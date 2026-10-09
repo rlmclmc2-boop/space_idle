@@ -9771,6 +9771,76 @@
         "count",
         "capacity"
       ]
+    },
+    "hyperspace.drone_hanging_capacity": {
+      "params": [
+        "opened",
+        "capacity"
+      ]
+    },
+    "hyperspace.drone_affix_capacity": {
+      "params": [
+        "used",
+        "capacity"
+      ]
+    },
+    "hyperspace.drone_quality_weapon_bonus": {
+      "params": [
+        "levels"
+      ]
+    },
+    "hyperspace.module_receipt_install": {
+      "params": []
+    },
+    "hyperspace.module_receipt_choose_carrier": {
+      "params": []
+    },
+    "hyperspace.dismantle_module_purpose": {
+      "params": []
+    },
+    "hyperspace.dismantle_module_progress": {
+      "params": [
+        "name",
+        "count",
+        "state",
+        "exp"
+      ]
+    },
+    "hyperspace.module_unlocked_grown": {
+      "params": [
+        "level"
+      ]
+    },
+    "hyperspace.module_level_grown": {
+      "params": [
+        "before",
+        "after"
+      ]
+    },
+    "hyperspace.module_experience_received": {
+      "params": []
+    },
+    "hyperspace.module_applied_change": {
+      "params": [
+        "effects",
+        "before",
+        "after"
+      ]
+    },
+    "hyperspace.module_saved_inactive": {
+      "params": []
+    },
+    "hyperspace.module_saved_unchanged": {
+      "params": []
+    },
+    "hyperspace.legendary_cultivation_short": {
+      "params": []
+    },
+    "hyperspace.legendary_slots_confirmation": {
+      "params": [
+        "slots",
+        "capacity"
+      ]
     }
   },
   "bindings": {

@@ -158,6 +158,7 @@ static func migrate(raw:Dictionary,c:Dictionary={})->Dictionary:
 			scale_cached_result(result,c,scale)
 			s.last_command.result_json=JSON.stringify(result,"",true,true)
 		s.material_unit_version=MATERIAL_UNIT_VERSION
+	Rewards.normalize_unlocked_modules(s)
 	return s
 
 static func scale_material_dict(values:Dictionary,scale:int)->void:

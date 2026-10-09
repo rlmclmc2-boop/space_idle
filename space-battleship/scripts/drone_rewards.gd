@@ -124,13 +124,20 @@ static func module_progress(c: Dictionary) -> Dictionary:
 	for key in c.hanging_modules:result[key]={"unlocked":false,"level":0,"exp":0.0}
 	return result
 
+# Only modules already obtained receive the minimum useful level; idempotent on reload.
+static func normalize_unlocked_modules(s:Dictionary) -> void:
+	for progress in s.hanging_modules.values():
+		if bool(progress.unlocked) and int(progress.level)==0:progress.level=1
+
 static func credit_modules(s: Dictionary,c: Dictionary,drops: Dictionary,outcomes: Dictionary={}) -> bool:
 	for key in drops:
 		var row: Dictionary=c.hanging_modules[key]
 		var progress: Dictionary=s.hanging_modules[key]
 		var copies:=int(drops[key])
 		var newly_unlocked: bool=not progress.unlocked
-		if not progress.unlocked:progress.unlocked=true;copies-=1
+		if copies<=0:continue
+		if not progress.unlocked:progress.unlocked=true;progress.level=1;copies-=1
+		elif int(progress.level)==0:progress.level=1
 		var experience_added:=copies*float(row.base_exp)
 		progress.exp+=experience_added
 		var needed:=float(row.base_exp)*pow(1.0+float(row.exp_growth),int(progress.level))

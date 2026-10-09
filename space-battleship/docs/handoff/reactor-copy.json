@@ -10,7 +10,8 @@
     "1ae2f17 route-named crew dispatch and same-route normal queue context",
     "25eb9a3 compact drone default cards, conditional empty-state visibility, modification versus actual weapon level",
     "fb25aa3 requested full attributes wrap and expose complete buffer settlement hover",
-    "2d8943e add-affix unavailable state names actual quality capacity or used/cap; classification rules retained"
+    "2d8943e add-affix unavailable state names actual quality capacity or used/cap; classification rules retained",
+    "Coherent cultivation/module flow: visible owned/max slots; dismantle receipt to existing carrier installation; actual applied system change; visible conversion goal and retained-capacity confirmation; first module level1 and idempotent obtained-zero normalization"
   ],
   "verification": {
     "main_ui_checks": 97,
@@ -48,16 +49,15 @@
     "drone_default_readability_checks": 10,
     "full_attribute_checks": 6,
     "add_affix_availability_checks": 7,
-    "white_cultivation_module_checks": 17,
-    "white_cultivation_failures": 0
+    "white_cultivation_module_checks": 34,
+    "cultivation_flow_gui": "Pending parent targeted acceptance; no new natural-play round started"
   },
   "next": [
-    "Parent reviews consolidated cultivation/module-chain findings and minimal flow proposal before product changes",
-    "Current play round remains stopped; no new task/thread/playthrough",
-    "Detailed diagnostic evidence stays private; isolated necessary logic test only"
+    "Parent integrates this batch and checks owned/max slots, first useful module receipt, carrier-preserving installation, actual active/inactive feedback, conversion goal and irreversible-capacity confirmation",
+    "Only after coordinated acceptance: separately authorized fresh first20 play round; implementation worker does not start it"
   ],
   "resume": "Verify HEAD, worktree and this checkpoint; do not repeat completed operations. Ordinary disconnect: retry original environment after about five minutes without per-disconnect user notification. Detailed evidence remains private.",
   "last_code_commit": "2d8943e7c4e9472fbb887882865a0fa70cfb185c",
   "save_boundary": "Non-grid/out-of-range master parameters reject the whole save. If every save copy is incompatible, startup pauses and disables saving, retaining original bytes. An existing valid backup can recover; later explicit saving installs recovered state by the existing recovery path. No migration or effect removal.",
-  "scope": "Existing implementation preserved; focused cultivation/module-chain diagnosis only. No economy change or new play round."
+  "scope": "Complete cultivation/module flow plus explicitly authorized first-acquired level1 rule; prices, drops, legendary rules, combat and late-game affix values unchanged."
 }
