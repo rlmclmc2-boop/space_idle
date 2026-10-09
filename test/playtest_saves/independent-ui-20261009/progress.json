@@ -3,7 +3,7 @@
 		6
 	],
 	"chronoParticles": 0.0,
-	"chronoSavedAt": 1791555450.91386,
+	"chronoSavedAt": 1791555876.34557,
 	"cleared": [
 		1,
 		2,
@@ -257,8 +257,8 @@
 	"crewEquipment": {
 
 	},
-	"droneWeaponFloor": 12,
-	"enhancementAttacks": 1673,
+	"droneWeaponFloor": 14,
+	"enhancementAttacks": 2195,
 	"enhancementBranches": {
 		"defence": {
 			"adaptation": {
@@ -283,7 +283,7 @@
 			}
 		}
 	},
-	"enhancementHits": 7026,
+	"enhancementHits": 8696,
 	"enhancementLevel": 0,
 	"enhancementOrder": {
 		"defence": [
@@ -298,8 +298,8 @@
 		]
 	},
 	"enhancementVersion": 1,
-	"furnaceElapsed": 14.18333333331,
-	"furnaceIncomePeak": 390.0,
+	"furnaceElapsed": 25.9333333333065,
+	"furnaceIncomePeak": 978.0,
 	"galaxies": {
 		"galaxy_1": {
 			"bag": [
@@ -2107,9 +2107,9 @@
 	"highestLevel": 7,
 	"hightechDrops": [],
 	"hightechLevels": {
-		"正电子聚焦装置": 10,
+		"正电子聚焦装置": 11,
 		"简并态装甲": 9,
-		"超时空炼铁炉": 12
+		"超时空炼铁炉": 13
 	},
 	"hightechOrder": [
 		"超时空炼铁炉",
@@ -2119,152 +2119,11 @@
 		"",
 		""
 	],
-	"hightechSavedAt": 1791555450.91386,
+	"hightechSavedAt": 1791555876.34557,
 	"hightechVersion": 2,
 	"hyperspace": {
 		"active": {
-			"crew_id": "",
-			"crew_luck": 0.0,
-			"crew_snapshot": "",
-			"duration": 0.0,
-			"level": 1,
-			"luck": 0.0,
-			"luck_state": "4312198084984904251",
-			"mode": "manual",
-			"permanent_luck": 0.0,
-			"return_journey": {
-				"distance": 200.0,
-				"groupIndex": 2,
-				"guardArrived": false,
-				"loop": false,
-				"pendingUnlocks": [],
-				"retreatBossPending": false,
-				"stage": 7,
-				"state": 3
-			},
-			"return_state": {
-				"armour": 65111.0,
-				"battle_json": "{\"nodes\":[{\"items\":[[\"player\",{\"ref\":1}],[\"enemies\",{\"ref\":2}],[\"projectiles\",{\"ref\":57}],[\"jewel_repeats\",{\"ref\":102}],[\"drone_delayed\",{\"ref\":103}],[\"branch_weapons\",{\"ref\":104}],[\"branch_defenses\",{\"ref\":111}],[\"attack_contexts\",{\"ref\":116}],[\"retreat_from\",{\"float\":\"AwAAAAAAYUQ=\"}],[\"retreat_target\",{\"float\":\"AwAAAAAAL0Q=\"}],[\"retreat_elapsed\",{\"float\":\"AwABADYzMzMzM/M/\"}],[\"guard_index\",{\"integer\":\"-1\"}],[\"guard_elapsed\",{\"float\":\"AwAAAAAAAAA=\"}],[\"guard_engaged\",true],[\"first_clear\",true],[\"enemy_shield_time\",{\"float\":\"AwABAN+QqqqqcZ9A\"}],[\"enemy_shield_hit_time\",{\"float\":\"AwAAAAAAgL8=\"}],[\"missile_queue\",{\"ref\":117}],[\"motion_clock\",{\"float\":\"AwABADcdERERz6FA\"}],[\"release_context\",{\"ref\":118}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwAAAAAAj0M=\"}],[\"y\",{\"float\":\"AwAAAAAAAkQ=\"}],[\"armour\",{\"float\":\"AwAAAABXfkc=\"}],[\"shield\",{\"float\":\"AwAAAAD8zUY=\"}]],\"type\":\"dict\"},{\"items\":[{\"ref\":3},{\"ref\":9},{\"ref\":15},{\"ref\":21},{\"ref\":27},{\"ref\":33},{\"ref\":39},{\"ref\":45},{\"ref\":51}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADBN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸2\"],[\"equipment\",{\"ref\":4}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAAEA=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":6}],[{\"name\":\"uid\"},{\"integer\":\"876\"}],[{\"name\":\"slot\"},{\"integer\":\"1\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAAj0M=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAA3EI=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":8}]],\"type\":\"dict\"},{\"items\":[{\"ref\":5}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":7}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADCN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸1\"],[\"equipment\",{\"ref\":10}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAgD8=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":12}],[{\"name\":\"uid\"},{\"integer\":\"877\"}],[{\"name\":\"slot\"},{\"integer\":\"2\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAAUkM=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAAh0M=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":14}]],\"type\":\"dict\"},{\"items\":[{\"ref\":11}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":13}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADDN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸2\"],[\"equipment\",{\"ref\":16}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAAEA=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":18}],[{\"name\":\"uid\"},{\"integer\":\"878\"}],[{\"name\":\"slot\"},{\"integer\":\"3\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAALEM=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAA3EI=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":20}]],\"type\":\"dict\"},{\"items\":[{\"ref\":17}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":19}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADGN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸1\"],[\"equipment\",{\"ref\":22}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAgD8=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":24}],[{\"name\":\"uid\"},{\"integer\":\"879\"}],[{\"name\":\"slot\"},{\"integer\":\"6\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAAtUM=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAAh0M=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":26}],[{\"name\":\"jewelDropChecked\"},true]],\"type\":\"dict\"},{\"items\":[{\"ref\":23}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":25}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABACAREREREaE/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADHN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸2\"],[\"equipment\",{\"ref\":28}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAAEA=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":30}],[{\"name\":\"uid\"},{\"integer\":\"880\"}],[{\"name\":\"slot\"},{\"integer\":\"7\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAAyEM=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAA3EI=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":32}]],\"type\":\"dict\"},{\"items\":[{\"ref\":29}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":31}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADIN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸1\"],[\"equipment\",{\"ref\":34}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAgD8=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":36}],[{\"name\":\"uid\"},{\"integer\":\"881\"}],[{\"name\":\"slot\"},{\"integer\":\"8\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAAaEI=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAAh0M=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":38}]],\"type\":\"dict\"},{\"items\":[{\"ref\":35}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":37}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADLN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸2\"],[\"equipment\",{\"ref\":40}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAAEA=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":42}],[{\"name\":\"uid\"},{\"integer\":\"882\"}],[{\"name\":\"slot\"},{\"integer\":\"11\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAAAAaEI=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAA3EI=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":44}]],\"type\":\"dict\"},{\"items\":[{\"ref\":41}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":43}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADMN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸1\"],[\"equipment\",{\"ref\":46}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAgD8=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":48}],[{\"name\":\"uid\"},{\"integer\":\"883\"}],[{\"name\":\"slot\"},{\"integer\":\"12\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAACAAEQ=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAAh0M=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":50}]],\"type\":\"dict\"},{\"items\":[{\"ref\":47}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":49}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[[\"id\",{\"float\":\"AwAAAADNN0c=\"}],[\"des\",\"编排草案-normal-laser-尺寸2\"],[\"equipment\",{\"ref\":52}],[\"dmgMultiple\",{\"float\":\"AwABAILn3sMlx40/\"}],[\"health\",{\"float\":\"AwAAAAAAoEM=\"}],[\"armourType\",{\"float\":\"AwAAAAAAAEA=\"}],[\"res\",\"{1,3,1}\"],[\"size\",{\"float\":\"AwAAAAAAAEA=\"}],[\"shield\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldType\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldRecovery\",{\"float\":\"AwAAAAAAAAA=\"}],[\"shieldDelay\",{\"float\":\"AwAAAAAAAAA=\"}],[\"drops\",{\"ref\":54}],[{\"name\":\"uid\"},{\"integer\":\"884\"}],[{\"name\":\"slot\"},{\"integer\":\"13\"}],[{\"name\":\"formation_columns\"},{\"integer\":\"5\"}],[{\"name\":\"size_formation\"},true],[{\"name\":\"explicit_formation\"},false],[{\"name\":\"formation_count\"},{\"integer\":\"9\"}],[{\"name\":\"x\"},{\"float\":\"AwAAAACAAEQ=\"}],[{\"name\":\"y\"},{\"float\":\"AwAAAAAA3EI=\"}],[{\"name\":\"hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_hp\"},{\"float\":\"AwAAAADIV0Y=\"}],[{\"name\":\"max_shield\"},{\"float\":\"AwAAAAAAAAA=\"}],[{\"name\":\"shield_updated_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"shield_hit_at\"},{\"float\":\"AwABAGAIIiIiaJ9A\"}],[{\"name\":\"res_ratio\"},{\"float\":\"AwABAPD8eIzAvhdA\"}],[{\"name\":\"combat_tier\"},\"normal\"],[{\"name\":\"boss\"},false],[{\"name\":\"cooldowns\"},{\"ref\":56}]],\"type\":\"dict\"},{\"items\":[{\"ref\":53}],\"type\":\"array\"},{\"items\":[[\"name\",\"laser_mon\"]],\"type\":\"dict\"},{\"items\":[{\"ref\":55}],\"type\":\"array\"},{\"items\":[[\"resourceId\",{\"float\":\"AwAAAAAAgD8=\"}],[\"amount\",{\"float\":\"AwAAAAAAQEA=\"}],[\"chance\",{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"items\":[{\"float\":\"AwABAHp3d3d3d8c/\"}],\"type\":\"array\"},{\"items\":[{\"ref\":58},{\"ref\":70},{\"ref\":82},{\"ref\":94},{\"ref\":95},{\"ref\":96},{\"ref\":97},{\"ref\":98},{\"ref\":99},{\"ref\":100},{\"ref\":101}],\"type\":\"array\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAgI/iiXFA\"}],[\"y\",{\"float\":\"AwABAAAAgFxAB4BA\"}],[\"target\",{\"ref\":9}],[\"damage\",{\"integer\":\"0\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAAYEI=\"}],[\"hostile\",false],[\"key\",\"longLaser\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9809\"}],[{\"name\":\"source_uid\"},{\"integer\":\"0\"}],[\"entry\",{\"ref\":59}],[\"mount\",{\"integer\":\"0\"}],[\"salvo_ordinal\",{\"integer\":\"0\"}],[\"beam\",true],[\"combat_context\",{\"ref\":60}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAJXnVL4=\"},{\"float\":\"AwAAANdner8=\"}]}],[{\"name\":\"launch_point\"},{\"vec\":[{\"float\":\"AwAAAGJ8j0M=\"},{\"float\":\"AwAAAIISIEQ=\"}]}],[\"repeated\",false],[\"repeat_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"repeat_depth\",{\"integer\":\"0\"}],[\"repeat_origin_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"charged_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"locked_target\",{\"ref\":9}],[\"source\",{\"ref\":1}],[\"elapsed\",{\"float\":\"AwABAE5EREREROw/\"}],[\"ticks\",{\"integer\":\"0\"}],[\"weapon\",{\"ref\":62}],[\"charge\",{\"float\":\"AwAAAAAAgD8=\"}],[{\"name\":\"attack_snapshot\"},{\"ref\":63}],[{\"name\":\"main_attack_id\"},{\"integer\":\"1653\"}],[{\"name\":\"attack_instance\"},{\"ref\":67}],[{\"name\":\"attack_instance_id\"},{\"integer\":\"1653\"}],[{\"name\":\"endless\"},false],[{\"name\":\"next_hit_at\"},{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"binding\":{\"index\":0,\"key\":\"longLaser\",\"kind\":\"weapons\"},\"items\":[[\"key\",\"longLaser\"],[\"level\",{\"integer\":\"12\"}]],\"type\":\"dict\"},{\"items\":[[\"root_id\",{\"integer\":\"1653\"}],[\"batch_id\",{\"integer\":\"1653\"}],[\"source_id\",\"module:0\"],[\"weapon\",\"longLaser\"],[\"trigger_depth\",{\"integer\":\"0\"}],[\"trigger\",\"\"],[\"guidance_factors\",{\"ref\":61}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[[\"name\",\"longLaser\"],[\"des\",\"锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)\"],[\"level\",{\"integer\":\"12\"}],[\"dmgtype\",{\"float\":\"AwAAAAAAgD8=\"}],[\"dmg\",{\"float\":\"AwAAAAAA5kM=\"}],[\"dmgMulti\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"cd\",{\"float\":\"AwAAAAAAAD8=\"}],[\"res_1\",{\"float\":\"AwAAAAAAgD8=\"}],[\"cost_1\",{\"float\":\"AwAAAAAAuUM=\"}],[\"costMulti_1\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"res_2\",null],[\"cost_2\",null],[\"costMulti_2\",null],[\"para1\",{\"float\":\"AwAAAAAAAEA=\"}],[\"para2\",{\"float\":\"AwAAAAAAQEA=\"}],[\"para3\",{\"float\":\"AwAAAAAAgD8=\"}],[\"para4\",null]],\"type\":\"dict\"},{\"items\":[[\"id\",{\"integer\":\"1653\"}],[\"damage\",{\"float\":\"AwAAAADAG0U=\"}],[\"effects\",{\"ref\":64}],[\"critical\",false],[\"critical_bonus_applied\",false],[\"secondary\",false],[\"secondary_used\",false],[\"repeats_queued\",false],[\"repeat_plan\",{\"ref\":65}],[\"weapon\",{\"ref\":66}],[{\"name\":\"combat_context\"},{\"ref\":60}],[{\"name\":\"instance\"},{\"ref\":67}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[\"name\",\"longLaser\"],[\"des\",\"锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)\"],[\"level\",{\"integer\":\"12\"}],[\"dmgtype\",{\"float\":\"AwAAAAAAgD8=\"}],[\"dmg\",{\"float\":\"AwAAAAAA5kM=\"}],[\"dmgMulti\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"cd\",{\"float\":\"AwAAAAAAAD8=\"}],[\"res_1\",{\"float\":\"AwAAAAAAgD8=\"}],[\"cost_1\",{\"float\":\"AwAAAAAAuUM=\"}],[\"costMulti_1\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"res_2\",null],[\"cost_2\",null],[\"costMulti_2\",null],[\"para1\",{\"float\":\"AwAAAAAAAEA=\"}],[\"para2\",{\"float\":\"AwAAAAAAQEA=\"}],[\"para3\",{\"float\":\"AwAAAAAAgD8=\"}],[\"para4\",null]],\"type\":\"dict\"},{\"items\":[[\"id\",{\"integer\":\"1653\"}],[\"chain\",{\"ref\":68}]],\"type\":\"dict\"},{\"items\":[[\"instance_id\",{\"integer\":\"1653\"}],[\"count\",{\"integer\":\"0\"}],[\"used\",true],[\"beam\",true],[\"ended\",false],[\"links\",{\"ref\":69}],[{\"name\":\"primary\"},{\"ref\":9}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAA4FhN7HFA\"}],[\"y\",{\"float\":\"AwABAAAAAGL7D4BA\"}],[\"target\",{\"ref\":9}],[\"damage\",{\"integer\":\"0\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAAYEI=\"}],[\"hostile\",false],[\"key\",\"longLaser\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9810\"}],[{\"name\":\"source_uid\"},{\"integer\":\"0\"}],[\"entry\",{\"ref\":71}],[\"mount\",{\"integer\":\"1\"}],[\"salvo_ordinal\",{\"integer\":\"0\"}],[\"beam\",true],[\"combat_context\",{\"ref\":72}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAABg9C74=\"},{\"float\":\"AwAAAFKffb8=\"}]}],[{\"name\":\"launch_point\"},{\"vec\":[{\"float\":\"AwAAAEY5hEM=\"},{\"float\":\"AwAAABznKUQ=\"}]}],[\"repeated\",false],[\"repeat_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"repeat_depth\",{\"integer\":\"0\"}],[\"repeat_origin_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"charged_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"locked_target\",{\"ref\":9}],[\"source\",{\"ref\":1}],[\"elapsed\",{\"float\":\"AwABAE5EREREROw/\"}],[\"ticks\",{\"integer\":\"0\"}],[\"weapon\",{\"ref\":74}],[\"charge\",{\"float\":\"AwAAAAAAgD8=\"}],[{\"name\":\"attack_snapshot\"},{\"ref\":75}],[{\"name\":\"main_attack_id\"},{\"integer\":\"1654\"}],[{\"name\":\"attack_instance\"},{\"ref\":79}],[{\"name\":\"attack_instance_id\"},{\"integer\":\"1654\"}],[{\"name\":\"endless\"},false],[{\"name\":\"next_hit_at\"},{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"binding\":{\"index\":1,\"key\":\"longLaser\",\"kind\":\"weapons\"},\"items\":[[\"key\",\"longLaser\"],[\"level\",{\"integer\":\"12\"}]],\"type\":\"dict\"},{\"items\":[[\"root_id\",{\"integer\":\"1654\"}],[\"batch_id\",{\"integer\":\"1654\"}],[\"source_id\",\"module:1\"],[\"weapon\",\"longLaser\"],[\"trigger_depth\",{\"integer\":\"0\"}],[\"trigger\",\"\"],[\"guidance_factors\",{\"ref\":73}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[[\"name\",\"longLaser\"],[\"des\",\"锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)\"],[\"level\",{\"integer\":\"12\"}],[\"dmgtype\",{\"float\":\"AwAAAAAAgD8=\"}],[\"dmg\",{\"float\":\"AwAAAAAA5kM=\"}],[\"dmgMulti\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"cd\",{\"float\":\"AwAAAAAAAD8=\"}],[\"res_1\",{\"float\":\"AwAAAAAAgD8=\"}],[\"cost_1\",{\"float\":\"AwAAAAAAuUM=\"}],[\"costMulti_1\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"res_2\",null],[\"cost_2\",null],[\"costMulti_2\",null],[\"para1\",{\"float\":\"AwAAAAAAAEA=\"}],[\"para2\",{\"float\":\"AwAAAAAAQEA=\"}],[\"para3\",{\"float\":\"AwAAAAAAgD8=\"}],[\"para4\",null]],\"type\":\"dict\"},{\"items\":[[\"id\",{\"integer\":\"1654\"}],[\"damage\",{\"float\":\"AwAAAADAG0U=\"}],[\"effects\",{\"ref\":76}],[\"critical\",false],[\"critical_bonus_applied\",false],[\"secondary\",false],[\"secondary_used\",false],[\"repeats_queued\",false],[\"repeat_plan\",{\"ref\":77}],[\"weapon\",{\"ref\":78}],[{\"name\":\"combat_context\"},{\"ref\":72}],[{\"name\":\"instance\"},{\"ref\":79}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[\"name\",\"longLaser\"],[\"des\",\"锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)\"],[\"level\",{\"integer\":\"12\"}],[\"dmgtype\",{\"float\":\"AwAAAAAAgD8=\"}],[\"dmg\",{\"float\":\"AwAAAAAA5kM=\"}],[\"dmgMulti\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"cd\",{\"float\":\"AwAAAAAAAD8=\"}],[\"res_1\",{\"float\":\"AwAAAAAAgD8=\"}],[\"cost_1\",{\"float\":\"AwAAAAAAuUM=\"}],[\"costMulti_1\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"res_2\",null],[\"cost_2\",null],[\"costMulti_2\",null],[\"para1\",{\"float\":\"AwAAAAAAAEA=\"}],[\"para2\",{\"float\":\"AwAAAAAAQEA=\"}],[\"para3\",{\"float\":\"AwAAAAAAgD8=\"}],[\"para4\",null]],\"type\":\"dict\"},{\"items\":[[\"id\",{\"integer\":\"1654\"}],[\"chain\",{\"ref\":80}]],\"type\":\"dict\"},{\"items\":[[\"instance_id\",{\"integer\":\"1654\"}],[\"count\",{\"integer\":\"0\"}],[\"used\",true],[\"beam\",true],[\"ended\",false],[\"links\",{\"ref\":81}],[{\"name\":\"primary\"},{\"ref\":9}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAgMQhTXJA\"}],[\"y\",{\"float\":\"AwABAAAAAPSlB4BA\"}],[\"target\",{\"ref\":9}],[\"damage\",{\"integer\":\"0\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAAYEI=\"}],[\"hostile\",false],[\"key\",\"longLaser\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9811\"}],[{\"name\":\"source_uid\"},{\"integer\":\"0\"}],[\"entry\",{\"ref\":83}],[\"mount\",{\"integer\":\"2\"}],[\"salvo_ordinal\",{\"integer\":\"0\"}],[\"beam\",true],[\"combat_context\",{\"ref\":84}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAFN3c74=\"},{\"float\":\"AwAAAK+oeL8=\"}]}],[{\"name\":\"launch_point\"},{\"vec\":[{\"float\":\"AwAAAMxPmkM=\"},{\"float\":\"AwAAAE/8KUQ=\"}]}],[\"repeated\",false],[\"repeat_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"repeat_depth\",{\"integer\":\"0\"}],[\"repeat_origin_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"charged_multiplier\",{\"float\":\"AwAAAAAAgD8=\"}],[\"locked_target\",{\"ref\":9}],[\"source\",{\"ref\":1}],[\"elapsed\",{\"float\":\"AwABAE5EREREROw/\"}],[\"ticks\",{\"integer\":\"0\"}],[\"weapon\",{\"ref\":86}],[\"charge\",{\"float\":\"AwAAAAAAgD8=\"}],[{\"name\":\"attack_snapshot\"},{\"ref\":87}],[{\"name\":\"main_attack_id\"},{\"integer\":\"1655\"}],[{\"name\":\"attack_instance\"},{\"ref\":91}],[{\"name\":\"attack_instance_id\"},{\"integer\":\"1655\"}],[{\"name\":\"endless\"},false],[{\"name\":\"next_hit_at\"},{\"float\":\"AwAAAAAAgD8=\"}]],\"type\":\"dict\"},{\"binding\":{\"index\":2,\"key\":\"longLaser\",\"kind\":\"weapons\"},\"items\":[[\"key\",\"longLaser\"],[\"level\",{\"integer\":\"12\"}]],\"type\":\"dict\"},{\"items\":[[\"root_id\",{\"integer\":\"1655\"}],[\"batch_id\",{\"integer\":\"1655\"}],[\"source_id\",\"module:2\"],[\"weapon\",\"longLaser\"],[\"trigger_depth\",{\"integer\":\"0\"}],[\"trigger\",\"\"],[\"guidance_factors\",{\"ref\":85}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[[\"name\",\"longLaser\"],[\"des\",\"锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)\"],[\"level\",{\"integer\":\"12\"}],[\"dmgtype\",{\"float\":\"AwAAAAAAgD8=\"}],[\"dmg\",{\"float\":\"AwAAAAAA5kM=\"}],[\"dmgMulti\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"cd\",{\"float\":\"AwAAAAAAAD8=\"}],[\"res_1\",{\"float\":\"AwAAAAAAgD8=\"}],[\"cost_1\",{\"float\":\"AwAAAAAAuUM=\"}],[\"costMulti_1\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"res_2\",null],[\"cost_2\",null],[\"costMulti_2\",null],[\"para1\",{\"float\":\"AwAAAAAAAEA=\"}],[\"para2\",{\"float\":\"AwAAAAAAQEA=\"}],[\"para3\",{\"float\":\"AwAAAAAAgD8=\"}],[\"para4\",null]],\"type\":\"dict\"},{\"items\":[[\"id\",{\"integer\":\"1655\"}],[\"damage\",{\"float\":\"AwAAAADAG0U=\"}],[\"effects\",{\"ref\":88}],[\"critical\",false],[\"critical_bonus_applied\",false],[\"secondary\",false],[\"secondary_used\",false],[\"repeats_queued\",false],[\"repeat_plan\",{\"ref\":89}],[\"weapon\",{\"ref\":90}],[{\"name\":\"combat_context\"},{\"ref\":84}],[{\"name\":\"instance\"},{\"ref\":91}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[\"name\",\"longLaser\"],[\"des\",\"锁定一个敌人发射持续的光束,光束每cd的时间造成一次伤害,光束持续命中的时间越长,伤害越高,在para1的时间里逐渐增长到最大para2的伤害(最大伤害为dmg*para2)\"],[\"level\",{\"integer\":\"12\"}],[\"dmgtype\",{\"float\":\"AwAAAAAAgD8=\"}],[\"dmg\",{\"float\":\"AwAAAAAA5kM=\"}],[\"dmgMulti\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"cd\",{\"float\":\"AwAAAAAAAD8=\"}],[\"res_1\",{\"float\":\"AwAAAAAAgD8=\"}],[\"cost_1\",{\"float\":\"AwAAAAAAuUM=\"}],[\"costMulti_1\",{\"float\":\"AwABAJqZmZmZmck/\"}],[\"res_2\",null],[\"cost_2\",null],[\"costMulti_2\",null],[\"para1\",{\"float\":\"AwAAAAAAAEA=\"}],[\"para2\",{\"float\":\"AwAAAAAAQEA=\"}],[\"para3\",{\"float\":\"AwAAAAAAgD8=\"}],[\"para4\",null]],\"type\":\"dict\"},{\"items\":[[\"id\",{\"integer\":\"1655\"}],[\"chain\",{\"ref\":92}]],\"type\":\"dict\"},{\"items\":[[\"instance_id\",{\"integer\":\"1655\"}],[\"count\",{\"integer\":\"0\"}],[\"used\",true],[\"beam\",true],[\"ended\",false],[\"links\",{\"ref\":93}],[{\"name\":\"primary\"},{\"ref\":9}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[\"x\",{\"float\":\"AwAAAAAAj0M=\"}],[\"y\",{\"float\":\"AwABAAAAAFBEJHZA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9820\"}],[{\"name\":\"source_uid\"},{\"integer\":\"876\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAAAAAAA=\"},{\"float\":\"AwAAAAAAgD8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAAK0+JnFA\"}],[\"y\",{\"float\":\"AwABAAAAAPCMhn5A\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9821\"}],[{\"name\":\"source_uid\"},{\"integer\":\"877\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAAedsD4=\"},{\"float\":\"AwAAAIRJcD8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAAJqKrmxA\"}],[\"y\",{\"float\":\"AwABAAAAAJRGk3VA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9822\"}],[{\"name\":\"source_uid\"},{\"integer\":\"878\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAANqWnT4=\"},{\"float\":\"AwAAAHqScz8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAALO6aHVA\"}],[\"y\",{\"float\":\"AwABAAAAAJRGk3VA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9823\"}],[{\"name\":\"source_uid\"},{\"integer\":\"880\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAANqWnb4=\"},{\"float\":\"AwAAAHqScz8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAAOx4iGhA\"}],[\"y\",{\"float\":\"AwABAAAAAKS8aXtA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9824\"}],[{\"name\":\"source_uid\"},{\"integer\":\"881\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAMeePT8=\"},{\"float\":\"AwAAACb9Kz8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAAOzI7GNA\"}],[\"y\",{\"float\":\"AwABAAAAAFgxRXRA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9825\"}],[{\"name\":\"source_uid\"},{\"integer\":\"882\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAO0PCz8=\"},{\"float\":\"AwAAAL/vVj8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAAIrDe3dA\"}],[\"y\",{\"float\":\"AwABAAAAAKS8aXtA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9826\"}],[{\"name\":\"source_uid\"},{\"integer\":\"883\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAMeePb8=\"},{\"float\":\"AwAAACb9Kz8=\"}]}]],\"type\":\"dict\"},{\"items\":[[\"x\",{\"float\":\"AwABAAAAAIqbyXlA\"}],[\"y\",{\"float\":\"AwABAAAAAFgxRXRA\"}],[\"target\",{\"ref\":1}],[\"damage\",{\"float\":\"AwAAAAAAUEE=\"}],[\"type\",{\"integer\":\"1\"}],[\"speed\",{\"float\":\"AwAAAAAADEQ=\"}],[\"hostile\",true],[\"key\",\"laser_mon\"],[\"dead\",false],[{\"name\":\"serial\"},{\"integer\":\"9827\"}],[{\"name\":\"source_uid\"},{\"integer\":\"884\"}],[{\"name\":\"direction\"},{\"vec\":[{\"float\":\"AwAAAO0PC78=\"},{\"float\":\"AwAAAL/vVj8=\"}]}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[],\"type\":\"array\"},{\"items\":[[{\"integer\":\"0\"},{\"ref\":105}],[{\"integer\":\"1\"},{\"ref\":107}],[{\"integer\":\"2\"},{\"ref\":109}]],\"type\":\"dict\"},{\"items\":[[\"entry\",{\"ref\":59}],[\"target\",{\"ref\":106}],[\"dwell\",{\"float\":\"AwAAAAAAAAA=\"}],[\"next\",{\"integer\":\"0\"}],[\"stacks\",{\"integer\":\"0\"}],[\"stack_time\",{\"float\":\"AwAAAAAAAAA=\"}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[[\"entry\",{\"ref\":71}],[\"target\",{\"ref\":108}],[\"dwell\",{\"float\":\"AwAAAAAAAAA=\"}],[\"next\",{\"integer\":\"0\"}],[\"stacks\",{\"integer\":\"0\"}],[\"stack_time\",{\"float\":\"AwAAAAAAAAA=\"}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[[\"entry\",{\"ref\":83}],[\"target\",{\"ref\":110}],[\"dwell\",{\"float\":\"AwAAAAAAAAA=\"}],[\"next\",{\"integer\":\"0\"}],[\"stacks\",{\"integer\":\"0\"}],[\"stack_time\",{\"float\":\"AwAAAAAAAAA=\"}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[[{\"integer\":\"0\"},{\"ref\":112}],[{\"integer\":\"1\"},{\"ref\":114}]],\"type\":\"dict\"},{\"items\":[[\"entry\",{\"ref\":113}],[\"cover_elapsed\",{\"float\":\"AwAAAAAAAAA=\"}],[\"cover_time\",{\"float\":\"AwAAAAAAAAA=\"}],[\"cover\",{\"float\":\"AwAAAAAAAAA=\"}],[\"resistance_type\",{\"integer\":\"0\"}],[\"resistance_time\",{\"float\":\"AwAAAAAAAAA=\"}],[\"lockout\",{\"float\":\"AwAAAAAAAAA=\"}]],\"type\":\"dict\"},{\"binding\":{\"index\":0,\"key\":\"armour\",\"kind\":\"defence\"},\"items\":[[\"key\",\"armour\"],[\"level\",{\"integer\":\"15\"}]],\"type\":\"dict\"},{\"items\":[[\"entry\",{\"ref\":115}],[\"cover_elapsed\",{\"float\":\"AwAAAAAAAAA=\"}],[\"cover_time\",{\"float\":\"AwAAAAAAAAA=\"}],[\"cover\",{\"float\":\"AwAAAAAAAAA=\"}],[\"resistance_type\",{\"integer\":\"0\"}],[\"resistance_time\",{\"float\":\"AwAAAAAAAAA=\"}],[\"lockout\",{\"float\":\"AwAAAAAAAAA=\"}]],\"type\":\"dict\"},{\"binding\":{\"index\":1,\"key\":\"shield\",\"kind\":\"defence\"},\"items\":[[\"key\",\"shield\"],[\"level\",{\"integer\":\"14\"}]],\"type\":\"dict\"},{\"items\":[],\"type\":\"dict\"},{\"items\":[],\"type\":\"array\"},{\"items\":[],\"type\":\"dict\"}],\"root\":{\"ref\":0}}",
-				"buffers": {
 
-				},
-				"charged": {
-
-				},
-				"clear_reduction_remaining": 0.0,
-				"clear_timer": 0.0,
-				"cooldowns": {
-					"weapons_0": {
-						"key": "longLaser",
-						"remaining": 0.5
-					},
-					"weapons_1": {
-						"key": "longLaser",
-						"remaining": 0.5
-					},
-					"weapons_2": {
-						"key": "longLaser",
-						"remaining": 0.5
-					}
-				},
-				"defense_losses": {
-					"0": {
-						"damage": 0.0,
-						"key": "armour",
-						"time": 115.383333333332
-					},
-					"1": {
-						"damage": 182.0,
-						"key": "shield",
-						"time": 0.1
-					}
-				},
-				"defenses": {
-					"0": {
-						"cover": 0.0,
-						"cover_elapsed": 0.0,
-						"cover_time": 0.0,
-						"key": "armour",
-						"lockout": 0.0,
-						"owner": "defence_0",
-						"resistance_time": 0.0,
-						"resistance_type": 0
-					},
-					"1": {
-						"cover": 0.0,
-						"cover_elapsed": 0.0,
-						"cover_time": 0.0,
-						"key": "shield",
-						"lockout": 0.0,
-						"owner": "defence_1",
-						"resistance_time": 0.0,
-						"resistance_type": 0
-					}
-				},
-				"drone": {
-					"black_hole_damage": 0.0,
-					"black_hole_elapsed": 0.0,
-					"black_hole_remaining": 0.0,
-					"disabled": [],
-					"dodge_cooldown": 0.0,
-					"missile_attacks": 0,
-					"rebuild_bonus": 0.0,
-					"rebuild_stacks": 0
-				},
-				"enhancement_defense_time": 15.3833333333337,
-				"enhancement_deferred": {
-
-				},
-				"enhancement_deferred_elapsed": 0.183333333333333,
-				"enhancement_deferred_tick": 76,
-				"enhancement_memory_elapsed": 0.183333333333333,
-				"incoming_sources": {
-
-				},
-				"memory_reduction_remaining": 0.0,
-				"paused": true,
-				"run_resources": {
-					"1": 63.0,
-					"2": 0.0
-				},
-				"shield": 26366.0,
-				"since_hit": 0.1,
-				"travel_origin": 100.0,
-				"travel_origin_ready": true,
-				"version": 2,
-				"weapons": {
-					"0": {
-						"key": "longLaser",
-						"next": 0,
-						"owner": "weapons_0",
-						"stack_time": 0.0,
-						"stacks": 0
-					},
-					"1": {
-						"key": "longLaser",
-						"next": 0,
-						"owner": "weapons_1",
-						"stack_time": 0.0,
-						"stacks": 0
-					},
-					"2": {
-						"key": "longLaser",
-						"next": 0,
-						"owner": "weapons_2",
-						"stack_time": 0.0,
-						"stacks": 0
-					}
-				}
-			},
-			"reward": {
-
-			},
-			"round_id": 1,
-			"route": "delta",
-			"run_id": 1,
-			"status": "started",
-			"ticket": 0.0,
-			"work": 15.4833333333337
 		},
 		"auto": {
 			"crew_id": "",
@@ -2310,25 +2169,77 @@
 			}
 		},
 		"history": {
-
+			"delta": {
+				"1": 78.4999999999968
+			}
 		},
 		"idle": {
 
 		},
 		"inventory": {
 			"drones": {
+				"space:1:1": {
+					"affixes": [],
+					"blue_source_bonus": false,
+					"forge_revision": 0,
+					"forge_rng_state": "4656055936734276594",
+					"hanging_slots": 0,
+					"hangings": [],
+					"id": "space:1:1",
+					"legendary": false,
+					"legendary_effect": {
 
+					},
+					"level": 1,
+					"omen": false,
+					"origin_quality": "white",
+					"planet_id": "1",
+					"preserved_hanging_slots": 0,
+					"ultimate": false,
+					"ultimate_affix": {
+
+					},
+					"weapon": "longLaser"
+				},
+				"space:1:2": {
+					"affixes": [],
+					"blue_source_bonus": false,
+					"forge_revision": 0,
+					"forge_rng_state": "8766765496207030308",
+					"hanging_slots": 0,
+					"hangings": [],
+					"id": "space:1:2",
+					"legendary": false,
+					"legendary_effect": {
+
+					},
+					"level": 1,
+					"omen": false,
+					"origin_quality": "white",
+					"planet_id": "1",
+					"preserved_hanging_slots": 0,
+					"ultimate": false,
+					"ultimate_affix": {
+
+					},
+					"weapon": "longLaser"
+				}
 			},
-			"equipped": [],
+			"equipped": [
+				"space:1:1"
+			],
 			"favorites": [],
-			"generation": 0,
+			"generation": 3,
 			"overflow": [],
 			"presets": [],
 			"reforge_count": 0,
 			"sealed": {
 
 			},
-			"warehouse": []
+			"warehouse": [
+				"space:1:1",
+				"space:1:2"
+			]
 		},
 		"last_command": {
 
@@ -2340,32 +2251,32 @@
 			"antiproton": 0,
 			"degenerate_matter": 0,
 			"glueball": 0,
-			"zero_point_energy": 0
+			"zero_point_energy": 20
 		},
-		"next_run": 2,
+		"next_run": 3,
 		"paused": [],
 		"pending_time": 0.0,
 		"queue_policy_version": 1,
-		"random_state": "7488614250035452996",
+		"random_state": "891249149596888090",
 		"round_id": 1,
-		"settled_run": 0,
+		"settled_run": 2,
 		"ultimate_cores": 0,
-		"unlocked_drones": false,
+		"unlocked_drones": true,
 		"version": 5
 	},
 	"hyperspaceReceipt": {
-		"drone_id": "",
-		"round": 0,
-		"run": 0,
-		"unread": false
+		"drone_id": "space:1:2",
+		"round": 1,
+		"run": 2,
+		"unread": true
 	},
 	"jewelFragments": 0.0,
 	"jewelFurnaceElapsed": 0.0,
 	"jewelFurnaceIncomePeak": 0.0,
 	"jewels": [],
 	"journey": {
-		"distance": 200.0,
-		"groupIndex": 2,
+		"distance": 400.0,
+		"groupIndex": 4,
 		"guardArrived": false,
 		"pendingUnlocks": [],
 		"retreatBossPending": false,
@@ -2373,37 +2284,37 @@
 		"state": 3
 	},
 	"levels": {
-		"armour": 15,
+		"armour": 16,
 		"cannon": 1,
-		"laser": 1,
-		"longLaser": 12,
+		"laser": 14,
+		"longLaser": 14,
 		"missile": 1,
-		"shield": 14
+		"shield": 16
 	},
 	"lifetime_max_stage": 7,
 	"loadout": {
 		"defence": [
 			{
 				"key": "armour",
-				"level": 15
+				"level": 16
 			},
 			{
 				"key": "shield",
-				"level": 14
+				"level": 16
 			}
 		],
 		"weapons": [
 			{
-				"key": "longLaser",
-				"level": 12
+				"key": "laser",
+				"level": 14
+			},
+			{
+				"key": "laser",
+				"level": 14
 			},
 			{
 				"key": "longLaser",
-				"level": 12
-			},
-			{
-				"key": "longLaser",
-				"level": 12
+				"level": 14
 			}
 		]
 	},
@@ -2600,15 +2511,15 @@
 			"unlocked": false
 		}
 	},
-	"productionElapsed": 2295.01666666828,
+	"productionElapsed": 2516.7666666711,
 	"reactorAllocation": {
 		"condensation": 0,
-		"defence": 362,
+		"defence": 434,
 		"smelting": 0,
-		"weapons": 381
+		"weapons": 457
 	},
 	"reactorIntegerVersion": 1,
-	"reactorLevel": 12,
+	"reactorLevel": 13,
 	"readUnlocks": [
 		"laser",
 		"armour",
@@ -2620,169 +2531,289 @@
 	],
 	"resourceSamples": [
 		{
-			"amount": 9.0,
+			"amount": 27.0,
 			"id": "2",
 			"origin": "drop",
-			"production_base": 9.0,
-			"production_time": 2242.80000000095,
-			"time": 1791555370.78567
+			"production_base": 27.0,
+			"production_time": 2457.01666667034,
+			"time": 1791555730.65712
 		},
 		{
-			"amount": 234.0,
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2458.65000000369,
+			"time": 1791555732.27789
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2460.65000000372,
+			"time": 1791555734.30247
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2462.65000000375,
+			"time": 1791555736.30004
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2464.65000000377,
+			"time": 1791555738.28928
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2466.6500000038,
+			"time": 1791555740.28122
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2468.15000000382,
+			"time": 1791555826.50085
+		},
+		{
+			"amount": 636.0,
 			"id": "1",
 			"origin": "furnace",
-			"production_base": 234.0,
-			"production_time": 2260.85000000118,
-			"time": 1791555388.83722
+			"production_base": 636.0,
+			"production_time": 2470.85000000385,
+			"time": 1791555829.21742
 		},
 		{
-			"amount": 9.0,
+			"amount": 31.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 31.0,
+			"production_time": 2472.65000000387,
+			"time": 1791555831.01782
+		},
+		{
+			"amount": 31.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 31.0,
+			"production_time": 2475.08333333724,
+			"time": 1791555833.44319
+		},
+		{
+			"amount": 31.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 31.0,
+			"production_time": 2477.1666666706,
+			"time": 1791555835.60343
+		},
+		{
+			"amount": 16.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 16.0,
+			"production_time": 2481.66666667065,
+			"time": 1791555840.09618
+		},
+		{
+			"amount": 16.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 16.0,
+			"production_time": 2482.71666667067,
+			"time": 1791555841.11764
+		},
+		{
+			"amount": 16.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 16.0,
+			"production_time": 2483.80000000402,
+			"time": 1791555842.19928
+		},
+		{
+			"amount": 16.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 16.0,
+			"production_time": 2485.30000000403,
+			"time": 1791555843.71056
+		},
+		{
+			"amount": 16.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 16.0,
+			"production_time": 2486.53333333738,
+			"time": 1791555844.96507
+		},
+		{
+			"amount": 16.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 16.0,
+			"production_time": 2488.0333333374,
+			"time": 1791555846.42548
+		},
+		{
+			"amount": 27.0,
 			"id": "2",
 			"origin": "drop",
-			"production_base": 9.0,
-			"production_time": 2264.15000000122,
-			"time": 1791555392.46605
+			"production_base": 27.0,
+			"production_time": 2488.21666667074,
+			"time": 1791555846.59549
 		},
 		{
-			"amount": 216.0,
+			"amount": 16.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 216.0,
-			"production_time": 2264.15000000122,
-			"time": 1791555392.46655
+			"production_base": 16.0,
+			"production_time": 2489.53333333742,
+			"time": 1791555847.97214
 		},
 		{
-			"amount": 6.0,
+			"amount": 16.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2272.16666666799,
-			"time": 1791555401.56642
+			"production_base": 16.0,
+			"production_time": 2491.03333333744,
+			"time": 1791555849.76406
 		},
 		{
-			"amount": 6.0,
+			"amount": 16.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2273.166666668,
-			"time": 1791555402.5394
+			"production_base": 16.0,
+			"production_time": 2492.53333333746,
+			"time": 1791555851.26016
 		},
 		{
-			"amount": 6.0,
+			"amount": 20.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2274.16666666801,
-			"time": 1791555403.71046
+			"production_base": 20.0,
+			"production_time": 2496.0333333375,
+			"time": 1791555854.77756
 		},
 		{
-			"amount": 6.0,
+			"amount": 20.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2275.16666666803,
-			"time": 1791555404.66062
+			"production_base": 20.0,
+			"production_time": 2497.53333333752,
+			"time": 1791555856.29201
 		},
 		{
-			"amount": 6.0,
+			"amount": 20.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2276.16666666804,
-			"time": 1791555405.68435
+			"production_base": 20.0,
+			"production_time": 2499.03333333754,
+			"time": 1791555857.79142
 		},
 		{
-			"amount": 6.0,
+			"amount": 20.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2277.16666666805,
-			"time": 1791555406.70926
+			"production_base": 20.0,
+			"production_time": 2500.53333333756,
+			"time": 1791555859.3322
 		},
 		{
-			"amount": 6.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2278.16666666806,
-			"time": 1791555407.72556
-		},
-		{
-			"amount": 6.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2279.16666666808,
-			"time": 1791555408.75685
-		},
-		{
-			"amount": 6.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 6.0,
-			"production_time": 2279.53333333475,
-			"time": 1791555434.25746
-		},
-		{
-			"amount": 9.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 9.0,
-			"production_time": 2279.53333333475,
-			"time": 1791555434.25788
-		},
-		{
-			"amount": 18.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 18.0,
-			"production_time": 2288.55000000153,
-			"time": 1791555444.10921
-		},
-		{
-			"amount": 18.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 18.0,
-			"production_time": 2289.55000000154,
-			"time": 1791555445.31104
-		},
-		{
-			"amount": 18.0,
-			"id": "1",
-			"origin": "drop",
-			"production_base": 18.0,
-			"production_time": 2289.55000000154,
-			"time": 1791555445.31137
-		},
-		{
-			"amount": 234.0,
+			"amount": 636.0,
 			"id": "1",
 			"origin": "furnace",
-			"production_base": 234.0,
-			"production_time": 2290.85000000156,
-			"time": 1791555446.59088
+			"production_base": 636.0,
+			"production_time": 2500.85000000423,
+			"time": 1791555859.65335
 		},
 		{
-			"amount": 18.0,
+			"amount": 20.0,
 			"id": "1",
 			"origin": "drop",
-			"production_base": 18.0,
-			"production_time": 2294.55000000161,
-			"time": 1791555450.3736
+			"production_base": 20.0,
+			"production_time": 2502.03333333758,
+			"time": 1791555860.85129
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2503.5333333376,
+			"time": 1791555862.61093
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2505.03333333762,
+			"time": 1791555864.10721
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2506.58333333764,
+			"time": 1791555865.68165
+		},
+		{
+			"amount": 20.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 20.0,
+			"production_time": 2508.11666667099,
+			"time": 1791555867.28572
+		},
+		{
+			"amount": 31.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 31.0,
+			"production_time": 2512.56666667105,
+			"time": 1791555871.73441
+		},
+		{
+			"amount": 31.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 31.0,
+			"production_time": 2514.65000000441,
+			"time": 1791555873.80022
+		},
+		{
+			"amount": 31.0,
+			"id": "1",
+			"origin": "drop",
+			"production_base": 31.0,
+			"production_time": 2516.73333333777,
+			"time": 1791555876.26077
 		}
 	],
 	"resources": {
-		"1": 1188.0,
-		"2": 143.0
+		"1": 2024.0,
+		"2": 130.0
 	},
 	"saveIntervalMinutes": "1",
 	"scientistAssignments": {
 		"正电子聚焦装置": 2,
-		"简并态装甲": 1,
+		"简并态装甲": 2,
 		"超时空炼铁炉": 2
 	},
-	"scientists": 5,
+	"scientists": 6,
 	"seenUnlocks": [
 		"missile",
 		"reactor",
@@ -2795,9 +2826,9 @@
 	],
 	"selectedShip": "Frigate",
 	"techPoints": {
-		"正电子聚焦装置": 649.050000000686,
-		"简并态装甲": 104.599999999996,
-		"超时空炼铁炉": 808.80000000061
+		"正电子聚焦装置": 719.550000000652,
+		"简并态装甲": 1126.9500000001,
+		"超时空炼铁炉": 639.300000000303
 	},
 	"unlocked": [
 		"armour",
