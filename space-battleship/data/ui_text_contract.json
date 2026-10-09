@@ -9682,6 +9682,11 @@
       "params": [
         "target"
       ]
+    },
+    "equipment.candidate_attributes": {
+      "params": [
+        "name"
+      ]
     }
   },
   "bindings": {

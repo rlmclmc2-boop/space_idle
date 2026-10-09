@@ -501,8 +501,8 @@ func rate_notes(projection: Dictionary) -> String:
 
 func rate_detail(current: Dictionary, next: Dictionary) -> String:
 	var rate: Dictionary=current.get("rate",{})
-	var single := UIText.t("weapon.rate_single_missile",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.scalar(float(rate.get("interval",0))),"count":str(rate.get("salvo",1))}) if rate.get("key","")=="missile" else UIText.t("weapon.rate_single",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.scalar(float(rate.get("interval",0)))})
-	return UIText.t("weapon.rate_preview",{"label":rate_title(current),"current":rate_value(current),"next":rate_value(next)})+("\n"+single if NumberFormat.scalar_is_exact(float(rate.get("interval",0))) else "")+"\n"+rate_notes(current)
+	var single := UIText.t("weapon.rate_single_missile",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.precise(float(rate.get("interval",0))),"count":str(rate.get("salvo",1))}) if rate.get("key","")=="missile" else UIText.t("weapon.rate_single",{"damage":host.number(rate.get("single",0)),"seconds":NumberFormat.precise(float(rate.get("interval",0)))})
+	return (rate_title(current)+" "+rate_value(current) if next.is_empty() else UIText.t("weapon.rate_preview",{"label":rate_title(current),"current":rate_value(current),"next":rate_value(next)}))+"\n"+single+"\n"+rate_notes(current)
 
 func equipment_item(category: String, index: int) -> Dictionary:
 	var entry: Dictionary = host.game.module_entry(category,index)
@@ -824,16 +824,31 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	for attributes in [detail.stats,detail.basics]:host.set_ui_value(attributes,"position",Vector2(18,608+comparison_extra))
 	host.set_ui_value(detail.title,"tooltip_text",detail.title.text)
 	host.set_ui_value(detail.stats,"text",description)
-	var row: Dictionary = (host.game.player_weapon_row(entry) if category=="weapons" else host.db.equip(key,int(entry.level))) if not key.is_empty() else {}
-	var basic_text := ""
-	if not row.is_empty():
-		if category=="weapons":basic_text=UIText.t("equipment.attack_interval",{"seconds":NumberFormat.scalar(float(row.cd))}) if NumberFormat.scalar_is_exact(float(row.cd)) else ""
-		else:basic_text=UIText.t("equipment.current_reduction",{"percent":NumberFormat.percentage(float(host.db.config.dmgReduce)*100)})
-		basic_text+="\n"+equipment_attributes(entry,false)
-		if category=="weapons":basic_text+="\n"+rate_notes(item.projection)
-	host.set_ui_value(detail.basics,"text",UIText.t("equipment.current_attributes",{"name":item.name})+"\n"+basic_text)
+	var basics := UIText.t("equipment.current_attributes",{"name":item.name})+"\n"+basic_attributes(entry,item.projection)
+	if comparing and not pending_key.is_empty():
+		var candidate: Dictionary=entry.duplicate(true)
+		candidate.key=pending_key
+		var projected: Dictionary=host.EQUIPMENT_DISPLAY.refit_snapshot(host.game,entry,pending_key)
+		var heading := UIText.t("equipment.candidate_attributes",{"name":host.NAMES.get(pending_key,pending_key)})
+		basics+="\n\n"+heading+"\n"+basic_attributes(candidate,projected)
+		var candidate_details: String=rate_detail(projected,{}) if category=="weapons" else UIText.t("defense.shield" if pending_key=="shield" else "defense.armour")+" "+host.number(projected.expected)
+		if category=="weapons":candidate_details+="\n"+host.equipment_expected_details(candidate,projected)
+		description+="\n\n"+heading+"\n"+candidate_details+"\n"+host.equipment_detail_text(candidate)+"\n"+equipment_attributes(candidate)
+		host.set_ui_value(detail.stats,"text",description)
+	host.set_ui_value(detail.basics,"text",basics)
 	host.set_ui_value(detail.stats,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	update_detail_height(force)
+
+func basic_attributes(entry: Dictionary, projection: Dictionary) -> String:
+	var key:=str(entry.key)
+	if key.is_empty():return ""
+	var weapon: bool=key in BattleGame.WEAPON_KEYS
+	var row: Dictionary=host.game.player_weapon_row(entry) if weapon else host.db.equip(key,int(entry.level))
+	var text: String=UIText.t("equipment.attack_interval",{"seconds":NumberFormat.precise(float(row.cd))}) if weapon else ""
+	if not weapon:text=UIText.t("equipment.current_reduction",{"percent":NumberFormat.percentage(float(host.db.config.dmgReduce)*100)})
+	text+="\n"+equipment_attributes(entry,false)
+	if weapon:text+="\n"+rate_notes(projection)
+	return text
 
 func change_equipment(key: String) -> void:
 	if not items.has(selected):return

@@ -17829,5 +17829,12 @@
     "params": "target",
     "category": "crew",
     "note": "按钮显示待确认岗位"
+  },
+  {
+    "key": "equipment.candidate_attributes",
+    "text": "待确认：{name}的属性",
+    "params": "{name}",
+    "category": "equipment",
+    "note": "仅展开候选换装属性，明确区别当前装备"
   }
 ]
