@@ -41,7 +41,10 @@ def main():
     parser.add_argument('--warmup-frames', type=int, default=15)
     parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
+    parser.add_argument('--retained-galaxy-probe', action='store_true', help='Experimental frozen color/depth retention proof; requires --rich --pages 8, never production acceptance')
     args = parser.parse_args()
+    if args.retained_galaxy_probe and (not args.rich or args.pages != '8' or args.headless or args.instrument or args.realtime or args.max_quote):
+        parser.error('retained proof requires graphical --rich --pages 8 without instrumentation, realtime or max quotes')
     assert 1 <= args.frames <= 600
     assert 1 <= args.warmup_frames <= 600
     work = ROOT / 'test/work'
@@ -65,7 +68,10 @@ def main():
             shutil.copytree(origin, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.blend', '*.blend1', '__pycache__'))
         else:
             shutil.copy2(origin, target)
-    shutil.copy2(ROOT / 'test/whole_game_perf.gd', project / 'probe.gd')
+    shutil.copy2(ROOT / ('test/retained_galaxy_probe.gd' if args.retained_galaxy_probe else 'test/whole_game_perf.gd'), project / 'probe.gd')
+    if args.retained_galaxy_probe:
+        for shader in ('retained_galaxy_color.gdshader', 'retained_galaxy_depth.gdshader'):
+            shutil.copy2(ROOT / 'test' / shader, project / shader)
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
     (project / '.runtime').mkdir(exist_ok=True)
     if args.instrument:
@@ -89,6 +95,8 @@ def main():
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
     env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    if args.retained_galaxy_probe:
+        env['SPACE_IDLE_FLAT_SHIPS'] = '0'
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     with (area / (args.label + '-import.log')).open('w', encoding='utf-8') as log:
@@ -99,11 +107,13 @@ def main():
     text = log_path.read_text(encoding='utf-8', errors='replace')
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
-    expected = 1 if args.max_quote else len(args.pages.split(','))
+    expected = 2 if args.retained_galaxy_probe else 1 if args.max_quote else len(args.pages.split(','))
     measured_files = ['probe.gd', 'project.godot', 'main.tscn', 'data/game_data.json', 'galaxy_fixture.json',
                       *['scripts/' + name for name in ('main.gd', 'battlefield.gd', 'game.gd', 'presented_battle_game.gd',
                                                        'presented_ship_view.gd', 'ship_body_baker.gd', 'flat_ship_compositor.gd',
                                                        'flat_ship_compositor.gdshader', 'galaxy_map.gd', 'galaxy_city_modules.gd')]]
+    if args.retained_galaxy_probe:
+        measured_files += ['retained_galaxy_color.gdshader', 'retained_galaxy_depth.gdshader']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
@@ -112,7 +122,7 @@ def main():
               'exit': result.returncode, 'environment': environment, 'rows': rows}
     (area / (args.label + '.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print('Exit:', result.returncode, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
-    if result.returncode or len(rows) != expected or 'SCRIPT ERROR' in text or 'ERROR:' in text:
+    if result.returncode or len(rows) != expected or 'SCRIPT ERROR' in text or 'ERROR:' in text or (args.retained_galaxy_probe and any(not row.get('profile_equal') for row in rows)):
         print(text[-4000:])
         return 1
     return 0
