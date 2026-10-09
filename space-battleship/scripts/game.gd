@@ -1190,6 +1190,7 @@ func set_reactor_allocation(key: String, value) -> bool:
 	if RI.compare(next,active.get(key,0))==0 and active==profile.reactorAllocation:return false
 	profile.reactorAllocation=active
 	profile.reactorAllocation[key] = next
+	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
 	invalidate_stat_cache()
 	if key == "defence":
 		player.armour = N.minimum(player.armour,stat("armour"))
@@ -1212,6 +1213,7 @@ func equalize_reactor_allocation() -> bool:
 		next[modules[index]] = RI.add(share,1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false
 	profile.reactorAllocation=next
+	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
 	invalidate_stat_cache()
 	player.armour = N.minimum(player.armour,stat("armour"))
 	player.shield = N.minimum(player.shield,stat("shield"))

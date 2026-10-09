@@ -5,6 +5,8 @@ const SKIN=preload("res://scripts/dialog_presentation.gd")
 var owner_ref:WeakRef
 var panel:
  get:return owner_ref.get_ref()
+var crew_hint:Label
+var bar:HBoxContainer
 var upgrade:CheckBox
 var allocate:CheckBox
 var presets:Array[Button]=[]
@@ -23,7 +25,7 @@ func button(parent:Node,key:String,action:Callable,values:Dictionary={}) -> Butt
 func setup(owner) -> void:
  owner_ref=weakref(owner)
  panel.readout_plate(panel,Vector2(48,1100),Vector2(546,50))
- var bar=HBoxContainer.new();bar.position=Vector2(60,1104);bar.size=Vector2(522,40);bar.add_theme_constant_override("separation",4);panel.add_child(bar)
+ bar=HBoxContainer.new();bar.position=Vector2(60,1104);bar.size=Vector2(522,40);bar.add_theme_constant_override("separation",4);panel.add_child(bar)
  upgrade=CheckBox.new();upgrade.text=text("upgrade");bar.add_child(upgrade)
  allocate=CheckBox.new();allocate.text=text("allocate");bar.add_child(allocate)
  for toggle in [upgrade,allocate]:
@@ -32,11 +34,14 @@ func setup(owner) -> void:
  allocate.toggled.connect(func(enabled):A.set_enabled(game(),"allocate",enabled);refresh())
  button(bar,"settings",show_settings)
  for index in 3:presets.append(button(bar,"slot",func():A.apply_slot(game(),index);panel.refresh(),{"slot":str(index+1)}))
+ crew_hint=Label.new();crew_hint.position=Vector2(64,1154);crew_hint.size=Vector2(514,28);crew_hint.text=text("requires_crew");crew_hint.add_theme_font_size_override("font_size",18);crew_hint.add_theme_color_override("font_color",panel.INK);panel.add_child(crew_hint)
  panel.tree_exiting.connect(func():
   if is_instance_valid(dialog):dialog.queue_free())
  refresh()
 func refresh() -> void:
  var state:Dictionary=game().profile.reactorAutomation
+ var dispatched=game().profile.crew.any(func(item):return item.assignmentType=="reactor_upgrade" and game().crew.active(game(),item))
+ panel.host.set_ui_value(crew_hint,"visible",not dispatched)
  if upgrade.button_pressed!=state.upgrade:upgrade.set_pressed_no_signal(state.upgrade)
  if allocate.button_pressed!=state.allocate:allocate.set_pressed_no_signal(state.allocate)
  for index in 3:
