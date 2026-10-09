@@ -877,15 +877,31 @@ func open_defeat_comparison()->void:
 	if not is_instance_valid(equipment_panel) or not is_instance_valid(equipment_tabs):return
 	select_system(equipment_tabs.get_tab_idx_from_control(equipment_panel))
 	var target := ""
+	var candidate := ""
 	var damage_type := 1 if last_defeat_cause=="energy" else 2 if last_defeat_cause=="physical" else 0
 	if damage_type>0:
-		if game.active_slot_count("defence")>0:target=equipment_panel.module_card_id("defence",0)
 		for index in game.active_slot_count("defence"):
 			var entry:Dictionary=game.module_entry("defence",index)
 			if not str(entry.get("key","")).is_empty() and int(db.equip(str(entry.key),int(entry.level)).get("dmgtype",0))==damage_type:
 				target=equipment_panel.module_card_id("defence",index);break
+		if target.is_empty():
+			for index in game.active_slot_count("defence"):
+				if game.slot_equipment_locked("defence",index):continue
+				for key in equipment_panel.equipment_choices("defence",index):
+					if not str(key).is_empty() and int(db.equip(str(key),int(game.module_entry("defence",index).level)).get("dmgtype",0))==damage_type:
+						target=equipment_panel.module_card_id("defence",index);candidate=str(key);break
+				if not target.is_empty():break
+	var unavailable := damage_type>0 and target.is_empty()
+	if unavailable and game.active_slot_count("defence")>0:target=equipment_panel.module_card_id("defence",0)
 	if target.is_empty() and not equipment_panel.items.is_empty():target=str(equipment_panel.items.keys()[0])
-	if not target.is_empty():equipment_panel.select_item(target);equipment_panel.show_inspector(UIText.t("equipment.defeat_source_"+last_defeat_cause,{"stage":str(last_defeat_stage),"wave":str(last_defeat_wave)}))
+	if not target.is_empty():
+		equipment_panel.select_item(target)
+		# A defeat opens a fresh read-only comparison, never an old removal draft.
+		equipment_panel.draft_context=[]
+		equipment_panel.show_inspector(UIText.t(("equipment.defeat_unavailable_" if unavailable else "equipment.defeat_source_")+last_defeat_cause,{"stage":str(last_defeat_stage),"wave":str(last_defeat_wave)}))
+		if not candidate.is_empty():
+			equipment_panel.pending_key=candidate
+			equipment_panel.refresh_detail({},true)
 
 func refresh_defeat_recall()->void:
 	if not is_instance_valid(defeat_recall):return

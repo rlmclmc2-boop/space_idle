@@ -9555,6 +9555,18 @@
         "preset",
         "active"
       ]
+    },
+    "equipment.defeat_unavailable_energy": {
+      "params": [
+        "stage",
+        "wave"
+      ]
+    },
+    "equipment.defeat_unavailable_physical": {
+      "params": [
+        "stage",
+        "wave"
+      ]
     }
   },
   "bindings": {

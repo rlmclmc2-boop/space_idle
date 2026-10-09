@@ -25,7 +25,8 @@ func run()->void:
  check(not p.detail.status.text.contains("上次") and p.detail.defeat_cause.position.y>=p.detail.status.position.y+p.detail.status.size.y and p.detail.defeat_cause.position.y+p.detail.defeat_cause.size.y<=p.detail.slots.position.y,"Short defeat cause has its own non-overlapping row above equipment choices")
  var item:Dictionary=p.items[p.selected]
  var entry:Dictionary=g.module_entry(item.category,item.index)
- check(item.category=="defence","Missing energy-resistant equipment still opens defence comparison")
+ check(item.category=="defence" and not g.slot_equipment_locked(item.category,item.index) and p.pending_key=="shield" and int(scene.db.equip(p.pending_key,entry.level).dmgtype)==1,"Missing installed energy resistance previews available shield in a refittable defence slot")
+ check(p.detail.description.text.contains(scene.NAMES.shield) and str(g.module_entry("defence",0).key)=="armour" and not p.detail.equip.disabled,"Comparison exposes matching candidate without replacing fixed life armour")
  scene.defeat_feedback.record(g,"hit",{"player":true,"type":2,"amount":1000})
  scene.on_event("battle_defeated",{"manual":false,"remaining":2,"stage":14,"wave":6})
  scene.defeat_recall.gui_input.emit(click)
@@ -40,5 +41,19 @@ func run()->void:
  check(p.comparison_context.is_empty() and p.detail.defeat_cause.text.is_empty() and not p.detail.defeat_cause.visible,"Normal object selection clears the defeat-specific context")
  scene.open_defeat_comparison();p.detail_frame.hide()
  check(p.comparison_context.is_empty() and p.detail.defeat_cause.text.is_empty() and not p.detail.defeat_cause.visible,"Closing the inspector clears source context")
+ g.equip_slot("defence",1,"shield");p.refresh()
+ scene.last_defeat_cause="energy";var equipped_before=JSON.stringify(g.profile)
+ scene.open_defeat_comparison()
+ check(p.selected==p.module_card_id("defence",1) and p.pending_key=="shield" and p.detail.equip.disabled,"Already installed matching shield takes priority without drafting a redundant refit")
+ check(JSON.stringify(g.profile)==equipped_before,"Opening matching installed defence leaves equipment and resources unchanged")
+ g.unequip_slot("defence",1)
+ g.db.data.unlock.shield.level=99;g.profile.highestLevel=2;g.profile.cleared=[1]
+ g.profile.grantedUnlocks=g.profile.grantedUnlocks.filter(func(id):return str(id)!="shield")
+ g.rebuild_unlocks();g.pending_unlocks.clear();p.refresh()
+ var early_before=JSON.stringify(g.profile);scene.open_defeat_comparison()
+ check(p.detail.defeat_cause.text.contains("暂无抗能量换装") and not p.slot_options.has("shield") and p.pending_key=="armour","Before unlock, cause explicitly says no energy refit is available and offers no invented shield")
+ check(p.selected==p.module_card_id("defence",0) and p.detail.slots.disabled and p.detail.remove.disabled and JSON.stringify(g.profile)==early_before,"Unavailable comparison keeps fixed life armour and never drafts its removal")
+ var source_label:Label=p.detail.defeat_cause
+ check(source_label.get_theme_font("font").get_string_size(source_label.text,HORIZONTAL_ALIGNMENT_LEFT,-1,source_label.get_theme_font_size("font_size")).x<=source_label.size.x,"Unavailable explanation fits the existing source row")
  scene.queue_free();await process_frame
  print("DEFEAT COMPARISON: %d checks, %d failures"%[checks,failures]);quit(1 if failures else 0)

@@ -17671,5 +17671,19 @@
     "params": "preset,active",
     "category": "reactor",
     "note": "临时容量减少的显示与明确操作前提；不写回分配，不参与计算。"
+  },
+  {
+    "key": "equipment.defeat_unavailable_energy",
+    "text": "上次{stage}/{wave}：能量损失 · 暂无抗能量换装",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "战败比较无法找到已装或实际可换的对应防御；不假定已解锁，不装配。"
+  },
+  {
+    "key": "equipment.defeat_unavailable_physical",
+    "text": "上次{stage}/{wave}：物理损失 · 暂无抗物理换装",
+    "params": "stage,wave",
+    "category": "equipment",
+    "note": "战败比较无法找到已装或实际可换的对应防御；不假定已解锁，不装配。"
   }
 ]
