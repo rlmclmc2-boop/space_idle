@@ -338,12 +338,13 @@ def main():
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
     measured_files += ['dev/toon_ship/missile_vfx.gd']
+    if (project/'scripts/battle_read_model.gd').exists():measured_files += ['scripts/battle_read_model.gd','scripts/retained_enemy_contacts.gd']
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py']},
+              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py']},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',

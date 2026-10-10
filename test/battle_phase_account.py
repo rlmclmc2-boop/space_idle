@@ -4,7 +4,7 @@ import shutil
 
 SCOPES = {
  'game': {'tick':'simulation','tick_projectiles':'simulation', **{name:'numeric_queries' for name in ['stat','jewel_equipment_stat','player_weapon_row','equipment_damage','module_damage','enhancement_effects','combat_weapon_entries','hyperspace_totals']}},
- 'presented_battle_game': {'tick':'simulation','tick_projectiles':'simulation'},
+ 'presented_battle_game': {'tick':'simulation','tick_projectiles':'simulation','target_point':'geometry_authority'},
  'main': {'_process':'process_other','advance_game_time':'simulation_boundary',
           **{name:'event_presentation' for name in ['on_event','weapon_launch']},
           **{name:'damage_layout' for name in ['queue_damage_number','flush_damage_numbers','damage_text_position']},

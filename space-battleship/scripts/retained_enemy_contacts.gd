@@ -46,11 +46,9 @@ func sync(offset:Vector2,boss:bool)->void:
   var record:Dictionary=records[uid]
   if record.root.get_index()!=order_index:move_child(record.root,order_index)
   order_index+=1
-  var components=paint_owner.enemy_weapon_components(enemy)
-  var supported=not boss and not paint_owner.encounter_presentation.is_leader(enemy)
-  for component in components:
-   var visual_class=str(component.profile.get("visual_class",""))
-   if not ((component.damage_type==2 and visual_class=="gun") or (component.damage_type==1 and visual_class=="energy")):supported=false
+  var publication:Dictionary=paint_owner.battle_read_model.display_contact(enemy,offset,boss)
+  var components:Array=publication.components
+  var supported:bool=publication.supported
   record.fallback.visible=not supported
   for child in record.root.get_children():
    if child!=record.fallback:child.visible=supported
@@ -58,32 +56,24 @@ func sync(offset:Vector2,boss:bool)->void:
    record.root.position=Vector2.ZERO
    record.fallback.update({"enemy":enemy,"offset":offset,"boss":boss},[paint_owner.fx_time,enemy,offset,boss])
    continue
-  var pos:Vector2=paint_owner.enemy_render_position(enemy)+offset
-  var width:float=paint_owner.enemy_render_width(enemy)
-  var angle:float=paint_owner.enemy_render_angle(enemy)
+  var pos:Vector2=publication.position
+  var width:float=publication.width
+  var angle:float=publication.angle
   record.root.position=pos
-  var light:float=paint_owner.enemy_hull_light(enemy)
+  var light:float=publication.light
   record.hull.rotation=PI+angle
   record.hull.update({"width":width,"light":light,"texture":paint_owner.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))},[width,int(enemy.size),light])
   record.deck.rotation=PI+angle
-  var types:Array=paint_owner.enemy_attack_types(enemy)
+  var types:Array=publication.types
   record.deck.update({"width":width,"types":types},[width,types])
-  var packet:Dictionary=paint_owner.enemy_recognition_geometry(enemy,width)
-  var status:Dictionary=paint_owner.enemy_recognition.state(enemy,paint_owner.game.enemy_shield_time,paint_owner.game.paused,paint_owner.enemy_pose(enemy))
+  var packet:Dictionary=publication.packet
+  var status:Dictionary=publication.status
   record.protection.rotation=PI+angle
   var key=[packet.inner,packet.outer,packet.front,packet.single_front,packet.hull_stroke,packet.shield_stroke,packet.scale,status,int(enemy.get("armourType",0)),int(enemy.get("shieldType",0)),int(enemy.size)]
   if status.repair:key.append(width)
   if status.recovering:key.append(paint_owner.game.enemy_shield_time)
   record.protection.update({"enemy":enemy,"width":width,"packet":packet,"status":status,"clock":paint_owner.game.enemy_shield_time},key)
-  # Return geometry follows the same branch order as draw_protection, even when
-  # native commands are retained. It remains authoritative for meter placement.
-  var outline:PackedVector2Array=packet.inner
-  if not status.alive: outline=PackedVector2Array()
-  elif status.active and int(enemy.get("shieldType",0)) in [0,1,2]:
-   outline=packet.outer if status.show_hull and int(enemy.get("armourType",0)) in [1,2] else packet.inner
-   if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outline=packet.front if status.show_hull and int(enemy.get("armourType",0)) in [1,2] else packet.single_front
-  elif not (status.show_hull and int(enemy.get("armourType",0)) in [1,2]) and not status.repair:outline=PackedVector2Array()
-  var layout:Dictionary=paint_owner.enemy_status_layout(enemy,pos,width,angle,outline)
+  var layout:Dictionary=publication.layout
   meter(record.health,layout.health,pos,float(enemy.hp)/maxf(1,float(enemy.max_hp)),paint_owner.BATTLE_WARM)
   record.shield.visible=float(enemy.get("max_shield",0))>0
   if record.shield.visible:meter(record.shield,layout.shield,pos,float(enemy.shield)/float(enemy.max_shield),paint_owner.ENEMY_RECOGNITION.shield_color(int(enemy.get("shieldType",0))))
@@ -94,7 +84,7 @@ func sync(offset:Vector2,boss:bool)->void:
   for index in components.size():
    var component=components[index]
    var node:Part=record.mounts[index]
-   var pose:Dictionary=paint_owner.enemy_component_pose(enemy,component,Vector2.INF,width)
+   var pose:Dictionary=publication.mounts[index]
    var physical=component.damage_type==2
    var w=maxf(15.0/maxf(0.1,screen_scale),float(pose.width))
    var shift:Vector2=Vector2(pose.port)-Vector2((0.64 if physical else 0.45)*w,0)

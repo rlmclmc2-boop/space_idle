@@ -11,6 +11,7 @@ var geometry_revision=0
 var bounds_revision=-1
 var bounds:Array[Rect2]=[]
 var bottom=-INF
+var bounds_members:Array=[]
 
 func setup(owner)->void:host=owner
 
@@ -96,9 +97,12 @@ func fleet_bounds()->Array[Rect2]:
 	ensure_clock()
 	# Calculate all contacts once, then publish an immutable list to every label.
 	var points=[]
+	var members=[]
 	for enemy in host.game.enemies:
-		if enemy.hp>0:points.append([enemy,host.enemy_render_position(enemy)])
-	if bounds_revision==geometry_revision:return bounds
+		if enemy.hp>0:
+			points.append([enemy,host.enemy_render_position(enemy)]);members.append(int(enemy.uid))
+	if bounds_revision==geometry_revision and members==bounds_members:return bounds
+	bounds_members=members
 	bounds=[];bottom=-INF
 	for item in points:
 		var enemy:Dictionary=item[0];var point:Vector2=item[1]
@@ -114,3 +118,29 @@ func fleet_bounds()->Array[Rect2]:
 func invalidate_membership()->void:
 	# Event-time identity/alive changes must be visible before the next hit.
 	clock=-INF;bounds_revision=-1
+
+func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
+	# One complete display publication. Native painters consume this packet;
+	# they do not derive gameplay geometry or query equipment independently.
+	var components_value=components(enemy)
+	var supported=not boss and not host.encounter_presentation.is_leader(enemy)
+	for component in components_value:
+		var visual_class=str(component.profile.get("visual_class",""))
+		if not ((component.damage_type==2 and visual_class=="gun") or (component.damage_type==1 and visual_class=="energy")):supported=false
+	var result={"components":components_value,"supported":supported}
+	if not supported:return result
+	var point=host.enemy_render_position(enemy)
+	var width=width_at(enemy,point.y)
+	var angle=host.enemy_render_angle(enemy)
+	var packet=host.enemy_recognition_geometry(enemy,width)
+	var status=host.enemy_recognition.state(enemy,host.game.enemy_shield_time,host.game.paused,host.enemy_pose(enemy))
+	var outline:PackedVector2Array=packet.inner
+	if not status.alive:outline=PackedVector2Array()
+	elif status.active and int(enemy.get("shieldType",0)) in [0,1,2]:
+		outline=packet.outer if status.show_hull and int(enemy.get("armourType",0)) in [1,2] else packet.inner
+		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outline=packet.front if status.show_hull and int(enemy.get("armourType",0)) in [1,2] else packet.single_front
+	elif not (status.show_hull and int(enemy.get("armourType",0)) in [1,2]) and not status.repair:outline=PackedVector2Array()
+	var poses=[]
+	for component in components_value:poses.append(host.enemy_component_pose(enemy,component,point,width))
+	result.merge({"position":point+offset,"width":width,"angle":angle,"light":host.enemy_hull_light(enemy),"types":host.enemy_attack_types(enemy),"packet":packet,"status":status,"layout":host.enemy_status_layout(enemy,point+offset,width,angle,outline),"mounts":poses})
+	return result

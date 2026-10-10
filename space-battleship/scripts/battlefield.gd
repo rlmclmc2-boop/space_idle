@@ -245,7 +245,7 @@ func _process(delta: float) -> void:
 	enemy_entry_batch_active=true
 	enemy_provider_query_active=false
 	enemy_entry_distance_time=-INF
-	if battle_read_model_enabled:battle_read_model.begin(true)
+	if battle_read_model_enabled:battle_read_model.begin()
 	_process_battlefield(delta)
 	# Wall-clock presentation survives accelerated simulation without changing
 	# the logical pose/entry cache or combat providers.
