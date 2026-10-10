@@ -86,7 +86,7 @@ def main():
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
     snapshots=parser.add_mutually_exclusive_group()
     snapshots.add_argument('--checkpoint-round2', type=Path, help='Exact authorized QA7/group4/Frigate snapshot')
-    snapshots.add_argument('--checkpoint-round4', type=Path, help='Exact authorized QA20/group1/Destroyer snapshot')
+    snapshots.add_argument('--checkpoint-round4', type=Path, help='Exact authorized QA20/group2/Destroyer snapshot')
     parser.add_argument('--sustain-test-health', action='store_true', help='After the real fleet is generated, hold test health; explicitly synthetic, never natural-play acceptance')
     parser.add_argument('--gpu-profile', action='store_true', help='Native GPU stage averages; timing-query overhead, not final frame comparison')
     parser.add_argument('--ref', help='Read this Git snapshot instead of current source')
@@ -99,6 +99,7 @@ def main():
     parser.add_argument('--max', action='store_true', dest='max_quote')
     parser.add_argument('--realtime', action='store_true')
     parser.add_argument('--instrument', action='store_true')
+    parser.add_argument('--focused-draw', action='store_true', help='Detailed draw/layout attribution; implies instrumentation, never a clean throughput result')
     parser.add_argument('--pages', default='0,4,1,2,6,8')
     parser.add_argument('--frames', type=int, default=60)
     parser.add_argument('--warmup-frames', type=int, default=15)
@@ -108,7 +109,7 @@ def main():
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
     checkpoint_stage=7 if args.checkpoint_round2 else 20
-    checkpoint_group=4 if args.checkpoint_round2 else 1
+    checkpoint_group=4 if args.checkpoint_round2 else 2
     if args.sustain_test_health and not checkpoint:
         parser.error("sustain-test-health requires an exact QA checkpoint")
     if checkpoint and not args.ref:
@@ -151,6 +152,7 @@ def main():
         shutil.copy2(ROOT / 'test/whole_game_perf.gd', project / 'probe.gd')
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
     (project / '.runtime').mkdir(exist_ok=True)
+    if args.focused_draw:args.instrument=True
     if args.instrument:
         MODULES.update({
             'battlefield': ['_process', 'draw_battle', 'draw_vertical_battle_hud', '_draw_muzzle_cues'],
@@ -162,6 +164,10 @@ def main():
         MODULES['game'] += ['enhancement_protection_status', 'enhancement_module_protection_capacity',
                             'enhancement_effects', 'max_upgrade_amount_slot', 'can_upgrade_slot']
         MODULES['equipment_tab'] += ['refresh_affordability', 'update_card_cost']
+        if args.focused_draw:
+            MODULES['main'] += ['draw_enemy_hull_and_status', 'enemy_render_width_at_y', 'enemy_frontline_y_limit', 'enemy_component_pose', 'enemy_weapon_angle', 'enemy_recognition_geometry', 'enemy_weapon_components', 'enemy_render_position', 'damage_text_enemy_bottom', 'damage_text_enemy_bounds', 'draw_enemy_weapon_components', 'damage_text_rect']
+            MODULES['battlefield'] += ['battle_meter','draw_enemy_hull_and_status','enemy_status_layout','draw_encounter_backdrop','enemy_hull_light']
+            MODULES['enemy_recognition_visual']=['geometry','draw_weapon','draw_protection','state','draw_attack_deck']
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')
             # Module-specific names preserve superclass dispatch in the real scene.

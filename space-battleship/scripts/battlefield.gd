@@ -82,6 +82,7 @@ var destruction_events: Array[Dictionary] = []
 var stable_center := Vector2.ZERO
 var stable_center_ready := false
 var encounter_presentation := preload("res://scripts/encounter_presentation.gd").new()
+var battle_meter_styles:Dictionary={}
 
 
 func _ready() -> void:
@@ -725,15 +726,21 @@ func battle_panel(rect:Rect2)->void:
 	style.set_border_width_all(1)
 	draw_surface.draw_style_box(style,rect)
 
-func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
+func battle_meter_style(color:Color)->StyleBoxFlat:
+	# The meter skin is immutable: only its rectangle and fill fraction animate.
+	# Bound the owner-local palette; unfamiliar animated colors retain the old
+	# allocation behavior instead of growing a cache for the scene's lifetime.
+	if battle_meter_styles.has(color):return battle_meter_styles[color]
 	var style:=StyleBoxFlat.new()
-	style.bg_color=Color("0b1b28")
-	style.set_corner_radius_all(3)
-	draw_surface.draw_style_box(style,rect)
-	if ratio<=0:return
-	style=style.duplicate()
 	style.bg_color=color
-	draw_surface.draw_style_box(style,Rect2(rect.position,Vector2(rect.size.x*clampf(ratio,0,1),rect.size.y)))
+	style.set_corner_radius_all(3)
+	if battle_meter_styles.size()<8:battle_meter_styles[color]=style
+	return style
+
+func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
+	draw_surface.draw_style_box(battle_meter_style(Color("0b1b28")),rect)
+	if ratio<=0:return
+	draw_surface.draw_style_box(battle_meter_style(color),Rect2(rect.position,Vector2(rect.size.x*clampf(ratio,0,1),rect.size.y)))
 
 func create_draw_layers() -> void:
 	super.create_draw_layers()
