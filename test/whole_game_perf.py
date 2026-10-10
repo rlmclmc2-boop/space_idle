@@ -85,6 +85,7 @@ def main():
     parser.add_argument('--label', required=True)
     parser.add_argument('--battle-only', action='store_true', help='Private-copy noncombat tick isolation; static modifiers retained, fixed-workload throughput only')
     parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
+    parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
     parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
     snapshots=parser.add_mutually_exclusive_group()
@@ -206,6 +207,14 @@ def main():
     if args.phase_account:
         from battle_phase_account import prepare as prepare_phases
         phase_wrapped=prepare_phases(project,ROOT)
+    if args.boundary_check:
+        if not (project/'scripts/battle_read_model.gd').exists():parser.error('boundary check requires structural candidate')
+        shutil.copy2(ROOT/'test/battle_boundary_check.gd',project/'battle_boundary_check.gd')
+        probe_path=project/'probe.gd';probe=probe_path.read_text(encoding='utf-8')
+        probe=probe.replace('func run():','func run():\n var boundary_check=preload("res://battle_boundary_check.gd").new()')
+        probe=probe.replace('   await RenderingServer.frame_post_draw','   boundary_check.check(scene)\n   await RenderingServer.frame_post_draw')
+        probe=probe.replace('  row.retention_counts=','  row.boundary_check=boundary_check.report()\n  row.retention_counts=')
+        probe_path.write_text(probe,encoding='utf-8')
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True
     if args.missile_profile:args.instrument=True
@@ -342,6 +351,7 @@ def main():
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
+    if args.boundary_check:measured_files += ['battle_boundary_check.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py']},
