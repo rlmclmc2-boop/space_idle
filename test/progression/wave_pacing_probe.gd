@@ -121,6 +121,9 @@ func run():
  var wall=Time.get_ticks_usec();var budget=wall
  for tick in roundi(float(r.seconds)*60.0):
   if not qa_failure.is_empty():break
+  if int(r.get("max_defeats",0))>0 and defeats>=int(r.max_defeats):
+   record_checkpoint(r.output,"QA defeat-budget stop portable progress checkpoint")
+   stream.store_line(JSON.stringify({"event":"defeat_budget_stop","budget":int(r.max_defeats),"state":snapshot()}));break
   if tick%interval_ticks==0 and r.get("transactions",false):transact()
   if not g.pending_unlocks.is_empty():g.acknowledge_unlocks()
   if g.state==g.State.LEVEL_CLEAR:
