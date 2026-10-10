@@ -1598,15 +1598,6 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
 	# entry-fleet calculation and never reuse a result across animation time.
-	# Explicit placement never solves the legacy top envelope. Its position has
-	# no dependency on weapon descriptors, shields, textures or screen scale.
-	if enemy.get("explicit_formation",false):
-		return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,pose.target,pose.logical_position,
-			pose.phase,pose.born,pose.duration,pose.entry_x,true,enemy.get("size_formation",false),enemy.get("formation_columns",10),
-			game.is_final_encounter(),battle_visual.enemy_idle_x,battle_visual.enemy_idle_y,
-			battle_visual.enemy_max_y,battle_visual.enemy_player_min_gap,battle_visual.player_core_scale,
-			battle_visual.player_idle_rotation,battle_visual.player_idle_y,battle_visual.player_ship_y,
-			enemy_config_visual_scale(int(enemy.size)),db.config.get("explicitEnemyPlayerMinGap",battle_visual.enemy_player_min_gap),player_art_scale()]
 	enemy_weapon_components(enemy)
 	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,pose.target,pose.logical_position,
 		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,

@@ -180,19 +180,6 @@ func run()->void:
 		enemy[field]=previous
 	scene.battle_draw_active=false;scene.battle_draw_enemy_positions.clear()
 	check(scene.game.profile==before_draw and scene.game.rng.state==before_rng,"layout-to-draw sharing leaves business state and RNG unchanged")
-	# Explicit settled positions omit only inputs unused by that branch.
-	enemy.explicit_formation=true;scene.enemy_provider_query_active=true;scene.enemy_entry_batch_active=true
-	for field in ["x","y","size","max_shield","shieldRecovery","shieldType","formation_columns"]:
-		var previous=enemy.get(field,0);scene.enemy_render_position(enemy)
-		enemy[field]=previous+1
-		check(scene.enemy_render_position(enemy)==original_position(scene,enemy),"explicit live key change "+field)
-		enemy[field]=previous
-	for field in ["enemy_idle_x","enemy_idle_y","enemy_max_y","enemy_player_min_gap","player_core_scale","player_idle_rotation","player_idle_y","player_ship_y"]:
-		var previous=scene.battle_visual[field];scene.enemy_render_position(enemy)
-		scene.battle_visual[field]=previous+0.01
-		check(scene.enemy_render_position(enemy)==original_position(scene,enemy),"explicit live visual change "+field)
-		scene.battle_visual[field]=previous
-	scene.enemy_provider_query_active=false;scene.enemy_entry_batch_active=false
 	var original_size=enemy.size
 	for size in range(1,7):
 		enemy.size=size
