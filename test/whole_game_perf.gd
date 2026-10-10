@@ -11,6 +11,17 @@ class UI extends "res://scripts/battlefield.gd":
   frame_launches+=1
   if bool(shot.hostile):frame_enemy_launches+=1
   super.weapon_launch(shot,spread)
+ func on_event(kind:String,info:Dictionary)->void:
+  var inspect=OS.get_environment("PERF_CPU_PEAKS")=="1"
+  if inspect:
+   Engine.get_meta("saved_perf").target_seen.clear()
+   Engine.get_meta("saved_perf").steering_seen.clear()
+   Engine.get_meta("saved_perf").steering_active=false
+  super.on_event(kind,info)
+  if inspect:
+   Engine.get_meta("saved_perf").target_seen.clear()
+   Engine.get_meta("saved_perf").steering_seen.clear()
+   Engine.get_meta("saved_perf").steering_active=false
  var last_process_us := 0
  var last_draw_us := 0
  func _process(dt: float) -> void:
@@ -51,6 +62,9 @@ class Meter extends RefCounted:
  var frame_times={}
  var muzzle_seen={}
  var card_changes=[]
+ var target_seen={}
+ var steering_seen={}
+ var steering_active=false
  func record(key,us):
   if not enabled:return
   if not times.has(key):times[key]=[0,0,0]

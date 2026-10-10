@@ -195,7 +195,8 @@ def main():
             MODULES.update({
                 'main':['advance_game_time','advance_turrets','advance_projectile_visuals','on_event','queue_damage_number','flush_damage_numbers','refresh_visible_cards','refresh_navigation','refresh_draw_layers','weapon_launch','visual_muzzle','enemy_shot_mount','equipment_display_snapshot','module_tooltip'],
                 'game':['tick','tick_projectiles','jewel_attack','jewel_fire','fire','hit_enemy','hit_player','advance_jewel_repair','enemy_weapon_offset','launch_player_attack','combat_entry','player_weapon_offset','enhancement_effects','module_effects','equipment_damage','module_damage','attack_from_snapshot','new_attack_instance','jewel_equipment_stat','jewel_critical','plan_attack_repeats','player_weapon_row'],
-                'battlefield':['weapon_launch'],
+                'battlefield':['weapon_launch','enemy_target_point','enemy_render_position'],
+                'presented_battle_game':['launch_player_attack','target_point','prepare_projectile','tick_projectiles'],
                 'equipment_tab':['refresh','refresh_stats','refresh_affordability','refresh_detail','refresh_live','update_card_cost','card_level_text','rate_value','rate_title','textured_panel_style','equipment_choices','stat_projection'],
                 'equipment_card':['refresh','refresh_options','fit_stat_text'],
                 'equipment_style_tiles':['panel_style'],
@@ -203,7 +204,37 @@ def main():
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')
             # Module-specific names preserve superclass dispatch in the real scene.
-            code = instrument(path.read_text(encoding='utf-8').replace('->void', '-> void'), module)
+            source = path.read_text(encoding='utf-8')
+            if args.cpu_peaks and module == 'presented_battle_game':
+                start = source.index('func target_point(')
+                stop = source.index('func tick_projectiles(', start)
+                source = source[:start] + """func target_point(target:Dictionary)->Vector2:
+	var began=Time.get_ticks_usec()
+	var point:Vector2=target_provider.call(target) if target_provider.is_valid() else Vector2(target.x,target.y)
+	var elapsed=Time.get_ticks_usec()-began
+	var measure=Engine.get_meta("saved_perf")
+	if measure.enabled:
+		var uid=int(target.get("uid",-1))
+		var previous:Dictionary=measure.target_seen.get(uid,{})
+		var role="first"
+		if not previous.is_empty() and is_same(previous.entity,target):role="repeat_equal" if previous.point==point else "repeat_changed"
+		measure.target_seen[uid]={"entity":target,"point":point}
+		measure.record("probe.target_"+role,elapsed)
+		if measure.steering_active:
+			var earlier:Dictionary=measure.steering_seen.get(uid,{})
+			var steering_role="first"
+			if not earlier.is_empty() and is_same(earlier.entity,target):steering_role="repeat_equal" if earlier.point==point else "repeat_changed"
+			measure.steering_seen[uid]={"entity":target,"point":point}
+			measure.record("probe.steering_target_"+steering_role,elapsed)
+	return point
+
+""" + source[stop:]
+                source = source.replace('func tick_projectiles(dt:float)->void:\n', 'func tick_projectiles(dt:float)->void:\n\tEngine.get_meta("saved_perf").target_seen.clear()\n', 1)
+                source = source.replace('\tif bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false', '\tif bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):\n\t\tEngine.get_meta("saved_perf").steering_seen.clear();Engine.get_meta("saved_perf").steering_active=false;return false\n\tEngine.get_meta("saved_perf").steering_active=true', 1)
+                source = source.replace('\t\t\tevent.emit("projectile_impact",', '\t\t\tEngine.get_meta("saved_perf").steering_seen.clear();Engine.get_meta("saved_perf").steering_active=false\n\t\t\tevent.emit("projectile_impact",', 1)
+                source = source.replace('func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:\n', 'func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:\n\tEngine.get_meta("saved_perf").steering_seen.clear();Engine.get_meta("saved_perf").steering_active=false\n', 1)
+                source = source.replace('\tsuper.tick_projectiles(dt)\n\nfunc prepare_projectile', '\tsuper.tick_projectiles(dt)\n\tEngine.get_meta("saved_perf").steering_seen.clear();Engine.get_meta("saved_perf").steering_active=false\n\nfunc prepare_projectile', 1)
+            code = instrument(source.replace('->void', '-> void'), module)
             path.write_text(code.replace('_perf_original_', '_perf_' + module + '_original_'), encoding='utf-8')
         if args.missile_profile:
             path=project/'dev/toon_ship/missile_vfx.gd'
