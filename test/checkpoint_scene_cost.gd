@@ -125,16 +125,19 @@ func observe_transitions(scene,g,save_hash):
  # Existing authorized QA scene, real production accumulator. No fixture,
  # artificial health, burst, loadout substitution, purchase or direct tick.
  var max_seconds:=clampf(float(OS.get_environment("PERF_QA_SECONDS")),35.0,180.0)
+ var normal_automation:=OS.get_environment("PERF_QA_NORMAL_AUTOMATION")=="1"
+ var original_crew:Array=g.profile.crew.duplicate(true)
  var original_reactor_auto: bool=g.profile.reactorAutomation.upgrade
  var source_resources:Dictionary=g.profile.resources.duplicate(true)
  var initial_loadout: Dictionary=g.profile.loadout.duplicate(true)
- g.profile.reactorAutomation.upgrade=false
  var disabled_purchase_assignments=[]
- for item in g.profile.crew:
-  if str(item.assignmentType)!="equipment_upgrade":continue
-  disabled_purchase_assignments.append({"crewId":item.crewId,"assignmentType":item.assignmentType,"targetId":item.targetId})
-  if not g.crew.assign(g,str(item.crewId),"",""):fail("could not disable isolated automatic equipment purchase");return
- if g.profile.resources!=source_resources or g.profile.loadout!=initial_loadout:fail("disabling isolated auto-upgrade changed resources or loadout");return
+ if not normal_automation:
+  g.profile.reactorAutomation.upgrade=false
+  for item in g.profile.crew:
+   if str(item.assignmentType)!="equipment_upgrade":continue
+   disabled_purchase_assignments.append({"crewId":item.crewId,"assignmentType":item.assignmentType,"targetId":item.targetId})
+   if not g.crew.assign(g,str(item.crewId),"",""):fail("could not disable isolated automatic equipment purchase");return
+  if g.profile.resources!=source_resources or g.profile.loadout!=initial_loadout:fail("disabling isolated auto-upgrade changed resources or loadout");return
  g.speed=1.0
  var frames=[];var cpu=[];var trace=[];var times=[];var launch=[];var snapshots=[];var events=[]
  var phase:="natural";var natural_end={};var exit_at:=-1;var reenter_at:=-1;var restart_ok:=false
@@ -146,14 +149,18 @@ func observe_transitions(scene,g,save_hash):
   if kind=="fire":
    if bool(info.get("shot",{}).get("hostile",false)):observed.enemy+=1
    else:observed.player+=1
-  elif kind in ["state","wave_clear","level_clear","battle_blocked","unlocks_changed","planet_changed","reactor_changed","hightech_changed"]:
+  elif normal_automation or kind in ["state","wave_clear","level_clear","battle_blocked","unlocks_changed","planet_changed","reactor_changed","hightech_changed"]:
    events.append({"us":Time.get_ticks_usec()-started,"kind":kind,"state":g.state,"stage":g.stage,"group":g.group_index})
+   if normal_automation:
+    for key in ["slot","key","levels","level","module","batch","enabled","assignmentType"]:
+     if info.has(key) and (info[key] is String or info[key] is int or info[key] is bool):events[-1][key]=info[key]
  g.event.connect(event_observer)
- print("QA_TRANSITION_BEGIN ",JSON.stringify({"max_seconds":max_seconds,"speed":g.speed,"source_sha256":save_hash,"initial_loadout":initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":false,"disabled_purchase_assignments":disabled_purchase_assignments,"stage":g.stage,"group":g.group_index,"state":g.state,"save_enabled":g.save_enabled,"noncombat_omitted":false}))
+ print("QA_TRANSITION_BEGIN ",JSON.stringify({"max_seconds":max_seconds,"normal_automation":normal_automation,"speed":g.speed,"source_sha256":save_hash,"initial_loadout":initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":g.profile.reactorAutomation.upgrade,"disabled_purchase_assignments":disabled_purchase_assignments,"stage":g.stage,"group":g.group_index,"state":g.state,"save_enabled":g.save_enabled,"noncombat_omitted":false}))
  scene.set_process(true)
  var wall_end:=started
  while float(wall_end-started)/1000000.0<max_seconds:
   observed.player=0;observed.enemy=0
+  var previous_end:=wall_end
   var began:=Time.get_ticks_usec()
   await process_frame;await RenderingServer.frame_post_draw
   wall_end=Time.get_ticks_usec();var at:=wall_end-started
@@ -162,17 +169,18 @@ func observe_transitions(scene,g,save_hash):
   var living:=0
   for enemy in g.enemies:
    if _enemy_alive(enemy):living+=1
-  trace.append([at,frame_us,scene.last_process_us,g.state,g.stage,g.group_index,living,g.projectiles.size(),g.missile_queue.size(),g.paused,phase,scene.logical_ticks-ticks_start])
+  trace.append([at,frame_us,scene.last_process_us,g.state,g.stage,g.group_index,living,g.projectiles.size(),g.missile_queue.size(),g.paused,phase,scene.logical_ticks-ticks_start,wall_end-previous_end,scene.last_process_delta,events.size()])
   launch.append([at,observed.player,observed.enemy])
   if at>=next_snapshot:
    var snapshot=transition_snapshot(scene,g,at,phase)
    snapshots.append(snapshot);next_snapshot+=10000000
-   print("QA_TRANSITION_SNAPSHOT ",JSON.stringify(snapshot))
-   events.append({"us":at,"kind":"observer_snapshot_log"})
+   if not normal_automation:
+    print("QA_TRANSITION_SNAPSHOT ",JSON.stringify(snapshot))
+    events.append({"us":at,"kind":"observer_snapshot_log"})
   if g.state!=last_state or g.stage!=last_stage or g.group_index!=last_group:
    var snapshot=transition_snapshot(scene,g,at,"state_transition")
    snapshots.append(snapshot)
-   print("QA_TRANSITION_STATE ",JSON.stringify(snapshot))
+   if not normal_automation:print("QA_TRANSITION_STATE ",JSON.stringify(snapshot))
    last_state=g.state;last_stage=g.stage;last_group=g.group_index
   if phase=="natural" and natural_end.is_empty() and g.state in [g.State.LEVEL_CLEAR,g.State.RETREAT,g.State.DEFEAT,g.State.LEVEL_SELECT]:
    natural_end={"us":at,"state":g.state,"stage":g.stage,"victory":g.state==g.State.LEVEL_CLEAR and g.profile.cleared.has(20)}
@@ -181,21 +189,21 @@ func observe_transitions(scene,g,save_hash):
   if phase=="natural" and (natural_wait_done or bounded_wait_done):
    phase="exit";exit_at=at
    events.append({"us":at,"kind":"observer_manual_exit","natural_end_seen":not natural_end.is_empty(),"state":g.state,"stage":g.stage})
-   print("QA_TRANSITION_EXIT ",JSON.stringify(events[-1]))
+   if not normal_automation:print("QA_TRANSITION_EXIT ",JSON.stringify(events[-1]))
    g.leave(g.State.LEVEL_SELECT)
   elif phase=="exit" and at-exit_at>=2000000:
    phase="reenter";reenter_at=at
    restart_ok=g.start(20,false)
    events.append({"us":at,"kind":"observer_manual_reenter","ok":restart_ok,"stage":g.stage,"group":g.group_index})
-   print("QA_TRANSITION_REENTER ",JSON.stringify(events[-1]))
-  elif phase=="reenter" and at-reenter_at>=30000000:break
+   if not normal_automation:print("QA_TRANSITION_REENTER ",JSON.stringify(events[-1]))
+  elif not normal_automation and phase=="reenter" and at-reenter_at>=30000000:break
  scene.set_process(false)
  # The observer captures g; release the signal-held closure before teardown.
  g.event.disconnect(event_observer);event_observer=Callable()
  snapshots.append(transition_snapshot(scene,g,wall_end-started,"end"))
  var clock={"wall_seconds":float(wall_end-started)/1000000.0,"game_seconds":g.motion_clock-game_start,"logical_ticks":scene.logical_ticks-ticks_start,"logic_hz":float(scene.logical_ticks-ticks_start)*1000000.0/float(wall_end-started),"mode":"normal1x full-system QA including legitimate menu/retreat/pause phases; phase tick rate reported separately","valid":g.speed==1.0}
  var inventory=[];views(root,inventory)
- print("ROW ",JSON.stringify({"qa_transition_observation":true,"frame_trace":trace,"sample_time_us":times,"launch_trace":launch,"frames_us":stats(frames),"main_us":stats(cpu),"clock_validation":clock,"snapshots":snapshots,"events":events,"natural_end":natural_end,"manual_exit_us":exit_at,"manual_reenter_us":reenter_at,"restart_ok":restart_ok,"initial_loadout":initial_loadout,"final_loadout":g.profile.loadout,"loadout_unchanged":g.profile.loadout==initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":false,"disabled_purchase_assignments":disabled_purchase_assignments,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled,"views":inventory,"screenshot_scope":"after observation only; excluded from frame samples"}))
+ print("ROW ",JSON.stringify({"qa_transition_observation":true,"normal_automation":normal_automation,"automation_unchanged":g.profile.reactorAutomation.upgrade==original_reactor_auto and g.profile.crew==original_crew,"frame_trace_columns":["at_us","frame_us","root_us","state","stage","group","alive","projectiles","queue","paused","phase","ticks","cadence_us","engine_delta","event_count"],"frame_trace":trace,"sample_time_us":times,"launch_trace":launch,"frames_us":stats(frames),"main_us":stats(cpu),"clock_validation":clock,"snapshots":snapshots,"events":events,"natural_end":natural_end,"manual_exit_us":exit_at,"manual_reenter_us":reenter_at,"restart_ok":restart_ok,"initial_loadout":initial_loadout,"final_loadout":g.profile.loadout,"loadout_unchanged":g.profile.loadout==initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":g.profile.reactorAutomation.upgrade,"disabled_purchase_assignments":disabled_purchase_assignments,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled,"views":inventory,"screenshot_scope":"after observation only; excluded from frame samples"}))
  await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png("res://.runtime/checkpoint20-transition-end.png")
 
