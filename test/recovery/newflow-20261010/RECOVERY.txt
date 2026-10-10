@@ -1,10 +1,10 @@
-Independent fresh normal-resource GUI playtest recovery only; round not complete.
+Independent fresh normal-resource GUI playtest recovery only; bounded round complete.
 Frozen gameplay HEAD: 2f766d3fd3dcc7cdeab1ddfed5e4e43610840746
 Frozen tree: ae2aa7d7da27ca6354e373fc7a614e8132064b23
 Unchanged game-project tree: 8736f5e43dd15eed7b3c697d56211cabbe4ad434
-Checkpoint: stage19 wave3/9 paused, manual save confirmed2026-10-10 02:09:54UTC.
-Flyingswallow ship,4weapons and2normaldrop beamdrones; no改造/injection. Equipmentcrew+1 normalautomaticinvestment; AI81Equal4stations. Strength2, weaponproficiency first and defensememoryrepair first. Native normal growth only.
+Checkpoint: firstarrival stage20 wave0/9 PAUSED, manualsave confirmed2026-10-10 02:24:02UTC. Game closed; own window0x200003 andGodotPID1011 absentconfirmed02:24:31UTC. No20battle/farming.
+Flyingswallow ship,4weapons and2normaldrop beamdrones; no改造/injection. Equipmentcrew+1 normalautomaticinvestment; AI81Equal4stations. Strength3, weaponproficiency first and defensememoryrepair first. Gear141/139/139/139 armor138 shield138 reactor60. Native normal growth only.
 Original cloud runtime: Godot4.6.3, DISPLAY:71, window0x200003, normal speed; no QA or resource injection.
 Restore only this test progress.json into a separate XDG_DATA_HOME under godot/app_userdata/太空战舰 · 深空远征/ before startup. Keep XDG_CONFIG_HOME and XDG_CACHE_HOME separate as well. Run frozen gameplay commit, not recovery branch as a new candidate.
-Next: continue this same player round through first arrival at stage20; pause, manually save, close. No farming at20.
+Next: round finished. Do not resume this player save for farming or further play; preserve for recovery/evidence only.
 Only this cloud test save and minimal recovery note are published. No user local saves, credentials, caches, screenshots, chat or detailed reports.
