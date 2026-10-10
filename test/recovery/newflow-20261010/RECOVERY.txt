@@ -9,4 +9,4 @@ This is a cloud test save. No local user save, credentials, caches, screenshots,
 
 Verified live window0x200003 (1373x883) in cloud DISPLAY:71, real XTest mouse/key input. Initial fresh Lv1, naturally gained iron16 at first rendered sample, uranium0. No resource injection or QA. Current weaponsL4, armorL3, shieldL3, reactorL4.
 
-Stage6 checkpoint: weapon slots7/7/6 (two magneticcannons, one beam), defense5/4armor, reactor7; AI3 allocated among refinery/positron/armor. Firststage6 observed00:41:07UTC. Continue same round without reading prior-player materials.
+Stage6 checkpoint: weapon slots7/6/6 (two magneticcannons, one beam), defense5/4armor, reactor7; AI3 allocated among refinery/positron/armor. Firststage6 observed00:41:07UTC. Continue same round without reading prior-player materials.
