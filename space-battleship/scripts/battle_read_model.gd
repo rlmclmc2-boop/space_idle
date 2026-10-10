@@ -8,6 +8,7 @@ var clock=-INF
 var records:Dictionary={}
 var config:Dictionary={}
 var config_signature:Array=[]
+var shape_revision=0
 var geometry_revision=0
 var bounds_revision=-1
 var bounds:Array[Rect2]=[]
@@ -21,6 +22,7 @@ func begin(force:bool=false)->void:
 	var next_config={"base_scale":host.player_base_art_scale(),"art_scale":host.player_art_scale(),"screen_scale":host.enemy_recognition_screen_scale(),"final":host.game.is_final_encounter(),"boss":host.game.is_boss_encounter()}
 	var signature=[next_config,host.battle_visual.hash(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap)]
 	if not force and clock==host.fx_time and signature==config_signature:return
+	if force or signature!=config_signature:shape_revision+=1
 	config=next_config;config_signature=signature
 	var visual=host.battle_visual
 	config.player_front=host.BATTLE_VIEW_SIZE.y*float(visual.player_ship_y)-absf(float(visual.player_idle_y))-(host.SHIP_ART_CANVAS.y*float(visual.player_core_scale)/2.0+host.SHIP_ART_CANVAS.x*float(visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(visual.player_idle_rotation)))))*float(config.art_scale)
@@ -31,9 +33,11 @@ func begin(force:bool=false)->void:
 		var old:Dictionary=records.get(uid,{})
 		if old.is_empty() or not is_same(old.entity,enemy):old={"entity":enemy,"position_clock":-INF};records[uid]=old
 		# Appearance contracts are resolved once at the boundary, never per query.
-		old.components=host._source_enemy_weapon_components(enemy)
-		old.frontline=_frontline(enemy)
-		old.width_base=_width_base(enemy)
+		if int(old.get("shape_revision",-1))!=shape_revision:
+			old.components=host._source_enemy_weapon_components(enemy)
+			old.frontline=_frontline(enemy)
+			old.width_base=_width_base(enemy)
+			old.shape_revision=shape_revision
 		old.position_clock=-INF
 	for uid in records.keys():
 		if not present.has(uid):records.erase(uid)
@@ -120,7 +124,7 @@ func fleet_bounds()->Array[Rect2]:
 
 func invalidate_membership()->void:
 	# Event-time identity/alive changes must be visible before the next hit.
-	clock=-INF;bounds_revision=-1
+	clock=-INF;bounds_revision=-1;shape_revision+=1
 
 func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
 	# One complete display publication. Native painters consume this packet;

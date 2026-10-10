@@ -39,5 +39,21 @@ func check(scene)->void:
 		model.end();same_value(dead_bounds,scene.damage_text_enemy_bounds(),"same_clock_death")
 		enemy.hp=hp
 		model.begin(true)
+	if frames==0 and not rows.is_empty():
+		var enemy:Dictionary=rows[0].enemy
+		var paused=scene.game.paused;scene.game.paused=true
+		var scale_value=scene.battle_visual.player_core_scale
+		scene.battle_visual.player_core_scale=float(scale_value)*1.01
+		model.end();var expected_front=scene.enemy_frontline_y_limit(enemy)
+		model.begin();same_value(scene.enemy_frontline_y_limit(enemy),expected_front,"paused_config")
+		scene.battle_visual.player_core_scale=scale_value;scene.game.paused=paused
+		# Same UID with a different entity must never borrow the old publication.
+		var original_pose=scene.enemy_poses[int(enemy.slot)]
+		var twin:Dictionary=enemy.duplicate(true);twin.x+=1.0
+		scene.game.enemies[0]=twin;model.end()
+		var expected_point=scene.enemy_render_position(twin)
+		model.begin(true);same_value(scene.enemy_render_position(twin),expected_point,"uid_replacement")
+		scene.game.enemies[0]=enemy;scene.enemy_poses[int(enemy.slot)]=original_pose
+		model.begin(true)
 	model.end();frames+=1
 func report()->Dictionary:return {"frames":frames,"comparisons":comparisons,"scope":"same-clock canonical spatial/recognition/mount/layout equality, including entry and alive-membership change; validation overhead excluded from clean timing"}
