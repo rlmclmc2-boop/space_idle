@@ -27,7 +27,7 @@
 交接列出当前提交、结论及证据限度、未闭合问题、下一步和阻塞。按用户评审节奏及正式交付前，从仓库根目录执行：
 
 ```sh
-python tools/check_workflow.py <private-ledger.json>
+python space-battleship/tools/check_workflow.py <private-ledger.json>
 ```
 
 父的实际独立意见评审另用同一命令加 `--review`，核对参与者、各自来源与覆盖、处置理由、修改后效果及旧低分跟进。校验器只检查材料完整性；不能用通过结果证明事实或替代实际评审。保留一份当前私有台账，不另建公开详细报告。
