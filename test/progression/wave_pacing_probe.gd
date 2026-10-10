@@ -20,6 +20,38 @@ var paid_boundaries={}
 var qa_failure={}
 var stage_refits={}
 var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fraction":0.25,"ai_batch":10,"enhancement_max":true,"equalize_reactor":true}
+func prepare_early_equipment()->Array:
+ var receipts=[]
+ if not policy.get("precrew_manual_gear",false) or g.stage>10:return receipts
+ var current=str(g.slot_entry("weapons",0).get("key","laser"))
+ var preferred={1:"laser",2:"missile",3:"cannon",6:"longLaser",7:"laser",8:"missile",9:"cannon"}.get(g.stage,current)
+ if g.profile.unlocked.has(preferred):
+  for index in g.active_slot_count("weapons"):
+   if str(g.slot_entry("weapons",index).get("key",""))!=preferred:
+    receipts.append({"category":"weapons","index":index,"key":preferred,"success":g.equip_slot("weapons",index,preferred)})
+ if g.profile.unlocked.has("shield"):
+  for index in range(1,g.active_slot_count("defence")):
+   if str(g.slot_entry("defence",index).get("key",""))=="":
+    receipts.append({"category":"defence","index":index,"key":"shield","success":g.equip_slot("defence",index,"shield")})
+ return receipts
+func buy_early_equipment()->Array:
+ var receipts=[]
+ if not policy.get("precrew_manual_gear",false) or g.content_unlocked("crew","navigator"):return receipts
+ # Normal paid card actions before the first upgrade crew is unlocked.
+ # Balance equipped active modules, retain the cost and use no free levels.
+ for attempt in 1000:
+  var selected={};var minimum=2147483647
+  for category in ["weapons","defence"]:
+   for index in g.active_slot_count(category):
+    var entry=g.slot_entry(category,index)
+    if str(entry.get("key",""))=="" or int(entry.level)>=minimum:continue
+    minimum=int(entry.level);selected={"category":category,"index":index}
+  if selected.is_empty():break
+  var amount=1
+  var cost=g.slot_upgrade_cost(selected.category,selected.index,amount)
+  if not g.upgrade_slot(selected.category,selected.index,amount):break
+  receipts.append({"category":selected.category,"index":selected.index,"amount":amount,"cost":cost})
+ return receipts
 func observe(kind:String,info:Dictionary):
  if kind=="state" and int(info.get("state",-1))==g.State.RETREAT and not g.enemies.is_empty():
   qa_failure={"reason":"Scene rejected encounter before normal retreat cleared actors","stage":g.stage,"wave":g.group_index,"t":g.simulated_time}
@@ -72,11 +104,17 @@ func transact():
  var affordable=int(quote.get("count",0))==int(policy.ai_batch)
  for key in quote.get("costs",{}):
   if N.compare(quote.costs[key],N.multiply(g.profile.resources.get(str(key),0),float(policy.ai_budget_fraction)))>0:affordable=false
- if affordable:g.generate_scientist(int(policy.ai_batch))
+ if not affordable and policy.get("ai_small_batch_fallback",false):
+  quote=g.scientist_purchase(1);affordable=int(quote.get("count",0))==1
+  for key in quote.get("costs",{}):
+   if N.compare(quote.costs[key],N.multiply(g.profile.resources.get(str(key),0),float(policy.ai_budget_fraction)))>0:affordable=false
+ if affordable:g.generate_scientist(int(quote.count))
  g.distribute_scientists()
+ var early_refits=prepare_early_equipment()
+ var early_purchases=buy_early_equipment()
  var levels=g.enhancement_max_upgrades()
  if levels>0 and policy.enhancement_max:g.upgrade_enhancement(levels)
- stream.store_line(JSON.stringify({"t":g.simulated_time,"event":"normal_transactions","before":before,"after":snapshot(),"reactor_debit":total if count>0 else 0}))
+ stream.store_line(JSON.stringify({"t":g.simulated_time,"event":"normal_transactions","before":before,"after":snapshot(),"reactor_debit":total if count>0 else 0,"precrew_refits":early_refits,"precrew_purchases":early_purchases}))
 func record_paid_boundary(boundary:String,side:String,count:int,quote:Variant):
  var path=capture_output.get_base_dir().path_join("reactor_%s_%s.json"%[boundary,side])
  FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"purchase":{"count":count,"quote":quote,"side":side},"scope":"Actual affordable normal reactor transaction boundary with complete economic/production state. Portable reload regenerates full-health actors and cooldowns; isolated comparison is not continuous arrival or pacing evidence."}))
@@ -88,9 +126,14 @@ func record_entry(output:String):
  entry_seen[g.stage]=true
  var path=output.get_base_dir().path_join("entry_stage_%02d.json"%g.stage)
  FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"scope":"QA first-entry portable checkpoint; reload regenerates combat and does not preserve live actors"}))
+ if policy.get("precrew_manual_gear",false) and g.stage<=10:
+  var before=snapshot();var receipts=prepare_early_equipment()
+  if not receipts.is_empty():stream.store_line(JSON.stringify({"event":"normal_early_refits","t":g.simulated_time,"stage":g.stage,"actions":receipts,"before":before,"after":snapshot()}))
  # Preserve the real arrival checkpoint before declared normal strategy changes.
  if stage_refits.has(str(g.stage)):
   var before=snapshot();var receipts=[]
+  if g.ship_unlocked("Destroyer") and g.profile.selectedShip!="Destroyer":
+   receipts.append({"action":{"ship":"Destroyer"},"success":g.switch_ship("Destroyer")})
   for action in stage_refits[str(g.stage)]:
    var ok=g.equip_slot(str(action.category),int(action.index),str(action.key))
    receipts.append({"action":action,"success":ok})
@@ -98,14 +141,21 @@ func record_entry(output:String):
   stream.store_line(JSON.stringify({"event":"normal_stage_refits","t":g.simulated_time,"stage":g.stage,"actions":receipts,"before":before,"after":snapshot(),"scope":"Explicit strategy hypothesis using normal free equip APIs, paid levels/assets retained. Not blind-player evidence."}));stream.flush()
 func _initialize():call_deferred("run")
 func run():
- var r:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment("QA_PACING_REQUEST")))
+ var request_path=OS.get_environment("QA_PACING_REQUEST")
+ if not FileAccess.file_exists(request_path):printerr("QA request missing");quit(2);return
+ var parsed=JSON.parse_string(FileAccess.get_file_as_string(request_path))
+ if not parsed is Dictionary:printerr("QA request invalid");quit(2);return
+ var r:Dictionary=parsed
+ if not FileAccess.file_exists(str(r.get("save",""))):printerr("QA source save missing");quit(2);return
  policy.merge(r.get("policy",{}),true)
  stage_refits=r.get("stage_refits",{})
  var interval_ticks=maxi(1,roundi(float(policy.interval_seconds)*60))
  var transaction_delay_ticks=maxi(0,roundi(float(r.get("transaction_delay_seconds",0))*60))
  stream=FileAccess.open(r.output,FileAccess.WRITE)
  combat_capture=bool(r.get("capture_combat",false));capture_output=r.output
- var payload:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(r.save))
+ var parsed_save=JSON.parse_string(FileAccess.get_file_as_string(r.save))
+ if not parsed_save is Dictionary:printerr("QA source save invalid");quit(2);return
+ var payload:Dictionary=parsed_save
  var raw:Dictionary=payload.get("save",payload)
  raw.chronoSavedAt=Time.get_unix_time_from_system()
  g=Game.new(ShipDatabase.new());g.stat_cache_enabled=true
