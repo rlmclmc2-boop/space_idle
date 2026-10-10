@@ -43,7 +43,9 @@ static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,
 	elif age<0.22:
 		surface.draw_circle(nozzle-axis*3.0,2.5,Color(SMOKE,(1.0-age/0.22)*0.30))
 	if not draw_body:return
-	if body_mesh!=null:
+	# Scaled matrix rounding exceeds the unit-scale 1/255 pixel bound. Keep the
+	# native geometry path for scaled canvases instead of relaxing that bound.
+	if body_mesh!=null and surface.get_global_transform_with_canvas().get_scale().is_equal_approx(Vector2.ONE):
 		surface.draw_mesh(body_mesh,null,Transform2D(axis.angle()+PI/2,point))
 		return
 	# The simulation point is the nose; the substantial rocket body trails it.
