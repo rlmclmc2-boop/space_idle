@@ -3,6 +3,8 @@ extends "res://scripts/main.gd"
 
 const PROTOTYPE_GAME := preload("res://scripts/presented_battle_game.gd")
 var enemy_vfx_enabled:=true
+var damage_presentation_enabled:=true
+var step_presentation=preload("res://scripts/battle_step_presentation.gd").new()
 var retained_contacts
 var retained_contacts_enabled:=true
 var enemy_launch_context:=false
@@ -215,7 +217,31 @@ func _sync_parameters() -> void:
 func uses_logical_battle_pose() -> bool:
 	return true
 
+func after_logical_game_tick()->void:
+	step_presentation.drain(self)
+
+func record_damage_presentation(info:Dictionary)->void:
+	if not step_presentation.active or fast_mode_enabled() or not show_damage_numbers:
+		super.record_damage_presentation(info)
+		return
+	step_presentation.record(self,info)
+
+func damage_layout_context()->Dictionary:
+	return step_presentation.layout_context(self) if step_presentation.active else {}
+
+func enemy_render_position(enemy:Dictionary)->Vector2:
+	if not step_presentation.active or battle_draw_active:return super.enemy_render_position(enemy)
+	step_presentation.ensure_time(fx_time)
+	var uid:=int(enemy.uid)
+	var saved:Dictionary=step_presentation.positions.get(uid,{})
+	if not saved.is_empty() and is_same(saved.entity,enemy):return saved.position
+	var point:=super.enemy_render_position(enemy)
+	step_presentation.positions[uid]={"entity":enemy,"position":point}
+	return point
+
 func before_logical_game_tick(dt:float) -> void:
+	step_presentation.drain(self)
+	step_presentation.invalidate()
 	# Combat providers consume the same carrier/target/turret sequence at every
 	# speed. Keep the historical X1 order: pose first, then fx/turrets, then tick.
 	if game.paused:return
@@ -242,6 +268,7 @@ func before_logical_game_tick(dt:float) -> void:
 func _process(delta: float) -> void:
 	# End the batch even when the presentation exits early. Each fixed logical
 	# step changes fx_time, so accelerated combat never reuses an older limit.
+	step_presentation.begin(damage_presentation_enabled)
 	enemy_entry_batch_active=true
 	enemy_provider_query_active=false
 	enemy_entry_distance_time=-INF
@@ -252,6 +279,7 @@ func _process(delta: float) -> void:
 		stars_layer.queue_redraw()
 		battle_layer.queue_redraw()
 		battle_hud_layer.queue_redraw()
+	step_presentation.finish(self)
 	enemy_entry_batch_active=false
 	enemy_provider_query_active=false
 	enemy_entry_distance_time=-INF
@@ -391,6 +419,9 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind!="hit":
+		step_presentation.drain(self)
+		step_presentation.invalidate()
 	if kind=="encounter":encounter_presentation.sync(game,0.0)
 	if kind=="wave_clear" and encounter_presentation.tier=="ultimate":encounter_presentation.clear_age=0.0
 	if kind=="hyperspace_manual":

@@ -234,6 +234,7 @@ func run():
   var cpu_peak_trace=[]
   var launch_trace=[]
   var presentation_trace=[]
+  var damage_trace=[]
   var card_change_trace=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
@@ -298,6 +299,7 @@ func run():
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  row.damage_trace=damage_trace
   row.retention_counts=scene.retention_counts.duplicate()
   row.retained_part_builds={}
   var native_contacts=scene.get("retained_contacts")
