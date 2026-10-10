@@ -5,6 +5,28 @@ class QueryUI extends "res://scripts/battlefield.gd":
  func enemy_render_position(enemy:Dictionary)->Vector2:
   if measuring:reads+=1
   return super.enemy_render_position(enemy)
+ func reference_damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}) -> Vector2:
+  var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+  var enemy_bounds: Array[Rect2] = []
+  var bounds_ready := false
+  # Drawing may hold a precomputed position; retain its original full query.
+  var fleet_bottom := INF if battle_draw_active else damage_text_enemy_bottom()
+  for row in 2:
+   for shift in [0,-56,56,-140,140]:
+    var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
+    var bounds := damage_text_rect(battle_point(pos),value,size_value)
+    if bounds.position.y<8:continue
+    var blocked := false
+    for entry in floats:
+     if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
+    if blocked:continue
+    if bounds.position.y<fleet_bottom:
+     if not bounds_ready:
+      enemy_bounds=damage_text_enemy_bounds();bounds_ready=true
+     for obstacle in enemy_bounds:
+      if bounds.intersects(obstacle):blocked = true
+    if not blocked:return pos
+  return Vector2.INF
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -36,6 +58,21 @@ func run()->void:
      var envelope:Vector2=Vector2(width*0.6,width*1.15)+Vector2(float(scene.battle_visual.enemy_idle_x),float(scene.battle_visual.enemy_idle_y))
      if rect.intersects(Rect2(center-envelope,envelope*2.0)):clear=false
     check(clear,"ordinary and explicit fleet footprints still exclude returned text placement")
+ # Frozen pre-optimization oracle: exact local placements remain unchanged
+ # while obstacles, exclusion, label text and live/dead rows vary.
+ for explicit in [false,true]:
+  for enemy in g.enemies:enemy.explicit_formation=explicit
+  for label_count in [0,1,8]:
+   scene.floats.clear()
+   for i in label_count:scene.floats.append({"damage":true,"life":0.0 if i==3 else 0.42,"text":"energy 123M" if i%2 else "408","size":15 if i%2 else 19,"pos":Vector2(80+i*56,230+(i%3)*40)})
+   var context={}
+   for origin in [Vector2(286,680),Vector2(160,330),Vector2(430,450),Vector2(80,230)]:
+    for value in ["408","energy 408","1.23e+100"]:
+     var excluded:Dictionary=scene.floats[0] if label_count>0 else {}
+     var expected:Vector2=scene.reference_damage_text_position(origin,value,19,excluded)
+     var actual:Vector2=scene.damage_text_position(origin,value,19,excluded,context)
+     check(actual==expected,"synchronous layout matches frozen placement with current live labels")
+ scene.floats.clear()
  scene.battle_draw_active=true;scene.measuring=true;scene.reads=0
  scene.damage_text_position(Vector2(286,680),"408",19);scene.measuring=false
  check(scene.reads==15,"drawing retains full query of its cached enemy positions")

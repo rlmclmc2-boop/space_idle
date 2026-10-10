@@ -89,6 +89,7 @@ var player_components: Array = []
 var player_components_signature := ""
 # Shared fleet limit is scoped to one process/draw batch and logical pose time.
 var enemy_entry_batch_active := false
+var enemy_provider_query_active := false
 var enemy_entry_distance_time := -INF
 var enemy_entry_distance_value := 0.0
 # Reuse presentation values only inside one synchronous draw callback. No state
@@ -1235,16 +1236,21 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
-	var entries: Array = []
 	var signature := ship_key+":"+str(db.get_instance_id())
-	for equipment in enemy.equipment:
-		var key := str(equipment.get("name",""))
-		entries.append({"key":key})
-		signature += "|"+key
+	for equipment in enemy.equipment:signature += "|"+str(equipment.get("name",""))
 	if str(pose.get("components_signature",""))!=signature:
+		var entries: Array = []
+		for equipment in enemy.equipment:entries.append({"key":str(equipment.get("name",""))})
 		pose.components_signature=signature
 		pose.components=compose_weapon_components(ship_key,entries,"enemy")
+		# Mounts describe these appearance-owned components, not their live aim,
+		# depth, shield state or width. Replace them with their component owner.
+		pose.recognition_mounts=enemy_recognition.descriptors(pose.components)
 	return pose.components
+
+func enemy_recognition_mounts(enemy:Dictionary)->Array:
+	enemy_weapon_components(enemy)
+	return enemy_pose(enemy).recognition_mounts
 
 func enemy_attack_types(enemy: Dictionary) -> Array:
 	var pose := enemy_pose(enemy)
@@ -1364,6 +1370,12 @@ func advance_turrets(dt: float) -> void:
 	# Targets remain selected per mount. Reuse only their visual positions for
 	# this invocation; identity guards slot reuse, and nothing survives a step.
 	var target_positions: Dictionary = {}
+	var beam_targets:Dictionary={}
+	for shot in game.projectiles if game.state==BattleGame.State.COMBAT and not entries.is_empty() else []:
+		if not shot.get("beam",false) or shot.hostile or shot.get("repeated",false):continue
+		var mount:=int(shot.mount)
+		if mount<0 or mount>=entries.size() or str(entries[mount].get("key","")).is_empty() or beam_targets.has(mount):continue
+		if game.long_laser_valid(shot):beam_targets[mount]=shot.target
 	for index in turret_visuals.keys():
 		if int(index)>=entries.size() or str(entries[index].key).is_empty():turret_visuals.erase(index)
 	for index in entries.size():
@@ -1372,11 +1384,9 @@ func advance_turrets(dt: float) -> void:
 		var pose := turret_pose(index)
 		pose.recoil = maxf(0,float(pose.recoil)-dt)
 		var target: Dictionary = pose.target
-		# A live main beam owns its mount's aim; repeats cannot pull it off target.
-		for shot in game.projectiles:
-			if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index and not shot.get("repeated",false) and game.long_laser_valid(shot):
-				target = shot.target
-				break
+		# Preserve the first valid main beam in projectile order for each mount.
+		# Repeats never own aim. This invocation's read-only index expires below.
+		if beam_targets.has(index):target=beam_targets[index]
 		if game.state!=BattleGame.State.COMBAT:
 			target = {}
 		elif target.is_empty() or not game.enemies.has(target) or float(target.get("hp",0))<=0:
@@ -1538,7 +1548,7 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	# The target and top-bound solver sample different width buckets; keep each
 	# cached separately so stationary frames never rebuild alternating envelopes.
 	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
+	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition_mounts(enemy),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
 	var outlines:Array=[packet.inner]
 	if float(enemy.get("max_shield",0))>0:
 		outlines.append(packet.outer)
@@ -1585,12 +1595,38 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
 	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height)
 
+func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
+	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
+	# entry-fleet calculation and never reuse a result across animation time.
+	enemy_weapon_components(enemy)
+	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,pose.target,pose.logical_position,
+		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,
+		enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),
+		enemy.get("max_shield",0),enemy.get("shieldRecovery",0),enemy.get("shieldType",0),
+		game.is_final_encounter(),game.is_boss_encounter(),pose.components_signature,ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).get_instance_id(),
+		battle_visual.enemy_idle_x,battle_visual.enemy_idle_y,battle_visual.enemy_idle_rotation,
+		battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,battle_visual.enemy_scale_variance.y,battle_visual.enemy_base_scale,
+		battle_visual.enemy_max_y,battle_visual.enemy_player_min_gap,battle_visual.player_core_scale,
+		battle_visual.player_idle_rotation,battle_visual.player_idle_y,battle_visual.player_ship_y,
+		enemy_config_visual_scale(int(enemy.size)),db.config.get("explicitEnemyPlayerMinGap",battle_visual.enemy_player_min_gap),
+		player_base_art_scale(),player_art_scale(),enemy_recognition_screen_scale(),
+		ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0),ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)]
+
 func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
+	var position_key:Array=[]
+	# Ordinary pose queries and drawing already have cheaper local paths.
+	# Guidance opts in explicitly; other logic needs a busy projectile scene.
+	var reuse_steady:=enemy_entry_batch_active and not battle_draw_active and enter==1.0 and (enemy_provider_query_active or game.projectiles.size()>=32)
+	if reuse_steady:
+		position_key=enemy_steady_position_key(enemy,pose)
+		if pose.get("steady_position_key",[])==position_key:
+			if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":pose.steady_position}
+			return pose.steady_position
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 	if not enemy.get("explicit_formation",false):target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
@@ -1600,18 +1636,22 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	# fleet-wide clearance calculation without caching moving entity state.
 	var entry_distance := enemy_safe_entry_distance() if enter<1.0 else 0.0
 	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))+hover*enter
-	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
-	# Clamp the final animated position, so hover, entry and ship changes cannot
-	# cross the front line. Logical entity coordinates remain untouched.
-	var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
-	# Width changes slightly with depth; solve the local top bound without moving
-	# other rows or altering the existing player clearance cap.
-	for iteration in 3:
-		var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
-		if next_minimum==minimum_y:break
-		minimum_y=next_minimum
-	if not enemy.get("explicit_formation",false):position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
-	else:position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
+	# Explicit formations own their authored top boundary. Their final clamp
+	# never reads minimum_y; do not solve the unused legacy envelope per query.
+	if enemy.get("explicit_formation",false):
+		position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
+	else:
+		var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
+		# Keep the original local top-bound solve for legacy formations.
+		var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
+		for iteration in 3:
+			var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
+			if next_minimum==minimum_y:break
+			minimum_y=next_minimum
+		position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
+	if reuse_steady:
+		pose.steady_position_key=position_key
+		pose.steady_position=position
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 
@@ -2741,6 +2781,8 @@ func move_damage_numbers_from_incoming(incoming: Dictionary) -> void:
 		else:other.life=0.0;other.retiring=true
 
 func flush_damage_numbers() -> void:
+	# This synchronous flush changes labels only. Its fleet projection expires here.
+	var layout_context := {}
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry)
@@ -2750,7 +2792,7 @@ func flush_damage_numbers() -> void:
 			active[0].life = minf(active[0].life,0.08)
 			active[0].retiring = true
 			continue
-		var pos := damage_text_position(entry.origin,entry.text,entry.size)
+		var pos := damage_text_position(entry.origin,entry.text,entry.size,{},layout_context)
 		if pos==Vector2.INF:
 			# No safe local space: keep a bounded, short-lived visual backlog.
 			if fx_time-entry.born>0.2:damage_pending.erase(entry)
@@ -2759,9 +2801,11 @@ func flush_damage_numbers() -> void:
 		floats.append(entry)
 		damage_pending.erase(entry)
 
-func damage_text_rect(pos: Vector2, value: String, size_value := 19) -> Rect2:
-	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
-	return Rect2(pos-Vector2(maxf(0,92-width)/2,font.get_ascent(size_value)),Vector2(maxf(92,width),font.get_height(size_value))).grow(4)
+func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Dictionary = {}) -> Rect2:
+	var width:float=metrics.width if not metrics.is_empty() else font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+	var ascent:float=metrics.ascent if not metrics.is_empty() else font.get_ascent(size_value)
+	var height:float=metrics.height if not metrics.is_empty() else font.get_height(size_value)
+	return Rect2(pos-Vector2(maxf(0,92-width)/2,ascent),Vector2(maxf(92,width),height)).grow(4)
 
 func damage_text_enemy_bounds() -> Array[Rect2]:
 	var enemy_bounds: Array[Rect2] = []
@@ -2788,24 +2832,38 @@ func damage_text_enemy_bottom() -> float:
 		bottom=maxf(bottom,limit+width*DAMAGE_ENEMY_BOUNDS_SCALE.y+absf(float(battle_visual.enemy_idle_y)))
 	return bottom
 
-func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}) -> Vector2:
+func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}, layout_context: Dictionary = {}) -> Vector2:
 	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+	var metrics := {"width":width,"ascent":font.get_ascent(size_value),"height":font.get_height(size_value)}
+	# Shape each existing label once, rather than for every candidate rectangle.
+	# This local list includes current live labels and excludes only the caller.
+	var floating_bounds: Array[Rect2] = []
+	for entry in floats:
+		if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry):
+			floating_bounds.append(damage_text_rect(battle_point(entry.pos),entry.text,entry.size))
 	var enemy_bounds: Array[Rect2] = []
-	var bounds_ready := false
-	# Drawing may hold a precomputed position; retain its original full query.
-	var fleet_bottom := INF if battle_draw_active else damage_text_enemy_bottom()
+	if layout_context.has("enemy_bounds"):enemy_bounds=layout_context.enemy_bounds
+	var bounds_ready := layout_context.has("enemy_bounds")
+	# A flush never changes fleet poses or entities. No context survives a flush,
+	# merge event, frame, or draw callback; ordinary callers get their own context.
+	if not layout_context.has("fleet_bottom"):
+		layout_context.fleet_bottom=INF if battle_draw_active else damage_text_enemy_bottom()
+	var fleet_bottom:float=layout_context.fleet_bottom
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
 			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
-			var bounds := damage_text_rect(battle_point(pos),value,size_value)
+			var bounds := damage_text_rect(battle_point(pos),value,size_value,metrics)
 			if bounds.position.y<8:continue
 			var blocked := false
-			for entry in floats:
-				if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
+			for occupied in floating_bounds:
+				if bounds.grow(8).intersects(occupied):
+					blocked = true
+					break
 			if blocked:continue
 			if bounds.position.y<fleet_bottom:
 				if not bounds_ready:
 					enemy_bounds=damage_text_enemy_bounds();bounds_ready=true
+					layout_context.enemy_bounds=enemy_bounds
 				for obstacle in enemy_bounds:
 					if bounds.intersects(obstacle):blocked = true
 			if not blocked:return pos
@@ -3379,8 +3437,8 @@ func enemy_recognition_screen_scale() -> float:
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
 	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
-	var components := enemy_weapon_components(enemy)
-	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	var mounts := enemy_recognition_mounts(enemy)
+	return enemy_recognition.geometry(texture,enemy_render_width(enemy),mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 
 func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):

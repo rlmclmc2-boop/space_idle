@@ -126,7 +126,13 @@ func _rail_geometry(shot: Dictionary) -> Dictionary:
 
 
 func _prototype_target_point(target:Dictionary)->Vector2:
-	return battle_logical_point(entity_render_position(target))
+	# Guidance queries often share a target even before the whole scene is busy.
+	# Only this read-only provider opts into the exact settled-position key.
+	var previous:=enemy_provider_query_active
+	enemy_provider_query_active=true
+	var point:=battle_logical_point(entity_render_position(target))
+	enemy_provider_query_active=previous
+	return point
 
 
 func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
@@ -230,6 +236,7 @@ func _process(delta: float) -> void:
 	# End the batch even when the presentation exits early. Each fixed logical
 	# step changes fx_time, so accelerated combat never reuses an older limit.
 	enemy_entry_batch_active=true
+	enemy_provider_query_active=false
 	enemy_entry_distance_time=-INF
 	_process_battlefield(delta)
 	# Wall-clock presentation survives accelerated simulation without changing
@@ -239,6 +246,7 @@ func _process(delta: float) -> void:
 		battle_layer.queue_redraw()
 		battle_hud_layer.queue_redraw()
 	enemy_entry_batch_active=false
+	enemy_provider_query_active=false
 	enemy_entry_distance_time=-INF
 
 func _process_battlefield(delta: float) -> void:
