@@ -1,10 +1,12 @@
 Independent fresh normal-resource GUI playtest recovery only.
 Frozen gameplay HEAD: 2f766d3fd3dcc7cdeab1ddfed5e4e43610840746
 Frozen tree: ae2aa7d7da27ca6354e373fc7a614e8132064b23
-Checkpoint: first observed stage 4, paused, manually saved.
+Checkpoint: first observed stage 6, paused, manually saved.
 Runtime: Godot 4.6.3 Linux, isolated DISPLAY :71, normal speed.
 Restore only this test progress.json into a separate XDG_DATA_HOME under godot/app_userdata/太空战舰 · 深空远征/ before startup. Keep XDG_CONFIG_HOME and XDG_CACHE_HOME separate as well. Use frozen gameplay commit, not recovery branch as a new gameplay candidate.
 Next: resume current player round through first arrival at stage 20; pause, manually save, close. No farming at 20.
 This is a cloud test save. No local user save, credentials, caches, screenshots, chat or detailed report included.
 
 Verified live window0x200003 (1373x883) in cloud DISPLAY:71, real XTest mouse/key input. Initial fresh Lv1, naturally gained iron16 at first rendered sample, uranium0. No resource injection or QA. Current weaponsL4, armorL3, shieldL3, reactorL4.
+
+Stage6 checkpoint: weapon slots7/7/6 (two magneticcannons, one beam), defense5/4armor, reactor7; AI3 allocated among refinery/positron/armor. Firststage6 observed00:41:07UTC. Continue same round without reading prior-player materials.
