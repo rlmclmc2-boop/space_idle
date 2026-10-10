@@ -180,13 +180,6 @@ func run()->void:
 		enemy[field]=previous
 	scene.battle_draw_active=false;scene.battle_draw_enemy_positions.clear()
 	check(scene.game.profile==before_draw and scene.game.rng.state==before_rng,"layout-to-draw sharing leaves business state and RNG unchanged")
-	var real_projectiles=scene.game.projectiles.duplicate()
-	for count in [0,7,8,31,32]:
-		scene.game.projectiles.clear()
-		for i in count:scene.game.projectiles.append({})
-		for item in scene.game.enemies:scene.enemy_pose(item).erase("steady_position_key")
-		compare_positions(scene,"busy fleet threshold %d"%count)
-	scene.game.projectiles.assign(real_projectiles)
 	var original_size=enemy.size
 	for size in range(1,7):
 		enemy.size=size

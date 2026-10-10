@@ -1623,8 +1623,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	# Guidance opts in explicitly; other logic needs a busy projectile scene.
 	# Drawing only checks a solved position from this exact logical pose time.
 	# Do not construct the full key for a cold/sparse draw; keep its old path.
-	var busy_fleet:=game.projectiles.size()>=32 or (game.enemies.size()>=8 and game.projectiles.size()>=8)
-	var reuse_steady:=enemy_entry_batch_active and enter==1.0 and ((not battle_draw_active and (enemy_provider_query_active or busy_fleet)) or (battle_draw_active and float(pose.get("steady_position_time",-INF))==fx_time))
+	var reuse_steady:=enemy_entry_batch_active and enter==1.0 and ((not battle_draw_active and (enemy_provider_query_active or game.projectiles.size()>=32)) or (battle_draw_active and float(pose.get("steady_position_time",-INF))==fx_time))
 	if reuse_steady:
 		position_key=enemy_steady_position_key(enemy,pose)
 		if pose.get("steady_position_key",[])==position_key:
