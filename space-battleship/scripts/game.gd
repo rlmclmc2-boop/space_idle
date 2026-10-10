@@ -33,8 +33,6 @@ var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
 var combat_sources_dirty:=true
-var combat_source_builds:=0
-var combat_source_primary_count:=-1
 var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
 var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
 var galaxy := preload("res://scripts/galaxy_system.gd").new()
@@ -568,6 +566,8 @@ func load_hightech(raw: Dictionary) -> void:
 					restored.jewelRatio = 1.0
 				drops.append(restored)
 
+	event.emit("progress_loaded",{})
+
 func rebuild_unlocks() -> void:
 	profile.highestLevel = 1
 	for n in profile.cleared:
@@ -726,20 +726,8 @@ func weapon_entries() -> Array:
 	return loadout_entries("weapons")
 
 func combat_weapon_entries() -> Array:
-	# Callers may edit their container; authoritative entry identities survive.
-	return combat_weapon_view().duplicate()
-
-func combat_weapon_view() -> Array:
-	var primary := module_entries("weapons")
-	var count := mini(primary.size(),active_slot_count("weapons"))
-	var same_primary := count==combat_source_primary_count
-	if same_primary:
-		for i in count:
-			if not is_same(primary[i],combat_sources[i]):same_primary=false;break
-	var has_drones: bool=profile.has("hyperspace") and not profile.hyperspace.inventory.equipped.is_empty()
-	# Check live primary identities even without explicit invalidation: events
-	# may replace a module in the middle of a salvo. Never freeze a tick's view.
-	if same_primary and not combat_sources_dirty and (has_drones or combat_sources.size()==count):return combat_sources
+	if not profile.has("hyperspace") or profile.hyperspace.inventory.equipped.is_empty():return weapon_entries()
+	if not combat_sources_dirty:return combat_sources
 	var previous: Dictionary={}
 	for entry in combat_sources:
 		if entry.has("drone_id"):previous[entry.drone_id]=entry
@@ -751,10 +739,7 @@ func combat_weapon_view() -> Array:
 			var projected:=drone_weapon_entry(d)
 			var old: Dictionary=previous.get(id,{})
 			combat_sources.append(old if old.get("key")==projected.key and old.get("level")==projected.level else projected)
-	combat_source_primary_count=count
-	combat_sources.make_read_only()
 	combat_sources_dirty=false
-	combat_source_builds+=1
 	return combat_sources
 
 func lowest_unlocked_weapon_slot() -> int:
@@ -787,12 +772,7 @@ func drone_weapon_entry(d: Dictionary) -> Dictionary:
 	return {"key":d.weapon,"level":inherited+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
-	# A single primary lookup needs neither a slice nor a whole-view identity scan.
-	# Read the authoritative slot at this call, including mid-salvo replacement.
-	var primary := module_entries("weapons")
-	var count := mini(primary.size(),active_slot_count("weapons"))
-	if index>=0 and index<count:return primary[index]
-	var entries:=combat_weapon_view()
+	var entries:=combat_weapon_entries()
 	return entries[index] if index>=0 and index<entries.size() else {}
 
 func defense_entries() -> Array:
@@ -1076,7 +1056,7 @@ func equipment_stat(key: String, level: int, drone_totals: Dictionary = {}) -> V
 	var levels: Dictionary = bases.get(key,{})
 	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
-	var row := db.combat_equipment(key, effective_equipment_level(level))
+	var row := db.equip(key, effective_equipment_level(level))
 	var value = row.para1 if key in ["armour", "shield"] else row.dmg
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if effective_hightech_level(tech) > 0:
@@ -1987,12 +1967,12 @@ func change_state(next: State) -> void:
 	if next == State.TRAVEL:
 		travel_origin = INF
 		cooldowns.clear()
-		for index in range(combat_weapon_view().size()):
-			var entry: Dictionary = combat_entry(index)
+		for index in range(combat_weapon_entries().size()):
+			var entry: Dictionary = combat_weapon_entries()[index]
 			var key := str(entry.key)
 			if key.is_empty():
 				continue
-			var cd := float(combat_player_weapon_row(entry).cd)
+			var cd := float(player_weapon_row(entry).cd)
 			if cd > 0:
 				cooldowns[slot_id("weapons", index)] = cd
 	state = next
@@ -2230,7 +2210,7 @@ func spawn_group(keep_distance := false) -> void:
 		enemy.boss = enemy.combat_tier in ["boss","ultimate"]
 		enemy.cooldowns = []
 		for entry in row.equipment:
-			enemy.cooldowns.append(float(db.combat_enemy_weapon(entry.name).cd))
+			enemy.cooldowns.append(float(db.enemy_weapon(entry.name).cd))
 		enemies.append(enemy)
 	if not manual_hyperspace.active and is_boss_encounter() and not profile.bossSeen.has(stage):
 		profile.bossSeen.append(stage)
@@ -2403,7 +2383,7 @@ func advance_long_laser(shot: Dictionary, dt: float) -> bool:
 	shot.x = float(shot.source.x) + offset.x
 	shot.y = float(shot.source.y) + offset.y
 	shot.elapsed += dt
-	var weapon: Dictionary = db.combat_enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	# Use scheduled hit times, not frame end time, including when a step spans several hits.
 	var interval := float(weapon.cd)
 	var first_hit := float(shot.charge) if float(shot.charge) >= 0 else interval
@@ -2411,7 +2391,7 @@ func advance_long_laser(shot: Dictionary, dt: float) -> bool:
 	return true
 
 func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
-	var weapon: Dictionary = db.combat_enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	var interval := float(weapon.cd)
 	var previous_hit_time := enemy_shield_hit_time
 	enemy_shield_hit_time=enemy_shield_time-float(shot.elapsed)+due
@@ -2442,7 +2422,7 @@ func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 
 func tick_long_laser(shot: Dictionary, dt: float) -> void:
 	if not advance_long_laser(shot,dt):return
-	var weapon: Dictionary = db.combat_enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
 		var due := float(shot.next_hit_at)
 		shot.next_hit_at=due+float(weapon.cd)
@@ -2457,7 +2437,7 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 		var shot: Dictionary = pending[index]
 		if not shot.get("beam",false) or not projectiles.has(shot):continue
 		if not advance_long_laser(shot,dt):continue
-		var weapon: Dictionary = db.combat_enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+		var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 		while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
 			var due := float(shot.next_hit_at)
 			hits.append({"at":enemy_shield_time-float(shot.elapsed)+due,"due":due,"index":index,"shot":shot})
@@ -2518,7 +2498,9 @@ func acknowledge_unlocks() -> void:
 	# One page per item keeps simultaneous unlocks readable without dropping any.
 	if not pending_unlocks.is_empty():
 		var key: String = pending_unlocks.pop_front()
-		if not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
+		if not profile.seenUnlocks.has(key):
+			profile.seenUnlocks.append(key)
+			event.emit("tutorial_changed",{"reason":"acknowledged"})
 	save_dirty = true
 	event.emit("state", {"state":state})
 
@@ -2933,12 +2915,12 @@ func tick(dt: float) -> void:
 			spawn_group()
 		return
 	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p) or (not p.hostile and not p.get("repeated",false) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(p.entry,endless_source())))
-	for index in range(combat_weapon_view().size()):
-		var entry: Dictionary = combat_entry(index)
+	for index in range(combat_weapon_entries().size()):
+		var entry: Dictionary = combat_weapon_entries()[index]
 		var key := str(entry.key)
 		if key.is_empty():
 			continue
-		var weapon := combat_player_weapon_row(entry)
+		var weapon := player_weapon_row(entry)
 		if float(weapon.cd) <= 0:
 			continue
 		if key == "longLaser":
@@ -2973,13 +2955,13 @@ func tick(dt: float) -> void:
 			continue
 		for i in range(enemy.equipment.size()):
 			if str(enemy.equipment[i].name).replace("_mon", "").replace("-mon", "") == "longLaser":
-				lock_long_laser(enemy, db.combat_enemy_weapon(enemy.equipment[i].name), true, i, enemy.equipment[i])
+				lock_long_laser(enemy, db.enemy_weapon(enemy.equipment[i].name), true, i, enemy.equipment[i])
 				continue
 			var cooldown_before := float(enemy.cooldowns[i])
 			enemy.cooldowns[i] = maxf(0.0,cooldown_before-dt)
 			if enemy.cooldowns[i] <= 0:
 				var entry: Dictionary = enemy.equipment[i]
-				var weapon := db.combat_enemy_weapon(entry.name)
+				var weapon := db.enemy_weapon(entry.name)
 				var raw := ceilf(float(weapon.dmg) * float(enemy.dmgMultiple) * ratio("atkRatio"))
 				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
 				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
@@ -3264,7 +3246,7 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 		"critical":
 			var critical:=jewel_critical(sample) if not sample.is_empty() else Vector2(0,1)
 			var base_chance:=enhancement_parameter("base_critical_rate") if active_level>0 else 0.0
-			if not sample.is_empty():base_chance+=float(db.combat_equipment(str(sample.key),int(sample.level)).get("cri",0))+enhancement_branches.a_count(self,sample,"critical")*enhancement_parameter("critical_a_probability")
+			if not sample.is_empty():base_chance+=float(db.equip(str(sample.key),int(sample.level)).get("cri",0))+enhancement_branches.a_count(self,sample,"critical")*enhancement_parameter("critical_a_probability")
 			result.base_probability_percent=clampf(base_chance,0,1)*100.0
 			result.probability_percent=critical.x*100.0;result.damage_multiplier=critical.y
 			result.underlying_probability_percent=enhancement_branches.underlying_critical_rate(self,sample)*100.0 if not sample.is_empty() else 0.0
@@ -3467,7 +3449,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),N.multiply(drone_multiplier,drones.get("base_damage" if WEAPON_KEYS.has(str(entry.key)) else "base_defence",1.0)))
 
 func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
-	var row := db.combat_equipment(str(entry.key), int(entry.level))
+	var row := db.equip(str(entry.key), int(entry.level))
 	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
@@ -3495,15 +3477,6 @@ func endless_source() -> Dictionary:
 
 func player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}) -> Dictionary:
 	var weapon := db.equip(str(entry.key),int(entry.level))
-	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
-	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(drones.attack_speed)
-	if entry.key=="longLaser":
-		var endless: Dictionary=drones.legendary.get("endless_beam",{})
-		if not endless.is_empty() and is_same(entry,endless_source()):weapon.para2=float(weapon.para2)+float(endless.parameters.maximum_multiplier_bonus)
-	return weapon
-
-func combat_player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}) -> Dictionary:
-	var weapon := db.combat_snapshot_equipment(str(entry.key),int(entry.level)).duplicate()
 	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
 	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(drones.attack_speed)
 	if entry.key=="longLaser":
@@ -3541,7 +3514,7 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 			if existing.is_empty():effects.append({"kind":"hyperspace_chain","chain":true,"chain_targets":extra_chain,"source":index,"weapon_key":str(entry.key),"main_attack_id":main_attack_serial})
 			else:existing[0].chain_targets=int(existing[0].get("chain_targets",0))+extra_chain
 		var secondary: bool = not context.get("derived",false) and enhancement_branches.active(self,entry,"repeat",3,"B") and rng.randf()<enhancement_parameter("repeat_b3_probability")
-		context.snapshot={"id":main_attack_serial,"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied,"secondary":secondary,"secondary_used":false,"repeats_queued":false,"repeat_plan":[] if context.get("derived",false) else plan_attack_repeats(entry,effects),"weapon":combat_player_weapon_row(entry).duplicate(true)}
+		context.snapshot={"id":main_attack_serial,"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied,"secondary":secondary,"secondary_used":false,"repeats_queued":false,"repeat_plan":[] if context.get("derived",false) else plan_attack_repeats(entry,effects),"weapon":player_weapon_row(entry).duplicate(true)}
 		context.snapshot.combat_context=CombatContext.root(main_attack_serial,"drone:"+str(entry.drone_id) if entry.has("drone_id") else "module:%d"%index,str(entry.key))
 		if primary_missile:
 			var wild: Dictionary=hyperspace_totals().legendary.get("wild_missile",{})
@@ -3577,7 +3550,7 @@ func plan_attack_repeats(entry: Dictionary, effects: Array) -> Array:
 	var plan: Array=[]
 	var beam_charge := 0.0
 	if str(entry.key)=="longLaser":
-		var row := combat_player_weapon_row(entry)
+		var row := player_weapon_row(entry)
 		beam_charge=maxf(0,float(row.para3)) if row.get("para3")!=null else float(row.cd)
 	var frontier: Array=[{"depth":0,"delay":0.0,"plan_index":-1}]
 	var allowed := 0 # A triggered repeat cannot trigger another repeat.
@@ -3626,7 +3599,7 @@ func launch_player_attack(index: int, target: Dictionary, weapon: Dictionary, at
 	projectiles.back().critical_bonus_applied=attack.get("critical_bonus_applied",attack.critical)
 
 func fire_drone_counter(index: int,multiplier: float) -> void:
-	var entry:=combat_entry(index);var weapon:=combat_player_weapon_row(entry)
+	var entry:=combat_entry(index);var weapon:=player_weapon_row(entry)
 	var candidates:=targets(int(weapon.dmgtype))
 	if candidates.is_empty():return
 	begin_enhancement_attack(index,candidates[0],true);record_enhancement_attack()

@@ -362,7 +362,8 @@ func open_picker(id: String) -> void:
 
 func refresh_new_weapon() -> void:
 	new_weapon_id = ""
-	for id in host.game.unread_tutorial_unlocks():
+	host.tutorial_projection.sync(host.game)
+	for id in host.tutorial_projection.unread:
 		var row: Dictionary = host.db.data.unlock.get(id,{})
 		var key := str(row.get("target",""))
 		if row.get("type","")!="equipment" or (not BattleGame.WEAPON_KEYS.has(key) and not BattleGame.DEFENSE_KEYS.has(key)) or int(row.get("level",0))<=0:continue

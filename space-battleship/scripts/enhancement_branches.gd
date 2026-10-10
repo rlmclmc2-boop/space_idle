@@ -44,7 +44,7 @@ func reconcile(g) -> void:
  # Eligibility is shared by every module in this synchronous reconciliation.
  # Resolve common choices/gates once here; retain no state across calls/ticks.
  var common_count: int=g.shared_enhancement_effect_count()
- var weapon_entries: Array=g.combat_weapon_view()
+ var weapon_entries: Array=g.combat_weapon_entries()
  var defense_entries: Array=g.defense_entries()
  var defense_order: Array=g.profile.enhancementOrder.get("defence",[])
  var defense_effects={}
@@ -81,7 +81,7 @@ func reconcile(g) -> void:
 
 func advance_weapons(g,dt: float) -> void:
  reconcile(g)
- for index in g.combat_weapon_view().size():
+ for index in g.combat_weapon_entries().size():
   var data:=weapon(g,index)
   var before_stacks:=int(data.stacks)
   var interval: float=g.enhancement_parameter("proficiency_b1_interval")
@@ -117,7 +117,7 @@ func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={},include
  var result = 1.0+float(a_count(g,entry,"proficiency"))*g.enhancement_parameter("proficiency_a_damage_bonus")
  if not include_timed_buffs:return result
  var owner: Dictionary=entry if original_entry.is_empty() else original_entry
- var index: int=g.combat_weapon_view().find_custom(func(candidate):return is_same(candidate,owner))
+ var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,owner))
  if index<0:return result
  var data:=weapon(g,index)
  if active(g,entry,"proficiency",1,"B"):
@@ -138,10 +138,10 @@ func repeat_probability(g,entry: Dictionary,drone_totals: Dictionary={}) -> floa
  return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability")+float(drones.repeat_chance),0,1)
 
 func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -> float:
- var row: Dictionary=g.db.combat_equipment(str(entry.key),int(entry.level))
+ var row: Dictionary=g.db.equip(str(entry.key),int(entry.level))
  var rate: float=float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
  if g.has_enhancement_effect(entry,"critical"):rate+=g.enhancement_parameter("base_critical_rate")
- var index: int=g.combat_weapon_view().find_custom(func(candidate):return is_same(candidate,entry))
+ var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,entry))
  if include_timed_buffs and index>=0 and active(g,entry,"critical",2,"B"):rate+=int(weapon(g,index).stacks)*g.enhancement_parameter("critical_b2_probability")
  return clampf(rate,0,1)
 

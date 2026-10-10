@@ -270,6 +270,7 @@ func run():
   var sampled_draw_start=0
   var sampled_clock_start=0.0
   var descriptor_start={}
+  var tutorial_build_start={}
   var realtime_start=Time.get_ticks_usec()
   var wall_start=0;var wall_end=0;var logical_start=0;var callbacks_start=0;var delta_start=0.0
   var sample_started=false
@@ -293,6 +294,7 @@ func run():
     envelope_build_start=scene.enemy_recognition.envelope_builds
     sampled_draw_start=Engine.get_frames_drawn();sampled_clock_start=g.motion_clock
     descriptor_start=combat_descriptor_counts(g)
+    tutorial_build_start={"eligibility":tutorial_projection_builds(scene,"builds"),"reads":tutorial_projection_builds(scene,"read_builds")}
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
     if render_cost:
      cost_views.clear();measured_views(root,cost_views)
@@ -358,6 +360,7 @@ func run():
   row.clock_validation={"mode":"engine real delta / production fixed60Hz accumulator" if realtime else "fixed workload per submitted frame", "wall_seconds":wall_seconds,"game_seconds":game_seconds,"game_wall_ratio":game_seconds/wall_seconds,"logical_ticks":tick_count,"logic_hz":float(tick_count)/wall_seconds,"render_frames":frames.size(),"render_hz":float(frames.size())/wall_seconds,"process_callbacks":scene.process_callbacks-callbacks_start,"process_delta_seconds":scene.process_delta_total-delta_start,"game_time_remainder":scene.game_time_remainder,"valid":not realtime or (wall_seconds>=seconds and absf(game_seconds/wall_seconds-1.0)<0.03 and absf(float(tick_count)/wall_seconds-60.0)<2.0)}
   row.main_budget={"scope":"Root _process wall time only; excludes later _draw and other autonomous/native callbacks","total_us":cpu_total_us,"wall_percent":cpu_total_us/(wall_seconds*10000.0),"no_tick_frames":cpu_no_tick.size(),"one_tick_frames":cpu_one_tick.size(),"multi_tick_frames":cpu_multi_tick.size(),"no_tick_us":stats(cpu_no_tick) if not cpu_no_tick.is_empty() else {},"one_tick_us":stats(cpu_one_tick) if not cpu_one_tick.is_empty() else {},"multi_tick_us":stats(cpu_multi_tick) if not cpu_multi_tick.is_empty() else {}}
   row.logic_frame_trace=logic_frame_trace;row.initial_combat_sha256=initial_combat_sha
+  row.tutorial_projection_start=tutorial_build_start;row.tutorial_projection_end={"eligibility":tutorial_projection_builds(scene,"builds"),"reads":tutorial_projection_builds(scene,"read_builds")}
   row.combat_descriptor_start=descriptor_start;row.combat_descriptor_end=combat_descriptor_counts(g)
   row.retention_counts=scene.retention_counts.duplicate()
   row.retained_part_builds=contact_part_builds(scene)
@@ -412,3 +415,7 @@ func combat_descriptor_counts(g)->Dictionary:
  for pair in [[g,"combat_source_builds"],[g.db,"combat_descriptor_builds"],[g.db,"combat_snapshot_builds"],[g.db.get_meta("prototype_enemy_source",g.db),"combat_enemy_builds"]]:
   if pair[0].get(pair[1])!=null:result[pair[1]]=pair[0].get(pair[1])
  return result
+
+func tutorial_projection_builds(scene,field:String)->int:
+ var projection=scene.get("tutorial_projection")
+ return int(projection.get(field)) if projection!=null else -1

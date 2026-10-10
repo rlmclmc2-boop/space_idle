@@ -63,6 +63,10 @@ func run() -> void:
 	check(g.pending_unlocks.is_empty(),"Second notice independently confirms")
 	tutorial.refresh()
 	check(tutorial.entry_badge.visible,"Tutorial entry shows unread red dot")
+	var builds_before:int=scene.tutorial_projection.builds
+	var reads_before:int=scene.tutorial_projection.read_builds
+	for _i in 60:scene.refresh_navigation()
+	check(scene.tutorial_projection.builds==builds_before and scene.tutorial_projection.read_builds==reads_before,"Hidden steady navigation never rescans eligibility or reads")
 	scene.help_open = true
 	scene.refresh_navigation()
 	tutorial.set_archive(true)
@@ -71,7 +75,9 @@ func run() -> void:
 	check(tutorial.category_buttons.equipment.badge.visible and tutorial.entry_buttons[missile].badge.visible,"Category and entry have unread dots")
 	check(not g.profile.readUnlocks.has(missile),"Opening category does not read entries")
 	await capture("02-unread-archive")
+	builds_before=scene.tutorial_projection.builds
 	tutorial.open_entry(missile)
+	check(scene.tutorial_projection.builds==builds_before,"Reading derives unread from current ids without eligibility rescan")
 	check(tutorial.description.text==str(g.db.data.unlock[missile].desc),"Content uses authoritative unlock description")
 	check(g.profile.readUnlocks.has(missile) and not tutorial.entry_buttons[missile].badge.visible,"Opening entry removes its dot")
 	await capture("03-read-entry")

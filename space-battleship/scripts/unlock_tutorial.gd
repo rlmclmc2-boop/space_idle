@@ -19,6 +19,11 @@ var description: Label
 var category_buttons := {}
 var entry_buttons := {}
 var snapshot: Array = []
+var archive_revision := -1
+var archive_read_revision := -1
+var archive_system := ""
+var archive_selected := ""
+var archive_ship := ""
 
 func setup(owner: Node) -> void:
 	host = owner
@@ -94,21 +99,7 @@ func dot(parent: Node) -> Label:
 	return label
 
 func row_system(row: Dictionary) -> String:
-	match str(row.get("type","")):
-		"equipment":return "equipment"
-		"ship":return "ships"
-		"hightech":return "hightech"
-		"reactor_module":return "reactor"
-		"crew":return "crew"
-		"planet":return "planets"
-		"feature":
-			match str(row.get("target","")):
-				"reactor":return "reactor"
-				"jewels":return "enhancement"
-				"crew_level":return "crew"
-				"galaxy":return "galaxy"
-				"hyperspace":return "hyperspace"
-	return "other"
+	return host.tutorial_projection.row_system(row)
 
 func set_archive(enabled: bool) -> void:
 	showing_archive = enabled
@@ -120,10 +111,12 @@ func select_system(id: String) -> void:
 	system = id
 	selected = ""
 	snapshot = []
+	archive_revision = -1
 	refresh()
 
 func open_entry(id: String) -> void:
-	if not content.is_visible_in_tree() or not host.game.tutorial_unlocks().has(id):return
+	host.tutorial_projection.sync(host.game)
+	if not content.is_visible_in_tree() or not host.tutorial_projection.ids.has(id):return
 	selected = id
 	# Fill the authoritative content before committing the read flag.
 	refresh_detail()
@@ -132,7 +125,8 @@ func open_entry(id: String) -> void:
 	refresh()
 
 func refresh_detail() -> void:
-	show_detail(host.game.tutorial_unlock_row(selected))
+	host.tutorial_projection.sync(host.game)
+	show_detail(host.tutorial_projection.rows.get(selected,{}))
 
 func ship_access_hint() -> String:
 	if host.unlocked_ship_keys().size()>1:return ""
@@ -152,8 +146,9 @@ func show_detail(row: Dictionary) -> void:
 
 func refresh() -> void:
 	if not is_instance_valid(host):return
-	var ids: Array[String] = host.game.tutorial_unlocks()
-	var unread: Array[String] = host.game.unread_tutorial_unlocks()
+	host.tutorial_projection.sync(host.game)
+	var ids: Array[String] = host.tutorial_projection.ids
+	var unread: Array[String] = host.tutorial_projection.unread
 	host.set_ui_value(entry_badge,"visible",not unread.is_empty())
 	host.set_ui_value(archive_badge,"visible",not unread.is_empty())
 	var opened: bool = host.help_open and host.game.pending_unlocks.is_empty()
@@ -167,21 +162,13 @@ func refresh() -> void:
 	host.set_ui_value(content,"position",rect.position-host.ui.position+Vector2(50,90)*scale_value)
 	host.set_ui_value(content,"scale",Vector2.ONE*scale_value)
 	if not showing_archive:return
-	# IDs already passed tutorial_unlocks eligibility. Read their current config rows
-	# directly; only the synthetic entry needs the domain projection. No cross-frame cache.
-	var definitions: Dictionary = host.game.db.data.get("unlock",{})
-	var rows: Dictionary = {}
-	var grouped: Dictionary = {}
-	var unread_ids: Dictionary = {}
-	var unread_systems: Dictionary = {}
-	for id in unread:unread_ids[id] = true
-	for id in ids:
-		var row: Dictionary = host.game.tutorial_unlock_row(id) if id=="hyperspace" else definitions.get(id,{})
-		rows[id] = row
-		var category := row_system(row)
-		if not grouped.has(category):grouped[category] = []
-		grouped[category].append(id)
-		if unread_ids.has(id):unread_systems[category] = true
+	var projection=host.tutorial_projection
+	var current_ship:=str(host.game.profile.selectedShip)
+	if archive_revision==projection.builds and archive_read_revision==projection.read_builds and archive_system==system and archive_selected==selected and archive_ship==current_ship:return
+	var rows: Dictionary = host.tutorial_projection.rows
+	var grouped: Dictionary = host.tutorial_projection.grouped
+	var unread_ids: Dictionary = host.tutorial_projection.unread_ids
+	var unread_systems: Dictionary = host.tutorial_projection.unread_systems
 	for id in SYSTEMS:
 		host.set_ui_value(category_buttons[id].button,"visible",grouped.has(id))
 		host.set_ui_value(category_buttons[id].button,"button_pressed",system==id)
@@ -207,6 +194,9 @@ func refresh() -> void:
 			entry_buttons[id] = {"button":button,"badge":badge}
 		snapshot = filtered.duplicate()
 	for id in entry_buttons:
+		host.set_ui_value(entry_buttons[id].button,"text",str(rows[id].get("title","")))
 		host.set_ui_value(entry_buttons[id].badge,"visible",unread_ids.has(id))
 		host.set_ui_value(entry_buttons[id].button,"button_pressed",selected==id)
 	show_detail(rows.get(selected,{}))
+	archive_revision=projection.builds;archive_read_revision=projection.read_builds
+	archive_system=system;archive_selected=selected;archive_ship=current_ship

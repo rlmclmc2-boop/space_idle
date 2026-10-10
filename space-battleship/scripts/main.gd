@@ -147,6 +147,7 @@ var unlock_description: Label
 var unlock_notice_id := ""
 var unlock_notice_started_ms := -1
 var unlock_tutorial: Control
+var tutorial_projection:=preload("res://scripts/tutorial_ui_projection.gd").new()
 var sound_on := false
 var audio: AudioStreamPlayer
 var music_on := true
@@ -649,6 +650,7 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	tutorial_projection.on_event(game,kind,info)
 	var geometry_changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if battle_read_model_enabled and geometry_changed:battle_read_model.invalidate_membership()
 	defeat_feedback.record(game,kind,info)
