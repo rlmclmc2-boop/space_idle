@@ -9,6 +9,8 @@ class Part extends Node2D:
  var signature:Array=[]
  var builds:=0
  var pieces:Dictionary={}
+ var stroke_kind=""
+ var stroke_width=-INF
  func update(values:Dictionary,key:Array)->void:
   if signature==key:return
   signature=key.duplicate(true);data=values;queue_redraw()
@@ -16,6 +18,7 @@ class Part extends Node2D:
   builds+=1
   if kind=="foreground" or not data.is_empty():host.paint(self,kind,data)
 
+var stroke_geometry=preload("res://scripts/resident_stroke_geometry.gd").new()
 var paint_owner
 var records:Dictionary={}
 var foreground:Part
@@ -41,6 +44,18 @@ func build_weapon(parent:Node2D)->Part:
  var group=part(parent,"weapon_group")
  group.pieces.body=part(group,"weapon_body");group.pieces.strokes=part(group,"weapon_strokes")
  return group
+
+func update_stroke(node:Part,kind:String,width:float)->void:
+ if node.stroke_kind!=kind:
+  var packet=stroke_geometry.asset(kind)
+  node.material=stroke_geometry.material_for(packet)
+  node.stroke_kind=kind;node.stroke_width=-INF
+  node.update({"mesh":packet.mesh},[kind])
+ if node.stroke_width==width:return
+ node.stroke_width=width;node.material.set_shader_parameter("shape_width",width)
+ # Shader displacement is not visible to Canvas culling. Publish a conservative
+ # local bound at the same size boundary, without recreating commands or mesh.
+ RenderingServer.canvas_item_set_custom_rect(node.get_canvas_item(),true,Rect2(Vector2(-0.65,-0.15)*width-Vector2.ONE*8,Vector2(1.3,0.85)*width+Vector2.ONE*16))
 
 func sync(offset:Vector2,boss:bool)->void:
  var live={}
@@ -88,7 +103,7 @@ func sync(offset:Vector2,boss:bool)->void:
    if enabled:
     body.scale=Vector2.ONE*width
     body.update({"physical":physical},[physical])
-    strokes.update({"width":width,"physical":physical},[width,physical])
+    update_stroke(strokes,"deck_physical" if physical else "deck_energy",width)
   var packet:Dictionary=publication.packet
   var status:Dictionary=publication.status
   record.protection.rotation=PI+angle
@@ -118,7 +133,7 @@ func sync(offset:Vector2,boss:bool)->void:
    body.scale=Vector2.ONE*w
    body.update({"physical":physical},[physical])
    strokes.visible=not physical
-   if not physical:strokes.update({"width":w},[w])
+   if not physical:update_stroke(strokes,"weapon_energy",w)
    # Preserve the existing under-hull/over-hull painter ordering.
   var ordered=[record.fallback]
   for index in components.size():
@@ -148,9 +163,9 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
   "hull":
    surface.draw_texture_rect(data.texture,Rect2(Vector2(-0.5,-1.0),Vector2(1.0,2.0)),false,Color.WHITE)
   "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
-  "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
+  "deck_physical_strokes","deck_energy_strokes":surface.draw_mesh(data.mesh)
   "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
-  "weapon_strokes":paint_owner.enemy_recognition.draw_weapon_strokes(surface,data.width)
+  "weapon_strokes":surface.draw_mesh(data.mesh)
   "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
   "fallback":paint_owner.draw_enemy_hull_and_status(data.enemy,data.offset,data.boss)
