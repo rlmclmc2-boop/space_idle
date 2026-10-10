@@ -80,6 +80,31 @@ def run_guarded(command, env, log_path, timeout=180):
     return process.returncode if process.returncode else (1 if failed else 0)
 
 
+def parse_native_script_profile(text):
+    """Read official local ScriptsProfiler output; no measurements or wrappers."""
+    import re
+    begin = text.find('NATIVE_PROFILE_BEGIN ')
+    end = text.find('NATIVE_PROFILE_DONE ',begin)
+    if begin<0 or end<0:return {'error':'missing warm-window markers'}
+    lines=text[begin:end].splitlines()
+    result={'scope':'Native accumulated scripts data, warmup reset; total includes script children, self excludes script children. Native calls may remain in self. Profiling/log I/O overhead; not clean performance. Periodic FRAME blocks are single frames, not 1second averages.','functions':[]}
+    for line in lines:
+        for marker,key in [('NATIVE_PROFILE_BEGIN ','begin'),('NATIVE_PROFILE_STOP ','stop')]:
+            if line.startswith(marker):result[key]=json.loads(line[len(marker):])
+    accumulated=next((i for i,line in enumerate(lines) if line.startswith('ACCUMULATED:')),None)
+    if accumulated is None:return {**result,'error':'no accumulated block'}
+    result['accumulated_header']=lines[accumulated]
+    signature=''
+    for line in lines[accumulated+1:]:
+        match=re.match(r'^\d+:(.+)$',line)
+        if match:signature=match[1];continue
+        match=re.search(r'total:\s*([\d.eE+-]+)/.*?self:\s*([\d.eE+-]+)/.*?tcalls:\s*(\d+)',line)
+        if match and signature:
+            result['functions'].append({'signature':signature,'total_ms':float(match[1])*1000,'self_ms':float(match[2])*1000,'calls':int(match[3])})
+            signature=''
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--label', required=True)
@@ -95,6 +120,7 @@ def main():
     parser.add_argument('--sustain-test-health', action='store_true', help='After the real fleet is generated, hold test health; explicitly synthetic, never natural-play acceptance')
     parser.add_argument('--checkpoint-wave', type=int, default=0, choices=range(10), help='QA-only authored wave selection; requires sustained test health, reported as synthetic')
     parser.add_argument('--test-missile-burst', type=int, default=0, choices=(0,256,1024), help='One synthetic burst of the QA ship actual missile weapon; no natural-load claim')
+    parser.add_argument('--script-profile', action='store_true', help='Native --profiling script attribution after warmup; diagnostic overhead, never clean timing')
     parser.add_argument('--gpu-profile', action='store_true', help='Native GPU stage averages; timing-query overhead, not final frame comparison')
     parser.add_argument('--render-cost', action='store_true', help='Diagnostic native setup and per-viewport CPU/GPU wall times; never clean throughput')
     parser.add_argument('--ref', help='Read this Git snapshot instead of current source')
@@ -127,6 +153,8 @@ def main():
     if args.realtime and (args.dynamic_replay or args.native_check or args.boundary_check):parser.error('realtime does not use same-tick replay/pixel diagnostics')
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
+    if args.script_profile and (not args.battle_only or not args.realtime or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.missile_profile or args.gpu_profile or args.native_check or args.boundary_check or args.dynamic_replay):
+        parser.error('script-profile requires realtime battle-only without custom or other profilers')
     if args.native_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.boundary_check or args.instrument):
         parser.error('native-check requires battle-only without other instrumentation')
     if args.boundary_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument):
@@ -353,11 +381,15 @@ def main():
     command = [*engine, *(['--headless'] if args.headless else []), '--audio-driver', 'Dummy', '--resolution', '1373x883', '--disable-vsync']
     if args.rendering_method:
         command += ['--rendering-method',args.rendering_method]
+    if args.script_profile:
+        command += ['--debug','--profiling','--ignore-error-breaks']
+        env['PERF_NATIVE_SCRIPT_PROFILE']='1'
     if args.gpu_profile:
         command.append('--gpu-profile')
     command += ['--script', 'res://probe.gd']
     result_code = run_guarded(command, env, log_path)
     text = log_path.read_text(encoding='utf-8', errors='replace')
+    native_profile = parse_native_script_profile(text) if args.script_profile else {}
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
     expected = 1 if checkpoint or args.max_quote else len(args.pages.split(','))
@@ -386,6 +418,7 @@ def main():
               'software_renderer_environment': {key: env.get(key) for key in ('LP_NUM_THREADS', 'GALLIUM_DRIVER')},
               'exit': result_code, 'environment': environment, 'rows': rows,
               'entry_rows': [json.loads(line[10:]) for line in text.splitlines() if line.startswith('ENTRY_ROW ')],
+              'native_script_profile': native_profile,
               'gpu_profile_lines': [line for line in text.splitlines() if line.startswith('GPU PROFILE') or ('ms' in line and line.lstrip().startswith('-'))],
               'gpu_profile_scope': 'Header total is last captured GPU frame; stages are approximately1second averages; no stageP95. Query overhead; keep separate from clean throughput.',
               'boundaries': [line for line in text.splitlines() if line.startswith('BOUNDARY_')]}
@@ -412,6 +445,8 @@ def main():
             boundary_failures.append('checkpoint source/save/default invariant failed')
         if row.get('sample_frames') != args.frames or any(value != checkpoint_stage for value in row.get('stages', [])) or any(value != checkpoint_group for value in row.get('groups', [])) or any(value != 3 for value in row.get('states', [])):
             boundary_failures.append('checkpoint encounter changed or sample count mismatched; not the pinned combat window')
+    if args.script_profile and not native_profile.get('functions'):
+        boundary_failures.append('native scripts profiler unavailable or missing warm-window accumulated data')
     if args.gpu_profile and not report['gpu_profile_lines']:
         boundary_failures.append('native GPU profile unavailable; no GPU stage evidence')
     report['boundary_failures'] = boundary_failures

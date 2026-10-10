@@ -167,6 +167,12 @@ func contact_part_builds(scene)->Dictionary:
    pending.append_array(child.get_children())
  return counts
 func run():
+ var native_profile=OS.get_environment("PERF_NATIVE_SCRIPT_PROFILE")=="1"
+ if native_profile:
+  print("NATIVE_PROFILE_AVAILABLE ",JSON.stringify({"active":EngineDebugger.is_active(),"has_scripts":EngineDebugger.has_profiler("scripts"),"profiling":EngineDebugger.is_profiling("scripts")}))
+  if not EngineDebugger.has_profiler("scripts"):push_error("Native scripts profiler unavailable");quit(1);return
+  EngineDebugger.profiler_enable("scripts",false)
+
  Engine.max_fps=0
  DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
  seed(1701)
@@ -278,6 +284,9 @@ func run():
     if sample_started and Time.get_ticks_usec()-wall_start>=seconds*1000000.0:break
     if not sample_started:warmup=i if Time.get_ticks_usec()-realtime_start>=warm_seconds*1000000.0 else i+1
    if i==warmup:
+    if native_profile:
+     print("NATIVE_PROFILE_BEGIN ",JSON.stringify({"us":Time.get_ticks_usec(),"motion_clock":g.motion_clock,"logical_ticks":scene.logical_ticks,"render_index":i}))
+     EngineDebugger.profiler_enable("scripts",true)
     sample_started=true;wall_start=Time.get_ticks_usec();logical_start=scene.logical_ticks;callbacks_start=scene.process_callbacks;delta_start=scene.process_delta_total
     if OS.get_environment("PERF_FREEZE_SHIP_BUFFER")=="1":ship_buffer_start=image_digest(scene.ship_view.viewport.get_texture())
     part_build_start=contact_part_builds(scene)
@@ -336,6 +345,10 @@ func run():
       view_costs.append([str(view.get_path()),RenderingServer.viewport_get_measured_render_time_cpu(rid),RenderingServer.viewport_get_measured_render_time_gpu(rid)])
      render_cost_trace.append([i,Engine.get_frames_drawn(),RenderingServer.get_frame_setup_time_cpu(),Performance.get_monitor(Performance.TIME_PROCESS)*1000.0,scene.last_draw_us/1000.0,view_costs])
    if i==warmup and OS.get_environment("PERF_FREEZE_CONTACT_BITMAP")=="1":enemy_bitmap=await cache_enemy_bitmap(scene)
+  if native_profile:
+   print("NATIVE_PROFILE_STOP ",JSON.stringify({"us":Time.get_ticks_usec(),"motion_clock":g.motion_clock,"logical_ticks":scene.logical_ticks,"render_index":logic_frame_trace[-1][0] if not logic_frame_trace.is_empty() else -1}))
+   EngineDebugger.profiler_enable("scripts",false)
+   print("NATIVE_PROFILE_DONE ",Time.get_ticks_usec())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
