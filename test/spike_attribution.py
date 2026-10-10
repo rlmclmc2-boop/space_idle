@@ -14,6 +14,8 @@ def prepare(project):
  scopes={k:list(v) for k,v in SCOPES.items()}
  scopes['main']+=['_ready','draw_battle','build_ui','create_draw_layers']
  scopes['presented_ship_view']=['_ready','set_hull','set_loadout','_install_materials']
+ for page in ['equipment_tab','crew_panel','planet_panel','chrono_panel','galaxy_panel','hyperspace_panel','save_panel','enhancement_panel','hightech_page','reactor_panel']:
+  if (project/'scripts'/(page+'.gd')).exists():scopes[page]=['setup']
  scopes['battlefield']+=['_ready']
  wrapped=[]
  for module,methods in scopes.items():
