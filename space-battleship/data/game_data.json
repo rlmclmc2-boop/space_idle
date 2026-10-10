@@ -23939,7 +23939,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.26,
+      "dmgMultiple": 0.13,
       "health": 3082,
       "armourType": 2,
       "res": "{1,12,1}",
@@ -23989,7 +23989,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.058512,
+      "dmgMultiple": 0.052,
       "health": 1608,
       "armourType": 1,
       "res": "{1,12,1}",
@@ -24014,7 +24014,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.058512,
+      "dmgMultiple": 0.052,
       "health": 1608,
       "armourType": 1,
       "res": "{1,12,1}",
@@ -24064,7 +24064,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.2,
+      "dmgMultiple": 0.1,
       "health": 3082,
       "armourType": 2,
       "res": "{1,12,1}",
@@ -24114,7 +24114,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.81424,
+      "dmgMultiple": 0.04,
       "health": 1608,
       "armourType": 1,
       "res": "{1,12,1}",
@@ -24139,7 +24139,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.81424,
+      "dmgMultiple": 0.04,
       "health": 1608,
       "armourType": 1,
       "res": "{1,12,1}",
@@ -24189,7 +24189,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.26,
+      "dmgMultiple": 0.13,
       "health": 3082,
       "armourType": 2,
       "res": "{1,12,1}",
@@ -24239,7 +24239,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.058512,
+      "dmgMultiple": 0.052,
       "health": 1608,
       "armourType": 1,
       "res": "{1,12,1}",
@@ -24264,7 +24264,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.058512,
+      "dmgMultiple": 0.052,
       "health": 1608,
       "armourType": 1,
       "res": "{1,12,1}",
@@ -269088,8 +269088,8 @@
         null,
         null
       ],
-      "atkMultiplier": 2315021.608712353,
-      "lifeMultiplier": 1271917.421226987,
+      "atkMultiplier": 1946693.372001105,
+      "lifeMultiplier": 980782.4080206057,
       "combatTier": "normal"
     },
     "30183": {
@@ -269111,8 +269111,8 @@
         null,
         null
       ],
-      "atkMultiplier": 2121517.704119835,
-      "lifeMultiplier": 1313417.51928961,
+      "atkMultiplier": 1500139.55499045,
+      "lifeMultiplier": 780962.7294542136,
       "combatTier": "normal"
     },
     "30184": {
@@ -269134,8 +269134,8 @@
         null,
         null
       ],
-      "atkMultiplier": 2251247.149590914,
-      "lifeMultiplier": 1582165.990045249,
+      "atkMultiplier": 1338599.563961555,
+      "lifeMultiplier": 725426.3049462072,
       "combatTier": "normal"
     },
     "30185": {
@@ -269157,8 +269157,8 @@
         null,
         null
       ],
-      "atkMultiplier": 2576318.391251266,
-      "lifeMultiplier": 2060894.242265878,
+      "atkMultiplier": 1288159.195625633,
+      "lifeMultiplier": 728636.1470072566,
       "combatTier": "normal"
     },
     "30186": {
@@ -269180,8 +269180,8 @@
         58133,
         null
       ],
-      "atkMultiplier": 3087647.559750664,
-      "lifeMultiplier": 2814852.3398644,
+      "atkMultiplier": 1298195.882280606,
+      "lifeMultiplier": 767404.5607332553,
       "combatTier": "elite"
     },
     "30187": {
@@ -269203,8 +269203,8 @@
         58153,
         null
       ],
-      "atkMultiplier": 3817647.050025986,
-      "lifeMultiplier": 3969128.863292147,
+      "atkMultiplier": 1349742.058625097,
+      "lifeMultiplier": 834406.5582056041,
       "combatTier": "elite"
     },
     "30188": {
@@ -269226,8 +269226,8 @@
         58173,
         null
       ],
-      "atkMultiplier": 4827531.833205524,
-      "lifeMultiplier": 5726361.299758255,
+      "atkMultiplier": 1435233.800987535,
+      "lifeMultiplier": 928271.479718659,
       "combatTier": "elite"
     },
     "30189": {
@@ -269249,8 +269249,8 @@
         null,
         null
       ],
-      "atkMultiplier": 6209076.829557999,
-      "lifeMultiplier": 8405321.038996274,
+      "atkMultiplier": 1552269.2073895,
+      "lifeMultiplier": 1050665.129874534,
       "combatTier": "boss"
     },
     "30191": {
@@ -269272,8 +269272,8 @@
         59033,
         59034
       ],
-      "atkMultiplier": 6209076.829557999,
-      "lifeMultiplier": 8405321.038996274,
+      "atkMultiplier": 1552269.2073895,
+      "lifeMultiplier": 1050665.129874534,
       "combatTier": "normal"
     },
     "30192": {
@@ -269295,8 +269295,8 @@
         59053,
         59054
       ],
-      "atkMultiplier": 4011919.490687458,
-      "lifeMultiplier": 5082542.991611379,
+      "atkMultiplier": 1002979.872671865,
+      "lifeMultiplier": 635317.8739514224,
       "combatTier": "normal"
     },
     "30193": {
@@ -269318,8 +269318,8 @@
         59073,
         59074
       ],
-      "atkMultiplier": 3945033.502259679,
-      "lifeMultiplier": 4869541.573952398,
+      "atkMultiplier": 986258.3755649199,
+      "lifeMultiplier": 608692.6967440498,
       "combatTier": "normal"
     },
     "30194": {
@@ -269341,8 +269341,8 @@
         59093,
         59094
       ],
-      "atkMultiplier": 4491941.447956745,
-      "lifeMultiplier": 5442525.165719046,
+      "atkMultiplier": 1122985.361989187,
+      "lifeMultiplier": 680315.6457148808,
       "combatTier": "normal"
     },
     "30195": {
@@ -269364,8 +269364,8 @@
         59113,
         59114
       ],
-      "atkMultiplier": 5515911.884082857,
-      "lifeMultiplier": 6577596.601022505,
+      "atkMultiplier": 1378977.971020714,
+      "lifeMultiplier": 822199.5751278132,
       "combatTier": "normal"
     },
     "30196": {
@@ -269387,8 +269387,8 @@
         59133,
         59134
       ],
-      "atkMultiplier": 7093366.232010648,
-      "lifeMultiplier": 8335473.495320463,
+      "atkMultiplier": 1773341.558002662,
+      "lifeMultiplier": 1041934.186915058,
       "combatTier": "elite"
     },
     "30197": {
@@ -269410,8 +269410,8 @@
         59153,
         59154
       ],
-      "atkMultiplier": 9410816.624785341,
-      "lifeMultiplier": 10905183.66204279,
+      "atkMultiplier": 2352704.156196336,
+      "lifeMultiplier": 1363147.957755349,
       "combatTier": "elite"
     },
     "30198": {
@@ -269433,8 +269433,8 @@
         59173,
         59174
       ],
-      "atkMultiplier": 12769196.14545644,
-      "lifeMultiplier": 14597539.50090802,
+      "atkMultiplier": 3192299.036364111,
+      "lifeMultiplier": 1824692.437613503,
       "combatTier": "elite"
     },
     "30199": {
@@ -269456,8 +269456,8 @@
         null,
         null
       ],
-      "atkMultiplier": 17622694.8409208,
-      "lifeMultiplier": 19880090.03811214,
+      "atkMultiplier": 4405673.7102302,
+      "lifeMultiplier": 2485011.254764018,
       "combatTier": "boss"
     },
     "30201": {
@@ -269479,8 +269479,8 @@
         60033,
         60034
       ],
-      "atkMultiplier": 17622694.8409208,
-      "lifeMultiplier": 19880090.03811214,
+      "atkMultiplier": 4405673.7102302,
+      "lifeMultiplier": 2485011.254764018,
       "combatTier": "elite"
     },
     "30202": {
@@ -269502,8 +269502,8 @@
         60053,
         60054
       ],
-      "atkMultiplier": 5226220.793494353,
-      "lifeMultiplier": 4379590.770767212,
+      "atkMultiplier": 1306555.198373588,
+      "lifeMultiplier": 547448.8463459016,
       "combatTier": "elite"
     },
     "30203": {
@@ -269525,8 +269525,8 @@
         60073,
         60074
       ],
-      "atkMultiplier": 4680066.072805675,
-      "lifeMultiplier": 3105139.016830505,
+      "atkMultiplier": 1170016.518201419,
+      "lifeMultiplier": 388142.3771038132,
       "combatTier": "elite"
     },
     "30204": {
@@ -269548,8 +269548,8 @@
         60093,
         60094
       ],
-      "atkMultiplier": 5254506.163048157,
-      "lifeMultiplier": 2771935.391433466,
+      "atkMultiplier": 1313626.540762039,
+      "lifeMultiplier": 346491.9239291833,
       "combatTier": "elite"
     },
     "30205": {
@@ -269571,8 +269571,8 @@
         60113,
         60114
       ],
-      "atkMultiplier": 6527978.376573443,
-      "lifeMultiplier": 2741458.369360223,
+      "atkMultiplier": 1631994.594143361,
+      "lifeMultiplier": 342682.2961700279,
       "combatTier": "elite"
     },
     "30206": {
@@ -269594,8 +269594,8 @@
         null,
         null
       ],
-      "atkMultiplier": 8591920.300877156,
-      "lifeMultiplier": 2873887.763923908,
+      "atkMultiplier": 2147980.075219289,
+      "lifeMultiplier": 359235.9704904885,
       "combatTier": "boss"
     },
     "30207": {
@@ -269617,8 +269617,8 @@
         null,
         null
       ],
-      "atkMultiplier": 11738765.94722118,
-      "lifeMultiplier": 3128202.940482732,
+      "atkMultiplier": 2934691.486805297,
+      "lifeMultiplier": 391025.3675603415,
       "combatTier": "boss"
     },
     "30208": {
@@ -269640,8 +269640,8 @@
         null,
         null
       ],
-      "atkMultiplier": 16463322.53410859,
-      "lifeMultiplier": 3495834.04430255,
+      "atkMultiplier": 4115830.633527148,
+      "lifeMultiplier": 436979.2555378187,
       "combatTier": "boss"
     },
     "30209": {
@@ -269663,8 +269663,8 @@
         null,
         null
       ],
-      "atkMultiplier": 23540637.82670104,
-      "lifeMultiplier": 3983414.600666311,
+      "atkMultiplier": 5885159.45667526,
+      "lifeMultiplier": 497926.8250832889,
       "combatTier": "ultimate"
     },
     "30211": {
