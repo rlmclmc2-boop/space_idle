@@ -83,6 +83,8 @@ def run_guarded(command, env, log_path, timeout=180):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--label', required=True)
+    parser.add_argument('--battle-only', action='store_true', help='Private-copy noncombat tick isolation; static modifiers retained, fixed-workload throughput only')
+    parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
     snapshots=parser.add_mutually_exclusive_group()
     snapshots.add_argument('--checkpoint-round2', type=Path, help='Exact authorized QA7/group4/Frigate snapshot')
@@ -116,6 +118,10 @@ def main():
     parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
+    if args.dynamic_replay and not args.battle_only:
+        parser.error('dynamic-replay requires battle-only')
+    if args.battle_only and (not args.rich or args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4 or args.instrument):
+        parser.error('battle-only requires fixed-step graphical rich page0')
     if (args.missile_loadout or args.authored_stage or args.organic_economy) and not args.rich:
         parser.error('missile-loadout/authored-stage require the explicitly synthetic rich fixture')
     if args.submission_mode != 'full' and (args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4):
@@ -190,6 +196,9 @@ def main():
         end=probe.index(' var last_process_us',begin)
         probe_path.write_text(probe[:begin]+probe[end:],encoding='utf-8')
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
+    if args.battle_only:
+        from battle_render_diagnostic import prepare
+        prepare(project, ROOT, args.dynamic_replay)
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True
     if args.missile_profile:args.instrument=True
