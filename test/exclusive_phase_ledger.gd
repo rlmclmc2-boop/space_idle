@@ -54,7 +54,7 @@ func report()->Dictionary:
  var function_means={};var function_per_call={}
  for key in self_totals:
   function_means[key]=float(self_totals[key])/rows.size()
-  function_per_call[key]=float(self_totals[key])/maxi(1,int(call_totals.get(key,0)))
+  if call_totals.has(key):function_per_call[key]=float(self_totals[key])/int(call_totals[key])
  for key in category_totals:
   for category in category_totals[key]:category_totals[key][category]=float(category_totals[key][category])/rows.size()
  var means={}
