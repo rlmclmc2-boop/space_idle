@@ -121,12 +121,17 @@ func transition_snapshot(scene,g,at: int,phase: String)->Dictionary:
    if record.root.is_visible_in_tree() and not g.enemies.any(func(enemy):return int(enemy.uid)==int(record.entity.uid)):stale+=1
  return {"us":at,"phase":phase,"memory":OS.get_static_memory_usage(),"objects":Performance.get_monitor(Performance.OBJECT_COUNT),"nodes":get_node_count(),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"orphans":Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT),"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"visuals":scene.projectile_visuals.size(),"state":g.state,"stage":g.stage,"group":g.group_index,"paused":g.paused,"battle_visible":scene.battle_layer.is_visible_in_tree(),"stale_visible_contacts":stale}
 
+func qa_crew_assignments(g):
+ var result=[]
+ for item in g.profile.crew:result.append([item.crewId,item.assignmentType,item.targetId,item.upgradeMode])
+ return result
+
 func observe_transitions(scene,g,save_hash):
  # Existing authorized QA scene, real production accumulator. No fixture,
  # artificial health, burst, loadout substitution, purchase or direct tick.
  var max_seconds:=clampf(float(OS.get_environment("PERF_QA_SECONDS")),35.0,180.0)
  var normal_automation:=OS.get_environment("PERF_QA_NORMAL_AUTOMATION")=="1"
- var original_crew:Array=g.profile.crew.duplicate(true)
+ var original_crew:Array=qa_crew_assignments(g)
  var original_reactor_auto: bool=g.profile.reactorAutomation.upgrade
  var source_resources:Dictionary=g.profile.resources.duplicate(true)
  var initial_loadout: Dictionary=g.profile.loadout.duplicate(true)
@@ -203,7 +208,7 @@ func observe_transitions(scene,g,save_hash):
  snapshots.append(transition_snapshot(scene,g,wall_end-started,"end"))
  var clock={"wall_seconds":float(wall_end-started)/1000000.0,"game_seconds":g.motion_clock-game_start,"logical_ticks":scene.logical_ticks-ticks_start,"logic_hz":float(scene.logical_ticks-ticks_start)*1000000.0/float(wall_end-started),"mode":"normal1x full-system QA including legitimate menu/retreat/pause phases; phase tick rate reported separately","valid":g.speed==1.0}
  var inventory=[];views(root,inventory)
- print("ROW ",JSON.stringify({"qa_transition_observation":true,"normal_automation":normal_automation,"automation_unchanged":g.profile.reactorAutomation.upgrade==original_reactor_auto and g.profile.crew==original_crew,"frame_trace_columns":["at_us","frame_us","root_us","state","stage","group","alive","projectiles","queue","paused","phase","ticks","cadence_us","engine_delta","event_count"],"frame_trace":trace,"sample_time_us":times,"launch_trace":launch,"frames_us":stats(frames),"main_us":stats(cpu),"clock_validation":clock,"snapshots":snapshots,"events":events,"natural_end":natural_end,"manual_exit_us":exit_at,"manual_reenter_us":reenter_at,"restart_ok":restart_ok,"initial_loadout":initial_loadout,"final_loadout":g.profile.loadout,"loadout_unchanged":g.profile.loadout==initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":g.profile.reactorAutomation.upgrade,"disabled_purchase_assignments":disabled_purchase_assignments,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled,"views":inventory,"screenshot_scope":"after observation only; excluded from frame samples"}))
+ print("ROW ",JSON.stringify({"qa_transition_observation":true,"normal_automation":normal_automation,"automation_unchanged":g.profile.reactorAutomation.upgrade==original_reactor_auto and qa_crew_assignments(g)==original_crew,"frame_trace_columns":["at_us","frame_us","root_us","state","stage","group","alive","projectiles","queue","paused","phase","ticks","cadence_us","engine_delta","event_count"],"frame_trace":trace,"sample_time_us":times,"launch_trace":launch,"frames_us":stats(frames),"main_us":stats(cpu),"clock_validation":clock,"snapshots":snapshots,"events":events,"natural_end":natural_end,"manual_exit_us":exit_at,"manual_reenter_us":reenter_at,"restart_ok":restart_ok,"initial_loadout":initial_loadout,"final_loadout":g.profile.loadout,"loadout_unchanged":g.profile.loadout==initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":g.profile.reactorAutomation.upgrade,"disabled_purchase_assignments":disabled_purchase_assignments,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled,"views":inventory,"screenshot_scope":"after observation only; excluded from frame samples"}))
  await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png("res://.runtime/checkpoint20-transition-end.png")
 
