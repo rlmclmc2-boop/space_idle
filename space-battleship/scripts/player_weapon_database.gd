@@ -16,3 +16,6 @@ func _init(source:ShipDatabase)->void:
 	mon_source_error=enemy_source.mon_source_error
 func enemy_weapon(key:String)->Dictionary:
 	return enemy_source.enemy_weapon(key)
+
+func combat_enemy_weapon(key:String)->Dictionary:
+	return enemy_source.combat_enemy_weapon(key)

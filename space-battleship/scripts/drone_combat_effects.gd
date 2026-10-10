@@ -35,7 +35,7 @@ func weapon_multiplier(g,key: String) -> float:
 		if not scatter.is_empty() and g.targets().size()==1:multiplier*=1.0+float(scatter.parameters.single_target_bonus)
 		var charge:=effect(g,"laser_charge")
 		if not charge.is_empty():
-			var count: int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
+			var count: int=g.combat_weapon_view().filter(func(e):return e.key=="laser").size()
 			multiplier*=1.0+minf(float(charge.parameters.maximum_bonus),float(charge.constants.bonus_per_laser)*count)
 	return multiplier
 func absorb(g,raw,hostile: bool) -> bool:
@@ -75,12 +75,12 @@ func incoming(g,raw,context: Dictionary) -> Dictionary:
 	var dodge:=effect(g,"dodge_counter")
 	if not dodge.is_empty() and CC.can_trigger(context):
 		var rate:=0.0
-		for entry in g.combat_weapon_entries():rate=maxf(rate,g.jewel_critical(entry).x)
+		for entry in g.combat_weapon_view():rate=maxf(rate,g.jewel_critical(entry).x)
 		if g.rng.randf()<minf(rate,float(dodge.parameters.maximum_dodge)):
 			if dodge_cooldown<=0:
 				dodge_cooldown=float(dodge.constants.cooldown)
 				var indices: Array=[]
-				for i in g.combat_weapon_entries().size():
+				for i in g.combat_weapon_view().size():
 					if not str(g.combat_entry(i).key).is_empty():indices.append(i)
 				if not indices.is_empty():g.fire_drone_counter(int(indices[g.rng.randi_range(0,indices.size()-1)]),1.0+float(dodge.parameters.counter_damage_bonus))
 			g.event.emit("hyperspace_dodge",{});return {"absorbed":true,"damage":0.0}

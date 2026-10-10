@@ -13,6 +13,80 @@ var defaults: Dictionary
 var ships: Dictionary
 var mon_source_error := ""
 var unlock_lookup: Dictionary = {}
+# Fixed authored projections only. Dynamic bonuses and rolls belong to BattleGame.
+var combat_equipment_cache: Dictionary = {}
+var combat_enemy_cache: Dictionary = {}
+var combat_descriptor_builds := 0
+var combat_snapshot_builds := 0
+var combat_enemy_builds := 0
+
+func _combat_base_row(key: String) -> Dictionary:
+	for row in equipment.get(key,[]):
+		if int(row.get("level",0))==1:return row
+	return {}
+
+func _freeze_combat_value(value: Variant) -> void:
+	if value is Dictionary:
+		for child in value.values():_freeze_combat_value(child)
+		value.make_read_only()
+	elif value is Array:
+		for child in value:_freeze_combat_value(child)
+		value.make_read_only()
+
+func _combat_equipment_record(key: String, level: int) -> Dictionary:
+	var source := _combat_base_row(key)
+	var token := key+":"+str(level)
+	var cached: Dictionary=combat_equipment_cache.get(token,{})
+	# Authoring can replace or edit a row in place; equality catches both.
+	if not cached.is_empty() and cached.source==source:return cached
+	if combat_equipment_cache.size()>=128:combat_equipment_cache.clear()
+	var result: Dictionary={}
+	if level>=1 and not source.is_empty():
+		for field in source:
+			if not str(field).begins_with("cost_") and not str(field).begins_with("costMulti_") and not str(field).begins_with("res_"):
+				result[field]=source[field]
+		result=result.duplicate(true)
+		result.level=level
+		if level>1:
+			if key in ["armour","shield"]:
+				result.para1=equipment_combat_growth(float(source.para1),float(source.get("para2" if key=="armour" else "para4",0)),level)
+			elif source.get("dmgMulti")!=null and source.get("dmg")!=null:
+				result.dmg=equipment_combat_growth(float(source.dmg),float(source.dmgMulti),level)
+	_freeze_combat_value(result)
+	cached={"source":source.duplicate(true),"basic":result}
+	combat_equipment_cache[token]=cached
+	combat_descriptor_builds+=1
+	return cached
+
+func combat_equipment(key: String, level: int) -> Dictionary:
+	# Immutable fixed combat fields, with no upgrade-price calculation.
+	return _combat_equipment_record(key,level).basic
+
+func combat_snapshot_equipment(key: String, level: int) -> Dictionary:
+	# Legacy attack snapshots retain all row metadata. Price compatibility is
+	# materialized once per fixed configuration, never per tick or attack.
+	var record := _combat_equipment_record(key,level)
+	if not record.has("snapshot"):
+		var result := equip(key,level)
+		_freeze_combat_value(result)
+		record.snapshot=result
+		combat_snapshot_builds+=1
+	return record.snapshot
+
+func combat_enemy_weapon(key: String) -> Dictionary:
+	var base_key := key.replace("_mon","").replace("-mon","")
+	var source := _combat_base_row(key)
+	var fallback := _combat_base_row(base_key)
+	var enemy_base: Dictionary=data.get("enemy_weapon_base",{}).get(base_key,{})
+	var cached: Dictionary=combat_enemy_cache.get(key,{})
+	if not cached.is_empty() and cached.source==source and cached.fallback==fallback and cached.enemy_base==enemy_base:return cached.weapon
+	if combat_enemy_cache.size()>=128:combat_enemy_cache.clear()
+	# Use the original fallback implementation, including absent/null fields.
+	var result := enemy_weapon(key)
+	_freeze_combat_value(result)
+	combat_enemy_cache[key]={"source":source.duplicate(true),"fallback":fallback.duplicate(true),"enemy_base":enemy_base.duplicate(true),"weapon":result}
+	combat_enemy_builds+=1
+	return result
 
 func _init() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
