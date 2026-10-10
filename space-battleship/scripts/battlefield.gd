@@ -3,6 +3,8 @@ extends "res://scripts/main.gd"
 
 const PROTOTYPE_GAME := preload("res://scripts/presented_battle_game.gd")
 var enemy_vfx_enabled:=true
+var retained_contacts
+var retained_contacts_enabled:=true
 var enemy_launch_context:=false
 var enemy_impacts:Array[Dictionary]=[]
 const CHAIN_VFX := preload("res://dev/toon_ship/chain_vfx.gd")
@@ -92,6 +94,8 @@ func _ready() -> void:
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
 	# encounter never loads a hull or reads its pixels inside the draw callback.
 	prepare_enemy_hulls()
+	retained_contacts=preload("res://scripts/retained_enemy_contacts.gd").new()
+	battle_layer.add_child(retained_contacts);retained_contacts.setup(self)
 	# The immutable body retains native primitive/feather order. Dynamic flames,
 	# trails and contact effects remain on their existing paths.
 	missile_body_mesh=preload("res://dev/toon_ship/missile_body_mesh.gd").new().build()
@@ -1012,3 +1016,13 @@ func box(rect:Rect2,color:=PANEL,border:=LINE)->void:
 		style.set_corner_radius_all(8)
 		draw_surface.draw_style_box(style,rect)
 	else:super.box(rect,color,border)
+
+func draw_retained_enemy_contacts(offset:Vector2,boss:bool)->bool:
+	if not retained_contacts_enabled or not is_instance_valid(retained_contacts):return false
+	retained_contacts.sync(offset,boss)
+	return true
+
+func retain_battle_foreground(flights:Array,shots:Array,offset:Vector2)->bool:
+	if not retained_contacts_enabled or not is_instance_valid(retained_contacts):return false
+	retained_contacts.stage_foreground(flights,shots,offset)
+	return true

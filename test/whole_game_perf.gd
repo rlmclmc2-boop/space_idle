@@ -22,6 +22,22 @@ class UI extends "res://scripts/battlefield.gd":
    Engine.get_meta("saved_perf").target_seen.clear()
    Engine.get_meta("saved_perf").steering_seen.clear()
    Engine.get_meta("saved_perf").steering_active=false
+ var retention_previous := {}
+ var retention_counts := {"contacts":0,"same_width":0,"same_protection":0,"same_mount_shape":0}
+ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss:bool)->void:
+  if OS.get_environment("PERF_RETENTION_PROFILE")=="1" and Engine.get_meta("saved_perf").enabled:
+   var width=enemy_render_width(enemy)
+   var state=enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
+   var uid=int(enemy.uid)
+   var current=[width,JSON.stringify(state),JSON.stringify(enemy.equipment)]
+   if retention_previous.has(uid):
+    var previous=retention_previous[uid]
+    if current[0]==previous[0]:retention_counts.same_width+=1
+    if current[0]==previous[0] and current[1]==previous[1]:retention_counts.same_protection+=1
+    if current[0]==previous[0] and current[2]==previous[2]:retention_counts.same_mount_shape+=1
+   retention_previous[uid]=current
+   retention_counts.contacts+=1
+  super.draw_enemy_hull_and_status(enemy,offset,boss)
  var last_process_us := 0
  var last_draw_us := 0
  func _process(dt: float) -> void:
@@ -105,6 +121,8 @@ func run():
  var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
  scene.automation_args=["--capture"];scene.music_on=false
  root.add_child(scene);current_scene=scene;scene.automation_args=[];scene.set_process(false)
+ if OS.get_environment("PERF_RETAINED_CONTACTS")=="0":
+  scene.retained_contacts_enabled=false;scene.retained_contacts.visible=false
  var g=scene.game
  g.save_enabled=false;g.stat_cache_enabled=true;g.rng.seed=1701;g.speed=1
  g.profile.onboarding.completed=true
@@ -238,6 +256,11 @@ func run():
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  row.retention_counts=scene.retention_counts.duplicate()
+  row.retained_part_builds={}
+  if is_instance_valid(scene.retained_contacts):
+   for record in scene.retained_contacts.records.values():
+    for child in record.root.get_children():row.retained_part_builds[child.kind]=row.retained_part_builds.get(child.kind,0)+child.builds
   row.submission_mode=submission_mode
   row.frames_drawn_delta=Engine.get_frames_drawn()-sampled_draw_start
   row.motion_clock_start=sampled_clock_start

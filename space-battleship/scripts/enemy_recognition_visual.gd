@@ -193,6 +193,10 @@ func draw_weapon(surface: CanvasItem, pos: Vector2, pose: Dictionary, damage_typ
 	var face := 0.64 if physical else 0.45
 	var shift := Vector2(pose.port)-Vector2(face*w,0)
 	surface.draw_set_transform(pos+Vector2(pose.origin)+shift.rotated(pose.angle),float(pose.angle)-PI/2)
+	draw_weapon_shape(surface,w,physical)
+	surface.draw_set_transform(Vector2.ZERO)
+
+func draw_weapon_shape(surface:CanvasItem,w:float,physical:bool)->void:
 	surface.draw_rect(Rect2(-w*0.24,-w*0.22,w*0.48,w*0.42),Color("36424b"))
 	if physical:
 		surface.draw_rect(Rect2(-w*0.16,-w*0.15,w*0.32,w*0.84),Color("ac886a"))
@@ -204,7 +208,6 @@ func draw_weapon(surface: CanvasItem, pos: Vector2, pose: Dictionary, damage_typ
 			surface.draw_colored_polygon(fork,Color("aabfc6"))
 			surface.draw_line(Vector2(side*w*0.49,w*0.20),Vector2(side*w*0.49,w*0.44),ENERGY,maxf(1,w*0.10),true)
 		surface.draw_rect(Rect2(-w*0.13,w*0.02,w*0.26,w*0.16),ENERGY)
-	surface.draw_set_transform(Vector2.ZERO)
 
 func draw_projectile(surface: CanvasItem, pos: Vector2, angle: float, damage_type: int, core: bool) -> void:
 	var heading := Vector2.from_angle(angle)

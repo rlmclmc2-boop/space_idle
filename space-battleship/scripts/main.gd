@@ -3231,10 +3231,24 @@ func draw_battle() -> void:
 	if GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT:
 		draw_ship(player_render_position()+offset,0.24,false,1,not accelerated_visual_mode and GrowthNumber.compare(game.player.shield,0)>0)
 		if not accelerated_visual_mode:draw_engine_wake(player_render_position()+offset)
-	for enemy in game.enemies:
-		if enemy.hp <= 0:
-			continue
-		draw_enemy_hull_and_status(enemy,offset,boss_battle)
+	if not draw_retained_enemy_contacts(offset,boss_battle):
+		for enemy in game.enemies:
+			if enemy.hp <= 0:continue
+			draw_enemy_hull_and_status(enemy,offset,boss_battle)
+	if not retain_battle_foreground(flights,visible_projectiles,offset):
+		draw_battle_foreground(flights,visible_projectiles,offset)
+	battle_draw_active=false
+	battle_draw_enemy_positions.clear()
+	enemy_entry_batch_active=false
+	enemy_entry_distance_time=-INF
+
+func draw_retained_enemy_contacts(_offset:Vector2,_boss:bool)->bool:
+	return false
+
+func retain_battle_foreground(_flights:Array,_shots:Array,_offset:Vector2)->bool:
+	return false
+
+func draw_battle_foreground(flights:Array,visible_projectiles:Array,offset:Vector2)->void:
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
 	for flight in flights:
 		var p: Dictionary = flight.shot
