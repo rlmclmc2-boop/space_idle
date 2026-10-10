@@ -193,10 +193,12 @@ def main():
         if args.cpu_peaks:
             MODULES.clear()
             MODULES.update({
-                'main':['advance_game_time','advance_turrets','advance_projectile_visuals','on_event','queue_damage_number','flush_damage_numbers','refresh_visible_cards','refresh_navigation','refresh_draw_layers','weapon_launch','visual_muzzle','enemy_shot_mount'],
-                'game':['tick','tick_projectiles','jewel_attack','jewel_fire','fire','hit_enemy','hit_player','advance_jewel_repair','enemy_weapon_offset'],
+                'main':['advance_game_time','advance_turrets','advance_projectile_visuals','on_event','queue_damage_number','flush_damage_numbers','refresh_visible_cards','refresh_navigation','refresh_draw_layers','weapon_launch','visual_muzzle','enemy_shot_mount','equipment_display_snapshot','module_tooltip'],
+                'game':['tick','tick_projectiles','jewel_attack','jewel_fire','fire','hit_enemy','hit_player','advance_jewel_repair','enemy_weapon_offset','launch_player_attack','combat_entry','player_weapon_offset','enhancement_effects','module_effects','equipment_damage','module_damage','attack_from_snapshot','new_attack_instance','jewel_equipment_stat','jewel_critical','plan_attack_repeats','player_weapon_row'],
                 'battlefield':['weapon_launch'],
-                'equipment_tab':['refresh','refresh_stats','refresh_affordability','refresh_detail','refresh_live','update_card_cost'],
+                'equipment_tab':['refresh','refresh_stats','refresh_affordability','refresh_detail','refresh_live','update_card_cost','card_level_text','rate_value','rate_title','textured_panel_style','equipment_choices','stat_projection'],
+                'equipment_card':['refresh','refresh_options','fit_stat_text'],
+                'equipment_style_tiles':['panel_style'],
             })
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')

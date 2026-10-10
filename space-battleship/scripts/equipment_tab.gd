@@ -612,9 +612,21 @@ func invalidate_stats(info: Dictionary) -> void:
 		for id in items:
 			if items[id].category==info.category:stats_dirty[id] = true
 
+func stat_projection(entry: Dictionary, projections: Dictionary) -> Dictionary:
+	# Batch identical simple modules only within this synchronous refresh.
+	# Beams retain source identity (Endless); extended/drone entries stay independent.
+	var key := str(entry.get("key",""))
+	if entry.size()!=2 or not entry.has("level") or key not in ["missile","cannon","shield","armour"]:
+		return host.equipment_display_snapshot(entry)
+	var group := key+":"+str(int(entry.level))
+	if not projections.has(group):projections[group]=host.equipment_display_snapshot(entry)
+	# Each card owns its projection; no mutable dictionaries survive as shared state.
+	return projections[group].duplicate(true)
+
 func refresh_stats() -> void:
 	var selected_changed := false
 	var selected_preview: Dictionary={}
+	var projections := {}
 	for id in stats_dirty:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
@@ -629,7 +641,7 @@ func refresh_stats() -> void:
 			sort_dirty=true
 			selected_changed=selected_changed or selected==id
 			continue
-		var projection: Dictionary=host.equipment_display_snapshot(entry)
+		var projection: Dictionary=stat_projection(entry,projections)
 		var value = host.EQUIPMENT_DISPLAY.displayed_value(projection)
 		var projection_changed: bool=item.projection!=projection
 		if selected==id and not item.key.is_empty():

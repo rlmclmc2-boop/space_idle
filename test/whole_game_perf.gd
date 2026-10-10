@@ -14,9 +14,23 @@ class UI extends "res://scripts/battlefield.gd":
  var last_process_us := 0
  var last_draw_us := 0
  func _process(dt: float) -> void:
+  var inspect_cards=OS.get_environment("PERF_CPU_PEAKS")=="1"
+  var before={}
+  if inspect_cards and is_instance_valid(equipment_panel):
+   for id in equipment_panel.cards:before[id]=equipment_panel.cards[id].last_state.duplicate()
   var began := Time.get_ticks_usec()
   super._process(dt)
   last_process_us = Time.get_ticks_usec()-began
+  if inspect_cards and is_instance_valid(equipment_panel):
+   var measure=Engine.get_meta("saved_perf")
+   for id in equipment_panel.cards:
+    var state=equipment_panel.cards[id].last_state
+    var changed=[]
+    if before.has(id) and before[id].size()==state.size():
+     for index in state.size():
+      if before[id][index]!=state[index]:changed.append(index)
+    elif before.get(id,[])!=state:changed.append(-1)
+    if not changed.is_empty():measure.card_changes.append([id,changed])
  func draw_battle()->void:
   var began=Time.get_ticks_usec()
   super.draw_battle()
@@ -36,6 +50,7 @@ class Meter extends RefCounted:
  var times={}
  var frame_times={}
  var muzzle_seen={}
+ var card_changes=[]
  func record(key,us):
   if not enabled:return
   if not times.has(key):times[key]=[0,0,0]
@@ -149,6 +164,7 @@ func run():
   var cpu_peak_trace=[]
   var launch_trace=[]
   var presentation_trace=[]
+  var card_change_trace=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
@@ -161,6 +177,7 @@ func run():
    scene.frame_launches=0;scene.frame_enemy_launches=0
    meter.frame_times.clear()
    meter.muzzle_seen.clear()
+   meter.card_changes.clear()
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1" and OS.get_environment("PERF_ORGANIC_ECONOMY")!="1":
     g.profile.resources["1"]*=1.0000000001;g.profile.resources["2"]*=1.0000000001
@@ -178,9 +195,17 @@ func run():
     alive.append(living);states.append(g.state);stages.append(g.stage);groups.append(g.group_index)
     frame_trace.append([i,frames[-1],cpu[-1],living,g.projectiles.size(),g.missile_queue.size()])
     launch_trace.append([i,scene.frame_launches,scene.frame_enemy_launches])
-    if OS.get_environment("PERF_PRESENTATION_AUDIT")=="1":presentation_trace.append([i,JSON.stringify([scene.enemy_impacts,scene.missile_events,scene.pulse_events,scene.rail_events,scene.projectile_visuals]).sha256_text()])
+    if OS.get_environment("PERF_PRESENTATION_AUDIT")=="1":
+     var card_states=[]
+     for id in scene.equipment_panel.cards:
+      var state=scene.equipment_panel.cards[id].last_state.duplicate()
+      if state.size()>13 and state[13] is Resource:state[13]=state[13].resource_path
+      card_states.append([id,state])
+     presentation_trace.append([i,JSON.stringify([scene.enemy_impacts,scene.missile_events,scene.pulse_events,scene.rail_events,scene.projectile_visuals,card_states]).sha256_text()])
     effect_trace.append([i,scene.missile_events.size(),scene.pulse_events.size(),scene.particles.size(),scene.projectile_visuals.size()])
-    if OS.get_environment("PERF_CPU_PEAKS")=="1":cpu_peak_trace.append([i,meter.frame_times.duplicate(true),g.speed,g.motion_clock])
+    if OS.get_environment("PERF_CPU_PEAKS")=="1":
+     cpu_peak_trace.append([i,meter.frame_times.duplicate(true),g.speed,g.motion_clock])
+     card_change_trace.append([i,meter.card_changes.duplicate(true)])
     if render_cost:
      var view_costs=[]
      for view in cost_views:
@@ -195,6 +220,7 @@ func run():
   row.effect_trace=effect_trace
   row.render_cost_trace=render_cost_trace
   row.cpu_peak_trace=cpu_peak_trace
+  row.card_change_trace=card_change_trace
   row.launch_trace=launch_trace
   row.presentation_trace=presentation_trace
   row.render_cost_scope="milliseconds, native render CPU is wall time and may include stalls; GPU last available queries, never added to CPU frame wall time"
