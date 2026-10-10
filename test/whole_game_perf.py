@@ -95,6 +95,9 @@ def main():
     parser.add_argument('--reuse', type=Path, help='Reuse this runner\'s isolated import cache')
     parser.add_argument('--headless', action='store_true')
     parser.add_argument('--rich', action='store_true')
+    parser.add_argument('--missile-loadout', action='store_true', help='Rich fixture selects eight actual missile slots; production cadence and parameters unchanged')
+    parser.add_argument('--authored-stage', type=int, default=0, choices=range(21), help='Rich fixture uses the first actual authored wave, with test health')
+    parser.add_argument('--missile-profile', action='store_true', help='Static missile VFX CPU and command attribution; diagnostic overhead, never clean throughput')
     parser.add_argument('--stress-enemies', type=int, default=3, choices=range(1,16), help='Synthetic sustained enemies; requires --rich, never a natural player claim')
     parser.add_argument('--balance', type=float, default=1e80)
     parser.add_argument('--capture', action='store_true', help='Capture after measurement; readback excluded from timings')
@@ -108,6 +111,8 @@ def main():
     parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
+    if (args.missile_loadout or args.authored_stage) and not args.rich:
+        parser.error('missile-loadout/authored-stage require the explicitly synthetic rich fixture')
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
     checkpoint_stage=7 if args.checkpoint_round2 else 20
@@ -161,6 +166,7 @@ def main():
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True
+    if args.missile_profile:args.instrument=True
     if args.instrument:
         MODULES.update({
             'battlefield': ['_process', 'draw_battle', 'draw_vertical_battle_hud', '_draw_muzzle_cues'],
@@ -176,16 +182,41 @@ def main():
             MODULES['main'] += ['draw_enemy_hull_and_status', 'enemy_render_width_at_y', 'enemy_frontline_y_limit', 'enemy_component_pose', 'enemy_weapon_angle', 'enemy_recognition_geometry', 'enemy_weapon_components', 'enemy_render_position', 'damage_text_enemy_bottom', 'damage_text_enemy_bounds', 'draw_enemy_weapon_components', 'damage_text_rect']
             MODULES['battlefield'] += ['battle_meter','draw_enemy_hull_and_status','enemy_status_layout','draw_encounter_backdrop','enemy_hull_light']
             MODULES['enemy_recognition_visual']=['geometry','draw_weapon','draw_protection','state','draw_attack_deck']
+        if args.missile_profile:
+            MODULES['battlefield']+=['draw_projectile_body_override','draw_projectile_fx','missile_visual_position']
+            MODULES['main']+=['projectile_visual']
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')
             # Module-specific names preserve superclass dispatch in the real scene.
             code = instrument(path.read_text(encoding='utf-8').replace('->void', '-> void'), module)
             path.write_text(code.replace('_perf_original_', '_perf_' + module + '_original_'), encoding='utf-8')
+        if args.missile_profile:
+            path=project/'dev/toon_ship/missile_vfx.gd'
+            code=path.read_text(encoding='utf-8')
+            MODULES['missile_vfx']=['flight','trail','flash','impact','retire']
+            # Static draw helpers share the same meter; retain static dispatch.
+            import re
+            current=''
+            lines=[]
+            for line in code.splitlines():
+                match=re.match(r'static func (\w+)\(',line)
+                if match:current=match[1]
+                if 'surface.draw_' in line:
+                    command=re.search(r'surface\.(draw_\w+)',line)[1]
+                    record=f'Engine.get_meta("saved_perf").record("cmd.missile_vfx.{current}.{command}",0);'
+                    line=line.replace('surface.'+command,record+'surface.'+command,1)
+                lines.append(line)
+            code='\n'.join(lines)+'\n'
+            code=instrument(code.replace('static func ','func ').replace('->void','-> void'),'missile_vfx')
+            code=code.replace('\nfunc ','\nstatic func ').replace('_perf_original_','_perf_missile_original_')
+            path.write_text(code,encoding='utf-8')
     env = os.environ.copy()
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
     env.update(PERF_SUSTAIN_TEST_HEALTH=str(int(args.sustain_test_health)), PERF_STRESS_ENEMIES=str(args.stress_enemies), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    env['PERF_MISSILE_LOADOUT']=str(int(args.missile_loadout))
+    env['PERF_AUTHORED_STAGE']=str(args.authored_stage)
     if checkpoint:
         env['SPACE_IDLE_FLAT_SHIPS'] = '0'
         env['PERF_CHECKPOINT_WAVE'] = str(args.checkpoint_wave)
@@ -216,6 +247,7 @@ def main():
                                                        'flat_ship_compositor.gdshader', 'galaxy_map.gd', 'galaxy_city_modules.gd')]]
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
+    measured_files += ['dev/toon_ship/missile_vfx.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),

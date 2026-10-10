@@ -29,7 +29,7 @@ static func _axis(direction: Vector2) -> Vector2:
 	return direction.normalized() if direction.length_squared() > 0.0001 else Vector2.UP
 
 
-static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_seed:int=0,budget:float=1.0,draw_body:bool=true,powered:bool=true)->void:
+static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_seed:int=0,budget:float=1.0,draw_body:bool=true,powered:bool=true,body_mesh:Mesh=null)->void:
 	var axis:=_axis(direction)
 	var side:=axis.orthogonal()
 	var nozzle:=point-axis*23.0
@@ -43,6 +43,9 @@ static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,
 	elif age<0.22:
 		surface.draw_circle(nozzle-axis*3.0,2.5,Color(SMOKE,(1.0-age/0.22)*0.30))
 	if not draw_body:return
+	if body_mesh!=null:
+		surface.draw_mesh(body_mesh,null,Transform2D(axis.angle()+PI/2,point))
+		return
 	# The simulation point is the nose; the substantial rocket body trails it.
 	for sign_value in [-1.0,1.0]:
 		var fin:=PackedVector2Array([point-axis*16.0+side*sign_value*2.8,point-axis*24.0+side*sign_value*6.2,point-axis*22.0+side*sign_value*2.8])

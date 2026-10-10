@@ -66,18 +66,25 @@ func run():
   g.profile.jewelFragments=1e40;g.profile.enhancementLevel=30
   g.profile.enhancementAttacks=1000000;g.profile.enhancementHits=1000000
   g.profile.loadout={"weapons":[],"defence":[]}
-  for key in ["laser","missile","cannon","longLaser","laser","missile","cannon","longLaser"]:g.profile.loadout.weapons.append({"key":key,"level":150})
+  var weapon_keys=["laser","missile","cannon","longLaser","laser","missile","cannon","longLaser"]
+  if OS.get_environment("PERF_MISSILE_LOADOUT")=="1":weapon_keys=["missile","missile","missile","missile","missile","missile","missile","missile"]
+  for key in weapon_keys:g.profile.loadout.weapons.append({"key":key,"level":150})
   for key in ["shield","armour","shield","armour"]:g.profile.loadout.defence.append({"key":key,"level":150})
   for crew in g.profile.crew:crew.level=103;crew.exp=13159583000.0
   for key in g.db.data.hightech:g.profile.hightechLevels[key]=303
   g.planet_buildings.sync(g,"1")
   for item in g.profile.planets["1"].buildings.values():item.status="built"
+  var authored_stage=int(OS.get_environment("PERF_AUTHORED_STAGE"))
+  if authored_stage>0:g.stage=authored_stage;g.group_index=0
   g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT;g.spawn_group()
-  var template=g.enemies[0].duplicate(true);g.enemies.clear()
-  var stress_count=int(OS.get_environment("PERF_STRESS_ENEMIES")) if OS.has_environment("PERF_STRESS_ENEMIES") else 3
-  for i in stress_count:
-   var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=80+80*(i%5);enemy.y=150+80*(i/5);enemy.hp=1e100;enemy.max_hp=1e100
-   g.enemies.append(enemy)
+  if authored_stage>0:
+   for enemy in g.enemies:enemy.hp=1e100;enemy.max_hp=1e100
+  else:
+   var template=g.enemies[0].duplicate(true);g.enemies.clear()
+   var stress_count=int(OS.get_environment("PERF_STRESS_ENEMIES")) if OS.has_environment("PERF_STRESS_ENEMIES") else 3
+   for i in stress_count:
+    var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=80+80*(i%5);enemy.y=150+80*(i/5);enemy.hp=1e100;enemy.max_hp=1e100
+    g.enemies.append(enemy)
  g.invalidate_stat_cache()
  scene.refresh_structure();scene.refresh_tab_visibility()
  print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"resolution":str(root.size),"cap":Engine.max_fps,"low_processor":OS.low_processor_usage_mode}))
@@ -103,7 +110,7 @@ func run():
   await process_frame
   var switch_frame_us=Time.get_ticks_usec()-switch_started
   var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[]
-  var frame_trace=[];var alive=[];var states=[];var stages=[];var groups=[]
+  var frame_trace=[];var effect_trace=[];var alive=[];var states=[];var stages=[];var groups=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
@@ -127,10 +134,14 @@ func run():
      if float(enemy.get("hp",0))>0:living+=1
     alive.append(living);states.append(g.state);stages.append(g.stage);groups.append(g.group_index)
     frame_trace.append([i,frames[-1],cpu[-1],living,g.projectiles.size(),g.missile_queue.size()])
+    effect_trace.append([i,scene.missile_events.size(),scene.pulse_events.size(),scene.particles.size(),scene.projectile_visuals.size()])
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   if render_inventory:row.ship_inventory=ship_inventory(scene)
+  row.effect_trace=effect_trace
+  row.missile_parameters={"row":g.db.equip("missile",150),"lifetime":g.MISSILE_LIFETIME,"ejection_gap":g.EJECTION_GAP,"loadout":g.profile.loadout.weapons}
+  row.canvas_materials={"battle":str(scene.battle_layer.material),"feedback":str(scene.pulse_layer.material)}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw

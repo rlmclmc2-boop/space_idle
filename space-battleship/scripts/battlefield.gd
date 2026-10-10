@@ -49,6 +49,7 @@ var fixture_name := ""
 var current_hull := ""
 var protect_silhouette := false
 var missile_vfx_enabled := true
+var missile_body_mesh:Mesh
 var continuous_beam_enabled := true
 var missile_events: Array[Dictionary] = []
 var missile_launch_context := false
@@ -91,6 +92,9 @@ func _ready() -> void:
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
 	# encounter never loads a hull or reads its pixels inside the draw callback.
 	prepare_enemy_hulls()
+	# The immutable body retains native primitive/feather order. Dynamic flames,
+	# trails and contact effects remain on their existing paths.
+	missile_body_mesh=preload("res://dev/toon_ship/missile_body_mesh.gd").new().build()
 	ship_view = SHIP_VIEW.new()
 	ship_view.name = "BattleShipView"
 	ship_view.size = BATTLE_VIEW_SIZE
@@ -378,7 +382,7 @@ func _draw_muzzle_cues() -> void:
 			if event.kind=="retired":
 				var coast_time:float=minf(age,float(event.coast_time))
 				point=battle_point(Vector2(event.position)+Vector2(event.direction)*float(event.speed)*coast_time)
-				if age<float(event.coast_time):MISSILE_VFX.flight(pulse_layer,point,event.direction,1.0,int(event.serial),1.0,true,false)
+				if age<float(event.coast_time):MISSILE_VFX.flight(pulse_layer,point,event.direction,1.0,int(event.serial),1.0,true,false,missile_body_mesh)
 				else:MISSILE_VFX.retire(pulse_layer,point,event.direction,age-float(event.coast_time))
 			elif event.kind=="fire":MISSILE_VFX.flash(pulse_layer,point,event.direction,age,budget)
 			else:MISSILE_VFX.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget,int(event.serial))
@@ -465,7 +469,7 @@ func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float,known
 	# Null preserves standalone callers; an indexed miss is an explicit empty row.
 	var visual:Dictionary=projectile_visual(shot) if known_visual==null else known_visual
 	# Every real missile, including an orphan, retains one physical body.
-	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(shot.get("motion_age",visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty())
+	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(shot.get("motion_age",visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty(),missile_body_mesh)
 	return true
 
 
