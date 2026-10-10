@@ -482,9 +482,6 @@ func _process(delta: float) -> void:
 			get_viewport().get_texture().get_image().save_png("res://preview" + ("-unlock" if automation_args.has("--capture-unlock") else "-all" if automation_args.has("--capture-all") else "-combat") + ".png")
 			get_tree().quit()
 
-func after_logical_game_tick()->void:
-	pass
-
 func advance_game_time(seconds: float) -> void:
 	if game == null or not is_finite(seconds) or seconds <= 0:return
 	var instance := game.get_instance_id()
@@ -498,7 +495,6 @@ func advance_game_time(seconds: float) -> void:
 	while game_time_remainder + 0.0000000001 >= STEP:
 		before_logical_game_tick(STEP)
 		game.tick(STEP)
-		after_logical_game_tick()
 		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
 
 func uses_logical_battle_pose() -> bool:
@@ -739,7 +735,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			beam_ring(info.pos,ORANGE,0.12,11)
 			weapon_sparks(info.pos,7,140,info.direction)
 		"hit":
-			record_damage_presentation(info)
+			queue_damage_number(info)
 		"explode":
 			if info.has("slot"):
 				death_drop_positions[int(info.uid)] = enemy_drop_anchor(info)
@@ -2682,23 +2678,7 @@ func incoming_damage_text(amount, absorbed, damage_type: int, exact := false) ->
 	if damage_type not in [1,2]:return value
 	return UIText.t("battle.incoming_damage",{"type":UIText.t("equipment.energy" if damage_type==1 else "equipment.physical"),"damage":value})
 
-func record_damage_presentation(info: Dictionary) -> void:
-	queue_damage_number(info)
-
-func damage_layout_context() -> Dictionary:
-	return {}
-
-func damage_number_anchor(info:Dictionary)->Dictionary:
-	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
-	var anchor := player_render_position()
-	if not info.player:
-		for enemy in game.enemies:
-			if enemy.uid==info.uid:
-				height=enemy_render_width(enemy)
-				anchor=enemy_render_position(enemy)
-	return {"height":height,"anchor":anchor}
-
-func queue_damage_number(info: Dictionary, captured_anchor:Dictionary={}, layout_context:Dictionary={}) -> void:
+func queue_damage_number(info: Dictionary) -> void:
 	if fast_mode_enabled():return
 	var absorbed = info.get("absorbed",0)
 	var exact := incoming_damage_text(info.amount,absorbed,int(info.type),true) if info.player else damage_feedback_text(info.amount,absorbed,true)
@@ -2706,7 +2686,7 @@ func queue_damage_number(info: Dictionary, captured_anchor:Dictionary={}, layout
 	if damage_history.size()>40:damage_history.pop_front()
 	if not show_damage_numbers:return
 	if info.player and int(info.type) in [1,2]:
-		queue_incoming_damage_number(info,absorbed,layout_context)
+		queue_incoming_damage_number(info,absorbed)
 		return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
@@ -2718,20 +2698,24 @@ func queue_damage_number(info: Dictionary, captured_anchor:Dictionary={}, layout
 				entry.absorbed = GrowthNumber.add(entry.get("absorbed",0),absorbed)
 				entry.text = incoming_damage_text(entry.amount,entry.absorbed,entry.type) if target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
 				if entry.pos!=Vector2.ZERO:
-					var adjusted := damage_text_position(entry.origin,entry.text,entry.size,entry,layout_context)
+					var adjusted := damage_text_position(entry.origin,entry.text,entry.size,entry)
 					if adjusted!=Vector2.INF:
 						entry.pos=adjusted
 					else:
 						entry.life=minf(float(entry.life),0.08)
 						entry.retiring=true
 				return
-	var placement:=captured_anchor if not captured_anchor.is_empty() else damage_number_anchor(info)
-	var height:float=placement.height
-	var anchor:Vector2=placement.anchor
+	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
+	var anchor := player_render_position()
+	if not info.player:
+		for enemy in game.enemies:
+			if enemy.uid==info.uid:
+				height = enemy_render_width(enemy)
+				anchor = enemy_render_position(enemy)
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
 	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":incoming_damage_text(info.amount,absorbed,int(info.type)) if info.player else damage_feedback_text(info.amount,absorbed),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
 	damage_pending.append(entry)
-	flush_damage_numbers(layout_context)
+	flush_damage_numbers()
 
 func incoming_damage_origin(damage_type: int) -> Vector2:
 	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
@@ -2766,7 +2750,7 @@ func incoming_damage_display_text(amount, absorbed, damage_type:int, size_value:
 	var short := UIText.t("battle.incoming_damage",{"type":kind,"damage":value})
 	return short if font.get_string_size(short,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x<=maximum_width else primary
 
-func queue_incoming_damage_number(info: Dictionary, absorbed, layout_context:Dictionary={}) -> void:
+func queue_incoming_damage_number(info: Dictionary, absorbed) -> void:
 	var entry:Dictionary={}
 	for current in floats:
 		if current.get("incoming_lane",false) and int(current.type)==int(info.type):entry=current;break
@@ -2787,21 +2771,24 @@ func queue_incoming_damage_number(info: Dictionary, absorbed, layout_context:Dic
 	entry.origin=incoming_damage_origin(int(entry.type))
 	var width := font.get_string_size(entry.text,HORIZONTAL_ALIGNMENT_LEFT,-1,int(entry.size)).x
 	entry.pos=Vector2(clampf(entry.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),entry.origin.y)
-	move_damage_numbers_from_incoming(entry,layout_context)
+	move_damage_numbers_from_incoming(entry)
 
-func move_damage_numbers_from_incoming(incoming: Dictionary, layout_context:Dictionary={}) -> void:
+func move_damage_numbers_from_incoming(incoming: Dictionary) -> void:
 	var bounds := damage_text_rect(battle_point(incoming.pos),incoming.text,int(incoming.size)).grow(8)
 	for other in floats:
 		if not other.get("damage",false) or other.get("target","")=="player" or float(other.life)<=0:continue
 		if not bounds.intersects(damage_text_rect(battle_point(other.pos),other.text,int(other.size))):continue
 		# Reuse the same placement query, which already excludes actual visible labels.
-		var adjusted := damage_text_position(other.origin,other.text,int(other.size),other,layout_context)
+		var adjusted := damage_text_position(other.origin,other.text,int(other.size),other)
 		if adjusted!=Vector2.INF:other.pos=adjusted
 		else:other.life=0.0;other.retiring=true
 
-func flush_damage_numbers(layout_context:Dictionary={}) -> void:
+func damage_layout_context()->Dictionary:
+	return {}
+
+func flush_damage_numbers() -> void:
 	# This synchronous flush changes labels only. Its fleet projection expires here.
-	if layout_context.is_empty():layout_context=damage_layout_context()
+	var layout_context := damage_layout_context()
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry)
