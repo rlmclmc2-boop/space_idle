@@ -169,12 +169,11 @@ func run():
   printerr("Calibration scene failed to load");quit(2);return
  await process_frame;await process_frame
  stream.store_line(JSON.stringify({"event":"initial","state":snapshot(),"request":r,"strategy_parameters":policy,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"game_script_sha256":FileAccess.get_sha256("res://scripts/game.gd"),"source_save_sha256":FileAccess.get_sha256(r.save),"qa_script_sha256":FileAccess.get_sha256(get_script().resource_path),"engine_version":Engine.get_version_info(),"scope":"Accelerated fixed1/60 calibration; restored journey regenerates battle; deterministic QA RNG; saved production/research continue; transactions per recorded strategy; scene launch/target providers retained; no player scoring or total-duration acceptance."}))
+ if r.has("max_defeats"):
+  stream.store_line(JSON.stringify({"event":"qa_warning","reason":"Legacy cumulative defeat limit ignored; defeats are observations, never a stop or tuning target","legacy_value":r.max_defeats}))
  var wall=Time.get_ticks_usec();var budget=wall
  for tick in roundi(float(r.seconds)*60.0):
   if not qa_failure.is_empty():break
-  if int(r.get("max_defeats",0))>0 and defeats>=int(r.max_defeats):
-   record_checkpoint(r.output,"QA defeat-budget stop portable progress checkpoint")
-   stream.store_line(JSON.stringify({"event":"defeat_budget_stop","budget":int(r.max_defeats),"state":snapshot()}));break
   if tick>=transaction_delay_ticks and (tick-transaction_delay_ticks)%interval_ticks==0 and r.get("transactions",false):transact()
   if not g.pending_unlocks.is_empty():g.acknowledge_unlocks()
   if g.state==g.State.LEVEL_CLEAR:
