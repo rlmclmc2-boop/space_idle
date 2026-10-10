@@ -203,6 +203,8 @@ var sound_button: Button
 var music_button: Button
 var guard_settings: MenuButton
 var draw_surface: Node2D
+var battle_read_model=preload("res://scripts/battle_read_model.gd").new()
+var battle_read_model_enabled:=true
 var background_layer: Node2D
 var chrome_layer: Node2D
 var stars_layer: Node2D
@@ -228,6 +230,7 @@ var pending_import: Dictionary = {}
 var import_committing := false
 
 func _ready() -> void:
+	battle_read_model.setup(self)
 	if preload("res://scripts/hyperspace_appearance.gd").reload_config():
 		preload("res://scripts/hyperspace_drone_visual.gd").base_materials.clear()
 	var from_save_import := get_tree().has_meta("save_import_backup")
@@ -646,6 +649,7 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	if battle_read_model_enabled and kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed"]:battle_read_model.invalidate_membership()
 	defeat_feedback.record(game,kind,info)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
@@ -1234,6 +1238,10 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 	return components
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
+	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.components(enemy)
+	return _source_enemy_weapon_components(enemy)
+
+func _source_enemy_weapon_components(enemy: Dictionary) -> Array:
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
 	var signature := ship_key+":"+str(db.get_instance_id())
@@ -1526,6 +1534,10 @@ func enemy_render_width(enemy: Dictionary) -> float:
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
+	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.width_at(enemy,y)
+	return _source_enemy_render_width_at_y(enemy,y)
+
+func _source_enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
 	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
@@ -1579,6 +1591,10 @@ func enemy_safe_entry_distance()->float:
 	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
+	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.frontline(enemy)
+	return _source_enemy_frontline_y_limit(enemy)
+
+func _source_enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	# Measure empty firing space between hull envelopes, not entity centres.
 	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
 	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
@@ -1613,6 +1629,13 @@ func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 		ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0),ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)]
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
+	var cached:Dictionary=battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
+	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
+	var point:Vector2=battle_read_model.position(enemy) if battle_read_model_enabled and battle_read_model.active else _source_enemy_render_position(enemy)
+	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":point}
+	return point
+
+func _source_enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
@@ -2811,6 +2834,10 @@ func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Di
 	return Rect2(pos-Vector2(maxf(0,92-width)/2,ascent),Vector2(maxf(92,width),height)).grow(4)
 
 func damage_text_enemy_bounds() -> Array[Rect2]:
+	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.fleet_bounds()
+	return _source_damage_text_enemy_bounds()
+
+func _source_damage_text_enemy_bounds() -> Array[Rect2]:
 	var enemy_bounds: Array[Rect2] = []
 	# Read-only layout shares the guidance cache's exact live-input validation.
 	# The flag expires before returning; geometry remains owned by enemy_pose.
@@ -2827,6 +2854,12 @@ func damage_text_enemy_bounds() -> Array[Rect2]:
 	return enemy_bounds
 
 func damage_text_enemy_bottom() -> float:
+	if battle_read_model_enabled and battle_read_model.active:
+		battle_read_model.fleet_bounds()
+		return battle_read_model.bottom
+	return _source_damage_text_enemy_bottom()
+
+func _source_damage_text_enemy_bottom() -> float:
 	var bottom := -INF
 	for enemy in game.enemies:
 		if enemy.hp<=0:continue
@@ -3196,6 +3229,7 @@ func draw_battle_resources() -> void:
 		RESOURCE_ART.draw_drop(draw_surface,drop,drop_render_position(drop),clock)
 
 func draw_battle() -> void:
+	if battle_read_model_enabled:battle_read_model.begin()
 	enemy_entry_batch_active=true
 	enemy_entry_distance_time=-INF
 	player_weapon_components()
@@ -3239,6 +3273,7 @@ func draw_battle() -> void:
 		draw_battle_foreground(flights,visible_projectiles,offset)
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
+	if battle_read_model_enabled:battle_read_model.end()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
 
@@ -3303,6 +3338,7 @@ func draw_battle_foreground(flights:Array,visible_projectiles:Array,offset:Vecto
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
+	if battle_read_model_enabled:battle_read_model.end()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
 

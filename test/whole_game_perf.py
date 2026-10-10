@@ -85,6 +85,7 @@ def main():
     parser.add_argument('--label', required=True)
     parser.add_argument('--battle-only', action='store_true', help='Private-copy noncombat tick isolation; static modifiers retained, fixed-workload throughput only')
     parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
+    parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
     snapshots=parser.add_mutually_exclusive_group()
     snapshots.add_argument('--checkpoint-round2', type=Path, help='Exact authorized QA7/group4/Frigate snapshot')
@@ -120,6 +121,8 @@ def main():
     args = parser.parse_args()
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
+    if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
+        parser.error('phase-account requires only battle-only, without replay or overlapping instrumenters')
     if args.battle_only and (not args.rich or args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4 or args.instrument):
         parser.error('battle-only requires fixed-step graphical rich page0')
     if (args.missile_loadout or args.authored_stage or args.organic_economy) and not args.rich:
@@ -199,6 +202,10 @@ def main():
     if args.battle_only:
         from battle_render_diagnostic import prepare
         prepare(project, ROOT, args.dynamic_replay)
+    phase_wrapped=[]
+    if args.phase_account:
+        from battle_phase_account import prepare as prepare_phases
+        phase_wrapped=prepare_phases(project,ROOT)
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True
     if args.missile_profile:args.instrument=True
@@ -333,12 +340,14 @@ def main():
     measured_files += ['dev/toon_ship/missile_vfx.gd']
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd']
+    if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py']},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
+              'phase_wrapped':phase_wrapped,
               'software_renderer_environment': {key: env.get(key) for key in ('LP_NUM_THREADS', 'GALLIUM_DRIVER')},
               'exit': result_code, 'environment': environment, 'rows': rows,
               'entry_rows': [json.loads(line[10:]) for line in text.splitlines() if line.startswith('ENTRY_ROW ')],
