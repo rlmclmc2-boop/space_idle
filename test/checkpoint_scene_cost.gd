@@ -211,16 +211,79 @@ func observe_cold(scene,g,save_hash):
  if g.profile.resources!=resources_before or g.profile.loadout!=initial_loadout:fail("cold diagnostic preparation changed source resources/loadout");return
  g.speed=1.0
  var ready_times:Dictionary=meter.times.duplicate(true);meter.times.clear()
+ var measured=[]
+ cold_measured_views(root,measured)
+ var before=cold_inventory(scene)
+ var cold=await cold_window(scene,g,measured,"cold")
+ var after=cold_inventory(scene)
+ scene.set_process(true)
+ var exit_started=Time.get_ticks_usec()
+ g.leave(g.State.LEVEL_SELECT)
+ var exit_call_us=Time.get_ticks_usec()-exit_started
+ await process_frame;await RenderingServer.frame_post_draw
+ await process_frame;await RenderingServer.frame_post_draw
+ var menu=cold_inventory(scene)
+ meter.frame_times.clear()
+ var restart_started=Time.get_ticks_usec()
+ var restart_ok=g.start(20,false)
+ var restart_call_us=Time.get_ticks_usec()-restart_started
+ var restart_phases=meter.frame_times.duplicate(true)
+ var reentry=await cold_window(scene,g,measured,"reentry",true)
+ var final=cold_inventory(scene)
+ scene.set_process(false);meter.enabled=false
+ print("ROW ",JSON.stringify({"spike_cold_diagnostic":true,"diagnostic_only":true,"scope":"Cold0.4sec then public menu exit, natural travel up to6sec, and first COMBAT0.4sec. Reentry group differs from saved cold group; no exact input equivalence claim. Includes original firstframes/input deltas. Inclusive script timers overlap; native CPU wall and GPU last-available queries must not be summed with frame wall. All resource inventory collection occurs outside frame timers, cadence preserves its cost. Native timing-query overhead is diagnostic only.","ready_before_timer":ready_times,"frame_trace":cold.trace,"phase_trace":cold.phases,"first_process_font_cache":cold.first_process_font_cache,"frames_us":stats(cold.frames),"main_us":stats(cold.cpu),"reentry":reentry,"lifecycle":{"before_cold":before,"after_cold":after,"menu":menu,"after_reentry":final,"exit_call_us":exit_call_us,"restart_call_us":restart_call_us,"restart_phases":restart_phases,"restart_ok":restart_ok},"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"loadout_unchanged":g.profile.loadout==initial_loadout,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled}))
+
+func cold_measured_views(node,measured):
+ if node is Viewport:
+  RenderingServer.viewport_set_measure_render_time(node.get_viewport_rid(),true)
+  measured.append(node)
+ for child in node.get_children():cold_measured_views(child,measured)
+
+func cold_fonts(node,found):
+ if node is Control and node.is_visible_in_tree():
+  var f=node.get_theme_font("font")
+  if f!=null:found[f.get_instance_id()]=f
+ for child in node.get_children():cold_fonts(child,found)
+
+func cold_font_cache(scene):
+ var found={scene.font.get_instance_id():scene.font};cold_fonts(scene,found)
+ var ts=TextServerManager.get_primary_interface();var result=[]
+ for f in found.values():
+  for rid in f.get_rids():
+   var entries=[]
+   for size in ts.font_get_size_cache_list(rid):entries.append([str(size),ts.font_get_glyph_list(rid,size).size(),ts.font_get_texture_count(rid,size)])
+   result.append([f.get_instance_id(),str(rid),entries])
+ return result
+
+func cold_inventory(scene):
+ var inventory={"viewport_id":scene.ship_view.viewport.get_instance_id(),"ship_id":scene.ship_view.ship.get_instance_id(),"font_id":scene.font.get_instance_id(),"material_pool_ids":{},"nodes":get_node_count(),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"font_cache":cold_font_cache(scene)}
+ for key in scene.ship_view.material_pool:inventory.material_pool_ids[str(key)]=scene.ship_view.material_pool[key].get_instance_id()
+ return inventory
+
+func cold_window(scene,g,measured,phase,wait_combat:=false):
  var trace=[];var phases=[];var frames=[];var cpu=[]
  var started:=Time.get_ticks_usec();var previous_end:=started
+ var combat_at=0;var first_font=[]
  scene.set_process(true)
- while Time.get_ticks_usec()-started<400000:
+ while Time.get_ticks_usec()-started<(6000000 if wait_combat else 400000):
   meter.frame_times.clear()
   var ticks:int=scene.logical_ticks;var began:=Time.get_ticks_usec()
-  await process_frame;await RenderingServer.frame_post_draw
+  await process_frame
+  var process_signal:=Time.get_ticks_usec()
+  if trace.is_empty():first_font=cold_font_cache(scene)
+  await RenderingServer.frame_pre_draw
+  var predraw:=Time.get_ticks_usec()
+  var predraw_font=[]
+  if trace.is_empty():predraw_font=cold_font_cache(scene)
+  var font_observer_end:=Time.get_ticks_usec()
+  await RenderingServer.frame_post_draw
   var ended:=Time.get_ticks_usec()
   frames.append(ended-began);cpu.append(scene.last_process_us)
-  trace.append({"us":ended-started,"frame_us":ended-began,"cadence_us":ended-previous_end,"root_us":scene.last_process_us,"engine_delta":scene.last_process_delta,"ticks":scene.logical_ticks-ticks,"game_clock":g.motion_clock,"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"nodes":get_node_count(),"objects":Performance.get_monitor(Performance.OBJECT_COUNT),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),"primitives":Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),"native_frame_setup_cpu_ms":RenderingServer.get_frame_setup_time_cpu(),"engine_frame":Engine.get_frames_drawn(),"ship_calls":scene.ship_view.viewport.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)})
+  var native=[]
+  for view in measured:
+   if is_instance_valid(view):native.append([str(view.get_path()),RenderingServer.viewport_get_measured_render_time_cpu(view.get_viewport_rid()),RenderingServer.viewport_get_measured_render_time_gpu(view.get_viewport_rid())])
+  trace.append({"state":g.state,"stage":g.stage,"group":g.group_index,"phase":phase,"us":ended-started,"frame_us":ended-began,"cadence_us":ended-previous_end,"wait_process_us":process_signal-began,"process_to_predraw_us":predraw-process_signal,"predraw_to_postdraw_us":ended-predraw,"predraw_font_observer_us":font_observer_end-predraw,"predraw_font_cache":predraw_font,"root_us":scene.last_process_us,"engine_delta":scene.last_process_delta,"engine_process_ms":Performance.get_monitor(Performance.TIME_PROCESS)*1000.0,"engine_physics_ms":Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)*1000.0,"ticks":scene.logical_ticks-ticks,"game_clock":g.motion_clock,"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"nodes":get_node_count(),"objects":Performance.get_monitor(Performance.OBJECT_COUNT),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),"primitives":Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),"native_frame_setup_cpu_ms":RenderingServer.get_frame_setup_time_cpu(),"native_views_ms":native,"engine_frame":Engine.get_frames_drawn(),"ship_calls":scene.ship_view.viewport.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)})
   phases.append(meter.frame_times.duplicate(true));previous_end=ended
- scene.set_process(false);meter.enabled=false
- print("ROW ",JSON.stringify({"spike_cold_diagnostic":true,"diagnostic_only":true,"scope":"0.4second normal1x full-system first-display, ready before timer; inclusive limited script timers overlap. Native setup CPU is last available engine snapshot, not GPU time or exclusive residual. No per-frame logging or GPU timing queries.","ready_before_timer":ready_times,"frame_trace":trace,"phase_trace":phases,"frames_us":stats(frames),"main_us":stats(cpu),"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"loadout_unchanged":g.profile.loadout==initial_loadout,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled}))
+  if wait_combat and g.state==g.State.COMBAT and combat_at==0:combat_at=ended-started
+  if wait_combat and combat_at>0 and ended-started-combat_at>=400000:break
+ return {"trace":trace,"phases":phases,"frames":frames,"cpu":cpu,"first_process_font_cache":first_font,"combat_at_us":combat_at}
