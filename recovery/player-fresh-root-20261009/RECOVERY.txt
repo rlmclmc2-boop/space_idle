@@ -1,5 +1,5 @@
 Independent cloud normal-resource test save, candidate 2f766d3fd3dcc7cdeab1ddfed5e4e43610840746 tree ae2aa7d7da27ca6354e373fc7a614e8132064b23.
-2026-10-10 01:11:19 UTC: stage17 wave1 paused, manually saved via game UI. Scope stops on first arrival stage20. No acceleration/injection.
+2026-10-10 01:47:48 UTC: stage19 wave1 paused, manually saved via game UI. Scope stops on first arrival stage20. No acceleration/injection.
 Original independent XDG_DATA_HOME=/tmp/play-fresh-20261009/xdg/data, DISPLAY=:71, game X11 window2097155; do not touch other displays.
 Save location: $XDG_DATA_HOME/godot/app_userdata/太空战舰 · 深空远征/progress.json
 Runtime Godot4.6.3 Linux software llvmpipe; performance and Windows unverified.
