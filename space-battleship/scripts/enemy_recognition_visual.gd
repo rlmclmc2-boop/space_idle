@@ -113,7 +113,7 @@ func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cac
 	envelope_builds+=1
 	return result
 
-func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictionary) -> Dictionary:
+func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictionary, result:Dictionary={}) -> Dictionary:
 	var alive := N.compare(enemy.get("hp",0),0)>0
 	var capacity = enemy.get("max_shield",0)
 	var amount = enemy.get("shield",0)
@@ -131,7 +131,10 @@ func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictiona
 		cache.recognition_shield_clock=shield_clock
 		cache.recognition_shield_amount=amount.duplicate(true) if amount is Dictionary else amount
 		cache.recognition_recovering=recovering
-	return {"alive":alive,"active":active,"repair":repair,"fraction":fraction,"recovering":recovering and not paused,"show_hull":not active or int(enemy.get("armourType",0))!=int(enemy.get("shieldType",0))}
+	result.alive=alive;result.active=active;result.repair=repair;result.fraction=fraction
+	result.recovering=recovering and not paused
+	result.show_hull=not active or int(enemy.get("armourType",0))!=int(enemy.get("shieldType",0))
+	return result
 
 func closed(surface: CanvasItem, outline: PackedVector2Array, color: Color, stroke: float) -> void:
 	var path := outline.duplicate()
