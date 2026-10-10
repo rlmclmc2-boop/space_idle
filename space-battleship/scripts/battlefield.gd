@@ -187,6 +187,7 @@ func visual_muzzle(shot:Dictionary)->Vector2:
 
 
 func _set_reference_dimensions() -> void:
+	if battle_read_model_enabled:battle_read_model.invalidate_membership()
 	# Match the existing hull's opaque footprint, not its transparent source canvas.
 	var image := ship_hull_texture(str(game.profile.selectedShip)).get_image()
 	var rect := image.get_used_rect()

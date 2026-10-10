@@ -7,6 +7,7 @@ var compiling=false
 var clock=-INF
 var records:Dictionary={}
 var config:Dictionary={}
+var config_signature:Array=[]
 var geometry_revision=0
 var bounds_revision=-1
 var bounds:Array[Rect2]=[]
@@ -17,8 +18,10 @@ func setup(owner)->void:host=owner
 
 func begin(force:bool=false)->void:
 	active=true
-	if not force and clock==host.fx_time:return
-	config={"base_scale":host.player_base_art_scale(),"art_scale":host.player_art_scale(),"screen_scale":host.enemy_recognition_screen_scale(),"final":host.game.is_final_encounter(),"boss":host.game.is_boss_encounter()}
+	var next_config={"base_scale":host.player_base_art_scale(),"art_scale":host.player_art_scale(),"screen_scale":host.enemy_recognition_screen_scale(),"final":host.game.is_final_encounter(),"boss":host.game.is_boss_encounter()}
+	var signature=[next_config,host.battle_visual.hash(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap)]
+	if not force and clock==host.fx_time and signature==config_signature:return
+	config=next_config;config_signature=signature
 	var visual=host.battle_visual
 	config.player_front=host.BATTLE_VIEW_SIZE.y*float(visual.player_ship_y)-absf(float(visual.player_idle_y))-(host.SHIP_ART_CANVAS.y*float(visual.player_core_scale)/2.0+host.SHIP_ART_CANVAS.x*float(visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(visual.player_idle_rotation)))))*float(config.art_scale)
 	var present={}
