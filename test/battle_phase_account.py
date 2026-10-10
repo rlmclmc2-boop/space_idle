@@ -15,7 +15,7 @@ SCOPES = {
           **{name:'geometry_queries' for name in ['enemy_render_width_at_y','enemy_frontline_y_limit','enemy_render_position','enemy_component_pose','enemy_recognition_geometry','enemy_weapon_components','enemy_weapon_angle','damage_text_enemy_bounds','damage_text_enemy_bottom']},
           'visual_muzzle':'geometry_authority'},
  'battlefield': {'_process':'presentation_update','before_logical_game_tick':'step_pose_update','weapon_launch':'event_presentation','on_event':'event_presentation','enemy_target_point':'geometry_authority','enemy_render_position':'geometry_queries','draw_battle':'draw_materialization','draw_projectile_fx':'draw_materialization','draw_projectile_body_override':'draw_materialization'},
- 'retained_enemy_contacts': {'sync':'draw_materialization','paint':'draw_materialization'},
+ 'retained_enemy_contacts': {'sync':'draw_materialization','paint':'draw_materialization','compile_record':'shape_publication','update_record':'draw_materialization'},
  'presented_ship_view': {name:'ship_native_update' for name in ['set_pose','set_loadout','apply_parameters','aim_at','set_hull']},
 }
 
