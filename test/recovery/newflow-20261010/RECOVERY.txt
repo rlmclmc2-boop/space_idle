@@ -2,8 +2,8 @@ Independent fresh normal-resource GUI playtest recovery only; round not complete
 Frozen gameplay HEAD: 2f766d3fd3dcc7cdeab1ddfed5e4e43610840746
 Frozen tree: ae2aa7d7da27ca6354e373fc7a614e8132064b23
 Unchanged game-project tree: 8736f5e43dd15eed7b3c697d56211cabbe4ad434
-Checkpoint: stage8 wave5/9 paused, manual save confirmed2026-10-10 01:23:53UTC.
-Weapons: beam19/missile22/beam12. Defense: armor27, shield24. AI6. Normal firstΔlayer1 cleared, whitebeamdrone equipped; normal backgroundΔ1 enabled.
+Checkpoint: stage10 wave2/9 paused, manual save confirmed2026-10-10 01:44:40UTC.
+Normal firstΔlayer1 cleared; naturalgoldbeamdrone equipped, no改造/injection. Strength1, weaponproficiency first and defensememoryrepair first. Gear upgraded through normal controls; allpuretestsave.
 Original cloud runtime: Godot4.6.3, DISPLAY:71, window0x200003, normal speed; no QA or resource injection.
 Restore only this test progress.json into a separate XDG_DATA_HOME under godot/app_userdata/太空战舰 · 深空远征/ before startup. Keep XDG_CONFIG_HOME and XDG_CACHE_HOME separate as well. Run frozen gameplay commit, not recovery branch as a new candidate.
 Next: continue this same player round through first arrival at stage20; pause, manually save, close. No farming at20.
