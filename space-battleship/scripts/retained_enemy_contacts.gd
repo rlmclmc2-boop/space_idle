@@ -9,6 +9,8 @@ class Part extends Node2D:
  var signature:Array=[]
  var builds:=0
  var pieces:Dictionary={}
+ var stroke_kind=""
+ var stroke_width=-INF
  func update(values:Dictionary,key:Array)->void:
   if signature==key:return
   signature=key.duplicate(true);data=values;queue_redraw()
@@ -63,6 +65,7 @@ class DisplayRecord extends RefCounted:
  var packet_repair:bool=false
  var packet_large:bool=false
 
+var stroke_geometry=preload("res://scripts/resident_stroke_geometry.gd").new()
 var paint_owner
 var records:Dictionary={}
 var foreground:Part
@@ -131,6 +134,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   var enabled=record.physical if physical else record.energy
   body.visible=enabled;strokes.visible=enabled
   body.data={"physical":physical};body.queue_redraw()
+  strokes.stroke_kind="";strokes.stroke_width=-INF
   strokes.data={"width":-INF,"physical":physical}
  for component in components:
   var mount=MountRecord.new();mount.node=build_weapon(record.root)
@@ -262,9 +266,21 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   mount.node.pieces.body.scale=Vector2.ONE*w
   if not mount.physical:set_stroke_width(mount.node.pieces.strokes,w)
 
+func update_stroke(node:Part,kind:String,width:float)->void:
+ if node.stroke_kind!=kind:
+  var packet=stroke_geometry.asset(kind)
+  node.material=stroke_geometry.material_for(packet)
+  node.stroke_kind=kind;node.stroke_width=-INF
+  node.update({"mesh":packet.mesh},[kind])
+ if node.stroke_width==width:return
+ node.stroke_width=width;node.material.set_shader_parameter("shape_width",width)
+ # Shader displacement is not visible to Canvas culling. Publish a conservative
+ # local bound at the same size boundary, without recreating commands or mesh.
+ RenderingServer.canvas_item_set_custom_rect(node.get_canvas_item(),true,Rect2(Vector2(-0.65,-0.15)*width-Vector2.ONE*8,Vector2(1.3,0.85)*width+Vector2.ONE*16))
+
 func set_stroke_width(node:Part,width:float)->void:
- if node.data.width==width:return
- node.data.width=width;node.queue_redraw()
+ var stroke_kind="weapon_energy" if node.kind=="weapon_strokes" else "deck_physical" if node.kind=="deck_physical_strokes" else "deck_energy"
+ update_stroke(node,stroke_kind,width)
 
 func update_meters(record:DisplayRecord,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->void:
  # Ordinary contacts draw only meters. Leader/caption consumers keep the full
@@ -299,9 +315,9 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
   "hull":
    surface.draw_texture_rect(data.texture,Rect2(Vector2(-0.5,-1.0),Vector2(1.0,2.0)),false,Color.WHITE)
   "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
-  "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
+  "deck_physical_strokes","deck_energy_strokes":surface.draw_mesh(data.mesh,null)
   "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
-  "weapon_strokes":paint_owner.enemy_recognition.draw_weapon_strokes(surface,data.width)
+  "weapon_strokes":surface.draw_mesh(data.mesh,null)
   "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
   "fallback":paint_owner.draw_enemy_hull_and_status(data.enemy,data.offset,data.boss)
