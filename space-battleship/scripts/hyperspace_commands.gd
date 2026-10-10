@@ -278,6 +278,17 @@ func received_rewards_text(rewards: Dictionary,previous_modules:Dictionary={}) -
   var state_text=t("module_unlocked_grown",{"level":str(int(outcome.level))}) if bool(outcome.newly_unlocked) else t("module_level_grown",{"before":str(before),"after":str(int(outcome.level))}) if int(outcome.level)>before else t("module_experience_received")
   lines.append(t("dismantle_module_progress",{"name":panel.hanging_name(str(key)),"count":str(int(outcome.copies)),"state":state_text,"exp":str(int(outcome.experience_added))}))
  return "\n".join(lines)
+func received_rewards_summary(rewards: Dictionary) -> String:
+ var lines:Array[String]=[]
+ for key in rewards.get("modules",{}):
+  lines.append(t("dismantle_module_short",{"name":panel.hanging_name(str(key)),"level":str(int(rewards.modules[key].level))}))
+ lines.append(t("dismantle_received_materials",{"materials":received_materials_text(rewards.get("materials",{}))}))
+ return "\n".join(lines)
+func received_rewards_details(rewards: Dictionary,previous_modules:Dictionary={}) -> String:
+ var lines:Array[String]=[received_rewards_text(rewards,previous_modules)]
+ for key in rewards.get("modules",{}):
+  lines.append(panel.hanging_name(str(key))+"\n"+module_effect_text(str(key),int(rewards.modules[key].level)))
+ return "\n\n".join(lines)
 func preview() -> void:
  quoted_request=request()
  if quoted_request.is_empty():feedback.text=t("choose");return
@@ -317,10 +328,11 @@ func execute_inventory_dismantle() -> void:
  var req=dismantle_request;dismantle_request={}
  var previous_modules:Dictionary=game().profile.hyperspace.hanging_modules.duplicate(true)
  var result:Dictionary=h().forge(game(),req)
- var receipt_text:String=error_text(str(result.error)) if not str(result.error).is_empty() else received_rewards_text(result.get("rewards",{}),previous_modules)
+ var receipt_text:String=error_text(str(result.error)) if not str(result.error).is_empty() else received_rewards_summary(result.get("rewards",{}))
+ var receipt_details:String="" if not str(result.error).is_empty() else received_rewards_details(result.get("rewards",{}),previous_modules)
  if str(result.error).is_empty() and bool(result.get("applied",false)):
   if panel.selected_id==str(req.drone_id):panel.selected_id=module_id if game().profile.hyperspace.inventory.drones.has(module_id) else ""
- panel.show_inventory_receipt(receipt_text)
+ panel.show_inventory_receipt(receipt_text,receipt_details)
  panel.refresh_manual_status();panel.inventory_dirty=true;panel.refresh()
 func execute_quote() -> void:
  if quoted_request.is_empty():return
@@ -430,6 +442,8 @@ func show_modules() -> void:
  for child in module_dialog.get_children():
   if child is VBoxContainer:child.free()
  module_choices.clear();var body=content(module_dialog);var d: Dictionary=panel.bag.drones[module_id]
+ module_dialog.title=t("module_manage")+" · "+t("module_carrier_title",{"quality":panel.quality_caption(d),"weapon":t(str(d.weapon)),"level":str(int(d.level))})
+ dialog_label(body,t("drone_hanging_capacity",{"opened":str(int(d.hanging_slots)),"capacity":str(panel.Bag.hanging_limit(d,h().config))}),20,660)
  dialog_label(body,t("module_slots",{"used":str(d.hangings.size()),"cap":str(int(d.hanging_slots))}),22)
  module_open_slot=null
  if int(d.hanging_slots)==0:
@@ -465,7 +479,7 @@ func show_modules() -> void:
  if available>0:dialog_label(body,t("module_source_hint"),18)
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
  refresh_module_apply()
- module_dialog.popup_centered(Vector2i(740,510))
+ module_dialog.popup_centered(Vector2i(740,540))
 func module_requirement_text(key:String) -> String:
  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
  var stage:int=int(h().config.hanging_modules[key].unlock_stage)

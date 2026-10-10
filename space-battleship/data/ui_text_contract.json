@@ -10002,6 +10002,22 @@
     },
     "hyperspace.drone_growth_active_slot": {
       "params": []
+    },
+    "hyperspace.dismantle_module_short": {
+      "params": [
+        "name",
+        "level"
+      ]
+    },
+    "hyperspace.inventory_receipt_details": {
+      "params": []
+    },
+    "hyperspace.module_carrier_title": {
+      "params": [
+        "quality",
+        "weapon",
+        "level"
+      ]
     }
   },
   "bindings": {

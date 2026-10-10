@@ -89,6 +89,9 @@ var dismantle_button: Button
 var inventory_feedback: Label
 var inventory_module_next: Button
 var inventory_receipt_close: Button
+var inventory_receipt_details: Button
+var inventory_receipt_dialog: AcceptDialog
+var inventory_receipt_detail_text: String=""
 var inventory_receipt_drone_id: String=""
 var forge_pick_cancel: Button
 var forge_pick_state: Dictionary={}
@@ -279,6 +282,7 @@ func build_inventory(parent: Node) -> void:
  var receipt_actions=row(detail_body)
  inventory_module_next=button(receipt_actions,"module_receipt_install",commands.show_module_entry);inventory_module_next.visible=false
  inventory_receipt_close=button(receipt_actions,"module_receipt_close",clear_inventory_receipt);inventory_receipt_close.visible=false
+ inventory_receipt_details=button(row(detail_body),"inventory_receipt_details",show_inventory_receipt_details);inventory_receipt_details.visible=false
  details=label(detail_body,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
 func build_forge(parent: Node) -> void:
@@ -469,6 +473,7 @@ func refresh_details() -> void:
  var valid=bag.drones.has(selected_id)
  if inventory_feedback.visible and inventory_receipt_drone_id!=selected_id:clear_inventory_receipt()
  put(inventory_receipt_close,"visible",inventory_feedback.visible)
+ put(inventory_receipt_details,"visible",inventory_feedback.visible and not inventory_receipt_detail_text.is_empty())
  put(inventory_module_next,"visible",inventory_feedback.visible and commands.has_effective_modules())
  put(inventory_module_next,"disabled",false)
  put(inventory_module_next,"text",t("module_receipt_install" if valid else "module_choose_carrier"))
@@ -545,11 +550,25 @@ func finish_forge_pick(id:String,cancelled:=false) -> void:
 func show_selected_legendary() -> void:
  if bag.get("drones",{}).has(selected_id) and bool(bag.drones[selected_id].get("legendary",false)):
   legendary_help.show(bag.drones[selected_id].legendary_effect,selected_id)
-func show_inventory_receipt(message:String) -> void:
+func show_inventory_receipt(message:String,full_message:String="") -> void:
  inventory_receipt_drone_id=selected_id
- put(inventory_feedback,"text",message);put(inventory_feedback,"tooltip_text",message);put(inventory_feedback,"visible",true)
+ inventory_receipt_detail_text=full_message
+ put(inventory_feedback,"max_lines_visible",-1 if not full_message.is_empty() else 2)
+ put(inventory_feedback,"text_overrun_behavior",TextServer.OVERRUN_NO_TRIMMING if not full_message.is_empty() else TextServer.OVERRUN_TRIM_ELLIPSIS)
+ put(inventory_feedback,"text",message);put(inventory_feedback,"tooltip_text",full_message if not full_message.is_empty() else message);put(inventory_feedback,"visible",true)
+ put(inventory_receipt_details,"visible",not full_message.is_empty())
+func show_inventory_receipt_details() -> void:
+ if inventory_receipt_detail_text.is_empty():return
+ if inventory_receipt_dialog==null:
+  inventory_receipt_dialog=AcceptDialog.new();inventory_receipt_dialog.title=t("inventory_receipt_details")
+  inventory_receipt_dialog.min_size=Vector2i(560,260);inventory_receipt_dialog.dialog_autowrap=true
+  add_child(inventory_receipt_dialog);preload("res://scripts/dialog_presentation.gd").dialog(inventory_receipt_dialog)
+ inventory_receipt_dialog.dialog_text=inventory_receipt_detail_text
+ inventory_receipt_dialog.popup_centered(Vector2i(680,400))
 func clear_inventory_receipt() -> void:
  put(inventory_feedback,"visible",false);put(inventory_module_next,"visible",false);put(inventory_receipt_close,"visible",false)
+ put(inventory_receipt_details,"visible",false);inventory_receipt_detail_text=""
+ if is_instance_valid(inventory_receipt_dialog):inventory_receipt_dialog.hide()
 func capability_summary(d:Dictionary) -> String:
  var config:Dictionary=host.game.hyperspace.config
  var parts:Array[String]=[t("drone_hanging_capacity",{"opened":str(int(d.hanging_slots)),"capacity":str(Bag.hanging_limit(d,config))})]
