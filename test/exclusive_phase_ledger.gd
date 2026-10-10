@@ -18,7 +18,11 @@ func enter(category:String,key:String)->void:
  if category=="geometry_queries":
   category="geometry_authority" if active=="geometry_authority" or "geometry_authority" in stack else "geometry_display"
  if category=="numeric_queries":
-  category="numeric_combat" if active=="simulation" or "simulation" in stack else "numeric_display"
+  category="numeric_display"
+  var ancestry=[active];var parents=stack.duplicate();parents.reverse();ancestry.append_array(parents)
+  for parent in ancestry:
+   if parent in ["numeric_display","ui_refresh","event_presentation","damage_layout","display_publication","draw_materialization","presentation_update"]:break
+   if parent in ["simulation","numeric_combat"]:category="numeric_combat";break
  active=category
  if enabled:calls[key]=calls.get(key,0)+1
 func leave()->void:

@@ -649,7 +649,8 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
-	if battle_read_model_enabled and kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","equipment_stats","upgrade"]:battle_read_model.invalidate_membership()
+	var geometry_changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
+	if battle_read_model_enabled and geometry_changed:battle_read_model.invalidate_membership()
 	defeat_feedback.record(game,kind,info)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
