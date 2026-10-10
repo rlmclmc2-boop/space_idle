@@ -9,11 +9,6 @@ const QUALITIES=["white","blue","gold","legendary"]
 const KINDS=["none","weapon","quality","minimum_level","affix","legendary_effect"]
 const COUNT_AFFIXES=["chain_count","extra_chain_count"]
 var host
-signal view_prepared
-var view_ready=false
-var view_preparing=false
-var preparation_steps=0
-var retained_services=false
 var manual_adapter: Callable
 var manual_ready_provider: Callable
 var manual_projection: Dictionary={}
@@ -151,7 +146,7 @@ func thumbnail(parent: Node,width: float) -> TextureRect:
  var n=preload("res://scripts/hyperspace_icon.gd").new();n.custom_minimum_size=Vector2(width,width);n.expand_mode=TextureRect.EXPAND_IGNORE_SIZE;n.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED;n.mouse_filter=Control.MOUSE_FILTER_IGNORE;parent.add_child(n);return n
 func option(parent: Node) -> OptionButton:
  var n=OptionButton.new();n.size_flags_horizontal=Control.SIZE_EXPAND_FILL;preload("res://scripts/dialog_presentation.gd").option(n);parent.add_child(n);return n
-func setup(owner, defer_view:=false) -> void:
+func setup(owner) -> void:
  host=owner;commands.setup(self);route_ui.setup(self);legendary_help.setup(self)
  reward_feedback.setup(self)
  equipment_ui.setup(self)
@@ -164,29 +159,6 @@ func setup(owner, defer_view:=false) -> void:
  hull_capacity_provider=func():return host.game.hyperspace.Permission.hull_capacity(host.game,host.game.hyperspace.config)
  preset_adapter=func(index):host.game.hyperspace.apply_preset(host.game,index)
  affix_catalog_provider=func():return host.game.hyperspace.config.affixes.keys()
- retained_services=true
- host.game.event.connect(on_event)
- visibility_changed.connect(func():
-  if is_visible_in_tree() and view_ready:refresh())
- set_process(true)
- if not defer_view:_build_view()
-
-func prepare_view() -> void:
- if view_ready:return
- if view_preparing:
-  await view_prepared
-  return
- view_preparing=true
- await _build_view()
- view_preparing=false
- view_prepared.emit()
-
-func preparation_checkpoint() -> void:
- if view_preparing:
-  preparation_steps+=1
-  await get_tree().process_frame
-
-func _build_view() -> void:
  theme=preload("res://scripts/dialog_presentation.gd").theme();add_theme_font_override("font",host.font)
  var panel=PanelContainer.new();panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  panel.offset_left=20;panel.offset_right=-20;panel.offset_top=20;panel.offset_bottom=-20
@@ -214,25 +186,16 @@ func _build_view() -> void:
    page_scroll.follow_focus=true;stack.add_child(page_scroll)
    content.size_flags_horizontal=Control.SIZE_EXPAND_FILL;page_scroll.add_child(content)
    sections.append(page_scroll)
-   if i==0:exploration_scroll=page_scroll;await build_exploration(content)
+   if i==0:exploration_scroll=page_scroll;build_exploration(content)
    else:forge_scroll=page_scroll;forge_content=content
   else:
    content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);stack.add_child(content);sections.append(content)
  root_box.move_child(exploration_receipt_area,root_box.get_child_count()-1)
- await preparation_checkpoint()
- await build_inventory(sections[1])
- await preparation_checkpoint()
- build_forge(forge_content)
- await preparation_checkpoint()
- await build_rules(sections[3])
- # Drain queued sizing/font work before exposing a complete page. The game keeps processing.
- await preparation_checkpoint()
- view_ready=true
- select_section(section_index);refresh()
+ build_inventory(sections[1]);build_forge(forge_content);build_rules(sections[3])
+ host.game.event.connect(on_event);visibility_changed.connect(func():
+  if is_visible_in_tree():refresh())
+ select_section(0);set_process(true);refresh()
 func select_section(index: int) -> void:
- if not view_ready:
-  section_index=clampi(index,0,3)
-  return
  if index!=1 and not forge_pick_state.is_empty():finish_forge_pick("",true);return
  section_index=clampi(index,0,3)
  if section_index>1 and host!=null and not bool(host.game.profile.hyperspace.unlocked_drones):section_index=0
@@ -269,7 +232,6 @@ func build_exploration(parent: Node) -> void:
   label(text,t("route_reward",{"material":t(config.material)}),20).mouse_filter=Control.MOUSE_FILTER_IGNORE
   var marker=label(text,"",18);marker.mouse_filter=Control.MOUSE_FILTER_IGNORE;marker.visible=false;route_markers.append(marker)
   routes.append(b)
-  await preparation_checkpoint()
  route_ui.build(parent)
  first_win=label(parent,t("layer_first_win"),22)
  reward_feedback.build(exploration_receipt_scroll)
@@ -300,7 +262,6 @@ func build_inventory(parent: Node) -> void:
   var quality=label(text,"",19);quality.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_subtitles.append(quality)
   var flags_label=label(text,"",16);flags_label.max_lines_visible=3;flags_label.mouse_filter=Control.MOUSE_FILTER_IGNORE;card_flags.append(flags_label)
   b.pressed.connect(func():choose_drone(str(b.get_meta("drone_id",""))));cards.append(b)
-  await preparation_checkpoint()
  empty=label(list,t("no_items"),24)
  var paging=row(list);previous=button(paging,"previous",func():page=maxi(0,page-1);refresh_list());page_label=label(paging,"");page_label.custom_minimum_size.x=120;page_label.autowrap_mode=TextServer.AUTOWRAP_OFF;next=button(paging,"next",func():page+=1;refresh_list())
  var detail=surface(split);detail.custom_minimum_size.x=360;detail.size_flags_vertical=Control.SIZE_EXPAND_FILL
@@ -340,7 +301,6 @@ func build_rules(parent: Node) -> void:
   var apply=button(pr,"apply_preset",func():
    if preset_adapter.is_valid():preset_adapter.call(index))
   preset_apply.append(apply);button(pr,"clear_preset",func():host.game.hyperspace.clear_preset(host.game,index))
-  await preparation_checkpoint()
  label(parent,t("filter"),25);label(parent,t("filter_domain_hint"),20)
  var modes=row(parent);filter_mode=option(modes);filter_mode.add_item(t("filter_and"));filter_mode.add_item(t("filter_or"));string_button=button(modes,"string_tools",show_strings)
  var policy=row(parent);filter_enabled=CheckBox.new();filter_enabled.text=t("filter_auto");policy.add_child(filter_enabled);checkbox_skin(filter_enabled);filter_action=option(policy)
@@ -355,7 +315,6 @@ func build_rules(parent: Node) -> void:
   for n in range(1,6):tier.add_item(t("condition_tier",{"tier":str(n)}))
   condition_tiers.append(tier)
   kind.item_selected.connect(func(_n):configure_condition(i));configure_condition(i)
-  await preparation_checkpoint()
  var rule_actions=row(parent);button(rule_actions,"filter_preview",build_filter_draft);filter_save=button(rule_actions,"filter_save",save_filter);filter_result=label(parent,t("rule_none"),22)
  string_dialog=AcceptDialog.new();string_dialog.title=t("string_title");string_dialog.min_size=Vector2i(750,480);string_dialog.size=Vector2i(860,520);add_child(string_dialog);preload("res://scripts/dialog_presentation.gd").dialog(string_dialog)
  var dialog_content=VBoxContainer.new();string_dialog.add_child(dialog_content);dialog_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dialog_content.offset_left=20;dialog_content.offset_right=-20;dialog_content.offset_top=20;dialog_content.offset_bottom=-60
@@ -423,12 +382,12 @@ func on_event(kind: String,_payload: Dictionary) -> void:
   if commands.totals_dialog!=null and commands.totals_dialog.visible:commands.refresh_totals()
   host.refresh_hyperspace_badge()
 func _process(_delta: float) -> void:
- if not view_ready or not is_visible_in_tree():return
+ if not is_visible_in_tree():return
  if dirty:refresh()
  reward_feedback.mark_viewed()
  if section_index==0:route_ui.tick(_delta)
 func refresh() -> void:
- if not view_ready or host==null or not is_visible_in_tree():return
+ if host==null or not is_visible_in_tree():return
  var s: Dictionary=host.game.profile.hyperspace
  if disabled_snapshot!=host.game.drone_combat.disabled:
   disabled_snapshot=host.game.drone_combat.disabled.duplicate();inventory_dirty=true

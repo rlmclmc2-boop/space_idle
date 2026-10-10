@@ -2091,9 +2091,6 @@ func build_ui() -> void:
 		ui_rebuild_pending = true
 		return
 	ui_rebuild_pending = false
-	system_selection_serial+=1
-	if is_instance_valid(hyperspace_panel) and hyperspace_panel.get_parent()!=null:
-		hyperspace_panel.get_parent().remove_child(hyperspace_panel)
 	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	system_nav_buttons.clear()
 	system_nav = null
@@ -2323,14 +2320,8 @@ func build_workspace_shell() -> void:
 	system_nav.add_child(upgrade_badges)
 	upgrade_badges.setup(game,system_nav_buttons)
 
-var system_selection_serial=0
 func select_system(index: int) -> void:
-	system_selection_serial+=1
-	var request=system_selection_serial
 	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
-	if index==9 and not hyperspace_panel.view_ready:
-		await hyperspace_panel.prepare_view()
-		if request!=system_selection_serial or not is_instance_valid(equipment_tabs) or equipment_tabs.is_tab_hidden(index):return
 	set_ui_value(equipment_tabs,"current_tab",index)
 	if index==9 and unread_hyperspace_reward():hyperspace_panel.select_section(0)
 	refresh_system_nav()
@@ -3706,12 +3697,11 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.add_child(galaxy_panel)
 	equipment_tabs.set_tab_title(8,UIText.t("galaxy.tab"))
 	galaxy_panel.setup(self)
-	var new_hyperspace=not is_instance_valid(hyperspace_panel)
-	if new_hyperspace:hyperspace_panel=preload("res://scripts/hyperspace_panel.gd").new()
+	hyperspace_panel=preload("res://scripts/hyperspace_panel.gd").new()
 	hyperspace_panel.name="Hyperspace"
 	equipment_tabs.add_child(hyperspace_panel)
 	equipment_tabs.set_tab_title(9,UIText.t("hyperspace.tab"))
-	if new_hyperspace:hyperspace_panel.setup(self,true)
+	hyperspace_panel.setup(self)
 	# Append after every gameplay page so unlocks never place a tab below Save.
 	save_panel = preload("res://scripts/save_panel.gd").new()
 	save_panel.name = "Save"

@@ -11,7 +11,6 @@ var summary: Label
 var view_button: Button
 var queued_notice=false
 var unread=false
-var receipt_text=""
 var receipt_marker:Dictionary={}
 func setup(owner) -> void:
  panel=owner
@@ -52,9 +51,7 @@ func on_event(kind:String,payload:Dictionary) -> void:
   if has_drone and first_drone:
    first_drone=false;queued_notice=true;show_first_drone.call_deferred()
  elif reason=="reforge" or reason=="inventory_reset":
-  pending={};pending_receipts={};latest={};unread=false;save_read_state();
-  if is_instance_valid(card):panel.put(card,"visible",false)
-  sync_receipt_area()
+  pending={};pending_receipts={};latest={};unread=false;save_read_state();panel.put(card,"visible",false);sync_receipt_area()
 func restore_read_state() -> void:
  var g=panel.host.game;var s:Dictionary=g.profile.hyperspace
  first_drone=not bool(s.unlocked_drones)
@@ -97,7 +94,6 @@ func save_read_state() -> void:
 func nav_key() -> String:
  return "reward_nav_drone" if not latest.get("drone",{}).is_empty() else "reward_nav_received"
 func sync_receipt_area() -> void:
- if not is_instance_valid(panel.exploration_receipt_area):return
  panel.put(panel.exploration_receipt_area,"visible",panel.section_index==0 and is_instance_valid(card) and card.visible)
 func mark_viewed() -> void:
  if not unread or queued_notice or not panel.is_visible_in_tree():return
@@ -109,40 +105,36 @@ func mark_viewed() -> void:
   unread=false;save_read_state();panel.host.refresh_hyperspace_badge()
 func show_receipt() -> bool:
  if latest.is_empty():
-  receipt_text=""
-  if is_instance_valid(card):panel.put(summary,"text","");panel.put(card,"visible",false);panel.put(view_button,"visible",false);sync_receipt_area()
-  return false
+  panel.put(summary,"text","");panel.put(card,"visible",false);panel.put(view_button,"visible",false);sync_receipt_area();return false
  var drone:Dictionary=latest.get("drone",{})
  var has_drone=not drone.is_empty() and panel.host.game.profile.hyperspace.inventory.drones.has(str(drone.id))
- receipt_text=panel.t("reward_drone_received",{"weapon":panel.t(str(drone.weapon)),"level":str(int(drone.level)),"quality":panel.quality_caption(drone)}) if has_drone else panel.t("reward_materials_received")
+ summary.text=panel.t("reward_drone_received",{"weapon":panel.t(str(drone.weapon)),"level":str(int(drone.level)),"quality":panel.quality_caption(drone)}) if has_drone else panel.t("reward_materials_received")
  var gains:Array[String]=[]
  for key in latest.get("materials",{}):
   if int(latest.materials[key])>0:gains.append(panel.t("reward_material_item",{"material":panel.t(str(key)),"count":str(int(latest.materials[key]))}))
  if int(latest.get("ultimate_cores",0))>0:gains.append(panel.t("reward_material_item",{"material":panel.t("ultimate_cores"),"count":str(int(latest.ultimate_cores))}))
- if not gains.is_empty():receipt_text+="\n"+" · ".join(gains)
+ if not gains.is_empty():summary.text+="\n"+" · ".join(gains)
  if not latest.get("module_receipt",[]).is_empty():
-  receipt_text+="\n"+panel.t("reward_auto_dismantled")
+  summary.text+="\n"+panel.t("reward_auto_dismantled")
   for receipt in latest.module_receipt:
-   receipt_text+="\n"+panel.t("reward_module_receipt",{"name":panel.hanging_name(str(receipt.key)),"copies":str(int(receipt.copies)),"level":str(int(receipt.level))})
- if is_instance_valid(card):
-  panel.put(summary,"text",receipt_text);panel.put(card,"visible",true);panel.put(view_button,"visible",has_drone);sync_receipt_area()
+   summary.text+="\n"+panel.t("reward_module_receipt",{"name":panel.hanging_name(str(receipt.key)),"copies":str(int(receipt.copies)),"level":str(int(receipt.level))})
+ panel.put(card,"visible",true);panel.put(view_button,"visible",has_drone);sync_receipt_area()
  return has_drone
 func show_first_drone() -> void:
  if not queued_notice or not is_instance_valid(panel.host):return
  queued_notice=false
- if not is_instance_valid(notice):
+ if notice==null:
   notice=AcceptDialog.new();notice.title=panel.t("reward_first_drone")
   notice.ok_button_text=panel.t("reward_view_drone");notice.dialog_autowrap=true
   panel.host.add_child(notice);preload("res://scripts/dialog_presentation.gd").dialog(notice)
   notice.confirmed.connect(view_drone)
- notice.dialog_text=receipt_text+"\n\n"+panel.t("reward_equip_next")
+ notice.dialog_text=summary.text+"\n\n"+panel.t("reward_equip_next")
  notice.popup_centered(Vector2i(560,280))
 func view_drone() -> void:
  var id=str(latest.get("drone",{}).get("id",""))
  var s:Dictionary=panel.host.game.profile.hyperspace
  if id.is_empty() or not s.inventory.drones.has(id):return
- await panel.host.select_system(9)
- if not panel.view_ready:return
+ panel.host.select_system(9)
  panel.selected_id=id
  # An explicit reward action must reveal its card even under an old filter.
  panel.weapon_filter.select(0);panel.quality_filter.select(0);panel.sort_order.select(0)
