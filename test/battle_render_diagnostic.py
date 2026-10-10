@@ -56,7 +56,7 @@ def prepare(project: Path, root: Path, replay: bool):
         '  scope.active_native_process_callbacks=preload("res://battle_scope.gd").processing_inventory(scene)\n'
         '  scope.settled_ship_scale=scene.ship_view.viewport.scaling_3d_scale\n  row.battle_scope=scope')
     # A and R0 both end each frame at actual native render completion.
-    source = source.replace('   await process_frame\n   if i>=warmup:',
+    source = source.replace('   await process_frame\n   if realtime:await RenderingServer.frame_post_draw\n   if i>=warmup:',
         '   await process_frame\n   await RenderingServer.frame_post_draw\n   if i>=warmup:')
     shutil.copy2(root/'test/battle_scope.gd',project/'battle_scope.gd')
     if replay:

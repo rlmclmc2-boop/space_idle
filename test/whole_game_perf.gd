@@ -38,9 +38,17 @@ class UI extends "res://scripts/battlefield.gd":
    retention_previous[uid]=current
    retention_counts.contacts+=1
   super.draw_enemy_hull_and_status(enemy,offset,boss)
+ var logical_ticks := 0
+ var process_callbacks := 0
+ var process_delta_total := 0.0
+ var last_process_delta := 0.0
+ func before_logical_game_tick(dt:float)->void:
+  logical_ticks+=1
+  super.before_logical_game_tick(dt)
  var last_process_us := 0
  var last_draw_us := 0
  func _process(dt: float) -> void:
+  process_callbacks+=1;process_delta_total+=dt;last_process_delta=dt
   var inspect_cards=OS.get_environment("PERF_CPU_PEAKS")=="1"
   var before={}
   if inspect_cards and is_instance_valid(equipment_panel):
@@ -213,6 +221,7 @@ func run():
  var submission_mode=OS.get_environment("PERF_SUBMISSION_MODE")
  if submission_mode.is_empty():submission_mode="full"
  var realtime=OS.get_environment("PERF_REALTIME")=="1"
+ var initial_combat_sha=JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text()
  scene.set_process(realtime)
  var scenarios=[0,4,1,2,6,8]
  if not OS.get_environment("PERF_PAGES").is_empty():
@@ -254,10 +263,21 @@ func run():
   var envelope_build_start=0
   var sampled_draw_start=0
   var sampled_clock_start=0.0
+  var realtime_start=Time.get_ticks_usec()
+  var wall_start=0;var wall_end=0;var logical_start=0;var callbacks_start=0;var delta_start=0.0
+  var sample_started=false
+  var logic_frame_trace=[];var cpu_no_tick=[];var cpu_one_tick=[];var cpu_multi_tick=[]
+  var cpu_total_us=0.0
+  var seconds=float(OS.get_environment("PERF_SECONDS"));var warm_seconds=float(OS.get_environment("PERF_WARMUP_SECONDS"))
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
   var warmup=int(OS.get_environment("PERF_WARMUP_FRAMES")) if not OS.get_environment("PERF_WARMUP_FRAMES").is_empty() else 15
+  if realtime:count=20000;warmup=0
   for i in range(count+warmup):
+   if realtime:
+    if sample_started and Time.get_ticks_usec()-wall_start>=seconds*1000000.0:break
+    if not sample_started:warmup=i if Time.get_ticks_usec()-realtime_start>=warm_seconds*1000000.0 else i+1
    if i==warmup:
+    sample_started=true;wall_start=Time.get_ticks_usec();logical_start=scene.logical_ticks;callbacks_start=scene.process_callbacks;delta_start=scene.process_delta_total
     if OS.get_environment("PERF_FREEZE_SHIP_BUFFER")=="1":ship_buffer_start=image_digest(scene.ship_view.viewport.get_texture())
     part_build_start=contact_part_builds(scene)
     envelope_build_start=scene.enemy_recognition.envelope_builds
@@ -269,14 +289,23 @@ func run():
    meter.frame_times.clear()
    meter.muzzle_seen.clear()
    meter.card_changes.clear()
+   var frame_logical_start=scene.logical_ticks
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1" and OS.get_environment("PERF_ORGANIC_ECONOMY")!="1":
     g.profile.resources["1"]*=1.0000000001;g.profile.resources["2"]*=1.0000000001
    if not realtime and submission_mode!="empty":scene._process(1.0/60.0)
    var elapsed=Time.get_ticks_usec()-start
    await process_frame
+   if realtime:await RenderingServer.frame_post_draw
    if i>=warmup:
     frames.append(Time.get_ticks_usec()-start);cpu.append(scene.last_process_us if realtime else elapsed)
+    wall_end=Time.get_ticks_usec()
+    var logical_delta=scene.logical_ticks-frame_logical_start
+    logic_frame_trace.append([i,logical_delta,g.motion_clock,scene.last_process_delta])
+    cpu_total_us+=cpu[-1]
+    if logical_delta==0:cpu_no_tick.append(cpu[-1])
+    elif logical_delta==1:cpu_one_tick.append(cpu[-1])
+    else:cpu_multi_tick.append(cpu[-1])
     calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
     primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
     projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size())
@@ -308,6 +337,12 @@ func run():
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var wall_seconds=float(wall_end-wall_start)/1000000.0
+  var game_seconds=g.motion_clock-sampled_clock_start
+  var tick_count=scene.logical_ticks-logical_start
+  row.clock_validation={"mode":"engine real delta / production fixed60Hz accumulator" if realtime else "fixed workload per submitted frame", "wall_seconds":wall_seconds,"game_seconds":game_seconds,"game_wall_ratio":game_seconds/wall_seconds,"logical_ticks":tick_count,"logic_hz":float(tick_count)/wall_seconds,"render_frames":frames.size(),"render_hz":float(frames.size())/wall_seconds,"process_callbacks":scene.process_callbacks-callbacks_start,"process_delta_seconds":scene.process_delta_total-delta_start,"game_time_remainder":scene.game_time_remainder,"valid":not realtime or (wall_seconds>=seconds and absf(game_seconds/wall_seconds-1.0)<0.03 and absf(float(tick_count)/wall_seconds-60.0)<2.0)}
+  row.main_budget={"scope":"Root _process wall time only; excludes later _draw and other autonomous/native callbacks","total_us":cpu_total_us,"wall_percent":cpu_total_us/(wall_seconds*10000.0),"no_tick_frames":cpu_no_tick.size(),"one_tick_frames":cpu_one_tick.size(),"multi_tick_frames":cpu_multi_tick.size(),"no_tick_us":stats(cpu_no_tick) if not cpu_no_tick.is_empty() else {},"one_tick_us":stats(cpu_one_tick) if not cpu_one_tick.is_empty() else {},"multi_tick_us":stats(cpu_multi_tick) if not cpu_multi_tick.is_empty() else {}}
+  row.logic_frame_trace=logic_frame_trace;row.initial_combat_sha256=initial_combat_sha
   row.retention_counts=scene.retention_counts.duplicate()
   row.retained_part_builds=contact_part_builds(scene)
   row.envelope_builds_in_sample=scene.enemy_recognition.envelope_builds-envelope_build_start

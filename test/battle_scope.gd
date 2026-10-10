@@ -37,4 +37,4 @@ static func manifest(g,scene)->Dictionary:
  "stage":g.stage,"group":g.group_index,"enemies":g.enemies.size(),"speed":g.speed,
  "ship_viewport":str(scene.ship_view.viewport.size),"scale_3d":scene.ship_view.viewport.scaling_3d_scale,
  "msaa_3d":scene.ship_view.viewport.msaa_3d,"shadows":scene.ship_view.world.get_node("KeyLight").shadow_enabled,
- "clock":"fixed 1/60 simulation step per submitted frame; throughput, not natural 1x FPS"}
+ "clock":"Engine real delta accumulated into production60Hz logic; controlled held-health fixture, not natural player" if OS.get_environment("PERF_REALTIME")=="1" else "fixed 1/60 simulation step per submitted frame; throughput, not natural 1x FPS"}

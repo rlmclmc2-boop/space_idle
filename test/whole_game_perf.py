@@ -111,7 +111,9 @@ def main():
     parser.add_argument('--balance', type=float, default=1e80)
     parser.add_argument('--capture', action='store_true', help='Capture after measurement; readback excluded from timings')
     parser.add_argument('--max', action='store_true', dest='max_quote')
-    parser.add_argument('--realtime', action='store_true')
+    parser.add_argument('--realtime', action='store_true', help='Engine real delta, production fixed60Hz logical accumulator; controlled fixture, not natural play')
+    parser.add_argument('--seconds', type=float, default=8.0, help='Realtime sample wall duration')
+    parser.add_argument('--warmup-seconds', type=float, default=4.0, help='Realtime warmup wall duration')
     parser.add_argument('--instrument', action='store_true')
     parser.add_argument('--cpu-peaks', action='store_true', help='Per-frame CPU phase attribution with limited outer timers; never clean throughput')
     parser.add_argument('--focused-draw', action='store_true', help='Detailed draw/layout attribution; implies instrumentation, never a clean throughput result')
@@ -121,6 +123,8 @@ def main():
     parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
+    if not (0 < args.seconds <= 30 and 0 < args.warmup_seconds <= 15):parser.error('wall windows must be bounded')
+    if args.realtime and (args.dynamic_replay or args.native_check or args.boundary_check):parser.error('realtime does not use same-tick replay/pixel diagnostics')
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
     if args.native_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.boundary_check or args.instrument):
@@ -129,8 +133,8 @@ def main():
         parser.error('boundary-check requires battle-only and cannot be combined with replay or other instrumentation')
     if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
         parser.error('phase-account requires only battle-only, without replay or overlapping instrumenters')
-    if args.battle_only and (not args.rich or args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4 or args.instrument):
-        parser.error('battle-only requires fixed-step graphical rich page0')
+    if args.battle_only and (not args.rich or args.pages != '0' or args.headless or args.checkpoint_round2 or args.checkpoint_round4 or args.instrument):
+        parser.error('battle-only requires graphical rich page0')
     if (args.missile_loadout or args.authored_stage or args.organic_economy) and not args.rich:
         parser.error('missile-loadout/authored-stage require the explicitly synthetic rich fixture')
     if args.submission_mode != 'full' and (args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4):
@@ -323,6 +327,8 @@ def main():
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
     env.update(PERF_SUSTAIN_TEST_HEALTH=str(int(args.sustain_test_health)), PERF_STRESS_ENEMIES=str(args.stress_enemies), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    env['PERF_SECONDS']=str(args.seconds)
+    env['PERF_WARMUP_SECONDS']=str(args.warmup_seconds)
     env['PERF_MISSILE_LOADOUT']=str(int(args.missile_loadout))
     env['PERF_ORGANIC_ECONOMY']=str(int(args.organic_economy))
     env['PERF_AUTHORED_STAGE']=str(args.authored_stage)
@@ -384,6 +390,10 @@ def main():
               'gpu_profile_scope': 'Header total is last captured GPU frame; stages are approximately1second averages; no stageP95. Query overhead; keep separate from clean throughput.',
               'boundaries': [line for line in text.splitlines() if line.startswith('BOUNDARY_')]}
     boundary_failures = []
+    if args.realtime:
+        for row in rows:
+            clock=row.get('clock_validation',{})
+            if not clock.get('valid'):boundary_failures.append('realtime clock/tick validation failed')
     if args.native_check and (not rows or not rows[0].get('native_check',{}).get('frames')):
         boundary_failures.append('native-check snapshots missing; no visual acceptance')
     if args.dynamic_replay:
