@@ -26,7 +26,10 @@ func run()->void:
  scene.set_process(false);scene.hide()
  var g=scene.game;g.save_enabled=false;g.paused=true;g.rng.seed=1701
  g.stage=20;g.group_index=0;g.state=BattleGame.State.COMBAT;g.spawn_group()
- for enemy in g.enemies:enemy.hp=1e100;enemy.max_hp=1e100;scene.enemy_pose(enemy)
+ for index in g.enemies.size():
+  var enemy=g.enemies[index];enemy.hp=1e100;enemy.max_hp=1e100
+  if index%2==0:enemy.equipment=[{"name":"cannon-mon"}]
+  scene.enemy_pose(enemy)
  var views=[];var surfaces=[]
  for i in 2:
   var view=SubViewport.new();view.size=Vector2i(572,960);view.transparent_bg=true;view.render_target_update_mode=SubViewport.UPDATE_ALWAYS;root.add_child(view);views.append(view)
@@ -36,9 +39,17 @@ func run()->void:
    surface.add_child(surface.retained);surface.retained.setup(scene)
  for sample in 6:
   scene.fx_time=0.02 if sample==0 else 5.0+float(sample)*0.137
+  if sample==2:
+   g.enemy_shield_time=0.5
+   for index in g.enemies.size():
+    var enemy=g.enemies[index]
+    enemy.max_shield=1000.0;enemy.shield=750.0;enemy.shieldRecovery=50.0;enemy.shieldDelay=0.0;enemy.shield_hit_at=0.0;enemy.shieldType=1 if index%2==0 else 2
   if sample==3:
+   g.enemy_shield_time=0.6
+   for enemy in g.enemies:enemy.shield=900.0
    for enemy in g.enemies:enemy.hp=enemy.max_hp*0.43
   if sample==4:
+   g.enemy_shield_time=1.1
    for enemy in g.enemies:enemy.shield=0.0
   if sample==5:
    for enemy in g.enemies:enemy.hp=0.0
@@ -60,6 +71,10 @@ func run()->void:
   print("PIXEL sample=",sample," channels=",left.size()," changed=",changed," maximum=",maximum," painted=",painted)
   if maximum>1:
    failures+=1;a.save_png("res://.runtime/contact-legacy-%d.png"%sample);b.save_png("res://.runtime/contact-retained-%d.png"%sample)
+ var old_layer=scene.retained_contacts
+ scene.create_draw_layers()
+ checks+=1
+ if scene.retained_contacts==old_layer or scene.retained_contacts.get_parent()!=scene.battle_layer:failures+=1
  for view in views:view.queue_free()
  scene.game.launch_provider=Callable();scene.game.target_provider=Callable();scene.queue_free()
  await process_frame;await process_frame

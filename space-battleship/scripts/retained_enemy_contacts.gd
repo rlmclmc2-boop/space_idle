@@ -33,6 +33,7 @@ func part(root:Node2D,kind:String)->Part:
 
 func sync(offset:Vector2,boss:bool)->void:
  var live={}
+ var order_index=0
  var screen_scale:float=paint_owner.enemy_recognition_screen_scale()
  for enemy in paint_owner.game.enemies:
   if enemy.hp<=0:continue
@@ -43,7 +44,8 @@ func sync(offset:Vector2,boss:bool)->void:
    var root=Node2D.new();add_child(root)
    records[uid]={"entity":enemy,"root":root,"fallback":part(root,"fallback"),"mounts":[],"hull":part(root,"hull"),"deck":part(root,"deck"),"protection":part(root,"protection"),"health":part(root,"meter"),"shield":part(root,"meter")}
   var record:Dictionary=records[uid]
-  move_child(record.root,get_child_count()-1)
+  if record.root.get_index()!=order_index:move_child(record.root,order_index)
+  order_index+=1
   var components=paint_owner.enemy_weapon_components(enemy)
   var supported=not boss and not paint_owner.encounter_presentation.is_leader(enemy)
   for component in components:
@@ -107,10 +109,11 @@ func sync(offset:Vector2,boss:bool)->void:
   for index in components.size():
    if int(components[index].hardpoint.get("z",1))>0:ordered.append(record.mounts[index])
   ordered.append_array([record.health,record.shield])
-  for index in ordered.size():record.root.move_child(ordered[index],index)
+  for index in ordered.size():
+   if ordered[index].get_index()!=index:record.root.move_child(ordered[index],index)
  for uid in records.keys():
   if not live.has(uid):records[uid].root.hide();records[uid].root.queue_free();records.erase(uid)
- move_child(foreground,get_child_count()-1)
+ if foreground.get_index()!=get_child_count()-1:move_child(foreground,get_child_count()-1)
 
 func meter(node:Part,rect:Rect2,pos:Vector2,ratio:float,color:Color)->void:
  node.position=rect.position-pos

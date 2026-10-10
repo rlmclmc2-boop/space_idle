@@ -94,8 +94,6 @@ func _ready() -> void:
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
 	# encounter never loads a hull or reads its pixels inside the draw callback.
 	prepare_enemy_hulls()
-	retained_contacts=preload("res://scripts/retained_enemy_contacts.gd").new()
-	battle_layer.add_child(retained_contacts);retained_contacts.setup(self)
 	# The immutable body retains native primitive/feather order. Dynamic flames,
 	# trails and contact effects remain on their existing paths.
 	missile_body_mesh=preload("res://dev/toon_ship/missile_body_mesh.gd").new().build()
@@ -757,6 +755,8 @@ func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
 
 func create_draw_layers() -> void:
 	super.create_draw_layers()
+	retained_contacts=preload("res://scripts/retained_enemy_contacts.gd").new()
+	battle_layer.add_child(retained_contacts);retained_contacts.setup(self)
 	var star_material:ShaderMaterial=stars_layer.material
 	star_material.set_shader_parameter("route_atlas",ROUTE_SCENERY_ATLAS)
 	scenery_material_route=""
