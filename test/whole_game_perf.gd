@@ -6,17 +6,26 @@ class UI extends "res://scripts/battlefield.gd":
  func show_qa_tools()->void:pass
  func show_chrono_login_report()->void:pass
  var last_process_us := 0
+ var last_draw_us := 0
  func _process(dt: float) -> void:
   var began := Time.get_ticks_usec()
   super._process(dt)
   last_process_us = Time.get_ticks_usec()-began
+ func draw_battle()->void:
+  var began=Time.get_ticks_usec()
+  super.draw_battle()
+  last_draw_us=Time.get_ticks_usec()-began
 class Meter extends RefCounted:
  var enabled=false
  var times={}
+ var frame_times={}
  func record(key,us):
   if not enabled:return
   if not times.has(key):times[key]=[0,0,0]
   times[key][0]+=1;times[key][1]+=us;times[key][2]=max(times[key][2],us)
+  if OS.get_environment("PERF_CPU_PEAKS")=="1":
+   if not frame_times.has(key):frame_times[key]=[0,0]
+   frame_times[key][0]+=1;frame_times[key][1]+=us
 var meter=Meter.new()
 var results=[]
 func _initialize():
@@ -29,6 +38,11 @@ func stats(a):
 func views(node,rows):
  if node is SubViewport:rows.append({"path":str(node.get_path()),"size":str(node.size),"mode":node.render_target_update_mode,"calls":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)})
  for c in node.get_children():views(c,rows)
+func measured_views(node,rows):
+ if node is Viewport:
+  RenderingServer.viewport_set_measure_render_time(node.get_viewport_rid(),true)
+  rows.append(node)
+ for child in node.get_children():measured_views(child,rows)
 func ship_inventory(scene):
  var view=scene.ship_view
  var bodies=[]
@@ -99,6 +113,9 @@ func run():
   scene.equipment_panel.set_upgrade_amount(0)
  var scenario_index=-1
  var render_inventory=OS.get_environment("PERF_RENDER_INVENTORY")=="1"
+ var render_cost=OS.get_environment("PERF_RENDER_COST")=="1"
+ var cost_views=[]
+ if render_cost:measured_views(root,cost_views)
  for page in scenarios:
   scenario_index+=1
   var switch_started=Time.get_ticks_usec()
@@ -111,6 +128,8 @@ func run():
   var switch_frame_us=Time.get_ticks_usec()-switch_started
   var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[]
   var frame_trace=[];var effect_trace=[];var alive=[];var states=[];var stages=[];var groups=[]
+  var render_cost_trace=[]
+  var cpu_peak_trace=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
@@ -118,8 +137,11 @@ func run():
   for i in range(count+warmup):
    if i==warmup:
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
+    if render_cost:
+     cost_views.clear();measured_views(root,cost_views)
+   meter.frame_times.clear()
    var start=Time.get_ticks_usec()
-   if OS.get_environment("PERF_RICH")=="1":
+   if OS.get_environment("PERF_RICH")=="1" and OS.get_environment("PERF_ORGANIC_ECONOMY")!="1":
     g.profile.resources["1"]*=1.0000000001;g.profile.resources["2"]*=1.0000000001
    if not realtime:scene._process(1.0/60.0)
    var elapsed=Time.get_ticks_usec()-start
@@ -135,12 +157,26 @@ func run():
     alive.append(living);states.append(g.state);stages.append(g.stage);groups.append(g.group_index)
     frame_trace.append([i,frames[-1],cpu[-1],living,g.projectiles.size(),g.missile_queue.size()])
     effect_trace.append([i,scene.missile_events.size(),scene.pulse_events.size(),scene.particles.size(),scene.projectile_visuals.size()])
+    if OS.get_environment("PERF_CPU_PEAKS")=="1":cpu_peak_trace.append([i,meter.frame_times.duplicate(true),g.speed,g.motion_clock])
+    if render_cost:
+     var view_costs=[]
+     for view in cost_views:
+      if not is_instance_valid(view):continue
+      var rid=view.get_viewport_rid()
+      view_costs.append([str(view.get_path()),RenderingServer.viewport_get_measured_render_time_cpu(rid),RenderingServer.viewport_get_measured_render_time_gpu(rid)])
+     render_cost_trace.append([i,Engine.get_frames_drawn(),RenderingServer.get_frame_setup_time_cpu(),Performance.get_monitor(Performance.TIME_PROCESS)*1000.0,scene.last_draw_us/1000.0,view_costs])
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   if render_inventory:row.ship_inventory=ship_inventory(scene)
   row.effect_trace=effect_trace
+  row.render_cost_trace=render_cost_trace
+  row.cpu_peak_trace=cpu_peak_trace
+  row.render_cost_scope="milliseconds, native render CPU is wall time and may include stalls; GPU last available queries, never added to CPU frame wall time"
   row.missile_parameters={"row":g.db.equip("missile",150),"lifetime":g.MISSILE_LIFETIME,"ejection_gap":g.EJECTION_GAP,"loadout":g.profile.loadout.weapons}
+  row.missile_parameters.effective_rows=[]
+  for entry in g.profile.loadout.weapons:row.missile_parameters.effective_rows.append(g.player_weapon_row(entry))
+  row.artificial_wealth_mutation=OS.get_environment("PERF_RICH")=="1" and OS.get_environment("PERF_ORGANIC_ECONOMY")!="1"
   row.canvas_materials={"battle":str(scene.battle_layer.material),"feedback":str(scene.pulse_layer.material)}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":

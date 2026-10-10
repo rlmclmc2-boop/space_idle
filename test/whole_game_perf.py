@@ -91,11 +91,14 @@ def main():
     parser.add_argument('--checkpoint-wave', type=int, default=0, choices=range(10), help='QA-only authored wave selection; requires sustained test health, reported as synthetic')
     parser.add_argument('--test-missile-burst', type=int, default=0, choices=(0,256,1024), help='One synthetic burst of the QA ship actual missile weapon; no natural-load claim')
     parser.add_argument('--gpu-profile', action='store_true', help='Native GPU stage averages; timing-query overhead, not final frame comparison')
+    parser.add_argument('--render-cost', action='store_true', help='Diagnostic native setup and per-viewport CPU/GPU wall times; never clean throughput')
     parser.add_argument('--ref', help='Read this Git snapshot instead of current source')
     parser.add_argument('--reuse', type=Path, help='Reuse this runner\'s isolated import cache')
     parser.add_argument('--headless', action='store_true')
+    parser.add_argument('--rendering-method', choices=('gl_compatibility','mobile','forward_plus'), help='Isolated renderer comparison; never changes production project settings')
     parser.add_argument('--rich', action='store_true')
     parser.add_argument('--missile-loadout', action='store_true', help='Rich fixture selects eight actual missile slots; production cadence and parameters unchanged')
+    parser.add_argument('--organic-economy', action='store_true', help='Rich fixture omits artificial per-frame wealth mutation; actual production economy still runs')
     parser.add_argument('--authored-stage', type=int, default=0, choices=range(21), help='Rich fixture uses the first actual authored wave, with test health')
     parser.add_argument('--missile-profile', action='store_true', help='Static missile VFX CPU and command attribution; diagnostic overhead, never clean throughput')
     parser.add_argument('--stress-enemies', type=int, default=3, choices=range(1,16), help='Synthetic sustained enemies; requires --rich, never a natural player claim')
@@ -104,6 +107,7 @@ def main():
     parser.add_argument('--max', action='store_true', dest='max_quote')
     parser.add_argument('--realtime', action='store_true')
     parser.add_argument('--instrument', action='store_true')
+    parser.add_argument('--cpu-peaks', action='store_true', help='Per-frame CPU phase attribution with limited outer timers; never clean throughput')
     parser.add_argument('--focused-draw', action='store_true', help='Detailed draw/layout attribution; implies instrumentation, never a clean throughput result')
     parser.add_argument('--pages', default='0,4,1,2,6,8')
     parser.add_argument('--frames', type=int, default=60)
@@ -111,7 +115,7 @@ def main():
     parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
-    if (args.missile_loadout or args.authored_stage) and not args.rich:
+    if (args.missile_loadout or args.authored_stage or args.organic_economy) and not args.rich:
         parser.error('missile-loadout/authored-stage require the explicitly synthetic rich fixture')
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
@@ -167,6 +171,7 @@ def main():
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True
     if args.missile_profile:args.instrument=True
+    if args.cpu_peaks:args.instrument=True
     if args.instrument:
         MODULES.update({
             'battlefield': ['_process', 'draw_battle', 'draw_vertical_battle_hud', '_draw_muzzle_cues'],
@@ -185,6 +190,12 @@ def main():
         if args.missile_profile:
             MODULES['battlefield']+=['draw_projectile_body_override','draw_projectile_fx','missile_visual_position']
             MODULES['main']+=['projectile_visual']
+        if args.cpu_peaks:
+            MODULES.clear()
+            MODULES.update({
+                'main':['advance_game_time','advance_turrets','advance_projectile_visuals','on_event','queue_damage_number','flush_damage_numbers','refresh_visible_cards','refresh_navigation','refresh_draw_layers'],
+                'game':['tick','tick_projectiles','jewel_attack','jewel_fire','fire','hit_enemy','hit_player','advance_jewel_repair'],
+            })
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')
             # Module-specific names preserve superclass dispatch in the real scene.
@@ -216,7 +227,10 @@ def main():
         Path(env[key]).mkdir(parents=True, exist_ok=True)
     env.update(PERF_SUSTAIN_TEST_HEALTH=str(int(args.sustain_test_health)), PERF_STRESS_ENEMIES=str(args.stress_enemies), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     env['PERF_MISSILE_LOADOUT']=str(int(args.missile_loadout))
+    env['PERF_ORGANIC_ECONOMY']=str(int(args.organic_economy))
     env['PERF_AUTHORED_STAGE']=str(args.authored_stage)
+    env['PERF_RENDER_COST']=str(int(args.render_cost))
+    env['PERF_CPU_PEAKS']=str(int(args.cpu_peaks))
     if checkpoint:
         env['SPACE_IDLE_FLAT_SHIPS'] = '0'
         env['PERF_CHECKPOINT_WAVE'] = str(args.checkpoint_wave)
@@ -233,6 +247,8 @@ def main():
         return 1
     log_path = area / (args.label + '.log')
     command = [*engine, *(['--headless'] if args.headless else []), '--audio-driver', 'Dummy', '--resolution', '1373x883', '--disable-vsync']
+    if args.rendering_method:
+        command += ['--rendering-method',args.rendering_method]
     if args.gpu_profile:
         command.append('--gpu-profile')
     command += ['--script', 'res://probe.gd']
