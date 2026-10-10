@@ -55,5 +55,7 @@ func check(scene)->void:
 		model.begin(true);same_value(scene.enemy_render_position(twin),expected_point,"uid_replacement")
 		scene.game.enemies[0]=enemy;scene.enemy_poses[int(enemy.slot)]=original_pose
 		model.begin(true)
+	model.begin();var revision=model.shape_revision
+	model.begin();same_value(model.shape_revision,revision,"unchanged_shape_revision")
 	model.end();frames+=1
 func report()->Dictionary:return {"frames":frames,"comparisons":comparisons,"scope":"same-clock canonical spatial/recognition/mount/layout equality, including entry and alive-membership change; validation overhead excluded from clean timing"}

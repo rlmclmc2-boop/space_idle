@@ -2,7 +2,7 @@
 
 `battle_read_model.gd` separates event-owned fleet shape (components, width coefficients, frontline) from exact-clock moving positions. It does not copy GameState, roll RNG, defer hit events, change combat order, alter fixed substeps, or change rendering quality.
 
-The scene activates the publication during logical advancement and native drawing. Exact clock/XY and entity identity remain part of the moving contract. Configuration and hull changes invalidate shape; encounter, state, equipment, and membership events invalidate shape and layout. Death membership is checked separately even without a clock change. Outside the active boundary canonical geometry remains available.
+The scene activates the publication during logical advancement and native drawing. Exact clock/XY and entity identity remain part of the moving contract. Configuration and hull changes invalidate shape; encounter, state, equipment, and membership events invalidate shape and layout. Counter-only equipment-stat events preserve the publication; their original combat counters and UI callbacks still run. Death membership is checked separately even without a clock change. Outside the active boundary canonical geometry remains available.
 
 `retained_enemy_contacts.gd` consumes complete display packets containing positions, width, angle, native appearance, protection state, layout and mount poses. Packet generation uses canonical recognition and aim rules; native painters retain the existing commands, order, shading and viewport.
 

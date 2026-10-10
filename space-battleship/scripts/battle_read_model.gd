@@ -20,7 +20,7 @@ func setup(owner)->void:host=owner
 func begin(force:bool=false)->void:
 	active=true
 	var next_config={"base_scale":host.player_base_art_scale(),"art_scale":host.player_art_scale(),"screen_scale":host.enemy_recognition_screen_scale(),"final":host.game.is_final_encounter(),"boss":host.game.is_boss_encounter()}
-	var signature=[next_config,host.battle_visual.hash(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap)]
+	var signature=[float(next_config.base_scale),float(next_config.art_scale),float(next_config.screen_scale),bool(next_config.final),bool(next_config.boss),host.battle_visual.hash(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap)]
 	if not force and clock==host.fx_time and signature==config_signature:return
 	if force or signature!=config_signature:shape_revision+=1
 	config=next_config;config_signature=signature
