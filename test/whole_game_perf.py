@@ -118,6 +118,8 @@ def main():
     snapshots.add_argument('--checkpoint-round2', type=Path, help='Exact authorized QA7/group4/Frigate snapshot')
     snapshots.add_argument('--checkpoint-round4', type=Path, help='Exact authorized QA20/group2/Destroyer snapshot')
     parser.add_argument('--sustain-test-health', action='store_true', help='After the real fleet is generated, hold test health; explicitly synthetic, never natural-play acceptance')
+    parser.add_argument('--checkpoint-transitions', action='store_true', help='Normal1x full-system bounded QA observation and one public exit/reentry, exact authorized save only')
+    parser.add_argument('--qa-seconds', type=float, default=180.0, help='QA transition observation wall limit,35..180seconds')
     parser.add_argument('--checkpoint-wave', type=int, default=0, choices=range(10), help='QA-only authored wave selection; requires sustained test health, reported as synthetic')
     parser.add_argument('--test-missile-burst', type=int, default=0, choices=(0,256,1024), help='One synthetic burst of the QA ship actual missile weapon; no natural-load claim')
     parser.add_argument('--script-profile', action='store_true', help='Native --profiling script attribution after warmup; diagnostic overhead, never clean timing')
@@ -174,6 +176,9 @@ def main():
         parser.error('enemy bitmap diagnostic requires frozen contact Canvas')
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
+    if args.checkpoint_transitions and (not checkpoint or args.sustain_test_health or args.test_missile_burst or args.instrument or args.script_profile or args.gpu_profile or args.cpu_peaks):
+        parser.error("QA transitions require exact checkpoint, full visuals, no synthetic health/burst/profilers")
+    if not 35 <= args.qa_seconds <= 180:parser.error("QA observation must be35..180seconds")
     checkpoint_stage=7 if args.checkpoint_round2 else 20
     checkpoint_group=4 if args.checkpoint_round2 else 2
     if args.checkpoint_wave and not (checkpoint and args.sustain_test_health):
@@ -378,6 +383,8 @@ def main():
     env['PERF_SUBMISSION_MODE']=args.submission_mode
     env['PERF_CPU_PEAKS']=str(int(args.cpu_peaks))
     if checkpoint:
+        env['PERF_QA_TRANSITIONS'] = str(int(args.checkpoint_transitions))
+        env['PERF_QA_SECONDS'] = str(args.qa_seconds)
         env['SPACE_IDLE_FLAT_SHIPS'] = '0'
         env['PERF_CHECKPOINT_WAVE'] = str(args.checkpoint_wave)
         env['PERF_TEST_MISSILE_BURST'] = str(args.test_missile_burst)
@@ -401,7 +408,7 @@ def main():
     if args.gpu_profile:
         command.append('--gpu-profile')
     command += ['--script', 'res://probe.gd']
-    result_code = run_guarded(command, env, log_path)
+    result_code = run_guarded(command, env, log_path, timeout=args.qa_seconds+90 if args.checkpoint_transitions else 180)
     text = log_path.read_text(encoding='utf-8', errors='replace')
     native_profile = parse_native_script_profile(text) if args.script_profile else {}
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
@@ -457,7 +464,10 @@ def main():
         row = rows[0]
         if not row.get('source_save_unchanged') or row.get('save_enabled') or row.get('flat_enabled'):
             boundary_failures.append('checkpoint source/save/default invariant failed')
-        if row.get('sample_frames') != args.frames or any(value != checkpoint_stage for value in row.get('stages', [])) or any(value != checkpoint_group for value in row.get('groups', [])) or any(value != 3 for value in row.get('states', [])):
+        if args.checkpoint_transitions:
+            if not row.get('qa_transition_observation') or not row.get('loadout_unchanged') or not row.get('restart_ok') or not row.get('clock_validation', {}).get('valid'):
+                boundary_failures.append('QA transition/loadout/reentry/normal1x invariant failed')
+        elif row.get('sample_frames') != args.frames or any(value != checkpoint_stage for value in row.get('stages', [])) or any(value != checkpoint_group for value in row.get('groups', [])) or any(value != 3 for value in row.get('states', [])):
             boundary_failures.append('checkpoint encounter changed or sample count mismatched; not the pinned combat window')
     if args.script_profile and not native_profile.get('functions'):
         boundary_failures.append('native scripts profiler unavailable or missing warm-window accumulated data')
