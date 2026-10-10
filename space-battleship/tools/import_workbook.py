@@ -122,6 +122,12 @@ def convert_sheet(name, rows):
             coordinates=row.get("formation_positions")
             if coordinates not in (None, ""):
                 group["formation_positions"]=json.loads(coordinates) if isinstance(coordinates,str) else coordinates
+            for key in ("atkMultiplier", "lifeMultiplier"):
+                value=row.get(key)
+                if value not in (None, ""):
+                    if type(value) not in (int,float) or not math.isfinite(value) or value<=0:
+                        raise ValueError(f"monGroup {row['id']} {key}: expected positive finite multiplier or blank")
+                    group[key]=value
             tier=row.get("combatTier")
             if tier not in (None, ""):
                 if tier not in ("normal","elite","boss","ultimate"):raise ValueError(f"monGroup {row['id']}: invalid combatTier")
@@ -304,6 +310,8 @@ def validate_projection(data, *, check_level_ratios=True):
         for g in level['groups']:
             if str(g['id']) not in groups: raise ValueError(ui_text('debug.import_workbook.message_131', id=g["id"]))
     for gid,g in groups.items():
+        for key in ("atkMultiplier", "lifeMultiplier"):
+            if key in g:positive(g[key], f'monGroup {gid} {key}')
         validate_explicit_formation(g,enemies)
         if len(g['slots']) not in (10,15): raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))
         for enemy_id in g['slots']:

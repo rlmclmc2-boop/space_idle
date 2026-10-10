@@ -149,4 +149,10 @@ func ratio(level: int, battle_point_index: int, kind: String) -> float:
 		previous = float(entry)
 	var point_count: int = levels[level - 1].groups.size()
 	var progress: float = 1.0 if point_count <= 1 else clampf(float(battle_point_index) / float(point_count - 1), 0.0, 1.0)
-	return lerpf(previous, float(levels[level - 1][kind]), progress)
+	var result := lerpf(previous, float(levels[level - 1][kind]), progress)
+	# Local wave gates never change rewards or the next stage's interpolation anchor.
+	var gate_key := "atkMultiplier" if kind=="atkRatio" else "lifeMultiplier" if kind=="lifeRatio" else ""
+	if not gate_key.is_empty() and point_count>0:
+		var point: Dictionary=levels[level-1].groups[clampi(battle_point_index,0,point_count-1)]
+		result*=float(groups[str(int(point.id))].get(gate_key,1.0))
+	return result

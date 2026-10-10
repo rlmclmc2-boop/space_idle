@@ -266728,6 +266728,8 @@
         52173,
         52174
       ],
+      "atkMultiplier": 2,
+      "lifeMultiplier": 8,
       "combatTier": "elite"
     },
     "30129": {
@@ -266749,6 +266751,8 @@
         null,
         null
       ],
+      "atkMultiplier": 8,
+      "lifeMultiplier": 1024,
       "combatTier": "boss"
     },
     "30131": {
@@ -267295,6 +267299,8 @@
         null,
         null
       ],
+      "atkMultiplier": 4,
+      "lifeMultiplier": 16,
       "combatTier": "elite"
     },
     "30159": {
@@ -267316,6 +267322,8 @@
         null,
         null
       ],
+      "atkMultiplier": 16,
+      "lifeMultiplier": 1024,
       "combatTier": "boss"
     },
     "30161": {
@@ -267862,6 +267870,8 @@
         58173,
         null
       ],
+      "atkMultiplier": 4,
+      "lifeMultiplier": 16,
       "combatTier": "elite"
     },
     "30189": {
@@ -267883,6 +267893,8 @@
         null,
         null
       ],
+      "atkMultiplier": 16,
+      "lifeMultiplier": 256,
       "combatTier": "boss"
     },
     "30191": {
@@ -268240,6 +268252,8 @@
         null,
         null
       ],
+      "atkMultiplier": 1,
+      "lifeMultiplier": 2,
       "combatTier": "boss"
     },
     "30209": {
@@ -268261,6 +268275,8 @@
         null,
         null
       ],
+      "atkMultiplier": 2,
+      "lifeMultiplier": 4,
       "combatTier": "ultimate"
     },
     "30211": {
