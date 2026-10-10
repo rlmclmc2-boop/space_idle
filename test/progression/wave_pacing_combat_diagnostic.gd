@@ -17,7 +17,7 @@ func observe(kind:String,info:Dictionary):
   var key=str(info.type)
   incoming[key]=N.add(incoming.get(key,0),info.amount)
   last_hit={"type":info.type,"paid":info.amount,"armour_after":g.player.armour,"shield_after":g.player.shield}
- if kind in ["battle_defeated","wave_clear"]:
+ if kind in ["battle_defeated","wave_clear","level_clear"]:
   outcome={"event":kind,"stage":g.stage,"wave":g.group_index,"elapsed_seconds":g.simulated_time-start_time,"enemies":enemies_state(),"incoming_paid_by_type":incoming,"last_hit":last_hit,"player":g.player.duplicate(true)}
   stream.store_line(JSON.stringify(outcome));stream.flush();finished=true
 func _initialize():call_deferred("run")
@@ -52,5 +52,5 @@ func run():
   if finished:break
   driver.before_tick(1.0/60.0);g.tick(1.0/60.0);driver.after_tick(1.0/60.0)
   if Time.get_ticks_usec()-budget>24000:await process_frame;budget=Time.get_ticks_usec()
- var result={"event":"final","finished":finished,"outcome":outcome,"elapsed_seconds":g.simulated_time-start_time,"wall_seconds":float(Time.get_ticks_usec()-wall)/1e6,"resources":g.profile.resources,"enemies":enemies_state(),"incoming_paid_by_type":incoming}
+ var result={"event":"final","finished":finished,"stage":g.stage,"wave":g.group_index,"state":g.state,"cleared":g.profile.cleared.duplicate(),"outcome":outcome,"elapsed_seconds":g.simulated_time-start_time,"wall_seconds":float(Time.get_ticks_usec()-wall)/1e6,"resources":g.profile.resources,"enemies":enemies_state(),"incoming_paid_by_type":incoming}
  stream.store_line(JSON.stringify(result));stream.close();print("COMBAT_DIAGNOSTIC ",JSON.stringify(result));driver.close();quit()
