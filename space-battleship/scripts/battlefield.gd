@@ -570,7 +570,10 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 	super.weapon_launch(shot,spread)
 	if enemy_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
-		enemy_impacts.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle()))),"damage_type":int(shot.get("type",0)),"born":fx_time})
+		# The base launch already solved this muzzle. Evaluate the fallback only
+		# when the capped visual list did not retain a record for this shot.
+		var origin:Vector2=visual.origin if visual.has("origin") else visual_muzzle(shot)
+		enemy_impacts.append({"kind":"fire","position":origin,"direction":Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle()))),"damage_type":int(shot.get("type",0)),"born":fx_time})
 	if pulse_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
 		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))

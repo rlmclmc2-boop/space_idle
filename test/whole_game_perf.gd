@@ -5,6 +5,12 @@ class UI extends "res://scripts/battlefield.gd":
  func create_battle_game(_persist:bool)->BattleGame:return super.create_battle_game(false)
  func show_qa_tools()->void:pass
  func show_chrono_login_report()->void:pass
+ var frame_launches := 0
+ var frame_enemy_launches := 0
+ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
+  frame_launches+=1
+  if bool(shot.hostile):frame_enemy_launches+=1
+  super.weapon_launch(shot,spread)
  var last_process_us := 0
  var last_draw_us := 0
  func _process(dt: float) -> void:
@@ -15,10 +21,21 @@ class UI extends "res://scripts/battlefield.gd":
   var began=Time.get_ticks_usec()
   super.draw_battle()
   last_draw_us=Time.get_ticks_usec()-began
+ func visual_muzzle(shot:Dictionary)->Vector2:
+  var began=Time.get_ticks_usec()
+  var point=super.visual_muzzle(shot)
+  var measure=Engine.get_meta("saved_perf")
+  if measure.enabled and OS.get_environment("PERF_CPU_PEAKS")=="1" and bool(shot.hostile):
+   var serial=int(shot.get("serial",-1))
+   var role="repeat" if measure.muzzle_seen.has(serial) else "first"
+   measure.muzzle_seen[serial]=true
+   measure.record("probe.enemy_muzzle_"+role,Time.get_ticks_usec()-began)
+  return point
 class Meter extends RefCounted:
  var enabled=false
  var times={}
  var frame_times={}
+ var muzzle_seen={}
  func record(key,us):
   if not enabled:return
   if not times.has(key):times[key]=[0,0,0]
@@ -130,6 +147,8 @@ func run():
   var frame_trace=[];var effect_trace=[];var alive=[];var states=[];var stages=[];var groups=[]
   var render_cost_trace=[]
   var cpu_peak_trace=[]
+  var launch_trace=[]
+  var presentation_trace=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
@@ -139,7 +158,9 @@ func run():
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
     if render_cost:
      cost_views.clear();measured_views(root,cost_views)
+   scene.frame_launches=0;scene.frame_enemy_launches=0
    meter.frame_times.clear()
+   meter.muzzle_seen.clear()
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1" and OS.get_environment("PERF_ORGANIC_ECONOMY")!="1":
     g.profile.resources["1"]*=1.0000000001;g.profile.resources["2"]*=1.0000000001
@@ -156,6 +177,8 @@ func run():
      if float(enemy.get("hp",0))>0:living+=1
     alive.append(living);states.append(g.state);stages.append(g.stage);groups.append(g.group_index)
     frame_trace.append([i,frames[-1],cpu[-1],living,g.projectiles.size(),g.missile_queue.size()])
+    launch_trace.append([i,scene.frame_launches,scene.frame_enemy_launches])
+    if OS.get_environment("PERF_PRESENTATION_AUDIT")=="1":presentation_trace.append([i,JSON.stringify([scene.enemy_impacts,scene.missile_events,scene.pulse_events,scene.rail_events,scene.projectile_visuals]).sha256_text()])
     effect_trace.append([i,scene.missile_events.size(),scene.pulse_events.size(),scene.particles.size(),scene.projectile_visuals.size()])
     if OS.get_environment("PERF_CPU_PEAKS")=="1":cpu_peak_trace.append([i,meter.frame_times.duplicate(true),g.speed,g.motion_clock])
     if render_cost:
@@ -172,6 +195,8 @@ func run():
   row.effect_trace=effect_trace
   row.render_cost_trace=render_cost_trace
   row.cpu_peak_trace=cpu_peak_trace
+  row.launch_trace=launch_trace
+  row.presentation_trace=presentation_trace
   row.render_cost_scope="milliseconds, native render CPU is wall time and may include stalls; GPU last available queries, never added to CPU frame wall time"
   row.missile_parameters={"row":g.db.equip("missile",150),"lifetime":g.MISSILE_LIFETIME,"ejection_gap":g.EJECTION_GAP,"loadout":g.profile.loadout.weapons}
   row.missile_parameters.effective_rows=[]

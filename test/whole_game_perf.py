@@ -193,8 +193,10 @@ def main():
         if args.cpu_peaks:
             MODULES.clear()
             MODULES.update({
-                'main':['advance_game_time','advance_turrets','advance_projectile_visuals','on_event','queue_damage_number','flush_damage_numbers','refresh_visible_cards','refresh_navigation','refresh_draw_layers'],
-                'game':['tick','tick_projectiles','jewel_attack','jewel_fire','fire','hit_enemy','hit_player','advance_jewel_repair'],
+                'main':['advance_game_time','advance_turrets','advance_projectile_visuals','on_event','queue_damage_number','flush_damage_numbers','refresh_visible_cards','refresh_navigation','refresh_draw_layers','weapon_launch','visual_muzzle','enemy_shot_mount'],
+                'game':['tick','tick_projectiles','jewel_attack','jewel_fire','fire','hit_enemy','hit_player','advance_jewel_repair','enemy_weapon_offset'],
+                'battlefield':['weapon_launch'],
+                'equipment_tab':['refresh','refresh_stats','refresh_affordability','refresh_detail','refresh_live','update_card_cost'],
             })
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')
