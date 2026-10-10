@@ -2457,6 +2457,19 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	var modified=N.multiply(raw,enhancement_branches.incoming_multiplier(self,int(context.get("source_uid",0))))
 	jewel_hit_player(modified,type)
 
+func main_retreat_range() -> float:
+	var original := float(db.config.backRange)
+	# Keep earlier stages/manual travel intact; steep later bands farm one wave back.
+	if stage < 14 or stage > 20 or state != State.COMBAT or group_index <= 1 or manual_hyperspace.active:return original
+	var level: Dictionary = db.levels[stage - 1]
+	var current := group_index - 1
+	if current >= level.groups.size():return original
+	var attack_gap: float = db.ratio(stage,current,"atkRatio") / db.ratio(stage,current-1,"atkRatio")
+	var life_gap: float = db.ratio(stage,current,"lifeRatio") / db.ratio(stage,current-1,"lifeRatio")
+	if maxf(attack_gap,life_gap) < 2.5:return original
+	var spacing := (float(level.groups[current].position)-float(level.groups[current-1].position))*float(level.length)
+	return minf(original,spacing) if spacing > 0 else original
+
 func begin_retreat() -> void:
 	# Snapshot actual survivors before retreat clears them or manual return restores main.
 	if state!=State.RETREAT and N.compare(player.armour,0)<=0:
@@ -2471,7 +2484,7 @@ func begin_retreat() -> void:
 	var original_stage := stage
 	retreat_boss_pending = false
 	retreat_from = distance
-	retreat_target = distance - float(db.config.backRange)
+	retreat_target = distance - main_retreat_range()
 	while retreat_target < 0 and stage > 1:
 		stage -= 1
 		var previous_length := float(db.levels[stage - 1].length)

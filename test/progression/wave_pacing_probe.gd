@@ -15,7 +15,7 @@ var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fra
 func observe(kind:String,info:Dictionary):
  if kind=="battle_defeated":defeats+=1
  if kind=="wave_clear":clears+=1
- if kind in ["reactor_changed","hightech_changed","level_clear","resource","wave_clear","battle_defeated","state","encounter","upgrade","scientists_changed","enhancement_changed"]:
+ if kind in ["reactor_changed","hightech_changed","level_clear","resource","wave_clear","battle_defeated","retreat","state","encounter","upgrade","scientists_changed","enhancement_changed"]:
   if kind!="resource":stream.store_line(JSON.stringify({"t":g.simulated_time,"event":kind,"stage":g.stage,"wave":g.group_index,"info":info}))
 func snapshot()->Dictionary:
  return {"t":g.simulated_time,"stage":g.stage,"wave":g.group_index,"state":g.state,"defeats":defeats,"wave_clears":clears,"wave_cursor_semantics":"COMBAT=current 1-based wave; TRAVEL=next 0-based group; LEVEL_CLEAR=count","resources":g.profile.resources.duplicate(true),"fragments":g.profile.jewelFragments,"reactor":g.profile.reactorLevel,"allocation":g.profile.reactorAllocation.duplicate(true),"gear":g.profile.loadout.duplicate(true),"research":g.profile.hightechLevels.duplicate(true),"ai":g.profile.scientists,"strength":g.enhancement_level(),"production_seconds":g.profile.productionElapsed,"iron_60s":g.resource_minute_total("1"),"uranium_60s":g.resource_minute_total("2"),"cleared":g.profile.cleared.duplicate(),"crew":g.profile.crew.duplicate(true),"ship":g.profile.selectedShip}
@@ -45,6 +45,9 @@ func transact():
  var levels=g.enhancement_max_upgrades()
  if levels>0 and policy.enhancement_max:g.upgrade_enhancement(levels)
  stream.store_line(JSON.stringify({"t":g.simulated_time,"event":"normal_transactions","before":before,"after":snapshot(),"reactor_debit":total if count>0 else 0}))
+func record_checkpoint(output:String,label:String):
+ var path=output.get_base_dir().path_join("checkpoint_latest.json")
+ FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"scope":label+"; portable reload regenerates combat and omits live actor/cooldown state"}))
 func record_entry(output:String):
  if entry_seen.has(g.stage):return
  entry_seen[g.stage]=true
@@ -69,7 +72,7 @@ func run():
  if not is_instance_valid(driver.scene) or not driver.scene.has_method("before_logical_game_tick"):
   printerr("Calibration scene failed to load");quit(2);return
  await process_frame;await process_frame
- stream.store_line(JSON.stringify({"event":"initial","state":snapshot(),"request":r,"strategy_parameters":policy,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"source_save_sha256":FileAccess.get_sha256(r.save),"qa_script_sha256":FileAccess.get_sha256("res://qa/wave_pacing_probe.gd"),"engine_version":Engine.get_version_info(),"scope":"Accelerated fixed1/60 calibration; restored journey regenerates battle; deterministic QA RNG; saved production/research continue; transactions per recorded strategy; scene launch/target providers retained; no player scoring or total-duration acceptance."}))
+ stream.store_line(JSON.stringify({"event":"initial","state":snapshot(),"request":r,"strategy_parameters":policy,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"game_script_sha256":FileAccess.get_sha256("res://scripts/game.gd"),"source_save_sha256":FileAccess.get_sha256(r.save),"qa_script_sha256":FileAccess.get_sha256(get_script().resource_path),"engine_version":Engine.get_version_info(),"scope":"Accelerated fixed1/60 calibration; restored journey regenerates battle; deterministic QA RNG; saved production/research continue; transactions per recorded strategy; scene launch/target providers retained; no player scoring or total-duration acceptance."}))
  var wall=Time.get_ticks_usec();var budget=wall
  for tick in roundi(float(r.seconds)*60.0):
   if tick%interval_ticks==0 and r.get("transactions",false):transact()
@@ -86,10 +89,15 @@ func run():
    if ok and action.get("equalize",false):g.equalize_reactor_allocation()
    stream.store_line(JSON.stringify({"event":"scripted_transaction","t":g.simulated_time,"request":action,"quote":quote,"success":ok,"before":before,"after":snapshot()}))
   record_entry(r.output)
+  if tick%7200==0:record_checkpoint(r.output,"QA periodic portable progress checkpoint")
+  if r.has("stop_file") and FileAccess.file_exists(r.stop_file):
+   record_checkpoint(r.output,"QA explicit stop portable progress checkpoint")
+   stream.store_line(JSON.stringify({"event":"requested_stop","state":snapshot()}));break
   driver.before_tick(STEP);g.tick(STEP);driver.after_tick(STEP)
   if tick%3600==0:
    stream.store_line(JSON.stringify({"event":"sample","state":snapshot()}));stream.flush()
   if Time.get_ticks_usec()-budget>24000:await process_frame;budget=Time.get_ticks_usec()
+ record_checkpoint(r.output,"QA final portable progress checkpoint")
  var result=snapshot();result.elapsed_seconds=g.simulated_time-initial_time;result.wall_seconds=float(Time.get_ticks_usec()-wall)/1e6
  stream.store_line(JSON.stringify({"event":"final","state":result}));stream.close()
  print("PACING_RESULT ",JSON.stringify(result))
