@@ -18,6 +18,7 @@ var last_hit={}
 var first_encounters={}
 var paid_boundaries={}
 var qa_failure={}
+var stage_refits={}
 var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fraction":0.25,"ai_batch":10,"enhancement_max":true,"equalize_reactor":true}
 func observe(kind:String,info:Dictionary):
  if kind=="state" and int(info.get("state",-1))==g.State.RETREAT and not g.enemies.is_empty():
@@ -87,10 +88,19 @@ func record_entry(output:String):
  entry_seen[g.stage]=true
  var path=output.get_base_dir().path_join("entry_stage_%02d.json"%g.stage)
  FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"scope":"QA first-entry portable checkpoint; reload regenerates combat and does not preserve live actors"}))
+ # Preserve the real arrival checkpoint before declared normal strategy changes.
+ if stage_refits.has(str(g.stage)):
+  var before=snapshot();var receipts=[]
+  for action in stage_refits[str(g.stage)]:
+   var ok=g.equip_slot(str(action.category),int(action.index),str(action.key))
+   receipts.append({"action":action,"success":ok})
+   if not ok:qa_failure={"reason":"Declared normal stage refit failed","stage":g.stage,"action":action}
+  stream.store_line(JSON.stringify({"event":"normal_stage_refits","t":g.simulated_time,"stage":g.stage,"actions":receipts,"before":before,"after":snapshot(),"scope":"Explicit strategy hypothesis using normal free equip APIs, paid levels/assets retained. Not blind-player evidence."}));stream.flush()
 func _initialize():call_deferred("run")
 func run():
  var r:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(OS.get_environment("QA_PACING_REQUEST")))
  policy.merge(r.get("policy",{}),true)
+ stage_refits=r.get("stage_refits",{})
  var interval_ticks=maxi(1,roundi(float(policy.interval_seconds)*60))
  stream=FileAccess.open(r.output,FileAccess.WRITE)
  combat_capture=bool(r.get("capture_combat",false));capture_output=r.output
