@@ -68,6 +68,7 @@ func run():
  print("CHECKPOINT_END ",JSON.stringify({"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash}))
  scene.queue_free();await process_frame;Engine.remove_meta("saved_perf");quit()
 func measure(scene,g,save_hash):
+ var damage_trace=[]
  var frame_trace=[];var entry_trace=[];var alive=[];var frames=[];var cpu=[];var drawing=[];var calls=[];var primitives=[];var stages=[];var groups=[];var states=[];var enemies=[];var projectiles=[]
  await process_frame;await RenderingServer.frame_post_draw
  var sample_frames = clampi(int(OS.get_environment("PERF_FRAMES")),1,600) if OS.has_environment("PERF_FRAMES") else 30
@@ -96,9 +97,10 @@ func measure(scene,g,save_hash):
     if float(enemy.get("hp",0))>0:living+=1
    alive.append(living)
    frame_trace.append([i,frames[-1],cpu[-1],living,g.projectiles.size()])
+   if OS.get_environment("PERF_DAMAGE_AUDIT")=="1":damage_trace.append([i,JSON.stringify([scene.floats,scene.damage_pending,scene.damage_history]).sha256_text()])
    stages.append(g.stage);groups.append(g.group_index);states.append(g.state);enemies.append(g.enemies.size());projectiles.append(g.projectiles.size())
  meter.enabled=false
  print("ENTRY_ROW ",JSON.stringify({"entry_trace":entry_trace,"synthetic_test_health":OS.get_environment("PERF_SUSTAIN_TEST_HEALTH")=="1","selected_authored_wave":int(OS.get_environment("PERF_CHECKPOINT_WAVE"))}))
  var inventory=[];views(root,inventory)
- print("ROW ",JSON.stringify({"frame_trace":frame_trace,"alive":alive,"rng_state":str(g.rng.state),"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"frames_us":stats(frames),"host_process_us":stats(cpu),"battle_draw_us":stats(drawing) if meter.times.has("main.draw_battle") else null,"draw_command_instrumented":meter.times.has("main.draw_battle"),"timings":meter.times,"calls":stats(calls),"primitives":stats(primitives),"stages":stages,"groups":groups,"states":states,"enemies":enemies,"projectiles":projectiles,"views":inventory,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"warmup_frames":warmup_frames,"sample_frames":sample_frames,"logical_elapsed_seconds":float(warmup_frames+sample_frames)/60.0,"save_enabled":g.save_enabled,"ship_body_records":scene.ship_view.body_baker.records.size(),"flat_enabled":scene.ship_view.flat_compositor.enabled}))
+ print("ROW ",JSON.stringify({"damage_trace":damage_trace,"frame_trace":frame_trace,"alive":alive,"rng_state":str(g.rng.state),"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"frames_us":stats(frames),"host_process_us":stats(cpu),"battle_draw_us":stats(drawing) if meter.times.has("main.draw_battle") else null,"draw_command_instrumented":meter.times.has("main.draw_battle"),"timings":meter.times,"calls":stats(calls),"primitives":stats(primitives),"stages":stages,"groups":groups,"states":states,"enemies":enemies,"projectiles":projectiles,"views":inventory,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"warmup_frames":warmup_frames,"sample_frames":sample_frames,"logical_elapsed_seconds":float(warmup_frames+sample_frames)/60.0,"save_enabled":g.save_enabled,"ship_body_records":scene.ship_view.body_baker.records.size(),"flat_enabled":scene.ship_view.flat_compositor.enabled}))
  root.get_texture().get_image().save_png("res://.runtime/checkpoint20-scene.png")
