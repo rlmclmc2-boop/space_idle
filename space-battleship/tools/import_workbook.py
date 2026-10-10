@@ -30,6 +30,25 @@ def read_rows(sheet):
     next(values,None)
     return [{key:value for key,value in zip(header,row) if key is not None} for row in values if row and row[0] is not None]
 
+def optional_json(row, key, expected):
+    value=row.get(key)
+    if value in (None, ""):
+        row.pop(key,None)
+        return None
+    if isinstance(value,str):
+        try:value=json.loads(value)
+        except (TypeError,ValueError) as error:raise ValueError(f"{key}: invalid JSON") from error
+    if type(value) is not expected:raise ValueError(f"{key}: expected {expected.__name__}")
+    row[key]=value
+    return value
+
+
+def integer_budget(value, label, minimum=0):
+    if type(value) not in (int,float) or not math.isfinite(value) or value<minimum or value!=int(value) or value>2147483647:
+        raise ValueError(f"{label}: expected finite integer >= {minimum}")
+    return int(value)
+
+
 def convert_sheet(name, rows):
     if name in ('weapon_motion', 'enemy_weapon_base', 'battle_design'):
         result = {}
@@ -113,6 +132,11 @@ def convert_sheet(name, rows):
             if len(drop)==4:
                 drop=[drop[0],drop[1],drop[2]+"."+drop[3]]
             row["drops"]=[{"resourceId":int(drop[0]),"amount":float(drop[1]),"chance":float(drop[2])}]
+            custom=optional_json(row,"rewardDrops",list)
+            if custom is not None:row["drops"]=custom
+            value=row.get("jewelDropRolls")
+            if value in (None, ""):row.pop("jewelDropRolls",None)
+            else:row["jewelDropRolls"]=integer_budget(value,f"mon {row['id']} jewelDropRolls")
             result[str(row["id"])]=row
         return result
     if name=="monGroup":
@@ -132,6 +156,8 @@ def convert_sheet(name, rows):
             if tier not in (None, ""):
                 if tier not in ("normal","elite","boss","ultimate"):raise ValueError(f"monGroup {row['id']}: invalid combatTier")
                 group["combatTier"]=tier
+            binding=optional_json(row,"rewardBinding",dict)
+            if binding is not None:group["rewardBinding"]=binding
             result[str(row["id"])]=group
         return result
     if name=="level":
@@ -146,6 +172,7 @@ def convert_sheet(name, rows):
                     row.pop(key, None)
                 elif type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
                     raise ValueError(f"level {row.get('id')} {key}: expected positive finite multiplier or blank")
+            optional_json(row,"rewardReferenceGroups",list)
             row["groups"]=[{"id":int(p.split("|")[0]),"position":float(p.split("|")[1])} for p in clean(row["monGroup"]).split(",")]
         return rows
     if name=="res":
@@ -249,6 +276,35 @@ def validate_weapon_motion(data):
     if enemy_base:
         data.setdefault('fallbacks',{}).update({'enemyWeaponMissingLevel':'Use enemy_weapon_base when the enemy weapon row is missing.','enemyCannonMissingDamageAndCooldown':'Use enemy_weapon_base for missing hostile weapon fields.'})
 
+def validate_reward_bindings(data):
+    from collections import Counter
+    groups,enemies,levels=data['groups'],data['enemies'],data['levels']
+    def members(group):return [enemies[str(i)] for i in group['slots'] if i is not None]
+    def custom(rows):return any('jewelDropRolls' in row or 'rewardDrops' in row for row in rows)
+    def drops(rows):return Counter((int(d['resourceId']),float(d['amount']),float(d['chance'])) for row in rows for d in row['drops'])
+    for level in levels:
+        for reference in level.get('rewardReferenceGroups',[]):
+            if not isinstance(reference,dict) or str(integer_budget(reference.get('id'),'reward reference ID',1)) not in groups:
+                raise ValueError('reward reference group missing')
+    for gid,group in groups.items():
+        rows=members(group);binding=group.get('rewardBinding')
+        if binding is None and not custom(rows):continue
+        if not isinstance(binding,dict) or binding.get('status')!='BOUND':raise ValueError(f'{gid}: candidate rewards UNBOUND')
+        ref=str(integer_budget(binding.get('referenceGroupId'),f'{gid} referenceGroupId',1))
+        if ref==gid or ref not in groups:raise ValueError(f'{gid}: invalid reward reference')
+        source=members(groups[ref])
+        if 'rewardBinding' in groups[ref] or custom(source):raise ValueError(f'{gid}: reference must be legacy')
+        count=sum(integer_budget(row.get('jewelDropRolls',1),f'{gid} draw count') for row in rows)
+        if count!=len(source) or drops(rows)!=drops(source):raise ValueError(f'{gid}: reward draw/drop budget differs')
+        lid=integer_budget(binding.get('levelId'),f'{gid} bound level',1)
+        if lid>len(levels):raise ValueError(f'{gid}: bound level missing')
+        level=levels[lid-1]
+        if ref not in {str(r['id']) for r in level['groups']+level.get('rewardReferenceGroups',[])}:raise ValueError(f'{gid}: reference not mounted')
+        for key in ['resRatio','jewelRatio']:
+            value=binding.get(key)
+            if type(value) not in (int,float) or not math.isfinite(value) or value<0 or value!=level[key]:raise ValueError(f'{gid}: invalid bound {key}')
+
+
 def validate_projection(data, *, check_level_ratios=True):
     validate_weapon_motion(data)
     validate_galaxy(data)
@@ -350,6 +406,7 @@ def validate_projection(data, *, check_level_ratios=True):
             if str(drop['resourceId']) not in data['resources']: raise ValueError(ui_text('debug.import_workbook.message_14', eid=eid))
             positive(drop['amount'],'drop amount',True)
             if not 0<=drop['chance']<=1: raise ValueError(ui_text('debug.import_workbook.message_133'))
+    validate_reward_bindings(data)
     for key in ('dmgReduce','autoCollectReduce'):
         if not isinstance(config[key],(int,float)) or not 0<=config[key]<1: raise ValueError(ui_text('debug.import_workbook.message_111', key=key))
     positive(config['movement'],'movement')

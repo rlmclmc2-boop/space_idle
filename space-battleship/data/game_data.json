@@ -259905,6 +259905,1152 @@
           "chance": 1.0
         }
       ]
+    },
+    "54920": {
+      "id": 54920,
+      "des": "第14关第6波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54921": {
+      "id": 54921,
+      "des": "第14关第6波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54922": {
+      "id": 54922,
+      "des": "第14关第6波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54923": {
+      "id": 54923,
+      "des": "第14关第6波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54924": {
+      "id": 54924,
+      "des": "第14关第6波：指挥舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 3,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54925": {
+      "id": 54925,
+      "des": "第14关第6波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54926": {
+      "id": 54926,
+      "des": "第14关第6波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54927": {
+      "id": 54927,
+      "des": "第14关第6波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54928": {
+      "id": 54928,
+      "des": "第14关第6波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54940": {
+      "id": 54940,
+      "des": "第14关第7波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54941": {
+      "id": 54941,
+      "des": "第14关第7波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54942": {
+      "id": 54942,
+      "des": "第14关第7波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54943": {
+      "id": 54943,
+      "des": "第14关第7波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54944": {
+      "id": 54944,
+      "des": "第14关第7波：指挥舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 3,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54945": {
+      "id": 54945,
+      "des": "第14关第7波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54946": {
+      "id": 54946,
+      "des": "第14关第7波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54947": {
+      "id": 54947,
+      "des": "第14关第7波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54948": {
+      "id": 54948,
+      "des": "第14关第7波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54960": {
+      "id": 54960,
+      "des": "第14关第8波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54961": {
+      "id": 54961,
+      "des": "第14关第8波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54962": {
+      "id": 54962,
+      "des": "第14关第8波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54963": {
+      "id": 54963,
+      "des": "第14关第8波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54964": {
+      "id": 54964,
+      "des": "第14关第8波：指挥舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 3,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54965": {
+      "id": 54965,
+      "des": "第14关第8波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54966": {
+      "id": 54966,
+      "des": "第14关第8波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54967": {
+      "id": 54967,
+      "des": "第14关第8波：能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.26172,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54968": {
+      "id": 54968,
+      "des": "第14关第8波：物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 1,
+      "res": "{1,4,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 2,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        },
+        {
+          "resourceId": 1,
+          "amount": 4,
+          "chance": 1
+        }
+      ]
+    },
+    "54987": {
+      "id": 54987,
+      "des": "第14关尾波主舰：能量攻击，物理装甲",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 3.1988,
+      "health": 6500,
+      "armourType": 2,
+      "res": "{1,120,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 1,
+      "rewardDrops": [
+        {
+          "resourceId": 1,
+          "amount": 120,
+          "chance": 1
+        }
+      ],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 120,
+          "chance": 1
+        }
+      ]
+    },
+    "54901": {
+      "id": 54901,
+      "des": "第14关尾波弱护卫：无额外奖励抽取",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,0,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 0,
+      "rewardDrops": [],
+      "drops": []
+    },
+    "54903": {
+      "id": 54903,
+      "des": "第14关尾波弱护卫：无额外奖励抽取",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,0,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "jewelDropRolls": 0,
+      "rewardDrops": [],
+      "drops": []
     }
   },
   "groups": {
@@ -267109,7 +268255,7 @@
       "lifeMultiplier": 7495.067338943531,
       "combatTier": "normal"
     },
-    "30146": {
+    "34146": {
       "description": "第14关第6战点",
       "slots": [
         54120,
@@ -267132,7 +268278,7 @@
       "lifeMultiplier": 16831.09401287439,
       "combatTier": "elite"
     },
-    "30147": {
+    "34147": {
       "description": "第14关第7战点",
       "slots": [
         54140,
@@ -267155,7 +268301,7 @@
       "lifeMultiplier": 39119.06587803794,
       "combatTier": "elite"
     },
-    "30148": {
+    "34148": {
       "description": "第14关第8战点",
       "slots": [
         54160,
@@ -267178,7 +268324,7 @@
       "lifeMultiplier": 93168.83992096882,
       "combatTier": "elite"
     },
-    "30149": {
+    "34149": {
       "description": "第14关第9战点",
       "slots": [
         null,
@@ -306242,6 +307388,284 @@
         null
       ],
       "combatTier": "ultimate"
+    },
+    "30146": {
+      "description": "第14关第6战点：主舰与混合护卫",
+      "slots": [
+        null,
+        54920,
+        54921,
+        54922,
+        null,
+        null,
+        54923,
+        54924,
+        54925,
+        null,
+        null,
+        54926,
+        54927,
+        54928,
+        null
+      ],
+      "formation_positions": [
+        null,
+        [
+          106,
+          220
+        ],
+        [
+          226,
+          220
+        ],
+        [
+          346,
+          220
+        ],
+        null,
+        null,
+        [
+          466,
+          220
+        ],
+        [
+          286,
+          110
+        ],
+        [
+          106,
+          330
+        ],
+        null,
+        null,
+        [
+          226,
+          330
+        ],
+        [
+          346,
+          330
+        ],
+        [
+          466,
+          330
+        ],
+        null
+      ],
+      "atkMultiplier": 626.836351278172,
+      "lifeMultiplier": 16831.09401287439,
+      "combatTier": "elite",
+      "rewardBinding": {
+        "status": "BOUND",
+        "referenceGroupId": 34146,
+        "levelId": 14,
+        "resRatio": 561545.6675019113,
+        "jewelRatio": 3.6
+      }
+    },
+    "30147": {
+      "description": "第14关第7战点：主舰与混合护卫",
+      "slots": [
+        null,
+        54940,
+        54941,
+        54942,
+        null,
+        null,
+        54943,
+        54944,
+        54945,
+        null,
+        null,
+        54946,
+        54947,
+        54948,
+        null
+      ],
+      "formation_positions": [
+        null,
+        [
+          106,
+          220
+        ],
+        [
+          226,
+          220
+        ],
+        [
+          346,
+          220
+        ],
+        null,
+        null,
+        [
+          466,
+          220
+        ],
+        [
+          286,
+          110
+        ],
+        [
+          106,
+          330
+        ],
+        null,
+        null,
+        [
+          226,
+          330
+        ],
+        [
+          346,
+          330
+        ],
+        [
+          466,
+          330
+        ],
+        null
+      ],
+      "atkMultiplier": 1243.663980941391,
+      "lifeMultiplier": 39119.06587803794,
+      "combatTier": "elite",
+      "rewardBinding": {
+        "status": "BOUND",
+        "referenceGroupId": 34147,
+        "levelId": 14,
+        "resRatio": 561545.6675019113,
+        "jewelRatio": 3.6
+      }
+    },
+    "30148": {
+      "description": "第14关第8战点：主舰与混合护卫",
+      "slots": [
+        null,
+        54960,
+        54961,
+        54962,
+        null,
+        null,
+        54963,
+        54964,
+        54965,
+        null,
+        null,
+        54966,
+        54967,
+        54968,
+        null
+      ],
+      "formation_positions": [
+        null,
+        [
+          106,
+          220
+        ],
+        [
+          226,
+          220
+        ],
+        [
+          346,
+          220
+        ],
+        null,
+        null,
+        [
+          466,
+          220
+        ],
+        [
+          286,
+          110
+        ],
+        [
+          106,
+          330
+        ],
+        null,
+        null,
+        [
+          226,
+          330
+        ],
+        [
+          346,
+          330
+        ],
+        [
+          466,
+          330
+        ],
+        null
+      ],
+      "atkMultiplier": 2525.093696752134,
+      "lifeMultiplier": 93168.83992096882,
+      "combatTier": "elite",
+      "rewardBinding": {
+        "status": "BOUND",
+        "referenceGroupId": 34148,
+        "levelId": 14,
+        "resRatio": 561545.6675019113,
+        "jewelRatio": 3.6
+      }
+    },
+    "30149": {
+      "description": "第14关尾波：主舰与两翼弱护卫",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        54901,
+        54987,
+        54903,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "formation_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          126,
+          250
+        ],
+        [
+          286,
+          100
+        ],
+        [
+          446,
+          250
+        ],
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "atkMultiplier": 5216.715970314535,
+      "lifeMultiplier": 225982.3092077873,
+      "combatTier": "boss",
+      "rewardBinding": {
+        "status": "BOUND",
+        "referenceGroupId": 34149,
+        "levelId": 14,
+        "resRatio": 561545.6675019113,
+        "jewelRatio": 3.6
+      }
     }
   },
   "levels": [
@@ -306798,6 +308222,24 @@
       "resRatio": 561545.6675019113,
       "jewelRatio": 3.6,
       "planetExpRatio": 0,
+      "rewardReferenceGroups": [
+        {
+          "id": 34146,
+          "position": 0.6
+        },
+        {
+          "id": 34147,
+          "position": 0.7
+        },
+        {
+          "id": 34148,
+          "position": 0.8
+        },
+        {
+          "id": 34149,
+          "position": 0.9
+        }
+      ],
       "groups": [
         {
           "id": 30141,

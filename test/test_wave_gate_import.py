@@ -22,6 +22,28 @@ class WaveGateImport(unittest.TestCase):
   self.assertEqual(convert_sheet('monGroup',read_rows(book['monGroup'])),data['groups'])
   book.close()
   validate_projection(data)
+ def test_live_enemy_source_projection(self):
+  data=json.loads((ROOT/'data/game_data.json').read_text())
+  book=openpyxl.load_workbook(ROOT/'config_excel/mon.xlsx',read_only=True,data_only=True)
+  self.assertEqual(convert_sheet('mon',read_rows(book['mon'])),data['enemies']);book.close()
+ def test_optional_candidate_fields_reject_bad_source(self):
+  row={'id':1,'des':'fixture','equipment':'{laser_mon|1}','dmgMultiple':1,'health':10,'armourType':1,'res':'{1,4,1}','size':1}
+  for value in [-1,1.5,float('nan'),float('inf'),True,'2']:
+   with self.subTest(value=value),self.assertRaises(ValueError):convert_sheet('mon',[dict(row,jewelDropRolls=value)])
+  for value in ['{bad}', '{}', 1]:
+   with self.subTest(value=value),self.assertRaises(ValueError):convert_sheet('mon',[dict(row,rewardDrops=value)])
+  valid=convert_sheet('mon',[dict(row,jewelDropRolls=0,rewardDrops='[]')])['1']
+  self.assertEqual(valid['drops'],[]);self.assertEqual(valid['jewelDropRolls'],0)
+ def test_candidate_reward_quota_rejections(self):
+  data=json.loads((ROOT/'data/game_data.json').read_text())
+  for change in ['draw','drop','reference','level','ratio']:
+   fixture=copy.deepcopy(data)
+   if change=='draw':fixture['enemies']['54924']['jewelDropRolls']+=1
+   elif change=='drop':fixture['enemies']['54924']['drops'][0]['amount']+=1
+   elif change=='reference':fixture['groups']['30146']['rewardBinding']['referenceGroupId']=30146
+   elif change=='level':fixture['groups']['30146']['rewardBinding']['levelId']=13
+   else:fixture['groups']['30146']['rewardBinding']['resRatio']+=1
+   with self.subTest(change=change),self.assertRaises(ValueError):validate_projection(fixture)
  def test_optional_factors_and_rejections(self):
   row={'id':1,'des':'fixture','mon':'{1,null,null,null,null,null,null,null,null,null}'}
   self.assertNotIn('lifeMultiplier',convert_sheet('monGroup',[dict(row,lifeMultiplier='')])['1'])
