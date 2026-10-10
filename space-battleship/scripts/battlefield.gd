@@ -221,7 +221,8 @@ func after_logical_game_tick()->void:
 	step_presentation.drain(self)
 
 func record_damage_presentation(info:Dictionary)->void:
-	if not step_presentation.active or fast_mode_enabled() or not show_damage_numbers:
+	if not step_presentation.active or fast_mode_enabled() or not show_damage_numbers or bool(info.player):
+		step_presentation.drain(self)
 		super.record_damage_presentation(info)
 		return
 	step_presentation.record(self,info)
@@ -421,7 +422,7 @@ func _draw_muzzle_cues() -> void:
 func on_event(kind:String,info:Dictionary)->void:
 	if kind!="hit":
 		step_presentation.drain(self)
-		step_presentation.invalidate()
+		if step_presentation.geometry_barrier(kind):step_presentation.invalidate()
 	if kind=="encounter":encounter_presentation.sync(game,0.0)
 	if kind=="wave_clear" and encounter_presentation.tier=="ultimate":encounter_presentation.clear_age=0.0
 	if kind=="hyperspace_manual":

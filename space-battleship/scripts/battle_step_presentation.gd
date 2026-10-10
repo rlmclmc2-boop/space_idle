@@ -10,6 +10,12 @@ var alive_entities:Array=[]
 var world:Dictionary={}
 var pending:Array[Dictionary]=[]
 
+func geometry_barrier(kind:String)->bool:
+	# These handlers change HP/shield amounts, projectiles, feedback or module
+	# stats, never the enemy pose/width inputs. Alive membership is checked by
+	# layout_context; any other event conservatively ends this read model.
+	return kind not in ["hit","fire","projectile_impact","beam_started","beam_hit","critical_impact","prototype_missile_retired","prototype_missile_reset","equipment_stats","collect"]
+
 func begin(enabled:bool)->void:
 	active=enabled
 	invalidate()
