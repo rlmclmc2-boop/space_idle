@@ -6,6 +6,7 @@ var active:=false
 var pose_time:float=-INF
 var positions:Dictionary={}
 var alive_ids:Array[int]=[]
+var alive_entities:Array=[]
 var world:Dictionary={}
 var pending:Array[Dictionary]=[]
 
@@ -17,6 +18,7 @@ func invalidate()->void:
 	pose_time=-INF
 	positions.clear()
 	alive_ids.clear()
+	alive_entities.clear()
 	world={}
 
 func ensure_time(time:float)->void:
@@ -27,12 +29,18 @@ func ensure_time(time:float)->void:
 func layout_context(scene)->Dictionary:
 	ensure_time(scene.fx_time)
 	var living:Array[int]=[]
+	var entities:Array=[]
 	for enemy in scene.game.enemies:
-		if enemy.hp>0:living.append(int(enemy.uid))
+		if enemy.hp>0:living.append(int(enemy.uid));entities.append(enemy)
 	# Death changes obstacles, not the unchanged survivor poses. Previously
 	# recorded events keep their own world dictionary, never this new one.
-	if living!=alive_ids:
+	var replaced:=entities.size()!=alive_entities.size()
+	if not replaced:
+		for i in entities.size():
+			if not is_same(entities[i],alive_entities[i]):replaced=true;break
+	if living!=alive_ids or replaced:
 		alive_ids=living
+		alive_entities=entities
 		world={}
 	return world
 

@@ -60,6 +60,10 @@ func run()->void:
  var replacement=enemy.duplicate(true);replacement.x+=13.0
  var q=scene.enemy_render_position(replacement)
  check(p!=q,"same UID replacement identity checked")
+ var context=scene.damage_layout_context();context.marker=true
+ var original_entity=g.enemies[0];g.enemies[0]=replacement
+ check(not scene.damage_layout_context().has("marker"),"same UID replacement releases obstacle snapshot")
+ g.enemies[0]=original_entity
  scene.step_presentation.finish(scene)
  g.launch_provider=Callable();g.target_provider=Callable();scene.queue_free();await process_frame;await process_frame
  print("CHECKS ",checks," FAILURES ",failures);quit(1 if failures else 0)
