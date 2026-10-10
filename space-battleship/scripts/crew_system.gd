@@ -7,6 +7,7 @@ var intervals: Dictionary = {}
 var allocation_timers: Dictionary = {}
 var allocation_intervals: Dictionary = {}
 var allocation_dependencies: Array = []
+var equipment_last_slot := "" # Runtime-only tie rotation; no offline purchases.
 var game_ref: WeakRef
 const PURCHASE_JOBS := ["equipment_upgrade","hightech_scientists","jewel_auto","reactor_upgrade"]
 
@@ -32,6 +33,7 @@ func attach(g) -> void:
 	g.event.connect(on_event)
 
 func reset_schedule(g) -> void:
+	equipment_last_slot=""
 	timers.clear()
 	intervals.clear()
 	allocation_timers.clear()
@@ -364,10 +366,25 @@ func passive(_g, _item: Dictionary) -> bool:
 	return false
 
 func auto_upgrade(g, item: Dictionary) -> bool:
-	var mode := str(item.get("upgradeMode",""))
-	if not upgrade_modes(g).has(mode):return false
-	# Match manual module upgrades. Each later module sees the remaining resources.
-	return g.upgrade_equipment_batch(mode)
+	if not active(g,item):return false
+	var slots: Array=[]
+	var lowest: int=9223372036854775807
+	for category in ["weapons","defence"]:
+		for index in g.loadout_entries(category).size():
+			var level: int=int(g.slot_entry(category,index).level)
+			lowest=mini(lowest,level)
+			slots.append({"category":category,"index":index,"level":level,"id":g.slot_id(category,index)})
+	if slots.is_empty():return false
+	var previous := -1
+	for i in slots.size():
+		if slots[i].id==equipment_last_slot:previous=i;break
+	for offset in range(1,slots.size()+1):
+		var chosen: Dictionary=slots[(previous+offset)%slots.size()]
+		if int(chosen.level)!=lowest:continue
+		# A failed lowest-slot purchase keeps its turn; never try a higher slot.
+		if g.upgrade_slot(chosen.category,int(chosen.index),1):equipment_last_slot=chosen.id
+		return true # Keep the next one-second attempt even while unaffordable.
+	return false
 
 func auto_scientists(g, item: Dictionary) -> bool:
 	var mode := str(item.get("upgradeMode",""))
@@ -429,7 +446,7 @@ func effect_text(g, item: Dictionary) -> String:
 	var key := str(row.get("descTextId", ""))
 	if key.is_empty():key="crew.effect.generic"
 	if not UIText.loaded:UIText.reload_catalog()
-	var possible := {"description":str(row.description),"value":NumberFormat.percentage(value*100),"interval":NumberFormat.scalar(float(row.interval)/value if value>0 else 0.0),"mode":upgrade_mode_text(str(item.get("upgradeMode","")),str(row.effectType))}
+	var possible := {"description":str(row.description),"value":NumberFormat.percentage(value*100),"interval":NumberFormat.scalar(float(row.interval)/value if value>0 else 0.0),"mode":upgrade_mode_text("1" if row.effectType=="AUTO_UPGRADE" else str(item.get("upgradeMode","")),str(row.effectType))}
 	var values := {}
 	for parameter in UIText.contracts.get(key,{}).get("params",[]):
 		if possible.has(parameter):values[parameter]=possible[parameter]

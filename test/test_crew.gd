@@ -41,15 +41,12 @@ func _initialize() -> void:
 	check(not c.assign(g,"engineer","equipment_upgrade","equipment"),"Capacity enforced")
 	check(is_equal_approx(c.effect_value(g,c.entry(g,"navigator")),1.0),"Equipment interval stays fixed at every crew level")
 	var before:=int(g.slot_entry("weapons",0).level)
-	var costs: Dictionary={}
-	for category in ["weapons","defence"]:
-		for index in g.loadout_entries(category).size():
-			for id in g.slot_upgrade_cost(category,index):costs[id]=float(costs.get(id,0))+float(g.slot_upgrade_cost(category,index)[id])
+	var costs: Dictionary=g.slot_upgrade_cost("weapons",0)
 	var resources: Dictionary=g.profile.resources.duplicate()
 	c.advance(g,0.9)
 	check(g.slot_entry("weapons",0).level==before,"No checks before effective interval")
 	c.advance(g,0.1)
-	check(g.slot_entry("weapons",0).level==before+1,"Automatic unified module upgrade")
+	check(g.slot_entry("weapons",0).level==before+1,"One lowest equipment slot upgrades")
 	for id in costs:check(g.profile.resources[id]==resources[id]-costs[id],"Normal resource cost "+id)
 	g.profile.resources={"1":0,"2":0}
 	c.advance(g,1)
@@ -59,13 +56,17 @@ func _initialize() -> void:
 	c.advance(g,1)
 	check(g.slot_entry("weapons",0).level==before+1,"Release cancels scheduler")
 	check(c.assign(g,"engineer","equipment_upgrade","equipment"),"Defense assignment")
+	for category in ["weapons","defence"]:
+		for index in g.loadout_entries(category).size():g.slot_entry(category,index).level=5
+	g.slot_entry("defence",0).level=1
+	g.invalidate_stat_cache()
 	var defense:=int(g.slot_entry("defence",0).level)
 	g.paused=true
 	g.tick(31)
 	check(g.slot_entry("defence",0).level==defense,"Paused scheduler")
 	g.paused=false
 	c.advance(g,1)
-	check(g.slot_entry("defence",0).level==defense+1,"Defense unified upgrade")
+	check(g.slot_entry("defence",0).level==defense+1,"Lowest defense slot upgrades")
 	c.assign(g,"engineer","","")
 	var tech: String=g.hightech_slots()[0]
 	g.profile.scientists=1

@@ -317319,11 +317319,11 @@
       "powerScale": 0,
       "interval": 1,
       "maxCrew": 1,
-      "description": "每秒尝试升级全部启用的武器和防御模块，正常消耗资源。",
+      "description": "每秒按正常费用升级最低等级的一个启用装备槽1级；同级轮流，买不起等待。",
       "titleTextId": "crew.job.equipment",
       "descTextId": "crew.effect.all_equipment",
       "targetCategory": "",
-      "upgradeModes": "1,10,max"
+      "upgradeModes": "1"
     },
     "hightech_scientists": {
       "id": "hightech_scientists",

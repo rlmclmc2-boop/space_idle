@@ -529,7 +529,7 @@ func refresh_detail_status(item: Dictionary) -> void:
 	if g.crew.active(g,item) and not effect_key.is_empty():
 		var value: float=g.crew.effect_value(g,item)
 		var interval: String=NumberFormat.scalar(float(job.interval)/value if value>0 else 0.0)
-		var mode: String=str(item.get("upgradeMode","1"))
+		var mode: String="1" if kind=="AUTO_UPGRADE" else str(item.get("upgradeMode","1"))
 		if kind=="AUTO_UPGRADE":
 			text=UIText.t("crew.core_equipment",{"interval":interval,"amount":UIText.t("crew.amount_max") if mode=="max" else UIText.t("crew.amount_levels",{"count":mode})})
 		elif kind=="AUTO_SCIENTIST":text=UIText.t("crew.core_scientist",{"interval":interval,"amount":g.crew.upgrade_mode_text(mode,kind)})
@@ -545,7 +545,7 @@ func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
 	var value: float=g.crew.effect_value(g,{"crewId":item.crewId,"assignmentType":job_ids[jobs.selected]})
 	if value<=0:return ""
 	var values: Dictionary={"interval":NumberFormat.scalar(float(row.interval)/value)}
-	var mode:=draft_mode
+	var mode: String="1" if kind=="AUTO_UPGRADE" else draft_mode
 	if kind=="AUTO_UPGRADE":
 		values.amount=UIText.t("crew.preview.maximum") if mode=="max" else g.crew.upgrade_mode_text(mode,kind)
 	elif kind=="AUTO_SCIENTIST":
@@ -565,7 +565,7 @@ func refresh_actions() -> void:
 	var row: Dictionary=g.crew.assignments(g).get(job_ids[jobs.selected],{}) if jobs.selected>=0 else {}
 	var equipment: bool=row.get("targetType")=="equipment" and row.get("effectType")=="AUTO_UPGRADE"
 	var scientist: bool=row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_SCIENTIST"
-	var automatic:=equipment or scientist
+	var automatic:=scientist
 	var choose_target: bool=not automatic and target_ids.size()>1
 	host.set_ui_value(target_label,"text",UIText.t("crew.amount_label" if equipment else "crew.ai_amount_label" if scientist else "crew.choose_target"))
 	host.set_ui_value(parameter_column,"visible",automatic or choose_target)

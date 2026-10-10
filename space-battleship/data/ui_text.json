@@ -4161,7 +4161,7 @@
   },
   {
     "key": "crew.core_equipment",
-    "text": "每{interval}秒 · 全部装备{amount}",
+    "text": "每{interval}秒 · 最低等级的一槽{amount}；同级轮流，买不起等待。",
     "params": "interval,amount",
     "category": "crew",
     "note": "船员紧凑布局"
@@ -10843,7 +10843,7 @@
   },
   {
     "key": "crew.effect.all_equipment",
-    "text": "每 {interval} 秒尝试为全部装备{mode}",
+    "text": "每{interval}秒选最低等级的一槽{mode}；同级轮流，买不起等待。",
     "params": "{interval},{mode}",
     "category": "crew",
     "note": "船员系统分配与批量升级"
@@ -15614,7 +15614,7 @@
   },
   {
     "key": "crew.preview.equipment",
-    "text": "确认后每{interval}秒按正常费用花铁，让各装备位{amount}；买不起的先跳过。",
+    "text": "确认后每{interval}秒按正常费用给最低等级的一槽{amount}；同级轮流，买不起等待。",
     "params": "interval,amount",
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
