@@ -122,6 +122,8 @@ def main():
     args = parser.parse_args()
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
+    if args.boundary_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument):
+        parser.error('boundary-check requires battle-only and cannot be combined with replay or other instrumentation')
     if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
         parser.error('phase-account requires only battle-only, without replay or overlapping instrumenters')
     if args.battle_only and (not args.rich or args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4 or args.instrument):

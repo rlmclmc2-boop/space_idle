@@ -34,10 +34,7 @@ func begin(force:bool=false)->void:
 		if old.is_empty() or not is_same(old.entity,enemy):old={"entity":enemy,"position_clock":-INF};records[uid]=old
 		# Appearance contracts are resolved once at the boundary, never per query.
 		if int(old.get("shape_revision",-1))!=shape_revision:
-			old.components=host._source_enemy_weapon_components(enemy)
-			old.frontline=_frontline(enemy)
-			old.width_base=_width_base(enemy)
-			old.shape_revision=shape_revision
+			compile_shape(enemy,old)
 		old.position_clock=-INF
 	for uid in records.keys():
 		if not present.has(uid):records.erase(uid)
@@ -47,6 +44,12 @@ func begin(force:bool=false)->void:
 	# not independently walk the same geometry dependency graph.
 	for enemy in host.game.enemies:
 		if enemy.hp>0:position(enemy)
+
+func compile_shape(enemy:Dictionary,row:Dictionary)->void:
+	row.components=host._source_enemy_weapon_components(enemy)
+	row.frontline=_frontline(enemy)
+	row.width_base=_width_base(enemy)
+	row.shape_revision=shape_revision
 
 func end()->void:active=false
 
@@ -96,9 +99,12 @@ func position(enemy:Dictionary)->Vector2:
 	var logical=Vector2(enemy.x,enemy.y)
 	if float(row.position_clock)!=clock or row.get("logical",Vector2.INF)!=logical:
 		# The canonical solver keeps entry/clamping/outline iteration unchanged.
-		row.position=host._source_enemy_render_position(enemy);row.logical=logical;row.position_clock=clock
-		geometry_revision+=1;bounds_revision=-1
+		_publish_position(enemy,row,logical)
 	return row.position
+
+func _publish_position(enemy:Dictionary,row:Dictionary,logical:Vector2)->void:
+	row.position=host._source_enemy_render_position(enemy);row.logical=logical;row.position_clock=clock
+	geometry_revision+=1;bounds_revision=-1
 
 func fleet_bounds()->Array[Rect2]:
 	ensure_clock()

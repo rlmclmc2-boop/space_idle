@@ -3,6 +3,7 @@ import re
 import shutil
 
 SCOPES = {
+ 'battle_read_model': {'compile_shape':'shape_publication','_publish_position':'geometry_queries','begin':'publication_boundary','display_contact':'display_publication'},
  'game': {'tick':'simulation','tick_projectiles':'simulation', **{name:'numeric_queries' for name in ['stat','jewel_equipment_stat','player_weapon_row','equipment_damage','module_damage','enhancement_effects','combat_weapon_entries','hyperspace_totals']}},
  'presented_battle_game': {'tick':'simulation','tick_projectiles':'simulation','target_point':'geometry_authority'},
  'main': {'_process':'process_other','advance_game_time':'simulation_boundary',
@@ -36,7 +37,9 @@ def prepare(project,root):
     shutil.copy2(root/'test/exclusive_phase_ledger.gd',project/'exclusive_phase_ledger.gd')
     wrapped=[]
     for module,methods in SCOPES.items():
-        path=project/'scripts'/(module+'.gd');source=path.read_text(encoding='utf-8')
+        path=project/'scripts'/(module+'.gd')
+        if not path.exists():continue
+        source=path.read_text(encoding='utf-8')
         for name,category in methods.items():
             match=re.search(rf'^func {name}\((.*)\)([^\n]*):$',source,re.M)
             if not match:continue
