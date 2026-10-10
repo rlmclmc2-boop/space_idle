@@ -362,6 +362,8 @@ def main():
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
     measured_files += ['dev/toon_ship/missile_vfx.gd','scripts/enemy_recognition_visual.gd']
+    for native_file in ['scripts/resident_stroke_geometry.gd','scripts/resident_stroke.gdshader']:
+        if (project/native_file).exists():measured_files.append(native_file)
     if (project/'scripts/battle_read_model.gd').exists():measured_files += ['scripts/battle_read_model.gd','scripts/retained_enemy_contacts.gd']
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd']

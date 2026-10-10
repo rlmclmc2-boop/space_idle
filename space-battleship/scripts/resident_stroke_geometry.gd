@@ -68,7 +68,7 @@ func build_mesh(paths:Array,color:Color)->ArrayMesh:
 		for strip in [core,left,right]:append_strip(strip,vertices,uvs,custom,colors,indices,color)
 	var arrays=[];arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX]=vertices;arrays[Mesh.ARRAY_TEX_UV]=uvs;arrays[Mesh.ARRAY_COLOR]=colors;arrays[Mesh.ARRAY_INDEX]=indices
-	arrays[Mesh.ARRAY_CUSTOM0]=custom.to_byte_array()
+	arrays[Mesh.ARRAY_CUSTOM0]=custom
 	var mesh=ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays,[],{},Mesh.ARRAY_CUSTOM_RGBA_FLOAT<<Mesh.ARRAY_FORMAT_CUSTOM0_SHIFT)
 	return mesh
