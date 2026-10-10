@@ -22922,7 +22922,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -22947,7 +22947,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -22972,7 +22972,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -22997,7 +22997,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23022,7 +23022,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23047,7 +23047,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23072,7 +23072,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23097,7 +23097,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23122,7 +23122,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23147,7 +23147,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23172,7 +23172,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23197,7 +23197,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23222,7 +23222,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23247,7 +23247,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23272,7 +23272,7 @@
       "shield": 1163,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23297,7 +23297,7 @@
       "shield": 3315,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23322,7 +23322,7 @@
       "shield": 2588,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23347,7 +23347,7 @@
       "shield": 3315,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23372,7 +23372,7 @@
       "shield": 3315,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23397,7 +23397,7 @@
       "shield": 2588,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23422,7 +23422,7 @@
       "shield": 3315,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23447,7 +23447,7 @@
       "shield": 3315,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23472,7 +23472,7 @@
       "shield": 2588,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23497,7 +23497,7 @@
       "shield": 3315,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
@@ -23522,7 +23522,7 @@
       "shield": 5954,
       "shieldType": 2,
       "shieldRecovery": 0.2,
-      "shieldDelay": 0.3,
+      "shieldDelay": 0.6,
       "drops": [
         {
           "resourceId": 1,
