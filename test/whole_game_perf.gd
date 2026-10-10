@@ -307,6 +307,7 @@ func run():
     if render_cost:
      cost_views.clear();measured_views(root,cost_views)
    scene.frame_launches=0;scene.frame_enemy_launches=0
+   scene.window_event_labels.clear()
    meter.frame_times.clear()
    meter.muzzle_seen.clear()
    meter.card_changes.clear()
