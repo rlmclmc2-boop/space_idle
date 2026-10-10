@@ -3,6 +3,7 @@ import re
 import shutil
 
 SCOPES = {
+ 'database': {name:'numeric_queries' for name in ['equip','enemy_weapon','_combat_equipment_record','combat_enemy_weapon']},
  'battle_read_model': {'compile_shape':'shape_publication','_publish_position':'geometry_queries','begin':'publication_boundary','display_contact':'display_publication'},
  'game': {'tick':'simulation','tick_projectiles':'simulation', **{name:'numeric_queries' for name in ['stat','jewel_equipment_stat','player_weapon_row','equipment_damage','module_damage','enhancement_effects','combat_weapon_entries','combat_weapon_view','combat_player_weapon_row','hyperspace_totals']}},
  'presented_battle_game': {'tick':'simulation','tick_projectiles':'simulation','target_point':'geometry_authority'},

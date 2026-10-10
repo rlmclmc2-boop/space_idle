@@ -787,6 +787,11 @@ func drone_weapon_entry(d: Dictionary) -> Dictionary:
 	return {"key":d.weapon,"level":inherited+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
 
 func combat_entry(index: int) -> Dictionary:
+	# A single primary lookup needs neither a slice nor a whole-view identity scan.
+	# Read the authoritative slot at this call, including mid-salvo replacement.
+	var primary := module_entries("weapons")
+	var count := mini(primary.size(),active_slot_count("weapons"))
+	if index>=0 and index<count:return primary[index]
 	var entries:=combat_weapon_view()
 	return entries[index] if index>=0 and index<entries.size() else {}
 
@@ -1983,7 +1988,7 @@ func change_state(next: State) -> void:
 		travel_origin = INF
 		cooldowns.clear()
 		for index in range(combat_weapon_view().size()):
-			var entry: Dictionary = combat_weapon_view()[index]
+			var entry: Dictionary = combat_entry(index)
 			var key := str(entry.key)
 			if key.is_empty():
 				continue
@@ -2929,7 +2934,7 @@ func tick(dt: float) -> void:
 		return
 	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p) or (not p.hostile and not p.get("repeated",false) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(p.entry,endless_source())))
 	for index in range(combat_weapon_view().size()):
-		var entry: Dictionary = combat_weapon_view()[index]
+		var entry: Dictionary = combat_entry(index)
 		var key := str(entry.key)
 		if key.is_empty():
 			continue

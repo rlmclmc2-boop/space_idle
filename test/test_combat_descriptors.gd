@@ -30,6 +30,13 @@ func _initialize()->void:
  var row=db._combat_base_row("missile");var original=row.cd;row.cd=float(original)+0.125
  check(db.combat_equipment("missile",150).cd==row.cd,"in-place authored change rebuild")
  row.cd=original
+ for id in g.profile.resources:g.profile.resources[id]=1e30
+ var previous_level=int(replacement.level)
+ check(g.upgrade_slot("weapons",0,1) and g.combat_entry(0).level==previous_level+1,"public upgrade updates descriptor immediately")
+ replacement=g.combat_entry(0)
+ check(g.combat_player_weapon_row(replacement)==g.player_weapon_row(replacement),"upgraded cooldown equals public pricing projection")
+ check(g.equip_slot("weapons",0,"cannon") and g.combat_entry(0).key=="cannon" and not is_same(g.combat_entry(0),replacement),"public refit replaces authoritative identity immediately")
+ replacement=g.combat_entry(0)
  var state=g.rng.state
  check(g.combat_player_weapon_row(replacement)==g.player_weapon_row(replacement),"dynamic cooldown projection matches public row")
  replacement.level=151
