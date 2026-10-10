@@ -98,7 +98,7 @@ class Meter extends RefCounted:
   if not enabled:return
   if not times.has(key):times[key]=[0,0,0]
   times[key][0]+=1;times[key][1]+=us;times[key][2]=max(times[key][2],us)
-  if OS.get_environment("PERF_CPU_PEAKS")=="1":
+  if OS.get_environment("PERF_CPU_PEAKS")=="1" or OS.get_environment("PERF_SPIKE_DIAGNOSTIC")=="1":
    if not frame_times.has(key):frame_times[key]=[0,0]
    frame_times[key][0]+=1;frame_times[key][1]+=us
 var meter=Meter.new()
@@ -352,7 +352,7 @@ func run():
       card_states.append([id,state])
      presentation_trace.append([i,JSON.stringify([scene.enemy_impacts,scene.missile_events,scene.pulse_events,scene.rail_events,scene.projectile_visuals,card_states]).sha256_text()])
     effect_trace.append([i,scene.missile_events.size(),scene.pulse_events.size(),scene.particles.size(),scene.projectile_visuals.size()])
-    if OS.get_environment("PERF_CPU_PEAKS")=="1":
+    if OS.get_environment("PERF_CPU_PEAKS")=="1" or OS.get_environment("PERF_SPIKE_DIAGNOSTIC")=="1":
      cpu_peak_trace.append([i,meter.frame_times.duplicate(true),g.speed,g.motion_clock])
      card_change_trace.append([i,meter.card_changes.duplicate(true)])
     if render_cost:

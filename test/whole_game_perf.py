@@ -143,6 +143,7 @@ def main():
     parser.add_argument('--seconds', type=float, default=8.0, help='Realtime sample wall duration')
     parser.add_argument('--warmup-seconds', type=float, default=4.0, help='Realtime warmup wall duration')
     parser.add_argument('--instrument', action='store_true')
+    parser.add_argument('--spike-diagnostic', action='store_true', help='Limited inclusive phase timers; QA first-display0.4sec or real1x battle<=4sec, never clean throughput')
     parser.add_argument('--cpu-peaks', action='store_true', help='Per-frame CPU phase attribution with limited outer timers; never clean throughput')
     parser.add_argument('--focused-draw', action='store_true', help='Detailed draw/layout attribution; implies instrumentation, never a clean throughput result')
     parser.add_argument('--pages', default='0,4,1,2,6,8')
@@ -176,6 +177,8 @@ def main():
         parser.error('enemy bitmap diagnostic requires frozen contact Canvas')
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
+    if args.spike_diagnostic and (args.instrument or args.cpu_peaks or args.focused_draw or args.script_profile or args.gpu_profile or args.render_cost or args.phase_account or args.dynamic_replay or args.native_check or args.headless or args.submission_mode != 'full' or args.sustain_test_health or args.test_missile_burst or not (checkpoint or (args.battle_only and args.realtime and 0<args.seconds<=4))):
+        parser.error('spike diagnostic requires exact graphical QA cold entry or short real1x battle, without other instruments')
     if args.checkpoint_transitions and (not checkpoint or args.sustain_test_health or args.test_missile_burst or args.instrument or args.script_profile or args.gpu_profile or args.cpu_peaks):
         parser.error("QA transitions require exact checkpoint, full visuals, no synthetic health/burst/profilers")
     if not 35 <= args.qa_seconds <= 180:parser.error("QA observation must be35..180seconds")
@@ -260,6 +263,10 @@ def main():
         from battle_render_diagnostic import prepare
         prepare(project, ROOT, args.dynamic_replay)
     phase_wrapped=[]
+    spike_wrapped=[]
+    if args.spike_diagnostic:
+        from spike_attribution import prepare as prepare_spike
+        spike_wrapped=prepare_spike(project)
     if args.phase_account:
         from battle_phase_account import prepare as prepare_phases
         phase_wrapped=prepare_phases(project,ROOT)
@@ -370,6 +377,7 @@ def main():
             code=code.replace('\nfunc ','\nstatic func ').replace('_perf_original_','_perf_missile_original_')
             path.write_text(code,encoding='utf-8')
     env = os.environ.copy()
+    env['PERF_SPIKE_DIAGNOSTIC']=str(int(args.spike_diagnostic))
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
@@ -431,11 +439,12 @@ def main():
     if args.boundary_check:measured_files += ['battle_boundary_check.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py']},
+              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py','spike_attribution.py']},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
               'phase_wrapped':phase_wrapped,
+              'spike_wrapped':spike_wrapped,
               'software_renderer_environment': {key: env.get(key) for key in ('LP_NUM_THREADS', 'GALLIUM_DRIVER')},
               'exit': result_code, 'environment': environment, 'rows': rows,
               'entry_rows': [json.loads(line[10:]) for line in text.splitlines() if line.startswith('ENTRY_ROW ')],
@@ -464,7 +473,10 @@ def main():
         row = rows[0]
         if not row.get('source_save_unchanged') or row.get('save_enabled') or row.get('flat_enabled'):
             boundary_failures.append('checkpoint source/save/default invariant failed')
-        if args.checkpoint_transitions:
+        if args.spike_diagnostic:
+            if not row.get('spike_cold_diagnostic') or not row.get('loadout_unchanged'):
+                boundary_failures.append('cold diagnostic/source-loadout invariant failed')
+        elif args.checkpoint_transitions:
             if not row.get('qa_transition_observation') or not row.get('loadout_unchanged') or not row.get('restart_ok') or not row.get('clock_validation', {}).get('valid'):
                 boundary_failures.append('QA transition/loadout/reentry/normal1x invariant failed')
         elif row.get('sample_frames') != args.frames or any(value != checkpoint_stage for value in row.get('stages', [])) or any(value != checkpoint_group for value in row.get('groups', [])) or any(value != 3 for value in row.get('states', [])):

@@ -17,15 +17,20 @@ class UI extends "res://scripts/battlefield.gd":
  func before_logical_game_tick(dt:float)->void:
   logical_ticks+=1;super.before_logical_game_tick(dt)
  var last_process_us=0
+ var last_process_delta=0.0
  func _process(dt:float)->void:
+  last_process_delta=dt
   var began=Time.get_ticks_usec();super._process(dt);last_process_us=Time.get_ticks_usec()-began
 class Meter extends RefCounted:
- var enabled=false;var times={};var draw_us=0
+ var enabled=false;var times={};var draw_us=0;var frame_times={}
  func record(key,us):
   if not enabled:return
   if not times.has(key):times[key]=[0,0,0]
   times[key][0]+=1;times[key][1]+=us;times[key][2]=max(times[key][2],us)
   if key=="main.draw_battle":draw_us+=us
+  if OS.get_environment("PERF_SPIKE_DIAGNOSTIC")=="1":
+   if not frame_times.has(key):frame_times[key]=[0,0]
+   frame_times[key][0]+=1;frame_times[key][1]+=us
 var meter=Meter.new()
 func _initialize():Engine.set_meta("saved_perf",meter);call_deferred("run")
 func stats(a):
@@ -51,6 +56,7 @@ func run():
  var save_path = str(Engine.get_meta("checkpoint_path","res://checkpoint20.json"))
  var save_hash=FileAccess.get_sha256(save_path)
  var scene=load("res://main.tscn").instantiate();scene.set_script(UI);scene.automation_args=[];scene.music_on=false
+ if OS.get_environment("PERF_SPIKE_DIAGNOSTIC")=="1":meter.enabled=true
  root.add_child(scene);current_scene=scene;scene.set_process(false)
  var g=scene.game
  if not g.startup_error.is_empty() or g.stage!=int(Engine.get_meta("checkpoint_stage",20)) or g.group_index!=int(Engine.get_meta("checkpoint_group",1)) or str(g.profile.selectedShip)!=str(Engine.get_meta("checkpoint_ship","Destroyer")) or not g.stat_cache_enabled:
@@ -67,7 +73,8 @@ func run():
   g.player.armour=1e100
  print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"method":RenderingServer.get_current_rendering_method(),"resolution":str(root.size),"display":DisplayServer.get_name(),"cap":Engine.max_fps}))
  print("CHECKPOINT_INIT ",JSON.stringify({"synthetic_test_health":OS.get_environment("PERF_SUSTAIN_TEST_HEALTH")=="1","save_sha256":save_hash,"combat_seed":1701,"stage":g.stage,"group":g.group_index,"state":g.state,"loop":g.profile.loop,"speed":g.speed,"resources":g.profile.resources,"ship":g.profile.selectedShip,"inventory_count":g.profile.hyperspace.inventory.drones.size(),"equipped_count":g.profile.hyperspace.inventory.equipped.size(),"loaded_chrono_login":g.login_chrono_particles,"save_enabled":g.save_enabled,"stat_cache_enabled":g.stat_cache_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled}))
- if OS.get_environment("PERF_QA_TRANSITIONS")=="1":await observe_transitions(scene,g,save_hash)
+ if OS.get_environment("PERF_SPIKE_DIAGNOSTIC")=="1":await observe_cold(scene,g,save_hash)
+ elif OS.get_environment("PERF_QA_TRANSITIONS")=="1":await observe_transitions(scene,g,save_hash)
  else:await measure(scene,g,save_hash)
  print("CHECKPOINT_END ",JSON.stringify({"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash}))
  scene.queue_free();await process_frame;Engine.remove_meta("saved_perf");quit()
@@ -194,3 +201,26 @@ func observe_transitions(scene,g,save_hash):
 
 func _enemy_alive(enemy: Dictionary)->bool:
  return preload("res://scripts/growth_number.gd").compare(enemy.get("hp",0),0)>0
+
+func observe_cold(scene,g,save_hash):
+ var initial_loadout:Dictionary=g.profile.loadout.duplicate(true)
+ var resources_before:Dictionary=g.profile.resources.duplicate(true)
+ g.profile.reactorAutomation.upgrade=false
+ for item in g.profile.crew:
+  if str(item.assignmentType)=="equipment_upgrade" and not g.crew.assign(g,str(item.crewId),"",""):fail("cold diagnostic auto purchase disable failed");return
+ if g.profile.resources!=resources_before or g.profile.loadout!=initial_loadout:fail("cold diagnostic preparation changed source resources/loadout");return
+ g.speed=1.0
+ var ready_times:Dictionary=meter.times.duplicate(true);meter.times.clear()
+ var trace=[];var phases=[];var frames=[];var cpu=[]
+ var started:=Time.get_ticks_usec();var previous_end:=started
+ scene.set_process(true)
+ while Time.get_ticks_usec()-started<400000:
+  meter.frame_times.clear()
+  var ticks:int=scene.logical_ticks;var began:=Time.get_ticks_usec()
+  await process_frame;await RenderingServer.frame_post_draw
+  var ended:=Time.get_ticks_usec()
+  frames.append(ended-began);cpu.append(scene.last_process_us)
+  trace.append({"us":ended-started,"frame_us":ended-began,"cadence_us":ended-previous_end,"root_us":scene.last_process_us,"engine_delta":scene.last_process_delta,"ticks":scene.logical_ticks-ticks,"game_clock":g.motion_clock,"projectiles":g.projectiles.size(),"queue":g.missile_queue.size(),"nodes":get_node_count(),"objects":Performance.get_monitor(Performance.OBJECT_COUNT),"resources":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),"calls":Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),"primitives":Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME),"native_frame_setup_cpu_ms":RenderingServer.get_frame_setup_time_cpu(),"engine_frame":Engine.get_frames_drawn(),"ship_calls":scene.ship_view.viewport.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME)})
+  phases.append(meter.frame_times.duplicate(true));previous_end=ended
+ scene.set_process(false);meter.enabled=false
+ print("ROW ",JSON.stringify({"spike_cold_diagnostic":true,"diagnostic_only":true,"scope":"0.4second normal1x full-system first-display, ready before timer; inclusive limited script timers overlap. Native setup CPU is last available engine snapshot, not GPU time or exclusive residual. No per-frame logging or GPU timing queries.","ready_before_timer":ready_times,"frame_trace":trace,"phase_trace":phases,"frames_us":stats(frames),"main_us":stats(cpu),"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"loadout_unchanged":g.profile.loadout==initial_loadout,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled}))
