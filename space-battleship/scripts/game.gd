@@ -114,6 +114,7 @@ var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
+var enhancement_plan := preload("res://scripts/enhancement_plan.gd").new()
 var enhancement_branches := preload("res://scripts/enhancement_branches.gd").new()
 var enhancement_attack_contexts: Dictionary = {}
 var enhancement_buffers: Dictionary = {}
@@ -143,6 +144,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
+	event.connect(_enhancement_plan_event)
 	crew.attach(self)
 	galaxy.load_state(self,{})
 	crew.load_state(self, [])
@@ -789,7 +791,18 @@ func stat(key: String) -> Variant:
 		stat_cache[key] = total
 	return total
 
+func notify_configuration_changed() -> void:
+	# In-place authored edits must call this before dependent reads. Replacing
+	# tables/databases is also detected by the plan's O(1) identity guard.
+	invalidate_stat_cache()
+	event.emit("configuration_changed",{})
+
+func _enhancement_plan_event(kind: String, _info: Dictionary) -> void:
+	if kind=="configuration_changed":enhancement_plan.configuration_changed()
+	elif kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed"]:enhancement_plan.invalidate()
+
 func invalidate_stat_cache() -> void:
+	enhancement_plan.invalidate()
 	combat_sources_dirty=true
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
@@ -3357,12 +3370,18 @@ func available_effect_count(entry: Dictionary) -> int:
 	return shared_enhancement_effect_count()
 
 func shared_enhancement_effect_count() -> int:
-	if not enhancement_unlocked():return 0
-	var count := 0
-	var shared_level := enhancement_effective_level()
-	for index in 3:
-		if shared_level>=enhancement_effect_threshold(index):count+=1
-	return count
+	enhancement_plan.sync(self)
+	return enhancement_plan.count
+
+func enhancement_recipe(entry: Dictionary) -> Array:
+	# Internal readers share immutable authored recipes. Attack/public callers
+	# receive independent mutable payloads from enhancement_effects instead.
+	enhancement_plan.sync(self)
+	return enhancement_plan.effects(self,entry)
+
+func enhancement_branch_active(entry: Dictionary, effect: String, node: int, choice: String) -> bool:
+	enhancement_plan.sync(self)
+	return enhancement_plan.active(self,entry,effect,node,choice)
 
 func record_enhancement_attack() -> void:
 	profile.enhancementAttacks += 1
@@ -3379,15 +3398,7 @@ func enhancement_currency_changed() -> void:
 	event.emit("jewels_changed", {"slot":"","slots":[]}) # Legacy event name retained for currency consumers.
 
 func enhancement_effects(entry: Dictionary) -> Array:
-	var result: Array = []
-	if str(entry.get("key","")).is_empty() or not enhancement_unlocked():return result
-	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
-	var order := enhancement_order(category)
-	var level := enhancement_effective_level()
-	for i in available_effect_count(entry):
-		var kind := str(order[i])
-		if not kind.is_empty():result.append(_enhancement_effect(kind,i,level))
-	return result
+	return enhancement_recipe(entry).duplicate(true)
 
 func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
 	var effect := {"kind":kind,"level":level,"threshold":enhancement_effect_threshold(i),"p2":0.0,"p4":0.0,"p5":0.0}
@@ -3407,15 +3418,8 @@ func active_enhancement_effect_count(entry: Dictionary) -> int:
 	return available_effect_count(entry)
 
 func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
-	# Scalar membership query; no effect payloads or retained/cross-tick cache.
-	if kind.is_empty():return -1
-	var count := active_enhancement_effect_count(entry)
-	if count<=0:return -1
-	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
-	var order: Array = profile.enhancementOrder.get(category,[])
-	for i in count:
-		if str(order[i])==kind:return i
-	return -1
+	enhancement_plan.sync(self)
+	return enhancement_plan.index(self,entry,kind)
 
 func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
 	return _enhancement_effect_index(entry,kind)>=0
@@ -3431,7 +3435,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 	if level>=0:
 		projected=entry.duplicate()
 		projected.level=level
-	for effect in (jewel_effects(projected) if effects == null else effects):
+	for effect in (enhancement_recipe(projected) if effects == null else effects):
 		if effect.kind in ["proficiency", "adaptation"]:
 			var count := maxi(1, int(profile.get("enhancementAttacks" if effect.kind == "proficiency" else "enhancementHits", 0)))
 			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(enhancement_parameter("counter_log_base")) * enhancement_parameter("bonus_round_scale")) / enhancement_parameter("bonus_round_scale")
@@ -3452,7 +3456,7 @@ func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_bu
 	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
-	for effect in (jewel_effects(entry) if effects == null else effects):
+	for effect in (enhancement_recipe(entry) if effects == null else effects):
 		if effect.kind=="critical":damage+=float(effect.p4)*int(effect.level)
 	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
 	return Vector2(clampf(rate+float(drones.critical_chance),0,1),maxf(0,damage)*float(drones.critical_damage))
@@ -3830,7 +3834,7 @@ func apply_jewel_charge(index: int, multiplier: float) -> void:
 
 func memory_effect(entry: Dictionary) -> Dictionary:
 	var index := _enhancement_effect_index(entry,"memory_material")
-	return _enhancement_effect("memory_material",index,enhancement_effective_level()) if index>=0 else {}
+	return enhancement_plan.recipes.defence[index].duplicate() if index>=0 else {}
 
 func sync_enhancement_buffers() -> void:
 	for index in enhancement_buffers.keys():

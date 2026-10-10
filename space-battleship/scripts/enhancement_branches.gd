@@ -5,8 +5,12 @@ var defenses: Dictionary={}
 var incoming_sources: Dictionary={}
 var memory_reduction_remaining := 0.0
 var clear_reduction_remaining := 0.0
+var reconciled_revision := -1
+var reconciled_slots: Array = []
+var reconciliations := 0
 
 func reset() -> void:
+ reconciled_revision=-1;reconciled_slots=[]
  weapons.clear();defenses.clear();incoming_sources.clear()
  memory_reduction_remaining=0.0;clear_reduction_remaining=0.0
 
@@ -14,10 +18,7 @@ func category(effect: String) -> String:
  return "weapons" if effect in ["proficiency","repeat","critical"] else "defence"
 
 func active(g, entry: Dictionary, effect: String, node: int, choice: String) -> bool:
- # A missing/different choice cannot be active; avoid resolving unlock tables
- # and constructing effect dictionaries for that overwhelmingly common case.
- if entry.is_empty() or g.enhancement_branch_choice(category(effect),effect,node)!=choice or not g.enhancement_branch_unlocked(category(effect),effect,node):return false
- return g.has_enhancement_effect(entry,effect)
+ return g.enhancement_branch_active(entry,effect,node,choice)
 
 func global_active(g,effect: String,node: int,choice: String) -> bool:
  return g.defense_entries().any(func(entry):return active(g,entry,effect,node,choice))
@@ -41,11 +42,25 @@ func defense(g,index: int) -> Dictionary:
  return defenses[index]
 
 func reconcile(g) -> void:
+ g.enhancement_plan.sync(g)
+ # Identity/key changes are structural. Timers, counters and entry levels do
+ # not invalidate eligibility, and continue through the original live paths.
+ var weapon_entries: Array=g.combat_weapon_entries()
+ var defense_entries: Array=g.defense_entries()
+ var same_slots:=reconciled_slots.size()==weapon_entries.size()+defense_entries.size()
+ var cursor:=0
+ for entries in [weapon_entries,defense_entries]:
+  for entry in entries:
+   if same_slots and (not is_same(reconciled_slots[cursor][0],entry) or reconciled_slots[cursor][1]!=str(entry.get("key",""))):same_slots=false
+   cursor+=1
+ if same_slots and reconciled_revision==g.enhancement_plan.revision:return
+ reconciled_slots=[]
+ for entries in [weapon_entries,defense_entries]:
+  for entry in entries:reconciled_slots.append([entry,str(entry.get("key",""))])
+ reconciled_revision=g.enhancement_plan.revision;reconciliations+=1
  # Eligibility is shared by every module in this synchronous reconciliation.
  # Resolve common choices/gates once here; retain no state across calls/ticks.
  var common_count: int=g.shared_enhancement_effect_count()
- var weapon_entries: Array=g.combat_weapon_entries()
- var defense_entries: Array=g.defense_entries()
  var defense_order: Array=g.profile.enhancementOrder.get("defence",[])
  var defense_effects={}
  for effect in ["adaptation","memory_material","delayed_damage"]:
