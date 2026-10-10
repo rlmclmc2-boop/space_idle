@@ -11,8 +11,29 @@ var defeats=0
 var clears=0
 var entry_seen={}
 var initial_time=0.0
+var combat_capture=false
+var capture_output=""
+var encounter_paid={}
+var last_hit={}
+var first_encounters={}
 var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fraction":0.25,"ai_batch":10,"enhancement_max":true,"equalize_reactor":true}
 func observe(kind:String,info:Dictionary):
+ if combat_capture:
+  if kind=="encounter":encounter_paid={};last_hit={}
+  if kind=="hit" and info.get("player",false):
+   var key=str(info.type)
+   encounter_paid[key]=N.add(encounter_paid.get(key,0),info.amount)
+   last_hit={"type":info.type,"paid":info.amount,"armour_after":g.player.armour,"shield_after":g.player.shield}
+  var terminal=kind=="state" and int(info.get("state",-1))==g.State.LEVEL_CLEAR
+  if kind in ["encounter","battle_defeated","wave_clear"] or terminal:
+   var actors=g.enemies.map(func(e):return {"uid":e.uid,"hp":e.hp,"max_hp":e.max_hp,"shield":e.shield,"max_shield":e.max_shield,"armour_type":e.armourType,"shield_type":e.shieldType,"weapons":e.equipment})
+   stream.store_line(JSON.stringify({"event":"combat_diagnostic","source_event":kind,"t":g.simulated_time,"stage":g.stage,"wave":g.group_index,"player":g.player.duplicate(true),"enemies":actors,"incoming_paid_by_type":encounter_paid.duplicate(true),"last_hit":last_hit.duplicate(true)}))
+  if kind=="encounter":
+   var key="%02d_%02d"%[g.stage,g.group_index]
+   if not first_encounters.has(key):
+    first_encounters[key]=true
+    var path=capture_output.get_base_dir().path_join("first_encounter_%s.json"%key)
+    FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"scope":"Actual first encounter QA economic checkpoint; portable reload regenerates actors/full health/cooldowns; original live damage is in combat_diagnostic event. No resources/levels injected."}))
  if kind=="battle_defeated":defeats+=1
  if kind=="wave_clear":clears+=1
  if kind in ["reactor_changed","hightech_changed","level_clear","resource","wave_clear","battle_defeated","retreat","state","encounter","upgrade","scientists_changed","enhancement_changed"]:
@@ -59,6 +80,7 @@ func run():
  policy.merge(r.get("policy",{}),true)
  var interval_ticks=maxi(1,roundi(float(policy.interval_seconds)*60))
  stream=FileAccess.open(r.output,FileAccess.WRITE)
+ combat_capture=bool(r.get("capture_combat",false));capture_output=r.output
  var payload:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(r.save))
  var raw:Dictionary=payload.get("save",payload)
  raw.chronoSavedAt=Time.get_unix_time_from_system()
