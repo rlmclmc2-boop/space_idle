@@ -26189,7 +26189,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26214,7 +26214,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26239,7 +26239,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26264,7 +26264,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26289,7 +26289,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26314,7 +26314,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.08724,
+      "dmgMultiple": 0.04362,
       "health": 2181,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26339,7 +26339,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26364,7 +26364,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26389,7 +26389,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26414,7 +26414,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.08724,
+      "dmgMultiple": 0.04362,
       "health": 2181,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26439,7 +26439,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26464,7 +26464,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26489,7 +26489,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26514,7 +26514,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26539,7 +26539,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26564,7 +26564,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26589,7 +26589,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26614,7 +26614,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26639,7 +26639,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26664,7 +26664,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26689,7 +26689,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.113412,
+      "dmgMultiple": 0.056706,
       "health": 2181,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26714,7 +26714,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26739,7 +26739,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26764,7 +26764,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26789,7 +26789,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.113412,
+      "dmgMultiple": 0.056706,
       "health": 2181,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26814,7 +26814,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26839,7 +26839,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26864,7 +26864,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26889,7 +26889,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26914,7 +26914,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.037804,
+      "dmgMultiple": 0.018902,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26939,7 +26939,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26964,7 +26964,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -26989,7 +26989,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27014,7 +27014,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27039,7 +27039,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27064,7 +27064,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.08724,
+      "dmgMultiple": 0.04362,
       "health": 2181,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27089,7 +27089,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27114,7 +27114,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27139,7 +27139,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27164,7 +27164,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.08724,
+      "dmgMultiple": 0.04362,
       "health": 2181,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27189,7 +27189,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27214,7 +27214,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27239,7 +27239,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27264,7 +27264,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27289,7 +27289,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.02908,
+      "dmgMultiple": 0.01454,
       "health": 727,
       "armourType": 1,
       "res": "{1,4,1}",
@@ -27314,7 +27314,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 0.28,
+      "dmgMultiple": 0.14,
       "health": 567,
       "armourType": 2,
       "res": "{1,120,1}",
