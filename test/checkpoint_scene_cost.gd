@@ -119,22 +119,30 @@ func observe_transitions(scene,g,save_hash):
  # artificial health, burst, loadout substitution, purchase or direct tick.
  var max_seconds:=clampf(float(OS.get_environment("PERF_QA_SECONDS")),35.0,180.0)
  var original_reactor_auto: bool=g.profile.reactorAutomation.upgrade
- g.profile.reactorAutomation.upgrade=false
- g.speed=1.0
+ var source_resources:Dictionary=g.profile.resources.duplicate(true)
  var initial_loadout: Dictionary=g.profile.loadout.duplicate(true)
+ g.profile.reactorAutomation.upgrade=false
+ var disabled_purchase_assignments=[]
+ for item in g.profile.crew:
+  if str(item.assignmentType)!="equipment_upgrade":continue
+  disabled_purchase_assignments.append({"crewId":item.crewId,"assignmentType":item.assignmentType,"targetId":item.targetId})
+  if not g.crew.assign(g,str(item.crewId),"",""):fail("could not disable isolated automatic equipment purchase");return
+ if g.profile.resources!=source_resources or g.profile.loadout!=initial_loadout:fail("disabling isolated auto-upgrade changed resources or loadout");return
+ g.speed=1.0
  var frames=[];var cpu=[];var trace=[];var times=[];var launch=[];var snapshots=[];var events=[]
  var phase:="natural";var natural_end={};var exit_at:=-1;var reenter_at:=-1;var restart_ok:=false
  var started:=Time.get_ticks_usec();var ticks_start: int=scene.logical_ticks;var game_start: float=g.motion_clock
  var last_state: int=g.state;var last_stage: int=g.stage;var last_group: int=g.group_index
  var next_snapshot:=0
  var observed={"player":0,"enemy":0}
- g.event.connect(func(kind,info):
+ var event_observer:Callable=func(kind,info):
   if kind=="fire":
    if bool(info.get("shot",{}).get("hostile",false)):observed.enemy+=1
    else:observed.player+=1
   elif kind in ["state","wave_clear","level_clear","battle_blocked","unlocks_changed","planet_changed","reactor_changed","hightech_changed"]:
-   events.append({"us":Time.get_ticks_usec()-started,"kind":kind,"state":g.state,"stage":g.stage,"group":g.group_index}))
- print("QA_TRANSITION_BEGIN ",JSON.stringify({"max_seconds":max_seconds,"speed":g.speed,"source_sha256":save_hash,"initial_loadout":initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":false,"stage":g.stage,"group":g.group_index,"state":g.state,"save_enabled":g.save_enabled,"noncombat_omitted":false}))
+   events.append({"us":Time.get_ticks_usec()-started,"kind":kind,"state":g.state,"stage":g.stage,"group":g.group_index})
+ g.event.connect(event_observer)
+ print("QA_TRANSITION_BEGIN ",JSON.stringify({"max_seconds":max_seconds,"speed":g.speed,"source_sha256":save_hash,"initial_loadout":initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":false,"disabled_purchase_assignments":disabled_purchase_assignments,"stage":g.stage,"group":g.group_index,"state":g.state,"save_enabled":g.save_enabled,"noncombat_omitted":false}))
  scene.set_process(true)
  var wall_end:=started
  while float(wall_end-started)/1000000.0<max_seconds:
@@ -175,10 +183,12 @@ func observe_transitions(scene,g,save_hash):
    print("QA_TRANSITION_REENTER ",JSON.stringify(events[-1]))
   elif phase=="reenter" and at-reenter_at>=30000000:break
  scene.set_process(false)
+ # The observer captures g; release the signal-held closure before teardown.
+ g.event.disconnect(event_observer);event_observer=Callable()
  snapshots.append(transition_snapshot(scene,g,wall_end-started,"end"))
  var clock={"wall_seconds":float(wall_end-started)/1000000.0,"game_seconds":g.motion_clock-game_start,"logical_ticks":scene.logical_ticks-ticks_start,"logic_hz":float(scene.logical_ticks-ticks_start)*1000000.0/float(wall_end-started),"mode":"normal1x full-system QA including legitimate menu/retreat/pause phases; phase tick rate reported separately","valid":g.speed==1.0}
  var inventory=[];views(root,inventory)
- print("ROW ",JSON.stringify({"qa_transition_observation":true,"frame_trace":trace,"sample_time_us":times,"launch_trace":launch,"frames_us":stats(frames),"main_us":stats(cpu),"clock_validation":clock,"snapshots":snapshots,"events":events,"natural_end":natural_end,"manual_exit_us":exit_at,"manual_reenter_us":reenter_at,"restart_ok":restart_ok,"initial_loadout":initial_loadout,"final_loadout":g.profile.loadout,"loadout_unchanged":g.profile.loadout==initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":false,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled,"views":inventory,"screenshot_scope":"after observation only; excluded from frame samples"}))
+ print("ROW ",JSON.stringify({"qa_transition_observation":true,"frame_trace":trace,"sample_time_us":times,"launch_trace":launch,"frames_us":stats(frames),"main_us":stats(cpu),"clock_validation":clock,"snapshots":snapshots,"events":events,"natural_end":natural_end,"manual_exit_us":exit_at,"manual_reenter_us":reenter_at,"restart_ok":restart_ok,"initial_loadout":initial_loadout,"final_loadout":g.profile.loadout,"loadout_unchanged":g.profile.loadout==initial_loadout,"reactor_auto_upgrade_source":original_reactor_auto,"reactor_auto_upgrade_runtime":false,"disabled_purchase_assignments":disabled_purchase_assignments,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"save_enabled":g.save_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled,"views":inventory,"screenshot_scope":"after observation only; excluded from frame samples"}))
  await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png("res://.runtime/checkpoint20-transition-end.png")
 
