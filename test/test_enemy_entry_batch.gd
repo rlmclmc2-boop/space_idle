@@ -208,5 +208,8 @@ func run()->void:
 	await process_frame
 	await RenderingServer.frame_post_draw
 	check(not scene.enemy_entry_batch_active,"draw releases cache")
+	check(not scene.battle_draw_scales_ready,"draw releases scale snapshot")
+	check(scene.player_base_art_scale()==scene.player_base_art_scale_for(str(scene.game.profile.selectedShip)),"outside draw reads live player base scale")
+	check(scene.player_art_scale()==scene.player_art_scale_for(str(scene.game.profile.selectedShip)),"outside draw reads live player art scale")
 	print("Enemy entry batch: %d checks, %d failures"%[checks,failures])
 	quit(1 if failures else 0)

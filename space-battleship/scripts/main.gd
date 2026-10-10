@@ -97,6 +97,10 @@ var enemy_entry_distance_value := 0.0
 var battle_draw_active := false
 var battle_draw_player_position := Vector2.ZERO
 var battle_draw_enemy_positions: Dictionary = {}
+var battle_draw_player_base_scale := 1.0
+var battle_draw_player_art_scale := 1.0
+var battle_draw_recognition_scale := 1.0
+var battle_draw_scales_ready := false
 var db: ShipDatabase
 var game: BattleGame
 var font: Font
@@ -1437,12 +1441,14 @@ func player_base_art_scale_for(ship_key: String) -> float:
 	return float(entry.get("display_scale",minf(SHIP_VISUALS.scale_for(db.ship(ship_key)),0.18)))*SHIP_VISUALS.player_display_multiplier()
 
 func player_base_art_scale() -> float:
+	if battle_draw_active and battle_draw_scales_ready:return battle_draw_player_base_scale
 	return player_base_art_scale_for(str(game.profile.selectedShip))
 
 func player_art_scale_for(ship_key: String) -> float:
 	return player_base_art_scale_for(ship_key)*float(db.config.get("playerVisualScale"+ship_key,1.0))
 
 func player_art_scale() -> float:
+	if battle_draw_active and battle_draw_scales_ready:return battle_draw_player_art_scale
 	return player_art_scale_for(str(game.profile.selectedShip))
 
 func player_idle_angle() -> float:
@@ -3200,6 +3206,12 @@ func draw_battle() -> void:
 	enemy_entry_distance_time=-INF
 	player_weapon_components()
 	battle_draw_player_position=player_render_position()
+	# Settings and transforms remain fixed within this synchronous draw.
+	# Resolve before enabling context; event/provider reads remain live.
+	battle_draw_player_base_scale=player_base_art_scale()
+	battle_draw_player_art_scale=player_art_scale()
+	battle_draw_recognition_scale=enemy_recognition_screen_scale()
+	battle_draw_scales_ready=true
 	battle_draw_active=true
 	var boss_battle := game.state == BattleGame.State.COMBAT and game.is_boss_encounter()
 	var offset := Vector2(sin(fx_time*83.0),cos(fx_time*97.0))*shake
@@ -3288,6 +3300,7 @@ func draw_battle() -> void:
 		if not f.get("damage",false) or not show_damage_numbers:continue
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
+	battle_draw_scales_ready=false
 	battle_draw_enemy_positions.clear()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
@@ -3441,6 +3454,7 @@ func draw_player_weapon_components(ship_key: String, pos: Vector2, scale_value: 
 		draw_weapon_component(component,pos+point.rotated(hull_angle)*scale_value,angle,width,scale_value,pulse,recoil if component.mode()=="main" else 0.0,railgun_component_charge(component))
 
 func enemy_recognition_screen_scale() -> float:
+	if battle_draw_active and battle_draw_scales_ready:return battle_draw_recognition_scale
 	return maxf(0.1,absf((get_viewport().get_stretch_transform()*battle_layer.get_global_transform_with_canvas()).get_scale().x)) if is_instance_valid(battle_layer) else 1.0
 
 func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Dictionary:
