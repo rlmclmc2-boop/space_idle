@@ -128,7 +128,7 @@ func qa_crew_assignments(g):
 
 func observe_transitions(scene,g,save_hash):
  # Existing authorized QA scene, real production accumulator. No fixture,
- # artificial health, burst, loadout substitution, purchase or direct tick.
+ # artificial health, burst, loadout substitution, manual purchase or direct tick.
  var max_seconds:=clampf(float(OS.get_environment("PERF_QA_SECONDS")),35.0,180.0)
  var normal_automation:=OS.get_environment("PERF_QA_NORMAL_AUTOMATION")=="1"
  var original_crew:Array=qa_crew_assignments(g)
