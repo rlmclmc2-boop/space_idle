@@ -361,7 +361,7 @@ def main():
                                                        'flat_ship_compositor.gdshader', 'galaxy_map.gd', 'galaxy_city_modules.gd')]]
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
-    measured_files += ['dev/toon_ship/missile_vfx.gd']
+    measured_files += ['dev/toon_ship/missile_vfx.gd','scripts/enemy_recognition_visual.gd']
     if (project/'scripts/battle_read_model.gd').exists():measured_files += ['scripts/battle_read_model.gd','scripts/retained_enemy_contacts.gd']
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd']
@@ -382,6 +382,8 @@ def main():
               'gpu_profile_scope': 'Header total is last captured GPU frame; stages are approximately1second averages; no stageP95. Query overhead; keep separate from clean throughput.',
               'boundaries': [line for line in text.splitlines() if line.startswith('BOUNDARY_')]}
     boundary_failures = []
+    if args.native_check and (not rows or not rows[0].get('native_check',{}).get('frames')):
+        boundary_failures.append('native-check snapshots missing; no visual acceptance')
     if args.dynamic_replay:
         r0_lines=[line[7:] for line in text.splitlines() if line.startswith('R0_ROW ')]
         if len(r0_lines)!=1:
