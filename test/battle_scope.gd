@@ -7,7 +7,7 @@ static func manifest(g,scene)->Dictionary:
  "omitted_tick_updates":["manual hyperspace dispatch/work","hyperspace expeditions","planet production/building","galaxy simulation","crew training","auto generator","hightech research","resource history pruning"],
  "presentation":"original visible battle/HUD/equipment; hidden UI remains instantiated; its background presentation processing has NOT yet been proven isolated",
  "static_galaxy_fixture_retained":true,"enhancement_level":g.profile.enhancementLevel,
- "enhancement_branch_choice":g.profile.get("enhancementBranchChoice",{}),
+ "enhancement_branches":g.profile.enhancementBranches.duplicate(true),
  "selected_ship":g.profile.selectedShip,"weapon_rows":weapons,"player":g.player.duplicate(true),
  "hyperspace_static":g.profile.hyperspace.duplicate(true),"loadout":g.profile.loadout.duplicate(true),
  "stage":g.stage,"group":g.group_index,"enemies":g.enemies.size(),"speed":g.speed,
