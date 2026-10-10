@@ -47,6 +47,8 @@ class UI extends "res://scripts/battlefield.gd":
    for id in equipment_panel.cards:before[id]=equipment_panel.cards[id].last_state.duplicate()
   var began := Time.get_ticks_usec()
   super._process(dt)
+  if OS.get_environment("PERF_FREEZE_SHIP_BUFFER")=="1" and Engine.get_meta("saved_perf").enabled:
+   ship_view.viewport.render_target_update_mode=SubViewport.UPDATE_DISABLED
   last_process_us = Time.get_ticks_usec()-began
   if inspect_cards and is_instance_valid(equipment_panel):
    var measure=Engine.get_meta("saved_perf")
@@ -114,6 +116,37 @@ func ship_inventory(scene):
  for node in view.world.find_children("*","GeometryInstance3D",true,false):
   if node.is_visible_in_tree():geometry+=1
  return {"battle_visible":scene.battle_layer.is_visible_in_tree(),"ship_visible":view.is_visible_in_tree(),"ship_render_scale":view.viewport.scaling_3d_scale,"ship_msaa":view.viewport.msaa_3d,"live_shadows":view.world.get_node("KeyLight").shadow_enabled,"body_roots":view.body_baker.body_roots.size(),"bodies":bodies,"visible_geometry":geometry,"flat_enabled":view.flat_compositor.enabled,"flat_active":view.flat_compositor.active,"flat_reason":view.flat_compositor.fallback_reason,"flat_items":view.flat_compositor.items.size(),"flat_textures":view.flat_compositor.textures.size()}
+func cache_enemy_bitmap(scene)->Dictionary:
+ var began=Time.get_ticks_usec()
+ var group=scene.retained_contacts
+ var transform:Transform2D=root.get_stretch_transform()*scene.battle_layer.get_global_transform_with_canvas()
+ var scale_value:Vector2=transform.get_scale()
+ var fraction:Vector2=transform.origin-transform.origin.floor()
+ var view=SubViewport.new();view.name="FrozenEnemyBitmap"
+ view.size=Vector2i((scene.BATTLE_VIEW_SIZE*scale_value+fraction).ceil())+Vector2i.ONE
+ view.transparent_bg=true;view.render_target_update_mode=SubViewport.UPDATE_ONCE
+ group.add_child(view)
+ var canvas=Node2D.new();canvas.transform=Transform2D(transform.x,transform.y,fraction)
+ view.add_child(canvas)
+ for record in group.records.values():record.root.reparent(canvas,false)
+ await process_frame;await RenderingServer.frame_post_draw
+ view.render_target_update_mode=SubViewport.UPDATE_DISABLED
+ var sprite=Node2D.new();sprite.name="FrozenEnemyComposite"
+ sprite.texture_filter=CanvasItem.TEXTURE_FILTER_NEAREST
+ var material=ShaderMaterial.new();var shader=Shader.new()
+ shader.code="shader_type canvas_item; render_mode unshaded, blend_premul_alpha;"
+ material.shader=shader;sprite.material=material
+ group.add_child(sprite);group.move_child(sprite,0)
+ var texture=view.get_texture()
+ var rect=Rect2(-fraction/scale_value,Vector2(view.size)/scale_value)
+ sprite.draw.connect(func():sprite.draw_texture_rect(texture,rect,false))
+ sprite.queue_redraw()
+ await process_frame;await RenderingServer.frame_post_draw
+ return {"setup_wall_us":Time.get_ticks_usec()-began,"viewport":view,"sprite":sprite,"start":image_digest(texture),"used_rect":str(texture.get_image().get_used_rect()),"size":str(view.size)}
+func image_digest(texture:Texture2D)->String:
+ var context=HashingContext.new();context.start(HashingContext.HASH_SHA256)
+ context.update(texture.get_image().get_data())
+ return context.finish().hex_encode()
 func run():
  Engine.max_fps=0
  DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -204,12 +237,20 @@ func run():
   var card_change_trace=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
+  var enemy_bitmap={}
+  var ship_buffer_start=""
+  var part_build_start={}
   var sampled_draw_start=0
   var sampled_clock_start=0.0
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
   var warmup=int(OS.get_environment("PERF_WARMUP_FRAMES")) if not OS.get_environment("PERF_WARMUP_FRAMES").is_empty() else 15
   for i in range(count+warmup):
    if i==warmup:
+    if OS.get_environment("PERF_FREEZE_SHIP_BUFFER")=="1":ship_buffer_start=image_digest(scene.ship_view.viewport.get_texture())
+    var initial_contacts=scene.get("retained_contacts")
+    if is_instance_valid(initial_contacts):
+     for record in initial_contacts.records.values():
+      for child in record.root.get_children():part_build_start[child.kind]=part_build_start.get(child.kind,0)+child.builds
     sampled_draw_start=Engine.get_frames_drawn();sampled_clock_start=g.motion_clock
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
     if render_cost:
@@ -253,6 +294,7 @@ func run():
       var rid=view.get_viewport_rid()
       view_costs.append([str(view.get_path()),RenderingServer.viewport_get_measured_render_time_cpu(rid),RenderingServer.viewport_get_measured_render_time_gpu(rid)])
      render_cost_trace.append([i,Engine.get_frames_drawn(),RenderingServer.get_frame_setup_time_cpu(),Performance.get_monitor(Performance.TIME_PROCESS)*1000.0,scene.last_draw_us/1000.0,view_costs])
+   if i==warmup and OS.get_environment("PERF_FREEZE_CONTACT_BITMAP")=="1":enemy_bitmap=await cache_enemy_bitmap(scene)
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
@@ -262,6 +304,19 @@ func run():
   if is_instance_valid(native_contacts):
    for record in native_contacts.records.values():
     for child in record.root.get_children():row.retained_part_builds[child.kind]=row.retained_part_builds.get(child.kind,0)+child.builds
+  row.part_builds_in_sample={}
+  for kind in row.retained_part_builds:row.part_builds_in_sample[kind]=row.retained_part_builds[kind]-part_build_start.get(kind,0)
+  row.enemy_bitmap_setup_wall_us=enemy_bitmap.get("setup_wall_us",0)
+  row.enemy_bitmap_frozen=not enemy_bitmap.is_empty()
+  row.enemy_bitmap_used_rect=enemy_bitmap.get("used_rect","")
+  row.enemy_bitmap_size=enemy_bitmap.get("size","")
+  row.enemy_bitmap_start=enemy_bitmap.get("start","")
+  row.enemy_bitmap_end=image_digest(enemy_bitmap.viewport.get_texture()) if not enemy_bitmap.is_empty() else ""
+  row.ship_buffer_frozen=OS.get_environment("PERF_FREEZE_SHIP_BUFFER")=="1"
+  row.ship_composite_visible=scene.ship_view.get_node("ShipComposite").visible
+  row.ship_buffer_start=ship_buffer_start
+  row.ship_buffer_end=image_digest(scene.ship_view.viewport.get_texture()) if row.ship_buffer_frozen else ""
+  row.enemy_canvas_frozen=OS.get_environment("PERF_FREEZE_CONTACT_CANVAS")=="1"
   row.submission_mode=submission_mode
   row.frames_drawn_delta=Engine.get_frames_drawn()-sampled_draw_start
   row.motion_clock_start=sampled_clock_start

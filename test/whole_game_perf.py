@@ -120,6 +120,11 @@ def main():
         parser.error('missile-loadout/authored-stage require the explicitly synthetic rich fixture')
     if args.submission_mode != 'full' and (args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4):
         parser.error('submission diagnostics require graphical fixed-step synthetic --pages 0, without checkpoints')
+    freeze_diagnostic=any(os.environ.get(key)=='1' for key in ('PERF_FREEZE_CONTACT_CANVAS','PERF_FREEZE_SHIP_BUFFER','PERF_FREEZE_CONTACT_BITMAP'))
+    if freeze_diagnostic and (not args.rich or args.pages!='0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4):
+        parser.error('visible freeze diagnostics require graphical fixed-step rich page0')
+    if os.environ.get('PERF_FREEZE_CONTACT_BITMAP')=='1' and os.environ.get('PERF_FREEZE_CONTACT_CANVAS')!='1':
+        parser.error('enemy bitmap diagnostic requires frozen contact Canvas')
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
     checkpoint_stage=7 if args.checkpoint_round2 else 20
@@ -170,6 +175,14 @@ def main():
         shutil.copy2(checkpoint_source, project / 'checkpoint.json')
     else:
         shutil.copy2(ROOT / 'test/whole_game_perf.gd', project / 'probe.gd')
+    if os.environ.get('PERF_FREEZE_CONTACT_CANVAS') == '1':
+        contact_path=project / 'scripts/retained_enemy_contacts.gd'
+        if not contact_path.exists() or 'retained_contacts_enabled' not in (project / 'scripts/battlefield.gd').read_text(encoding='utf-8'):
+            parser.error('freeze diagnostic requires retained Canvas candidate')
+        contact=contact_path.read_text(encoding='utf-8')
+        contact=contact.replace('var frame:Dictionary={}', 'var frame:Dictionary={}\nvar frozen_once:=false')
+        contact=contact.replace('func sync(offset:Vector2,boss:bool)->void:', 'func sync(offset:Vector2,boss:bool)->void:\n if frozen_once:return\n if Engine.has_meta("saved_perf") and Engine.get_meta("saved_perf").enabled:frozen_once=true')
+        contact_path.write_text(contact,encoding='utf-8')
     if not checkpoint and os.environ.get('PERF_RETENTION_PROFILE') != '1':
         probe_path=project / 'probe.gd'
         probe=probe_path.read_text(encoding='utf-8')
