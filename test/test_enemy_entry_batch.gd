@@ -161,6 +161,25 @@ func run()->void:
 	calls=scene.clearance_calls
 	for i in 50:check(scene._prototype_target_point(enemy)==expected_provider,"repeated guidance provider keeps exact target point")
 	check(scene.clearance_calls==calls and not scene.enemy_provider_query_active,"guidance owns bounded reuse and releases context")
+	# A read-only label solve can supply a same-time draw. The draw still checks
+	# every original live input and does not build a key for a cold pose.
+	enemy.explicit_formation=false
+	scene.damage_text_enemy_bounds()
+	check(not scene.enemy_provider_query_active,"label obstacle query releases provider context")
+	var before_draw:Dictionary=scene.game.profile.duplicate(true)
+	var before_rng:int=scene.game.rng.state
+	scene.battle_draw_active=true;scene.battle_draw_enemy_positions.clear()
+	var expected_draw:Vector2=original_position(scene,enemy)
+	calls=scene.clearance_calls
+	check(scene.enemy_render_position(enemy)==expected_draw,"warm draw reuses the exact label position")
+	check(scene.clearance_calls==calls,"warm draw avoids solving the same top envelope again")
+	for field in ["x","y","max_shield"]:
+		var previous=enemy.get(field,0)
+		enemy[field]=previous+1;scene.battle_draw_enemy_positions.clear()
+		check(scene.enemy_render_position(enemy)==original_position(scene,enemy),"draw rejects same-time live input change "+field)
+		enemy[field]=previous
+	scene.battle_draw_active=false;scene.battle_draw_enemy_positions.clear()
+	check(scene.game.profile==before_draw and scene.game.rng.state==before_rng,"layout-to-draw sharing leaves business state and RNG unchanged")
 	scene.enemy_entry_batch_active=false
 	scene.game.projectiles=projectiles
 	enemy.explicit_formation=false

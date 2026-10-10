@@ -1619,9 +1619,11 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var position_key:Array=[]
-	# Ordinary pose queries and drawing already have cheaper local paths.
+	# Ordinary pose queries and cold drawing keep their cheaper local paths.
 	# Guidance opts in explicitly; other logic needs a busy projectile scene.
-	var reuse_steady:=enemy_entry_batch_active and not battle_draw_active and enter==1.0 and (enemy_provider_query_active or game.projectiles.size()>=32)
+	# Drawing only checks a solved position from this exact logical pose time.
+	# Do not construct the full key for a cold/sparse draw; keep its old path.
+	var reuse_steady:=enemy_entry_batch_active and enter==1.0 and ((not battle_draw_active and (enemy_provider_query_active or game.projectiles.size()>=32)) or (battle_draw_active and float(pose.get("steady_position_time",-INF))==fx_time))
 	if reuse_steady:
 		position_key=enemy_steady_position_key(enemy,pose)
 		if pose.get("steady_position_key",[])==position_key:
@@ -1652,6 +1654,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	if reuse_steady:
 		pose.steady_position_key=position_key
 		pose.steady_position=position
+		pose.steady_position_time=fx_time
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 
@@ -2809,6 +2812,10 @@ func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Di
 
 func damage_text_enemy_bounds() -> Array[Rect2]:
 	var enemy_bounds: Array[Rect2] = []
+	# Read-only layout shares the guidance cache's exact live-input validation.
+	# The flag expires before returning; geometry remains owned by enemy_pose.
+	var previous:=enemy_provider_query_active
+	enemy_provider_query_active=true
 	for enemy in game.enemies:
 		if enemy.hp<=0:continue
 		var center := enemy_render_position(enemy)
@@ -2816,6 +2823,7 @@ func damage_text_enemy_bounds() -> Array[Rect2]:
 		var hover_margin := Vector2(float(battle_visual.enemy_idle_x),float(battle_visual.enemy_idle_y))
 		var envelope := DAMAGE_ENEMY_BOUNDS_SCALE*half_width+hover_margin
 		enemy_bounds.append(Rect2(center-envelope,envelope*2.0))
+	enemy_provider_query_active=previous
 	return enemy_bounds
 
 func damage_text_enemy_bottom() -> float:
