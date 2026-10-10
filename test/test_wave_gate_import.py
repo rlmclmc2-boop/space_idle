@@ -1,5 +1,10 @@
 """Wave combat overrides preserve source/projection and reject malformed factors."""
 import copy
+import contextlib
+import io
+import math
+import shutil
+import tempfile
 import json
 import pathlib
 import sys
@@ -8,6 +13,7 @@ import openpyxl
 ROOT=pathlib.Path(__file__).resolve().parents[1]/'space-battleship'
 sys.path.insert(0,str(ROOT/'tools'))
 from import_workbook import convert_sheet, read_rows, validate_projection
+from smooth_wave_curve import smooth
 
 class WaveGateImport(unittest.TestCase):
  def test_live_source_projection(self):
@@ -26,6 +32,22 @@ class WaveGateImport(unittest.TestCase):
    for value in [0,-1,float('nan'),float('inf'),True,'2']:
     with self.subTest(key=key,value=value),self.assertRaises(ValueError):
      convert_sheet('monGroup',[dict(row,**{key:value})])
+ def test_author_shape_survives_full_middle_curve_rebuild(self):
+  expected=json.loads((ROOT/'data/game_data.json').read_text())['groups']
+  with tempfile.TemporaryDirectory() as directory:
+   path=pathlib.Path(directory)
+   for name in ['level.xlsx','monGroup.xlsx']:
+    shutil.copy2(ROOT/'config_excel'/name,path/name)
+   with contextlib.redirect_stdout(io.StringIO()):smooth(path,range(11,21),True)
+   book=openpyxl.load_workbook(path/'monGroup.xlsx',read_only=True,data_only=True)
+   actual=convert_sheet('monGroup',read_rows(book['monGroup']));book.close()
+  self.assertEqual(set(actual),set(expected))
+  for gid,group in expected.items():
+   for key in ['atkMultiplier','lifeMultiplier']:
+    if key in group:
+     self.assertTrue(math.isclose(actual[gid][key],group[key],rel_tol=1e-12),f'{gid}/{key}')
+     actual[gid][key]=group[key]
+   self.assertEqual(actual[gid],group)
  def test_projection_revalidates_factors(self):
   data=json.loads((ROOT/'data/game_data.json').read_text())
   gid=str(data['levels'][10]['groups'][0]['id'])
