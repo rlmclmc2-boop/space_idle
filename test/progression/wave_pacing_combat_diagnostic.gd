@@ -17,8 +17,10 @@ func observe(kind:String,info:Dictionary):
   var key=str(info.type)
   incoming[key]=N.add(incoming.get(key,0),info.amount)
   last_hit={"type":info.type,"paid":info.amount,"armour_after":g.player.armour,"shield_after":g.player.shield}
- if kind in ["battle_defeated","wave_clear","level_clear"]:
-  outcome={"event":kind,"stage":g.stage,"wave":g.group_index,"elapsed_seconds":g.simulated_time-start_time,"enemies":enemies_state(),"incoming_paid_by_type":incoming,"last_hit":last_hit,"player":g.player.duplicate(true)}
+ var terminal=kind
+ if kind=="state" and int(info.get("state",-1))==g.State.LEVEL_CLEAR:terminal="level_clear"
+ if terminal in ["battle_defeated","wave_clear","level_clear"]:
+  outcome={"event":terminal,"stage":g.stage,"wave":g.group_index,"elapsed_seconds":g.simulated_time-start_time,"enemies":enemies_state(),"incoming_paid_by_type":incoming,"last_hit":last_hit,"player":g.player.duplicate(true)}
   stream.store_line(JSON.stringify(outcome));stream.flush();finished=true
 func _initialize():call_deferred("run")
 func run():
