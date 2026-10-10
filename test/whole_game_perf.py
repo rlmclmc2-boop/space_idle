@@ -331,8 +331,11 @@ def main():
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
     measured_files += ['dev/toon_ship/missile_vfx.gd']
+    if args.battle_only:measured_files += ['battle_scope.gd']
+    if args.dynamic_replay:measured_files += ['native_render_tape.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py']},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
@@ -343,6 +346,16 @@ def main():
               'gpu_profile_scope': 'Header total is last captured GPU frame; stages are approximately1second averages; no stageP95. Query overhead; keep separate from clean throughput.',
               'boundaries': [line for line in text.splitlines() if line.startswith('BOUNDARY_')]}
     boundary_failures = []
+    if args.dynamic_replay:
+        r0_lines=[line[7:] for line in text.splitlines() if line.startswith('R0_ROW ')]
+        if len(r0_lines)!=1:
+            boundary_failures.append('R0 missing or aborted; no accepted rendering comparison')
+        else:
+            r0=json.loads(r0_lines[0])
+            (area/(args.label+'-r0.json')).write_text(json.dumps(r0,ensure_ascii=False,indent=2),encoding='utf-8')
+            report['r0_summary']={key:value for key,value in r0.items() if key not in ('audit','visible_counts')}
+            if not r0.get('equivalence_accepted'):
+                boundary_failures.append('R0 visual equivalence gate failed; no performance conclusion')
     if checkpoint and rows:
         row = rows[0]
         if not row.get('source_save_unchanged') or row.get('save_enabled') or row.get('flat_enabled'):
