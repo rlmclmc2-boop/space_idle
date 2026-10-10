@@ -38,7 +38,7 @@ func run_sequence(scoped:bool,scenario:int)->Array:
  scene.step_geometry.finish()
  check(scene.step_geometry.positions.is_empty() and not scene.step_geometry.active,"scope released")
  return result
-func _initialize()->void:call_scoped("run")
+func _initialize()->void:call_deferred("run")
 func run()->void:
  scene=load("res://main.tscn").instantiate();scene.set_script(QuietUI)
  scene.automation_args=["--capture"];root.add_child(scene);scene.automation_args=[];scene.set_process(false);scene.hide()
