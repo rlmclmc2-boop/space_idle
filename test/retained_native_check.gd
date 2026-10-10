@@ -61,6 +61,9 @@ func compare_transition(scene,root:Viewport,reference,label:String,boss:bool,exp
 	var current=scene.retained_contacts
 	var offset:Vector2=current.frame.get("offset",Vector2.ZERO)
 	var before=game_digest(scene)
+	var enemy:Dictionary=scene.game.enemies[0]
+	var canonical_cache:Dictionary=scene.enemy_pose(enemy).duplicate()
+	var canonical_status:Dictionary=reference_visual.state(enemy,scene.game.enemy_shield_time,scene.game.paused,canonical_cache)
 	scene.battle_draw_enemy_positions={}
 	scene.battle_read_model.begin(true)
 	current.sync(offset,boss);current.stage_foreground(current.frame.flights,current.frame.shots,offset)
@@ -69,10 +72,10 @@ func compare_transition(scene,root:Viewport,reference,label:String,boss:bool,exp
 	await scene.get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	var actual=root.get_texture().get_image()
-	var enemy:Dictionary=scene.game.enemies[0]
 	var record=current.records[int(enemy.uid)]
 	var identity_ok=is_same(record.entity,enemy)
 	var fallback_ok=record.fallback.visible==boss
+	var canonical_state_ok=boss or record.status==canonical_status
 	var status_ok=true
 	if expected_recovering>=0:status_ok=bool(record.status.recovering)==bool(expected_recovering)
 	scene.battle_read_model.begin()
@@ -90,8 +93,8 @@ func compare_transition(scene,root:Viewport,reference,label:String,boss:bool,exp
 		if delta>0:changed+=1;maximum=maxi(maximum,delta)
 		if delta>1:over_one+=1
 	var unchanged=before==game_digest(scene)
-	transition_rows.append({"case":label,"changed_pixels":changed,"max_channel_delta":maximum,"over_one":over_one,"identity_exact":identity_ok,"fallback_exact":fallback_ok,"recovery_exact":status_ok,"combat_state_unchanged_during_render":unchanged})
-	if not identity_ok or not fallback_ok or not status_ok or not unchanged or over_one>0:push_error("NATIVE_TRANSITION_MISMATCH "+label)
+	transition_rows.append({"case":label,"changed_pixels":changed,"max_channel_delta":maximum,"over_one":over_one,"identity_exact":identity_ok,"fallback_exact":fallback_ok,"recovery_exact":status_ok,"canonical_state_exact":canonical_state_ok,"combat_state_unchanged_during_render":unchanged})
+	if not identity_ok or not fallback_ok or not status_ok or not canonical_state_ok or not unchanged or over_one>0:push_error("NATIVE_TRANSITION_MISMATCH "+label)
 	reference.hide();current.show()
 
 func check_transitions(scene,root:Viewport)->void:
