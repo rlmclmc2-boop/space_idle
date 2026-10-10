@@ -180,6 +180,19 @@ func run()->void:
 		enemy[field]=previous
 	scene.battle_draw_active=false;scene.battle_draw_enemy_positions.clear()
 	check(scene.game.profile==before_draw and scene.game.rng.state==before_rng,"layout-to-draw sharing leaves business state and RNG unchanged")
+	var original_size=enemy.size
+	for size in range(1,7):
+		enemy.size=size
+		for y in [50.0,90.0,150.0,250.0,400.0]:
+			var position:=Vector2(220.0,y)
+			var width:float=scene.enemy_render_width_at_y(enemy,y)
+			for component in scene.enemy_weapon_components(enemy):
+				check(scene.enemy_component_pose(enemy,component,position)==scene.enemy_component_pose(enemy,component,position,width),"same-draw known width keeps exact mount/muzzle geometry")
+		var width:float=scene.enemy_render_width(enemy)
+		var live:Dictionary=scene.enemy_recognition_geometry(enemy)
+		check(live==scene.enemy_recognition_geometry(enemy,width),"same-draw known width keeps exact recognition/protection packet")
+	enemy.size=original_size
+	check(scene.game.profile==before_draw and scene.game.rng.state==before_rng,"known drawing widths do not change business state or RNG")
 	scene.enemy_entry_batch_active=false
 	scene.game.projectiles=projectiles
 	enemy.explicit_formation=false

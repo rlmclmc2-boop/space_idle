@@ -880,11 +880,11 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if boss_battle:
 		light=1.20 if leader else maxf(0.72,light*0.84)
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
-	draw_enemy_weapon_components(enemy,pos,angle,width,true)
+	draw_enemy_weapon_components(enemy,pos,angle,width,true,width)
 	draw_surface.draw_set_transform(pos,PI+angle)
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
 	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
-	var packet := enemy_recognition_geometry(enemy)
+	var packet := enemy_recognition_geometry(enemy,width)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
 	# Scale only the protection draw transform, never the shared geometry
 	# packet/pose cache consumed by entry limits and combat providers.
@@ -896,7 +896,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 		outline=PackedVector2Array()
 		for point in protection_outline:outline.append(point*protection_scale)
 	draw_surface.draw_set_transform(Vector2.ZERO)
-	draw_enemy_weapon_components(enemy,pos,angle,width,false)
+	draw_enemy_weapon_components(enemy,pos,angle,width,false,width)
 	var layout:=enemy_status_layout(enemy,pos,hull_width,angle,outline)
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:

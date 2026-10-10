@@ -1308,10 +1308,10 @@ func enemy_render_angle(enemy:Dictionary)->float:
 	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
 
 # Supplied positions stay within one synchronous solve; no value survives it.
-func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
+func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0)->Dictionary:
 	var point:Dictionary=component.hardpoint
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
-	var width:=enemy_render_width_at_y(enemy,position.y)
+	var width:=enemy_render_width_at_y(enemy,position.y) if known_width<0.0 else known_width
 	var hull_angle:=enemy_render_angle(enemy)
 	var normalized:Array=point.pos
 	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
@@ -3299,7 +3299,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	var depth := enemy_depth(enemy)
 	var angle := float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
 	var light := lerpf(0.63,1.0,depth)
-	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
+	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true,dimensions.x)
 	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
 	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
 	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
@@ -3310,7 +3310,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	var status_top := -dimensions.x/2.0
 	for point in outline:status_top=minf(status_top,point.rotated(PI+angle).y)
 	draw_surface.draw_set_transform(Vector2.ZERO)
-	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false)
+	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,false,dimensions.x)
 	var w := dimensions.y * 0.8
 	bar(Rect2(pos.x-w/2,pos.y+status_top-6,w,4),float(enemy.hp)/float(enemy.max_hp),ORANGE if int(enemy.armourType)==2 else CYAN)
 	if float(enemy.get("max_shield",0))>0:
@@ -3443,15 +3443,18 @@ func draw_player_weapon_components(ship_key: String, pos: Vector2, scale_value: 
 func enemy_recognition_screen_scale() -> float:
 	return maxf(0.1,absf((get_viewport().get_stretch_transform()*battle_layer.get_global_transform_with_canvas()).get_scale().x)) if is_instance_valid(battle_layer) else 1.0
 
-func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
+func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Dictionary:
 	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var mounts := enemy_recognition_mounts(enemy)
-	return enemy_recognition.geometry(texture,enemy_render_width(enemy),mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	var width:=enemy_render_width(enemy) if known_width<0.0 else known_width
+	return enemy_recognition.geometry(texture,width,mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 
-func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
+func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool, known_width:float=-1.0) -> void:
 	for component in enemy_weapon_components(enemy):
 		if (int(component.hardpoint.get("z",1))<=0)!=under_hull:continue
-		var pose:=enemy_component_pose(enemy,component)
+		# The caller just solved this same unscaled contact width. Consume it only
+		# in this synchronous draw; standalone combat providers keep the live path.
+		var pose:=enemy_component_pose(enemy,component,Vector2.INF,known_width)
 		var weapon_class := str(component.profile.get("visual_class",""))
 		if (component.damage_type==2 and weapon_class=="gun") or (component.damage_type==1 and weapon_class=="energy"):
 			enemy_recognition.draw_weapon(draw_surface,pos,pose,component.damage_type,enemy_recognition_screen_scale())
