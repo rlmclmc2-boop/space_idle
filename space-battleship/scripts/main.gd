@@ -2785,7 +2785,7 @@ func move_damage_numbers_from_incoming(incoming: Dictionary) -> void:
 
 func flush_damage_numbers() -> void:
 	# This synchronous flush changes labels only. Its fleet projection expires here.
-	var layout_context := {}
+	var layout_context := {"flush_floating_bounds":true}
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry)
@@ -2802,6 +2802,8 @@ func flush_damage_numbers() -> void:
 			continue
 		entry.pos = pos
 		floats.append(entry)
+		if entry.get("damage",false) and float(entry.life)>0:
+			layout_context.floating_bounds.append(damage_text_rect(battle_point(pos),entry.text,entry.size))
 		damage_pending.erase(entry)
 
 func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Dictionary = {}) -> Rect2:
@@ -2846,9 +2848,15 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 	# Shape each existing label once, rather than for every candidate rectangle.
 	# This local list includes current live labels and excludes only the caller.
 	var floating_bounds: Array[Rect2] = []
-	for entry in floats:
-		if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry):
-			floating_bounds.append(damage_text_rect(battle_point(entry.pos),entry.text,entry.size))
+	if layout_context.has("floating_bounds") and layout_context.get("flush_floating_bounds",false):
+		floating_bounds=layout_context.floating_bounds
+	else:
+		for entry in floats:
+			if entry.get("damage",false) and float(entry.life)>0 and not is_same(entry,excluded_entry):
+				floating_bounds.append(damage_text_rect(battle_point(entry.pos),entry.text,entry.size))
+		# Only flush owns this snapshot: it appends each accepted label above.
+		# Retiring a label clamps positive life to 0.08, preserving membership.
+		if layout_context.get("flush_floating_bounds",false):layout_context.floating_bounds=floating_bounds
 	var enemy_bounds: Array[Rect2] = []
 	if layout_context.has("enemy_bounds"):enemy_bounds=layout_context.enemy_bounds
 	var bounds_ready := layout_context.has("enemy_bounds")
