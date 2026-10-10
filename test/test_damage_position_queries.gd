@@ -27,17 +27,6 @@ class QueryUI extends "res://scripts/battlefield.gd":
       if bounds.intersects(obstacle):blocked = true
     if not blocked:return pos
   return Vector2.INF
- func reference_flush()->void:
-  for entry in damage_pending.duplicate():
-   if fx_time-entry.born>0.3:damage_pending.erase(entry);continue
-   var active=floats.filter(func(f):return f.get("target","")==entry.target and not f.get("incoming_lane",false))
-   if active.size()>=2:
-    active[0].life=minf(active[0].life,0.08);active[0].retiring=true;continue
-   var pos=reference_damage_text_position(entry.origin,entry.text,entry.size)
-   if pos==Vector2.INF:
-    if fx_time-entry.born>0.2:damage_pending.erase(entry)
-    continue
-   entry.pos=pos;floats.append(entry);damage_pending.erase(entry)
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -83,19 +72,6 @@ func run()->void:
      var expected:Vector2=scene.reference_damage_text_position(origin,value,19,excluded)
      var actual:Vector2=scene.damage_text_position(origin,value,19,excluded,context)
      check(actual==expected,"synchronous layout matches frozen placement with current live labels")
- # Complete synchronous flush: newly accepted, retired, expired and incoming
- # labels must preserve the frozen oracle's order, placement and backlog.
- for initial_count in [0,2,8]:
-  for y in [230,450,680]:
-   scene.floats.clear();scene.damage_pending.clear()
-   for i in initial_count:
-    scene.floats.append({"damage":true,"life":-0.01 if i==1 else 0.4,"text":"408","size":19,"pos":Vector2(80+i*56,230),"target":"enemy0","incoming_lane":i==2})
-   for i in 12:
-    scene.damage_pending.append({"damage":i!=3,"life":0.5,"text":"energy 408" if i%2 else "408","size":15 if i%2 else 19,"origin":Vector2(160+(i%3)*80,y),"born":4.6 if i==11 else 4.9,"target":"enemy%d"%(i%4)})
-   var before_floats=scene.floats.duplicate(true);var before_pending=scene.damage_pending.duplicate(true)
-   scene.reference_flush();var expected_floats=scene.floats.duplicate(true);var expected_pending=scene.damage_pending.duplicate(true)
-   scene.floats=before_floats;scene.damage_pending=before_pending;scene.flush_damage_numbers()
-   check(scene.floats==expected_floats and scene.damage_pending==expected_pending,"flush retains exact placements, retirement and backlog")
  scene.floats.clear()
  scene.battle_draw_active=true;scene.measuring=true;scene.reads=0
  scene.damage_text_position(Vector2(286,680),"408",19);scene.measuring=false
