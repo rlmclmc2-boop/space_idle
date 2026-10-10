@@ -58,6 +58,10 @@ class DisplayRecord extends RefCounted:
  var physical:bool=false
  var energy:bool=false
  var alive:bool=false
+ var order_index:int=-1
+ var packet_bucket:int=-999999
+ var packet_repair:bool=false
+ var packet_large:bool=false
 
 var paint_owner
 var records:Dictionary={}
@@ -157,11 +161,12 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   if not mount.under:ordered.append(mount.node)
  ordered.append_array([record.health,record.shield])
  for index in ordered.size():record.root.move_child(ordered[index],index)
- record.packet={};record.protection_width=-INF;record.protection_clock=-INF
+ record.packet={};record.packet_bucket=-999999;record.protection_width=-INF;record.protection_clock=-INF
 
 func sync(offset:Vector2,boss:bool)->void:
  var live={};var order_changed=false
  var model=paint_owner.battle_read_model
+ var member_index=0
  for enemy in paint_owner.game.enemies:
   var uid=int(enemy.uid);live[uid]=true
   var record:DisplayRecord=records.get(uid)
@@ -170,6 +175,8 @@ func sync(offset:Vector2,boss:bool)->void:
   if record==null:
    if enemy.hp<=0:continue
    record=create_record(enemy);records[uid]=record;order_changed=true
+  if record.order_index!=member_index:record.order_index=member_index;order_changed=true
+  member_index+=1
   var alive:bool=enemy.hp>0
   if record.alive!=alive:record.alive=alive;record.root.visible=alive;order_changed=true
   if not alive:continue
@@ -208,7 +215,16 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   body.scale=Vector2.ONE*width
   set_stroke_width(record.deck.pieces[prefix+"strokes"],width)
  var repair:bool=float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0
- var packet:Dictionary=paint_owner.enemy_recognition.geometry(record.texture,width,record.descriptors,repair,record.pose,record.screen_scale,int(enemy.size)>=4)
+ var bucket=ceili(width*maxf(0.1,record.screen_scale)/2.0)
+ var large:bool=int(enemy.size)>=4
+ var gap:float=ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0)
+ var layer_gap:float=ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)
+ var previous_packet:Dictionary=record.packet
+ if record.packet_bucket!=bucket or record.packet_repair!=repair or record.packet_large!=large or record.protection_gap!=gap or record.layer_gap!=layer_gap:
+  record.packet=paint_owner.enemy_recognition.geometry(record.texture,width,record.descriptors,repair,record.pose,record.screen_scale,large)
+  record.packet_bucket=bucket;record.packet_repair=repair;record.packet_large=large
+  record.protection_gap=gap;record.layer_gap=layer_gap
+ var packet:Dictionary=record.packet
  var old_alive:bool=record.status.get("alive",false)
  var old_active:bool=record.status.get("active",false)
  var old_repair:bool=record.status.get("repair",false)
@@ -218,7 +234,7 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  paint_owner.enemy_recognition.state(enemy,paint_owner.game.enemy_shield_time,paint_owner.game.paused,record.pose,record.status)
  var status=record.status
  var armour=int(enemy.get("armourType",0));var shield_type=int(enemy.get("shieldType",0));var size=int(enemy.size)
- var changed=not is_same(record.packet,packet) or old_alive!=status.alive or old_active!=status.active or old_repair!=status.repair or old_fraction!=status.fraction or old_recovering!=status.recovering or old_hull!=status.show_hull or record.armour!=armour or record.shield_type!=shield_type or record.size!=size
+ var changed=not is_same(previous_packet,packet) or old_alive!=status.alive or old_active!=status.active or old_repair!=status.repair or old_fraction!=status.fraction or old_recovering!=status.recovering or old_hull!=status.show_hull or record.armour!=armour or record.shield_type!=shield_type or record.size!=size
  if status.repair and record.protection_width!=width:changed=true
  if status.recovering and record.protection_clock!=paint_owner.game.enemy_shield_time:changed=true
  record.packet=packet;record.armour=armour;record.shield_type=shield_type;record.size=size
