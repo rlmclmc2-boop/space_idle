@@ -7,10 +7,11 @@ var memory_reduction_remaining := 0.0
 var clear_reduction_remaining := 0.0
 var reconciled_revision := -1
 var reconciled_slots: Array = []
+var reconciled_weapon_count := -1
 var reconciliations := 0
 
 func reset() -> void:
- reconciled_revision=-1;reconciled_slots=[]
+ reconciled_revision=-1;reconciled_slots=[];reconciled_weapon_count=-1
  weapons.clear();defenses.clear();incoming_sources.clear()
  memory_reduction_remaining=0.0;clear_reduction_remaining=0.0
 
@@ -47,14 +48,14 @@ func reconcile(g) -> void:
  # not invalidate eligibility, and continue through the original live paths.
  var weapon_entries: Array=g.combat_weapon_entries()
  var defense_entries: Array=g.defense_entries()
- var same_slots:=reconciled_slots.size()==weapon_entries.size()+defense_entries.size()
+ var same_slots:=reconciled_weapon_count==weapon_entries.size() and reconciled_slots.size()==weapon_entries.size()+defense_entries.size()
  var cursor:=0
  for entries in [weapon_entries,defense_entries]:
   for entry in entries:
    if same_slots and (not is_same(reconciled_slots[cursor][0],entry) or reconciled_slots[cursor][1]!=str(entry.get("key",""))):same_slots=false
    cursor+=1
  if same_slots and reconciled_revision==g.enhancement_plan.revision:return
- reconciled_slots=[]
+ reconciled_slots=[];reconciled_weapon_count=weapon_entries.size()
  for entries in [weapon_entries,defense_entries]:
   for entry in entries:reconciled_slots.append([entry,str(entry.get("key",""))])
  reconciled_revision=g.enhancement_plan.revision;reconciliations+=1

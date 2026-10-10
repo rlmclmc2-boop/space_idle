@@ -1,5 +1,7 @@
 extends RefCounted
 ## Qualification and authored recipes only. No attack/counter/timer/health state.
+const EMPTY_MAP := {}
+const EMPTY_LIST := []
 var dirty := true
 var config_revision := 0
 var revision := 0
@@ -34,16 +36,16 @@ func configuration_changed() -> void:
 
 func sync(g) -> void:
  var p: Dictionary=g.profile
- var next_config: Dictionary=g.db.data.get("enhance_config",{})
- var next_unlocks: Dictionary=g.db.data.get("unlock",{})
- var next_buffs: Dictionary=g.db.data.get("planet_buff",{})
- var next_planets: Dictionary=p.get("planets",{})
+ var next_config: Dictionary=g.db.data.get("enhance_config",EMPTY_MAP)
+ var next_unlocks: Dictionary=g.db.data.get("unlock",EMPTY_MAP)
+ var next_buffs: Dictionary=g.db.data.get("planet_buff",EMPTY_MAP)
+ var next_planets: Dictionary=p.get("planets",EMPTY_MAP)
  var replaced_config: bool=not is_same(config,next_config) or not is_same(unlocks,next_unlocks) or owner_db!=g.db or not is_same(planet_buffs,next_buffs)
- var next_orders: Dictionary=p.get("enhancementOrder",{})
- var next_selected: Dictionary=p.get("enhancementBranches",{})
- var next_weapon: Array=next_orders.get("weapons",[])
- var next_defense: Array=next_orders.get("defence",[])
- if not is_same(owner_profile,p) or owner_db!=g.db or not is_same(config,next_config) or not is_same(unlocks,next_unlocks) or not is_same(granted,p.get("grantedUnlocks",[])) or not is_same(cleared,p.get("cleared",[])) or not is_same(orders,next_orders) or not is_same(weapon_order,next_weapon) or not is_same(defense_order,next_defense) or not is_same(selected,next_selected) or not is_same(planets,next_planets) or replaced_config or actual_level!=int(p.get("enhancementLevel",0)) or highest!=int(p.get("highestLevel",1)):
+ var next_orders: Dictionary=p.get("enhancementOrder",EMPTY_MAP)
+ var next_selected: Dictionary=p.get("enhancementBranches",EMPTY_MAP)
+ var next_weapon: Array=next_orders.get("weapons",EMPTY_LIST)
+ var next_defense: Array=next_orders.get("defence",EMPTY_LIST)
+ if not is_same(owner_profile,p) or owner_db!=g.db or not is_same(config,next_config) or not is_same(unlocks,next_unlocks) or not is_same(granted,p.get("grantedUnlocks",EMPTY_LIST)) or not is_same(cleared,p.get("cleared",EMPTY_LIST)) or not is_same(orders,next_orders) or not is_same(weapon_order,next_weapon) or not is_same(defense_order,next_defense) or not is_same(selected,next_selected) or not is_same(planets,next_planets) or replaced_config or actual_level!=int(p.get("enhancementLevel",0)) or highest!=int(p.get("highestLevel",1)):
   dirty=true
  if not dirty:return
  if replaced_config:
@@ -51,7 +53,7 @@ func sync(g) -> void:
   g.stat_cache.clear();g.jewel_defence_capacity_cache.clear()
  owner_profile=p;owner_db=g.db;config=next_config;unlocks=next_unlocks
  planet_buffs=next_buffs;planets=next_planets
- granted=p.get("grantedUnlocks",[]);cleared=p.get("cleared",[])
+ granted=p.get("grantedUnlocks",EMPTY_LIST);cleared=p.get("cleared",EMPTY_LIST)
  orders=next_orders;weapon_order=next_weapon;defense_order=next_defense;selected=next_selected
  actual_level=int(p.get("enhancementLevel",0));highest=int(p.get("highestLevel",1))
  var enabled: bool=g.enhancement_unlocked()
@@ -66,7 +68,7 @@ func sync(g) -> void:
   for i in 3:
    if level>=g.enhancement_effect_threshold(i):count+=1
  for category in ["weapons","defence"]:
-  var order: Array=orders.get(category,[])
+  var order: Array=orders.get(category,EMPTY_LIST)
   var effects: Array=[];var indexes: Dictionary={};var choices: Dictionary={}
   for i in count:
    var kind:=str(order[i])
@@ -76,7 +78,7 @@ func sync(g) -> void:
   for kind in g.default_enhancement_order()[category]:
    var nodes: Dictionary={}
    for node in [1,2,3]:
-    nodes[node]=str(selected.get(category,{}).get(kind,{}).get(str(node),"")) if enabled and level>=g.enhancement_branch_threshold(node,category,kind) else ""
+    nodes[node]=str(selected.get(category,EMPTY_MAP).get(kind,EMPTY_MAP).get(str(node),"")) if enabled and level>=g.enhancement_branch_threshold(node,category,kind) else ""
    nodes.make_read_only();choices[kind]=nodes
   effects.make_read_only();indexes.make_read_only();choices.make_read_only()
   recipes[category]=effects;ranks[category]=indexes;branches[category]=choices
@@ -91,11 +93,11 @@ func category(g,entry: Dictionary) -> String:
 
 func effects(g,entry: Dictionary) -> Array:
  var kind:=category(g,entry)
- return recipes.get(kind,[])
+ return recipes.get(kind,EMPTY_LIST)
 
 func index(g,entry: Dictionary,effect: String) -> int:
- return int(ranks.get(category(g,entry),{}).get(effect,-1))
+ return int(ranks.get(category(g,entry),EMPTY_MAP).get(effect,-1))
 
 func active(g,entry: Dictionary,effect: String,node: int,choice: String) -> bool:
  var kind:=category(g,entry)
- return ranks.get(kind,{}).has(effect) and branches.get(kind,{}).get(effect,{}).get(node,"")==choice
+ return ranks.get(kind,EMPTY_MAP).has(effect) and branches.get(kind,EMPTY_MAP).get(effect,EMPTY_MAP).get(node,"")==choice

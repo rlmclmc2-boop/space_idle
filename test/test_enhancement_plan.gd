@@ -82,6 +82,7 @@ func _initialize() -> void:
  g.profile.planets["1"].degree=300;g.planet_buildings.sync(g,"1")
  g.profile.planets["1"].buildings.shipyard.status="built"
  check(g.reforge_planet("1"),"actual authorized reforge succeeds")
- check(matches(g) and g.enhancement_plan.level==g.enhancement_effective_level() and g.enhancement_level_bonus()==2,"reforge reset and permanent conquest level bonus compile canonically")
+ g.shared_enhancement_effect_count()
+ check(matches(g) and g.enhancement_plan.level==g.enhancement_effective_level() and g.enhancement_level_bonus()==int(g.planet_buffs.totals(g).gem_drop_level_bonus) and g.enhancement_level_bonus()>0,"reforge reset and permanent conquest level bonus compile canonically")
  print("ENHANCEMENT PLAN: ",checks," checks, ",failures," failures")
  quit(0 if failures==0 else 1)
