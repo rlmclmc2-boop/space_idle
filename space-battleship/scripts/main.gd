@@ -101,7 +101,6 @@ var battle_draw_player_base_scale := 1.0
 var battle_draw_player_art_scale := 1.0
 var battle_draw_recognition_scale := 1.0
 var battle_draw_scales_ready := false
-var battle_draw_enemy_components: Dictionary = {}
 var db: ShipDatabase
 var game: BattleGame
 var font: Font
@@ -1239,9 +1238,6 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 	return components
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
-	if battle_draw_active and battle_draw_scales_ready:
-		var cached:Dictionary=battle_draw_enemy_components.get(int(enemy.slot),{})
-		if not cached.is_empty() and is_same(cached.entity,enemy):return cached.components
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
 	var signature := ship_key+":"+str(db.get_instance_id())
@@ -1254,9 +1250,6 @@ func enemy_weapon_components(enemy: Dictionary) -> Array:
 		# Mounts describe these appearance-owned components, not their live aim,
 		# depth, shield state or width. Replace them with their component owner.
 		pose.recognition_mounts=enemy_recognition.descriptors(pose.components)
-	# Only the synchronous renderer owns this shortcut. No event/provider read
-	# skips the existing live equipment signature check.
-	if battle_draw_active and battle_draw_scales_ready:battle_draw_enemy_components[int(enemy.slot)]={"entity":enemy,"components":pose.components}
 	return pose.components
 
 func enemy_recognition_mounts(enemy:Dictionary)->Array:
@@ -3308,7 +3301,6 @@ func draw_battle() -> void:
 		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
 	battle_draw_active=false
 	battle_draw_scales_ready=false
-	battle_draw_enemy_components.clear()
 	battle_draw_enemy_positions.clear()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
