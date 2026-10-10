@@ -14,7 +14,7 @@ func run():
  if g.event.is_connected(driver.scene.on_event):g.event.disconnect(driver.scene.on_event)
  var result=[];var failed=false
  for wave in r.get("waves",[6,7,8,9]):
-  g.stage=14;g.group_index=int(wave)-1;g.spawn_group()
+  g.stage=int(r.get("stage",14));g.group_index=int(wave)-1;g.spawn_group()
   var override:Dictionary=r.get("positions",{}).get(str(wave),{})
   for e in g.enemies:
    if override.has(str(e.slot)):

@@ -38,4 +38,20 @@ func _initialize():
  var original=captain.jewelDropRolls;captain.jewelDropRolls+=1
  check(not Rewards.binding_error("30146",db.groups,db.enemies,db.levels,14,float(db.levels[13].resRatio),float(db.levels[13].jewelRatio)).is_empty(),"Reject accidental bonus fragment draw")
  captain.jewelDropRolls=original
+ for wave in range(1,10):
+  var group:Dictionary=db.groups[str(int(db.levels[14].groups[wave-1].id))]
+  var members=group.slots.filter(func(id):return id!=null).map(func(id):return db.enemies[str(int(id))])
+  check(members.size()==(3 if wave in [6,7,8] else 1),"Stage15 retains existing actor/draw count")
+  var iron=0.0
+  for member in members:
+   for drop in member.drops:iron+=drop.amount*drop.chance
+   check(Rewards.rolls(member.get("jewelDropRolls",1))==1,"No new or removed fragment draw")
+  check(is_equal_approx(iron,30.0 if wave<=5 else 60.0 if wave<=8 else 120.0),"Stage15 raw reward quota preserved")
+  if wave in [6,7,8]:
+   check(members.filter(func(m):return m.size>=4).size()==1,"One primary hull and two smaller escorts")
+   var types=members.map(func(m):return int(db.enemy_weapon(m.equipment[0].name).dmgtype))
+   check(types.has(1) and types.has(2),"Every elite mixes damage instead of whole-wave type pivots")
+   check(Formation.explicit_error(group.slots,db.enemies,group.formation_positions).is_empty(),"Stage15 authored logical formation valid")
+   var g=BattleGame.new(db,false);g.stage=15;g.group_index=wave-1;g.spawn_group()
+   check(g.state==BattleGame.State.COMBAT and g.enemies.size()==3,"Real stage15 spawn consumes authored fleet")
  print("WAVE_COMPOSITION ",checks," checks passed");quit()

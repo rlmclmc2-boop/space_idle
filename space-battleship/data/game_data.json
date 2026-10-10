@@ -21758,14 +21758,14 @@
     },
     "55027": {
       "id": 55027,
-      "des": "编排草案-normal-cannon-尺寸3 · 物理攻击变体（源模板1016）",
+      "des": "第15关巡逻舰：保留交替伤害，缩短解锁前单舰铺垫",
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
       "dmgMultiple": 0.01454,
-      "health": 11632,
+      "health": 6500,
       "armourType": 1,
       "res": "{1,30,1}",
       "size": 3,
@@ -21783,14 +21783,14 @@
     },
     "55047": {
       "id": 55047,
-      "des": "编排草案-normal-cannon-尺寸3",
+      "des": "第15关巡逻舰：保留交替伤害，缩短解锁前单舰铺垫",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.01454,
-      "health": 11632,
+      "health": 6500,
       "armourType": 1,
       "res": "{1,30,1}",
       "size": 3,
@@ -21808,14 +21808,14 @@
     },
     "55067": {
       "id": 55067,
-      "des": "编排草案-normal-cannon-尺寸3 · 物理攻击变体（源模板1016）",
+      "des": "第15关巡逻舰：保留交替伤害，缩短解锁前单舰铺垫",
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
       "dmgMultiple": 0.01454,
-      "health": 11632,
+      "health": 6500,
       "armourType": 1,
       "res": "{1,30,1}",
       "size": 3,
@@ -21833,14 +21833,14 @@
     },
     "55087": {
       "id": 55087,
-      "des": "编排草案-normal-cannon-尺寸3",
+      "des": "第15关巡逻舰：保留交替伤害，缩短解锁前单舰铺垫",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.01454,
-      "health": 11632,
+      "health": 6500,
       "armourType": 1,
       "res": "{1,30,1}",
       "size": 3,
@@ -21858,14 +21858,14 @@
     },
     "55107": {
       "id": 55107,
-      "des": "编排草案-normal-cannon-尺寸3 · 物理攻击变体（源模板1016）",
+      "des": "第15关巡逻舰：保留交替伤害，缩短解锁前单舰铺垫",
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
       "dmgMultiple": 0.01454,
-      "health": 11632,
+      "health": 6500,
       "armourType": 1,
       "res": "{1,30,1}",
       "size": 3,
@@ -21883,17 +21883,17 @@
     },
     "55125": {
       "id": 55125,
-      "des": "编排草案-elite-cannon-尺寸2",
+      "des": "第15关第6波物理护卫（能量装甲）",
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.0178,
-      "health": 10614,
+      "dmgMultiple": 0.065,
+      "health": 2300,
       "armourType": 1,
       "res": "{1,20,1}",
-      "size": 4,
+      "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
@@ -21908,17 +21908,17 @@
     },
     "55127": {
       "id": 55127,
-      "des": "编排草案-elite-cannon-尺寸1",
+      "des": "第15关第6波主舰：能量攻击，物理装甲",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.0178,
-      "health": 3635,
-      "armourType": 1,
+      "dmgMultiple": 0.05,
+      "health": 6500,
+      "armourType": 2,
       "res": "{1,20,1}",
-      "size": 2,
+      "size": 4,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
@@ -21933,17 +21933,17 @@
     },
     "55129": {
       "id": 55129,
-      "des": "编排草案-elite-cannon-尺寸2",
+      "des": "第15关第6波能量护卫（物理装甲）",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.0178,
-      "health": 10614,
-      "armourType": 1,
+      "dmgMultiple": 0.05,
+      "health": 2300,
+      "armourType": 2,
       "res": "{1,20,1}",
-      "size": 4,
+      "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
@@ -21958,17 +21958,17 @@
     },
     "55145": {
       "id": 55145,
-      "des": "编排草案-elite-cannon-尺寸2 · 物理攻击变体（源模板1057）",
+      "des": "第15关第7波能量护卫（物理装甲）",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.42492,
-      "health": 10614,
-      "armourType": 1,
+      "dmgMultiple": 0.05,
+      "health": 2300,
+      "armourType": 2,
       "res": "{1,20,1}",
-      "size": 4,
+      "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
@@ -21983,17 +21983,17 @@
     },
     "55147": {
       "id": 55147,
-      "des": "编排草案-elite-cannon-尺寸1 · 物理攻击变体（源模板1058）",
+      "des": "第15关第7波主舰：能量攻击，物理装甲",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.42492,
-      "health": 3635,
-      "armourType": 1,
+      "dmgMultiple": 0.05,
+      "health": 6500,
+      "armourType": 2,
       "res": "{1,20,1}",
-      "size": 2,
+      "size": 4,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
@@ -22008,64 +22008,14 @@
     },
     "55149": {
       "id": 55149,
-      "des": "编排草案-elite-cannon-尺寸2 · 物理攻击变体（源模板1057）",
+      "des": "第15关第7波物理护卫（能量装甲）",
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.42492,
-      "health": 10614,
-      "armourType": 1,
-      "res": "{1,20,1}",
-      "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "drops": [
-        {
-          "resourceId": 1,
-          "amount": 20.0,
-          "chance": 1.0
-        }
-      ]
-    },
-    "55165": {
-      "id": 55165,
-      "des": "编排草案-elite-cannon-尺寸2",
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.0178,
-      "health": 10614,
-      "armourType": 1,
-      "res": "{1,20,1}",
-      "size": 4,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
-      "drops": [
-        {
-          "resourceId": 1,
-          "amount": 20.0,
-          "chance": 1.0
-        }
-      ]
-    },
-    "55167": {
-      "id": 55167,
-      "des": "编排草案-elite-cannon-尺寸1",
-      "equipment": [
-        {
-          "name": "laser_mon"
-        }
-      ],
-      "dmgMultiple": 1.0178,
-      "health": 3635,
+      "dmgMultiple": 0.065,
+      "health": 2300,
       "armourType": 1,
       "res": "{1,20,1}",
       "size": 2,
@@ -22081,17 +22031,42 @@
         }
       ]
     },
-    "55169": {
-      "id": 55169,
-      "des": "编排草案-elite-cannon-尺寸2",
+    "55165": {
+      "id": 55165,
+      "des": "第15关第8波物理护卫（能量装甲）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.065,
+      "health": 2300,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "55167": {
+      "id": 55167,
+      "des": "第15关第8波主舰：能量攻击，物理装甲",
       "equipment": [
         {
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.0178,
-      "health": 10614,
-      "armourType": 1,
+      "dmgMultiple": 0.05,
+      "health": 6500,
+      "armourType": 2,
       "res": "{1,20,1}",
       "size": 4,
       "shield": 0,
@@ -22106,15 +22081,40 @@
         }
       ]
     },
+    "55169": {
+      "id": 55169,
+      "des": "第15关第8波能量护卫（物理装甲）",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.05,
+      "health": 2300,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
     "55187": {
       "id": 55187,
-      "des": "能量盾BOSS：磁轨占优 · 物理攻击变体（源模板1088）",
+      "des": "第15关尾舰：保留能量盾与物理攻击，接续混合编队压力",
       "equipment": [
         {
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 5.118080000000001,
+      "dmgMultiple": 0.165,
       "health": 567,
       "armourType": 2,
       "res": "{1,120,1}",
@@ -268463,7 +268463,7 @@
       "combatTier": "normal"
     },
     "30156": {
-      "description": "第15关第6战点",
+      "description": "第15关第6战点：主舰与混合护卫",
       "slots": [
         null,
         null,
@@ -268481,12 +268481,38 @@
         null,
         null
       ],
+      "formation_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          126,
+          350
+        ],
+        null,
+        [
+          286,
+          110
+        ],
+        null,
+        [
+          446,
+          350
+        ],
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
       "atkMultiplier": 41361.67985575831,
       "lifeMultiplier": 511509.1446189569,
       "combatTier": "elite"
     },
     "30157": {
-      "description": "第15关第7战点",
+      "description": "第15关第7战点：主舰与混合护卫",
       "slots": [
         null,
         null,
@@ -268504,12 +268530,38 @@
         null,
         null
       ],
+      "formation_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          126,
+          350
+        ],
+        null,
+        [
+          286,
+          110
+        ],
+        null,
+        [
+          446,
+          350
+        ],
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
       "atkMultiplier": 80844.07982255514,
       "lifeMultiplier": 789290.1987877744,
       "combatTier": "elite"
     },
     "30158": {
-      "description": "第15关第8战点",
+      "description": "第15关第8战点：主舰与混合护卫",
       "slots": [
         null,
         null,
@@ -268521,6 +268573,32 @@
         55167,
         null,
         55169,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "formation_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          126,
+          350
+        ],
+        null,
+        [
+          286,
+          110
+        ],
+        null,
+        [
+          446,
+          350
+        ],
         null,
         null,
         null,

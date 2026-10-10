@@ -16,6 +16,7 @@ var capture_output=""
 var encounter_paid={}
 var last_hit={}
 var first_encounters={}
+var paid_boundaries={}
 var qa_failure={}
 var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fraction":0.25,"ai_batch":10,"enhancement_max":true,"equalize_reactor":true}
 func observe(kind:String,info:Dictionary):
@@ -59,8 +60,13 @@ func transact():
   var price=g.reactor_upgrade_cost(int(g.profile.reactorLevel)+offset)
   if N.compare(N.add(total,price),reserve)>0:break
   total=N.add(total,price);count+=1
+ var boundary="%02d_%02d"%[g.stage,g.group_index]
+ var capture_paid=combat_capture and count>0 and g.state==g.State.COMBAT and not paid_boundaries.has(boundary)
+ if capture_paid:record_paid_boundary(boundary,"before",count,total)
  if count>0:g.upgrade_reactor(count)
  if policy.equalize_reactor:g.equalize_reactor_allocation()
+ if capture_paid:
+  record_paid_boundary(boundary,"after",count,total);paid_boundaries[boundary]=true
  var quote=g.scientist_purchase(int(policy.ai_batch))
  var affordable=int(quote.get("count",0))==int(policy.ai_batch)
  for key in quote.get("costs",{}):
@@ -70,6 +76,9 @@ func transact():
  var levels=g.enhancement_max_upgrades()
  if levels>0 and policy.enhancement_max:g.upgrade_enhancement(levels)
  stream.store_line(JSON.stringify({"t":g.simulated_time,"event":"normal_transactions","before":before,"after":snapshot(),"reactor_debit":total if count>0 else 0}))
+func record_paid_boundary(boundary:String,side:String,count:int,quote:Variant):
+ var path=capture_output.get_base_dir().path_join("reactor_%s_%s.json"%[boundary,side])
+ FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"purchase":{"count":count,"quote":quote,"side":side},"scope":"Actual affordable normal reactor transaction boundary with complete economic/production state. Portable reload regenerates full-health actors and cooldowns; isolated comparison is not continuous arrival or pacing evidence."}))
 func record_checkpoint(output:String,label:String):
  var path=output.get_base_dir().path_join("checkpoint_latest.json")
  FileAccess.open(path,FileAccess.WRITE).store_string(JSON.stringify({"save":g.portable_save_data(),"state":snapshot(),"rng_state":str(g.rng.state),"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"scope":label+"; portable reload regenerates combat and omits live actor/cooldown state"}))
@@ -122,7 +131,10 @@ func run():
    stream.store_line(JSON.stringify({"event":"requested_stop","state":snapshot()}));break
   driver.before_tick(STEP);g.tick(STEP);driver.after_tick(STEP)
   if tick%3600==0:
-   stream.store_line(JSON.stringify({"event":"sample","state":snapshot()}));stream.flush()
+   stream.store_line(JSON.stringify({"event":"sample","state":snapshot()}))
+   if combat_capture and g.state==g.State.COMBAT:
+    stream.store_line(JSON.stringify({"event":"combat_progress","t":g.simulated_time,"stage":g.stage,"wave":g.group_index,"enemies":g.enemies.map(func(e):return {"uid":e.uid,"slot":e.slot,"hp":e.hp,"max_hp":e.max_hp,"shield":e.shield,"max_shield":e.max_shield}),"incoming_paid_by_type":encounter_paid.duplicate(true)}))
+   stream.flush()
   if Time.get_ticks_usec()-budget>24000:await process_frame;budget=Time.get_ticks_usec()
  record_checkpoint(r.output,"QA final portable progress checkpoint")
  var result=snapshot();result.elapsed_seconds=g.simulated_time-initial_time;result.wall_seconds=float(Time.get_ticks_usec()-wall)/1e6;result.qa_failure=qa_failure
