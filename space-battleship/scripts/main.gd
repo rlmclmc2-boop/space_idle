@@ -89,6 +89,7 @@ var player_components: Array = []
 var player_components_signature := ""
 # Shared fleet limit is scoped to one process/draw batch and logical pose time.
 var enemy_entry_batch_active := false
+var enemy_provider_query_active := false
 var enemy_entry_distance_time := -INF
 var enemy_entry_distance_value := 0.0
 # Reuse presentation values only inside one synchronous draw callback. No state
@@ -1618,9 +1619,9 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var position_key:Array=[]
-	# A short ordinary frame has too few repeated providers to repay the key.
-	# Drawing already owns its smaller local cache; reserve this for busy logic.
-	var reuse_steady:=enemy_entry_batch_active and not battle_draw_active and enter==1.0 and game.projectiles.size()>=32
+	# Ordinary pose queries and drawing already have cheaper local paths.
+	# Guidance opts in explicitly; other logic needs a busy projectile scene.
+	var reuse_steady:=enemy_entry_batch_active and not battle_draw_active and enter==1.0 and (enemy_provider_query_active or game.projectiles.size()>=32)
 	if reuse_steady:
 		position_key=enemy_steady_position_key(enemy,pose)
 		if pose.get("steady_position_key",[])==position_key:

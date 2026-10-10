@@ -152,6 +152,16 @@ func run()->void:
 					check(scene.enemy_display_top_clearance(enemy,y)==expected,"cached clearance exactly matches fresh geometry")
 					check(scene.enemy_display_top_clearance(enemy,y)==expected,"repeated clearance keeps exact value")
 				compare_positions(scene,"shield/angle/authored boundary")
+	scene.game.projectiles=[]
+	scene.fx_time=10.0
+	var expected_provider:Vector2=scene.battle_logical_point(original_position(scene,enemy))
+	scene.enemy_pose(enemy).erase("steady_position_key")
+	scene.enemy_entry_batch_active=true
+	check(scene._prototype_target_point(enemy)==expected_provider,"actual guidance provider keeps exact target point at low projectile count")
+	calls=scene.clearance_calls
+	for i in 50:check(scene._prototype_target_point(enemy)==expected_provider,"repeated guidance provider keeps exact target point")
+	check(scene.clearance_calls==calls and not scene.enemy_provider_query_active,"guidance owns bounded reuse and releases context")
+	scene.enemy_entry_batch_active=false
 	scene.game.projectiles=projectiles
 	enemy.explicit_formation=false
 	scene.game.paused=true
