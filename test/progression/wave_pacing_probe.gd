@@ -10,6 +10,7 @@ var stream
 var defeats=0
 var clears=0
 var entry_seen={}
+var initial_time=0.0
 var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fraction":0.25,"ai_batch":10,"enhancement_max":true,"equalize_reactor":true}
 func observe(kind:String,info:Dictionary):
  if kind=="battle_defeated":defeats+=1
@@ -55,10 +56,13 @@ func run():
  policy.merge(r.get("policy",{}),true)
  var interval_ticks=maxi(1,roundi(float(policy.interval_seconds)*60))
  stream=FileAccess.open(r.output,FileAccess.WRITE)
- var raw:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(r.save))
+ var payload:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(r.save))
+ var raw:Dictionary=payload.get("save",payload)
  raw.chronoSavedAt=Time.get_unix_time_from_system()
  g=Game.new(ShipDatabase.new());g.stat_cache_enabled=true
+ g.simulated_time=float(payload.get("state",{}).get("t",0));initial_time=g.simulated_time
  g.load_progress_data(raw);g.resume_progress();g.paused=false;g.speed=1.0;g.rng.seed=20261010
+ if r.has("rng_state") or payload.has("rng_state"):g.rng.state=int(str(r.get("rng_state",payload.get("rng_state"))))
  g.event.connect(observe)
  var driver=Driver.new();driver.production_ui_ticks=true;driver.ui_refresh_seconds=60.0
  driver.setup(self,g)
@@ -73,12 +77,20 @@ func run():
   if g.state==g.State.LEVEL_CLEAR:
    if g.stage>=int(r.get("stop_clear",20)):break
    g.advance_after_clear()
+  for action in r.get("actions",[]):
+   if action.get("applied",false) or g.simulated_time-initial_time<float(action.get("at_seconds",0)):continue
+   action.applied=true
+   var before=snapshot();var count=int(action.get("reactor_levels",0));var quote=0.0
+   for offset in count:quote=N.add(quote,g.reactor_upgrade_cost(int(g.profile.reactorLevel)+offset))
+   var ok=g.upgrade_reactor(count)
+   if ok and action.get("equalize",false):g.equalize_reactor_allocation()
+   stream.store_line(JSON.stringify({"event":"scripted_transaction","t":g.simulated_time,"request":action,"quote":quote,"success":ok,"before":before,"after":snapshot()}))
   record_entry(r.output)
   driver.before_tick(STEP);g.tick(STEP);driver.after_tick(STEP)
   if tick%3600==0:
    stream.store_line(JSON.stringify({"event":"sample","state":snapshot()}));stream.flush()
   if Time.get_ticks_usec()-budget>24000:await process_frame;budget=Time.get_ticks_usec()
- var result=snapshot();result.wall_seconds=float(Time.get_ticks_usec()-wall)/1e6
+ var result=snapshot();result.elapsed_seconds=g.simulated_time-initial_time;result.wall_seconds=float(Time.get_ticks_usec()-wall)/1e6
  stream.store_line(JSON.stringify({"event":"final","state":result}));stream.close()
  print("PACING_RESULT ",JSON.stringify(result))
  driver.close();quit()
