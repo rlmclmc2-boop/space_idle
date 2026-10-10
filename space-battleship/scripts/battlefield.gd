@@ -455,13 +455,15 @@ func sync_beam_visuals()->void:
 	super.sync_beam_visuals()
 
 
-func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float)->bool:
+func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float,known_visual:Variant=null)->bool:
 	if shot.get("chain_hop",false):
 		var logical:=Vector2(shot.x,shot.y)
 		CHAIN_VFX.flight(draw_surface,pos,battle_point(logical+Vector2(shot.direction))-battle_point(logical))
 		return true
 	if not _is_own_missile(shot):return false
-	var visual:=projectile_visual(shot)
+	# The draw already resolved this exact visual through its frame-local index.
+	# Null preserves standalone callers; an indexed miss is an explicit empty row.
+	var visual:Dictionary=projectile_visual(shot) if known_visual==null else known_visual
 	# Every real missile, including an orphan, retains one physical body.
 	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(shot.get("motion_age",visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty())
 	return true

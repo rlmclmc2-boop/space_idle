@@ -88,6 +88,8 @@ def main():
     snapshots.add_argument('--checkpoint-round2', type=Path, help='Exact authorized QA7/group4/Frigate snapshot')
     snapshots.add_argument('--checkpoint-round4', type=Path, help='Exact authorized QA20/group2/Destroyer snapshot')
     parser.add_argument('--sustain-test-health', action='store_true', help='After the real fleet is generated, hold test health; explicitly synthetic, never natural-play acceptance')
+    parser.add_argument('--checkpoint-wave', type=int, default=0, choices=range(10), help='QA-only authored wave selection; requires sustained test health, reported as synthetic')
+    parser.add_argument('--test-missile-burst', type=int, default=0, choices=(0,256,1024), help='One synthetic burst of the QA ship actual missile weapon; no natural-load claim')
     parser.add_argument('--gpu-profile', action='store_true', help='Native GPU stage averages; timing-query overhead, not final frame comparison')
     parser.add_argument('--ref', help='Read this Git snapshot instead of current source')
     parser.add_argument('--reuse', type=Path, help='Reuse this runner\'s isolated import cache')
@@ -110,6 +112,12 @@ def main():
     checkpoint = checkpoint_source is not None
     checkpoint_stage=7 if args.checkpoint_round2 else 20
     checkpoint_group=4 if args.checkpoint_round2 else 2
+    if args.checkpoint_wave and not (checkpoint and args.sustain_test_health):
+        parser.error('checkpoint-wave requires an exact QA checkpoint and sustained test health')
+    if args.test_missile_burst and not (checkpoint and args.sustain_test_health):
+        parser.error('test-missile-burst requires an exact QA checkpoint and sustained test health')
+    if args.checkpoint_wave:
+        checkpoint_group=args.checkpoint_wave
     if args.sustain_test_health and not checkpoint:
         parser.error("sustain-test-health requires an exact QA checkpoint")
     if checkpoint and not args.ref:
@@ -180,6 +188,8 @@ def main():
     env.update(PERF_SUSTAIN_TEST_HEALTH=str(int(args.sustain_test_health)), PERF_STRESS_ENEMIES=str(args.stress_enemies), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     if checkpoint:
         env['SPACE_IDLE_FLAT_SHIPS'] = '0'
+        env['PERF_CHECKPOINT_WAVE'] = str(args.checkpoint_wave)
+        env['PERF_TEST_MISSILE_BURST'] = str(args.test_missile_burst)
     if checkpoint:
         for key in ('PERF_BALANCE', 'PERF_RICH', 'PERF_MAX'):
             env.pop(key, None)
@@ -213,6 +223,7 @@ def main():
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
               'software_renderer_environment': {key: env.get(key) for key in ('LP_NUM_THREADS', 'GALLIUM_DRIVER')},
               'exit': result_code, 'environment': environment, 'rows': rows,
+              'entry_rows': [json.loads(line[10:]) for line in text.splitlines() if line.startswith('ENTRY_ROW ')],
               'gpu_profile_lines': [line for line in text.splitlines() if line.startswith('GPU PROFILE') or ('ms' in line and line.lstrip().startswith('-'))],
               'gpu_profile_scope': 'Header total is last captured GPU frame; stages are approximately1second averages; no stageP95. Query overhead; keep separate from clean throughput.',
               'boundaries': [line for line in text.splitlines() if line.startswith('BOUNDARY_')]}

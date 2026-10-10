@@ -1,7 +1,7 @@
 extends SceneTree
 # Bounded attribution on the named natural QA checkpoint copy, never a player save.
 # Copy this script to the isolated project; checkpoint20.json comes from the authorized Git QA checkpoint.
-# This checkpoint completed20, brieflyentered21, thenreturned20/1; no pure<=20 provenance claim.
+# Validate the exact source encounter before any explicitly synthetic wave setup.
 class UI extends "res://scripts/battlefield.gd":
  func create_battle_game(_persist:bool)->BattleGame:
   var g=super.create_battle_game(false)
@@ -33,6 +33,16 @@ func views(node,rows):
  if node is SubViewport:rows.append({"path":str(node.get_path()),"size":str(node.size),"mode":node.render_target_update_mode,"scale_3d":node.scaling_3d_scale,"msaa_3d":node.msaa_3d,"calls":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_DRAW_CALLS_IN_FRAME),"primitives":node.get_render_info(Viewport.RENDER_INFO_TYPE_VISIBLE,Viewport.RENDER_INFO_PRIMITIVES_IN_FRAME)})
  for child in node.get_children():views(child,rows)
 func fail(reason):printerr("CHECKPOINT_FAILURE ",reason);Engine.remove_meta("saved_perf");quit(2)
+func inject_test_missile_burst(g,count):
+ # One explicitly synthetic transient. Use the actual equipped missile and
+ # its production firing path, payload, speed, target references and visuals.
+ for mount in g.weapon_entries().size():
+  var entry:Dictionary=g.weapon_entries()[mount]
+  if entry.key!="missile":continue
+  for i in count:
+   g.jewel_fire(mount,g.enemies[i%g.enemies.size()],g.db.equip(entry.key,int(entry.level)),g.player_weapon_offset(mount),1.0,g.missile_visual_spread(i%3,3))
+  return true
+ return false
 func run():
  Engine.max_fps=0;DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
  var save_path = str(Engine.get_meta("checkpoint_path","res://checkpoint20.json"))
@@ -43,6 +53,11 @@ func run():
  if not g.startup_error.is_empty() or g.stage!=int(Engine.get_meta("checkpoint_stage",20)) or g.group_index!=int(Engine.get_meta("checkpoint_group",1)) or str(g.profile.selectedShip)!=str(Engine.get_meta("checkpoint_ship","Destroyer")) or not g.stat_cache_enabled:
   fail({"startup":g.startup_error,"stage":g.stage,"group":g.group_index,"ship":g.profile.get("selectedShip"),"cache":g.stat_cache_enabled});return
  if OS.get_environment("PERF_SUSTAIN_TEST_HEALTH")=="1":
+  var selected_wave=int(OS.get_environment("PERF_CHECKPOINT_WAVE"))
+  if selected_wave>0:
+   if selected_wave>g.db.levels[g.stage-1].groups.size():fail("selected wave outside authored stage");return
+   g.group_index=selected_wave-1
+   g.spawn_group()
   # Apply only after the final scene-owned fleet exists. Do not alter weapon
   # parameters, launch cadence, paths, RNG, source save, or production tables.
   for enemy in g.enemies:enemy.hp=1e100;enemy.max_hp=1e100
@@ -53,7 +68,7 @@ func run():
  print("CHECKPOINT_END ",JSON.stringify({"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash}))
  scene.queue_free();await process_frame;Engine.remove_meta("saved_perf");quit()
 func measure(scene,g,save_hash):
- var frame_trace=[];var alive=[];var frames=[];var cpu=[];var drawing=[];var calls=[];var primitives=[];var stages=[];var groups=[];var states=[];var enemies=[];var projectiles=[]
+ var frame_trace=[];var entry_trace=[];var alive=[];var frames=[];var cpu=[];var drawing=[];var calls=[];var primitives=[];var stages=[];var groups=[];var states=[];var enemies=[];var projectiles=[]
  await process_frame;await RenderingServer.frame_post_draw
  var sample_frames = clampi(int(OS.get_environment("PERF_FRAMES")),1,600) if OS.has_environment("PERF_FRAMES") else 30
  var warmup_frames = clampi(int(OS.get_environment("PERF_WARMUP_FRAMES")),1,600) if OS.has_environment("PERF_WARMUP_FRAMES") else 15
@@ -61,11 +76,18 @@ func measure(scene,g,save_hash):
  for i in warmup_frames+sample_frames:
   if g.stage>20:fail("measurement crossedstage20");return
   if i==warmup_frames:
+   var burst=int(OS.get_environment("PERF_TEST_MISSILE_BURST"))
+   if burst>0 and not inject_test_missile_burst(g,burst):fail("QA has no missile mount");return
    meter.enabled=true;meter.times.clear()
    print("MEASUREMENT_SAMPLES_BEGIN ",JSON.stringify({"sample_frames":sample_frames}))
   meter.draw_us=0
   var began=Time.get_ticks_usec();scene._process(1.0/60.0)
   await process_frame;await RenderingServer.frame_post_draw
+  if i<warmup_frames:
+   var living=0
+   for enemy in g.enemies:
+    if float(enemy.get("hp",0))>0:living+=1
+   entry_trace.append([i,Time.get_ticks_usec()-began,scene.last_process_us,living,g.projectiles.size()])
   if i>=warmup_frames:
    frames.append(Time.get_ticks_usec()-began);cpu.append(scene.last_process_us);drawing.append(meter.draw_us)
    calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME));primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
@@ -76,6 +98,7 @@ func measure(scene,g,save_hash):
    frame_trace.append([i,frames[-1],cpu[-1],living,g.projectiles.size()])
    stages.append(g.stage);groups.append(g.group_index);states.append(g.state);enemies.append(g.enemies.size());projectiles.append(g.projectiles.size())
  meter.enabled=false
+ print("ENTRY_ROW ",JSON.stringify({"entry_trace":entry_trace,"synthetic_test_health":OS.get_environment("PERF_SUSTAIN_TEST_HEALTH")=="1","selected_authored_wave":int(OS.get_environment("PERF_CHECKPOINT_WAVE"))}))
  var inventory=[];views(root,inventory)
  print("ROW ",JSON.stringify({"frame_trace":frame_trace,"alive":alive,"rng_state":str(g.rng.state),"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"frames_us":stats(frames),"host_process_us":stats(cpu),"battle_draw_us":stats(drawing) if meter.times.has("main.draw_battle") else null,"draw_command_instrumented":meter.times.has("main.draw_battle"),"timings":meter.times,"calls":stats(calls),"primitives":stats(primitives),"stages":stages,"groups":groups,"states":states,"enemies":enemies,"projectiles":projectiles,"views":inventory,"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash,"warmup_frames":warmup_frames,"sample_frames":sample_frames,"logical_elapsed_seconds":float(warmup_frames+sample_frames)/60.0,"save_enabled":g.save_enabled,"ship_body_records":scene.ship_view.body_baker.records.size(),"flat_enabled":scene.ship_view.flat_compositor.enabled}))
  root.get_texture().get_image().save_png("res://.runtime/checkpoint20-scene.png")

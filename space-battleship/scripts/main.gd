@@ -3242,7 +3242,7 @@ func draw_battle() -> void:
 		var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
 		var key := str(p.key).replace("_mon", "").replace("-mon", "")
 		if key in ["laser","cannon"]:continue
-		if draw_projectile_body_override(p,pos,angle):continue
+		if draw_projectile_body_override(p,pos,angle,flight.visual):continue
 		var texture := visual_texture(str(weapon_visual_profile(key).get("projectile_vfx","")))
 		if texture==null:continue
 		var size: Vector2 = PROJECTILE_SIZES.get(key,Vector2(48,24)) * PROJECTILE_SCALE * BODY_SCALE.get(key,Vector2.ONE)
@@ -3321,7 +3321,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 		box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
 		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
 
-func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float) -> bool:
+func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float, _known_visual:Variant=null) -> bool:
 	# Optional presentation override; default retains the existing projectile sprite.
 	return false
 
