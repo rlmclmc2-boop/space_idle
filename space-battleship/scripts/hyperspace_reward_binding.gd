@@ -50,13 +50,19 @@ func bind(base:ShipDatabase,registry:Dictionary,level:int,resource_level:int=-1)
    var actual_id:String=str(int(wave.group))
    if not base.groups.has(actual_id) or not resource_reference.groups.any(func(point):return int(point.id)==int(wave.group)):continue
    var actual:Dictionary=base.groups[actual_id]
+   # A redesigned main fleet retains its legacy reward budget as a reference.
+   # Validate that binding before using only that legacy source in this registry.
+   if actual.has("rewardBinding"):
+    var source_error=Validator.binding_error(actual_id,base.groups,base.enemies,base.levels,resource_level,float(resource_reference.resRatio),float(resource_reference.jewelRatio))
+    if not source_error.is_empty():return fail("space_reward_mainline_reference_invalid: "+source_error)
+    actual_id=str(int(actual.rewardBinding.referenceGroupId));actual=base.groups[actual_id]
    var actual_blocks:Array=[]
    for id in actual.slots:
     if id!=null:
      if not base.enemies.has(str(int(id))):return fail("space_reward_mainline_reference_invalid")
      actual_blocks.append(base.enemies[str(int(id))].drops)
    if actual_blocks.size()!=count:return fail("space_reward_mainline_budget_invalid")
-   blocks=actual_blocks;ref_id=int(wave.group)
+   blocks=actual_blocks;ref_id=int(actual_id)
    result.groups[actual_id]=actual.duplicate(true)
    for id in actual.slots:
     if id!=null:result.enemies[str(int(id))]=base.enemies[str(int(id))].duplicate(true)

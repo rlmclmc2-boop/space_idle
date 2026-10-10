@@ -16,8 +16,12 @@ var capture_output=""
 var encounter_paid={}
 var last_hit={}
 var first_encounters={}
+var qa_failure={}
 var policy={"interval_seconds":120,"reactor_uranium_fraction":0.5,"ai_budget_fraction":0.25,"ai_batch":10,"enhancement_max":true,"equalize_reactor":true}
 func observe(kind:String,info:Dictionary):
+ if kind=="state" and int(info.get("state",-1))==g.State.RETREAT and not g.enemies.is_empty():
+  qa_failure={"reason":"Scene rejected encounter before normal retreat cleared actors","stage":g.stage,"wave":g.group_index,"t":g.simulated_time}
+  stream.store_line(JSON.stringify({"event":"qa_failure","failure":qa_failure}));stream.flush()
  if combat_capture:
   if kind=="encounter":encounter_paid={};last_hit={}
   if kind=="hit" and info.get("player",false):
@@ -97,6 +101,7 @@ func run():
  stream.store_line(JSON.stringify({"event":"initial","state":snapshot(),"request":r,"strategy_parameters":policy,"data_sha256":FileAccess.get_sha256("res://data/game_data.json"),"game_script_sha256":FileAccess.get_sha256("res://scripts/game.gd"),"source_save_sha256":FileAccess.get_sha256(r.save),"qa_script_sha256":FileAccess.get_sha256(get_script().resource_path),"engine_version":Engine.get_version_info(),"scope":"Accelerated fixed1/60 calibration; restored journey regenerates battle; deterministic QA RNG; saved production/research continue; transactions per recorded strategy; scene launch/target providers retained; no player scoring or total-duration acceptance."}))
  var wall=Time.get_ticks_usec();var budget=wall
  for tick in roundi(float(r.seconds)*60.0):
+  if not qa_failure.is_empty():break
   if tick%interval_ticks==0 and r.get("transactions",false):transact()
   if not g.pending_unlocks.is_empty():g.acknowledge_unlocks()
   if g.state==g.State.LEVEL_CLEAR:
@@ -120,7 +125,7 @@ func run():
    stream.store_line(JSON.stringify({"event":"sample","state":snapshot()}));stream.flush()
   if Time.get_ticks_usec()-budget>24000:await process_frame;budget=Time.get_ticks_usec()
  record_checkpoint(r.output,"QA final portable progress checkpoint")
- var result=snapshot();result.elapsed_seconds=g.simulated_time-initial_time;result.wall_seconds=float(Time.get_ticks_usec()-wall)/1e6
+ var result=snapshot();result.elapsed_seconds=g.simulated_time-initial_time;result.wall_seconds=float(Time.get_ticks_usec()-wall)/1e6;result.qa_failure=qa_failure
  stream.store_line(JSON.stringify({"event":"final","state":result}));stream.close()
  print("PACING_RESULT ",JSON.stringify(result))
- driver.close();quit()
+ driver.close();quit(0 if qa_failure.is_empty() else 2)
