@@ -5,6 +5,8 @@ class UI extends "res://scripts/battlefield.gd":
  func create_battle_game(_persist:bool)->BattleGame:return super.create_battle_game(false)
  func show_qa_tools()->void:pass
  func show_chrono_login_report()->void:pass
+ var window_events_enabled := false
+ var window_event_labels: Array=[]
  var frame_launches := 0
  var frame_enemy_launches := 0
  func weapon_launch(shot:Dictionary,spread:=0.0)->void:
@@ -12,6 +14,7 @@ class UI extends "res://scripts/battlefield.gd":
   if bool(shot.hostile):frame_enemy_launches+=1
   super.weapon_launch(shot,spread)
  func on_event(kind:String,info:Dictionary)->void:
+  if window_events_enabled and kind in ["state","wave_clear","level_clear","planet_changed","hyperspace_settled","crew_changed","hightech_changed","save_success","reactor_changed","unlocks_changed","jewels_changed","tutorial_changed"] and not window_event_labels.has(kind):window_event_labels.append(kind)
   var inspect=OS.get_environment("PERF_CPU_PEAKS")=="1"
   if inspect:
    Engine.get_meta("saved_perf").target_seen.clear()
@@ -178,6 +181,7 @@ func run():
  seed(1701)
  var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
  scene.automation_args=["--capture"];scene.music_on=false
+ scene.window_events_enabled=OS.get_environment("PERF_WINDOW_EVENTS")=="1"
  root.add_child(scene);current_scene=scene;scene.automation_args=[];scene.set_process(false)
  if OS.get_environment("PERF_RETAINED_CONTACTS")=="0":
   scene.retained_contacts_enabled=false;scene.retained_contacts.visible=false
@@ -257,6 +261,8 @@ func run():
   var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[]
   var frame_trace=[];var effect_trace=[];var alive=[];var states=[];var stages=[];var groups=[]
   var render_cost_trace=[]
+  var sample_time_us=[]
+  var slow_callback_trace=[];var memory_trace=[];var next_memory_us=0
   var cpu_peak_trace=[]
   var launch_trace=[]
   var presentation_trace=[]
@@ -315,6 +321,13 @@ func run():
    if i>=warmup:
     frames.append(Time.get_ticks_usec()-start);cpu.append(scene.last_process_us if realtime else elapsed)
     wall_end=Time.get_ticks_usec()
+    sample_time_us.append(wall_end-wall_start)
+    if scene.window_events_enabled:
+     if frames[-1]>16670:slow_callback_trace.append([i,sample_time_us[-1],frames[-1],cpu[-1],scene.last_draw_us,scene.window_event_labels.duplicate()])
+     if sample_time_us[-1]>=next_memory_us:
+      memory_trace.append([sample_time_us[-1],OS.get_static_memory_usage(),Performance.get_monitor(Performance.OBJECT_COUNT),get_node_count(),Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT),Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT),g.projectiles.size(),g.missile_queue.size()])
+      next_memory_us+=10000000
+
     var logical_delta=scene.logical_ticks-frame_logical_start
     logic_frame_trace.append([i,logical_delta,g.motion_clock,scene.last_process_delta])
     cpu_total_us+=cpu[-1]
@@ -361,6 +374,7 @@ func run():
   var tick_count=scene.logical_ticks-logical_start
   row.clock_validation={"mode":"engine real delta / production fixed60Hz accumulator" if realtime else "fixed workload per submitted frame", "wall_seconds":wall_seconds,"game_seconds":game_seconds,"game_wall_ratio":game_seconds/wall_seconds,"logical_ticks":tick_count,"logic_hz":float(tick_count)/wall_seconds,"render_frames":frames.size(),"render_hz":float(frames.size())/wall_seconds,"process_callbacks":scene.process_callbacks-callbacks_start,"process_delta_seconds":scene.process_delta_total-delta_start,"game_time_remainder":scene.game_time_remainder,"valid":not realtime or (wall_seconds>=seconds and absf(game_seconds/wall_seconds-1.0)<0.03 and absf(float(tick_count)/wall_seconds-60.0)<2.0)}
   row.main_budget={"scope":"Root _process wall time only; excludes later _draw and other autonomous/native callbacks","total_us":cpu_total_us,"wall_percent":cpu_total_us/(wall_seconds*10000.0),"no_tick_frames":cpu_no_tick.size(),"one_tick_frames":cpu_one_tick.size(),"multi_tick_frames":cpu_multi_tick.size(),"no_tick_us":stats(cpu_no_tick) if not cpu_no_tick.is_empty() else {},"one_tick_us":stats(cpu_one_tick) if not cpu_one_tick.is_empty() else {},"multi_tick_us":stats(cpu_multi_tick) if not cpu_multi_tick.is_empty() else {}}
+  row.sample_time_us=sample_time_us;row.slow_callback_trace=slow_callback_trace;row.memory_trace=memory_trace;row.window_events_capture=scene.window_events_enabled
   row.logic_frame_trace=logic_frame_trace;row.initial_combat_sha256=initial_combat_sha
   row.enhancement_plan_start=enhancement_plan_start;row.enhancement_plan_end=enhancement_plan_counts(g)
   row.tutorial_projection_start=tutorial_build_start;row.tutorial_projection_end={"eligibility":tutorial_projection_builds(scene,"builds"),"reads":tutorial_projection_builds(scene,"read_builds")}

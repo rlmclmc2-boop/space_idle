@@ -149,7 +149,7 @@ def main():
     parser.add_argument('--render-inventory', action='store_true', help='Live ship representation and viewport visibility inventory after sampling')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
-    if not (0 < args.seconds <= 30 and 0 < args.warmup_seconds <= 15):parser.error('wall windows must be bounded')
+    if not (0 < args.seconds <= 60 and 0 < args.warmup_seconds <= 15):parser.error('wall windows must be bounded')
     if args.realtime and (args.dynamic_replay or args.native_check or args.boundary_check):parser.error('realtime does not use same-tick replay/pixel diagnostics')
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
@@ -207,6 +207,20 @@ def main():
             subprocess.run(['git', 'archive', args.ref, *['space-battleship/' + p for p in PARTS]], cwd=ROOT, stdout=output, check=True)
         source = area / 'source/space-battleship'
         with tarfile.open(archive) as package:
+            snapshot_files={entry.name for entry in package.getmembers() if entry.isfile()}
+            # Reused QA copies must not keep files introduced by a later ref.
+            # Remove individual stale files only inside our verified snapshot
+            # PARTS directories; never touch user data, engine cache or repo.
+            for snapshot_root in [source,project]:
+                assert snapshot_root.resolve().is_relative_to(area.resolve())
+                for part in PARTS:
+                    folder=snapshot_root/part
+                    if not folder.is_dir():continue
+                    for stale in folder.rglob('*'):
+                        if not stale.is_file():continue
+                        assert stale.resolve().is_relative_to(snapshot_root.resolve())
+                        key='space-battleship/'+stale.relative_to(snapshot_root).as_posix()
+                        if key not in snapshot_files:stale.unlink()
             package.extractall(area / 'source', filter='data')
         archive.unlink()
     project.mkdir(exist_ok=True)
