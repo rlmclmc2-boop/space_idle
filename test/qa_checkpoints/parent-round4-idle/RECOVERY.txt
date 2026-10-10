@@ -1,1 +1,6 @@
-Normal-resource QA save only. Round4 parent low-intervention. Frozen candidate2f766d3fd3dcc7cdeab1ddfed5e4e43610840746. Saved2026-10-09T23:32:57Z atstage6/wave6. Normal1x, noQA resources or particles. XDG isolated; do not replace user's player save. Current gameplay continues; copy into separate QA XDG and preserve baseline if restoring.
+QA checkpoint only. Frozen game code 2f766d3fd3dcc7cdeab1ddfed5e4e43610840746.
+Normal-resource new save, 1x, no injected resources or particles used. Parent low-intervention run.
+Started 2026-10-09 22:51:30 UTC; first stage20 observed 2026-10-10 00:58:40 UTC. Stages1-19 cleared; stage20 not cleared.
+Manually saved 00:59:15 UTC after stage20 defeat; game closed and window absence verified00:59:41 UTC. Round finished; do not resume farming.
+SHA256 progress.json: d11614ad44bb800fd1252381437ae773f349b1763ef95ff76c96878970cee387
+This is an isolated cloud QA save, not the user's local player save. No screenshots, conversation or detailed report included.
