@@ -170,6 +170,12 @@ def main():
         shutil.copy2(checkpoint_source, project / 'checkpoint.json')
     else:
         shutil.copy2(ROOT / 'test/whole_game_perf.gd', project / 'probe.gd')
+    if not checkpoint and os.environ.get('PERF_RETENTION_PROFILE') != '1':
+        probe_path=project / 'probe.gd'
+        probe=probe_path.read_text(encoding='utf-8')
+        begin=probe.index(' func draw_enemy_hull_and_status(')
+        end=probe.index(' var last_process_us',begin)
+        probe_path.write_text(probe[:begin]+probe[end:],encoding='utf-8')
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True

@@ -258,8 +258,9 @@ func run():
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   row.retention_counts=scene.retention_counts.duplicate()
   row.retained_part_builds={}
-  if is_instance_valid(scene.retained_contacts):
-   for record in scene.retained_contacts.records.values():
+  var native_contacts=scene.get("retained_contacts")
+  if is_instance_valid(native_contacts):
+   for record in native_contacts.records.values():
     for child in record.root.get_children():row.retained_part_builds[child.kind]=row.retained_part_builds.get(child.kind,0)+child.builds
   row.submission_mode=submission_mode
   row.frames_drawn_delta=Engine.get_frames_drawn()-sampled_draw_start
