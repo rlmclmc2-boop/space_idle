@@ -1,1 +1,1 @@
-先读 [项目长期约束](docs/PROJECT_CONSTRAINTS.md)，再按其 WORKFLOW 入口加载任务相关规则。
+Godot/GDScript 项目；按当前任务先查 [WORKFLOW](docs/WORKFLOW.md) 与 [ARCHITECTURE](docs/ARCHITECTURE.md)，仅加载相关文档和技能。
