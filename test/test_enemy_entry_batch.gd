@@ -99,6 +99,15 @@ func run()->void:
 			compare_positions(scene,"after real process speed "+str(speed))
 	# Cached extrema follow geometry identity, exact angle and shield layers.
 	var enemy:Dictionary=scene.game.enemies[0]
+	var equipment:Array=enemy.equipment.duplicate(true)
+	for names in [["cannon-mon"],["laser-mon","missile-mon"],[]]:
+		enemy.equipment.clear()
+		for name in names:enemy.equipment.append({"name":name})
+		var mounts:Array=scene.enemy_recognition_mounts(enemy)
+		check(mounts==scene.enemy_recognition.descriptors(scene.enemy_weapon_components(enemy)),"appearance mounts match independent descriptor projection")
+		check(is_same(mounts,scene.enemy_recognition_mounts(enemy)),"unchanged component owner reuses mounts")
+		check(scene.enemy_display_top_clearance(enemy,150.0)==original_clearance(scene,enemy,150.0),"equipment replacement invalidates exact envelope")
+	enemy.equipment=equipment
 	for explicit in [false,true]:
 		enemy.explicit_formation=explicit
 		for shield_type in [0,1,2]:

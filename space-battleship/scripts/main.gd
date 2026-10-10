@@ -1235,16 +1235,21 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
-	var entries: Array = []
 	var signature := ship_key+":"+str(db.get_instance_id())
-	for equipment in enemy.equipment:
-		var key := str(equipment.get("name",""))
-		entries.append({"key":key})
-		signature += "|"+key
+	for equipment in enemy.equipment:signature += "|"+str(equipment.get("name",""))
 	if str(pose.get("components_signature",""))!=signature:
+		var entries: Array = []
+		for equipment in enemy.equipment:entries.append({"key":str(equipment.get("name",""))})
 		pose.components_signature=signature
 		pose.components=compose_weapon_components(ship_key,entries,"enemy")
+		# Mounts describe these appearance-owned components, not their live aim,
+		# depth, shield state or width. Replace them with their component owner.
+		pose.recognition_mounts=enemy_recognition.descriptors(pose.components)
 	return pose.components
+
+func enemy_recognition_mounts(enemy:Dictionary)->Array:
+	enemy_weapon_components(enemy)
+	return enemy_pose(enemy).recognition_mounts
 
 func enemy_attack_types(enemy: Dictionary) -> Array:
 	var pose := enemy_pose(enemy)
@@ -1542,28 +1547,16 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	# The target and top-bound solver sample different width buckets; keep each
 	# cached separately so stationary frames never rebuild alternating envelopes.
 	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
-	var cache:Dictionary=pose.top_geometries[key]
+	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition_mounts(enemy),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
+	var outlines:Array=[packet.inner]
+	if float(enemy.get("max_shield",0))>0:
+		outlines.append(packet.outer)
+		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
+	var top:=0.0
+	# A synchronous outline query shares one ship angle across all vertices.
 	var angle:=PI+enemy_render_angle(enemy)
-	var outer:bool=float(enemy.get("max_shield",0))>0
-	var front:bool=outer and int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4
-	var projection_signature:=[angle,outer,front]
-	var top:float
-	# Several position/provider queries sample the same bucket and exact angle.
-	# The geometry owner replaces packet on any envelope dependency change;
-	# reuse only its rotated extremum, never moving coordinates or combat state.
-	if is_same(cache.get("top_packet"),packet) and cache.get("top_signature",[])==projection_signature:
-		top=cache.top_projection
-	else:
-		var outlines:Array=[packet.inner]
-		if outer:outlines.append(packet.outer)
-		if front:outlines.append(packet.front)
-		top=0.0
-		for outline in outlines:
-			for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
-		cache.top_packet=packet
-		cache.top_signature=projection_signature
-		cache.top_projection=top
+	for outline in outlines:
+		for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
 	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
 	var status_space:=28.0 if game.is_boss_encounter() else 16.0
 	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
@@ -3396,8 +3389,8 @@ func enemy_recognition_screen_scale() -> float:
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
 	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
-	var components := enemy_weapon_components(enemy)
-	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	var mounts := enemy_recognition_mounts(enemy)
+	return enemy_recognition.geometry(texture,enemy_render_width(enemy),mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 
 func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):
