@@ -1,17 +1,33 @@
-# WORKFLOW: evidence → opinion → improvement
+# WORKFLOW：操作与交接入口
 
-- On start/resume, verify HEAD, worktree and the current private checkpoint (completed actions, next action, blocker), then continue unresolved owned findings without repeating completed operations. Confirm environment recovery with a successful real workspace operation, never a running-status label. Treat ordinary disconnects as routine: retry the original environment after about five minutes, without notifying the user each time or creating replacement tasks/threads. Choose the highest-impact authorized action; do not expand permissions implicitly.
-- Separate playtest and implementation roles. Parent and assigned player threads keep playing their own existing checkpoints and forming independent opinions throughout an authorized experience-improvement run. A delivered patch or score does not finish that role: continue the next player-visible decision, investment or progression while a repair owner implements findings. Parent integration/permission waits block only dependent work, not other playable flows. Stop only for the user, a concrete blocker, or demonstrated completion of the authorized experience scope; do not invent work or independent retest tasks. Implementation-only roles deliver bounded fixes and stay outside player scoring when specified.
-- Run early-game reviews in bounded rounds: reaching stage 20 ends that player round. Save evidence and close the game; do not farm at the boundary or keep the old player thread running. Start another full round only after a coherent, material improvement addresses the previous round's major problems and passes targeted acceptance; small patches get relevant checks, not full replay. Every new player round uses fresh threads and normal-resource new saves. Keep prior opinions, progress and strategy with the parent for comparison, not in the new players' context. Freeze the round candidate and record any unavoidable version boundary; compare scope, decisions, friction and investment value without claiming mixed-version or paused wall time as continuous pacing. New task creation remains bounded by explicit user authorization.
-- Calibrate numeric changes first with authorized accelerated QA and fixed test checkpoints; label fixture edits, speed, version and start state. Judge enemy survival time and player survival pressure together: inspect per-wave combat lengths and failure causes, separate waiting/replays from purchases/refits and their observed progress, then check unlock pressure/release, and only then total time. Long harmless fights and concentrated long gates cannot pass on total duration or few defeats. Freeze a coherent candidate before explicitly approved ordinary 1× play; do not automatically restart players. When approved, keep two active-strategy players and an independent low-intervention parent sample without peer foreknowledge. Disconnect time is not difficulty; waiting alone is not a defect.
-- Implementation/testing owners independently recommend accept/reject, flag material evidence gaps, and oppose requests that conflict with evidence; parent final authority does not transfer away that duty. Handoffs lead with the decision, at most three blocking issues, and decisive per-wave comparisons; keep full logs separately. A commit or check count cannot replace the failed-goal analysis.
-- Progression QA never stops on cumulative defeat count or optimizes toward fewer defeats. Abort corrupt/nonfinite data and illegal states; prolonged lack of frontier progress produces a diagnostic warning using actual income, normal purchases, survival/kills, enemy remaining durability and furthest wave. Diagnose first; warnings neither stop accumulation nor automatically weaken enemies.
-- Rotate long-running implementation threads at a safe Git checkpoint when context becomes costly or unreliable: finish/save the current bounded change, stop the old thread, and give its authorized replacement only current rules, commits, evidence limits and unresolved work. Never copy the full history or expand concurrency without permission.
-- Each testing participant independently reviews the game systems: observed player goal, strengths, friction, investment value, proposed change and evidence limits. Apply strict player standards equally to all work, including the parent’s own changes: state weak motivation, poor pacing, confusing operations and performance failures directly with observed impact and a proposed remedy; never soften findings to protect an implementer’s feelings or inflate criticism without evidence. Mark unplayed systems unverified. At each scheduled review, the parent report preserves each participant’s views and disagreements, its accept/defer/reject decision and reason, the implementation owner, and the observed effect after change. Missing participant views or unverified effects remain explicit gaps; aggregate scores/commit lists cannot replace them. Implementation-only participants stay outside testing/scoring.
-- Start each scheduled review with the previous low-scoring findings: improved, still blocked, or recurred. Every accepted deduction has owner, next action, acceptance evidence and recurrence tracking. A fix is not closed by implementation alone. Recheck the failed player goal; recurring omissions reopen the finding and affect its original owner/coordinator assessment.
-- Track only observable availability: actionable waiting, external blockage, required dependency, completed scope, unknown. Do not equate `inProgress` with activity/restoration or fabricate exact idle time. Avoidable idle belongs in collaboration efficiency; coordination-induced idle belongs to the coordinator. No reward for repeated tests, token usage or busywork.
-- Preserve evidence classes: natural play / authorized fixture or unlimited-resource play / automated check / source inference / unverified. Acceptance covers understanding, operation burden, meaningful investment return and runtime quality, not merely successful execution. Keep numeric system-value scores separate from worker scores.
-- Performance claims require the intended steady workload, same scene/settings/version basis, isolated processes, correctness/quality checks, and repeated measurements. Startup-only, diagnostic overlays, wrong cache flags and contradictory samples cannot prove an overall gain. Disabled visuals are diagnostic bounds, not quality-preserving fixes.
-- Reuse the smallest relevant verification; do not rerun another worker's broad suite without an unresolved risk. Parent owns final acceptance, not every preparatory test. Use Git as the primary recovery/transfer authority: commit and push coherent stages to working branches, record completed operations and the next action in the private checkpoint, and read back the remote commit/tree before relying on them; cloud-only edits are not recoverable checkpoints. Request foreseeable missing publication permissions early and block only the dependent payload. Retain reports/saves/raw evidence privately unless their specific publication is explicitly approved.
-- A handoff states current commit, evidence/limits, unresolved findings, next action and blocker. At the user's review cadence and before formal delivery, run `python tools/check_workflow.py <private-ledger.json>`; validate the separate independent-opinion review with the same command plus `--review` (required participants, individual sources/scope, disposition/reason, observed effects, prior low-score follow-up). These checks enforce completeness, not truth. Keep one private current ledger, not duplicate public reports.
-- Promote only demonstrated useful practice into this authority; keep temporary experiments and current deadlines in the task handoff. Remove superseded rules. Review whether the rule actually prevented recurrence, not whether it was merely read.
+协作、授权、验收及发布规则以 [PROJECT_CONSTRAINTS](PROJECT_CONSTRAINTS.md) 为唯一入口。
+
+## 开始与接续
+
+核对 HEAD、工作区及当前私有检查点中的已完成操作、下一步和阻塞。用真实工作区操作确认环境可用，再继续授权范围内未闭合事项，避免重复已完成操作。先定位目标，仅加载相关文档与技能；技能缺失时检查项目 `.agents/skills`。阶段交接更新同一份私有检查点，不把临时进度写成长期规则。
+
+## 按任务加载
+
+| 任务 | 入口 |
+|---|---|
+| 代码与数据定位 | [ARCHITECTURE](ARCHITECTURE.md) |
+| 稳定玩法 | [PROJECT](PROJECT.md) |
+| 未闭合问题与长期决策 | [STATUS](STATUS.md)、[DECISIONS](DECISIONS.md) |
+| 战斗、武器、增益与宝石 | [BATTLE](BATTLE.md) |
+| UI、渲染、输入与玩家文字 | [UI](UI.md)、[UI_TEXT](UI_TEXT.md) |
+| 测试与命令 | [TEST](TEST.md)、[测试 README](../../test/README.md) |
+| 平衡、模拟与性能 | [BALANCE_LAB](BALANCE_LAB.md)、[BALANCE_PERFORMANCE](BALANCE_PERFORMANCE.md) |
+| 船员、美术与关卡编辑器 | [CREW](CREW.md)、[ART_GUIDELINES](ART_GUIDELINES.md)、[LEVEL_EDITOR](LEVEL_EDITOR.md) |
+| 任务 token 预算 | [token-opt](../.agents/skills/token-opt/SKILL.md) |
+| 长上下文与交接 | [ctx-compress](../.agents/skills/ctx-compress/SKILL.md) |
+| 持久规则与文档编辑 | [doc-compact](../.agents/skills/doc-compact/SKILL.md) |
+
+## 交接核对
+
+交接列出当前提交、结论及证据限度、未闭合问题、下一步和阻塞。按用户评审节奏及正式交付前，从仓库根目录执行：
+
+```sh
+python tools/check_workflow.py <private-ledger.json>
+```
+
+父的实际独立意见评审另用同一命令加 `--review`，核对参与者、各自来源与覆盖、处置理由、修改后效果及旧低分跟进。校验器只检查材料完整性；不能用通过结果证明事实或替代实际评审。保留一份当前私有台账，不另建公开详细报告。
