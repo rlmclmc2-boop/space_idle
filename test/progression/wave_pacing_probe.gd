@@ -102,6 +102,7 @@ func run():
  policy.merge(r.get("policy",{}),true)
  stage_refits=r.get("stage_refits",{})
  var interval_ticks=maxi(1,roundi(float(policy.interval_seconds)*60))
+ var transaction_delay_ticks=maxi(0,roundi(float(r.get("transaction_delay_seconds",0))*60))
  stream=FileAccess.open(r.output,FileAccess.WRITE)
  combat_capture=bool(r.get("capture_combat",false));capture_output=r.output
  var payload:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(r.save))
@@ -124,7 +125,7 @@ func run():
   if int(r.get("max_defeats",0))>0 and defeats>=int(r.max_defeats):
    record_checkpoint(r.output,"QA defeat-budget stop portable progress checkpoint")
    stream.store_line(JSON.stringify({"event":"defeat_budget_stop","budget":int(r.max_defeats),"state":snapshot()}));break
-  if tick%interval_ticks==0 and r.get("transactions",false):transact()
+  if tick>=transaction_delay_ticks and (tick-transaction_delay_ticks)%interval_ticks==0 and r.get("transactions",false):transact()
   if not g.pending_unlocks.is_empty():g.acknowledge_unlocks()
   if g.state==g.State.LEVEL_CLEAR:
    if g.stage>=int(r.get("stop_clear",20)):break
