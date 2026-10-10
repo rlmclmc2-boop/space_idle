@@ -134,7 +134,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   var enabled=record.physical if physical else record.energy
   body.visible=enabled;strokes.visible=enabled
   body.data={"physical":physical};body.queue_redraw()
-  strokes.stroke_kind="";strokes.stroke_width=-INF
+  strokes.stroke_kind="";strokes.stroke_width=-INF;strokes.signature=[]
   strokes.data={"width":-INF,"physical":physical}
  for component in components:
   var mount=MountRecord.new();mount.node=build_weapon(record.root)
