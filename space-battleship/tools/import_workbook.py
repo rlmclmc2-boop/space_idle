@@ -122,12 +122,12 @@ def convert_sheet(name, rows):
             coordinates=row.get("formation_positions")
             if coordinates not in (None, ""):
                 group["formation_positions"]=json.loads(coordinates) if isinstance(coordinates,str) else coordinates
-            for key in ("atkMultiplier", "lifeMultiplier"):
+            for key in ("atkMultiplier", "lifeMultiplier", "authorAtkScale"):
                 value=row.get(key)
                 if value not in (None, ""):
                     if type(value) not in (int,float) or not math.isfinite(value) or value<=0:
                         raise ValueError(f"monGroup {row['id']} {key}: expected positive finite multiplier or blank")
-                    group[key]=value
+                    if key != "authorAtkScale":group[key]=value
             tier=row.get("combatTier")
             if tier not in (None, ""):
                 if tier not in ("normal","elite","boss","ultimate"):raise ValueError(f"monGroup {row['id']}: invalid combatTier")

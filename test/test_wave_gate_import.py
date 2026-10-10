@@ -21,7 +21,8 @@ class WaveGateImport(unittest.TestCase):
   self.assertNotIn('lifeMultiplier',convert_sheet('monGroup',[dict(row,lifeMultiplier='')])['1'])
   valid=convert_sheet('monGroup',[dict(row,lifeMultiplier=2.5,atkMultiplier=0.75)])['1']
   self.assertEqual((valid['lifeMultiplier'],valid['atkMultiplier']),(2.5,0.75))
-  for key in ['lifeMultiplier','atkMultiplier']:
+  self.assertNotIn('authorAtkScale',convert_sheet('monGroup',[dict(row,authorAtkScale=0.125)])['1'])
+  for key in ['lifeMultiplier','atkMultiplier','authorAtkScale']:
    for value in [0,-1,float('nan'),float('inf'),True,'2']:
     with self.subTest(key=key,value=value),self.assertRaises(ValueError):
      convert_sheet('monGroup',[dict(row,**{key:value})])

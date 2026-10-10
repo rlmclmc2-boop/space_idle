@@ -3,7 +3,8 @@
 Edit atkMultiplier/lifeMultiplier on each selected stage's last monGroup row,
 then run with --apply and import via config_workbooks.py. Earlier stage tails
 anchor the next head. This writes only monGroup.xlsx; level ratios/drop data
-remain unchanged. Intermediate absolute combat ratios grow geometrically.
+remain unchanged. Intermediate absolute combat ratios grow geometrically. Optional authorAtkScale
+shapes attack bands only; tail factors remain the final runtime values.
 """
 import argparse
 import math
@@ -46,16 +47,19 @@ def smooth(directory, stages, apply=False):
                 anchor = float(previous[kind]) if previous else 1.0
                 previous_factor = factor(sheet.cell(rows[previous['groups'][-1]['id']], columns[key]).value, key) if previous else 1.0
                 head = float(level.get(entry, anchor))
-                start, end = anchor * previous_factor, float(level[kind]) * tail
+                shape_column = columns.get('authorAtkScale') if key == 'atkMultiplier' else None
+                tail_shape = factor(sheet.cell(rows[points[-1]['id']], shape_column).value, 'authorAtkScale') if shape_column else 1.0
+                start, end = anchor * previous_factor, float(level[kind]) * tail / tail_shape
                 for i, point in enumerate(points):
                     t = i / (len(points) - 1) if len(points) > 1 else 1.0
                     base = head * (1 - t) + float(level[kind]) * t
                     absolute = start ** (1 - t) * end ** t
-                    value = tail if i == len(points) - 1 else absolute / base
+                    shape = factor(sheet.cell(rows[point['id']], shape_column).value, 'authorAtkScale') if shape_column else 1.0
+                    value = tail if i == len(points) - 1 else absolute / base * shape
                     factor(value, f'{stage}/{i + 1} {key}')
                     changes.append((rows[point['id']], columns[key], value))
-                summary[key] = {'tail': tail, 'absolute_stage_growth': end / start,
-                                'adjacent_wave_growth': (end / start) ** (1 / (len(points) - 1)) if len(points) > 1 else 1.0}
+                summary[key] = {'tail': tail, 'absolute_stage_growth': float(level[kind]) * tail / start,
+                                'unshaped_adjacent_wave_growth': (end / start) ** (1 / (len(points) - 1)) if len(points) > 1 else 1.0}
             print(summary)
         if apply:
             for row, column, value in changes:
