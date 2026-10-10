@@ -1539,15 +1539,27 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	# cached separately so stationary frames never rebuild alternating envelopes.
 	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
 	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
-	var outlines:Array=[packet.inner]
-	if float(enemy.get("max_shield",0))>0:
-		outlines.append(packet.outer)
-		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
-	var top:=0.0
-	# A synchronous outline query shares one ship angle across all vertices.
+	var cache:Dictionary=pose.top_geometries[key]
 	var angle:=PI+enemy_render_angle(enemy)
-	for outline in outlines:
-		for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
+	var outer:bool=float(enemy.get("max_shield",0))>0
+	var front:bool=outer and int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4
+	var projection_signature:=[angle,outer,front]
+	var top:float
+	# Several position/provider queries sample the same bucket and exact angle.
+	# The geometry owner replaces packet on any envelope dependency change;
+	# reuse only its rotated extremum, never moving coordinates or combat state.
+	if is_same(cache.get("top_packet"),packet) and cache.get("top_signature",[])==projection_signature:
+		top=cache.top_projection
+	else:
+		var outlines:Array=[packet.inner]
+		if outer:outlines.append(packet.outer)
+		if front:outlines.append(packet.front)
+		top=0.0
+		for outline in outlines:
+			for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
+		cache.top_packet=packet
+		cache.top_signature=projection_signature
+		cache.top_projection=top
 	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
 	var status_space:=28.0 if game.is_boss_encounter() else 16.0
 	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
@@ -1600,18 +1612,19 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	# fleet-wide clearance calculation without caching moving entity state.
 	var entry_distance := enemy_safe_entry_distance() if enter<1.0 else 0.0
 	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))+hover*enter
-	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
-	# Clamp the final animated position, so hover, entry and ship changes cannot
-	# cross the front line. Logical entity coordinates remain untouched.
-	var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
-	# Width changes slightly with depth; solve the local top bound without moving
-	# other rows or altering the existing player clearance cap.
-	for iteration in 3:
-		var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
-		if next_minimum==minimum_y:break
-		minimum_y=next_minimum
-	if not enemy.get("explicit_formation",false):position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
-	else:position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
+	# Explicit formations own their authored top boundary. Their final clamp
+	# never reads minimum_y; do not solve the unused legacy envelope per query.
+	if enemy.get("explicit_formation",false):
+		position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
+	else:
+		var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
+		# Keep the original local top-bound solve for legacy formations.
+		var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
+		for iteration in 3:
+			var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
+			if next_minimum==minimum_y:break
+			minimum_y=next_minimum
+		position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 

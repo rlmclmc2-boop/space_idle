@@ -15,6 +15,21 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func _initialize()->void:call_deferred("run")
 
+func original_clearance(scene,enemy:Dictionary,y:float)->float:
+	var pose:Dictionary=scene.enemy_pose(enemy)
+	var width:float=scene.enemy_render_width_at_y(enemy,y)
+	var scale_value:float=scene.enemy_recognition_screen_scale()
+	var packet:Dictionary=scene.enemy_recognition.geometry(scene.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,scene.enemy_recognition.descriptors(scene.enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,{},scale_value,int(enemy.size)>=4)
+	var outlines:Array=[packet.inner]
+	if float(enemy.get("max_shield",0))>0:
+		outlines.append(packet.outer)
+		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
+	var top:=0.0
+	var angle:float=PI+scene.enemy_render_angle(enemy)
+	for outline in outlines:
+		for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
+	return -top+(28.0 if scene.game.is_boss_encounter() else 16.0)+6.0+4.0/scale_value
+
 func original_position(scene,enemy:Dictionary)->Vector2:
 	# Independent pre-fix formula, including all three fixed-point iterations.
 	var pose:Dictionary=scene.enemy_pose(enemy)
@@ -27,8 +42,8 @@ func original_position(scene,enemy:Dictionary)->Vector2:
 	var distance:float=scene.enemy_safe_entry_distance() if enter<1.0 else 0.0
 	var point:=target+Vector2(float(pose.entry_x)*(1.0-enter),-distance*(1.0-enter))+hover*enter
 	var half_height:float=(78.0 if scene.game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
-	var minimum:=maxf(half_height+8.0,scene.enemy_display_top_clearance(enemy,maxf(point.y,target.y)))
-	for iteration in 3:minimum=maxf(minimum,scene.enemy_display_top_clearance(enemy,minimum))
+	var minimum:=maxf(half_height+8.0,original_clearance(scene,enemy,maxf(point.y,target.y)))
+	for iteration in 3:minimum=maxf(minimum,original_clearance(scene,enemy,minimum))
 	if not enemy.get("explicit_formation",false):point.y=clampf(point.y,minimum,floorf(scene.enemy_frontline_y_limit(enemy)))
 	else:point.y=minf(point.y,floorf(scene.enemy_frontline_y_limit(enemy)))
 	return point
@@ -82,6 +97,20 @@ func run()->void:
 			scene._process(1.0/60.0)
 			check(not scene.enemy_entry_batch_active and scene.enemy_entry_distance_time==-INF,"process releases cache at speed "+str(speed))
 			compare_positions(scene,"after real process speed "+str(speed))
+	# Cached extrema follow geometry identity, exact angle and shield layers.
+	var enemy:Dictionary=scene.game.enemies[0]
+	for explicit in [false,true]:
+		enemy.explicit_formation=explicit
+		for shield_type in [0,1,2]:
+			enemy.max_shield=100.0;enemy.shieldType=shield_type
+			for time in [0.2,2.0]:
+				scene.fx_time=time
+				for y in [50.0,90.0,250.0]:
+					var expected:float=original_clearance(scene,enemy,y)
+					check(scene.enemy_display_top_clearance(enemy,y)==expected,"cached clearance exactly matches fresh geometry")
+					check(scene.enemy_display_top_clearance(enemy,y)==expected,"repeated clearance keeps exact value")
+				compare_positions(scene,"shield/angle/authored boundary")
+	enemy.explicit_formation=false
 	scene.game.paused=true
 	scene._process(1.0/60.0)
 	compare_positions(scene,"paused")

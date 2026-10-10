@@ -310,6 +310,7 @@ func set_upgrade_amount(amount: int) -> void:
 func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	if item.locked:
 		item.cost = "—"
+		item.upgradeable = false
 		item.direct_upgradeable = false
 		item.upgrade_count = 0
 		return
@@ -322,13 +323,15 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 		item.cost = quotes[quote_key].cost
 		item.direct_upgradeable = quotes[quote_key].available
 		item.upgrade_count = quotes[quote_key].count
+		item.upgradeable = quotes[quote_key].single_available
 		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
 	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
 	item.cost = host.cost_text(costs)
 	item.upgrade_count = count
 	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
-	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable,"count":count}
+	item.upgradeable = item.direct_upgradeable if upgrade_amount==1 else host.game.can_upgrade_slot(item.category,item.index)
+	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable,"count":count,"single_available":item.upgradeable}
 
 func max_upgrade_quote() -> String:
 	if selected_slot<0 or not items.has(selected):return UIText.t("equipment.action.max")
@@ -657,12 +660,13 @@ func refresh_affordability() -> void:
 	var quotes := {}
 	for id in items:
 		var item: Dictionary = items[id]
-		var available: bool = host.game.can_upgrade_slot(item.category,item.index)
-		if item.upgradeable!=available:
-			item.upgradeable = available
-			changed = true
+		var previous := [item.upgradeable,item.cost,item.direct_upgradeable,item.upgrade_count]
 		update_card_cost(item,quotes)
-		cards[id].refresh(item,selected==id)
+		changed = changed or previous[0]!=item.upgradeable
+		# A balance change affects purchase feedback, not names, stats or choices.
+		# Keep the existing card/menu/tooltip when its purchase projection is equal.
+		if previous!=[item.upgradeable,item.cost,item.direct_upgradeable,item.upgrade_count]:
+			cards[id].refresh(item,selected==id)
 	if changed:
 		sort_dirty = sort_dirty or sort_mode==3
 		if sort_mode==3 or status_filter in [2,3]:apply_filters()
