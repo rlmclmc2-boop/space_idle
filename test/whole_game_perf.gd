@@ -148,6 +148,8 @@ func run():
  g.invalidate_stat_cache()
  scene.refresh_structure();scene.refresh_tab_visibility()
  print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"resolution":str(root.size),"cap":Engine.max_fps,"low_processor":OS.low_processor_usage_mode}))
+ var submission_mode=OS.get_environment("PERF_SUBMISSION_MODE")
+ if submission_mode.is_empty():submission_mode="full"
  var realtime=OS.get_environment("PERF_REALTIME")=="1"
  scene.set_process(realtime)
  var scenarios=[0,4,1,2,6,8]
@@ -172,6 +174,9 @@ func run():
   var switch_cpu_us=Time.get_ticks_usec()-switch_started
   await process_frame
   var switch_frame_us=Time.get_ticks_usec()-switch_started
+  if submission_mode in ["no-submit","no-presentation"]:RenderingServer.set_render_loop_enabled(false)
+  if submission_mode=="no-presentation":scene.hide()
+  elif submission_mode=="empty":root.remove_child(scene)
   var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[]
   var frame_trace=[];var effect_trace=[];var alive=[];var states=[];var stages=[];var groups=[]
   var render_cost_trace=[]
@@ -181,10 +186,13 @@ func run():
   var card_change_trace=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
+  var sampled_draw_start=0
+  var sampled_clock_start=0.0
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
   var warmup=int(OS.get_environment("PERF_WARMUP_FRAMES")) if not OS.get_environment("PERF_WARMUP_FRAMES").is_empty() else 15
   for i in range(count+warmup):
    if i==warmup:
+    sampled_draw_start=Engine.get_frames_drawn();sampled_clock_start=g.motion_clock
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
     if render_cost:
      cost_views.clear();measured_views(root,cost_views)
@@ -195,7 +203,7 @@ func run():
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1" and OS.get_environment("PERF_ORGANIC_ECONOMY")!="1":
     g.profile.resources["1"]*=1.0000000001;g.profile.resources["2"]*=1.0000000001
-   if not realtime:scene._process(1.0/60.0)
+   if not realtime and submission_mode!="empty":scene._process(1.0/60.0)
    var elapsed=Time.get_ticks_usec()-start
    await process_frame
    if i>=warmup:
@@ -230,6 +238,13 @@ func run():
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  row.submission_mode=submission_mode
+  row.frames_drawn_delta=Engine.get_frames_drawn()-sampled_draw_start
+  row.motion_clock_start=sampled_clock_start
+  row.motion_clock_end=g.motion_clock
+  row.render_loop_enabled=RenderingServer.is_render_loop_enabled()
+  row.vsync_mode=DisplayServer.window_get_vsync_mode()
+  row.physics_us=Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS)*1000000.0
   if render_inventory:row.ship_inventory=ship_inventory(scene)
   row.effect_trace=effect_trace
   row.render_cost_trace=render_cost_trace
@@ -248,6 +263,7 @@ func run():
    await RenderingServer.frame_post_draw
    root.get_texture().get_image().save_png("res://.runtime/page-%d.png" % page)
  FileAccess.open("res://.runtime/whole-perf.json",FileAccess.WRITE).store_string(JSON.stringify(results," "))
+ RenderingServer.set_render_loop_enabled(true)
  scene.set_process(false)
  scene.game.launch_provider=Callable();scene.game.target_provider=Callable()
  scene.queue_free();await process_frame;await process_frame

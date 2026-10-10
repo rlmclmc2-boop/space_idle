@@ -95,6 +95,7 @@ def main():
     parser.add_argument('--ref', help='Read this Git snapshot instead of current source')
     parser.add_argument('--reuse', type=Path, help='Reuse this runner\'s isolated import cache')
     parser.add_argument('--headless', action='store_true')
+    parser.add_argument('--submission-mode', choices=('full','no-submit','no-presentation','empty'), default='full', help='Isolated upper-bound diagnostic: no-submit keeps full game/UI processing but disables RenderingServer loop; empty detaches the scene and measures blank window, not comparable gameplay')
     parser.add_argument('--rendering-method', choices=('gl_compatibility','mobile','forward_plus'), help='Isolated renderer comparison; never changes production project settings')
     parser.add_argument('--rich', action='store_true')
     parser.add_argument('--missile-loadout', action='store_true', help='Rich fixture selects eight actual missile slots; production cadence and parameters unchanged')
@@ -117,6 +118,8 @@ def main():
     args = parser.parse_args()
     if (args.missile_loadout or args.authored_stage or args.organic_economy) and not args.rich:
         parser.error('missile-loadout/authored-stage require the explicitly synthetic rich fixture')
+    if args.submission_mode != 'full' and (args.pages != '0' or args.realtime or args.headless or args.checkpoint_round2 or args.checkpoint_round4):
+        parser.error('submission diagnostics require graphical fixed-step synthetic --pages 0, without checkpoints')
     checkpoint_source=args.checkpoint_round2 or args.checkpoint_round4
     checkpoint = checkpoint_source is not None
     checkpoint_stage=7 if args.checkpoint_round2 else 20
@@ -265,6 +268,7 @@ def main():
     env['PERF_ORGANIC_ECONOMY']=str(int(args.organic_economy))
     env['PERF_AUTHORED_STAGE']=str(args.authored_stage)
     env['PERF_RENDER_COST']=str(int(args.render_cost))
+    env['PERF_SUBMISSION_MODE']=args.submission_mode
     env['PERF_CPU_PEAKS']=str(int(args.cpu_peaks))
     if checkpoint:
         env['SPACE_IDLE_FLAT_SHIPS'] = '0'
