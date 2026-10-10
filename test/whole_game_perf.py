@@ -85,6 +85,7 @@ def main():
     parser.add_argument('--label', required=True)
     parser.add_argument('--battle-only', action='store_true', help='Private-copy noncombat tick isolation; static modifiers retained, fixed-workload throughput only')
     parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
+    parser.add_argument('--native-check', action='store_true', help='Diagnostic same-frame native painter/pinned-reference comparison; not clean timing')
     parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
     parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
@@ -122,6 +123,8 @@ def main():
     args = parser.parse_args()
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
+    if args.native_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.boundary_check or args.instrument):
+        parser.error('native-check requires battle-only without other instrumentation')
     if args.boundary_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument):
         parser.error('boundary-check requires battle-only and cannot be combined with replay or other instrumentation')
     if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
@@ -216,6 +219,16 @@ def main():
         probe=probe.replace('func run():','func run():\n var boundary_check=preload("res://battle_boundary_check.gd").new()')
         probe=probe.replace('   await RenderingServer.frame_post_draw','   boundary_check.check(scene)\n   await RenderingServer.frame_post_draw')
         probe=probe.replace('  row.retention_counts=','  row.boundary_check=boundary_check.report()\n  row.retention_counts=')
+        probe_path.write_text(probe,encoding='utf-8')
+    if args.native_check:
+        shutil.copy2(ROOT/'test/retained_native_check.gd',project/'retained_native_check.gd')
+        for module in ['retained_enemy_contacts','enemy_recognition_visual']:
+            reference=subprocess.check_output(['git','-c','safe.directory=*','show','6144e357:space-battleship/scripts/'+module+'.gd'],cwd=ROOT)
+            (project/('reference_'+module+'.gd')).write_bytes(reference)
+        probe_path=project/'probe.gd';probe=probe_path.read_text(encoding='utf-8')
+        probe=probe.replace('func run():','func run():\n var native_check=preload("res://retained_native_check.gd").new()')
+        probe=probe.replace('   await RenderingServer.frame_post_draw\n   if i>=warmup:', '   await RenderingServer.frame_post_draw\n   await native_check.after_draw(scene,i,root)\n   if i>=warmup:')
+        probe=probe.replace('  row.retention_counts=', '  row.native_check=native_check.report()\n  row.retention_counts=')
         probe_path.write_text(probe,encoding='utf-8')
     (project / '.runtime').mkdir(exist_ok=True)
     if args.focused_draw:args.instrument=True
@@ -353,6 +366,7 @@ def main():
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
+    if args.native_check:measured_files += ['retained_native_check.gd','reference_retained_enemy_contacts.gd','reference_enemy_recognition_visual.gd']
     if args.boundary_check:measured_files += ['battle_boundary_check.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),

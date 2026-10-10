@@ -147,6 +147,17 @@ func image_digest(texture:Texture2D)->String:
  var context=HashingContext.new();context.start(HashingContext.HASH_SHA256)
  context.update(texture.get_image().get_data())
  return context.finish().hex_encode()
+func contact_part_builds(scene)->Dictionary:
+ var counts={};var contacts=scene.get("retained_contacts")
+ if not is_instance_valid(contacts):return counts
+ for record in contacts.records.values():
+  var pending=record.root.get_children()
+  while not pending.is_empty():
+   var child=pending.pop_back()
+   if child.get_script()!=null:
+    counts[child.kind]=counts.get(child.kind,0)+child.builds
+   pending.append_array(child.get_children())
+ return counts
 func run():
  Engine.max_fps=0
  DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
@@ -240,6 +251,7 @@ func run():
   var enemy_bitmap={}
   var ship_buffer_start=""
   var part_build_start={}
+  var envelope_build_start=0
   var sampled_draw_start=0
   var sampled_clock_start=0.0
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
@@ -247,10 +259,8 @@ func run():
   for i in range(count+warmup):
    if i==warmup:
     if OS.get_environment("PERF_FREEZE_SHIP_BUFFER")=="1":ship_buffer_start=image_digest(scene.ship_view.viewport.get_texture())
-    var initial_contacts=scene.get("retained_contacts")
-    if is_instance_valid(initial_contacts):
-     for record in initial_contacts.records.values():
-      for child in record.root.get_children():part_build_start[child.kind]=part_build_start.get(child.kind,0)+child.builds
+    part_build_start=contact_part_builds(scene)
+    envelope_build_start=scene.enemy_recognition.envelope_builds
     sampled_draw_start=Engine.get_frames_drawn();sampled_clock_start=g.motion_clock
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
     if render_cost:
@@ -299,11 +309,8 @@ func run():
   var viewport_rows=[];views(root,viewport_rows)
   var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   row.retention_counts=scene.retention_counts.duplicate()
-  row.retained_part_builds={}
-  var native_contacts=scene.get("retained_contacts")
-  if is_instance_valid(native_contacts):
-   for record in native_contacts.records.values():
-    for child in record.root.get_children():row.retained_part_builds[child.kind]=row.retained_part_builds.get(child.kind,0)+child.builds
+  row.retained_part_builds=contact_part_builds(scene)
+  row.envelope_builds_in_sample=scene.enemy_recognition.envelope_builds-envelope_build_start
   row.part_builds_in_sample={}
   for kind in row.retained_part_builds:row.part_builds_in_sample[kind]=row.retained_part_builds[kind]-part_build_start.get(kind,0)
   row.enemy_bitmap_setup_wall_us=enemy_bitmap.get("setup_wall_us",0)

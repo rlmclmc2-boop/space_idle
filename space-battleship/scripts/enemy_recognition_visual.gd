@@ -67,6 +67,18 @@ func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cac
 	var layer_gap := float(ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5))/scale_safe
 	var signature := [texture.get_instance_id(),bucket,scale_safe,gap,layer_gap,repair,mounts,large]
 	if cache.get("recognition_signature",[])==signature:return cache.recognition_geometry
+	# One contact owns one immutable appearance contract and bounded canonical
+	# width packets. Clearance and display consume the same packets; alternating
+	# their widths must not refit the same legal mount envelope every frame.
+	var contract_signature=[texture.get_instance_id(),scale_safe,gap,layer_gap,repair,mounts,large]
+	if cache.get("recognition_contract_signature",[])!=contract_signature:
+		cache.recognition_contract_signature=contract_signature.duplicate(true)
+		cache.recognition_width_packets={};cache.recognition_width_order=[]
+	var packets:Dictionary=cache.recognition_width_packets
+	if packets.has(bucket):
+		cache.recognition_signature=signature.duplicate(true)
+		cache.recognition_geometry=packets[bucket]
+		return cache.recognition_geometry
 	var profile := hull_profile(texture)
 	var min_width := 15.0/scale_safe
 	var points := PackedVector2Array()
@@ -96,6 +108,8 @@ func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cac
 	var result := {"inner":inner,"outer":outer,"front":front,"single_front":single_front,"hull_stroke":hull_stroke,"shield_stroke":shield_stroke,"scale":scale_safe,"audit_points":points}
 	cache.recognition_signature=signature.duplicate(true)
 	cache.recognition_geometry=result
+	packets[bucket]=result;cache.recognition_width_order.append(bucket)
+	if cache.recognition_width_order.size()>16:packets.erase(cache.recognition_width_order.pop_front())
 	envelope_builds+=1
 	return result
 
@@ -236,3 +250,39 @@ func draw_contact(surface: CanvasItem, pos: Vector2, axis: Vector2, age: float, 
 	else:
 		surface.draw_line(pos-side*radius,pos+side*radius,color,1.2,true)
 		surface.draw_line(pos-axis*radius*0.6,pos+axis*radius*0.6,color,1.0,true)
+
+func draw_deck_body(surface:CanvasItem,width:float,physical:bool)->void:
+	var y=width*0.23
+	if physical:
+		surface.draw_rect(Rect2(-width*0.18,y-width*0.19,width*0.36,width*0.48),Color("17212a"))
+		for sign_value in [-1,1]:
+			var x=float(sign_value)*width*0.10
+			surface.draw_rect(Rect2(x-width*0.035,y-width*0.14,width*0.07,width*0.33),Color("c2c9c9"))
+			surface.draw_rect(Rect2(x-width*0.022,y+width*0.12,width*0.044,width*0.055),Color("080d13"))
+	else:
+		surface.draw_colored_polygon(PackedVector2Array([Vector2(0,y-width*0.22),Vector2(width*0.17,y),Vector2(0,y+width*0.22),Vector2(-width*0.17,y)]),Color("17212a"))
+		surface.draw_colored_polygon(PackedVector2Array([Vector2(0,y-width*0.15),Vector2(width*0.12,y),Vector2(0,y+width*0.15),Vector2(-width*0.12,y)]),Color("b8a2d8"))
+
+func draw_deck_strokes(surface:CanvasItem,width:float,physical:bool)->void:
+	var y=width*0.23
+	if physical:
+		for stripe in 3:surface.draw_line(Vector2(-width*0.15,y+width*(0.21+stripe*0.025)),Vector2(width*0.15,y+width*(0.21+stripe*0.025)),Color("757f83"),maxf(0.8,width*0.018),true)
+	else:
+		for sign_value in [-1,1]:
+			var x=float(sign_value)*width*0.19
+			surface.draw_polyline(PackedVector2Array([Vector2(x*0.65,y-width*0.24),Vector2(x,y-width*0.13),Vector2(x,y+width*0.13),Vector2(x*0.65,y+width*0.24)]),Color("c2c9c9"),maxf(1.0,width*0.045),true)
+
+func draw_weapon_body(surface:CanvasItem,w:float,physical:bool)->void:
+	surface.draw_rect(Rect2(-w*0.24,-w*0.22,w*0.48,w*0.42),Color("36424b"))
+	if physical:
+		surface.draw_rect(Rect2(-w*0.16,-w*0.15,w*0.32,w*0.84),Color("ac886a"))
+		surface.draw_rect(Rect2(-w*0.23,w*0.48,w*0.46,w*0.25),Color("6e594a"))
+		surface.draw_rect(Rect2(-w*0.15,w*0.57,w*0.30,w*0.14),Color("080d13"))
+	else:
+		for side in [-1,1]:
+			var fork=PackedVector2Array([Vector2(side*w*0.17,-w*0.18),Vector2(side*w*0.60,-w*0.08),Vector2(side*w*0.60,w*0.45),Vector2(side*w*0.41,w*0.45),Vector2(side*w*0.41,w*0.07),Vector2(side*w*0.17,0)])
+			surface.draw_colored_polygon(fork,Color("aabfc6"))
+		surface.draw_rect(Rect2(-w*0.13,w*0.02,w*0.26,w*0.16),ENERGY)
+
+func draw_weapon_strokes(surface:CanvasItem,w:float)->void:
+	for side in [-1,1]:surface.draw_line(Vector2(side*w*0.49,w*0.20),Vector2(side*w*0.49,w*0.44),ENERGY,maxf(1,w*0.10),true)

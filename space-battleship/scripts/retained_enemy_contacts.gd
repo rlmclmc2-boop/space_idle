@@ -8,6 +8,7 @@ class Part extends Node2D:
  var data:Dictionary
  var signature:Array=[]
  var builds:=0
+ var pieces:Dictionary={}
  func update(values:Dictionary,key:Array)->void:
   if signature==key:return
   signature=key.duplicate(true);data=values;queue_redraw()
@@ -31,6 +32,16 @@ func part(root:Node2D,kind:String)->Part:
  root.add_child(result)
  return result
 
+func build_deck(parent:Node2D)->Part:
+ var group=part(parent,"deck_group")
+ for kind in ["deck_physical_body","deck_physical_strokes","deck_energy_body","deck_energy_strokes"]:group.pieces[kind]=part(group,kind)
+ return group
+
+func build_weapon(parent:Node2D)->Part:
+ var group=part(parent,"weapon_group")
+ group.pieces.body=part(group,"weapon_body");group.pieces.strokes=part(group,"weapon_strokes")
+ return group
+
 func sync(offset:Vector2,boss:bool)->void:
  var live={}
  var order_index=0
@@ -42,7 +53,7 @@ func sync(offset:Vector2,boss:bool)->void:
    records[uid].root.hide();records[uid].root.queue_free();records.erase(uid)
   if not records.has(uid):
    var root=Node2D.new();add_child(root)
-   records[uid]={"entity":enemy,"root":root,"fallback":part(root,"fallback"),"mounts":[],"hull":part(root,"hull"),"deck":part(root,"deck"),"protection":part(root,"protection"),"health":part(root,"meter"),"shield":part(root,"meter")}
+   records[uid]={"entity":enemy,"root":root,"fallback":part(root,"fallback"),"mounts":[],"hull":part(root,"hull"),"deck":build_deck(root),"protection":part(root,"protection"),"health":part(root,"meter"),"shield":part(root,"meter")}
   var record:Dictionary=records[uid]
   if record.root.get_index()!=order_index:move_child(record.root,order_index)
   order_index+=1
@@ -62,10 +73,22 @@ func sync(offset:Vector2,boss:bool)->void:
   record.root.position=pos
   var light:float=publication.light
   record.hull.rotation=PI+angle
-  record.hull.update({"width":width,"light":light,"texture":paint_owner.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))},[width,int(enemy.size),light])
+  record.hull.scale=Vector2.ONE*width
+  record.hull.self_modulate=Color(light,light,light,1.0)
+  var texture=paint_owner.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+  record.hull.update({"texture":texture},[texture.get_instance_id()])
   record.deck.rotation=PI+angle
   var types:Array=publication.types
-  record.deck.update({"width":width,"types":types},[width,types])
+  for physical in [true,false]:
+   var prefix="deck_physical_" if physical else "deck_energy_"
+   var body:Part=record.deck.pieces[prefix+"body"]
+   var strokes:Part=record.deck.pieces[prefix+"strokes"]
+   var enabled=types.has(2 if physical else 1)
+   body.visible=enabled;strokes.visible=enabled
+   if enabled:
+    body.scale=Vector2.ONE*width
+    body.update({"physical":physical},[physical])
+    strokes.update({"width":width,"physical":physical},[width,physical])
   var packet:Dictionary=publication.packet
   var status:Dictionary=publication.status
   record.protection.rotation=PI+angle
@@ -80,7 +103,7 @@ func sync(offset:Vector2,boss:bool)->void:
   if record.mounts.size()!=components.size():
    for item in record.mounts:item.hide();item.queue_free()
    record.mounts.clear()
-   for component in components:record.mounts.append(part(record.root,"weapon"))
+   for component in components:record.mounts.append(build_weapon(record.root))
   for index in components.size():
    var component=components[index]
    var node:Part=record.mounts[index]
@@ -90,7 +113,12 @@ func sync(offset:Vector2,boss:bool)->void:
    var shift:Vector2=Vector2(pose.port)-Vector2((0.64 if physical else 0.45)*w,0)
    node.position=Vector2(pose.origin)+shift.rotated(pose.angle)
    node.rotation=float(pose.angle)-PI/2
-   node.update({"width":w,"physical":physical},[w,physical])
+   var body:Part=node.pieces.body
+   var strokes:Part=node.pieces.strokes
+   body.scale=Vector2.ONE*w
+   body.update({"physical":physical},[physical])
+   strokes.visible=not physical
+   if not physical:strokes.update({"width":w},[w])
    # Preserve the existing under-hull/over-hull painter ordering.
   var ordered=[record.fallback]
   for index in components.size():
@@ -118,10 +146,11 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
  var previous=paint_owner.draw_surface;paint_owner.draw_surface=surface
  match kind:
   "hull":
-   var dimensions=Vector2(data.width,data.width*2.0)
-   surface.draw_texture_rect(data.texture,Rect2(-dimensions/2,dimensions),false,Color(data.light,data.light,data.light,1.0))
-  "deck":paint_owner.enemy_recognition.draw_attack_deck(surface,data.width,data.types)
-  "weapon":paint_owner.enemy_recognition.draw_weapon_shape(surface,data.width,data.physical)
+   surface.draw_texture_rect(data.texture,Rect2(Vector2(-0.5,-1.0),Vector2(1.0,2.0)),false,Color.WHITE)
+  "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
+  "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
+  "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
+  "weapon_strokes":paint_owner.enemy_recognition.draw_weapon_strokes(surface,data.width)
   "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
   "fallback":paint_owner.draw_enemy_hull_and_status(data.enemy,data.offset,data.boss)
