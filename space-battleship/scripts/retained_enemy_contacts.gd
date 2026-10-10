@@ -103,12 +103,12 @@ func create_record(enemy:Dictionary)->DisplayRecord:
 func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  var enemy=record.entity
  record.shape_revision=int(spatial.shape_revision);record.boss=boss
- record.pose=paint_owner.enemy_pose(enemy)
+ bind_pose(record,paint_owner.enemy_pose(enemy))
  record.screen_scale=paint_owner.enemy_recognition_screen_scale()
  record.texture=paint_owner.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
  record.used=paint_owner.enemy_hull_bounds(record.texture)
  record.corners=PackedVector2Array([record.used.position,Vector2(record.used.end.x,record.used.position.y),record.used.end,Vector2(record.used.position.x,record.used.end.y)])
- record.descriptors=record.pose.recognition_mounts
+ record.descriptors=spatial.appearance.mounts
  record.supported=not boss and not paint_owner.encounter_presentation.is_leader(enemy)
  var components:Array=spatial.components
  for component in components:
@@ -163,6 +163,12 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  for index in ordered.size():record.root.move_child(ordered[index],index)
  record.packet={};record.packet_bucket=-999999;record.protection_width=-INF;record.protection_clock=-INF
 
+func bind_pose(record:DisplayRecord,pose:Dictionary)->void:
+ # Do not rebuild immutable mounts when only their live pose owner changes.
+ record.pose=pose;record.status.clear()
+ record.packet={};record.packet_bucket=-999999
+ record.protection_width=-INF;record.protection_clock=-INF
+
 func sync(offset:Vector2,boss:bool)->void:
  var live={};var order_changed=false
  var model=paint_owner.battle_read_model
@@ -182,6 +188,7 @@ func sync(offset:Vector2,boss:bool)->void:
   if not alive:continue
   var spatial:Dictionary=model.entry(enemy)
   if record.shape_revision!=int(spatial.shape_revision) or record.boss!=boss:compile_record(record,spatial,boss)
+  elif not is_same(record.pose,paint_owner.enemy_pose(enemy)):bind_pose(record,paint_owner.enemy_pose(enemy))
   if not record.supported:
    record.root.position=Vector2.ZERO
    record.fallback.update({"enemy":enemy,"offset":offset,"boss":boss},[paint_owner.fx_time,enemy,offset,boss])

@@ -46,7 +46,9 @@ func begin(force:bool=false)->void:
 		if enemy.hp>0:position(enemy)
 
 func compile_shape(enemy:Dictionary,row:Dictionary)->void:
-	row.components=host._source_enemy_weapon_components(enemy)
+	row.appearance=host._source_enemy_appearance(enemy)
+	row.components=row.appearance.components
+	row.pose=host.enemy_pose(enemy)
 	row.frontline=_frontline(enemy)
 	row.width_base=_width_base(enemy)
 	row.shape_revision=shape_revision
@@ -78,8 +80,20 @@ func _frontline(enemy:Dictionary)->float:
 	return minf(host.BATTLE_VIEW_SIZE.y*max_y,float(config.player_front)-host.BATTLE_VIEW_SIZE.y*gap-half)
 
 func components(enemy:Dictionary)->Array:
+	return appearance(enemy).components
+
+func appearance(enemy:Dictionary)->Dictionary:
 	ensure_clock();var row=entry(enemy)
-	return row.components if ready() and not row.is_empty() else host._source_enemy_weapon_components(enemy)
+	return row.appearance if ready() and not row.is_empty() else host._source_enemy_appearance(enemy)
+
+func sync_pose(enemy:Dictionary,row:Dictionary)->void:
+	# Only a replaced mutable owner invalidates this entity's spatial solve.
+	# Death pruning and residual references may recreate a pose without
+	# changing appearance or the fleet-wide shape revision.
+	var pose=host.enemy_pose(enemy)
+	if is_same(row.pose,pose):return
+	row.pose=pose;row.position_clock=-INF
+	geometry_revision+=1;bounds_revision=-1
 
 func frontline(enemy:Dictionary)->float:
 	ensure_clock();var row=entry(enemy)
@@ -88,6 +102,7 @@ func frontline(enemy:Dictionary)->float:
 func width_at(enemy:Dictionary,y:float)->float:
 	ensure_clock();var row=entry(enemy)
 	if not ready() or row.is_empty():return host._source_enemy_render_width_at_y(enemy,y)
+	sync_pose(enemy,row)
 	var depth=clampf((y-90.0)/maxf(1.0,float(row.frontline)-90.0),0,1)
 	var width=float(row.width_base.base)*float(row.width_base.scale)*lerpf(host.battle_visual.enemy_depth_scale_min,host.battle_visual.enemy_depth_scale_max,depth)*float(host.enemy_pose(enemy).variance)
 	width*=float(row.width_base.explicit_scale)
@@ -96,6 +111,7 @@ func width_at(enemy:Dictionary,y:float)->float:
 func position(enemy:Dictionary)->Vector2:
 	ensure_clock();var row=entry(enemy)
 	if not ready() or row.is_empty():return host._source_enemy_render_position(enemy)
+	sync_pose(enemy,row)
 	var logical=Vector2(enemy.x,enemy.y)
 	if float(row.position_clock)!=clock or row.get("logical",Vector2.INF)!=logical:
 		# The canonical solver keeps entry/clamping/outline iteration unchanged.

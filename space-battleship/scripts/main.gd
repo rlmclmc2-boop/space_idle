@@ -1245,34 +1245,35 @@ func enemy_weapon_components(enemy: Dictionary) -> Array:
 	return _source_enemy_weapon_components(enemy)
 
 func _source_enemy_weapon_components(enemy: Dictionary) -> Array:
+	return _source_enemy_appearance(enemy).components
+
+func enemy_appearance(enemy: Dictionary) -> Dictionary:
+	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.appearance(enemy)
+	return _source_enemy_appearance(enemy)
+
+func _source_enemy_appearance(enemy: Dictionary) -> Dictionary:
+	# The immutable appearance owns components, descriptors and attack types
+	# together. A spatial publication can outlive this slot's mutable pose.
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
 	var signature := ship_key+":"+str(db.get_instance_id())
 	for equipment in enemy.equipment:signature += "|"+str(equipment.get("name",""))
-	if str(pose.get("components_signature",""))!=signature:
+	if not pose.has("appearance") or str(pose.appearance.signature)!=signature:
 		var entries: Array = []
 		for equipment in enemy.equipment:entries.append({"key":str(equipment.get("name",""))})
-		pose.components_signature=signature
-		pose.components=compose_weapon_components(ship_key,entries,"enemy")
-		# Mounts describe these appearance-owned components, not their live aim,
-		# depth, shield state or width. Replace them with their component owner.
-		pose.recognition_mounts=enemy_recognition.descriptors(pose.components)
-	return pose.components
+		var components=compose_weapon_components(ship_key,entries,"enemy")
+		var types:Array=[]
+		for equipment in enemy.equipment:
+			var damage_type:=int(db.enemy_weapon(str(equipment.name)).get("dmgtype",0))
+			if damage_type in [1,2] and not types.has(damage_type):types.append(damage_type)
+		pose.appearance={"signature":signature,"components":components,"mounts":enemy_recognition.descriptors(components),"types":types}
+	return pose.appearance
 
 func enemy_recognition_mounts(enemy:Dictionary)->Array:
-	enemy_weapon_components(enemy)
-	return enemy_pose(enemy).recognition_mounts
+	return enemy_appearance(enemy).mounts
 
 func enemy_attack_types(enemy: Dictionary) -> Array:
-	var pose := enemy_pose(enemy)
-	enemy_weapon_components(enemy)
-	if pose.get("attack_signature","")!=pose.components_signature:
-		pose.attack_signature=pose.components_signature
-		pose.attack_types=[]
-		for entry in enemy.equipment:
-			var damage_type:=int(db.enemy_weapon(str(entry.name)).get("dmgtype",0))
-			if damage_type in [1,2] and not pose.attack_types.has(damage_type):pose.attack_types.append(damage_type)
-	return pose.attack_types
+	return enemy_appearance(enemy).types
 
 func turret_pose(index: int) -> Dictionary:
 	if turret_ship!=str(game.profile.selectedShip):
@@ -1506,6 +1507,10 @@ func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) ->
 	return Vector2(BattleGame.enemy_slot_position(slot).x,(130.0 if large else 120.0)+scale_offset)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
+	# One mutable pose per slot, with exact entity identity. Residual access
+	# to a dead/departed entity may recreate this legacy pose; appearance
+	# publications own their immutable descriptors independently. Consumers
+	# rebind when this mutable identity changes, including same-uid replacement.
 	var slot := int(enemy.slot)
 	if enemy_poses.has(slot) and is_same(enemy_poses[slot].entity,enemy):return enemy_poses[slot]
 	# Local deterministic generator never consumes the combat RNG stream.
@@ -1617,12 +1622,12 @@ func _source_enemy_frontline_y_limit(enemy: Dictionary) -> float:
 func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
 	# entry-fleet calculation and never reuse a result across animation time.
-	enemy_weapon_components(enemy)
+	var appearance:=enemy_appearance(enemy)
 	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,pose.target,pose.logical_position,
 		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,
 		enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),
 		enemy.get("max_shield",0),enemy.get("shieldRecovery",0),enemy.get("shieldType",0),
-		game.is_final_encounter(),game.is_boss_encounter(),pose.components_signature,ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).get_instance_id(),
+		game.is_final_encounter(),game.is_boss_encounter(),appearance.signature,ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).get_instance_id(),
 		battle_visual.enemy_idle_x,battle_visual.enemy_idle_y,battle_visual.enemy_idle_rotation,
 		battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,battle_visual.enemy_scale_variance.y,battle_visual.enemy_base_scale,
 		battle_visual.enemy_max_y,battle_visual.enemy_player_min_gap,battle_visual.player_core_scale,
