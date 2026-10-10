@@ -7,6 +7,7 @@ class UI extends "res://scripts/battlefield.gd":
   var g=super.create_battle_game(false)
   g.stat_cache_enabled=true
   var raw=JSON.parse_string(FileAccess.get_file_as_string(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))
+  g.rng.seed=1701
   g.load_progress_data(raw)
   g.save_enabled=false
   return g
@@ -42,7 +43,7 @@ func run():
  if not g.startup_error.is_empty() or g.stage!=int(Engine.get_meta("checkpoint_stage",20)) or g.group_index!=int(Engine.get_meta("checkpoint_group",1)) or str(g.profile.selectedShip)!=str(Engine.get_meta("checkpoint_ship","Destroyer")) or not g.stat_cache_enabled:
   fail({"startup":g.startup_error,"stage":g.stage,"group":g.group_index,"ship":g.profile.get("selectedShip"),"cache":g.stat_cache_enabled});return
  print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"method":RenderingServer.get_current_rendering_method(),"resolution":str(root.size),"display":DisplayServer.get_name(),"cap":Engine.max_fps}))
- print("CHECKPOINT_INIT ",JSON.stringify({"save_sha256":save_hash,"stage":g.stage,"group":g.group_index,"state":g.state,"loop":g.profile.loop,"speed":g.speed,"resources":g.profile.resources,"ship":g.profile.selectedShip,"inventory_count":g.profile.hyperspace.inventory.drones.size(),"equipped_count":g.profile.hyperspace.inventory.equipped.size(),"loaded_chrono_login":g.login_chrono_particles,"save_enabled":g.save_enabled,"stat_cache_enabled":g.stat_cache_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled}))
+ print("CHECKPOINT_INIT ",JSON.stringify({"save_sha256":save_hash,"combat_seed":1701,"stage":g.stage,"group":g.group_index,"state":g.state,"loop":g.profile.loop,"speed":g.speed,"resources":g.profile.resources,"ship":g.profile.selectedShip,"inventory_count":g.profile.hyperspace.inventory.drones.size(),"equipped_count":g.profile.hyperspace.inventory.equipped.size(),"loaded_chrono_login":g.login_chrono_particles,"save_enabled":g.save_enabled,"stat_cache_enabled":g.stat_cache_enabled,"flat_enabled":scene.ship_view.flat_compositor.enabled}))
  await measure(scene,g,save_hash)
  print("CHECKPOINT_END ",JSON.stringify({"source_save_unchanged":FileAccess.get_sha256(str(Engine.get_meta("checkpoint_path","res://checkpoint20.json")))==save_hash}))
  scene.queue_free();await process_frame;Engine.remove_meta("saved_perf");quit()

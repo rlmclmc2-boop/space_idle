@@ -1364,6 +1364,12 @@ func advance_turrets(dt: float) -> void:
 	# Targets remain selected per mount. Reuse only their visual positions for
 	# this invocation; identity guards slot reuse, and nothing survives a step.
 	var target_positions: Dictionary = {}
+	var beam_targets:Dictionary={}
+	for shot in game.projectiles if game.state==BattleGame.State.COMBAT and not entries.is_empty() else []:
+		if not shot.get("beam",false) or shot.hostile or shot.get("repeated",false):continue
+		var mount:=int(shot.mount)
+		if mount<0 or mount>=entries.size() or str(entries[mount].get("key","")).is_empty() or beam_targets.has(mount):continue
+		if game.long_laser_valid(shot):beam_targets[mount]=shot.target
 	for index in turret_visuals.keys():
 		if int(index)>=entries.size() or str(entries[index].key).is_empty():turret_visuals.erase(index)
 	for index in entries.size():
@@ -1372,11 +1378,9 @@ func advance_turrets(dt: float) -> void:
 		var pose := turret_pose(index)
 		pose.recoil = maxf(0,float(pose.recoil)-dt)
 		var target: Dictionary = pose.target
-		# A live main beam owns its mount's aim; repeats cannot pull it off target.
-		for shot in game.projectiles:
-			if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index and not shot.get("repeated",false) and game.long_laser_valid(shot):
-				target = shot.target
-				break
+		# Preserve the first valid main beam in projectile order for each mount.
+		# Repeats never own aim. This invocation's read-only index expires below.
+		if beam_targets.has(index):target=beam_targets[index]
 		if game.state!=BattleGame.State.COMBAT:
 			target = {}
 		elif target.is_empty() or not game.enemies.has(target) or float(target.get("hp",0))<=0:

@@ -61,8 +61,21 @@ func run() -> void:
 	var beam: Dictionary = scene.game.projectiles.back()
 	scene.advance_turrets(0.1)
 	scene.sync_beam_visuals()
-	check(scene.beam_visuals.back().start.is_equal_approx(scene.turret_muzzle(3)),"beam and charge source track rotated muzzle")
+	check(scene.visual_muzzle(beam).is_equal_approx(scene.turret_muzzle(3)),"continuous beam and charge source track rotated muzzle")
 	check(is_same(scene.turret_visuals[3].target,beam.target),"main beam owns mount aim")
+	# Same mount can also have repeat beams and stale beams in projectile order.
+	var alternate:Dictionary=beam.duplicate()
+	alternate.target=scene.game.enemies.back();alternate.locked_target=alternate.target
+	var repeat:Dictionary=alternate.duplicate();repeat.repeated=true
+	var invalid:Dictionary=alternate.duplicate();invalid.dead=true
+	scene.game.projectiles.push_front(repeat);scene.game.projectiles.push_front(invalid)
+	scene.game.projectiles.append(alternate)
+	scene.advance_turrets(0.1)
+	check(is_same(scene.turret_visuals[3].target,beam.target),"first valid main beam wins over repeats, stale and later beams")
+	beam.dead=true
+	scene.advance_turrets(0.1)
+	check(is_same(scene.turret_visuals[3].target,alternate.target),"invalid first beam yields to the next valid main beam")
+	scene.game.projectiles.erase(alternate);scene.game.projectiles.erase(repeat);scene.game.projectiles.erase(invalid)
 	# Finish initial scene/UI drawing before counting unrelated redraws.
 	await process_frame
 	await RenderingServer.frame_post_draw
