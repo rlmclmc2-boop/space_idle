@@ -38,6 +38,8 @@ class UI extends "res://scripts/battlefield.gd":
    retention_previous[uid]=current
    retention_counts.contacts+=1
   super.draw_enemy_hull_and_status(enemy,offset,boss)
+ var last_process_us := 0
+ var last_draw_us := 0
  var logical_ticks := 0
  var process_callbacks := 0
  var process_delta_total := 0.0
@@ -45,8 +47,6 @@ class UI extends "res://scripts/battlefield.gd":
  func before_logical_game_tick(dt:float)->void:
   logical_ticks+=1
   super.before_logical_game_tick(dt)
- var last_process_us := 0
- var last_draw_us := 0
  func _process(dt: float) -> void:
   process_callbacks+=1;process_delta_total+=dt;last_process_delta=dt
   var inspect_cards=OS.get_environment("PERF_CPU_PEAKS")=="1"
