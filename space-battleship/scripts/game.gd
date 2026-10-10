@@ -114,6 +114,7 @@ var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
+var _enhancement_read_scope_depth := 0
 var enhancement_plan := preload("res://scripts/enhancement_plan.gd").new()
 var enhancement_branches := preload("res://scripts/enhancement_branches.gd").new()
 var enhancement_attack_contexts: Dictionary = {}
@@ -2841,6 +2842,16 @@ func advance_enemy_shields(dt: float) -> void:
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 
 func tick(dt: float) -> void:
+	if paused:return
+	# This body and its owned combat helpers are synchronous (never await).
+	# Each reentrant entry validates fully. Splitting the body keeps cleanup in
+	# the caller when a body early-return or GDScript runtime error unwinds it.
+	enhancement_plan.sync(self,true)
+	_enhancement_read_scope_depth+=1
+	_tick_synchronized(dt)
+	_enhancement_read_scope_depth-=1
+
+func _tick_synchronized(dt: float) -> void:
 	if paused:return
 	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	manual_hyperspace.dispatch_queued(self)

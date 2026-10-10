@@ -6,6 +6,7 @@ var dirty := true
 var config_revision := 0
 var revision := 0
 var builds := 0
+var guard_checks := 0
 var count := 0
 var level := 0
 var recipes: Dictionary = {}
@@ -34,7 +35,11 @@ func configuration_changed() -> void:
  config_revision+=1
  dirty=true
 
-func sync(g) -> void:
+func sync(g, full_guard := false) -> void:
+ # The Game-owned tick chain never yields. Owner invalidations remain visible
+ # immediately inside it; UI/public reads outside it always validate fully.
+ if not full_guard and g._enhancement_read_scope_depth>0 and not dirty:return
+ guard_checks+=1
  var p: Dictionary=g.profile
  var next_config: Dictionary=g.db.data.get("enhance_config",EMPTY_MAP)
  var next_unlocks: Dictionary=g.db.data.get("unlock",EMPTY_MAP)
