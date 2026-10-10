@@ -1594,12 +1594,38 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
 	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height)
 
+func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
+	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
+	# entry-fleet calculation and never reuse a result across animation time.
+	enemy_weapon_components(enemy)
+	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,pose.target,pose.logical_position,
+		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,
+		enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),
+		enemy.get("max_shield",0),enemy.get("shieldRecovery",0),enemy.get("shieldType",0),
+		game.is_final_encounter(),game.is_boss_encounter(),pose.components_signature,ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).get_instance_id(),
+		battle_visual.enemy_idle_x,battle_visual.enemy_idle_y,battle_visual.enemy_idle_rotation,
+		battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,battle_visual.enemy_scale_variance.y,battle_visual.enemy_base_scale,
+		battle_visual.enemy_max_y,battle_visual.enemy_player_min_gap,battle_visual.player_core_scale,
+		battle_visual.player_idle_rotation,battle_visual.player_idle_y,battle_visual.player_ship_y,
+		enemy_config_visual_scale(int(enemy.size)),db.config.get("explicitEnemyPlayerMinGap",battle_visual.enemy_player_min_gap),
+		player_base_art_scale(),player_art_scale(),enemy_recognition_screen_scale(),
+		ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0),ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)]
+
 func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
+	var position_key:Array=[]
+	# A short ordinary frame has too few repeated providers to repay the key.
+	# Drawing already owns its smaller local cache; reserve this for busy logic.
+	var reuse_steady:=enemy_entry_batch_active and not battle_draw_active and enter==1.0 and game.projectiles.size()>=32
+	if reuse_steady:
+		position_key=enemy_steady_position_key(enemy,pose)
+		if pose.get("steady_position_key",[])==position_key:
+			if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":pose.steady_position}
+			return pose.steady_position
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 	if not enemy.get("explicit_formation",false):target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
 	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
@@ -1622,6 +1648,9 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 			if next_minimum==minimum_y:break
 			minimum_y=next_minimum
 		position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
+	if reuse_steady:
+		pose.steady_position_key=position_key
+		pose.steady_position=position
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
 	return position
 

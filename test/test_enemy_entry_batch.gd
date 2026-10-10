@@ -108,6 +108,39 @@ func run()->void:
 		check(is_same(mounts,scene.enemy_recognition_mounts(enemy)),"unchanged component owner reuses mounts")
 		check(scene.enemy_display_top_clearance(enemy,150.0)==original_clearance(scene,enemy,150.0),"equipment replacement invalidates exact envelope")
 	enemy.equipment=equipment
+	var projectiles:Array=scene.game.projectiles.duplicate()
+	# Query-only high-load fixture. No logic tick or rendering sees these fillers.
+	while scene.game.projectiles.size()<64:scene.game.projectiles.append({"beam":false})
+	scene.fx_time=10.0
+	for e in scene.game.enemies:scene.enemy_pose(e).born=0.0
+	enemy.explicit_formation=false
+	scene.enemy_entry_batch_active=true
+	scene.enemy_pose(enemy).erase("steady_position_key")
+	scene.enemy_render_position(enemy)
+	var calls:int=scene.clearance_calls
+	for i in 50:scene.enemy_render_position(enemy)
+	check(scene.clearance_calls==calls,"settled batch avoids repeated top solves")
+	scene.enemy_entry_batch_active=false
+	for field in ["x","y","size","max_shield","shieldRecovery","shieldType"]:
+		var previous=enemy.get(field,0)
+		enemy[field]=previous+1
+		compare_positions(scene,"same-time live entity change "+field)
+		enemy[field]=previous
+	for field in ["rotation","variance","phase","entry_x"]:
+		var pose:Dictionary=scene.enemy_pose(enemy)
+		var previous=pose[field]
+		pose[field]=previous+0.1
+		compare_positions(scene,"same-time pose change "+field)
+		pose[field]=previous
+	for field in ["enemy_idle_x","enemy_idle_y","enemy_idle_rotation","enemy_base_scale","enemy_max_y","enemy_player_min_gap","player_core_scale","player_ship_y"]:
+		var previous=scene.battle_visual[field]
+		scene.battle_visual[field]=previous+0.01
+		compare_positions(scene,"same-time visual setting change "+field)
+		scene.battle_visual[field]=previous
+	var old_gap=ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0)
+	ProjectSettings.set_setting("visuals/enemy_protection_gap_pixels",float(old_gap)+1.0)
+	compare_positions(scene,"same-time protection pixel gap change")
+	ProjectSettings.set_setting("visuals/enemy_protection_gap_pixels",old_gap)
 	for explicit in [false,true]:
 		enemy.explicit_formation=explicit
 		for shield_type in [0,1,2]:
@@ -119,6 +152,7 @@ func run()->void:
 					check(scene.enemy_display_top_clearance(enemy,y)==expected,"cached clearance exactly matches fresh geometry")
 					check(scene.enemy_display_top_clearance(enemy,y)==expected,"repeated clearance keeps exact value")
 				compare_positions(scene,"shield/angle/authored boundary")
+	scene.game.projectiles=projectiles
 	enemy.explicit_formation=false
 	scene.game.paused=true
 	scene._process(1.0/60.0)
