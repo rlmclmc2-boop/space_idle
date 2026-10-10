@@ -412,6 +412,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	# Restore capacity-owning hanging modules before validating saved energy.
 	load_reactor(raw)
 	crew.reset_schedule(self)
+	event.emit("progress_loaded",{})
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -565,8 +566,6 @@ func load_hightech(raw: Dictionary) -> void:
 					restored.jewel = true
 					restored.jewelRatio = 1.0
 				drops.append(restored)
-
-	event.emit("progress_loaded",{})
 
 func rebuild_unlocks() -> void:
 	profile.highestLevel = 1

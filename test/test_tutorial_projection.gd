@@ -38,7 +38,16 @@ func _initialize()->void:
  region.state.status="complete";g.event.emit("galaxy_changed",{"key":key});equal(g,p,"galaxy completion invalidates eligibility")
  builds=p.builds;g.event.emit("galaxy_changed",{"key":key});p.sync(g);check(p.builds==builds,"unchanged complete status does not rebuild")
  g.profile.planets["1"].conquered=true;g.event.emit("planet_changed",{"id":"1"});equal(g,p,"planet conquest/next planet qualification")
- var saved:Dictionary=g.profile.duplicate(true);g.load_progress_data(saved);equal(g,p,"load completion invalidates reads and eligibility")
+ var saved:Dictionary=g.profile.duplicate(true)
+ var canonical:=BattleGame.new(db,false)
+ canonical.load_progress_data(saved)
+ var expected_status:String=canonical.galaxy.regions[key].state.status
+ region.state.status="locked" if expected_status!="locked" else "exploring"
+ var loaded_status:Array=[]
+ g.event.connect(func(kind,_info):
+  if kind=="progress_loaded":loaded_status.append(g.galaxy.regions[key].state.status))
+ g.load_progress_data(saved);equal(g,p,"load completion invalidates reads and eligibility")
+ check(loaded_status==[expected_status],"load event observes canonical restored galaxies, not intermediate hightech state")
  check(p.ids.is_read_only() and p.unread.is_read_only(),"UI shared arrays cannot be changed by consumers")
  for connection in g.event.get_connections():g.event.disconnect(connection.callable)
  print("TUTORIAL_PROJECTION %d checks %d failures"%[checks,failures]);quit(1 if failures else 0)
