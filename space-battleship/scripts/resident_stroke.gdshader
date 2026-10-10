@@ -1,5 +1,4 @@
 shader_type canvas_item;
-render_mode unshaded;
 uniform float shape_width = 1.0;
 uniform float stroke_factor = 0.045;
 uniform float minimum_width = 1.0;

@@ -163,9 +163,9 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
   "hull":
    surface.draw_texture_rect(data.texture,Rect2(Vector2(-0.5,-1.0),Vector2(1.0,2.0)),false,Color.WHITE)
   "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
-  "deck_physical_strokes","deck_energy_strokes":surface.draw_mesh(data.mesh)
+  "deck_physical_strokes","deck_energy_strokes":surface.draw_mesh(data.mesh,null)
   "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
-  "weapon_strokes":surface.draw_mesh(data.mesh)
+  "weapon_strokes":surface.draw_mesh(data.mesh,null)
   "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
   "fallback":paint_owner.draw_enemy_hull_and_status(data.enemy,data.offset,data.boss)
