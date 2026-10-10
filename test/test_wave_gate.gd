@@ -18,9 +18,16 @@ func _initialize()->void:
     if multiplier==1.0:check(is_equal_approx(db.ratio(stage,i,kind),base),"Unrelated wave/reward polluted")
  var fixture_group:Dictionary=db.groups[str(int(db.levels[10].groups[0].id))]
  var old:float=db.ratio(11,0,"lifeRatio");var following:float=db.ratio(12,0,"lifeRatio")
+ var saved:Variant=fixture_group.get("lifeMultiplier")
+ var original_factor:float=float(saved) if saved!=null else 1.0
  fixture_group.lifeMultiplier=8
- check(is_equal_approx(db.ratio(11,0,"lifeRatio"),old*8) and is_equal_approx(db.ratio(12,0,"lifeRatio"),following),"Distinct local fixture must not alter following stage anchor")
- fixture_group.erase("lifeMultiplier")
- var tail=db.ratio(20,8,"lifeRatio");var head=db.ratio(21,0,"lifeRatio")
- print("GATE_BOUNDARY20to21 life=",tail/head," attack=",db.ratio(20,8,"atkRatio")/db.ratio(21,0,"atkRatio"))
+ check(is_equal_approx(db.ratio(11,0,"lifeRatio"),old*8/original_factor) and is_equal_approx(db.ratio(12,0,"lifeRatio"),following),"Distinct local fixture must not alter following stage anchor")
+ if saved!=null:fixture_group.lifeMultiplier=saved
+ else:fixture_group.erase("lifeMultiplier")
+ var manual=preload("res://scripts/hyperspace_encounter_database.gd").new()
+ manual.configure(db,12,[int(db.levels[11].groups[0].id)])
+ for kind in ["atkRatio","lifeRatio","resRatio","jewelRatio"]:
+  check(is_equal_approx(manual.ratio(12,0,kind),float(db.levels[11][kind])),"Manual exploration keeps its selected-stage endpoint and ignores main wave gates")
+ var tail=db.ratio(20,db.levels[19].groups.size()-1,"lifeRatio");var head=db.ratio(21,0,"lifeRatio")
+ print("GATE_BOUNDARY20to21 life=",tail/head," attack=",db.ratio(20,db.levels[19].groups.size()-1,"atkRatio")/db.ratio(21,0,"atkRatio"))
  print("WAVE_GATE ",checks," checks passed");quit()
