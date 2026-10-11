@@ -485,6 +485,8 @@ def main():
     for native_file in ['scripts/resident_stroke_geometry.gd','scripts/resident_stroke.gdshader']:
         if (project/native_file).exists():measured_files.append(native_file)
     if (project/'scripts/battle_read_model.gd').exists():measured_files += ['scripts/battle_read_model.gd','scripts/retained_enemy_contacts.gd']
+    if 'logical_fleet_pose.gd' in (project/'scripts/battlefield.gd').read_text(encoding='utf-8'):
+        measured_files += ['scripts/logical_fleet_pose.gd','scripts/hyperspace_drone_visual.gd']
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd','pulse_packet_batch.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']

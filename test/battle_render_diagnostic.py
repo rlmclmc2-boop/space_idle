@@ -103,4 +103,13 @@ def prepare(project: Path, root: Path, replay: bool, pulse_batch: bool = False):
     at=code.index(signature); end=code.index('\n',at)
     code=code[:end+1]+'\tfor mat in exhaust_materials:mat.set_shader_parameter("diagnostic_clock",time)\n'+code[end+1:]
     view.write_text(code,encoding='utf-8')
+    # A data-pose candidate bypasses set_pose at its native display commit.
+    # Drive the same diagnostic shader phase there; never freeze one side at0.
+    logical_pose=project/'scripts/logical_fleet_pose.gd'
+    if logical_pose.exists() and 'logical_fleet_pose.gd' in (project/'scripts/battlefield.gd').read_text(encoding='utf-8'):
+        code=logical_pose.read_text(encoding='utf-8')
+        signature='func commit('
+        at=code.index(signature);end=code.index('\n',at)
+        code=code[:end+1]+'\tfor mat in view.exhaust_materials:mat.set_shader_parameter("diagnostic_clock",elapsed)\n'+code[end+1:]
+        logical_pose.write_text(code,encoding='utf-8')
     probe.write_text(source,encoding='utf-8')

@@ -38,6 +38,8 @@ func run() -> void:
 			for slot in 8:angles.append(float(index+slot)*0.03)
 			view.set_slot_angles(angles);rig.set_slot_angles(angles)
 			for slot in 8:
+				var module:Dictionary=view.modules[slot]
+				verify(rig.screen_mount_for_slot(slot),view.camera.unproject_position(module.mount.global_position),str(key)+" aim mount "+str(index)+"/"+str(slot))
 				for ordinal in 2:verify(rig.screen_muzzle_for_slot(slot,ordinal),view.screen_muzzle_for_slot(slot,ordinal),str(key)+" muzzle "+str(index)+"/"+str(slot)+"/"+str(ordinal))
 			for id in bag.equipped:
 				for ordinal in 2:verify(rig.screen_muzzle_for_drone(id,ordinal),hyper.screen_muzzle_for_drone(id,ordinal,view),"drone "+id+"/"+str(index)+"/"+str(ordinal))

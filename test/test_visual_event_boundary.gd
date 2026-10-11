@@ -13,12 +13,17 @@ func run() -> void:
 	var enemy:Dictionary=game.enemies[0]
 	var rng=game.rng.state
 	var shot:Dictionary={"key":"laser","hostile":false,"mount":0,"target":enemy,"x":game.player.x,"y":game.player.y,"direction":Vector2.UP,"serial":912345,"launch_point":Vector2(250,600),"ballistic_target_origin":Vector2(enemy.x,enemy.y),"critical":false,"type":1,"beam":false}
+	var shared:Dictionary={"links":[]}
+	for index in 1000:shared.links.append({"owner":enemy,"authority":index})
+	shot.attack_instance=shared
 	scene.fx_time=10.0
 	scene.on_event("fire",{"shot":shot,"type":1})
 	check(scene.projectile_visuals.is_empty() and scene.pulse_events.is_empty(),"fire publishes no drawing record before display boundary")
 	check(is_same(scene.turret_pose(0).target,enemy),"canonical turret target settles immediately")
 	var packet:Dictionary=scene.visual_packets[0]
 	check(packet.is_read_only() and packet.info.is_read_only() and packet.info.shot.is_read_only() and packet.info.shot.target.is_read_only(),"event payload is recursively immutable")
+	check(not packet.info.shot.has("attack_instance") and packet.info.shot.target.size()==2,"small schema excludes authority effect/target graphs")
+	check(not shared.is_read_only() and not shared.links.is_read_only() and not enemy.is_read_only() and not shot.is_read_only(),"live/shared graph is neither copied into payload nor frozen")
 	var direction:Vector2=Vector2.from_angle(float(packet.launch_seed.angle))
 	scene.fx_time=10.01
 	scene.on_event("projectile_impact",{"shot":shot,"pos":Vector2(280,140)})

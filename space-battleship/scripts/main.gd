@@ -106,6 +106,7 @@ var particles: Array[Dictionary] = []
 # UI-only references and endpoint snapshots; never written into combat state.
 var beam_visuals: Array[Dictionary] = []
 var visual_event_context: Dictionary = {}
+var display_launch_visual: Dictionary = {}
 var projectile_visuals: Array[Dictionary] = []
 # UI-owned per-mount pose; never used by damage, aiming or projectile simulation.
 var turret_visuals: Dictionary = {}
@@ -1845,7 +1846,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	if key=="longLaser":return
 	if not bool(visual_event_context.get("replay",false)):settle_weapon_launch(shot)
 	if fast_mode_enabled():return
-	var visual:Dictionary=visual_event_context.get("launch_visual",{})
+	var visual:Dictionary=display_launch_visual if bool(visual_event_context.get("replay",false)) else {}
 	if visual.is_empty():visual=make_launch_visual(shot,spread)
 	var pos:Vector2=visual.origin
 	if projectile_visuals.size()<256:retain_launch_visual(visual)

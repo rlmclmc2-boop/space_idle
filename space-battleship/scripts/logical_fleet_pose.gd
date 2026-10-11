@@ -24,6 +24,9 @@ var size := Vector2.ZERO
 var camera_transform := Transform3D.IDENTITY
 var projection := Projection.IDENTITY
 var configuration_dirty := true
+var configured_entries:Array=[]
+var configured_capacity:=0
+var configured_bag:Dictionary={}
 
 func prepare(view) -> void:
 	manifest = view.manifest
@@ -80,6 +83,10 @@ func _global(root: Transform3D, chain: Array) -> Transform3D:
 func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> void:
 	if not configuration_dirty and key == hull_key: return
 	configuration_dirty = false
+	configured_entries=[]
+	for entry in entries:configured_entries.append({"key":str(entry.get("key",""))})
+	configured_capacity=capacity
+	configured_bag={"generation":int(bag.get("generation",-1)),"equipped":[],"drones":{}}
 	var hull_changed := key != hull_key
 	if hull_changed:
 		hull_key = key
@@ -111,6 +118,11 @@ func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> v
 		var data: Dictionary = bag.get("drones",{}).get(id,{})
 		var weapon: String = str(data.get("weapon",""))
 		if not drone_sockets.has(weapon): continue
+		var appearance:Dictionary={"weapon":weapon,"legendary":bool(data.get("legendary",false)),"origin_quality":str(data.get("origin_quality","white")),"ultimate":bool(data.get("ultimate",false)),"affixes":[]}
+		for affix in data.get("affixes",[]):appearance.affixes.append({"tier":int(affix.get("tier",6)),"key":str(affix.get("key",""))})
+		var ultimate:Dictionary=data.get("ultimate_affix",{})
+		if not ultimate.is_empty():appearance.ultimate_affix={"tier":int(ultimate.get("tier",6)),"key":str(ultimate.get("key",""))}
+		configured_bag.equipped.append(str(id));configured_bag.drones[str(id)]=appearance
 		var member: Dictionary = {}
 		for old in drones:
 			if old.id == str(id) and old.weapon == weapon: member = old; break
@@ -196,6 +208,11 @@ func screen_muzzle_for_slot(slot: int, ordinal := 0) -> Vector2:
 		for index in chain.size(): transform = transform*(module.pivot if index == chain.size()-1 else chain[index])
 		var sockets: Array = module.descriptor.sockets
 		return project(_global(transform,sockets[1] if ordinal%2 == 1 and sockets.size()>1 else sockets[0]).origin)
+	return Vector2.ZERO
+
+func screen_mount_for_slot(slot:int) -> Vector2:
+	for module in modules:
+		if int(module.assignment.slot)==slot:return project(_mount(module).origin)
 	return Vector2.ZERO
 
 func screen_muzzle_for_drone(id: String, ordinal: int) -> Vector2:

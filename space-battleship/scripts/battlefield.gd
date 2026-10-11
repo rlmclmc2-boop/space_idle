@@ -214,10 +214,10 @@ func _ensure_logical_fleet_configuration() -> void:
 func _commit_fleet_configuration() -> void:
 	if not fleet_native_dirty:return
 	fleet_native_dirty=false
-	current_hull=str(game.profile.selectedShip)
+	current_hull=logical_fleet.hull_key
 	ship_view.set_hull(current_hull)
-	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
-	if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
+	ship_view.set_loadout(logical_fleet.configured_entries,logical_fleet.configured_capacity)
+	if hyperspace_visual.sync(logical_fleet.configured_bag):paused_presentation_signature=""
 
 
 func _set_reference_dimensions() -> void:
@@ -342,7 +342,6 @@ func _process_battlefield(delta: float) -> void:
 	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	_ensure_logical_fleet_configuration()
 	_commit_fleet_configuration()
 	logical_fleet.pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,close_up,0.0)
 	var angles: Array = []
@@ -433,6 +432,7 @@ func _draw_muzzle_cues() -> void:
 
 func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
 	if bool(visual_event_context.get("replay",false)) and visual_event_context.has("visual"):
+		if visual_event_context.has("launch_seed"):return display_launch_visual if not visual_event_context.visual.is_empty() else {}
 		return visual_event_context.visual
 	if visual_batch_started and shot.has("serial"):
 		var visual:Dictionary=logical_visuals.get(int(shot.serial),{})
@@ -442,6 +442,7 @@ func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
 
 func freeze_visual_event(kind:String,info:Dictionary) -> void:
 	if kind=="projectile_impact" and bool(info.shot.get("chain_hop",false)):return
+	if kind=="prototype_missile_retired" and not missile_vfx_enabled:return
 	_begin_visual_batch()
 	var shot:Dictionary=info.get("shot",{})
 	var own_beam:bool=kind in ["beam_started","beam_hit"] and prototype_enabled and continuous_beam_enabled and not bool(shot.get("hostile",false))
@@ -453,7 +454,7 @@ func freeze_visual_event(kind:String,info:Dictionary) -> void:
 		if kind=="beam_started" and int(shot.mount)>=0 and int(shot.mount)<game.weapon_entries().size():turret_pose(int(shot.mount)).fired_at=fx_time
 		return
 	if kind=="beam_started" and not bool(shot.get("hostile",false)) and int(shot.get("mount",-1))>=0:turret_pose(int(shot.mount)).fired_at=fx_time
-	var packet:Dictionary={"kind":kind,"time":fx_time,"info":info.duplicate(true),"replay":true,"fast":false,"hit_flash_duration":float(battle_visual.hit_flash_duration),"muzzle_flash":float(railgun_fx.muzzle_flash)}
+	var packet:Dictionary={"kind":kind,"time":fx_time,"info":_visual_event_payload(kind,info),"replay":true,"fast":false,"hit_flash_duration":float(battle_visual.hit_flash_duration),"muzzle_flash":float(railgun_fx.muzzle_flash)}
 	if not shot.is_empty():
 		packet.own_missile=_is_own_missile(shot);packet.own_rail=_is_own_rail(shot)
 		packet.own_pulse=_is_own_pulse(shot);packet.simple_enemy=_is_simple_enemy(shot)
@@ -462,11 +463,10 @@ func freeze_visual_event(kind:String,info:Dictionary) -> void:
 		packet.fire_vfx=str(weapon_visual_profile(weapon_key(shot)).get("fire_vfx","flash"))
 		# The live handle is only for lifetime/flight tracking; event-time payload
 		# and coordinates are immutable copies, including a target that dies later.
-		packet.live_shot=shot
+		if kind in ["fire","beam_started"]:packet.live_shot=shot
 		packet.origin=visual_muzzle(shot)
 		var visual:Dictionary=projectile_visual(shot)
-		packet.visual=visual.duplicate()
-		packet.visual.erase("shot")
+		packet.visual=_visual_orientation(visual)
 		if kind=="fire":
 			settle_weapon_launch(shot)
 			if weapon_key(shot)!="longLaser":
@@ -474,8 +474,8 @@ func freeze_visual_event(kind:String,info:Dictionary) -> void:
 				packet.origin=seed.origin
 				packet.launch_seed=seed.duplicate()
 				packet.launch_seed.erase("shot")
-				packet.visual=seed.duplicate() if logical_visual_count<256 else {}
-				packet.visual.erase("shot")
+				packet.launch_seed.make_read_only()
+				packet.visual=_visual_orientation(seed) if logical_visual_count<256 else {}
 				if logical_visual_count<256:
 					logical_visuals[int(shot.serial)]=seed;logical_visual_count+=1
 				if bool(packet.own_rail):packet.rail_aim=game.target_point(shot.target) if not shot.target.is_empty() else Vector2(seed.origin)+Vector2(shot.direction)*100.0
@@ -487,6 +487,7 @@ func freeze_visual_event(kind:String,info:Dictionary) -> void:
 		elif kind in ["beam_started","beam_hit"]:
 			packet.end=battle_logical_point(entity_render_position(shot.target))
 	if kind=="explode":
+		packet.boss_shake=float(battle_visual.boss_destroy_shake)
 		if int(info.get("uid",-2))==encounter_presentation.leader_uid:encounter_presentation.leader_fall=0.0
 		if info.has("slot"):death_drop_positions[int(info.uid)]=enemy_drop_anchor(info)
 		var point:=visual_effect_point(Vector2(info.x,info.y));var width:=34.0
@@ -495,21 +496,59 @@ func freeze_visual_event(kind:String,info:Dictionary) -> void:
 				point=battle_logical_point(enemy_render_position(enemy));width=enemy_render_width(enemy);break
 		packet.destruction={"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0)),"hyperspace":bool(game.manual_hyperspace.active)}
 	if kind=="collect":_freeze_pickup_coordinates(packet,info)
+	if kind=="prototype_missile_retired":
+		var coast:=0.12 if bool(info.coast) else 0.0
+		packet.retired={"kind":"retired","position":Vector2(info.position),"direction":Vector2(info.direction),"speed":float(info.speed),"serial":int(info.serial),"born":fx_time,"coast_time":coast,"duration":coast+0.18}
+		packet.retired.make_read_only()
 	# These dictionaries are never shared with authority. Drawing records are
 	# allocated/reused by the consumer, not mutated into the queued snapshots.
-	for key in packet:
-		if key!="live_shot":_freeze_packet_value(packet[key])
+	if packet.has("destruction"):packet.destruction.make_read_only()
 	packet.make_read_only()
 	visual_packets.append(packet)
 
 
-func _freeze_packet_value(value:Variant) -> void:
-	if value is Dictionary:
-		for member in value.values():_freeze_packet_value(member)
-		value.make_read_only()
-	elif value is Array:
-		for member in value:_freeze_packet_value(member)
-		value.make_read_only()
+func _visual_orientation(visual:Dictionary) -> Dictionary:
+	var result:Dictionary={}
+	if not visual.is_empty():
+		result={"angle":float(visual.angle),"origin":Vector2(visual.origin),"mount":int(visual.mount)}
+	result.make_read_only()
+	return result
+
+
+func _presentation_shot(shot:Dictionary) -> Dictionary:
+	# A schema of event-time values, never a clone of attack/target/chain state.
+	var target:Dictionary={}
+	if not shot.target.is_empty():target={"x":float(shot.target.x),"y":float(shot.target.y)}
+	target.make_read_only()
+	var result:Dictionary={"key":str(shot.key),"hostile":bool(shot.hostile),"mount":int(shot.get("mount",-1)),"serial":int(shot.get("serial",0)),"x":float(shot.x),"y":float(shot.y),"direction":Vector2(shot.direction),"critical":bool(shot.get("critical",false)),"type":int(shot.get("type",0)),"beam":bool(shot.get("beam",false)),"target":target,"rail_width_multiplier":float(shot.get("rail_width_multiplier",1.0))}
+	result.make_read_only()
+	return result
+
+
+func _pickup_payload(info:Dictionary) -> Dictionary:
+	var amount:Variant=info.amount
+	if amount is Dictionary:
+		amount={"m":float(amount.m),"e":float(amount.e)};amount.make_read_only()
+	var result:Dictionary={"amount":amount}
+	if info.has("jewel"):result.jewel=true
+	else:result.id=str(info.id)
+	if info.has("x"):result.x=float(info.x)
+	if info.has("y"):result.y=float(info.y)
+	result.make_read_only()
+	return result
+
+
+func _visual_event_payload(kind:String,info:Dictionary) -> Dictionary:
+	var result:Dictionary={}
+	match kind:
+		"fire":result={"shot":_presentation_shot(info.shot),"spread":float(info.get("spread",0)),"type":int(info.type)}
+		"projectile_impact","beam_started","beam_hit":result={"shot":_presentation_shot(info.shot)}
+		"critical_impact":result={"pos":Vector2(info.pos),"direction":Vector2(info.direction)}
+		"explode":result={"boss":bool(info.get("boss",false))}
+		"prototype_missile_retired":result={"coast":bool(info.coast),"position":Vector2(info.position),"direction":Vector2(info.direction),"speed":float(info.speed),"serial":int(info.serial)}
+		"collect":return _pickup_payload(info)
+	result.make_read_only()
+	return result
 
 
 func _freeze_pickup_coordinates(packet:Dictionary,info:Dictionary) -> void:
@@ -525,9 +564,9 @@ func _freeze_pickup_coordinates(packet:Dictionary,info:Dictionary) -> void:
 func resource_pickup_feedback(info:Dictionary) -> void:
 	if bool(visual_event_context.get("replay",false)) or logical_fleet.hull_key.is_empty():
 		super.resource_pickup_feedback(info);return
-	var packet:Dictionary={"kind":"pickup","time":fx_time,"info":info.duplicate(true),"replay":true}
+	var packet:Dictionary={"kind":"pickup","time":fx_time,"info":_pickup_payload(info),"replay":true}
 	_freeze_pickup_coordinates(packet,info)
-	packet.info.make_read_only();packet.make_read_only();visual_packets.append(packet)
+	packet.make_read_only();visual_packets.append(packet)
 
 
 func commit_visual_events() -> void:
@@ -538,31 +577,32 @@ func commit_visual_events() -> void:
 	var current_time:=fx_time
 	for packet in packets:
 		fx_time=float(packet.time)
-		visual_event_context=packet.duplicate()
+		visual_event_context=packet
 		if packet.has("launch_seed"):
 			var record:Dictionary=packet.launch_seed.duplicate()
 			record.shot=packet.live_shot
-			visual_event_context.launch_visual=record
-			visual_event_context.visual=record if not packet.visual.is_empty() else {}
+			display_launch_visual=record
 		match str(packet.kind):
 			"pickup":super.resource_pickup_feedback(packet.info)
 			"display_reset":
-				particles.clear();projectile_visuals.clear();beam_visuals=packet.beams.duplicate()
+				particles.clear();projectile_visuals.clear();beam_visuals.clear()
+				for beam in packet.beams:beam_visuals.append({"shot":beam.handle,"start":beam.start,"end":beam.end,"full":beam.full})
 				destruction_events.clear();missile_events.clear();rail_events.clear();pulse_events.clear();enemy_impacts.clear()
 				floats=floats.filter(func(entry):return bool(entry.get("damage",false)))
 				pickup_effects.clear()
 			"explode":
 				if destruction_events.size()>=24:destruction_events.pop_front()
 				destruction_events.append(packet.destruction.duplicate())
-				if bool(packet.info.get("boss",false)):shake=maxf(shake,float(battle_visual.boss_destroy_shake))
+				if bool(packet.info.get("boss",false)):shake=maxf(shake,float(packet.boss_shake))
 				beep(90)
 			"projectile_impact":weapon_impact(packet.info.shot,packet.impact)
+			"prototype_missile_retired":missile_events.append(packet.retired.duplicate())
 			"beam_started":
 				beam_visuals.append({"shot":packet.live_shot,"start":packet.origin,"end":packet.end,"full":false})
 				weapon_flash(packet.origin,weapon_visual_glow(weapon_key(packet.info.shot),packet.info.shot.hostile),7.0,0.07)
 			"beam_hit":weapon_flash(packet.end,ORANGE if packet.info.shot.hostile else CYAN,7.0,0.08)
 			_:on_event(str(packet.kind),packet.info)
-	visual_event_context={}
+	visual_event_context={};display_launch_visual={}
 	fx_time=current_time
 	visual_batch_started=false;logical_visuals.clear()
 
@@ -641,7 +681,13 @@ func reset_battle_transients_for_scene() -> void:
 		# Old packets must consume their visual RNG in order even when a scene
 		# boundary subsequently discards them. The marker clears only display
 		# records; damage history and post-boundary logical slots stay immediate.
-		visual_packets.append({"kind":"display_reset","time":fx_time,"beams":beam_visuals.duplicate()})
+		var beams:Array=[]
+		for beam in beam_visuals:
+			var snapshot:Dictionary={"handle":beam.shot,"start":Vector2(beam.start),"end":Vector2(beam.end),"full":bool(beam.full)}
+			snapshot.make_read_only();beams.append(snapshot)
+		beams.make_read_only()
+		var marker:Dictionary={"kind":"display_reset","time":fx_time,"beams":beams}
+		marker.make_read_only();visual_packets.append(marker)
 	logical_visuals.clear();logical_visual_count=0
 
 func sync_beam_visuals()->void:
@@ -899,9 +945,9 @@ func turret_muzzle(index: int) -> Vector2:
 
 func player_mount_center(key: String, index: int) -> Vector2:
 	if prototype_enabled and is_instance_valid(ship_view):
-		for module in ship_view.modules:
-			if int(module.slot)!=index: continue
-			var point: Vector2 = ship_view.camera.unproject_position(module.mount.global_position)
+		for module in logical_fleet.modules:
+			if int(module.assignment.slot)!=index: continue
+			var point: Vector2 = logical_fleet.screen_mount_for_slot(index)
 			return (point-player_render_position()).rotated(PI/2-player_idle_angle())/player_art_scale()
 	return super.player_mount_center(key,index)
 
