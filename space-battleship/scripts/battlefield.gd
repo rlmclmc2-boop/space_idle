@@ -127,6 +127,7 @@ func create_battle_game(persist:bool)->BattleGame:
 	prototype.launch_provider=_prototype_launch_pose
 	prototype.drone_launch_provider=_prototype_drone_launch_pose
 	prototype.target_provider=_prototype_target_point
+	prototype.target_spatial_source=battle_read_model
 	prototype.rail_geometry_provider=_rail_geometry
 	prototype.rail_target_point_provider=entity_render_position
 	return prototype

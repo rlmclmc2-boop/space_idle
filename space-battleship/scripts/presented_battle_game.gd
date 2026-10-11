@@ -24,6 +24,17 @@ var MISSILE_LAUNCH_FORWARD_Y := -0.12
 var drone_launch_provider:=Callable()
 var launch_provider:Callable
 var target_provider:Callable
+var target_spatial_source:RefCounted
+# Complete read-only publication for one actual projectile substep. Live death
+# checks and every straight projectile's launch anchors remain authoritative.
+var projectile_target_points:Dictionary={}
+var projectile_target_points_active:=false
+var projectile_target_points_version:=0
+var projectile_target_points_state:=0
+var projectile_target_points_player:Dictionary={}
+var projectile_target_points_roster_size:=0
+var projectile_target_points_shape_version:=0
+var projectile_target_points_geometry_version:=0
 var missile_queue:Array[Dictionary]=[]
 var motion_clock:=0.0
 var release_context:Dictionary={}
@@ -71,6 +82,49 @@ func _init(database:ShipDatabase,persist:=true)->void:
 	MISSILE_LAUNCH_EDGE_MARGIN=db.weapon_motion_value("missile_launch_edge_margin",MISSILE_LAUNCH_EDGE_MARGIN)
 	MISSILE_LAUNCH_FORWARD_Y=db.weapon_motion_value("missile_launch_forward_y",MISSILE_LAUNCH_FORWARD_Y)
 	MISSILE_CRUISE_SPEED=float(db.equip("missile",1).para2)*db.projectile_pixels_per_unit()
+	event.connect(_projectile_target_points_event)
+
+func _projectile_target_points_event(kind:String,info:Dictionary)->void:
+	match kind:
+		"state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade","prototype_missile_reset":invalidate_projectile_target_points()
+		"equipment_stats":
+			if not bool(info.get("counter_only",false)):invalidate_projectile_target_points()
+
+func invalidate_projectile_target_points()->void:
+	projectile_target_points_version+=1
+	projectile_target_points_active=false
+
+func begin_projectile_target_points()->void:
+	invalidate_projectile_target_points()
+	projectile_target_points.clear()
+	projectile_target_points_player={}
+	if not target_provider.is_valid() or state!=State.COMBAT:return
+	var version:=projectile_target_points_version
+	var publication:Dictionary={}
+	var spatial_version_captured:=false
+	# Provider callbacks only see the source path while this table is built.
+	for index in enemies.size():
+		var enemy:Dictionary=enemies[index]
+		if enemy.hp<=0:continue
+		var point:Vector2=_source_target_point(enemy)
+		if target_spatial_source!=null:
+			if not spatial_version_captured:
+				projectile_target_points_shape_version=int(target_spatial_source.shape_revision)
+				projectile_target_points_geometry_version=int(target_spatial_source.geometry_revision)
+				spatial_version_captured=true
+			elif int(target_spatial_source.shape_revision)!=projectile_target_points_shape_version or int(target_spatial_source.geometry_revision)!=projectile_target_points_geometry_version:return
+		publication[int(enemy.uid)]={"entity":enemy,"point":point,"x":enemy.x,"y":enemy.y,"index":index,"available":true,"version":version}
+	if version!=projectile_target_points_version:return
+	projectile_target_points=publication
+	projectile_target_points_state=int(state)
+	projectile_target_points_player=player
+	projectile_target_points_roster_size=enemies.size()
+	projectile_target_points_active=true
+
+func end_projectile_target_points()->void:
+	projectile_target_points_active=false
+	projectile_target_points.clear()
+	projectile_target_points_player={}
 
 func tick(dt:float)->void:
 	if paused:return
@@ -155,10 +209,25 @@ func projectile_target_point(shot:Dictionary)->Vector2:
 	return target_point(shot.target)
 
 func target_point(target:Dictionary)->Vector2:
+	if projectile_target_points_active:
+		var geometry_current:=target_spatial_source==null or (int(target_spatial_source.shape_revision)==projectile_target_points_shape_version and int(target_spatial_source.geometry_revision)==projectile_target_points_geometry_version)
+		if not geometry_current or int(state)!=projectile_target_points_state or not is_same(player,projectile_target_points_player) or enemies.size()!=projectile_target_points_roster_size:
+			invalidate_projectile_target_points()
+		elif target.has("uid") and not is_same(target,player):
+			var row:Dictionary=projectile_target_points.get(int(target.uid),{})
+			if not row.is_empty() and is_same(row.entity,target) and target.hp>0 and row.version==projectile_target_points_version and target.x==row.x and target.y==row.y:
+				var index:=int(row.index)
+				# Same-uid replacement/removal/reordering rejects the whole table.
+				if index<enemies.size() and is_same(enemies[index],target):return row.point
+			invalidate_projectile_target_points()
+	return _source_target_point(target)
+
+func _source_target_point(target:Dictionary)->Vector2:
 	if target_provider.is_valid():return target_provider.call(target)
 	return Vector2(target.x,target.y)
 
 func tick_projectiles(dt:float)->void:
+	begin_projectile_target_points()
 	for packet in missile_queue.duplicate():
 		if float(packet.due)>motion_clock+0.000000001:continue
 		missile_queue.erase(packet)
@@ -178,6 +247,7 @@ func tick_projectiles(dt:float)->void:
 		super.launch_player_attack(int(packet.mount),packet.target,packet.weapon,packet.attack,packet.offset,float(packet.spread),int(packet.ordinal),int(packet.count))
 		release_context={}
 	super.tick_projectiles(dt)
+	end_projectile_target_points()
 
 func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_spread:float)->void:
 	if bool(shot.hostile):return
