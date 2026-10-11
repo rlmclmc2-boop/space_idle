@@ -105,6 +105,7 @@ var stars: Array[Dictionary] = []
 var particles: Array[Dictionary] = []
 # UI-only references and endpoint snapshots; never written into combat state.
 var beam_visuals: Array[Dictionary] = []
+var visual_event_context: Dictionary = {}
 var projectile_visuals: Array[Dictionary] = []
 # UI-owned per-mount pose; never used by damage, aiming or projectile simulation.
 var turret_visuals: Dictionary = {}
@@ -450,6 +451,7 @@ func _process(delta: float) -> void:
 		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.profile.chronoParticles <= 0):
 			game.speed = game.default_speed()
 			advance_game_time((dt - boosted) * game.speed)
+		commit_visual_events()
 		if not accelerated_visual_mode:
 			sync_beam_visuals()
 			advance_projectile_visuals(dt)
@@ -468,6 +470,7 @@ func _process(delta: float) -> void:
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
+	if game.paused:commit_visual_events()
 	flush_damage_numbers(0.0 if game.paused else dt)
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
@@ -485,6 +488,10 @@ func _process(delta: float) -> void:
 			await RenderingServer.frame_post_draw
 			get_viewport().get_texture().get_image().save_png("res://preview" + ("-unlock" if automation_args.has("--capture-unlock") else "-all" if automation_args.has("--capture-all") else "-combat") + ".png")
 			get_tree().quit()
+
+func commit_visual_events() -> void:
+	pass
+
 
 func advance_game_time(seconds: float) -> void:
 	if game == null or not is_finite(seconds) or seconds <= 0:return
@@ -508,6 +515,7 @@ func before_logical_game_tick(_dt:float) -> void:
 	pass
 
 func fast_mode_enabled() -> bool:
+	if visual_event_context.has("fast"):return bool(visual_event_context.fast)
 	return game != null and game.speed >= FAST_MODE_MIN_SPEED
 
 func sync_accelerated_visual_mode() -> void:
@@ -649,13 +657,17 @@ func invalidate_equipment_projections() -> void:
 	for category in ["weapons","defence"]:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
-func on_event(kind: String, info: Dictionary) -> void:
+func on_event_authority(kind: String, info: Dictionary) -> void:
 	tutorial_projection.on_event(game,kind,info)
 	var geometry_changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if battle_read_model_enabled and geometry_changed:battle_read_model.invalidate_membership()
 	defeat_feedback.record(game,kind,info)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
+
+
+func on_event(kind: String, info: Dictionary) -> void:
+	if not bool(visual_event_context.get("replay",false)):on_event_authority(kind,info)
 	match kind:
 		"hyperspace_changed":
 			var s: Dictionary=game.profile.hyperspace
@@ -1128,6 +1140,7 @@ func weapon_key(shot: Dictionary) -> String:
 	return weapon_visual_key(str(shot.key))
 
 func weapon_visual_tier(shot: Dictionary) -> int:
+	if visual_event_context.has("tier"):return int(visual_event_context.tier)
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
 	return 1 if weapon_key(shot) in ["cannon","missile"] else 0
 
@@ -1172,6 +1185,7 @@ func weapon_visual_profile(key: String) -> Dictionary:
 	return visual_config.get("weapons",{}).get(weapon_visual_key(key),{})
 
 func weapon_visual_glow(key: String, hostile: bool) -> Color:
+	if visual_event_context.has("glow"):return visual_event_context.glow
 	var faction := "enemy" if hostile else "ally"
 	var skin: Dictionary = weapon_visual_profile(key).get("faction_skin",{}).get(faction,{})
 	return Color(str(skin.get("muzzle_glow","ffbc73" if hostile else "71e5f4")))
@@ -1776,7 +1790,7 @@ func battle_logical_point(point: Vector2) -> Vector2:
 		else:high=middle
 	return Vector2(point.x,(low+high)*0.5)
 
-func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
+func settle_weapon_launch(shot: Dictionary) -> void:
 	var key := weapon_key(shot)
 	if key=="longLaser":return
 	var mount := shot_mount(shot)
@@ -1799,24 +1813,42 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 				nearest_distance=distance
 				nearest={"enemy":enemy,"slot":slot}
 		if not nearest.is_empty():enemy_pose(nearest.enemy)["rail_fired_"+str(nearest.slot)]=fx_time
+
+
+func make_launch_visual(shot: Dictionary, spread: float) -> Dictionary:
+	var key := weapon_key(shot)
+	var mount := shot_mount(shot)
 	var pos := visual_muzzle(shot)
-	var trail := PackedVector2Array()
-	trail.resize(14)
-	trail.fill(pos)
-	# One fixed trail buffer per shot, overwritten in place during flight.
-	if projectile_visuals.size()<256:
-		projectile_visuals.append({"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else shot.direction.angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":Vector2(shot.x,shot.y),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
-		if key in ["laser","cannon"] and not shot.target.is_empty():
-			var visual: Dictionary=projectile_visuals.back()
-			# Presented pulses already launch toward a projected aim. Map their
-			# committed segment once, rather than scaling it by the old logical target.
-			var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else Vector2(shot.target.x,shot.target.y)
-			var distance := Vector2(shot.x,shot.y).distance_to(aim)
-			var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else entity_render_position(shot.target)
-			visual.fixed_origin=battle_point(pos)
-			visual.fixed_step=(rendered_aim-visual.fixed_origin)/maxf(distance,0.001)
-			visual.fixed_direction=shot.direction
-			visual.angle=Vector2(visual.fixed_step).angle()
+	var visual:Dictionary={"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else shot.direction.angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":Vector2(shot.x,shot.y),"spread":spread,"head":0,"samples":1}
+	if key in ["laser","cannon"] and not shot.target.is_empty():
+		# Presented pulses already launch toward a projected aim. Map their
+		# committed segment once, rather than scaling it by the old logical target.
+		var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else Vector2(shot.target.x,shot.target.y)
+		var distance := Vector2(shot.x,shot.y).distance_to(aim)
+		var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else entity_render_position(shot.target)
+		visual.fixed_origin=battle_point(pos)
+		visual.fixed_step=(rendered_aim-visual.fixed_origin)/maxf(distance,0.001)
+		visual.fixed_direction=shot.direction
+		visual.angle=Vector2(visual.fixed_step).angle()
+	return visual
+
+
+func retain_launch_visual(visual: Dictionary) -> void:
+	var trail := PackedVector2Array();trail.resize(14);trail.fill(visual.origin)
+	visual.trail=trail
+	visual.trail_times=PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+	projectile_visuals.append(visual)
+
+
+func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
+	var key := weapon_key(shot)
+	if key=="longLaser":return
+	if not bool(visual_event_context.get("replay",false)):settle_weapon_launch(shot)
+	if fast_mode_enabled():return
+	var visual:Dictionary=visual_event_context.get("launch_visual",{})
+	if visual.is_empty():visual=make_launch_visual(shot,spread)
+	var pos:Vector2=visual.origin
+	if projectile_visuals.size()<256:retain_launch_visual(visual)
 	var tier := weapon_visual_tier(shot)
 	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
 		var physical := int(shot.type)==2
@@ -1824,9 +1856,9 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		if physical:weapon_smoke(pos,Color("8992a0"),1,0.14,3.0)
 		return
 	if key=="cannon":
-		weapon_flash(pos,Color("d8f8ff"),5.0*clampf(railgun_fx.muzzle_flash,0.0,1.5),0.035)
+		weapon_flash(pos,Color("d8f8ff"),5.0*clampf(float(visual_event_context.get("muzzle_flash",railgun_fx.muzzle_flash)),0.0,1.5),0.035)
 		return
-	var fire_vfx := str(weapon_visual_profile(key).get("fire_vfx","flash"))
+	var fire_vfx := str(visual_event_context.get("fire_vfx",weapon_visual_profile(key).get("fire_vfx","flash")))
 	var color := Color("fff0d5") if tier==2 else weapon_visual_glow(key,shot.hostile)
 	var muzzle_radius := 13.0 if tier==2 else 11.0 if fire_vfx=="hatch" else 10.0 if fire_vfx=="flash" else 7.0
 	weapon_flash(pos,color,muzzle_radius,0.07+float(tier)*0.015)
@@ -1907,7 +1939,7 @@ func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
 	var tier := weapon_visual_tier(shot)
 	var color := Color("fff0d5") if tier==2 else CYAN if key=="laser" else ORANGE
 	var radius := 20.0 if tier==2 else 18.0 if key=="missile" else 16.0 if key=="cannon" else 11.0
-	weapon_flash(pos,color,radius*IMPACT_SCALE,float(battle_visual.hit_flash_duration))
+	weapon_flash(pos,color,radius*IMPACT_SCALE,float(visual_event_context.get("hit_flash_duration",battle_visual.hit_flash_duration)))
 	if shot.get("critical",false):
 		on_event("critical_impact",{"pos":pos,"direction":shot.get("direction",Vector2.RIGHT)})
 	elif tier==2:
@@ -3214,7 +3246,7 @@ func battle_notice_rect(index: int) -> Rect2:
 
 func queue_pickup_effect(drop: Dictionary, color: Color) -> void:
 	if not drop.has("x") or not drop.has("y") or pickup_effects.size()>=24:return
-	var start := BATTLE_ORIGIN+drop_render_position(drop)
+	var start:Vector2 = visual_event_context.pickup_start if visual_event_context.has("pickup_start") else BATTLE_ORIGIN+drop_render_position(drop)
 	if not Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE).has_point(start):return
 	var destination := battle_notice_rect(0).get_center()
 	if drop.has("id"):
@@ -3223,6 +3255,7 @@ func queue_pickup_effect(drop: Dictionary, color: Color) -> void:
 			if str(drop.id) in notices[index].get("resources",[]):
 				destination=battle_notice_rect(index).get_center()
 				break
+	if visual_event_context.has("pickup_end"):destination=visual_event_context.pickup_end
 	pickup_effects.append({"start":start,"end":destination,"life":0.42,"duration":0.42,"color":color,"resource":"jewel" if drop.has("jewel") else str(drop.get("id","1"))})
 
 func draw_overlay() -> void:

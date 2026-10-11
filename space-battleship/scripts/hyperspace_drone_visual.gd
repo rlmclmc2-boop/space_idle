@@ -103,3 +103,17 @@ func pose(view,disabled: Array=[],zoom: float=1.0,check_body_resolution: bool=tr
  # Finish membership/style changes after every body, orbit, transform and
  # visibility has been assigned, including while the logical game is paused.
  if changed:view.request_fleet_redraw()
+
+func commit_pose(view,disabled: Array=[]) -> void:
+ # Transforms already belong to the logical rig; this boundary owns appearance.
+ var changed: bool=body_bake_pending
+ if body_bake_pending:
+  for i in nodes.size():
+   view.body_baker.attach(nodes[i],"hyperspace:"+str(nodes[i].get_meta("weapon"))+":"+str(style_keys[identities[i]]))
+  body_bake_pending=false
+ for i in nodes.size():
+  nodes[i].visible=not disabled.has(identities[i])
+  var ring=nodes[i].get_node_or_null("Appearance/UltimateOrbit")
+  if ring!=null and animated and bool(Appearance.settings().get("animate",true)):ring.rotation.y=view.orbit_elapsed*0.45
+ view.body_baker.guard_resolution(float(int(view.viewport.size.x*view.viewport.scaling_3d_scale))/view.camera.size)
+ if changed:view.request_fleet_redraw()
