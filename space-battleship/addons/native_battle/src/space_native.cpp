@@ -22,13 +22,14 @@ namespace {
 // This is a native ptrcall, never a GDScript callback. It also avoids CRT/compiler
 // differences changing a single rounded motion component over many substeps.
 struct VectorMethods {
-    GDExtensionPtrBuiltInMethod angle, normalized, distance, from_angle;
+    GDExtensionPtrBuiltInMethod angle, normalized, distance, from_angle, rotated;
     VectorMethods() {
         StringName a("angle"),n("normalized"),d("distance_to"),f("from_angle");
         angle=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,a._native_ptr(),466405837);
         normalized=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,n._native_ptr(),2428350749);
         distance=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,d._native_ptr(),3819070308);
         from_angle=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,f._native_ptr(),889263119);
+        StringName r("rotated");rotated=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,r._native_ptr(),889263119);
     }
 };
 VectorMethods &vector_methods(){static VectorMethods methods;return methods;}
@@ -36,6 +37,7 @@ double engine_angle(const Vector2 &v){double result;vector_methods().angle(const
 double engine_distance(const Vector2 &a,const Vector2 &b){double result;const void *args[]={&b};vector_methods().distance(const_cast<Vector2*>(&a),args,&result,1);return result;}
 Vector2 engine_normalized(const Vector2 &v){Vector2 result;vector_methods().normalized(const_cast<Vector2*>(&v),nullptr,&result,0);return result;}
 Vector2 engine_from_angle(double angle){Vector2 result;const void *args[]={&angle};vector_methods().from_angle(nullptr,args,&result,1);return result;}
+Vector2 engine_rotated(const Vector2 &v,double angle){Vector2 result;const void *args[]={&angle};vector_methods().rotated(const_cast<Vector2*>(&v),args,&result,1);return result;}
 // GDScript scalar values are double, but every Vector2 operation rounds to the
 // single-precision real_t of this engine. Do not combine consecutive multiplies.
 struct Motion {
@@ -259,6 +261,9 @@ class SpaceNativePipeline : public RefCounted {
     std::vector<Ref<MultiMesh>> pulse_pool;
     std::vector<Transform2D> pulse_transforms;
     size_t pulse_cursor = 0;
+    struct ContactEvent {Vector2 point,direction;double born;bool launch,critical;int type;};
+    std::array<std::vector<ContactEvent>,2> contact_events;
+    std::vector<Vector2> contact_path;
 
     void release(size_t slot, uint64_t gen) {
         if (motions[slot].generation == gen) { motions[slot].generation = 0; free_slots.push_back(slot); }
@@ -286,6 +291,20 @@ class SpaceNativePipeline : public RefCounted {
 protected:
     static void _bind_methods();
 public:
+    void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
+        contact_events[category].push_back({point,direction,born,launch,critical,type});
+    }
+    void prune_contacts(double now,bool clear_enemy) {
+        for(int k=0;k<2;++k){auto &events=contact_events[k];
+            events.erase(std::remove_if(events.begin(),events.end(),[&](const ContactEvent &e){return (k==0&&clear_enemy)||!(now-e.born<(k==0?0.12:0.14));}),events.end());}
+    }
+    void clear_contacts(){for(auto &events:contact_events)events.clear();}
+    Array contact_snapshot(int category) const {
+        Array result;for(const ContactEvent &e:contact_events[category]){Dictionary d;d["position"]=e.point;d["direction"]=e.direction;d["born"]=e.born;
+            if(category==0){d["damage_type"]=e.type;if(e.launch)d["kind"]="fire";}
+            else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
+    }
+    void draw_contacts(RID canvas,double now,bool pulse_enabled);
     Ref<SpaceMotionLease> bind_motion(Dictionary shot) {
         Ref<SpaceMotionLease> lease; lease.instantiate();
         const size_t slot = free_slots.empty() ? motions.size() : free_slots.back();
@@ -619,6 +638,11 @@ void SpaceMotionLease::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_orphan","value"),&SpaceMotionLease::set_orphan);
 }
 void SpaceNativePipeline::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("record_contact","category","point","direction","born","launch","critical","type"),&SpaceNativePipeline::record_contact);
+    ClassDB::bind_method(D_METHOD("prune_contacts","now","clear_enemy"),&SpaceNativePipeline::prune_contacts);
+    ClassDB::bind_method(D_METHOD("clear_contacts"),&SpaceNativePipeline::clear_contacts);
+    ClassDB::bind_method(D_METHOD("contact_snapshot","category"),&SpaceNativePipeline::contact_snapshot);
+    ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceNativePipeline::draw_contacts);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
     ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
     ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);
@@ -629,6 +653,42 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("draw_flights","surface","flights","offset"),&SpaceNativePipeline::draw_flights);
     ClassDB::bind_method(D_METHOD("bind_visual","visual"),&SpaceNativePipeline::bind_visual);
     ClassDB::bind_method(D_METHOD("advance_visuals","surface","dt"),&SpaceNativePipeline::advance_visuals);
+}
+void SpaceNativePipeline::draw_contacts(RID canvas,double now,bool pulse_enabled) {
+    begin();
+    for(const ContactEvent &e:contact_events[0]) {
+        Vector2 p=battle_point(e.point),axis=e.direction,side=axis.orthogonal();double age=now-e.born;
+        double fade=Math::clamp(1.0-age/0.12,0.0,1.0);bool physical=e.type==2;
+        Color color(Color::html(physical?"ffaf61":"64b5ff"),fade);
+        if(e.launch){if(physical)line(p-axis*2,p+axis*4,color,2.5);else for(int sign:{-1,1})line(p+side*sign*2,p+axis*4,color,1.0);continue;}
+        double radius=3.0+4.0*(1.0-fade);
+        if(physical){contact_path.clear();for(int i=0;i<12;++i){double angle=double(i)/11.0*Math::TAU;contact_path.push_back(p+engine_from_angle(angle)*radius);}ribbon(contact_path,color,1.2,false);}
+        else {line(p-side*radius,p+side*radius,color,1.2);line(p-axis*radius*0.6,p+axis*radius*0.6,color,1.0);}
+    }
+    if(pulse_enabled)for(const ContactEvent &e:contact_events[1]) {
+        double age=now-e.born;Vector2 p=battle_point(e.point),axis=e.direction,across=axis.orthogonal();
+        Color cyan=Color::html("42edee"),blue=Color::html("398bdf"),white=Color::html("f1ffff");
+        if(e.launch) {
+            if(!std::isfinite(age)||age>=0.075||!p.is_finite()||!axis.is_finite()||axis.is_zero_approx())continue;
+            double t=Math::clamp(age/0.075,0.0,1.0),fade=1.0-t;
+            Vector2 kick=p-axis*(3.0*UtilityFunctions::sin(t*Math::PI)),back=kick-axis*2.0,center=kick+axis*9.0*fade;
+            Vector2 a=kick+axis*15.0*fade+across*4.0*fade,b=kick+axis*15.0*fade-across*4.0*fade;
+            if(std::abs(double((a-back).cross(center-back)))>0.00001)tri(back,a,center,Color(cyan,fade));
+            if(std::abs(double((center-back).cross(b-back)))>0.00001)tri(back,center,b,Color(cyan,fade));
+            line(kick-across*(4.0+3.0*t),kick+across*(4.0+3.0*t),Color(blue,fade*0.9),2.3);
+            line(kick,kick+axis*11.0*fade,Color(white,fade),3.0*fade+0.5);
+        } else {
+            double t=Math::clamp(age/0.13,0.0,1.0),fade=1.0-t,size=(4.0+10.0*t)*(e.critical?1.15:1.0);
+            contact_path={p+axis*size*0.65,p+across*size,p-axis*size*0.65,p-across*size,p+axis*size*0.65};
+            ribbon(contact_path,Color(cyan,fade*0.9),2.0*fade+0.5,false);
+            if(t<0.45){PackedVector2Array points;for(Vector2 q:{p+axis*5.0,p+across*4.0,p-axis*5.0,p-across*4.0})points.push_back(q);
+                PackedInt32Array indexes=Geometry2D::get_singleton()->triangulate_polygon(points);
+                for(int i=0;i<indexes.size();i+=3)tri(points[indexes[i]],points[indexes[i+1]],points[indexes[i+2]],Color(white,fade));}
+            for(int i=0;i<4;++i){Vector2 direction=engine_rotated(-axis,(-1.5+double(i))*0.7);
+                line(p+direction*(4.0+8.0*t),p+direction*(8.0+14.0*t),Color(i%2==0?cyan:blue,fade),1.8);}
+        }
+    }
+    paint(canvas);
 }
 void SpaceNativePipeline::prepare_pulse_mesh() {
     if(pulse_mesh.is_valid())return;

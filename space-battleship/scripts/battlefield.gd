@@ -6,7 +6,13 @@ var enemy_vfx_enabled:=true
 var retained_contacts
 var retained_contacts_enabled:=true
 var enemy_launch_context:=false
-var enemy_impacts:Array[Dictionary]=[]
+var enemy_impacts:Array[Dictionary]:
+	get:
+		var result:Array[Dictionary]=[]
+		if game.native_pipeline!=null:result.assign(game.native_pipeline.contact_snapshot(0))
+		else:result=_enemy_impacts
+		return result
+var _enemy_impacts:Array[Dictionary]=[]
 const CHAIN_VFX := preload("res://dev/toon_ship/chain_vfx.gd")
 const MISSILE_VFX := preload("res://dev/toon_ship/missile_vfx.gd")
 const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd")
@@ -73,7 +79,13 @@ var rail_hit_count := 0
 var rail_origin_max_error := 0.0
 var rail_fire_slots: Dictionary = {}
 var pulse_vfx_enabled := true
-var pulse_events: Array[Dictionary] = []
+var pulse_events:Array[Dictionary]:
+	get:
+		var result:Array[Dictionary]=[]
+		if game.native_pipeline!=null:result.assign(game.native_pipeline.contact_snapshot(1))
+		else:result=_pulse_events
+		return result
+var _pulse_events:Array[Dictionary]=[]
 var pulse_launch_context := false
 var pulse_fire_count := 0
 var pulse_hit_count := 0
@@ -292,9 +304,11 @@ func _process_battlefield(delta: float) -> void:
 	if accelerated_visual_mode:missile_events.clear()
 	rail_events = rail_events.filter(func(e):return fx_time-float(e.born)<rail_vfx.afterglow_seconds())
 	if accelerated_visual_mode:rail_events.clear()
-	enemy_impacts=enemy_impacts.filter(func(e):return fx_time-float(e.born)<0.12)
-	if accelerated_visual_mode:enemy_impacts.clear()
-	pulse_events = pulse_events.filter(func(e):return fx_time-float(e.born)<0.14)
+	if game.native_pipeline!=null:game.native_pipeline.prune_contacts(fx_time,accelerated_visual_mode)
+	else:
+		_enemy_impacts=_enemy_impacts.filter(func(e):return fx_time-float(e.born)<0.12)
+		if accelerated_visual_mode:_enemy_impacts.clear()
+		_pulse_events=_pulse_events.filter(func(e):return fx_time-float(e.born)<0.14)
 	prototype_frames += 1
 	_sync_parameters()
 	var anchor := _stable_player_anchor()
@@ -363,14 +377,16 @@ func _draw_muzzle_cues() -> void:
 		pulse_layer.draw_set_transform(Vector2.ZERO)
 		pulse_layer.draw_circle(point,radius*(0.3+progress),Color(Color("d9a477"),maxf(0.0,0.28-age*1.5)))
 		if age<0.22:pulse_layer.draw_circle(point,radius*(0.5-age*1.5),Color(Color("f5e4bd"),1.0-age/0.22))
-	for event in enemy_impacts:
-		enemy_recognition.draw_contact(pulse_layer,battle_point(event.position),event.direction,fx_time-float(event.born),int(event.damage_type),event.get("kind","")=="fire")
-	if pulse_vfx_enabled:
-		for event in pulse_events:
-			var age:=fx_time-float(event.born)
-			var point:=battle_point(Vector2(event.position))
-			if event.kind=="fire":PULSE_VFX.flash(pulse_layer,point,event.direction,age)
-			else:PULSE_VFX.impact(pulse_layer,point,event.direction,age,bool(event.critical))
+	if game.native_pipeline!=null:game.native_pipeline.draw_contacts(pulse_layer.get_canvas_item(),fx_time,pulse_vfx_enabled)
+	else:
+		for event in _enemy_impacts:
+			enemy_recognition.draw_contact(pulse_layer,battle_point(event.position),event.direction,fx_time-float(event.born),int(event.damage_type),event.get("kind","")=="fire")
+		if pulse_vfx_enabled:
+			for event in _pulse_events:
+				var age:=fx_time-float(event.born)
+				var point:=battle_point(Vector2(event.position))
+				if event.kind=="fire":PULSE_VFX.flash(pulse_layer,point,event.direction,age)
+				else:PULSE_VFX.impact(pulse_layer,point,event.direction,age,bool(event.critical))
 
 	if rail_vfx_enabled:
 		# Only brightness budgets overlap. Every shot still has a core and event.
@@ -448,8 +464,9 @@ func reset_battle_transients_for_scene() -> void:
 	destruction_events.clear()
 	rail_events.clear()
 	missile_events.clear()
-	pulse_events.clear()
-	enemy_impacts.clear()
+	_pulse_events.clear()
+	_enemy_impacts.clear()
+	if game.native_pipeline!=null:game.native_pipeline.clear_contacts()
 	beam_full_started.clear()
 	player_hit_at=-100.0
 	encounter_presentation.leader_fall=2.0
@@ -583,11 +600,15 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 		# The base launch already solved this muzzle. Evaluate the fallback only
 		# when the capped visual list did not retain a record for this shot.
 		var origin:Vector2=visual.origin if visual.has("origin") else visual_muzzle(shot)
-		enemy_impacts.append({"kind":"fire","position":origin,"direction":Vector2.from_angle(float(projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle()))),"damage_type":int(shot.get("type",0)),"born":fx_time})
+		var direction:=Vector2.from_angle(float(projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle())))
+		if game.native_pipeline!=null:game.native_pipeline.record_contact(0,origin,direction,fx_time,true,false,int(shot.get("type",0)))
+		else:_enemy_impacts.append({"kind":"fire","position":origin,"direction":direction,"damage_type":int(shot.get("type",0)),"born":fx_time})
 	if pulse_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
 		var direction:=Vector2.from_angle(float(projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle())))
-		pulse_events.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":direction,"born":fx_time,"critical":false})
+		var origin:Vector2=visual.origin if visual.has("origin") else visual_muzzle(shot)
+		if game.native_pipeline!=null:game.native_pipeline.record_contact(1,origin,direction,fx_time,true,false,0)
+		else:_pulse_events.append({"kind":"fire","position":origin,"direction":direction,"born":fx_time,"critical":false})
 		pulse_fire_count+=1
 		pulse_fire_slots[int(visual.get("mount",-1))]=true
 		pulse_origin_max_error=maxf(pulse_origin_max_error,Vector2(visual.get("origin",Vector2.ZERO)).distance_to(visual_muzzle(shot)))
@@ -630,7 +651,10 @@ func weapon_smoke(pos:Vector2,color:Color,count:int,duration:float,size_value:fl
 
 func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 	if _is_simple_enemy(shot):
-		if not fast_mode_enabled():enemy_impacts.append({"position":pos,"direction":game.projectile_direction(shot),"damage_type":int(shot.get("type",0)),"born":fx_time})
+		if not fast_mode_enabled():
+			var direction:Vector2=game.projectile_direction(shot)
+			if game.native_pipeline!=null:game.native_pipeline.record_contact(0,pos,direction,fx_time,false,false,int(shot.get("type",0)))
+			else:_enemy_impacts.append({"position":pos,"direction":direction,"damage_type":int(shot.get("type",0)),"born":fx_time})
 		return
 	if _is_own_missile(shot):
 		if fast_mode_enabled():return
@@ -653,7 +677,8 @@ func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 	if fast_mode_enabled():return
 	var visual:=projectile_visual(shot)
 	var direction:=Vector2.from_angle(float(projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle())))
-	pulse_events.append({"kind":"hit","position":pos,"direction":direction,"born":fx_time,"critical":bool(shot.get("critical",false))})
+	if game.native_pipeline!=null:game.native_pipeline.record_contact(1,pos,direction,fx_time,false,bool(shot.get("critical",false)),0)
+	else:_pulse_events.append({"kind":"hit","position":pos,"direction":direction,"born":fx_time,"critical":bool(shot.get("critical",false))})
 	pulse_hit_count+=1
 
 
