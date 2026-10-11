@@ -481,6 +481,8 @@ def main():
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
     measured_files += ['dev/toon_ship/missile_vfx.gd','scripts/enemy_recognition_visual.gd']
+    for packed_file in ['scripts/projectile_motion_store.gd','scripts/projectile_motion_lease.gd','dev/toon_ship/missile_canvas_batch.gd']:
+        if (project/packed_file).exists():measured_files.append(packed_file)
     if (project/'dev/toon_ship/pulse_packet_batch.gd').exists():measured_files += ['dev/toon_ship/pulse_packet_batch.gd']
     for native_file in ['scripts/resident_stroke_geometry.gd','scripts/resident_stroke.gdshader']:
         if (project/native_file).exists():measured_files.append(native_file)

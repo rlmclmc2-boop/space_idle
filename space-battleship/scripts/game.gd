@@ -1,6 +1,9 @@
 class_name BattleGame
 extends RefCounted
 
+const MOTION_LEASE=preload("res://scripts/projectile_motion_lease.gd")
+var projectile_motion_store=preload("res://scripts/projectile_motion_store.gd").new()
+
 const CLEAR_ADVANCE_DELAY := 3.0
 const MAX_TRAVEL_SECONDS := 3.0
 
@@ -2312,7 +2315,8 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	if not hostile and not player_launch_payload.is_empty():shot.merge(player_launch_payload)
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	prepare_projectile(shot,source,weapon,visual_spread)
-	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
+	pack_projectile_motion(shot)
+	event.emit("fire", {"x":projectile_x(shot),"y":projectile_y(shot),"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
 
 func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Dictionary, _spread: float) -> void:
 	pass
@@ -2423,7 +2427,7 @@ func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 			queue_jewel_repeats(shot.mount,boost,shot)
 		var attack := jewel_attack(shot.mount, multiplier * boost)
 		if attack.critical:
-			event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":Vector2(shot.target.x-shot.x,shot.target.y-shot.y).normalized()})
+			event.emit("critical_impact", {"pos":Vector2(shot.target.x,shot.target.y),"direction":(Vector2(shot.target.x,shot.target.y)-projectile_position(shot)).normalized()})
 		hit_enemy(shot.target,attack.damage,int(weapon.dmgtype),attack.effects,attack.critical,attack.get("combat_context",{}))
 		launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
 		enhancement_attack_contexts.erase(int(shot.mount))
@@ -3032,6 +3036,11 @@ func tick_projectiles(dt: float) -> void:
 			if target_dead:
 				# Keep the last heading; a missile never acquires a replacement target.
 				shot.target = {}
+		var lease=shot.get("motion_lease")
+		if lease!=null:
+			advance_packed_round(shot,lease,dt)
+			if projectiles.is_empty():return
+			continue
 		if not shot.target.is_empty():
 			var impact_point:Vector2=projectile_target_point(shot)
 			var delta := impact_point-Vector2(shot.x,shot.y)
@@ -3736,11 +3745,16 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 		if direction.is_zero_approx():direction=Vector2.UP
 		# A visible damage carrier starts at the hit, never at a weapon mount.
 		var hop:Dictionary={"x":origin.x,"y":origin.y,"target":target,"damage":raw,"type":type,"speed":db.weapon_motion_value("chain_carrier_speed",720.0),"hostile":false,"key":"chain","dead":false,"serial":projectile_serial,"direction":direction,"chain_hop":true,"attack_instance_id":chain.instance_id,"main_attack_id":effect.get("main_attack_id",0),"jewelEffects":continued,"critical":critical,"chain_weapon":effect.get("weapon_key",""),"combat_context":CombatContext.derive(context,"chain")}
+		pack_projectile_motion(hop)
 		projectiles.append(hop)
 		event.emit("enhancement_chain",{"source":origin,"target":chain_target_point(target),"weapon":str(effect.get("weapon_key","")),"shot":hop})
 
 func advance_chain_projectile(shot: Dictionary, dt: float) -> void:
 	if shot.dead:return
+	var lease=shot.get("motion_lease")
+	if lease!=null:
+		advance_packed_chain(shot,lease,dt)
+		return
 	if not chain_target_alive(shot.target):shot.target={}
 	var position:=Vector2(shot.x,shot.y)
 	if not shot.target.is_empty():
@@ -4229,3 +4243,99 @@ func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> vo
 		apply_refit_health()
 		event.emit("reactor_changed",{})
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+
+# Motion compatibility reads are confined to presentation/event/QA boundaries.
+# Native missiles have no x/y/direction/speed/age mirror in their dictionaries.
+func projectile_position(shot:Dictionary)->Vector2:
+	var lease=shot.get("motion_lease")
+	if lease==null:return Vector2(shot.x,shot.y)
+	return Vector2(lease.store.values[lease.offset],lease.store.values[lease.offset+1])
+
+func projectile_direction(shot:Dictionary)->Vector2:
+	var lease=shot.get("motion_lease")
+	if lease==null:return shot.direction
+	return Vector2(lease.store.values[lease.offset+2],lease.store.values[lease.offset+3])
+
+func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.get("motion_age",fallback)) if lease==null else lease.store.values[lease.offset+5]
+
+func projectile_contract_snapshot()->Array:
+	var result:Array=[]
+	for shot in projectiles:
+		var lease=shot.get("motion_lease")
+		if lease==null:result.append(shot);continue
+		var row:Dictionary=shot.duplicate()
+		row.erase("motion_lease")
+		var i:int=lease.offset
+		row.x=lease.store.values[i];row.y=lease.store.values[i+1]
+		row.direction=projectile_direction(shot);row.speed=lease.store.values[i+4]
+		if lease.missile_fields:
+			row.motion_age=lease.store.values[i+5];row.orphan_age=lease.store.values[i+6]
+			row.last_target_point=Vector2(lease.store.values[i+7],lease.store.values[i+8])
+		result.append(row)
+	return result
+
+func uses_packed_projectile_motion()->bool:
+	return false
+
+func pack_projectile_motion(shot:Dictionary)->void:
+	if not uses_packed_projectile_motion() or shot.get("beam",false) or "longLaser" in str(shot.key) or shot.has("higgs") or shot.key=="cannon":return
+	var slot:int=projectile_motion_store.allocate(shot)
+	var lease=MOTION_LEASE.new(projectile_motion_store,slot)
+	lease.missile_fields=shot.has("motion_age")
+	shot.motion_lease=lease
+	for key in ["x","y","direction","speed","motion_age","orphan_age","last_target_point"]:shot.erase(key)
+
+func projectile_x(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.x) if lease==null else lease.store.values[lease.offset]
+
+func projectile_y(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.y) if lease==null else lease.store.values[lease.offset+1]
+
+func advance_packed_chain(shot:Dictionary,lease:RefCounted,dt:float)->void:
+	if not chain_target_alive(shot.target):shot.target={}
+	var i:int=lease.offset
+	var position:=Vector2(projectile_motion_store.values[i],projectile_motion_store.values[i+1])
+	if not shot.target.is_empty():
+		var aim:=chain_target_point(shot.target)
+		var distance:=position.distance_to(aim)
+		if distance<=float(projectile_motion_store.values[i+4])*dt:
+			projectile_motion_store.values[i]=aim.x;projectile_motion_store.values[i+1]=aim.y;shot.dead=true
+			event.emit("projectile_impact",{"shot":shot,"pos":aim})
+			hit_enemy(shot.target,shot.damage,int(shot.type),shot.jewelEffects,bool(shot.critical),shot.get("combat_context",{}))
+			return
+		var direction:Vector2=(aim-position).normalized()
+		projectile_motion_store.values[i+2]=direction.x;projectile_motion_store.values[i+3]=direction.y
+	var movement:Vector2=Vector2(projectile_motion_store.values[i+2],projectile_motion_store.values[i+3])*float(projectile_motion_store.values[i+4])*dt
+	projectile_motion_store.values[i]+=movement.x;projectile_motion_store.values[i+1]+=movement.y
+	if projectile_motion_store.values[i] < -32 or projectile_motion_store.values[i] > BATTLE_SIZE.x+32 or projectile_motion_store.values[i+1] < -32 or projectile_motion_store.values[i+1] > BATTLE_SIZE.y+32:shot.dead=true
+
+func advance_packed_round(shot:Dictionary,lease:RefCounted,dt:float)->void:
+	var i:int=lease.offset
+	if not shot.target.is_empty():
+		var impact_point:Vector2=projectile_target_point(shot)
+		var delta:Vector2=impact_point-Vector2(projectile_motion_store.values[i],projectile_motion_store.values[i+1])
+		var homing:bool=str(shot.key).replace("_mon", "").replace("-mon", "") == "missile"
+		var direction:=Vector2(projectile_motion_store.values[i+2],projectile_motion_store.values[i+3])
+		if homing:
+			direction=delta.normalized()
+			projectile_motion_store.values[i+2]=direction.x;projectile_motion_store.values[i+3]=direction.y
+		var speed:float=projectile_motion_store.values[i+4]
+		var along:float=delta.dot(direction)
+		var intersects:=along>=0 and along<=speed*dt and absf(delta.cross(direction))<=0.5
+		if (delta.length()<=speed*dt) if homing else intersects:
+			shot.dead=true
+			event.emit("projectile_impact",{"shot":shot,"pos":impact_point})
+			if shot.hostile:hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
+			else:hit_enemy(shot.target,shot.damage,shot.type,shot.get("jewelEffects",[]),shot.get("critical",false),shot.get("combat_context",{}))
+			return
+	var movement:Vector2=Vector2(projectile_motion_store.values[i+2],projectile_motion_store.values[i+3])*float(projectile_motion_store.values[i+4])*dt
+	projectile_motion_store.values[i]+=movement.x;projectile_motion_store.values[i+1]+=movement.y
+	if projectile_motion_store.values[i] < -32 or projectile_motion_store.values[i] > BATTLE_SIZE.x+32 or projectile_motion_store.values[i+1] < -32 or projectile_motion_store.values[i+1] > BATTLE_SIZE.y+32:shot.dead=true
+
+func projectile_speed(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.speed) if lease==null else lease.store.values[lease.offset+4]

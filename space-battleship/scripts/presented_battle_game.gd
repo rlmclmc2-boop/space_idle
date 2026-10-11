@@ -300,32 +300,35 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
-	shot.motion_age=float(shot.motion_age)+dt
+	var lease=shot.motion_lease
+	var i:int=lease.offset
+	projectile_motion_store.values[i+5]=float(projectile_motion_store.values[i+5])+dt
 	if not missile_target_live(shot.target):
 		# An ejected missile never acquires another target. Pending packets still
 		# use the existing due-time target validation in tick_projectiles.
 		shot.target={}
-	if not shot.target.is_empty() and float(shot.motion_age)>MISSILE_LIFETIME:
+	if not shot.target.is_empty() and float(projectile_motion_store.values[i+5])>MISSILE_LIFETIME:
 		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
-	var position:=Vector2(shot.x,shot.y)
-	var old_angle:float=Vector2(shot.direction).angle()
-	var cruise_speed:=lerpf(MISSILE_LAUNCH_SPEED,float(shot.get("cruise_speed",MISSILE_CRUISE_SPEED)),smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(shot.motion_age)))
+	var position:=Vector2(projectile_motion_store.values[i],projectile_motion_store.values[i+1])
+	var old_angle:float=Vector2(projectile_motion_store.values[i+2],projectile_motion_store.values[i+3]).angle()
+	var cruise_speed:=lerpf(MISSILE_LAUNCH_SPEED,float(shot.get("cruise_speed",MISSILE_CRUISE_SPEED)),smoothstep(MISSILE_IGNITION,MISSILE_CRUISE_AT,float(projectile_motion_store.values[i+5])))
 	if not shot.target.is_empty():
-		shot.orphan_age=0.0
+		projectile_motion_store.values[i+6]=0.0
 		var aim:=target_point(shot.target)
-		shot.last_target_point=aim
+		projectile_motion_store.values[i+7]=aim.x;projectile_motion_store.values[i+8]=aim.y
 		var wanted:=(aim-position).angle()
 		var range_now:=position.distance_to(aim)
 		# Keep the live lock on a near miss; brake enough for a bounded turn rather
 		# than deliberately turning it into a long, wandering orphan.
 		if range_now<MISSILE_BRAKE_RANGE and absf(angle_difference(old_angle,wanted))>MISSILE_BRAKE_ANGLE:
 			cruise_speed=minf(cruise_speed,maxf(MISSILE_MIN_GUIDED_SPEED,range_now*MISSILE_TURN_RATE*MISSILE_BRAKE_FACTOR))
-		shot.speed=cruise_speed
-		if float(shot.motion_age)>=MISSILE_SEEK_START:
+		projectile_motion_store.values[i+4]=cruise_speed
+		if float(projectile_motion_store.values[i+5])>=MISSILE_SEEK_START:
 			var angle:=rotate_toward(old_angle,wanted,MISSILE_TURN_RATE*dt)
 			maximum_turn_step_error=maxf(maximum_turn_step_error,absf(angle_difference(old_angle,angle))-MISSILE_TURN_RATE*dt)
-			shot.direction=Vector2.from_angle(angle)
-		var next:=position+Vector2(shot.direction)*float(shot.speed)*dt
+			var direction:=Vector2.from_angle(angle)
+			projectile_motion_store.values[i+2]=direction.x;projectile_motion_store.values[i+3]=direction.y
+		var next:=position+Vector2(projectile_motion_store.values[i+2],projectile_motion_store.values[i+3])*float(projectile_motion_store.values[i+4])*dt
 		var closest:=Geometry2D.get_closest_point_to_segment(aim,position,next)
 		if closest.distance_to(aim)<=MISSILE_HIT_RADIUS:
 			shot.dead=true
@@ -335,23 +338,26 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 			hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
 			return true
 	else:
-		shot.orphan_age=float(shot.orphan_age)+dt
-		if float(shot.orphan_age)>=ORPHAN_LIFETIME:
+		projectile_motion_store.values[i+6]=float(projectile_motion_store.values[i+6])+dt
+		if float(projectile_motion_store.values[i+6])>=ORPHAN_LIFETIME:
 			_retire_missile(shot,"orphan_timeout",false);orphan_expirations+=1;return true
 		# Losing the lock stops steering, not the launch-to-cruise acceleration.
-		shot.speed=maxf(float(shot.speed),cruise_speed)
+		projectile_motion_store.values[i+4]=maxf(float(projectile_motion_store.values[i+4]),cruise_speed)
 		# Keep the last heading until the ordinary off-screen cleanup.
 		# An empty target also excludes collision and every hit/crit effect above.
-	var movement:=Vector2(shot.direction)*float(shot.speed)*dt
-	shot.x+=movement.x;shot.y+=movement.y
-	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+80:shot.dead=true
+	var movement:=Vector2(projectile_motion_store.values[i+2],projectile_motion_store.values[i+3])*float(projectile_motion_store.values[i+4])*dt
+	projectile_motion_store.values[i]+=movement.x;projectile_motion_store.values[i+1]+=movement.y
+	if projectile_motion_store.values[i] < -32 or projectile_motion_store.values[i] > BATTLE_SIZE.x+32 or projectile_motion_store.values[i+1] < -32 or projectile_motion_store.values[i+1] > BATTLE_SIZE.y+80:shot.dead=true
 	return true
 
 func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
 	if bool(shot.get("retirement_emitted",false)):return
 	shot.retirement_emitted=true;shot.dead=true
-	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":Vector2(shot.x,shot.y),"direction":Vector2(shot.direction),"speed":float(shot.speed),"coast":coast}
+	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":projectile_position(shot),"direction":projectile_direction(shot),"speed":float(shot.motion_lease.store.values[shot.motion_lease.offset+4]) if shot.has("motion_lease") else float(shot.speed),"coast":coast}
 	missile_retirements.append(record)
 	if missile_retirements.size()>128:missile_retirements.pop_front()
 	# Presentation-only notification, never a projectile impact or damage event.
 	event.emit("prototype_missile_retired",record)
+
+func uses_packed_projectile_motion()->bool:
+	return true

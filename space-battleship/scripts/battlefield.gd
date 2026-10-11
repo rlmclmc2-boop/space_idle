@@ -15,6 +15,7 @@ var rail_vfx = RAIL_VFX.new()
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const PULSE_PACKET_BATCH := preload("res://dev/toon_ship/pulse_packet_batch.gd")
 var pulse_packet_batch=PULSE_PACKET_BATCH.new()
+var missile_canvas_batch=preload("res://dev/toon_ship/missile_canvas_batch.gd").new()
 var pulse_packet_transforms:Array[Transform2D]=[]
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
@@ -470,15 +471,15 @@ func sync_beam_visuals()->void:
 
 func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float,known_visual:Variant=null)->bool:
 	if shot.get("chain_hop",false):
-		var logical:=Vector2(shot.x,shot.y)
-		CHAIN_VFX.flight(draw_surface,pos,battle_point(logical+Vector2(shot.direction))-battle_point(logical))
+		var logical:=game.projectile_position(shot)
+		CHAIN_VFX.flight(draw_surface,pos,battle_point(logical+game.projectile_direction(shot))-battle_point(logical))
 		return true
 	if not _is_own_missile(shot):return false
 	# The draw already resolved this exact visual through its frame-local index.
 	# Null preserves standalone callers; an indexed miss is an explicit empty row.
 	var visual:Dictionary=projectile_visual(shot) if known_visual==null else known_visual
 	# Every real missile, including an orphan, retains one physical body.
-	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),float(shot.get("motion_age",visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty(),missile_body_mesh)
+	MISSILE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle),game.projectile_motion_age(shot,float(visual.get("age",0.0))),int(shot.get("serial",0)),0.4 if missile_density>6 else 1.0,true,not shot.target.is_empty(),missile_body_mesh)
 	return true
 
 
@@ -504,10 +505,10 @@ func _is_own_missile(shot:Dictionary)->bool:
 
 
 func missile_visual_position(shot:Dictionary,spread:float,origin:Vector2,visual:Dictionary={})->Vector2:
-	if bool(shot.get("prototype_missile",false)):return Vector2(shot.x,shot.y)
+	if bool(shot.get("prototype_missile",false)):return game.projectile_position(shot)
 	if not _is_own_missile(shot):return super.missile_visual_position(shot,spread,origin,visual)
 	if visual.is_empty():visual=projectile_visual(shot)
-	var logical:=Vector2(shot.x,shot.y)
+	var logical:=game.projectile_position(shot)
 	if visual.has("orphan_offset"):return logical+Vector2(visual.orphan_offset)
 	if shot.target.is_empty():return super.missile_visual_position(shot,spread,origin,visual)
 	var start:Vector2=visual.get("logical_origin",origin)
@@ -532,7 +533,7 @@ func advance_projectile_visuals(dt:float)->void:
 		if bool(visual.get("had_target",false)) and visual.shot.target.is_empty() and not visual.has("orphan_offset"):
 			visual.orphan_offset=Vector2(visual.get("last_render_point",visual.origin))-Vector2(visual.get("last_logical_point",visual.logical_origin))
 			missile_loss_count+=1
-			var expected:=Vector2(visual.last_render_point)+Vector2(visual.shot.x,visual.shot.y)-Vector2(visual.last_logical_point)
+			var expected:=Vector2(visual.last_render_point)+game.projectile_position(visual.shot)-Vector2(visual.last_logical_point)
 			var actual:=missile_visual_position(visual.shot,float(visual.spread),visual.origin,visual)
 			missile_loss_max_jump=maxf(missile_loss_max_jump,battle_point(actual).distance_to(battle_point(expected)))
 	super.advance_projectile_visuals(dt)
@@ -543,7 +544,7 @@ func advance_projectile_visuals(dt:float)->void:
 			var movement:=battle_point(visual.trail[head])-battle_point(visual.trail[(head+13)%14])
 			if movement.length_squared()>0.001:visual.angle=movement.angle()
 		visual.last_render_point=visual.trail[head]
-		visual.last_logical_point=Vector2(visual.shot.x,visual.shot.y)
+		visual.last_logical_point=game.projectile_position(visual.shot)
 		visual.had_target=not visual.shot.target.is_empty()
 
 
@@ -582,19 +583,19 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 		# The base launch already solved this muzzle. Evaluate the fallback only
 		# when the capped visual list did not retain a record for this shot.
 		var origin:Vector2=visual.origin if visual.has("origin") else visual_muzzle(shot)
-		enemy_impacts.append({"kind":"fire","position":origin,"direction":Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle()))),"damage_type":int(shot.get("type",0)),"born":fx_time})
+		enemy_impacts.append({"kind":"fire","position":origin,"direction":Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle()))),"damage_type":int(shot.get("type",0)),"born":fx_time})
 	if pulse_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
-		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
+		var direction:=Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle())))
 		pulse_events.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":direction,"born":fx_time,"critical":false})
 		pulse_fire_count+=1
 		pulse_fire_slots[int(visual.get("mount",-1))]=true
 		pulse_origin_max_error=maxf(pulse_origin_max_error,Vector2(visual.get("origin",Vector2.ZERO)).distance_to(visual_muzzle(shot)))
 	if rail_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
-		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
+		var direction:=Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle())))
 		var origin: Vector2 = visual.get("origin",visual_muzzle(shot))
-		var aim: Vector2 = game.target_point(shot.target) if not shot.target.is_empty() else origin+Vector2(shot.direction)*100.0
+		var aim: Vector2 = game.target_point(shot.target) if not shot.target.is_empty() else origin+game.projectile_direction(shot)*100.0
 		# Snapshot the real projected shot path. Target death cannot truncate this event.
 		direction = (battle_point(aim)-battle_point(origin)).normalized()
 		rail_events.append({"kind":"fire","position":origin,"aim":aim,"direction":direction,"born":fx_time,"critical":false,"full_width":rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0)))})
@@ -603,15 +604,15 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 		rail_origin_max_error=maxf(rail_origin_max_error,Vector2(visual.get("origin",Vector2.ZERO)).distance_to(visual_muzzle(shot)))
 	if missile_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
-		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
+		var direction:=Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle())))
 		missile_events.append({"kind":"fire","position":visual.get("origin",visual_muzzle(shot)),"direction":direction,"born":fx_time,"critical":false,"serial":int(shot.get("serial",0))})
 		missile_fire_count+=1
 		missile_fire_slots[int(visual.get("mount",-1))]=true
 		missile_origin_max_error=maxf(missile_origin_max_error,Vector2(visual.get("origin",Vector2.ZERO)).distance_to(visual_muzzle(shot)))
 		visual.had_target=not shot.target.is_empty()
-		visual.missile_range=Vector2(shot.x,shot.y).distance_to(Vector2(shot.target.x,shot.target.y)) if not shot.target.is_empty() else 160.0
+		visual.missile_range=game.projectile_position(shot).distance_to(Vector2(shot.target.x,shot.target.y)) if not shot.target.is_empty() else 160.0
 		visual.last_render_point=visual.get("origin",visual_muzzle(shot))
-		visual.last_logical_point=Vector2(shot.x,shot.y)
+		visual.last_logical_point=game.projectile_position(shot)
 	enemy_launch_context=false
 	pulse_launch_context=false
 	rail_launch_context=false
@@ -628,19 +629,19 @@ func weapon_smoke(pos:Vector2,color:Color,count:int,duration:float,size_value:fl
 
 func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 	if _is_simple_enemy(shot):
-		if not fast_mode_enabled():enemy_impacts.append({"position":pos,"direction":shot.direction,"damage_type":int(shot.get("type",0)),"born":fx_time})
+		if not fast_mode_enabled():enemy_impacts.append({"position":pos,"direction":game.projectile_direction(shot),"damage_type":int(shot.get("type",0)),"born":fx_time})
 		return
 	if _is_own_missile(shot):
 		if fast_mode_enabled():return
 		var visual:=projectile_visual(shot)
-		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
+		var direction:=Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle())))
 		missile_events.append({"kind":"hit","position":pos,"direction":direction,"born":fx_time,"critical":bool(shot.get("critical",false)),"serial":int(shot.get("serial",0))})
 		missile_hit_count+=1
 		return
 	if _is_own_rail(shot):
 		if fast_mode_enabled():return
 		var visual:=projectile_visual(shot)
-		var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
+		var direction:=Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle())))
 		rail_events.append({"kind":"hit","origin":visual.get("origin",pos),"position":pos,"direction":direction,"born":fx_time,"critical":bool(shot.get("critical",false))})
 		rail_hit_count+=1
 		railgun_sound("impact")
@@ -650,46 +651,60 @@ func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 		return
 	if fast_mode_enabled():return
 	var visual:=projectile_visual(shot)
-	var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
+	var direction:=Vector2.from_angle(float(visual.get("angle",game.projectile_direction(shot).angle())))
 	pulse_events.append({"kind":"hit","position":pos,"direction":direction,"born":fx_time,"critical":bool(shot.get("critical",false))})
 	pulse_hit_count+=1
 
 
 func begin_projectile_packet_batch()->void:
 	pulse_packet_batch.begin()
+	missile_canvas_batch.begin()
 	pulse_packet_transforms.clear()
 
-func queue_projectile_packet(flight:Dictionary)->bool:
+func queue_projectile_packet(flight:Dictionary,offset:Vector2=Vector2.ZERO)->bool:
 	var shot:Dictionary=flight.shot
-	if shot.get("chain_hop",false) or not _is_own_pulse(shot):return false
-	var angle:=float(flight.visual.get("angle",Vector2(shot.direction).angle()))
+	if shot.get("chain_hop",false):
+		if not pulse_packet_transforms.is_empty():
+			pulse_packet_batch.paint(draw_surface,pulse_packet_transforms);pulse_packet_transforms.clear()
+		var logical:Vector2=game.projectile_position(shot)
+		missile_canvas_batch.chain(flight.pos,battle_point(logical+game.projectile_direction(shot))-battle_point(logical))
+		return true
+	var angle:=float(flight.visual.get("angle",game.projectile_direction(shot).angle()))
 	var direction:=Vector2.from_angle(angle)
+	if _is_own_missile(shot):
+		if not pulse_packet_transforms.is_empty():
+			pulse_packet_batch.paint(draw_surface,pulse_packet_transforms);pulse_packet_transforms.clear()
+		missile_canvas_batch.flight(flight.pos,direction,game.projectile_motion_age(shot,float(flight.visual.get("age",0))),not shot.target.is_empty(),flight.visual,battle_point,offset,0.5 if int(flight.budget)==0 else 1.0)
+		return true
+	if not _is_own_pulse(shot):return false
+	missile_canvas_batch.paint(draw_surface)
 	pulse_packet_transforms.append(Transform2D(direction,-direction.orthogonal(),flight.pos))
 	return true
 
 func flush_projectile_packet_batch()->void:
+	missile_canvas_batch.paint(draw_surface)
 	if pulse_packet_transforms.is_empty():return
 	pulse_packet_batch.paint(draw_surface,pulse_packet_transforms)
 	pulse_packet_transforms.clear()
 
 
 func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,visual:Dictionary={},trail_budget:=-1)->float:
-	if shot.get("chain_hop",false):return Vector2(shot.direction).angle()
+	if shot.get("chain_hop",false):return game.projectile_direction(shot).angle()
 	if _is_simple_enemy(shot):
-		var angle:float=visual.get("angle",Vector2(shot.direction).angle())
+		var angle:float=visual.get("angle",game.projectile_direction(shot).angle())
 		enemy_recognition.draw_projectile(draw_surface,pos,angle,int(shot.get("type",0)),core)
 		return angle
 	if _is_own_missile(shot):
-		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
+		var angle:=float(visual.get("angle",game.projectile_direction(shot).angle()))
 		var budget:=0.5 if trail_budget==0 else 1.0
-		if not shot.target.is_empty() and float(shot.get("motion_age",1.0))>=0.22:MISSILE_VFX.trail(draw_surface,visual,battle_point,offset,core,int(shot.get("serial",0)),budget)
+		if not shot.target.is_empty() and game.projectile_motion_age(shot)>=0.22:MISSILE_VFX.trail(draw_surface,visual,battle_point,offset,core,int(shot.get("serial",0)),budget)
 		return angle
 	if _is_own_rail(shot):
-		var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
-		if core:rail_vfx.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",Vector2(shot.x,shot.y)))))
+		var angle:=float(visual.get("angle",game.projectile_direction(shot).angle()))
+		if core:rail_vfx.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",game.projectile_position(shot)))))
 		return angle
 	if not _is_own_pulse(shot):return super.draw_projectile_fx(shot,pos,offset,core,visual,trail_budget)
-	var angle:=float(visual.get("angle",Vector2(shot.direction).angle()))
+	var angle:=float(visual.get("angle",game.projectile_direction(shot).angle()))
 	if core:PULSE_VFX.flight(draw_surface,pos,Vector2.from_angle(angle))
 	# No legacy trail pass: only one finite packet at the authoritative projected position.
 	return angle
