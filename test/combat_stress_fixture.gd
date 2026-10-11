@@ -17,6 +17,10 @@ func affix(rng,c,key):
   if a.tier==1:return a
  return {}
 func configure(g,layer:int)->bool:
+ # Noncombat fresh-profile metadata is deterministic for full-state replay.
+ # BattleScope excludes hightech/hyperspace economy; combat RNG is untouched.
+ g.profile.hightechSavedAt=0.0
+ g.profile.hyperspace.random_state="739"
  if layer>0:
   g.profile.enhancementLevel=40
   g.invalidate_stat_cache()
@@ -64,3 +68,11 @@ func sample(g,scene):
 func finish(g):
  g.event.disconnect(on_event)
  return {"config":manifest,"counts":counts.duplicate(),"counter_scope":"RAM event counters; live load scan included in full postdraw cadence, no perframe prints; no function profiler"}
+
+func battle_contract(g)->Dictionary:
+ var result={}
+ for field in ["profile","state","stage","distance","group_index","enemies","projectiles","drops","player","cooldowns","since_hit","clear_timer","projectile_serial","missile_queue","main_attack_serial","attack_instance_serial","jewel_repeats","jewel_defence_times","jewel_defence_damage","jewel_charged","enhancement_attack_contexts","enhancement_buffers","enhancement_buffer_owners","enhancement_memory_elapsed","enhancement_defense_time","enhancement_deferred_elapsed","enhancement_deferred_tick","enhancement_deferred","refit_health_ratios","enemy_shield_time","enemy_shield_hit_time"]:result[field]=g.get(field)
+ result.rng=str(g.rng.state);result.drone={}
+ for field in ["delayed","disabled","rebuild_bonus","rebuild_stacks","dodge_cooldown","black_hole_elapsed","black_hole_remaining","black_hole_damage","black_hole_source","missile_attacks"]:result.drone[field]=g.drone_combat.get(field)
+ result.damage_stats=g.damage_stats.snapshot()
+ return result

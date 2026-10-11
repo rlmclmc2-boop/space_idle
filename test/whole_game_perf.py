@@ -113,6 +113,7 @@ def main():
     parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
     parser.add_argument('--native-check', action='store_true', help='Diagnostic same-frame native painter/pinned-reference comparison; not clean timing')
     parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
+    parser.add_argument('--spatial-counters', action='store_true', help='Private-copy spatial boundary counts; diagnostic, not clean throughput')
     parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
     snapshots=parser.add_mutually_exclusive_group()
@@ -274,8 +275,20 @@ def main():
         code=code.replace('sample_started=true;wall_start=Time.get_ticks_usec();','sample_started=true;wall_start=Time.get_ticks_usec();stress_previous=wall_start;stress.counts.clear();',1)
         code=code.replace('   scene.frame_launches=0;', '   stress.frame_counts.clear()\n   scene.frame_launches=0;',1)
         code=code.replace('    wall_end=Time.get_ticks_usec()','    wall_end=Time.get_ticks_usec()\n    stress_trace.append([wall_end-wall_start,wall_end-stress_previous]+stress.sample(g,scene))\n    stress_previous=wall_end',1)
-        code=code.replace('  row.enemy_canvas_frozen=', '  row.damage_history=scene.damage_history.duplicate()\n  row.contract_state={\"profile\":g.profile,\"enemies\":g.enemies,\"projectiles\":g.projectiles,\"player\":g.player,\"queue\":g.missile_queue,\"rng\":str(g.rng.state),\"attack_serial\":g.attack_instance_serial,\"main_serial\":g.main_attack_serial,\"repeats\":g.jewel_repeats,\"contexts\":g.enhancement_attack_contexts}\n  row.combat_stress=stress.finish(g)\n  row.combat_stress_trace=stress_trace\n  row.combat_stress_columns=["sample_us","cadence_us","chain_carriers","beam_links","beams","visual_events","node_count","frame_events"]\n  row.enemy_canvas_frozen=',1)
+        code=code.replace('  row.enemy_canvas_frozen=', '  row.damage_history=scene.damage_history.duplicate()\n  row.contract_state=stress.battle_contract(g)\n  row.combat_stress=stress.finish(g)\n  row.combat_stress_trace=stress_trace\n  row.combat_stress_columns=["sample_us","cadence_us","chain_carriers","beam_links","beams","visual_events","node_count","frame_events"]\n  row.enemy_canvas_frozen=',1)
         probe_path.write_text(code,encoding='utf-8')
+    if args.spatial_counters:
+        model_path=project/'scripts/battle_read_model.gd'
+        model=model_path.read_text(encoding='utf-8')
+        model=model.replace('var host', 'var perf_counts:Dictionary={}\nfunc perf_count(key:String)->void:perf_counts[key]=int(perf_counts.get(key,0))+1\nvar host',1)
+        for signature,key in [('func begin(force:bool=false)->void:','begin_calls'),('func _publish_position(enemy:Dictionary,row:Dictionary,logical:Vector2)->void:','actual_publish'),('func position(enemy:Dictionary)->Vector2:','position_queries'),('func fleet_bounds()->Array[Rect2]:','fleet_bounds_queries')]:
+            model=model.replace(signature,signature+'\n\tperf_count("'+key+'")',1)
+        model=model.replace('\tif force or signature!=config_signature:shape_revision+=1','\tperf_count("begin_transactions")\n\tif force or signature!=config_signature:shape_revision+=1',1)
+        model=model.replace('if not ready() or row.is_empty():return host._source_enemy_render_position(enemy)','if not ready() or row.is_empty():\n\t\tperf_count("position_fallback");return host._source_enemy_render_position(enemy)',1)
+        model_path.write_text(model,encoding='utf-8')
+        probe_path=project/'probe.gd';probe=probe_path.read_text(encoding='utf-8')
+        probe=probe.replace('  row.enemy_canvas_frozen=', '  row.spatial_counts=scene.battle_read_model.perf_counts.duplicate()\n  row.enemy_canvas_frozen=',1)
+        probe_path.write_text(probe,encoding='utf-8')
     phase_wrapped=[]
     spike_wrapped=[]
     if args.spike_diagnostic:

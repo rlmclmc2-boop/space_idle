@@ -2820,6 +2820,7 @@ func damage_layout_occupy(entry:Dictionary,context:Dictionary)->void:
 func flush_damage_numbers() -> void:
 	# One visible-frame transaction. Gameplay events/history and merge windows
 	# have already committed; only final text and placement are materialized here.
+	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
 	var context := {"metrics":{},"occupied":[]}
 	var incoming_changed=false
 	for entry in floats:
