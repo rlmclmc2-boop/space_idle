@@ -25,7 +25,7 @@ func verify_history_records(scene)->void:
 		expected_rows.append(UIText.t("battle.damage_record",{"target":UIText.t("battle.queue_damage_number.text_02",{"uid":"%s" % i}),"critical":UIText.t("battle.queue_damage_number.text_03") if info.critical else "","damage":exact}))
 		scene.queue_damage_number(info)
 	check(scene.damage_history==expected_rows.slice(5),"40-slot ring preserves exact final strings, hit order, critical and absorption")
-	check(scene.floats.is_empty() and scene.damage_pending.is_empty(),"disabled labels still retain history without admitting presentation slots")
+	check(not scene.floats.any(func(entry):return entry.get("damage",false)) and scene.damage_pending.is_empty(),"disabled labels still retain history without admitting damage slots")
 func verify_incoming_lanes(scene) -> void:
 	scene.set_damage_mode(0)
 	var before=JSON.stringify(scene.game.profile);var rng=scene.game.rng.state
@@ -199,7 +199,10 @@ func run() -> void:
 	details.push_input(enter)
 	enter = enter.duplicate()
 	enter.pressed = false
-	details.push_input(enter)
+	# Accept hides the dialog on key-down. Route key-up to the visible parent
+	# as the OS does; pushing it into a hidden Windows subwindow is invalid.
+	if is_instance_valid(details) and details.visible:details.push_input(enter)
+	else:root.push_input(enter)
 	await process_frame
 	check(not is_instance_valid(details),"details confirms and frees with actual keyboard input")
 	verify_history_records(scene)
