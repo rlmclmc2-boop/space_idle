@@ -108,6 +108,9 @@ class SpaceDamageLayout : public RefCounted {
     struct Metric {String text;int size;Dictionary values;};
     std::vector<Occupied> occupied;
     std::vector<Metric> metrics;
+    struct Slot {String target;Dictionary first;int count=0;};
+    std::vector<Slot> slot_scratch;
+    std::vector<Dictionary> pending_scratch;
     static Rect2 bounds(Vector2 p,double width,double ascent,double height) {
         return Rect2(p-Vector2(std::max(0.0,92.0-width)/2.0,ascent),Vector2(std::max(92.0,width),height)).grow(4);
     }
@@ -117,10 +120,26 @@ protected:
         ClassDB::bind_method(D_METHOD("metrics","font","text","size"),&SpaceDamageLayout::get_metrics);
         ClassDB::bind_method(D_METHOD("occupy","entry","rect"),&SpaceDamageLayout::occupy);
         ClassDB::bind_method(D_METHOD("overlaps_incoming","rect"),&SpaceDamageLayout::overlaps_incoming);
+        ClassDB::bind_method(D_METHOD("reserve_slots","floats","pending","now"),&SpaceDamageLayout::reserve_slots);
         ClassDB::bind_method(D_METHOD("position","origin","width","ascent","height","excluded","bottom","obstacles","ready","battlefield_width"),&SpaceDamageLayout::place);
     }
 public:
     void reset(){occupied.clear();metrics.clear();}
+    void reserve_slots(Array floats,Array pending,double now) {
+        slot_scratch.clear();pending_scratch.clear();pending_scratch.reserve(pending.size());
+        auto slot_for=[&](String target)->Slot&{for(Slot &s:slot_scratch)if(s.target==target)return s;slot_scratch.push_back({target,Dictionary(),0});return slot_scratch.back();};
+        for(int i=0;i<floats.size();++i){Dictionary entry=floats[i];
+            if(bool(entry.get("damage",false))&&!bool(entry.get("incoming_lane",false))){Slot &s=slot_for(entry["target"]);if(s.count++==0)s.first=entry;}}
+        for(int i=0;i<pending.size();++i)pending_scratch.push_back(pending[i]);
+        for(Dictionary entry:pending_scratch) {
+            if(now-double(entry["born"])>0.3){pending.erase(entry);continue;}
+            Slot &s=slot_for(entry["target"]);
+            if(s.count>=2){s.first["life"]=std::min(double(s.first["life"]),0.08);s.first["retiring"]=true;if(!s.first.has("retire_time"))s.first["retire_time"]=now;continue;}
+            floats.push_back(entry);if(s.count++==0)s.first=entry;pending.erase(entry);
+        }
+        // Keep capacities, release every display reference at this event boundary.
+        slot_scratch.clear();pending_scratch.clear();
+    }
     Dictionary get_metrics(Ref<Font> font,String text,int size) {
         for(const Metric &m:metrics)if(m.size==size&&m.text==text)return m.values;
         Dictionary values;values["width"]=font->get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,size).x;
@@ -292,6 +311,7 @@ protected:
     static void _bind_methods();
 public:
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
+        ERR_FAIL_INDEX(category,2);
         contact_events[category].push_back({point,direction,born,launch,critical,type});
     }
     void prune_contacts(double now,bool clear_enemy) {
@@ -300,11 +320,15 @@ public:
     }
     void clear_contacts(){for(auto &events:contact_events)events.clear();}
     Array contact_snapshot(int category) const {
+        ERR_FAIL_INDEX_V(category,2,Array());
         Array result;for(const ContactEvent &e:contact_events[category]){Dictionary d;d["position"]=e.point;d["direction"]=e.direction;d["born"]=e.born;
             if(category==0){d["damage_type"]=e.type;if(e.launch)d["kind"]="fire";}
             else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
     }
     void draw_contacts(RID canvas,double now,bool pulse_enabled);
+    Dictionary find_visual(Array visuals,Dictionary shot) const {
+        for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i];if(same(v["shot"],shot))return v;}return Dictionary();
+    }
     Ref<SpaceMotionLease> bind_motion(Dictionary shot) {
         Ref<SpaceMotionLease> lease; lease.instantiate();
         const size_t slot = free_slots.empty() ? motions.size() : free_slots.back();
@@ -643,6 +667,7 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("clear_contacts"),&SpaceNativePipeline::clear_contacts);
     ClassDB::bind_method(D_METHOD("contact_snapshot","category"),&SpaceNativePipeline::contact_snapshot);
     ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceNativePipeline::draw_contacts);
+    ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceNativePipeline::find_visual);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
     ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
     ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);

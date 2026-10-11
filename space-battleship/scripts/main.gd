@@ -1891,6 +1891,7 @@ func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, v
 
 func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
 	if shot.has("serial") and not index.is_empty():return index.get(shot.serial,{})
+	if game.native_pipeline!=null:return game.native_pipeline.find_visual(projectile_visuals,shot)
 	for visual in projectile_visuals:
 		if is_same(visual.shot,shot):return visual
 	return {}
@@ -2858,6 +2859,9 @@ func damage_layout_occupy(entry:Dictionary,context:Dictionary)->void:
 
 func reserve_damage_slots()->void:
 	# Event-only numeric/category ownership. No font, projection or collision work.
+	if damage_layout_native!=null:
+		damage_layout_native.reserve_slots(floats,damage_pending,fx_time)
+		return
 	var slots := {}
 	for entry in floats:
 		if entry.get("damage",false) and not entry.get("incoming_lane",false):
