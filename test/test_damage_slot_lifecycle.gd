@@ -14,9 +14,9 @@ func run():
  var state=JSON.stringify(g.profile);var rng=g.rng.state;var uid=g.enemies[0].uid
  var event={"player":false,"uid":uid,"type":1,"amount":7.,"critical":false}
  scene.queue_damage_number(event)
- check(scene.floats.size()==1 and scene.damage_pending.is_empty(),"new category owns visible slot synchronously")
+ check(scene.floats.size()==1 and scene.damage_pending.is_empty(),"new category reserves logical slot before display")
  event.type=2;event.amount=11.;scene.queue_damage_number(event)
- check(scene.floats.size()==2 and scene.damage_pending.is_empty(),"second category owns second slot synchronously")
+ check(scene.floats.size()==2 and scene.damage_pending.is_empty(),"second category reserves second logical slot")
  event.type=1;event.critical=true;event.amount=13.;scene.queue_damage_number(event)
  check(scene.floats.size()==2 and scene.damage_pending.size()==1,"third category waits behind original two-slot cap")
  var retiring=scene.floats.filter(func(f):return f.get("retiring",false))
@@ -25,7 +25,7 @@ func run():
  var old=scene.floats.filter(func(f):return f.get("type",0)==1 and not f.critical)
  check(old.size()==1 and old[0].amount==7.,"later same-frame hit cannot merge into retiring slot")
  check(scene.damage_pending.size()==2,"later noncritical category keeps distinct backlog entry")
- # Reproduce production's float ageing/filter boundary without ticking gameplay.
+ # Exercise visible ageing/admission without ticking gameplay; no event layout required.
  for f in scene.floats:f.life-=.1
  scene.floats=scene.floats.filter(func(f):return f.life>0.)
  scene.flush_damage_numbers()

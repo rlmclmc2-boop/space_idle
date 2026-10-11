@@ -117,6 +117,7 @@ def main():
     parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
     parser.add_argument('--membership-counters', action='store_true', help='Private-copy RAM native membership counts; diagnostic, not clean timing')
     parser.add_argument('--spatial-counters', action='store_true', help='Private-copy spatial boundary counts; diagnostic, not clean throughput')
+    parser.add_argument('--projectile-step-timing', action='store_true', help='QA-only narrow loop timing per logical step; separate from clean AB')
     parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
     snapshots=parser.add_mutually_exclusive_group()
@@ -170,6 +171,7 @@ def main():
         parser.error('native-check requires battle-only without other instrumentation')
     if args.boundary_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument):
         parser.error('boundary-check requires battle-only and cannot be combined with replay or other instrumentation')
+    if args.projectile_step_timing and (not args.battle_only or not args.realtime or args.dynamic_replay or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.script_profile or args.gpu_profile or args.native_check or args.boundary_check or args.membership_counters):parser.error('projectile-step-timing requires realtime battle-only without other profilers')
     if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
         parser.error('phase-account requires only battle-only, without replay or overlapping instrumenters')
     if args.battle_only and (not args.rich or args.pages != '0' or args.headless or args.checkpoint_round2 or args.checkpoint_round4 or args.instrument):
@@ -298,6 +300,9 @@ def main():
         if not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument:parser.error('membership counters require battle-only without replay/profilers')
         from membership_diagnostic import prepare as prepare_membership
         membership_sites=prepare_membership(project,ROOT)
+    if args.projectile_step_timing:
+        from projectile_step_timing import prepare as prepare_step_timing
+        prepare_step_timing(project, ROOT)
     phase_wrapped=[]
     spike_wrapped=[]
     if args.spike_diagnostic:
@@ -475,12 +480,13 @@ def main():
     if args.battle_only:measured_files += ['battle_scope.gd']
     if args.dynamic_replay:measured_files += ['native_render_tape.gd','pulse_packet_batch.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
+    if args.projectile_step_timing:measured_files += ['projectile_step_timer.gd']
     if args.membership_counters:measured_files += ['membership_diagnostic.gd','scripts/drone_combat_effects.gd']
     if args.native_check:measured_files += ['retained_native_check.gd','reference_retained_enemy_contacts.gd','reference_enemy_recognition_visual.gd']
     if args.boundary_check:measured_files += ['battle_boundary_check.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py','spike_attribution.py','membership_diagnostic.py']},
+              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py','spike_attribution.py','membership_diagnostic.py','projectile_step_timing.py']},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
