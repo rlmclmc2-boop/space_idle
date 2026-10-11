@@ -329,8 +329,6 @@ public:
     Dictionary find_visual(Array visuals,Dictionary shot) const {
         for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i];if(same(v["shot"],shot))return v;}return Dictionary();
     }
-    void tick_beams(Object *game, Array pending, double dt, int64_t combat_state);
-    void tick_beam(Object *game, Dictionary shot, double dt, int64_t combat_state);
     Ref<SpaceMotionLease> bind_motion(Dictionary shot) {
         Ref<SpaceMotionLease> lease; lease.instantiate();
         const size_t slot = free_slots.empty() ? motions.size() : free_slots.back();
@@ -382,108 +380,6 @@ public:
 Motion &SpaceMotionLease::motion() const { return owner->motions[slot]; }
 SpaceMotionLease::~SpaceMotionLease() { if (owner.is_valid()) owner->release(slot, generation); }
 SpaceFlightFrame::~SpaceFlightFrame() {if(recycler.is_valid())recycler->recycle_frame(flights);}
-
-namespace {
-// Only the event-free preparation portion shares this transient scene view.
-// Relocking falls back to the original script, then reacquires all inputs. Real
-// period contacts retain original script validity/damage/RNG in immediate order.
-struct BeamStep {
-    Object *game;
-    int64_t combat_state;
-    Array live,enemies,entries;
-    Dictionary player;
-    Ref<RefCounted> database;
-    int64_t state=0;
-    bool player_alive=false;
-    BeamStep(Object *g,int64_t combat):game(g),combat_state(combat){refresh();}
-    void refresh() {
-        live=game->get("projectiles");enemies=game->get("enemies");player=game->get("player");
-        entries=game->call("combat_weapon_entries");database=game->get("db");state=game->get("state");
-        player_alive=game->call("_native_player_target_alive",player);
-    }
-    bool valid(Dictionary shot) const {
-        Dictionary target=shot["target"];
-        if(state!=combat_state || bool(shot["dead"]) || target.is_empty() || !same(target,shot["locked_target"]))return false;
-        Dictionary source=shot["source"],entry=shot["entry"];
-        int64_t mount=shot["mount"];
-        if(bool(shot["hostile"])) {
-            if(!enemies.has(source) || double(source["hp"])<=0 || !same(target,player) || !player_alive)return false;
-            Array equipment=source["equipment"];
-            return mount<equipment.size() && same(entry,equipment[mount]);
-        }
-        Dictionary mounted=mount>=0 && mount<entries.size()?Dictionary(entries[mount]):Dictionary();
-        return same(source,player) && player_alive && enemies.has(target) && double(target["hp"])>0 &&
-            same(entry,mounted) && String(entry["key"])=="longLaser";
-    }
-    Dictionary weapon(Dictionary shot) const {
-        if(bool(shot["hostile"])) {Dictionary entry=shot["entry"];return database->call("enemy_weapon",entry["name"]);}
-        Dictionary snapshot=shot["attack_snapshot"];return snapshot["weapon"];
-    }
-    bool advance(Dictionary shot,double dt,Dictionary &row) {
-        if(!valid(shot)) {
-            // Includes endless travel, retargeting, prism binding, and death.
-            bool ready=game->call("advance_long_laser",shot,dt);refresh();
-            if(ready)row=weapon(shot);
-            return ready;
-        }
-        Dictionary instance=shot.get("attack_instance",Dictionary());
-        Dictionary chain=instance.get("chain",Dictionary());
-        Array links=chain.get("links",Array());
-        for(int64_t i=0;i<links.size();++i) {
-            Dictionary link=links[i];if(bool(link["broken"]))continue;
-            Dictionary target=link["target"];bool present=false;
-            if(!target.is_empty() && chain_hp_positive(target.get("hp",0)))
-                for(int64_t j=0;j<enemies.size();++j)if(same(enemies[j],target)){present=true;break;}
-            if(!present)link["broken"]=true;
-        }
-        Dictionary source=shot["source"];
-        Vector2 offset=bool(shot["hostile"])?Vector2(game->call("enemy_weapon_offset",source,shot["mount"])):
-            Vector2(game->call("player_weapon_offset",shot["mount"]));
-        if(bool(shot["repeated"]))offset.x+=6.0;
-        shot["x"]=double(source["x"])+double(offset.x);shot["y"]=double(source["y"])+double(offset.y);
-        shot["elapsed"]=double(shot["elapsed"])+dt;
-        row=weapon(shot);
-        if(!shot.has("next_hit_at")) {
-            double charge=shot["charge"];shot["next_hit_at"]=charge>=0?charge:double(row["cd"]);
-        }
-        return true;
-    }
-};
-struct BeamPeriod {double at,due;int64_t index;Dictionary shot;};
-}
-
-void SpaceNativePipeline::tick_beams(Object *game,Array pending,double dt,int64_t combat_state) {
-    Ref<SpaceNativePipeline> guard(this);
-    BeamStep step(game,combat_state);
-    // Local storage also preserves recursive signal re-entry; it retains no
-    // shot, target or lease after this synchronous method returns.
-    std::vector<BeamPeriod> periods;
-    for(int64_t index=0;index<pending.size();++index) {
-        Dictionary shot=pending[index];if(!bool(shot.get("beam",false)) || !step.live.has(shot))continue;
-        Dictionary row;if(!step.advance(shot,dt,row))continue;
-        while(double(shot["next_hit_at"])<=double(shot["elapsed"])+0.000000001) {
-            double due=shot["next_hit_at"];
-            double at=double(game->get("enemy_shield_time"))-double(shot["elapsed"])+due;
-            periods.push_back({at,due,index,shot});shot["next_hit_at"]=due+double(row["cd"]);
-        }
-    }
-    std::stable_sort(periods.begin(),periods.end(),[](const BeamPeriod &a,const BeamPeriod &b){return a.at==b.at?a.index<b.index:a.at<b.at;});
-    for(const BeamPeriod &period:periods) {
-        Array live=game->get("projectiles");
-        if(!live.has(period.shot) || !bool(game->call("long_laser_valid",period.shot)))continue;
-        game->call("apply_long_laser_hit",period.shot,period.due);
-    }
-}
-
-void SpaceNativePipeline::tick_beam(Object *game,Dictionary shot,double dt,int64_t combat_state) {
-    Ref<SpaceNativePipeline> guard(this);
-    BeamStep step(game,combat_state);Dictionary row;if(!step.advance(shot,dt,row))return;
-    while(double(shot["next_hit_at"])<=double(shot["elapsed"])+0.000000001) {
-        double due=shot["next_hit_at"];shot["next_hit_at"]=due+double(row["cd"]);
-        game->call("apply_long_laser_hit",shot,due);
-        if(bool(shot["dead"]))break;
-    }
-}
 
 void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot) {
     Array live = game->get("projectiles");
@@ -772,8 +668,6 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("contact_snapshot","category"),&SpaceNativePipeline::contact_snapshot);
     ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceNativePipeline::draw_contacts);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceNativePipeline::find_visual);
-    ClassDB::bind_method(D_METHOD("tick_beams","game","pending","dt","combat_state"),&SpaceNativePipeline::tick_beams);
-    ClassDB::bind_method(D_METHOD("tick_beam","game","shot","dt","combat_state"),&SpaceNativePipeline::tick_beam);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
     ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
     ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);
