@@ -290,7 +290,7 @@ func _process_battlefield(delta: float) -> void:
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	super._process(delta)
-	var native_feedback_pruned:=native_presentation!=null and native_presentation.prune_feedback(self)
+	var native_feedback_pruned:bool=native_presentation!=null and native_presentation.prune_feedback(self)
 	if not native_feedback_pruned:
 		destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 		var valid_beams:Dictionary={}
