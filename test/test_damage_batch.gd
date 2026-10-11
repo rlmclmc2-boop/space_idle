@@ -7,7 +7,7 @@ func check(ok,label):
 func _initialize():call_deferred("run")
 func run():
  var scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"];root.add_child(scene);scene.set_process(false)
- var g=scene.game;g.save_enabled=false;g.profile.highestLevel=8;g.rebuild_unlocks();g.start(8,false);g.pending_unlocks.clear();g.paused=true
+ var g=scene.game;g.save_enabled=false;g.profile.highestLevel=8;g.rebuild_unlocks();g.profile.loadout.defence[0]={"key":"armour","level":8};g.invalidate_stat_cache();g.start(8,false);g.spawn_group();g.pending_unlocks.clear();g.paused=true
  scene.fx_time=5.0
  for enemy in g.enemies:scene.enemy_pose(enemy).born=0;enemy.hp=0
  var state=JSON.stringify(g.profile);var rng=g.rng.state
