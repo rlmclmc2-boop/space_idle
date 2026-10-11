@@ -117,6 +117,7 @@ def main():
     parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
     parser.add_argument('--membership-counters', action='store_true', help='Private-copy RAM native membership counts; diagnostic, not clean timing')
     parser.add_argument('--spatial-counters', action='store_true', help='Private-copy spatial boundary counts; diagnostic, not clean throughput')
+    parser.add_argument('--projectile-partition', choices=['measure','empty'], help='QA-only exclusive categorical accounting inside base projectile loop')
     parser.add_argument('--projectile-step-timing', action='store_true', help='QA-only narrow loop timing per logical step; separate from clean AB')
     parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
     parser.add_argument('--godot', default=shutil.which('godot') or 'godot')
@@ -171,6 +172,7 @@ def main():
         parser.error('native-check requires battle-only without other instrumentation')
     if args.boundary_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument):
         parser.error('boundary-check requires battle-only and cannot be combined with replay or other instrumentation')
+    if args.projectile_partition and (not args.battle_only or args.combat_stress_layer is None or args.dynamic_replay or args.projectile_step_timing or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.script_profile or args.gpu_profile or args.native_check or args.boundary_check or args.membership_counters or args.spatial_counters):parser.error('projectile-partition requires legal combat-layer battle-only without other profilers')
     if args.projectile_step_timing and (not args.battle_only or not args.realtime or args.dynamic_replay or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.script_profile or args.gpu_profile or args.native_check or args.boundary_check or args.membership_counters):parser.error('projectile-step-timing requires realtime battle-only without other profilers')
     if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
         parser.error('phase-account requires only battle-only, without replay or overlapping instrumenters')
@@ -303,6 +305,10 @@ def main():
     if args.projectile_step_timing:
         from projectile_step_timing import prepare as prepare_step_timing
         prepare_step_timing(project, ROOT)
+    partition_sites=[]
+    if args.projectile_partition:
+        from projectile_partition import prepare as prepare_partition
+        partition_sites=prepare_partition(project, ROOT, args.projectile_partition)
     phase_wrapped=[]
     spike_wrapped=[]
     if args.spike_diagnostic:
@@ -481,12 +487,13 @@ def main():
     if args.dynamic_replay:measured_files += ['native_render_tape.gd','pulse_packet_batch.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
     if args.projectile_step_timing:measured_files += ['projectile_step_timer.gd']
+    if args.projectile_partition:measured_files += ['projectile_partition_timer.gd']
     if args.membership_counters:measured_files += ['membership_diagnostic.gd','scripts/drone_combat_effects.gd']
     if args.native_check:measured_files += ['retained_native_check.gd','reference_retained_enemy_contacts.gd','reference_enemy_recognition_visual.gd']
     if args.boundary_check:measured_files += ['battle_boundary_check.gd']
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               'harness_ref': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py','spike_attribution.py','membership_diagnostic.py','projectile_step_timing.py']},
+              'driver_sha256': {name:hashlib.sha256((ROOT/'test'/name).read_bytes()).hexdigest() for name in ['whole_game_perf.py','battle_render_diagnostic.py','battle_phase_account.py','spike_attribution.py','membership_diagnostic.py','projectile_step_timing.py','projectile_partition.py']},
               'source_ref': subprocess.check_output(['git', 'rev-parse', args.ref or 'HEAD'], cwd=ROOT, text=True).strip(),
               'runtime_sha256': {name: hashlib.sha256((project / name).read_bytes()).hexdigest() for name in measured_files},
               'flat_candidate_requested': env.get('SPACE_IDLE_FLAT_SHIPS') == '1',
