@@ -68,7 +68,70 @@ var distance := 0.0
 var travel_origin := INF
 var group_index := 0
 var enemies: Array[Dictionary] = []
-var projectiles: Array[Dictionary] = []
+var _projectiles: Array[Dictionary] = []
+var _native_readonly_observers: Array[Callable]=[]
+var _native_forced_compatibility:=false
+func native_lifecycle_compatibility()->void:
+	# Foreign code with raw Array/Dictionary writes must opt out before writing.
+	_native_forced_compatibility=true
+func native_transaction_observer(callback:Callable)->void:
+	# Audited observers must use lifecycle transactions, never raw list writes.
+	if not _native_readonly_observers.has(callback):_native_readonly_observers.append(callback)
+func native_forget_observer(callback:Callable)->void:
+	_native_readonly_observers.erase(callback)
+func native_readonly_observer(callback:Callable)->void:
+	# Explicit opt-in for audited QA observers; never infer purity from a name.
+	if not _native_readonly_observers.has(callback):_native_readonly_observers.append(callback)
+var projectiles: Array[Dictionary]:
+	get:return _projectiles
+	set(value):
+		_projectiles=value
+		if native_pipeline!=null and native_pipeline.has_method("replace_records"):native_pipeline.replace_records(value)
+
+# Lifecycle mutations preserve original Array clear aliases and erase equality.
+func projectile_append(shot:Dictionary,ready:=true)->void:
+	_projectiles.append(shot)
+	if ready:projectile_finish(shot)
+func projectile_finish(shot:Dictionary)->void:
+	if native_pipeline!=null and native_pipeline.has_method("append_record") and (not _projectiles.is_empty() and is_same(_projectiles.back(),shot) or _projectiles.has(shot)):native_pipeline.append_record(_projectiles,shot)
+func projectile_clear()->void:
+	_projectiles.clear()
+	if native_pipeline!=null and native_pipeline.has_method("clear_records"):native_pipeline.clear_records(_projectiles)
+func projectile_assign(values:Array)->void:
+	_projectiles.assign(values)
+	if native_pipeline!=null and native_pipeline.has_method("replace_records"):native_pipeline.replace_records(_projectiles)
+func projectile_erase(shot:Dictionary)->void:
+	var index:=_projectiles.find(shot)
+	if index<0:return
+	_projectiles.remove_at(index)
+	if native_pipeline!=null and native_pipeline.has_method("erase_record"):native_pipeline.erase_record(_projectiles,index)
+func projectile_mark_dead(shot:Dictionary)->void:
+	if native_pipeline!=null and native_pipeline.has_method("mark_dead"):native_pipeline.mark_dead(shot)
+	else:shot.dead=true
+func native_lifecycle_allowed()->bool:
+	if _native_forced_compatibility:return false
+	if native_pipeline==null or not native_pipeline.has_method("begin_step"):return false
+	if get_script().resource_path not in ["res://scripts/game.gd","res://scripts/presented_battle_game.gd"]:return false
+	for key in ["target_provider","launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:
+		var provider:Variant=get(key)
+		if not provider is Callable or not provider.is_valid():continue
+		if _native_readonly_observers.has(provider):continue
+		var owner=provider.get_object()
+		if owner==null:return false
+		var source=owner.get_script()
+		if source==null or source.resource_path!="res://scripts/battlefield.gd":return false
+		if provider.get_method() not in ["_prototype_target_point","_prototype_launch_pose","_prototype_drone_launch_pose","_rail_geometry","entity_render_position"]:return false
+	# Unknown subscribers can perform unmanaged raw writes; use compatibility.
+	for connection in event.get_connections():
+		var callback:Callable=connection.callable
+		if _native_readonly_observers.has(callback):continue
+		var receiver=callback.get_object()
+		if receiver==null:return false
+		var source=receiver.get_script()
+		if source==null or source.resource_path not in ["res://scripts/game.gd","res://scripts/presented_battle_game.gd","res://scripts/main.gd","res://scripts/battlefield.gd","res://scripts/crew_system.gd"]:return false
+		if callback.get_method() not in ["on_event","_projectile_target_points_event","_enhancement_plan_event"]:return false
+	return native_pipeline.members_match(_projectiles)
+
 var drops: Array[Dictionary] = []
 var player: Dictionary = {}
 var reactor_vitals = preload("res://scripts/reactor_vitals.gd").new()
@@ -941,7 +1004,7 @@ func invalidate_module_attack(index: int) -> void:
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
 	jewel_charged.erase(slot_id("weapons",index))
 	for shot in projectiles:
-		if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index:shot.dead=true
+		if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index:projectile_mark_dead(shot)
 	var entry := slot_entry("weapons",index)
 	if entry.is_empty() or str(entry.key).is_empty():
 		cooldowns.erase(slot_id("weapons",index))
@@ -1647,7 +1710,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	pending_unlocks.clear()
 	resource_samples.clear()
 	drops.clear()
-	projectiles.clear()
+	projectile_clear()
 	enemies.clear()
 	speed=default_speed()
 	auto_gen_elapsed=0.0
@@ -2118,7 +2181,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}, start_pause
 	guard_arrived = false
 	retreat_boss_pending = false
 	enemies.clear()
-	projectiles.clear()
+	projectile_clear()
 	cooldowns.clear()
 	pending_unlocks.clear()
 	reset_player()
@@ -2305,7 +2368,7 @@ func player_weapon_offset(index: int) -> Vector2:
 
 func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
-	projectiles.append({"x":float(source.x) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*db.projectile_pixels_per_unit(hostile),"hostile":hostile,"key":key,"dead":false})
+	projectile_append({"x":float(source.x) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*db.projectile_pixels_per_unit(hostile),"hostile":hostile,"key":key,"dead":false},false)
 	var shot: Dictionary = projectiles.back()
 	projectile_serial += 1
 	shot.serial = projectile_serial
@@ -2316,6 +2379,7 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	var launch_x:float=shot.x
 	var launch_y:float=shot.y
 	bind_projectile_motion(shot)
+	if "longLaser" not in key:projectile_finish(shot)
 	event.emit("fire", {"x":launch_x,"y":launch_y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
 
 func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Dictionary, _spread: float) -> void:
@@ -2375,6 +2439,7 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 		shot.endless=not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(entry,endless_source()) and not repeated
 		bind_beam_chain(shot)
 
+	projectile_finish(shot)
 	event.emit("beam_started", {"shot":shot})
 
 func long_laser_multiplier(weapon: Dictionary, duration: float) -> float:
@@ -2389,7 +2454,7 @@ func advance_long_laser(shot: Dictionary, dt: float) -> bool:
 			if not candidates.is_empty():
 				shot.await_target=false;shot.target=candidates[0];shot.locked_target=shot.target;shot.attack_instance.chain.links.clear();bind_beam_chain(shot)
 	if not long_laser_valid(shot):
-		shot.dead = true
+		projectile_mark_dead(shot)
 		end_beam_chain(shot)
 		return false
 	prune_beam_chain(shot)
@@ -2432,7 +2497,7 @@ func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 		launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
 		enhancement_attack_contexts.erase(int(shot.mount))
 	if not projectiles.has(shot) or not long_laser_valid(shot):
-		shot.dead = true
+		projectile_mark_dead(shot)
 		end_beam_chain(shot)
 	enemy_shield_hit_time=previous_hit_time
 
@@ -2564,7 +2629,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		enemy.erase("guidance_layers")
 		break_beam_chain_target(enemy)
 		if is_final_encounter() and targets().is_empty():
-			projectiles.clear()
+			projectile_clear()
 		event.emit("explode", enemy)
 		jewel_kill_drop(enemy)
 		for drop in enemy.drops:
@@ -2611,7 +2676,7 @@ func advance_higgs_projectile(shot: Dictionary,_dt: float) -> bool:
 		shot.higgs.hit_uids[str(target.uid)]=true
 		event.emit("projectile_impact",{"shot":shot,"pos":chain_target_point(target)})
 		hit_enemy(target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.combat_context)
-	shot.dead=true
+	projectile_mark_dead(shot)
 	return true
 
 func guided_missile_damage(enemy: Dictionary,raw,context: Dictionary) -> Variant:
@@ -2822,7 +2887,7 @@ func upgrade_max(key: String) -> bool:
 func leave(next: State) -> void:
 	if manual_hyperspace.active:manual_hyperspace.finish(self,false,"user_exit")
 	settle_drops()
-	projectiles.clear()
+	projectile_clear()
 	enemies.clear()
 	paused = false
 	change_state(next)
@@ -2930,7 +2995,8 @@ func tick(dt: float) -> void:
 		if group_index < level.groups.size() and distance+0.000001 >= float(level.groups[group_index].position)*float(level.length):
 			spawn_group()
 		return
-	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p) or (not p.hostile and not p.get("repeated",false) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(p.entry,endless_source())))
+	if native_lifecycle_allowed():projectiles=native_pipeline.prune_beams(func(p): return long_laser_valid(p) or (not p.hostile and not p.get("repeated",false) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(p.entry,endless_source())))
+	else:projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p) or (not p.hostile and not p.get("repeated",false) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(p.entry,endless_source())))
 	for index in range(combat_weapon_entries().size()):
 		var entry: Dictionary = combat_weapon_entries()[index]
 		var key := str(entry.key)
@@ -2988,7 +3054,7 @@ func tick(dt: float) -> void:
 		if guarding_here():
 			if guard_engaged and is_final_encounter():
 				guard_engaged = false
-				projectiles.clear()
+				projectile_clear()
 				clear_level()
 				clear_timer = guard_interval()
 				return
@@ -2997,7 +3063,7 @@ func tick(dt: float) -> void:
 				respawn_guard()
 			return
 		if is_final_encounter():
-			projectiles.clear()
+			projectile_clear()
 			clear_level()
 		else:
 			change_state(State.TRAVEL)
@@ -3012,12 +3078,16 @@ func tick_projectiles(dt: float) -> void:
 	# Overrides select pending launches at step start; only this base advances
 	# the shield clock, before resolving scheduled periods and boundary hits.
 	if state==State.COMBAT:enemy_shield_time+=dt
-	var pending := projectiles.duplicate()
+	var managed:=native_lifecycle_allowed()
+	var transaction=native_pipeline.begin_step() if managed else null
+	var pending: Array=native_pipeline.script_snapshot(transaction) if managed else projectiles.duplicate()
 	var shield_timing := enemies.any(func(enemy):return float(enemy.get("max_shield",0))>0)
 	if shield_timing:tick_shield_beams(pending,dt)
 	if native_pipeline!=null:
-		native_pipeline.advance(self,dt,shield_timing,pending)
-		projectiles=projectiles.filter(func(p):return not p.dead and (not p.get("beam",false) or long_laser_valid(p)))
+		if managed:native_pipeline.advance(self,dt,shield_timing,[],transaction)
+		else:native_pipeline.advance(self,dt,shield_timing,pending)
+		if native_pipeline.has_method("cleanup"):projectiles=native_pipeline.cleanup(self,projectiles,managed)
+		else:projectiles=projectiles.filter(func(p):return not p.dead and (not p.get("beam",false) or long_laser_valid(p)))
 		return
 	for index in pending.size():
 		var shot: Dictionary = pending[index]
@@ -3050,7 +3120,7 @@ func tick_projectiles(dt: float) -> void:
 			var along: float = delta.dot(shot.direction)
 			var intersects := along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
 			if (delta.length() <= shot.speed*dt) if homing else intersects:
-				shot.dead = true
+				projectile_mark_dead(shot)
 				event.emit("projectile_impact", {"shot":shot,"pos":impact_point})
 				if shot.hostile:
 					hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
@@ -3065,7 +3135,7 @@ func tick_projectiles(dt: float) -> void:
 		shot.y += move.y
 		# Include the rendered trail before removing an off-screen projectile.
 		if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:
-			shot.dead = true
+			projectile_mark_dead(shot)
 	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
 
 func bind_projectile_motion(shot:Dictionary)->void:
@@ -3139,10 +3209,10 @@ func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->v
 		var along:float=delta.dot(shot.direction)
 		var intersects:=along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
 		if (delta.length()<=shot.speed*dt) if homing else intersects:
-			shot.dead=true;_native_projectile_contact(shot,aim,0);return
+			projectile_mark_dead(shot);_native_projectile_contact(shot,aim,0);return
 	var move:Vector2=shot.direction*float(shot.speed)*dt
 	shot.x+=move.x;shot.y+=move.y
-	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:shot.dead=true
+	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:projectile_mark_dead(shot)
 
 func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
 	return false
@@ -3821,7 +3891,7 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 		# A visible damage carrier starts at the hit, never at a weapon mount.
 		var hop:Dictionary={"x":origin.x,"y":origin.y,"target":target,"damage":raw,"type":type,"speed":db.weapon_motion_value("chain_carrier_speed",720.0),"hostile":false,"key":"chain","dead":false,"serial":projectile_serial,"direction":direction,"chain_hop":true,"attack_instance_id":chain.instance_id,"main_attack_id":effect.get("main_attack_id",0),"jewelEffects":continued,"critical":critical,"chain_weapon":effect.get("weapon_key",""),"combat_context":CombatContext.derive(context,"chain")}
 		bind_projectile_motion(hop)
-		projectiles.append(hop)
+		projectile_append(hop)
 		event.emit("enhancement_chain",{"source":origin,"target":chain_target_point(target),"weapon":str(effect.get("weapon_key","")),"shot":hop})
 
 func advance_chain_projectile(shot: Dictionary, dt: float) -> void:
@@ -3835,14 +3905,14 @@ func advance_chain_projectile(shot: Dictionary, dt: float) -> void:
 		var aim:=chain_target_point(shot.target)
 		var distance:=position.distance_to(aim)
 		if distance<=float(shot.speed)*dt:
-			shot.x=aim.x;shot.y=aim.y;shot.dead=true
+			shot.x=aim.x;shot.y=aim.y;projectile_mark_dead(shot)
 			event.emit("projectile_impact",{"shot":shot,"pos":aim})
 			hit_enemy(shot.target,shot.damage,int(shot.type),shot.jewelEffects,bool(shot.critical),shot.get("combat_context",{}))
 			return
 		shot.direction=(aim-position).normalized()
 	var movement:Vector2=shot.direction*float(shot.speed)*dt
 	shot.x+=movement.x;shot.y+=movement.y
-	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:shot.dead=true
+	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:projectile_mark_dead(shot)
 
 func queue_jewel_repeats(index: int, multiplier: float, beam: Dictionary = {}) -> void:
 	var context: Dictionary=enhancement_attack_contexts.get(index,{})

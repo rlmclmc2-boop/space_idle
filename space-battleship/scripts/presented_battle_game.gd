@@ -136,11 +136,15 @@ func tick(dt:float)->void:
 			var until:=float(packet.due)-motion_clock
 			if until>0.000000001:step=minf(step,until)
 		motion_clock+=step
-		var boss_survivors:Array=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead)) if state==State.COMBAT and is_boss_encounter() else []
+		var boss_survivors:Variant=[]
+		if state==State.COMBAT and is_boss_encounter():
+			boss_survivors=native_pipeline.boss_snapshot() if native_lifecycle_allowed() else projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead))
 		super.tick(step)
 		if state==State.LEVEL_CLEAR:
-			for shot in boss_survivors:
-				if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
+			if boss_survivors is Array:
+				for shot in boss_survivors:
+					if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
+			else:native_pipeline.retire_boss_snapshot(self,boss_survivors)
 		remaining-=step
 
 func reset_player()->void:
@@ -185,10 +189,10 @@ func launch_player_attack(index:int,target:Dictionary,weapon:Dictionary,attack:D
 		if shot.has("higgs"):
 			# The rendered rail spans the battlefield on this launch frame.
 			advance_higgs_projectile(shot,0.0)
-			shot.dead=true;projectiles.erase(shot)
+			projectile_mark_dead(shot);projectile_erase(shot)
 			return
-		shot.dead=true
-		projectiles.erase(shot)
+		projectile_mark_dead(shot)
+		projectile_erase(shot)
 		event.emit("projectile_impact",{"shot":shot,"pos":target_point(target)})
 		hit_enemy(target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
 		return
@@ -334,7 +338,7 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 		var next:=position+Vector2(shot.direction)*float(shot.speed)*dt
 		var closest:=Geometry2D.get_closest_point_to_segment(aim,position,next)
 		if closest.distance_to(aim)<=MISSILE_HIT_RADIUS:
-			shot.dead=true
+			projectile_mark_dead(shot)
 			if hit_records.size()>=2048:hit_records.pop_front()
 			hit_records.append({"time":motion_clock,"serial":int(shot.serial),"target_uid":int(shot.target.get("uid",-1)),"target_alive":float(shot.target.hp)>0,"damage":shot.damage})
 			event.emit("projectile_impact",{"shot":shot,"pos":aim})
@@ -350,12 +354,12 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 		# An empty target also excludes collision and every hit/crit effect above.
 	var movement:=Vector2(shot.direction)*float(shot.speed)*dt
 	shot.x+=movement.x;shot.y+=movement.y
-	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+80:shot.dead=true
+	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+80:projectile_mark_dead(shot)
 	return true
 
 func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
 	if bool(shot.get("retirement_emitted",false)):return
-	shot.retirement_emitted=true;shot.dead=true
+	shot.retirement_emitted=true;projectile_mark_dead(shot)
 	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":projectile_position(shot),"direction":projectile_direction(shot),"speed":projectile_speed(shot),"coast":coast}
 	missile_retirements.append(record)
 	if missile_retirements.size()>128:missile_retirements.pop_front()

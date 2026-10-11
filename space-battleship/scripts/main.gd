@@ -1805,12 +1805,14 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 				nearest={"enemy":enemy,"slot":slot}
 		if not nearest.is_empty():enemy_pose(nearest.enemy)["rail_fired_"+str(nearest.slot)]=fx_time
 	var pos := visual_muzzle(shot)
-	var trail := PackedVector2Array()
-	trail.resize(14)
-	trail.fill(pos)
-	# One fixed trail buffer per shot, overwritten in place during flight.
 	if projectile_visuals.size()<256:
-		projectile_visuals.append({"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else game.projectile_direction(shot).angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":game.projectile_position(shot),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
+		var angle:float=-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else game.projectile_direction(shot).angle()
+		if game.native_pipeline!=null and game.native_pipeline.has_method("create_visual"):
+			projectile_visuals.append(game.native_pipeline.create_visual(shot,angle,mount,pos,game.projectile_position(shot),spread))
+		else:
+			var trail := PackedVector2Array();trail.resize(14);trail.fill(pos)
+			projectile_visuals.append({"shot":shot,"angle":angle,"mount":mount,"age":0.0,"origin":pos,"logical_origin":game.projectile_position(shot),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
+		if game.native_pipeline!=null and game.native_pipeline.has_method("register_visual"):game.native_pipeline.register_visual(shot,projectile_visuals.back(),projectile_visuals.size()-1)
 		if key in ["laser","cannon"] and not shot.target.is_empty():
 			var visual: Dictionary=projectile_visuals.back()
 			# Presented pulses already launch toward a projected aim. Map their

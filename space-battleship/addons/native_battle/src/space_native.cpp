@@ -13,6 +13,8 @@
 #include <cmath>
 #include <deque>
 #include <vector>
+#include <memory>
+#include <unordered_map>
 
 using namespace godot;
 static_assert(sizeof(real_t)==4 && sizeof(double)==8,"This build must match Godot single vectors and GDScript doubles.");
@@ -46,6 +48,16 @@ struct Motion {
     uint64_t generation = 0;
     int kind = 0; // 0 straight, 1 presented missile, 2 chain, 3 ordinary homing
     bool missile_fields = false;
+};
+// Numeric arena has no facade, lease or pipeline references. Surviving public
+// leases retain their numeric state without retaining the lifecycle store.
+struct MotionArena {
+    std::deque<Motion> motions;
+    std::vector<size_t> free_slots;
+    uint64_t next_generation=0;
+    void release(size_t slot,uint64_t generation) {
+        if(motions[slot].generation==generation){motions[slot].generation=0;free_slots.push_back(slot);}
+    }
 };
 bool same(const Variant &a, const Variant &b) { return UtilityFunctions::is_same(a, b); }
 bool chain_hp_positive(const Variant &hp) {
@@ -195,7 +207,7 @@ public:
 class SpaceMotionLease : public RefCounted {
     GDCLASS(SpaceMotionLease, RefCounted)
     friend class SpaceNativePipeline;
-    Ref<SpaceNativePipeline> owner;
+    std::shared_ptr<MotionArena> arena;
     size_t slot = 0;
     uint64_t generation = 0;
     Motion &motion() const;
@@ -217,6 +229,33 @@ public:
     void set_speed(double v) { motion().speed = v; }
     void set_age(double v) { motion().age = v; }
     void set_orphan(double v) { motion().orphan = v; }
+};
+
+struct ProjectileRecord {
+    Dictionary shot,target,visual;
+    Ref<SpaceMotionLease> lease;
+    uint64_t generation=0;
+    bool active=true,hostile=false,dead=false,ballistic=false,beam=false,prototype=false,chain=false;
+    int visual_index=-1;
+    String key;
+    Vector2 ballistic_origin,ballistic_logical;
+    double cruise_speed=0;
+    void capture() {
+        lease=shot.get("motion_lease",Variant());target=shot.get("target",Dictionary());
+        hostile=shot.get("hostile",false);dead=shot.get("dead",false);beam=shot.get("beam",false);
+        prototype=shot.get("prototype_missile",false);chain=shot.get("chain_hop",false);
+        key=String(shot.get("key","")).replace("_mon","").replace("-mon","");
+        ballistic=shot.has("ballistic_target_origin");
+        if(ballistic){ballistic_origin=shot["ballistic_target_origin"];ballistic_logical=shot["ballistic_target_logical"];}
+        cruise_speed=shot.get("cruise_speed",0.0);
+    }
+};
+class SpaceStepSnapshot : public RefCounted {
+    GDCLASS(SpaceStepSnapshot,RefCounted)
+    friend class SpaceNativePipeline;
+    std::vector<std::shared_ptr<ProjectileRecord>> entries;
+protected:
+    static void _bind_methods(){}
 };
 
 struct PreparedFlight {
@@ -258,11 +297,21 @@ class SpaceNativePipeline : public RefCounted {
     void recycle_frame(std::vector<PreparedFlight> &flights) {
         flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}
     }
-    std::deque<Motion> motions;
-    std::vector<size_t> free_slots;
-    uint64_t next_generation = 0;
-    std::vector<Dictionary> pending;
-    std::vector<Ref<SpaceMotionLease>> pins;
+    std::shared_ptr<MotionArena> arena=std::make_shared<MotionArena>();
+    std::vector<std::shared_ptr<ProjectileRecord>> records;
+    std::unordered_map<int64_t,std::weak_ptr<ProjectileRecord>> record_index;
+    Array member_view,replacement_view;
+    std::vector<std::shared_ptr<ProjectileRecord>> replacement_records;
+    bool replacement_ready=false;
+    uint64_t record_generation=0;
+    bool records_dirty=false,canonical_unique=true;
+    uint64_t managed_steps=0,compatibility_steps=0;
+    std::shared_ptr<ProjectileRecord> lookup(Dictionary shot) const {
+        if(!shot.has("serial"))return {};
+        auto found=record_index.find(int64_t(shot["serial"]));
+        if(found==record_index.end())return {};
+        auto r=found->second.lock();return r&&r->active&&same(r->shot,shot)?r:nullptr;
+    }
     std::vector<Vector2> vertices;
     std::vector<Color> colors;
     PackedVector2Array packed_vertices;
@@ -284,9 +333,6 @@ class SpaceNativePipeline : public RefCounted {
     std::array<std::vector<ContactEvent>,2> contact_events;
     std::vector<Vector2> contact_path;
 
-    void release(size_t slot, uint64_t gen) {
-        if (motions[slot].generation == gen) { motions[slot].generation = 0; free_slots.push_back(slot); }
-    }
     void tri(Vector2 a, Vector2 b, Vector2 c, Color ca, Color cb, Color cc) {
         vertices.push_back(a); vertices.push_back(b); vertices.push_back(c);
         colors.push_back(ca); colors.push_back(cb); colors.push_back(cc);
@@ -310,6 +356,52 @@ class SpaceNativePipeline : public RefCounted {
 protected:
     static void _bind_methods();
 public:
+    void append_record(Array view,Dictionary shot) {
+        member_view=view;
+        auto r=std::make_shared<ProjectileRecord>();r->shot=shot;r->generation=++record_generation;r->capture();
+        if(!shot.has("serial")||record_index.count(int64_t(shot.get("serial",-1))))canonical_unique=false;
+        records.push_back(r);if(shot.has("serial"))record_index[int64_t(shot["serial"])]=r;
+    }
+    void clear_records(Array view) {
+        for(auto &r:records)r->active=false;
+        records.clear();record_index.clear();replacement_records.clear();replacement_view=Array();replacement_ready=false;member_view=view;records_dirty=false;canonical_unique=true;
+    }
+    void erase_record(Array view,int64_t index) {
+        if(view.size()+1!=int64_t(records.size())){replace_records(view);return;}
+        if(index>=0&&index<int64_t(records.size())){records[index]->active=false;records.erase(records.begin()+index);}
+        member_view=view;
+    }
+    void replace_records(Array view) {
+        std::vector<std::shared_ptr<ProjectileRecord>> next;
+        if(replacement_ready&&same(view,replacement_view)){next.swap(replacement_records);replacement_ready=false;replacement_view=Array();}
+        else {next.reserve(view.size());
+            for(int i=0;i<view.size();++i){Dictionary shot=view[i];auto r=lookup(shot);
+                if(!r){r=std::make_shared<ProjectileRecord>();r->shot=shot;r->generation=++record_generation;r->capture();}
+                if(records_dirty)r->capture();next.push_back(r);
+            }
+        }
+        for(auto &r:records)r->active=false;
+        records.swap(next);record_index.clear();canonical_unique=true;
+        for(auto &r:records){r->active=true;if(!r->shot.has("serial")||record_index.count(int64_t(r->shot.get("serial",-1))))canonical_unique=false;if(r->shot.has("serial"))record_index[int64_t(r->shot["serial"])]=r;}
+        member_view=view;records_dirty=false;
+    }
+    void mark_dead(Dictionary shot) {shot["dead"]=true;auto r=lookup(shot);if(r)r->dead=true;}
+    Dictionary lifecycle_stats() const {Dictionary d;d["managed_steps"]=managed_steps;d["compatibility_steps"]=compatibility_steps;d["active"]=int64_t(records.size());d["generation"]=record_generation;return d;}
+    Array cleanup(Object *game,Array view,bool managed) {
+        Ref<SpaceNativePipeline> guard(this);
+        Array result;result.set_typed(view.get_typed_builtin(),view.get_typed_class_name(),view.get_typed_script());
+        if(!managed){records_dirty=true;for(int i=0;i<view.size();++i){Dictionary s=view[i];if(!bool(s["dead"])&&(!bool(s.get("beam",false))||bool(game->call("long_laser_valid",s))))result.push_back(s);}}
+        else {replacement_records.clear();for(auto &r:records){if(!r->dead&&(!r->beam||bool(game->call("long_laser_valid",r->shot)))){result.push_back(r->shot);replacement_records.push_back(r);}}
+            replacement_view=result;replacement_ready=true;
+        }
+        return result;
+    }
+    Array prune_beams(Callable predicate) {
+        Ref<SpaceNativePipeline> guard(this);
+        Array result;result.set_typed(member_view.get_typed_builtin(),member_view.get_typed_class_name(),member_view.get_typed_script());replacement_records.clear();
+        for(auto &r:records)if(!r->beam||bool(predicate.call(r->shot))){result.push_back(r->shot);replacement_records.push_back(r);}
+        replacement_view=result;replacement_ready=true;return result;
+    }
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
         ERR_FAIL_INDEX(category,2);
         contact_events[category].push_back({point,direction,born,launch,critical,type});
@@ -326,26 +418,38 @@ public:
             else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
     }
     void draw_contacts(RID canvas,double now,bool pulse_enabled);
-    Dictionary find_visual(Array visuals,Dictionary shot) const {
-        for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i];if(same(v["shot"],shot))return v;}return Dictionary();
+    Ref<SpaceStepSnapshot> boss_snapshot(){Ref<SpaceStepSnapshot> step;step.instantiate();for(auto &r:records)if(r->lease.is_valid()&&r->lease->motion().kind==1&&!r->dead)step->entries.push_back(r);return step;}
+    void retire_boss_snapshot(Object *game,Ref<SpaceStepSnapshot> step){Ref<SpaceNativePipeline> guard(this);for(auto &r:step->entries)if(!bool(r->shot.get("dead",false))&&!member_view.has(r->shot))game->call("_retire_missile",r->shot,"level_clear",true);}
+    Dictionary create_visual(Dictionary shot,double angle,int64_t mount,Vector2 origin,Vector2 logical,double spread) {
+        Dictionary v;v["shot"]=shot;v["angle"]=angle;v["mount"]=mount;v["age"]=0.0;v["origin"]=origin;v["logical_origin"]=logical;v["spread"]=spread;v["head"]=0;v["samples"]=1;
+        if(!bool(shot.get("prototype_missile",false))&&!shot.has("ballistic_target_origin")){PackedVector2Array trail;trail.resize(14);trail.fill(origin);PackedFloat32Array times;times.resize(14);times.fill(0);v["trail"]=trail;v["trail_times"]=times;}
+        return v;
     }
+    Dictionary find_visual(Array visuals,Dictionary shot) const {
+        auto r=lookup(shot);if(r&&r->visual_index>=0&&r->visual_index<visuals.size()&&same(visuals[r->visual_index],r->visual))return r->visual;
+        for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i];if(same(v["shot"],shot)){if(r){r->visual=v;r->visual_index=i;}return v;}}return Dictionary();
+    }
+    void register_visual(Dictionary shot,Dictionary visual,int64_t index){auto r=lookup(shot);if(r){r->visual=visual;r->visual_index=index;}}
     Ref<SpaceMotionLease> bind_motion(Dictionary shot) {
         Ref<SpaceMotionLease> lease; lease.instantiate();
-        const size_t slot = free_slots.empty() ? motions.size() : free_slots.back();
-        if (free_slots.empty()) motions.emplace_back(); else free_slots.pop_back();
-        Motion &m = motions[slot]; m = Motion(); m.generation = ++next_generation;
+        const size_t slot = arena->free_slots.empty() ? arena->motions.size() : arena->free_slots.back();
+        if (arena->free_slots.empty()) arena->motions.emplace_back(); else arena->free_slots.pop_back();
+        Motion &m = arena->motions[slot]; m = Motion(); m.generation = ++arena->next_generation;
         m.x = shot["x"]; m.y = shot["y"]; m.direction = shot["direction"]; m.speed = shot["speed"];
         m.missile_fields = shot.has("motion_age");
         m.age = shot.get("motion_age", 0.0); m.orphan = shot.get("orphan_age", 0.0);
         m.last_aim = shot.get("last_target_point", Vector2());
         const String key = shot.get("key", "");
         m.kind = bool(shot.get("chain_hop", false)) ? 2 : bool(shot.get("prototype_missile", false)) ? 1 : key.replace("_mon", "").replace("-mon", "") == "missile" ? 3 : 0;
-        lease->owner = Ref<SpaceNativePipeline>(this); lease->slot = slot; lease->generation = m.generation;
+        lease->arena = arena; lease->slot = slot; lease->generation = m.generation;
         shot["motion_lease"] = lease;
         for (const char *key : {"x", "y", "direction", "speed", "motion_age", "orphan_age", "last_target_point"}) shot.erase(key);
         return lease;
     }
-    void advance(Object *game, double dt, bool shield_timing, Array snapshot);
+    Ref<SpaceStepSnapshot> begin_step(){Ref<SpaceStepSnapshot> step;step.instantiate();step->entries=records;return step;}
+    bool members_match(Array view) const {return canonical_unique&&!records_dirty&&same(view,member_view)&&view.size()==int64_t(records.size());}
+    Array script_snapshot(Ref<SpaceStepSnapshot> step) const {Array result;for(auto &r:step->entries)if(r->lease.is_null())result.push_back(r->shot);return result;}
+    void advance(Object *game, double dt, bool shield_timing, Array snapshot, Variant transaction=Variant());
     Ref<SpaceFlightFrame> prepare_flights(Object *surface, Array shots, Vector2 offset);
     void draw_flights(Object *surface, Variant prepared, Vector2 offset);
     void bind_visual(Dictionary visual) {
@@ -377,14 +481,20 @@ public:
     }
 };
 
-Motion &SpaceMotionLease::motion() const { return owner->motions[slot]; }
-SpaceMotionLease::~SpaceMotionLease() { if (owner.is_valid()) owner->release(slot, generation); }
+Motion &SpaceMotionLease::motion() const { return arena->motions[slot]; }
+SpaceMotionLease::~SpaceMotionLease() { if (arena) arena->release(slot, generation); }
 SpaceFlightFrame::~SpaceFlightFrame() {if(recycler.is_valid())recycler->recycle_frame(flights);}
 
-void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot) {
+void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot, Variant transaction) {
+    Ref<SpaceNativePipeline> guard(this);
+    Ref<SpaceStepSnapshot> step=transaction;
+    const bool managed=step.is_valid();
+    if(managed)++managed_steps;else {++compatibility_steps;records_dirty=true;}
+    std::vector<Dictionary> pending;
+    std::vector<Ref<SpaceMotionLease>> pins;
     Array live = game->get("projectiles");
     pending.clear(); pins.clear(); pending.reserve(live.size()); pins.reserve(live.size());
-    for (int i = 0; i < snapshot.size(); ++i) {
+    for (int i = 0; !managed && i < snapshot.size(); ++i) {
         Dictionary shot = snapshot[i]; pending.push_back(shot);
         pins.push_back(shot.get("motion_lease", Variant()));
     }
@@ -426,6 +536,7 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
         return true;
     };
     bool publication_valid = publication_current();
+    Variant publication_version=game->get("projectile_target_points_version");
     auto refresh = [&]() {
         live = game->get("projectiles"); enemies = game->get("enemies"); registry = game->get("missile_target_registry"); player = game->get("player");
         player_alive = game->call("_native_player_target_alive",player);
@@ -434,14 +545,16 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
         // rejected publication stays rejected until the next real substep.
         publication_valid = publication_current();
         publication = game->get("projectile_target_points");
+        publication_version=game->get("projectile_target_points_version");
     };
-    auto aim_for = [&](Dictionary target, Dictionary shot, bool ballistic) -> Vector2 {
-        if (ballistic && shot.has("ballistic_target_origin")) return Vector2(shot["ballistic_target_origin"]) + Vector2(target["x"],target["y"]) - Vector2(shot["ballistic_target_logical"]);
+    auto aim_for = [&](Dictionary target, Dictionary shot, bool ballistic, ProjectileRecord *record) -> Vector2 {
+        if(ballistic&&record&&record->ballistic)return record->ballistic_origin+Vector2(target["x"],target["y"])-record->ballistic_logical;
+        if (ballistic && !record && shot.has("ballistic_target_origin")) return Vector2(shot["ballistic_target_origin"]) + Vector2(target["x"],target["y"]) - Vector2(shot["ballistic_target_logical"]);
         if (same(target, player)) return Vector2(target["x"], target["y"]);
         const int64_t uid = target.get("uid", -1);
         Dictionary row = publication_valid ? Dictionary(publication.get(uid, Dictionary())) : Dictionary();
         if (!row.is_empty() && same(row["entity"], target) && same(row["x"], target["x"]) && same(row["y"], target["y"]) &&
-            same(row["version"], game->get("projectile_target_points_version"))) {
+            same(row["version"], managed?publication_version:game->get("projectile_target_points_version"))) {
             int64_t target_index = row["index"];
             if (target_index >= 0 && target_index < enemies.size() && same(enemies[target_index], target)) return row["point"];
         }
@@ -452,32 +565,44 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
         source_points.push_back({target,target["x"],target["y"],point});
         return point;
     };
-    for (size_t index = 0; index < pending.size(); ++index) {
-        Dictionary shot = pending[index];
-        if ((index >= size_t(live.size()) || !same(live[index], shot)) && !live.has(shot)) continue;
-        Ref<SpaceMotionLease> lease = pins[index];
+    const size_t count=managed?step->entries.size():pending.size();
+    for (size_t index = 0; index < count; ++index) {
+        std::shared_ptr<ProjectileRecord> record=managed?step->entries[index]:nullptr;
+        Dictionary shot=managed?record->shot:pending[index];
+        // A removed snapshot entry may become live again under Array.has
+        // content equality. Decode only that exceptional entry, never rescan
+        // all records after a contact or silently replace equality with identity.
+        const bool typed=managed&&record->active;
+        if(managed&&!typed&&!live.has(shot))continue;
+        if(!managed&&(index>=size_t(live.size())||!same(live[index],shot))&&!live.has(shot))continue;
+        struct ReconcileOne {std::shared_ptr<ProjectileRecord> value;~ReconcileOne(){if(value)value->capture();}};
+        ReconcileOne reconcile{managed&&!typed?lookup(shot):nullptr};
+        if(!typed)record.reset();
+        Ref<SpaceMotionLease> lease=typed?record->lease:managed?Ref<SpaceMotionLease>(shot.get("motion_lease",Variant())):pins[index];
         if (lease.is_null()) {
+            if(typed&&record->beam&&shield_timing)continue;
             game->call("_native_unpacked_projectile", shot, dt, shield_timing);
+            if(typed){record->dead=shot.get("dead",false);record->target=shot.get("target",Dictionary());}
             refresh(); if (live.is_empty()) break; continue;
         }
         Motion &m = lease->motion();
-        if(m.kind==2 && bool(shot.get("dead",false)))continue;
-        Dictionary target = shot["target"];
-        const bool hostile = shot["hostile"];
+        if(m.kind==2 && (typed?record->dead:bool(shot.get("dead",false))))continue;
+        Dictionary target=typed?record->target:Dictionary(shot["target"]);
+        const bool hostile=typed?record->hostile:bool(shot["hostile"]);
         const bool target_alive = !target.is_empty() && (m.kind == 1 ? double(target.get("hp",0)) > 0 && same(registry.get(int64_t(target.get("uid",-1)), Variant()), target) : hostile ? player_alive : (m.kind==2?chain_hp_positive(target.get("hp",0)):double(target.get("hp",0))>0) && enemies.has(target));
-        if (!target_alive) { target = Dictionary(); shot["target"] = target; }
+        if (!target_alive) { target = Dictionary(); shot["target"] = target;if(typed)record->target=target; }
         bool impact = false;
         Vector2 aim;
         if (m.kind == 1) {
             m.age += dt;
             if (!target.is_empty() && m.age > lifetime) {
-                game->call("_native_missile_retire", shot, "lifetime"); refresh(); continue;
+                game->call("_native_missile_retire", shot, "lifetime");if(typed)record->dead=shot.get("dead",false); refresh(); continue;
             }
             const Vector2 p = position(m);
             const double old_angle = engine_angle(m.direction);
-            double speed = UtilityFunctions::lerpf(launch_speed, double(shot.get("cruise_speed",cruise_default)), UtilityFunctions::smoothstep(ignition,cruise_at,m.age));
+            double speed = UtilityFunctions::lerpf(launch_speed, typed&&record->cruise_speed!=0?record->cruise_speed:double(shot.get("cruise_speed",cruise_default)), UtilityFunctions::smoothstep(ignition,cruise_at,m.age));
             if (!target.is_empty()) {
-                m.orphan = 0; aim = aim_for(target,shot,false); m.last_aim = aim;
+                m.orphan = 0; aim = aim_for(target,shot,false,record.get()); m.last_aim = aim;
                 const double wanted = engine_angle(aim-p);
                 const double range = engine_distance(p,aim);
                 if (range < brake_range && std::abs(UtilityFunctions::angle_difference(old_angle,wanted)) > brake_angle) speed = std::min(speed,std::max(min_speed,range*turn_rate*brake_factor));
@@ -492,11 +617,11 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
                 impact = engine_distance(closest,aim) <= hit_radius;
             } else {
                 m.orphan += dt;
-                if (m.orphan >= orphan_lifetime) { game->call("_native_missile_retire",shot,"orphan_timeout"); refresh(); continue; }
+                if (m.orphan >= orphan_lifetime) { game->call("_native_missile_retire",shot,"orphan_timeout");if(typed)record->dead=shot.get("dead",false); refresh(); continue; }
                 m.speed = std::max(m.speed,speed);
             }
         } else if (!target.is_empty()) {
-            aim = hostile ? Vector2(target["x"],target["y"]) : aim_for(target,shot,m.kind != 2);
+            aim = hostile ? Vector2(target["x"],target["y"]) : aim_for(target,shot,m.kind != 2,record.get());
             const Vector2 delta = aim-position(m);
             if (m.kind == 2) {
                 impact = engine_distance(position(m),aim) <= m.speed*dt;
@@ -508,13 +633,13 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
             }
         }
         if (impact) {
-            shot["dead"] = true;
+            shot["dead"] = true;if(typed)record->dead=true;
             game->set("maximum_turn_step_error",maximum_turn_error);
             game->call("_native_projectile_contact",shot,aim,m.kind);
             refresh(); if (live.is_empty()) break; continue;
         }
         const Vector2 step = movement(m,dt); m.x += step.x; m.y += step.y;
-        if (m.x < -32 || m.x > 572+32 || m.y < -32 || m.y > 696 + (m.kind == 1 ? 80 : 32)) shot["dead"] = true;
+        if (m.x < -32 || m.x > 572+32 || m.y < -32 || m.y > 696 + (m.kind == 1 ? 80 : 32)) {shot["dead"] = true;if(typed)record->dead=true;}
     }
     game->set("maximum_turn_step_error",maximum_turn_error);
     pending.clear(); pins.clear();
@@ -662,6 +787,22 @@ void SpaceMotionLease::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_orphan","value"),&SpaceMotionLease::set_orphan);
 }
 void SpaceNativePipeline::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("append_record","view","shot"),&SpaceNativePipeline::append_record);
+    ClassDB::bind_method(D_METHOD("clear_records","view"),&SpaceNativePipeline::clear_records);
+    ClassDB::bind_method(D_METHOD("erase_record","view","index"),&SpaceNativePipeline::erase_record);
+    ClassDB::bind_method(D_METHOD("replace_records","view"),&SpaceNativePipeline::replace_records);
+    ClassDB::bind_method(D_METHOD("mark_dead","shot"),&SpaceNativePipeline::mark_dead);
+    ClassDB::bind_method(D_METHOD("lifecycle_stats"),&SpaceNativePipeline::lifecycle_stats);
+    ClassDB::bind_method(D_METHOD("cleanup","game","view","managed"),&SpaceNativePipeline::cleanup);
+    ClassDB::bind_method(D_METHOD("prune_beams","predicate"),&SpaceNativePipeline::prune_beams);
+    ClassDB::bind_method(D_METHOD("begin_step"),&SpaceNativePipeline::begin_step);
+    ClassDB::bind_method(D_METHOD("members_match","view"),&SpaceNativePipeline::members_match);
+    ClassDB::bind_method(D_METHOD("script_snapshot","step"),&SpaceNativePipeline::script_snapshot);
+    ClassDB::bind_method(D_METHOD("register_visual","shot","visual","index"),&SpaceNativePipeline::register_visual);
+    ClassDB::bind_method(D_METHOD("boss_snapshot"),&SpaceNativePipeline::boss_snapshot);
+    ClassDB::bind_method(D_METHOD("retire_boss_snapshot","game","step"),&SpaceNativePipeline::retire_boss_snapshot);
+    ClassDB::bind_method(D_METHOD("create_visual","shot","angle","mount","origin","logical","spread"),&SpaceNativePipeline::create_visual);
+
     ClassDB::bind_method(D_METHOD("record_contact","category","point","direction","born","launch","critical","type"),&SpaceNativePipeline::record_contact);
     ClassDB::bind_method(D_METHOD("prune_contacts","now","clear_enemy"),&SpaceNativePipeline::prune_contacts);
     ClassDB::bind_method(D_METHOD("clear_contacts"),&SpaceNativePipeline::clear_contacts);
@@ -669,7 +810,7 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceNativePipeline::draw_contacts);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceNativePipeline::find_visual);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
-    ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
+    ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot","transaction"),&SpaceNativePipeline::advance,DEFVAL(Variant()));
     ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);
     ClassDB::bind_method(D_METHOD("begin"),&SpaceNativePipeline::begin);
     ClassDB::bind_method(D_METHOD("flight","point","axis","age","powered","visual","offset","budget"),&SpaceNativePipeline::flight);
@@ -763,14 +904,15 @@ Ref<SpaceFlightFrame> SpaceNativePipeline::prepare_flights(Object *surface,Array
     };
     for(int i=0;i<shots.size();++i) {
         Dictionary p=shots[i],v=index.get(p.get("serial",Variant()),Dictionary());
-        Ref<SpaceMotionLease> m=p.get("motion_lease",Variant());Ref<SpaceVisualLease> visual=v.get("visual_lease",Variant());
-        String key=String(p.get("key","")).replace("_mon","").replace("-mon","");bool hostile=p.get("hostile",false);
-        bool chain=p.get("chain_hop",false),missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&bool(p.get("prototype_missile",false));
+        auto record=members_match(shots)?lookup(p):nullptr;
+        Ref<SpaceMotionLease> m=record?record->lease:Ref<SpaceMotionLease>(p.get("motion_lease",Variant()));Ref<SpaceVisualLease> visual=v.get("visual_lease",Variant());
+        String key=record?record->key:String(p.get("key","")).replace("_mon","").replace("-mon","");bool hostile=record?record->hostile:bool(p.get("hostile",false));
+        bool chain=record?record->chain:bool(p.get("chain_hop",false)),missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&(record?record->prototype:bool(p.get("prototype_missile",false)));
         bool pulse=prototype&&pulse_enabled&&!hostile&&key=="laser",enemy=prototype&&enemy_enabled&&hostile&&(key=="laser"||key=="cannon");
         // The original visual list is capped at256. Unretained ordinary flights
         // still have an authoritative native position and heading; the cap must
         // not reintroduce one script call/getter for each flying projectile.
-        if(m.is_null()||bool(p.get("beam",false))||!(chain||missile||((pulse||enemy)&&(v.is_empty()||(visual.is_valid()&&v.has("fixed_step")))))) {
+        if(m.is_null()||(record?record->beam:bool(p.get("beam",false)))||!(chain||missile||((pulse||enemy)&&(v.is_empty()||(visual.is_valid()&&v.has("fixed_step")))))) {
             Dictionary f=surface->call("_prepare_projectile_flight",p,index,offset);
             if(!f.is_empty())append(p,f["visual"],m,Ref<SpaceVisualLease>(Dictionary(f["visual"]).get("visual_lease",Variant())),f["pos"],f["budget"],key,hostile,chain);
             continue;
@@ -872,7 +1014,7 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
     for(int i=visuals.size()-1;i>=0;--i) {
         Dictionary visual=visuals[i],shot=visual["shot"];
         bool alive=shot.has("serial")?same(active.get(shot["serial"],Variant()),shot):shots.has(shot);
-        if(!alive){visuals.remove_at(i);continue;}
+        if(!alive){auto r=lookup(shot);if(r){r->visual=Dictionary();r->visual_index=-1;}visuals.remove_at(i);continue;}
         Ref<SpaceVisualLease> v=visual.get("visual_lease",Variant());
         if(v.is_null()){surface->call("_advance_projectile_visual_record",visual,dt);continue;}
         Ref<SpaceMotionLease> m=shot.get("motion_lease",Variant());
@@ -897,7 +1039,8 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
     ClassDB::register_class<SpaceDamageHistory>();ClassDB::register_class<SpaceDamageLayout>();
-    ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceFlightFrame>();ClassDB::register_class<SpaceNativePipeline>();
+    ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceFlightFrame>();ClassDB::register_class<SpaceStepSnapshot>();
+    ClassDB::register_class<SpaceNativePipeline>();
 }
 void terminate(ModuleInitializationLevel) {}
 extern "C" GDExtensionBool GDE_EXPORT space_native_init(GDExtensionInterfaceGetProcAddress get_proc,GDExtensionClassLibraryPtr library,GDExtensionInitialization *initialization) {

@@ -54,6 +54,7 @@ func configure(g,layer:int)->bool:
  g.invalidate_stat_cache()
  manifest={"layer":layer,"scope":"synthetic held-health battle fixture, no natural progression claim","ordinary":g.weapon_entries().duplicate(true),"enhancement_effective_level":g.enhancement_effective_level(),"branches":g.profile.enhancementBranches.duplicate(true),"equipped":g.profile.hyperspace.inventory.equipped.duplicate(),"drones":g.profile.hyperspace.inventory.drones.duplicate(true),"totals":g.hyperspace_totals().duplicate(true),"combat_sources":g.combat_weapon_entries().duplicate(true),"alive_enemies":g.enemies.size(),"rng":str(g.rng.state)}
  g.event.connect(on_event)
+ if g.has_method("native_readonly_observer"):g.native_readonly_observer(on_event)
  return true
 func sample(g,scene):
  var chain=0;var links=0;var beams=0
@@ -67,6 +68,7 @@ func sample(g,scene):
  return [chain,links,beams,visuals,scene.get_tree().get_node_count(),frame_counts.duplicate()]
 func finish(g):
  g.event.disconnect(on_event)
+ if g.has_method("native_forget_observer"):g.native_forget_observer(on_event)
  return {"config":manifest,"counts":counts.duplicate(),"counter_scope":"RAM event counters; live load scan included in full postdraw cadence, no perframe prints; no function profiler"}
 
 func battle_contract(g)->Dictionary:

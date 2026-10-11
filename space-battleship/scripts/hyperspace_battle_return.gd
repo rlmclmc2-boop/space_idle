@@ -138,7 +138,7 @@ static func restore(g,text:String)->void:
 	var root:=decode(JSON.parse_string(text),g)
 	var armour:Variant=g.player.armour;var shield:Variant=g.player.shield
 	g.player=root.player;g.player.armour=armour;g.player.shield=shield
-	g.enemies.assign(root.enemies);g.projectiles.assign(root.projectiles);g.jewel_repeats.assign(root.jewel_repeats)
+	g.enemies.assign(root.enemies);g.projectile_assign(root.projectiles);g.jewel_repeats.assign(root.jewel_repeats)
 	g.drone_combat.delayed=root.drone_delayed
 	g.enhancement_branches.weapons=root.branch_weapons;g.enhancement_branches.defenses=root.branch_defenses;g.enhancement_attack_contexts=root.attack_contexts
 	for key in ["retreat_from","retreat_target","retreat_elapsed","guard_index","guard_elapsed","guard_engaged","first_clear","enemy_shield_time","enemy_shield_hit_time","motion_clock","release_context"]:

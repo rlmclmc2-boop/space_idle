@@ -81,7 +81,7 @@ static func restore(g,saved:Dictionary,point:Dictionary)->void:
  # No start()/spawn_group(): completed main actors stay dead. Global serials/RNG/economy keep advancing.
  g.stage=int(point.stage);g.distance=float(point.distance);g.group_index=int(point.groupIndex);g.profile.loop=bool(point.loop)
  g.guard_arrived=bool(point.guardArrived);g.retreat_boss_pending=bool(point.retreatBossPending);g.pending_unlocks.assign(point.pendingUnlocks)
- g.enemies.clear();g.projectiles.clear()
+ g.enemies.clear();g.projectile_clear()
  if g.get("missile_queue") is Array:g.get("missile_queue").clear()
  g.reset_player();g.drone_combat.reset()
  g.state=int(point.state);g.paused=bool(saved.paused);g.clear_timer=float(saved.clear_timer);g.cooldowns.clear()

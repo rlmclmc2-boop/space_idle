@@ -2,7 +2,13 @@ extends SceneTree
 # Use whole_game_perf.py: synthetic fixtures, copied project and isolated player data.
 # Fixed-step wall times include rendering; headless wall times are not FPS.
 class UI extends "res://scripts/battlefield.gd":
- func create_battle_game(_persist:bool)->BattleGame:return super.create_battle_game(false)
+ func create_battle_game(_persist:bool)->BattleGame:
+  var g=super.create_battle_game(false)
+  if g.has_method("native_readonly_observer"):g.native_readonly_observer(Callable(self,"on_event"))
+  if g.has_method("native_readonly_observer"):
+   for callback in [g.target_provider,g.launch_provider,g.drone_launch_provider,g.rail_geometry_provider,g.rail_target_point_provider]:
+    if callback.is_valid():g.native_readonly_observer(callback)
+  return g
  func show_qa_tools()->void:pass
  func show_chrono_login_report()->void:pass
  var window_events_enabled := false
@@ -384,6 +390,7 @@ func run():
   row.tutorial_projection_start=tutorial_build_start;row.tutorial_projection_end={"eligibility":tutorial_projection_builds(scene,"builds"),"reads":tutorial_projection_builds(scene,"read_builds")}
   row.combat_descriptor_start=descriptor_start;row.combat_descriptor_end=combat_descriptor_counts(g)
   row.retention_counts=scene.retention_counts.duplicate()
+  row.native_lifecycle=g.native_pipeline.lifecycle_stats() if g.native_pipeline!=null and g.native_pipeline.has_method("lifecycle_stats") else {}
   row.retained_part_builds=contact_part_builds(scene)
   row.envelope_builds_in_sample=scene.enemy_recognition.envelope_builds-envelope_build_start
   row.part_builds_in_sample={}
