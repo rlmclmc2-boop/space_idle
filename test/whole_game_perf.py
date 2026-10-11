@@ -266,7 +266,7 @@ def main():
         from battle_render_diagnostic import prepare
         prepare(project, ROOT, args.dynamic_replay)
     if args.combat_stress_layer is not None:
-        if not args.battle_only or not args.realtime or not args.missile_loadout or not args.organic_economy or args.authored_stage!=20:parser.error('combat layers require original8missile realtime battle-only authoredQA20 fixture')
+        if not args.battle_only or not args.missile_loadout or not args.organic_economy or args.authored_stage!=20:parser.error('combat layers require original8missile battle-only authoredQA20 fixture')
         shutil.copy2(ROOT/'test/combat_stress_fixture.gd',project/'combat_stress_fixture.gd')
         probe_path=project/'probe.gd';code=probe_path.read_text(encoding='utf-8')
         code=code.replace(' scene.refresh_structure();scene.refresh_tab_visibility()', ' var stress=preload("res://combat_stress_fixture.gd").new()\n if not stress.configure(g,'+str(args.combat_stress_layer)+'):push_error("Invalid legal combat fixture");quit(2);return\n scene.refresh_structure();scene.refresh_tab_visibility()',1)
@@ -274,7 +274,7 @@ def main():
         code=code.replace('sample_started=true;wall_start=Time.get_ticks_usec();','sample_started=true;wall_start=Time.get_ticks_usec();stress_previous=wall_start;stress.counts.clear();',1)
         code=code.replace('   scene.frame_launches=0;', '   stress.frame_counts.clear()\n   scene.frame_launches=0;',1)
         code=code.replace('    wall_end=Time.get_ticks_usec()','    wall_end=Time.get_ticks_usec()\n    stress_trace.append([wall_end-wall_start,wall_end-stress_previous]+stress.sample(g,scene))\n    stress_previous=wall_end',1)
-        code=code.replace('  row.enemy_canvas_frozen=', '  row.combat_stress=stress.finish(g)\n  row.combat_stress_trace=stress_trace\n  row.combat_stress_columns=["sample_us","cadence_us","chain_carriers","beam_links","beams","visual_events","node_count","frame_events"]\n  row.enemy_canvas_frozen=',1)
+        code=code.replace('  row.enemy_canvas_frozen=', '  row.damage_history=scene.damage_history.duplicate()\n  row.contract_state={\"profile\":g.profile,\"enemies\":g.enemies,\"projectiles\":g.projectiles,\"player\":g.player,\"queue\":g.missile_queue,\"rng\":str(g.rng.state),\"attack_serial\":g.attack_instance_serial,\"main_serial\":g.main_attack_serial,\"repeats\":g.jewel_repeats,\"contexts\":g.enhancement_attack_contexts}\n  row.combat_stress=stress.finish(g)\n  row.combat_stress_trace=stress_trace\n  row.combat_stress_columns=["sample_us","cadence_us","chain_carriers","beam_links","beams","visual_events","node_count","frame_events"]\n  row.enemy_canvas_frozen=',1)
         probe_path.write_text(code,encoding='utf-8')
     phase_wrapped=[]
     spike_wrapped=[]
