@@ -295,7 +295,7 @@ func meter(node:Part,position_value:Vector2,size_value:Vector2,ratio:float,color
  node.data.rect=Rect2(Vector2.ZERO,size_value);node.data.ratio=ratio;node.data.color=color
  node.queue_redraw()
 
-func stage_foreground(flights:Array,shots:Array,offset:Vector2)->void:
+func stage_foreground(flights:Variant,shots:Array,offset:Vector2)->void:
  frame={"flights":flights,"shots":shots,"offset":offset}
  saved_positions=paint_owner.battle_draw_enemy_positions.duplicate()
  foreground.queue_redraw()

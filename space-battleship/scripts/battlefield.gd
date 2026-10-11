@@ -1049,7 +1049,7 @@ func draw_retained_enemy_contacts(offset:Vector2,boss:bool)->bool:
 	retained_contacts.sync(offset,boss)
 	return true
 
-func retain_battle_foreground(flights:Array,shots:Array,offset:Vector2)->bool:
+func retain_battle_foreground(flights:Variant,shots:Array,offset:Vector2)->bool:
 	if not retained_contacts_enabled or not is_instance_valid(retained_contacts):return false
 	retained_contacts.stage_foreground(flights,shots,offset)
 	return true

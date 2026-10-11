@@ -3335,7 +3335,7 @@ func draw_battle() -> void:
 	var offset := Vector2(sin(fx_time*83.0),cos(fx_time*97.0))*shake
 	if not accelerated_visual_mode:draw_environment_event(offset)
 	if not accelerated_visual_mode:draw_battle_particles(offset,false)
-	var flights: Array = []
+	var flights: Variant = []
 	var visible_projectiles: Array = [] if accelerated_visual_mode else game.projectiles
 	if game.native_pipeline!=null:
 		flights=game.native_pipeline.prepare_flights(self,visible_projectiles,offset)
@@ -3382,7 +3382,7 @@ func _prepare_projectile_flight(p:Dictionary,visual_index:Dictionary,offset:Vect
 func draw_retained_enemy_contacts(_offset:Vector2,_boss:bool)->bool:
 	return false
 
-func retain_battle_foreground(_flights:Array,_shots:Array,_offset:Vector2)->bool:
+func retain_battle_foreground(_flights:Variant,_shots:Array,_offset:Vector2)->bool:
 	return false
 
 func begin_projectile_packet_batch()->void:
@@ -3410,12 +3410,13 @@ func _draw_projectile_foreground_flight(flight:Dictionary,offset:Vector2)->void:
 	draw_surface.draw_texture_rect(texture,Rect2(-size/2,size),false)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 
-func draw_battle_foreground(flights:Array,visible_projectiles:Array,offset:Vector2)->void:
+func draw_battle_foreground(flights:Variant,visible_projectiles:Array,offset:Vector2)->void:
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
 	begin_projectile_packet_batch()
 	if game.native_pipeline!=null:
 		game.native_pipeline.draw_flights(self,flights,offset)
 	else:
+		if flights is Object and flights.has_method("to_array"):flights=flights.to_array()
 		for flight in flights:_draw_projectile_foreground_flight(flight,offset)
 		flush_projectile_packet_batch()
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.

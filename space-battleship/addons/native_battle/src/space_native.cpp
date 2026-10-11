@@ -112,9 +112,45 @@ public:
     void set_orphan(double v) { motion().orphan = v; }
 };
 
+struct PreparedFlight {
+    Dictionary shot,visual;
+    Ref<SpaceMotionLease> motion;
+    Ref<SpaceVisualLease> visual_state;
+    Vector2 point;
+    String key;
+    int budget=1;
+    bool hostile=false,chain=false;
+    Dictionary legacy() const {
+        Dictionary f;f["shot"]=shot;f["visual"]=visual;f["pos"]=point;f["budget"]=budget;return f;
+    }
+};
+class SpaceFlightFrame : public RefCounted {
+    GDCLASS(SpaceFlightFrame,RefCounted)
+    friend class SpaceNativePipeline;
+    Ref<SpaceNativePipeline> recycler;
+    std::vector<PreparedFlight> flights;
+protected:
+    static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("size"),&SpaceFlightFrame::size);
+        ClassDB::bind_method(D_METHOD("to_array"),&SpaceFlightFrame::to_array);
+    }
+public:
+    ~SpaceFlightFrame();
+    int64_t size() const {return flights.size();}
+    // Compatibility/reference inspection only, never the native production path.
+    Array to_array() const {Array result;for(const PreparedFlight &f:flights)result.push_back(f.legacy());return result;}
+};
+
 class SpaceNativePipeline : public RefCounted {
     GDCLASS(SpaceNativePipeline, RefCounted)
     friend class SpaceMotionLease;
+    friend class SpaceFlightFrame;
+    // Only empty vector capacities are pooled. No frame/shot/lease references
+    // are owned by this pool, so deferred canvas frames cannot create a cycle.
+    std::vector<std::vector<PreparedFlight>> spare_frames;
+    void recycle_frame(std::vector<PreparedFlight> &flights) {
+        flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}
+    }
     std::deque<Motion> motions;
     std::vector<size_t> free_slots;
     uint64_t next_generation = 0;
@@ -181,8 +217,8 @@ public:
         return lease;
     }
     void advance(Object *game, double dt, bool shield_timing, Array snapshot);
-    Array prepare_flights(Object *surface, Array shots, Vector2 offset);
-    void draw_flights(Object *surface, Array flights, Vector2 offset);
+    Ref<SpaceFlightFrame> prepare_flights(Object *surface, Array shots, Vector2 offset);
+    void draw_flights(Object *surface, Variant prepared, Vector2 offset);
     void bind_visual(Dictionary visual) {
         if(visual.is_empty()||visual.has("visual_lease"))return;
         Dictionary shot=visual["shot"];
@@ -214,6 +250,7 @@ public:
 
 Motion &SpaceMotionLease::motion() const { return owner->motions[slot]; }
 SpaceMotionLease::~SpaceMotionLease() { if (owner.is_valid()) owner->release(slot, generation); }
+SpaceFlightFrame::~SpaceFlightFrame() {if(recycler.is_valid())recycler->recycle_frame(flights);}
 
 void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot) {
     Array live = game->get("projectiles");
@@ -538,7 +575,7 @@ void SpaceNativePipeline::flush_pulses(RID canvas) {
     for(size_t i=0;i<pulse_transforms.size();++i)batch->set_instance_transform_2d(i,pulse_transforms[i]);
     RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
 }
-Array SpaceNativePipeline::prepare_flights(Object *surface,Array shots,Vector2 offset) {
+Ref<SpaceFlightFrame> SpaceNativePipeline::prepare_flights(Object *surface,Array shots,Vector2 offset) {
     // References and the serial index exist only for this draw. The native
     // continuous state and the original visual records remain authoritative.
     Dictionary index;Array visuals=surface->get("projectile_visuals"),particles=surface->get("particles");
@@ -546,15 +583,26 @@ Array SpaceNativePipeline::prepare_flights(Object *surface,Array shots,Vector2 o
     Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
     bool prototype=surface->get("prototype_enabled");
     bool missile_enabled=surface->get("missile_vfx_enabled"),pulse_enabled=surface->get("pulse_vfx_enabled"),enemy_enabled=surface->get("enemy_vfx_enabled");
-    Array result;
+    Ref<SpaceFlightFrame> result;result.instantiate();result->recycler=Ref<SpaceNativePipeline>(this);
+    if(!spare_frames.empty()){result->flights.swap(spare_frames.back());spare_frames.pop_back();}
+    result->flights.reserve(shots.size());
+    auto append=[&](Dictionary p,Dictionary v,Ref<SpaceMotionLease> m,Ref<SpaceVisualLease> visual,Vector2 point,int budget,String key,bool hostile,bool chain) {
+        PreparedFlight f;f.shot=p;f.visual=v;f.motion=m;f.visual_state=visual;f.point=point;f.budget=budget;f.key=key;f.hostile=hostile;f.chain=chain;
+        result->flights.push_back(std::move(f));
+    };
     for(int i=0;i<shots.size();++i) {
         Dictionary p=shots[i],v=index.get(p.get("serial",Variant()),Dictionary());
         Ref<SpaceMotionLease> m=p.get("motion_lease",Variant());Ref<SpaceVisualLease> visual=v.get("visual_lease",Variant());
         String key=String(p.get("key","")).replace("_mon","").replace("-mon","");bool hostile=p.get("hostile",false);
         bool chain=p.get("chain_hop",false),missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&bool(p.get("prototype_missile",false));
         bool pulse=prototype&&pulse_enabled&&!hostile&&key=="laser",enemy=prototype&&enemy_enabled&&hostile&&(key=="laser"||key=="cannon");
-        if(m.is_null()||bool(p.get("beam",false))||!(chain||missile||((pulse||enemy)&&visual.is_valid()&&v.has("fixed_step")))) {
-            Dictionary f=surface->call("_prepare_projectile_flight",p,index,offset);if(!f.is_empty())result.push_back(f);continue;
+        // The original visual list is capped at256. Unretained ordinary flights
+        // still have an authoritative native position and heading; the cap must
+        // not reintroduce one script call/getter for each flying projectile.
+        if(m.is_null()||bool(p.get("beam",false))||!(chain||missile||((pulse||enemy)&&(v.is_empty()||(visual.is_valid()&&v.has("fixed_step")))))) {
+            Dictionary f=surface->call("_prepare_projectile_flight",p,index,offset);
+            if(!f.is_empty())append(p,f["visual"],m,Ref<SpaceVisualLease>(Dictionary(f["visual"]).get("visual_lease",Variant())),f["pos"],f["budget"],key,hostile,chain);
+            continue;
         }
         Vector2 logical=position(m->motion());
         if(!missile&&!v.is_empty()&&v.has("fixed_step")) {
@@ -566,7 +614,7 @@ Array SpaceNativePipeline::prepare_flights(Object *surface,Array shots,Vector2 o
             int nearby=0;for(int j=0;j<particles.size();++j){Dictionary particle=particles[j];if(Vector2(particle["pos"]).distance_squared_to(point)<6400)++nearby;}
             budget=std::min(1,std::max(0,18-nearby));
         }
-        Dictionary f;f["shot"]=p;f["pos"]=point;f["visual"]=v;f["budget"]=budget;result.push_back(f);
+        append(p,v,m,visual,point,budget,key,hostile,chain);
         if(enemy) {
             double angle=visual.is_valid()?visual->angle:engine_angle(m->motion().direction);Vector2 axis=engine_from_angle(angle);
             Color color=Color::html(int64_t(p.get("type",0))==2?"ffaf61":"64b5ff");color.a=0.16;
@@ -575,39 +623,49 @@ Array SpaceNativePipeline::prepare_flights(Object *surface,Array shots,Vector2 o
     }
     return result;
 }
-void SpaceNativePipeline::draw_flights(Object *surface,Array flights,Vector2 offset) {
+void SpaceNativePipeline::draw_flights(Object *surface,Variant prepared,Vector2 offset) {
+    Ref<SpaceFlightFrame> frame;
+    if(prepared.get_type()==Variant::OBJECT)frame=prepared;
+    std::vector<PreparedFlight> compatibility;
+    if(frame.is_null()) {
+        Array input=prepared;compatibility.reserve(input.size());
+        for(int i=0;i<input.size();++i) {
+            Dictionary f=input[i],shot=f["shot"],visual=f["visual"];PreparedFlight p;
+            p.shot=shot;p.visual=visual;p.motion=shot.get("motion_lease",Variant());p.visual_state=visual.get("visual_lease",Variant());
+            p.point=f["pos"];p.budget=f.get("budget",-1);p.key=String(shot.get("key","")).replace("_mon","").replace("-mon","");
+            p.hostile=shot.get("hostile",false);p.chain=shot.get("chain_hop",false);compatibility.push_back(std::move(p));
+        }
+    }
+    const std::vector<PreparedFlight> &flights=frame.is_valid()?frame->flights:compatibility;
     Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
     const bool own_missiles=bool(surface->get("prototype_enabled"))&&bool(surface->get("missile_vfx_enabled"));
     const bool own_pulses=bool(surface->get("prototype_enabled"))&&bool(surface->get("pulse_vfx_enabled"));
     const bool simple_enemies=bool(surface->get("prototype_enabled"))&&bool(surface->get("enemy_vfx_enabled"));
     if(own_pulses)prepare_pulse_mesh();pulse_cursor=0;pulse_transforms.clear();
     begin();bool script_run=false;
-    for(int i=0;i<flights.size();++i) {
-        Dictionary f=flights[i],shot=f["shot"],visual=f["visual"];
-        Vector2 point=f["pos"];
-        Ref<SpaceMotionLease> lease=shot.get("motion_lease",Variant());
-        bool is_chain=shot.get("chain_hop",false);
-        bool is_missile=own_missiles&&!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile";
-        String key=String(shot.get("key","")).replace("_mon","").replace("-mon","");
-        bool is_pulse=own_pulses&&!bool(shot.get("hostile",false))&&key=="laser"&&!bool(shot.get("beam",false));
-        bool is_enemy=simple_enemies&&bool(shot.get("hostile",false))&&(key=="laser"||key=="cannon")&&!bool(shot.get("beam",false));
+    for(const PreparedFlight &f:flights) {
+        const Dictionary &shot=f.shot,&visual=f.visual;Vector2 point=f.point;const Ref<SpaceMotionLease> &lease=f.motion;
+        bool is_chain=f.chain;
+        bool is_missile=own_missiles&&!f.hostile&&f.key=="missile";
+        bool is_pulse=own_pulses&&!f.hostile&&f.key=="laser"&&!bool(shot.get("beam",false));
+        bool is_enemy=simple_enemies&&f.hostile&&(f.key=="laser"||f.key=="cannon")&&!bool(shot.get("beam",false));
         if(is_chain||is_missile) {
             if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
             flush_pulses(rid);
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
             if(is_chain){Vector2 p=lease.is_valid()?position(lease->motion()):Vector2(shot["x"],shot["y"]);chain_flight(point,battle_point(p+direction)-battle_point(p));}
             else {
-                Ref<SpaceVisualLease> native_visual=visual.get("visual_lease",Variant());
+                const Ref<SpaceVisualLease> &native_visual=f.visual_state;
                 double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",double(direction.angle())));
                 double age=lease.is_valid()?lease->motion().age:double(shot.get("motion_age",native_visual.is_valid()?native_visual->age:double(visual.get("age",0.0))));
                 Dictionary target=shot["target"];
-                flight(point,engine_from_angle(angle),age,!target.is_empty(),visual,offset,int(f.get("budget",-1))==0?0.5:1.0);
+                flight(point,engine_from_angle(angle),age,!target.is_empty(),visual,offset,f.budget==0?0.5:1.0);
             }
             continue;
         }
         if(is_pulse||is_enemy) {
             paint(rid);if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
-            Ref<SpaceVisualLease> native_visual=visual.get("visual_lease",Variant());
+            const Ref<SpaceVisualLease> &native_visual=f.visual_state;
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
             double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",engine_angle(direction)));Vector2 axis=engine_from_angle(angle);
             if(is_pulse){pulse_transforms.emplace_back(axis,-axis.orthogonal(),point);continue;}
@@ -623,7 +681,7 @@ void SpaceNativePipeline::draw_flights(Object *surface,Array flights,Vector2 off
             }
             continue;
         }
-        paint(rid);flush_pulses(rid);surface->call("_draw_projectile_foreground_flight",f,offset);script_run=true;
+        paint(rid);flush_pulses(rid);surface->call("_draw_projectile_foreground_flight",f.legacy(),offset);script_run=true;
     }
     paint(rid);flush_pulses(rid);if(script_run)surface->call("flush_projectile_packet_batch");
 }
@@ -667,7 +725,7 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
 }
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
-    ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceNativePipeline>();
+    ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceFlightFrame>();ClassDB::register_class<SpaceNativePipeline>();
 }
 void terminate(ModuleInitializationLevel) {}
 extern "C" GDExtensionBool GDE_EXPORT space_native_init(GDExtensionInterfaceGetProcAddress get_proc,GDExtensionClassLibraryPtr library,GDExtensionInitialization *initialization) {
