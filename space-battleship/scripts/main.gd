@@ -2737,8 +2737,11 @@ func queue_damage_number(info: Dictionary) -> void:
 				height = enemy_render_width(enemy)
 				anchor = enemy_render_position(enemy)
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"deferred_frame":Engine.get_process_frames(),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
+	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
 	damage_pending.append(entry)
+	# New categories own/retire slots synchronously, before this frame ages them.
+	# Repeated-hit text/layout remains dirty until the visible-frame commit.
+	flush_damage_numbers(0.0,true)
 
 func incoming_damage_origin(damage_type: int) -> Vector2:
 	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
@@ -2817,11 +2820,23 @@ func damage_layout_occupy(entry:Dictionary,context:Dictionary)->void:
 			return
 	context.occupied.append([entry,damage_text_rect(battle_point(entry.pos),entry.text,int(entry.size),damage_layout_metrics(entry.text,int(entry.size),context))])
 
-func flush_damage_numbers(frame_delta:float=0.0) -> void:
-	# One visible-frame transaction. Gameplay events/history and merge windows
-	# have already committed; only final text and placement are materialized here.
+func flush_damage_numbers(frame_delta:float=0.0,pending_only:bool=false) -> void:
+	# Repeated-hit text/layout commits once per visible frame. New-category
+	# admission uses pending_only to preserve slot retirement before float ageing.
 	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
 	var context := {"metrics":{},"occupied":[]}
+	if pending_only:
+		for entry in floats:
+			if not entry.get("damage",false) or float(entry.life)<=0:continue
+			# A newly reserved incoming lane needs its real bounds for admission.
+			if entry.get("incoming_lane",false) and entry.get("display_dirty",false):
+				entry.text=incoming_damage_display_text(entry.amount,entry.absorbed,int(entry.type),int(entry.size))
+				entry.origin=incoming_damage_origin(int(entry.type))
+				var width:float=damage_layout_metrics(entry.text,int(entry.size),context).width
+				entry.pos=Vector2(clampf(entry.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),entry.origin.y)
+			damage_layout_occupy(entry,context)
+		commit_damage_pending_slots(context)
+		return
 	var incoming_changed=false
 	for entry in floats:
 		if not entry.get("damage",false) or float(entry.life)<=0:continue
@@ -2850,20 +2865,21 @@ func flush_damage_numbers(frame_delta:float=0.0) -> void:
 				entry.retiring=true
 			damage_layout_occupy(entry,context)
 		entry.display_dirty=false
+	commit_damage_pending_slots(context)
+
+func commit_damage_pending_slots(context:Dictionary)->void:
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry);continue
-		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
 		var active := floats.filter(func(f):return f.get("target","")==entry.target and not f.get("incoming_lane",false))
 		if active.size()>=2:
 			active[0].life=minf(active[0].life,0.08);active[0].retiring=true
 			continue
-		var newly_deferred:=int(entry.get("deferred_frame",-1))==Engine.get_process_frames()
-		var pos := damage_text_position(entry.origin-Vector2(0,frame_delta*12 if newly_deferred else 0.0),entry.text,entry.size,{},context)
+		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+		var pos := damage_text_position(entry.origin,entry.text,entry.size,{},context)
 		if pos==Vector2.INF:
 			if fx_time-entry.born>0.2:damage_pending.erase(entry)
 			continue
-		if newly_deferred:entry.life-=frame_delta
 		entry.pos=pos;entry.display_dirty=false
 		floats.append(entry);damage_layout_occupy(entry,context)
 		damage_pending.erase(entry)

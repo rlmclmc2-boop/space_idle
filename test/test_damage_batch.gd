@@ -15,10 +15,10 @@ func run():
  var outgoing={"player":false,"uid":uid,"type":1,"amount":10.0,"critical":false}
  scene.set_damage_mode(1)
  for i in 100:scene.queue_damage_number(outgoing)
- check(scene.damage_pending.size()==1 and scene.floats.is_empty() and scene.damage_pending[0].amount==1000,"100 ordered events merge without intermediate layout")
+ check(scene.damage_pending.is_empty() and scene.floats.size()==1 and scene.floats[0].amount==1000 and scene.floats[0].display_dirty,"100 ordered events merge into owned slot without repeated layout")
  check(scene.damage_history.size()==40,"full per-hit bounded40 history remains")
  outgoing.type=2;scene.queue_damage_number(outgoing);outgoing.critical=true;scene.queue_damage_number(outgoing)
- check(scene.damage_pending.size()==3,"distinct type and critical remain distinct before commit")
+ check(scene.floats.size()==2 and scene.damage_pending.size()==1 and scene.floats[0].retiring,"distinct categories preserve synchronous slot pressure")
  var physical={"player":true,"uid":0,"type":2,"amount":300.0,"absorbed":0.0,"critical":false}
  var energy={"player":true,"uid":0,"type":1,"amount":100.0,"absorbed":20.0,"critical":false}
  scene.queue_damage_number(physical);scene.queue_damage_number(energy)
@@ -35,12 +35,14 @@ func run():
  check(scene.floats==frozen,"pause leaves committed rows unchanged")
  scene.set_damage_mode(1);outgoing.type=1;outgoing.critical=false;outgoing.amount=7
  scene.queue_damage_number(outgoing);scene.fx_time+=0.201;outgoing.amount=9;scene.queue_damage_number(outgoing)
- check(scene.damage_pending.size()==2 and scene.damage_pending[0].amount==7 and scene.damage_pending[1].amount==9,"multiple logical steps cannot cross200ms merge boundary")
+ check(scene.floats.size()==2 and scene.floats[0].amount==7 and scene.floats[1].amount==9,"multiple logical steps cannot cross200ms merge boundary")
+ outgoing.critical=true;scene.queue_damage_number(outgoing)
  scene.fx_time+=0.31;scene.flush_damage_numbers()
- check(scene.damage_pending.is_empty() and scene.floats.is_empty(),"expired backlog never appears later")
- scene.queue_damage_number(outgoing);var born=scene.damage_pending[0].born
+ check(scene.damage_pending.is_empty() and scene.floats.size()==2,"expired blocked backlog never appears later")
+ scene.set_damage_mode(1);outgoing.critical=false;scene.queue_damage_number(outgoing);var born=scene.floats[0].born
+ for f in scene.floats:f.life-=0.05;f.pos.y-=0.05*12
  scene.flush_damage_numbers(0.05)
- check(scene.floats[0].born==born and is_equal_approx(scene.floats[0].life,float(scene.battle_visual.damage_number_normal_duration)-0.05),"newly deferred label keeps original frame-age deduction")
+ check(scene.floats[0].born==born and is_equal_approx(scene.floats[0].life,float(scene.battle_visual.damage_number_normal_duration)-0.05),"synchronously admitted label ages exactly once")
  scene.queue_damage_number(energy);scene.reset_battle_transients_for_scene()
  scene.flush_damage_numbers()
  check(scene.floats.filter(func(f):return f.get("damage",false)).is_empty() and scene.damage_pending.is_empty(),"clear discards deferred labels")
