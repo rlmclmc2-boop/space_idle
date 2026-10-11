@@ -10,6 +10,7 @@ const WORLD_PER_PIXEL := 0.05
 
 @export var weapon_scene: PackedScene = DEFAULT_WEAPON
 
+var native_presentation: RefCounted
 var viewport: SubViewport
 var camera: Camera3D
 var ship: Node3D
@@ -318,6 +319,7 @@ func aim_at(target: Vector2) -> void:
 
 
 func set_slot_angles(angles: Array) -> void:
+	if native_presentation!=null and native_presentation.slot_angles(self,angles):return
 	for module in modules:
 		if int(module.slot)<angles.size(): module.pivot.rotation.y = -float(angles[module.slot])-module.mount.global_rotation.y
 
@@ -396,6 +398,7 @@ func apply_parameters(settings: Dictionary, toon_enabled: bool, rim_enabled: boo
 
 
 func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vector2, time: float, shield_enabled: bool, close_up: bool, visual_delta := 0.0, check_body_resolution := true) -> void:
+	if native_presentation!=null and native_presentation.pose_ship(self,center,height_pixels,angle,target,time,shield_enabled,close_up,visual_delta,check_body_resolution):return
 	elapsed = time
 	rendered_height = height_pixels * (2.8 if close_up else 1.0)
 	rendered_position = size*Vector2(0.5,0.58) if close_up else center

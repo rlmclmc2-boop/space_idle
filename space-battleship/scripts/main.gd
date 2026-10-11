@@ -1,6 +1,8 @@
 extends Node2D
 
 var space_pause_held := false
+# Experimental complete frame producer; frozen baseline DLLs lack this class.
+var native_presentation: RefCounted
 
 const BG := Color("080e1b")
 const PANEL := Color("101c2c")
@@ -276,6 +278,8 @@ func _ready() -> void:
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
 	game = create_battle_game(not automation_args.has("--capture"))
+	if game.native_pipeline!=null and ClassDB.class_exists("SpacePresentationProducer"):
+		native_presentation=ClassDB.instantiate("SpacePresentationProducer")
 	if not game.startup_error.is_empty():
 		set_process(false);set_process_unhandled_input(false)
 		var problem := AcceptDialog.new()
@@ -461,18 +465,19 @@ func _process(delta: float) -> void:
 		star_travel += dt * (-250.0*game.speed if game.state == BattleGame.State.RETREAT else game.travel_movement()*game.speed if game.state == BattleGame.State.TRAVEL else 2.0)
 		# Blend the star-only travel effect instead of toggling 200 trails at once.
 		star_streak = move_toward(star_streak,1.0 if game.state == BattleGame.State.TRAVEL else 0.0,dt*4.0)
-		if not accelerated_visual_mode:
-			for p in particles:
-				p.life -= dt
-				p.pos += p.vel*dt
-				p.vel *= 0.97
-			particles = particles.filter(func(p):return p.life > 0)
-		for f in floats:
-			f.life -= dt
-			if f.get("damage",false) and not f.get("incoming_lane",false):f.pos.y -= dt*12
-		floats = floats.filter(func(f):return f.life > 0)
-		for effect in pickup_effects:effect.life -= dt
-		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
+		if native_presentation==null or not native_presentation.advance_transients(self,dt,not accelerated_visual_mode):
+			if not accelerated_visual_mode:
+				for p in particles:
+					p.life -= dt
+					p.pos += p.vel*dt
+					p.vel *= 0.97
+				particles = particles.filter(func(p):return p.life > 0)
+			for f in floats:
+				f.life -= dt
+				if f.get("damage",false) and not f.get("incoming_lane",false):f.pos.y -= dt*12
+			floats = floats.filter(func(f):return f.life > 0)
+			for effect in pickup_effects:effect.life -= dt
+			pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
 	flush_damage_numbers(0.0 if game.paused else dt)
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
@@ -1844,6 +1849,7 @@ func advance_projectile_visuals(dt: float) -> void:
 	if fast_mode_enabled():
 		projectile_visuals.clear()
 		return
+	if native_presentation!=null and native_presentation.advance_visuals(self,dt):return
 	if game.native_pipeline!=null:
 		game.native_pipeline.advance_visuals(self,dt)
 		return
@@ -2661,6 +2667,7 @@ func create_draw_layers() -> void:
 		layer.draw.connect(func():draw_surface=layer;painter.call())
 
 func refresh_draw_layers(dt: float) -> void:
+	if native_presentation!=null and native_presentation.refresh_layers(self,dt):return
 	if not is_instance_valid(battle_layer):
 		return
 	sync_battle_visibility()
@@ -3470,38 +3477,39 @@ func draw_battle_foreground(flights:Variant,visible_projectiles:Array,offset:Vec
 		for flight in flights:_draw_projectile_foreground_flight(flight,offset)
 		flush_projectile_packet_batch()
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
-	for shot in visible_projectiles:
-		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
-		if draw_beam_override(shot,offset):continue
-		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
-			var pos := battle_point(visual_muzzle(shot))+offset
-			var color := ORANGE if shot.hostile else CYAN
-			var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
-			var radius := lerpf(28.0,8.0,progress)
-			draw_surface.draw_circle(pos,4.0+progress*8.0,Color(color,0.2+progress*0.4))
-			draw_surface.draw_circle(pos,2.0+progress*3.0,Color.WHITE)
-			draw_surface.draw_arc(pos,radius,-PI/2,-PI/2+TAU*progress,32,color,2.0,true)
-			for ray in range(6):
-				var direction := Vector2.from_angle(float(ray)*TAU/6+float(shot.elapsed)*3)
-				draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
-		elif int(shot.ticks)>0:
-			var beam := beam_style(shot)
-			var end := entity_render_position(shot.target)+offset
-			var color := ORANGE if shot.hostile else CYAN
-			var pos := battle_point(visual_muzzle(shot))+offset
-			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width*float(battle_visual.laser_glow_scale),true)
-			draw_surface.draw_line(pos,end,Color(1,1,1,0.5+beam.pulse*0.4),beam.width*0.38,true)
-			for stream in range(4):
-				var phase := fposmod(float(shot.elapsed)*2.0+float(stream)*0.25,1.0)
-				var flow: Vector2 = pos.lerp(end,phase)
-				draw_surface.draw_line(flow,flow.lerp(end,0.035),Color(1,1,1,0.12+beam.pulse*0.5),beam.width*0.55,true)
-			draw_surface.draw_circle(pos,beam.width*1.3,Color(color,0.45))
-			draw_surface.draw_circle(end,4.0+beam.pulse*3.0,Color(color,0.3+beam.pulse*0.3))
-			draw_surface.draw_circle(end,1.8+beam.pulse*1.8,Color.WHITE)
-			var spark_size: float = float(battle_visual.beam_hit_spark_scale)*(3.0+float(beam.pulse)*4.0)
-			for spark in 2:
-				var direction := Vector2.from_angle(float(shot.elapsed)*13.0+float(spark)*PI)
-				draw_surface.draw_line(end+direction*2.0,end+direction*spark_size,Color(color,0.3+beam.pulse*0.55),1.0,true)
+	if native_presentation==null or not native_presentation.draw_beams(self,visible_projectiles,offset):
+		for shot in visible_projectiles:
+			if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
+			if draw_beam_override(shot,offset):continue
+			if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
+				var pos := battle_point(visual_muzzle(shot))+offset
+				var color := ORANGE if shot.hostile else CYAN
+				var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
+				var radius := lerpf(28.0,8.0,progress)
+				draw_surface.draw_circle(pos,4.0+progress*8.0,Color(color,0.2+progress*0.4))
+				draw_surface.draw_circle(pos,2.0+progress*3.0,Color.WHITE)
+				draw_surface.draw_arc(pos,radius,-PI/2,-PI/2+TAU*progress,32,color,2.0,true)
+				for ray in range(6):
+					var direction := Vector2.from_angle(float(ray)*TAU/6+float(shot.elapsed)*3)
+					draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
+			elif int(shot.ticks)>0:
+				var beam := beam_style(shot)
+				var end := entity_render_position(shot.target)+offset
+				var color := ORANGE if shot.hostile else CYAN
+				var pos := battle_point(visual_muzzle(shot))+offset
+				draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width*float(battle_visual.laser_glow_scale),true)
+				draw_surface.draw_line(pos,end,Color(1,1,1,0.5+beam.pulse*0.4),beam.width*0.38,true)
+				for stream in range(4):
+					var phase := fposmod(float(shot.elapsed)*2.0+float(stream)*0.25,1.0)
+					var flow: Vector2 = pos.lerp(end,phase)
+					draw_surface.draw_line(flow,flow.lerp(end,0.035),Color(1,1,1,0.12+beam.pulse*0.5),beam.width*0.55,true)
+				draw_surface.draw_circle(pos,beam.width*1.3,Color(color,0.45))
+				draw_surface.draw_circle(end,4.0+beam.pulse*3.0,Color(color,0.3+beam.pulse*0.3))
+				draw_surface.draw_circle(end,1.8+beam.pulse*1.8,Color.WHITE)
+				var spark_size: float = float(battle_visual.beam_hit_spark_scale)*(3.0+float(beam.pulse)*4.0)
+				for spark in 2:
+					var direction := Vector2.from_angle(float(shot.elapsed)*13.0+float(spark)*PI)
+					draw_surface.draw_line(end+direction*2.0,end+direction*spark_size,Color(color,0.3+beam.pulse*0.55),1.0,true)
 	if not accelerated_visual_mode:draw_battle_particles(offset,true)
 	for f in floats:
 		if accelerated_visual_mode:continue
@@ -3551,6 +3559,7 @@ func draw_beam_override(_shot: Dictionary, _offset: Vector2, _core: bool = true)
 	return false
 
 func draw_battle_particles(offset: Vector2, core: bool) -> void:
+	if native_presentation!=null and native_presentation.draw_particles(self,offset,core):return
 	for p in particles:
 		if bool(p.has("flash") or p.has("spark") or p.has("fragment") or p.has("ring") or p.has("destroy") or p.has("rail_contact"))!=core:continue
 		if p.has("rail_contact"):

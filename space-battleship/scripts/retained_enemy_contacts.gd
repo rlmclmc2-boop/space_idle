@@ -170,6 +170,7 @@ func bind_pose(record:DisplayRecord,pose:Dictionary)->void:
  record.protection_width=-INF;record.protection_clock=-INF
 
 func sync(offset:Vector2,boss:bool)->void:
+ if paint_owner.native_presentation!=null and paint_owner.native_presentation.sync_contacts(self,offset,boss):return
  var live={};var order_changed=false
  var model=paint_owner.battle_read_model
  var member_index=0
@@ -301,6 +302,7 @@ func stage_foreground(flights:Variant,shots:Array,offset:Vector2)->void:
  foreground.queue_redraw()
 
 func paint(surface:Part,kind:String,data:Dictionary)->void:
+ if paint_owner.native_presentation!=null and paint_owner.native_presentation.paint_part(self,surface,kind,data):return
  var previous=paint_owner.draw_surface;paint_owner.draw_surface=surface
  match kind:
   "hull":

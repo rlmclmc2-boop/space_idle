@@ -1,4 +1,11 @@
 #include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/node2d.hpp>
+#include <godot_cpp/classes/node3d.hpp>
+#include <godot_cpp/classes/control.hpp>
+#include <godot_cpp/classes/camera3d.hpp>
+#include <godot_cpp/classes/sub_viewport.hpp>
+#include <godot_cpp/classes/shader_material.hpp>
+#include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/geometry2d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
@@ -465,7 +472,7 @@ public:
         visual["visual_lease"]=v;
         for(const char *key:{"age","angle","head","samples","trail","trail_times","last_render_point","last_logical_point","had_target"})visual.erase(key);
     }
-    void advance_visuals(Object *surface,double dt);
+    void advance_visuals(Object *surface,double dt,bool recorded=false);
     void begin() { prepare_templates(); vertices.clear(); colors.clear(); }
     void flight(Vector2 point, Vector2 axis, double age, bool powered, Dictionary visual, Vector2 offset, double budget);
     void chain_flight(Vector2 point, Vector2 direction) {
@@ -820,7 +827,7 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("paint","canvas"),&SpaceNativePipeline::paint);
     ClassDB::bind_method(D_METHOD("draw_flights","surface","flights","offset"),&SpaceNativePipeline::draw_flights);
     ClassDB::bind_method(D_METHOD("bind_visual","visual"),&SpaceNativePipeline::bind_visual);
-    ClassDB::bind_method(D_METHOD("advance_visuals","surface","dt"),&SpaceNativePipeline::advance_visuals);
+    ClassDB::bind_method(D_METHOD("advance_visuals","surface","dt","recorded"),&SpaceNativePipeline::advance_visuals,DEFVAL(false));
 }
 void SpaceNativePipeline::draw_contacts(RID canvas,double now,bool pulse_enabled) {
     begin();
@@ -1000,10 +1007,12 @@ void SpaceNativePipeline::draw_flights(Object *surface,Variant prepared,Vector2 
     }
     paint(rid);flush_pulses(rid);if(script_run)surface->call("flush_projectile_packet_batch");
 }
-void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
+void SpaceNativePipeline::advance_visuals(Object *surface,double dt,bool recorded) {
+    recorded=recorded&&!records_dirty&&canonical_unique;
     Object *game=surface->get("game");Array shots=game->get("projectiles"),visuals=surface->get("projectile_visuals");
     Dictionary active;int density=0;
-    for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;if(!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile")++density;}
+    if(recorded){for(const auto &record:records)if(!record->hostile&&record->key=="missile")++density;}
+    else for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;if(!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile")++density;}
     surface->set("missile_density",density);
     auto inverse=[](Vector2 p)->Vector2 {
         constexpr double offset=110.0/(1<<20);
@@ -1015,11 +1024,12 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
     };
     for(int i=visuals.size()-1;i>=0;--i) {
         Dictionary visual=visuals[i],shot=visual["shot"];
-        bool alive=shot.has("serial")?same(active.get(shot["serial"],Variant()),shot):shots.has(shot);
+        auto record=recorded?lookup(shot):std::shared_ptr<ProjectileRecord>();
+        bool alive=recorded?bool(record&&record->active):(shot.has("serial")?same(active.get(shot["serial"],Variant()),shot):shots.has(shot));
         if(!alive){auto r=lookup(shot);if(r){r->visual=Dictionary();r->visual_index=-1;}visuals.remove_at(i);continue;}
         Ref<SpaceVisualLease> v=visual.get("visual_lease",Variant());
         if(v.is_null()){surface->call("_advance_projectile_visual_record",visual,dt);continue;}
-        Ref<SpaceMotionLease> m=shot.get("motion_lease",Variant());
+        Ref<SpaceMotionLease> m=record?record->lease:Ref<SpaceMotionLease>(shot.get("motion_lease",Variant()));
         Vector2 logical=m.is_valid()?position(m->motion()):Vector2(shot["x"],shot["y"]);
         Vector2 direction=m.is_valid()?m->motion().direction:Vector2(shot["direction"]);
         Vector2 next=logical;
@@ -1032,17 +1042,19 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
         double wanted=delta.length_squared()>0.001?double(delta.angle()):double(direction.angle());
         v->angle=Math::lerp_angle(v->angle,wanted,1.0-std::exp(-dt*16.0));
         if(dt>0){v->head=(v->head+1)%14;v->times[v->head]=v->age;v->trail[v->head]=next;v->samples=std::min(14,v->samples+1);}
-        if(bool(shot.get("prototype_missile",false))) {
+        if(record?record->prototype:bool(shot.get("prototype_missile",false))) {
             if(v->samples>1){Vector2 delta=battle_point(v->trail[v->head])-battle_point(v->trail[(v->head+13)%14]);if(delta.length_squared()>0.001)v->angle=delta.angle();}
-            v->last_render=v->trail[v->head];v->last_logical=logical;Dictionary target=shot["target"];v->had_target=!target.is_empty();
+            v->last_render=v->trail[v->head];v->last_logical=logical;Dictionary target=record?record->target:Dictionary(shot["target"]);v->had_target=!target.is_empty();
         }
     }
 }
+#include "presentation_producer.inc"
+
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
     ClassDB::register_class<SpaceDamageHistory>();ClassDB::register_class<SpaceDamageLayout>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceFlightFrame>();ClassDB::register_class<SpaceStepSnapshot>();
-    ClassDB::register_class<SpaceNativePipeline>();
+    ClassDB::register_class<SpaceNativePipeline>();ClassDB::register_class<SpacePresentationProducer>();
 }
 void terminate(ModuleInitializationLevel) {}
 extern "C" GDExtensionBool GDE_EXPORT space_native_init(GDExtensionInterfaceGetProcAddress get_proc,GDExtensionClassLibraryPtr library,GDExtensionInitialization *initialization) {
