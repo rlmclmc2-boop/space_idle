@@ -12,24 +12,24 @@ func verify_incoming_lanes(scene) -> void:
 	var before=JSON.stringify(scene.game.profile);var rng=scene.game.rng.state
 	var energy={"player":true,"uid":0,"type":1,"amount":100.0,"absorbed":20.0,"critical":false}
 	var physical={"player":true,"uid":0,"type":2,"amount":300.0,"critical":false}
-	scene.queue_damage_number(physical);scene.queue_damage_number(energy)
+	scene.queue_damage_number(physical);scene.queue_damage_number(energy);scene.flush_damage_numbers()
 	var rows=scene.floats.filter(func(f):return f.get("incoming_lane",false))
 	check(rows.size()==2 and scene.damage_pending.is_empty(),"incoming types occupy two rows without the shared target backlog")
 	var e:Dictionary=rows.filter(func(f):return f.type==1)[0];var p:Dictionary=rows.filter(func(f):return f.type==2)[0]
 	var e_pos:Vector2=e.pos;var p_pos:Vector2=p.pos
 	check(e_pos.y<p_pos.y and e.text.begins_with("能量") and p.text.begins_with("物理") and e.color==scene.CYAN and p.color==scene.ORANGE,"energy stays above physical with type prefixes and distinct colors regardless of hit order")
 	check(not scene.damage_text_rect(scene.battle_point(e.pos),e.text,e.size).intersects(scene.damage_text_rect(scene.battle_point(p.pos),p.text,p.size)),"the fixed incoming rows do not overlap")
-	energy.amount=30.0;energy.absorbed=5.0;energy.critical=true;scene.fx_time+=0.1;scene.queue_damage_number(energy)
+	energy.amount=30.0;energy.absorbed=5.0;energy.critical=true;scene.fx_time+=0.1;scene.queue_damage_number(energy);scene.flush_damage_numbers()
 	check(e.amount==130 and e.absorbed==25 and e.critical and e.size>p.size and p.amount==300 and scene.floats.size()==2,"same-type ordinary and critical hits aggregate within200ms without consuming the other type row")
-	var old_p:Dictionary=p.duplicate(true);scene.fx_time+=0.11;energy.amount=7.0;energy.absorbed=0;energy.critical=false;scene.queue_damage_number(energy)
+	var old_p:Dictionary=p.duplicate(true);scene.fx_time+=0.11;energy.amount=7.0;energy.absorbed=0;energy.critical=false;scene.queue_damage_number(energy);scene.flush_damage_numbers()
 	check(e.amount==7 and not e.critical and is_equal_approx(e.pos.y,e_pos.y) and p==old_p and not p.get("retiring",false),"next energy window replaces only its own fixed row without retiring physical")
 	for i in 30:
-		scene.fx_time+=0.21;energy.amount=i+1;scene.queue_damage_number(energy)
+		scene.fx_time+=0.21;energy.amount=i+1;scene.queue_damage_number(energy);scene.flush_damage_numbers()
 	check(scene.floats.size()==2 and scene.damage_pending.is_empty() and p==old_p,"sustained one-type pressure cannot evict the other type or grow a backlog")
 	var uid:int=scene.game.enemies[0].uid
 	for target in scene.game.enemies:scene.enemy_pose(target).born=0.0;target.hp=0 # Resolved killed-enemy fixture: no live hull can block its final damage label.
 	var enemy={"player":false,"uid":uid,"type":1,"amount":12345.0,"critical":false}
-	scene.queue_damage_number(enemy)
+	scene.queue_damage_number(enemy);scene.flush_damage_numbers()
 	var outgoing:Dictionary=scene.floats.filter(func(f):return f.get("target","")=="enemy:%s" % uid)[0]
 	check(outgoing.text=="12.3K" and not outgoing.get("incoming_lane",false) and not rows.any(func(row):return scene.damage_text_rect(scene.battle_point(row.pos),row.text,row.size).grow(8).intersects(scene.damage_text_rect(scene.battle_point(outgoing.pos),outgoing.text,outgoing.size))),"enemy damage retains compact unsigned text outside reserved incoming rows")
 	check(JSON.stringify(scene.game.profile)==before and scene.game.rng.state==rng and scene.damage_history.back().contains("12345"),"display updates keep gameplay/RNG unchanged and full per-event history")
@@ -38,9 +38,9 @@ func verify_incoming_lanes(scene) -> void:
 	scene.game.paused=false;scene._process(0.1)
 	check(is_equal_approx(e.pos.y,e_pos.y) and is_equal_approx(p.pos.y,p_pos.y),"incoming labels hold their type rows instead of floating into each other")
 	for mode in [1,0]:
-		scene.set_damage_mode(mode);scene.queue_damage_number(energy);scene.queue_damage_number(physical)
+		scene.set_damage_mode(mode);scene.queue_damage_number(energy);scene.queue_damage_number(physical);scene.flush_damage_numbers()
 		check(scene.floats.size()==2 and scene.floats.all(func(f):return f.get("incoming_lane",false)),"both enabled modes preserve the incoming two-type rows")
-	scene.set_damage_mode(2);scene.queue_damage_number(energy)
+	scene.set_damage_mode(2);scene.queue_damage_number(energy);scene.flush_damage_numbers()
 	check(scene.floats.is_empty() and scene.damage_pending.is_empty(),"off clears rows and suppresses new labels")
 	scene.set_damage_mode(0)
 	var tiny=scene.incoming_damage_display_text(12345.0,1e-100,1,19)
@@ -54,14 +54,14 @@ func verify_incoming_lanes(scene) -> void:
 	check(narrow.begins_with("物理 123M") and scene.font.get_string_size(narrow,HORIZONTAL_ALIGNMENT_LEFT,-1,19).x<=160,"absorption yields before the type or main damage under a constrained text budget")
 	var free=scene.damage_text_position(Vector2(286,scene.incoming_damage_origin(1).y),"123M",19)
 	check(free!=Vector2.INF,"empty incoming rows reserve no area for enemy text")
-	scene.queue_damage_number(energy);scene.queue_damage_number(physical)
+	scene.queue_damage_number(energy);scene.queue_damage_number(physical);scene.flush_damage_numbers()
 	var single=scene.floats.filter(func(f):return f.type==1)[0];single.life=0.0
 	free=scene.damage_text_position(single.origin,"123M",19)
 	check(free!=Vector2.INF,"expired incoming row releases its actual rectangle while the other type remains visible")
 	var spare=scene.damage_text_position(Vector2(70,scene.incoming_damage_origin(2).y),"123M",19)
 	check(spare!=Vector2.INF,"visible incoming text leaves the unused horizontal part of its row available")
 	var blocker={"damage":true,"target":"enemy:boundary","type":0,"text":"123M","size":19,"life":0.42,"pos":scene.incoming_damage_origin(1),"origin":scene.incoming_damage_origin(1)}
-	scene.floats.append(blocker);scene.queue_damage_number(energy)
+	scene.floats.append(blocker);scene.queue_damage_number(energy);scene.flush_damage_numbers()
 	var incoming=scene.floats.filter(func(f):return f.get("incoming_lane",false) and f.type==1)[0]
 	check(blocker.life>0 and not scene.damage_text_rect(scene.battle_point(incoming.pos),incoming.text,incoming.size).grow(8).intersects(scene.damage_text_rect(scene.battle_point(blocker.pos),blocker.text,blocker.size)),"new incoming text moves an overlapping enemy label through the existing placement query without dropping it when space is available")
 	scene.set_damage_mode(0);scene.game.paused=false
@@ -88,12 +88,12 @@ func run() -> void:
 		quit(1 if failures else 0);return
 	var hit := {"player":false,"uid":999,"type":1,"x":286,"y":360,"amount":12345.0}
 	check(scene.damage_mode==0,"default simplified")
-	scene.on_event("hit",hit)
+	scene.on_event("hit",hit);scene.flush_damage_numbers()
 	scene.fx_time += 0.19
-	scene.on_event("hit",hit)
+	scene.on_event("hit",hit);scene.flush_damage_numbers()
 	check(scene.floats.size()==1 and scene.floats[0].amount==24690,"fixed 200ms aggregation preserves sum")
 	hit.critical = true
-	scene.on_event("hit",hit)
+	scene.on_event("hit",hit);scene.flush_damage_numbers()
 	check(scene.floats.size()==2 and scene.floats[1].critical and scene.floats[1].size>scene.floats[0].size,"critical separately gold and larger")
 	check(scene.floats[0].text=="24.7K" and is_equal_approx(scene.floats[0].life,scene.battle_visual.damage_number_normal_duration),"unsigned three significant digits and short ordinary lifetime")
 	check(is_equal_approx(scene.floats[1].life,scene.battle_visual.damage_number_critical_duration),"critical label stays distinct slightly longer")
@@ -102,7 +102,7 @@ func run() -> void:
 	check(scene.damage_history.back().contains("12345"),"details preserve full event amount")
 	scene.fx_time += 0.02
 	hit.critical = false
-	scene.on_event("hit",hit)
+	scene.on_event("hit",hit);scene.flush_damage_numbers()
 	check(scene.floats.size()==2 and scene.floats[0].life<=0.08,"overflow fades oldest without third label")
 	scene._process(0.09)
 	check(scene.floats.size()<=2,"queued label admitted after retiring label disappears")

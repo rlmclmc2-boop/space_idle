@@ -7,7 +7,7 @@ func check(ok,label):
 func _initialize():call_deferred("run")
 func run():
  var scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"];root.add_child(scene);scene.set_process(false)
- var g=scene.game;g.save_enabled=false;g.start(8,false);g.pending_unlocks.clear();g.paused=true
+ var g=scene.game;g.save_enabled=false;g.profile.highestLevel=8;g.rebuild_unlocks();g.start(8,false);g.pending_unlocks.clear();g.paused=true
  scene.fx_time=5.0
  for enemy in g.enemies:scene.enemy_pose(enemy).born=0;enemy.hp=0
  var state=JSON.stringify(g.profile);var rng=g.rng.state
@@ -38,6 +38,9 @@ func run():
  check(scene.damage_pending.size()==2 and scene.damage_pending[0].amount==7 and scene.damage_pending[1].amount==9,"multiple logical steps cannot cross200ms merge boundary")
  scene.fx_time+=0.31;scene.flush_damage_numbers()
  check(scene.damage_pending.is_empty() and scene.floats.is_empty(),"expired backlog never appears later")
+ scene.queue_damage_number(outgoing);var born=scene.damage_pending[0].born
+ scene.flush_damage_numbers(0.05)
+ check(scene.floats[0].born==born and is_equal_approx(scene.floats[0].life,float(scene.battle_visual.damage_number_normal_duration)-0.05),"newly deferred label keeps original frame-age deduction")
  scene.queue_damage_number(energy);scene.reset_battle_transients_for_scene()
  scene.flush_damage_numbers()
  check(scene.floats.filter(func(f):return f.get("damage",false)).is_empty() and scene.damage_pending.is_empty(),"clear discards deferred labels")

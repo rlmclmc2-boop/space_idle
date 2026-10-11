@@ -468,7 +468,7 @@ func _process(delta: float) -> void:
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
-	flush_damage_numbers()
+	flush_damage_numbers(0.0 if game.paused else dt)
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
 	advance_defeat_notice(dt)
@@ -2737,7 +2737,7 @@ func queue_damage_number(info: Dictionary) -> void:
 				height = enemy_render_width(enemy)
 				anchor = enemy_render_position(enemy)
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
+	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"deferred_frame":Engine.get_process_frames(),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
 	damage_pending.append(entry)
 
 func incoming_damage_origin(damage_type: int) -> Vector2:
@@ -2817,7 +2817,7 @@ func damage_layout_occupy(entry:Dictionary,context:Dictionary)->void:
 			return
 	context.occupied.append([entry,damage_text_rect(battle_point(entry.pos),entry.text,int(entry.size),damage_layout_metrics(entry.text,int(entry.size),context))])
 
-func flush_damage_numbers() -> void:
+func flush_damage_numbers(frame_delta:float=0.0) -> void:
 	# One visible-frame transaction. Gameplay events/history and merge windows
 	# have already committed; only final text and placement are materialized here.
 	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
@@ -2843,7 +2843,7 @@ func flush_damage_numbers() -> void:
 			for item in context.occupied:
 				if item[0].get("incoming_lane",false) and item[1].grow(8).intersects(bounds):overlaps_incoming=true;break
 		if entry.get("display_dirty",false) or overlaps_incoming:
-			var adjusted := damage_text_position(entry.origin,entry.text,int(entry.size),entry,context)
+			var adjusted := damage_text_position(entry.origin-Vector2(0,frame_delta*12),entry.text,int(entry.size),entry,context)
 			if adjusted!=Vector2.INF:entry.pos=adjusted
 			else:
 				entry.life=0.0 if overlaps_incoming else minf(float(entry.life),0.08)
@@ -2858,10 +2858,12 @@ func flush_damage_numbers() -> void:
 		if active.size()>=2:
 			active[0].life=minf(active[0].life,0.08);active[0].retiring=true
 			continue
-		var pos := damage_text_position(entry.origin,entry.text,entry.size,{},context)
+		var newly_deferred:=int(entry.get("deferred_frame",-1))==Engine.get_process_frames()
+		var pos := damage_text_position(entry.origin-Vector2(0,frame_delta*12 if newly_deferred else 0.0),entry.text,entry.size,{},context)
 		if pos==Vector2.INF:
 			if fx_time-entry.born>0.2:damage_pending.erase(entry)
 			continue
+		if newly_deferred:entry.life-=frame_delta
 		entry.pos=pos;entry.display_dirty=false
 		floats.append(entry);damage_layout_occupy(entry,context)
 		damage_pending.erase(entry)
