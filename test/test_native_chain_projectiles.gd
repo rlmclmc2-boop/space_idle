@@ -91,6 +91,9 @@ func run()->void:
  check(g.projectiles.size()==1 and g.rng.state==owner_rng and g.profile.enhancementAttacks==owner_attacks,"existing live beam ownership prevents a second launch or roll")
  check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player.duplicate(),false,0,false,0),"equal source content cannot replace beam owner identity")
  check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player,true,0,false,0) and not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,1,false,0) and not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,true,0) and not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,false,1),"hostility mount repeated status and trigger depth remain separate owners")
+ beam.mount=.5
+ check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,false,0),"fractional edited mount cannot truncate into another owner")
+ beam.mount=0
  beam.dead=true
  check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,false,0),"expired beam releases its owner")
  beam.await_target=true
