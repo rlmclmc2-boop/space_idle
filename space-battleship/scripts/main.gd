@@ -2826,16 +2826,7 @@ func flush_damage_numbers(frame_delta:float=0.0,pending_only:bool=false) -> void
 	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
 	var context := {"metrics":{},"occupied":[]}
 	if pending_only:
-		for entry in floats:
-			if not entry.get("damage",false) or float(entry.life)<=0:continue
-			# A newly reserved incoming lane needs its real bounds for admission.
-			if entry.get("incoming_lane",false) and entry.get("display_dirty",false):
-				entry.text=incoming_damage_display_text(entry.amount,entry.absorbed,int(entry.type),int(entry.size))
-				entry.origin=incoming_damage_origin(int(entry.type))
-				var width:float=damage_layout_metrics(entry.text,int(entry.size),context).width
-				entry.pos=Vector2(clampf(entry.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),entry.origin.y)
-			damage_layout_occupy(entry,context)
-		commit_damage_pending_slots(context)
+		commit_damage_pending_slots(context,true)
 		return
 	var incoming_changed=false
 	for entry in floats:
@@ -2867,7 +2858,7 @@ func flush_damage_numbers(frame_delta:float=0.0,pending_only:bool=false) -> void
 		entry.display_dirty=false
 	commit_damage_pending_slots(context)
 
-func commit_damage_pending_slots(context:Dictionary)->void:
+func commit_damage_pending_slots(context:Dictionary,prepare_occupancy:bool=false)->void:
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry);continue
@@ -2875,6 +2866,17 @@ func commit_damage_pending_slots(context:Dictionary)->void:
 		if active.size()>=2:
 			active[0].life=minf(active[0].life,0.08);active[0].retiring=true
 			continue
+		if prepare_occupancy and not context.get("occupied_ready",false):
+			context.occupied_ready=true
+			for current in floats:
+				if not current.get("damage",false) or float(current.life)<=0:continue
+				# A newly reserved incoming lane needs its real bounds for admission.
+				if current.get("incoming_lane",false) and current.get("display_dirty",false):
+					current.text=incoming_damage_display_text(current.amount,current.absorbed,int(current.type),int(current.size))
+					current.origin=incoming_damage_origin(int(current.type))
+					var width:float=damage_layout_metrics(current.text,int(current.size),context).width
+					current.pos=Vector2(clampf(current.origin.x-width/2,8,BattleGame.BATTLE_SIZE.x-8-width),current.origin.y)
+				damage_layout_occupy(current,context)
 		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
 		var pos := damage_text_position(entry.origin,entry.text,entry.size,{},context)
 		if pos==Vector2.INF:
