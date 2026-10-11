@@ -152,5 +152,17 @@ func run()->void:
   check(native.enemies.map(func(e):return e.hp)==legacy.enemies.map(func(e):return e.hp) and native.rng.state==legacy.rng.state and native.profile.enhancementAttacks==legacy.profile.enhancementAttacks,"period damage counters and callback RNG match script: "+str(ordered))
   check(native.projectiles.map(func(p):return [p.elapsed,p.ticks,p.get("next_hit_at",-1),p.dead])==legacy.projectiles.map(func(p):return [p.elapsed,p.ticks,p.get("next_hit_at",-1),p.dead]),"period clock and interrupted beam lifecycle match script: "+str(ordered))
   for index in 2:[native,legacy][index].event.disconnect(observers[index])
+ var custom=RejectingBeamGame.new(ShipDatabase.new(),false)
+ custom.profile.cleared=range(1,41);custom.rebuild_unlocks()
+ custom.profile.loadout.weapons=[{"key":"longLaser","level":1}];custom.invalidate_stat_cache();custom.reset_player();custom.spawn_group()
+ var custom_target=custom.enemies[0];var custom_entry=custom.slot_entry("weapons",0)
+ var rejected={"beam":true,"source":custom.player,"target":custom_target,"locked_target":custom_target,"hostile":false,"mount":0,"entry":custom_entry,"repeated":false,"dead":false,"elapsed":0.0,"charge":1e20,"next_hit_at":1e20,"ticks":0,"attack_snapshot":{"weapon":custom.db.equip("longLaser",1)}}
+ custom.projectiles.append(rejected);custom.tick_long_laser(rejected,.1)
+ check(rejected.dead and rejected.elapsed==0.0 and custom.validity_reads>=2,"unknown script retains its overridden beam qualification and lifecycle")
  print("CHAIN PROJECTILES: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
+class RejectingBeamGame:
+ extends "res://scripts/presented_battle_game.gd"
+ var validity_reads:=0
+ func long_laser_valid(_shot:Dictionary)->bool:
+  validity_reads+=1;return false
