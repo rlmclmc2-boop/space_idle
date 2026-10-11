@@ -335,8 +335,8 @@ public:
         // Only matching beams enter the original validity hook, in original order.
         for (int64_t i=0;i<projectiles.size();++i) {
             Dictionary shot=projectiles[i];
-            if (!bool(shot.get("beam",false)) || shot["hostile"]!=Variant(hostile) ||
-                !same(shot["source"],source) || shot["mount"]!=Variant(mount) ||
+            if (!bool(shot.get("beam",false)) || bool(shot["hostile"])!=hostile ||
+                !same(shot["source"],source) || int64_t(shot["mount"])!=mount ||
                 bool(shot.get("repeated",false))!=repeated ||
                 int64_t(shot.get("repeat_depth",0))!=repeat_depth) continue;
             if (bool(game->call("long_laser_valid",shot)) || bool(shot.get("await_target",false))) return true;
