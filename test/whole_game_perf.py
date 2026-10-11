@@ -110,6 +110,8 @@ def main():
     parser.add_argument('--label', required=True)
     parser.add_argument('--combat-stress-layer',type=int,choices=(0,1,2),help='Legal labelled combat fixture layers; graphical realtime battle-only')
     parser.add_argument('--battle-only', action='store_true', help='Private-copy noncombat tick isolation; static modifiers retained, fixed-workload throughput only')
+    parser.add_argument('--pulse-batch-replay', action='store_true', help='QA-only adjacent pulse packet MultiMesh prototype; requires dynamic-replay')
+    parser.add_argument('--category-replay', action='store_true', help='Diagnostic tape category omission bounds; requires dynamic-replay, no production omission')
     parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
     parser.add_argument('--native-check', action='store_true', help='Diagnostic same-frame native painter/pinned-reference comparison; not clean timing')
     parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
@@ -158,6 +160,8 @@ def main():
     args = parser.parse_args()
     if not (0 < args.seconds <= 60 and 0 < args.warmup_seconds <= 15):parser.error('wall windows must be bounded')
     if args.realtime and (args.dynamic_replay or args.native_check or args.boundary_check):parser.error('realtime does not use same-tick replay/pixel diagnostics')
+    if args.pulse_batch_replay and not args.dynamic_replay:parser.error('pulse-batch-replay requires dynamic-replay')
+    if args.category_replay and not args.dynamic_replay:parser.error('category-replay requires dynamic-replay')
     if args.dynamic_replay and not args.battle_only:
         parser.error('dynamic-replay requires battle-only')
     if args.script_profile and (not args.battle_only or not args.realtime or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.missile_profile or args.gpu_profile or args.native_check or args.boundary_check or args.dynamic_replay):
@@ -266,7 +270,7 @@ def main():
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
     if args.battle_only:
         from battle_render_diagnostic import prepare
-        prepare(project, ROOT, args.dynamic_replay)
+        prepare(project, ROOT, args.dynamic_replay, args.pulse_batch_replay)
     if args.combat_stress_layer is not None:
         if not args.battle_only or not args.missile_loadout or not args.organic_economy or args.authored_stage!=20:parser.error('combat layers require original8missile battle-only authoredQA20 fixture')
         shutil.copy2(ROOT/'test/combat_stress_fixture.gd',project/'combat_stress_fixture.gd')
@@ -416,6 +420,8 @@ def main():
     env.update(PERF_SUSTAIN_TEST_HEALTH=str(int(args.sustain_test_health)), PERF_STRESS_ENEMIES=str(args.stress_enemies), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_WARMUP_FRAMES=str(args.warmup_frames), PERF_RENDER_INVENTORY=str(int(args.render_inventory)), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     env['PERF_SECONDS']=str(args.seconds)
     env['PERF_WARMUP_SECONDS']=str(args.warmup_seconds)
+    env['PERF_PULSE_BATCH']=str(int(args.pulse_batch_replay))
+    env['PERF_TAPE_CATEGORIES']=str(int(args.category_replay))
     env['PERF_MISSILE_LOADOUT']=str(int(args.missile_loadout))
     env['PERF_ORGANIC_ECONOMY']=str(int(args.organic_economy))
     env['PERF_AUTHORED_STAGE']=str(args.authored_stage)
@@ -466,7 +472,7 @@ def main():
         if (project/native_file).exists():measured_files.append(native_file)
     if (project/'scripts/battle_read_model.gd').exists():measured_files += ['scripts/battle_read_model.gd','scripts/retained_enemy_contacts.gd']
     if args.battle_only:measured_files += ['battle_scope.gd']
-    if args.dynamic_replay:measured_files += ['native_render_tape.gd']
+    if args.dynamic_replay:measured_files += ['native_render_tape.gd','pulse_packet_batch.gd']
     if args.phase_account:measured_files += ['exclusive_phase_ledger.gd']
     if args.membership_counters:measured_files += ['membership_diagnostic.gd','scripts/drone_combat_effects.gd']
     if args.native_check:measured_files += ['retained_native_check.gd','reference_retained_enemy_contacts.gd','reference_enemy_recognition_visual.gd']

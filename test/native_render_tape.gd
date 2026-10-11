@@ -4,6 +4,10 @@ extends RefCounted
 var scene
 var output="res://.runtime/"
 var replaying=false
+var omitted:Dictionary={}
+var pulse_batch_enabled=false
+var pulse_batches={}
+var pulse_malformed=0
 var recording=false
 var commands={}
 var changed={}
@@ -31,13 +35,37 @@ func begin(surface:CanvasItem,script_draw:bool=false)->void:
  if script_draw:script_drawers[surface]=true
  commands[surface]=[];changed[surface]=true
 
-func command(surface:CanvasItem,method:String,args:Array):
+func command(surface:CanvasItem,method:String,args:Array,category:String="other"):
  if not changed.has(surface):begin(surface)
- commands[surface].append([method,args])
+ commands[surface].append([method,args,category])
  return surface.callv(method,args)
 
 func paint(surface:CanvasItem)->void:
- for item in current_commands.get(surface,[]):surface.callv(item[0],item[1])
+ var items=current_commands.get(surface,[])
+ var packets:Array[Transform2D]=[]
+ var helper
+ if pulse_batch_enabled:
+  if not pulse_batches.has(surface):pulse_batches[surface]=preload("res://pulse_packet_batch.gd").new()
+  helper=pulse_batches[surface];helper.begin()
+ var i=0
+ while i<items.size():
+  var item=items[i]
+  if pulse_batch_enabled and item[2]=="pulse_vfx.flight":
+   var valid=i+6<=items.size()
+   var expected=["draw_line","draw_colored_polygon","draw_colored_polygon","draw_line","draw_line","draw_line"]
+   if valid:
+    for j in 6:
+     if items[i+j][2]!="pulse_vfx.flight" or items[i+j][0]!=expected[j]:valid=false
+   if valid:
+    var a:Vector2=item[1][0];var b:Vector2=item[1][1]
+    var direction=(b-a).normalized()
+    packets.append(Transform2D(direction,-direction.orthogonal(),a+direction*11.))
+    i+=6;continue
+   pulse_malformed+=1
+  if not packets.is_empty():helper.paint(surface,packets);packets.clear()
+  if not omitted.has(item[2]) or item[0]=="draw_set_transform":surface.callv(item[0],item[1])
+  i+=1
+ if not packets.is_empty():helper.paint(surface,packets)
 
 func collect(node:Node)->void:
  if node in excluded_pages:return
@@ -118,6 +146,13 @@ func capture(index:int,counts:Dictionary)->void:
  var command_total=0
  for surface in commands:command_total+=commands[surface].size()
  counts.native_commands=command_total
+ counts.categories={};counts.category_runs={}
+ for surface in commands:
+  var previous=""
+  for item in commands[surface]:
+   var key:String=item[2];counts.categories[key]=int(counts.categories.get(key,0))+1
+   if key!=previous:counts.category_runs[key]=int(counts.category_runs.get(key,0))+1
+   previous=key
  var full_commands=commands.duplicate()
  var item={"index":index,"nodes":delta,"shaders":shader_delta,"canvas":canvas,"counts":counts.duplicate(true),"full":full,"shader_full":shader_full,"full_commands":full_commands}
  frames.append(item);last_values=full;last_materials=shader_full
@@ -235,8 +270,65 @@ func run_replay(tree:SceneTree)->void:
  report.render_cost_trace=cost_trace
  report.render_cost_scope="diagnostic queries only when requested; milliseconds, CPU wall may include stalls, GPU last available query; stages not added and no stage-P95 claim"
  report.clean_timing=cost_views.is_empty()
+ if equivalent and OS.get_environment("PERF_TAPE_CATEGORIES")=="1":
+  report.category_omission=await category_cost(tree)
+ if equivalent and OS.get_environment("PERF_PULSE_BATCH")=="1":
+  report.pulse_batch_prototype=await pulse_batch_cost(tree)
  FileAccess.open(output+"r0-replay.json",FileAccess.WRITE).store_string(JSON.stringify(report," "))
  print("R0_ROW ",JSON.stringify(report))
+
+func category_cost(tree:SceneTree)->Array:
+ # Only diagnostic upper bounds: omitted effects are never a production default.
+ var groups={"full":[],"chain_flight":["chain_vfx.flight"],"pulse_flight":["pulse_vfx.flight"],"chain_link":["chain_vfx.link"],"pulse_short":["pulse_vfx.flash","pulse_vfx._flash_triangle","pulse_vfx.impact"],"missile_flight":["missile_vfx.flight","missile_vfx.trail"],"full_repeat":[]}
+ var results=[]
+ for name in groups:
+  omitted.clear()
+  for key in groups[name]:omitted[key]=true
+  for frame in frames:
+   apply(frame);await tree.process_frame;await RenderingServer.frame_post_draw
+  var wall=[];var draws=[];var primitives=[]
+  for frame in frames:
+   var started=Time.get_ticks_usec();apply(frame)
+   await tree.process_frame;await RenderingServer.frame_post_draw
+   wall.append(Time.get_ticks_usec()-started)
+   draws.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+   primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
+  results.append({"mode":name,"omitted_categories":groups[name],"wall_us":tree.stats(wall),"draws":tree.stats(draws),"primitives":tree.stats(primitives),"scope":"Same recorded order/native3D; effects omitted only to measure removal upper bound, not visual acceptance; deltas not additive"})
+ omitted.clear()
+ return results
+
+func pulse_batch_cost(tree:SceneTree)->Dictionary:
+ # Only tape structural prototype. Production query/gameplay path is unchanged.
+ var results=[];var images={};var allocation_deltas=[]
+ for mode in ["full","pulse_batch","full_repeat"]:
+  pulse_batch_enabled=mode=="pulse_batch"
+  for frame in frames:
+   apply(frame);await tree.process_frame;await RenderingServer.frame_post_draw
+  var allocations_before=0
+  for helper in pulse_batches.values():allocations_before+=helper.allocations
+  var wall=[];var draws=[];var primitives=[]
+  for frame in frames:
+   var started=Time.get_ticks_usec();apply(frame)
+   await tree.process_frame;await RenderingServer.frame_post_draw
+   wall.append(Time.get_ticks_usec()-started)
+   draws.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
+   primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
+  var allocations_after=0
+  for helper in pulse_batches.values():allocations_after+=helper.allocations
+  allocation_deltas.append(allocations_after-allocations_before)
+  results.append({"mode":mode,"wall_us":tree.stats(wall),"draws":tree.stats(draws),"primitives":tree.stats(primitives)})
+  if pulse_batch_enabled:
+   for i in frames.size():
+    apply(frames[i]);await tree.process_frame;await RenderingServer.frame_post_draw
+    if reference_images.has(i):
+     var image=tree.root.get_texture().get_image()
+     image.save_png(output+"pulse-batch-%d.png" % i)
+     images[str(i)]=image_difference(reference_images[i],image)
+ pulse_batch_enabled=false
+ var accepted=pulse_malformed==0
+ for check in images.values():
+  if int(check.get("max_channel_error",999))>1 or int(check.get("changed_pixels",999))>8:accepted=false
+ return {"results":results,"images":images,"existing_pixel_gate_passed":accepted,"malformed_packets":pulse_malformed,"measured_resource_allocations":allocation_deltas,"scope":"QA tape prototype only; same other commands/native3D/order; transform upload included; gameplay/query path excluded; no production activation or acceptance"}
 
 func release()->void:
  for surface in commands:
@@ -244,4 +336,4 @@ func release()->void:
    for connection in surface.get_signal_connection_list("draw"):surface.disconnect("draw",connection.callable)
  frames.clear();commands.clear();changed.clear();nodes.clear();properties.clear()
  last_values.clear();materials.clear();last_materials.clear();registered.clear()
- script_drawers.clear();current_commands.clear();reference_images.clear();scene=null
+ script_drawers.clear();current_commands.clear();reference_images.clear();pulse_batches.clear();scene=null

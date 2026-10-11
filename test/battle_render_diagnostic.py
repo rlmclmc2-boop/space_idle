@@ -1,6 +1,7 @@
 """Private-copy scope isolation and in-memory native dynamic replay. No production edits."""
 from pathlib import Path
 import re
+import hashlib
 import shutil
 
 NATIVE = {'draw_arc','draw_circle','draw_colored_polygon','draw_line','draw_mesh',
@@ -8,10 +9,11 @@ NATIVE = {'draw_arc','draw_circle','draw_colored_polygon','draw_line','draw_mesh
           'draw_style_box','draw_texture_rect','draw_texture_rect_region'}
 
 
-def native_calls(source):
+def native_calls(source, prefix="unknown"):
     # Balanced argument scan: source strings/comments are preserved verbatim.
     pattern = re.compile(r'(?<![\w.])(?:(\w+)\.)?(draw_\w+)\(')
     replacements = []
+    functions=list(re.finditer(r"(?m)^[ \t]*(?:static )?func (\w+)\(",source))
     for match in pattern.finditer(source):
         if match[2] not in NATIVE:
             continue
@@ -27,14 +29,20 @@ def native_calls(source):
             elif char == ')': depth -= 1
             pos += 1
         args = source[start:pos-1]
+        fn=next((m[1] for m in reversed(functions) if m.start()<match.start()),"unknown")
         replacements.append((match.start(), pos,
-            f'Engine.get_meta("render_tape").command({match[1] or "self"},"{match[2]}",[{args}])'))
+            f'Engine.get_meta("render_tape").command({match[1] or "self"},"{match[2]}",[{args}],"{prefix}.{fn}")'))
     for start, stop, replacement in reversed(replacements):
         source = source[:start] + replacement + source[stop:]
     return source
 
 
-def prepare(project: Path, root: Path, replay: bool):
+def prepare(project: Path, root: Path, replay: bool, pulse_batch: bool = False):
+    if pulse_batch:
+        pulse = project/'dev/toon_ship/pulse_vfx.gd'
+        expected = '93afcf7571bdb94c77c1c38a3a4425aff50b2c76a85ac8cdf3fae43c5aad2008'
+        if hashlib.sha256(pulse.read_bytes()).hexdigest() != expected:
+            raise ValueError('Pulse batch prototype requires its pinned authoritative flight source; revalidate geometry first')
     game = project / 'scripts/game.gd'
     source = game.read_text(encoding='utf-8')
     begin = source.index('\tmanual_hyperspace.dispatch_queued(self)', source.index('func tick('))
@@ -61,6 +69,7 @@ def prepare(project: Path, root: Path, replay: bool):
     shutil.copy2(root/'test/battle_scope.gd',project/'battle_scope.gd')
     if replay:
         shutil.copy2(root/'test/native_render_tape.gd',project/'native_render_tape.gd')
+        shutil.copy2(root/'test/pulse_packet_batch.gd',project/'pulse_packet_batch.gd')
         source = source.replace(' Engine.set_meta("saved_perf",meter)',
             ' Engine.set_meta("saved_perf",meter)\n Engine.set_meta("render_tape",preload("res://native_render_tape.gd").new())')
         source = source.replace('  for i in range(count+warmup):',
@@ -76,7 +85,7 @@ def prepare(project: Path, root: Path, replay: bool):
             ' Engine.get_meta("render_tape").release()\n scene.queue_free();await process_frame;await process_frame\n Engine.remove_meta("render_tape")')
         for path in list((project/'scripts').rglob('*.gd')) + list((project/'dev').rglob('*.gd')):
             code = path.read_text(encoding='utf-8')
-            code = native_calls(code)
+            code = native_calls(code,path.stem)
             code = re.sub(r'(?m)^([ \t]*)func _draw\([^\n]*\n(?=([ \t]+)\S)',
                 lambda m: m[0] + m[2] + 'if Engine.get_meta("render_tape").replaying:Engine.get_meta("render_tape").paint(self);return\n' + m[2] + 'Engine.get_meta("render_tape").begin(self,true)\n', code)
             if path.name == 'main.gd':
