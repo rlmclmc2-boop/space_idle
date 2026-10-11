@@ -85,6 +85,7 @@ var first_clear := false
 var run_resources := {"1": 0.0, "2": 0.0}
 var uid := 0
 var projectile_serial := 0
+var native_pipeline:RefCounted
 var startup_error := ""
 var save_enabled := true
 var stat_cache_enabled := false
@@ -2312,7 +2313,10 @@ func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hosti
 	if not hostile and not player_launch_payload.is_empty():shot.merge(player_launch_payload)
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	prepare_projectile(shot,source,weapon,visual_spread)
-	event.emit("fire", {"x":shot.x,"y":shot.y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
+	var launch_x:float=shot.x
+	var launch_y:float=shot.y
+	bind_projectile_motion(shot)
+	event.emit("fire", {"x":launch_x,"y":launch_y,"type":int(weapon.dmgtype),"shot":shot,"spread":visual_spread})
 
 func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Dictionary, _spread: float) -> void:
 	pass
@@ -3011,6 +3015,10 @@ func tick_projectiles(dt: float) -> void:
 	var pending := projectiles.duplicate()
 	var shield_timing := enemies.any(func(enemy):return float(enemy.get("max_shield",0))>0)
 	if shield_timing:tick_shield_beams(pending,dt)
+	if native_pipeline!=null:
+		native_pipeline.advance(self,dt,shield_timing,pending)
+		projectiles=projectiles.filter(func(p):return not p.dead and (not p.get("beam",false) or long_laser_valid(p)))
+		return
 	for index in pending.size():
 		var shot: Dictionary = pending[index]
 		# Usually the live array retains its order for the whole step. Identity at
@@ -3059,6 +3067,82 @@ func tick_projectiles(dt: float) -> void:
 		if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:
 			shot.dead = true
 	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
+
+func bind_projectile_motion(shot:Dictionary)->void:
+	if native_pipeline==null or shot.has("motion_lease") or shot.get("beam",false) or "longLaser" in str(shot.key) or shot.has("higgs") or shot.key=="cannon":return
+	native_pipeline.bind_motion(shot)
+
+func projectile_position(shot:Dictionary)->Vector2:
+	var lease=shot.get("motion_lease")
+	return Vector2(shot.x,shot.y) if lease==null else lease.position()
+
+func projectile_direction(shot:Dictionary)->Vector2:
+	var lease=shot.get("motion_lease")
+	return Vector2(shot.direction) if lease==null else lease.direction()
+
+func projectile_x(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.x) if lease==null else lease.x()
+
+func projectile_y(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.y) if lease==null else lease.y()
+
+func projectile_speed(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.speed) if lease==null else lease.speed()
+
+func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.get("motion_age",fallback)) if lease==null else lease.age()
+
+func projectile_contract_snapshot()->Array:
+	# Only QA serialization reconstructs the historical contract. Live motion has
+	# one native authority and shares the original metadata/targets/effect graph.
+	var result:Array=[]
+	for shot in projectiles:
+		var lease=shot.get("motion_lease")
+		if lease==null:result.append(shot);continue
+		var row:Dictionary=shot.duplicate()
+		row.erase("motion_lease")
+		row.x=lease.x();row.y=lease.y();row.direction=lease.direction();row.speed=lease.speed()
+		if lease.missile_fields():
+			row.motion_age=lease.age();row.orphan_age=lease.orphan();row.last_target_point=lease.last_aim()
+		result.append(row)
+	return result
+
+func _native_player_target_alive(target:Dictionary)->bool:
+	return not target.is_empty() and N.compare(target.armour,0)>0
+
+func _native_projectile_contact(shot:Dictionary,aim:Vector2,_kind:int)->void:
+	event.emit("projectile_impact",{"shot":shot,"pos":aim})
+	if shot.hostile:
+		hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
+	else:hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
+
+func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->void:
+	if advance_higgs_projectile(shot,dt):return
+	if advance_custom_projectile(shot,dt):return
+	if shot.get("beam",false):
+		if not shield_timing:tick_long_laser(shot,dt)
+		return
+	# Unmigrated instantaneous/player cannon and hostile cannon retain the exact
+	# original straight segment, including immediate impact and ordinary cleanup.
+	if not shot.target.is_empty():
+		var target_dead:bool=N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp<=0 or not enemies.has(shot.target)
+		if target_dead:shot.target={}
+	if not shot.target.is_empty():
+		var aim:=projectile_target_point(shot)
+		var delta:=aim-Vector2(shot.x,shot.y)
+		var homing:bool=str(shot.key).replace("_mon","").replace("-mon","")=="missile"
+		if homing:shot.direction=delta.normalized()
+		var along:float=delta.dot(shot.direction)
+		var intersects:=along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
+		if (delta.length()<=shot.speed*dt) if homing else intersects:
+			shot.dead=true;_native_projectile_contact(shot,aim,0);return
+	var move:Vector2=shot.direction*float(shot.speed)*dt
+	shot.x+=move.x;shot.y+=move.y
+	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:shot.dead=true
 
 func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
 	return false
@@ -3736,11 +3820,15 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 		if direction.is_zero_approx():direction=Vector2.UP
 		# A visible damage carrier starts at the hit, never at a weapon mount.
 		var hop:Dictionary={"x":origin.x,"y":origin.y,"target":target,"damage":raw,"type":type,"speed":db.weapon_motion_value("chain_carrier_speed",720.0),"hostile":false,"key":"chain","dead":false,"serial":projectile_serial,"direction":direction,"chain_hop":true,"attack_instance_id":chain.instance_id,"main_attack_id":effect.get("main_attack_id",0),"jewelEffects":continued,"critical":critical,"chain_weapon":effect.get("weapon_key",""),"combat_context":CombatContext.derive(context,"chain")}
+		bind_projectile_motion(hop)
 		projectiles.append(hop)
 		event.emit("enhancement_chain",{"source":origin,"target":chain_target_point(target),"weapon":str(effect.get("weapon_key","")),"shot":hop})
 
 func advance_chain_projectile(shot: Dictionary, dt: float) -> void:
 	if shot.dead:return
+	if native_pipeline!=null and shot.has("motion_lease"):
+		native_pipeline.advance(self,dt,false,[shot])
+		return
 	if not chain_target_alive(shot.target):shot.target={}
 	var position:=Vector2(shot.x,shot.y)
 	if not shot.target.is_empty():

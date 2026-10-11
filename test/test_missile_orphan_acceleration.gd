@@ -52,16 +52,16 @@ func run()->void:
 	var directions={};var peak={};var exits={};var speeds_at_loss=[]
 	for frame in 420:
 		if frame==72:
-			for shot in g.projectiles:directions[shot.serial]=shot.direction;speeds_at_loss.append(shot.speed)
+			for shot in g.projectiles:directions[shot.serial]=g.projectile_direction(shot);speeds_at_loss.append(g.projectile_speed(shot))
 			target.hp=0
 		var prior=g.projectiles.duplicate()
 		step(g,1./60.)
 		if frame>=72:
 			for shot in prior:
-				var expected=lerpf(g.MISSILE_LAUNCH_SPEED,g.MISSILE_CRUISE_SPEED,smoothstep(g.MISSILE_IGNITION,g.MISSILE_CRUISE_AT,float(shot.motion_age)))
-				check(is_equal_approx(float(shot.speed),expected),"each orphan follows original age-based acceleration curve")
-				check(shot.target.is_empty() and shot.direction==directions[shot.serial],"no new target or steering")
-				peak[shot.serial]=maxf(float(peak.get(shot.serial,0)),float(shot.speed))
+				var expected=lerpf(g.MISSILE_LAUNCH_SPEED,g.MISSILE_CRUISE_SPEED,smoothstep(g.MISSILE_IGNITION,g.MISSILE_CRUISE_AT,float(g.projectile_motion_age(shot))))
+				check(is_equal_approx(float(g.projectile_speed(shot)),expected),"each orphan follows original age-based acceleration curve")
+				check(shot.target.is_empty() and g.projectile_direction(shot)==directions[shot.serial],"no new target or steering")
+				peak[shot.serial]=maxf(float(peak.get(shot.serial,0)),float(g.projectile_speed(shot)))
 				if shot.dead:exits[shot.serial]=g.motion_clock
 		if frame>72 and g.projectiles.is_empty():break
 	check(speeds_at_loss.size()==5 and speeds_at_loss[0]==g.MISSILE_CRUISE_SPEED and speeds_at_loss[4]==g.MISSILE_LAUNCH_SPEED,"same batch loses target with first at cruise and last at launch speed")

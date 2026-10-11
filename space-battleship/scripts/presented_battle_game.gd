@@ -82,6 +82,7 @@ func _init(database:ShipDatabase,persist:=true)->void:
 	MISSILE_LAUNCH_EDGE_MARGIN=db.weapon_motion_value("missile_launch_edge_margin",MISSILE_LAUNCH_EDGE_MARGIN)
 	MISSILE_LAUNCH_FORWARD_Y=db.weapon_motion_value("missile_launch_forward_y",MISSILE_LAUNCH_FORWARD_Y)
 	MISSILE_CRUISE_SPEED=float(db.equip("missile",1).para2)*db.projectile_pixels_per_unit()
+	if ClassDB.class_exists("SpaceNativePipeline"):native_pipeline=ClassDB.instantiate("SpaceNativePipeline")
 	event.connect(_projectile_target_points_event)
 
 func _projectile_target_points_event(kind:String,info:Dictionary)->void:
@@ -300,6 +301,11 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
+	# Existing direct-call fixtures use the same native ordered kernel. Production
+	# enters once per complete substep through BattleGame.tick_projectiles.
+	if native_pipeline!=null and shot.has("motion_lease"):
+		native_pipeline.advance(self,dt,false,[shot])
+		return true
 	shot.motion_age=float(shot.motion_age)+dt
 	if not missile_target_live(shot.target):
 		# An ejected missile never acquires another target. Pending packets still
@@ -350,8 +356,19 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
 	if bool(shot.get("retirement_emitted",false)):return
 	shot.retirement_emitted=true;shot.dead=true
-	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":Vector2(shot.x,shot.y),"direction":Vector2(shot.direction),"speed":float(shot.speed),"coast":coast}
+	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":projectile_position(shot),"direction":projectile_direction(shot),"speed":projectile_speed(shot),"coast":coast}
 	missile_retirements.append(record)
 	if missile_retirements.size()>128:missile_retirements.pop_front()
 	# Presentation-only notification, never a projectile impact or damage event.
 	event.emit("prototype_missile_retired",record)
+
+func _native_missile_retire(shot:Dictionary,reason:String)->void:
+	_retire_missile(shot,reason,false)
+	if reason=="lifetime":lifetime_expirations+=1
+	elif reason=="orphan_timeout":orphan_expirations+=1
+
+func _native_projectile_contact(shot:Dictionary,aim:Vector2,kind:int)->void:
+	if kind==1:
+		if hit_records.size()>=2048:hit_records.pop_front()
+		hit_records.append({"time":motion_clock,"serial":int(shot.serial),"target_uid":int(shot.target.get("uid",-1)),"target_alive":float(shot.target.hp)>0,"damage":shot.damage})
+	super._native_projectile_contact(shot,aim,kind)

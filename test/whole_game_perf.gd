@@ -231,7 +231,7 @@ func run():
  var submission_mode=OS.get_environment("PERF_SUBMISSION_MODE")
  if submission_mode.is_empty():submission_mode="full"
  var realtime=OS.get_environment("PERF_REALTIME")=="1"
- var initial_combat_sha=JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text()
+ var initial_combat_sha=JSON.stringify({"enemies":g.enemies,"projectiles":g.projectile_contract_snapshot() if g.has_method("projectile_contract_snapshot") else g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text()
  scene.set_process(realtime)
  var scenarios=[0,4,1,2,6,8]
  if not OS.get_environment("PERF_PAGES").is_empty():
@@ -369,7 +369,7 @@ func run():
    print("NATIVE_PROFILE_DONE ",Time.get_ticks_usec())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
-  var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var row={"frame_trace":frame_trace,"combat_sha256":JSON.stringify({"enemies":g.enemies,"projectiles":g.projectile_contract_snapshot() if g.has_method("projectile_contract_snapshot") else g.projectiles,"player":g.player,"rng":str(g.rng.state)}).sha256_text(),"alive":stats(alive),"states":states,"stages":stages,"groups":groups,"rng_state":str(g.rng.state),"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   var wall_seconds=float(wall_end-wall_start)/1000000.0
   var game_seconds=g.motion_clock-sampled_clock_start
   var tick_count=scene.logical_ticks-logical_start
@@ -377,6 +377,7 @@ func run():
   row.main_budget={"scope":"Root _process wall time only; excludes later _draw and other autonomous/native callbacks","total_us":cpu_total_us,"wall_percent":cpu_total_us/(wall_seconds*10000.0),"no_tick_frames":cpu_no_tick.size(),"one_tick_frames":cpu_one_tick.size(),"multi_tick_frames":cpu_multi_tick.size(),"no_tick_us":stats(cpu_no_tick) if not cpu_no_tick.is_empty() else {},"one_tick_us":stats(cpu_one_tick) if not cpu_one_tick.is_empty() else {},"multi_tick_us":stats(cpu_multi_tick) if not cpu_multi_tick.is_empty() else {}}
   row.sample_time_us=sample_time_us;row.slow_callback_trace=slow_callback_trace;row.memory_trace=memory_trace;row.window_events_capture=scene.window_events_enabled
   row.logic_frame_trace=logic_frame_trace;row.initial_combat_sha256=initial_combat_sha
+  row.native_pipeline_loaded=g.has_method("bind_projectile_motion") and g.native_pipeline!=null
   row.enhancement_plan_start=enhancement_plan_start;row.enhancement_plan_end=enhancement_plan_counts(g)
   row.tutorial_projection_start=tutorial_build_start;row.tutorial_projection_end={"eligibility":tutorial_projection_builds(scene,"builds"),"reads":tutorial_projection_builds(scene,"read_builds")}
   row.combat_descriptor_start=descriptor_start;row.combat_descriptor_end=combat_descriptor_counts(g)

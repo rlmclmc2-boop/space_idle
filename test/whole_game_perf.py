@@ -216,8 +216,8 @@ def main():
         parser.error('checkpoint must be the exact authorized QA snapshot')
     assert 1 <= args.frames <= 600
     assert 1 <= args.warmup_frames <= 600
-    work = ROOT / 'test/work'
-    work.mkdir(exist_ok=True)
+    work = Path(os.environ.get('PERF_WORK_ROOT', str(ROOT / 'test/work'))).resolve()
+    work.mkdir(parents=True, exist_ok=True)
     area = args.reuse.resolve() if args.reuse else Path(tempfile.mkdtemp(prefix='whole-perf-', dir=work))
     assert area.parent == work.resolve() and area.name.startswith('whole-perf-')
     if os.name == 'nt':
@@ -253,6 +253,14 @@ def main():
             shutil.copytree(origin, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.blend', '*.blend1', '__pycache__'))
         else:
             shutil.copy2(origin, target)
+    native_manifest = project / 'addons/native_battle/space_native.gdextension'
+    native_template = project / 'addons/native_battle/space_native.gdextension.in'
+    if native_template.exists():
+        native_dll = Path(os.environ['PERF_NATIVE_DLL']).resolve()
+        assert native_dll.is_file() and native_dll.suffix == '.dll'
+        (project / 'bin').mkdir(exist_ok=True)
+        shutil.copy2(native_dll, project / 'bin/space_native.dll')
+        shutil.copy2(native_template, native_manifest)
     if checkpoint:
         shutil.copy2(ROOT / ('test/checkpoint_round2.gd' if args.checkpoint_round2 else 'test/checkpoint_round4.gd'), project / 'probe.gd')
         shutil.copy2(ROOT / 'test/checkpoint_scene_cost.gd', project / 'checkpoint_scene_cost.gd')
@@ -454,7 +462,7 @@ def main():
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     import_log = area / (args.label + '-import.log')
-    imported = run_guarded([*engine, '--headless', '--audio-driver', 'Dummy', '--editor', '--import', '--quit'], env, import_log)
+    imported = run_guarded([*engine, '--headless', '--audio-driver', 'Dummy', '--import'], env, import_log)
     if imported:
         print('Import failed; no measurement started:', import_log)
         return 1
@@ -472,6 +480,9 @@ def main():
     text = log_path.read_text(encoding='utf-8', errors='replace')
     native_profile = parse_native_script_profile(text) if args.script_profile else {}
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
+    if args.capture:
+        for capture in (project / '.runtime').glob('page-*.png'):
+            shutil.copy2(capture, area / (args.label + '-' + capture.name))
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
     expected = 1 if checkpoint or args.max_quote else len(args.pages.split(','))
     measured_files = ['probe.gd', 'project.godot', 'main.tscn', 'data/game_data.json', 'galaxy_fixture.json',
@@ -481,6 +492,10 @@ def main():
     if checkpoint:
         measured_files += ['checkpoint_scene_cost.gd', 'checkpoint.json']
     measured_files += ['dev/toon_ship/missile_vfx.gd','scripts/enemy_recognition_visual.gd']
+    if native_manifest.exists():
+        measured_files += ['addons/native_battle/src/space_native.cpp','addons/native_battle/SConstruct',
+                          'addons/native_battle/space_native.gdextension.in',
+                          'addons/native_battle/space_native.gdextension','bin/space_native.dll']
     if (project/'dev/toon_ship/pulse_packet_batch.gd').exists():measured_files += ['dev/toon_ship/pulse_packet_batch.gd']
     for native_file in ['scripts/resident_stroke_geometry.gd','scripts/resident_stroke.gdshader']:
         if (project/native_file).exists():measured_files.append(native_file)

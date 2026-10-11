@@ -88,14 +88,14 @@ func run()->void:
 	g=fixture(1);target=g.enemies[0]
 	commit(g,0,target);step(g,0)
 	var orphan:Dictionary=g.projectiles[0]
-	var loss_point:=Vector2(orphan.x,orphan.y)
-	var loss_velocity:=Vector2(orphan.direction)*float(orphan.speed)
+	var loss_point:=g.projectile_position(orphan)
+	var loss_velocity:=g.projectile_direction(orphan)*g.projectile_speed(orphan)
 	target.hp=0
 	g.change_state(BattleGame.State.TRAVEL)
 	advance(g,2)
 	check(g.launch_records.size()==1 and g.invalid_target_cancellations==4 and g.missile_queue.is_empty(),"No enemies cancels four invalid due packets rather than banking hidden salvos")
-	check(g.orphan_expirations==0 and orphan.motion_age>.24,"Empty field does not use the old short fade timeout")
-	check(absf((Vector2(orphan.x,orphan.y)-loss_point).cross(loss_velocity.normalized()))<.01 and orphan.speed==g.MISSILE_CRUISE_SPEED,"Empty-field coast keeps heading and reaches cruise speed")
+	check(g.orphan_expirations==0 and g.projectile_motion_age(orphan)>.24,"Empty field does not use the old short fade timeout")
+	check(absf((g.projectile_position(orphan)-loss_point).cross(loss_velocity.normalized()))<.01 and g.projectile_speed(orphan)==g.MISSILE_CRUISE_SPEED,"Empty-field coast keeps heading and reaches cruise speed")
 	advance(g,10)
 	check(g.projectiles.is_empty() and g.hit_records.is_empty() and g.orphan_expirations==0,"Coasting exits the arena without timeout or ghost hits")
 	g=fixture(2);target=g.enemies[0]
@@ -109,7 +109,9 @@ func run()->void:
 	check(g.launch_records.size()==5 and g.hit_records.size()==4 and g.hit_records.all(func(r):return r.serial!=first.serial),"New enemy never reacquires an already orphaned packet; pending four still hit")
 	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0)
 	var expired:Dictionary=g.projectiles[0]
-	expired.motion_age=4.49;step(g,.02)
+	if expired.has("motion_lease"):expired.motion_lease.set_age(4.49)
+	else:expired.motion_age=4.49
+	step(g,.02)
 	check(expired.dead and g.lifetime_expirations==1,"Live-target missile retains its original 4.5-second lifetime")
 	g.change_state(BattleGame.State.LEVEL_CLEAR)
 	check(g.missile_queue.is_empty(),"Terminal clear keeps existing pending-salvo cancellation")
@@ -126,19 +128,24 @@ func run()->void:
 		g=fixture(2);commit(g,0,g.enemies[0]);step(g,0)
 		g.missile_queue.clear() # isolate one already released missile
 		var shot:Dictionary=g.projectiles[0]
-		shot.x=286.;shot.y=348.;shot.direction=direction;shot.speed=60.;shot.motion_age=4.49
+		if shot.has("motion_lease"):
+			var motion=shot.motion_lease
+			motion.set_position(Vector2(286.,348.));motion.set_direction(direction);motion.set_speed(60.);motion.set_age(4.49)
+		else:shot.x=286.;shot.y=348.;shot.direction=direction;shot.speed=60.;shot.motion_age=4.49
 		g.enemies[0].hp=0
 		var state:int=g.rng.state
 		var straight:=true
 		for frame in 1500:
 			if shot.dead:break
 			step(g,1.0/60.0)
-			straight=straight and shot.direction==direction and shot.speed>=60.
-		check(straight and shot.dead and (shot.x < -32 or shot.x > 604 or shot.y < -32 or shot.y > 776),"Orphan leaves arena along unchanged direction "+str(direction))
+			straight=straight and g.projectile_direction(shot)==direction and g.projectile_speed(shot)>=60.
+		check(straight and shot.dead and (g.projectile_x(shot) < -32 or g.projectile_x(shot) > 604 or g.projectile_y(shot) < -32 or g.projectile_y(shot) > 776),"Orphan leaves arena along unchanged direction "+str(direction))
 		check(g.hit_records.is_empty() and g.missile_retirements.is_empty() and g.orphan_expirations==0 and g.rng.state==state,"Offscreen cleanup has no ghost damage, retirement effect or RNG "+str(direction))
 	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0);g.missile_queue.clear()
 	var stalled:Dictionary=g.projectiles[0]
-	stalled.speed=0.;g.enemies[0].hp=0;step(g,30.)
+	if stalled.has("motion_lease"):stalled.motion_lease.set_speed(0.)
+	else:stalled.speed=0.
+	g.enemies[0].hp=0;step(g,30.)
 	check(stalled.dead and g.orphan_expirations==1 and g.hit_records.is_empty(),"Stalled malformed missile has finite cleanup backstop")
 	# Final encounter still clears every projectile and pending salvo.
 	g=fixture(1);commit(g,0,g.enemies[0]);step(g,0)
@@ -155,6 +162,6 @@ func run()->void:
 	check(int(projected.db.equipment.missile[0].para1)==5 and legacy.equipment.missile[0]==legacy_row and projected.db.enemy_weapon("missile-mon")==legacy_hostile,"Legacy player-only five-shot projection leaves source/enemy equipment untouched")
 	var hostile:Dictionary={"x":200.0,"y":100.0,"uid":77}
 	g.fire(hostile,g.player,g.db.enemy_weapon("missile-mon"),10,true,"missile-mon")
-	check(not g.projectiles.back().get("prototype_missile",false) and g.projectiles.back().direction==Vector2.DOWN,"Hostile missile retains its independent simplified path")
+	check(not g.projectiles.back().get("prototype_missile",false) and g.projectile_direction(g.projectiles.back())==Vector2.DOWN,"Hostile missile retains its independent simplified path")
 	print("MISSILE RETARGET: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

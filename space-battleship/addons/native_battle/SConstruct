@@ -1,0 +1,10 @@
+import os
+
+# Bindings, generated files, object files and DLLs belong to the explicit D drive
+# build directory. Invoke this copied SConstruct from that directory.
+binding = ARGUMENTS['bindings']
+env = SConscript(binding + '/SConstruct')
+env.Append(CCFLAGS=['-fno-fast-math', '-ffp-contract=off'])
+env.Append(CPPPATH=[binding + '/include', binding + '/gen/include', binding + '/gdextension'])
+library = env.SharedLibrary('bin/space_native', Glob('src/*.cpp'))
+Default(library)
