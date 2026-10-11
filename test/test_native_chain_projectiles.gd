@@ -153,8 +153,7 @@ func run()->void:
       "clear":game.projectiles.clear()
       "replace":
        var remaining=game.projectiles[1].duplicate()
-       var replacement: Array[Dictionary]=[remaining]
-       game.projectiles=replacement
+       game.projectiles=[];game.projectiles.append(remaining)
       "travel":game.change_state(BattleGame.State.TRAVEL)
      game.rng.randf()
     if kind=="hit":trace.append([info.player,info.uid if info.has("uid") else 0,info.type,info.amount])
