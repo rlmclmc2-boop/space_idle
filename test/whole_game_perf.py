@@ -108,6 +108,7 @@ def parse_native_script_profile(text):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--label', required=True)
+    parser.add_argument('--combat-stress-layer',type=int,choices=(0,1,2),help='Legal labelled combat fixture layers; graphical realtime battle-only')
     parser.add_argument('--battle-only', action='store_true', help='Private-copy noncombat tick isolation; static modifiers retained, fixed-workload throughput only')
     parser.add_argument('--dynamic-replay', action='store_true', help='Record final native visible state in RAM and replay R0; diagnostic only, source recording is not clean timing')
     parser.add_argument('--native-check', action='store_true', help='Diagnostic same-frame native painter/pinned-reference comparison; not clean timing')
@@ -264,6 +265,17 @@ def main():
     if args.battle_only:
         from battle_render_diagnostic import prepare
         prepare(project, ROOT, args.dynamic_replay)
+    if args.combat_stress_layer is not None:
+        if not args.battle_only or not args.realtime or not args.missile_loadout or not args.organic_economy or args.authored_stage!=20:parser.error('combat layers require original8missile realtime battle-only authoredQA20 fixture')
+        shutil.copy2(ROOT/'test/combat_stress_fixture.gd',project/'combat_stress_fixture.gd')
+        probe_path=project/'probe.gd';code=probe_path.read_text(encoding='utf-8')
+        code=code.replace(' scene.refresh_structure();scene.refresh_tab_visibility()', ' var stress=preload("res://combat_stress_fixture.gd").new()\n if not stress.configure(g,'+str(args.combat_stress_layer)+'):push_error("Invalid legal combat fixture");quit(2);return\n scene.refresh_structure();scene.refresh_tab_visibility()',1)
+        code=code.replace('  var render_cost_trace=[]','  var stress_trace=[];var stress_previous=Time.get_ticks_usec()\n  var render_cost_trace=[]',1)
+        code=code.replace('sample_started=true;wall_start=Time.get_ticks_usec();','sample_started=true;wall_start=Time.get_ticks_usec();stress_previous=wall_start;stress.counts.clear();',1)
+        code=code.replace('   scene.frame_launches=0;', '   stress.frame_counts.clear()\n   scene.frame_launches=0;',1)
+        code=code.replace('    wall_end=Time.get_ticks_usec()','    wall_end=Time.get_ticks_usec()\n    stress_trace.append([wall_end-wall_start,wall_end-stress_previous]+stress.sample(g,scene))\n    stress_previous=wall_end',1)
+        code=code.replace('  row.enemy_canvas_frozen=', '  row.combat_stress=stress.finish(g)\n  row.combat_stress_trace=stress_trace\n  row.combat_stress_columns=["sample_us","cadence_us","chain_carriers","beam_links","beams","visual_events","node_count","frame_events"]\n  row.enemy_canvas_frozen=',1)
+        probe_path.write_text(code,encoding='utf-8')
     phase_wrapped=[]
     spike_wrapped=[]
     if args.spike_diagnostic:
