@@ -1,4 +1,6 @@
 extends RefCounted
+## Rejected performance experiment, not instantiated by live Battlefield.
+## Retained for native equivalence/regression investigation.
 ## Simulation-owned transforms. Scene descriptors are captured once at startup;
 ## logical updates never read or write a Node3D, material, or render server.
 const VIEW = preload("res://scripts/presented_ship_view.gd")

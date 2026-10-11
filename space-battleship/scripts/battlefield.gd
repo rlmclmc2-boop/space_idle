@@ -39,8 +39,6 @@ const SOLID_BACKGROUND_SHADER := preload("res://scripts/solid_background.gdshade
 var effects_enabled := true
 var ship_view
 var hyperspace_visual
-var logical_fleet = preload("res://scripts/logical_fleet_pose.gd").new()
-var fleet_native_dirty := true
 var visual_packets: Array[Dictionary] = []
 var logical_visuals: Dictionary = {}
 var logical_visual_count := 0
@@ -125,9 +123,6 @@ func _ready() -> void:
 	_set_reference_dimensions()
 	_sync_parameters()
 	ship_view.set_pose(player_render_position(),reference_height,0.0,player_render_position()+Vector2(0,-450),demo_time,false,false)
-	logical_fleet.prepare(ship_view)
-	_ensure_logical_fleet_configuration()
-	logical_fleet.pose(player_render_position(),reference_height,0.0,player_render_position()+Vector2(0,-450),demo_time,false,0.0)
 
 
 func create_battle_game(persist:bool)->BattleGame:
@@ -161,11 +156,11 @@ func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 		return {"position":fallback,"direction":(aim-fallback).normalized()}
 	var angles:Array=[]
 	for index in game.weapon_entries().size():angles.append(turret_angle(index))
-	logical_fleet.set_slot_angles(angles)
-	var point:Vector2=logical_fleet.screen_muzzle_for_slot(slot,ordinal)
+	ship_view.set_slot_angles(angles)
+	var point:Vector2=ship_view.screen_muzzle_for_slot(slot,ordinal)
 	# Canonical battlefield coordinates are independent of viewport pixels and
 	# paused close-up inspection magnification.
-	if close_up:point=player_render_position()+reference_offset+(point-logical_fleet.rendered_position)/2.8
+	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
 	var logical:=battle_logical_point(point)
 	return {"position":logical,"direction":(aim-logical).normalized()}
 
@@ -174,8 +169,8 @@ func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary
 	if not is_instance_valid(ship_view) or not is_instance_valid(hyperspace_visual):
 		var fallback:=Vector2(game.player.x,game.player.y)
 		return {"position":fallback,"direction":(aim-fallback).normalized()}
-	var point:Vector2=logical_fleet.screen_muzzle_for_drone(id,ordinal)
-	if close_up:point=player_render_position()+reference_offset+(point-logical_fleet.rendered_position)/2.8
+	var point:Vector2=hyperspace_visual.screen_muzzle_for_drone(id,ordinal,ship_view)
+	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
 	var logical:=battle_logical_point(point)
 	return {"position":logical,"direction":(aim-logical).normalized()}
 
@@ -200,26 +195,6 @@ func visual_muzzle(shot:Dictionary)->Vector2:
 	return super.visual_muzzle(shot)
 
 
-func _ensure_logical_fleet_configuration() -> void:
-	if logical_fleet.manifest == null:return
-	var key := str(game.profile.selectedShip)
-	if logical_fleet.hull_key != key:logical_fleet.configuration_dirty=true
-	if not logical_fleet.configuration_dirty:return
-	var hull_changed:bool=logical_fleet.hull_key!=key
-	logical_fleet.configure(key,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
-	fleet_native_dirty=true
-	if hull_changed:_set_reference_dimensions()
-
-
-func _commit_fleet_configuration() -> void:
-	if not fleet_native_dirty:return
-	fleet_native_dirty=false
-	current_hull=logical_fleet.hull_key
-	ship_view.set_hull(current_hull)
-	ship_view.set_loadout(logical_fleet.configured_entries,logical_fleet.configured_capacity)
-	if hyperspace_visual.sync(logical_fleet.configured_bag):paused_presentation_signature=""
-
-
 func _set_reference_dimensions() -> void:
 	if battle_read_model_enabled:battle_read_model.invalidate_membership()
 	# Match the existing hull's opaque footprint, not its transparent source canvas.
@@ -229,15 +204,7 @@ func _set_reference_dimensions() -> void:
 	reference_height = float(rect.size.y)*factor
 	# Frame the combined formation at battle scale, never enlarge the original hull footprint.
 	# Reserve 10% side margin for ordinary idle yaw; diagnostic rear angles do not widen gameplay aim.
-	var hull:Dictionary=ship_view.manifest.hulls[str(game.profile.selectedShip)]
-	var radius:float=float(ship_view.manifest.weapon_contract.conservative_xz_rotation_radius)
-	var left:float=float(hull.godot_aabb_min[0]);var right:float=float(hull.godot_aabb_max[0])
-	for point in hull.weapon_mounts:
-		left=minf(left,float(point.position[0])-radius);right=maxf(right,float(point.position[0])+radius)
-	for offset in hull.drone_offsets:
-		left=minf(left,float(offset[0])+minf(-radius,float(ship_view.manifest.drone.godot_aabb_min[0])))
-		right=maxf(right,float(offset[0])+maxf(radius,float(ship_view.manifest.drone.godot_aabb_max[0])))
-	reference_height = minf(reference_height,BATTLE_VIEW_SIZE.x*0.90*float(hull.model_span)/(right-left))
+	reference_height = minf(reference_height,BATTLE_VIEW_SIZE.x*0.90*ship_view.model_span/ship_view.formation_width)
 	# Reduce only the large own-ship classes; tiny frigates keep their legibility.
 	reference_height *= 0.74 if str(game.profile.selectedShip)=="Heavy_Battleship" else 0.85 if str(game.profile.selectedShip)=="Battleship" else 1.0
 	stable_center_ready=false
@@ -267,15 +234,21 @@ func before_logical_game_tick(dt:float) -> void:
 	# as X1 presentation does after spawning; lazy render visits must not set age.
 	for enemy in game.enemies:enemy_pose(enemy)
 	if is_instance_valid(ship_view):
-		_ensure_logical_fleet_configuration()
+		if current_hull != str(game.profile.selectedShip):
+			current_hull=str(game.profile.selectedShip)
+			ship_view.set_hull(current_hull);_set_reference_dimensions()
+		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 		demo_time+=dt
 		var aim:Vector2=player_render_position()+Vector2(0,-450)
 		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
-		logical_fleet.pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,close_up,dt)
+		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt,false)
+		hyperspace_visual.sync(game.profile.hyperspace.inventory)
+		# Keep substep poses and muzzle providers live; validate the completed
+		# fleet once at the display boundary below, not twice per logical tick.
+		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,false)
 	shield_before_hit=game.player.shield
 	fx_time+=dt
 	advance_turrets(dt)
-
 
 func _begin_visual_batch() -> void:
 	if not visual_batch_started:
@@ -306,10 +279,17 @@ func _process(delta: float) -> void:
 
 func _process_battlefield(delta: float) -> void:
 	if is_instance_valid(ship_view):
-		_ensure_logical_fleet_configuration()
-		_commit_fleet_configuration()
+		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
 		hyperspace_visual.animated=game.speed < 10.0
+		if current_hull != str(game.profile.selectedShip):
+			current_hull = str(game.profile.selectedShip)
+			if not ship_view.set_hull(current_hull):
+				prototype_enabled = false
+				ship_view.set_rendering(false)
+				return
+			_set_reference_dimensions()
+		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	super._process(delta)
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 	var valid_beams:Dictionary={}
@@ -342,14 +322,15 @@ func _process_battlefield(delta: float) -> void:
 	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	_commit_fleet_configuration()
-	logical_fleet.pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,close_up,0.0)
-	var angles: Array = []
-	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
-	logical_fleet.set_slot_angles(angles)
-	logical_fleet.commit(ship_view,hyperspace_visual,game.drone_combat.disabled,shield_enabled)
+	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0,false)
+	# Last pose writer: one guard reads actual current global scales for all
+	# bodies, including newly attached/hidden/restored members. No scale cache.
+	hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,true)
 	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
 	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
+	var angles: Array = []
+	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
+	ship_view.set_slot_angles(angles)
 	for plume in ship_view.exhaust_nodes: plume.visible = effects_enabled
 	var alive: bool = GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT
 	ship_view.set_rendering(prototype_enabled and alive and battle_layer.visible,game.paused)
@@ -562,7 +543,7 @@ func _freeze_pickup_coordinates(packet:Dictionary,info:Dictionary) -> void:
 
 
 func resource_pickup_feedback(info:Dictionary) -> void:
-	if bool(visual_event_context.get("replay",false)) or logical_fleet.hull_key.is_empty():
+	if bool(visual_event_context.get("replay",false)) or not is_instance_valid(ship_view) or ship_view.hull_key.is_empty():
 		super.resource_pickup_feedback(info);return
 	var packet:Dictionary={"kind":"pickup","time":fx_time,"info":_pickup_payload(info),"replay":true}
 	_freeze_pickup_coordinates(packet,info)
@@ -608,9 +589,7 @@ func commit_visual_events() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
-	if kind in ["ship_changed","module_changed","unlock","unlocks_changed","configuration_changed","crew_changed","hyperspace_changed","hyperspace_manual"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false))):
-		logical_fleet.configuration_dirty=true
-	if not bool(visual_event_context.get("replay",false)) and not fast_mode_enabled() and not logical_fleet.hull_key.is_empty():
+	if not bool(visual_event_context.get("replay",false)) and not fast_mode_enabled() and is_instance_valid(ship_view) and not ship_view.hull_key.is_empty():
 		if kind in ["fire","projectile_impact","critical_impact","beam_started","beam_hit","prototype_missile_retired","prototype_missile_reset","explode","collect"]:
 			freeze_visual_event(kind,info)
 			return
@@ -938,16 +917,16 @@ func draw_engine_wake(pos: Vector2) -> void:
 
 func turret_muzzle(index: int) -> Vector2:
 	if prototype_enabled and is_instance_valid(ship_view):
-		var point: Vector2 = logical_fleet.screen_muzzle_for_slot(index)
+		var point: Vector2 = ship_view.screen_muzzle_for_slot(index)
 		if point!=Vector2.ZERO: return battle_logical_point(point)
 	return super.turret_muzzle(index)
 
 
 func player_mount_center(key: String, index: int) -> Vector2:
 	if prototype_enabled and is_instance_valid(ship_view):
-		for module in logical_fleet.modules:
-			if int(module.assignment.slot)!=index: continue
-			var point: Vector2 = logical_fleet.screen_mount_for_slot(index)
+		for module in ship_view.modules:
+			if int(module.slot)!=index: continue
+			var point: Vector2 = ship_view.camera.unproject_position(module.mount.global_position)
 			return (point-player_render_position()).rotated(PI/2-player_idle_angle())/player_art_scale()
 	return super.player_mount_center(key,index)
 
