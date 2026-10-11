@@ -2330,9 +2330,12 @@ func long_laser_valid(shot: Dictionary) -> bool:
 	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, combat_entry(shot.mount)) and shot.entry.key == "longLaser"
 
 func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0, repeat_depth := 0, repeat_origin_multiplier := 1.0, inherited_snapshot: Dictionary = {}) -> void:
-	for shot in projectiles:
-		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and int(shot.get("repeat_depth",0))==repeat_depth and (long_laser_valid(shot) or shot.get("await_target",false)):
-			return
+	if native_pipeline!=null:
+		if native_pipeline.owns_beam(self,projectiles,source,hostile,mount,repeated,repeat_depth):return
+	else:
+		for shot in projectiles:
+			if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and int(shot.get("repeat_depth",0))==repeat_depth and (long_laser_valid(shot) or shot.get("await_target",false)):
+				return
 	var candidates: Array = targets(int(weapon.dmgtype)) if not hostile else []
 	var target: Dictionary = player if hostile else (candidates[0] if not candidates.is_empty() else {})
 	if not hostile:

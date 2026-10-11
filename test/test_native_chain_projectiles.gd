@@ -86,6 +86,16 @@ func run()->void:
  var entry=g.slot_entry("weapons",0)
  g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
  var beam=g.projectiles.back();var chain=beam.attack_instance.chain
+ var owner_rng=g.rng.state;var owner_attacks=g.profile.enhancementAttacks
+ g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
+ check(g.projectiles.size()==1 and g.rng.state==owner_rng and g.profile.enhancementAttacks==owner_attacks,"existing live beam ownership prevents a second launch or roll")
+ check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player.duplicate(),false,0,false,0),"equal source content cannot replace beam owner identity")
+ check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player,true,0,false,0) and not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,1,false,0) and not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,true,0) and not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,false,1),"hostility mount repeated status and trigger depth remain separate owners")
+ beam.dead=true
+ check(not g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,false,0),"expired beam releases its owner")
+ beam.await_target=true
+ check(g.native_pipeline.owns_beam(g,g.projectiles,g.player,false,0,false,0),"awaiting-target beam retains its existing owner")
+ beam.dead=false;beam.erase("await_target")
  target=chain.links[0].target;hp=target.hp
  var rng_state=g.rng.state;var history=g.profile.enhancementAttacks
  check(chain.links.size()==1 and beam.ticks==0,"beam binds configured relation at startup")
