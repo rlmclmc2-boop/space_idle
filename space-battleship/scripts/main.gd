@@ -1931,7 +1931,7 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 	if key=="cannon":
 		if core:
 			var distance := pos.distance_to(battle_point(visual.get("origin",game.projectile_position(shot)))+offset)
-			var render_speed := float(shot.get("speed",800.0))*Vector2(visual.get("fixed_step",Vector2.ONE.normalized())).length()*maxf(1.0,game.speed)
+			var render_speed := game.projectile_speed(shot)*Vector2(visual.get("fixed_step",Vector2.ONE.normalized())).length()*maxf(1.0,game.speed)
 			railgun_fx.draw_flight(draw_surface,pos,Vector2.from_angle(angle),distance,render_speed)
 		return angle
 	if not visual.is_empty():
