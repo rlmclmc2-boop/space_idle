@@ -330,11 +330,6 @@ public:
     Dictionary find_visual(Array visuals,Dictionary shot) const {
         for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i];if(same(v["shot"],shot))return v;}return Dictionary();
     }
-    bool supports_beam_step(Object *game) const {
-        Object *script=game->get_script();
-        String path=script?String(script->get("resource_path")):String();
-        return path=="res://scripts/game.gd" || path=="res://scripts/presented_battle_game.gd";
-    }
     void tick_beams(Object *game, Array pending, double dt, int64_t combat_state);
     void tick_beam(Object *game, Dictionary shot, double dt, int64_t combat_state);
     Ref<SpaceMotionLease> bind_motion(Dictionary shot) {
@@ -499,8 +494,10 @@ void SpaceNativePipeline::tick_beam(Object *game,Dictionary shot,double dt,int64
 
 void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot,int64_t combat_state) {
     Ref<SpaceNativePipeline> guard(this);
+    Object *script=game->get_script();
+    String path=script?String(script->call("get_path")):String();
     // Unknown script subclasses keep the original custom-projectile hook.
-    const bool native_beams=combat_state>=0 && supports_beam_step(game);
+    const bool native_beams=combat_state>=0 && (path=="res://scripts/game.gd" || path=="res://scripts/presented_battle_game.gd");
     std::unique_ptr<BeamStep> beam_step;
     bool beam_context_current=false;
     Array live = game->get("projectiles");
@@ -801,7 +798,6 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("contact_snapshot","category"),&SpaceNativePipeline::contact_snapshot);
     ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceNativePipeline::draw_contacts);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceNativePipeline::find_visual);
-    ClassDB::bind_method(D_METHOD("supports_beam_step","game"),&SpaceNativePipeline::supports_beam_step);
     ClassDB::bind_method(D_METHOD("tick_beams","game","pending","dt","combat_state"),&SpaceNativePipeline::tick_beams);
     ClassDB::bind_method(D_METHOD("tick_beam","game","shot","dt","combat_state"),&SpaceNativePipeline::tick_beam);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
