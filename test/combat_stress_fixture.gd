@@ -11,7 +11,8 @@ func on_event(kind,info):
  if kind=="fire" and str(info.get("shot",{}).get("combat_context",{}).get("source_id","")).begins_with("drone:"):
   counts.drone_fire=int(counts.get("drone_fire",0))+1;frame_counts.drone_fire=int(frame_counts.get("drone_fire",0))+1
 func affix(rng,c,key):
- for attempt in 256:
+ # T1 weight is1/201 for general affixes; a finite rejection budget is required.
+ for attempt in 4096:
   var a=Rewards.affix(rng,c,"",key)
   if a.tier==1:return a
  return {}
