@@ -3326,9 +3326,21 @@ func draw_retained_enemy_contacts(_offset:Vector2,_boss:bool)->bool:
 func retain_battle_foreground(_flights:Array,_shots:Array,_offset:Vector2)->bool:
 	return false
 
+func begin_projectile_packet_batch()->void:
+	pass
+
+func queue_projectile_packet(_flight:Dictionary)->bool:
+	return false
+
+func flush_projectile_packet_batch()->void:
+	pass
+
 func draw_battle_foreground(flights:Array,visible_projectiles:Array,offset:Vector2)->void:
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
+	begin_projectile_packet_batch()
 	for flight in flights:
+		if queue_projectile_packet(flight):continue
+		flush_projectile_packet_batch()
 		var p: Dictionary = flight.shot
 		var pos: Vector2 = flight.pos
 		var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
@@ -3341,6 +3353,7 @@ func draw_battle_foreground(flights:Array,visible_projectiles:Array,offset:Vecto
 		draw_surface.draw_set_transform(pos, angle)
 		draw_surface.draw_texture_rect(texture,Rect2(-size/2,size),false)
 		draw_surface.draw_set_transform(Vector2.ZERO)
+	flush_projectile_packet_batch()
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
 	for shot in visible_projectiles:
 		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue

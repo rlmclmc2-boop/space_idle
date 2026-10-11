@@ -13,6 +13,9 @@ const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd
 const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
 var rail_vfx = RAIL_VFX.new()
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
+const PULSE_PACKET_BATCH := preload("res://dev/toon_ship/pulse_packet_batch.gd")
+var pulse_packet_batch=PULSE_PACKET_BATCH.new()
+var pulse_packet_transforms:Array[Transform2D]=[]
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
 var scenery_material_route := ""
@@ -649,6 +652,24 @@ func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 	var direction:=Vector2.from_angle(float(visual.get("angle",Vector2(shot.direction).angle())))
 	pulse_events.append({"kind":"hit","position":pos,"direction":direction,"born":fx_time,"critical":bool(shot.get("critical",false))})
 	pulse_hit_count+=1
+
+
+func begin_projectile_packet_batch()->void:
+	pulse_packet_batch.begin()
+	pulse_packet_transforms.clear()
+
+func queue_projectile_packet(flight:Dictionary)->bool:
+	var shot:Dictionary=flight.shot
+	if shot.get("chain_hop",false) or not _is_own_pulse(shot):return false
+	var angle:=float(flight.visual.get("angle",Vector2(shot.direction).angle()))
+	var direction:=Vector2.from_angle(angle)
+	pulse_packet_transforms.append(Transform2D(direction,-direction.orthogonal(),flight.pos))
+	return true
+
+func flush_projectile_packet_batch()->void:
+	if pulse_packet_transforms.is_empty():return
+	pulse_packet_batch.paint(draw_surface,pulse_packet_transforms)
+	pulse_packet_transforms.clear()
 
 
 func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,visual:Dictionary={},trail_budget:=-1)->float:
