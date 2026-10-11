@@ -123,5 +123,34 @@ func run()->void:
  check(beam.ticks==1 and not beam.has("attack_instance"),"hostile beam tick needs no player chain instance")
  source.hp=0;g.tick_long_laser(beam,.2)
  check(beam.dead and beam.ticks==1,"hostile source death interrupts cleanly")
+ # Paired period processing, including a real synchronous refit between contacts.
+ for ordered in [false,true]:
+  var native=fixture("longLaser");var legacy=fixture("longLaser");legacy.native_pipeline=null
+  var traces: Array=[];var observers: Array=[];var changed: Array=[]
+  for game in [native,legacy]:
+   game.rng.seed=87234
+   game.profile.loadout.weapons.append({"key":"longLaser","level":150});game.invalidate_stat_cache()
+   game.reset_player()
+   for index in 2:
+    var module=game.slot_entry("weapons",index)
+    game.lock_long_laser(game.player,game.player_weapon_row(module),false,index,module)
+   var trace: Array=[];var mutation=[false]
+   var observer=func(kind,info):
+    if kind=="beam_hit" and not mutation[0]:
+     mutation[0]=true
+     game.profile.loadout.weapons[1]=game.profile.loadout.weapons[1].duplicate()
+     game.invalidate_stat_cache();game.rng.randf()
+    if kind=="hit":trace.append([info.player,info.uid if info.has("uid") else 0,info.type,info.amount])
+   game.event.connect(observer);traces.append(trace);observers.append(observer);changed.append(mutation)
+  for delta in [.1,.1,.4]:
+   for game in [native,legacy]:
+    if ordered:
+     game.enemy_shield_time+=delta;game.tick_shield_beams(game.projectiles.duplicate(),delta)
+    else:
+     for active_beam in game.projectiles.duplicate():game.tick_long_laser(active_beam,delta)
+  check(changed[0][0] and changed[1][0] and traces[0]==traces[1],"period order and synchronous refit match script: "+str(ordered))
+  check(native.enemies.map(func(e):return e.hp)==legacy.enemies.map(func(e):return e.hp) and native.rng.state==legacy.rng.state and native.profile.enhancementAttacks==legacy.profile.enhancementAttacks,"period damage counters and callback RNG match script: "+str(ordered))
+  check(native.projectiles.map(func(p):return [p.elapsed,p.ticks,p.get("next_hit_at",-1),p.dead])==legacy.projectiles.map(func(p):return [p.elapsed,p.ticks,p.get("next_hit_at",-1),p.dead]),"period clock and interrupted beam lifecycle match script: "+str(ordered))
+  for index in 2:[native,legacy][index].event.disconnect(observers[index])
  print("CHAIN PROJECTILES: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)

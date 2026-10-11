@@ -2437,6 +2437,9 @@ func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 	enemy_shield_hit_time=previous_hit_time
 
 func tick_long_laser(shot: Dictionary, dt: float) -> void:
+	if native_pipeline!=null:
+		native_pipeline.tick_beam(self,shot,dt,int(State.COMBAT))
+		return
 	if not advance_long_laser(shot,dt):return
 	var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
 	while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
@@ -2448,6 +2451,9 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 func tick_shield_beams(pending: Array, dt: float) -> void:
 	# Flying rounds and asynchronous chain hops hit at the step boundary. Beam
 	# periods can precede it, so merge periods across mounts before those hits.
+	if native_pipeline!=null:
+		native_pipeline.tick_beams(self,pending,dt,int(State.COMBAT))
+		return
 	var hits: Array[Dictionary] = []
 	for index in pending.size():
 		var shot: Dictionary = pending[index]
