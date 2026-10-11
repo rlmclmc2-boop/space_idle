@@ -121,7 +121,12 @@ var show_damage_numbers := true
 var damage_stats_ui
 var damage_mode := 0 # 0 simplified, 1 all (damage types), 2 off
 var damage_pending: Array[Dictionary] = []
-var damage_history: Array[String] = []
+var damage_history: Array[String]:
+	get:return read_damage_history()
+var damage_history_native=ClassDB.instantiate("SpaceDamageHistory") if ClassDB.class_exists("SpaceDamageHistory") else null
+var damage_history_records:Array=[]
+var damage_history_head:=0
+var damage_layout_native=ClassDB.instantiate("SpaceDamageLayout") if ClassDB.class_exists("SpaceDamageLayout") else null
 var wave_hint := 0.0
 var fx_time := 0.0
 var accelerated_visual_mode := false
@@ -2209,7 +2214,8 @@ func build_ui() -> void:
 			var detail_text := RichTextLabel.new()
 			detail_text.custom_minimum_size = Vector2(520,480)
 			detail_text.selection_enabled = true
-			detail_text.text = "\n".join(damage_history) if not damage_history.is_empty() else UIText.t("main.build_ui.text_22")
+			var history:=damage_history
+			detail_text.text = "\n".join(history) if not history.is_empty() else UIText.t("main.build_ui.text_22")
 			details.add_child(detail_text)
 			details.confirmed.connect(details.queue_free)
 			details.canceled.connect(details.queue_free)
@@ -2722,9 +2728,17 @@ func incoming_damage_text(amount, absorbed, damage_type: int, exact := false) ->
 func queue_damage_number(info: Dictionary) -> void:
 	if fast_mode_enabled():return
 	var absorbed = info.get("absorbed",0)
-	var exact := incoming_damage_text(info.amount,absorbed,int(info.type),true) if info.player else damage_feedback_text(info.amount,absorbed,true)
-	damage_history.append(UIText.t("battle.damage_record", {"target":UIText.t("battle.queue_damage_number.text_01") if info.player else UIText.t("battle.queue_damage_number.text_02", {"uid":"%s" % (info.uid)}), "critical":UIText.t("battle.queue_damage_number.text_03") if info.get("critical",false) else "", "damage":exact}))
-	if damage_history.size()>40:damage_history.pop_front()
+	if damage_history_native!=null:
+		damage_history_native.append(bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),info.amount,absorbed)
+	else:
+		# Only the two scalar growth fields may need copying. Never retain info,
+		# shot, target or mutable numeric dictionaries in the bounded history.
+		var amount=info.amount
+		var row=[bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),{"m":amount.m,"e":amount.e} if amount is Dictionary else amount,{"m":absorbed.m,"e":absorbed.e} if absorbed is Dictionary else absorbed]
+		if damage_history_records.size()<40:damage_history_records.append(row)
+		else:
+			damage_history_records[damage_history_head]=row
+			damage_history_head=(damage_history_head+1)%40
 	if not show_damage_numbers:return
 	if info.player and int(info.type) in [1,2]:
 		queue_incoming_damage_number(info,absorbed)
@@ -2747,6 +2761,19 @@ func queue_damage_number(info: Dictionary) -> void:
 			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
 	reserve_damage_slots()
+
+func read_damage_history()->Array[String]:
+	# Preserve the public ordered string-array read, formatting with the current
+	# text catalog only when details or a QA observer actually asks for it.
+	var records:Array=[]
+	if damage_history_native!=null:records=damage_history_native.snapshot()
+	else:
+		for i in damage_history_records.size():records.append(damage_history_records[(damage_history_head+i)%damage_history_records.size()])
+	var result:Array[String]=[]
+	for row in records:
+		var exact:String=incoming_damage_text(row[4],row[5],int(row[2]),true) if row[0] else damage_feedback_text(row[4],row[5],true)
+		result.append(UIText.t("battle.damage_record",{"target":UIText.t("battle.queue_damage_number.text_01") if row[0] else UIText.t("battle.queue_damage_number.text_02",{"uid":"%s" % row[1]}),"critical":UIText.t("battle.queue_damage_number.text_03") if row[3] else "","damage":exact}))
+	return result
 
 func incoming_damage_origin(damage_type: int) -> Vector2:
 	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
@@ -2811,6 +2838,7 @@ func move_damage_numbers_from_incoming(incoming: Dictionary) -> void:
 		else:other.life=0.0;other.retiring=true
 
 func damage_layout_metrics(value:String,size_value:int,context:Dictionary)->Dictionary:
+	if context.has("native_layout"):return context.native_layout.metrics(font,value,size_value)
 	if not context.has("metrics"):context.metrics={}
 	var key=[value,size_value]
 	if not context.metrics.has(key):
@@ -2818,6 +2846,9 @@ func damage_layout_metrics(value:String,size_value:int,context:Dictionary)->Dict
 	return context.metrics[key]
 
 func damage_layout_occupy(entry:Dictionary,context:Dictionary)->void:
+	if context.has("native_layout"):
+		context.native_layout.occupy(entry,damage_text_rect(battle_point(entry.pos),entry.text,int(entry.size),damage_layout_metrics(entry.text,int(entry.size),context)))
+		return
 	if not context.has("occupied"):return
 	for item in context.occupied:
 		if is_same(item[0],entry):
@@ -2864,6 +2895,9 @@ func flush_damage_numbers(frame_delta:float=0.0)->void:
 	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
 	reserve_damage_slots()
 	var context := {"metrics":{},"occupied":[]}
+	if damage_layout_native!=null:
+		damage_layout_native.reset()
+		context.native_layout=damage_layout_native
 	var incoming_changed=false
 	for entry in floats:
 		if not entry.get("damage",false) or float(entry.life)<=0:continue
@@ -2883,8 +2917,10 @@ func flush_damage_numbers(frame_delta:float=0.0)->void:
 		var overlaps_incoming=false
 		if incoming_changed and not entry.get("unplaced",false) and entry.get("target","")!="player":
 			var bounds=damage_text_rect(battle_point(entry.pos),entry.text,int(entry.size),damage_layout_metrics(entry.text,int(entry.size),context))
-			for item in context.occupied:
-				if item[0].get("incoming_lane",false) and item[1].grow(8).intersects(bounds):overlaps_incoming=true;break
+			if context.has("native_layout"):overlaps_incoming=context.native_layout.overlaps_incoming(bounds)
+			else:
+				for item in context.occupied:
+					if item[0].get("incoming_lane",false) and item[1].grow(8).intersects(bounds):overlaps_incoming=true;break
 		if entry.get("display_dirty",false) or overlaps_incoming:
 			resolve_damage_origin(entry,context)
 			var adjusted := damage_text_position(entry.origin-Vector2(0,frame_delta*12),entry.text,int(entry.size),entry,context)
@@ -2920,6 +2956,7 @@ func flush_damage_numbers(frame_delta:float=0.0)->void:
 		entry.pos=adjusted;entry.unplaced=false;entry.display_dirty=false
 		floats.append(entry);damage_pending.erase(entry);damage_layout_occupy(entry,context)
 		occupied_slots[entry.target]=int(occupied_slots.get(entry.target,0))+1
+	if context.has("native_layout"):context.native_layout.reset()
 
 func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Dictionary = {}) -> Rect2:
 	var width:float=metrics.width if not metrics.is_empty() else font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
@@ -2970,6 +3007,13 @@ func _source_damage_text_enemy_bottom() -> float:
 func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}, layout_context: Dictionary = {}) -> Vector2:
 	var metrics := damage_layout_metrics(value,int(size_value),layout_context)
 	var width:float=metrics.width
+	if layout_context.has("native_layout"):
+		if not layout_context.has("fleet_bottom"):layout_context.fleet_bottom=INF if battle_draw_active else damage_text_enemy_bottom()
+		var result:Vector2=layout_context.native_layout.position(origin,width,metrics.ascent,metrics.height,excluded_entry,layout_context.fleet_bottom,layout_context.get("enemy_bounds",[]),layout_context.has("enemy_bounds"),BattleGame.BATTLE_SIZE.x)
+		if result==Vector2(-INF,-INF):
+			layout_context.enemy_bounds=damage_text_enemy_bounds()
+			result=layout_context.native_layout.position(origin,width,metrics.ascent,metrics.height,excluded_entry,layout_context.fleet_bottom,layout_context.enemy_bounds,true,BattleGame.BATTLE_SIZE.x)
+		return result
 	var floating_bounds: Array[Rect2] = []
 	if layout_context.has("occupied"):
 		for item in layout_context.occupied:

@@ -3,6 +3,7 @@
 #include <godot_cpp/classes/geometry2d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/multi_mesh.hpp>
+#include <godot_cpp/classes/font.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/math.hpp>
 #include <godot_cpp/godot.hpp>
@@ -63,6 +64,91 @@ Vector2 inverse_battle_point(Vector2 p) {
 }
 
 class SpaceNativePipeline;
+// History owns only immutable scalar payloads. Formatting and translation remain
+// in the existing display formatter, invoked only by a public history read.
+class SpaceDamageHistory : public RefCounted {
+    GDCLASS(SpaceDamageHistory,RefCounted)
+    struct Number {
+        Variant scalar,m,e; bool large=false;
+        void capture(const Variant &value) {
+            large=value.get_type()==Variant::DICTIONARY;
+            if(large){Dictionary d=value;m=d["m"];e=d["e"];scalar=Variant();}
+            else {scalar=value;m=Variant();e=Variant();}
+        }
+        Variant value() const {if(!large)return scalar;Dictionary d;d["m"]=m;d["e"]=e;return d;}
+    };
+    struct Record {bool player=false,critical=false;Variant uid;int type=0;Number amount,absorbed;};
+    std::array<Record,40> records;
+    size_t head=0,count=0;
+protected:
+    static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("append","player","uid","type","critical","amount","absorbed"),&SpaceDamageHistory::append);
+        ClassDB::bind_method(D_METHOD("snapshot"),&SpaceDamageHistory::snapshot);
+    }
+public:
+    void append(bool player,Variant uid,int type,bool critical,Variant amount,Variant absorbed) {
+        size_t at=(head+count)%40;if(count==40){at=head;head=(head+1)%40;}else ++count;
+        Record &r=records[at];r.player=player;r.uid=uid;r.type=type;r.critical=critical;r.amount.capture(amount);r.absorbed.capture(absorbed);
+    }
+    Array snapshot() const {
+        Array result;result.resize(count);
+        for(size_t i=0;i<count;++i){const Record &r=records[(head+i)%40];Array row;
+            row.push_back(r.player);row.push_back(r.uid);row.push_back(r.type);row.push_back(r.critical);row.push_back(r.amount.value());row.push_back(r.absorbed.value());result[i]=row;}
+        return result;
+    }
+};
+
+// One synchronous final display transaction owns these reusable metrics and
+// occupied rectangles. No cache survives reset and no entity graph is copied.
+class SpaceDamageLayout : public RefCounted {
+    GDCLASS(SpaceDamageLayout,RefCounted)
+    struct Occupied {Dictionary entry;Rect2 rect;bool incoming;};
+    struct Metric {String text;int size;Dictionary values;};
+    std::vector<Occupied> occupied;
+    std::vector<Metric> metrics;
+    static Rect2 bounds(Vector2 p,double width,double ascent,double height) {
+        return Rect2(p-Vector2(std::max(0.0,92.0-width)/2.0,ascent),Vector2(std::max(92.0,width),height)).grow(4);
+    }
+protected:
+    static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("reset"),&SpaceDamageLayout::reset);
+        ClassDB::bind_method(D_METHOD("metrics","font","text","size"),&SpaceDamageLayout::get_metrics);
+        ClassDB::bind_method(D_METHOD("occupy","entry","rect"),&SpaceDamageLayout::occupy);
+        ClassDB::bind_method(D_METHOD("overlaps_incoming","rect"),&SpaceDamageLayout::overlaps_incoming);
+        ClassDB::bind_method(D_METHOD("position","origin","width","ascent","height","excluded","bottom","obstacles","ready","battlefield_width"),&SpaceDamageLayout::place);
+    }
+public:
+    void reset(){occupied.clear();metrics.clear();}
+    Dictionary get_metrics(Ref<Font> font,String text,int size) {
+        for(const Metric &m:metrics)if(m.size==size&&m.text==text)return m.values;
+        Dictionary values;values["width"]=font->get_string_size(text,HORIZONTAL_ALIGNMENT_LEFT,-1,size).x;
+        values["ascent"]=font->get_ascent(size);values["height"]=font->get_height(size);
+        metrics.push_back({text,size,values});return values;
+    }
+    void occupy(Dictionary entry,Rect2 rect) {
+        for(Occupied &o:occupied)if(same(o.entry,entry)){o.rect=rect;return;}
+        occupied.push_back({entry,rect,bool(entry.get("incoming_lane",false))});
+    }
+    bool overlaps_incoming(Rect2 rect) const {
+        for(const Occupied &o:occupied)if(o.incoming&&o.rect.grow(8).intersects(rect))return true;return false;
+    }
+    Vector2 place(Vector2 origin,double width,double ascent,double height,Dictionary excluded,double bottom,Array obstacles,bool ready,double battlefield_width) const {
+        for(int row=0;row<2;++row)for(int shift:{0,-56,56,-140,140}) {
+            Vector2 p(Math::clamp(double(origin.x)-width/2.0+shift,8.0,battlefield_width-8.0-width),double(origin.y)-row*40.0);
+            Rect2 rect=bounds(battle_point(p),width,ascent,height);if(rect.position.y<8)continue;
+            bool blocked=false;
+            for(const Occupied &o:occupied)if(double(o.entry.get("life",0.0))>0&&!same(o.entry,excluded)&&rect.grow(8).intersects(o.rect)){blocked=true;break;}
+            if(blocked)continue;
+            if(rect.position.y<bottom) {
+                // Preserve lazy canonical enemy geometry acquisition exactly.
+                if(!ready)return Vector2(-INFINITY,-INFINITY);
+                for(int i=0;i<obstacles.size();++i)if(rect.intersects(Rect2(obstacles[i]))){blocked=true;break;}
+            }
+            if(!blocked)return p;
+        }
+        return Vector2(INFINITY,INFINITY);
+    }
+};
 class SpaceVisualLease : public RefCounted {
     GDCLASS(SpaceVisualLease,RefCounted)
     friend class SpaceNativePipeline;
@@ -725,6 +811,7 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
 }
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
+    ClassDB::register_class<SpaceDamageHistory>();ClassDB::register_class<SpaceDamageLayout>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceFlightFrame>();ClassDB::register_class<SpaceNativePipeline>();
 }
 void terminate(ModuleInitializationLevel) {}
