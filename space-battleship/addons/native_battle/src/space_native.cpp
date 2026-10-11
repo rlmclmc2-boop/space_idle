@@ -329,20 +329,6 @@ public:
     Dictionary find_visual(Array visuals,Dictionary shot) const {
         for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i];if(same(v["shot"],shot))return v;}return Dictionary();
     }
-    bool owns_beam(Object *game, Array projectiles, Dictionary source, bool hostile,
-                   int64_t mount, bool repeated, int64_t repeat_depth) const {
-        // One live ordered query, with no retained index or qualification cache.
-        // Only matching beams enter the original validity hook, in original order.
-        for (int64_t i=0;i<projectiles.size();++i) {
-            Dictionary shot=projectiles[i];
-            if (!bool(shot.get("beam",false)) || bool(shot["hostile"])!=hostile ||
-                !same(shot["source"],source) || int64_t(shot["mount"])!=mount ||
-                bool(shot.get("repeated",false))!=repeated ||
-                int64_t(shot.get("repeat_depth",0))!=repeat_depth) continue;
-            if (bool(game->call("long_laser_valid",shot)) || bool(shot.get("await_target",false))) return true;
-        }
-        return false;
-    }
     Ref<SpaceMotionLease> bind_motion(Dictionary shot) {
         Ref<SpaceMotionLease> lease; lease.instantiate();
         const size_t slot = free_slots.empty() ? motions.size() : free_slots.back();
@@ -682,7 +668,6 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("contact_snapshot","category"),&SpaceNativePipeline::contact_snapshot);
     ClassDB::bind_method(D_METHOD("draw_contacts","canvas","now","pulse_enabled"),&SpaceNativePipeline::draw_contacts);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceNativePipeline::find_visual);
-    ClassDB::bind_method(D_METHOD("owns_beam","game","projectiles","source","hostile","mount","repeated","repeat_depth"),&SpaceNativePipeline::owns_beam);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
     ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
     ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);
