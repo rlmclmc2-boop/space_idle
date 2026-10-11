@@ -12,6 +12,7 @@
 #include <array>
 #include <cmath>
 #include <deque>
+#include <memory>
 #include <vector>
 
 using namespace godot;
@@ -347,7 +348,7 @@ public:
         for (const char *key : {"x", "y", "direction", "speed", "motion_age", "orphan_age", "last_target_point"}) shot.erase(key);
         return lease;
     }
-    void advance(Object *game, double dt, bool shield_timing, Array snapshot);
+    void advance(Object *game, double dt, bool shield_timing, Array snapshot, int64_t combat_state);
     Ref<SpaceFlightFrame> prepare_flights(Object *surface, Array shots, Vector2 offset);
     void draw_flights(Object *surface, Variant prepared, Vector2 offset);
     void bind_visual(Dictionary visual) {
@@ -407,7 +408,7 @@ struct BeamStep {
         Dictionary source=shot["source"],entry=shot["entry"];
         int64_t mount=shot["mount"];
         if(bool(shot["hostile"])) {
-            if(!enemies.has(source) || double(source["hp"])<=0 || !same(target,player) || !player_alive)return false;
+            if(!enemies.has(source) || !(double(source["hp"])>0) || !same(target,player) || !player_alive)return false;
             Array equipment=source["equipment"];
             return mount<equipment.size() && same(entry,equipment[mount]);
         }
@@ -419,8 +420,10 @@ struct BeamStep {
         if(bool(shot["hostile"])) {Dictionary entry=shot["entry"];return database->call("enemy_weapon",entry["name"]);}
         Dictionary snapshot=shot["attack_snapshot"];return snapshot["weapon"];
     }
-    bool advance(Dictionary shot,double dt,Dictionary &row) {
+    bool advance(Dictionary shot,double dt,Dictionary &row,bool &boundary) {
+        boundary=false;
         if(!valid(shot)) {
+            boundary=true;
             // Includes endless travel, retargeting, prism binding, and death.
             bool ready=game->call("advance_long_laser",shot,dt);refresh();
             if(ready)row=weapon(shot);
@@ -450,6 +453,15 @@ struct BeamStep {
     }
 };
 struct BeamPeriod {double at,due;int64_t index;Dictionary shot;};
+bool run_beam_periods(BeamStep &step,Dictionary shot,double dt) {
+    Dictionary row;bool boundary=false;if(!step.advance(shot,dt,row,boundary))return boundary;
+    while(double(shot["next_hit_at"])<=double(shot["elapsed"])+0.000000001) {
+        double due=shot["next_hit_at"];shot["next_hit_at"]=due+double(row["cd"]);
+        step.game->call("apply_long_laser_hit",shot,due);boundary=true;
+        if(bool(shot["dead"]))break;
+    }
+    return boundary;
+}
 }
 
 void SpaceNativePipeline::tick_beams(Object *game,Array pending,double dt,int64_t combat_state) {
@@ -460,7 +472,7 @@ void SpaceNativePipeline::tick_beams(Object *game,Array pending,double dt,int64_
     std::vector<BeamPeriod> periods;
     for(int64_t index=0;index<pending.size();++index) {
         Dictionary shot=pending[index];if(!bool(shot.get("beam",false)) || !step.live.has(shot))continue;
-        Dictionary row;if(!step.advance(shot,dt,row))continue;
+        Dictionary row;bool boundary=false;if(!step.advance(shot,dt,row,boundary))continue;
         while(double(shot["next_hit_at"])<=double(shot["elapsed"])+0.000000001) {
             double due=shot["next_hit_at"];
             double at=double(game->get("enemy_shield_time"))-double(shot["elapsed"])+due;
@@ -477,15 +489,17 @@ void SpaceNativePipeline::tick_beams(Object *game,Array pending,double dt,int64_
 
 void SpaceNativePipeline::tick_beam(Object *game,Dictionary shot,double dt,int64_t combat_state) {
     Ref<SpaceNativePipeline> guard(this);
-    BeamStep step(game,combat_state);Dictionary row;if(!step.advance(shot,dt,row))return;
-    while(double(shot["next_hit_at"])<=double(shot["elapsed"])+0.000000001) {
-        double due=shot["next_hit_at"];shot["next_hit_at"]=due+double(row["cd"]);
-        game->call("apply_long_laser_hit",shot,due);
-        if(bool(shot["dead"]))break;
-    }
+    BeamStep step(game,combat_state);run_beam_periods(step,shot,dt);
 }
 
-void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot) {
+void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot,int64_t combat_state) {
+    Ref<SpaceNativePipeline> guard(this);
+    Object *script=game->get_script();
+    String path=script?String(script->call("get_path")):String();
+    // Unknown script subclasses keep the original custom-projectile hook.
+    const bool native_beams=combat_state>=0 && (path=="res://scripts/game.gd" || path=="res://scripts/presented_battle_game.gd");
+    std::unique_ptr<BeamStep> beam_step;
+    bool beam_context_current=false;
     Array live = game->get("projectiles");
     pending.clear(); pins.clear(); pending.reserve(live.size()); pins.reserve(live.size());
     for (int i = 0; i < snapshot.size(); ++i) {
@@ -531,6 +545,7 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
     };
     bool publication_valid = publication_current();
     auto refresh = [&]() {
+        beam_context_current=false;
         live = game->get("projectiles"); enemies = game->get("enemies"); registry = game->get("missile_target_registry"); player = game->get("player");
         player_alive = game->call("_native_player_target_alive",player);
         source_points.clear();
@@ -561,6 +576,17 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
         if ((index >= size_t(live.size()) || !same(live[index], shot)) && !live.has(shot)) continue;
         Ref<SpaceMotionLease> lease = pins[index];
         if (lease.is_null()) {
+            if(native_beams && bool(shot.get("beam",false)) && !shot.has("higgs") && !bool(shot.get("prototype_missile",false))) {
+                // Shield periods were resolved before this ordered flight pass.
+                // Plain beams have no custom-projectile work in these two scripts.
+                if(!shield_timing) {
+                    if(!beam_step)beam_step=std::make_unique<BeamStep>(game,combat_state);
+                    else if(!beam_context_current)beam_step->refresh();
+                    beam_context_current=true;
+                    if(run_beam_periods(*beam_step,shot,dt)){refresh();if(live.is_empty())break;}
+                }
+                continue;
+            }
             game->call("_native_unpacked_projectile", shot, dt, shield_timing);
             refresh(); if (live.is_empty()) break; continue;
         }
@@ -775,7 +801,7 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("tick_beams","game","pending","dt","combat_state"),&SpaceNativePipeline::tick_beams);
     ClassDB::bind_method(D_METHOD("tick_beam","game","shot","dt","combat_state"),&SpaceNativePipeline::tick_beam);
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
-    ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
+    ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot","combat_state"),&SpaceNativePipeline::advance,DEFVAL(-1));
     ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);
     ClassDB::bind_method(D_METHOD("begin"),&SpaceNativePipeline::begin);
     ClassDB::bind_method(D_METHOD("flight","point","axis","age","powered","visual","offset","budget"),&SpaceNativePipeline::flight);

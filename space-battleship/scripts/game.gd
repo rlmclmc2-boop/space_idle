@@ -3022,7 +3022,7 @@ func tick_projectiles(dt: float) -> void:
 	var shield_timing := enemies.any(func(enemy):return float(enemy.get("max_shield",0))>0)
 	if shield_timing:tick_shield_beams(pending,dt)
 	if native_pipeline!=null:
-		native_pipeline.advance(self,dt,shield_timing,pending)
+		native_pipeline.advance(self,dt,shield_timing,pending,int(State.COMBAT))
 		projectiles=projectiles.filter(func(p):return not p.dead and (not p.get("beam",false) or long_laser_valid(p)))
 		return
 	for index in pending.size():
