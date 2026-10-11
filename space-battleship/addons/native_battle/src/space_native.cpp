@@ -224,24 +224,50 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
     const double hit_radius = game->get("MISSILE_HIT_RADIUS");
     const double orphan_lifetime = game->get("ORPHAN_LIFETIME");
     double maximum_turn_error = game->get("maximum_turn_step_error");
+    // Canonical fallback points are transient to this ordered substep and are
+    // discarded after every synchronous callback. Never retain a second target
+    // graph or substitute logical coordinates for a presentation provider.
+    struct SourcePoint { Dictionary entity; Variant x, y; Vector2 point; };
+    std::vector<SourcePoint> source_points;
+    auto publication_current = [&]() {
+        if (!bool(game->get("projectile_target_points_active"))) return false;
+        Object *spatial = game->get("target_spatial_source");
+        bool geometry_current = !spatial ||
+            (same(spatial->get("shape_revision"), game->get("projectile_target_points_shape_version")) &&
+             same(spatial->get("geometry_revision"), game->get("projectile_target_points_geometry_version")));
+        if (!geometry_current || !same(game->get("state"), game->get("projectile_target_points_state")) ||
+            !same(player, game->get("projectile_target_points_player")) ||
+            enemies.size() != int64_t(game->get("projectile_target_points_roster_size"))) {
+            game->call("invalidate_projectile_target_points"); return false;
+        }
+        return true;
+    };
+    bool publication_valid = publication_current();
     auto refresh = [&]() {
         live = game->get("projectiles"); enemies = game->get("enemies"); registry = game->get("missile_target_registry"); player = game->get("player");
         player_alive = game->call("_native_player_target_alive",player);
-        // Only an actual callback may invalidate the already-published geometry.
-        if (!bool(game->get("projectile_target_points_active"))) game->call("begin_projectile_target_points");
+        source_points.clear();
+        // Match target_point's rejection rules after an actual callback. A
+        // rejected publication stays rejected until the next real substep.
+        publication_valid = publication_current();
         publication = game->get("projectile_target_points");
     };
     auto aim_for = [&](Dictionary target, Dictionary shot, bool ballistic) -> Vector2 {
         if (ballistic && shot.has("ballistic_target_origin")) return Vector2(shot["ballistic_target_origin"]) + Vector2(target["x"],target["y"]) - Vector2(shot["ballistic_target_logical"]);
         if (same(target, player)) return Vector2(target["x"], target["y"]);
         const int64_t uid = target.get("uid", -1);
-        Dictionary row = publication.get(uid, Dictionary());
-        if (!row.is_empty() && same(row["entity"], target) && same(row["x"], target["x"]) && same(row["y"], target["y"])) return row["point"];
-        // Unsupported external geometry mutation is resolved once as a complete
-        // publication, rather than making a script projection for each flyer.
-        game->call("begin_projectile_target_points"); publication = game->get("projectile_target_points");
-        row = publication.get(uid, Dictionary());
-        return row.is_empty() ? Vector2(target["x"], target["y"]) : Vector2(row["point"]);
+        Dictionary row = publication_valid ? Dictionary(publication.get(uid, Dictionary())) : Dictionary();
+        if (!row.is_empty() && same(row["entity"], target) && same(row["x"], target["x"]) && same(row["y"], target["y"]) &&
+            same(row["version"], game->get("projectile_target_points_version"))) {
+            int64_t target_index = row["index"];
+            if (target_index >= 0 && target_index < enemies.size() && same(enemies[target_index], target)) return row["point"];
+        }
+        if (publication_valid) { game->call("invalidate_projectile_target_points"); publication_valid = false; }
+        for (const SourcePoint &entry : source_points)
+            if (same(entry.entity,target) && same(entry.x,target["x"]) && same(entry.y,target["y"])) return entry.point;
+        Vector2 point = game->call("_source_target_point", target);
+        source_points.push_back({target,target["x"],target["y"],point});
+        return point;
     };
     for (size_t index = 0; index < pending.size(); ++index) {
         Dictionary shot = pending[index];
