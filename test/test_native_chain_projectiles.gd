@@ -14,6 +14,7 @@ func fixture(key:="laser"):
  db.equipment.longLaser[0].para3=.2
  var g=preload("res://scripts/presented_battle_game.gd").new(db,false)
  assert(g.native_pipeline!=null,"Native chain gate requires the compiled extension")
+ assert(g.native_pipeline.supports_beam_step(g),"Native beam gate must execute the canonical compiled stage")
  g.speed=1;g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
