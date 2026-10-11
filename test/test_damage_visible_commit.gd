@@ -4,6 +4,25 @@ var checks=0
 func check(ok,label):
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",label)
+func verify_history_records(scene)->void:
+ scene.set_damage_mode(2)
+ var amount={"m":1.23,"e":400.0};var absorbed={"m":2.34,"e":399.0}
+ var expected=scene.incoming_damage_text(amount,absorbed,1,true)
+ scene.queue_damage_number({"player":true,"uid":0,"type":1,"amount":amount,"absorbed":absorbed,"critical":true})
+ amount.m=9.99;absorbed.e=900.0
+ check(scene.damage_history.back().contains(expected),"history freezes growth scalars at the synchronous hit even with labels off")
+ if scene.damage_history_native!=null:
+  var observer:Array=scene.damage_history_native.snapshot()
+  observer.back()[4].m=8.88
+  check(scene.damage_history.back().contains(expected),"a history observer cannot mutate the owned numeric record")
+ var expected_rows:Array[String]=[]
+ for i in 45:
+  var info={"player":false,"uid":i,"type":i%3,"amount":float(i+1),"absorbed":float(i%2),"critical":i%2==0}
+  var exact:String=scene.damage_feedback_text(info.amount,info.absorbed,true)
+  expected_rows.append(UIText.t("battle.damage_record",{"target":UIText.t("battle.queue_damage_number.text_02",{"uid":"%s" % i}),"critical":UIText.t("battle.queue_damage_number.text_03") if info.critical else "","damage":exact}))
+  scene.queue_damage_number(info)
+ check(scene.damage_history==expected_rows.slice(5),"40-slot ring preserves exact final strings, hit order, critical and absorption")
+ check(not scene.floats.any(func(entry):return entry.get("damage",false)) and scene.damage_pending.is_empty(),"disabled labels still retain history without admitting damage slots")
 func _initialize():call_deferred("run")
 func run():
  var scene=load("res://main.tscn").instantiate();scene.set_script(load("res://damage_visible_probe_scene.gd"));scene.automation_args=["--capture"];root.add_child(scene);scene.set_process(false)
@@ -53,5 +72,6 @@ func run():
  var expected=scene.battle_logical_point(scene.enemy_render_position(enemy)-Vector2(0,scene.enemy_render_width(enemy)+16))
  check(departed.size()==1 and departed[0].origin.is_equal_approx(expected),"dead-target label keeps its target anchor instead of player fallback")
  check(JSON.stringify(g.profile)==state and g.rng.state==rng,"display commit has no gameplay or RNG mutation")
+ verify_history_records(scene)
  scene.queue_free();await process_frame;await process_frame
  print("Damage visible commit: ",checks," checks, ",failures," failures");quit(1 if failures else 0)
