@@ -687,7 +687,7 @@ void SpaceNativePipeline::draw_contacts(RID canvas,double now,bool pulse_enabled
         Color color(Color::html(physical?"ffaf61":"64b5ff"),fade);
         if(e.launch){if(physical)line(p-axis*2,p+axis*4,color,2.5);else for(int sign:{-1,1})line(p+side*sign*2,p+axis*4,color,1.0);continue;}
         double radius=3.0+4.0*(1.0-fade);
-        if(physical){contact_path.clear();for(int i=0;i<12;++i){float angle=float(double(i)/11.0*float(Math::TAU));contact_path.push_back(p+engine_from_angle(angle)*float(radius));}ribbon(contact_path,color,1.2,false);}
+        if(physical){contact_path.clear();for(int i=0;i<11;++i){float angle=float(double(i)/11.0*float(Math::TAU));contact_path.push_back(p+engine_from_angle(angle)*float(radius));}ribbon(contact_path,color,1.2,true);}
         else {line(p-side*radius,p+side*radius,color,1.2);line(p-axis*radius*0.6,p+axis*radius*0.6,color,1.0);}
     }
     if(pulse_enabled)for(const ContactEvent &e:contact_events[1]) {
@@ -704,8 +704,8 @@ void SpaceNativePipeline::draw_contacts(RID canvas,double now,bool pulse_enabled
             line(kick,kick+axis*11.0*fade,Color(white,fade),3.0*fade+0.5);
         } else {
             double t=Math::clamp(age/0.13,0.0,1.0),fade=1.0-t,size=(4.0+10.0*t)*(e.critical?1.15:1.0);
-            contact_path={p+axis*size*0.65,p+across*size,p-axis*size*0.65,p-across*size,p+axis*size*0.65};
-            ribbon(contact_path,Color(cyan,fade*0.9),2.0*fade+0.5,false);
+            contact_path={p+axis*size*0.65,p+across*size,p-axis*size*0.65,p-across*size};
+            ribbon(contact_path,Color(cyan,fade*0.9),2.0*fade+0.5,true);
             if(t<0.45){PackedVector2Array points;for(Vector2 q:{p+axis*5.0,p+across*4.0,p-axis*5.0,p-across*4.0})points.push_back(q);
                 PackedInt32Array indexes=Geometry2D::get_singleton()->triangulate_polygon(points);
                 for(int i=0;i<indexes.size();i+=3)tri(points[indexes[i]],points[indexes[i+1]],points[indexes[i+2]],Color(white,fade));}
