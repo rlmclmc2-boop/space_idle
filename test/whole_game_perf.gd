@@ -289,7 +289,9 @@ func run():
   if realtime:count=20000;warmup=0
   for i in range(count+warmup):
    if realtime:
-    if sample_started and Time.get_ticks_usec()-wall_start>=seconds*1000000.0:break
+    # End only after the last captured frame covers the requested interval.
+    # Probe work after that capture must not prematurely close a shorter window.
+    if sample_started and wall_end-wall_start>=seconds*1000000.0:break
     if not sample_started:warmup=i if Time.get_ticks_usec()-realtime_start>=warm_seconds*1000000.0 else i+1
    if i==warmup:
     if native_profile:
