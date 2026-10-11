@@ -299,7 +299,7 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	shot.launch_point=origin;shot.motion_age=0.0;shot.orphan_age=0.0
 	shot.last_target_point=aim;shot.closest_range=INF
 	shot.ignition_at=MISSILE_IGNITION;shot.seek_at=MISSILE_SEEK_START;shot.cruise_at=MISSILE_CRUISE_AT
-	if not target_alive:shot.target={}
+	if not target_alive:projectile_set_target(shot,{})
 	if launch_records.size()>=2048:launch_records.pop_front()
 	launch_records.append({"time":motion_clock,"serial":int(shot.serial),"mount":int(shot.mount),"ordinal":int(packet.ordinal),"position":origin,"target_alive":target_alive,"target_uid":int(shot.target.get("uid",-1)),"damage":shot.damage})
 
@@ -314,7 +314,7 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if not missile_target_live(shot.target):
 		# An ejected missile never acquires another target. Pending packets still
 		# use the existing due-time target validation in tick_projectiles.
-		shot.target={}
+		projectile_set_target(shot,{})
 	if not shot.target.is_empty() and float(shot.motion_age)>MISSILE_LIFETIME:
 		_retire_missile(shot,"lifetime",false);lifetime_expirations+=1;return true
 	var position:=Vector2(shot.x,shot.y)

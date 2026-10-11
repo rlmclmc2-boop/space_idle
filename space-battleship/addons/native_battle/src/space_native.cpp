@@ -386,6 +386,7 @@ public:
         member_view=view;records_dirty=false;
     }
     void mark_dead(Dictionary shot) {shot["dead"]=true;auto r=lookup(shot);if(r)r->dead=true;}
+    void set_target(Dictionary shot,Dictionary target){shot["target"]=target;auto r=lookup(shot);if(r)r->target=target;}
     Dictionary lifecycle_stats() const {Dictionary d;d["managed_steps"]=managed_steps;d["compatibility_steps"]=compatibility_steps;d["active"]=int64_t(records.size());d["generation"]=record_generation;return d;}
     Array cleanup(Object *game,Array view,bool managed) {
         Ref<SpaceNativePipeline> guard(this);
@@ -792,6 +793,7 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("erase_record","view","index"),&SpaceNativePipeline::erase_record);
     ClassDB::bind_method(D_METHOD("replace_records","view"),&SpaceNativePipeline::replace_records);
     ClassDB::bind_method(D_METHOD("mark_dead","shot"),&SpaceNativePipeline::mark_dead);
+    ClassDB::bind_method(D_METHOD("set_target","shot","target"),&SpaceNativePipeline::set_target);
     ClassDB::bind_method(D_METHOD("lifecycle_stats"),&SpaceNativePipeline::lifecycle_stats);
     ClassDB::bind_method(D_METHOD("cleanup","game","view","managed"),&SpaceNativePipeline::cleanup);
     ClassDB::bind_method(D_METHOD("prune_beams","predicate"),&SpaceNativePipeline::prune_beams);

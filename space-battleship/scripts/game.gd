@@ -108,6 +108,9 @@ func projectile_erase(shot:Dictionary)->void:
 func projectile_mark_dead(shot:Dictionary)->void:
 	if native_pipeline!=null and native_pipeline.has_method("mark_dead"):native_pipeline.mark_dead(shot)
 	else:shot.dead=true
+func projectile_set_target(shot:Dictionary,target:Dictionary)->void:
+	if native_pipeline!=null and native_pipeline.has_method("set_target"):native_pipeline.set_target(shot,target)
+	else:shot.target=target
 func native_lifecycle_allowed()->bool:
 	if _native_forced_compatibility:return false
 	if native_pipeline==null or not native_pipeline.has_method("begin_step"):return false
@@ -128,8 +131,15 @@ func native_lifecycle_allowed()->bool:
 		var receiver=callback.get_object()
 		if receiver==null:return false
 		var source=receiver.get_script()
-		if source==null or source.resource_path not in ["res://scripts/game.gd","res://scripts/presented_battle_game.gd","res://scripts/main.gd","res://scripts/battlefield.gd","res://scripts/crew_system.gd"]:return false
-		if callback.get_method() not in ["on_event","_projectile_target_points_event","_enhancement_plan_event"]:return false
+		if source==null:return false
+		var methods={
+		 "res://scripts/game.gd":["_enhancement_plan_event"],
+		 "res://scripts/presented_battle_game.gd":["_enhancement_plan_event","_projectile_target_points_event"],
+		 "res://scripts/main.gd":["on_event"],"res://scripts/battlefield.gd":["on_event"],
+		 "res://scripts/crew_system.gd":["on_event"],"res://scripts/system_upgrade_badges.gd":["on_event"],
+		 "res://scripts/hightech_workshop.gd":["on_game_event"],"res://scripts/reactor_panel.gd":["on_game_event"],
+		 "res://scripts/planet_panel.gd":["_on_log_event"],"res://scripts/hyperspace_panel.gd":["on_event"]}
+		if not methods.get(source.resource_path,[]).has(callback.get_method()):return false
 	return native_pipeline.members_match(_projectiles)
 
 var drops: Array[Dictionary] = []
@@ -2452,7 +2462,7 @@ func advance_long_laser(shot: Dictionary, dt: float) -> bool:
 		if not endless.is_empty() and is_same(shot.entry,endless_source()) and is_same(shot.entry,combat_entry(int(shot.mount))) and state==State.COMBAT and N.compare(player.armour,0)>0:
 			var candidates:=targets(int(shot.weapon.dmgtype))
 			if not candidates.is_empty():
-				shot.await_target=false;shot.target=candidates[0];shot.locked_target=shot.target;shot.attack_instance.chain.links.clear();bind_beam_chain(shot)
+				shot.await_target=false;projectile_set_target(shot,candidates[0]);shot.locked_target=shot.target;shot.attack_instance.chain.links.clear();bind_beam_chain(shot)
 	if not long_laser_valid(shot):
 		projectile_mark_dead(shot)
 		end_beam_chain(shot)
@@ -3109,7 +3119,7 @@ func tick_projectiles(dt: float) -> void:
 			var target_dead: bool = N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
 			if target_dead:
 				# Keep the last heading; a missile never acquires a replacement target.
-				shot.target = {}
+				projectile_set_target(shot,{})
 		if not shot.target.is_empty():
 			var impact_point:Vector2=projectile_target_point(shot)
 			var delta := impact_point-Vector2(shot.x,shot.y)
@@ -3200,7 +3210,7 @@ func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->v
 	# original straight segment, including immediate impact and ordinary cleanup.
 	if not shot.target.is_empty():
 		var target_dead:bool=N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp<=0 or not enemies.has(shot.target)
-		if target_dead:shot.target={}
+		if target_dead:projectile_set_target(shot,{})
 	if not shot.target.is_empty():
 		var aim:=projectile_target_point(shot)
 		var delta:=aim-Vector2(shot.x,shot.y)
@@ -3899,7 +3909,7 @@ func advance_chain_projectile(shot: Dictionary, dt: float) -> void:
 	if native_pipeline!=null and shot.has("motion_lease"):
 		native_pipeline.advance(self,dt,false,[shot])
 		return
-	if not chain_target_alive(shot.target):shot.target={}
+	if not chain_target_alive(shot.target):projectile_set_target(shot,{})
 	var position:=Vector2(shot.x,shot.y)
 	if not shot.target.is_empty():
 		var aim:=chain_target_point(shot.target)

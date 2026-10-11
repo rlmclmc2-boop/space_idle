@@ -69,5 +69,34 @@ func run()->void:
    if use_native:check(game.native_pipeline.lifecycle_stats().managed_steps==1,"mutation case executes managed kernel rather than compatibility")
    results.append([trace,str(game.rng.state),game.projectile_position(game.projectiles[0])])
   check(results[0]==results[1],"immediate hit/RNG and transaction boundary match original script")
+ for action in ["retarget_other","dead_other","unknown_raw_retarget"]:
+  var results=[]
+  for use_native in [true,false]:
+   var game=fixture();game.rng.seed=4242
+   if not use_native:game.native_pipeline=null
+   var first=launch(game);var second=launch(game)
+   if use_native:
+    first.motion_lease.set_position(Vector2(first.target.x,first.target.y))
+    second.motion_lease.set_position(Vector2(game.enemies[1].x,game.enemies[1].y))
+   else:
+    first.x=first.target.x;first.y=first.target.y
+    second.x=game.enemies[1].x;second.y=game.enemies[1].y
+   var changed=[false];var trace=[]
+   var observer=func(kind,info):
+    if kind=="projectile_impact" and not changed[0]:
+     changed[0]=true
+     if action=="dead_other":game.projectile_mark_dead(second)
+     elif action=="unknown_raw_retarget":second.target=game.enemies[1]
+     else:game.projectile_set_target(second,game.enemies[1])
+     game.rng.randf()
+    if kind=="hit":trace.append([info.uid,info.amount,info.type])
+   if use_native and action!="unknown_raw_retarget":game.native_transaction_observer(observer)
+   game.event.connect(observer);game.tick_projectiles(.005);game.event.disconnect(observer)
+   if use_native:
+    game.native_forget_observer(observer)
+    var stats=game.native_pipeline.lifecycle_stats()
+    check(stats.managed_steps==0 and stats.compatibility_steps==1 if action=="unknown_raw_retarget" else stats.managed_steps==1,"unknown raw writer downgrades; audited other-projectile transaction executes managed kernel")
+   results.append([trace,str(game.rng.state),game.projectiles.size()])
+  check(results[0]==results[1],"other surviving projectile target/dead writes are visible before next entry: "+action)
  print("PROJECTILE LIFECYCLE: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
