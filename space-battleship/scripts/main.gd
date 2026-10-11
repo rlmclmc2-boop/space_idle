@@ -2731,6 +2731,10 @@ func queue_damage_number(info: Dictionary) -> void:
 				return
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
 	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"uid":info.get("uid",0),"duration":duration,"needs_origin":true,"unplaced":true,"origin":Vector2.ZERO,"pos":Vector2.ZERO}
+	# Retain ownership through a same-frame kill; resolving display geometry is deferred.
+	if not info.player:
+		for enemy in game.enemies:
+			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
 	reserve_damage_slots()
 
@@ -2839,7 +2843,7 @@ func resolve_damage_origin(entry:Dictionary,context:Dictionary)->void:
 		if not context.has("enemy_by_uid"):
 			context.enemy_by_uid={}
 			for enemy in game.enemies:context.enemy_by_uid[enemy.uid]=enemy
-		var enemy:Dictionary=context.enemy_by_uid.get(entry.uid,{})
+		var enemy:Dictionary=context.enemy_by_uid.get(entry.uid,entry.get("target_entity",{}))
 		if not enemy.is_empty():
 			height=enemy_render_width(enemy);anchor=enemy_render_position(enemy)
 	entry.origin=battle_logical_point(anchor-Vector2(0,height+16))

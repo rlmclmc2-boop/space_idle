@@ -45,6 +45,13 @@ func run():
  var critical=scene.floats.filter(func(f):return f.get("critical",false))
  check(critical.size()==1 and critical[0].type==1 and critical[0].size==19 and not critical[0].text.is_empty(),"critical category remains distinct and visible")
  check(critical.size()==1 and is_equal_approx(critical[0].life,float(scene.battle_visual.damage_number_critical_duration)),"critical visible duration remains configured")
+ scene.set_damage_mode(1);scene.visual_queries=0;event.critical=false;scene.queue_damage_number(event)
+ check(scene.visual_queries==0,"dead-target ownership capture does not materialize geometry")
+ g.enemies.erase(enemy);scene.flush_damage_numbers()
+ var departed=scene.floats.filter(func(f):return f.get("target","")=="enemy:%s" % enemy.uid)
+ check(departed.size()==1 and is_same(departed[0].target_entity,enemy),"same-frame removal retains exact departed target identity")
+ var expected=scene.battle_logical_point(scene.enemy_render_position(enemy)-Vector2(0,scene.enemy_render_width(enemy)+16))
+ check(departed.size()==1 and departed[0].origin.is_equal_approx(expected),"dead-target label keeps its target anchor instead of player fallback")
  check(JSON.stringify(g.profile)==state and g.rng.state==rng,"display commit has no gameplay or RNG mutation")
  scene.queue_free();await process_frame;await process_frame
  print("Damage visible commit: ",checks," checks, ",failures," failures");quit(1 if failures else 0)
