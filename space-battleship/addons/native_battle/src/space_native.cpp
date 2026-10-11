@@ -1,6 +1,8 @@
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/geometry2d.hpp>
+#include <godot_cpp/classes/array_mesh.hpp>
+#include <godot_cpp/classes/multi_mesh.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/math.hpp>
 #include <godot_cpp/godot.hpp>
@@ -50,6 +52,14 @@ bool chain_hp_positive(const Variant &hp) {
 Vector2 position(const Motion &m) { return Vector2(m.x, m.y); }
 Vector2 movement(const Motion &m, double dt) { return (m.direction * m.speed) * dt; }
 Vector2 battle_point(Vector2 p) { return Vector2(p.x, double(p.y) + Math::smoothstep(220.0, 420.0, double(p.y)) * 220.0); }
+Vector2 inverse_battle_point(Vector2 p) {
+    constexpr double offset=110.0/(1<<20);
+    if(p.y>=-512.0&&p.y<=220.0)return Vector2(p.x,double(p.y)-offset);
+    if(p.y>=640.0&&p.y<=2048.0)return Vector2(p.x,double(p.y)-220.0+offset);
+    double low=double(p.y)-220.0,high=p.y;
+    for(int i=0;i<20;++i){double middle=(low+high)*0.5;if(battle_point(Vector2(0,middle)).y<p.y)low=middle;else high=middle;}
+    return Vector2(p.x,(low+high)*0.5);
+}
 }
 
 class SpaceNativePipeline;
@@ -123,6 +133,10 @@ class SpaceNativePipeline : public RefCounted {
     std::array<std::vector<Color>,3> ribbon_colors;
     std::array<Vector2, 65> circle;
     bool templates_ready = false;
+    Ref<ArrayMesh> pulse_mesh;
+    std::vector<Ref<MultiMesh>> pulse_pool;
+    std::vector<Transform2D> pulse_transforms;
+    size_t pulse_cursor = 0;
 
     void release(size_t slot, uint64_t gen) {
         if (motions[slot].generation == gen) { motions[slot].generation = 0; free_slots.push_back(slot); }
@@ -141,6 +155,8 @@ class SpaceNativePipeline : public RefCounted {
         for (int i = 0; i < 64; ++i) tri(center, center + circle[i] * radius, center + circle[i+1] * radius, color);
     }
     void prepare_templates();
+    void prepare_pulse_mesh();
+    void flush_pulses(RID canvas);
     void template_at(const std::vector<Vector2>& points, const std::vector<Color>& tints, Vector2 point, Vector2 axis) {
         Transform2D transform(double(axis.angle()) + Math::PI / 2.0, point);
         for (size_t i = 0; i < points.size(); ++i) { vertices.push_back(transform.xform(points[i])); colors.push_back(tints[i]); }
@@ -165,6 +181,7 @@ public:
         return lease;
     }
     void advance(Object *game, double dt, bool shield_timing, Array snapshot);
+    Array prepare_flights(Object *surface, Array shots, Vector2 offset);
     void draw_flights(Object *surface, Array flights, Vector2 offset);
     void bind_visual(Dictionary visual) {
         if(visual.is_empty()||visual.has("visual_lease"))return;
@@ -481,6 +498,7 @@ void SpaceMotionLease::_bind_methods() {
 void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("bind_motion","shot"),&SpaceNativePipeline::bind_motion);
     ClassDB::bind_method(D_METHOD("advance","game","dt","shield_timing","snapshot"),&SpaceNativePipeline::advance);
+    ClassDB::bind_method(D_METHOD("prepare_flights","surface","shots","offset"),&SpaceNativePipeline::prepare_flights);
     ClassDB::bind_method(D_METHOD("begin"),&SpaceNativePipeline::begin);
     ClassDB::bind_method(D_METHOD("flight","point","axis","age","powered","visual","offset","budget"),&SpaceNativePipeline::flight);
     ClassDB::bind_method(D_METHOD("chain","point","direction"),&SpaceNativePipeline::chain_flight);
@@ -489,9 +507,80 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("bind_visual","visual"),&SpaceNativePipeline::bind_visual);
     ClassDB::bind_method(D_METHOD("advance_visuals","surface","dt"),&SpaceNativePipeline::advance_visuals);
 }
+void SpaceNativePipeline::prepare_pulse_mesh() {
+    if(pulse_mesh.is_valid())return;
+    prepare_templates();begin();
+    Color cyan=Color::html("42edee"),blue=Color::html("398bdf"),white=Color::html("f1ffff");
+    Color glow=blue;glow.a=0.2;line(Vector2(-11,0),Vector2(9,0),glow,12);
+    auto polygon=[&](std::initializer_list<Vector2> points,Color color) {
+        std::vector<Vector2> p(points);for(size_t i=1;i+1<p.size();++i)tri(p[0],p[i],p[i+1],color);
+    };
+    polygon({Vector2(9,0),Vector2(0,-4.5),Vector2(-11,0),Vector2(0,4.5)},cyan);
+    polygon({Vector2(9,0),Vector2(1,-2.2),Vector2(-6,0),Vector2(1,2.2)},white);
+    blue.a=0.7;for(double side:{-1.0,1.0})line(Vector2(-11,-side*2),Vector2(-25,-side*3),blue,1.8);
+    cyan.a=0.8;line(Vector2(2,5),Vector2(2,-5),cyan,1.2);
+    PackedVector3Array points;PackedColorArray tints;PackedInt32Array indices;
+    points.resize(vertices.size());tints.resize(colors.size());indices.resize(vertices.size());
+    for(size_t i=0;i<vertices.size();++i){points[i]=Vector3(vertices[i].x,vertices[i].y,0);tints[i]=colors[i];indices[i]=i;}
+    Array arrays;arrays.resize(Mesh::ARRAY_MAX);arrays[Mesh::ARRAY_VERTEX]=points;arrays[Mesh::ARRAY_COLOR]=tints;arrays[Mesh::ARRAY_INDEX]=indices;
+    pulse_mesh.instantiate();pulse_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES,arrays);begin();
+}
+void SpaceNativePipeline::flush_pulses(RID canvas) {
+    if(pulse_transforms.empty())return;
+    if(pulse_cursor==pulse_pool.size()) {
+        Ref<MultiMesh> batch;batch.instantiate();batch->set_transform_format(MultiMesh::TRANSFORM_2D);batch->set_mesh(pulse_mesh);pulse_pool.push_back(batch);
+    }
+    Ref<MultiMesh> batch=pulse_pool[pulse_cursor++];
+    if(batch->get_instance_count()<int64_t(pulse_transforms.size())) {
+        int capacity=std::max(8,batch->get_instance_count());while(capacity<int64_t(pulse_transforms.size()))capacity*=2;batch->set_instance_count(capacity);
+    }
+    batch->set_visible_instance_count(pulse_transforms.size());
+    for(size_t i=0;i<pulse_transforms.size();++i)batch->set_instance_transform_2d(i,pulse_transforms[i]);
+    RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
+}
+Array SpaceNativePipeline::prepare_flights(Object *surface,Array shots,Vector2 offset) {
+    // References and the serial index exist only for this draw. The native
+    // continuous state and the original visual records remain authoritative.
+    Dictionary index;Array visuals=surface->get("projectile_visuals"),particles=surface->get("particles");
+    for(int i=0;i<visuals.size();++i){Dictionary v=visuals[i],p=v["shot"];if(p.has("serial"))index[p["serial"]]=v;}
+    Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
+    bool prototype=surface->get("prototype_enabled");
+    bool missile_enabled=surface->get("missile_vfx_enabled"),pulse_enabled=surface->get("pulse_vfx_enabled"),enemy_enabled=surface->get("enemy_vfx_enabled");
+    Array result;
+    for(int i=0;i<shots.size();++i) {
+        Dictionary p=shots[i],v=index.get(p.get("serial",Variant()),Dictionary());
+        Ref<SpaceMotionLease> m=p.get("motion_lease",Variant());Ref<SpaceVisualLease> visual=v.get("visual_lease",Variant());
+        String key=String(p.get("key","")).replace("_mon","").replace("-mon","");bool hostile=p.get("hostile",false);
+        bool chain=p.get("chain_hop",false),missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&bool(p.get("prototype_missile",false));
+        bool pulse=prototype&&pulse_enabled&&!hostile&&key=="laser",enemy=prototype&&enemy_enabled&&hostile&&(key=="laser"||key=="cannon");
+        if(m.is_null()||bool(p.get("beam",false))||!(chain||missile||((pulse||enemy)&&visual.is_valid()&&v.has("fixed_step")))) {
+            Dictionary f=surface->call("_prepare_projectile_flight",p,index,offset);if(!f.is_empty())result.push_back(f);continue;
+        }
+        Vector2 logical=position(m->motion());
+        if(!missile&&!v.is_empty()&&v.has("fixed_step")) {
+            double distance=(logical-Vector2(v["logical_origin"])).dot(Vector2(v["fixed_direction"]));
+            logical=inverse_battle_point(Vector2(v["fixed_origin"])+Vector2(v["fixed_step"])*distance);
+        }
+        Vector2 point=battle_point(logical)+offset;int budget=1;
+        if(missile&&visual.is_valid()&&visual->samples>5) {
+            int nearby=0;for(int j=0;j<particles.size();++j){Dictionary particle=particles[j];if(Vector2(particle["pos"]).distance_squared_to(point)<6400)++nearby;}
+            budget=std::min(1,std::max(0,18-nearby));
+        }
+        Dictionary f;f["shot"]=p;f["pos"]=point;f["visual"]=v;f["budget"]=budget;result.push_back(f);
+        if(enemy) {
+            double angle=visual.is_valid()?visual->angle:engine_angle(m->motion().direction);Vector2 axis=engine_from_angle(angle);
+            Color color=Color::html(int64_t(p.get("type",0))==2?"ffaf61":"64b5ff");color.a=0.16;
+            RenderingServer::get_singleton()->canvas_item_add_line(rid,point-axis*15,point,color,1.0,true);
+        }
+    }
+    return result;
+}
 void SpaceNativePipeline::draw_flights(Object *surface,Array flights,Vector2 offset) {
     Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
     const bool own_missiles=bool(surface->get("prototype_enabled"))&&bool(surface->get("missile_vfx_enabled"));
+    const bool own_pulses=bool(surface->get("prototype_enabled"))&&bool(surface->get("pulse_vfx_enabled"));
+    const bool simple_enemies=bool(surface->get("prototype_enabled"))&&bool(surface->get("enemy_vfx_enabled"));
+    if(own_pulses)prepare_pulse_mesh();pulse_cursor=0;pulse_transforms.clear();
     begin();bool script_run=false;
     for(int i=0;i<flights.size();++i) {
         Dictionary f=flights[i],shot=f["shot"],visual=f["visual"];
@@ -499,8 +588,12 @@ void SpaceNativePipeline::draw_flights(Object *surface,Array flights,Vector2 off
         Ref<SpaceMotionLease> lease=shot.get("motion_lease",Variant());
         bool is_chain=shot.get("chain_hop",false);
         bool is_missile=own_missiles&&!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile";
+        String key=String(shot.get("key","")).replace("_mon","").replace("-mon","");
+        bool is_pulse=own_pulses&&!bool(shot.get("hostile",false))&&key=="laser"&&!bool(shot.get("beam",false));
+        bool is_enemy=simple_enemies&&bool(shot.get("hostile",false))&&(key=="laser"||key=="cannon")&&!bool(shot.get("beam",false));
         if(is_chain||is_missile) {
             if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+            flush_pulses(rid);
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
             if(is_chain){Vector2 p=lease.is_valid()?position(lease->motion()):Vector2(shot["x"],shot["y"]);chain_flight(point,battle_point(p+direction)-battle_point(p));}
             else {
@@ -512,9 +605,27 @@ void SpaceNativePipeline::draw_flights(Object *surface,Array flights,Vector2 off
             }
             continue;
         }
-        paint(rid);surface->call("_draw_projectile_foreground_flight",f,offset);script_run=true;
+        if(is_pulse||is_enemy) {
+            paint(rid);if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+            Ref<SpaceVisualLease> native_visual=visual.get("visual_lease",Variant());
+            Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
+            double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",engine_angle(direction)));Vector2 axis=engine_from_angle(angle);
+            if(is_pulse){pulse_transforms.emplace_back(axis,-axis.orthogonal(),point);continue;}
+            flush_pulses(rid);
+            RenderingServer *rs=RenderingServer::get_singleton();Color color=Color::html(int64_t(shot.get("type",0))==2?"ffaf61":"64b5ff");
+            if(int64_t(shot.get("type",0))==2) {
+                Color glow=color;glow.a=0.5;rs->canvas_item_add_line(rid,point-axis*9,point-axis,glow,1.5,true);
+                rs->canvas_item_add_line(rid,point,point+axis*8,color,3.5,true);
+                rs->canvas_item_add_line(rid,point+axis*5,point+axis*8,Color::html("ffe5bf"),2.0,true);
+            } else {
+                rs->canvas_item_add_line(rid,point-axis*9,point+axis*9,color,2.0,true);
+                rs->canvas_item_add_line(rid,point-axis*7,point+axis*7,Color::html("d8f3ff"),1.0,true);
+            }
+            continue;
+        }
+        paint(rid);flush_pulses(rid);surface->call("_draw_projectile_foreground_flight",f,offset);script_run=true;
     }
-    paint(rid);if(script_run)surface->call("flush_projectile_packet_batch");
+    paint(rid);flush_pulses(rid);if(script_run)surface->call("flush_projectile_packet_batch");
 }
 void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
     Object *game=surface->get("game");Array shots=game->get("projectiles"),visuals=surface->get("projectile_visuals");

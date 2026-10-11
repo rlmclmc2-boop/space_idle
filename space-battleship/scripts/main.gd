@@ -3335,29 +3335,15 @@ func draw_battle() -> void:
 	var offset := Vector2(sin(fx_time*83.0),cos(fx_time*97.0))*shake
 	if not accelerated_visual_mode:draw_environment_event(offset)
 	if not accelerated_visual_mode:draw_battle_particles(offset,false)
-	var visual_index := projectile_visual_index()
 	var flights: Array = []
 	var visible_projectiles: Array = [] if accelerated_visual_mode else game.projectiles
-	for p in visible_projectiles:
-		var pos := battle_point(game.projectile_position(p))+offset
-		if p.get("beam", false):
-			if game.long_laser_valid(p) and draw_beam_override(p,offset,false):continue
-			pos = battle_point(visual_muzzle(p))+offset
-			if game.long_laser_valid(p):
-				var end := entity_render_position(p.target) + offset
-				var color := ORANGE if p.hostile else CYAN
-				if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
-					draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
-					continue
-				var visual := beam_style(p)
-				draw_surface.draw_line(pos,end,Color(color,visual.glow),visual.width*2.5*float(battle_visual.laser_glow_scale),true)
-			continue
-		var flight_visual := projectile_visual(p,visual_index)
-		if not flight_visual.is_empty():
-			pos = battle_point(missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual))+offset
-		var trail_budget := decoration_budget(pos,1) if weapon_key(p)=="missile" and not flight_visual.is_empty() and int(projectile_visual_value(flight_visual,"samples",0))>5 else 1
-		flights.append({"shot":p,"pos":pos,"visual":flight_visual,"budget":trail_budget})
-		draw_projectile_fx(p,pos,offset,false,flight_visual,trail_budget)
+	if game.native_pipeline!=null:
+		flights=game.native_pipeline.prepare_flights(self,visible_projectiles,offset)
+	else:
+		var visual_index:=projectile_visual_index()
+		for p in visible_projectiles:
+			var flight:=_prepare_projectile_flight(p,visual_index,offset)
+			if not flight.is_empty():flights.append(flight)
 	if GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT:
 		draw_ship(player_render_position()+offset,0.24,false,1,not accelerated_visual_mode and GrowthNumber.compare(game.player.shield,0)>0)
 		if not accelerated_visual_mode:draw_engine_wake(player_render_position()+offset)
@@ -3372,6 +3358,26 @@ func draw_battle() -> void:
 	if battle_read_model_enabled:battle_read_model.end()
 	enemy_entry_batch_active=false
 	enemy_entry_distance_time=-INF
+
+func _prepare_projectile_flight(p:Dictionary,visual_index:Dictionary,offset:Vector2)->Dictionary:
+	var pos:=battle_point(game.projectile_position(p))+offset
+	if p.get("beam",false):
+		if game.long_laser_valid(p) and draw_beam_override(p,offset,false):return {}
+		pos=battle_point(visual_muzzle(p))+offset
+		if game.long_laser_valid(p):
+			var end:=entity_render_position(p.target)+offset
+			var color:=ORANGE if p.hostile else CYAN
+			if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
+				draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
+				return {}
+			var visual:=beam_style(p)
+			draw_surface.draw_line(pos,end,Color(color,visual.glow),visual.width*2.5*float(battle_visual.laser_glow_scale),true)
+			return {}
+	var flight_visual:=projectile_visual(p,visual_index)
+	if not flight_visual.is_empty():pos=battle_point(missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual))+offset
+	var trail_budget:=decoration_budget(pos,1) if weapon_key(p)=="missile" and not flight_visual.is_empty() and int(projectile_visual_value(flight_visual,"samples",0))>5 else 1
+	draw_projectile_fx(p,pos,offset,false,flight_visual,trail_budget)
+	return {"shot":p,"pos":pos,"visual":flight_visual,"budget":trail_budget}
 
 func draw_retained_enemy_contacts(_offset:Vector2,_boss:bool)->bool:
 	return false
