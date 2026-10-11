@@ -3120,12 +3120,16 @@ func _native_projectile_contact(shot:Dictionary,aim:Vector2,_kind:int)->void:
 		hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
 	else:hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
 
-func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->void:
-	if advance_higgs_projectile(shot,dt):return
-	if advance_custom_projectile(shot,dt):return
+func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->bool:
+	# True conservatively requires the native caller to reacquire live scene
+	# references after a script/provider or synchronous event boundary. Only the
+	# already-settled shield beam path is known to perform no further work.
+	if advance_higgs_projectile(shot,dt):return true
+	if advance_custom_projectile(shot,dt):return true
 	if shot.get("beam",false):
-		if not shield_timing:tick_long_laser(shot,dt)
-		return
+		if shield_timing:return false
+		tick_long_laser(shot,dt)
+		return true
 	# Unmigrated instantaneous/player cannon and hostile cannon retain the exact
 	# original straight segment, including immediate impact and ordinary cleanup.
 	if not shot.target.is_empty():
@@ -3139,10 +3143,11 @@ func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->v
 		var along:float=delta.dot(shot.direction)
 		var intersects:=along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
 		if (delta.length()<=shot.speed*dt) if homing else intersects:
-			shot.dead=true;_native_projectile_contact(shot,aim,0);return
+			shot.dead=true;_native_projectile_contact(shot,aim,0);return true
 	var move:Vector2=shot.direction*float(shot.speed)*dt
 	shot.x+=move.x;shot.y+=move.y
 	if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:shot.dead=true
+	return true
 
 func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
 	return false

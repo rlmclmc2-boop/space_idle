@@ -457,8 +457,11 @@ void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, A
         if ((index >= size_t(live.size()) || !same(live[index], shot)) && !live.has(shot)) continue;
         Ref<SpaceMotionLease> lease = pins[index];
         if (lease.is_null()) {
-            game->call("_native_unpacked_projectile", shot, dt, shield_timing);
-            refresh(); if (live.is_empty()) break; continue;
+            Variant changed = game->call("_native_unpacked_projectile", shot, dt, shield_timing);
+            // Unknown/older overrides remain conservative. False means the
+            // script explicitly performed no scene work (already-settled beam).
+            if (changed.get_type() != Variant::BOOL || bool(changed)) refresh();
+            if (live.is_empty()) break; continue;
         }
         Motion &m = lease->motion();
         if(m.kind==2 && bool(shot.get("dead",false)))continue;
