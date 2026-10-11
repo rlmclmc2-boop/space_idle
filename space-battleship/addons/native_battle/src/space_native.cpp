@@ -29,7 +29,7 @@ struct VectorMethods {
         normalized=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,n._native_ptr(),2428350749);
         distance=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,d._native_ptr(),3819070308);
         from_angle=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,f._native_ptr(),889263119);
-        StringName r("rotated");rotated=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,r._native_ptr(),889263119);
+        StringName r("rotated");rotated=gdextension_interface::variant_get_ptr_builtin_method(GDEXTENSION_VARIANT_TYPE_VECTOR2,r._native_ptr(),2544004089);
     }
 };
 VectorMethods &vector_methods(){static VectorMethods methods;return methods;}
@@ -662,7 +662,7 @@ void SpaceNativePipeline::draw_contacts(RID canvas,double now,bool pulse_enabled
         Color color(Color::html(physical?"ffaf61":"64b5ff"),fade);
         if(e.launch){if(physical)line(p-axis*2,p+axis*4,color,2.5);else for(int sign:{-1,1})line(p+side*sign*2,p+axis*4,color,1.0);continue;}
         double radius=3.0+4.0*(1.0-fade);
-        if(physical){contact_path.clear();for(int i=0;i<12;++i){double angle=double(i)/11.0*Math::TAU;contact_path.push_back(p+engine_from_angle(angle)*radius);}ribbon(contact_path,color,1.2,false);}
+        if(physical){contact_path.clear();for(int i=0;i<12;++i){float angle=float(double(i)/11.0*float(Math::TAU));contact_path.push_back(p+engine_from_angle(angle)*float(radius));}ribbon(contact_path,color,1.2,false);}
         else {line(p-side*radius,p+side*radius,color,1.2);line(p-axis*radius*0.6,p+axis*radius*0.6,color,1.0);}
     }
     if(pulse_enabled)for(const ContactEvent &e:contact_events[1]) {
