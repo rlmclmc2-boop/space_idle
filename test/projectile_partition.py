@@ -12,7 +12,7 @@ def wrap(source, name, arguments, category):
     assert source.count(signature)==1
     return source.replace(signature,replacement,1)
 
-def prepare(project: Path, root: Path, mode: str):
+def prepare(project: Path, root: Path, mode: str, projection: bool=False):
     shutil.copy2(root/'test/projectile_partition_timer.gd',project/'projectile_partition_timer.gd')
     sites=[]
     # Preserve exact synchronous signal arguments/order and every subscriber.
@@ -36,6 +36,12 @@ def prepare(project: Path, root: Path, mode: str):
     assert source.count(tail)==1
     source=source.replace(tail,'\tvar filter_previous=Engine.get_meta("projectile_partition").enter_phase(3)\n'+tail+'\n\tEngine.get_meta("projectile_partition").leave_phase(filter_previous)',1)
     path.write_text(source,encoding='utf-8')
+    if projection:
+        path=project/'scripts/presented_battle_game.gd';source=path.read_text(encoding='utf-8')
+        signature=next(line for line in source.splitlines() if line.startswith('func target_point('))
+        replacement=signature+'\n\tvar timer=Engine.get_meta("projectile_partition")\n\tvar token=timer.begin_projection()\n\tvar result:Vector2=_projection_original_target_point(target)\n\ttimer.end_projection(token)\n\treturn result\n\n'+signature.replace('target_point','_projection_original_target_point',1)
+        assert source.count(signature)==1
+        path.write_text(source.replace(signature,replacement,1),encoding='utf-8')
     path=project/'combat_stress_fixture.gd';source=path.read_text(encoding='utf-8');source=wrap(source,'on_event','kind,info',4);path.write_text(source,encoding='utf-8')
     path=project/'probe.gd';source=path.read_text(encoding='utf-8')
     replacements=[

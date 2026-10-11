@@ -117,6 +117,7 @@ def main():
     parser.add_argument('--boundary-check', action='store_true', help='Diagnostic canonical/read-model spatial and display contract equality; not clean timing')
     parser.add_argument('--membership-counters', action='store_true', help='Private-copy RAM native membership counts; diagnostic, not clean timing')
     parser.add_argument('--spatial-counters', action='store_true', help='Private-copy spatial boundary counts; diagnostic, not clean throughput')
+    parser.add_argument('--projectile-projection', action='store_true', help='Additional narrow target_point projection sub-timer inside projectile partition')
     parser.add_argument('--projectile-partition', choices=['measure','empty'], help='QA-only exclusive categorical accounting inside base projectile loop')
     parser.add_argument('--projectile-step-timing', action='store_true', help='QA-only narrow loop timing per logical step; separate from clean AB')
     parser.add_argument('--phase-account', action='store_true', help='Private-copy exclusive broad-phase attribution; diagnostic overhead, not clean throughput')
@@ -172,6 +173,7 @@ def main():
         parser.error('native-check requires battle-only without other instrumentation')
     if args.boundary_check and (not args.battle_only or args.dynamic_replay or args.phase_account or args.instrument):
         parser.error('boundary-check requires battle-only and cannot be combined with replay or other instrumentation')
+    if args.projectile_projection and not args.projectile_partition:parser.error('projectile-projection requires projectile-partition')
     if args.projectile_partition and (not args.battle_only or args.combat_stress_layer is None or args.dynamic_replay or args.projectile_step_timing or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.script_profile or args.gpu_profile or args.native_check or args.boundary_check or args.membership_counters or args.spatial_counters):parser.error('projectile-partition requires legal combat-layer battle-only without other profilers')
     if args.projectile_step_timing and (not args.battle_only or not args.realtime or args.dynamic_replay or args.phase_account or args.instrument or args.cpu_peaks or args.focused_draw or args.script_profile or args.gpu_profile or args.native_check or args.boundary_check or args.membership_counters):parser.error('projectile-step-timing requires realtime battle-only without other profilers')
     if args.phase_account and (not args.battle_only or args.dynamic_replay or args.instrument or args.cpu_peaks or args.focused_draw):
@@ -308,7 +310,7 @@ def main():
     partition_sites=[]
     if args.projectile_partition:
         from projectile_partition import prepare as prepare_partition
-        partition_sites=prepare_partition(project, ROOT, args.projectile_partition)
+        partition_sites=prepare_partition(project, ROOT, args.projectile_partition, args.projectile_projection)
     phase_wrapped=[]
     spike_wrapped=[]
     if args.spike_diagnostic:
