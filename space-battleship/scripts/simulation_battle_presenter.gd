@@ -11,6 +11,7 @@ var published_paused:bool=false
 var published_speed:float=1.0
 var publications:int=0
 var render_epoch:int=0
+var completed_render_passes:int=0
 var applied_events:int=0
 var transport_failures:int=0
 var native_steps_before_transfer:int=0
@@ -20,6 +21,12 @@ var retired_enemy_publications:Dictionary={}
 func install(root,pure_geometry)->void:
 	scene=root
 	var source:BattleGame=scene.game
+	# A previously staged foreground may hide native shot/motion references.
+	# Discard it before moving the old arena; the new model restages normal draws.
+	if is_instance_valid(scene.retained_contacts):
+		scene.retained_contacts.frame={};scene.retained_contacts.saved_positions.clear()
+		scene.retained_contacts.foreground.queue_redraw()
+	if not RenderingServer.frame_post_draw.is_connected(render_completed):RenderingServer.frame_post_draw.connect(render_completed)
 	owner=Owner.new();owner.attach(source,pure_geometry)
 	model=Display.new(ShipDatabase.new(),false,source.profile.duplicate(true))
 	copy_database(source.db,model.db)
@@ -151,7 +158,7 @@ func apply_packet(packet:Dictionary)->void:
 		var target:Dictionary=decode(row.target)
 		if not is_same(shot.get("target",{}),target):model.projectile_set_target(shot,target)
 		if row.dead:model.projectile_mark_dead(shot)
-	for identity in packet.get("retired_shots",[]):retired_shot_publications[int(identity)]=render_epoch
+	for identity in packet.get("retired_shots",[]):retired_shot_publications[int(identity)]=completed_render_passes
 	if packet.has("active_shots"):
 		var active:Array[Dictionary]=[]
 		for serial in packet.active_shots:
@@ -192,19 +199,23 @@ func dispatch_command(name:String,args:Array)->Variant:
 	consume()
 	if not bool(ack.get("accepted",false)):
 		push_error("Simulation input rejected: "+str(ack.get("reason","unknown")));return false
+	for key in ack.get("authoritative_fields",{}):model.set(key,ack.authoritative_fields[key])
+	published_paused=model.paused;published_speed=model.speed
 	return decode(ack.get("result"))
 func capture_inputs()->void:
 	# Direct pause/speed UI fields are converted to ordered input writes. No other
 	# direct mutable display field may silently become authoritative.
-	if model.paused!=published_paused:owner.dispatch("set_field",["paused",model.paused]);published_paused=model.paused
-	if model.speed!=published_speed:owner.dispatch("set_field",["speed",model.speed]);published_speed=model.speed
+	if model.paused!=published_paused:dispatch_command("set_field",["paused",model.paused])
+	if model.speed!=published_speed:dispatch_command("set_speed",[model.speed])
 func metrics()->Dictionary:
 	var result=owner.metrics();result.UI_events=applied_events;result.UI_publications=publications
 	result.production_single_thread_connected=true;result.thread_started=false
 	result.native_steps_before_transfer=native_steps_before_transfer;result.skipped_helper_fields=skipped_helper_fields
+	result.completed_render_passes=completed_render_passes
 	result.UI_shot_records=shot_views.size();result.UI_enemy_records=enemy_views.size();result.sim_shot_records=owner.shot_records.size();result.sim_enemy_records=owner.entity_records.size()
 	return result
 func close()->void:
+	if RenderingServer.frame_post_draw.is_connected(render_completed):RenderingServer.frame_post_draw.disconnect(render_completed)
 	model.command_gateway=Callable();owner.close();owner=null;model=null;scene=null
 
 func rewrite_script_objects(value:Variant,source:BattleGame,seen:Dictionary)->void:
@@ -287,9 +298,12 @@ func _audit_value(value:Variant,source:BattleGame,path:String,seen:Dictionary,fi
 		if value.get_object()==source:findings.append(path+":live Game callback")
 		for bound in value.get_bound_arguments():_audit_value(bound,source,path+".bound",seen,findings)
 
+func render_completed()->void:
+	# Main-thread renderer submission fence, not a claim of GPU completion.
+	completed_render_passes+=1
 func reclaim_visual_records()->void:
-	# Retired metadata survives all explicit visual references and two completed
-	# publications. Deferred native frames may retain their own UI-only record;
+	# Retired metadata survives explicit visual references and two completed
+	# renderer passes, regardless of how many snapshots were consumed. Deferred native frames may retain their own UI-only record;
 	# erasing the registry never invalidates those independently owned references.
 	var needed_shots={};var needed_entities={}
 	for shot in model.projectiles:needed_shots[int(shot.serial)]=true
@@ -297,15 +311,21 @@ func reclaim_visual_records()->void:
 		for visual in collection:
 			var shot:Dictionary=visual.get("shot",{})
 			if shot.has("serial"):needed_shots[int(shot.serial)]=true
+	if scene is Node and is_instance_valid(scene.retained_contacts):
+		for shot in scene.retained_contacts.frame.get("shots",[]):
+			if shot.has("serial"):needed_shots[int(shot.serial)]=true
 	for identity in retired_shot_publications.keys():
-		if needed_shots.has(identity) or render_epoch-int(retired_shot_publications[identity])<2:continue
+		if needed_shots.has(identity) or completed_render_passes-int(retired_shot_publications[identity])<2:continue
 		shot_views.erase(identity);model.display_chain_targets.erase(identity);retired_shot_publications.erase(identity)
 	for enemy in model.enemies:needed_entities[str(enemy.uid)]=true
 	for shot in shot_views.values():
 		for key in ["target","source","locked_target"]:
 			var record:Dictionary=shot.get(key,{})
 			if record.has("uid"):needed_entities[str(record.uid)]=true
+	for targets in model.display_chain_targets.values():
+		for target in targets:
+			if target.has("uid"):needed_entities[str(target.uid)]=true
 	for key in enemy_views.keys():
 		if needed_entities.has(str(enemy_views[key].uid)):retired_enemy_publications.erase(key);continue
-		if not retired_enemy_publications.has(key):retired_enemy_publications[key]=render_epoch
-		elif render_epoch-int(retired_enemy_publications[key])>=2:enemy_views.erase(key);retired_enemy_publications.erase(key)
+		if not retired_enemy_publications.has(key):retired_enemy_publications[key]=completed_render_passes
+		elif completed_render_passes-int(retired_enemy_publications[key])>=2:enemy_views.erase(key);retired_enemy_publications.erase(key)

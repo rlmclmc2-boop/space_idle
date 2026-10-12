@@ -686,6 +686,14 @@ func before_tick(dt:float)->void:
 	advance_turrets(dt)
 	canonical_generation+=1
 
+func finish_display_boundary()->void:
+	# Match Main.refresh_draw_layers once per external advance, not per substep.
+	# Legacy dead/departed records may be queried again and recreate their pose.
+	for slot in enemy_poses.keys():
+		var record:Dictionary=enemy_poses[slot].entity
+		if not game.enemies.has(record) or GrowthNumber.compare(record.get("hp",0),0)<=0:enemy_poses.erase(slot)
+	for enemy in game.enemies:
+		if GrowthNumber.compare(enemy.get("hp",0),0)>0:enemy_pose(enemy)
 func after_tick()->void:
 	if battle_read_model_enabled:battle_read_model.end()
 	enemy_entry_batch_active=false

@@ -12,6 +12,7 @@ class Geometry extends RefCounted:
  var fleet_pose=Pose.new()
  func before_tick(dt:float)->void:fx_time+=dt;demo_time+=dt
  func after_tick()->void:pass
+ func finish_display_boundary()->void:pass
  func visual_muzzle(_shot:Dictionary)->Vector2:return Vector2.ZERO
 class Surface extends RefCounted:
  var fx_time:float=0.0

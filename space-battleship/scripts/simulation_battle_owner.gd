@@ -163,6 +163,7 @@ func advance(seconds:float)->bool:
 		geometry.before_tick(STEP);_kernel.tick(STEP);geometry.after_tick()
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
 	var started=Time.get_ticks_usec()
+	geometry.finish_display_boundary()
 	full_frame=base_packet(true)
 	pending_frame_retired=retired_shot_ids(full_frame.active_shots)
 	var retired=pending_frame_retired
@@ -207,7 +208,6 @@ func validate_command(name:String,arguments:Array)->String:
 	if name=="set_field":
 		if arguments.size()!=2:return "invalid_field_arguments"
 		if str(arguments[0])=="paused":return "" if typeof(arguments[1])==TYPE_BOOL else "invalid_pause_value"
-		if str(arguments[0])=="speed":return "" if typeof(arguments[1]) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(arguments[1])) and float(arguments[1])>0 else "invalid_speed_value"
 		return "uncompiled_field"
 	if not command_signatures.has(name):return "missing_command_signature"
 	var signature:Dictionary=command_signatures[name]
@@ -236,10 +236,10 @@ func process_commands()->void:
 			if actual.is_empty():accepted=false;reason="retired_drop"
 			else:_kernel.collect(actual,bool(arguments[1]))
 		elif command.name=="set_field":
-			if arguments.size()!=2 or not str(arguments[0]) in ["paused","speed"]:accepted=false;reason="uncompiled_field"
+			if arguments.size()!=2 or not str(arguments[0]) in ["paused"]:accepted=false;reason="uncompiled_field"
 			else:_kernel.set(str(arguments[0]),arguments[1])
 		else:result=_kernel.callv(command.name,arguments)
-		command_acks[int(command.sequence)]={"sequence":int(command.sequence),"accepted":accepted,"reason":reason,"result":encode(result),"applied_tick":logical_steps,"queued_us":int(command.queued_us),"ack_us":Time.get_ticks_usec()}
+		command_acks[int(command.sequence)]={"sequence":int(command.sequence),"accepted":accepted,"reason":reason,"result":encode(result),"authoritative_fields":{"paused":_kernel.paused,"speed":_kernel.speed},"applied_tick":logical_steps,"queued_us":int(command.queued_us),"ack_us":Time.get_ticks_usec()}
 	command_queue_active=false
 
 func metrics()->Dictionary:

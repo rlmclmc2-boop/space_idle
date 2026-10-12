@@ -207,6 +207,7 @@ public:
 class SpaceMotionLease : public RefCounted {
     GDCLASS(SpaceMotionLease, RefCounted)
     friend class SpaceNativePipeline;
+    friend class SpaceFlightFrame;
     std::shared_ptr<MotionArena> arena;
     size_t slot = 0;
     uint64_t generation = 0;
@@ -279,9 +280,11 @@ protected:
     static void _bind_methods() {
         ClassDB::bind_method(D_METHOD("size"),&SpaceFlightFrame::size);
         ClassDB::bind_method(D_METHOD("to_array"),&SpaceFlightFrame::to_array);
+        ClassDB::bind_method(D_METHOD("audit_reference_isolation","entities","player","shots","source_pipeline"),&SpaceFlightFrame::audit_reference_isolation);
     }
 public:
     ~SpaceFlightFrame();
+    Dictionary audit_reference_isolation(Array entities,Dictionary player,Array shots,Ref<SpaceNativePipeline> source_pipeline) const;
     int64_t size() const {return flights.size();}
     // Compatibility/reference inspection only, never the native production path.
     Array to_array() const {Array result;for(const PreparedFlight &f:flights)result.push_back(f.legacy());return result;}
@@ -510,6 +513,24 @@ public:
 Motion &SpaceMotionLease::motion() const { return arena->motions[slot]; }
 SpaceMotionLease::~SpaceMotionLease() { if (arena) arena->release(slot, generation); }
 SpaceFlightFrame::~SpaceFlightFrame() {if(recycler.is_valid())recycler->recycle_frame(flights);}
+Dictionary SpaceFlightFrame::audit_reference_isolation(Array entities,Dictionary player,Array shots,Ref<SpaceNativePipeline> source_pipeline) const {
+    int64_t foreign_shots=0,foreign_targets=0,foreign_motions=0,foreign_visuals=0;
+    auto foreign_entity=[&](const Dictionary &record){
+        if(same(record,player))return true;
+        for(int i=0;i<entities.size();++i)if(same(record,Dictionary(entities[i])))return true;
+        return false;
+    };
+    for(const PreparedFlight &flight:flights){
+        for(int i=0;i<shots.size();++i)if(same(flight.shot,Dictionary(shots[i]))){++foreign_shots;break;}
+        for(int i=0;i<shots.size();++i)if(same(Dictionary(flight.visual.get("shot",Dictionary())),Dictionary(shots[i]))){++foreign_visuals;break;}
+        for(const char *key:{"target","source","locked_target"})if(foreign_entity(Dictionary(flight.shot.get(key,Dictionary())))){++foreign_targets;break;}
+        if(source_pipeline.is_valid()&&flight.motion.is_valid()&&flight.motion->arena==source_pipeline->arena)++foreign_motions;
+    }
+    Dictionary result;result["foreign_shots"]=foreign_shots;result["foreign_targets"]=foreign_targets;
+    result["foreign_visuals"]=foreign_visuals;result["source_motion_leases"]=foreign_motions;result["flights"]=int64_t(flights.size());
+    result["scope"]="this deferred native flight frame, including hidden motion leases";return result;
+}
+
 
 void SpaceNativePipeline::advance(Object *game, double dt, bool shield_timing, Array snapshot, Variant transaction) {
     Ref<SpaceNativePipeline> guard(this);
