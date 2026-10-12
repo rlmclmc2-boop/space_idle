@@ -25,6 +25,7 @@ func global_active(g,effect: String,node: int,choice: String) -> bool:
  return g.defense_entries().any(func(entry):return active(g,entry,effect,node,choice))
 
 func a_count(g,entry: Dictionary,effect: String) -> int:
+ if g.compiled_combat_rules!=null and not g.compiled_combat_rules.compiling:return g.compiled_combat_rules.count_a(entry,effect)
  var count := 0
  for node in [1,2,3]:
   if active(g,entry,effect,node,"A"):count+=1
@@ -45,7 +46,7 @@ func defense(g,index: int) -> Dictionary:
  return defenses[index]
 
 func reconcile(g) -> void:
- g.enhancement_plan.sync(g)
+ if g.compiled_combat_rules==null or g.compiled_combat_rules.compiling:g.enhancement_plan.sync(g)
  # Identity/key changes are structural. Timers, counters and entry levels do
  # not invalidate eligibility, and continue through the original live paths.
  var weapon_entries: Array=g.combat_weapon_entries()
@@ -159,7 +160,7 @@ func repeat_probability(g,entry: Dictionary,drone_totals: Dictionary={}) -> floa
  return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability")+float(drones.repeat_chance),0,1)
 
 func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -> float:
- var row: Dictionary=g.db.equip(str(entry.key),int(entry.level))
+ var row: Dictionary=g.combat_equipment_row(str(entry.key),int(entry.level))
  var rate: float=float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
  if g.has_enhancement_effect(entry,"critical"):rate+=g.enhancement_parameter("base_critical_rate")
  var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,entry))
