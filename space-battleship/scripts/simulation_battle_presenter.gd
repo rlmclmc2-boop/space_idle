@@ -123,7 +123,8 @@ func rebind_ui(value:Variant,source:BattleGame)->Variant:
 			result[key]=rebind_ui(value[key],source)
 		return result
 	if value is Array:
-		var result=[]
+		# Nested UI containers retain their declared element type after rebinding.
+		var result=value.duplicate(false);result.clear()
 		for member in value:result.append(rebind_ui(member,source))
 		return result
 	return value
@@ -277,7 +278,24 @@ func wait_for_ack(sequence:int)->Dictionary:
 func synchronize()->bool:
 	if not owner.worker_active:return true
 	return bool(dispatch_command("__barrier",[]))
+func retain_pending_damage_geometry()->void:
+	if owner.worker_active:return
+	var identities=PackedInt64Array()
+	for field in ["floats","damage_pending"]:
+		var entries=scene.get(field)
+		if not entries is Array:continue
+		for entry in entries:
+			if bool(entry.get("needs_origin",false)) and entry.get("target","")!="player" and entry.has("uid"):
+				identities.append(int(entry.uid))
+	owner.set_damage_geometry_references(identities)
+func retired_damage_geometry(identity:int)->Dictionary:
+	return owner.retired_damage_geometry(identity)
+func finish_retired_damage_geometry()->void:
+	if owner.worker_active:return
+	var values:Dictionary=owner.finish_retired_damage_geometry()
+	if not values.is_empty():scene.simulation_geometry_view.apply(values)
 func advance(seconds:float)->void:
+	retain_pending_damage_geometry()
 	if owner.worker_active:
 		var prior_step=last_snapshot_step
 		var request=owner.dispatch("__advance",[seconds])
@@ -291,6 +309,7 @@ func advance(seconds:float)->void:
 	while not complete:
 		complete=owner.advance(0.0);consume()
 func dispatch_command(name:String,args:Array)->Variant:
+	retain_pending_damage_geometry()
 	var ack=owner.dispatch(name,args)
 	if bool(ack.get("pending",false)):ack=wait_for_ack(int(ack.sequence))
 	consume()
@@ -331,7 +350,7 @@ func close()->void:
 	geometry_restore_context={};owner=null;model=null;scene=null
 
 func rewrite_script_objects(value:Variant,source:BattleGame,seen:Dictionary)->void:
-	if not value is Object or not is_instance_valid(value):return
+	if typeof(value)!=TYPE_OBJECT or not is_instance_valid(value):return
 	if value==source or value==model or value==owner or value==self:return
 	var identity=value.get_instance_id()
 	if seen.has(identity):return
@@ -379,7 +398,7 @@ func audit_ui_references(root,source:BattleGame)->Array:
 	var findings=[];_audit_value(root,source,"UI",{},findings)
 	return findings
 func _audit_value(value:Variant,source:BattleGame,path:String,seen:Dictionary,findings:Array)->void:
-	if value is Object:
+	if typeof(value)==TYPE_OBJECT:
 		if not is_instance_valid(value):return
 		if value==source:findings.append(path+":live Game");return
 		if value==owner or value==self or value==owner.geometry:return
@@ -430,6 +449,12 @@ func reclaim_visual_records()->void:
 		if needed_shots.has(identity) or completed_render_passes-int(retired_shot_publications[identity])<2:continue
 		shot_views.erase(identity);model.display_chain_targets.erase(identity);retired_shot_publications.erase(identity)
 	for enemy in model.enemies:needed_entities[str(enemy.uid)]=true
+	# Labels can outlive the encounter while waiting for their original visible slot.
+	for field in ["floats","damage_pending"]:
+		var entries=scene.get(field)
+		if not entries is Array:continue
+		for entry in entries:
+			if entry.get("target","")!="player" and entry.has("uid"):needed_entities[str(entry.uid)]=true
 	for shot in shot_views.values():
 		for key in ["target","source","locked_target"]:
 			var record:Dictionary=shot.get(key,{})

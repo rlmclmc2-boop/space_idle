@@ -30,6 +30,9 @@ var publication_us:int=0
 var configuration_version:int=1
 var configuration_dirty:bool=true
 var entity_records:Dictionary={}
+var damage_geometry_references:Dictionary={}
+var damage_geometry_queries:int=0
+var damage_geometry_cleanup_pending:bool=false
 var shot_records:Dictionary={}
 var new_entities:Array=[]
 var published_enemy_order:PackedInt64Array=PackedInt64Array()
@@ -328,7 +331,7 @@ func metrics()->Dictionary:
 	return authoritative_metrics()
 func authoritative_metrics()->Dictionary:
 	assert_authority()
-	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":worker_active,"thread_started":worker_active,"authority_thread":_authority_thread,"motion_clock":_kernel.motion_clock,"worker_jobs":_worker_jobs,"geometry_values":geometry.display_geometry_metrics() if geometry.has_method("display_geometry_metrics") else {},"time_debt":remainder,"sim_shot_records":shot_records.size(),"sim_enemy_records":entity_records.size()}
+	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":worker_active,"thread_started":worker_active,"authority_thread":_authority_thread,"motion_clock":_kernel.motion_clock,"worker_jobs":_worker_jobs,"damage_geometry_queries":damage_geometry_queries,"damage_geometry_references":damage_geometry_references.size(),"geometry_values":geometry.display_geometry_metrics() if geometry.has_method("display_geometry_metrics") else {},"time_debt":remainder,"sim_shot_records":shot_records.size(),"sim_enemy_records":entity_records.size()}
 func drain_shutdown_transport()->void:
 	# Shutdown no longer presents UI. Dropping display-only packets releases
 	# producer backpressure while accepted simulation/transactions finish.
@@ -353,7 +356,7 @@ func close()->void:
 	assert_authority()
 	if _kernel.event.is_connected(capture_event):_kernel.event.disconnect(capture_event)
 	_kernel.native_forget_observer(capture_event);_kernel.simulation_descriptor_publisher=Callable();_kernel.simulation_mutation_sink=Callable()
-	mailbox.stop();pending_events.clear();shot_records.clear();entity_records.clear();geometry=null;_kernel=null
+	mailbox.stop();pending_events.clear();shot_records.clear();entity_records.clear();damage_geometry_references.clear();geometry=null;_kernel=null
 
 func event_packet(kind:String,payload:Dictionary)->Dictionary:
 	# Discrete events carry event-time changes, not a full world snapshot. The
@@ -402,10 +405,38 @@ func retired_shot_ids(active:PackedInt64Array)->PackedInt64Array:
 	for identity in shot_records:
 		if not present.has(identity):result.append(int(identity))
 	return result
+func set_damage_geometry_references(identities:PackedInt64Array)->void:
+	assert_authority()
+	damage_geometry_references.clear()
+	for identity in identities:damage_geometry_references[int(identity)]=true
+func retired_damage_geometry(identity:int)->Dictionary:
+	assert_authority()
+	assert(not worker_active,"Retired label geometry requires the phase1 single-thread authority")
+	var record:Dictionary=entity_records.get(identity,{}).get("record",{})
+	assert(not record.is_empty(),"Unresolved label lost its source identity")
+	var started=Time.get_ticks_usec()
+	# Match the original query at actual slot admission, after earlier frame cleanup.
+	# Never precompute a queued label's new pose before that label becomes visible.
+	var position:Vector2=geometry.enemy_render_position(record)
+	var result={"position":position,"width":geometry.enemy_render_width(record)}
+	damage_geometry_cleanup_pending=true
+	damage_geometry_queries+=1;publication_us+=Time.get_ticks_usec()-started
+	return result
+func finish_retired_damage_geometry()->Dictionary:
+	assert_authority()
+	if not damage_geometry_cleanup_pending:return {}
+	var started=Time.get_ticks_usec()
+	damage_geometry_cleanup_pending=false
+	# Original Main cleans/recreates pose caches after all visible label queries.
+	# A departed actor may share a slot with a new actor, so republish live values.
+	geometry.finish_display_boundary()
+	var result:Dictionary=geometry.display_frame(_kernel.enemies,false)
+	publication_us+=Time.get_ticks_usec()-started
+	return result
 func retire_entity_records()->void:
 	# Monotonic Game UID is the generation for declared production births. No
 	# old record graph is retained merely to remember its former UI descriptor.
-	var required={}
+	var required=damage_geometry_references.duplicate()
 	for enemy in _kernel.enemies:required[int(enemy.uid)]=true
 	for shot in _kernel.projectiles:
 		for key in ["target","source","locked_target"]:

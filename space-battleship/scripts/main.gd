@@ -2685,6 +2685,7 @@ func create_draw_layers() -> void:
 		layer.draw.connect(func():draw_surface=layer;painter.call())
 
 func refresh_draw_layers(dt: float) -> void:
+	if simulation_presenter!=null:simulation_presenter.finish_retired_damage_geometry()
 	if not is_instance_valid(battle_layer):
 		return
 	sync_battle_visibility()
@@ -2916,7 +2917,11 @@ func resolve_damage_origin(entry:Dictionary,context:Dictionary)->void:
 			for enemy in game.enemies:context.enemy_by_uid[enemy.uid]=enemy
 		var enemy:Dictionary=context.enemy_by_uid.get(entry.uid,entry.get("target_entity",{}))
 		if not enemy.is_empty():
-			height=enemy_render_width(enemy);anchor=enemy_render_position(enemy)
+			if simulation_presenter!=null and not game.enemies.has(enemy):
+				var geometry:Dictionary=simulation_presenter.retired_damage_geometry(int(enemy.uid))
+				height=geometry.width;anchor=geometry.position
+			else:
+				height=enemy_render_width(enemy);anchor=enemy_render_position(enemy)
 	entry.origin=battle_logical_point(anchor-Vector2(0,height+16))
 	entry.needs_origin=false
 

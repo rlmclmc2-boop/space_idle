@@ -15,6 +15,8 @@ class Geometry extends RefCounted:
  func before_tick(dt:float)->void:fx_time+=dt;demo_time+=dt
  func after_tick()->void:pass
  func finish_display_boundary()->void:pass
+ func enemy_render_position(enemy:Dictionary)->Vector2:return Vector2(enemy.x,enemy.y)
+ func enemy_render_width(_enemy:Dictionary)->float:return 1.0
  func visual_muzzle(_shot:Dictionary)->Vector2:return Vector2.ZERO
  func shot_mount(_shot:Dictionary)->int:return -1
  func display_descriptor(_enemy:Dictionary)->Dictionary:return {"components":[],"mounts":[],"types":[]}
@@ -61,7 +63,30 @@ func run()->void:
  var presenter=Presenter.new();presenter.owner=owner;presenter.model=Display.new(ShipDatabase.new(),false,game.profile.duplicate(true));presenter.scene=Surface.new()
  presenter.model.command_gateway=presenter.dispatch_command;presenter.model.display_ready=true
  var display=presenter.model
+ var typed_parts:Array[Dictionary]=[{"pose":Vector2.ONE}]
+ var rebound:Dictionary=presenter.rebind_ui({"parts":typed_parts},game)
+ var rebound_parts:Array[Dictionary]=rebound.parts
+ assert(rebound_parts==typed_parts and not is_same(rebound_parts,typed_parts))
+ assert(not is_same(rebound_parts[0],typed_parts[0]))
+ var retired_node=Node.new();retired_node.free()
+ assert(presenter.audit_ui_references({"retired":retired_node},game).is_empty())
+ presenter.rewrite_script_objects(retired_node,game,{})
  assert(owner.advance(0.0));presenter.consume()
+ var retired_actor:Dictionary=game.enemies[0].duplicate(true)
+ retired_actor.uid=999;retired_actor.x=17;retired_actor.y=23
+ owner.entity_token(retired_actor)
+ owner.set_damage_geometry_references(PackedInt64Array([999]))
+ owner.retire_entity_records()
+ assert(owner.entity_records.has(999),"queued label retains departed source identity")
+ var rng_before=game.rng.state
+ var anchor:Dictionary=owner.retired_damage_geometry(999)
+ assert(anchor=={"position":Vector2(17,23),"width":1.0} and owner.mailbox._is_value_packet(anchor))
+ assert(game.rng.state==rng_before,"retired presentation query must not advance combat RNG")
+ owner.finish_retired_damage_geometry()
+ assert(not owner.damage_geometry_cleanup_pending)
+ owner.set_damage_geometry_references(PackedInt64Array())
+ owner.retire_entity_records()
+ assert(not owner.entity_records.has(999),"resolved label releases departed source identity")
  assert(presenter.scene.turret_ship==owner.geometry.turret_ship)
  assert(not owner.dispatch("hyperspace.set_preset",["bad","name",[]]).accepted)
  assert(not owner.dispatch("planet_buildings.assign",["1","shipyard",RefCounted.new()]).accepted)
