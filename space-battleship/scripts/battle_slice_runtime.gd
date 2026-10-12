@@ -46,6 +46,9 @@ func install(root)->void:
 	scene=root;game=root.game
 	remainder=root.game_time_remainder
 	root.time_step_game_id=game.get_instance_id()
+	# A native owner may be selected inside an already-started legacy frame.
+	# End that frame publication before display consumers use the new view.
+	root.battle_read_model.end()
 	geometry.prepare(root,game)
 	previous_spatial=game.target_spatial_source
 	for key in ["target_provider","launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:

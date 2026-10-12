@@ -106,5 +106,22 @@ func run()->void:
 	g=fixture("missile",true)
 	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.native_execution==null and g.native_handoff_count==1,"new crew assignment transfers before modifier mutation")
 	g.begin_retreat()
+	g=fixture("missile",true);g.native_before_configuration_change();g.projectile_clear();g.missile_queue.clear();g.jewel_repeats.clear();g.native_handoff_count=0
+	g.enemies[0].equipment=[{"name":"laser_mon"}];g.enemies[0].cooldowns=[10.0];g.enemies[0].dmgMultiple=1.0
+	check(g.admit_native_compiled_execution("native_low_contract"),"armed enemy fixture admits legal default fields")
+	owner=g.native_execution
+	check(g.upgrade_slot("weapons",0,1) and g.native_execution==owner and g.native_handoff_count==0,"armed enemy default factor does not reject ordinary upgrade")
+	g.begin_retreat()
+	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
+	var tech=BattleGame.DENSE_ARMOUR;g.profile.techPoints[tech]=g.hightech_required(tech)*10.0
+	var points_before=g.profile.techPoints[tech];var tech_level=g.hightech_level(tech)
+	g.advance_hightech_bulk(tech,0.0)
+	check(g.profile.techPoints[tech]==points_before and g.hightech_level(tech)==tech_level,"failed bulk research handoff spends no points or level")
+	var reactor_level=g.profile.reactorLevel;var uranium=g.profile.resources["2"]
+	check(not g.upgrade_reactor(1) and g.profile.reactorLevel==reactor_level and N.compare(g.profile.resources["2"],uranium)==0,"failed reactor handoff spends no resources or level")
+	g.begin_retreat()
+	g=fixture("missile",true)
+	check(g.damage_stats.set_enabled(true) and g.native_execution==null and g.native_handoff_count==1,"enabling unsupported damage statistics transfers before activation")
+	g.begin_retreat()
 	print("NATIVE NUMERIC UPGRADE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

@@ -27,7 +27,8 @@ func build() -> void:
  details=RichTextLabel.new();details.custom_minimum_size=Vector2(600,320);details.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(details)
  timer=Timer.new();timer.wait_time=0.5;timer.timeout.connect(refresh);dialog.add_child(timer)
  enabled.toggled.connect(func(value):
-  host.game.damage_stats.set_enabled(value)
+  if not host.game.damage_stats.set_enabled(value):
+   enabled.set_pressed_no_signal(host.game.damage_stats.enabled);return
   if value:
    source_names.clear();drone_serial=host.game.profile.hyperspace.inventory.equipped.size()
    for index in host.game.profile.hyperspace.inventory.equipped.size():

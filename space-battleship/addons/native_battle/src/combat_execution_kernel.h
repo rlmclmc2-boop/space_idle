@@ -1376,7 +1376,7 @@ class SpaceCombatKernel : public RefCounted {
         if (rows.size() != int(weapons.size()) || defs.size() != int(defences.size())) return false;
         for (int i = 0; i < rows.size(); ++i) {
             Dictionary v = rows[i]; const Weapon &w = weapons[i];
-            if (!numeric_fields(v, {"kind","type","slot","source","damage","factor","interval","speed","salvo","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","chain_count","secondary_probability"}) || double(v.get("interval", 0)) <= 0 || double(v.get("speed", 0)) <= 0 || double(v.get("damage", -1)) < 0 || double(v.get("factor", -1)) < 0) return false;
+            if (!numeric_fields(v, {"kind","type","slot","source","damage","factor","interval","speed","salvo","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","chain_count","secondary_probability"}) || double(v.get("interval", 0)) <= 0 || double(v.get("speed", 0)) <= 0 || double(v.get("damage", -1)) < 0 || double(v.get("factor", 1.0)) < 0) return false;
             if (int(v.get("kind", -1)) != w.kind || int(v.get("type", -1)) != w.type || int(v.get("slot", -1)) != w.slot || bool(v.get("hostile", false)) != w.hostile || int(v.get("source", -2)) != (w.hostile ? int(w.source.index) : -1)) return false;
             Dictionary entry = v.get("entry", Dictionary());
             if (entry.get("key", "") != w.entry.get("key", "") || entry.get("name", "") != w.entry.get("name", "") || entry.get("drone_id", "") != w.entry.get("drone_id", "")) return false;

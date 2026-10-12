@@ -248,6 +248,7 @@ func economy_time() -> float:
 	return Time.get_unix_time_from_system()
 
 func _init(database: ShipDatabase, persist := true) -> void:
+	damage_stats.game_ref=weakref(self)
 	db = database
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
 		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
@@ -1943,9 +1944,9 @@ func advance_hightech_bulk(key: String, dt: float) -> void:
 				high = mid-1
 		count = float(low)
 		spent = hightech_bulk_cost(key,level,low)
+	if count > 0 and key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
 	profile.techPoints[key] = maxf(0,points-spent)
 	if count > 0:
-		if key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
 		profile.hightechLevels[key] = level+int(count)
 		if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
 		event.emit("hightech_complete", {"key":key})

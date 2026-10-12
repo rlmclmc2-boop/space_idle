@@ -5,6 +5,7 @@ const WIDTH:=0.5
 const COUNT:=16
 const SOURCE_LIMIT:=32
 var enabled:=false
+var game_ref:WeakRef
 var elapsed:=0.0
 var bucket_index:=0
 var buckets:Array[Dictionary]=[]
@@ -14,9 +15,12 @@ func clear() -> void:
  elapsed=0.0;bucket_index=0;buckets.clear();totals.clear();total=0.0
  if enabled:
   for i in COUNT:buckets.append({})
-func set_enabled(value:bool) -> void:
- if enabled==value:return
- enabled=value;clear()
+func set_enabled(value:bool) -> bool:
+ if enabled==value:return true
+ if value and game_ref!=null:
+  var game=game_ref.get_ref()
+  if game!=null and not game.native_before_configuration_change():return false
+ enabled=value;clear();return true
 func advance(dt:float) -> void:
  if not enabled or dt<=0:return
  elapsed+=dt
