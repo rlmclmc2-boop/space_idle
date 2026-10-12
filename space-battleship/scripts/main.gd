@@ -98,6 +98,7 @@ var battle_draw_active := false
 var battle_draw_player_position := Vector2.ZERO
 var battle_draw_enemy_positions: Dictionary = {}
 var db: ShipDatabase
+var simulation_presenter:RefCounted
 var game: BattleGame
 var font: Font
 var ui: Control
@@ -429,6 +430,7 @@ func _notification(what: int) -> void:
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
+	if simulation_presenter!=null:simulation_presenter.capture_inputs()
 	advance_unlock_notice()
 	game.check_timed_save()
 	if fast_mode_enabled():
@@ -492,6 +494,8 @@ func _process(delta: float) -> void:
 			get_tree().quit()
 
 func advance_game_time(seconds: float) -> void:
+	if simulation_presenter!=null:
+		simulation_presenter.advance(seconds);return
 	if game == null or not is_finite(seconds) or seconds <= 0:return
 	var instance := game.get_instance_id()
 	if instance != time_step_game_id:

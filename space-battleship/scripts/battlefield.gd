@@ -195,7 +195,9 @@ func shot_mount(shot:Dictionary)->int:
 	if not bool(shot.get("hostile",false)) and (not _visual_drone_id(shot).is_empty() or int(shot.get("mount",-1))>=game.weapon_entries().size()):return -1
 	return super.shot_mount(shot)
 
+var simulation_event_muzzles:Dictionary={}
 func visual_muzzle(shot:Dictionary)->Vector2:
+	if simulation_event_muzzles.has(int(shot.get("serial",-1))):return simulation_event_muzzles[int(shot.serial)]
 	if bool(shot.get("prototype_missile",false)) or shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var id:String=_visual_drone_id(shot)
 	if not id.is_empty():return _prototype_drone_launch_pose(id,Vector2.ZERO,0).position

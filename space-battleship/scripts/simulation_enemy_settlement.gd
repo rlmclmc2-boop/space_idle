@@ -11,6 +11,7 @@ class HitResult extends RefCounted:
 	var position:Vector2=Vector2.ZERO
 	var amount:Variant=0.0
 	var absorbed:Variant=0.0
+	var health_damage:Variant=0.0
 	var settled_health:Variant=0.0
 	var killed:bool=false
 
@@ -42,6 +43,7 @@ func hit(target:State.EntityState,raw:Variant,damage_type:int,resistance:float,s
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if damage_type==target.armour_type else 1.0)))
 		if collect_statistics:result.settled_health=N.minimum(target.health.value(),amount)
 		target.health.subtract(amount)
+	result.health_damage=amount
 	result.amount=N.add(amount,result.absorbed)
 	result.killed=N.compare(target.health.value(),0)<=0
 	target.alive=not result.killed

@@ -188,17 +188,8 @@ func turret_pose(index: int) -> Dictionary:
 		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
 	return turret_visuals[index]
 
-func turret_muzzle(index: int) -> Vector2:
-	var key := str(game.profile.selectedShip)
-	var scale_value := player_art_scale()
-	var component = player_component_for_slot(index)
-	var owner: int = component.owner_slot if component!=null else index
-	var profile: Dictionary = component.profile if component!=null else weapon_visual_profile(str(game.slot_entry("weapons",index).get("key","")))
-	var muzzle: Array = profile.get("muzzle",[[0.25,0]])
-	var class_scale := float({"small":0.72,"medium":0.9,"large":1.1}.get(str(component.hardpoint.get("visual_size_class","medium")),0.9)) if component!=null else 0.9
-	var reach := SHIP_VISUALS.module_width(key)*class_scale*float(muzzle[0][0])
-	var local := player_mount_center(key,index)+Vector2(reach,0).rotated(weapon_visual_angle(owner))
-	return battle_logical_point(player_render_position()+local.rotated(-PI/2+player_idle_angle())*scale_value)
+func turret_muzzle(index:int)->Vector2:
+	return launch_pose(index,Vector2.ZERO,0).position
 
 func player_component_for_slot(index: int):
 	for component in player_weapon_components():

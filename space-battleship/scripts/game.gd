@@ -92,7 +92,9 @@ var projectiles: Array[Dictionary]:
 func projectile_append(shot:Dictionary,ready:=true)->void:
 	_projectiles.append(shot)
 	if ready:projectile_finish(shot)
+var simulation_descriptor_publisher:=Callable()
 func projectile_finish(shot:Dictionary)->void:
+	if simulation_descriptor_publisher.is_valid():simulation_descriptor_publisher.call(shot)
 	if native_pipeline!=null and native_pipeline.has_method("append_record") and (not _projectiles.is_empty() and is_same(_projectiles.back(),shot) or _projectiles.has(shot)):native_pipeline.append_record(_projectiles,shot)
 func projectile_clear()->void:
 	_projectiles.clear()
@@ -200,6 +202,13 @@ var enhancement_deferred_tick := 0
 var enhancement_deferred: Dictionary = {}
 # Preserves damage fraction while a capacity temporarily becomes zero during refit.
 var refit_health_ratios := {"armour":1.0,"shield":1.0}
+var simulation_bridge:RefCounted
+
+func enable_simulation_state_bridge()->void:
+	assert(simulation_bridge==null)
+	simulation_bridge=preload("res://scripts/simulation_battle_kernel_bridge.gd").new()
+	simulation_bridge.attach(self)
+
 var enemy_shield_time := 0.0
 var enemy_shield_hit_time := -1.0
 
@@ -2612,25 +2621,30 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	var resistance := float(db.config.dmgReduce)
 	for effect in effects:
 		if effect.has("enemy_resistance"):resistance=float(effect.enemy_resistance);break
-	var incoming = N.multiply(raw,1.0+float(enemy.get("interference",0)))
-	var absorbed = 0.0
-	if float(enemy.get("max_shield",0))>0:
-		incoming=N.maximum(1,incoming)
-		var at := maxf(float(enemy.get("shield_updated_at",enemy_shield_time)),enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
-		settle_enemy_shield(enemy,at)
-		# A periodic beam hit is a hit, even though the whole beam is one attack.
-		enemy.shield_hit_at=at
-		if N.compare(enemy.get("shield",0),0)>0:
-			var factor := 1.0-resistance if type==int(enemy.get("shieldType",0)) else 1.0
-			absorbed=N.minimum(enemy.shield,N.maximum(1,N.multiply(incoming,factor)))
-			enemy.shield=N.subtract(enemy.shield,absorbed)
-			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
-	var amount = 0.0
-	var settled_hp = 0.0
-	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
-		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
-		if damage_stats.enabled:settled_hp=N.minimum(enemy.hp,amount)
-		enemy.hp=N.subtract(enemy.hp,amount)
+	var amount:Variant=0.0
+	var absorbed:Variant=0.0
+	var settled_hp:Variant=0.0
+	if simulation_bridge!=null and simulation_bridge.active():
+		var settlement=simulation_bridge.hit_enemy(enemy,raw,type,resistance,damage_stats.enabled)
+		amount=settlement.health_damage
+		absorbed=settlement.absorbed;settled_hp=settlement.settled_health
+	else:
+		var incoming = N.multiply(raw,1.0+float(enemy.get("interference",0)))
+		if float(enemy.get("max_shield",0))>0:
+			incoming=N.maximum(1,incoming)
+			var at := maxf(float(enemy.get("shield_updated_at",enemy_shield_time)),enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
+			settle_enemy_shield(enemy,at)
+			# A periodic beam hit is a hit, even though the whole beam is one attack.
+			enemy.shield_hit_at=at
+			if N.compare(enemy.get("shield",0),0)>0:
+				var factor := 1.0-resistance if type==int(enemy.get("shieldType",0)) else 1.0
+				absorbed=N.minimum(enemy.shield,N.maximum(1,N.multiply(incoming,factor)))
+				enemy.shield=N.subtract(enemy.shield,absorbed)
+				incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
+		if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
+			amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
+			if damage_stats.enabled:settled_hp=N.minimum(enemy.hp,amount)
+			enemy.hp=N.subtract(enemy.hp,amount)
 	if damage_stats.enabled and state==State.COMBAT:damage_stats.record(str(context.get("source_id","other")),N.add(settled_hp,absorbed))
 	amount=N.add(amount,absorbed)
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
@@ -2907,6 +2921,8 @@ func weapon_cooldown_after_shot(_remaining_before: float, _dt: float, interval: 
 	return interval
 
 func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
+	if simulation_bridge!=null and simulation_bridge.active():
+		simulation_bridge.settle_enemy_shield(enemy,at);return
 	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return
 	var before := float(enemy.get("shield_updated_at",at))
 	var ready_at := float(enemy.get("shield_hit_at",at))+float(enemy.get("shieldDelay",0))
