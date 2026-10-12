@@ -179,16 +179,23 @@ func active_views(source:Array)->Array[Dictionary]:
 		if shot_views.has(int(shot.serial)):result.append(shot_views[int(shot.serial)])
 	return result
 func consume()->void:
-	for envelope in owner.mailbox.drain_events():
+	var bundle=owner.mailbox.consume_bundle()
+	var lease:Dictionary=bundle.snapshot
+	var applied_frame=false
+	for envelope in bundle.events:
+		# Never apply an older snapshot after a newer discrete state transition.
+		if not lease.is_empty() and not applied_frame and int(envelope.sequence)>int(lease.event_watermark):
+			apply_frame_lease(lease);applied_frame=true
 		var packet:Dictionary=envelope.payload
 		apply_packet(packet)
 		if bool(packet.get("transport_only",false)):continue
 		scene.simulation_event_muzzles=decode(packet.get("event_muzzle",{}))
 		model.event.emit(packet.kind,decode(packet.payload));applied_events+=1
 		scene.simulation_event_muzzles={}
-	var lease=owner.mailbox.acquire_latest()
-	if not lease.is_empty():render_epoch+=1;apply_packet(lease.frame);owner.mailbox.release(int(lease.slot))
+	if not lease.is_empty() and not applied_frame:apply_frame_lease(lease)
 	reclaim_visual_records()
+func apply_frame_lease(lease:Dictionary)->void:
+	render_epoch+=1;apply_packet(lease.frame);owner.mailbox.release(int(lease.slot))
 func advance(seconds:float)->void:
 	var complete=owner.advance(seconds)
 	consume()

@@ -9,6 +9,7 @@ var mutex=Mutex.new()
 var frames:Array=[null,null,null]
 var states:PackedInt32Array=PackedInt32Array([FREE,FREE,FREE])
 var sequences:PackedInt64Array=PackedInt64Array([0,0,0])
+var event_watermarks:PackedInt64Array=PackedInt64Array([0,0,0])
 var events:Array=[]
 var inputs:Array=[]
 var event_limit:int=4096
@@ -41,21 +42,27 @@ func publish(slot:int,record)->bool:
 	var transferred=_freeze_value(record)
 	mutex.lock()
 	assert(states[slot]==WRITING)
-	published_sequence+=1;sequences[slot]=published_sequence
+	published_sequence+=1;sequences[slot]=published_sequence;event_watermarks[slot]=event_sequence
 	frames[slot]=transferred;states[slot]=PUBLISHED
 	mutex.unlock();return true
 func acquire_latest()->Dictionary:
-	mutex.lock()
+	mutex.lock();var result=_take_latest_locked();mutex.unlock();return result
+func consume_bundle()->Dictionary:
+	# One lock chooses both the event prefix and frame lease. The frame's event
+	# watermark separates events before it from newer in-progress-step events.
+	mutex.lock();var ordered=events;events=[]
+	var lease=_take_latest_locked();mutex.unlock()
+	return {"events":ordered,"snapshot":lease}
+func _take_latest_locked()->Dictionary:
 	var slot=-1
 	for i in states.size():
 		if states[i]==PUBLISHED and (slot<0 or sequences[i]>sequences[slot]):slot=i
 	var result={}
 	if slot>=0:
 		states[slot]=READING
-		result={"slot":slot,"sequence":sequences[slot],"frame":frames[slot]}
+		result={"slot":slot,"sequence":sequences[slot],"frame":frames[slot],"event_watermark":event_watermarks[slot]}
 		for i in states.size():
 			if states[i]==PUBLISHED:states[i]=FREE;frames[i]=null;dropped_snapshots+=1
-	mutex.unlock()
 	return result
 func release(slot:int)->void:
 	mutex.lock();assert(states[slot]==READING)
@@ -156,7 +163,7 @@ func publish_owned(slot:int,record:Dictionary)->bool:
 	if not _seal_owned(record):
 		push_error("Owned frame contains an uncompiled mutable object");cancel_write(slot);return false
 	mutex.lock();assert(states[slot]==WRITING)
-	published_sequence+=1;sequences[slot]=published_sequence
+	published_sequence+=1;sequences[slot]=published_sequence;event_watermarks[slot]=event_sequence
 	frames[slot]=record;states[slot]=PUBLISHED;mutex.unlock();return true
 
 func _seal_owned(value:Variant,depth:int=0)->bool:

@@ -68,5 +68,12 @@ func run()->void:
  presenter.consume();assert(owner.pending_events.is_empty())
  assert(owner.logical_steps==165) # 90 prior steps plus all 1.25 seconds of debt.
  assert(presenter.applied_events==owner.event_count)
+ owner.mailbox.event_limit=4096
+ # A future event can exist while the most recent frame is still older.
+ assert(owner.mailbox.append_owned_event({"transport_only":true,"fields":{"speed":1.25}}))
+ var slot=owner.mailbox.begin_write();assert(owner.mailbox.publish_owned(slot,{"fields":{"speed":1.5}}))
+ assert(owner.mailbox.append_owned_event({"transport_only":true,"fields":{"speed":2.0}}))
+ presenter.consume();assert(presenter.model.speed==2.0)
+
  print("SIMULATION_TRANSPORT_CONTRACT_PASS snapshots_skipped=",owner.mailbox.metrics().dropped_snapshots,"; retries=",retries,"; commands_value_checked; births_configuration_lossless; no_battle_thread")
  presenter.close();game.simulation_bridge.close();quit()
