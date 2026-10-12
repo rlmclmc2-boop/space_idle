@@ -93,6 +93,9 @@ func projectile_append(shot:Dictionary,ready:=true)->void:
 	_projectiles.append(shot)
 	if ready:projectile_finish(shot)
 var simulation_descriptor_publisher:=Callable()
+var simulation_mutation_sink:=Callable()
+func simulation_state_changed(kind:String,index:int)->void:
+	if simulation_mutation_sink.is_valid():simulation_mutation_sink.call(kind,index)
 func projectile_finish(shot:Dictionary)->void:
 	if simulation_descriptor_publisher.is_valid():simulation_descriptor_publisher.call(shot)
 	if native_pipeline!=null and native_pipeline.has_method("append_record") and (not _projectiles.is_empty() and is_same(_projectiles.back(),shot) or _projectiles.has(shot)):native_pipeline.append_record(_projectiles,shot)

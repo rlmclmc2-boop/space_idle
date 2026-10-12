@@ -8,6 +8,9 @@ var geometry
 var mailbox=Mailbox.new()
 var pending_events:Array=[]
 var command_serial:int=0
+var command_acks:Dictionary={}
+var last_command_sequence:int=0
+var command_queue_active:bool=false
 var remainder:float=0.0
 var logical_steps:int=0
 var event_count:int=0
@@ -25,6 +28,8 @@ var full_frame:Dictionary={}
 var _generation:int=0
 var _step_shield:Variant=0.0
 var last_weapon_publication:Dictionary={}
+var dirty_weapon_states:Dictionary={}
+var dirty_defense_states:Dictionary={}
 var last_defense_publication:Dictionary={}
 const CORE_FIELDS=["state","stage","group_index","distance","since_hit","paused","speed","clear_timer","guard_index","guard_elapsed","guard_engaged","guard_arrived","enemy_shield_time","enemy_shield_hit_time","motion_clock","uid","projectile_serial","first_clear"]
 const PROFILE_DYNAMIC=["productionElapsed","chronoParticles","enhancementAttacks","enhancementHits","resources","techPoints","furnaceElapsed","jewelFurnaceElapsed"]
@@ -32,6 +37,7 @@ const SHOT_OMIT=["motion_lease","attack_instance","attack_snapshot","jewelEffect
 func attach(kernel:BattleGame,pure_geometry)->void:
 	_kernel=kernel;geometry=pure_geometry
 	_kernel.simulation_descriptor_publisher=descriptor_ready
+	_kernel.simulation_mutation_sink=mark_state_changed
 	# Only pure semantic subscribers remain attached to the kernel. UI subscribers
 	# are reconnected to Display by the main-thread presenter during transfer.
 	for row in _kernel.event.get_connections():
@@ -49,12 +55,12 @@ func entity_token(record:Dictionary)->Dictionary:
 	if is_same(record,_kernel.player):return {"$player":true}
 	var identity=int(record.uid)
 	if not entity_records.has(identity) or not is_same(entity_records[identity].record,record):
-		_generation+=1;entity_records[identity]={"record":record,"generation":_generation}
+		_generation+=1;entity_records[identity]={"record":record,"generation":identity}
 		var metadata={}
 		for key in record:
 			if key in ["hp","shield","cooldowns","guidance_layers"]:continue
 			metadata[key]=encode(record[key])
-		new_entities.append({"uid":identity,"generation":_generation,"metadata":metadata})
+		new_entities.append({"uid":identity,"generation":identity,"metadata":metadata})
 	return {"$enemy":identity,"generation":entity_records[identity].generation}
 func descriptor_ready(record:Dictionary)->void:
 	shot_token(record,true)
@@ -105,7 +111,7 @@ func capture_event(kind:String,payload:Dictionary)->void:
 	publication_us+=Time.get_ticks_usec()-started
 func flush_events()->bool:
 	while not pending_events.is_empty():
-		if not mailbox.append_event(pending_events[0]):event_backpressure+=1;return false
+		if not mailbox.append_owned_event(pending_events[0]):event_backpressure+=1;return false
 		pending_events.pop_front()
 	return true
 func base_packet(with_motion:bool)->Dictionary:
@@ -140,7 +146,7 @@ func base_packet(with_motion:bool)->Dictionary:
 func shot_values(shot:Dictionary)->Dictionary:
 	var position=Vector2(_kernel.projectile_x(shot),_kernel.projectile_y(shot))
 	var direction=_kernel.projectile_direction(shot)
-	return {"serial":int(shot.serial),"target":encode(shot.get("target",{})),"values":PackedFloat64Array([position.x,position.y,direction.x,direction.y,_kernel.projectile_speed(shot),_kernel.projectile_motion_age(shot,0),float(shot.get("charge",0)),float(shot.get("ticks",0)),float(shot.get("elapsed",0))]),"dead":bool(shot.get("dead",false))}
+	return {"serial":int(shot.serial),"target":encode(shot.get("target",{})),"values":PackedFloat64Array([position.x,position.y,direction.x,direction.y,_kernel.projectile_speed(shot),_kernel.projectile_motion_age(shot,0),float(shot.get("charge",0)),float(shot.get("ticks",0)),float(shot.get("elapsed",0))]),"dead":bool(shot.get("dead",false)),"chain_targets":encode(_kernel.beam_chain_targets(shot)) if bool(shot.get("beam",false)) and shot.has("locked_target") and shot.has("attack_instance") else []}
 func advance(seconds:float)->bool:
 	if not flush_events():return false
 	remainder+=seconds
@@ -151,23 +157,53 @@ func advance(seconds:float)->bool:
 		geometry.before_tick(STEP);_kernel.tick(STEP);geometry.after_tick()
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
 	var started=Time.get_ticks_usec()
-	full_frame=base_packet(true);full_frame.entities_added=new_entities;new_entities=[];full_frame.shots_added=new_shots;new_shots=[]
+	full_frame=base_packet(true);full_frame.retired_shots=retired_shot_ids(full_frame.active_shots);full_frame.entities_added=new_entities;new_entities=[];full_frame.shots_added=new_shots;new_shots=[]
 	var slot=mailbox.begin_write()
 	if slot<0:return false
-	assert(mailbox.publish(slot,full_frame));full_frame={}
+	if not mailbox.publish_owned(slot,full_frame):return false
+	for identity in full_frame.retired_shots:shot_records.erase(identity)
+	retire_entity_records()
+	full_frame={}
 	publication_us+=Time.get_ticks_usec()-started
 	return true
-func dispatch(name:String,args:Array)->Variant:
-	command_serial+=1
-	# Initial single-thread mode preserves synchronous command return values.
-	# Worker admission stays closed until all input signatures/ack delays are audited.
-	var result=_kernel.callv(name,args)
-	return encode(result)
+const COMMANDS=["resume_progress","equip_slot","unequip_slot","upgrade_reactor","set_reactor_allocation","equalize_reactor_allocation","scientist_purchase","generate_scientist","distribute_scientists","assign_scientist","set_planet_auto","start_planet_exploration","cancel_planet_exploration","change_state","select_loop_level","set_guard_death","set_hyperspace_auto","start_hyperspace_challenge","claim_hyperspace","advance_after_clear","clear_level","upgrade_slot","upgrade_equipment_batch","upgrade_enhancement","set_speed","set_save_interval","check_timed_save","save_progress","assign_crew","toggle_loop","start","begin_retreat","acknowledge_unlocks","collect_uid","upgrade","upgrade_max","set_enhancement_branch","set_enhancement_order","set_field"]
+func dispatch(name:String,args:Array)->Dictionary:
+	if not name in COMMANDS:return {"accepted":false,"reason":"uncompiled_command"}
+	# enqueue_input detaches every array/dictionary and rejects objects/callbacks.
+	# Display identities are never handed to a method expecting authoritative data.
+	var sequence=mailbox.enqueue_input(name,args)
+	if sequence<0:return {"accepted":false,"reason":"input_capacity_or_nonvalue_argument"}
+	command_serial=sequence
+	process_commands()
+	var ack:Dictionary=command_acks.get(sequence,{"accepted":false,"reason":"command_still_pending","sequence":sequence})
+	command_acks.erase(sequence)
+	return ack
+func process_commands()->void:
+	if command_queue_active:return
+	command_queue_active=true
+	for command in mailbox.drain_inputs():
+		assert(int(command.sequence)==last_command_sequence+1)
+		last_command_sequence=int(command.sequence)
+		var arguments:Array=command.arguments.duplicate(true)
+		var result:Variant=null;var accepted=true;var reason=""
+		if command.name=="collect_uid":
+			var actual:Dictionary={}
+			for drop in _kernel.drops:
+				if int(drop.get("uid",-1))==int(arguments[0]):actual=drop;break
+			if actual.is_empty():accepted=false;reason="retired_drop"
+			else:_kernel.collect(actual,bool(arguments[1]))
+		elif command.name=="set_field":
+			if arguments.size()!=2 or not str(arguments[0]) in ["paused","speed"]:accepted=false;reason="uncompiled_field"
+			else:_kernel.set(str(arguments[0]),arguments[1])
+		else:result=_kernel.callv(command.name,arguments)
+		command_acks[int(command.sequence)]={"sequence":int(command.sequence),"accepted":accepted,"reason":reason,"result":encode(result),"applied_tick":logical_steps,"queued_us":int(command.queued_us),"ack_us":Time.get_ticks_usec()}
+	command_queue_active=false
+
 func metrics()->Dictionary:
 	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":false}
 func close()->void:
 	if _kernel.event.is_connected(capture_event):_kernel.event.disconnect(capture_event)
-	_kernel.native_forget_observer(capture_event);_kernel.simulation_descriptor_publisher=Callable()
+	_kernel.native_forget_observer(capture_event);_kernel.simulation_descriptor_publisher=Callable();_kernel.simulation_mutation_sink=Callable()
 	mailbox.stop();pending_events.clear();shot_records.clear();entity_records.clear();geometry=null;_kernel=null
 
 func event_packet(kind:String,payload:Dictionary)->Dictionary:
@@ -177,21 +213,50 @@ func event_packet(kind:String,payload:Dictionary)->Dictionary:
 	if kind in ["state","encounter","wave_clear","retreat","explode"]:
 		for key in CORE_FIELDS:packet.fields[key]=_kernel.get(key)
 	if kind=="hit":
-		packet.player=encode(_kernel.player.duplicate())
-		if not bool(payload.get("player",false)):
+		if bool(payload.get("player",false)):packet.player=encode(_kernel.player.duplicate())
+		else:
 			var record:Dictionary=entity_records.get(int(payload.uid),{}).get("record",{})
 			if not record.is_empty():packet.enemy_changes.append({"token":entity_token(record),"hp":encode(record.hp),"shield":encode(record.get("shield",0)),"x":record.x,"y":record.y,"shield_hit_at":record.get("shield_hit_at",0),"shield_updated_at":record.get("shield_updated_at",0),"interference":record.get("interference",0)})
-	for index in _kernel.enhancement_branches.weapons:
+	for index in dirty_weapon_states:
+		if not _kernel.enhancement_branches.weapons.has(index):continue
 		var data=_kernel.enhancement_branches.weapons[index];var row={}
 		for key in ["target","dwell","next","stacks","stack_time"]:row[key]=encode(data[key])
-		if not last_weapon_publication.has(index) or row!=last_weapon_publication[index]:packet.weapon_states[index]=row;last_weapon_publication[index]=row
-	for index in _kernel.enhancement_branches.defenses:
+		packet.weapon_states[index]=row
+	for index in dirty_defense_states:
+		if not _kernel.enhancement_branches.defenses.has(index):continue
 		var data=_kernel.enhancement_branches.defenses[index];var row={}
 		for key in ["cover","cover_elapsed","cover_time","resistance_type","resistance_time","lockout"]:row[key]=encode(data[key])
-		if not last_defense_publication.has(index) or row!=last_defense_publication[index]:packet.defense_states[index]=row;last_defense_publication[index]=row
+		packet.defense_states[index]=row
+	dirty_weapon_states.clear();dirty_defense_states.clear()
 	if kind in ["fire","beam_started","beam_hit","projectile_impact"] and payload.has("shot"):
 		packet.turrets=encode(geometry.turret_visuals)
 	if configuration_dirty:
 		configuration_version+=1;packet.configuration_version=configuration_version
 		packet.configuration=_kernel.profile.duplicate(true);configuration_dirty=false
 	return packet
+
+func retired_shot_ids(active:PackedInt64Array)->PackedInt64Array:
+	var present={};var result=PackedInt64Array()
+	for identity in active:present[identity]=true
+	for identity in shot_records:
+		if not present.has(identity):result.append(int(identity))
+	return result
+func retire_entity_records()->void:
+	# Monotonic Game UID is the generation for declared production births. No
+	# old record graph is retained merely to remember its former UI descriptor.
+	var required={}
+	for enemy in _kernel.enemies:required[int(enemy.uid)]=true
+	for shot in _kernel.projectiles:
+		for key in ["target","source"]:
+			var record:Dictionary=shot.get(key,{})
+			if record.has("uid"):required[int(record.uid)]=true
+	for packet in _kernel.missile_queue:
+		for key in ["target","source"]:
+			var record:Dictionary=packet.get(key,{})
+			if record.has("uid"):required[int(record.uid)]=true
+	for identity in entity_records.keys():
+		if not required.has(identity):entity_records.erase(identity)
+
+func mark_state_changed(kind:String,index:int)->void:
+	if kind=="weapon":dirty_weapon_states[index]=true
+	elif kind=="defense":dirty_defense_states[index]=true

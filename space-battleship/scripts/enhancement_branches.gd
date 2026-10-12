@@ -34,12 +34,14 @@ func weapon(g,index: int) -> Dictionary:
  var entry: Dictionary=g.combat_entry(index)
  if not weapons.has(index) or not is_same(weapons[index].entry,entry):
   weapons[index]={"entry":entry,"target":{},"dwell":0.0,"next":0,"stacks":0,"stack_time":0.0}
+  g.simulation_state_changed("weapon",index)
  return weapons[index]
 
 func defense(g,index: int) -> Dictionary:
  var entry: Dictionary=g.slot_entry("defence",index)
  if not defenses.has(index) or not is_same(defenses[index].entry,entry):
   defenses[index]={"entry":entry,"cover_elapsed":0.0,"cover_time":0.0,"cover":0.0,"resistance_type":0,"resistance_time":0.0,"lockout":0.0}
+  g.simulation_state_changed("defense",index)
  return defenses[index]
 
 func reconcile(g) -> void:
@@ -107,6 +109,7 @@ func advance_weapons(g,dt: float) -> void:
   if g.state==g.State.COMBAT and not data.target.is_empty() and g.enemies.has(data.target) and data.target.hp>0 and active(g,data.entry,"proficiency",1,"B"):
    data.dwell+=dt
   else:data.target={};data.dwell=0.0
+  g.simulation_state_changed("weapon",index)
   if before_stacks!=int(data.stacks) or before_focus!=int(floor(float(data.dwell)/interval)):
    g.invalidate_equipment_counter(str(data.entry.get("key","")))
    # Timed bonuses remain combat-only; module presentation has no dependency.
@@ -117,6 +120,7 @@ func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary
  var boost := 1.0
  if not derived and int(data.next)>0 and active(g,data.entry,"critical",1,"B"):
   boost+=g.enhancement_parameter("critical_b1_damage_bonus");data.next-=1
+ g.simulation_state_changed("weapon",index)
  return {"index":index,"primary":target,"derived":derived,"next_multiplier":boost,"critical":false}
 
 func finish_attack(g,context: Dictionary) -> void:
@@ -126,6 +130,7 @@ func finish_attack(g,context: Dictionary) -> void:
  if active(g,data.entry,"critical",2,"B"):
   data.stacks=mini(int(g.enhancement_parameter("critical_b2_stacks")),int(data.stacks)+1)
   data.stack_time=g.enhancement_parameter("critical_b2_duration")
+ g.simulation_state_changed("weapon",int(context.index))
  g.invalidate_equipment_counter(str(data.entry.get("key","")))
 
 
@@ -216,6 +221,7 @@ func memory_incoming(g,type: int) -> void:
    data.resistance_type=0;data.resistance_time=0.0;data.lockout=g.enhancement_parameter("memory_b2_lockout")
   elif type in [1,2]:
    data.resistance_type=type;data.resistance_time=g.enhancement_parameter("memory_b2_duration")
+  g.simulation_state_changed("defense",index)
 
 func memory_resistance(g,index: int,type: int) -> float:
  var entry: Dictionary=g.slot_entry("defence",index);var data:=defense(g,index)
@@ -242,12 +248,14 @@ func advance_defense(g,dt: float) -> void:
     data.cover_elapsed=fmod(float(data.cover_elapsed),interval)
     data.cover_time=g.enhancement_parameter("adaptation_b2_duration")
     data.cover=N.multiply(N.add(g.jewel_equipment_stat(entry),g.enhancement_module_protection_capacity(index)),g.enhancement_parameter("adaptation_b2_capacity_multiplier"))
+  g.simulation_state_changed("defense",index)
 
 func consume_cover(g,amount,feedback: Dictionary = {}) -> Variant:
  var rest=amount
  for index in g.defense_entries().size():
   var data:=defense(g,index)
   var consumed=N.minimum(data.cover,rest);data.cover=N.subtract(data.cover,consumed);rest=N.subtract(rest,consumed)
+  g.simulation_state_changed("defense",index)
   if feedback.has("absorbed"):feedback.absorbed=N.add(feedback.absorbed,consumed)
   if N.compare(rest,0)<=0:break
  return rest

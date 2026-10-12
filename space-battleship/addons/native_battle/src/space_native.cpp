@@ -387,6 +387,31 @@ public:
     }
     void mark_dead(Dictionary shot) {shot["dead"]=true;auto r=lookup(shot);if(r)r->dead=true;}
     void set_target(Dictionary shot,Dictionary target){shot["target"]=target;auto r=lookup(shot);if(r)r->target=target;}
+    Dictionary audit_reference_isolation(Array original_entities, Dictionary original_player, Array original_shots, Ref<SpaceNativePipeline> source_pipeline) const {
+        int64_t foreign_shots=0,foreign_targets=0,foreign_visuals=0,foreign_motions=0;
+        auto entity_foreign=[&](const Dictionary &value){
+            if(same(value,original_player))return true;
+            for(int i=0;i<original_entities.size();++i)if(same(value,Dictionary(original_entities[i])))return true;
+            return false;
+        };
+        auto shot_foreign=[&](const Dictionary &value){
+            for(int i=0;i<original_shots.size();++i)if(same(value,Dictionary(original_shots[i])))return true;
+            return false;
+        };
+        auto scan=[&](const std::shared_ptr<ProjectileRecord> &r){
+            if(shot_foreign(r->shot))++foreign_shots;
+            if(entity_foreign(r->target)||entity_foreign(Dictionary(r->shot.get("source",Dictionary())))||entity_foreign(Dictionary(r->shot.get("locked_target",Dictionary()))))++foreign_targets;
+            if(!r->visual.is_empty()&&shot_foreign(Dictionary(r->visual.get("shot",Dictionary()))))++foreign_visuals;
+            if(source_pipeline.is_valid()&&r->lease.is_valid()&&r->lease->arena==source_pipeline->arena)++foreign_motions;
+        };
+        for(const auto &r:records)scan(r);
+        for(const auto &r:replacement_records)scan(r);
+        Dictionary result;result["foreign_shots"]=foreign_shots;result["foreign_targets"]=foreign_targets;
+        result["foreign_visuals"]=foreign_visuals;result["source_motion_leases"]=foreign_motions;
+        result["different_motion_arena"]=source_pipeline.is_valid()&&arena!=source_pipeline->arena;
+        result["scope"]="live and replacement native records; external deferred flight frames require a completed renderer fence";
+        return result;
+    }
     Dictionary lifecycle_stats() const {Dictionary d;d["managed_steps"]=managed_steps;d["compatibility_steps"]=compatibility_steps;d["active"]=int64_t(records.size());d["generation"]=record_generation;return d;}
     Array cleanup(Object *game,Array view,bool managed) {
         Ref<SpaceNativePipeline> guard(this);
@@ -795,6 +820,7 @@ void SpaceNativePipeline::_bind_methods() {
     ClassDB::bind_method(D_METHOD("mark_dead","shot"),&SpaceNativePipeline::mark_dead);
     ClassDB::bind_method(D_METHOD("set_target","shot","target"),&SpaceNativePipeline::set_target);
     ClassDB::bind_method(D_METHOD("lifecycle_stats"),&SpaceNativePipeline::lifecycle_stats);
+    ClassDB::bind_method(D_METHOD("audit_reference_isolation","entities","player","shots","source_pipeline"),&SpaceNativePipeline::audit_reference_isolation);
     ClassDB::bind_method(D_METHOD("cleanup","game","view","managed"),&SpaceNativePipeline::cleanup);
     ClassDB::bind_method(D_METHOD("prune_beams","predicate"),&SpaceNativePipeline::prune_beams);
     ClassDB::bind_method(D_METHOD("begin_step"),&SpaceNativePipeline::begin_step);

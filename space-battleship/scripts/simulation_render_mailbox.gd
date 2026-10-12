@@ -135,3 +135,39 @@ func _is_value_packet(value:Variant,depth:int=0)->bool:
 			for element in value:
 				if not _is_value_packet(element,depth+1):return false
 	return true
+
+func append_owned_event(record:Dictionary)->bool:
+	# Simulation publisher-only ownership transfer: every nested value was newly
+	# constructed from IDs/scalars. Generic/foreign callers use append_event.
+	# Seal rather than recursively copy a second time; producer relinquishes writes.
+	mutex.lock()
+	if stopped or events.size()>=event_limit:event_backpressure+=1;mutex.unlock();return false
+	mutex.unlock()
+	if not _seal_owned(record):
+		push_error("Owned event contains an uncompiled mutable object");return false
+	mutex.lock()
+	# Single producer; consumer only drains. Capacity cannot increase while unlocked.
+	if stopped:mutex.unlock();return false
+	event_sequence+=1;var envelope={"sequence":event_sequence,"payload":record}
+	envelope.make_read_only();events.append(envelope);mutex.unlock();return true
+
+func publish_owned(slot:int,record:Dictionary)->bool:
+	if not _seal_owned(record):
+		push_error("Owned frame contains an uncompiled mutable object");cancel_write(slot);return false
+	mutex.lock();assert(states[slot]==WRITING)
+	published_sequence+=1;sequences[slot]=published_sequence
+	frames[slot]=record;states[slot]=PUBLISHED;mutex.unlock();return true
+
+func _seal_owned(value:Variant,depth:int=0)->bool:
+	if depth>=32:return false
+	match typeof(value):
+		TYPE_OBJECT,TYPE_CALLABLE,TYPE_SIGNAL,TYPE_RID:return false
+		TYPE_DICTIONARY:
+			for key in value:
+				if not typeof(key) in [TYPE_STRING,TYPE_STRING_NAME,TYPE_INT] or not _seal_owned(value[key],depth+1):return false
+			if not value.is_read_only():value.make_read_only()
+		TYPE_ARRAY:
+			for member in value:
+				if not _seal_owned(member,depth+1):return false
+			if not value.is_read_only():value.make_read_only()
+	return true

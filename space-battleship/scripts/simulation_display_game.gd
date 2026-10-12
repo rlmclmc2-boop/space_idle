@@ -5,6 +5,7 @@ var command_gateway:Callable
 var display_ready:bool=false
 var display_shots:Dictionary={}
 var display_entities:Dictionary={}
+var display_chain_targets:Dictionary={}
 var _constructor_profile:Dictionary={}
 func _init(database:ShipDatabase,persist:bool=false,initial_profile:Dictionary={})->void:
 	_constructor_profile=initial_profile
@@ -70,7 +71,7 @@ func acknowledge_unlocks() -> void:
 
 func collect(drop: Dictionary, manual: bool) -> void:
 	if display_ready:
-		command("collect",[drop,manual])
+		command("collect_uid",[int(drop.get("uid",-1)),manual])
 		return
 	super.collect(drop,manual)
 
@@ -93,3 +94,130 @@ func set_enhancement_order(category: String, order: Array) -> bool:
 	if display_ready:
 		return command("set_enhancement_order",[category,order])
 	return super.set_enhancement_order(category,order)
+
+func beam_chain_targets(shot:Dictionary)->Array:
+	return display_chain_targets.get(int(shot.get("serial",-1)),[]) if projectiles.has(shot) and long_laser_valid(shot) else []
+
+func resume_progress() -> void:
+	if display_ready:
+		command("resume_progress",[])
+		return
+	super.resume_progress()
+
+func equip_slot(category: String, index: int, key: String) -> bool:
+	if display_ready:
+		return command("equip_slot",[category,index,key])
+	return super.equip_slot(category,index,key)
+
+func unequip_slot(category: String, index: int) -> bool:
+	if display_ready:
+		return command("unequip_slot",[category,index])
+	return super.unequip_slot(category,index)
+
+func upgrade_reactor(amount: int) -> bool:
+	if display_ready:
+		return command("upgrade_reactor",[amount])
+	return super.upgrade_reactor(amount)
+
+func set_reactor_allocation(key: String, value) -> bool:
+	if display_ready:
+		return command("set_reactor_allocation",[key,value])
+	return super.set_reactor_allocation(key,value)
+
+func equalize_reactor_allocation() -> bool:
+	if display_ready:
+		return command("equalize_reactor_allocation",[])
+	return super.equalize_reactor_allocation()
+
+func scientist_purchase(amount := 1) -> Dictionary:
+	if display_ready:
+		return command("scientist_purchase",[amount])
+	return super.scientist_purchase(amount)
+
+func generate_scientist(amount := 1) -> bool:
+	if display_ready:
+		return command("generate_scientist",[amount])
+	return super.generate_scientist(amount)
+
+func distribute_scientists() -> bool:
+	if display_ready:
+		return command("distribute_scientists",[])
+	return super.distribute_scientists()
+
+func assign_scientist(key: String, delta: int) -> bool:
+	if display_ready:
+		return command("assign_scientist",[key,delta])
+	return super.assign_scientist(key,delta)
+
+func set_planet_auto(id: String, enabled: bool) -> bool:
+	if display_ready:
+		return command("set_planet_auto",[id,enabled])
+	return super.set_planet_auto(id,enabled)
+
+func start_planet_exploration(id: String, crew_id: String) -> bool:
+	if display_ready:
+		return command("start_planet_exploration",[id,crew_id])
+	return super.start_planet_exploration(id,crew_id)
+
+func cancel_planet_exploration(id: String) -> bool:
+	if display_ready:
+		return command("cancel_planet_exploration",[id])
+	return super.cancel_planet_exploration(id)
+
+func change_state(next: State) -> void:
+	if display_ready:
+		command("change_state",[next])
+		return
+	super.change_state(next)
+
+func select_loop_level(level: int) -> bool:
+	if display_ready:
+		return command("select_loop_level",[level])
+	return super.select_loop_level(level)
+
+func set_guard_death(mode: int) -> void:
+	if display_ready:
+		command("set_guard_death",[mode])
+		return
+	super.set_guard_death(mode)
+
+func set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool:
+	if display_ready:
+		return command("set_hyperspace_auto",[route,crew_id,enabled])
+	return super.set_hyperspace_auto(route,crew_id,enabled)
+
+func start_hyperspace_challenge(route:String)->bool:
+	if display_ready:
+		return command("start_hyperspace_challenge",[route])
+	return super.start_hyperspace_challenge(route)
+
+func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
+	if display_ready:
+		return command("claim_hyperspace",[round_id,run_id])
+	return super.claim_hyperspace(round_id,run_id)
+
+func advance_after_clear() -> bool:
+	if display_ready:
+		return command("advance_after_clear",[])
+	return super.advance_after_clear()
+
+func clear_level() -> void:
+	if display_ready:
+		command("clear_level",[])
+		return
+	super.clear_level()
+
+func upgrade_slot(category: String, index: int, levels := 1) -> bool:
+	if display_ready:
+		return command("upgrade_slot",[category,index,levels])
+	return super.upgrade_slot(category,index,levels)
+
+func upgrade_equipment_batch(mode: String) -> bool:
+	if display_ready:
+		return command("upgrade_equipment_batch",[mode])
+	return super.upgrade_equipment_batch(mode)
+
+func upgrade_enhancement(count := 1) -> int:
+	if display_ready:
+		return command("upgrade_enhancement",[count])
+	return super.upgrade_enhancement(count)

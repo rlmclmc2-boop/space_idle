@@ -10,10 +10,13 @@ var shot_views:Dictionary={}
 var published_paused:bool=false
 var published_speed:float=1.0
 var publications:int=0
+var render_epoch:int=0
 var applied_events:int=0
 var transport_failures:int=0
 var native_steps_before_transfer:int=0
 var skipped_helper_fields:Array=[]
+var retired_shot_publications:Dictionary={}
+var retired_enemy_publications:Dictionary={}
 func install(root,pure_geometry)->void:
 	scene=root
 	var source:BattleGame=scene.game
@@ -22,7 +25,9 @@ func install(root,pure_geometry)->void:
 	copy_database(source.db,model.db)
 	model.profile=source.profile.duplicate(true)
 	model.player=source.player.duplicate(true)
-	model.galaxy.load_state(model,source.profile.get("galaxies",{}).duplicate(true))
+	model.galaxy=preload("res://scripts/simulation_galaxy_display.gd").new()
+	model.galaxy.load_state(model,source.galaxy.save_data())
+	for effect in ["crew_exp","equipment_value","charge_max","gem_fragment"]:model.galaxy.display_multipliers[effect]=source.galaxy.multiplier(effect)
 	# Copy value fields only once at transfer. RefCounted helpers are independently
 	# constructed by Display; they never borrow a simulation helper/Game reference.
 	for property in source.get_property_list():
@@ -139,12 +144,14 @@ func apply_packet(packet:Dictionary)->void:
 	for row in packet.get("shot_values",[]):
 		var shot:Dictionary=shot_views.get(int(row.serial),{})
 		if shot.is_empty():continue
+		model.display_chain_targets[int(row.serial)]=decode(row.get("chain_targets",[]))
 		var values:PackedFloat64Array=row.values
 		shot.x=values[0];shot.y=values[1];shot.direction=Vector2(values[2],values[3]);shot.speed=values[4]
 		shot.motion_age=values[5];shot.charge=values[6];shot.ticks=int(values[7]);shot.elapsed=values[8]
 		var target:Dictionary=decode(row.target)
 		if not is_same(shot.get("target",{}),target):model.projectile_set_target(shot,target)
 		if row.dead:model.projectile_mark_dead(shot)
+	for identity in packet.get("retired_shots",[]):retired_shot_publications[int(identity)]=render_epoch
 	if packet.has("active_shots"):
 		var active:Array[Dictionary]=[]
 		for serial in packet.active_shots:
@@ -171,25 +178,29 @@ func consume()->void:
 		model.event.emit(packet.kind,decode(packet.payload));applied_events+=1
 		scene.simulation_event_muzzles={}
 	var lease=owner.mailbox.acquire_latest()
-	if not lease.is_empty():apply_packet(lease.frame);owner.mailbox.release(int(lease.slot))
+	if not lease.is_empty():render_epoch+=1;apply_packet(lease.frame);owner.mailbox.release(int(lease.slot))
+	reclaim_visual_records()
 func advance(seconds:float)->void:
 	var complete=owner.advance(seconds)
 	consume()
 	while not complete:
 		complete=owner.advance(0.0);consume()
 func dispatch_command(name:String,args:Array)->Variant:
-	var result=owner.dispatch(name,args)
+	var ack=owner.dispatch(name,args)
 	consume()
-	return decode(result)
+	if not bool(ack.get("accepted",false)):
+		push_error("Simulation input rejected: "+str(ack.get("reason","unknown")));return false
+	return decode(ack.get("result"))
 func capture_inputs()->void:
 	# Direct pause/speed UI fields are converted to ordered input writes. No other
 	# direct mutable display field may silently become authoritative.
-	if model.paused!=published_paused:owner.dispatch("set",["paused",model.paused]);published_paused=model.paused
-	if model.speed!=published_speed:owner.dispatch("set",["speed",model.speed]);published_speed=model.speed
+	if model.paused!=published_paused:owner.dispatch("set_field",["paused",model.paused]);published_paused=model.paused
+	if model.speed!=published_speed:owner.dispatch("set_field",["speed",model.speed]);published_speed=model.speed
 func metrics()->Dictionary:
 	var result=owner.metrics();result.UI_events=applied_events;result.UI_publications=publications
 	result.production_single_thread_connected=true;result.thread_started=false
 	result.native_steps_before_transfer=native_steps_before_transfer;result.skipped_helper_fields=skipped_helper_fields
+	result.UI_shot_records=shot_views.size();result.UI_enemy_records=enemy_views.size();result.sim_shot_records=owner.shot_records.size();result.sim_enemy_records=owner.entity_records.size()
 	return result
 func close()->void:
 	model.command_gateway=Callable();owner.close();owner=null;model=null;scene=null
@@ -273,3 +284,26 @@ func _audit_value(value:Variant,source:BattleGame,path:String,seen:Dictionary,fi
 	elif value is Callable:
 		if value.get_object()==source:findings.append(path+":live Game callback")
 		for bound in value.get_bound_arguments():_audit_value(bound,source,path+".bound",seen,findings)
+
+func reclaim_visual_records()->void:
+	# Retired metadata survives all explicit visual references and two completed
+	# publications. Deferred native frames may retain their own UI-only record;
+	# erasing the registry never invalidates those independently owned references.
+	var needed_shots={};var needed_entities={}
+	for shot in model.projectiles:needed_shots[int(shot.serial)]=true
+	for collection in [scene.projectile_visuals,scene.beam_visuals]:
+		for visual in collection:
+			var shot:Dictionary=visual.get("shot",{})
+			if shot.has("serial"):needed_shots[int(shot.serial)]=true
+	for identity in retired_shot_publications.keys():
+		if needed_shots.has(identity) or render_epoch-int(retired_shot_publications[identity])<2:continue
+		shot_views.erase(identity);model.display_chain_targets.erase(identity);retired_shot_publications.erase(identity)
+	for enemy in model.enemies:needed_entities[str(enemy.uid)]=true
+	for shot in shot_views.values():
+		for key in ["target","source","locked_target"]:
+			var record:Dictionary=shot.get(key,{})
+			if record.has("uid"):needed_entities[str(record.uid)]=true
+	for key in enemy_views.keys():
+		if needed_entities.has(str(enemy_views[key].uid)):retired_enemy_publications.erase(key);continue
+		if not retired_enemy_publications.has(key):retired_enemy_publications[key]=render_epoch
+		elif render_epoch-int(retired_enemy_publications[key])>=2:enemy_views.erase(key);retired_enemy_publications.erase(key)
