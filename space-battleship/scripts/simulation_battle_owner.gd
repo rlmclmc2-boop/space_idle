@@ -103,6 +103,7 @@ func shot_token(record:Dictionary,refresh:bool=false)->Dictionary:
 			metadata[key]=encode(record[key])
 		metadata.x=_kernel.projectile_x(record);metadata.y=_kernel.projectile_y(record)
 		metadata.direction=_kernel.projectile_direction(record);metadata.speed=_kernel.projectile_speed(record)
+		metadata.entry_current=entry_is_current(record)
 		new_shots.append({"serial":identity,"metadata":metadata})
 	return {"$shot":identity}
 func encode(value:Variant)->Variant:
@@ -142,13 +143,14 @@ func capture_event(kind:String,payload:Dictionary)->void:
 			geometry_entities.append(record);geometry_ids[int(record.uid)]=true
 	if payload.has("uid"):
 		var record:Dictionary=entity_records.get(int(payload.uid),{}).get("record",{})
-		if not record.is_empty():geometry_entities.append(record);geometry_ids[int(record.uid)]=true
+		if not record.is_empty() and not geometry_ids.has(int(record.uid)):geometry_entities.append(record);geometry_ids[int(record.uid)]=true
 	if payload.has("shot"):
 		for key in ["source","target","locked_target"]:
 			var record:Dictionary=payload.shot.get(key,{})
 			if record.has("uid") and not geometry_ids.has(int(record.uid)):
 				geometry_entities.append(record);geometry_ids[int(record.uid)]=true
 	packet.geometry=geometry.display_frame(geometry_entities,false)
+	packet.geometry.configuration_version=configuration_version
 	packet.entities_added=new_entities;new_entities=[];packet.shots_added=new_shots;new_shots=[]
 	# A failed enqueue retains this event. No later event may overtake it, and
 	# no following simulation step may run until the presenter drains the FIFO.
@@ -189,14 +191,18 @@ func base_packet(with_motion:bool)->Dictionary:
 		packet.configuration=_kernel.profile.duplicate(true);configuration_dirty=false
 	if with_motion:
 		packet.geometry=geometry.display_frame(_kernel.enemies)
+		packet.geometry.configuration_version=configuration_version
 		var rows=[];var order=PackedInt64Array()
 		for shot in _kernel.projectiles:shot_token(shot);rows.append(shot_values(shot));order.append(int(shot.serial))
 		packet.shot_values=rows;packet.active_shots=order
 	return packet
+func entry_is_current(shot:Dictionary)->bool:
+	var mount:int=int(shot.get("mount",-1))
+	return not bool(shot.get("hostile",false)) and mount>=0 and is_same(shot.get("entry",{}),_kernel.combat_entry(mount))
 func shot_values(shot:Dictionary)->Dictionary:
 	var position=Vector2(_kernel.projectile_x(shot),_kernel.projectile_y(shot))
 	var direction=_kernel.projectile_direction(shot)
-	return {"serial":int(shot.serial),"target":encode(shot.get("target",{})),"values":PackedFloat64Array([position.x,position.y,direction.x,direction.y,_kernel.projectile_speed(shot),_kernel.projectile_motion_age(shot,0),float(shot.get("charge",0)),float(shot.get("ticks",0)),float(shot.get("elapsed",0))]),"dead":bool(shot.get("dead",false)),"chain_targets":encode(_kernel.beam_chain_targets(shot)) if bool(shot.get("beam",false)) and shot.has("locked_target") and shot.has("attack_instance") else []}
+	return {"serial":int(shot.serial),"target":encode(shot.get("target",{})),"values":PackedFloat64Array([position.x,position.y,direction.x,direction.y,_kernel.projectile_speed(shot),_kernel.projectile_motion_age(shot,0),float(shot.get("charge",0)),float(shot.get("ticks",0)),float(shot.get("elapsed",0))]),"dead":bool(shot.get("dead",false)),"entry_current":entry_is_current(shot),"chain_targets":encode(_kernel.beam_chain_targets(shot)) if bool(shot.get("beam",false)) and shot.has("locked_target") and shot.has("attack_instance") else []}
 func advance(seconds:float,publish:bool=true)->bool:
 	assert_authority()
 	# Time debt survives backpressure. A staged frame/delta is constructed once.
@@ -322,7 +328,7 @@ func metrics()->Dictionary:
 	return authoritative_metrics()
 func authoritative_metrics()->Dictionary:
 	assert_authority()
-	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":worker_active,"thread_started":worker_active,"authority_thread":_authority_thread,"motion_clock":_kernel.motion_clock,"worker_jobs":_worker_jobs,"time_debt":remainder,"sim_shot_records":shot_records.size(),"sim_enemy_records":entity_records.size()}
+	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":worker_active,"thread_started":worker_active,"authority_thread":_authority_thread,"motion_clock":_kernel.motion_clock,"worker_jobs":_worker_jobs,"geometry_values":geometry.display_geometry_metrics() if geometry.has_method("display_geometry_metrics") else {},"time_debt":remainder,"sim_shot_records":shot_records.size(),"sim_enemy_records":entity_records.size()}
 func drain_shutdown_transport()->void:
 	# Shutdown no longer presents UI. Dropping display-only packets releases
 	# producer backpressure while accepted simulation/transactions finish.

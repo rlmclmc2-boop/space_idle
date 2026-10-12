@@ -10,6 +10,7 @@ var appearances:Dictionary={}
 var spatials:Dictionary={}
 var poses:Dictionary={}
 var fleet:Dictionary={}
+var fleet_configuration_version:int=0
 var shapes:Dictionary={}
 var shape_members:Dictionary={}
 var player_position:=Vector2.ZERO
@@ -29,7 +30,8 @@ func apply(value:Dictionary)->void:
 		if not shape_members.has(int(shape.uid)):shape_members[int(shape.uid)]={}
 		shape_members[int(shape.uid)][str(shape.id)]=true
 	if value.has("player_position"):player_position=value.player_position
-	if value.has("fleet"):fleet=value.fleet
+	if value.has("fleet"):
+		fleet=value.fleet;fleet_configuration_version=int(value.get("configuration_version",0))
 	for uid in value.get("enemies",{}):
 		var row:Dictionary=value.enemies[uid].duplicate()
 		assert(shapes.has(str(row.recognition_id)),"Display missing immutable shape publication")

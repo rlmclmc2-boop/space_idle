@@ -43,6 +43,9 @@ var enemy_poses: Dictionary = {}
 var boundary_dead_geometry:Dictionary={}
 var display_shapes:Dictionary={}
 var pending_display_shapes:Array=[]
+var display_row_cache:Dictionary={}
+var display_row_builds:int=0
+var display_row_reuses:int=0
 
 const SHIP_ART_CANVAS := Vector2(887, 1774)
 
@@ -222,6 +225,12 @@ func enemy_render_angle(enemy:Dictionary)->float:
 # Supplied positions stay within one synchronous solve; no value survives it.
 
 func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0)->Dictionary:
+	var row:Dictionary=display_enemy(enemy)
+	if (render_position==Vector2.INF or render_position==row.position) and (known_width<0.0 or known_width==float(row.width)):
+		return row.components[int(component.owner_slot)]
+	return _source_enemy_component_pose(enemy,component,render_position,known_width)
+
+func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0)->Dictionary:
 	var point:Dictionary=component.hardpoint
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y) if known_width<0.0 else known_width
@@ -768,6 +777,7 @@ func rail_geometry(shot:Dictionary)->Dictionary:
 func on_simulation_event(kind:String,info:Dictionary)->void:
 	var changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if changed:
+		display_row_cache.clear()
 		sync_hull()
 		battle_read_model.invalidate_membership()
 		enemy_entry_distance_time=-INF
@@ -833,7 +843,7 @@ func close(restoration:Dictionary={})->void:
 	battle_read_model.end();battle_read_model.host=null
 	battle_read_model.records.clear();battle_read_model.bounds_members.clear()
 	captured_visuals.clear();captured_bounds.clear()
-	enemy_poses.clear();turret_visuals.clear();fleet_pose=null
+	enemy_poses.clear();display_shapes.clear();boundary_dead_geometry.clear();display_row_cache.clear();turret_visuals.clear();fleet_pose=null
 	game=null;db=null;prepared=false
 
 func display_descriptor(enemy:Dictionary)->Dictionary:
@@ -843,14 +853,25 @@ func display_descriptor(enemy:Dictionary)->Dictionary:
 		components.append({"hardpoint":component.hardpoint.duplicate(true),"profile":component.profile.duplicate(true),"slots":component.slots.duplicate(),"owner_slot":component.owner_slot,"damage_type":component.damage_type})
 	return {"components":components,"mounts":appearance.mounts.duplicate(true),"types":appearance.types.duplicate()}
 func display_enemy(enemy:Dictionary)->Dictionary:
+	var uid:int=int(enemy.uid);var pose:Dictionary=enemy_pose(enemy)
+	var logical:Vector2=Vector2(enemy.x,enemy.y)
+	var cached:Dictionary=display_row_cache.get(uid,{})
+	# Reuse only this exact source pose/time/identity/logical position. Event-time
+	# and final-frame consumers share one solve; unknown custom-position queries
+	# below retain their original mathematical path.
+	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and cached.clock==fx_time and cached.logical==logical:
+		display_row_reuses+=1;return cached.value
+	display_row_builds+=1
 	var position:Vector2=enemy_render_position(enemy)
 	var width:float=enemy_render_width_at_y(enemy,position.y)
 	var components:Dictionary={}
 	for component in enemy_weapon_components(enemy):
-		components[int(component.owner_slot)]=enemy_component_pose(enemy,component,position,width)
-	var pose:Dictionary=enemy_pose(enemy);var values:Dictionary={}
+		components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,position,width)
+	var values:Dictionary={}
 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
-	return {"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
+	var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
+	display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"value":result}
+	return result
 func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	var values:Dictionary={}
 	for enemy in enemies:
@@ -886,4 +907,7 @@ func display_shape(enemy:Dictionary,width:float)->String:
 		packets[bucket]=packet;pending_display_shapes.append({"id":identity,"uid":uid,"value":packet})
 	return identity
 func retire_display_entity(uid:int)->void:
-	display_shapes.erase(uid);boundary_dead_geometry.erase(uid)
+	display_shapes.erase(uid);boundary_dead_geometry.erase(uid);display_row_cache.erase(uid)
+
+func display_geometry_metrics()->Dictionary:
+	return {"source_row_builds":display_row_builds,"source_row_reuses":display_row_reuses,"source_cached_entities":display_row_cache.size(),"source_shape_entities":display_shapes.size()}

@@ -11,6 +11,7 @@ var shot_views:Dictionary={}
 var published_paused:bool=false
 var published_speed:float=1.0
 var publications:int=0
+var applied_configuration_version:int=0
 var render_epoch:int=0
 var completed_render_passes:int=0
 var applied_events:int=0
@@ -145,6 +146,8 @@ func apply_packet(packet:Dictionary)->void:
 		snapshot_age_us_total+=age;snapshot_age_us_max=maxi(snapshot_age_us_max,age);snapshot_samples+=1
 		last_snapshot_step=int(packet.logical_steps)
 	if packet.has("configuration"):
+		assert(int(packet.configuration_version)>=applied_configuration_version,"Out-of-order display configuration")
+		applied_configuration_version=int(packet.configuration_version)
 		model.profile=packet.configuration.duplicate(true);model.combat_sources_dirty=true;model.invalidate_stat_cache()
 	for row in packet.get("entities_added",[]):
 		var identity=str(row.uid)+":"+str(row.generation)
@@ -153,7 +156,7 @@ func apply_packet(packet:Dictionary)->void:
 	for row in packet.get("shots_added",[]):
 		var shot=decode(row.metadata)
 		var mount=int(shot.get("mount",-1))
-		if not bool(shot.get("hostile",false)) and mount>=0 and mount<model.combat_weapon_entries().size():shot.entry=model.combat_entry(mount)
+		if bool(shot.get("entry_current",false)) and mount>=0 and mount<model.combat_weapon_entries().size():shot.entry=model.combat_entry(mount)
 		if shot_views.has(int(row.serial)):
 			var existing:Dictionary=shot_views[int(row.serial)];existing.merge(shot,true);shot=existing
 		else:shot_views[int(row.serial)]=shot
@@ -181,6 +184,10 @@ func apply_packet(packet:Dictionary)->void:
 	for row in packet.get("shot_values",[]):
 		var shot:Dictionary=shot_views.get(int(row.serial),{})
 		if shot.is_empty():continue
+		if bool(row.get("entry_current",false)) and not bool(shot.get("hostile",false)):
+			shot.entry=model.combat_entry(int(shot.mount))
+		# Detached old-entry values survive refit only when source says this shot
+		# no longer owns the current slot. Never revive a beam by rebinding blindly.
 		model.display_chain_targets[int(row.serial)]=decode(row.get("chain_targets",[]))
 		var values:PackedFloat64Array=row.values
 		shot.x=values[0];shot.y=values[1];shot.direction=Vector2(values[2],values[3]);shot.speed=values[4]

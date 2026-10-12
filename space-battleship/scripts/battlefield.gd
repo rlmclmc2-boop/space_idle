@@ -327,6 +327,7 @@ func _process_battlefield(delta: float) -> void:
 	if simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():
 		ship_view.set_hull(str(simulation_geometry_view.fleet.hull));current_hull=str(simulation_geometry_view.fleet.hull)
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
+		assert(simulation_geometry_view.fleet_configuration_version==simulation_presenter.applied_configuration_version,"Fleet geometry/configuration version mismatch")
 		ship_view.apply_geometry_frame(simulation_geometry_view.fleet,shield_enabled)
 	else:ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0,false)
 	# Last pose writer: one guard reads actual current global scales for all
