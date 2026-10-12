@@ -859,7 +859,7 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	# Reuse only this exact source pose/time/identity/logical position. Event-time
 	# and final-frame consumers share one solve; unknown custom-position queries
 	# below retain their original mathematical path.
-	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and cached.clock==fx_time and cached.logical==logical:
+	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and cached.clock==fx_time and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
 		display_row_reuses+=1;return cached.value
 	display_row_builds+=1
 	var position:Vector2=enemy_render_position(enemy)
@@ -870,7 +870,7 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	var values:Dictionary={}
 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
 	var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
-	display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"value":result}
+	display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"appearance":pose.get("appearance"),"value":result}
 	return result
 func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	var values:Dictionary={}
@@ -911,3 +911,11 @@ func retire_display_entity(uid:int)->void:
 
 func display_geometry_metrics()->Dictionary:
 	return {"source_row_builds":display_row_builds,"source_row_reuses":display_row_reuses,"source_cached_entities":display_row_cache.size(),"source_shape_entities":display_shapes.size()}
+
+func display_pose_values_match(values:Dictionary,pose:Dictionary)->bool:
+	# A source callback may edit the same pose dictionary without a clock change.
+	# Numeric inputs are compared by value; cache/recognition bookkeeping is not
+	# an input, while a replaced appearance contract invalidates separately above.
+	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:
+		if values[key]!=pose[key]:return false
+	return true
