@@ -146,8 +146,9 @@ func append_owned_event(record:Dictionary)->bool:
 	if not _seal_owned(record):
 		push_error("Owned event contains an uncompiled mutable object");return false
 	mutex.lock()
-	# Single producer; consumer only drains. Capacity cannot increase while unlocked.
-	if stopped:mutex.unlock();return false
+	# Recheck after sealing: a foreign producer may enqueue through append_event.
+	# On rejection the owner retains the sealed packet and retries without loss.
+	if stopped or events.size()>=event_limit:event_backpressure+=1;mutex.unlock();return false
 	event_sequence+=1;var envelope={"sequence":event_sequence,"payload":record}
 	envelope.make_read_only();events.append(envelope);mutex.unlock();return true
 

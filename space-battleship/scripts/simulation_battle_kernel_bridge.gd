@@ -45,6 +45,15 @@ func hit_enemy(record:Dictionary,raw:Variant,damage_type:int,resistance:float,co
 func settle_enemy_shield(record:Dictionary,at:float)->void:
 	var target=resolve(record);shield_calls+=1
 	enemy_kernel.settle_shield(target,at);project(record,target)
+func retire_unreferenced(required:Dictionary)->void:
+	# Owner calls after a completed logical advance, retaining pending attacks,
+	# locked targets and enhancement targets. Immediate callbacks already finished.
+	for identity in records.keys():
+		if required.has(identity):continue
+		var entity=state.entity_index.get(identity)
+		state.retire_entity(int(identity))
+		if entity!=null:state.entities.erase(entity)
+		records.erase(identity)
 func metrics()->Dictionary:
 	return {"typed_enemy_settlements":settlement_calls,"typed_shield_queries":shield_calls,"external_write_fallbacks":external_write_fallbacks,"battle_thread_admission":false,"legacy_UI_references_remaining":true}
 func close()->void:

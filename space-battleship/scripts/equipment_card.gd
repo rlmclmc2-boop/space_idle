@@ -138,6 +138,11 @@ func layout_contents() -> void:
 func refresh(item: Dictionary, chosen: bool) -> void:
 	var state := [item.key,item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false),item.get("upgrade_count",0),panel.upgrade_amount]
 	refresh_options(item)
+	# A parent theme pass can change the font after card construction. Restore
+	# the card-owned size even when the value projection has not changed.
+	var level_font := 18 if item.key=="longLaser" else 21
+	if fields.level.get_theme_font_size("font_size")!=level_font:
+		fields.level.add_theme_font_size_override("font_size",level_font)
 	if last_state == state:return
 	last_state = state
 	slot_id = item.id
@@ -156,7 +161,6 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(name_button,"visible",not fixed)
 	host.set_ui_value(fields.title,"visible",fixed)
 	host.set_ui_value(fields.title,"text",UIText.t("equipment.fixed_card_name",{"name":item.name}) if fixed else item.name)
-	fields.level.add_theme_font_size_override("font_size",18 if item.key=="longLaser" else 21)
 	host.set_ui_value(fields.level,"text",item.get("cardLevelText",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))})))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
 	host.set_ui_value(fields.caption,"text",item.mainStatLabel)

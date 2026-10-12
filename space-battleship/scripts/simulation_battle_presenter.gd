@@ -131,8 +131,8 @@ func apply_packet(packet:Dictionary)->void:
 		var data=decode(packet.weapon_states[index]);data.entry=model.combat_entry(int(index));model.enhancement_branches.weapons[index]=data
 	for index in packet.get("defense_states",{}):
 		var data=decode(packet.defense_states[index]);data.entry=model.slot_entry("defence",int(index));model.enhancement_branches.defenses[index]=data
-	for key in packet.fields:model.set(key,decode(packet.fields[key]))
-	for key in packet.profile_dynamic:model.profile[key]=decode(packet.profile_dynamic[key])
+	for key in packet.get("fields",{}):model.set(key,decode(packet.fields[key]))
+	for key in packet.get("profile_dynamic",{}):model.profile[key]=decode(packet.profile_dynamic[key])
 	var player=decode(packet.get("player",{}))
 	for key in player:model.player[key]=player[key]
 	var enemies:Array[Dictionary]=[]
@@ -157,8 +157,9 @@ func apply_packet(packet:Dictionary)->void:
 		for serial in packet.active_shots:
 			if shot_views.has(serial):active.append(shot_views[serial])
 		model.projectiles=active
-	scene.fx_time=packet.fx_time;scene.demo_time=packet.demo_time
-	scene.ship_view.orbit_elapsed=packet.orbit_elapsed
+	if packet.has("fx_time"):scene.fx_time=packet.fx_time
+	if packet.has("demo_time"):scene.demo_time=packet.demo_time
+	if packet.has("orbit_elapsed"):scene.ship_view.orbit_elapsed=packet.orbit_elapsed
 	if packet.has("turrets"):scene.turret_visuals=decode(packet.turrets)
 	# Entries are identity-bearing UI configuration values, never simulation refs.
 	for index in scene.turret_visuals:
@@ -174,6 +175,7 @@ func consume()->void:
 	for envelope in owner.mailbox.drain_events():
 		var packet:Dictionary=envelope.payload
 		apply_packet(packet)
+		if bool(packet.get("transport_only",false)):continue
 		scene.simulation_event_muzzles=decode(packet.get("event_muzzle",{}))
 		model.event.emit(packet.kind,decode(packet.payload));applied_events+=1
 		scene.simulation_event_muzzles={}

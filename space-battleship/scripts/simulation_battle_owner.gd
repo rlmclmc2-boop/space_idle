@@ -11,6 +11,7 @@ var command_serial:int=0
 var command_acks:Dictionary={}
 var last_command_sequence:int=0
 var command_queue_active:bool=false
+var command_signatures:Dictionary={}
 var remainder:float=0.0
 var logical_steps:int=0
 var event_count:int=0
@@ -25,6 +26,7 @@ var new_shots:Array=[]
 var pending_configuration:Dictionary={}
 var event_packets:Array=[]
 var full_frame:Dictionary={}
+var pending_frame_retired:PackedInt64Array=PackedInt64Array()
 var _generation:int=0
 var _step_shield:Variant=0.0
 var last_weapon_publication:Dictionary={}
@@ -36,6 +38,8 @@ const PROFILE_DYNAMIC=["productionElapsed","chronoParticles","enhancementAttacks
 const SHOT_OMIT=["motion_lease","attack_instance","attack_snapshot","jewelEffects","higgs","guidance_layers"]
 func attach(kernel:BattleGame,pure_geometry)->void:
 	_kernel=kernel;geometry=pure_geometry
+	for method in _kernel.get_method_list():
+		if str(method.name) in COMMANDS:command_signatures[str(method.name)]={"arguments":method.args.duplicate(true),"defaults":method.default_args.size()}
 	_kernel.simulation_descriptor_publisher=descriptor_ready
 	_kernel.simulation_mutation_sink=mark_state_changed
 	# Only pure semantic subscribers remain attached to the kernel. UI subscribers
@@ -148,8 +152,10 @@ func shot_values(shot:Dictionary)->Dictionary:
 	var direction=_kernel.projectile_direction(shot)
 	return {"serial":int(shot.serial),"target":encode(shot.get("target",{})),"values":PackedFloat64Array([position.x,position.y,direction.x,direction.y,_kernel.projectile_speed(shot),_kernel.projectile_motion_age(shot,0),float(shot.get("charge",0)),float(shot.get("ticks",0)),float(shot.get("elapsed",0))]),"dead":bool(shot.get("dead",false)),"chain_targets":encode(_kernel.beam_chain_targets(shot)) if bool(shot.get("beam",false)) and shot.has("locked_target") and shot.has("attack_instance") else []}
 func advance(seconds:float)->bool:
-	if not flush_events():return false
+	# Time debt survives backpressure. A staged frame/delta is constructed once.
 	remainder+=seconds
+	if not flush_events():return false
+	if not full_frame.is_empty() and not publish_pending_frame():return false
 	const STEP=1.0/60.0
 	while remainder+0.0000000001>=STEP:
 		if not pending_events.is_empty():return false
@@ -157,18 +163,34 @@ func advance(seconds:float)->bool:
 		geometry.before_tick(STEP);_kernel.tick(STEP);geometry.after_tick()
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
 	var started=Time.get_ticks_usec()
-	full_frame=base_packet(true);full_frame.retired_shots=retired_shot_ids(full_frame.active_shots);full_frame.entities_added=new_entities;new_entities=[];full_frame.shots_added=new_shots;new_shots=[]
+	full_frame=base_packet(true)
+	pending_frame_retired=retired_shot_ids(full_frame.active_shots)
+	var retired=pending_frame_retired
+	# Birth/configuration/retirement are lossless protocol records. A PUBLISHED
+	# dynamic snapshot may be replaced, so it must never own a one-shot delta.
+	var delta={"transport_only":true,"entities_added":new_entities,"shots_added":new_shots,"retired_shots":retired}
+	new_entities=[];new_shots=[]
+	if full_frame.has("configuration"):
+		delta.configuration=full_frame.configuration;delta.configuration_version=full_frame.configuration_version
+		full_frame.erase("configuration")
+	if not delta.entities_added.is_empty() or not delta.shots_added.is_empty() or not retired.is_empty() or delta.has("configuration"):
+		pending_events.append(delta)
+	if not flush_events():return false
+	var complete=publish_pending_frame()
+	publication_us+=Time.get_ticks_usec()-started
+	return complete
+func publish_pending_frame()->bool:
 	var slot=mailbox.begin_write()
 	if slot<0:return false
 	if not mailbox.publish_owned(slot,full_frame):return false
-	for identity in full_frame.retired_shots:shot_records.erase(identity)
+	for identity in pending_frame_retired:shot_records.erase(identity)
 	retire_entity_records()
-	full_frame={}
-	publication_us+=Time.get_ticks_usec()-started
+	full_frame={};pending_frame_retired=PackedInt64Array()
 	return true
 const COMMANDS=["resume_progress","equip_slot","unequip_slot","upgrade_reactor","set_reactor_allocation","equalize_reactor_allocation","scientist_purchase","generate_scientist","distribute_scientists","assign_scientist","set_planet_auto","start_planet_exploration","cancel_planet_exploration","change_state","select_loop_level","set_guard_death","set_hyperspace_auto","start_hyperspace_challenge","claim_hyperspace","advance_after_clear","clear_level","upgrade_slot","upgrade_equipment_batch","upgrade_enhancement","set_speed","set_save_interval","check_timed_save","save_progress","assign_crew","toggle_loop","start","begin_retreat","acknowledge_unlocks","collect_uid","upgrade","upgrade_max","set_enhancement_branch","set_enhancement_order","set_field"]
 func dispatch(name:String,args:Array)->Dictionary:
-	if not name in COMMANDS:return {"accepted":false,"reason":"uncompiled_command"}
+	var failure=validate_command(name,args)
+	if not failure.is_empty():return {"accepted":false,"reason":failure}
 	# enqueue_input detaches every array/dictionary and rejects objects/callbacks.
 	# Display identities are never handed to a method expecting authoritative data.
 	var sequence=mailbox.enqueue_input(name,args)
@@ -178,6 +200,25 @@ func dispatch(name:String,args:Array)->Dictionary:
 	var ack:Dictionary=command_acks.get(sequence,{"accepted":false,"reason":"command_still_pending","sequence":sequence})
 	command_acks.erase(sequence)
 	return ack
+func validate_command(name:String,arguments:Array)->String:
+	if not name in COMMANDS:return "uncompiled_command"
+	if name=="collect_uid":
+		return "" if arguments.size()==2 and typeof(arguments[0])==TYPE_INT and typeof(arguments[1])==TYPE_BOOL else "invalid_collect_identity"
+	if name=="set_field":
+		if arguments.size()!=2:return "invalid_field_arguments"
+		if str(arguments[0])=="paused":return "" if typeof(arguments[1])==TYPE_BOOL else "invalid_pause_value"
+		if str(arguments[0])=="speed":return "" if typeof(arguments[1]) in [TYPE_INT,TYPE_FLOAT] and is_finite(float(arguments[1])) and float(arguments[1])>0 else "invalid_speed_value"
+		return "uncompiled_field"
+	if not command_signatures.has(name):return "missing_command_signature"
+	var signature:Dictionary=command_signatures[name]
+	var parameters:Array=signature.arguments
+	if arguments.size()<parameters.size()-int(signature.defaults) or arguments.size()>parameters.size():return "invalid_argument_count"
+	for index in arguments.size():
+		var expected=int(parameters[index].type);var actual=typeof(arguments[index])
+		if expected==TYPE_NIL:continue # Variant still passes mailbox value validation.
+		if expected==TYPE_FLOAT and actual in [TYPE_INT,TYPE_FLOAT]:continue
+		if actual!=expected:return "invalid_argument_type:"+str(index)
+	return ""
 func process_commands()->void:
 	if command_queue_active:return
 	command_queue_active=true
@@ -186,7 +227,9 @@ func process_commands()->void:
 		last_command_sequence=int(command.sequence)
 		var arguments:Array=command.arguments.duplicate(true)
 		var result:Variant=null;var accepted=true;var reason=""
-		if command.name=="collect_uid":
+		var failure=validate_command(str(command.name),arguments)
+		if not failure.is_empty():accepted=false;reason=failure
+		elif command.name=="collect_uid":
 			var actual:Dictionary={}
 			for drop in _kernel.drops:
 				if int(drop.get("uid",-1))==int(arguments[0]):actual=drop;break
@@ -247,15 +290,19 @@ func retire_entity_records()->void:
 	var required={}
 	for enemy in _kernel.enemies:required[int(enemy.uid)]=true
 	for shot in _kernel.projectiles:
-		for key in ["target","source"]:
+		for key in ["target","source","locked_target"]:
 			var record:Dictionary=shot.get(key,{})
 			if record.has("uid"):required[int(record.uid)]=true
 	for packet in _kernel.missile_queue:
-		for key in ["target","source"]:
+		for key in ["target","source","locked_target"]:
 			var record:Dictionary=packet.get(key,{})
 			if record.has("uid"):required[int(record.uid)]=true
+	for data in _kernel.enhancement_branches.weapons.values():
+		var target:Dictionary=data.get("target",{})
+		if target.has("uid"):required[int(target.uid)]=true
 	for identity in entity_records.keys():
 		if not required.has(identity):entity_records.erase(identity)
+	if _kernel.simulation_bridge!=null:_kernel.simulation_bridge.retire_unreferenced(required)
 
 func mark_state_changed(kind:String,index:int)->void:
 	if kind=="weapon":dirty_weapon_states[index]=true
