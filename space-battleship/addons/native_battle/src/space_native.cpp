@@ -208,6 +208,7 @@ class SpaceMotionLease : public RefCounted {
     GDCLASS(SpaceMotionLease, RefCounted)
     friend class SpaceNativePipeline;
     friend class SpaceFlightFrame;
+    friend class SpaceCombatKernel;
     std::shared_ptr<MotionArena> arena;
     size_t slot = 0;
     uint64_t generation = 0;
@@ -1085,11 +1086,13 @@ void SpaceNativePipeline::advance_visuals(Object *surface,double dt) {
         }
     }
 }
+#include "combat_execution_kernel.h"
+
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
     ClassDB::register_class<SpaceDamageHistory>();ClassDB::register_class<SpaceDamageLayout>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceFlightFrame>();ClassDB::register_class<SpaceStepSnapshot>();
-    ClassDB::register_class<SpaceNativePipeline>();
+    ClassDB::register_class<SpaceNativePipeline>();ClassDB::register_class<SpaceCombatKernel>();
 }
 void terminate(ModuleInitializationLevel) {}
 extern "C" GDExtensionBool GDE_EXPORT space_native_init(GDExtensionInterfaceGetProcAddress get_proc,GDExtensionClassLibraryPtr library,GDExtensionInitialization *initialization) {

@@ -31,6 +31,7 @@ try {
     New-Item -ItemType Directory -Force -Path (Join-Path $native 'src') | Out-Null
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'SConstruct') -Destination (Join-Path $native 'SConstruct')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\space_native.cpp') -Destination (Join-Path $native 'src\space_native.cpp')
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_execution_kernel.h') -Destination (Join-Path $native 'src\combat_execution_kernel.h')
     Push-Location $native
     try {
         & $python -m SCons "bindings=$($binding.Replace('\','/'))" platform=windows arch=x86_64 use_mingw=yes use_llvm=yes "mingw_prefix=$($compiler.Replace('\','/'))" use_static_cpp=yes "custom_api_file=$($api.Replace('\','/'))" target=template_release lto=none -j $Jobs
