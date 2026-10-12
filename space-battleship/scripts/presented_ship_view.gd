@@ -487,3 +487,19 @@ func set_rendering(enabled: bool, paused := false) -> void:
 	if not enabled and flat_compositor.visible:flat_compositor.visible = false
 	var mode := (SubViewport.UPDATE_ONCE if paused else SubViewport.UPDATE_ALWAYS) if enabled and not complete else SubViewport.UPDATE_DISABLED
 	if viewport.render_target_update_mode != mode:viewport.render_target_update_mode = mode
+
+var numeric_slice_only:=false
+
+func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
+	assert(str(frame.hull)==hull_key,"Fleet geometry/configuration generation mismatch")
+	elapsed=frame.elapsed;rendered_height=frame.rendered_height;rendered_position=frame.rendered_position
+	orbit_center=frame.orbit_center;orbit_elapsed=frame.orbit_elapsed;ship.transform=frame.ship
+	assert(carriers.size()==frame.carriers.size() and modules.size()==frame.pivots.size(),"Fleet descriptor membership mismatch")
+	for index in carriers.size():carriers[index].transform=frame.carriers[index];carriers[index].visible=true
+	for index in modules.size():
+		assert(int(modules[index].slot)==int(frame.pivots[index].slot))
+		modules[index].pivot.transform=frame.pivots[index].transform
+	shield.visible=shield_enabled
+	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(elapsed,3.8)/0.6))
+	for index in exhaust_nodes.size():exhaust_nodes[index].scale.z=1.0+sin(elapsed*9+float(index))*0.06
+	if viewport.render_target_update_mode!=SubViewport.UPDATE_ALWAYS:viewport.render_target_update_mode=SubViewport.UPDATE_ONCE

@@ -60,6 +60,16 @@ var travel_origin := INF
 var group_index := 0
 var enemies: Array[Dictionary] = []
 var projectiles: Array[Dictionary] = []
+var native_execution:RefCounted
+var native_execution_requested:=false
+var native_execution_auto:=false
+var native_numeric_update:=false
+var native_execution_scope:=""
+var native_wave_waiting:=false
+var native_step_phase:="idle"
+var native_step_remaining:=0.0
+var native_handoff_count:=0
+
 var drops: Array[Dictionary] = []
 var player: Dictionary = {}
 var cooldowns: Dictionary = {}
@@ -717,11 +727,21 @@ func combat_weapon_entries() -> Array:
 	combat_sources_dirty=false
 	return combat_sources
 
-func drone_weapon_entry(d: Dictionary) -> Dictionary:
+func drone_weapon_entry(d: Dictionary, weapon_levels:Dictionary={}) -> Dictionary:
 	var maximum:=1
-	for entry in module_entries("weapons"):
-		if entry.key==d.weapon:maximum=maxi(maximum,int(entry.level))
+	var entries:=module_entries("weapons")
+	for index in entries.size():
+		var entry:Dictionary=entries[index]
+		if entry.key==d.weapon:maximum=maxi(maximum,int(weapon_levels.get(index,entry.level)))
 	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
+
+func projected_combat_entry(index:int,weapon_levels:Dictionary={}) -> Dictionary:
+	var entry:Dictionary=combat_entry(index)
+	if entry.has("drone_id"):
+		return drone_weapon_entry(profile.hyperspace.inventory.drones[entry.drone_id],weapon_levels)
+	if weapon_levels.has(index):
+		entry=entry.duplicate();entry.level=int(weapon_levels[index])
+	return entry
 
 func combat_entry(index: int) -> Dictionary:
 	var entries:=combat_weapon_entries()
@@ -754,6 +774,7 @@ func combat_equipment_row(key:String,level:int)->Dictionary:
 func _compiled_configuration_event(kind:String,_info:Dictionary)->void:
 	if compiled_combat_rules!=null and kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed","configuration_changed"]:compiled_combat_rules.compile(self)
 func notify_configuration_changed()->void:
+	if not native_before_configuration_change():return
 	invalidate_stat_cache();event.emit("configuration_changed",{})
 func enhancement_recipe(entry:Dictionary)->Array:
 	return compiled_combat_rules.effects(entry) if compiled_combat_rules!=null and not compiled_combat_rules.compiling else enhancement_effects(entry)
@@ -763,6 +784,7 @@ func enhancement_branch_active(entry:Dictionary,effect:String,node:int,choice:St
 	return not entry.is_empty() and enhancement_branch_choice(category,effect,node)==choice and enhancement_branch_unlocked(category,effect,node) and has_enhancement_effect(entry,effect)
 
 func invalidate_stat_cache() -> void:
+	if native_execution!=null and not native_numeric_update:native_execution.configuration_changed()
 	combat_sources_dirty=true
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
@@ -921,6 +943,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	if category=="weapons":
 		var requested:=weapon_entries().duplicate(true);requested[index].key=key
 		if not hyperspace.equipment_constraints(self,profile.hyperspace.inventory.equipped,{},requested):return false
+	if not native_before_configuration_change():return false
 	capture_refit_health()
 	# Replace the entry reference to invalidate old beams/repeats, keeping module assets.
 	var module := entry.duplicate(true)
@@ -937,6 +960,7 @@ func unequip_slot(category: String, index: int) -> bool:
 	if slot_equipment_locked(category,index):return false
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or str(entry.key).is_empty():return false
+	if not native_before_configuration_change():return false
 	capture_refit_health()
 	var module := entry.duplicate(true)
 	module.key = ""
@@ -960,6 +984,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	var requested_modules: Array=module_entries("weapons").slice(0,int(db.ship(key).weaponSlots)) if selected_loadout.is_empty() else selected_loadout.weapons
 	var ids: Array=profile.hyperspace.inventory.equipped.slice(0,int(hyperspace.config.hull_capacities[key]))
 	if not hyperspace.equipment_constraints(self,ids,{},requested_modules):return false
+	if not native_before_configuration_change():return false
 	capture_refit_health()
 	var old_weapon_count := active_slot_count("weapons")
 	profile.selectedShip = key
@@ -1103,6 +1128,7 @@ func upgrade_reactor(amount: int) -> bool:
 		var cost := reactor_upgrade_cost(int(profile.reactorLevel)+offset)
 		if not is_finite(cost) or cost <= 0 or N.compare(N.add(total,cost),budget)>0:return false
 		total += cost
+	if not native_before_configuration_change():return false
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
 	resources_changed([str(int(db.config.reactorUraniumId))])
@@ -1115,6 +1141,7 @@ func set_reactor_allocation(key: String, value: float) -> bool:
 	var allowed := maxi(0,reactor_capacity() - reactor_allocated() + int(profile.reactorAllocation.get(key,0)))
 	var next := clampi(int(floor(value)),0,allowed)
 	if next == int(profile.reactorAllocation.get(key,0)):return false
+	if not native_before_configuration_change():return false
 	profile.reactorAllocation[key] = next
 	invalidate_stat_cache()
 	if key == "defence":
@@ -1136,6 +1163,7 @@ func equalize_reactor_allocation() -> bool:
 	for index in modules.size():
 		next[modules[index]] = share + (1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false
+	if not native_before_configuration_change():return false
 	profile.reactorAllocation=next
 	invalidate_stat_cache()
 	player.armour = N.minimum(player.armour,stat("armour"))
@@ -1662,6 +1690,7 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 			profile.techPoints[key] = float(profile.techPoints.get(key,0))+float(rates[key])*step
 			var required := hightech_required(key)
 			if float(profile.techPoints[key])+0.00000001 >= required:
+				if key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
 				profile.techPoints[key] = maxf(0,float(profile.techPoints[key])-required)
 				profile.hightechLevels[key] = hightech_level(key)+1
 				if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
@@ -1693,6 +1722,7 @@ func advance_hightech_bulk(key: String, dt: float) -> void:
 				high = mid-1
 		count = float(low)
 		spent = hightech_bulk_cost(key,level,low)
+	if count > 0 and key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
 	profile.techPoints[key] = maxf(0,points-spent)
 	if count > 0:
 		profile.hightechLevels[key] = level+int(count)
@@ -1868,6 +1898,8 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if native_execution!=null:
+		native_execution.cancel(self);native_execution=null
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and p.get("endless",false) and not p.get("repeated",false)))
 	if next == State.TRAVEL:
@@ -2000,6 +2032,9 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if N.compare(stat("armour"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_armour"})
 		return false
+	if native_execution!=null:
+		native_execution.cancel(self);native_execution=null
+		native_execution_requested=false
 	settle_drops()
 	drone_combat.reset();invalidate_stat_cache()
 	stage = level
@@ -2122,6 +2157,10 @@ func spawn_group(keep_distance := false) -> void:
 	change_state(State.COMBAT)
 	event.emit("encounter", {"boss":is_boss_encounter(),"tier":encounter_tier(),"final":is_final_encounter()})
 
+	if native_execution_auto:
+		native_execution_requested=false
+		admit_native_compiled_execution("native_rich15_layer2")
+
 func boss_info() -> String:
 	if not profile.get("bossSeen", []).has(stage) and not profile.cleared.has(stage):
 		return UIText.t("system.boss_info.text_01")
@@ -2138,6 +2177,7 @@ func boss_info() -> String:
 	return " / ".join(descriptions) if not descriptions.is_empty() else UIText.t("system.boss_info.text_01")
 
 func targets(damage_type: int = 0) -> Array[Dictionary]:
+	if native_execution!=null:return native_execution.kernel.target_views(damage_type)
 	var alive: Array[Dictionary] = []
 	for e in enemies:
 		if e.hp > 0:
@@ -2214,6 +2254,7 @@ func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Diction
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
 func long_laser_valid(shot: Dictionary) -> bool:
+	if native_execution!=null:return state==State.COMBAT and not bool(shot.dead) and not shot.target.is_empty() and (N.compare(player.armour,0)>0 if bool(shot.hostile) else float(shot.target.hp)>0)
 	if state != State.COMBAT or shot.dead or shot.target.is_empty() or not is_same(shot.target, shot.locked_target):
 		return false
 	if shot.hostile:
@@ -2356,6 +2397,8 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 		apply_long_laser_hit(shot,float(item.due))
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
+	if native_execution!=null:
+		push_error("legacy executor called during native ownership");return
 	record_enhancement_hit() # Incoming attempts count once, including absorption.
 	if not context.has("trigger_depth"):
 		var root:=CombatContext.root(0,"enemy:"+str(context.get("source_uid",0)),str(context.get("weapon_key","")));root.merge(context);context=root
@@ -2367,6 +2410,8 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
+	if native_execution!=null:
+		native_execution.cancel(self);native_execution=null
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
 	guard_arrived = false
@@ -2407,6 +2452,8 @@ func acknowledge_unlocks() -> void:
 	event.emit("state", {"state":state})
 
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false, context: Dictionary = {}) -> void:
+	if native_execution!=null:
+		push_error("legacy executor called during native ownership");return
 	if enemy.hp <= 0:
 		return
 	if context.is_empty():
@@ -2662,6 +2709,11 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry = slot_entry(category, index)
 	var key = str(entry.key)
 	var costs = slot_upgrade_cost(category, index, levels)
+	var native_updated=false
+	if native_execution!=null:
+		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
+		if not native_updated and not native_before_configuration_change():return false
+	native_numeric_update=native_updated
 	for id in costs:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
 	var before = jewel_equipment_stat(entry)
@@ -2670,10 +2722,11 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	invalidate_stat_cache()
 	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
-	if key == "armour" and state != State.RETREAT:
+	if not native_updated and key == "armour" and state != State.RETREAT:
 		player.armour = N.add(player.armour,N.subtract(after,before))
-	elif key == "shield" and state != State.RETREAT:
+	elif not native_updated and key == "shield" and state != State.RETREAT:
 		player.shield = N.add(player.shield,N.subtract(after,before))
+	native_numeric_update=false
 	if _upgrade_batch:
 		_upgrade_slots.append(slot_id(category,index))
 	else:
@@ -2714,6 +2767,7 @@ func weapon_cooldown_after_shot(_remaining_before: float, _dt: float, interval: 
 	return interval
 
 func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
+	if native_execution!=null:return
 	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return
 	var before := float(enemy.get("shield_updated_at",at))
 	var ready_at := float(enemy.get("shield_hit_at",at))+float(enemy.get("shieldDelay",0))
@@ -2728,26 +2782,28 @@ func advance_enemy_shields(dt: float) -> void:
 
 func tick(dt: float) -> void:
 	if paused:return
-	manual_hyperspace.dispatch_queued(self)
-	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
-	profile.productionElapsed=production_time()+dt
-	hyperspace.advance(self,dt)
-	enhancement_branches.advance_weapons(self,dt)
-	advance_planets(dt)
-	galaxy.advance(self,dt)
-	crew.advance(self,dt)
-	advance_auto_gen(dt)
-	advance_hightech(dt, dt / maxf(speed, 0.001))
-	resource_prune_elapsed += dt / maxf(speed, 0.001)
-	if resource_prune_elapsed >= 5.0:
-		resource_prune_elapsed = 0
-		prune_resource_samples(economy_time())
-	for drop in drops.duplicate():
-		if drop.get("hightech", false) or drop.get("auto_gen", false):
-			continue
-		drop.age += dt
-		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
-			collect(drop, false)
+	var native_at_entry=native_execution
+	native_step_phase="shared";native_step_remaining=dt
+	advance_shared_clock_and_economy(dt)
+	if native_execution!=null and native_execution.paused_by_configuration:
+		native_execution.handoff_to_legacy(self,"configuration_notification")
+	# Presented.tick advanced this clock itself on a legacy entry. If a shared
+	# callback handed off a native entry, only its unexecuted combat phase remains.
+	if native_at_entry!=null and native_execution==null and native_step_remaining>0 and "motion_clock" in self:
+		set("motion_clock",float(get("motion_clock"))+native_step_remaining)
+
+	if native_wave_waiting and state==State.COMBAT:
+		since_hit+=dt;advance_jewel_repair(dt);finish_combat_step(dt)
+		if has_alive_enemy():native_wave_waiting=false
+		return
+	if state==State.COMBAT and native_execution_requested and native_execution==null:
+		if not admit_native_compiled_execution(native_execution_scope):
+			native_execution_requested=false
+			# Cold whole-encounter legacy selection. No native state was installed.
+	if native_execution!=null:
+		native_execution.advance(self,dt)
+		native_step_phase="idle";native_step_remaining=0.0
+		return
 	if state == State.LEVEL_CLEAR:
 		since_hit+=dt
 		advance_jewel_repair(dt)
@@ -2864,31 +2920,14 @@ func tick(dt: float) -> void:
 				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
 	tick_projectiles(dt)
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
-	if state == State.COMBAT and not has_alive_enemy():
-		if guarding_here():
-			if guard_engaged and is_final_encounter():
-				guard_engaged = false
-				projectiles.clear()
-				clear_level()
-				clear_timer = guard_interval()
-				return
-			guard_elapsed += dt
-			if guard_elapsed >= guard_interval():
-				respawn_guard()
-			return
-		if is_final_encounter():
-			projectiles.clear()
-			clear_level()
-		else:
-			change_state(State.TRAVEL)
-			event.emit("wave_clear", {})
-	elif state == State.COMBAT:
-		guard_elapsed = 0
+	finish_combat_step(dt)
 
 func projectile_target_point(shot:Dictionary)->Vector2:
 	return Vector2(shot.target.x,shot.target.y)
 
 func tick_projectiles(dt: float) -> void:
+	if native_execution!=null:
+		push_error("legacy executor called during native ownership");return
 	# Overrides select pending launches at step start; only this base advances
 	# the shield clock, before resolving scheduled periods and boundary hits.
 	if state==State.COMBAT:enemy_shield_time+=dt
@@ -3069,6 +3108,7 @@ func enhancement_branch_choice(category: String, effect: String, node: int) -> S
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
 	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
 	if enhancement_branch_choice(category,effect,node)==choice:return true
+	if not native_before_configuration_change():return false
 	profile.enhancementBranches[category][effect][str(node)]=choice
 	# Selection invalidates projections and only the removed branch's transient buffs.
 	invalidate_stat_cache()
@@ -3212,6 +3252,7 @@ func upgrade_enhancement(count := 1) -> int:
 	if count==0 or not enhancement_unlocked():return 0
 	var purchased := enhancement_max_upgrades(count)
 	if purchased>0:
+		if not native_before_configuration_change():return 0
 		profile.jewelFragments=N.subtract(profile.jewelFragments,enhancement_purchase_cost(purchased))
 		profile.enhancementLevel+=purchased
 		invalidate_stat_cache()
@@ -3236,6 +3277,7 @@ func valid_enhancement_order(category: String, value: Variant) -> bool:
 func set_enhancement_order(category: String, order: Array) -> bool:
 	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return false
 	if enhancement_order(category)==order:return true
+	if not native_before_configuration_change():return false
 	profile.enhancementOrder[category]=order.duplicate()
 	invalidate_stat_cache()
 	enhancement_branches.reconcile(self)
@@ -3351,14 +3393,15 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 	var drone_multiplier: float=float(drones.damage)*float(drones.weapon_damage.get(str(entry.key),1.0)) if WEAPON_KEYS.has(str(entry.key)) else float(drones.defence)*float(drones.get(str(entry.key),1.0))
 	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),drone_multiplier)
 
-func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true) -> Vector2:
+func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
 	var row := combat_equipment_row(str(entry.key), int(entry.level))
 	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
 	for effect in (jewel_effects(entry) if effects == null else effects):
 		if effect.kind=="critical":damage+=float(effect.p4)*int(effect.level)
-	return Vector2(clampf(rate+float(hyperspace_totals().critical_chance),0,1),maxf(0,damage)*float(hyperspace_totals().critical_damage))
+	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
+	return Vector2(clampf(rate+float(drones.critical_chance),0,1),maxf(0,damage)*float(drones.critical_damage))
 
 func begin_enhancement_attack(index: int, target: Dictionary, derived := false, track_primary := true) -> Dictionary:
 	var context := enhancement_branches.begin_attack(self,index,target,derived,track_primary)
@@ -3377,11 +3420,12 @@ func endless_source() -> Dictionary:
 		if best.is_empty() or int(entry.level)>int(best.level):best=entry
 	stat_cache.hyperspace_endless_source=best;return best
 
-func player_weapon_row(entry: Dictionary) -> Dictionary:
+func player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}) -> Dictionary:
 	var weapon := combat_equipment_row(str(entry.key),int(entry.level)).duplicate()
-	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(hyperspace_totals().attack_speed)
+	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
+	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(drones.attack_speed)
 	if entry.key=="longLaser":
-		var endless: Dictionary=hyperspace_totals().legendary.get("endless_beam",{})
+		var endless: Dictionary=drones.legendary.get("endless_beam",{})
 		if not endless.is_empty() and is_same(entry,endless_source()):weapon.para2=float(weapon.para2)+float(endless.parameters.maximum_multiplier_bonus)
 	return weapon
 
@@ -4130,3 +4174,101 @@ func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> vo
 		apply_refit_health()
 		event.emit("reactor_changed",{})
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+
+func native_before_configuration_change()->bool:
+	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
+
+
+func admit_native_execution(descriptor:Dictionary)->bool:
+	if native_execution!=null or state!=State.COMBAT:return false
+	var session=preload("res://scripts/native_execution_session.gd").new()
+	if not session.admit(self,descriptor):return false
+	native_execution=session
+	native_execution_requested=true;native_execution_scope=descriptor.execution_scope
+	return true
+
+
+func admit_native_compiled_execution(scope:String)->bool:
+	if not projectiles.is_empty() or not jewel_repeats.is_empty() or ("missile_queue" in self and not get("missile_queue").is_empty()):return false
+
+	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(self,scope)
+	if descriptor.has("error"):return false
+	return admit_native_execution(descriptor)
+
+func projectile_position(shot:Dictionary)->Vector2:
+	var lease=shot.get("motion_lease")
+	return Vector2(shot.x,shot.y) if lease==null else lease.position()
+
+
+func projectile_direction(shot:Dictionary)->Vector2:
+	var lease=shot.get("motion_lease")
+	return Vector2(shot.direction) if lease==null else lease.direction()
+
+
+func projectile_x(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.x) if lease==null else lease.x()
+
+
+func projectile_y(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.y) if lease==null else lease.y()
+
+
+func projectile_speed(shot:Dictionary)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.speed) if lease==null else lease.speed()
+
+
+func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
+	var lease=shot.get("motion_lease")
+	return float(shot.get("motion_age",fallback)) if lease==null else lease.age()
+
+
+func advance_shared_clock_and_economy(dt:float)->void:
+	manual_hyperspace.dispatch_queued(self)
+	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
+	profile.productionElapsed=production_time()+dt
+	hyperspace.advance(self,dt)
+	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
+	advance_planets(dt)
+	galaxy.advance(self,dt)
+	crew.advance(self,dt)
+	advance_auto_gen(dt)
+	advance_hightech(dt, dt / maxf(speed, 0.001))
+	resource_prune_elapsed += dt / maxf(speed, 0.001)
+	if resource_prune_elapsed >= 5.0:
+		resource_prune_elapsed = 0
+		prune_resource_samples(economy_time())
+	for drop in drops.duplicate():
+		if drop.get("hightech", false) or drop.get("auto_gen", false):
+			continue
+		drop.age += dt
+		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
+			collect(drop, false)
+
+func finish_combat_step(dt:float)->void:
+	if state == State.COMBAT and not has_alive_enemy():
+		if guarding_here():
+			if guard_engaged and is_final_encounter():
+				guard_engaged = false
+				projectiles.clear()
+				clear_level()
+				clear_timer = guard_interval()
+				return
+			guard_elapsed += dt
+			if guard_elapsed >= guard_interval():
+				respawn_guard()
+			return
+		if is_final_encounter():
+			projectiles.clear()
+			clear_level()
+		else:
+			change_state(State.TRAVEL)
+			event.emit("wave_clear", {})
+	elif state == State.COMBAT:
+		guard_elapsed = 0
+
+
+func projectile_clear()->void:
+	projectiles.clear()

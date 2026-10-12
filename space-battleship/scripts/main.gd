@@ -469,7 +469,8 @@ func _process(delta: float) -> void:
 			get_tree().quit()
 
 func advance_game_time(seconds: float) -> void:
-	if game == null or not is_finite(seconds) or seconds <= 0:return
+	if battle_slice_runtime!=null:battle_slice_runtime.advance(seconds);return
+	if game == null or not is_finite(seconds) or seconds < 0:return
 	var instance := game.get_instance_id()
 	if instance != time_step_game_id:
 		time_step_game_id = instance
@@ -479,6 +480,8 @@ func advance_game_time(seconds: float) -> void:
 	game_time_remainder += seconds
 	const STEP := 1.0/60.0
 	while game_time_remainder + 0.0000000001 >= STEP:
+		if attach_native_display():
+			battle_slice_runtime.advance(0.0);return
 		before_logical_game_tick(STEP)
 		game.tick(STEP)
 		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
@@ -1168,6 +1171,7 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 	return components
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).components
 	var pose := enemy_pose(enemy)
 	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
 	var entries: Array = []
@@ -1182,6 +1186,7 @@ func enemy_weapon_components(enemy: Dictionary) -> Array:
 	return pose.components
 
 func enemy_attack_types(enemy: Dictionary) -> Array:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).types
 	var pose := enemy_pose(enemy)
 	enemy_weapon_components(enemy)
 	if pose.get("attack_signature","")!=pose.components_signature:
@@ -1226,18 +1231,20 @@ func shot_mount(shot: Dictionary) -> int:
 	for index in game.weapon_entries().size():
 		if str(game.slot_entry("weapons",index).key)!=weapon_key(shot):continue
 		var muzzle := Vector2(game.player.x,game.player.y)+game.player_weapon_offset(index)
-		var candidate := muzzle.distance_squared_to(Vector2(shot.x,shot.y))
+		var candidate := muzzle.distance_squared_to(game.projectile_position(shot))
 		if candidate<distance:
 			distance = candidate
 			closest = index
 	return closest
 
 func enemy_render_angle(enemy:Dictionary)->float:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).angle)
 	var pose:=enemy_pose(enemy)
 	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
 
 # Supplied positions stay within one synchronous solve; no value survives it.
 func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).components[int(component.owner_slot)]
 	var point:Dictionary=component.hardpoint
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y)
@@ -1282,7 +1289,7 @@ func enemy_component_for_slot(enemy: Dictionary, index: int):
 
 func enemy_shot_mount(enemy: Dictionary, shot: Dictionary) -> int:
 	if is_same(enemy,shot.get("source",{})) and shot.has("mount"):return int(shot.mount)
-	var origin := Vector2(float(shot.x),float(shot.y))
+	var origin := game.projectile_position(shot)
 	var best := 0
 	var distance := INF
 	for index in enemy.equipment.size():
@@ -1335,7 +1342,7 @@ func advance_turrets(dt: float) -> void:
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
-	var pos := Vector2(shot.x,shot.y)
+	var pos := game.projectile_position(shot)
 	if shot.hostile:
 		var nearest: Dictionary = {}
 		var distance := INF
@@ -1420,6 +1427,7 @@ func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) ->
 	return Vector2(BattleGame.enemy_slot_position(slot).x,(130.0 if large else 120.0)+scale_offset)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.pose(enemy)
 	var slot := int(enemy.slot)
 	if enemy_poses.has(slot) and is_same(enemy_poses[slot].entity,enemy):return enemy_poses[slot]
 	# Local deterministic generator never consumes the combat RNG stream.
@@ -1448,9 +1456,11 @@ func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
 func enemy_render_width(enemy: Dictionary) -> float:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.width_at(enemy,y)
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
 	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
@@ -1502,6 +1512,7 @@ func enemy_safe_entry_distance()->float:
 	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).frontline)
 	# Measure empty firing space between hull envelopes, not entity centres.
 	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
 	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
@@ -1519,6 +1530,7 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).position
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
@@ -1653,7 +1665,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		for enemy in game.enemies:
 			if enemy.equipment.is_empty():continue
 			var slot := enemy_shot_mount(enemy,shot)
-			var distance := (Vector2(enemy.x,enemy.y)+game.enemy_weapon_offset(enemy,slot)).distance_squared_to(Vector2(shot.x,shot.y))
+			var distance := (Vector2(enemy.x,enemy.y)+game.enemy_weapon_offset(enemy,slot)).distance_squared_to(game.projectile_position(shot))
 			if distance<nearest_distance:
 				nearest_distance=distance
 				nearest={"enemy":enemy,"slot":slot}
@@ -1664,17 +1676,17 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	trail.fill(pos)
 	# One fixed trail buffer per shot, overwritten in place during flight.
 	if projectile_visuals.size()<256:
-		projectile_visuals.append({"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else shot.direction.angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":Vector2(shot.x,shot.y),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
+		projectile_visuals.append({"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else game.projectile_direction(shot).angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":game.projectile_position(shot),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
 		if key in ["laser","cannon"] and not shot.target.is_empty():
 			var visual: Dictionary=projectile_visuals.back()
 			# Presented pulses already launch toward a projected aim. Map their
 			# committed segment once, rather than scaling it by the old logical target.
 			var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else Vector2(shot.target.x,shot.target.y)
-			var distance := Vector2(shot.x,shot.y).distance_to(aim)
+			var distance := game.projectile_position(shot).distance_to(aim)
 			var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else entity_render_position(shot.target)
 			visual.fixed_origin=battle_point(pos)
 			visual.fixed_step=(rendered_aim-visual.fixed_origin)/maxf(distance,0.001)
-			visual.fixed_direction=shot.direction
+			visual.fixed_direction=game.projectile_direction(shot)
 			visual.angle=Vector2(visual.fixed_step).angle()
 	var tier := weapon_visual_tier(shot)
 	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
@@ -1708,7 +1720,7 @@ func advance_projectile_visuals(dt: float) -> void:
 		visual.age += dt
 		var next_position := missile_visual_position(visual.shot,float(visual.spread),visual.origin,visual)
 		var movement := battle_point(next_position)-battle_point(visual.trail[int(visual.head)])
-		var desired_angle: float = movement.angle() if movement.length_squared()>0.001 else visual.shot.direction.angle()
+		var desired_angle: float = movement.angle() if movement.length_squared()>0.001 else game.projectile_direction(visual.shot).angle()
 		visual.angle = lerp_angle(float(visual.angle),desired_angle,1.0-exp(-dt*16.0))
 		if dt>0:
 			visual.head = (int(visual.head)+1)%14
@@ -1721,7 +1733,7 @@ func straight_projectile_point(logical_point: Vector2, visual: Dictionary) -> Ve
 	return battle_logical_point(Vector2(visual.fixed_origin)+Vector2(visual.fixed_step)*distance)
 
 func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, visual: Dictionary = {}) -> Vector2:
-	var pos := Vector2(shot.x,shot.y)
+	var pos := game.projectile_position(shot)
 	if visual.is_empty():visual = projectile_visual(shot)
 	if visual.has("fixed_step"):return straight_projectile_point(pos,visual)
 	var converge := 1.0
@@ -1781,7 +1793,7 @@ func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
 
 func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core := true, visual: Dictionary = {}, trail_budget := -1) -> float:
 	var key := weapon_key(shot)
-	var angle: float = shot.direction.angle()
+	var angle: float = game.projectile_direction(shot).angle()
 	if not visual.is_empty():
 		angle = visual.angle
 	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
@@ -1789,7 +1801,7 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 		return angle
 	if key=="cannon":
 		if core:
-			var distance := pos.distance_to(battle_point(visual.get("origin",Vector2(shot.x,shot.y)))+offset)
+			var distance := pos.distance_to(battle_point(visual.get("origin",game.projectile_position(shot)))+offset)
 			var render_speed := float(shot.get("speed",800.0))*Vector2(visual.get("fixed_step",Vector2.ONE.normalized())).length()*maxf(1.0,game.speed)
 			railgun_fx.draw_flight(draw_surface,pos,Vector2.from_angle(angle),distance,render_speed)
 		return angle
@@ -2950,7 +2962,7 @@ func draw_battle() -> void:
 	var flights: Array = []
 	var visible_projectiles: Array = [] if accelerated_visual_mode else game.projectiles
 	for p in visible_projectiles:
-		var pos := battle_point(Vector2(p.x,p.y))+offset
+		var pos := battle_point(game.projectile_position(p))+offset
 		if p.get("beam", false):
 			if game.long_laser_valid(p) and draw_beam_override(p,offset,false):continue
 			pos = battle_point(visual_muzzle(p))+offset
@@ -3074,7 +3086,7 @@ func draw_battle_particles(offset: Vector2, core: bool) -> void:
 	for p in particles:
 		if bool(p.has("flash") or p.has("spark") or p.has("fragment") or p.has("ring") or p.has("destroy") or p.has("rail_contact"))!=core:continue
 		if p.has("rail_contact"):
-			railgun_fx.draw_contact(draw_surface,battle_point(p.pos)+offset,float(p.duration)-float(p.life),p.direction)
+			railgun_fx.draw_contact(draw_surface,battle_point(p.pos)+offset,float(p.duration)-float(p.life),game.projectile_direction(p))
 			continue
 		if p.has("fragment"):
 			var fade := clampf(float(p.life)/float(p.duration),0,1)
@@ -3185,6 +3197,7 @@ func enemy_recognition_screen_scale() -> float:
 	return maxf(0.1,absf((get_viewport().get_stretch_transform()*battle_layer.get_global_transform_with_canvas()).get_scale().x)) if is_instance_valid(battle_layer) else 1.0
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).recognition
 	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var components := enemy_weapon_components(enemy)
 	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
@@ -3479,3 +3492,14 @@ func draw_unlock() -> void:
 		text_at(UIText.t("unlock.remaining", {"count":str(game.pending_unlocks.size())}),Vector2(57,236),18,MUTED)
 	text_at(UIText.t("unlock.next" if game.pending_unlocks.size() > 1 else "main.draw_unlock.text_03"),Vector2(57,269),15,MUTED)
 	draw_surface.draw_set_transform(Vector2.ZERO)
+
+var battle_slice_runtime:RefCounted
+var simulation_geometry_view:RefCounted
+var battle_read_model=preload("res://scripts/battle_read_model.gd").new()
+
+func attach_native_display()->bool:
+	return false
+
+func _exit_tree()->void:
+	if battle_slice_runtime!=null:
+		battle_slice_runtime.close();battle_slice_runtime=null

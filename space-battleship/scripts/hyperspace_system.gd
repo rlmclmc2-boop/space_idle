@@ -72,8 +72,9 @@ func snapshot(g) -> Dictionary:
 	result.manual_error=g.manual_hyperspace.last_error
 	return result
 
-func publish(g,next: Dictionary,kind: String) -> void:
+func publish(g,next: Dictionary,kind: String) -> bool:
 	var refit: bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
+	if (refit or kind=="hull_capacity_changed") and not g.native_before_configuration_change():return false
 	if refit:g.capture_refit_health()
 	var previous_capacity: int=g.reactor_capacity() if refit else 0
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
@@ -87,6 +88,8 @@ func publish(g,next: Dictionary,kind: String) -> void:
 		g.apply_refit_health()
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})
+
+	return true
 
 func is_unlocked(g) -> bool:
 	return int(g.profile.highestLevel)>=int(config.unlock_stage)
@@ -201,7 +204,7 @@ func claim(g,round_id: int,run_id: int) -> bool:
 	next.ultimate_cores+=int(a.reward.ultimate_cores)
 	if not Rewards.credit_modules(next,config,a.reward.hanging_rewards):return false
 	next.settled_run=maxi(int(next.settled_run),run_id);next[slot]={};next.blocked=not Bag.has_space(next.inventory,config)
-	publish(g,next,"claimed");return true
+	return publish(g,next,"claimed")
 
 func start_idle(g,route:String)->bool:
 	if g.profile.hyperspace.auto.enabled:return false
@@ -360,7 +363,7 @@ func set_equipped(g,ids: Array,hull_capacity: int=-1) -> bool:
 	if hull_capacity!=-1 and hull_capacity!=actual:return false
 	if not Bag.equipment_valid(next.inventory,ids,actual,config) or not equipment_constraints(g,ids,next.inventory):return false
 	next.inventory.equipped=ids.duplicate();next.inventory.generation+=1
-	publish(g,next,"equipment_changed");return true
+	return publish(g,next,"equipment_changed")
 
 func set_favorites(g,ids: Array) -> bool:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
@@ -427,7 +430,8 @@ func forge(g,request: Dictionary) -> Dictionary:
 	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
 	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
 	if not equipment_constraints(g,next.inventory.equipped,next.inventory):return Forge.error("equipment_constraint")
-	publish(g,next,"forge_"+str(request.operation));return result
+	if not publish(g,next,"forge_"+str(request.operation)):return Forge.error("native_handoff_failed")
+	return result
 
 func preview_forge(g,request: Dictionary) -> Dictionary:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
@@ -443,7 +447,7 @@ func attach_hangings(g,id: String,keys: Array) -> bool:
 		if not config.hanging_modules.has(key) or not next.hanging_modules[key].unlocked or int(g.profile.highestLevel)<int(config.hanging_modules[key].unlock_stage):return false
 	d.hangings=keys.duplicate()
 	if not Bag.valid_drone(d,config):return false
-	next.inventory.generation+=1;publish(g,next,"hangings_changed");return true
+	next.inventory.generation+=1;return publish(g,next,"hangings_changed")
 
 func set_filter(g,filter: Dictionary) -> bool:
 	if not Filter.valid(filter,config):return false
@@ -478,7 +482,7 @@ func apply_preset(g,index: int) -> bool:
 			if not next.hanging_modules[key].unlocked or int(g.profile.highestLevel)<int(config.hanging_modules[key].unlock_stage):return false
 		if not Bag.valid_drone(d,config):return false
 	next.inventory.equipped=ids;next.inventory.generation+=1
-	publish(g,next,"preset_applied");return true
+	return publish(g,next,"preset_applied")
 
 func fit_hull(g) -> void:
 	var maximum:=Permission.hull_capacity(g,config)

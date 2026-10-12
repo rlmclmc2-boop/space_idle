@@ -74,6 +74,9 @@ func _init(database:ShipDatabase,persist:=true)->void:
 
 func tick(dt:float)->void:
 	if paused:return
+	if native_execution!=null:
+		super.tick(dt)
+		return
 	var remaining:=maxf(0.0,dt)
 	while remaining>0.000000001:
 		var step:=minf(remaining,1.0/60.0)
@@ -81,7 +84,9 @@ func tick(dt:float)->void:
 			var until:=float(packet.due)-motion_clock
 			if until>0.000000001:step=minf(step,until)
 		motion_clock+=step
-		var boss_survivors:Array=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead)) if state==State.COMBAT and is_boss_encounter() else []
+		var boss_survivors:Variant=[]
+		if state==State.COMBAT and is_boss_encounter():
+			boss_survivors=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead))
 		super.tick(step)
 		if state==State.LEVEL_CLEAR:
 			for shot in boss_survivors:
@@ -285,3 +290,5 @@ func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
 	if missile_retirements.size()>128:missile_retirements.pop_front()
 	# Presentation-only notification, never a projectile impact or damage event.
 	event.emit("prototype_missile_retired",record)
+
+var target_spatial_source:RefCounted
