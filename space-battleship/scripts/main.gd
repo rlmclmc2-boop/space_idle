@@ -98,6 +98,7 @@ var battle_draw_active := false
 var battle_draw_player_position := Vector2.ZERO
 var battle_draw_enemy_positions: Dictionary = {}
 var db: ShipDatabase
+var battle_slice_runtime:RefCounted
 var simulation_presenter:RefCounted
 var simulation_geometry_view:RefCounted
 var game: BattleGame
@@ -500,6 +501,7 @@ func _process(delta: float) -> void:
 			get_tree().quit()
 
 func advance_game_time(seconds: float) -> void:
+	if battle_slice_runtime!=null:battle_slice_runtime.advance(seconds);return
 	if simulation_presenter!=null:
 		simulation_presenter.advance(seconds);return
 	if game == null or not is_finite(seconds) or seconds <= 0:return
@@ -1441,6 +1443,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if battle_slice_runtime!=null:return battle_slice_runtime.muzzle(shot)
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var pos := game.projectile_position(shot)
 	if shot.hostile:

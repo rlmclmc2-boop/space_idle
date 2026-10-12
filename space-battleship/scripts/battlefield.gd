@@ -235,6 +235,7 @@ func uses_logical_battle_pose() -> bool:
 	return true
 
 func before_logical_game_tick(dt:float) -> void:
+	assert(battle_slice_runtime==null,"Direct slice executed the retired logical Node pose path")
 	# Combat providers consume the same carrier/target/turret sequence at every
 	# speed. Keep the historical X1 order: pose first, then fx/turrets, then tick.
 	if game.paused:return
@@ -324,7 +325,9 @@ func _process_battlefield(delta: float) -> void:
 	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	if simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():
+	if battle_slice_runtime!=null:
+		battle_slice_runtime.apply_nodes()
+	elif simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():
 		ship_view.set_hull(str(simulation_geometry_view.fleet.hull));current_hull=str(simulation_geometry_view.fleet.hull)
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 		assert(simulation_geometry_view.fleet_configuration_version==simulation_presenter.applied_configuration_version,"Fleet geometry/configuration version mismatch")
@@ -332,7 +335,8 @@ func _process_battlefield(delta: float) -> void:
 	else:ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0,false)
 	# Last pose writer: one guard reads actual current global scales for all
 	# bodies, including newly attached/hidden/restored members. No scale cache.
-	if simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():hyperspace_visual.apply_geometry_frame(ship_view,simulation_geometry_view.fleet,game.drone_combat.disabled)
+	if battle_slice_runtime!=null:pass
+	elif simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():hyperspace_visual.apply_geometry_frame(ship_view,simulation_geometry_view.fleet,game.drone_combat.disabled)
 	else:hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,true)
 	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
 	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
@@ -422,6 +426,7 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if battle_slice_runtime!=null and battle_slice_runtime.on_event(kind,info):return
 	if kind=="encounter":encounter_presentation.sync(game,0.0)
 	if kind=="wave_clear" and encounter_presentation.tier=="ultimate":encounter_presentation.clear_age=0.0
 	if kind=="hyperspace_manual":
@@ -596,6 +601,7 @@ func _is_simple_enemy(shot:Dictionary)->bool:
 
 
 func weapon_launch(shot:Dictionary,spread:=0.0)->void:
+	assert(battle_slice_runtime==null,"Direct slice executed retired event launch restoration")
 	enemy_launch_context=_is_simple_enemy(shot)
 	missile_launch_context=_is_own_missile(shot)
 	rail_launch_context=_is_own_rail(shot)
@@ -658,6 +664,7 @@ func weapon_smoke(pos:Vector2,color:Color,count:int,duration:float,size_value:fl
 
 
 func weapon_impact(shot:Dictionary,pos:Vector2)->void:
+	assert(battle_slice_runtime==null,"Direct slice executed retired event impact restoration")
 	if _is_simple_enemy(shot):
 		if not fast_mode_enabled():
 			var direction:Vector2=game.projectile_direction(shot)
