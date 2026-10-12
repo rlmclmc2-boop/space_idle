@@ -103,6 +103,7 @@ var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
 var jewel_charged: Dictionary = {}
+var compiled_combat_rules:RefCounted
 var enhancement_branches := preload("res://scripts/enhancement_branches.gd").new()
 var enhancement_attack_contexts: Dictionary = {}
 var enhancement_buffers: Dictionary = {}
@@ -122,6 +123,7 @@ func economy_time() -> float:
 	return Time.get_unix_time_from_system()
 
 func _init(database: ShipDatabase, persist := true) -> void:
+	event.connect(_compiled_configuration_event)
 	db = database
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
 		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
@@ -740,10 +742,31 @@ func stat(key: String) -> Variant:
 		stat_cache[key] = total
 	return total
 
+func enable_compiled_combat_rules()->void:
+	assert(compiled_combat_rules==null)
+	compiled_combat_rules=preload("res://scripts/compiled_combat_rules.gd").new()
+	compiled_combat_rules.compile(self)
+func combat_equipment_row(key:String,level:int)->Dictionary:
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		var row:Dictionary=compiled_combat_rules.row(key,level)
+		if not row.is_empty():return row
+	return db.equip(key,level)
+func _compiled_configuration_event(kind:String,_info:Dictionary)->void:
+	if compiled_combat_rules!=null and kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed","configuration_changed"]:compiled_combat_rules.compile(self)
+func notify_configuration_changed()->void:
+	invalidate_stat_cache();event.emit("configuration_changed",{})
+func enhancement_recipe(entry:Dictionary)->Array:
+	return compiled_combat_rules.effects(entry) if compiled_combat_rules!=null and not compiled_combat_rules.compiling else enhancement_effects(entry)
+func enhancement_branch_active(entry:Dictionary,effect:String,node:int,choice:String)->bool:
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.active(entry,effect,node,choice)
+	var category="weapons" if effect in ["proficiency","repeat","critical"] else "defence"
+	return not entry.is_empty() and enhancement_branch_choice(category,effect,node)==choice and enhancement_branch_unlocked(category,effect,node) and has_enhancement_effect(entry,effect)
+
 func invalidate_stat_cache() -> void:
 	combat_sources_dirty=true
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
+	if compiled_combat_rules!=null:compiled_combat_rules.compile(self)
 
 func invalidate_equipment_counter(key: String) -> void:
 	# Attack/hit counters change only this equipment type's proficiency/adaptation.
@@ -1004,7 +1027,7 @@ func equipment_stat(key: String, level: int) -> Variant:
 	var levels: Dictionary = bases.get(key,{})
 	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
-	var row := db.equip(key, effective_equipment_level(level))
+	var row := combat_equipment_row(key, effective_equipment_level(level))
 	var value = row.para1 if key in ["armour", "shield"] else row.dmg
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if effective_hightech_level(tech) > 0:
@@ -2119,10 +2142,13 @@ func targets(damage_type: int = 0) -> Array[Dictionary]:
 	for e in enemies:
 		if e.hp > 0:
 			alive.append(e)
+	var resistance:Dictionary={}
+	if compiled_combat_rules!=null and damage_type!=0:
+		for enemy in alive:resistance[int(enemy.uid)]=enemy_resistance_type(enemy)
 	alive.sort_custom(func(a,b):
 		if damage_type != 0:
-			var a_resists := enemy_resistance_type(a) == damage_type
-			var b_resists := enemy_resistance_type(b) == damage_type
+			var a_resists:bool=(int(resistance[int(a.uid)]) if compiled_combat_rules!=null else enemy_resistance_type(a)) == damage_type
+			var b_resists:bool=(int(resistance[int(b.uid)]) if compiled_combat_rules!=null else enemy_resistance_type(b)) == damage_type
 			if a_resists != b_resists:
 				return not a_resists
 		if a.y != b.y:
@@ -2768,7 +2794,7 @@ func tick(dt: float) -> void:
 	if state==State.RETREAT:return
 	advance_jewel_repeats(dt)
 	var shield_entry := first_equipment_entry("shield")
-	var shield := db.equip("shield", int(shield_entry.level)) if not shield_entry.is_empty() else db.equip("shield", 1)
+	var shield := combat_equipment_row("shield", int(shield_entry.level)) if not shield_entry.is_empty() else combat_equipment_row("shield", 1)
 	if not defence_jewels and since_hit >= float(shield.para3):
 		player.shield = N.minimum(max_shield(),N.add(player.shield,N.multiply(max_shield(),float(shield.para2)*dt)))
 	if state == State.TRAVEL:
@@ -3131,6 +3157,7 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 	return result
 
 func enhancement_parameter(key: String) -> float:
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return float(compiled_combat_rules.parameters[key])
 	return float(db.data.enhance_config[key].value)
 
 func enhancement_unlocked() -> bool:
@@ -3228,6 +3255,7 @@ func available_effect_count(entry: Dictionary) -> int:
 	return shared_enhancement_effect_count()
 
 func shared_enhancement_effect_count() -> int:
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.effect_count
 	if not enhancement_unlocked():return 0
 	var count := 0
 	var shared_level := enhancement_effective_level()
@@ -3250,6 +3278,10 @@ func enhancement_currency_changed() -> void:
 	event.emit("jewels_changed", {"slot":"","slots":[]}) # Legacy event name retained for currency consumers.
 
 func enhancement_effects(entry: Dictionary) -> Array:
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		var copies:Array=[]
+		for effect in compiled_combat_rules.effects(entry):copies.append(effect.duplicate(true))
+		return copies
 	var result: Array = []
 	if str(entry.get("key","")).is_empty() or not enhancement_unlocked():return result
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
@@ -3278,6 +3310,7 @@ func active_enhancement_effect_count(entry: Dictionary) -> int:
 	return available_effect_count(entry)
 
 func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.effect_index(entry,kind)
 	# Scalar membership query; no effect payloads or retained/cross-tick cache.
 	if kind.is_empty():return -1
 	var count := active_enhancement_effect_count(entry)
@@ -3319,7 +3352,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),drone_multiplier)
 
 func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true) -> Vector2:
-	var row := db.equip(str(entry.key), int(entry.level))
+	var row := combat_equipment_row(str(entry.key), int(entry.level))
 	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
 	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
 	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
@@ -3345,7 +3378,7 @@ func endless_source() -> Dictionary:
 	stat_cache.hyperspace_endless_source=best;return best
 
 func player_weapon_row(entry: Dictionary) -> Dictionary:
-	var weapon := db.equip(str(entry.key),int(entry.level))
+	var weapon := combat_equipment_row(str(entry.key),int(entry.level)).duplicate()
 	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(hyperspace_totals().attack_speed)
 	if entry.key=="longLaser":
 		var endless: Dictionary=hyperspace_totals().legendary.get("endless_beam",{})
@@ -3406,6 +3439,9 @@ func attack_from_snapshot(snapshot: Dictionary, multiplier: float, instance: Dic
 	if instance.is_empty():
 		if not snapshot.has("instance"):snapshot.instance=new_attack_instance(snapshot)
 		instance=snapshot.instance
+	if compiled_combat_rules!=null:
+		compiled_combat_rules.bind_instance(snapshot,instance)
+		return {"attack_instance_id":instance.id,"main_attack_id":snapshot.id,"damage":N.multiply(snapshot.damage,multiplier),"effects":instance.effects,"critical":snapshot.critical,"critical_bonus_applied":snapshot.critical_bonus_applied}
 	var effects: Array=[]
 	for source in snapshot.effects:
 		var effect: Dictionary=source.duplicate(true)
@@ -3564,6 +3600,9 @@ func beam_chain_targets(shot: Dictionary) -> Array:
 	return result
 
 func chain_damage_effects(effects: Array) -> Array:
+	if compiled_combat_rules!=null:
+		for effect in effects:
+			if effect.has("chain_state") and effect.chain_state.has("continued_effects"):return effect.chain_state.continued_effects
 	var continued:Array=[]
 	for source in effects:
 		var effect:Dictionary=source.duplicate()
@@ -3592,7 +3631,8 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 			if not link.broken:hit_enemy(link.target,raw,type,continued,critical,CombatContext.derive(context,"chain"))
 		return
 	if chain.used:return
-	chain.used=true;effect.chain_used=true
+	chain.used=true
+	if not effect.is_read_only():effect.chain_used=true
 	var continued:=chain_damage_effects(effects)
 	if origin==Vector2.INF:origin=chain_target_point(enemy)
 	for target in select_chain_targets(enemy,type,int(chain.count)):
@@ -3837,7 +3877,7 @@ func jewel_hit_player(raw, type: int) -> void:
 		for index in capacities[key].indices:
 			if N.compare(available[index],0)<=0:continue
 			var entry := slot_entry("defence",index)
-			var row := db.equip(key,int(entry.level))
+			var row := combat_equipment_row(key,int(entry.level))
 			var factor := 1.0-enhancement_branches.resistance(self,entry,float(db.config.dmgReduce)) if type==int(row.dmgtype) else 1.0
 			# Only raw damage surviving neutral protection receives body resistance.
 			var part = N.multiply(incoming,N.ratio(available[index],total)*factor)
@@ -3990,7 +4030,7 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 			var elapsed := float(jewel_defence_times.get(index,since_hit-dt))+dt
 			jewel_defence_times[index]=elapsed
 			if key=="shield":
-				var row := db.equip(key,int(entry.level))
+				var row := combat_equipment_row(key,int(entry.level))
 				if elapsed>=float(row.para3):
 					var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(maximum,float(row.para2)*dt))
 					jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)

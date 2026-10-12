@@ -119,6 +119,7 @@ func create_battle_game(persist:bool)->BattleGame:
 	prototype.target_provider=_prototype_target_point
 	prototype.rail_geometry_provider=_rail_geometry
 	prototype.rail_target_point_provider=entity_render_position
+	prototype.enable_compiled_combat_rules()
 	return prototype
 
 func _rail_geometry(shot: Dictionary) -> Dictionary:
