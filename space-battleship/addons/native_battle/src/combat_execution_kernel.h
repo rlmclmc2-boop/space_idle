@@ -923,7 +923,7 @@ class SpaceCombatKernel : public RefCounted {
             Timed q = roots.top();
             roots.pop();
             primary(q.weapon);
-            q.at += weapons[q.weapon].interval;
+            q.at = clock + weapons[q.weapon].interval;
             if (weapons[q.weapon].kind != 3)
                 reschedule.push_back(q);
         }

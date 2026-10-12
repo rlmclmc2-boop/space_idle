@@ -124,7 +124,7 @@ func run()->void:
  d=world(0);d.weapons[0].interval=0.03;d.enemies[0].x=100000.0
  k=core(d)
  for i in 60:k.advance(1.0/60.0)
- check(k.metrics().root_attacks==34,"absolute root deadline retains cadence remainder")
+ check(k.metrics().root_attacks==30,"authored reset-on-shot interval matches fixed-step firing cadence")
  k.cancel()
  d=world(0);d.weapons=[];d.requires_drop_rules=true;d.drop_rules_compiled=true;d.drop_uid=700;d.jewel_probability=1.0;d.jewel_ratio=2.0
  d.enemies[0].jewel_rolls=1;d.enemies[0].compiled_drops=[{"resource":1,"chance":1.0,"base":5.0,"amount":10.0}]
