@@ -41,6 +41,7 @@ func install(root,pure_geometry)->void:
 		scene.retained_contacts.frame={};scene.retained_contacts.saved_positions.clear()
 		scene.retained_contacts.foreground.queue_redraw()
 	if not RenderingServer.frame_post_draw.is_connected(render_completed):RenderingServer.frame_post_draw.connect(render_completed)
+	scene.simulation_geometry_view=preload("res://scripts/simulation_geometry_view.gd").new()
 	owner=Owner.new();geometry_restore_context=owner.attach(source,pure_geometry)
 	model=Display.new(ShipDatabase.new(),false,source.profile.duplicate(true))
 	copy_database(source.db,model.db)
@@ -93,7 +94,9 @@ func install(root,pure_geometry)->void:
 	# Rebuild panels/captured UI closures against Display, rather than retaining an
 	# old Game reference in a hidden panel or anonymous signal callback.
 	var guide_visible=scene.beginner_guide.visible if is_instance_valid(scene.beginner_guide) else true
+	var equipment_amount:int=scene.equipment_panel.upgrade_amount if is_instance_valid(scene.equipment_panel) else 1
 	scene.build_ui();scene.refresh_structure();scene.refresh_tab_visibility()
+	if is_instance_valid(scene.equipment_panel):scene.equipment_panel.set_upgrade_amount(equipment_amount)
 	if is_instance_valid(scene.beginner_guide):scene.beginner_guide.visible=guide_visible
 	model.projectiles=active_views(source.projectiles)
 	rewrite_script_objects(scene,source,{})
@@ -146,6 +149,7 @@ func apply_packet(packet:Dictionary)->void:
 	for row in packet.get("entities_added",[]):
 		var identity=str(row.uid)+":"+str(row.generation)
 		enemy_views[identity]=decode(row.metadata)
+		if row.has("geometry_descriptor"):scene.simulation_geometry_view.descriptor(int(row.uid),row.geometry_descriptor)
 	for row in packet.get("shots_added",[]):
 		var shot=decode(row.metadata)
 		var mount=int(shot.get("mount",-1))
@@ -193,7 +197,10 @@ func apply_packet(packet:Dictionary)->void:
 	if packet.has("fx_time"):scene.fx_time=packet.fx_time
 	if packet.has("demo_time"):scene.demo_time=packet.demo_time
 	if packet.has("orbit_elapsed"):scene.ship_view.orbit_elapsed=packet.orbit_elapsed
+	if packet.has("geometry_shapes"):scene.simulation_geometry_view.apply({"shapes":packet.geometry_shapes})
+	if packet.has("geometry"):scene.simulation_geometry_view.apply(packet.geometry)
 	if packet.has("turrets"):scene.turret_visuals=decode(packet.turrets)
+	for index in packet.get("turret_changes",{}):scene.turret_visuals[index]=decode(packet.turret_changes[index])
 	if packet.has("turret_ship"):scene.turret_ship=packet.turret_ship
 	# Entries are identity-bearing UI configuration values, never simulation refs.
 	for index in scene.turret_visuals:
@@ -313,6 +320,7 @@ func close()->void:
 	# The worker must already be stopped before shutdown restores main-only data.
 	for callback in geometry_restore_context.get("native_observers",[]):source.native_transaction_observer(callback)
 	if geometry!=null and geometry.has_method("close"):geometry.close(geometry_restore_context)
+	scene.simulation_geometry_view=null
 	geometry_restore_context={};owner=null;model=null;scene=null
 
 func rewrite_script_objects(value:Variant,source:BattleGame,seen:Dictionary)->void:
@@ -425,4 +433,6 @@ func reclaim_visual_records()->void:
 	for key in enemy_views.keys():
 		if needed_entities.has(str(enemy_views[key].uid)):retired_enemy_publications.erase(key);continue
 		if not retired_enemy_publications.has(key):retired_enemy_publications[key]=completed_render_passes
-		elif completed_render_passes-int(retired_enemy_publications[key])>=2:enemy_views.erase(key);retired_enemy_publications.erase(key)
+		elif completed_render_passes-int(retired_enemy_publications[key])>=2:
+			scene.simulation_geometry_view.retire(int(enemy_views[key].uid))
+			enemy_views.erase(key);retired_enemy_publications.erase(key)

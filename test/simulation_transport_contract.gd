@@ -10,12 +10,26 @@ class Geometry extends RefCounted:
  var demo_time:float=0.0
  var turret_visuals:Dictionary={}
  var turret_ship:String="transport_hull"
+ var published_shapes:Dictionary={}
  var fleet_pose=Pose.new()
  func before_tick(dt:float)->void:fx_time+=dt;demo_time+=dt
  func after_tick()->void:pass
  func finish_display_boundary()->void:pass
  func visual_muzzle(_shot:Dictionary)->Vector2:return Vector2.ZERO
+ func shot_mount(_shot:Dictionary)->int:return -1
+ func display_descriptor(_enemy:Dictionary)->Dictionary:return {"components":[],"mounts":[],"types":[]}
+ func retire_display_entity(uid:int)->void:published_shapes.erase(uid)
+ func display_frame(enemies:Array,_with_fleet:bool=true)->Dictionary:
+  var rows={};var shapes=[]
+  for enemy in enemies:
+   var uid:int=int(enemy.uid);var identity:String=str(uid)+":1"
+   rows[uid]={"position":Vector2(enemy.x,enemy.y),"width":1.0,"width_low":1.0,"width_high":1.0,"frontline":0.0,"angle":0.0,"components":{},"pose":{"born":0.0},"recognition_id":identity}
+   if not published_shapes.has(uid):
+    shapes.append({"id":identity,"uid":uid,"value":{}});published_shapes[uid]=true
+  return {"player_position":Vector2.ZERO,"enemies":rows,"shapes":shapes}
+
 class Surface extends RefCounted:
+ var simulation_geometry_view=preload("res://scripts/simulation_geometry_view.gd").new()
  var fx_time:float=0.0
  var demo_time:float=0.0
  var ship_view=Pose.new()
@@ -114,6 +128,7 @@ func run()->void:
  assert(owner.mailbox.metrics().dropped_snapshots>0)
  var lease=owner.mailbox.acquire_latest()
  for key in ["entities_added","shots_added","configuration","retired_shots"]:assert(not lease.frame.has(key))
+ assert(lease.frame.geometry.shapes.is_empty())
  owner.mailbox.release(lease.slot)
  # All one-shot descriptors must survive even after every dynamic slot was skipped.
  presenter.consume()

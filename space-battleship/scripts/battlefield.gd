@@ -264,7 +264,7 @@ func _process(delta: float) -> void:
 	enemy_entry_batch_active=true
 	enemy_provider_query_active=false
 	enemy_entry_distance_time=-INF
-	if battle_read_model_enabled:battle_read_model.begin()
+	if battle_read_model_enabled and simulation_geometry_view==null:battle_read_model.begin()
 	_process_battlefield(delta)
 	# Wall-clock presentation survives accelerated simulation without changing
 	# the logical pose/entry cache or combat providers.
@@ -324,15 +324,20 @@ func _process_battlefield(delta: float) -> void:
 	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
-	ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0,false)
+	if simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():
+		ship_view.set_hull(str(simulation_geometry_view.fleet.hull));current_hull=str(simulation_geometry_view.fleet.hull)
+		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
+		ship_view.apply_geometry_frame(simulation_geometry_view.fleet,shield_enabled)
+	else:ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0,false)
 	# Last pose writer: one guard reads actual current global scales for all
 	# bodies, including newly attached/hidden/restored members. No scale cache.
-	hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,true)
+	if simulation_geometry_view!=null and not simulation_geometry_view.fleet.is_empty():hyperspace_visual.apply_geometry_frame(ship_view,simulation_geometry_view.fleet,game.drone_combat.disabled)
+	else:hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0,true)
 	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
 	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
 	var angles: Array = []
 	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
-	ship_view.set_slot_angles(angles)
+	if simulation_geometry_view==null:ship_view.set_slot_angles(angles)
 	for plume in ship_view.exhaust_nodes: plume.visible = effects_enabled
 	var alive: bool = GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT
 	ship_view.set_rendering(prototype_enabled and alive and battle_layer.visible,game.paused)
@@ -754,6 +759,7 @@ func player_idle_angle() -> float:
 
 
 func _stable_player_anchor() -> Vector2:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.player_position
 	var point := super.player_render_position()
 	# The inherited renderer adds perpetual sine bob. Remove it only in this
 	# renderer; real game.player.x movement, if any, remains the input.
@@ -764,6 +770,7 @@ func _stable_player_anchor() -> Vector2:
 
 
 func player_render_position() -> Vector2:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.player_position
 	if not prototype_enabled:return super.player_render_position()
 	if battle_draw_active:return battle_draw_player_position
 	return stable_center if stable_center_ready else _stable_player_anchor()

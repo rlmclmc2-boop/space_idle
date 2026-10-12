@@ -40,6 +40,9 @@ const BATTLE_VISUAL_DEFAULTS := {
 var battle_visual: Dictionary = BATTLE_VISUAL_DEFAULTS.duplicate()
 
 var enemy_poses: Dictionary = {}
+var boundary_dead_geometry:Dictionary={}
+var display_shapes:Dictionary={}
+var pending_display_shapes:Array=[]
 
 const SHIP_ART_CANVAS := Vector2(887, 1774)
 
@@ -726,6 +729,12 @@ func before_tick(dt:float)->void:
 	canonical_generation+=1
 
 func finish_display_boundary()->void:
+	# Original label placement consumes the completed pose before Main removes
+	# dead pose caches. Preserve that display value while source cleanup remains
+	# at its required logical boundary; a later residual query may recreate pose.
+	boundary_dead_geometry.clear()
+	for enemy in game.enemies:
+		if GrowthNumber.compare(enemy.get("hp",0),0)<=0:boundary_dead_geometry[int(enemy.uid)]=display_enemy(enemy)
 	# Match Main.refresh_draw_layers once per external advance, not per substep.
 	# Legacy dead/departed records may be queried again and recreate their pose.
 	for slot in enemy_poses.keys():
@@ -826,3 +835,55 @@ func close(restoration:Dictionary={})->void:
 	captured_visuals.clear();captured_bounds.clear()
 	enemy_poses.clear();turret_visuals.clear();fleet_pose=null
 	game=null;db=null;prepared=false
+
+func display_descriptor(enemy:Dictionary)->Dictionary:
+	var appearance:Dictionary=enemy_appearance(enemy)
+	var components:Array=[]
+	for component in appearance.components:
+		components.append({"hardpoint":component.hardpoint.duplicate(true),"profile":component.profile.duplicate(true),"slots":component.slots.duplicate(),"owner_slot":component.owner_slot,"damage_type":component.damage_type})
+	return {"components":components,"mounts":appearance.mounts.duplicate(true),"types":appearance.types.duplicate()}
+func display_enemy(enemy:Dictionary)->Dictionary:
+	var position:Vector2=enemy_render_position(enemy)
+	var width:float=enemy_render_width_at_y(enemy,position.y)
+	var components:Dictionary={}
+	for component in enemy_weapon_components(enemy):
+		components[int(component.owner_slot)]=enemy_component_pose(enemy,component,position,width)
+	var pose:Dictionary=enemy_pose(enemy);var values:Dictionary={}
+	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
+	return {"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
+func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
+	var values:Dictionary={}
+	for enemy in enemies:
+		if enemy.has("uid"):
+			var uid:int=int(enemy.uid)
+			values[uid]=boundary_dead_geometry[uid] if with_fleet and boundary_dead_geometry.has(uid) else display_enemy(enemy)
+	var result={"player_position":player_render_position(),"enemies":values,"shapes":pending_display_shapes}
+	pending_display_shapes=[]
+	if with_fleet:
+		if fleet_pose.configuration_dirty:
+			fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+			var aim:Vector2=player_render_position()+Vector2(0,-450)
+			if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
+			fleet_pose.pose(player_render_position(),reference_height,0.0,aim,demo_time,false,0.0)
+		var angles:Array=[]
+		for index in game.weapon_entries().size():angles.append(turret_angle(index))
+		fleet_pose.set_slot_angles(angles)
+		var pivots:Array=[];var carriers:Array=[];var drones:Dictionary={}
+		for module in fleet_pose.modules:pivots.append({"slot":int(module.assignment.slot),"transform":module.pivot})
+		for carrier in fleet_pose.carriers:carriers.append(carrier.transform)
+		for drone in fleet_pose.drones:drones[str(drone.id)]=drone.transform
+		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":pivots,"carriers":carriers,"drones":drones,"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
+	return result
+
+func display_shape(enemy:Dictionary,width:float)->String:
+	# Static outline packets travel only on birth/bucket/contract changes. Their
+	# stable entity+bucket ID avoids repeating every packed outline in hit events.
+	var uid:int=int(enemy.uid);var bucket:int=ceili(width*maxf(0.1,screen_scale)/2.0)
+	var packet:Dictionary=enemy_recognition_geometry(enemy,width)
+	if not display_shapes.has(uid):display_shapes[uid]={}
+	var packets:Dictionary=display_shapes[uid];var identity:String=str(uid)+":"+str(bucket)
+	if not packets.has(bucket) or (not is_same(packets[bucket],packet) and packets[bucket]!=packet):
+		packets[bucket]=packet;pending_display_shapes.append({"id":identity,"uid":uid,"value":packet})
+	return identity
+func retire_display_entity(uid:int)->void:
+	display_shapes.erase(uid);boundary_dead_geometry.erase(uid)

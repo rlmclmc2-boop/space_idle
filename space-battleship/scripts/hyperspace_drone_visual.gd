@@ -103,3 +103,16 @@ func pose(view,disabled: Array=[],zoom: float=1.0,check_body_resolution: bool=tr
  # Finish membership/style changes after every body, orbit, transform and
  # visibility has been assigned, including while the logical game is paused.
  if changed:view.request_fleet_redraw()
+
+func apply_geometry_frame(view,frame:Dictionary,disabled:Array=[])->void:
+ var changed:bool=body_bake_pending
+ if body_bake_pending:
+  for index in nodes.size():view.body_baker.attach(nodes[index],"hyperspace:"+str(nodes[index].get_meta("weapon"))+":"+str(style_keys[identities[index]]))
+  body_bake_pending=false
+ for index in nodes.size():
+  assert(frame.drones.has(identities[index]),"Missing drone geometry descriptor")
+  nodes[index].transform=frame.drones[identities[index]];nodes[index].visible=not disabled.has(identities[index])
+  var ring=nodes[index].get_node_or_null("Appearance/UltimateOrbit")
+  if ring!=null and animated and bool(Appearance.settings().get("animate",true)):ring.rotation.y=view.orbit_elapsed*0.45
+ view.body_baker.guard_resolution(float(int(view.viewport.size.x*view.viewport.scaling_3d_scale))/view.camera.size)
+ if changed:view.request_fleet_redraw()

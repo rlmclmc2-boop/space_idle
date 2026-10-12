@@ -32,6 +32,7 @@ var configuration_dirty:bool=true
 var entity_records:Dictionary={}
 var shot_records:Dictionary={}
 var new_entities:Array=[]
+var published_enemy_order:PackedInt64Array=PackedInt64Array()
 var new_shots:Array=[]
 var pending_configuration:Dictionary={}
 var event_packets:Array=[]
@@ -88,7 +89,7 @@ func entity_token(record:Dictionary)->Dictionary:
 		for key in record:
 			if key in ["hp","shield","cooldowns","guidance_layers"]:continue
 			metadata[key]=encode(record[key])
-		new_entities.append({"uid":identity,"generation":identity,"metadata":metadata})
+		new_entities.append({"uid":identity,"generation":identity,"metadata":metadata,"geometry_descriptor":geometry.display_descriptor(record)})
 	return {"$enemy":identity,"generation":entity_records[identity].generation}
 func descriptor_ready(record:Dictionary)->void:
 	shot_token(record,true)
@@ -135,6 +136,19 @@ func capture_event(kind:String,payload:Dictionary)->void:
 		packet.shot_values=[shot_values(payload.shot)]
 		packet.event_muzzle={int(payload.shot.serial):geometry.visual_muzzle(payload.shot)}
 	else:packet.shot_values=[]
+	var geometry_entities:Array=[];var geometry_ids:Dictionary={}
+	if packet.has("enemies"):
+		for record in _kernel.enemies:
+			geometry_entities.append(record);geometry_ids[int(record.uid)]=true
+	if payload.has("uid"):
+		var record:Dictionary=entity_records.get(int(payload.uid),{}).get("record",{})
+		if not record.is_empty():geometry_entities.append(record);geometry_ids[int(record.uid)]=true
+	if payload.has("shot"):
+		for key in ["source","target","locked_target"]:
+			var record:Dictionary=payload.shot.get(key,{})
+			if record.has("uid") and not geometry_ids.has(int(record.uid)):
+				geometry_entities.append(record);geometry_ids[int(record.uid)]=true
+	packet.geometry=geometry.display_frame(geometry_entities,false)
 	packet.entities_added=new_entities;new_entities=[];packet.shots_added=new_shots;new_shots=[]
 	# A failed enqueue retains this event. No later event may overtake it, and
 	# no following simulation step may run until the presenter drains the FIFO.
@@ -157,6 +171,8 @@ func base_packet(with_motion:bool)->Dictionary:
 	for record in _kernel.enemies:
 		var token=entity_token(record)
 		enemies.append({"token":token,"hp":encode(record.hp),"shield":encode(record.get("shield",0)),"x":record.x,"y":record.y,"shield_hit_at":record.get("shield_hit_at",0),"shield_updated_at":record.get("shield_updated_at",0),"interference":record.get("interference",0)})
+	published_enemy_order=PackedInt64Array()
+	for record in _kernel.enemies:published_enemy_order.append(int(record.uid))
 	var weapon_states={}
 	for index in _kernel.enhancement_branches.weapons:
 		var data=_kernel.enhancement_branches.weapons[index];weapon_states[index]={}
@@ -172,6 +188,7 @@ func base_packet(with_motion:bool)->Dictionary:
 		configuration_version+=1;packet.configuration_version=configuration_version
 		packet.configuration=_kernel.profile.duplicate(true);configuration_dirty=false
 	if with_motion:
+		packet.geometry=geometry.display_frame(_kernel.enemies)
 		var rows=[];var order=PackedInt64Array()
 		for shot in _kernel.projectiles:shot_token(shot);rows.append(shot_values(shot));order.append(int(shot.serial))
 		packet.shot_values=rows;packet.active_shots=order
@@ -204,12 +221,14 @@ func publish_display()->bool:
 	var retired=pending_frame_retired
 	# Birth/configuration/retirement are lossless protocol records. A PUBLISHED
 	# dynamic snapshot may be replaced, so it must never own a one-shot delta.
-	var delta={"transport_only":true,"entities_added":new_entities,"shots_added":new_shots,"retired_shots":retired}
+	var delta={"transport_only":true,"entities_added":new_entities,"shots_added":new_shots,"retired_shots":retired,"geometry_shapes":full_frame.geometry.shapes}
+	# Shape birth/change is lossless even when all dynamic frame slots are skipped.
+	full_frame.geometry.shapes=[]
 	new_entities=[];new_shots=[]
 	if full_frame.has("configuration"):
 		delta.configuration=full_frame.configuration;delta.configuration_version=full_frame.configuration_version
 		full_frame.erase("configuration")
-	if not delta.entities_added.is_empty() or not delta.shots_added.is_empty() or not retired.is_empty() or delta.has("configuration"):
+	if not delta.entities_added.is_empty() or not delta.shots_added.is_empty() or not retired.is_empty() or not delta.geometry_shapes.is_empty() or delta.has("configuration"):
 		pending_events.append(delta)
 	if not flush_events():return false
 	var complete=publish_pending_frame()
@@ -336,6 +355,15 @@ func event_packet(kind:String,payload:Dictionary)->Dictionary:
 	var packet={"input_sequence":last_command_sequence,"fx_time":geometry.fx_time,"demo_time":geometry.demo_time,"orbit_elapsed":geometry.fleet_pose.orbit_elapsed,"fields":{},"profile_dynamic":{"enhancementAttacks":_kernel.profile.enhancementAttacks,"enhancementHits":_kernel.profile.enhancementHits},"enemy_changes":[],"weapon_states":{},"defense_states":{}}
 	if kind in ["state","encounter","wave_clear","retreat","explode"]:
 		for key in CORE_FIELDS:packet.fields[key]=_kernel.get(key)
+	if kind in ["state","encounter","wave_clear","retreat"]:
+		var order:PackedInt64Array=PackedInt64Array()
+		for record in _kernel.enemies:order.append(int(record.uid))
+		# Membership is structural, not a per-hit world projection. Encounter UI
+		# must receive births and geometry before the encounter callback runs.
+		if order!=published_enemy_order:
+			packet.enemies=[];published_enemy_order=order
+			for record in _kernel.enemies:
+				packet.enemies.append({"token":entity_token(record),"hp":encode(record.hp),"shield":encode(record.get("shield",0)),"x":record.x,"y":record.y,"shield_hit_at":record.get("shield_hit_at",0),"shield_updated_at":record.get("shield_updated_at",0),"interference":record.get("interference",0)})
 	if kind in ["collect","jewel_pickup"]:packet.drops=encode(_kernel.drops)
 	if kind=="hit":
 		if bool(payload.get("player",false)):packet.player=encode(_kernel.player.duplicate())
@@ -354,7 +382,9 @@ func event_packet(kind:String,payload:Dictionary)->Dictionary:
 		packet.defense_states[index]=row
 	dirty_weapon_states.clear();dirty_defense_states.clear()
 	if kind in ["fire","beam_started","beam_hit","projectile_impact"] and payload.has("shot"):
-		packet.turrets=encode(geometry.turret_visuals);packet.turret_ship=geometry.turret_ship
+		var mount:int=geometry.shot_mount(payload.shot)
+		if mount>=0:packet.turret_changes={mount:encode(geometry.turret_pose(mount))}
+		packet.turret_ship=geometry.turret_ship
 	if configuration_dirty:
 		configuration_version+=1;packet.configuration_version=configuration_version
 		packet.configuration=_kernel.profile.duplicate(true);configuration_dirty=false
@@ -383,7 +413,8 @@ func retire_entity_records()->void:
 		var target:Dictionary=data.get("target",{})
 		if target.has("uid"):required[int(target.uid)]=true
 	for identity in entity_records.keys():
-		if not required.has(identity):entity_records.erase(identity)
+		if not required.has(identity):
+			geometry.retire_display_entity(int(identity));entity_records.erase(identity)
 	if _kernel.simulation_bridge!=null:_kernel.simulation_bridge.retire_unreferenced(required)
 
 func mark_state_changed(kind:String,index:int)->void:

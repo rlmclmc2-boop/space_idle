@@ -26,6 +26,7 @@ class MountRecord extends RefCounted:
  var aim_limit:float
  var aim_factor:float
  var under:bool
+ var owner_slot:int
 
 class DisplayRecord extends RefCounted:
  var entity:Dictionary
@@ -148,6 +149,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   mount.aim_factor=1.0 if role=="main" else 0.2 if role=="secondary" else 0.0
   mount.aim_limit=deg_to_rad(float(aim_component.hardpoint.get("rotation_limit",0))) if aim_component!=null else 0.0
   mount.under=int(point.get("z",1))<=0
+  mount.owner_slot=int(component.owner_slot)
   mount.node.pieces.body.data={"physical":mount.physical};mount.node.pieces.body.queue_redraw()
   mount.node.pieces.strokes.visible=not mount.physical
   mount.node.pieces.strokes.data={"width":-INF}
@@ -186,7 +188,7 @@ func sync(offset:Vector2,boss:bool)->void:
   var alive:bool=enemy.hp>0
   if record.alive!=alive:record.alive=alive;record.root.visible=alive;order_changed=true
   if not alive:continue
-  var spatial:Dictionary=model.entry(enemy)
+  var spatial:Dictionary=paint_owner.simulation_geometry_view.spatial(enemy) if paint_owner.simulation_geometry_view!=null else model.entry(enemy)
   if record.shape_revision!=int(spatial.shape_revision) or record.boss!=boss:compile_record(record,spatial,boss)
   elif not is_same(record.pose,paint_owner.enemy_pose(enemy)):bind_pose(record,paint_owner.enemy_pose(enemy))
   if not record.supported:
@@ -209,7 +211,7 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  var enemy=record.entity
  var point:Vector2=spatial.position
  var pos=point+offset
- var width:float=paint_owner.battle_read_model.width_at(enemy,point.y)
+ var width:float=paint_owner.enemy_render_width_at_y(enemy,point.y)
  var angle:float=paint_owner.enemy_render_angle(enemy)
  var depth=clampf((point.y-90.0)/maxf(1.0,float(spatial.frontline)-90.0),0,1)
  var light=lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
@@ -227,7 +229,9 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  var gap:float=ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0)
  var layer_gap:float=ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)
  var previous_packet:Dictionary=record.packet
- if record.packet_bucket!=bucket or record.packet_repair!=repair or record.packet_large!=large or record.protection_gap!=gap or record.layer_gap!=layer_gap:
+ if paint_owner.simulation_geometry_view!=null:
+  record.packet=paint_owner.simulation_geometry_view.row(enemy).recognition
+ elif record.packet_bucket!=bucket or record.packet_repair!=repair or record.packet_large!=large or record.protection_gap!=gap or record.layer_gap!=layer_gap:
   record.packet=paint_owner.enemy_recognition.geometry(record.texture,width,record.descriptors,repair,record.pose,record.screen_scale,large)
   record.packet_bucket=bucket;record.packet_repair=repair;record.packet_large=large
   record.protection_gap=gap;record.layer_gap=layer_gap
@@ -257,13 +261,20 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   if shield_type==1 and size>=4:outline=packet.front if status.show_hull and armour in [1,2] else packet.single_front
  elif not (status.show_hull and armour in [1,2]) and not status.repair:outline=PackedVector2Array()
  update_meters(record,pos,width,angle,outline)
- var desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-angle,-PI,PI)
+ var desired:float=0.0
+ if paint_owner.simulation_geometry_view==null:desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-angle,-PI,PI)
  var min_width=15.0/maxf(0.1,record.screen_scale)
  for mount in record.mounts:
   var module_width=width*mount.module_factor
   var w=maxf(min_width,module_width)
-  var mount_angle=PI/2+angle+clampf(desired,-mount.aim_limit,mount.aim_limit)*mount.aim_factor+mount.base_rotation
-  var origin=(mount.normalized*width).rotated(PI+angle)
+  var mount_angle:float
+  var origin:Vector2
+  if paint_owner.simulation_geometry_view!=null:
+   var geometry:Dictionary=paint_owner.simulation_geometry_view.row(enemy).components[mount.owner_slot]
+   mount_angle=geometry.angle;origin=geometry.origin
+  else:
+   mount_angle=PI/2+angle+clampf(desired,-mount.aim_limit,mount.aim_limit)*mount.aim_factor+mount.base_rotation
+   origin=(mount.normalized*width).rotated(PI+angle)
   var shift=mount.port_factor*module_width-Vector2((0.64 if mount.physical else 0.45)*w,0)
   mount.node.position=origin+shift.rotated(mount_angle);mount.node.rotation=mount_angle-PI/2
   mount.node.pieces.body.scale=Vector2.ONE*w
