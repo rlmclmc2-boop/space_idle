@@ -23,10 +23,16 @@ class EntityState extends RefCounted:
 	var shield=NumberValue.new()
 	var maximum_shield=NumberValue.new()
 	var shield_hit_at:float=0.0
+	var shield_updated_at:float=0.0
+	var armour_type:int=0
+	var shield_type:int=0
+	var interference:float=0.0
+	var slot:int=-1
 	var shield_delay:float=0.0
 	var shield_recovery:float=0.0
 	var alive:bool=true
 	var configuration:int=0
+	var incoming_stacks:int=0
 	var cooldowns:PackedFloat64Array=PackedFloat64Array()
 class AttackState extends RefCounted:
 	var id:int=0
@@ -57,6 +63,7 @@ class DefenseState extends RefCounted:
 	var cover=NumberValue.new()
 	var debt=NumberValue.new()
 	var cover_remaining:float=0.0
+	var cover_elapsed:float=0.0
 	var resistance_type:int=0
 	var resistance_remaining:float=0.0
 	var lockout:float=0.0
@@ -94,3 +101,18 @@ func retire_entity(identity:int)->void:
 	value.alive=false;entity_index.erase(identity)
 func require_thread_ready()->void:
 	assert(ownership_transferred and not legacy_writes_remaining,"Typed state ownership must be proven before starting simulation thread")
+
+func import_enemy(record:Dictionary,shield_clock:float)->EntityState:
+	# Assembly-boundary import: copy named values, never retain record/target aliases.
+	var target=create_entity(int(record.uid))
+	target.position=Vector2(record.x,record.y);target.slot=int(record.get("slot",-1))
+	target.health.assign(record.hp);target.maximum_health.assign(record.max_hp)
+	target.shield.assign(record.get("shield",0));target.maximum_shield.assign(record.get("max_shield",0))
+	target.armour_type=int(record.armourType);target.shield_type=int(record.get("shieldType",0))
+	target.interference=float(record.get("interference",0))
+	target.shield_hit_at=float(record.get("shield_hit_at",shield_clock))
+	target.shield_updated_at=float(record.get("shield_updated_at",shield_clock))
+	target.shield_delay=float(record.get("shieldDelay",0));target.shield_recovery=float(record.get("shieldRecovery",0))
+	target.cooldowns=PackedFloat64Array(record.cooldowns)
+	target.alive=N.compare(target.health.value(),0)>0
+	return target
