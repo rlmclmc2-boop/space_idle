@@ -69,6 +69,14 @@ var travel_origin := INF
 var group_index := 0
 var enemies: Array[Dictionary] = []
 var _projectiles: Array[Dictionary] = []
+var native_execution:RefCounted
+func admit_native_execution(descriptor:Dictionary)->bool:
+	if native_execution!=null or state!=State.COMBAT:return false
+	var session=preload("res://scripts/native_execution_session.gd").new()
+	if not session.admit(self,descriptor):return false
+	native_execution=session
+	return true
+
 var _native_readonly_observers: Array[Callable]=[]
 var _native_forced_compatibility:=false
 func native_lifecycle_compatibility()->void:
@@ -909,6 +917,7 @@ func _enhancement_plan_event(kind: String, _info: Dictionary) -> void:
 	if compiled_combat_rules!=null and enhancement_plan.dirty:compiled_combat_rules.compile(self)
 
 func invalidate_stat_cache() -> void:
+	if native_execution!=null:native_execution.configuration_changed()
 	enhancement_plan.invalidate()
 	combat_sources_dirty=true
 	stat_cache.clear()
@@ -2083,6 +2092,12 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if native_execution!=null:
+		native_execution.cancel(self)
+		state=next
+		event.emit("state",{"state":state})
+		return
+
 	if next != State.COMBAT:drone_combat.restore_disabled(self,"state_exit")
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and p.get("endless",false) and not p.get("repeated",false)))
@@ -2581,6 +2596,9 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 		apply_long_laser_hit(shot,float(item.due))
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
+	if native_execution!=null:
+		push_error("legacy settlement callback called during native ownership")
+		return
 	record_enhancement_hit() # Incoming attempts count once, including absorption.
 	if not context.has("trigger_depth"):
 		var root:=CombatContext.root(0,"enemy:"+str(context.get("source_uid",0)),str(context.get("weapon_key","")));root.merge(context);context=root
@@ -2637,6 +2655,9 @@ func acknowledge_unlocks() -> void:
 	event.emit("state", {"state":state})
 
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false, context: Dictionary = {}) -> void:
+	if native_execution!=null:
+		push_error("legacy settlement callback called during native ownership")
+		return
 	if enemy.hp <= 0:
 		return
 	if context.is_empty():
@@ -2969,6 +2990,9 @@ func advance_enemy_shields(dt: float) -> void:
 
 func tick(dt: float) -> void:
 	if paused:return
+	if native_execution!=null:
+		native_execution.advance(self,dt)
+		return
 	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	manual_hyperspace.dispatch_queued(self)
 	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
@@ -3133,6 +3157,9 @@ func projectile_target_point(shot:Dictionary)->Vector2:
 	return Vector2(shot.target.x,shot.target.y)
 
 func tick_projectiles(dt: float) -> void:
+	if native_execution!=null:
+		push_error("legacy projectile executor called during native ownership")
+		return
 	# Overrides select pending launches at step start; only this base advances
 	# the shield clock, before resolving scheduled periods and boundary hits.
 	if state==State.COMBAT:enemy_shield_time+=dt
@@ -3243,12 +3270,18 @@ func _native_player_target_alive(target:Dictionary)->bool:
 	return not target.is_empty() and N.compare(target.armour,0)>0
 
 func _native_projectile_contact(shot:Dictionary,aim:Vector2,_kind:int)->void:
+	if native_execution!=null:
+		push_error("legacy settlement callback called during native ownership")
+		return
 	event.emit("projectile_impact",{"shot":shot,"pos":aim})
 	if shot.hostile:
 		hit_player(shot.damage,shot.type,{"source_uid":int(shot.get("source_uid",0)),"weapon_key":str(shot.key)})
 	else:hit_enemy(shot.target,shot.damage,int(shot.type),shot.get("jewelEffects",[]),bool(shot.get("critical",false)),shot.get("combat_context",{}))
 
 func _native_unpacked_projectile(shot:Dictionary,dt:float,shield_timing:bool)->void:
+	if native_execution!=null:
+		push_error("legacy settlement callback called during native ownership")
+		return
 	if advance_higgs_projectile(shot,dt):return
 	if advance_custom_projectile(shot,dt):return
 	if shot.get("beam",false):

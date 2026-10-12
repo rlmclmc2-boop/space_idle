@@ -129,6 +129,9 @@ func end_projectile_target_points()->void:
 
 func tick(dt:float)->void:
 	if paused:return
+	if native_execution!=null:
+		super.tick(dt)
+		return
 	var remaining:=maxf(0.0,dt)
 	while remaining>0.000000001:
 		var step:=minf(remaining,1.0/60.0)

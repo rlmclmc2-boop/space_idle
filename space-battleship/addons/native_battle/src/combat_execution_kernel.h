@@ -54,8 +54,8 @@ class SpaceCombatKernel : public RefCounted {
         int weapon = -1, type = 0;
         Handle source, target;
         std::shared_ptr<Instance> instance;
-        double multiplier = 1, damage = 0, age = 0, next_hit = 0, charge = 0, interval = 0, ramp = 1,
-               maximum = 1;
+        double multiplier = 1, damage = 0, cruise_speed = 0, age = 0, next_hit = 0, charge = 0, interval = 0,
+               ramp = 1, maximum = 1;
         int ticks = 0;
         Vector2 aim, logical_aim;
         Ref<SpaceMotionLease> lease;
@@ -130,6 +130,46 @@ class SpaceCombatKernel : public RefCounted {
     }
     Handle handle(size_t index) const {
         return {uint32_t(index), actors[index].generation};
+    }
+    static bool finite_descriptor(const Variant &value) {
+        switch (value.get_type()) {
+        case Variant::FLOAT:
+            return std::isfinite(double(value));
+        case Variant::VECTOR2: {
+            Vector2 point = value;
+            return std::isfinite(point.x) && std::isfinite(point.y);
+        }
+        case Variant::DICTIONARY: {
+            Dictionary values = value;
+            Array keys = values.keys();
+            for (int i = 0; i < keys.size(); ++i)
+                if (!finite_descriptor(values[keys[i]]))
+                    return false;
+            return true;
+        }
+        case Variant::ARRAY: {
+            Array values = value;
+            for (int i = 0; i < values.size(); ++i)
+                if (!finite_descriptor(values[i]))
+                    return false;
+            return true;
+        }
+        case Variant::OBJECT:
+        case Variant::CALLABLE:
+            return false; // Configuration cannot retain a legacy executor.
+        default:
+            return true;
+        }
+    }
+    static bool numeric_fields(Dictionary values, std::initializer_list<const char *> keys) {
+        for (const char *key : keys) {
+            if (!values.has(key))
+                continue;
+            Variant value = values[key];
+            if (value.get_type() != Variant::INT && value.get_type() != Variant::FLOAT)
+                return false;
+        }
+        return true;
     }
     static Vector2 axis(double angle) {
         return Vector2(std::cos(angle), std::sin(angle));
@@ -243,6 +283,7 @@ class SpaceCombatKernel : public RefCounted {
             }
             f.lease.unref();
             f.instance.reset();
+            f.view = Dictionary();
             free_flights.push_back(id);
         }
         retired.clear();
@@ -264,6 +305,7 @@ class SpaceCombatKernel : public RefCounted {
         f.generation = generation;
         f.live = true;
         f.weapon = wi;
+        f.cruise_speed = w.speed;
         f.type = w.type;
         f.hostile = w.hostile;
         f.target = target;
@@ -309,7 +351,7 @@ class SpaceCombatKernel : public RefCounted {
         if (m.kind == 1) {
             m.speed = launch_speed;
             int ordinal = int(event_serial % 2);
-            double departure = (ordinal ? 1 : -1) * 12.0 * Math_PI / 180.0;
+            double departure = (ordinal ? 1 : -1) * 12.0 * 3.14159265358979323846 / 180.0;
             Vector2 trial = axis(angle(m.direction) + departure);
             if (trial.y >= -0.12 || (from.x < 55 && trial.x < 0) || (from.x > 517 && trial.x > 0))
                 departure = 0;
@@ -733,7 +775,8 @@ class SpaceCombatKernel : public RefCounted {
         if (!w.hostile)
             ++attack_counter;
         a->damage = (w.hostile ? w.base : std::ceil(w.base * (1 + counter_bonus(attack_counter)))) *
-                    w.factor * (scatter && w.kind == 0 && candidates.size() == 1 ? 1 + scatter_bonus : 1);
+                    w.factor *
+                    (!w.hostile && scatter && w.kind == 0 && candidates.size() == 1 ? 1 + scatter_bonus : 1);
         a->critical = !w.hostile && rng->randf() < crit_rate;
         if (a->critical)
             a->damage *= crit_multiplier;
@@ -861,12 +904,12 @@ class SpaceCombatKernel : public RefCounted {
                 }
                 double progress = std::clamp((m.age - ignition) / (cruise_at - ignition), 0.0, 1.0);
                 progress = progress * progress * (3 - 2 * progress);
-                m.speed = launch_speed + (weapons[f.weapon].speed - launch_speed) * progress;
+                m.speed = launch_speed + (f.cruise_speed - launch_speed) * progress;
                 if (t) {
                     m.orphan = 0;
                     m.last_aim = aim;
                     double old = angle(m.direction), wanted = angle(aim - position(m));
-                    double change = std::remainder(wanted - old, Math_TAU);
+                    double change = std::remainder(wanted - old, 6.28318530717958647692);
                     double range = distance(position(m), aim);
                     if (range < brake_range && std::abs(change) > brake_angle)
                         m.speed = std::min(m.speed, std::max(min_speed, range * turn_rate * brake_factor));
@@ -937,6 +980,8 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("take_feedback"), &SpaceCombatKernel::take_feedback);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
         ClassDB::bind_method(D_METHOD("hit_handle", "handle", "raw", "type"), &SpaceCombatKernel::hit_handle);
+        ClassDB::bind_method(D_METHOD("receive_player_hit", "raw", "type"),
+                             &SpaceCombatKernel::receive_player_hit);
         ClassDB::bind_method(D_METHOD("cancel"), &SpaceCombatKernel::cancel);
         ClassDB::bind_method(D_METHOD("metrics"), &SpaceCombatKernel::metrics);
     }
@@ -944,6 +989,7 @@ class SpaceCombatKernel : public RefCounted {
   public:
     bool configure(Dictionary d) {
         cancel();
+        feedback.clear();
         actors.clear();
         weapons.clear();
         defences.clear();
@@ -955,6 +1001,12 @@ class SpaceCombatKernel : public RefCounted {
         admitted = false;
         stopped = false;
         ++encounter_generation;
+        if (!finite_descriptor(d) || !d.has("player") || !d.has("enemies") || !d.has("weapons") ||
+            !Array(d.get("unsupported_rules", Array())).is_empty())
+            return false;
+        if (!numeric_fields(d["player"], {"armour", "shield"}))
+            return false;
+
         clock = d.get("clock", 0.0);
         resistance = d.get("resistance", 0.5);
         player_row = Dictionary(d["player"]).duplicate(true);
@@ -978,6 +1030,8 @@ class SpaceCombatKernel : public RefCounted {
         Array values = d["enemies"];
         for (int i = 0; i < values.size(); ++i) {
             Dictionary v = values[i];
+            if (!numeric_fields(v, {"hp", "max_hp", "shield", "max_shield"}))
+                return false;
             Actor a;
             a.generation = encounter_generation;
             a.uid = v["uid"];
@@ -1003,6 +1057,9 @@ class SpaceCombatKernel : public RefCounted {
         Array wvalues = d["weapons"];
         for (int i = 0; i < wvalues.size(); ++i) {
             Dictionary v = wvalues[i];
+            if (!numeric_fields(
+                    v, {"damage", "factor", "interval", "remaining", "speed", "charge", "ramp", "maximum"}))
+                return false;
             Weapon w;
             w.kind = v["kind"];
             if (w.kind < 0 || w.kind > 3)
@@ -1017,7 +1074,8 @@ class SpaceCombatKernel : public RefCounted {
                 w.source = handle(source);
             }
             w.interval = v.get("interval", 1.0);
-            if (w.interval <= 0)
+            if (w.interval <= 0 || double(v.get("speed", 720.0)) <= 0 || double(v.get("damage", 1.0)) < 0 ||
+                int(v.get("salvo", 1)) < 1)
                 return false;
             w.remaining = v.get("remaining", w.kind == 3 ? 0.0 : w.interval);
             w.base = v.get("damage", 1.0);
@@ -1028,8 +1086,8 @@ class SpaceCombatKernel : public RefCounted {
             w.ramp = v.get("ramp", 1.0);
             w.maximum = v.get("maximum", 1.0);
             w.muzzle = v.get("muzzle", Vector2(286, 520));
-            w.entry = v.get("entry", Dictionary());
-            w.row = v.get("row", Dictionary());
+            w.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
+            w.row = Dictionary(v.get("row", Dictionary())).duplicate(true);
             weapons.push_back(w);
             roots.push({clock + w.remaining, ++event_serial, 0, i});
         }
@@ -1075,6 +1133,7 @@ class SpaceCombatKernel : public RefCounted {
         module_defence = !defences.empty();
         admitted = (!bool(d.get("requires_module_defense", false)) || module_defence) &&
                    !bool(d.get("requires_drop_rules", false));
+        root_attacks = hit_count = dead_count = stale_rejections = physics_visits = 0;
         return admitted;
     }
     void input_geometry(PackedVector2Array points, PackedVector2Array muzzles) {
@@ -1084,8 +1143,7 @@ class SpaceCombatKernel : public RefCounted {
             weapons[i].muzzle = muzzles[i];
     }
     void advance(double seconds) {
-        ERR_FAIL_COND(!admitted);
-        if (stopped || seconds <= 0)
+        if (!admitted || stopped || !std::isfinite(seconds) || seconds <= 0)
             return;
         double end = clock + seconds;
         while (clock + 1e-9 < end && !stopped) {
@@ -1136,7 +1194,7 @@ class SpaceCombatKernel : public RefCounted {
         return h;
     }
     bool hit_handle(PackedInt64Array value, double raw, int type) {
-        if (value.size() != 2 || !admitted)
+        if (value.size() != 2 || !admitted || stopped || !std::isfinite(raw) || raw < 0)
             return false;
         Handle h{uint32_t(value[0]), uint32_t(value[1])};
         if (!resolve(h)) {
@@ -1145,6 +1203,12 @@ class SpaceCombatKernel : public RefCounted {
         }
         hit_enemy(h, raw, type, {}, false, clock, 0);
         compact();
+        return true;
+    }
+    bool receive_player_hit(double raw, int type) {
+        if (!admitted || stopped || !std::isfinite(raw) || raw < 0)
+            return false;
+        player_hit(raw, type, clock);
         return true;
     }
     void cancel() {
