@@ -64,6 +64,7 @@ func advance(seconds:float)->void:
 		scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 		scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
 		geometry_us+=Time.get_ticks_usec()-began
+		if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
 		game.tick(STEP);geometry.after_tick()
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
 	var began=Time.get_ticks_usec()

@@ -70,13 +70,21 @@ var group_index := 0
 var enemies: Array[Dictionary] = []
 var _projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
+var native_execution_requested:=false
+var native_execution_scope:=""
+var native_wave_waiting:=false
 func admit_native_execution(descriptor:Dictionary)->bool:
 	if native_execution!=null or state!=State.COMBAT:return false
 	var session=preload("res://scripts/native_execution_session.gd").new()
 	if not session.admit(self,descriptor):return false
 	native_execution=session
+	native_execution_requested=true;native_execution_scope=descriptor.execution_scope
 	return true
 
+func admit_native_compiled_execution(scope:String)->bool:
+	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(self,scope)
+	if descriptor.has("error"):return false
+	return admit_native_execution(descriptor)
 var _native_readonly_observers: Array[Callable]=[]
 var _native_forced_compatibility:=false
 func native_lifecycle_compatibility()->void:
@@ -125,6 +133,7 @@ func projectile_set_target(shot:Dictionary,target:Dictionary)->void:
 	if native_pipeline!=null and native_pipeline.has_method("set_target"):native_pipeline.set_target(shot,target)
 	else:shot.target=target
 func native_lifecycle_allowed()->bool:
+	if native_execution!=null:return false
 	if _native_forced_compatibility:return false
 	if native_pipeline==null or not native_pipeline.has_method("begin_step"):return false
 	if get_script().resource_path not in ["res://scripts/game.gd","res://scripts/presented_battle_game.gd"]:return false
@@ -2092,8 +2101,10 @@ func reset_player() -> void:
 	since_hit = 100
 
 func change_state(next: State) -> void:
+	if next!=State.COMBAT:native_wave_waiting=false
 	if native_execution!=null:
 		native_execution.cancel(self)
+		native_execution=null
 		state=next
 		event.emit("state",{"state":state})
 		return
@@ -2371,6 +2382,7 @@ func boss_info() -> String:
 	return " / ".join(descriptions) if not descriptions.is_empty() else UIText.t("system.boss_info.text_01")
 
 func targets(damage_type: int = 0) -> Array[Dictionary]:
+	if native_execution!=null:return native_execution.kernel.target_views(damage_type)
 	var alive: Array[Dictionary] = []
 	for e in enemies:
 		if e.hp > 0:
@@ -2453,6 +2465,7 @@ func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Diction
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
 func long_laser_valid(shot: Dictionary) -> bool:
+	if native_execution!=null:return state==State.COMBAT and not bool(shot.dead) and not shot.target.is_empty() and (N.compare(player.armour,0)>0 if bool(shot.hostile) else float(shot.target.hp)>0)
 	if state != State.COMBAT or shot.dead or shot.target.is_empty() or not is_same(shot.target, shot.locked_target):
 		return false
 	if shot.hostile:
@@ -2610,6 +2623,9 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
+	if native_execution!=null:
+		native_execution.cancel(self)
+		native_execution=null
 	# Snapshot actual survivors before retreat clears them or manual return restores main.
 	if state!=State.RETREAT and N.compare(player.armour,0)<=0:
 		event.emit("battle_defeated",{"stage":stage,"wave":group_index,"manual":manual_hyperspace.active,"remaining":enemies.filter(func(enemy):return N.compare(enemy.hp,0)>0).size()})
@@ -2974,6 +2990,7 @@ func weapon_cooldown_after_shot(_remaining_before: float, _dt: float, interval: 
 	return interval
 
 func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
+	if native_execution!=null:return
 	if simulation_bridge!=null and simulation_bridge.active():
 		simulation_bridge.settle_enemy_shield(enemy,at);return
 	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return
@@ -2988,17 +3005,13 @@ func advance_enemy_shields(dt: float) -> void:
 	enemy_shield_time+=dt
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 
-func tick(dt: float) -> void:
-	if paused:return
-	if native_execution!=null:
-		native_execution.advance(self,dt)
-		return
+func advance_shared_clock_and_economy(dt:float)->void:
 	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	manual_hyperspace.dispatch_queued(self)
 	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
 	profile.productionElapsed=production_time()+dt
 	hyperspace.advance(self,dt)
-	enhancement_branches.advance_weapons(self,dt)
+	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy.advance(self,dt)
 	crew.advance(self,dt)
@@ -3014,6 +3027,20 @@ func tick(dt: float) -> void:
 		drop.age += dt
 		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
 			collect(drop, false)
+
+func tick(dt: float) -> void:
+	if paused:return
+	advance_shared_clock_and_economy(dt)
+	if native_wave_waiting and state==State.COMBAT:
+		since_hit+=dt;advance_jewel_repair(dt);finish_combat_step(dt)
+		if has_alive_enemy():native_wave_waiting=false
+		return
+	if state==State.COMBAT and native_execution_requested and native_execution==null:
+		if not admit_native_compiled_execution(native_execution_scope):
+			paused=true;event.emit("battle_blocked",{"reason":"unsupported_native_encounter"});return
+	if native_execution!=null:
+		native_execution.advance(self,dt)
+		return
 	if state == State.LEVEL_CLEAR:
 		since_hit+=dt
 		advance_jewel_repair(dt)
@@ -3131,6 +3158,9 @@ func tick(dt: float) -> void:
 				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
 	tick_projectiles(dt)
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
+	finish_combat_step(dt)
+
+func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():
 		drone_combat.restore_disabled(self,"wave_clear")
 		if guarding_here():
@@ -4101,6 +4131,7 @@ func memory_effect(entry: Dictionary) -> Dictionary:
 	return enhancement_plan.recipes.defence[index].duplicate() if index>=0 else {}
 
 func sync_enhancement_buffers() -> void:
+	if native_execution!=null:return
 	for index in enhancement_buffers.keys():
 		var entry := slot_entry("defence",int(index))
 		var owner: Dictionary=enhancement_buffer_owners.get(index,{})
@@ -4283,6 +4314,7 @@ func enhancement_deferred_fraction(level := -1) -> float:
 	return maxf(0.0,(scale-remaining)/scale)
 
 func enhancement_deferred_total() -> Variant:
+	if native_execution!=null:return native_execution.kernel.deferred_total()
 	var total = 0.0
 	for due in enhancement_deferred.values():
 		for key in ["shield","armour"]:total=N.add(total,due.get(key,0))

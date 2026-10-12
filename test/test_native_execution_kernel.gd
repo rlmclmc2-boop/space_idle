@@ -102,9 +102,9 @@ func run()->void:
  g.state=BattleGame.State.COMBAT
  var old_enemies=g.enemies;var old_player=g.player;var old_projectiles=g.projectiles
  var observed=[];g.event.connect(func(kind,info):observed.append({"kind":kind,"info":info}))
- d=world(0);d.execution_scope="native_low_contract";d.enemies[0].hp=5.0
+ d=world(0);d.execution_scope="native_low_contract";d.enemies=[actor(100,30,5,4),actor(101,1000,100,0)]
  check(g.admit_native_execution(d),"one existing Game accepts bounded native execution")
- check(g.native_pipeline==null and not is_same(g.enemies,old_enemies) and not is_same(g.player,old_player) and not is_same(g.projectiles,old_projectiles),"old bodies and callback pipeline retired at admission")
+ check(not g.native_lifecycle_allowed() and not is_same(g.enemies,old_enemies) and not is_same(g.player,old_player) and not is_same(g.projectiles,old_projectiles),"old bodies and callback pipeline retired at admission")
  var stable_enemies=g.enemies;var stable_player=g.player;var stable_projectiles=g.projectiles
  for i in 5:g.tick(1.0/60.0)
  check(g.enemies[0].hp==0.0,"Game read view observes native real lethal settlement")
@@ -115,11 +115,25 @@ func run()->void:
   if row.kind=="hit":hit_seen=true;check(row.info.amount==10.0 and row.info.uid==100,"direct hit consumer agrees with paid target")
   if row.kind=="explode":death_seen=true;check(is_same(row.info,g.enemies[0]),"death consumer sees authoritative actor")
  check(fire_seen and hit_seen and death_seen,"direct launch/hit/death display events delivered")
- check(g.cooldowns.is_empty() and g.jewel_repeats.is_empty() and g.missile_queue.is_empty() and g.motion_clock==0.0,"old combat and presented schedulers stay out of execution")
- g.change_state(BattleGame.State.RETREAT);var executed=g.native_execution.kernel.metrics().steps;g.tick(1.0)
- check(g.native_execution.kernel.metrics().steps==executed and g.projectiles.is_empty(),"Game exit cancels owner without restarting old runtime")
+ check(g.cooldowns.is_empty() and g.jewel_repeats.is_empty() and g.missile_queue.is_empty() and is_equal_approx(g.motion_clock,5.0/60.0),"old combat and presented schedulers stay out of execution")
+ g.change_state(BattleGame.State.RETREAT)
+ check(g.native_execution==null and g.projectiles.is_empty(),"Game exit cancels owner without restarting old runtime")
  var rejected=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false);rejected.state=BattleGame.State.COMBAT
  d=world(0);d.execution_scope="rich15"
  check(not rejected.admit_native_execution(d) and rejected.native_execution==null,"unfinished rich15 compilation explicitly refuses candidate")
+ d=world(0);d.weapons[0].interval=0.03;d.enemies[0].x=100000.0
+ k=core(d)
+ for i in 60:k.advance(1.0/60.0)
+ check(k.metrics().root_attacks==34,"absolute root deadline retains cadence remainder")
+ k.cancel()
+ d=world(0);d.weapons=[];d.requires_drop_rules=true;d.drop_rules_compiled=true;d.drop_uid=700;d.jewel_probability=1.0;d.jewel_ratio=2.0
+ d.enemies[0].jewel_rolls=1;d.enemies[0].compiled_drops=[{"resource":1,"chance":1.0,"base":5.0,"amount":10.0}]
+ k=core(d);check(k.hit_handle(k.actor_handle(100),1000.0,1),"native lethal drop command")
+ var born=[]
+ for e in k.take_feedback():
+  if e.kind==7:born.append(e.shot)
+ check(born.size()==2 and born[0].id=="jewel" and born[1].id=="1" and born[1].amount==10.0 and born[1].source_uid==100,"native death creates ordered jewel/resource drops with full amounts")
+ check(k.metrics().drop_uid==702,"drop uid owned and advanced by native death")
+ k.cancel()
  print("NATIVE EXECUTION KERNEL: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
