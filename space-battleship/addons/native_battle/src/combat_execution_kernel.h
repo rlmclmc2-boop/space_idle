@@ -28,6 +28,12 @@ class SpaceCombatKernel : public RefCounted {
         int jewel_rolls = 0;
         double interference = 0, explosion = 0;
     };
+    struct BirthConfig {
+        Dictionary weapon;
+        Array effects;
+        int slot = 0;
+        double repeat_delay = 0, repeat_multiplier = 1;
+    };
     struct Weapon {
         int kind = 0, type = 0, slot = 0;
         bool hostile = false;
@@ -41,11 +47,13 @@ class SpaceCombatKernel : public RefCounted {
         Vector2 muzzle;
         Dictionary entry, row;
         int64_t beam = -1;
+        std::shared_ptr<const BirthConfig> birth;
     };
     struct Attack {
         uint64_t id = 0;
         double damage = 0;
         bool critical = false, secondary = false, repeats = false;
+        std::shared_ptr<const BirthConfig> birth;
     };
     struct Instance {
         uint64_t id = 0;
@@ -124,6 +132,7 @@ class SpaceCombatKernel : public RefCounted {
     uint32_t encounter_generation = 1;
     uint64_t step_serial = 0, event_serial = 0, attack_serial = 0, instance_serial = 0, flight_serial = 0;
     double clock = 0, player_hp = 0, player_shield = 0, resistance = 0.5;
+    double last_incoming_at = -100;
     double jewel_probability = 0, jewel_ratio = 1;
     int64_t drop_uid = 0;
     bool drop_rules = false;
@@ -747,6 +756,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     void player_hit(double raw, int type, double at) {
         ++incoming_counter;
+        last_incoming_at = at;
         if (!module_defence) {
             double factor = type == int(player_row.get("shield_type", 0)) ? 1 - resistance : 1;
             double absorbed = std::min(player_shield, std::max(1.0, raw * factor));
@@ -859,6 +869,7 @@ class SpaceCombatKernel : public RefCounted {
             return;
         auto a = std::make_shared<Attack>();
         a->id = ++attack_serial;
+        a->birth = w.birth;
         ++root_attacks;
         if (!w.hostile)
             ++attack_counter;
@@ -1121,6 +1132,8 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total);
         ClassDB::bind_method(D_METHOD("rng_source"), &SpaceCombatKernel::rng_source);
         ClassDB::bind_method(D_METHOD("exit_state"), &SpaceCombatKernel::exit_state);
+        ClassDB::bind_method(D_METHOD("export_handoff"), &SpaceCombatKernel::export_handoff);
+        ClassDB::bind_method(D_METHOD("commit_handoff", "revision"), &SpaceCombatKernel::commit_handoff);
         ClassDB::bind_method(D_METHOD("loss_view"), &SpaceCombatKernel::loss_view);
         ClassDB::bind_method(D_METHOD("defence_time_view"), &SpaceCombatKernel::defence_time_view);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
@@ -1159,6 +1172,9 @@ class SpaceCombatKernel : public RefCounted {
             return false;
 
         clock = d.get("clock", 0.0);
+        last_incoming_at = clock - double(d.get("since_hit", 100.0));
+        flight_serial = d.get("projectile_serial", 0); attack_serial = d.get("attack_serial", 0);
+        instance_serial = d.get("instance_serial", 0);
         ejection_gap = d.get("ejection_gap", 0.12);
         launch_speed = d.get("launch_speed", 120.0);
         turn_rate = d.get("turn_rate", 4.0);
@@ -1271,6 +1287,13 @@ class SpaceCombatKernel : public RefCounted {
             w.muzzle = v.get("muzzle", Vector2(286, 520));
             w.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             w.row = Dictionary(v.get("row", Dictionary())).duplicate(true);
+            auto birth = std::make_shared<BirthConfig>();
+            birth->weapon = w.row.duplicate(true); birth->weapon.make_read_only();
+            birth->effects = Array(v.get("transfer_effects", Array())).duplicate(true);
+            for (int effect = 0; effect < birth->effects.size(); ++effect) { Dictionary row = birth->effects[effect]; row.make_read_only(); }
+            birth->effects.make_read_only(); birth->slot = w.slot;
+            birth->repeat_delay = d.get("repeat_delay", 0.5); birth->repeat_multiplier = w.repeat_multiplier;
+            w.birth = birth;
             weapons.push_back(w);
             roots.push({clock + w.remaining, ++event_serial, 0, i});
         }
@@ -1426,6 +1449,88 @@ class SpaceCombatKernel : public RefCounted {
             segment(next - clock);
         }
     }
+    Dictionary export_handoff() const {
+        Dictionary out;
+        if (!admitted || stopped || executing) return out;
+        out["schema"] = 1; out["revision"] = int64_t(step_serial); out["clock"] = clock;
+        out["player"] = player_row; out["enemies"] = actor_rows;
+        out["buffers"] = buffer_rows; out["losses"] = loss_rows; out["defence_times"] = defence_time_rows;
+        out["since_hit"] = clock - last_incoming_at;
+        out["defence_time"] = defence_time; out["memory_elapsed"] = memory_elapsed;
+        out["deferred_elapsed"] = deferred_elapsed; out["deferred_tick"] = deferred_tick;
+        out["attack_counter"] = attack_counter; out["incoming_counter"] = incoming_counter;
+        out["projectile_serial"] = int64_t(flight_serial); out["attack_serial"] = int64_t(attack_serial);
+        out["instance_serial"] = int64_t(instance_serial); out["drop_uid"] = drop_uid; out["rng"] = rng;
+        Dictionary deferred;
+        for (const auto &item : debts) { Dictionary due; due["shield"] = item.second[0]; due["armour"] = item.second[1]; deferred[item.first] = due; }
+        out["deferred"] = deferred;
+        std::map<uint64_t, Dictionary> attack_rows;
+        auto attack_view = [&](const std::shared_ptr<const Attack> &a) {
+            auto found = attack_rows.find(a->id); if (found != attack_rows.end()) return found->second;
+            Dictionary row; row["id"] = int64_t(a->id); row["damage"] = a->damage;
+            row["critical"] = a->critical; row["critical_bonus_applied"] = a->critical;
+            row["secondary"] = a->secondary; row["secondary_used"] = true; row["repeats_queued"] = true;
+            row["weapon"] = a->birth->weapon.duplicate(true); row["effects"] = a->birth->effects;
+            row["repeat_plan"] = Array(); row["source_slot"] = a->birth->slot;
+            attack_rows[a->id] = row; return row;
+        };
+        Array records;
+        for (size_t id : active) {
+            const Flight &f = flights[id]; if (!f.live) continue;
+            Dictionary row; row["view"] = f.view; row["weapon_index"] = f.weapon;
+            row["snapshot"] = attack_view(f.instance->attack); row["instance"] = f.instance->view;
+            row["instance_derived"] = f.instance->derived; row["damage"] = f.damage;
+            row["multiplier"] = f.multiplier; row["age"] = f.age; row["next_hit"] = f.next_hit;
+            row["ticks"] = f.ticks; row["charge"] = f.charge; row["interval"] = f.interval;
+            row["ramp"] = f.ramp; row["maximum"] = f.maximum; row["cruise_speed"] = f.cruise_speed;
+            row["native_index"] = int64_t(id); row["native_generation"] = int64_t(f.generation);
+            row["beam"] = f.beam; row["chain"] = f.chain; row["repeated"] = f.repeated;
+            row["hostile"] = f.hostile;
+            const Motion &m = f.lease->motion(); row["position"] = position(m); row["direction"] = m.direction;
+            row["speed"] = m.speed; row["motion_age"] = m.age; row["orphan_age"] = m.orphan; row["last_aim"] = m.last_aim;
+            if (f.beam) {
+                Dictionary snap = row["snapshot"], weapon = Dictionary(snap["weapon"]).duplicate(true);
+                weapon["para2"] = f.maximum; snap["weapon"] = weapon;
+                if (!f.repeated && f.ticks == 0) {
+                    snap["secondary_used"] = false; snap["repeats_queued"] = false;
+                    if (f.instance->attack->repeats) {
+                        Dictionary plan; plan["depth"] = 1; plan["delay"] = f.instance->attack->birth->repeat_delay;
+                        plan["factor"] = f.instance->attack->birth->repeat_multiplier; plan["parent"] = -1; plan["plan_index"] = 0;
+                        Array plans; plans.push_back(plan); snap["repeat_plan"] = plans;
+                    }
+                }
+            }
+            records.push_back(row);
+        }
+        out["flights"] = records;
+        Array due_roots; auto root_copy = roots;
+        while (!root_copy.empty()) { auto q = root_copy.top(); root_copy.pop(); Dictionary row; row["weapon_index"] = q.weapon; row["remaining"] = nonnegative(q.at - clock); due_roots.push_back(row); }
+        out["cooldowns"] = due_roots;
+        auto export_queue = [&](auto queue) {
+            Array rows;
+            while (!queue.empty()) { auto q = queue.top(); queue.pop(); Dictionary row;
+                row["weapon_index"] = q.weapon; row["due"] = q.at; row["remaining"] = nonnegative(q.at - clock);
+                row["ordinal"] = q.ordinal; row["multiplier"] = q.multiplier;
+                row["target"] = q.target.index < actors.size() ? actors[q.target.index].view : Dictionary();
+                row["snapshot"] = attack_view(q.attack); row["instance"] = q.instance ? q.instance->view : Dictionary(); row["derived"] = q.instance && q.instance->derived;
+                row["owner_index"] = q.owner_flight == SIZE_MAX ? -1 : int64_t(q.owner_flight);
+                row["owner_generation"] = int64_t(q.owner_generation); rows.push_back(row);
+            }
+            return rows;
+        };
+        out["ejections"] = export_queue(ejections); out["repeats"] = export_queue(repeats);
+        return out;
+    }
+    bool commit_handoff(int64_t revision) {
+        if (!admitted || stopped || executing || revision != int64_t(step_serial)) return false;
+        stopped = true; admitted = false;
+        while (!roots.empty()) roots.pop(); while (!ejections.empty()) ejections.pop(); while (!repeats.empty()) repeats.pop();
+        // Drop executor references only. Published rows/leases stay live for the
+        // receiving Game and visual surface; no retire/dead/effect is emitted.
+        flights.clear(); active.clear(); free_flights.clear(); retired.clear();
+        flight_rows = Array(); actor_rows = Array(); actors.clear(); weapons.clear(); defences.clear(); debts.clear();
+        return true;
+    }
     Ref<RandomNumberGenerator> rng_source() const { return rng; }
     Dictionary exit_state() {
         Dictionary values, due;
@@ -1527,6 +1632,7 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary d;
         d["admitted"] = admitted;
         d["clock"] = clock;
+        d["since_hit"] = clock - last_incoming_at;
         d["steps"] = int64_t(step_serial);
         d["active_flights"] = int64_t(active.size());
         d["root_attacks"] = int64_t(root_attacks);

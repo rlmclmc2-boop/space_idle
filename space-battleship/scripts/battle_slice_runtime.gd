@@ -39,6 +39,8 @@ var previous_spatial
 var born:Dictionary={}
 var muzzle_values:Dictionary={}
 var started:=false
+var advancing:=false
+var detach_requested:=false
 func install(root)->void:
 	assert(root.simulation_presenter==null,"Direct slice cannot enable the rejected bridge")
 	scene=root;game=root.game
@@ -56,6 +58,7 @@ func install(root)->void:
 	scene.ship_view.numeric_slice_only=true
 	started=true
 func advance(seconds:float)->void:
+	advancing=true
 	remainder+=seconds
 	const STEP=1.0/60.0
 	while remainder+0.0000000001>=STEP:
@@ -67,9 +70,17 @@ func advance(seconds:float)->void:
 		if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
 		game.tick(STEP);geometry.after_tick()
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
+		if detach_requested:
+			advancing=false
+			close()
+			scene.battle_slice_runtime=null
+			scene.game_time_remainder=remainder
+			scene.advance_game_time(0.0)
+			return
 	var began=Time.get_ticks_usec()
 	snapshot();geometry_us+=Time.get_ticks_usec()-began
 	scene.game_time_remainder=remainder
+	advancing=false
 func snapshot()->void:
 	var retained:Dictionary={}
 	for enemy in game.enemies:retained[int(enemy.uid)]=true
@@ -213,11 +224,15 @@ func consume(e:Effect)->void:
 			scene.weapon_sparks(e.position,7,140,e.direction)
 func metrics()->Dictionary:
 	return {"logical_steps":logical_steps,"node_applies":node_applies,"typed_events":typed_events,"fire_events":fire_events,"hit_events":hit_events,"geometry_us":geometry_us,"effects_us":effects_us,"one_game":scene.game==game,"bridge_enabled":scene.simulation_presenter!=null,"birth_records":born.size(),"muzzle_records":muzzle_values.size()}
+func request_legacy_display()->void:
+	detach_requested=true
+	if not advancing:
+		close();scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
 func close()->void:
 	scene.ship_view.numeric_slice_only=false
+	scene.simulation_geometry_view=null
+	scene.enemy_poses=geometry.enemy_poses
 	for key in previous:game.set(key,previous[key])
 	game.target_spatial_source=previous_spatial
-	scene.simulation_geometry_view=null
-	geometry.close({"providers":previous,"spatial":previous_spatial})
-	previous.clear();previous_spatial=null
-	geometry=null;scene=null;game=null
+	game.invalidate_projectile_target_points()
+	started=false

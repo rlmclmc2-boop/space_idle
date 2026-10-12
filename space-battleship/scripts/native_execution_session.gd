@@ -10,6 +10,7 @@ var weapons:Array=[]
 var production_seconds:=0.0
 var ticks:=0
 var feedback_rows:=0
+var handed_off:=false
 
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
@@ -43,16 +44,24 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	game.projectiles=kernel.projectile_views()
 	return true
 
+func handoff_to_legacy(game:RefCounted,reason:String)->bool:
+	if handed_off:return game.native_execution==null
+	var exported:Dictionary=kernel.export_handoff()
+	var prepared=preload("res://scripts/native_execution_handoff.gd").new()
+	if not prepared.prepare(game,self,exported):return false
+	if not kernel.commit_handoff(int(exported.revision)):return false
+	# No events/callbacks between stopping the old owner and binding the new
+	# owner. Published body/shot identities and leases are retained.
+	handed_off=true;game.native_execution=null;game.native_execution_requested=false;game.native_wave_waiting=false
+	prepared.commit_views(game)
+	game.native_handoff_count+=1
+	game.event.emit("native_execution_handoff",{"reason":reason,"clock":exported.clock})
+	return true
+
 func advance(game:RefCounted,dt:float)->void:
 	if kernel==null:return
-	if paused_by_configuration:
-		var configuration:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope)
-		if configuration.has("error") or not kernel.update_configuration(configuration):
-			cancel(game);game.native_execution=null;game.paused=true
-			game.event.emit("battle_blocked",{"reason":configuration.get("error","unsupported_native_configuration_command")})
-			return
-		weapons=configuration.weapons;paused_by_configuration=false
 	kernel.advance(dt)
+	game.native_step_phase="native_done";game.native_step_remaining=0.0
 	production_seconds+=dt
 	var values:Dictionary=kernel.metrics()
 	var attacks=int(values.attack_counter);var incoming=int(values.incoming_counter)
@@ -70,14 +79,15 @@ func advance(game:RefCounted,dt:float)->void:
 	if "motion_clock" in game:game.motion_clock=float(values.clock)
 	ticks+=1
 	consume_feedback(game)
-	game.since_hit+=dt
+	if handed_off:return
+	game.since_hit=float(kernel.metrics().get("since_hit",game.since_hit+dt))
 	if float(game.player.armour)<=0:
 		game.event.emit("explode",{"x":game.player.x,"y":game.player.y,"boss":true})
 		game.begin_retreat()
 	elif not game.has_alive_enemy():
-		cancel(game);game.native_execution=null;game.native_wave_waiting=true
-		game.finish_combat_step(dt)
-		if game.has_alive_enemy():game.native_wave_waiting=false
+		# Existing finish_combat_step owns the original clear/travel filtering.
+		# Transfer first so non-final waves keep their already-fired carriers.
+		if handoff_to_legacy(game,"wave_complete"):game.finish_combat_step(dt)
 
 func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	var points=PackedVector2Array();var muzzles=PackedVector2Array()

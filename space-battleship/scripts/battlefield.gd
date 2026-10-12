@@ -426,6 +426,9 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="native_execution_handoff" and battle_slice_runtime!=null:
+		battle_slice_runtime.request_legacy_display()
+		return
 	if battle_slice_runtime!=null and battle_slice_runtime.on_event(kind,info):return
 	if kind=="encounter":encounter_presentation.sync(game,0.0)
 	if kind=="wave_clear" and encounter_presentation.tier=="ultimate":encounter_presentation.clear_age=0.0

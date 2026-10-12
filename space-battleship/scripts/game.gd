@@ -73,6 +73,12 @@ var native_execution:RefCounted
 var native_execution_requested:=false
 var native_execution_scope:=""
 var native_wave_waiting:=false
+var native_step_phase:="idle"
+var native_step_remaining:=0.0
+var native_handoff_count:=0
+func native_before_configuration_change()->bool:
+	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
+
 func admit_native_execution(descriptor:Dictionary)->bool:
 	if native_execution!=null or state!=State.COMBAT:return false
 	var session=preload("res://scripts/native_execution_session.gd").new()
@@ -82,6 +88,8 @@ func admit_native_execution(descriptor:Dictionary)->bool:
 	return true
 
 func admit_native_compiled_execution(scope:String)->bool:
+	if not projectiles.is_empty() or not jewel_repeats.is_empty() or ("missile_queue" in self and not get("missile_queue").is_empty()):return false
+
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(self,scope)
 	if descriptor.has("error"):return false
 	return admit_native_execution(descriptor)
@@ -915,6 +923,7 @@ func combat_equipment_row(key:String,level:int)->Dictionary:
 	return db.equip(key,level) # UI prospective levels remain ordinary independent queries.
 
 func notify_configuration_changed() -> void:
+	if not native_before_configuration_change():return
 	# In-place authored edits must call this before dependent reads. Replacing
 	# tables/databases is also detected by the plan's O(1) identity guard.
 	invalidate_stat_cache()
@@ -1086,6 +1095,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	if category=="weapons":
 		var requested:=weapon_entries().duplicate(true);requested[index].key=key
 		if not hyperspace.equipment_constraints(self,profile.hyperspace.inventory.equipped,{},requested):return false
+	if not native_before_configuration_change():return false
 	capture_refit_health()
 	# Replace the entry reference to invalidate old beams/repeats, keeping module assets.
 	var module := entry.duplicate(true)
@@ -1102,6 +1112,7 @@ func unequip_slot(category: String, index: int) -> bool:
 	if slot_equipment_locked(category,index):return false
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or str(entry.key).is_empty():return false
+	if not native_before_configuration_change():return false
 	capture_refit_health()
 	var module := entry.duplicate(true)
 	module.key = ""
@@ -1125,6 +1136,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	var requested_modules: Array=module_entries("weapons").slice(0,int(db.ship(key).weaponSlots)) if selected_loadout.is_empty() else selected_loadout.weapons
 	var ids: Array=profile.hyperspace.inventory.equipped.slice(0,int(hyperspace.config.hull_capacities[key]))
 	if not hyperspace.equipment_constraints(self,ids,{},requested_modules):return false
+	if not native_before_configuration_change():return false
 	capture_refit_health()
 	refresh_drone_weapon_floor()
 	var old_weapon_count := active_slot_count("weapons")
@@ -2937,6 +2949,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry = slot_entry(category, index)
 	var key = str(entry.key)
 	var costs = slot_upgrade_cost(category, index, levels)
+	if not native_before_configuration_change():return false
 	for id in costs:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
 	var before = jewel_equipment_stat(entry)
@@ -3030,16 +3043,27 @@ func advance_shared_clock_and_economy(dt:float)->void:
 
 func tick(dt: float) -> void:
 	if paused:return
+	var native_at_entry=native_execution
+	native_step_phase="shared";native_step_remaining=dt
 	advance_shared_clock_and_economy(dt)
+	if native_execution!=null and native_execution.paused_by_configuration:
+		native_execution.handoff_to_legacy(self,"configuration_notification")
+	# Presented.tick advanced this clock itself on a legacy entry. If a shared
+	# callback handed off a native entry, only its unexecuted combat phase remains.
+	if native_at_entry!=null and native_execution==null and native_step_remaining>0 and "motion_clock" in self:
+		set("motion_clock",float(get("motion_clock"))+native_step_remaining)
+
 	if native_wave_waiting and state==State.COMBAT:
 		since_hit+=dt;advance_jewel_repair(dt);finish_combat_step(dt)
 		if has_alive_enemy():native_wave_waiting=false
 		return
 	if state==State.COMBAT and native_execution_requested and native_execution==null:
 		if not admit_native_compiled_execution(native_execution_scope):
-			paused=true;event.emit("battle_blocked",{"reason":"unsupported_native_encounter"});return
+			native_execution_requested=false
+			# Cold whole-encounter legacy selection. No native state was installed.
 	if native_execution!=null:
 		native_execution.advance(self,dt)
+		native_step_phase="idle";native_step_remaining=0.0
 		return
 	if state == State.LEVEL_CLEAR:
 		since_hit+=dt
@@ -3460,6 +3484,7 @@ func enhancement_branch_choice(category: String, effect: String, node: int) -> S
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
 	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
 	if enhancement_branch_choice(category,effect,node)==choice:return true
+	if not native_before_configuration_change():return false
 	profile.enhancementBranches[category][effect][str(node)]=choice
 	# Selection invalidates projections and only the removed branch's transient buffs.
 	invalidate_stat_cache()
