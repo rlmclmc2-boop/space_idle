@@ -252,7 +252,7 @@ func start_worker()->Error:
 func wait_for_ack(sequence:int)->Dictionary:
 	var started=Time.get_ticks_usec()
 	var ack=owner.mailbox.take_ack(sequence)
-	while ack.is_empty() and not owner.mailbox.should_stop():
+	while ack.is_empty() and not owner.mailbox.should_stop() and owner.worker.is_alive():
 		if consume_active:collect_during_confirmation()
 		else:consume()
 		OS.delay_usec(100)

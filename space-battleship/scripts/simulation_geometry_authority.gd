@@ -6,7 +6,7 @@ var db:ShipDatabase
 var fleet_pose
 var player_anchor=Vector2.ZERO
 var screen_scale=1.0
-var captured_textures={}
+var captured_visuals:Dictionary={}
 var captured_bounds={}
 var prepared_hulls:Dictionary={}
 
@@ -424,7 +424,7 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	# The target and top-bound solver sample different width buckets; keep each
 	# cached separately so stationary frames never rebuild alternating envelopes.
 	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition_mounts(enemy),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
+	var packet:Dictionary=geometry_from_descriptor(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition_mounts(enemy),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
 	var outlines:Array=[packet.inner]
 	if float(enemy.get("max_shield",0))>0:
 		outlines.append(packet.outer)
@@ -483,7 +483,7 @@ func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,
 		enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),
 		enemy.get("max_shield",0),enemy.get("shieldRecovery",0),enemy.get("shieldType",0),
-		game.is_final_encounter(),game.is_boss_encounter(),appearance.signature,ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).get_instance_id(),
+		game.is_final_encounter(),game.is_boss_encounter(),appearance.signature,int(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).identity),
 		battle_visual.enemy_idle_x,battle_visual.enemy_idle_y,battle_visual.enemy_idle_rotation,
 		battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,battle_visual.enemy_scale_variance.y,battle_visual.enemy_base_scale,
 		battle_visual.enemy_max_y,battle_visual.enemy_player_min_gap,battle_visual.player_core_scale,
@@ -587,7 +587,7 @@ func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Di
 	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
 	var mounts := enemy_recognition_mounts(enemy)
 	var width:=enemy_render_width(enemy) if known_width<0.0 else known_width
-	return enemy_recognition.geometry(texture,width,mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	return geometry_from_descriptor(texture,width,mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 
 var reference_height=0.0
 var demo_time=0.0
@@ -624,13 +624,14 @@ func prepare(owner,simulation:BattleGame)->void:
 		turret_visuals[index].target=resolve_entity(previous)
 	enemy_poses=owner.enemy_poses.duplicate(true)
 	for slot in enemy_poses:enemy_poses[slot].entity=resolve_entity(owner.enemy_poses[slot].entity)
-	for key in owner.visual_textures:captured_textures[key]=owner.visual_textures[key]
 	for key in visual_config.get("ships",{}):
 		var texture=owner.ship_hull_texture(key)
 		if texture!=null:
-			captured_textures[str(visual_config.ships[key].get("texture",""))]=texture
-			captured_bounds[texture.get_instance_id()]=owner.enemy_hull_bounds(texture)
-			enemy_recognition.hull_profiles[texture.get_instance_id()]=owner.enemy_recognition.hull_profile(texture)
+			var identity=texture.get_instance_id()
+			var bounds=owner.enemy_hull_bounds(texture)
+			var profile=owner.enemy_recognition.hull_profile(texture).duplicate()
+			captured_visuals[str(visual_config.ships[key].get("texture",""))]={"identity":identity,"bounds":bounds,"profile":profile}
+			captured_bounds[identity]=bounds
 	fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
 	fleet_pose.prepare(owner.ship_view)
 	fleet_pose.manifest=fleet_pose.manifest.duplicate(true)
@@ -687,16 +688,17 @@ func player_mount_center(_key:String,index:int)->Vector2:
 	return (point-player_render_position()).rotated(PI/2)/player_art_scale()
 func enemy_recognition_screen_scale()->float:return screen_scale
 func player_visible_tail()->float:return reference_height*0.5
-func visual_texture(path:String)->Texture2D:
-	assert(captured_textures.has(path),"Simulation cannot load an uncaptured visual resource")
-	return captured_textures[path]
-func ship_hull_texture(key:String)->Texture2D:
+func visual_texture(path:String)->Dictionary:
+	assert(captured_visuals.has(path),"Uncompiled visual geometry descriptor")
+	return captured_visuals[path]
+func ship_hull_texture(key:String)->Dictionary:
 	return visual_texture(str(ship_visual_entry(key).get("texture","")))
-func enemy_hull_bounds(texture)->Rect2:
-	assert(captured_bounds.has(texture.get_instance_id()))
-	return captured_bounds[texture.get_instance_id()]
+func enemy_hull_bounds(descriptor:Dictionary)->Rect2:
+	return descriptor.bounds
 func visual_region(path:String)->Rect2:
-	return captured_bounds[visual_texture(path).get_instance_id()]
+	return visual_texture(path).bounds
+func geometry_from_descriptor(descriptor:Dictionary,width:float,mounts:Array,repair:bool,cache:Dictionary,scale_value:float,large:bool=false)->Dictionary:
+	return enemy_recognition.geometry_from_profile(int(descriptor.identity),descriptor.profile,width,mounts,repair,cache,scale_value,large)
 
 func sync_hull()->void:
 	var key=str(game.profile.selectedShip)
@@ -821,6 +823,6 @@ func close(restoration:Dictionary={})->void:
 	previous_providers.clear();previous_spatial_source=null
 	battle_read_model.end();battle_read_model.host=null
 	battle_read_model.records.clear();battle_read_model.bounds_members.clear()
-	captured_textures.clear();captured_bounds.clear()
+	captured_visuals.clear();captured_bounds.clear()
 	enemy_poses.clear();turret_visuals.clear();fleet_pose=null
 	game=null;db=null;prepared=false

@@ -59,18 +59,21 @@ func swept_mount(points: PackedVector2Array, mount: Dictionary, width: float, mi
 			if aim>=-limit and aim<=limit:points.append(origin+corner.rotated(base+aim))
 
 func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cache: Dictionary, scale_value: float, large := false) -> Dictionary:
+	return geometry_from_profile(texture.get_instance_id(),hull_profile(texture),width,mounts,repair,cache,scale_value,large)
+
+func geometry_from_profile(identity:int,profile:PackedVector2Array,width:float,mounts:Array,repair:bool,cache:Dictionary,scale_value:float,large:bool=false)->Dictionary:
 	var scale_safe := maxf(0.1,scale_value)
 	var bucket := ceili(width*scale_safe/2.0)
 	var low := maxf(0.1,float(bucket-1)*2.0/scale_safe)
 	var high := float(bucket)*2.0/scale_safe
 	var gap := float(ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0))/scale_safe
 	var layer_gap := float(ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5))/scale_safe
-	var signature := [texture.get_instance_id(),bucket,scale_safe,gap,layer_gap,repair,mounts,large]
+	var signature := [identity,bucket,scale_safe,gap,layer_gap,repair,mounts,large]
 	if cache.get("recognition_signature",[])==signature:return cache.recognition_geometry
 	# One contact owns one immutable appearance contract and bounded canonical
 	# width packets. Clearance and display consume the same packets; alternating
 	# their widths must not refit the same legal mount envelope every frame.
-	var contract_signature=[texture.get_instance_id(),scale_safe,gap,layer_gap,repair,mounts,large]
+	var contract_signature=[identity,scale_safe,gap,layer_gap,repair,mounts,large]
 	if cache.get("recognition_contract_signature",[])!=contract_signature:
 		cache.recognition_contract_signature=contract_signature.duplicate(true)
 		cache.recognition_width_packets={};cache.recognition_width_order=[]
@@ -79,7 +82,6 @@ func geometry(texture: Texture2D, width: float, mounts: Array, repair: bool, cac
 		cache.recognition_signature=signature.duplicate(true)
 		cache.recognition_geometry=packets[bucket]
 		return cache.recognition_geometry
-	var profile := hull_profile(texture)
 	var min_width := 15.0/scale_safe
 	var points := PackedVector2Array()
 	var widths: Array[float]=[low,high]

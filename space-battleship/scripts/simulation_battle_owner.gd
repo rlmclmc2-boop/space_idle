@@ -126,7 +126,7 @@ func capture_event(kind:String,payload:Dictionary)->void:
 	var started=Time.get_ticks_usec()
 	if kind in ["ship_changed","module_changed","upgrade","crew_changed","hightech_changed","reactor_changed","jewels_changed","enhancement_changed","hyperspace_changed","planet_changed","onboarding_changed","tutorial_read","unlocks_changed","planet_reforged","hyperspace_rebuild"] or (kind=="equipment_stats" and not bool(payload.get("counter_only",false))):configuration_dirty=true
 	var info=encode(payload)
-	if semantic_audit_enabled:
+	if semantic_audit_enabled and kind in ["fire","hit","beam_started","beam_hit","projectile_impact","explode","enhancement_chain","enhancement_secondary"]:
 		if not semantic_audit_started:semantic_audit.start(HashingContext.HASH_SHA256);semantic_audit_started=true
 		semantic_audit.update(JSON.stringify([logical_steps,kind,info,str(_kernel.rng.state)]).to_utf8_buffer())
 	var packet=event_packet(kind,payload)
@@ -303,9 +303,23 @@ func metrics()->Dictionary:
 	return authoritative_metrics()
 func authoritative_metrics()->Dictionary:
 	assert_authority()
-	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":worker_active,"thread_started":worker_active,"authority_thread":_authority_thread,"worker_jobs":_worker_jobs,"time_debt":remainder,"sim_shot_records":shot_records.size(),"sim_enemy_records":entity_records.size()}
-func stop_worker()->void:
+	return {"logical_steps":logical_steps,"events":event_count,"event_backpressure":event_backpressure,"pending_events":pending_events.size(),"publication_us":publication_us,"configuration_version":configuration_version,"battle_thread_admission":worker_active,"thread_started":worker_active,"authority_thread":_authority_thread,"motion_clock":_kernel.motion_clock,"worker_jobs":_worker_jobs,"time_debt":remainder,"sim_shot_records":shot_records.size(),"sim_enemy_records":entity_records.size()}
+func drain_shutdown_transport()->void:
+	# Shutdown no longer presents UI. Dropping display-only packets releases
+	# producer backpressure while accepted simulation/transactions finish.
+	var bundle=mailbox.consume_bundle()
+	if not bundle.snapshot.is_empty():mailbox.release(int(bundle.snapshot.slot))
+func stop_worker(cancel_pending:bool=false)->void:
 	if not worker_active:return
+	if not cancel_pending:
+		var request=dispatch("__barrier",[])
+		while not request.accepted and worker.is_alive():
+			drain_shutdown_transport();OS.delay_usec(100);request=dispatch("__barrier",[])
+		if request.accepted:
+			var ack=mailbox.take_ack(int(request.sequence))
+			while ack.is_empty() and worker.is_alive():
+				drain_shutdown_transport();OS.delay_usec(100);ack=mailbox.take_ack(int(request.sequence))
+			assert(not ack.is_empty() and bool(ack.accepted),"Worker stopped before accepted work was confirmed")
 	mailbox.stop();mailbox.wake.post()
 	worker.wait_to_finish();worker=null;worker_active=false
 	_authority_thread=OS.get_thread_caller_id()
@@ -394,6 +408,7 @@ func worker_loop()->void:
 	while not mailbox.should_stop():
 		var batch=mailbox.drain_inputs()
 		if batch.is_empty():mailbox.wake.wait();continue
+		var unpublished_boundaries=0
 		for index in batch.size():
 			if mailbox.should_stop():break
 			var command:Dictionary=batch[index]
@@ -403,7 +418,11 @@ func worker_loop()->void:
 				# Every submitted boundary runs all original 60Hz steps and geometry
 				# cleanup. Only obsolete dynamic publications may be skipped; events
 				# and structural descriptors remain lossless and ordered.
-				var publish=index==batch.size()-1 or batch[index+1].name!="__advance"
+				unpublished_boundaries+=1
+				# A continuously replenished batch must not starve the live view:
+				# births without active/retired snapshots inflate displayed workload.
+				var publish=unpublished_boundaries>=2 or index==batch.size()-1 or batch[index+1].name!="__advance"
+				if publish:unpublished_boundaries=0
 				var complete=advance(float(command.arguments[0]),publish)
 				while not complete and not mailbox.should_stop():
 					mailbox.wake.wait()

@@ -417,6 +417,11 @@ func show_qa_tools() -> void:
 		get_tree().root.add_child(panel)
 	panel.show()
 
+func _exit_tree() -> void:
+	if simulation_presenter!=null:
+		# Presenter drains accepted work and joins before restoring scene callbacks.
+		simulation_presenter.close();simulation_presenter=null
+
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:space_pause_held = false
 	if game == null:

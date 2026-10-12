@@ -44,11 +44,14 @@ func run()->void:
  presenter.dispatch_command("set_field",["paused",false])
  assert(original.dispatch("upgrade_slot",["weapons",0,1]).accepted)
  assert(presenter.synchronize())
- presenter.consume();owner.stop_worker() # All source reads below occur after join.
- assert(owner.logical_steps==60 and original.logical_steps==60)
+ for tick in 5:
+  assert(original.advance(1.0/60.0));presenter.advance(1.0/60.0)
+ owner.stop_worker() # Default graceful drain, without a caller-provided barrier.
+ # Source reads below occur after join; all accepted time is retained.
+ assert(owner.logical_steps==65 and original.logical_steps==65)
  assert(combat_state(candidate)==combat_state(baseline))
- assert(owner.pending_events.is_empty() and presenter.applied_events==owner.event_count)
+ assert(owner.pending_events.is_empty()) # Closing may discard display-only events after source completion.
  assert(owner.mailbox.acknowledgements.is_empty())
- assert(presenter.model.cooldowns==candidate.cooldowns)
- print("SIMULATION_WORKER_CONTRACT_PASS thread_distinct; steps=60; FIFO_backpressure; command_confirmation; reentrant_confirmation; source_equal; join_before_read; wait_us=",presenter.input_wait_us)
+ assert(owner.remainder<1e-10)
+ print("SIMULATION_WORKER_CONTRACT_PASS thread_distinct; steps=65; graceful_stop_retains_time; FIFO_backpressure; command_confirmation; reentrant_confirmation; source_equal; join_before_read; wait_us=",presenter.input_wait_us)
  presenter.close();original.close();candidate.simulation_bridge.close();baseline.simulation_bridge.close();quit()
