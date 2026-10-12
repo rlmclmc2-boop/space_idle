@@ -6,6 +6,9 @@ const WRITING=1
 const PUBLISHED=2
 const READING=3
 var mutex=Mutex.new()
+var wake=Semaphore.new()
+var acknowledgements:Dictionary={}
+var owner_status:Dictionary={}
 var frames:Array=[null,null,null]
 var states:PackedInt32Array=PackedInt32Array([FREE,FREE,FREE])
 var sequences:PackedInt64Array=PackedInt64Array([0,0,0])
@@ -52,6 +55,7 @@ func consume_bundle()->Dictionary:
 	# watermark separates events before it from newer in-progress-step events.
 	mutex.lock();var ordered=events;events=[]
 	var lease=_take_latest_locked();mutex.unlock()
+	if not ordered.is_empty() or not lease.is_empty():wake.post()
 	return {"events":ordered,"snapshot":lease}
 func _take_latest_locked()->Dictionary:
 	var slot=-1
@@ -67,7 +71,7 @@ func _take_latest_locked()->Dictionary:
 func release(slot:int)->void:
 	mutex.lock();assert(states[slot]==READING)
 	states[slot]=FREE;frames[slot]=null
-	mutex.unlock()
+	mutex.unlock();wake.post()
 func append_event(record:Dictionary)->bool:
 	if not _is_value_packet(record):return false
 	var transferred:Dictionary=_freeze_value(record)
@@ -179,3 +183,15 @@ func _seal_owned(value:Variant,depth:int=0)->bool:
 				if not _seal_owned(member,depth+1):return false
 			if not value.is_read_only():value.make_read_only()
 	return true
+
+func publish_ack(record:Dictionary)->void:
+	var value=_freeze_value(record)
+	mutex.lock();acknowledgements[int(record.sequence)]=value;mutex.unlock()
+func take_ack(sequence:int)->Dictionary:
+	mutex.lock();var value:Dictionary=acknowledgements.get(sequence,{})
+	acknowledgements.erase(sequence);mutex.unlock();return value
+func publish_owner_status(record:Dictionary)->void:
+	var value=_freeze_value(record)
+	mutex.lock();owner_status=value;mutex.unlock()
+func read_owner_status()->Dictionary:
+	mutex.lock();var value=owner_status.duplicate(true);mutex.unlock();return value

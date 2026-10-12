@@ -40,6 +40,8 @@ func set_save_interval(text: String) -> bool:
 	return super.set_save_interval(text)
 
 func check_timed_save() -> void:
+	if not save_enabled:return
+	if display_ready and save_clock_seconds()<next_timed_save_at:return
 	if display_ready:
 		command("check_timed_save",[])
 		return
@@ -239,6 +241,7 @@ func collect_near(pos: Vector2, clicked := false, position_overrides: Dictionary
 	super.collect_near(pos,clicked,position_overrides,path_start)
 
 func chrono_affordable_seconds(real_dt: float) -> float:
+	if display_ready and chrono_cost(speed)==0:return real_dt # Pure zero-cost query; no authoritative mutation.
 	if display_ready:
 		return command("chrono_affordable_seconds",[real_dt])
 	return super.chrono_affordable_seconds(real_dt)
@@ -270,3 +273,21 @@ func enhancement_visible_buffer(index: int, capacity: Variant = null) -> Variant
 	for component in display_defense_projection.get("components",[]):
 		if int(component.index)==index:return component.current if capacity==null else GrowthNumber.minimum(component.current,capacity)
 	return 0.0
+
+func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
+	if display_ready:return command("switch_ship",[key,selected_loadout])
+	return super.switch_ship(key,selected_loadout)
+
+func reforge_planet(id: String, keep_drones: Array = [], claim_stages: Dictionary = {}) -> bool:
+	if display_ready:return command("reforge_planet",[id,keep_drones,claim_stages])
+	return super.reforge_planet(id,keep_drones,claim_stages)
+
+func reset_player() -> void:
+	if display_ready:
+		command("reset_player",[]);return
+	super.reset_player()
+
+func rebuild_unlocks() -> void:
+	if display_ready:
+		command("rebuild_unlocks",[]);return
+	super.rebuild_unlocks()

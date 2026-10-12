@@ -9,6 +9,9 @@ const JSON_EXACT:int=9007199254740991
 const MAX_DIGITS:=1024
 static var long_operations:=0
 static var growth_cache:Dictionary={}
+static var cache_mutex:=Mutex.new()
+static func count_long_operation()->void:
+ cache_mutex.lock();long_operations+=1;cache_mutex.unlock()
 static func valid(v) -> bool:
  if v is int:return v>=0
  if v is float:return is_finite(v) and v>=0 and v<=float(INT_LIMIT) and v==floorf(v)
@@ -50,7 +53,7 @@ static func value(a:Array[int]):
  return small(s)
 static func add(a,b):
  if a is int and b is int and b<=INT_LIMIT-a:return a+b
- long_operations+=1
+ count_long_operation()
  var x:=limbs(a);var y:=limbs(b);var out:Array[int]=[];var carry:=0
  for i in maxi(x.size(),y.size()):
   var n: int=(x[i] if i<x.size() else 0)+(y[i] if i<y.size() else 0)+carry
@@ -66,12 +69,12 @@ static func sub_arrays(x:Array[int],y:Array[int]) -> Array[int]:
 static func subtract(a,b):
  if compare(a,b)<=0:return 0
  if a is int and b is int:return a-b
- long_operations+=1
+ count_long_operation()
  return value(sub_arrays(limbs(a),limbs(b)))
 static func multiply(a,b):
  if compare(a,0)==0 or compare(b,0)==0:return 0
  if a is int and b is int and b<=INT_LIMIT/a:return a*b
- long_operations+=1
+ count_long_operation()
  var x:=limbs(a);var y:=limbs(b);var out:Array[int]=[];out.resize(x.size()+y.size());out.fill(0)
  for i in x.size():
   var carry:=0
@@ -94,7 +97,7 @@ static func divmod(a,b) -> Array:
  assert(compare(b,0)>0,"Reactor integer division requires a positive divisor")
  if compare(a,b)<0:return [0,a]
  if a is int and b is int:return [a/b,a%b]
- long_operations+=1
+ count_long_operation()
  var x:=limbs(a);var y:=limbs(b);var out:Array[int]=[];out.resize(x.size());out.fill(0)
  var remainder:Array[int]=[0]
  if b is int and b<=1000000000:
@@ -135,10 +138,15 @@ static func from_growth(v):
  return small(s)
 static func as_growth(v):
  if v is int:return float(v)
- if growth_cache.has(v):return growth_cache[v]
+ cache_mutex.lock()
+ if growth_cache.has(v):
+  var cached=growth_cache[v];cache_mutex.unlock();return cached
+ cache_mutex.unlock()
  var s:=digits(v);var length:int=mini(16,s.length());var m:=float(s.substr(0,length))/pow(10,length-1)
  var result=GrowthNumber.make(m,s.length()-1)
+ if result is Dictionary:result.make_read_only()
+ cache_mutex.lock()
  if growth_cache.size()>=128:growth_cache.clear()
- growth_cache[v]=result
+ growth_cache[v]=result;cache_mutex.unlock()
  return result
 static func ratio(a,b) -> float:return GrowthNumber.ratio(as_growth(a),as_growth(b)) if compare(b,0)>0 else 0.0

@@ -14,6 +14,19 @@ var publications:int=0
 var render_epoch:int=0
 var completed_render_passes:int=0
 var applied_events:int=0
+var input_wait_us:int=0
+var input_wait_max_us:int=0
+var input_confirmations:int=0
+var last_input_ack:Dictionary={}
+var last_confirmed_sequence:int=0
+var native_admission:Dictionary={}
+var last_snapshot_step:int=-1
+var snapshot_age_us_total:int=0
+var snapshot_age_us_max:int=0
+var snapshot_samples:int=0
+var frames_without_new_logic:int=0
+var consume_active:bool=false
+var pending_bundles:Array=[]
 var transport_failures:int=0
 var native_steps_before_transfer:int=0
 var skipped_helper_fields:Array=[]
@@ -124,6 +137,10 @@ func decode(value:Variant)->Variant:
 		return result
 	return value
 func apply_packet(packet:Dictionary)->void:
+	if packet.has("snapshot_built_us"):
+		var age=maxi(0,Time.get_ticks_usec()-int(packet.snapshot_built_us))
+		snapshot_age_us_total+=age;snapshot_age_us_max=maxi(snapshot_age_us_max,age);snapshot_samples+=1
+		last_snapshot_step=int(packet.logical_steps)
 	if packet.has("configuration"):
 		model.profile=packet.configuration.duplicate(true);model.combat_sources_dirty=true;model.invalidate_stat_cache()
 	for row in packet.get("entities_added",[]):
@@ -141,7 +158,9 @@ func apply_packet(packet:Dictionary)->void:
 		var data=decode(packet.weapon_states[index]);data.entry=model.combat_entry(int(index));model.enhancement_branches.weapons[index]=data
 	for index in packet.get("defense_states",{}):
 		var data=decode(packet.defense_states[index]);data.entry=model.slot_entry("defence",int(index));model.enhancement_branches.defenses[index]=data
-	for key in packet.get("fields",{}):model.set(key,decode(packet.fields[key]))
+	for key in packet.get("fields",{}):
+		if key in ["paused","speed"] and int(packet.get("input_sequence",last_confirmed_sequence))<last_confirmed_sequence:continue
+		model.set(key,decode(packet.fields[key]))
 	for key in packet.get("profile_dynamic",{}):model.profile[key]=decode(packet.profile_dynamic[key])
 	if packet.has("drops"):model.drops.assign(decode(packet.drops))
 	if packet.has("cooldowns"):model.cooldowns=decode(packet.cooldowns)
@@ -187,7 +206,21 @@ func active_views(source:Array)->Array[Dictionary]:
 		if shot_views.has(int(shot.serial)):result.append(shot_views[int(shot.serial)])
 	return result
 func consume()->void:
+	if consume_active:return
+	consume_active=true
+	pending_bundles.append(owner.mailbox.consume_bundle())
+	while not pending_bundles.is_empty():consume_ordered_bundle(pending_bundles.pop_front())
+	consume_active=false
+func collect_during_confirmation()->void:
+	# A UI subscriber can submit another command. Drain transport to release
+	# backpressure, but finish the current event prefix before emitting later events.
 	var bundle=owner.mailbox.consume_bundle()
+	if not bundle.snapshot.is_empty():
+		var lease:Dictionary=bundle.snapshot
+		owner.mailbox.release(int(lease.slot))
+		bundle.snapshot={"slot":-1,"frame":lease.frame,"sequence":lease.sequence,"event_watermark":lease.event_watermark}
+	if not bundle.events.is_empty() or not bundle.snapshot.is_empty():pending_bundles.append(bundle)
+func consume_ordered_bundle(bundle:Dictionary)->void:
 	var lease:Dictionary=bundle.snapshot
 	var applied_frame=false
 	for envelope in bundle.events:
@@ -203,18 +236,57 @@ func consume()->void:
 	if not lease.is_empty() and not applied_frame:apply_frame_lease(lease)
 	reclaim_visual_records()
 func apply_frame_lease(lease:Dictionary)->void:
-	render_epoch+=1;apply_packet(lease.frame);owner.mailbox.release(int(lease.slot))
+	render_epoch+=1;apply_packet(lease.frame)
+	if int(lease.slot)>=0:owner.mailbox.release(int(lease.slot))
+func start_worker()->Error:
+	# Both native arenas must exclude the other side before concurrent use.
+	# This also inspects replacements/leases, not just script-visible records.
+	var source=owner._kernel
+	if source.native_pipeline!=null and model.native_pipeline!=null:
+		var checks=[source.native_pipeline.audit_reference_isolation(model.enemies,model.player,model.projectiles,model.native_pipeline),model.native_pipeline.audit_reference_isolation(source.enemies,source.player,source.projectiles,source.native_pipeline)]
+		for check in checks:
+			for key in ["foreign_shots","foreign_targets","foreign_visuals","source_motion_leases"]:
+				if int(check[key])!=0:return ERR_UNAUTHORIZED
+		native_admission={"both_arenas_exclude_foreign_records":true,"scope":"live and replacement native records/leases; deferred visual frames remain main-owned"}
+	return owner.start_worker()
+func wait_for_ack(sequence:int)->Dictionary:
+	var started=Time.get_ticks_usec()
+	var ack=owner.mailbox.take_ack(sequence)
+	while ack.is_empty() and not owner.mailbox.should_stop():
+		if consume_active:collect_during_confirmation()
+		else:consume()
+		OS.delay_usec(100)
+		ack=owner.mailbox.take_ack(sequence)
+	var elapsed=Time.get_ticks_usec()-started
+	input_wait_us+=elapsed;input_wait_max_us=maxi(input_wait_max_us,elapsed);input_confirmations+=1
+	return ack if not ack.is_empty() else {"accepted":false,"reason":"worker_stopped"}
+func synchronize()->bool:
+	if not owner.worker_active:return true
+	return bool(dispatch_command("__barrier",[]))
 func advance(seconds:float)->void:
+	if owner.worker_active:
+		var prior_step=last_snapshot_step
+		var request=owner.dispatch("__advance",[seconds])
+		while not request.accepted and not owner.mailbox.should_stop():
+			consume();OS.delay_usec(100);request=owner.dispatch("__advance",[seconds])
+		consume()
+		if last_snapshot_step==prior_step:frames_without_new_logic+=1
+		return
 	var complete=owner.advance(seconds)
 	consume()
 	while not complete:
 		complete=owner.advance(0.0);consume()
 func dispatch_command(name:String,args:Array)->Variant:
 	var ack=owner.dispatch(name,args)
+	if bool(ack.get("pending",false)):ack=wait_for_ack(int(ack.sequence))
 	consume()
 	if not bool(ack.get("accepted",false)):
 		push_error("Simulation input rejected: "+str(ack.get("reason","unknown")));return false
-	for key in ack.get("authoritative_fields",{}):model.set(key,ack.authoritative_fields[key])
+	# A nested subscriber may already have confirmed a later input. The outer
+	# result still returns to its caller, but cannot roll back newer UI fields.
+	if int(ack.sequence)>=last_confirmed_sequence:
+		last_confirmed_sequence=int(ack.sequence);last_input_ack=ack
+		for key in ack.get("authoritative_fields",{}):model.set(key,ack.authoritative_fields[key])
 	published_paused=model.paused;published_speed=model.speed
 	return decode(ack.get("result"))
 func capture_inputs()->void:
@@ -224,14 +296,17 @@ func capture_inputs()->void:
 	if model.speed!=published_speed:dispatch_command("set_speed",[model.speed])
 func metrics()->Dictionary:
 	var result=owner.metrics();result.UI_events=applied_events;result.UI_publications=publications
-	result.production_single_thread_connected=true;result.thread_started=false
+	result.production_single_thread_connected=not owner.worker_active;result.thread_started=owner.worker_active
+	result.input_wait_us=input_wait_us;result.input_wait_max_us=input_wait_max_us;result.input_confirmations=input_confirmations
+	result.snapshot_samples=snapshot_samples;result.snapshot_age_us_total=snapshot_age_us_total;result.snapshot_age_us_max=snapshot_age_us_max;result.frames_without_new_logic=frames_without_new_logic
 	result.native_steps_before_transfer=native_steps_before_transfer;result.skipped_helper_fields=skipped_helper_fields
 	result.completed_render_passes=completed_render_passes
-	result.UI_shot_records=shot_views.size();result.UI_enemy_records=enemy_views.size();result.sim_shot_records=owner.shot_records.size();result.sim_enemy_records=owner.entity_records.size()
+	result.UI_shot_records=shot_views.size();result.UI_enemy_records=enemy_views.size();result.sim_shot_records=result.get("sim_shot_records",0);result.sim_enemy_records=result.get("sim_enemy_records",0)
 	return result
 func close()->void:
 	if RenderingServer.frame_post_draw.is_connected(render_completed):RenderingServer.frame_post_draw.disconnect(render_completed)
 	model.command_gateway=Callable()
+	owner.stop_worker() # join before any main access to authority or restore data.
 	var geometry=owner.geometry
 	var source=owner._kernel
 	owner.close()

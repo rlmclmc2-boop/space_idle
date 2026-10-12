@@ -8,6 +8,7 @@ var player_anchor=Vector2.ZERO
 var screen_scale=1.0
 var captured_textures={}
 var captured_bounds={}
+var prepared_hulls:Dictionary={}
 
 const BATTLE_INVERSE_STEPS := 20
 
@@ -634,6 +635,33 @@ func prepare(owner,simulation:BattleGame)->void:
 	fleet_pose.prepare(owner.ship_view)
 	fleet_pose.manifest=fleet_pose.manifest.duplicate(true)
 	fleet_pose.configure(str(game.profile.selectedShip),game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+	# Capture every authored hull's footprint before worker admission. Runtime
+	# ship commands choose immutable descriptors; they never instantiate/read Nodes.
+	for key in fleet_pose.manifest.hulls:
+		var texture=owner.ship_hull_texture(key);var image=texture.get_image()
+		var factor=float(battle_visual.player_core_scale)*player_art_scale_for(key)
+		var hull:Dictionary=fleet_pose.manifest.hulls[key]
+		var radius=float(fleet_pose.manifest.weapon_contract.conservative_xz_rotation_radius)
+		var left=float(hull.godot_aabb_min[0]);var right=float(hull.godot_aabb_max[0])
+		for point in hull.weapon_mounts:
+			left=minf(left,float(point.position[0])-radius);right=maxf(right,float(point.position[0])+radius)
+		for offset in hull.drone_offsets:
+			left=minf(left,float(offset[0])+minf(-radius,float(fleet_pose.manifest.drone.godot_aabb_min[0])))
+			right=maxf(right,float(offset[0])+maxf(radius,float(fleet_pose.manifest.drone.godot_aabb_max[0])))
+		var height=minf(float(image.get_used_rect().size.y)*factor,BATTLE_VIEW_SIZE.x*0.90*float(hull.model_span)/(right-left))
+		height*=0.74 if key=="Heavy_Battleship" else 0.85 if key=="Battleship" else 1.0
+		image.convert(Image.FORMAT_RGBA8);var pixels=image.get_data();var width=image.get_width();var bottom=image.get_height()
+		for y in range(image.get_height()-1,-1,-1):
+			var found=false
+			for x in range(0,width,2):
+				if pixels[(y*width+x)*4+3]>8:bottom=y+1;found=true;break
+			if found:break
+		var tail=(float(bottom)-SHIP_ART_CANVAS.y*0.5)*factor
+		var reference_half=SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*0.18*1.15*0.5
+		var anchor_y=BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)+maxf(0,reference_half-SHIP_ART_CANVAS.y*factor*0.5)
+		anchor_y=minf(anchor_y,1132.0-owner.BATTLE_ORIGIN.y-float(battle_visual.player_hud_gap)-tail-absf(float(battle_visual.player_idle_y)))
+		anchor_y=minf(anchor_y,BATTLE_VIEW_SIZE.y-float(battle_visual.player_hud_gap)-height*0.5)
+		prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
 	current_hull=str(game.profile.selectedShip)
 	# Ownership handoff begins at the exact existing logical pose, including
 	# startup steps. Descriptors alone do not reproduce accumulated orbit time.
@@ -670,13 +698,22 @@ func enemy_hull_bounds(texture)->Rect2:
 func visual_region(path:String)->Rect2:
 	return captured_bounds[visual_texture(path).get_instance_id()]
 
+func sync_hull()->void:
+	var key=str(game.profile.selectedShip)
+	if key==current_hull:return
+	assert(prepared_hulls.has(key),"Hull has no main-thread compiled descriptors")
+	current_hull=key;reference_height=prepared_hulls[key].height
+	player_anchor=Vector2(game.player.x,prepared_hulls[key].anchor_y)
+	fleet_pose.configuration_dirty=true
+	fleet_pose.configure(key,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+
 func before_tick(dt:float)->void:
 	assert(prepared)
 	if game.paused:return
 	enemy_entry_batch_active=true;enemy_entry_distance_time=-INF
 	if battle_read_model_enabled:battle_read_model.begin()
 	for enemy in game.enemies:enemy_pose(enemy)
-	assert(str(game.profile.selectedShip)==current_hull,"Hull changes require an ordered descriptor command")
+	sync_hull()
 	fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
 	demo_time+=dt
 	var aim:Vector2=player_render_position()+Vector2(0,-450)
@@ -720,6 +757,7 @@ func rail_geometry(shot:Dictionary)->Dictionary:
 func on_simulation_event(kind:String,info:Dictionary)->void:
 	var changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if changed:
+		sync_hull()
 		battle_read_model.invalidate_membership()
 		enemy_entry_distance_time=-INF
 		fleet_pose.configuration_dirty=true
