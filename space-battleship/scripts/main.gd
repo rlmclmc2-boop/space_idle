@@ -504,7 +504,7 @@ func advance_game_time(seconds: float) -> void:
 	if battle_slice_runtime!=null:battle_slice_runtime.advance(seconds);return
 	if simulation_presenter!=null:
 		simulation_presenter.advance(seconds);return
-	if game == null or not is_finite(seconds) or seconds <= 0:return
+	if game == null or not is_finite(seconds) or seconds < 0:return
 	var instance := game.get_instance_id()
 	if instance != time_step_game_id:
 		time_step_game_id = instance
@@ -514,11 +514,16 @@ func advance_game_time(seconds: float) -> void:
 	game_time_remainder += seconds
 	const STEP := 1.0/60.0
 	while game_time_remainder + 0.0000000001 >= STEP:
+		if attach_native_display():
+			battle_slice_runtime.advance(0.0);return
 		before_logical_game_tick(STEP)
 		game.tick(STEP)
 		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
 
 func uses_logical_battle_pose() -> bool:
+	return false
+
+func attach_native_display()->bool:
 	return false
 
 func before_logical_game_tick(_dt:float) -> void:

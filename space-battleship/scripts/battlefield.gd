@@ -142,6 +142,8 @@ func create_battle_game(persist:bool)->BattleGame:
 	prototype.target_spatial_source=battle_read_model
 	prototype.rail_geometry_provider=_rail_geometry
 	prototype.rail_target_point_provider=entity_render_position
+	prototype.native_execution_auto=true
+	prototype.enable_compiled_combat_rules()
 	return prototype
 
 func _rail_geometry(shot: Dictionary) -> Dictionary:
@@ -232,6 +234,12 @@ func _sync_parameters() -> void:
 
 
 func uses_logical_battle_pose() -> bool:
+	return true
+
+func attach_native_display()->bool:
+	if game.native_execution==null or not game.native_execution_auto or battle_slice_runtime!=null:return false
+	battle_slice_runtime=preload("res://scripts/battle_slice_runtime.gd").new()
+	battle_slice_runtime.install(self)
 	return true
 
 func before_logical_game_tick(dt:float) -> void:
@@ -429,6 +437,8 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="native_execution_handoff" and battle_slice_runtime!=null:
 		battle_slice_runtime.request_legacy_display()
 		return
+	if kind=="state" and game.native_execution==null and battle_slice_runtime!=null:
+		battle_slice_runtime.request_legacy_display()
 	if battle_slice_runtime!=null and battle_slice_runtime.on_event(kind,info):return
 	if kind=="encounter":encounter_presentation.sync(game,0.0)
 	if kind=="wave_clear" and encounter_presentation.tier=="ultimate":encounter_presentation.clear_age=0.0

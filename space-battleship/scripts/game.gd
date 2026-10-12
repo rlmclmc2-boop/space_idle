@@ -71,6 +71,8 @@ var enemies: Array[Dictionary] = []
 var _projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
 var native_execution_requested:=false
+var native_execution_auto:=false
+var native_numeric_update:=false
 var native_execution_scope:=""
 var native_wave_waiting:=false
 var native_step_phase:="idle"
@@ -863,7 +865,7 @@ func combat_weapon_entries() -> Array:
 	combat_sources_dirty=false
 	return combat_sources
 
-func lowest_unlocked_weapon_slot() -> int:
+func lowest_unlocked_weapon_slot(levels:Dictionary={}) -> int:
 	# Empty and dormant slots still count; changing hulls cannot hide a weak slot.
 	var count := active_slot_count("weapons")
 	for ship_key in db.ships:
@@ -872,14 +874,14 @@ func lowest_unlocked_weapon_slot() -> int:
 	var minimum := 9223372036854775807
 	var lowest := -1
 	for index in count:
-		var level := maxi(1,int(entries[index].level)) if index<entries.size() else 1
+		var level := maxi(1,int(levels.get(index,entries[index].level))) if index<entries.size() else 1
 		if lowest<0 or level<minimum:minimum=level;lowest=index
 	return lowest
 
-func lowest_unlocked_weapon_level() -> int:
-	var index := lowest_unlocked_weapon_slot()
+func lowest_unlocked_weapon_level(levels:Dictionary={}) -> int:
+	var index := lowest_unlocked_weapon_slot(levels)
 	var entries := module_entries("weapons")
-	return maxi(1,int(entries[index].level)) if index>=0 and index<entries.size() else 1
+	return maxi(1,int(levels.get(index,entries[index].level))) if index>=0 and index<entries.size() else 1
 
 func refresh_drone_weapon_floor() -> void:
 	var next := maxi(int(profile.get("droneWeaponFloor",1)),lowest_unlocked_weapon_level())
@@ -935,7 +937,7 @@ func _enhancement_plan_event(kind: String, _info: Dictionary) -> void:
 	if compiled_combat_rules!=null and enhancement_plan.dirty:compiled_combat_rules.compile(self)
 
 func invalidate_stat_cache() -> void:
-	if native_execution!=null:native_execution.configuration_changed()
+	if native_execution!=null and not native_numeric_update:native_execution.configuration_changed()
 	enhancement_plan.invalidate()
 	combat_sources_dirty=true
 	stat_cache.clear()
@@ -1329,6 +1331,7 @@ func upgrade_reactor(amount: int) -> bool:
 		var cost = reactor_upgrade_cost(int(profile.reactorLevel)+offset)
 		if not N.valid(cost) or N.compare(cost,0)<=0 or N.compare(N.add(total,cost),budget)>0:return false
 		total = N.add(total,cost)
+	if not native_before_configuration_change():return false
 	var old_capacity = reactor_capacity()
 	var current_allocation:=reactor_active_allocation()
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
@@ -1358,6 +1361,7 @@ func set_reactor_allocation(key: String, value) -> bool:
 	var allowed = RI.add(RI.subtract(reactor_capacity(),reactor_allocated()),active.get(key,0))
 	var next = RI.minimum(RI.normalize(value),allowed)
 	if RI.compare(next,active.get(key,0))==0 and active==profile.reactorAllocation:return false
+	if not native_before_configuration_change():return false
 	var previous_vitals := capture_reactor_vitals()
 	profile.reactorAllocation=active
 	profile.reactorAllocation[key] = next
@@ -1382,6 +1386,7 @@ func equalize_reactor_allocation() -> bool:
 	for index in modules.size():
 		next[modules[index]] = RI.add(share,1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false
+	if not native_before_configuration_change():return false
 	var previous_vitals := capture_reactor_vitals()
 	profile.reactorAllocation=next
 	profile.reactorAutomation.ratio=preload("res://scripts/reactor_automation.gd").capture(self)
@@ -1906,6 +1911,7 @@ func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
 			profile.techPoints[key] = float(profile.techPoints.get(key,0))+float(rates[key])*step
 			var required := hightech_required(key)
 			if float(profile.techPoints[key])+0.00000001 >= required:
+				if key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
 				profile.techPoints[key] = maxf(0,float(profile.techPoints[key])-required)
 				profile.hightechLevels[key] = hightech_level(key)+1
 				if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
@@ -1939,6 +1945,7 @@ func advance_hightech_bulk(key: String, dt: float) -> void:
 		spent = hightech_bulk_cost(key,level,low)
 	profile.techPoints[key] = maxf(0,points-spent)
 	if count > 0:
+		if key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
 		profile.hightechLevels[key] = level+int(count)
 		if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
 		event.emit("hightech_complete", {"key":key})
@@ -2254,6 +2261,8 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}, start_pause
 	if N.compare(stat("armour"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_armour"})
 		return false
+	if native_execution!=null:
+		native_execution.cancel(self);native_execution=null;native_execution_requested=false
 	settle_drops()
 	drone_combat.reset();invalidate_stat_cache()
 	stage = level
@@ -2376,6 +2385,10 @@ func spawn_group(keep_distance := false) -> void:
 		profile.bossSeen.append(stage)
 		save_dirty = true
 	change_state(State.COMBAT)
+	# Selection belongs to a fresh encounter, never to each impact or frame.
+	if native_execution_auto:
+		native_execution_requested=false
+		admit_native_compiled_execution("native_rich15_layer2")
 	event.emit("encounter", {"boss":is_boss_encounter(),"tier":encounter_tier(),"final":is_final_encounter()})
 
 func boss_info() -> String:
@@ -2949,7 +2962,11 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry = slot_entry(category, index)
 	var key = str(entry.key)
 	var costs = slot_upgrade_cost(category, index, levels)
-	if not native_before_configuration_change():return false
+	var native_updated=false
+	if native_execution!=null:
+		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
+		if not native_updated and not native_before_configuration_change():return false
+	native_numeric_update=native_updated
 	for id in costs:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
 	var before = jewel_equipment_stat(entry)
@@ -2959,10 +2976,11 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	invalidate_stat_cache()
 	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
-	if key == "armour" and state != State.RETREAT:
+	if not native_updated and key == "armour" and state != State.RETREAT:
 		player.armour = N.add(player.armour,N.subtract(after,before))
-	elif key == "shield" and state != State.RETREAT:
+	elif not native_updated and key == "shield" and state != State.RETREAT:
 		player.shield = N.add(player.shield,N.subtract(after,before))
+	native_numeric_update=false
 	if _upgrade_batch:
 		_upgrade_slots.append(slot_id(category,index))
 	else:
@@ -3628,6 +3646,7 @@ func upgrade_enhancement(count := 1) -> int:
 	if count==0 or not enhancement_unlocked():return 0
 	var purchased := enhancement_max_upgrades(count)
 	if purchased>0:
+		if not native_before_configuration_change():return 0
 		profile.jewelFragments=N.subtract(profile.jewelFragments,enhancement_purchase_cost(purchased))
 		profile.enhancementLevel+=purchased
 		invalidate_stat_cache()
@@ -3652,6 +3671,7 @@ func valid_enhancement_order(category: String, value: Variant) -> bool:
 func set_enhancement_order(category: String, order: Array) -> bool:
 	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return false
 	if enhancement_order(category)==order:return true
+	if not native_before_configuration_change():return false
 	profile.enhancementOrder[category]=order.duplicate()
 	invalidate_stat_cache()
 	enhancement_branches.reconcile(self)

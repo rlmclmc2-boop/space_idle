@@ -44,6 +44,8 @@ var detach_requested:=false
 func install(root)->void:
 	assert(root.simulation_presenter==null,"Direct slice cannot enable the rejected bridge")
 	scene=root;game=root.game
+	remainder=root.game_time_remainder
+	root.time_step_game_id=game.get_instance_id()
 	geometry.prepare(root,game)
 	previous_spatial=game.target_spatial_source
 	for key in ["target_provider","launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:
@@ -232,7 +234,8 @@ func close()->void:
 	scene.ship_view.numeric_slice_only=false
 	scene.simulation_geometry_view=null
 	scene.enemy_poses=geometry.enemy_poses
-	for key in previous:game.set(key,previous[key])
-	game.target_spatial_source=previous_spatial
+	geometry.close({"providers":previous,"spatial":previous_spatial})
+	for key in previous:
+		if previous[key].is_valid():game.native_transaction_observer(previous[key])
 	game.invalidate_projectile_target_points()
 	started=false

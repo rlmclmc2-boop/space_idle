@@ -48,6 +48,7 @@ static func apply(g,ratio:Dictionary,remember:bool=true) -> bool:
  if next==g.profile.reactorAllocation:
   if remember:notify(g,{"ratio":true})
   return true
+ if not g.native_before_configuration_change():return false
  var previous_vitals:Dictionary=g.capture_reactor_vitals()
  g.profile.reactorAllocation=next;g.invalidate_stat_cache()
  g.remap_reactor_vitals(previous_vitals)

@@ -44,6 +44,18 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	game.projectiles=kernel.projectile_views()
 	return true
 
+func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->bool:
+	var entry:Dictionary=game.slot_entry(category,index)
+	var projected=entry.duplicate();projected.level=int(entry.level)+levels
+	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"category":category,"index":index,"level":projected.level})
+	if descriptor.has("error"):return false
+	if category=="defence" and str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
+		var difference=game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry))
+		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
+	if not kernel.update_configuration(descriptor):return false
+	weapons=descriptor.weapons
+	return true
+
 func handoff_to_legacy(game:RefCounted,reason:String)->bool:
 	if handed_off:return game.native_execution==null
 	var exported:Dictionary=kernel.export_handoff()
@@ -127,6 +139,8 @@ func consume_feedback(game:RefCounted)->void:
 func cancel(game:RefCounted)->void:
 	if kernel==null:return
 	var released:Dictionary=kernel.exit_state()
+	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)
+	game.attack_instance_serial=int(released.instance_serial);game.uid=int(released.drop_uid)
 	game.enhancement_deferred=released.deferred
 	game.enhancement_defense_time=float(released.defence_time);game.enhancement_memory_elapsed=float(released.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(released.deferred_elapsed);game.enhancement_deferred_tick=int(released.deferred_tick)

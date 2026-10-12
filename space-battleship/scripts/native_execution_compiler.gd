@@ -7,17 +7,26 @@ func external_factor(g,entry:Dictionary,totals:Dictionary)->float:
 	var attack=entry.key in KEYS
 	var drone=float(totals.damage)*float(totals.weapon_damage.get(entry.key,1.0)) if attack else float(totals.defence)*float(totals.get(entry.key,1.0))
 	return g.planet_equipment_multiplier()*g.crew.system_effect(g,"equip_bonus")*g.galaxy.multiplier("equipment_value")*drone*float(totals.get("base_damage" if attack else "base_defence",1.0))
-func compile(g,scope:String)->Dictionary:
+func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 	if scope not in ["native_low_contract","native_rich15_layer2"]:return {"error":"unsupported_scope"}
 	if g.damage_stats.enabled or g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}
 	for category in ["weapons","defence"]:
 		for effect in g.profile.enhancementBranches[category]:
 			for node in g.profile.enhancementBranches[category][effect]:
 				if category!="weapons" or ALLOWED_BRANCHES.get(effect,{}).get(node,"")!=g.profile.enhancementBranches[category][effect][node]:return {"error":"unsupported_branch"}
+	var weapon_levels:Dictionary={}
+	if upgrade.get("category","")=="weapons":weapon_levels[int(upgrade.index)]=int(upgrade.level)
+	var old_floor=maxi(int(g.profile.get("droneWeaponFloor",1)),g.lowest_unlocked_weapon_level())
+	var next_floor=maxi(int(g.profile.get("droneWeaponFloor",1)),g.lowest_unlocked_weapon_level(weapon_levels))
 	var totals:Dictionary=g.hyperspace_totals()
 	for key in totals.legendary:
 		if key not in ["scatter_pulse","prism_tower"]:return {"error":"unsupported_legendary:"+str(key)}
 	if not g.drone_combat.delayed.is_empty() or not g.drone_combat.disabled.is_empty() or g.drone_combat.black_hole_remaining>0:return {"error":"unsupported_pending_drone_state"}
+	for key in g.galaxy.regions:
+		var region=g.galaxy.regions[key]
+		if region.state.status in ["exploring","developing"]:
+			for member in g.profile.crew:
+				if member.assignmentType=="galaxy_explore" and str(member.targetId)==str(key) and g.crew.active(g,member):return {"error":"unsupported_autonomous_galaxy_configuration"}
 	var enemies:Array=[];var weapons:Array=[];var defence:Array=[]
 	var growth=0.0;var defence_growth=0.0;var effect_level=0.0
 	for enemy in g.enemies:
@@ -32,6 +41,10 @@ func compile(g,scope:String)->Dictionary:
 		enemies.append(view)
 	for index in g.combat_weapon_entries().size():
 		var entry:Dictionary=g.combat_entry(index)
+		if not upgrade.is_empty():
+			entry=entry.duplicate()
+			if entry.has("drone_id"):entry.level=int(entry.level)+next_floor-old_floor
+			elif weapon_levels.has(index):entry.level=weapon_levels[index]
 		if str(entry.key).is_empty():continue
 		if not entry.key in KEYS:return {"error":"unsupported_weapon"}
 		var row:Dictionary=g.player_weapon_row(entry,totals)
@@ -60,6 +73,8 @@ func compile(g,scope:String)->Dictionary:
 			weapons.append({"kind":kind,"type":int(row.dmgtype),"slot":slot,"hostile":true,"source":source,"damage":ceilf(float(row.dmg)*float(enemy.dmgMultiple)*g.ratio("atkRatio")),"interval":float(row.cd),"remaining":float(enemy.cooldowns[slot]) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit(true) if kind!=3 else 1.0,"salvo":1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(enemy.x,enemy.y)+g.enemy_weapon_offset(enemy,slot),"entry":entry,"row":row})
 	for index in g.defense_entries().size():
 		var entry:Dictionary=g.slot_entry("defence",index)
+		if upgrade.get("category","")=="defence" and int(upgrade.index)==index:
+			entry=entry.duplicate();entry.level=int(upgrade.level)
 		if entry.key not in ["shield","armour"]:return {"error":"unsupported_defence"}
 		var memory_heal=0.0;var memory_cap=0.0;var deferred=0.0
 		for effect in g.enhancement_recipe(entry):

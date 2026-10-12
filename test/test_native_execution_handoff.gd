@@ -6,7 +6,7 @@ class SharedCommandGame extends "res://scripts/presented_battle_game.gd":
 	func advance_shared_clock_and_economy(dt:float)->void:
 		super.advance_shared_clock_and_economy(dt)
 		if command_due:
-			command_due=false;command_ok=upgrade_slot("weapons",0,1)
+			command_due=false;command_ok=equip_slot("weapons",0,"laser")
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -42,6 +42,7 @@ func run()->void:
 	for id in costs:g.profile.resources[id]=N.multiply(costs[id],10.0)
 	var resource=g.profile.resources["1"];var level=g.weapon_entries()[0].level
 	check(g.upgrade_slot("weapons",0,1),"upgrade while missile packets pending")
+	g.notify_configuration_changed()
 	check(g.native_execution==null and g.native_handoff_count==1,"one whole-owner handoff")
 	check(g.weapon_entries()[0].level==level+1 and N.compare(g.profile.resources["1"],N.subtract(resource,costs.get("1",0)))==0,"level and spend applied exactly once")
 	check(is_equal_approx(g.cooldowns[g.slot_id("weapons",0)],cd),"upgrade keeps exact remaining cooldown")
@@ -75,6 +76,7 @@ func run()->void:
 	check(expected_count>0 and exported.flights[0].instance.chain.count==expected_count,"enhanced missile exports typed chain allowance")
 	check(not native_chain.has("count") and not native_chain.used,"cold export does not mutate native published instance")
 	check(g.upgrade_slot("weapons",0,1),"enhanced missile upgrade transfers pending salvo")
+	g.notify_configuration_changed()
 	var missile_chain:Dictionary=shot.attack_instance.chain
 	check(missile_chain.count==expected_count and not missile_chain.used,"unused missile allowance survives transfer")
 	check(is_same(missile_chain,g.missile_queue[0].attack.effects.filter(func(e):return e.get("chain",false))[0].chain_state),"pending tubes share chain allowance")
@@ -93,6 +95,7 @@ func run()->void:
 	exported=core.export_handoff()
 	var spent_id=int(shot.attack_instance.id)
 	check(g.upgrade_slot("weapons",0,1),"spent enhanced salvo transfers remaining carriers")
+	g.notify_configuration_changed()
 	var spent_effects:Array=[]
 	for carrier in g.projectiles:
 		if int(carrier.attack_instance_id)==spent_id:spent_effects=carrier.jewelEffects;break

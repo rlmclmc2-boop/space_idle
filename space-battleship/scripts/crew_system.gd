@@ -227,6 +227,8 @@ func gain_exp(g, id: String, amount: float, notify := true) -> bool:
 	var item := entry(g,id)
 	if item.is_empty() or not is_finite(amount) or amount < 0:return false
 	if not levels_unlocked(g) or not unlocked(g,id):return false
+	var next_exp=minf(roundf(float(item.exp))+roundf(amount),1e308)
+	if next_exp>=required_exp(g,int(item.level)) and not g.native_before_configuration_change():return false
 	g.capture_refit_health()
 	var previous := item.duplicate(true)
 	var before := [item.level,item.exp]
@@ -276,6 +278,7 @@ func assign(g, id: String, assignment: String, target: String, upgrade_mode := "
 	var item := entry(g,id)
 	if item.assignmentType==assignment and item.targetId==target:
 		return set_upgrade_mode(g,id,upgrade_mode,assignment) if not upgrade_mode.is_empty() else true
+	if not g.native_before_configuration_change():return false
 	g.capture_refit_health()
 	var previous := item.duplicate(true)
 	if item.assignmentType=="galaxy_explore":g.galaxy.flush_pending(g,str(item.targetId))
