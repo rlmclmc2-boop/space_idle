@@ -3,13 +3,14 @@ extends RefCounted
 ## No Owner, mailbox, DisplayGame, object graph encoding or scene geometry providers.
 const Geometry=preload("res://scripts/simulation_geometry_authority.gd")
 const View=preload("res://scripts/simulation_geometry_view.gd")
-const HOT=["fire","hit","beam_started","beam_hit","projectile_impact","explode","prototype_missile_retired","prototype_missile_reset"]
+const HOT=["fire","hit","beam_started","beam_hit","projectile_impact","explode","prototype_missile_retired","prototype_missile_reset","critical_impact"]
 class Effect extends RefCounted:
 	var kind:int
 	var serial:int=0
 	var uid:int=0
 	var style:int=0 # 0 enemy,1 pulse,2 missile,3 rail,4 beam
 	var position:=Vector2.ZERO
+	var aim:=Vector2.ZERO
 	var direction:=Vector2.UP
 	var width:float=0.0
 	var speed:float=0.0
@@ -69,6 +70,20 @@ func advance(seconds:float)->void:
 	snapshot();geometry_us+=Time.get_ticks_usec()-began
 	scene.game_time_remainder=remainder
 func snapshot()->void:
+	var retained:Dictionary={}
+	for enemy in game.enemies:retained[int(enemy.uid)]=true
+	# Labels and in-flight shots may still reference a departed target.
+	for entry in scene.floats+scene.damage_pending:
+		if entry.has("target_entity"):retained[int(entry.target_entity.uid)]=true
+	for shot in game.projectiles:
+		if not shot.target.is_empty() and shot.target.has("uid"):retained[int(shot.target.uid)]=true
+	for uid in born.keys():
+		if not retained.has(uid):
+			born.erase(uid);view.retire(uid);geometry.retire_display_entity(uid)
+	var active_serials:Dictionary={}
+	for shot in game.projectiles:active_serials[int(shot.serial)]=true
+	for serial in muzzle_values.keys():
+		if not active_serials.has(serial):muzzle_values.erase(serial)
 	for enemy in game.enemies:
 		var uid=int(enemy.uid)
 		if not born.has(uid):
@@ -110,6 +125,10 @@ func on_event(kind:String,info:Dictionary)->bool:
 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.spread=float(info.get("spread",0.0));fire_events+=1
 			if e.style!=4:
 				e.position=geometry.visual_muzzle(shot);e.direction=game.projectile_direction(shot)
+				e.aim=geometry.target_point(shot.target) if not shot.target.is_empty() else e.position+e.direction*100.0
+				if e.style==3:
+					e.direction=(geometry.battle_point(e.aim)-geometry.battle_point(e.position)).normalized()
+					e.width=scene.rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0)))
 				muzzle_values[e.serial]=e.position
 				spawn_visual(shot,e)
 				consume(e)
@@ -121,6 +140,8 @@ func on_event(kind:String,info:Dictionary)->bool:
 			var shot:Dictionary=info.shot
 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.position=Vector2(info.pos)
 			e.direction=game.projectile_direction(shot);e.critical=bool(shot.get("critical",false))
+			var visual:Dictionary=scene.projectile_visual(shot)
+			if visual.has("fixed_step"):e.position=scene.straight_projectile_point(e.position,visual)
 			if not bool(shot.get("chain_hop",false)):consume(e)
 		"explode":
 			e.uid=int(info.get("uid",0));e.position=Vector2(info.x,info.y);e.width=34.0
@@ -131,11 +152,20 @@ func on_event(kind:String,info:Dictionary)->bool:
 					scene.death_drop_positions[e.uid]=geometry.enemy_render_position(enemy)
 					break
 			consume(e)
+			if e.uid==scene.encounter_presentation.leader_uid:scene.encounter_presentation.leader_fall=0.0
+			if bool(info.get("boss",false)):scene.shake=maxf(scene.shake,float(scene.battle_visual.boss_destroy_shake))
+			scene.beep(90)
 		"prototype_missile_retired":
 			e.serial=int(info.serial);e.style=2;e.position=info.position;e.direction=info.direction
 			e.speed=float(info.speed);e.coast=bool(info.coast);consume(e)
 		"prototype_missile_reset":scene.missile_events.clear()
-		"beam_started","beam_hit":pass # continuous beam renderer consumes the live beam record
+		"beam_started","beam_hit":
+			var shot:Dictionary=info.shot
+			if bool(shot.get("hostile",false)):
+				e.position=geometry.visual_muzzle(shot) if kind=="beam_started" else geometry.target_point(shot.target)
+				scene.weapon_flash(e.position,scene.ORANGE,7.0,0.08)
+		"critical_impact":
+			e.position=info.pos;e.direction=info.direction;consume(e)
 	effects_us+=Time.get_ticks_usec()-began
 	return true
 func spawn_visual(shot:Dictionary,e:Effect)->void:
@@ -158,7 +188,9 @@ func consume(e:Effect)->void:
 			match e.style:
 				0,1:game.native_pipeline.record_contact(e.style,e.position,e.direction,geometry.fx_time,true,false,e.damage_type)
 				2:scene.missile_events.append({"kind":"fire","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":false})
-				3:scene.rail_events.append({"kind":"fire","origin":e.position,"position":e.position,"direction":e.direction,"aim":e.position+e.direction*800,"full_width":scene.rail_vfx.discharge_width(),"born":geometry.fx_time})
+				3:scene.rail_events.append({"kind":"fire","origin":e.position,"position":e.position,"direction":e.direction,"aim":e.aim,"full_width":e.width,"born":geometry.fx_time})
+			if e.style==3:scene.railgun_sound("release")
+			else:scene.beep(620 if e.damage_type==1 else 200)
 		1:
 			scene.queue_damage_number({"player":e.player,"uid":e.uid,"type":e.damage_type,"amount":e.amount,"absorbed":e.absorbed,"critical":e.critical})
 			if e.player:scene.player_hit_at=geometry.fx_time
@@ -167,14 +199,19 @@ func consume(e:Effect)->void:
 				0,1:game.native_pipeline.record_contact(e.style,e.position,e.direction,geometry.fx_time,false,e.critical,e.damage_type)
 				2:scene.missile_events.append({"kind":"hit","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":e.critical,"serial":e.serial})
 				3:scene.rail_events.append({"kind":"hit","origin":muzzle_values.get(e.serial,e.position),"position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":e.critical})
+			if e.style==3:scene.railgun_sound("impact")
 		5:
 			if scene.destruction_events.size()>=24:scene.destruction_events.pop_front()
 			scene.destruction_events.append({"position":e.position,"width":e.width,"born":geometry.fx_time,"seed":e.uid,"hyperspace":false})
 		6:
 			var coast=0.12 if e.coast else 0.0
 			scene.missile_events.append({"kind":"retired","position":e.position,"direction":e.direction,"speed":e.speed,"serial":e.serial,"born":geometry.fx_time,"coast_time":coast,"duration":coast+0.18})
+		8:
+			scene.weapon_flash(e.position,Color.WHITE,14.0,0.08)
+			scene.beam_ring(e.position,scene.ORANGE,0.12,11)
+			scene.weapon_sparks(e.position,7,140,e.direction)
 func metrics()->Dictionary:
-	return {"logical_steps":logical_steps,"node_applies":node_applies,"typed_events":typed_events,"fire_events":fire_events,"hit_events":hit_events,"geometry_us":geometry_us,"effects_us":effects_us,"one_game":scene.game==game,"bridge_enabled":scene.simulation_presenter!=null}
+	return {"logical_steps":logical_steps,"node_applies":node_applies,"typed_events":typed_events,"fire_events":fire_events,"hit_events":hit_events,"geometry_us":geometry_us,"effects_us":effects_us,"one_game":scene.game==game,"bridge_enabled":scene.simulation_presenter!=null,"birth_records":born.size(),"muzzle_records":muzzle_values.size()}
 func close()->void:
 	scene.ship_view.numeric_slice_only=false
 	for key in previous:game.set(key,previous[key])
