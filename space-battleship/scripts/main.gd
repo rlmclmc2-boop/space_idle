@@ -108,7 +108,10 @@ const IMPACT_SCALE := 0.65
 var show_damage_numbers := true
 var damage_mode := 0 # 0 simplified, 1 all (damage types), 2 off
 var damage_pending: Array[Dictionary] = []
-var damage_history: Array[String] = []
+var damage_history: Array[String]:
+	get:return read_damage_history()
+var damage_history_records: Array = []
+var damage_history_head := 0
 var wave_hint := 0.0
 var fx_time := 0.0
 var accelerated_visual_mode := false
@@ -451,7 +454,7 @@ func _process(delta: float) -> void:
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
-		flush_damage_numbers()
+	flush_damage_numbers(0.0 if game.paused else dt)
 	shake = maxf(0,shake-dt*18)
 	message_time = maxf(0,message_time-dt)
 	refresh_visible_cards(dt)
@@ -2053,7 +2056,8 @@ func build_ui() -> void:
 			var detail_text := RichTextLabel.new()
 			detail_text.custom_minimum_size = Vector2(520,480)
 			detail_text.selection_enabled = true
-			detail_text.text = "\n".join(damage_history) if not damage_history.is_empty() else UIText.t("main.build_ui.text_22")
+			var history := damage_history
+			detail_text.text = "\n".join(history) if not history.is_empty() else UIText.t("main.build_ui.text_22")
 			details.add_child(detail_text)
 			details.confirmed.connect(details.queue_free)
 			details.canceled.connect(details.queue_free)
@@ -2561,9 +2565,13 @@ func incoming_damage_text(amount, absorbed, damage_type: int, exact := false) ->
 func queue_damage_number(info: Dictionary) -> void:
 	if fast_mode_enabled():return
 	var absorbed = info.get("absorbed",0)
-	var exact := incoming_damage_text(info.amount,absorbed,int(info.type),true) if info.player else damage_feedback_text(info.amount,absorbed,true)
-	damage_history.append(UIText.t("battle.damage_record", {"target":UIText.t("battle.queue_damage_number.text_01") if info.player else UIText.t("battle.queue_damage_number.text_02", {"uid":"%s" % (info.uid)}), "critical":UIText.t("battle.queue_damage_number.text_03") if info.get("critical",false) else "", "damage":exact}))
-	if damage_history.size()>40:damage_history.pop_front()
+	var amount = info.amount
+	# Each hit remains a record; only owned scalar numbers enter the bounded ring.
+	var row = [bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),{"m":amount.m,"e":amount.e} if amount is Dictionary else amount,{"m":absorbed.m,"e":absorbed.e} if absorbed is Dictionary else absorbed]
+	if damage_history_records.size()<40:damage_history_records.append(row)
+	else:
+		damage_history_records[damage_history_head]=row
+		damage_history_head=(damage_history_head+1)%40
 	if not show_damage_numbers:return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
@@ -2573,70 +2581,120 @@ func queue_damage_number(info: Dictionary) -> void:
 			if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):
 				entry.amount = GrowthNumber.add(entry.amount,info.amount)
 				entry.absorbed = GrowthNumber.add(entry.get("absorbed",0),absorbed)
-				entry.text = incoming_damage_text(entry.amount,entry.absorbed,entry.type) if target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
-				if entry.pos!=Vector2.ZERO:
-					var adjusted := damage_text_position(entry.origin,entry.text,entry.size,entry)
-					if adjusted!=Vector2.INF:
-						entry.pos=adjusted
-					else:
-						entry.life=minf(float(entry.life),0.08)
-						entry.retiring=true
+				entry.display_dirty = true
 				return
-	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
-	var anchor := player_render_position()
+	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
+	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
+	# Keep a same-frame killed target alive until its final display anchor is read.
 	if not info.player:
 		for enemy in game.enemies:
-			if enemy.uid==info.uid:
-				height = enemy_render_width(enemy)
-				anchor = enemy_render_position(enemy)
-	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":incoming_damage_text(info.amount,absorbed,int(info.type)) if info.player else damage_feedback_text(info.amount,absorbed),"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":battle_logical_point(anchor-Vector2(0,height+16)),"pos":Vector2.ZERO}
+			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
-	flush_damage_numbers()
 
-func flush_damage_numbers() -> void:
+func read_damage_history() -> Array[String]:
+	var result: Array[String] = []
+	for i in damage_history_records.size():
+		var row: Array = damage_history_records[(damage_history_head+i)%damage_history_records.size()]
+		var exact: String = incoming_damage_text(row[4],row[5],int(row[2]),true) if row[0] else damage_feedback_text(row[4],row[5],true)
+		result.append(UIText.t("battle.damage_record",{"target":UIText.t("battle.queue_damage_number.text_01") if row[0] else UIText.t("battle.queue_damage_number.text_02",{"uid":"%s" % row[1]}),"critical":UIText.t("battle.queue_damage_number.text_03") if row[3] else "","damage":exact}))
+	return result
+
+func resolve_damage_origin(entry: Dictionary) -> void:
+	if not entry.get("needs_origin",false):return
+	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
+	var anchor := player_render_position()
+	var enemy: Dictionary = entry.get("target_entity",{})
+	if not enemy.is_empty():
+		height=enemy_render_width(enemy);anchor=enemy_render_position(enemy)
+	entry.origin=battle_logical_point(anchor-Vector2(0,height+16))
+	entry.needs_origin=false
+
+func flush_damage_numbers(frame_delta: float = 0.0) -> void:
+	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
+	# Final strings and geometry are shared by all placement queries this frame.
+	var context := {"metrics":{},"occupied":[],"enemies":damage_text_enemy_bounds()}
+	for entry in floats+damage_pending:
+		if entry.get("display_dirty",false):
+			entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+	for entry in floats:
+		if entry.get("damage",false):damage_layout_occupy(entry,context)
+	for entry in floats:
+		if not entry.get("display_dirty",false):continue
+		var adjusted := damage_text_position(entry.origin-Vector2(0,frame_delta*12),entry.text,entry.size,entry,context)
+		if adjusted!=Vector2.INF:entry.pos=adjusted
+		else:
+			entry.life=minf(float(entry.life),0.08);entry.retiring=true
+		entry.display_dirty=false
+		damage_layout_occupy(entry,context)
+	var slots := {}
+	for entry in floats:
+		var target: String=entry.get("target","")
+		if not slots.has(target):slots[target]=[]
+		slots[target].append(entry)
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
-			damage_pending.erase(entry)
-			continue
-		var active := floats.filter(func(f):return f.get("target","")==entry.target)
+			damage_pending.erase(entry);continue
+		var active: Array=slots.get(entry.target,[])
 		if active.size()>=2:
-			active[0].life = minf(active[0].life,0.08)
-			active[0].retiring = true
+			active[0].life=minf(float(active[0].life),0.08);active[0].retiring=true
 			continue
-		var pos := damage_text_position(entry.origin,entry.text,entry.size)
+		resolve_damage_origin(entry)
+		var drift := frame_delta if fx_time-entry.born<=frame_delta+0.0000001 else 0.0
+		var pos := damage_text_position(entry.origin-Vector2(0,drift*12),entry.text,entry.size,{},context)
 		if pos==Vector2.INF:
-			# No safe local space: keep a bounded, short-lived visual backlog.
 			if fx_time-entry.born>0.2:damage_pending.erase(entry)
 			continue
-		entry.pos = pos
-		floats.append(entry)
-		damage_pending.erase(entry)
+		entry.pos=pos;entry.life-=drift;entry.display_dirty=false
+		floats.append(entry);damage_pending.erase(entry)
+		active.append(entry);slots[entry.target]=active
+		damage_layout_occupy(entry,context)
 
-func damage_text_rect(pos: Vector2, value: String, size_value := 19) -> Rect2:
-	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
-	return Rect2(pos-Vector2(maxf(0,92-width)/2,font.get_ascent(size_value)),Vector2(maxf(92,width),font.get_height(size_value))).grow(4)
+func damage_layout_metrics(value: String, size_value: int, context: Dictionary) -> Dictionary:
+	var key=[value,size_value]
+	if not context.metrics.has(key):
+		context.metrics[key]={"width":font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x,"ascent":font.get_ascent(size_value),"height":font.get_height(size_value)}
+	return context.metrics[key]
 
-func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}) -> Vector2:
-	var width := font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
-	var enemy_bounds: Array[Rect2] = []
+func damage_layout_occupy(entry: Dictionary, context: Dictionary) -> void:
+	var bounds := damage_text_rect(battle_point(entry.pos),entry.text,int(entry.size),damage_layout_metrics(entry.text,int(entry.size),context))
+	for item in context.occupied:
+		if is_same(item[0],entry):item[1]=bounds;return
+	context.occupied.append([entry,bounds])
+
+func damage_text_enemy_bounds() -> Array[Rect2]:
+	var result: Array[Rect2] = []
 	for enemy in game.enemies:
 		if enemy.hp<=0:continue
 		var half_width := enemy_render_width(enemy)
 		var center := enemy_render_position(enemy)
-		var hover_margin := Vector2(float(battle_visual.enemy_idle_x),float(battle_visual.enemy_idle_y))
-		var envelope := Vector2(half_width*0.6,half_width*1.15)+hover_margin
-		enemy_bounds.append(Rect2(center-envelope,envelope*2.0))
+		var envelope := Vector2(half_width*0.6,half_width*1.15)+Vector2(float(battle_visual.enemy_idle_x),float(battle_visual.enemy_idle_y))
+		result.append(Rect2(center-envelope,envelope*2.0))
+	return result
+
+func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Dictionary = {}) -> Rect2:
+	var width: float=metrics.width if not metrics.is_empty() else font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
+	var ascent: float=metrics.ascent if not metrics.is_empty() else font.get_ascent(size_value)
+	var height: float=metrics.height if not metrics.is_empty() else font.get_height(size_value)
+	return Rect2(pos-Vector2(maxf(0,92-width)/2,ascent),Vector2(maxf(92,width),height)).grow(4)
+
+func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}, context: Dictionary = {}) -> Vector2:
+	if context.is_empty():
+		context={"metrics":{},"occupied":[],"enemies":damage_text_enemy_bounds()}
+		for entry in floats:
+			if entry.get("damage",false):damage_layout_occupy(entry,context)
+	var metrics := damage_layout_metrics(value,size_value,context)
+	var width: float=metrics.width
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
 			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
-			var bounds := damage_text_rect(battle_point(pos),value,size_value)
+			var bounds := damage_text_rect(battle_point(pos),value,size_value,metrics)
 			if bounds.position.y<8:continue
 			var blocked := false
-			for entry in floats:
-				if entry.get("damage",false) and not is_same(entry,excluded_entry) and bounds.grow(8).intersects(damage_text_rect(battle_point(entry.pos),entry.text,entry.size)):blocked = true
-			for obstacle in enemy_bounds:
-				if bounds.intersects(obstacle):blocked = true
+			for item in context.occupied:
+				if not is_same(item[0],excluded_entry) and bounds.grow(8).intersects(item[1]):blocked=true;break
+			if not blocked:
+				for obstacle in context.enemies:
+					if bounds.intersects(obstacle):blocked=true;break
 			if not blocked:return pos
 	return Vector2.INF
 
