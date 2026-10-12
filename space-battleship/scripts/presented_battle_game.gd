@@ -72,6 +72,8 @@ func _init(database:ShipDatabase,persist:=true)->void:
 	MISSILE_LAUNCH_FORWARD_Y=db.weapon_motion_value("missile_launch_forward_y",MISSILE_LAUNCH_FORWARD_Y)
 	MISSILE_CRUISE_SPEED=float(db.equip("missile",1).para2)*db.projectile_pixels_per_unit()
 
+	if ClassDB.class_exists("SpaceCombatPresentation"):combat_presentation=ClassDB.instantiate("SpaceCombatPresentation")
+
 func tick(dt:float)->void:
 	if paused:return
 	if native_execution!=null:

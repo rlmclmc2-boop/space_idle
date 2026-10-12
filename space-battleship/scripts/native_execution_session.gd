@@ -149,3 +149,39 @@ func configuration_changed()->void:
 	# A mutation cannot resume the old executor. Later rich admission will
 	# replace this pause with explicit typed configuration commands.
 	paused_by_configuration=true
+
+func prepare_numeric_batch(game,mode:String)->Dictionary:
+	var wallet:Dictionary=game.profile.resources.duplicate()
+	var weapon_levels:Dictionary={};var defence_levels:Dictionary={};var planned:Dictionary={}
+	var player:Dictionary=game.player.duplicate(true)
+	for category in ["weapons","defence"]:
+		for index in game.loadout_entries(category).size():
+			var levels:int=game.max_upgrade_amount_slot(category,index,wallet) if mode=="max" else int(mode)
+			if levels<=0:continue
+			var costs:Dictionary=game.slot_upgrade_cost(category,index,levels)
+			if costs.is_empty():continue
+			if not costs.keys().all(func(id):return is_finite(float(costs[id])) and game.N.compare(wallet.get(id,0),costs[id])>=0):continue
+			for id in costs:wallet[id]=game.N.subtract(wallet.get(id,0),costs[id])
+			var entry:Dictionary=game.slot_entry(category,index)
+			var projected=entry.duplicate();projected.level=int(entry.level)+levels
+			planned[game.slot_id(category,index)]={"levels":levels,"before":int(entry.level)}
+			if category=="weapons":weapon_levels[index]=int(projected.level)
+			else:
+				defence_levels[index]=int(projected.level)
+				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
+					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
+	if planned.is_empty():return {"skip":true}
+	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
+	if descriptor.has("error"):return {}
+	descriptor.player=player
+	if not kernel.can_update_configuration(descriptor):return {}
+	return {"descriptor":descriptor,"planned":planned}
+
+func commit_numeric_batch(game,batch:Dictionary)->bool:
+	# Main performed its original sequential purchases and defence deltas. No
+	# combat advances inside this synchronous, prevalidated command boundary.
+	var descriptor:Dictionary=batch.descriptor
+	descriptor.player=game.player.duplicate(true)
+	if not kernel.update_configuration(descriptor):return false
+	weapons=descriptor.weapons
+	return true

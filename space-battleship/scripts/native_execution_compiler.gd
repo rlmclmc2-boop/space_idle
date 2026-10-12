@@ -14,7 +14,8 @@ func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 		for effect in g.profile.enhancementBranches[category]:
 			for node in g.profile.enhancementBranches[category][effect]:
 				if category!="weapons" or ALLOWED_BRANCHES.get(effect,{}).get(node,"")!=g.profile.enhancementBranches[category][effect][node]:return {"error":"unsupported_branch"}
-	var weapon_levels:Dictionary={}
+	var weapon_levels:Dictionary=upgrade.get("weapon_levels",{})
+	var defence_levels:Dictionary=upgrade.get("defence_levels",{})
 	if upgrade.get("category","")=="weapons":weapon_levels[int(upgrade.index)]=int(upgrade.level)
 	var totals:Dictionary=g.hyperspace_totals()
 	for key in totals.legendary:
@@ -67,7 +68,9 @@ func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 			weapons.append({"kind":kind,"type":int(row.dmgtype),"slot":slot,"hostile":true,"source":source,"damage":ceilf(float(row.dmg)*float(enemy.dmgMultiple)*g.ratio("atkRatio")),"interval":float(row.cd),"remaining":float(enemy.cooldowns[slot]) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit(true) if kind!=3 else 1.0,"salvo":1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(enemy.x,enemy.y)+g.enemy_weapon_offset(enemy,slot),"entry":entry,"row":row})
 	for index in g.defense_entries().size():
 		var entry:Dictionary=g.slot_entry("defence",index)
-		if upgrade.get("category","")=="defence" and int(upgrade.index)==index:
+		if defence_levels.has(index):
+			entry=entry.duplicate();entry.level=int(defence_levels[index])
+		elif upgrade.get("category","")=="defence" and int(upgrade.index)==index:
 			entry=entry.duplicate();entry.level=int(upgrade.level)
 		if entry.key not in ["shield","armour"]:return {"error":"unsupported_defence"}
 		var memory_heal=0.0;var memory_cap=0.0;var deferred=0.0

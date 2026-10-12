@@ -147,5 +147,25 @@ func run()->void:
 	var inventory_before=g.profile.hyperspace.duplicate(true)
 	check(not g.hyperspace.set_equipped(g,[]) and g.profile.hyperspace==inventory_before,"failed structural drone handoff leaves configuration unchanged")
 	g.begin_retreat()
+	for mode in ["1","10","max"]:
+		g=fixture("missile",true);owner=g.native_execution;g.enable_compiled_combat_rules()
+		var quote=g.slot_upgrade_cost("weapons",0,1)
+		g.profile.resources={"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5}
+		var legacy=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
+		legacy.profile=g.profile.duplicate(true);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
+		legacy.enable_compiled_combat_rules();legacy.invalidate_stat_cache()
+		var expected_ok=legacy.upgrade_equipment_batch(mode)
+		var actual_ok=g.upgrade_equipment_batch(mode)
+		check(actual_ok==expected_ok and g.profile.loadout==legacy.profile.loadout and g.profile.resources==legacy.profile.resources,"main ordered partial-budget batch preserved: "+mode)
+		check(N.compare(g.player.armour,legacy.player.armour)==0 and N.compare(g.player.shield,legacy.player.shield)==0,"main sequential defence deltas preserved: "+mode)
+		check(g.native_execution==owner and g.native_handoff_count==0,"one prepared batch retains native owner: "+mode)
+		g.begin_retreat()
+	g=fixture("missile",true);owner=g.native_execution;g.profile.resources={"1":0.0,"2":0.0}
+	check(not g.upgrade_equipment_batch("1") and g.native_execution==owner and g.native_handoff_count==0,"unaffordable batch leaves native owner intact")
+	g.begin_retreat()
+	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
+	var batch_profile=g.profile.duplicate(true)
+	check(not g.upgrade_equipment_batch("1") and g.profile==batch_profile,"failed whole-batch validation spends nothing and runs no purchase")
+	g.begin_retreat()
 	print("NATIVE NUMERIC UPGRADE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

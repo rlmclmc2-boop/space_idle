@@ -80,6 +80,7 @@ Vector2 inverse_battle_point(Vector2 p) {
 class SpaceMotionLease : public RefCounted {
     GDCLASS(SpaceMotionLease, RefCounted)
     friend class SpaceCombatKernel;
+    friend class SpaceCombatPresentation;
     std::shared_ptr<MotionArena> arena;
     size_t slot = 0;
     uint64_t generation = 0;
@@ -122,10 +123,12 @@ void SpaceMotionLease::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_orphan","value"),&SpaceMotionLease::set_orphan);
 }
 #include "combat_execution_kernel.h"
+#include "combat_presentation.h"
 
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceCombatKernel>();
+    ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceCombatFlightFrame>();ClassDB::register_class<SpaceCombatPresentation>();
 }
 void terminate(ModuleInitializationLevel) {}
 extern "C" GDExtensionBool GDE_EXPORT space_native_init(GDExtensionInterfaceGetProcAddress get_proc,GDExtensionClassLibraryPtr library,GDExtensionInitialization *initialization) {

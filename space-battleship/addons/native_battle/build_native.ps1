@@ -1,7 +1,7 @@
 param(
     [string]$BuildRoot = 'D:\CodexBuild\space_idle',
     [string]$ToolsRoot = 'D:\CodexTools',
-    [int]$Jobs = 8
+    [int]$Jobs = 1
 )
 $ErrorActionPreference = 'Stop'
 $buildPath = [IO.Path]::GetFullPath($BuildRoot)
@@ -32,6 +32,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'SConstruct') -Destination (Join-Path $native 'SConstruct')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\space_native.cpp') -Destination (Join-Path $native 'src\space_native.cpp')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_execution_kernel.h') -Destination (Join-Path $native 'src\combat_execution_kernel.h')
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_presentation.h') -Destination (Join-Path $native 'src\combat_presentation.h')
     Push-Location $native
     try {
         & $python -m SCons "bindings=$($binding.Replace('\','/'))" platform=windows arch=x86_64 use_mingw=yes use_llvm=yes "mingw_prefix=$($compiler.Replace('\','/'))" use_static_cpp=yes "custom_api_file=$($api.Replace('\','/'))" target=template_release lto=none -j $Jobs

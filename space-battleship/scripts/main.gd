@@ -1651,7 +1651,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	var key := weapon_key(shot)
 	if key=="longLaser":return
 	var mount := shot_mount(shot)
-	if mount>=0:
+	if mount>=0 and simulation_geometry_view==null:
 		var pose := turret_pose(mount)
 		if key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time):
 			pose.target = shot.target
@@ -1671,12 +1671,14 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 				nearest={"enemy":enemy,"slot":slot}
 		if not nearest.is_empty():enemy_pose(nearest.enemy)["rail_fired_"+str(nearest.slot)]=fx_time
 	var pos := visual_muzzle(shot)
-	var trail := PackedVector2Array()
-	trail.resize(14)
-	trail.fill(pos)
-	# One fixed trail buffer per shot, overwritten in place during flight.
 	if projectile_visuals.size()<256:
-		projectile_visuals.append({"shot":shot,"angle":-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else game.projectile_direction(shot).angle(),"mount":mount,"age":0.0,"origin":pos,"logical_origin":game.projectile_position(shot),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
+		var angle:float=-PI/2+player_idle_angle()+weapon_visual_angle(mount) if mount>=0 else game.projectile_direction(shot).angle()
+		if game.combat_presentation!=null and game.combat_presentation.has_method("create_visual"):
+			projectile_visuals.append(game.combat_presentation.create_visual(shot,angle,mount,pos,game.projectile_position(shot),spread))
+		else:
+			var trail := PackedVector2Array();trail.resize(14);trail.fill(pos)
+			projectile_visuals.append({"shot":shot,"angle":angle,"mount":mount,"age":0.0,"origin":pos,"logical_origin":game.projectile_position(shot),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
+		if game.combat_presentation!=null and game.combat_presentation.has_method("register_visual"):game.combat_presentation.register_visual(shot,projectile_visuals.back(),projectile_visuals.size()-1)
 		if key in ["laser","cannon"] and not shot.target.is_empty():
 			var visual: Dictionary=projectile_visuals.back()
 			# Presented pulses already launch toward a projected aim. Map their
@@ -1708,6 +1710,9 @@ func advance_projectile_visuals(dt: float) -> void:
 	if fast_mode_enabled():
 		projectile_visuals.clear()
 		return
+	if game.combat_presentation!=null:
+		game.combat_presentation.advance_visuals(self,dt)
+		return
 	var active_shots := {}
 	for shot in game.projectiles:
 		if shot.has("serial"):active_shots[shot.serial] = shot
@@ -1717,16 +1722,7 @@ func advance_projectile_visuals(dt: float) -> void:
 		if not alive:
 			projectile_visuals.remove_at(i)
 			continue
-		visual.age += dt
-		var next_position := missile_visual_position(visual.shot,float(visual.spread),visual.origin,visual)
-		var movement := battle_point(next_position)-battle_point(visual.trail[int(visual.head)])
-		var desired_angle: float = movement.angle() if movement.length_squared()>0.001 else game.projectile_direction(visual.shot).angle()
-		visual.angle = lerp_angle(float(visual.angle),desired_angle,1.0-exp(-dt*16.0))
-		if dt>0:
-			visual.head = (int(visual.head)+1)%14
-			visual.trail_times[visual.head] = visual.age
-			visual.trail[visual.head] = next_position
-			visual.samples = mini(14,int(visual.samples)+1)
+		_advance_projectile_visual_record(visual,dt)
 
 func straight_projectile_point(logical_point: Vector2, visual: Dictionary) -> Vector2:
 	var distance := (logical_point-Vector2(visual.logical_origin)).dot(visual.fixed_direction)
@@ -1751,6 +1747,7 @@ func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, v
 
 func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
 	if shot.has("serial") and not index.is_empty():return index.get(shot.serial,{})
+	if game.combat_presentation!=null:return game.combat_presentation.find_visual(projectile_visuals,shot)
 	for visual in projectile_visuals:
 		if is_same(visual.shot,shot):return visual
 	return {}
@@ -1795,14 +1792,14 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 	var key := weapon_key(shot)
 	var angle: float = game.projectile_direction(shot).angle()
 	if not visual.is_empty():
-		angle = visual.angle
+		angle = projectile_visual_value(visual,"angle",0.0)
 	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
 		enemy_recognition.draw_projectile(draw_surface,pos,angle,int(shot.type),core)
 		return angle
 	if key=="cannon":
 		if core:
 			var distance := pos.distance_to(battle_point(visual.get("origin",game.projectile_position(shot)))+offset)
-			var render_speed := float(shot.get("speed",800.0))*Vector2(visual.get("fixed_step",Vector2.ONE.normalized())).length()*maxf(1.0,game.speed)
+			var render_speed := game.projectile_speed(shot)*Vector2(visual.get("fixed_step",Vector2.ONE.normalized())).length()*maxf(1.0,game.speed)
 			railgun_fx.draw_flight(draw_surface,pos,Vector2.from_angle(angle),distance,render_speed)
 		return angle
 	if not visual.is_empty():
@@ -2958,29 +2955,15 @@ func draw_battle() -> void:
 	var offset := Vector2(sin(fx_time*83.0),cos(fx_time*97.0))*shake
 	if not accelerated_visual_mode:draw_environment_event(offset)
 	if not accelerated_visual_mode:draw_battle_particles(offset,false)
-	var visual_index := projectile_visual_index()
-	var flights: Array = []
-	var visible_projectiles: Array = [] if accelerated_visual_mode else game.projectiles
-	for p in visible_projectiles:
-		var pos := battle_point(game.projectile_position(p))+offset
-		if p.get("beam", false):
-			if game.long_laser_valid(p) and draw_beam_override(p,offset,false):continue
-			pos = battle_point(visual_muzzle(p))+offset
-			if game.long_laser_valid(p):
-				var end := entity_render_position(p.target) + offset
-				var color := ORANGE if p.hostile else CYAN
-				if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
-					draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
-					continue
-				var visual := beam_style(p)
-				draw_surface.draw_line(pos,end,Color(color,visual.glow),visual.width*2.5*float(battle_visual.laser_glow_scale),true)
-			continue
-		var flight_visual := projectile_visual(p,visual_index)
-		if not flight_visual.is_empty():
-			pos = battle_point(missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual))+offset
-		var trail_budget := decoration_budget(pos,1) if weapon_key(p)=="missile" and not flight_visual.is_empty() and int(flight_visual.samples)>5 else 1
-		flights.append({"shot":p,"pos":pos,"visual":flight_visual,"budget":trail_budget})
-		draw_projectile_fx(p,pos,offset,false,flight_visual,trail_budget)
+	var flights:Variant=[]
+	var visible_projectiles:Array=[] if accelerated_visual_mode else game.projectiles
+	if game.combat_presentation!=null:
+		flights=game.combat_presentation.prepare_flights(self,visible_projectiles,offset)
+	else:
+		var visual_index=projectile_visual_index()
+		for p in visible_projectiles:
+			var flight=_prepare_projectile_flight(p,visual_index,offset)
+			if not flight.is_empty():flights.append(flight)
 	if GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT:
 		draw_ship(player_render_position()+offset,0.24,false,1,not accelerated_visual_mode and GrowthNumber.compare(game.player.shield,0)>0)
 		if not accelerated_visual_mode:draw_engine_wake(player_render_position()+offset)
@@ -2989,19 +2972,9 @@ func draw_battle() -> void:
 			continue
 		draw_enemy_hull_and_status(enemy,offset,boss_battle)
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
-	for flight in flights:
-		var p: Dictionary = flight.shot
-		var pos: Vector2 = flight.pos
-		var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
-		var key := str(p.key).replace("_mon", "").replace("-mon", "")
-		if key in ["laser","cannon"]:continue
-		if draw_projectile_body_override(p,pos,angle):continue
-		var texture := visual_texture(str(weapon_visual_profile(key).get("projectile_vfx","")))
-		if texture==null:continue
-		var size: Vector2 = PROJECTILE_SIZES.get(key,Vector2(48,24)) * PROJECTILE_SCALE * BODY_SCALE.get(key,Vector2.ONE)
-		draw_surface.draw_set_transform(pos, angle)
-		draw_surface.draw_texture_rect(texture,Rect2(-size/2,size),false)
-		draw_surface.draw_set_transform(Vector2.ZERO)
+	if game.combat_presentation!=null:game.combat_presentation.draw_flights(self,flights,offset)
+	else:
+		for flight in flights:_draw_projectile_foreground_flight(flight,offset)
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
 	for shot in visible_projectiles:
 		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
@@ -3074,7 +3047,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 		box(Rect2(marker, Vector2(40, 20)), PANEL, LINE)
 		text_at(UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)}),marker+Vector2(5,15),12,INK)
 
-func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float) -> bool:
+func draw_projectile_body_override(_shot: Dictionary, _pos: Vector2, _angle: float, _known_visual:Variant=null) -> bool:
 	# Optional presentation override; default retains the existing projectile sprite.
 	return false
 
@@ -3503,3 +3476,70 @@ func attach_native_display()->bool:
 func _exit_tree()->void:
 	if battle_slice_runtime!=null:
 		battle_slice_runtime.close();battle_slice_runtime=null
+
+func _advance_projectile_visual_record(visual:Dictionary,dt:float)->void:
+	visual.age += dt
+	var next_position := missile_visual_position(visual.shot,float(visual.spread),visual.origin,visual)
+	var movement := battle_point(next_position)-battle_point(visual.trail[int(visual.head)])
+	var desired_angle: float = movement.angle() if movement.length_squared()>0.001 else game.projectile_direction(visual.shot).angle()
+	visual.angle = lerp_angle(float(visual.angle),desired_angle,1.0-exp(-dt*16.0))
+	if dt>0:
+		visual.head = (int(visual.head)+1)%14
+		visual.trail_times[visual.head] = visual.age
+		visual.trail[visual.head] = next_position
+		visual.samples = mini(14,int(visual.samples)+1)
+
+
+func projectile_visual_value(visual:Dictionary,key:StringName,fallback:Variant=null)->Variant:
+	var lease=visual.get("visual_lease")
+	return visual.get(key,fallback) if lease==null else lease.read(key)
+
+
+func _prepare_projectile_flight(p:Dictionary,visual_index:Dictionary,offset:Vector2)->Dictionary:
+	var pos:=battle_point(game.projectile_position(p))+offset
+	if p.get("beam",false):
+		if game.long_laser_valid(p) and draw_beam_override(p,offset,false):return {}
+		pos=battle_point(visual_muzzle(p))+offset
+		if game.long_laser_valid(p):
+			var end:=entity_render_position(p.target)+offset
+			var color:=ORANGE if p.hostile else CYAN
+			if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
+				draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
+				return {}
+			var visual:=beam_style(p)
+			draw_surface.draw_line(pos,end,Color(color,visual.glow),visual.width*2.5*float(battle_visual.laser_glow_scale),true)
+			return {}
+	var flight_visual:=projectile_visual(p,visual_index)
+	if not flight_visual.is_empty():pos=battle_point(missile_visual_position(p,float(flight_visual.spread),flight_visual.origin,flight_visual))+offset
+	var trail_budget:=decoration_budget(pos,1) if weapon_key(p)=="missile" and not flight_visual.is_empty() and int(projectile_visual_value(flight_visual,"samples",0))>5 else 1
+	draw_projectile_fx(p,pos,offset,false,flight_visual,trail_budget)
+	return {"shot":p,"pos":pos,"visual":flight_visual,"budget":trail_budget}
+
+
+func _draw_projectile_foreground_flight(flight:Dictionary,offset:Vector2)->void:
+	if queue_projectile_packet(flight,offset):return
+	flush_projectile_packet_batch()
+	var p: Dictionary = flight.shot
+	var pos: Vector2 = flight.pos
+	var angle := draw_projectile_fx(p,pos,offset,true,flight.visual,flight.budget)
+	var key := str(p.key).replace("_mon", "").replace("-mon", "")
+	if key in ["laser","cannon"]:return
+	if draw_projectile_body_override(p,pos,angle,flight.visual):return
+	var texture := visual_texture(str(weapon_visual_profile(key).get("projectile_vfx","")))
+	if texture==null:return
+	var size: Vector2 = PROJECTILE_SIZES.get(key,Vector2(48,24)) * PROJECTILE_SCALE * BODY_SCALE.get(key,Vector2.ONE)
+	draw_surface.draw_set_transform(pos, angle)
+	draw_surface.draw_texture_rect(texture,Rect2(-size/2,size),false)
+	draw_surface.draw_set_transform(Vector2.ZERO)
+
+
+func begin_projectile_packet_batch()->void:
+	pass
+
+
+func queue_projectile_packet(_flight:Dictionary,_offset:Vector2=Vector2.ZERO)->bool:
+	return false
+
+
+func flush_projectile_packet_batch()->void:
+	pass

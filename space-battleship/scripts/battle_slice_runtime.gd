@@ -173,16 +173,23 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
 	if scene.projectile_visuals.size()>=256:return
 	var mount=geometry.shot_mount(shot)
 	var angle=e.direction.angle()
-	var trail=PackedVector2Array();trail.resize(14);trail.fill(e.position)
-	var times=PackedFloat32Array();times.resize(14);times.fill(0.0)
-	var visual:Dictionary={"shot":shot,"angle":angle,"mount":mount,"origin":e.position,"logical_origin":game.projectile_position(shot),"spread":e.spread,"age":0.0,"head":0,"samples":1,"trail":trail,"trail_times":times}
+	var visual:Dictionary
+	if game.combat_presentation!=null:
+		visual=game.combat_presentation.create_visual(shot,angle,mount,e.position,game.projectile_position(shot),e.spread)
+	else:
+		var trail=PackedVector2Array();trail.resize(14);trail.fill(e.position)
+		var times=PackedFloat32Array();times.resize(14);times.fill(0.0)
+		visual={"shot":shot,"angle":angle,"mount":mount,"origin":e.position,"logical_origin":game.projectile_position(shot),"spread":e.spread,"age":0.0,"head":0,"samples":1,"trail":trail,"trail_times":times}
 	scene.projectile_visuals.append(visual)
+	if game.combat_presentation!=null:game.combat_presentation.register_visual(shot,visual,scene.projectile_visuals.size()-1)
 	if geometry.weapon_key(shot) in ["laser","cannon"] and not shot.target.is_empty():
 		var aim:Vector2=shot.get("ballistic_target_origin",Vector2(shot.target.x,shot.target.y))
 		var target:Vector2=geometry.battle_point(aim) if shot.has("ballistic_target_origin") else geometry.entity_render_position(shot.target)
 		visual.fixed_origin=geometry.battle_point(e.position)
 		visual.fixed_step=(target-visual.fixed_origin)/maxf(game.projectile_position(shot).distance_to(aim),0.001)
 		visual.fixed_direction=game.projectile_direction(shot);visual.angle=Vector2(visual.fixed_step).angle()
+	if game.combat_presentation!=null:game.combat_presentation.bind_visual(visual)
+
 func consume(e:Effect)->void:
 	match e.kind:
 		0: # all original launches retain a body and an emitter effect
@@ -223,8 +230,11 @@ func close()->void:
 	started=false
 
 func record_contact(e:Effect,launch:bool,critical:bool)->void:
+	if game.combat_presentation!=null:
+		game.combat_presentation.record_contact(e.style,e.position,e.direction,geometry.fx_time,launch,critical,e.damage_type)
+		return
 	if e.style==0:
 		var event={"position":e.position,"direction":e.direction,"born":geometry.fx_time,"damage_type":e.damage_type}
 		if launch:event.kind="fire"
-		scene.enemy_impacts.append(event)
-	else:scene.pulse_events.append({"kind":"fire" if launch else "hit","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":critical})
+		scene._enemy_impacts.append(event)
+	else:scene._pulse_events.append({"kind":"fire" if launch else "hit","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":critical})

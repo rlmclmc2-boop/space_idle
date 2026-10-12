@@ -788,7 +788,7 @@ func invalidate_stat_cache() -> void:
 	combat_sources_dirty=true
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
-	if compiled_combat_rules!=null:compiled_combat_rules.compile(self)
+	if compiled_combat_rules!=null and native_upgrade_batch.is_empty():compiled_combat_rules.compile(self)
 
 func invalidate_equipment_counter(key: String) -> void:
 	# Attack/hit counters change only this equipment type's proficiency/adaptation.
@@ -2661,7 +2661,7 @@ func upgrade_quote_signature(key:String)->Array:
 	# Separate from combat stat invalidation: attack counters do not change prices.
 	return [profile.resources.duplicate(true),db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
 
-func max_upgrade_amount_slot(category: String, index: int) -> int:
+func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={}) -> int:
 	var entry := slot_entry(category,index)
 	var key := module_cost_key(category)
 	if entry.is_empty():
@@ -2670,8 +2670,8 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 	var cache_key:String=str([key,current])
 	var signature:Array=upgrade_quote_signature(key)
 	var cached:Dictionary=max_upgrade_quote_cache.get(cache_key,{})
-	if not cached.is_empty() and cached.signature==signature:return int(cached.amount)
-	var available: Dictionary = profile.resources.duplicate()
+	if budget.is_empty() and not cached.is_empty() and cached.signature==signature:return int(cached.amount)
+	var available: Dictionary = (profile.resources if budget.is_empty() else budget).duplicate()
 	var total:Dictionary={}
 	var amount := 0
 	var level := current + 1
@@ -2689,8 +2689,9 @@ func max_upgrade_amount_slot(category: String, index: int) -> int:
 			total[id]=float(total.get(id,0))+float(costs[id])
 		amount += 1
 		level += 1
-	if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
-	max_upgrade_quote_cache[cache_key]={"signature":signature,"amount":amount,"costs":total}
+	if budget.is_empty():
+		if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
+		max_upgrade_quote_cache[cache_key]={"signature":signature,"amount":amount,"costs":total}
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:
@@ -2709,8 +2710,14 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry = slot_entry(category, index)
 	var key = str(entry.key)
 	var costs = slot_upgrade_cost(category, index, levels)
-	var native_updated=false
-	if native_execution!=null:
+	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
+	if batch_update:
+		var expected:Dictionary=native_upgrade_batch.planned.get(slot_id(category,index),{})
+		if expected.get("levels",-1)!=levels or expected.get("before",-1)!=int(entry.level):
+			if not native_before_configuration_change():return false
+			native_upgrade_batch={};batch_update=false
+	var native_updated=batch_update
+	if native_execution!=null and not batch_update:
 		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
 		if not native_updated and not native_before_configuration_change():return false
 	native_numeric_update=native_updated
@@ -2722,9 +2729,9 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	invalidate_stat_cache()
 	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
-	if not native_updated and key == "armour" and state != State.RETREAT:
+	if (not native_updated or batch_update) and key == "armour" and state != State.RETREAT:
 		player.armour = N.add(player.armour,N.subtract(after,before))
-	elif not native_updated and key == "shield" and state != State.RETREAT:
+	elif (not native_updated or batch_update) and key == "shield" and state != State.RETREAT:
 		player.shield = N.add(player.shield,N.subtract(after,before))
 	native_numeric_update=false
 	if _upgrade_batch:
@@ -2736,11 +2743,21 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 
 func upgrade_equipment_batch(mode: String) -> bool:
 	if _upgrade_batch:return false
+	if native_execution!=null:
+		native_upgrade_batch=native_execution.prepare_numeric_batch(self,mode)
+		if native_upgrade_batch.get("skip",false):native_upgrade_batch={};return false
+		if native_upgrade_batch.is_empty() and not native_before_configuration_change():return false
 	_upgrade_batch=true
 	for category in ["weapons","defence"]:
 		for index in loadout_entries(category).size():
 			var amount: int=max_upgrade_amount_slot(category,index) if mode=="max" else int(mode)
 			if amount>0:upgrade_slot(category,index,amount)
+	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
+	if native_execution!=null and not native_upgrade_batch.is_empty():
+		if not native_execution.commit_numeric_batch(self,native_upgrade_batch):
+			push_error("prevalidated native batch changed during synchronous commit")
+			native_before_configuration_change()
+	native_upgrade_batch={}
 	_upgrade_batch=false
 	_upgrade_costs.clear()
 	var changed := _upgrade_slots
@@ -4272,3 +4289,7 @@ func finish_combat_step(dt:float)->void:
 
 func projectile_clear()->void:
 	projectiles.clear()
+
+var combat_presentation:RefCounted
+
+var native_upgrade_batch:Dictionary={}
