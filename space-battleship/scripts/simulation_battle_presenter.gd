@@ -3,6 +3,7 @@ extends RefCounted
 const Display=preload("res://scripts/simulation_display_game.gd")
 const Owner=preload("res://scripts/simulation_battle_owner.gd")
 var owner
+var geometry_restore_context:Dictionary={}
 var model:BattleGame
 var scene
 var enemy_views:Dictionary={}
@@ -27,7 +28,7 @@ func install(root,pure_geometry)->void:
 		scene.retained_contacts.frame={};scene.retained_contacts.saved_positions.clear()
 		scene.retained_contacts.foreground.queue_redraw()
 	if not RenderingServer.frame_post_draw.is_connected(render_completed):RenderingServer.frame_post_draw.connect(render_completed)
-	owner=Owner.new();owner.attach(source,pure_geometry)
+	owner=Owner.new();geometry_restore_context=owner.attach(source,pure_geometry)
 	model=Display.new(ShipDatabase.new(),false,source.profile.duplicate(true))
 	copy_database(source.db,model.db)
 	model.profile=source.profile.duplicate(true)
@@ -143,6 +144,9 @@ func apply_packet(packet:Dictionary)->void:
 	for key in packet.get("fields",{}):model.set(key,decode(packet.fields[key]))
 	for key in packet.get("profile_dynamic",{}):model.profile[key]=decode(packet.profile_dynamic[key])
 	if packet.has("drops"):model.drops.assign(decode(packet.drops))
+	if packet.has("cooldowns"):model.cooldowns=decode(packet.cooldowns)
+	if packet.has("defense_projection"):model.display_defense_projection=packet.defense_projection
+	if packet.has("deferred_projection"):model.display_deferred_projection=packet.deferred_projection
 	var player=decode(packet.get("player",{}))
 	for key in player:model.player[key]=player[key]
 	var enemies:Array[Dictionary]=[]
@@ -227,7 +231,14 @@ func metrics()->Dictionary:
 	return result
 func close()->void:
 	if RenderingServer.frame_post_draw.is_connected(render_completed):RenderingServer.frame_post_draw.disconnect(render_completed)
-	model.command_gateway=Callable();owner.close();owner=null;model=null;scene=null
+	model.command_gateway=Callable()
+	var geometry=owner.geometry
+	var source=owner._kernel
+	owner.close()
+	# The worker must already be stopped before shutdown restores main-only data.
+	for callback in geometry_restore_context.get("native_observers",[]):source.native_transaction_observer(callback)
+	if geometry!=null and geometry.has_method("close"):geometry.close(geometry_restore_context)
+	geometry_restore_context={};owner=null;model=null;scene=null
 
 func rewrite_script_objects(value:Variant,source:BattleGame,seen:Dictionary)->void:
 	if not value is Object or not is_instance_valid(value):return

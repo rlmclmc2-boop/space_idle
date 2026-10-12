@@ -37,7 +37,13 @@ func run()->void:
  game.invalidate_stat_cache();game.reset_player();game.state=BattleGame.State.COMBAT;game.spawn_group()
  for enemy in game.enemies:enemy.hp=1e30;enemy.max_hp=1e30
  game.enable_simulation_state_bridge()
- var owner=Owner.new();owner.attach(game,Geometry.new())
+ var foreign_node=Node.new()
+ var node_observer=Callable(foreign_node,"get_instance_id")
+ game.native_readonly_observer(node_observer)
+ var owner=Owner.new();var restoration=owner.attach(game,Geometry.new())
+ assert(not game._native_readonly_observers.has(node_observer))
+ assert(restoration.native_observers.has(node_observer))
+ foreign_node.free()
  var presenter=Presenter.new();presenter.owner=owner;presenter.model=Display.new(ShipDatabase.new(),false,game.profile.duplicate(true));presenter.scene=Surface.new()
  presenter.model.command_gateway=presenter.dispatch_command;presenter.model.display_ready=true
  var display=presenter.model
@@ -115,6 +121,9 @@ func run()->void:
  assert(presenter.enemy_views.size()>=game.enemies.size())
  assert(owner.advance(0.0));presenter.consume()
  assert(presenter.model.projectiles.size()==game.projectiles.size())
+ assert(presenter.model.cooldowns==game.cooldowns and not is_same(presenter.model.cooldowns,game.cooldowns))
+ assert(presenter.model.enhancement_protection_status()==game.enhancement_protection_status())
+ assert(presenter.model.enhancement_deferred_total()==game.enhancement_deferred_total())
  for shot in game.projectiles:
   assert(presenter.shot_views.has(int(shot.serial)))
   var view:Dictionary=presenter.shot_views[int(shot.serial)]

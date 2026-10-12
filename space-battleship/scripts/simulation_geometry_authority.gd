@@ -765,13 +765,21 @@ func resolve_entity(previous:Dictionary)->Dictionary:
 		if int(enemy.get("uid",-1))==int(previous.uid):return enemy
 	return {}
 
-func close()->void:
+func take_restore_context()->Dictionary:
+	# Only the main-thread presenter may retain old scene callbacks. The worker
+	# graph keeps exclusively its new geometry providers after this transfer.
+	var context={"providers":previous_providers,"spatial":previous_spatial_source}
+	previous_providers={};previous_spatial_source=null
+	return context
+
+func close(restoration:Dictionary={})->void:
 	# RefCounted signal/provider/spatial links form cycles unless detached explicitly.
-	if game!=null and not previous_providers.is_empty():
+	if game!=null:
 		if game.event.is_connected(on_simulation_event):game.event.disconnect(on_simulation_event)
 		for provider in [target_point,launch_pose,drone_launch_pose,rail_geometry,entity_render_position,on_simulation_event]:game.native_forget_observer(provider)
-		for key in previous_providers:game.set(key,previous_providers[key])
-		game.target_spatial_source=previous_spatial_source
+		var providers:Dictionary=restoration.get("providers",previous_providers)
+		for key in providers:game.set(key,providers[key])
+		game.target_spatial_source=restoration.get("spatial",previous_spatial_source)
 	previous_providers.clear();previous_spatial_source=null
 	battle_read_model.end();battle_read_model.host=null
 	battle_read_model.records.clear();battle_read_model.bounds_members.clear()

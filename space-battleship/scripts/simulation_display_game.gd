@@ -6,6 +6,8 @@ var display_ready:bool=false
 var display_shots:Dictionary={}
 var display_entities:Dictionary={}
 var display_chain_targets:Dictionary={}
+var display_defense_projection:Dictionary={}
+var display_deferred_projection:Variant=0.0
 var _constructor_profile:Dictionary={}
 func _init(database:ShipDatabase,persist:bool=false,initial_profile:Dictionary={})->void:
 	_constructor_profile=initial_profile
@@ -250,3 +252,21 @@ func read_tutorial_unlock(id: String) -> bool:
 	if display_ready:
 		return command("read_tutorial_unlock",[id])
 	return super.read_tutorial_unlock(id)
+
+func enhancement_protection_status() -> Dictionary:
+	return display_defense_projection if display_ready else super.enhancement_protection_status()
+
+func enhancement_deferred_total() -> Variant:
+	return display_deferred_projection if display_ready else super.enhancement_deferred_total()
+
+func enhancement_protection_current() -> Variant:
+	return display_defense_projection.get("current",0.0) if display_ready else super.enhancement_protection_current()
+
+func enhancement_protection_capacity() -> Variant:
+	return display_defense_projection.get("capacity",0.0) if display_ready else super.enhancement_protection_capacity()
+
+func enhancement_visible_buffer(index: int, capacity: Variant = null) -> Variant:
+	if not display_ready:return super.enhancement_visible_buffer(index,capacity)
+	for component in display_defense_projection.get("components",[]):
+		if int(component.index)==index:return component.current if capacity==null else GrowthNumber.minimum(component.current,capacity)
+	return 0.0

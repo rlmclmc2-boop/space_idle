@@ -37,8 +37,16 @@ const CORE_FIELDS=["state","stage","group_index","distance","since_hit","paused"
 const PROFILE_DYNAMIC=["productionElapsed","chronoParticles","enhancementAttacks","enhancementHits","resources","techPoints","furnaceElapsed","jewelFurnaceElapsed"]
 const SHOT_OMIT=["motion_lease","attack_instance","attack_snapshot","jewelEffects","higgs","guidance_layers"]
 const DOMAIN_COMMANDS={"crew": ["assign"], "planet_buildings": ["activate", "assign"], "hyperspace": ["exchange_materials", "equip_drone", "unequip_drone", "set_equipped", "set_favorites", "set_preset", "clear_preset", "remove_unprotected", "claim_sealed", "forge", "attach_hangings", "set_filter", "import_filter", "set_legendary_collection", "apply_preset"]}
-func attach(kernel:BattleGame,pure_geometry)->void:
+func attach(kernel:BattleGame,pure_geometry)->Dictionary:
 	_kernel=kernel;geometry=pure_geometry
+	var restoration:Dictionary=geometry.take_restore_context() if geometry.has_method("take_restore_context") else {}
+	# Old provider observer classifications can retain the scene even when their
+	# callback is no longer installed in a Game field or signal connection.
+	var detached_observers:Array[Callable]=[]
+	for callback in _kernel._native_readonly_observers.duplicate():
+		if callback.get_object() is Node:
+			detached_observers.append(callback);_kernel.native_forget_observer(callback)
+	restoration.native_observers=detached_observers
 	for method in _kernel.get_method_list():
 		if str(method.name) in COMMANDS:command_signatures[str(method.name)]={"arguments":method.args.duplicate(true),"defaults":method.default_args.size()}
 	for domain in DOMAIN_COMMANDS:
@@ -60,6 +68,7 @@ func attach(kernel:BattleGame,pure_geometry)->void:
 	_kernel.event.connect(capture_event);_kernel.native_transaction_observer(capture_event)
 	for enemy in _kernel.enemies:entity_token(enemy)
 	for shot in _kernel.projectiles:shot_token(shot)
+	return restoration
 func entity_token(record:Dictionary)->Dictionary:
 	if is_same(record,_kernel.player):return {"$player":true}
 	var identity=int(record.uid)
@@ -141,7 +150,7 @@ func base_packet(with_motion:bool)->Dictionary:
 	for index in _kernel.enhancement_branches.defenses:
 		var data=_kernel.enhancement_branches.defenses[index];defense_states[index]={}
 		for key in ["cover","cover_elapsed","cover_time","resistance_type","resistance_time","lockout"]:defense_states[index][key]=encode(data[key])
-	var packet={"weapon_states":weapon_states,"defense_states":defense_states,"fields":fields,"profile_dynamic":profile,"player":encode(_kernel.player.duplicate()),"drops":encode(_kernel.drops),"enemies":enemies,"fx_time":geometry.fx_time,"demo_time":geometry.demo_time,"orbit_elapsed":geometry.fleet_pose.orbit_elapsed,"turrets":encode(geometry.turret_visuals),"turret_ship":geometry.turret_ship,"configuration_version":configuration_version}
+	var packet={"weapon_states":weapon_states,"defense_states":defense_states,"fields":fields,"profile_dynamic":profile,"player":encode(_kernel.player.duplicate()),"drops":encode(_kernel.drops),"cooldowns":encode(_kernel.cooldowns),"defense_projection":encode(_kernel.enhancement_protection_status()),"deferred_projection":encode(_kernel.enhancement_deferred_total()),"enemies":enemies,"fx_time":geometry.fx_time,"demo_time":geometry.demo_time,"orbit_elapsed":geometry.fleet_pose.orbit_elapsed,"turrets":encode(geometry.turret_visuals),"turret_ship":geometry.turret_ship,"configuration_version":configuration_version}
 	# Snapshot data is compact dynamic state; static profile/configuration only
 	# travels on a structural generation. No Game/object graph is cloned per frame.
 	if configuration_dirty:

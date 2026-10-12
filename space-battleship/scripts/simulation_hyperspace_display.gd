@@ -74,4 +74,3 @@ func apply_preset(g,index: int) -> bool:
 	if g.display_ready:
 		return g.command("hyperspace.apply_preset",[index])
 	return super.apply_preset(g,index)
-

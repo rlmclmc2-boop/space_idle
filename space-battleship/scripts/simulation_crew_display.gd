@@ -4,4 +4,3 @@ func assign(g, id: String, assignment: String, target: String, upgrade_mode := "
 	if g.display_ready:
 		return g.command("crew.assign",[id,assignment,target,upgrade_mode])
 	return super.assign(g,id,assignment,target,upgrade_mode)
-
