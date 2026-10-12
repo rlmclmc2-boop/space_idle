@@ -1474,11 +1474,23 @@ class SpaceCombatKernel : public RefCounted {
             row["repeat_plan"] = Array(); row["source_slot"] = a->birth->slot;
             attack_rows[a->id] = row; return row;
         };
+        // Cold transfer copies typed mutable state without mutating live views.
+        std::map<uint64_t, Dictionary> instance_rows;
+        auto instance_view = [&](const std::shared_ptr<Instance> &inst) {
+            if (!inst) return Dictionary();
+            auto found = instance_rows.find(inst->id); if (found != instance_rows.end()) return found->second;
+            Dictionary row = inst->view.duplicate();
+            Dictionary chain = Dictionary(inst->view["chain"]).duplicate();
+            chain["count"] = inst->count; chain["used"] = inst->chain_used;
+            chain["beam"] = inst->beam; chain["ended"] = inst->ended;
+            if (inst->beam) chain["primary"] = inst->primary.index < actors.size() ? actors[inst->primary.index].view : Dictionary();
+            row["chain"] = chain; instance_rows[inst->id] = row; return row;
+        };
         Array records;
         for (size_t id : active) {
             const Flight &f = flights[id]; if (!f.live) continue;
             Dictionary row; row["view"] = f.view; row["weapon_index"] = f.weapon;
-            row["snapshot"] = attack_view(f.instance->attack); row["instance"] = f.instance->view;
+            row["snapshot"] = attack_view(f.instance->attack); row["instance"] = instance_view(f.instance);
             row["instance_derived"] = f.instance->derived; row["damage"] = f.damage;
             row["multiplier"] = f.multiplier; row["age"] = f.age; row["next_hit"] = f.next_hit;
             row["ticks"] = f.ticks; row["charge"] = f.charge; row["interval"] = f.interval;
@@ -1512,7 +1524,7 @@ class SpaceCombatKernel : public RefCounted {
                 row["weapon_index"] = q.weapon; row["due"] = q.at; row["remaining"] = nonnegative(q.at - clock);
                 row["ordinal"] = q.ordinal; row["multiplier"] = q.multiplier;
                 row["target"] = q.target.index < actors.size() ? actors[q.target.index].view : Dictionary();
-                row["snapshot"] = attack_view(q.attack); row["instance"] = q.instance ? q.instance->view : Dictionary(); row["derived"] = q.instance && q.instance->derived;
+                row["snapshot"] = attack_view(q.attack); row["instance"] = instance_view(q.instance); row["derived"] = q.instance && q.instance->derived;
                 row["owner_index"] = q.owner_flight == SIZE_MAX ? -1 : int64_t(q.owner_flight);
                 row["owner_generation"] = int64_t(q.owner_generation); rows.push_back(row);
             }

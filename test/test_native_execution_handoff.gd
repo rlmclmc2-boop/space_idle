@@ -21,6 +21,7 @@ func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=fals
 	if beam_chain:
 		g.profile.enhancementLevel=40;g.profile.cleared=range(1,61);g.profile.highestLevel=61
 		g.rebuild_unlocks();g.set_enhancement_branch("weapons","repeat",1,"B")
+		if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
 	g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
 	g.enemies.assign([{"uid":100,"slot":4,"x":286.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0},{"uid":101,"slot":3,"x":240.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
 	g.cooldowns[g.slot_id("weapons",0)]=0.0
@@ -67,6 +68,44 @@ func run()->void:
 	check(g.command_ok and g.native_handoff_count==1,"shared-stage command transfers before its mutation")
 	check(is_equal_approx(g.production_time()-time_before,1.0/60.0) and is_equal_approx(g.motion_clock-motion_before,1.0/60.0),"shared and battle clocks consume current substep once")
 	check(core.metrics().steps==native_before,"unexecuted native combat phase not run after shared-stage transfer")
+	g=fixture("missile",true);owner=g.native_execution;core=owner.kernel
+	exported=core.export_handoff();shot=g.projectiles[0]
+	var native_chain:Dictionary=shot.attack_instance.chain
+	var expected_count=int(owner.weapons[0].chain_count)
+	check(expected_count>0 and exported.flights[0].instance.chain.count==expected_count,"enhanced missile exports typed chain allowance")
+	check(not native_chain.has("count") and not native_chain.used,"cold export does not mutate native published instance")
+	check(g.upgrade_slot("weapons",0,1),"enhanced missile upgrade transfers pending salvo")
+	var missile_chain:Dictionary=shot.attack_instance.chain
+	check(missile_chain.count==expected_count and not missile_chain.used,"unused missile allowance survives transfer")
+	check(is_same(missile_chain,g.missile_queue[0].attack.effects.filter(func(e):return e.get("chain",false))[0].chain_state),"pending tubes share chain allowance")
+	var target:Dictionary=shot.target
+	var before_count=g.projectiles.size()
+	g.hit_enemy(target,shot.damage,int(shot.type),shot.jewelEffects,false,shot.combat_context)
+	check(missile_chain.used and g.projectiles.size()==before_count+mini(expected_count,g.enemies.size()-1),"first legacy hit spends inherited allowance once")
+	before_count=g.projectiles.size()
+	g.hit_enemy(target,shot.damage,int(shot.type),shot.jewelEffects,false,shot.combat_context)
+	check(g.projectiles.size()==before_count,"same-salvo hit cannot rearm chain")
+	g=fixture("missile",true);owner=g.native_execution;core=owner.kernel;shot=g.projectiles[0]
+	for i in 240:
+		if shot.attack_instance.chain.used:break
+		g.tick(1.0/60.0)
+	check(shot.attack_instance.chain.used,"native first missile arrival already spends chain allowance")
+	exported=core.export_handoff()
+	var spent_id=int(shot.attack_instance.id)
+	check(g.upgrade_slot("weapons",0,1),"spent enhanced salvo transfers remaining carriers")
+	var spent_effects:Array=[]
+	for carrier in g.projectiles:
+		if int(carrier.attack_instance_id)==spent_id:spent_effects=carrier.jewelEffects;break
+	if spent_effects.is_empty():
+		for pending in g.missile_queue:
+			if int(pending.attack.attack_instance_id)==spent_id:spent_effects=pending.attack.effects;break
+	check(not spent_effects.is_empty(),"spent salvo still owns active or pending carriers")
+	if not spent_effects.is_empty():
+		var spent_chain:Dictionary=spent_effects.filter(func(e):return e.get("chain",false))[0].chain_state
+		check(spent_chain.used,"spent allowance remains spent after transfer")
+		before_count=g.projectiles.size()
+		g.hit_enemy(g.enemies[0],shot.damage,int(shot.type),spent_effects,false,shot.combat_context)
+		check(g.projectiles.size()==before_count,"transferred spent salvo does not spawn another chain")
 	g=fixture("longLaser",true);owner=g.native_execution;core=owner.kernel
 	var beam=g.projectiles[0];var chain=beam.attack_instance.chain
 	check(chain.links.size()==1,"beam linked target exists")
