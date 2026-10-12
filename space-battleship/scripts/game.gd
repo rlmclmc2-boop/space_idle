@@ -1124,6 +1124,8 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 					entries[index].key = requested
 					if category=="weapons":invalidate_module_attack(index)
 	for index in range(mini(old_weapon_count,active_slot_count("weapons")),maxi(old_weapon_count,active_slot_count("weapons"))):invalidate_module_attack(index)
+	# Selected loadout writes finish here; compile their final references before dependent health reads.
+	if compiled_combat_rules!=null:compiled_combat_rules.compile(self)
 	apply_refit_health()
 	save_dirty = true
 	event.emit("ship_changed",{"key":key})

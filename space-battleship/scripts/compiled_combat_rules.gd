@@ -14,6 +14,8 @@ var target_priority_prepares:int=0
 func compile(g)->void:
  if compiling:return
  compiling=true
+ # A public mutation may have replaced module references after its first invalidation.
+ g.combat_sources_dirty=true
  g.enhancement_plan.sync(g)
  parameters={}
  for key in g.db.data.enhance_config:parameters[key]=float(g.db.data.enhance_config[key].value)
