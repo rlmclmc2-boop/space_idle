@@ -36,10 +36,15 @@ var last_defense_publication:Dictionary={}
 const CORE_FIELDS=["state","stage","group_index","distance","since_hit","paused","speed","clear_timer","guard_index","guard_elapsed","guard_engaged","guard_arrived","enemy_shield_time","enemy_shield_hit_time","motion_clock","uid","projectile_serial","first_clear"]
 const PROFILE_DYNAMIC=["productionElapsed","chronoParticles","enhancementAttacks","enhancementHits","resources","techPoints","furnaceElapsed","jewelFurnaceElapsed"]
 const SHOT_OMIT=["motion_lease","attack_instance","attack_snapshot","jewelEffects","higgs","guidance_layers"]
+const DOMAIN_COMMANDS={"crew": ["assign"], "planet_buildings": ["activate", "assign"], "hyperspace": ["exchange_materials", "equip_drone", "unequip_drone", "set_equipped", "set_favorites", "set_preset", "clear_preset", "remove_unprotected", "claim_sealed", "forge", "attach_hangings", "set_filter", "import_filter", "set_legendary_collection", "apply_preset"]}
 func attach(kernel:BattleGame,pure_geometry)->void:
 	_kernel=kernel;geometry=pure_geometry
 	for method in _kernel.get_method_list():
 		if str(method.name) in COMMANDS:command_signatures[str(method.name)]={"arguments":method.args.duplicate(true),"defaults":method.default_args.size()}
+	for domain in DOMAIN_COMMANDS:
+		for method in _kernel.get(domain).get_method_list():
+			if str(method.name) in DOMAIN_COMMANDS[domain]:
+				command_signatures[str(domain)+"."+str(method.name)]={"arguments":method.args.slice(1).duplicate(true),"defaults":method.default_args.size()}
 	_kernel.simulation_descriptor_publisher=descriptor_ready
 	_kernel.simulation_mutation_sink=mark_state_changed
 	# Only pure semantic subscribers remain attached to the kernel. UI subscribers
@@ -99,7 +104,7 @@ func encode(value:Variant)->Variant:
 	return value.duplicate() if typeof(value)>=TYPE_PACKED_BYTE_ARRAY else value
 func capture_event(kind:String,payload:Dictionary)->void:
 	var started=Time.get_ticks_usec()
-	if kind in ["ship_changed","module_changed","upgrade","crew_changed","hightech_changed","reactor_changed","jewels_changed","enhancement_changed"] or (kind=="equipment_stats" and not bool(payload.get("counter_only",false))):configuration_dirty=true
+	if kind in ["ship_changed","module_changed","upgrade","crew_changed","hightech_changed","reactor_changed","jewels_changed","enhancement_changed","hyperspace_changed","planet_changed","onboarding_changed","tutorial_read"] or (kind=="equipment_stats" and not bool(payload.get("counter_only",false))):configuration_dirty=true
 	var info=encode(payload)
 	var packet=event_packet(kind,payload)
 	packet.kind=kind;packet.payload=info;packet.shield_before_hit=encode(_step_shield)
@@ -136,7 +141,7 @@ func base_packet(with_motion:bool)->Dictionary:
 	for index in _kernel.enhancement_branches.defenses:
 		var data=_kernel.enhancement_branches.defenses[index];defense_states[index]={}
 		for key in ["cover","cover_elapsed","cover_time","resistance_type","resistance_time","lockout"]:defense_states[index][key]=encode(data[key])
-	var packet={"weapon_states":weapon_states,"defense_states":defense_states,"fields":fields,"profile_dynamic":profile,"player":encode(_kernel.player.duplicate()),"enemies":enemies,"fx_time":geometry.fx_time,"demo_time":geometry.demo_time,"orbit_elapsed":geometry.fleet_pose.orbit_elapsed,"turrets":encode(geometry.turret_visuals),"configuration_version":configuration_version}
+	var packet={"weapon_states":weapon_states,"defense_states":defense_states,"fields":fields,"profile_dynamic":profile,"player":encode(_kernel.player.duplicate()),"drops":encode(_kernel.drops),"enemies":enemies,"fx_time":geometry.fx_time,"demo_time":geometry.demo_time,"orbit_elapsed":geometry.fleet_pose.orbit_elapsed,"turrets":encode(geometry.turret_visuals),"turret_ship":geometry.turret_ship,"configuration_version":configuration_version}
 	# Snapshot data is compact dynamic state; static profile/configuration only
 	# travels on a structural generation. No Game/object graph is cloned per frame.
 	if configuration_dirty:
@@ -188,7 +193,7 @@ func publish_pending_frame()->bool:
 	retire_entity_records()
 	full_frame={};pending_frame_retired=PackedInt64Array()
 	return true
-const COMMANDS=["resume_progress","equip_slot","unequip_slot","upgrade_reactor","set_reactor_allocation","equalize_reactor_allocation","scientist_purchase","generate_scientist","distribute_scientists","assign_scientist","set_planet_auto","start_planet_exploration","cancel_planet_exploration","change_state","select_loop_level","set_guard_death","set_hyperspace_auto","start_hyperspace_challenge","claim_hyperspace","advance_after_clear","clear_level","upgrade_slot","upgrade_equipment_batch","upgrade_enhancement","set_speed","set_save_interval","check_timed_save","save_progress","assign_crew","toggle_loop","start","begin_retreat","acknowledge_unlocks","collect_uid","upgrade","upgrade_max","set_enhancement_branch","set_enhancement_order","set_field"]
+const COMMANDS=["resume_progress","equip_slot","unequip_slot","upgrade_reactor","set_reactor_allocation","equalize_reactor_allocation","scientist_purchase","generate_scientist","distribute_scientists","assign_scientist","set_planet_auto","start_planet_exploration","cancel_planet_exploration","change_state","select_loop_level","set_guard_death","set_hyperspace_auto","start_hyperspace_challenge","claim_hyperspace","advance_after_clear","clear_level","upgrade_slot","upgrade_equipment_batch","upgrade_enhancement","set_speed","set_save_interval","check_timed_save","save_progress","assign_crew","toggle_loop","start","begin_retreat","acknowledge_unlocks","collect_uid","collect_near","chrono_affordable_seconds","set_onboarding_flag","read_tutorial_unlock","upgrade","upgrade_max","set_enhancement_branch","set_enhancement_order","set_field"]
 func dispatch(name:String,args:Array)->Dictionary:
 	var failure=validate_command(name,args)
 	if not failure.is_empty():return {"accepted":false,"reason":failure}
@@ -202,7 +207,7 @@ func dispatch(name:String,args:Array)->Dictionary:
 	command_acks.erase(sequence)
 	return ack
 func validate_command(name:String,arguments:Array)->String:
-	if not name in COMMANDS:return "uncompiled_command"
+	if not name in COMMANDS and not command_signatures.has(name):return "uncompiled_command"
 	if name=="collect_uid":
 		return "" if arguments.size()==2 and typeof(arguments[0])==TYPE_INT and typeof(arguments[1])==TYPE_BOOL else "invalid_collect_identity"
 	if name=="set_field":
@@ -238,6 +243,10 @@ func process_commands()->void:
 		elif command.name=="set_field":
 			if arguments.size()!=2 or not str(arguments[0]) in ["paused"]:accepted=false;reason="uncompiled_field"
 			else:_kernel.set(str(arguments[0]),arguments[1])
+		elif str(command.name).contains("."):
+			var route=String(command.name).split(".")
+			arguments.push_front(_kernel)
+			result=_kernel.get(route[0]).callv(route[1],arguments)
 		else:result=_kernel.callv(command.name,arguments)
 		command_acks[int(command.sequence)]={"sequence":int(command.sequence),"accepted":accepted,"reason":reason,"result":encode(result),"authoritative_fields":{"paused":_kernel.paused,"speed":_kernel.speed},"applied_tick":logical_steps,"queued_us":int(command.queued_us),"ack_us":Time.get_ticks_usec()}
 	command_queue_active=false
@@ -255,6 +264,7 @@ func event_packet(kind:String,payload:Dictionary)->Dictionary:
 	var packet={"fx_time":geometry.fx_time,"demo_time":geometry.demo_time,"orbit_elapsed":geometry.fleet_pose.orbit_elapsed,"fields":{},"profile_dynamic":{"enhancementAttacks":_kernel.profile.enhancementAttacks,"enhancementHits":_kernel.profile.enhancementHits},"enemy_changes":[],"weapon_states":{},"defense_states":{}}
 	if kind in ["state","encounter","wave_clear","retreat","explode"]:
 		for key in CORE_FIELDS:packet.fields[key]=_kernel.get(key)
+	if kind in ["collect","jewel_pickup"]:packet.drops=encode(_kernel.drops)
 	if kind=="hit":
 		if bool(payload.get("player",false)):packet.player=encode(_kernel.player.duplicate())
 		else:
@@ -272,7 +282,7 @@ func event_packet(kind:String,payload:Dictionary)->Dictionary:
 		packet.defense_states[index]=row
 	dirty_weapon_states.clear();dirty_defense_states.clear()
 	if kind in ["fire","beam_started","beam_hit","projectile_impact"] and payload.has("shot"):
-		packet.turrets=encode(geometry.turret_visuals)
+		packet.turrets=encode(geometry.turret_visuals);packet.turret_ship=geometry.turret_ship
 	if configuration_dirty:
 		configuration_version+=1;packet.configuration_version=configuration_version
 		packet.configuration=_kernel.profile.duplicate(true);configuration_dirty=false

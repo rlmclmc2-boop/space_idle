@@ -333,6 +333,14 @@ func tutorial_unlock_row(id: String) -> Dictionary:
 func unread_tutorial_unlocks() -> Array[String]:
 	return tutorial_unlocks().filter(func(id):return not profile.get("readUnlocks", []).has(id))
 
+func set_onboarding_flag(key: String, value: bool) -> bool:
+	if key not in ["intro","equipped","upgraded","completed","dismissed","retreatSeen"]:return false
+	if profile.onboarding.get(key,false)==value:return true
+	profile.onboarding[key]=value
+	save_dirty=true
+	event.emit("onboarding_changed",{"key":key,"value":value})
+	return true
+
 func read_tutorial_unlock(id: String) -> bool:
 	if not tutorial_unlocks().has(id) or profile.get("readUnlocks", []).has(id):return false
 	profile.readUnlocks.append(id)

@@ -9,6 +9,7 @@ class Geometry extends RefCounted:
  var fx_time:float=0.0
  var demo_time:float=0.0
  var turret_visuals:Dictionary={}
+ var turret_ship:String="transport_hull"
  var fleet_pose=Pose.new()
  func before_tick(dt:float)->void:fx_time+=dt;demo_time+=dt
  func after_tick()->void:pass
@@ -19,6 +20,7 @@ class Surface extends RefCounted:
  var demo_time:float=0.0
  var ship_view=Pose.new()
  var turret_visuals:Dictionary={}
+ var turret_ship:String="transport_hull"
  var simulation_event_muzzles:Dictionary={}
  var shield_before_hit:Variant=0.0
  var projectile_visuals:Array=[]
@@ -28,12 +30,72 @@ func run()->void:
  var game=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
  game.save_enabled=false;game.rng.seed=1701
  game.profile.resources={"1":1e30,"2":1e30}
+ game.profile.cleared=range(1,41);game.rebuild_unlocks()
+ game.profile.planets["1"].buildings.station.status="ready"
+ game.profile.planets["1"].buildings.shipyard.status="building"
  game.profile.loadout.weapons=[{"key":"laser","level":1}]
  game.invalidate_stat_cache();game.reset_player();game.state=BattleGame.State.COMBAT;game.spawn_group()
  for enemy in game.enemies:enemy.hp=1e30;enemy.max_hp=1e30
  game.enable_simulation_state_bridge()
  var owner=Owner.new();owner.attach(game,Geometry.new())
  var presenter=Presenter.new();presenter.owner=owner;presenter.model=Display.new(ShipDatabase.new(),false,game.profile.duplicate(true));presenter.scene=Surface.new()
+ presenter.model.command_gateway=presenter.dispatch_command;presenter.model.display_ready=true
+ var display=presenter.model
+ assert(owner.advance(0.0));presenter.consume()
+ assert(presenter.scene.turret_ship==owner.geometry.turret_ship)
+ assert(not owner.dispatch("hyperspace.set_preset",["bad","name",[]]).accepted)
+ assert(not owner.dispatch("planet_buildings.assign",["1","shipyard",RefCounted.new()]).accepted)
+ assert(not owner.dispatch("crew.assign",["engineer","equipment_upgrade","equipment",false]).accepted)
+ assert(not owner.dispatch("hyperspace.publish",[{}]).accepted)
+ assert(not owner.dispatch("hyperspace.set_preset",[0,"foreign",[],{"foreign":RefCounted.new()}]).accepted)
+ var sequence=owner.command_serial
+ var mode=game.crew.upgrade_modes(game,"equipment_upgrade").back()
+ assert(display.crew.assign(display,"engineer","equipment_upgrade","equipment",mode))
+ assert(game.crew.entry(game,"engineer").upgradeMode==mode)
+ assert(display.crew.entry(display,"engineer").upgradeMode==mode)
+ assert(display.crew.assign(display,"engineer","",""))
+ assert(display.planet_buildings.assign(display,"1","shipyard","engineer"))
+ assert(game.profile.planets["1"].buildings.shipyard.crew==["engineer"])
+ assert(display.profile.planets["1"].buildings.shipyard.crew==["engineer"])
+ assert(not is_same(display.profile.planets["1"].buildings.shipyard.crew,game.profile.planets["1"].buildings.shipyard.crew))
+ assert(display.planet_buildings.assign(display,"1","shipyard","engineer"))
+ assert(display.planet_buildings.activate(display,"1","station"))
+ assert(game.profile.planets["1"].buildings.station.status=="built" and display.profile.planets["1"].buildings.station.status=="built")
+ assert(display.hyperspace.set_preset(display,0,"value preset",[]))
+ assert(game.profile.hyperspace.inventory.presets[0].name=="value preset")
+ assert(display.profile.hyperspace.inventory.presets==game.profile.hyperspace.inventory.presets)
+ assert(display.hyperspace.apply_preset(display,0))
+ assert(display.hyperspace.set_favorites(display,[]))
+ assert(display.hyperspace.set_filter(display,game.profile.hyperspace.filter.duplicate(true)))
+ assert(display.hyperspace.clear_preset(display,0))
+ assert(game.profile.hyperspace.inventory.presets.is_empty() and display.profile.hyperspace.inventory.presets.is_empty())
+ assert(owner.command_serial==sequence+10)
+ assert(not display.hyperspace.clear_preset(display,99)) # Domain rejection remains the original bool result.
+ # A death drop is born without its own event. Snapshot must publish it even
+ # after its source leaves the encounter; pickup sends values, never the UI record.
+ var drop={"uid":99999,"source_uid":99998,"x":100.0,"y":200.0,"age":0.5,"id":"1","amount":17.0}
+ game.drops.append(drop)
+ assert(owner.advance(0.0));presenter.consume()
+ assert(display.drops.size()==1 and display.drops[0]==drop and not is_same(display.drops[0],drop))
+ drop.age=0.75;assert(owner.advance(0.0));presenter.consume();assert(display.drops[0].age==0.75)
+ game.profile.resources["1"]=100.0
+ var resources=game.profile.resources["1"]
+ display.collect_near(Vector2(100,200),true,{99999:Vector2(100,200)})
+ assert(game.drops.is_empty() and display.drops.is_empty())
+ assert(game.profile.resources["1"]>resources)
+ assert(display.set_onboarding_flag("retreatSeen",true))
+ assert(game.profile.onboarding.retreatSeen and display.profile.onboarding.retreatSeen)
+ assert(not display.set_onboarding_flag("uncompiled",true))
+ var option={}
+ for row in game.chrono_options():
+  if float(row.cost)>0:option=row;break
+ assert(not option.is_empty())
+ game.profile.chronoParticles=100.0
+ assert(display.set_speed(option.multiplier))
+ var before_particles=game.profile.chronoParticles
+ assert(is_equal_approx(display.chrono_affordable_seconds(0.01),0.01))
+ assert(is_equal_approx(game.profile.chronoParticles,before_particles-0.01*float(option.cost)))
+ assert(display.set_speed(game.default_speed()))
  assert(not owner.dispatch("set_field",["paused","bad"]).accepted)
  assert(not owner.dispatch("set_speed",["bad"]).accepted)
  assert(not owner.dispatch("collect_uid",[{},false]).accepted)
@@ -75,5 +137,5 @@ func run()->void:
  assert(owner.mailbox.append_owned_event({"transport_only":true,"fields":{"speed":2.0}}))
  presenter.consume();assert(presenter.model.speed==2.0)
 
- print("SIMULATION_TRANSPORT_CONTRACT_PASS snapshots_skipped=",owner.mailbox.metrics().dropped_snapshots,"; retries=",retries,"; commands_value_checked; births_configuration_lossless; no_battle_thread")
+ print("SIMULATION_TRANSPORT_CONTRACT_PASS snapshots_skipped=",owner.mailbox.metrics().dropped_snapshots,"; retries=",retries,"; commands_value_checked; UI_helper_commands_ordered=11; births_configuration_lossless; no_battle_thread")
  presenter.close();game.simulation_bridge.close();quit()

@@ -78,7 +78,9 @@ func install(root,pure_geometry)->void:
 	model.command_gateway=dispatch_command;model.display_ready=true
 	# Rebuild panels/captured UI closures against Display, rather than retaining an
 	# old Game reference in a hidden panel or anonymous signal callback.
+	var guide_visible=scene.beginner_guide.visible if is_instance_valid(scene.beginner_guide) else true
 	scene.build_ui();scene.refresh_structure();scene.refresh_tab_visibility()
+	if is_instance_valid(scene.beginner_guide):scene.beginner_guide.visible=guide_visible
 	model.projectiles=active_views(source.projectiles)
 	rewrite_script_objects(scene,source,{})
 	published_paused=model.paused;published_speed=model.speed
@@ -140,6 +142,7 @@ func apply_packet(packet:Dictionary)->void:
 		var data=decode(packet.defense_states[index]);data.entry=model.slot_entry("defence",int(index));model.enhancement_branches.defenses[index]=data
 	for key in packet.get("fields",{}):model.set(key,decode(packet.fields[key]))
 	for key in packet.get("profile_dynamic",{}):model.profile[key]=decode(packet.profile_dynamic[key])
+	if packet.has("drops"):model.drops.assign(decode(packet.drops))
 	var player=decode(packet.get("player",{}))
 	for key in player:model.player[key]=player[key]
 	var enemies:Array[Dictionary]=[]
@@ -168,6 +171,7 @@ func apply_packet(packet:Dictionary)->void:
 	if packet.has("demo_time"):scene.demo_time=packet.demo_time
 	if packet.has("orbit_elapsed"):scene.ship_view.orbit_elapsed=packet.orbit_elapsed
 	if packet.has("turrets"):scene.turret_visuals=decode(packet.turrets)
+	if packet.has("turret_ship"):scene.turret_ship=packet.turret_ship
 	# Entries are identity-bearing UI configuration values, never simulation refs.
 	for index in scene.turret_visuals:
 		scene.turret_visuals[index].entry=model.slot_entry("weapons",int(index))

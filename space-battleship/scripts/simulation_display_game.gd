@@ -10,6 +10,14 @@ var _constructor_profile:Dictionary={}
 func _init(database:ShipDatabase,persist:bool=false,initial_profile:Dictionary={})->void:
 	_constructor_profile=initial_profile
 	super(database,persist)
+	# Replace helper instances before UI captures them. Keep constructor config;
+	# the presenter later copies detached source values into these instances.
+	if event.is_connected(crew.on_event):event.disconnect(crew.on_event)
+	crew=preload("res://scripts/simulation_crew_display.gd").new();crew.attach(self)
+	planet_buildings=preload("res://scripts/simulation_planet_buildings_display.gd").new()
+	var display_hyperspace=preload("res://scripts/simulation_hyperspace_display.gd").new()
+	display_hyperspace.configure(hyperspace.config)
+	hyperspace=display_hyperspace
 	_constructor_profile={}
 func fresh_profile()->Dictionary:
 	return _constructor_profile.duplicate(true) if not _constructor_profile.is_empty() else super.fresh_profile()
@@ -221,3 +229,24 @@ func upgrade_enhancement(count := 1) -> int:
 	if display_ready:
 		return command("upgrade_enhancement",[count])
 	return super.upgrade_enhancement(count)
+
+func collect_near(pos: Vector2, clicked := false, position_overrides: Dictionary = {}, path_start: Variant = null) -> void:
+	if display_ready:
+		command("collect_near",[pos,clicked,position_overrides,path_start])
+		return
+	super.collect_near(pos,clicked,position_overrides,path_start)
+
+func chrono_affordable_seconds(real_dt: float) -> float:
+	if display_ready:
+		return command("chrono_affordable_seconds",[real_dt])
+	return super.chrono_affordable_seconds(real_dt)
+
+func set_onboarding_flag(key: String, value: bool) -> bool:
+	if display_ready:
+		return command("set_onboarding_flag",[key,value])
+	return super.set_onboarding_flag(key,value)
+
+func read_tutorial_unlock(id: String) -> bool:
+	if display_ready:
+		return command("read_tutorial_unlock",[id])
+	return super.read_tutorial_unlock(id)

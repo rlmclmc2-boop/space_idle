@@ -81,10 +81,14 @@ func _process(delta: float) -> void:
 func flags() -> Dictionary:
 	return host.game.profile.onboarding
 
+func set_flag(state: Dictionary, key: String, value: bool) -> void:
+	if state.get(key,false)==value:return
+	if host.game.set_onboarding_flag(key,value):state[key]=value
+
 func dismiss() -> void:
 	retreat_pending = false
 	retreat_defence.clear()
-	flags().dismissed = true
+	set_flag(flags().duplicate(true),"dismissed",true)
 	manually_opened = false
 	review = false
 	refresh()
@@ -99,7 +103,7 @@ func open_guide() -> void:
 
 func decide() -> Dictionary:
 	var game: BattleGame = host.game
-	var state := flags()
+	var state := flags().duplicate(true)
 	var empty_slot := ""
 	var empty_defence := ""
 	var defence_adjusted := false
@@ -126,14 +130,14 @@ func decide() -> Dictionary:
 	var starting_weapons := 0
 	for entry in game.default_loadout(str(game.profile.selectedShip),Array(str(game.db.config.startEquip).split(","))).weapons:
 		if not str(entry.key).is_empty():starting_weapons += 1
-	if occupied_weapons>starting_weapons:state.equipped = true
-	if any_upgraded:state.upgraded = true
-	if state.equipped or state.upgraded or not game.profile.cleared.is_empty():state.intro = true
+	if occupied_weapons>starting_weapons:set_flag(state,"equipped",true)
+	if any_upgraded:set_flag(state,"upgraded",true)
+	if state.equipped or state.upgraded or not game.profile.cleared.is_empty():set_flag(state,"intro",true)
 	if not equip_target.is_empty():
 		var parts := equip_target.split("_")
 		var entry := game.slot_entry(parts[0],int(parts[1]))
-		if not entry.is_empty() and not str(entry.key).is_empty():state.equipped = true
-	if empty_slot.is_empty():state.equipped = true
+		if not entry.is_empty() and not str(entry.key).is_empty():set_flag(state,"equipped",true)
+	if empty_slot.is_empty():set_flag(state,"equipped",true)
 	if review:return {"phase":"review"}
 	if not game.pending_unlocks.is_empty():return {"phase":"unlock","action":"continue"}
 	if retreat_pending:
@@ -156,11 +160,11 @@ func decide() -> Dictionary:
 		if not waiting_slot.is_empty():
 			var parts := waiting_slot.split("_")
 			return {"phase":"waiting","slot":waiting_slot,"action":"show_upgrade","anchor":"upgrade_action","cost":host.cost_text(game.slot_upgrade_cost(parts[0],int(parts[1])))}
-		state.upgraded = true
+		set_flag(state,"upgraded",true)
 	if not defence_adjusted and not empty_defence.is_empty():
 		return {"phase":"defence","slot":empty_defence,"action":"show_defence","anchor":"empty_module"}
 	if not game.profile.cleared.is_empty():
-		state.completed = true
+		set_flag(state,"completed",true)
 		manually_opened = false
 		return {"phase":"clear"}
 	return {"phase":"paused" if game.paused else "progress"}
@@ -174,7 +178,7 @@ func has_equipment_choice(category: String, index: int) -> bool:
 
 func enhancement_ready() -> bool:
 	var game: BattleGame = host.game
-	var state := flags()
+	var state := flags().duplicate(true)
 	# Existing purchase state ends this earned-action hint; no new saved flag.
 	return state.completed and state.equipped and state.upgraded and not state.dismissed and game.stage>=8 and game.stage<=10 and game.enhancement_level()==0 and game.can_upgrade_enhancement()
 
@@ -222,7 +226,7 @@ func refresh() -> void:
 	host.set_ui_value(panel,"position",host.BATTLE_ORIGIN-host.ui.position+Vector2(16,16 if phase=="unlock" else 570))
 	target_slot = step.get("slot","")
 	host.set_ui_value(body,"text",UIText.t("onboarding."+phase,{"cost":step.cost} if step.has("cost") else {}))
-	if phase=="retreat" and panel.is_visible_in_tree():flags().retreatSeen = true
+	if phase=="retreat" and panel.is_visible_in_tree():set_flag(flags().duplicate(true),"retreatSeen",true)
 	host.set_ui_value(action,"visible",step.has("action"))
 	if step.has("action"):host.set_ui_value(action,"text",UIText.t("onboarding."+str(step.action)))
 	target = resolve_anchor(str(step.get("anchor","")),target_slot)
@@ -261,7 +265,7 @@ func resolve_anchor(id: String, slot: String) -> Control:
 
 func activate() -> void:
 	match phase:
-		"intro":flags().intro = true
+		"intro":set_flag(flags().duplicate(true),"intro",true)
 		"enhancement":host.select_system(4)
 		"unlock":
 			# Reuse the existing explicit acknowledgement action.
