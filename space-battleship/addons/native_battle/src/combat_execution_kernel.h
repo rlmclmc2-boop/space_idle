@@ -357,7 +357,7 @@ class SpaceCombatKernel : public RefCounted {
         f.lease = lease;
         Vector2 from = chain ? origin : w.muzzle;
         Actor *t = resolve(target);
-        Vector2 aim = w.hostile ? Vector2(player_row["x"], player_row["y"])
+        Vector2 aim = w.hostile ? player_point
                       : t       ? t->point
                                 : from + Vector2(0, -100);
         m.x = from.x;
@@ -365,7 +365,7 @@ class SpaceCombatKernel : public RefCounted {
         m.direction = unit(aim - from);
         m.speed = chain ? chain_speed : w.speed;
         f.aim = aim;
-        f.logical_aim = t ? t->logical : aim;
+        f.logical_aim = w.hostile ? Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0)) : t ? t->logical : aim;
         if (m.kind == 1) {
             m.speed = launch_speed;
             int ordinal = int(event_serial % 2);
@@ -813,8 +813,15 @@ class SpaceCombatKernel : public RefCounted {
         incoming_effect(loss, absorbed, type, at);
     }
     void launch(int wi, Handle target, std::shared_ptr<const Attack> a, double multiplier,
-                bool repeated = false, bool distribute = true) {
+                bool repeated = false, bool distribute = true, double inherited_maximum = -1) {
         Weapon &w = weapons[wi];
+        if (repeated && w.kind == 3) {
+            for (Handle choice : targets(w.type, clock)) {
+                bool occupied = false;
+                for (size_t id : active) if (flights[id].live && flights[id].beam && flights[id].weapon == wi && flights[id].target.index == choice.index) occupied = true;
+                if (!occupied) { target = choice; break; }
+            }
+        }
         auto inst = instance(a);
         inst->derived = repeated;
         if (w.kind == 2 && !w.hostile) {
@@ -828,6 +835,11 @@ class SpaceCombatKernel : public RefCounted {
         size_t id = birth(wi, target, inst, multiplier, repeated);
         Flight &f = flights[id];
         if (w.kind == 3) {
+            if (inherited_maximum >= 0) {
+                f.maximum = inherited_maximum;
+                Dictionary row = Dictionary(f.view["weapon"]).duplicate(true); row["para2"] = inherited_maximum;
+                f.view["weapon"] = row; Dictionary snapshot = f.view["attack_snapshot"]; snapshot["weapon"] = row;
+            }
             if (!repeated)
                 w.beam = id;
         } else if (w.kind == 1 && !w.hostile) {
@@ -903,7 +915,7 @@ class SpaceCombatKernel : public RefCounted {
             if (!t.empty()) {
                 ++root_attacks;
                 ++attack_counter;
-                launch(q.weapon, t.front(), q.attack, q.multiplier, true);
+                launch(q.weapon, t.front(), q.attack, q.multiplier, true, true, q.owner_flight == SIZE_MAX ? -1 : flights[q.owner_flight].maximum);
             }
         }
         std::vector<Timed> reschedule;
@@ -948,6 +960,7 @@ class SpaceCombatKernel : public RefCounted {
             f.view["launch_point"] = muzzle;
             Actor *target = resolve(f.target);
             f.aim = f.hostile ? player_point : target ? target->point : f.aim;
+            motion.direction = unit(f.aim - muzzle);
             if (f.born_step < step_serial)
                 f.age += dt;
             while (f.next_hit <= f.age + 1e-9) {
@@ -969,6 +982,7 @@ class SpaceCombatKernel : public RefCounted {
             double ramp = f.ramp > 0 ? std::clamp(duration / f.ramp, 0.0, 1.0) : 1;
             double raw = f.damage * (1 + (f.maximum - 1) * ramp);
             effect(6, f, f.aim, p.at);
+            if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, p.at);
             if (f.hostile)
                 player_hit(raw, f.type, p.at);
             else
@@ -1011,7 +1025,11 @@ class SpaceCombatKernel : public RefCounted {
             ++physics_visits;
             Motion &m = f.lease->motion();
             Actor *t = resolve(f.target);
-            Vector2 aim = f.hostile ? Vector2(player_row["x"], player_row["y"]) : t ? t->point : m.last_aim;
+            Vector2 aim = f.hostile ? player_point : t ? t->point : m.last_aim;
+            if (!f.chain && m.kind != 1) {
+                Vector2 logical = f.hostile ? Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0)) : t ? t->logical : f.logical_aim;
+                aim = f.aim + logical - f.logical_aim;
+            }
             if (!f.hostile && !t) {
                 f.view["target"] = Dictionary();
             }
@@ -1366,6 +1384,7 @@ class SpaceCombatKernel : public RefCounted {
 
         counter_growth = d.get("counter_growth", counter_growth);
         defence_counter_growth = d.get("defence_counter_growth", defence_counter_growth);
+        clear_probability = d.get("clear_probability", clear_probability);
         counter_level = d.get("counter_level", counter_level);
         repeat_delay = d.get("repeat_delay", repeat_delay);
         scatter = d.get("scatter", scatter);

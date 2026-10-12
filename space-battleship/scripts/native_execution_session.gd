@@ -72,6 +72,7 @@ func advance(game:RefCounted,dt:float)->void:
 	consume_feedback(game)
 	game.since_hit+=dt
 	if float(game.player.armour)<=0:
+		game.event.emit("explode",{"x":game.player.x,"y":game.player.y,"boss":true})
 		game.begin_retreat()
 	elif not game.has_alive_enemy():
 		cancel(game);game.native_execution=null;game.native_wave_waiting=true
@@ -105,6 +106,7 @@ func consume_feedback(game:RefCounted)->void:
 			2:game.event.emit("hit",{"x":p.x,"y":p.y,"amount":row.amount,"absorbed":row.absorbed,"player":row.player,"type":row.type,"uid":row.uid,"critical":row.critical})
 			3:game.event.emit("explode",actor_by_uid[int(row.uid)])
 			4:game.event.emit("enhancement_chain",{"source":p,"target":Vector2(row.shot.target.x,row.shot.target.y),"weapon":row.shot.key,"shot":row.shot})
+			9:game.event.emit("critical_impact",{"pos":p,"direction":row.direction})
 			7:game.drops.append(row.shot)
 			8:game.event.emit("enhancement_secondary",{"source":p,"target":Vector2(row.shot.x,row.shot.y),"weapon":"native","beam":true})
 			6:game.event.emit("beam_hit",{"shot":row.shot})
