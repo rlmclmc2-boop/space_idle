@@ -273,6 +273,9 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary player = d["player"];
         if (!schema_required(player, {"armour","shield"}) ||
             !numeric_fields(player, {"armour","shield","x","y"}) ||
+            !schema_integers(player, {"armour_type","shield_type"}) ||
+            int(player.get("armour_type",0)) < 0 || int(player.get("armour_type",0)) > 2 ||
+            int(player.get("shield_type",0)) < 0 || int(player.get("shield_type",0)) > 2 ||
             !schema_nonnegative(player, {"armour","shield"})) return false;
         Array enemies = d["enemies"], weapons = d["weapons"], defs = d.get("defences", Array());
         if ((bool(d.get("requires_module_defense", false)) && defs.is_empty()) ||
@@ -284,7 +287,9 @@ class SpaceCombatKernel : public RefCounted {
                 !schema_integers(v, {"uid"}, false) || !schema_integers(v, {"armourType","shieldType","slot","jewel_rolls"}) ||
                 !schema_types(v, Variant::ARRAY, {"compiled_drops"}) ||
                 !numeric_fields(v, {"hp","max_hp","shield","max_shield","x","y","shield_hit_at","shield_updated_at","shieldDelay","shieldRecovery","interference","jewelExplosion"}) ||
-                !schema_nonnegative(v, {"max_hp","shield","max_shield","shieldDelay","shieldRecovery","interference","jewelExplosion","jewel_rolls"})) return false;
+                !schema_nonnegative(v, {"max_hp","shield","max_shield","shieldDelay","shieldRecovery","interference","jewelExplosion","jewel_rolls","slot"}) ||
+                int(v.get("armourType",0)) < 0 || int(v.get("armourType",0)) > 2 ||
+                int(v.get("shieldType",0)) < 0 || int(v.get("shieldType",0)) > 2) return false;
             Array drops = v.get("compiled_drops", Array());
             for (int j = 0; j < drops.size(); ++j) {
                 if (Variant(drops[j]).get_type() != Variant::DICTIONARY) return false;
@@ -301,10 +306,10 @@ class SpaceCombatKernel : public RefCounted {
                 !schema_types(v, Variant::BOOL, {"hostile"}) || !schema_types(v, Variant::VECTOR2, {"muzzle"}) ||
                 !schema_types(v, Variant::DICTIONARY, {"entry","row"}) || !schema_types(v, Variant::ARRAY, {"transfer_effects"}) ||
                 !numeric_fields(v, {"damage","factor","interval","remaining","speed","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","secondary_probability"}) ||
-                !schema_nonnegative(v, {"damage","factor","ramp","maximum","critical_multiplier","repeat_multiplier","chain_count"}) ||
+                !schema_nonnegative(v, {"damage","factor","ramp","maximum","critical_multiplier","repeat_multiplier","chain_count","slot"}) ||
                 !schema_probabilities(v, {"critical_rate","repeat_probability","secondary_probability"})) return false;
             int kind = v["kind"], source = v.get("source", -1);
-            if (kind < 0 || kind > 3 || double(v.get("interval", 1.0)) <= 0 || double(v.get("speed", 720.0)) <= 0 ||
+            if (kind < 0 || kind > 3 || int(v.get("type",1)) < 0 || int(v.get("type",1)) > 2 || double(v.get("interval", 1.0)) <= 0 || double(v.get("speed", 720.0)) <= 0 ||
                 int(v.get("salvo", 1)) < 1 || (bool(v.get("hostile", false)) && (source < 0 || source >= enemies.size()))) return false;
             Array effects = v.get("transfer_effects", Array());
             for (int j = 0; j < effects.size(); ++j)
@@ -316,7 +321,8 @@ class SpaceCombatKernel : public RefCounted {
             if (!schema_integers(v, {"layer","type"}) ||
                 !numeric_fields(v, {"base","factor","maximum","loss","buffer","delay","rate","last_hit","memory_heal","memory_cap","deferred_fraction"}) ||
                 !schema_nonnegative(v, {"base","factor","maximum","loss","buffer","delay","rate","memory_heal","memory_cap","deferred_fraction"}) ||
-                int(v.get("layer", 0)) < 0 || int(v.get("layer", 0)) > 1 || double(v.get("deferred_fraction", 0.0)) >= 1) return false;
+                int(v.get("layer", 0)) < 0 || int(v.get("layer", 0)) > 1 ||
+                int(v.get("type",0)) < 0 || int(v.get("type",0)) > 2 || double(v.get("deferred_fraction", 0.0)) >= 1) return false;
         }
         Dictionary debts = d.get("deferred", Dictionary());
         Array keys = debts.keys();
@@ -328,6 +334,118 @@ class SpaceCombatKernel : public RefCounted {
         }
         return true;
     }
+
+    static bool checked_counter_bonus(Dictionary d, double count, bool incoming, double &bonus) {
+        // Counter increments must still be exact in the native double representation.
+        if (count < 0 || count >= 9007199254740992.0 || std::floor(count) != count) return false;
+        double growth = incoming ? double(d.get("defence_counter_growth", d.get("counter_growth", 0.0)))
+                                 : double(d.get("counter_growth", 0.0));
+        double product = growth * double(d.get("counter_level", 0.0));
+        if (!std::isfinite(product)) return false;
+        if (product == 0) { bonus = 0; return true; }
+        double value = product * std::log(std::max(1.0, count));
+        if (!std::isfinite(value)) return false;
+        value /= std::log(double(d.get("counter_log_base", 10.0)));
+        if (!std::isfinite(value)) return false;
+        value *= double(d.get("counter_round_scale", 10.0));
+        if (!std::isfinite(value)) return false;
+        bonus = std::round(value) / double(d.get("counter_round_scale", 10.0));
+        return std::isfinite(bonus) && std::isfinite(1 + bonus) && 1 + bonus >= 0;
+    }
+    // Check the actual evaluation order: finite inputs alone do not imply finite intermediates.
+    // Called only after schema validation, before clearing or assigning any live state.
+    static bool configuration_arithmetic(Dictionary d, double attacks, double incoming) {
+        double attack_bonus = 0, defence_bonus = 0;
+        if (!checked_counter_bonus(d, attacks, false, attack_bonus) ||
+            !checked_counter_bonus(d, incoming, true, defence_bonus)) return false;
+        double next_attack_bonus = 0, next_defence_bonus = 0;
+        if (!checked_counter_bonus(d, attacks + 1, false, next_attack_bonus) ||
+            !checked_counter_bonus(d, incoming + 1, true, next_defence_bonus)) return false;
+        attack_bonus = std::max(attack_bonus,next_attack_bonus);
+        defence_bonus = std::max(defence_bonus,next_defence_bonus);
+        double clock_value = d.get("clock", 0.0), defence_clock = d.get("defence_time", 0.0);
+        if (!std::isfinite(clock_value - double(d.get("since_hit", 100.0))) ||
+            !std::isfinite(clock_value + double(d.get("repeat_delay", .1)))) return false;
+        double portions = std::ceil(double(d.get("deferred_duration",1.0)) / double(d.get("deferred_interval",1.0)));
+        double first_at = defence_clock + double(d.get("deferred_interval",1.0)) - 1e-9;
+        double first_tick = std::ceil(first_at / double(d.get("deferred_interval",1.0)));
+        int64_t tick = d.get("deferred_tick",0);
+        if (!std::isfinite(portions) || portions > std::numeric_limits<int>::max() ||
+            !std::isfinite(first_at) || !std::isfinite(first_tick) || first_tick >= 9223372036854775808.0 ||
+            tick == std::numeric_limits<int64_t>::max()) return false;
+        int64_t first = std::max(tick + 1, int64_t(first_tick));
+        if (first > std::numeric_limits<int64_t>::max() - int64_t(std::max(1.0,portions))) return false;
+        Array weapons = d["weapons"], enemies = d["enemies"], defs = d.get("defences", Array());
+        double raw_bound = 0;
+        for (int i = 0; i < weapons.size(); ++i) {
+            Dictionary v = weapons[i];
+            double raw = v.get("damage", 1.0);
+            if (!bool(v.get("hostile", false))) {
+                raw *= 1 + attack_bonus;
+                if (!std::isfinite(raw)) return false;
+                raw = std::ceil(raw);
+            }
+            raw *= double(v.get("factor", 1.0));
+            if (!std::isfinite(raw)) return false;
+            if (!bool(v.get("hostile", false)) && bool(d.get("scatter",false)) && int(v["kind"]) == 0)
+                raw *= 1 + double(d.get("scatter_bonus", 0.0));
+            if (!std::isfinite(raw)) return false;
+            // Both branches must be representable, regardless of the next RNG draw.
+            double critical = raw * double(v.get("critical_multiplier", d.get("critical_multiplier", 2.0)));
+            if (!std::isfinite(critical)) return false;
+            raw = std::max(raw, critical);
+            double repeated = raw * double(v.get("repeat_multiplier", d.get("repeat_multiplier", 1.0)));
+            if (!std::isfinite(repeated)) return false;
+            raw = std::max(raw, repeated);
+            double maximum = double(v.get("maximum",1.0)) + double(d.get("prism_bonus",0.0));
+            if (!std::isfinite(maximum) || !std::isfinite(raw * std::max(1.0,maximum))) return false;
+            raw_bound = std::max(raw_bound, std::max(raw, raw * std::max(1.0, maximum)));
+            if (!std::isfinite(clock_value + double(v.get("remaining",int(v["kind"]) == 3 ? 0.0 : double(v.get("interval",1.0)))))) return false;
+        }
+        for (int i = 0; i < enemies.size(); ++i) {
+            Dictionary v = enemies[i];
+            double explosion = double(v["max_hp"]) * double(v.get("jewelExplosion",0.0));
+            if (!std::isfinite(explosion)) return false;
+            raw_bound = std::max(raw_bound, explosion);
+            double recovery = double(v.get("max_shield",0.0)) * double(v.get("shieldRecovery",0.0));
+            double elapsed = clock_value - double(v.get("shield_updated_at",clock_value));
+            if (!std::isfinite(recovery) || !std::isfinite(elapsed) || !std::isfinite(recovery * std::max(0.0,elapsed)) ||
+                !std::isfinite(double(v.get("shield",0.0)) + recovery * std::max(0.0,elapsed)) ||
+                !std::isfinite(double(v.get("shield_hit_at",clock_value)) + double(v.get("shieldDelay",0.0)))) return false;
+        }
+        // Explosions use the receiving actor's interference too.
+        for (int i = 0; i < enemies.size(); ++i) {
+            Dictionary v = enemies[i];
+            if (!std::isfinite(raw_bound * (1 + double(v.get("interference",0.0))))) return false;
+        }
+        double totals[2] = {}, losses[2] = {}, buffers[2] = {};
+        for (int i = 0; i < defs.size(); ++i) {
+            Dictionary v = defs[i]; int layer = v.get("layer",0);
+            double before_ceil = double(v.get("base",0.0)) * (1 + defence_bonus);
+            double maximum = std::ceil(before_ceil) * double(v.get("factor",1.0));
+            double supplied = v.get("maximum",0.0);
+            if (!std::isfinite(before_ceil) || !std::isfinite(maximum) ||
+                !std::isfinite(maximum * double(v.get("memory_cap",0.0))) ||
+                !std::isfinite(supplied * double(v.get("memory_cap",0.0))) ||
+                !std::isfinite(maximum * double(v.get("memory_heal",0.0))) ||
+                !std::isfinite(maximum * double(v.get("rate",0.0))) ||
+                !std::isfinite(maximum / (1 - double(v.get("deferred_fraction",0.0)))) ||
+                !std::isfinite(defence_clock - double(v.get("last_hit",0.0))) ||
+                !std::isfinite(double(v.get("last_hit",0.0)) + double(v.get("delay",0.0))) ||
+                !std::isfinite(raw_bound * maximum)) return false;
+            totals[layer] += maximum; losses[layer] += double(v.get("loss",0.0)); buffers[layer] += double(v.get("buffer",0.0));
+            if (!std::isfinite(totals[layer]) || !std::isfinite(losses[layer]) || !std::isfinite(buffers[layer])) return false;
+        }
+        Dictionary debt = d.get("deferred",Dictionary()); Array keys = debt.keys();
+        double debt_totals[2] = {};
+        for (int i = 0; i < keys.size(); ++i) {
+            Dictionary payment = debt[keys[i]];
+            debt_totals[0] += double(payment.get("shield",0.0)); debt_totals[1] += double(payment.get("armour",0.0));
+            if (!std::isfinite(debt_totals[0]) || !std::isfinite(debt_totals[1])) return false;
+        }
+        return true;
+    }
+
 
     static Vector2 axis(double angle) {
         return Vector2(std::cos(angle), std::sin(angle));
@@ -1339,7 +1457,7 @@ class SpaceCombatKernel : public RefCounted {
 
   public:
     bool configure(Dictionary d) {
-        if (!configuration_schema(d)) return false;
+        if (!configuration_schema(d) || !configuration_arithmetic(d, double(d.get("attack_counter",0.0)), double(d.get("incoming_counter",0.0)))) return false;
         cancel();
         feedback.clear();
         actors.clear();
@@ -1543,7 +1661,8 @@ class SpaceCombatKernel : public RefCounted {
         return admitted;
     }
     bool can_update_configuration(Dictionary d) const {
-        if (!admitted || stopped || executing || !configuration_schema(d)) return false;
+        if (!admitted || stopped || executing || !configuration_schema(d) ||
+            !configuration_arithmetic(d, attack_counter, incoming_counter)) return false;
         Array enemies = d.get("enemies", Array());
         if (enemies.size() != int(actors.size())) return false;
         for (int i = 0; i < enemies.size(); ++i) {
