@@ -221,6 +221,114 @@ class SpaceCombatKernel : public RefCounted {
         }
         return true;
     }
+    static bool schema_types(Dictionary row, Variant::Type type,
+                             std::initializer_list<const char *> keys) {
+        for (const char *key : keys)
+            if (row.has(key) && Variant(row[key]).get_type() != type) return false;
+        return true;
+    }
+    static bool schema_integers(Dictionary row, std::initializer_list<const char *> keys,
+                                bool narrow = true) {
+        if (!schema_types(row, Variant::INT, keys)) return false;
+        for (const char *key : keys) {
+            if (!row.has(key) || !narrow) continue;
+            int64_t value = row[key];
+            if (value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max()) return false;
+        }
+        return true;
+    }
+    static bool schema_required(Dictionary row, std::initializer_list<const char *> keys) {
+        for (const char *key : keys) if (!row.has(key)) return false;
+        return true;
+    }
+    static bool schema_nonnegative(Dictionary row, std::initializer_list<const char *> keys) {
+        for (const char *key : keys)
+            if (row.has(key) && double(row[key]) < 0) return false;
+        return true;
+    }
+    static bool schema_probabilities(Dictionary row, std::initializer_list<const char *> keys) {
+        for (const char *key : keys)
+            if (row.has(key) && (double(row[key]) < 0 || double(row[key]) > 1)) return false;
+        return true;
+    }
+    // Pure descriptor admission. No casts of unchecked fields, RNG draws or owner mutation.
+    // GrowthNumber dictionaries are valid legacy values, but never native scalar values.
+    static bool configuration_schema(Dictionary d) {
+        if (!finite_descriptor(d) || !schema_required(d, {"player","enemies","weapons"}) ||
+            !schema_types(d, Variant::DICTIONARY, {"player","deferred"}) ||
+            !schema_types(d, Variant::ARRAY, {"enemies","weapons","defences","unsupported_rules"}) ||
+            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
+            !schema_integers(d, {"chain_count","prism_count"}) ||
+            !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}, false) ||
+            !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
+        if (!Array(d.get("unsupported_rules", Array())).is_empty() ||
+            !schema_nonnegative(d, {"since_hit","launch_speed","turn_rate","ignition","seek","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","critical_multiplier","repeat_multiplier","repeat_delay","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","scatter_bonus","prism_bonus","deferred_duration","defence_time","memory_elapsed","deferred_elapsed","jewel_ratio","chain_count","prism_count","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}) ||
+            !schema_probabilities(d, {"resistance","critical_rate","repeat_probability","secondary_probability","clear_probability","jewel_probability"})) return false;
+        double mi = d.get("memory_interval", 1.0), di = d.get("deferred_interval", 1.0);
+        double lb = d.get("counter_log_base", 10.0);
+        if (double(d.get("ejection_gap", .12)) <= 0 || double(d.get("cruise_at", .65)) <= double(d.get("ignition", .22)) ||
+            mi <= 1e-9 || di <= 1e-9 || double(d.get("memory_elapsed", 0.0)) >= mi ||
+            double(d.get("deferred_elapsed", 0.0)) >= di || lb <= 0 || lb == 1 ||
+            double(d.get("counter_round_scale", 10.0)) <= 0) return false;
+        Dictionary player = d["player"];
+        if (!schema_required(player, {"armour","shield"}) ||
+            !numeric_fields(player, {"armour","shield","x","y"}) ||
+            !schema_nonnegative(player, {"armour","shield"})) return false;
+        Array enemies = d["enemies"], weapons = d["weapons"], defs = d.get("defences", Array());
+        if ((bool(d.get("requires_module_defense", false)) && defs.is_empty()) ||
+            (bool(d.get("requires_drop_rules", false)) && !bool(d.get("drop_rules_compiled", false)))) return false;
+        for (int i = 0; i < enemies.size(); ++i) {
+            if (Variant(enemies[i]).get_type() != Variant::DICTIONARY) return false;
+            Dictionary v = enemies[i];
+            if (!schema_required(v, {"uid","hp","max_hp","x","y"}) ||
+                !schema_integers(v, {"uid"}, false) || !schema_integers(v, {"armourType","shieldType","slot","jewel_rolls"}) ||
+                !schema_types(v, Variant::ARRAY, {"compiled_drops"}) ||
+                !numeric_fields(v, {"hp","max_hp","shield","max_shield","x","y","shield_hit_at","shield_updated_at","shieldDelay","shieldRecovery","interference","jewelExplosion"}) ||
+                !schema_nonnegative(v, {"max_hp","shield","max_shield","shieldDelay","shieldRecovery","interference","jewelExplosion","jewel_rolls"})) return false;
+            Array drops = v.get("compiled_drops", Array());
+            for (int j = 0; j < drops.size(); ++j) {
+                if (Variant(drops[j]).get_type() != Variant::DICTIONARY) return false;
+                Dictionary drop = drops[j];
+                if (!schema_required(drop, {"chance","amount","base","resource"}) ||
+                    !numeric_fields(drop, {"chance","amount","base"}) || !schema_integers(drop, {"resource"}) ||
+                    !schema_nonnegative(drop, {"amount","base","resource"}) || !schema_probabilities(drop, {"chance"})) return false;
+            }
+        }
+        for (int i = 0; i < weapons.size(); ++i) {
+            if (Variant(weapons[i]).get_type() != Variant::DICTIONARY) return false;
+            Dictionary v = weapons[i];
+            if (!schema_required(v, {"kind"}) || !schema_integers(v, {"kind","type","slot","source","salvo","chain_count"}) ||
+                !schema_types(v, Variant::BOOL, {"hostile"}) || !schema_types(v, Variant::VECTOR2, {"muzzle"}) ||
+                !schema_types(v, Variant::DICTIONARY, {"entry","row"}) || !schema_types(v, Variant::ARRAY, {"transfer_effects"}) ||
+                !numeric_fields(v, {"damage","factor","interval","remaining","speed","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","secondary_probability"}) ||
+                !schema_nonnegative(v, {"damage","factor","ramp","maximum","critical_multiplier","repeat_multiplier","chain_count"}) ||
+                !schema_probabilities(v, {"critical_rate","repeat_probability","secondary_probability"})) return false;
+            int kind = v["kind"], source = v.get("source", -1);
+            if (kind < 0 || kind > 3 || double(v.get("interval", 1.0)) <= 0 || double(v.get("speed", 720.0)) <= 0 ||
+                int(v.get("salvo", 1)) < 1 || (bool(v.get("hostile", false)) && (source < 0 || source >= enemies.size()))) return false;
+            Array effects = v.get("transfer_effects", Array());
+            for (int j = 0; j < effects.size(); ++j)
+                if (Variant(effects[j]).get_type() != Variant::DICTIONARY) return false;
+        }
+        for (int i = 0; i < defs.size(); ++i) {
+            if (Variant(defs[i]).get_type() != Variant::DICTIONARY) return false;
+            Dictionary v = defs[i];
+            if (!schema_integers(v, {"layer","type"}) ||
+                !numeric_fields(v, {"base","factor","maximum","loss","buffer","delay","rate","last_hit","memory_heal","memory_cap","deferred_fraction"}) ||
+                !schema_nonnegative(v, {"base","factor","maximum","loss","buffer","delay","rate","memory_heal","memory_cap","deferred_fraction"}) ||
+                int(v.get("layer", 0)) < 0 || int(v.get("layer", 0)) > 1 || double(v.get("deferred_fraction", 0.0)) >= 1) return false;
+        }
+        Dictionary debts = d.get("deferred", Dictionary());
+        Array keys = debts.keys();
+        for (int i = 0; i < keys.size(); ++i) {
+            if (Variant(keys[i]).get_type() != Variant::INT || int64_t(keys[i]) < 0 ||
+                Variant(debts[keys[i]]).get_type() != Variant::DICTIONARY) return false;
+            Dictionary payment = debts[keys[i]];
+            if (!numeric_fields(payment, {"shield","armour"}) || !schema_nonnegative(payment, {"shield","armour"})) return false;
+        }
+        return true;
+    }
+
     static Vector2 axis(double angle) {
         return Vector2(std::cos(angle), std::sin(angle));
     }
@@ -1231,6 +1339,7 @@ class SpaceCombatKernel : public RefCounted {
 
   public:
     bool configure(Dictionary d) {
+        if (!configuration_schema(d)) return false;
         cancel();
         feedback.clear();
         actors.clear();
@@ -1434,7 +1543,7 @@ class SpaceCombatKernel : public RefCounted {
         return admitted;
     }
     bool can_update_configuration(Dictionary d) const {
-        if (!admitted || stopped || executing || !finite_descriptor(d)) return false;
+        if (!admitted || stopped || executing || !configuration_schema(d)) return false;
         Array enemies = d.get("enemies", Array());
         if (enemies.size() != int(actors.size())) return false;
         for (int i = 0; i < enemies.size(); ++i) {
