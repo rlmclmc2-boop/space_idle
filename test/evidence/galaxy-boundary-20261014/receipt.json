@@ -1,0 +1,32 @@
+{
+  "refs": {
+    "A": "720a533f",
+    "B": "1f2b40da"
+  },
+  "runs": [
+    {
+      "label": "A1",
+      "started": 1791920855.6915293,
+      "finished": 1791920912.91087,
+      "driver_sha256": "427b472758be445ac6b0d1c950e45c82bf811a055634ec68b8f54b498b2e341d",
+      "output_sha256": "9259928d5cf24992d2465fc894c8545f79267fcdff4b44c5f748f12c1e1f1305",
+      "dll_sha256": "97c1122c07ddb459ee7b4dc420455188c8a2d8507ca2653bc84b26cd048837ca"
+    },
+    {
+      "label": "B",
+      "started": 1791920913.169749,
+      "finished": 1791920933.224132,
+      "driver_sha256": "427b472758be445ac6b0d1c950e45c82bf811a055634ec68b8f54b498b2e341d",
+      "output_sha256": "09af44122d902bf6fdf73aca5e05c3c1ecc2c46ec720f236386a5073d2a07431",
+      "dll_sha256": "97c1122c07ddb459ee7b4dc420455188c8a2d8507ca2653bc84b26cd048837ca"
+    },
+    {
+      "label": "A2",
+      "started": 1791920933.4829798,
+      "finished": 1791920990.2447484,
+      "driver_sha256": "427b472758be445ac6b0d1c950e45c82bf811a055634ec68b8f54b498b2e341d",
+      "output_sha256": "e764e1dc369c707a4a58fa86ddcba5816faa3e12ff56fd97ad8328ac7fd397dd",
+      "dll_sha256": "97c1122c07ddb459ee7b4dc420455188c8a2d8507ca2653bc84b26cd048837ca"
+    }
+  ]
+}

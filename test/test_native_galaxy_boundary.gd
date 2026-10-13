@@ -32,6 +32,22 @@ func _initialize()->void:
    check(before==r.save_data() and rng==r.random.state and map_rng==r.map_random.state,"preflight pure "+mode)
    var revision:int=r.building_revision;r.advance(dt,1)
    check(due==(r.building_revision!=revision),"boundary prediction "+mode+" "+str(dt))
+ # Final work completion is not full progress: construction participates
+ # in node_progress(). Cover transition to upgrading with time left in dt.
+ for dt in [1.0,30.5,31.0]:
+  var r=fresh(db);r.row.construction_time=30.0
+  for slot in r.slots:slot.status="active";slot.level=1;slot.work=r.work_cost();slot.construction=0.0
+  var last:Dictionary=r.slots.back();last.status="constructing";last.work=r.work_cost()-1.0;last.construction=30.0
+  r.state.status="exploring";r.state.explore_work=float(r.row.explore_work_total)-1.0;r.refresh_counts()
+  var revision:int=r.building_revision;var due:bool=r.revision_due(dt,1)
+  r.advance(dt,1)
+  check(due==(r.building_revision!=revision),"last work / construction / upgrade boundary "+str(dt))
+  check(float(r.state.explore_work)==float(r.row.explore_work_total),"last work reaches recorded total "+str(dt))
+  if dt==1.0:
+   check(r.state.status=="exploring" and r.progress()<1.0 and last.construction>0 and r.slots.all(func(slot):return slot.status!="upgrading"),"remaining construction prevents early developing and upgrade selection")
+  else:
+   check(r.state.status=="developing" and last.status in ["active","upgrading"],"completion enters developing only after first revision "+str(dt))
+   if dt>30.5:check(r.slots.any(func(slot):return slot.status=="upgrading"),"remaining substep can begin upgrades after preflighted completion")
  var g=BattleGame.new(db,false);g.profile.cleared=range(1,101);g.rebuild_unlocks();g.galaxy.refresh_unlocks(g)
  check(g.assign_crew("navigator","galaxy_explore","galaxy_1"),"ordinary galaxy assignment")
  var region=g.galaxy.regions.galaxy_1
