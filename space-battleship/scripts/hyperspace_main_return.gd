@@ -122,5 +122,6 @@ static func restore(g,saved:Dictionary,point:Dictionary)->void:
  g.enhancement_deferred_tick=int(saved.enhancement_deferred_tick)
  for key in saved.enhancement_deferred:g.enhancement_deferred[int(key)]=saved.enhancement_deferred[key].duplicate(true)
  g.sync_jewel_defence_damage();g.enhancement_branches.reconcile(g);g.sync_enhancement_buffers();g.save_dirty=true
+ g.enhancement_memory_due_pending=false;g.enhancement_deferred_due_pending=false
  if saved.get("version")==VERSION:Actors.restore(g,saved.battle_json)
  g.event.emit("state",{"state":g.state})

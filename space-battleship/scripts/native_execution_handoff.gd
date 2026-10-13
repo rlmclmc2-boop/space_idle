@@ -99,6 +99,8 @@ func commit_views(game)->void:
 	game.enhancement_deferred=state.deferred;game.since_hit=float(state.since_hit)
 	game.enhancement_defense_time=float(state.defence_time);game.enhancement_memory_elapsed=float(state.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(state.deferred_elapsed);game.enhancement_deferred_tick=int(state.deferred_tick)
+	game.enhancement_memory_due_pending=false;game.enhancement_deferred_due_pending=false
+	game._mark_enhancement_due(game.enhancement_parameter("memory_interval"),game.enhancement_parameter("deferred_interval"))
 	game.enemy_shield_time=float(state.clock);game.motion_clock=float(state.clock)
 	game.profile.enhancementAttacks=int(state.attack_counter);game.profile.enhancementHits=int(state.incoming_counter)
 	game.projectile_serial=int(state.projectile_serial);game.main_attack_serial=int(state.attack_serial);game.attack_instance_serial=int(state.instance_serial);game.uid=int(state.drop_uid);game.rng=state.rng

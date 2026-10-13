@@ -123,6 +123,9 @@ var enhancement_defense_time := 0.0
 var enhancement_deferred_elapsed := 0.0
 var enhancement_deferred_tick := 0
 var enhancement_deferred: Dictionary = {}
+# A terminal window can interrupt a due settlement after its phase wrapped.
+var enhancement_memory_due_pending:=false
+var enhancement_deferred_due_pending:=false
 # Preserves damage fraction while a capacity temporarily becomes zero during refit.
 var refit_health_ratios := {"armour":1.0,"shield":1.0}
 var enemy_shield_time := 0.0
@@ -1898,6 +1901,7 @@ func reset_player() -> void:
 	enhancement_defense_time=0.0
 	enhancement_deferred_elapsed=0.0
 	enhancement_deferred_tick=0
+	enhancement_memory_due_pending=false;enhancement_deferred_due_pending=false
 	enhancement_deferred.clear()
 	player = {"x":PLAYER_POSITION.x, "y":PLAYER_POSITION.y, "armour":stat("armour"), "shield":max_shield()}
 	since_hit = 100
@@ -2389,6 +2393,12 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 		if shot.dead:break
 
 func tick_shield_beams(pending: Array, dt: float) -> void:
+	if _legacy_defence_span_active and _legacy_defence_stopped():return
+	if state!=State.COMBAT:
+		# The combat clock is frozen here: clean up, never schedule past periods.
+		for shot in pending:
+			if shot.get("beam",false) and projectiles.has(shot):advance_long_laser(shot,0.0)
+		return
 	# Flying rounds and asynchronous chain hops hit at the step boundary. Beam
 	# periods can precede it, so merge periods across mounts before those hits.
 	var hits: Array[Dictionary] = []
@@ -4112,6 +4122,24 @@ func _legacy_advance_defence_to(combat_at:float)->bool:
 	if not advance_jewel_repair(maxf(0.0,target-enhancement_defense_time)):return false
 	return not _legacy_defence_stopped()
 
+func _mark_enhancement_due(memory_interval:float,deferred_interval:float)->void:
+	# Phase bookkeeping never performs a payment, recovery pulse or RNG roll.
+	if enhancement_deferred_elapsed+0.000000001>=deferred_interval:
+		enhancement_deferred_elapsed=maxf(0.0,enhancement_deferred_elapsed-deferred_interval)
+		enhancement_deferred_due_pending=true
+	if enhancement_memory_elapsed+0.000000001>=memory_interval:
+		enhancement_memory_elapsed=maxf(0.0,enhancement_memory_elapsed-memory_interval)
+		enhancement_memory_due_pending=true
+
+func _settle_enhancement_due()->void:
+	if enhancement_deferred_due_pending:
+		enhancement_deferred_due_pending=false
+		advance_enhancement_deferred_tick()
+		if _legacy_defence_stopped():return
+	if enhancement_memory_due_pending:
+		enhancement_memory_due_pending=false
+		advance_enhancement_repair_step(0.0,1)
+
 func advance_jewel_repair(dt: float) -> bool:
 	if paused or dt<0 or state==State.RETREAT or N.compare(player.armour,0)<=0:return true
 	var memory_interval := enhancement_parameter("memory_interval")
@@ -4127,6 +4155,8 @@ func advance_jewel_repair(dt: float) -> bool:
 		if _legacy_defence_span_active:enemy_shield_hit_time=_legacy_combat_origin+(enhancement_defense_time-_legacy_defence_origin)
 		enhancement_branches.advance_defense(self,0.0)
 		if _legacy_defence_span_active:drone_combat.advance_incoming(self,0.0)
+		if _legacy_defence_stopped():enemy_shield_hit_time=previous_query_time;return true
+		_settle_enhancement_due()
 		enemy_shield_hit_time=previous_query_time
 		if _legacy_defence_stopped():return true
 		if rest<=0.000000001:break
@@ -4140,6 +4170,7 @@ func advance_jewel_repair(dt: float) -> bool:
 		since_hit+=step
 		enhancement_memory_elapsed+=step
 		enhancement_deferred_elapsed+=step
+		_mark_enhancement_due(memory_interval,deferred_interval)
 		rest=maxf(0.0,rest-step)
 		# Integrate the elapsed interval before consuming its endpoint events.
 		if _legacy_defence_span_active:enemy_shield_hit_time=_legacy_combat_origin+(enhancement_defense_time-_legacy_defence_origin)
@@ -4147,14 +4178,9 @@ func advance_jewel_repair(dt: float) -> bool:
 		enhancement_branches.advance_defense(self,step)
 		if _legacy_defence_span_active:drone_combat.advance_incoming(self,step)
 		if _legacy_defence_stopped():enemy_shield_hit_time=previous_query_time;return true
-		if enhancement_deferred_elapsed+0.000000001>=deferred_interval:
-			enhancement_deferred_elapsed=maxf(0.0,enhancement_deferred_elapsed-deferred_interval)
-			advance_enhancement_deferred_tick()
-			if _legacy_defence_stopped():enemy_shield_hit_time=previous_query_time;return true
-		if enhancement_memory_elapsed+0.000000001>=memory_interval:
-			enhancement_memory_elapsed=maxf(0.0,enhancement_memory_elapsed-memory_interval)
-			advance_enhancement_repair_step(0.0,1)
+		_settle_enhancement_due()
 		enemy_shield_hit_time=previous_query_time
+		if _legacy_defence_stopped():return true
 	return true
 
 func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
@@ -4276,7 +4302,7 @@ func native_before_configuration_change()->bool:
 
 
 func admit_native_execution(descriptor:Dictionary)->bool:
-	if native_execution!=null or state!=State.COMBAT:return false
+	if native_execution!=null or state!=State.COMBAT or enhancement_memory_due_pending or enhancement_deferred_due_pending:return false
 	var session=preload("res://scripts/native_execution_session.gd").new()
 	if not session.admit(self,descriptor):return false
 	native_execution=session
