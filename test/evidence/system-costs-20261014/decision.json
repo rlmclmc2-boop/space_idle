@@ -357,7 +357,8 @@
     "Timings include isolated wrapper overhead; no subtraction or net saving claim. Exclusive spans remove measured nested children only.",
     "Synthetic history is bounded and explicitly declared; held-health combat alone supplied zero ordinary receipts.",
     "Hidden region advance spike about188ms occurred once; neither its cause nor removability is established.",
-    "Native rejection is explicit in native_execution_compiler.gd:50-54. Do not bypass it without correct autonomous configuration reconciliation."
+    "Native rejection is explicit in native_execution_compiler.gd:50-54. Do not bypass it without correct autonomous configuration reconciliation.",
+    "Read-only follow-up: fixture set 15 built slots/explore_work without calling region.sync_map(), leaving initial cells behind progress. galaxy_region.advance ends with sync_map(), which paints to the progress-derived target. Hidden first region step occurs after warmup while visible steps run during warmup. Therefore the ~188ms hidden spike is plausibly fixture catch-up, NOT evidence of a production hotspot; exclude it from optimization budgets. No rerun was performed."
   ],
   "source_probe_sha256": {
     "main.gd": {
