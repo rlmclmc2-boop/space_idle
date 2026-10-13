@@ -24,7 +24,7 @@ var sort_dirty := true
 var sorted_ids: Array = []
 var last_sort_mode := -1
 var observed_resources: Dictionary = {}
-var stats_dirty: Dictionary = {}
+var stats_dirty: Dictionary = {} # true: full stats/context; false: counters only
 var selected_next_stat = 0.0
 var detail_dirty := true
 var details_open := false
@@ -538,20 +538,26 @@ func invalidate_stats(info: Dictionary) -> void:
 	if not is_visible_in_tree():
 		dirty = true
 		return
+	var full := not bool(info.get("counter_only",false)) or bool(info.get("detail",false))
 	if info.has("slot"):
-		stats_dirty[info.slot] = true
+		stats_dirty[info.slot] = bool(stats_dirty.get(info.slot,false)) or full
 	else:
 		for id in items:
-			if items[id].category==info.category:stats_dirty[id] = true
+			if items[id].category==info.category:stats_dirty[id] = bool(stats_dirty.get(id,false)) or full
 
 func refresh_stats() -> void:
+	# Snapshot excludes timed/identity-owned buffs. Equal entry values share
+	# this synchronous read only; nothing is retained across refresh calls.
+	var projections:Dictionary={}
 	var selected_changed := false
 	var selected_preview: Dictionary={}
 	for id in stats_dirty:
 		if not items.has(id):continue
 		var item: Dictionary = items[id]
 		var entry: Dictionary = host.game.module_entry(item.category,item.index)
-		var projection: Dictionary=host.equipment_display_snapshot(entry)
+		if not projections.has(entry):projections[entry]=host.equipment_display_snapshot(entry)
+		var projection: Dictionary=projections[entry]
+		var counter_only := not bool(stats_dirty[id])
 		var value = projection.expected
 		var projection_changed: bool=item.projection!=projection
 		if selected==id and not item.key.is_empty():
@@ -560,15 +566,17 @@ func refresh_stats() -> void:
 				selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
 			else:detail_dirty=true
 			selected_changed = selected_changed or projection_changed
-		var context := card_level_text(entry,item.category,not item.locked)
+		var context: String=item.cardLevelText if counter_only else card_level_text(entry,item.category,not item.locked)
 		if GrowthNumber.compare(value,item.mainStatNumber)==0 and not projection_changed and context==item.cardLevelText:continue
 		item.cardLevelText=context
 		item.projection=projection
 		item.tooltip=module_tooltip(entry,("W" if item.category=="weapons" else "D")+str(int(item.index)+1).pad_zeros(2),host.NAMES.get(item.key,UIText.t("equipment.vacant")),projection)
 		item.mainStatNumber = value
 		item.mainStatValue = host.number(value) if not item.key.is_empty() else "—"
-		# A damage/probability-only event leaves its already quoted upgrade cost valid.
-		cards[id].refresh(item,selected==id)
+		# Counter events change the current amount/tooltip, not level/CD/type,
+		# choices, affordability, selection or card skin. Update them immediately.
+		if counter_only:cards[id].refresh_counter_values(item,selected==id)
+		else:cards[id].refresh(item,selected==id)
 		sort_dirty = sort_dirty or sort_mode==2
 		selected_changed = selected_changed or selected==id
 	stats_dirty.clear()

@@ -168,6 +168,14 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(fields.cost,"text",item.get("cost","—"))
 	add_theme_stylebox_override("normal",panel.textured_panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 
+func refresh_counter_values(item: Dictionary, chosen: bool) -> void:
+	if last_state.size()!=16 or last_state[10]!=chosen:
+		refresh(item,chosen)
+		return
+	last_state[6]=item.mainStatValue;last_state[11]=item.tooltip
+	host.set_ui_value(fields.stat,"text",item.mainStatValue)
+	host.set_ui_value(self,"tooltip_text",item.tooltip)
+
 func refresh_options(item: Dictionary) -> void:
 	var options: Array = panel.equipment_choices(item.category,int(item.index))
 	var state := [item.category,item.index,item.key,item.locked,options]
