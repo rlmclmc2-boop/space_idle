@@ -80,41 +80,26 @@ func rail_charge_contract(scene)->void:
 	check(fires[0]>=2 and seen[0] and seen[1] and upgraded,"player rail charge rises in two actual firing cycles")
 	check(enemy_seen,"enemy rail charge reads its native root deadline")
 	g.event.disconnect(watcher)
-func same_clock_fleet_threshold(geometry,g)->void:
-	var original_enemies:Array[Dictionary]=g.enemies
+func fixed_layout_contract(geometry,g)->void:
 	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
-	var original_target:Vector2=pose.target;var original_born:float=pose.born
-	var original_explicit=enemy.get("explicit_formation",null)
-	var original_columns=enemy.get("formation_columns",null)
-	var original_max_y:float=geometry.battle_visual.enemy_max_y
-	g.enemies=original_enemies.duplicate();g.enemies.clear();g.enemies.append(enemy)
-	for index in 9:
-		var other:Dictionary=enemy.duplicate(true);other.uid=9000+index;other.slot=100+index;g.enemies.append(other)
-	enemy.explicit_formation=false;enemy.formation_columns=10
-	pose.target=Vector2(original_target.x,10000);pose.born=geometry.fx_time-2.0
-	geometry.battle_visual.enemy_max_y=0.2
-	geometry.enemy_entry_batch_active=true;geometry.enemy_provider_query_active=true
 	var before:Vector2=geometry._source_enemy_render_position(enemy)
-	geometry.enemy_provider_query_active=false;geometry.after_tick()
-	var clock:float=geometry.fx_time
-	var removed:Dictionary=g.enemies.pop_back()
-	var cached:Vector2=geometry._source_enemy_render_position(enemy)
-	pose.erase("steady_position_key");pose.erase("steady_position_time")
-	var expected:Vector2=geometry._source_enemy_render_position(enemy)
-	check(before!=expected,"10 to 9 fixture changes the non-explicit frontline clamp")
-	check(cached==expected and geometry.fx_time==clock,"same-clock 10 to 9 equals uncached solve")
-	geometry.enemy_entry_batch_active=true;geometry.enemy_provider_query_active=true
-	geometry._source_enemy_render_position(enemy)
-	geometry.enemy_provider_query_active=false;geometry.after_tick();g.enemies.append(removed)
-	cached=geometry._source_enemy_render_position(enemy)
-	pose.erase("steady_position_key");pose.erase("steady_position_time")
-	check(cached==geometry._source_enemy_render_position(enemy) and geometry.fx_time==clock,"same-clock 9 to 10 equals uncached solve")
-	g.enemies=original_enemies;pose.target=original_target;pose.born=original_born
-	geometry.battle_visual.enemy_max_y=original_max_y
-	if original_explicit==null:enemy.erase("explicit_formation")
-	else:enemy.explicit_formation=original_explicit
-	if original_columns==null:enemy.erase("formation_columns")
-	else:enemy.formation_columns=original_columns
+	var old_x:float=enemy.x;enemy.x+=1.0
+	check(geometry._source_enemy_render_position(enemy).x!=before.x,"fixed layout follows live logical movement without a stale position key")
+	enemy.x=old_x
+	var old_enemies:Array[Dictionary]=g.enemies
+	for size_class in range(1,7):
+		for explicit in [false,true]:
+			var sample:Dictionary=enemy.duplicate(true);sample.uid=9000+size_class;sample.slot=100+size_class
+			sample.size=size_class;sample.explicit_formation=explicit;sample.formation_count=4
+			var sample_enemies:Array[Dictionary]=[sample]
+			g.enemies=sample_enemies
+			var sample_pose:Dictionary=geometry.enemy_pose(sample)
+			var low:float=geometry._source_enemy_render_width_at_y(sample,90.0)
+			var high:float=geometry._source_enemy_render_width_at_y(sample,900.0)
+			check(low>0.0 and low==high,"one model width across depth, size %d explicit %s"%[size_class,explicit])
+			check(sample_pose.fixed_layout.frontline>=sample_pose.fixed_layout.top,"fixed bounds are ordered for every model size")
+			geometry.enemy_poses.erase(int(sample.slot))
+	g.enemies=old_enemies
 
 func steady_position_publication(geometry,g)->void:
 	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
@@ -205,10 +190,12 @@ func run()->void:
 	check(missile_origin_match[0] and missile_origin_match[1]>0,"ordinal0 input, actual missile birth and fire feedback share the muzzle")
 	g.event.disconnect(muzzle_watcher)
 	steady_position_publication(geometry,g)
-	same_clock_fleet_threshold(geometry,g)
+	fixed_layout_contract(geometry,g)
 	var transferred_poses:Dictionary=geometry.enemy_poses;var transferred_turrets:Dictionary=geometry.turret_visuals
 	var remaining_enemy:Dictionary=g.enemies.back();var old_pose:Dictionary=geometry.enemy_pose(remaining_enemy)
 	var pose_values=[old_pose.born,old_pose.phase,old_pose.rotation]
+	var fixed_position:Vector2=geometry.enemy_render_position(remaining_enemy)
+	var fixed_width:float=geometry.enemy_render_width(remaining_enemy)
 	var turret_values:Dictionary={}
 	for slot in transferred_turrets:
 		var value:Dictionary=transferred_turrets[slot]
@@ -220,6 +207,7 @@ func run()->void:
 	for slot in turret_values:
 		var before:Dictionary=turret_values[slot];var after:Dictionary=scene.turret_visuals[slot]
 		check(is_same(after,before.pose) and is_same(after.entry,before.entry) and is_same(after.target,before.target) and after.angle==before.angle and after.recoil==before.recoil and after.get("fired_at",-INF)==before.fired_at,"handoff preserves turret identity, target, angle and recoil "+str(slot))
+	check(scene.enemy_render_position(remaining_enemy).distance_to(fixed_position)<0.001 and scene.enemy_render_width(remaining_enemy)==fixed_width,"handoff preserves shared fixed model position and width")
 	scene._process(0.0)
 	check(is_same(scene.enemy_poses[int(remaining_enemy.slot)],old_pose) and old_pose.born==pose_values[0],"legacy zero step does not replay entry")
 	FileAccess.open("res://.runtime/native-scale-result.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"evidence":evidence}))
