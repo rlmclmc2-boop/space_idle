@@ -1,0 +1,14 @@
+{
+  "decision": "Reject muzzle-demand optimization: no >1ms complete-frame net gain demonstrated. Restore its production code; keep pre-existing battle correctness and disabled accessibility.",
+  "A1_ms": 34.531564102564104,
+  "B_ms": 34.89733913043478,
+  "A2_ms": 35.5782389380531,
+  "A_mean_minus_B_ms": 0.15756238987382432,
+  "A_drift_ms": 1.046674835488993,
+  "run_order": [
+    "A1",
+    "B",
+    "A2"
+  ],
+  "workload_note": "All real 1x, ~60 Hz, 48 purchases, no handoff. Exact per-window steps and events differ by frame stopping; raw samples retain all counts."
+}

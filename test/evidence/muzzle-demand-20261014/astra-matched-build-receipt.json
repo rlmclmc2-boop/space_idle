@@ -1,0 +1,113 @@
+{
+  "compiler": "D:\\CodexTools\\llvm-mingw\\llvm-mingw-20261006-ucrt-x86_64\\bin\\x86_64-w64-mingw32-clang++.exe",
+  "compiler_sha256": "ee85bef2c733e24a26c22be3df94bd631cf9528a048fce91241c182a936737fe",
+  "compile_flags": [
+    "-c",
+    "-std=c++17",
+    "-fno-exceptions",
+    "-Wwrite-strings",
+    "-fvisibility=hidden",
+    "-O3",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-DWINDOWS_ENABLED",
+    "-DTHREADS_ENABLED",
+    "-DNDEBUG",
+    "-DGDEXTENSION",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gen\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gdextension"
+  ],
+  "link_flags": [
+    "-shared",
+    "-Wl,--no-undefined",
+    "-static",
+    "-static-libgcc",
+    "-static-libstdc++"
+  ],
+  "godot_cpp_library_sha256": "37123d5132db4deff052d47265ed684640246e280f6a441322817874e4819a29",
+  "driver_sha256": "1d33031989ff8650b4209b2ad52d92215871ca2a168a9fa9665bfbe9a683f01a",
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "builds": {
+    "A": {
+      "ref": "9f9c762dd6985bbd3b6c6552e9adb1a06441d5ac",
+      "dll_sha256": "7c2a6a0244f99f8c998c894da75a5f59ef1149dec5368f6785c4b21b09f4e372",
+      "dll_bytes": 2619904,
+      "source_sha256": {
+        "space_native.cpp": "c0f03d3676c2bdee1ec653180ede1d999876e7227083b338a2215ab2e36c687d",
+        "combat_presentation.h": "7a8affa90a014b888c1eb34c4d95fdd0a62fa9c230f461e0149cc7ec0053e9c7",
+        "combat_execution_kernel.h": "c19c6879999f13f89fec81a50600a34217e4e57e811ff93d95a68b8eebab2bdb"
+      }
+    },
+    "B": {
+      "ref": "44bd2d38",
+      "dll_sha256": "a840f5764310b7d0fc085519041fbe54342a3961ef2d76afacc7cc1a51747044",
+      "dll_bytes": 2635776,
+      "source_sha256": {
+        "space_native.cpp": "c0f03d3676c2bdee1ec653180ede1d999876e7227083b338a2215ab2e36c687d",
+        "combat_presentation.h": "7a8affa90a014b888c1eb34c4d95fdd0a62fa9c230f461e0149cc7ec0053e9c7",
+        "combat_execution_kernel.h": "e8ab7326ff49c0397457f2f7b82024d7c7a12ebff3d3613e67da16934b049a5d"
+      }
+    }
+  },
+  "runs": [
+    {
+      "label": "A1",
+      "started_unix": 1791909330.4870465,
+      "completed_unix": 1791909346.3540351,
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://qa_astra_direct.gd",
+        "--log-file",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\astra-matched-A1.log"
+      ],
+      "sample_sha256": "6bd3386ed3c8e43eb72bdaf059f8437b84434faf9fbeecaeb0079145516dbc82",
+      "dll_sha256": "7c2a6a0244f99f8c998c894da75a5f59ef1149dec5368f6785c4b21b09f4e372",
+      "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+    },
+    {
+      "label": "B",
+      "started_unix": 1791909346.8242643,
+      "completed_unix": 1791909362.546276,
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://qa_astra_direct.gd",
+        "--log-file",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\astra-matched-B.log"
+      ],
+      "sample_sha256": "82e7a1a069f35725691df3891a7e46a3c82becc91e82c5e138769810fb16ce57",
+      "dll_sha256": "a840f5764310b7d0fc085519041fbe54342a3961ef2d76afacc7cc1a51747044",
+      "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+    },
+    {
+      "label": "A2",
+      "started_unix": 1791909363.0012665,
+      "completed_unix": 1791909378.827829,
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://qa_astra_direct.gd",
+        "--log-file",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\astra-matched-A2.log"
+      ],
+      "sample_sha256": "9264eba45e3f62c2ec8a56256f9e8adbd35d0f84a55921f2f487be98630f0df4",
+      "dll_sha256": "7c2a6a0244f99f8c998c894da75a5f59ef1149dec5368f6785c4b21b09f4e372",
+      "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+    }
+  ]
+}

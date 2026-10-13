@@ -109,7 +109,7 @@ func advance(game:RefCounted,dt:float)->bool:
 		if handoff_to_legacy(game,"wave_complete"):game.finish_combat_step(dt)
 	return true
 
-func prepare_geometry(geometry:RefCounted,game:RefCounted,dt:float)->void:
+func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	var points=PackedVector2Array();var muzzles=PackedVector2Array()
 	var hulls:Array=[];var screen_points=PackedVector2Array();var screen_muzzles=PackedVector2Array()
 	for actor in actor_rows:
@@ -117,9 +117,7 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted,dt:float)->void:
 		points.append(geometry.battle_logical_point(shape.center))
 		hulls.append(shape.hull);screen_points.append(shape.center)
 	var aim:Vector2=geometry.target_point(game.player)
-	var required:PackedInt32Array=kernel.required_muzzles(dt)
-	for index in required:
-		var weapon:Dictionary=weapons[index]
+	for weapon in weapons:
 		if bool(weapon.hostile):
 			var actor:Dictionary=actor_rows[int(weapon.source)]
 			var position:Vector2=geometry.enemy_render_position(actor)
@@ -128,9 +126,8 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted,dt:float)->void:
 			muzzles.append(geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position)
 		else:muzzles.append(geometry.launch_pose(int(weapon.slot),aim,0).position)
 	for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
-	kernel.input_ballistic_geometry(hulls,screen_points,PackedVector2Array())
-	kernel.input_geometry(points,PackedVector2Array())
-	kernel.input_muzzles(required,muzzles,screen_muzzles)
+	kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles)
+	kernel.input_geometry(points,muzzles)
 	kernel.input_player_point(aim)
 
 func consume_feedback(game:RefCounted)->void:
