@@ -1,0 +1,155 @@
+{
+  "performance_refs": {
+    "A": "cf9c10de",
+    "B": "fe27404e"
+  },
+  "final_cancel_only_fix": "753aca05",
+  "native_dll_sha256": "a7ec883a52d4ec070e4a9da9f2057150f013f7eb51ed524b10aa5a003200b652",
+  "runs": {
+    "A1": {
+      "whole_frame_mean_ms": 43.3360569476082,
+      "whole_fps": 23.075472722609845,
+      "game_seconds": 18.0000000000003,
+      "wall_seconds": 19.024529,
+      "effective_logic_hz": 56.76881672077232,
+      "steps_from_production_time": 1080,
+      "raw_partial_step_counter": 1079,
+      "fires": 7603,
+      "hits": 22976,
+      "purchases": 216,
+      "handoffs": 1,
+      "equipment_multiplier": [
+        1.0,
+        1.1
+      ],
+      "pre": {
+        "frames": 377,
+        "mean_ms": 26.488758620689655,
+        "p95_ms": 35.366,
+        "bodies_mean": 333.0371352785146,
+        "floats_mean": 4.6710875331564985,
+        "pending_text_mean": 24.381962864721487,
+        "render_cpu_root_ms": 2.5546684363160272,
+        "render_gpu_root_ms": 0.4296604762501047,
+        "render_cpu_ship_ms": 0.8362891245583958,
+        "render_gpu_ship_ms": 2.460217501978027
+      },
+      "post": {
+        "frames": 61,
+        "mean_ms": 146.61524590163933,
+        "p95_ms": 181.385,
+        "bodies_mean": 357.7049180327869,
+        "floats_mean": 5.557377049180328,
+        "pending_text_mean": 20.42622950819672,
+        "render_cpu_root_ms": 2.1893934500022016,
+        "render_gpu_root_ms": 0.4244918026885049,
+        "render_cpu_ship_ms": 0.7939180321380741,
+        "render_gpu_ship_ms": 2.1746229363269487
+      },
+      "revision_frame_ms": 94.737,
+      "post_game_seconds": 8.000000000000199
+    },
+    "B": {
+      "whole_frame_mean_ms": 27.05409880239521,
+      "whole_fps": 36.96297582499647,
+      "game_seconds": 18.0166666666669,
+      "wall_seconds": 18.072138,
+      "effective_logic_hz": 59.81583363296662,
+      "steps_from_production_time": 1081,
+      "raw_partial_step_counter": 1081,
+      "fires": 7721,
+      "hits": 27464,
+      "purchases": 216,
+      "handoffs": 0,
+      "equipment_multiplier": [
+        1.0,
+        1.1
+      ],
+      "pre": {
+        "frames": 371,
+        "mean_ms": 26.982973045822103,
+        "p95_ms": 36.499,
+        "bodies_mean": 333.60107816711593,
+        "floats_mean": 4.706199460916442,
+        "pending_text_mean": 24.31266846361186,
+        "render_cpu_root_ms": 2.617754721577277,
+        "render_gpu_root_ms": 0.3836172499425328,
+        "render_cpu_ship_ms": 0.8648921847343444,
+        "render_gpu_ship_ms": 2.5213989189692905
+      },
+      "post": {
+        "frames": 296,
+        "mean_ms": 26.99039864864865,
+        "p95_ms": 35.334,
+        "bodies_mean": 363.1283783783784,
+        "floats_mean": 5.429054054054054,
+        "pending_text_mean": 24.695945945945947,
+        "render_cpu_root_ms": 2.784361485693906,
+        "render_gpu_root_ms": 0.4079999985123004,
+        "render_cpu_ship_ms": 0.7821452708260433,
+        "render_gpu_ship_ms": 2.6952567511313674
+      },
+      "revision_frame_ms": 72.297,
+      "post_game_seconds": 8.0000000000001
+    },
+    "A2": {
+      "whole_frame_mean_ms": 44.98287528344671,
+      "whole_fps": 22.230682091769065,
+      "game_seconds": 18.1000000000002,
+      "wall_seconds": 19.837448,
+      "effective_logic_hz": 54.74494501510538,
+      "steps_from_production_time": 1086,
+      "raw_partial_step_counter": 1085,
+      "fires": 7608,
+      "hits": 23070,
+      "purchases": 216,
+      "handoffs": 1,
+      "equipment_multiplier": [
+        1.0,
+        1.1
+      ],
+      "pre": {
+        "frames": 379,
+        "mean_ms": 26.343311345646438,
+        "p95_ms": 33.946,
+        "bodies_mean": 333.6094986807388,
+        "floats_mean": 4.738786279683377,
+        "pending_text_mean": 24.474934036939313,
+        "render_cpu_root_ms": 2.583656992635501,
+        "render_gpu_root_ms": 0.41965963052570987,
+        "render_cpu_ship_ms": 0.8416306060348148,
+        "render_gpu_ship_ms": 2.497920849549739
+      },
+      "post": {
+        "frames": 61,
+        "mean_ms": 159.94909836065574,
+        "p95_ms": 195.875,
+        "bodies_mean": 355.1967213114754,
+        "floats_mean": 5.557377049180328,
+        "pending_text_mean": 20.524590163934427,
+        "render_cpu_root_ms": 2.5091803073883057,
+        "render_gpu_root_ms": 0.4006229477827667,
+        "render_cpu_ship_ms": 0.8770983619768111,
+        "render_gpu_ship_ms": 2.515557363385059
+      },
+      "revision_frame_ms": 96.438,
+      "post_game_seconds": 8.100000000000101
+    }
+  },
+  "method": "One serial A/B/A; same DLL, native/fixed-geometry start, real equipment building completion (1.0 to 1.1) at 10s hidden settlement, at least 8 game seconds after. Post phase excludes mixed revision frame. Settings GL, 60 cap, VSync 1, 1373x883, speed 1, accessibility disabled, cache true/save false.",
+  "limitations": [
+    "Performance measured fe27404e; final 753aca05 only adds late-failure cancellation/remainder handling and corrected rejection tests, verified separately.",
+    "A/B follow different owners after completion and hit counts differ; frame difference is an end-to-end residency improvement, not equal-load operator speedup.",
+    "Raw total_steps adds native ticks and Main legacy callbacks: A omits its one transition step. Use production-time-derived logical steps for full A totals; B remains native and its 1081-step count is complete.",
+    "No 60 FPS claim: B mean 27.05 ms, completion frame 72.297 ms. The post-completion observation is eight seconds, not an indefinite soak.",
+    "Godot logs include teardown RID/resource warnings; no runtime script errors or assertion failures in accepted runs."
+  ],
+  "tests": {
+    "refit": 203,
+    "region_boundary": 136,
+    "blocked_transfer_and_cancel": 25,
+    "kernel": 300,
+    "handoff": 45,
+    "failures": 0
+  }
+}
