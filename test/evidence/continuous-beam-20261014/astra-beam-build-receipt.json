@@ -1,0 +1,40 @@
+{
+  "scope": "One same-build beam A/B/A round, no muzzle-demand candidate present",
+  "driver_sha256": "1d33031989ff8650b4209b2ad52d92215871ca2a168a9fa9665bfbe9a683f01a",
+  "refs": {
+    "A": "15715321",
+    "B": "36dcfe49bbe3a182be338e0a0a412e9c166ec66a"
+  },
+  "runs": [
+    {
+      "label": "A1",
+      "started_unix": 1791909541.1987107,
+      "completed_unix": 1791909559.7921498,
+      "dll_sha256": "7c2a6a0244f99f8c998c894da75a5f59ef1149dec5368f6785c4b21b09f4e372",
+      "sample_sha256": "e78eaaecd1c5d32a5be8b225976909340ca2d301b2ed27b64665332574cec0ba",
+      "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+    },
+    {
+      "label": "B",
+      "started_unix": 1791909560.1909328,
+      "completed_unix": 1791909576.0135865,
+      "dll_sha256": "e04865a165d2656bb88e90b11690ab82a5efa5a4d02f7a85a1ba3fc7112ed154",
+      "sample_sha256": "c2a9d61cbedd14a0d16fe81284e8a9ed02bb11c895866343b688ee4246a4549e",
+      "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+    },
+    {
+      "label": "A2",
+      "started_unix": 1791909576.435856,
+      "completed_unix": 1791909592.694306,
+      "dll_sha256": "7c2a6a0244f99f8c998c894da75a5f59ef1149dec5368f6785c4b21b09f4e372",
+      "sample_sha256": "1c3b6d549fb6871c1b998ae760605e137a09a5740b14cc638a953cfc32605dd4",
+      "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+    }
+  ],
+  "build_flags_reference": "../muzzle-demand-20261014/astra-matched-build-receipt.json",
+  "candidate_sources": {
+    "space_native.cpp": "08b0e49118eb4885b351d64629a7f2b50829dfb00eb4e8dfe7ae29b18729c104",
+    "combat_presentation.h": "a54c2ed90cad6f92292dc118933697b646ece719d85bf4285a355bd6cf1770eb",
+    "combat_execution_kernel.h": "c19c6879999f13f89fec81a50600a34217e4e57e811ff93d95a68b8eebab2bdb"
+  }
+}

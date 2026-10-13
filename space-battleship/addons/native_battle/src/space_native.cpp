@@ -4,7 +4,6 @@
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/multi_mesh.hpp>
 #include <godot_cpp/classes/font.hpp>
-#include <godot_cpp/classes/canvas_item.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/math.hpp>
 #include <godot_cpp/godot.hpp>
