@@ -29,6 +29,10 @@ func resize_zero(scene,size:Vector2i,label:String,same_bucket:bool=false)->void:
 	scene._process(0.0)
 	check(contract(scene)==before,label+": zero-step preserves time, CD, birth values, queues, damage and RNG")
 	check(not is_equal_approx(old_scale,geometry.screen_scale) and is_equal_approx(geometry.screen_scale,scene.enemy_recognition_screen_scale()),label+": actual viewport scale synchronized")
+	for actor in scene.game.enemies:
+		var at:Vector2=geometry.enemy_render_position(actor)
+		for slot in actor.equipment.size():
+			check(geometry.execution_enemy_port_offset(actor,slot,at)==geometry.enemy_port_offset(actor,slot,at),label+": execution-only muzzle equals complete display pose")
 	var row:Dictionary=runtime.view.row(enemy)
 	check(row.width==geometry.enemy_render_width(enemy) and row.components==geometry.display_enemy(enemy).components,label+": authority width and components published")
 	check(row.recognition==geometry.enemy_recognition_geometry(enemy,row.width),label+": display protection outline matches authority")
@@ -133,6 +137,8 @@ func run()->void:
 	var frozen_position:Vector2=runtime.view.row(dead).position;var original_pose:Dictionary=geometry.boundary_dead_geometry[uid].pose
 	var born:float=original_pose.born;var phase:float=original_pose.phase
 	var shield_history=runtime.view.pose(dead).duplicate()
+	for slot in dead.equipment.size():
+		check(geometry.execution_enemy_port_offset(dead,slot,frozen_position)==geometry.enemy_port_offset(dead,slot,frozen_position),"dead muzzle keeps frozen publication")
 	check(scene.floats.any(func(entry):return is_same(entry.get("target_entity",{}),dead)) or scene.damage_pending.any(func(entry):return is_same(entry.get("target_entity",{}),dead)),"actual death label retains departed entity")
 	# Remove only the public display membership; the kernel retains its actor table.
 	g.enemies=g.enemies.filter(func(enemy):return not is_same(enemy,dead))

@@ -121,7 +121,7 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 		if bool(weapon.hostile):
 			var actor:Dictionary=actor_rows[int(weapon.source)]
 			var position:Vector2=geometry.enemy_render_position(actor)
-			muzzles.append(geometry.battle_logical_point(position+geometry.enemy_port_offset(actor,int(weapon.slot),position)))
+			muzzles.append(geometry.battle_logical_point(position+geometry.execution_enemy_port_offset(actor,int(weapon.slot),position)))
 		elif weapon.entry.has("drone_id"):
 			muzzles.append(geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position)
 		else:muzzles.append(geometry.launch_pose(int(weapon.slot),aim,0).position)

@@ -247,6 +247,15 @@ func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Ve
 	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
 	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
 
+func execution_enemy_port_offset(enemy:Dictionary,index:int,render_position:Vector2)->Vector2:
+	# A native input asks only for this muzzle, not a complete display packet.
+	# Dead/departed contacts retain the existing frozen publication path.
+	if GrowthNumber.compare(enemy.get("hp",0),0)<=0 or boundary_dead_geometry.has(int(enemy.uid)):
+		return enemy_port_offset(enemy,index,render_position)
+	var component=enemy_component_for_slot(enemy,index)
+	if component!=null:return _source_enemy_component_pose(enemy,component,render_position).muzzle
+	return enemy_port_offset(enemy,index,render_position)
+
 func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> Vector2:
 	var component=enemy_component_for_slot(enemy,index)
 	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
