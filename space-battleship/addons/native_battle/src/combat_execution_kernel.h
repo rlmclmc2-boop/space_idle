@@ -239,6 +239,7 @@ class SpaceCombatKernel : public RefCounted {
     void shield(Actor &a, double at) {
         if (!a.live || a.max_shield <= 0)
             return;
+        if (at <= a.shield_at) return; // Duplicate/boundary reads never rewind the ledger.
         double ready = a.hit_at + a.delay;
         double elapsed = nonnegative(at - ready) - nonnegative(a.shield_at - ready);
         if (elapsed > 0)
@@ -717,7 +718,7 @@ class SpaceCombatKernel : public RefCounted {
             debts[first + i][layer] += part;
         }
     }
-    void pay_debt(double amount) {
+    void pay_debt(double amount, double at) {
         double absorbed = 0, rest = protection(amount, absorbed), loss = 0;
         for (int layer = 0; layer < 2 && rest > 0; ++layer) {
             reconcile_defence();
@@ -740,19 +741,31 @@ class SpaceCombatKernel : public RefCounted {
             rest = nonnegative(rest - taken);
         }
         if (loss > 0 || absorbed > 0)
-            incoming_effect(loss, absorbed, 0, clock, true);
+            incoming_effect(loss, absorbed, 0, at, true);
     }
-    void recover(double dt) {
+    void recover(double dt, double begin_at) {
         if (!module_defence)
             return;
         double rest = dt;
         while (rest > 1e-9 && !stopped) {
             double piece = std::min(
                 rest, std::min(memory_interval - memory_elapsed, deferred_interval - deferred_elapsed));
+            double begin_defence = defence_time;
             defence_time += piece;
             memory_elapsed += piece;
             deferred_elapsed += piece;
             rest = nonnegative(rest - piece);
+            // Integrate only the elapsed interval before paying its endpoint events.
+            reconcile_defence();
+            for (Defence &d : defences) {
+                if (d.layer != 0) continue;
+                double ready = d.last_hit + d.delay;
+                double elapsed = nonnegative(defence_time - ready) - nonnegative(begin_defence - ready);
+                double recovered = std::min(d.loss, d.maximum * d.rate * elapsed);
+                d.loss = nonnegative(d.loss - recovered);
+                player_shield = std::min(capacity(0), player_shield + recovered);
+            }
+            // Same-time priority: continuous recovery, debt, memory, then beam hit.
             if (deferred_elapsed + 1e-9 >= deferred_interval) {
                 deferred_elapsed = nonnegative(deferred_elapsed - deferred_interval);
                 ++deferred_tick;
@@ -762,7 +775,7 @@ class SpaceCombatKernel : public RefCounted {
                     debts.erase(at);
                     for (int layer = 0; layer < 2 && !stopped; ++layer)
                         if (due[layer] > 0)
-                            pay_debt(due[layer]);
+                            pay_debt(due[layer], begin_at + dt - rest);
                     if (!stopped && rng->randf() < clear_probability)
                         debts.clear();
                 }
@@ -776,11 +789,6 @@ class SpaceCombatKernel : public RefCounted {
             for (Defence &d : defences) {
                 double &hp = d.layer == 0 ? player_shield : player_hp;
                 double total = capacity(d.layer);
-                if (d.layer == 0 && defence_time - d.last_hit >= d.delay) {
-                    double recovered = std::min(d.loss, d.maximum * d.rate * piece);
-                    d.loss = nonnegative(d.loss - recovered);
-                    hp = std::min(total, hp + recovered);
-                }
                 if (memory && d.memory_heal > 0) {
                     double healing = d.maximum * d.memory_heal, recovered = std::min(d.loss, healing);
                     d.loss = nonnegative(d.loss - recovered);
@@ -948,17 +956,111 @@ class SpaceCombatKernel : public RefCounted {
             feedback.push_back(secondary);
         }
     }
-    void segment(double dt) {
+    void beam_periods(double dt, bool newborn, double &defence_at) {
+        // Scheduled periods are ordered before boundary roots can query future shields.
+        struct Period {
+            double at, due;
+            size_t id;
+        };
+        std::vector<Period> periods;
+        const size_t begin_count = active.size();
+        for (size_t n = 0; n < begin_count; ++n) {
+            size_t id = active[n];
+            Flight &f = flights[id];
+            if (!f.live || !f.beam || ((f.born_step == step_serial) != newborn))
+                continue;
+            Vector2 muzzle = weapons[f.weapon].muzzle;
+            Motion &motion = f.lease->motion();
+            motion.x = muzzle.x;
+            motion.y = muzzle.y;
+            f.view["launch_point"] = muzzle;
+            Actor *target = resolve(f.target);
+            f.aim = f.hostile ? player_point : target ? target->point : f.aim;
+            motion.direction = unit(f.aim - muzzle);
+            if (f.born_step < step_serial)
+                f.age += dt;
+            while (f.next_hit <= f.age + 1e-9) {
+                periods.push_back({clock - f.age + f.next_hit, f.next_hit, id});
+                f.next_hit += f.interval;
+            }
+            f.view["elapsed"] = f.age;
+        }
+        std::sort(periods.begin(), periods.end(), [&](const Period &a, const Period &b) {
+            return a.at == b.at ? flights[a.id].serial < flights[b.id].serial : a.at < b.at;
+        });
+        for (const Period &p : periods) {
+            if (stopped || final_cleared) break;
+            recover(nonnegative(p.at - defence_at), defence_at);
+            defence_at = std::max(defence_at, p.at);
+            if (stopped) break;
+            Flight &f = flights[p.id];
+            if (!f.live || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
+                if (f.live) retire(p.id);
+                continue;
+            }
+            ++f.ticks;
+            f.view["ticks"] = f.ticks;
+            double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : p.due;
+            double ramp = f.ramp > 0 ? std::clamp(duration / f.ramp, 0.0, 1.0) : 1;
+            double raw = f.damage * (1 + (f.maximum - 1) * ramp);
+            effect(6, f, f.aim, p.at);
+            if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, p.at);
+            if (f.hostile)
+                player_hit(raw, f.type, p.at);
+            else
+                hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, p.at, f.weapon);
+            if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
+                auto candidates = targets(f.type, p.at);
+                for (Handle h : candidates)
+                    if (h.index != f.target.index) {
+                        Vector2 target_position = actors[h.index].point;
+                        int64_t target_uid = actors[h.index].uid;
+                        hit_enemy(h, raw, f.type, f.instance, false, p.at, f.weapon);
+                        Effect secondary;
+                        secondary.kind = 8;
+                        secondary.time = p.at;
+                        secondary.point = f.aim;
+                        secondary.target_point = target_position;
+                        secondary.target_uid = target_uid;
+                        secondary.type = f.type;
+                        feedback.push_back(secondary);
+                        break;
+                    }
+            }
+            if (!final_cleared && f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
+                Timed pending{p.at + repeat_delay,
+                              ++event_serial,
+                              2,
+                              f.weapon,
+                              0,
+                              f.target,
+                              f.instance->attack,
+                              weapons[f.weapon].repeat_multiplier};
+                pending.owner_flight = p.id;
+                pending.owner_generation = f.generation;
+                repeats.push(pending);
+            }
+        }
+    }
+    void segment(double dt, bool frame_boundary) {
         executing = true;
         clock += dt;
         ++step_serial;
-        recover(dt);
+        double defence_at = clock - dt;
+        // Preserve committed completion while settling its already-owned defence tail.
+        if (final_cleared && !stopped) recover(dt, defence_at);
         if (stopped || final_cleared) {
             compact();
             executing = false;
             return;
         }
-        while (!repeats.empty() && repeats.top().at <= clock + 1e-9) {
+        beam_periods(dt, false, defence_at);
+        if (final_cleared && !stopped) recover(nonnegative(clock - defence_at), defence_at);
+        if (stopped || final_cleared) { compact(); executing = false; return; }
+        recover(nonnegative(clock - defence_at), defence_at);
+        defence_at = clock;
+        if (stopped) { compact(); executing = false; return; }
+        while (frame_boundary && !repeats.empty() && repeats.top().at <= clock + 1e-9) {
             Timed q = repeats.top();
             repeats.pop();
             if (q.owner_flight != SIZE_MAX &&
@@ -995,86 +1097,8 @@ class SpaceCombatKernel : public RefCounted {
             birth(q.weapon, q.target, q.instance ? q.instance : instance(q.attack), q.multiplier,
                   q.instance && q.instance->derived);
         }
-        // Beam periods precede boundary flight contacts. Stable serial resolves same-time periods.
-        struct Period {
-            double at, due;
-            size_t id;
-        };
-        std::vector<Period> periods;
-        const size_t begin_count = active.size();
-        for (size_t n = 0; n < begin_count; ++n) {
-            size_t id = active[n];
-            Flight &f = flights[id];
-            if (!f.live || !f.beam)
-                continue;
-            Vector2 muzzle = weapons[f.weapon].muzzle;
-            Motion &motion = f.lease->motion();
-            motion.x = muzzle.x;
-            motion.y = muzzle.y;
-            f.view["launch_point"] = muzzle;
-            Actor *target = resolve(f.target);
-            f.aim = f.hostile ? player_point : target ? target->point : f.aim;
-            motion.direction = unit(f.aim - muzzle);
-            if (f.born_step < step_serial)
-                f.age += dt;
-            while (f.next_hit <= f.age + 1e-9) {
-                periods.push_back({clock - f.age + f.next_hit, f.next_hit, id});
-                f.next_hit += f.interval;
-            }
-            f.view["elapsed"] = f.age;
-        }
-        std::sort(periods.begin(), periods.end(), [&](const Period &a, const Period &b) {
-            return a.at == b.at ? flights[a.id].serial < flights[b.id].serial : a.at < b.at;
-        });
-        for (const Period &p : periods) {
-            Flight &f = flights[p.id];
-            if (!f.live || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
-                if (f.live) retire(p.id);
-                continue;
-            }
-            ++f.ticks;
-            f.view["ticks"] = f.ticks;
-            double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : p.due;
-            double ramp = f.ramp > 0 ? std::clamp(duration / f.ramp, 0.0, 1.0) : 1;
-            double raw = f.damage * (1 + (f.maximum - 1) * ramp);
-            effect(6, f, f.aim, p.at);
-            if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, p.at);
-            if (f.hostile)
-                player_hit(raw, f.type, p.at);
-            else
-                hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, p.at, f.weapon);
-            if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
-                auto candidates = targets(f.type, p.at);
-                for (Handle h : candidates)
-                    if (h.index != f.target.index) {
-                        Vector2 target_position = actors[h.index].point;
-                        int64_t target_uid = actors[h.index].uid;
-                        hit_enemy(h, raw, f.type, f.instance, false, p.at, f.weapon);
-                        Effect secondary;
-                        secondary.kind = 8;
-                        secondary.time = p.at;
-                        secondary.point = f.aim;
-                        secondary.target_point = target_position;
-                        secondary.target_uid = target_uid;
-                        secondary.type = f.type;
-                        feedback.push_back(secondary);
-                        break;
-                    }
-            }
-            if (!final_cleared && f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
-                Timed pending{clock + repeat_delay,
-                              ++event_serial,
-                              2,
-                              f.weapon,
-                              0,
-                              f.target,
-                              f.instance->attack,
-                              weapons[f.weapon].repeat_multiplier};
-                pending.owner_flight = p.id;
-                pending.owner_generation = f.generation;
-                repeats.push(pending);
-            }
-        }
+        beam_periods(0.0, true, defence_at);
+        if (stopped || final_cleared) { compact(); executing = false; return; }
         const size_t motion_count = active.size();
         for (size_t n = 0; n < motion_count && !stopped; ++n) {
             size_t id = active[n];
@@ -1358,7 +1382,10 @@ class SpaceCombatKernel : public RefCounted {
         memory_elapsed = d.get("memory_elapsed", 0.0);
         deferred_elapsed = d.get("deferred_elapsed", 0.0);
         deferred_tick = d.get("deferred_tick", 0);
-        if (memory_interval <= 0 || deferred_interval <= 0 || counter_log_base <= 0 ||
+        if (!numeric_fields(d, {"memory_interval", "deferred_interval", "defence_time", "memory_elapsed", "deferred_elapsed", "deferred_tick"}) ||
+            memory_interval <= 1e-9 || deferred_interval <= 1e-9 || defence_time < 0 ||
+            memory_elapsed < 0 || memory_elapsed >= memory_interval ||
+            deferred_elapsed < 0 || deferred_elapsed >= deferred_interval || counter_log_base <= 0 ||
             counter_log_base == 1 || counter_round_scale <= 0)
             return false;
         Array defs = d.get("defences", Array());
@@ -1508,8 +1535,11 @@ class SpaceCombatKernel : public RefCounted {
             double next = end;
             if (!ejections.empty() && ejections.top().at > clock + 1e-9)
                 next = std::min(next, ejections.top().at);
-            segment(next - clock);
+            segment(next - clock, next == end);
         }
+        // The session consumes this whole logical step; terminal death freezes defence,
+        // while consuming any tail after an ejection split without more battle events.
+        if (stopped) clock = end;
     }
     Dictionary export_handoff() const {
         Dictionary out;
