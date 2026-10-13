@@ -99,6 +99,16 @@ protected:
     static void _bind_methods();
 public:
     Vector2 battle_logical_point(Vector2 point) const { return inverse_battle_point(point); }
+    double rotated_outlines_min_y(const Array &outlines,double angle) const {
+        // Same per-vertex float rotation as Vector2.rotated in the script solver.
+        // Batch the reduction across the ABI; no shape approximation or cache.
+        double top=0.0;
+        for(int i=0;i<outlines.size();++i) {
+            PackedVector2Array outline=outlines[i];
+            for(int j=0;j<outline.size();++j)top=std::min(top,double(outline[j].rotated(angle).y));
+        }
+        return top;
+    }
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
         ERR_FAIL_INDEX(category,2);
         contact_events[category].push_back({point,direction,born,launch,critical,type});
@@ -522,6 +532,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 }
 void SpaceCombatPresentation::_bind_methods(){
     ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
+    ClassDB::bind_method(D_METHOD("rotated_outlines_min_y","outlines","angle"),&SpaceCombatPresentation::rotated_outlines_min_y);
     ClassDB::bind_method(D_METHOD("create_visual","shot","angle","mount","origin","logical","spread"),&SpaceCombatPresentation::create_visual);
     ClassDB::bind_method(D_METHOD("register_visual","shot","visual","index"),&SpaceCombatPresentation::register_visual);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceCombatPresentation::find_visual);

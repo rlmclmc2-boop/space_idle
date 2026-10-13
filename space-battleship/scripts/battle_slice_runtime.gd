@@ -15,10 +15,7 @@ class Effect extends RefCounted:
 	var width:float=0.0
 	var speed:float=0.0
 	var critical:bool=false
-	var player:bool=false
 	var damage_type:int=0
-	var amount:Variant=0.0
-	var absorbed:Variant=0.0
 	var coast:bool=false
 	var spread:float=0.0
 var scene
@@ -131,6 +128,14 @@ func style(shot:Dictionary)->int:
 		"longLaser":return 4
 	return 1
 func on_event(kind:String,info:Dictionary)->bool:
+	# These feedback events never mutate geometry. Preserve every damage record
+	# without allocating an Effect and a second dictionary for the same hit.
+	if kind=="hit":
+		scene.queue_damage_number(info)
+		if bool(info.player):scene.player_hit_at=geometry.fx_time
+		return true
+	# Chain carriers own their flight visual, but never emit an impact flash.
+	if kind=="projectile_impact" and bool(info.shot.get("chain_hop",false)):return true
 	geometry.on_simulation_event(kind,info)
 	if not kind in HOT:
 		if kind=="encounter":snapshot()
@@ -149,10 +154,6 @@ func on_event(kind:String,info:Dictionary)->bool:
 				muzzle_values[e.serial]=e.position
 				spawn_visual(shot,e)
 				consume(e)
-		"hit":
-			e.uid=int(info.get("uid",0));e.player=bool(info.player);e.damage_type=int(info.type)
-			e.amount=info.amount;e.absorbed=info.get("absorbed",0.0);e.critical=bool(info.get("critical",false))
-			consume(e)
 		"projectile_impact":
 			var shot:Dictionary=info.shot
 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.position=Vector2(info.pos)
@@ -217,9 +218,6 @@ func consume(e:Effect)->void:
 				3:scene.rail_events.append({"kind":"fire","origin":e.position,"position":e.position,"direction":e.direction,"aim":e.aim,"full_width":e.width,"born":geometry.fx_time})
 			if e.style==3:scene.railgun_sound("release")
 			else:scene.beep(620 if e.damage_type==1 else 200)
-		1:
-			scene.queue_damage_number({"player":e.player,"uid":e.uid,"type":e.damage_type,"amount":e.amount,"absorbed":e.absorbed,"critical":e.critical})
-			if e.player:scene.player_hit_at=geometry.fx_time
 		4:
 			match e.style:
 				0,1:record_contact(e,false,e.critical)

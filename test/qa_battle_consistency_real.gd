@@ -98,9 +98,8 @@ func inheritance(g)->Array:
 func render_times(scene)->Dictionary:
  var result:Dictionary={}
  for pair in [["root",root],["ship",scene.ship_view.viewport]]:
-  var viewport=pair[1]
-  if viewport.has_method("get_measured_render_time_cpu"):
-   result[pair[0]]={"cpu_ms":viewport.get_measured_render_time_cpu(),"gpu_ms":viewport.get_measured_render_time_gpu() if viewport.has_method("get_measured_render_time_gpu") else -1.0}
+  var rid:RID=pair[1].get_viewport_rid()
+  result[pair[0]]={"cpu_ms":RenderingServer.viewport_get_measured_render_time_cpu(rid),"gpu_ms":RenderingServer.viewport_get_measured_render_time_gpu(rid)}
  return result
 func _initialize()->void:call_deferred("run")
 func snapshot(scene)->Dictionary:
@@ -188,7 +187,7 @@ func run()->void:
  print("CACHE_ON_START ",JSON.stringify(startup_config))
  g.event.connect(scene.watch)
  for viewport in [root,scene.ship_view.viewport]:
-  if viewport.has_method("set_measure_render_time"):viewport.set_measure_render_time(true)
+  RenderingServer.viewport_set_measure_render_time(viewport.get_viewport_rid(),true)
  var begin=snapshot(scene);var warm_start=Time.get_ticks_usec()
  scene.set_process(true)
  while scene.logical_step_count()-begin.steps<240:await RenderingServer.frame_post_draw

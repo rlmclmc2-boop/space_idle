@@ -69,6 +69,12 @@ func _initialize()->void:
    if mapped.y<y:low=middle
    else:high=middle
   check(presentation.battle_logical_point(Vector2(45,y)).distance_to(Vector2(45,(low+high)*0.5))<0.001,"native reuse preserves twenty-step inverse at "+str(y))
+ var outlines=[PackedVector2Array([Vector2(-13.5,-27.2),Vector2(8.0,19.5),Vector2(41.0,-2.0)]),PackedVector2Array([Vector2(-30.0,4.0),Vector2(7.0,35.0)]),PackedVector2Array()]
+ for angle in [-PI,-0.4,0.0,0.73,PI,7.2]:
+  var expected:=0.0
+  for outline in outlines:
+   for point in outline:expected=minf(expected,Vector2(point).rotated(angle).y)
+  check(absf(presentation.rotated_outlines_min_y(outlines,angle)-expected)<0.00001,"native outline reduction preserves every rotated vertex")
  ownership_case()
  run_case(12,true)
  run_case(30,false)
