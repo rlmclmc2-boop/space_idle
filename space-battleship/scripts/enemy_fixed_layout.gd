@@ -35,7 +35,9 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 	var gap:float=float(host.db.config.get("explicitEnemyPlayerMinGap",visual.enemy_player_min_gap)) if explicit else float(visual.enemy_player_min_gap)
 	var maximum:float=maxf(float(visual.enemy_max_y),0.52) if explicit or int(enemy.get("formation_columns",10))==5 else float(visual.enemy_max_y)
 	# Fixed model margins replace rotated-outline fitting and depth iteration.
-	var top:=maxf(100.0,model_width*1.8+28.0+4.0/maxf(scale_value,0.1))
+	# Authored rear boundary: model-dependent clearance pushed the back row
+	# toward row two. Keep the row at its authored position instead of fitting it.
+	var top:=100.0
 	var front:=maxf(top,player_front-host.BATTLE_VIEW_SIZE.y*clampf(gap,0.0,1.0)-model_width*1.6)
 	if explicit or host.game.enemies.size()<10:front=minf(front,host.BATTLE_VIEW_SIZE.y*maximum)
 	front=maxf(top,front)
