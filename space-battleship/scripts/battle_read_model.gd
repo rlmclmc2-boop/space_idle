@@ -101,7 +101,7 @@ func width_at(enemy:Dictionary,y:float)->float:
 	ensure_clock();var row=entry(enemy)
 	if not ready() or row.is_empty():return host._source_enemy_render_width_at_y(enemy,y)
 	sync_pose(enemy,row)
-	if row.pose.has("fixed_layout"):return float(row.pose.fixed_layout.width)
+	if host.get("fixed_enemy_layout")==true:return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(host,enemy,row.pose).width)
 	var depth=clampf((y-90.0)/maxf(1.0,float(row.frontline)-90.0),0,1)
 	var width=float(row.width_base.base)*float(row.width_base.scale)*lerpf(host.battle_visual.enemy_depth_scale_min,host.battle_visual.enemy_depth_scale_max,depth)*float(host.enemy_pose(enemy).variance)
 	width*=float(row.width_base.explicit_scale)

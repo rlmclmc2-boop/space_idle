@@ -41,6 +41,9 @@ const BATTLE_VISUAL_DEFAULTS := {
 	"environment_event_enabled":true, "environment_event_interval":55.0,
 	"boss_destroy_shake":3.0
 }
+var fixed_enemy_layout:=false # Geometry policy survives cache eviction and owner handoff.
+var fixed_layout_revision:=0
+var fixed_layout_signature:Array=[]
 var battle_visual: Dictionary = BATTLE_VISUAL_DEFAULTS.duplicate()
 # At most one pose per occupied logical slot, replaced on entity identity change.
 var enemy_poses: Dictionary = {}
@@ -410,6 +413,7 @@ func _notification(what: int) -> void:
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
+	if fixed_enemy_layout and battle_slice_runtime==null:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	advance_unlock_notice()
 	game.check_timed_save()
 	if fast_mode_enabled():
@@ -640,6 +644,7 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	if fixed_enemy_layout and battle_slice_runtime==null and kind in ["state","encounter","ship_changed","configuration_changed","progress_loaded"]:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
 	match kind:
@@ -1450,7 +1455,7 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 		offset = Vector2.ZERO
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
-	if columns==5 and game.enemies.size()>=10 and not enemy.get("explicit_formation",false):
+	if not fixed_enemy_layout and columns==5 and game.enemies.size()>=10 and not enemy.get("explicit_formation",false):
 		var rows:=ceili(float(game.enemies.size())/columns)
 		var top:=maxf(100.0,(78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*enemy_config_visual_scale(int(enemy.size))+28.0)
 		target.y=lerpf(top,enemy_frontline_y_limit(enemy),float(slot/columns)/maxf(1.0,rows-1))+offset.y
@@ -1470,7 +1475,7 @@ func enemy_render_width(enemy: Dictionary) -> float:
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
-	if simulation_geometry_view==null and enemy_pose(enemy).has("fixed_layout"):
+	if fixed_enemy_layout and simulation_geometry_view==null:
 		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.width_at(enemy,y)
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
@@ -1524,7 +1529,7 @@ func enemy_safe_entry_distance()->float:
 	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
-	if simulation_geometry_view==null and enemy_poses.has(int(enemy.slot)) and is_same(enemy_poses[int(enemy.slot)].entity,enemy) and enemy_poses[int(enemy.slot)].has("fixed_layout"):
+	if fixed_enemy_layout and simulation_geometry_view==null:
 		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).frontline)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).frontline)
 	# Measure empty firing space between hull envelopes, not entity centres.
@@ -1550,7 +1555,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
-	if pose.has("fixed_layout"):return preload("res://scripts/enemy_fixed_layout.gd").position(self,enemy,pose)
+	if fixed_enemy_layout:return preload("res://scripts/enemy_fixed_layout.gd").position(self,enemy,pose)
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position

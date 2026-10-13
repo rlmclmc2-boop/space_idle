@@ -158,6 +158,15 @@ func run()->void:
 	g.paused=true
 	await resize_zero(scene,Vector2i(1000,644),"paused-small")
 	await resize_zero(scene,Vector2i(1373,883),"paused-large")
+	# The live config dictionary may change without a notification; even a
+	# paused zero-step boundary must publish one coherent fixed model width.
+	var config_key:="enemyVisualScaleSize4";var old_scale_config=g.db.config.get(config_key,1.0)
+	var config_before=contract(scene);var old_model_width:float=runtime.view.row(g.enemies.back()).width
+	g.db.config[config_key]=float(old_scale_config)*0.8
+	scene._process(0.0)
+	check(contract(scene)==config_before and runtime.view.row(g.enemies.back()).width<old_model_width,"paused unnotified config edit updates model without advancing gameplay")
+	check(runtime.view.row(g.enemies.back()).width==geometry.enemy_render_width(g.enemies.back()),"config edit keeps view and collision authority at one width")
+	g.db.config[config_key]=old_scale_config;scene._process(0.0)
 	var steps:int=runtime.logical_steps;g.paused=false;scene._process(1.0/60.0)
 	check(runtime.logical_steps==steps+1,"resume advances exactly one next logical step")
 	await rail_charge_contract(scene)
@@ -210,6 +219,14 @@ func run()->void:
 	check(scene.enemy_render_position(remaining_enemy).distance_to(fixed_position)<0.001 and scene.enemy_render_width(remaining_enemy)==fixed_width,"handoff preserves shared fixed model position and width")
 	scene._process(0.0)
 	check(is_same(scene.enemy_poses[int(remaining_enemy.slot)],old_pose) and old_pose.born==pose_values[0],"legacy zero step does not replay entry")
+	old_pose.erase("fixed_layout")
+	check(scene.fixed_enemy_layout and scene.enemy_render_width_at_y(remaining_enemy,90.0)==scene.enemy_render_width_at_y(remaining_enemy,900.0),"handoff policy survives layout cache eviction")
+	var replacement:Dictionary=remaining_enemy.duplicate(true);replacement.uid=9800;replacement.slot=int(remaining_enemy.slot)
+	var saved_members:Array[Dictionary]=g.enemies;var replacement_members:Array[Dictionary]=[replacement]
+	g.enemies=replacement_members;g.notify_configuration_changed();scene._process(0.0)
+	check(scene.enemy_render_width_at_y(replacement,90.0)==scene.enemy_render_width_at_y(replacement,900.0),"new identity after handoff keeps fixed dimensions")
+	check(is_same(scene.enemy_pose(replacement).entity,replacement),"slot reuse does not inherit the previous pose owner")
+	g.enemies=saved_members
 	FileAccess.open("res://.runtime/native-scale-result.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"evidence":evidence}))
 	print("NATIVE_SCALE_RESULT ",checks," checks, ",failures," failures")
 	g.begin_retreat();scene.queue_free();await process_frame;await process_frame

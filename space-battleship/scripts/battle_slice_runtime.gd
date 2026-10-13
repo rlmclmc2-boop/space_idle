@@ -34,6 +34,7 @@ var advancing:=false
 var detach_requested:=false
 func install(root)->void:
 	scene=root;game=root.game
+	root.fixed_enemy_layout=true
 	remainder=root.game_time_remainder
 	root.time_step_game_id=game.get_instance_id()
 	# A native owner may be selected inside an already-started legacy frame.
@@ -51,7 +52,9 @@ func install(root)->void:
 	scene.ship_view.numeric_slice_only=true
 	started=true
 func sync_screen_scale(value:float)->bool:
-	if not geometry.sync_screen_scale(value):return false
+	var scale_changed:bool=geometry.sync_screen_scale(value)
+	var layout_changed:bool=geometry.sync_fixed_layout()
+	if not scale_changed and not layout_changed:return false
 	snapshot()
 	scene.paused_presentation_signature=""
 	# A zero-step/paused frame may keep the normal draw signature unchanged.
@@ -84,6 +87,7 @@ func advance(seconds:float)->void:
 	scene.game_time_remainder=remainder
 	advancing=false
 func snapshot()->void:
+	geometry.sync_fixed_layout()
 	var retained:Dictionary={}
 	for enemy in game.enemies:retained[int(enemy.uid)]=enemy
 	# Labels and in-flight shots may still reference a departed target.

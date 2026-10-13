@@ -2,6 +2,9 @@ extends RefCounted
 ## Prototype simulation-owned mathematical geometry. No active scene objects.
 const FIXED_LAYOUT=preload("res://scripts/enemy_fixed_layout.gd")
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
+var fixed_enemy_layout:=true
+var fixed_layout_revision:=0
+var fixed_layout_signature:Array=[]
 var game:BattleGame
 var db:ShipDatabase
 var fleet_angles_dirty := true
@@ -597,7 +600,15 @@ func prepare(owner,simulation:BattleGame)->void:
 	for index in fleet_pose.drones.size():fleet_pose.drones[index].transform=owner.hyperspace_visual.nodes[index].transform
 	fleet_pose.invalidate_pose()
 	battle_read_model.setup(self)
+	sync_fixed_layout()
 	prepared=true
+
+func sync_fixed_layout()->bool:
+	if not FIXED_LAYOUT.sync(self):return false
+	display_row_cache.clear()
+	battle_read_model.invalidate_membership()
+	refresh_frozen_layouts()
+	return true
 
 func sync_screen_scale(value:float)->bool:
 	if not is_finite(value) or value<=0.0 or is_equal_approx(screen_scale,value):return false
@@ -606,6 +617,10 @@ func sync_screen_scale(value:float)->bool:
 	battle_draw_enemy_positions.clear();enemy_entry_distance_time=-INF
 	battle_read_model.invalidate_membership()
 	for pose in enemy_poses.values():invalidate_pose_scale(pose)
+	sync_fixed_layout()
+	return true
+
+func refresh_frozen_layouts()->void:
 	for record in boundary_dead_geometry.values():
 		invalidate_pose_scale(record.pose)
 		var enemy:Dictionary=record.entity;var row:Dictionary=record.value.duplicate()
@@ -619,7 +634,6 @@ func sync_screen_scale(value:float)->bool:
 			components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,row.position,width,row.angle)
 		row.components=components;row.recognition_id=display_shape(enemy,width,record.pose)
 		record.value=row
-	return true
 
 func invalidate_pose_scale(pose:Dictionary)->void:
 	# Shield recovery and birth/animation history are not geometry caches.
@@ -666,6 +680,7 @@ func sync_hull()->void:
 
 func before_tick(dt:float)->void:
 	assert(prepared)
+	sync_fixed_layout()
 	if game.paused:return
 	enemy_entry_batch_active=true;enemy_entry_distance_time=-INF
 	if battle_read_model_enabled:battle_read_model.begin()
@@ -734,7 +749,7 @@ func on_simulation_event(kind:String,info:Dictionary)->void:
 	if kind=="explode":
 		for enemy in game.enemies:
 			if int(enemy.uid)==int(info.get("uid",-1)):freeze_display_entity(enemy,true);break
-	var changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
+	var changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade","configuration_changed","progress_loaded"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if changed:
 		display_row_cache.clear()
 		for pose in enemy_poses.values():pose.erase("fixed_layout")
