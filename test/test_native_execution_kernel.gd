@@ -161,6 +161,148 @@ func final_game_contract()->void:
  g.tick(STEP);g.tick(STEP)
  check(g.native_execution==null and g.state==BattleGame.State.LEVEL_CLEAR and g.profile.cleared.has(1) and g.player.armour>0,"session commits final clear instead of later enemy-hit retreat")
  g.begin_retreat()
+func shield_event_contract()->void:
+ const STEP=1.0/60.0
+ var d=world(3);d.enemies[0].hp=1e9;d.enemies[0].max_hp=1e9
+ d.enemies[0].shield=10.0;d.enemies[0].max_shield=1000.0;d.enemies[0].shieldRecovery=0.1;d.enemies[0].shieldDelay=0.01
+ d.enemies[0].shield_updated_at=0.0;d.enemies[0].shield_hit_at=-10.0
+ d.weapons[0].charge=0.045;d.weapons[0].interval=0.07
+ var cannon=weapon(1);cannon.slot=1;cannon.remaining=4.0*STEP;cannon.interval=4.0*STEP
+ d.weapons.append(cannon)
+ var k=core(d);var first=[]
+ for i in 4:
+  k.advance(STEP)
+  for row in k.take_feedback():
+   if int(row.kind)==2 and not bool(row.player):first.append(float(row.clock))
+ # First period at1/60+.045, then the ordinary hit at4/60. Each consumes5 shield.
+ var beam_at=STEP+0.045
+ var expected=10.0+100.0*beam_at-5.0-5.0
+ check(first.size()==2 and is_equal_approx(first[0],beam_at) and is_equal_approx(first[1],4.0*STEP),"nonintegral beam period precedes same-segment ordinary shot")
+ check(is_equal_approx(k.enemy_views()[0].shield,expected),"shield recovery integral has no future healing or double recovery")
+ var second=[]
+ for i in 4:
+  k.advance(STEP)
+  for row in k.take_feedback():
+   if int(row.kind)==2 and not bool(row.player):second.append(float(row.clock))
+ var next_beam=beam_at+0.07
+ expected+=100.0*(next_beam-(4.0*STEP+0.01))-5.0-5.0
+ check(second.size()==2 and is_equal_approx(second[0],next_beam) and is_equal_approx(second[1],8.0*STEP),"next period and boundary shot retain event order")
+ check(is_equal_approx(k.enemy_views()[0].shield,expected) and is_equal_approx(k.enemy_views()[0].shield_updated_at,8.0*STEP),"delay-aware integral commits once through segment end")
+ var before:float=k.enemy_views()[0].shield
+ k.target_views(1);k.target_views(1)
+ check(k.enemy_views()[0].shield==before,"same-time target queries do not heal twice")
+ k.cancel()
+func defence_event_world()->Dictionary:
+ var d=world(3);d.weapons[0]=weapon(3,true);d.weapons[0].charge=0.045;d.weapons[0].interval=0.07
+ d.player.shield=0.0
+ d.defences=[{"layer":0,"type":2,"base":100.0,"maximum":100.0,"loss":100.0,"rate":0.0,"delay":0.01,"last_hit":0.0},
+  {"layer":1,"type":2,"base":100.0,"maximum":100.0,"loss":0.0}]
+ return d
+func player_defence_event_contract()->void:
+ const STEP=1.0/60.0
+ var beam_at=STEP+0.045
+ var d=defence_event_world();d.defences[0].rate=1.0
+ var k=core(d);var incoming=[]
+ for i in 4:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==2 and bool(e.player):incoming.append(float(e.clock))
+ # Recover100*(beam_at-.01)=5.1666667 before raw10; armour paysceil(4.8333333)=5.
+ check(incoming.size()==1 and is_equal_approx(incoming[0],beam_at),"hostile period uses actual nonintegral time")
+ check(is_equal_approx(k.player_view().armour,95.0) and is_zero_approx(k.player_view().shield),"player shield integrates only before beam and respects hit delay through boundary")
+ for i in 4:k.advance(STEP)
+ # Next period recovers100*(.07-.01)=6, then armour pays4; no boundary healing yet.
+ check(is_equal_approx(k.player_view().armour,91.0) and is_zero_approx(k.player_view().shield),"later period does not borrow future recovery or repeat elapsed integral")
+ check(is_equal_approx(k.export_handoff().defence_time,8.0*STEP),"defence cursor accumulates elapsed time exactly once")
+ k.cancel()
+ d=defence_event_world();d.memory_interval=0.064;d.defences[0].memory_heal=0.2
+ k=core(d)
+ for i in 4:k.advance(STEP)
+ check(is_equal_approx(k.player_view().armour,90.0) and is_equal_approx(k.player_view().shield,20.0),"memory after beam cannot absorb earlier hit")
+ k.cancel()
+ # Three debt deadlines before the first beam retain their actual feedback clocks.
+ d=defence_event_world();d.deferred_interval=0.02;d.deferred={1:{"armour":2.0},2:{"armour":2.0},3:{"armour":2.0}}
+ k=core(d);incoming=[]
+ for i in 4:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==2 and bool(e.player):incoming.append(float(e.clock))
+ check(incoming.size()==4 and is_equal_approx(incoming[0],0.02) and is_equal_approx(incoming[1],0.04) and is_equal_approx(incoming[2],0.06) and is_equal_approx(incoming[3],beam_at),"debt deadlines precede beam in time order without public-clock overwrite")
+ check(is_equal_approx(k.player_view().armour,84.0),"three debts and beam each pay once")
+ k.cancel()
+ # At one deadline: debt consumes5 shield, memory restores20, then beam consumes10.
+ d=defence_event_world();d.player.shield=10.0;d.defences[0].loss=90.0;d.defences[0].memory_heal=0.2
+ d.memory_interval=beam_at;d.deferred_interval=beam_at;d.deferred={1:{"shield":5.0}}
+ k=core(d);incoming=[]
+ for i in 4:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==2 and bool(e.player):incoming.append(e)
+ check(incoming.size()==2 and int(incoming[0].type)==0 and int(incoming[1].type)==1 and is_equal_approx(float(incoming[0].clock),beam_at) and is_equal_approx(float(incoming[1].clock),beam_at),"same-time debt precedes beam feedback")
+ check(is_equal_approx(k.player_view().shield,15.0) and is_equal_approx(k.player_view().armour,100.0),"same-time memory occurs after debt and before beam")
+ k.cancel()
+ # Earlier beam leaves5 armour; later debt at.064 kills before same-time memory can heal.
+ d=defence_event_world();d.player.armour=15.0;d.defences[1].loss=85.0;d.defences[1].memory_heal=0.1
+ d.memory_interval=0.064;d.deferred_interval=0.064;d.deferred={1:{"armour":6.0}}
+ k=core(d);incoming=[]
+ for i in 4:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==2 and bool(e.player):incoming.append(float(e.clock))
+ check(incoming.size()==2 and is_equal_approx(incoming[0],beam_at) and is_equal_approx(incoming[1],0.064),"later fatal debt cannot erase an earlier beam hit")
+ check(is_zero_approx(k.player_view().armour) and k.export_handoff().is_empty(),"fatal debt stops same-time memory instead of resurrecting player")
+ k.cancel()
+func shield_phase_repeat_contract()->void:
+ const STEP=1.0/60.0
+ var d=world(3);d.enemies[0].hp=1e9;d.enemies[0].max_hp=1e9
+ d.weapons[0].charge=0.045;d.weapons[0].interval=10.0;d.weapons[0].repeat_probability=1.0;d.repeat_delay=0.071
+ var k=core(d);var births=[]
+ for i in 7:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==0:births.append(float(e.clock))
+ check(births.size()==1 and k.metrics().repeat_queue==1,"nonintegral beam repeat waits until true due time")
+ k.advance(STEP)
+ for e in k.take_feedback():
+  if int(e.kind)==0:births.append(float(e.clock))
+ # True deadline=.061666667+.071=.132666667; first legal boundary8/60=.133333333.
+ check(births.size()==2 and is_equal_approx(births[1],8.0*STEP),"beam repeat uses actual period plus delay then first legal boundary")
+ k.cancel()
+ # Ejection at.1328 is after the repeat deadline but before the legal8/60 boundary.
+ d=world(3);d.enemies[0].hp=1e9;d.enemies[0].max_hp=1e9
+ d.weapons[0].charge=0.045;d.weapons[0].interval=10.0;d.weapons[0].repeat_probability=1.0;d.repeat_delay=0.071
+ var split_missile=weapon(2);split_missile.slot=1;split_missile.salvo=2;split_missile.interval=10.0
+ d.weapons.append(split_missile);d.ejection_gap=0.1328-STEP
+ k=core(d);var repeat_times=[]
+ for i in 8:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==0 and bool(e.shot.get("repeated",false)):repeat_times.append(float(e.clock))
+ check(repeat_times.size()==1 and is_equal_approx(repeat_times[0],8.0*STEP),"ejection split cannot execute repeat before legal logical boundary")
+ k.cancel()
+ for key in ["memory_interval","deferred_interval"]:
+  for value in [0.0,1e-10]:
+   d=defence_event_world();d[key]=value;k=ClassDB.instantiate("SpaceCombatKernel")
+   check(not k.configure(d),"reject nonprogressing defence period "+key)
+   k.cancel()
+ for pair in [["memory_elapsed","memory_interval"],["deferred_elapsed","deferred_interval"]]:
+  for value in [-0.01,1.0,1.01]:
+   d=defence_event_world();d[pair[1]]=1.0;d[pair[0]]=value;k=ClassDB.instantiate("SpaceCombatKernel")
+   check(not k.configure(d),"reject defence phase outside half-open interval "+str(pair[0]))
+   k.cancel()
+ # A valid near-deadline phase drains once and then makes positive progress.
+ d=defence_event_world();d.memory_interval=0.064;d.memory_elapsed=0.064-1e-12
+ k=core(d);k.advance(STEP)
+ check(is_equal_approx(k.metrics().defence_time,STEP) and is_equal_approx(k.metrics().memory_elapsed,STEP-1e-12),"near-boundary defence phase drains without zero-piece loop")
+ k.cancel()
+ # Fatal debt occurs before a pending ejection split; session still consumes requested step.
+ d=defence_event_world();d.player.armour=15.0;d.defences[1].loss=85.0
+ d.deferred_interval=0.064;d.deferred={1:{"armour":6.0}}
+ var missile=weapon(2);missile.slot=1;missile.salvo=2;missile.interval=10.0
+ d.weapons.append(missile);d.ejection_gap=0.0645-STEP
+ k=core(d);k.advance(STEP);k.take_feedback();k.advance(3.0*STEP)
+ check(is_zero_approx(k.player_view().armour) and is_equal_approx(k.metrics().clock,4.0*STEP) and is_equal_approx(k.metrics().defence_time,0.064),"death consumes logical-step tail while defence freezes at actual death time")
+ k.cancel()
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var dll_path="res://bin/space_native.dll";var dll_hash=FileAccess.get_sha256(dll_path)
@@ -174,6 +316,9 @@ func run()->void:
  hostile_beam_contract()
  lifecycle_contract()
  final_game_contract()
+ shield_event_contract()
+ player_defence_event_contract()
+ shield_phase_repeat_contract()
  for kind in [0,1,2,3]:
   var d=world(kind);d.enemies[0].x=100.0
   var k=core(d)
