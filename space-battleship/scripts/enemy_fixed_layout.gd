@@ -55,7 +55,9 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 				if not source_rows.has(source_y):source_rows.append(source_y)
 			source_rows.sort()
 			var row:int=source_rows.find(float(enemy.y))
-			var pitch:float=minf(196.0,(front-110.0)/maxi(1,source_rows.size()-1))
+			var last_y:float=float(source_rows.back())
+			var last_target:float=minf(front,last_y+smoothstep(220.0,420.0,last_y)*220.0)
+			var pitch:float=minf(196.0,(last_target-110.0)/maxi(1,source_rows.size()-1))
 			pose.target.y=110.0+maxi(0,row)*pitch
 		# Explicit layouts retain their authored coordinates.
 		# Legacy dense slots receive evenly spaced fixed rows once at birth.
