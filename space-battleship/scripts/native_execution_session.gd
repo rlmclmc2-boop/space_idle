@@ -12,6 +12,8 @@ var ticks:=0
 var feedback_rows:=0
 var handed_off:=false
 var advance_blocked:=false
+var galaxy_refit_blocked:=false
+var blocked_shared_step:=0.0
 
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
@@ -83,6 +85,7 @@ func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	return true
 
 func handoff_to_legacy(game:RefCounted,reason:String)->bool:
+	if galaxy_refit_blocked:return false # Partial shared work cannot be replayed by another owner.
 	if handed_off:return game.native_execution==null
 	var exported:Dictionary=kernel.export_handoff()
 	var prepared=preload("res://scripts/native_execution_handoff.gd").new()
@@ -178,6 +181,9 @@ func consume_feedback(game:RefCounted)->void:
 
 func cancel(game:RefCounted)->void:
 	if kernel==null:return
+	if galaxy_refit_blocked:
+		game.native_cancelled_step+=blocked_shared_step;blocked_shared_step=0.0
+		game.native_step_phase="idle";game.native_step_remaining=0.0
 	var released:Dictionary=kernel.exit_state()
 	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)
 	game.attack_instance_serial=int(released.instance_serial);game.uid=int(released.drop_uid)

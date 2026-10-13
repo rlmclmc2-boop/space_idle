@@ -63,6 +63,8 @@ func sync_screen_scale(value:float)->bool:
 	return true
 func advance(seconds:float)->void:
 	advancing=true
+	if game.native_cancelled_step>0:
+		remainder=maxf(0.0,remainder-game.native_cancelled_step);game.native_cancelled_step=0.0
 	remainder+=seconds
 	const STEP=1.0/60.0
 	while remainder+0.0000000001>=STEP:

@@ -19,6 +19,8 @@ class GeometryProbe extends RefCounted:
 	var turret_ship:=""
 	func before_tick(dt:float)->void:fx_time+=dt;demo_time+=dt
 	func after_tick()->void:pass
+class CancelBudgetRuntime extends "res://scripts/battle_slice_runtime.gd":
+	func snapshot()->void:pass
 var failures:=0
 var checks:=0
 func check(ok:bool,label:String)->void:
@@ -66,6 +68,18 @@ func run()->void:
 		check(g.paused and g.native_step_phase=="blocked" and g.shared_calls==0 and g.production_time()==clock,"galaxy failure precedes shared clock and economy")
 		check(scene.demo_time==0 and probe.demo_time==0 and probe.fx_time==0 and is_equal_approx(scene.game_time_remainder,3.0/60.0),"galaxy failure preserves presentation clocks and complete budget")
 		check(g.galaxy.save_data()==state and g.native_execution.kernel.export_handoff()==before,"galaxy failure leaves region and combat untouched")
+		g.begin_retreat();scene.free()
+	for slice in [false,true]:
+		g=fixture();scene=BudgetMain.new();scene.game=g;scene.time_step_game_id=g.get_instance_id()
+		g.native_cancelled_step=1.0/60.0
+		if slice:
+			runtime=CancelBudgetRuntime.new();runtime.scene=scene;runtime.game=g;runtime.remainder=1.5/60.0
+			runtime.advance(0.0)
+			check(is_equal_approx(runtime.remainder,0.5/60.0),"cancel consumes only the partial shared step from slice budget")
+		else:
+			scene.game_time_remainder=1.5/60.0;scene.advance_game_time(0.0)
+			check(is_equal_approx(scene.game_time_remainder,0.5/60.0),"cancel consumes only the partial shared step from Main budget")
+		check(g.native_cancelled_step==0 and g.shared_calls==0,"cancel never replays shared work")
 		g.begin_retreat();scene.free()
 	print("EXPECTED_BLOCKED_TRANSFER_PROOF ",JSON.stringify({"checks":checks,"failures":failures,"remaining_preserved":true}))
 	quit(0 if failures==0 else 1)

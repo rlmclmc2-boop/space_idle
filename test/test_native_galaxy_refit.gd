@@ -12,7 +12,8 @@ class ChangedDuringShared extends "res://scripts/presented_battle_game.gd":
 	func advance_auto_gen(dt:float)->void:
 		later_shared+=1;super.advance_auto_gen(dt)
 class RefusedLater extends "res://scripts/native_execution_session.gd":
-	func handoff_to_legacy(_g:RefCounted,_reason:String)->bool:return false
+	var refuse:=true
+	func handoff_to_legacy(g:RefCounted,reason:String)->bool:return false if refuse else super.handoff_to_legacy(g,reason)
 func refit_fixture(key:String="missile",effect:String="equipment_value",shared_change:bool=false):
 	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0
 	var g=ChangedDuringShared.new(db,false) if shared_change else preload("res://scripts/presented_battle_game.gd").new(db,false)
@@ -92,6 +93,8 @@ func run()->void:
 				if entry.key==layer:check(is_equal_approx(g.jewel_defence_damage[i],g.jewel_equipment_stat(entry)*(1.0-ratio)),key+" redistributed module loss")
 		check(notices==["equipment_stats","equipment_stats","reactor_changed","galaxy_changed"],key+" notifications exactly once")
 		var invalid=preload("res://scripts/native_execution_compiler.gd").new().compile(g,owner.execution_scope)
+		invalid.refit_token=k.refit_token()
+		check(k.can_refit_configuration(invalid),key+" valid descriptor and current token accepted before field rejection")
 		invalid.player.armour=0.0
 		check(not k.can_refit_configuration(invalid) and not k.refit_configuration(invalid) and k.export_handoff()==after,key+" zero armour rejects without mutation")
 		invalid.player.armour=g.player.armour;invalid.weapons[0].entry.level+=1
@@ -146,9 +149,12 @@ func run()->void:
 	check(g.mutation_ok and owner.advance_blocked and g.paused and g.native_step_phase=="blocked","stale commit plus refused transfer explicitly blocks")
 	check(owner.kernel.export_handoff()==g.mutation_state and g.later_shared==0,"late failure executes neither remaining economy nor combat")
 	check(g.galaxy.regions.galaxy_1.save_data()==before_region and is_equal_approx(g.galaxy.elapsed.galaxy_1,10.0),"late failure preserves all unconsumed region work")
+	refused.refuse=false
+	check(not owner.handoff_to_legacy(g,"retry") and g.native_execution==owner,"blocked partial shared step permits cancellation only, never later handoff")
 	var clock=g.production_time();g.paused=false
 	check(not g.prepare_logical_step(1.0/60.0) and g.production_time()==clock and owner.kernel.export_handoff()==g.mutation_state,"blocked late failure cannot replay shared work on resume")
 	g.begin_retreat()
+	check(g.native_execution==null and is_equal_approx(g.native_cancelled_step,1.0/60.0),"explicit cancel marks already-started step for scheduler discard")
 	print("GALAXY_REFIT_CHECKS ",checks," failures ",failures)
 	FileAccess.open("res://.runtime/galaxy-refit-checks.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures}))
 	quit(1 if failures else 0)

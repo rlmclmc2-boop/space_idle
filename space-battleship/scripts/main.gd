@@ -485,6 +485,9 @@ func advance_game_time(seconds: float) -> void:
 		game_time_remainder = 0.0
 	# Carry frame tails: X1 and boosts share the same game-time tick sequence
 	# at every render rate. At most one fixed step remains pending on screen.
+	if game.native_cancelled_step>0:
+		game_time_remainder=maxf(0.0,game_time_remainder-game.native_cancelled_step)
+		game.native_cancelled_step=0.0
 	game_time_remainder += seconds
 	const STEP := 1.0/60.0
 	while game_time_remainder + 0.0000000001 >= STEP:

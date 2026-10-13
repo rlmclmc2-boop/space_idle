@@ -190,6 +190,8 @@ func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 	return true
 
 func block_region_advance(g)->bool:
+	g.native_execution.galaxy_refit_blocked=true
+	g.native_execution.blocked_shared_step=g.native_step_remaining if g.native_step_phase=="shared" else 0.0
 	g.native_execution.advance_blocked=true;g.native_step_phase="blocked";g.paused=true
 	return false
 

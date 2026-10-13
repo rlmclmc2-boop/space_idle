@@ -68,6 +68,7 @@ var native_execution_scope:=""
 var native_wave_waiting:=false
 var native_step_phase:="idle"
 var native_step_remaining:=0.0
+var native_cancelled_step:=0.0
 var native_handoff_count:=0
 
 var drops: Array[Dictionary] = []

@@ -4,6 +4,8 @@ var checks:=0
 var failures:=0
 class Refused extends RefCounted:
  var advance_blocked:=false
+ var galaxy_refit_blocked:=false
+ var blocked_shared_step:=0.0
  var calls:=0
  func handoff_to_legacy(_g,_why)->bool:calls+=1;return false
 func check(ok:bool,label:String)->void:
