@@ -14,6 +14,8 @@ var drone_sockets: Dictionary = {}
 var carrier_mount: Array = []
 var hull_key := ""
 var modules: Array[Dictionary] = []
+var module_by_slot: Dictionary = {}
+var drone_by_id: Dictionary = {}
 var carriers: Array[Dictionary] = []
 var drones: Array[Dictionary] = []
 var ship_transform := Transform3D.IDENTITY
@@ -98,13 +100,14 @@ func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> v
 	var old_modules := modules
 	var old_carriers := carriers
 	modules = []; carriers = []
+	module_by_slot.clear(); drone_by_id.clear()
+	var unchanged := not hull_changed and old_modules.size() == assignment.size()
+	if unchanged:
+		for index in assignment.size():
+			if old_modules[index].assignment != assignment[index]: unchanged = false; break
 	for item in assignment:
 		var existing: Dictionary = {}
 		# Retain setter state only when the native assignment would also survive.
-		var unchanged := not hull_changed and old_modules.size() == assignment.size()
-		if unchanged:
-			for index in assignment.size():
-				if old_modules[index].assignment != assignment[index]: unchanged = false; break
 		if unchanged: existing = old_modules[modules.size()]
 		var module: Dictionary = existing if not existing.is_empty() else {"assignment":item,"pivot":Transform3D.IDENTITY}
 		module.descriptor = weapons[item.key]
@@ -115,6 +118,7 @@ func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> v
 			carriers.append(old_carriers[carriers.size()] if unchanged else {"transform":Transform3D.IDENTITY,"euler":Vector3.ZERO})
 			module.carrier_index = carriers.size()-1
 		modules.append(module)
+		module_by_slot[int(item.slot)] = module
 	var next_drones: Array[Dictionary] = []
 	for id in bag.get("equipped",[]):
 		var data: Dictionary = bag.get("drones",{}).get(id,{})
@@ -132,8 +136,10 @@ func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> v
 		next_drones.append(member)
 		if next_drones.size() == 5: break
 	drones = next_drones
+	for member in drones: drone_by_id[str(member.id)] = member
+	invalidate_pose()
 
-func pose(center: Vector2, height: float, angle: float, target: Vector2, time: float, close_up: bool, dt: float) -> void:
+func pose_base(center: Vector2, height: float, angle: float, time: float, close_up: bool, dt: float) -> void:
 	elapsed = time
 	rendered_height = height * (2.8 if close_up else 1.0)
 	rendered_position = size*Vector2(0.5,0.58) if close_up else center
@@ -143,10 +149,6 @@ func pose(center: Vector2, height: float, angle: float, target: Vector2, time: f
 	var rotation := Vector3(0,-angle+sin(orbit_elapsed*TAU/10.0)*deg_to_rad(0.65),0)
 	ship_transform = Transform3D(Basis.from_euler(rotation).scaled_local(Vector3.ONE*scale_value),orbit_center+Vector3(0,0,sin(orbit_elapsed*TAU/8.0)*1.2*VIEW.WORLD_PER_PIXEL))
 	_pose_carriers(scale_value)
-	var world_target := Vector3((target.x-size.x*0.5)*VIEW.WORLD_PER_PIXEL,0,(target.y-size.y*0.5)*VIEW.WORLD_PER_PIXEL)
-	for module in modules:
-		var local: Vector3 = _mount(module).affine_inverse()*world_target
-		_set_pivot(module,atan2(-local.x,-local.z))
 	var zoom := 2.8 if close_up else 1.0
 	for index in drones.size():
 		var member: Dictionary = drones[index]
@@ -180,19 +182,43 @@ func _pose_carriers(scale_value: float) -> void:
 		carrier.euler = Vector3(0,atan2(-cos(theta)*radius.x,-sin(theta)*radius.y),0)
 		carrier.transform = Transform3D(Basis.from_euler(carrier.euler).scaled_local(scaled.get_scale()),orbit_center+Vector3(sin(theta)*radius.x*radial,-1.6*scale_value,-cos(theta)*radius.y*radial))
 
+func invalidate_pose() -> void:
+	# Configuration and ownership capture can replace transforms without a step.
+	# Projection descriptors are immutable after prepare; invalidate here if changed.
+	for module in modules:
+		module.erase("mount_root")
+		module.erase("pivot_yaw")
+		module.socket_points = {}
+	for member in drones:
+		member.erase("socket_transform")
+		member.socket_points = {}
+
 func _mount(module: Dictionary) -> Transform3D:
-	return _global(ship_transform if module.assignment.carrier == "hull" else carriers[module.carrier_index].transform,module.mount_chain)
+	var root: Transform3D = ship_transform if module.assignment.carrier == "hull" else carriers[module.carrier_index].transform
+	if not module.has("mount_root") or module.mount_root != root:
+		module.mount_root = root
+		module.mount_transform = _global(root,module.mount_chain)
+		module.mount_position = project(module.mount_transform.origin)
+		module.mount_yaw = module.mount_transform.basis.orthonormalized().get_euler().y
+		module.socket_points = {}
+	return module.mount_transform
 
 func _set_pivot(module: Dictionary, yaw: float) -> void:
+	if module.has("pivot_yaw") and float(module.pivot_yaw) == yaw: return
+	module.pivot_yaw = yaw
 	var descriptor: Dictionary = module.descriptor
 	var euler: Vector3 = descriptor.pivot_euler
 	euler.y = yaw
-	module.pivot = Transform3D(Basis.from_euler(euler).scaled_local(descriptor.pivot_scale),module.pivot.origin)
+	var next := Transform3D(Basis.from_euler(euler).scaled_local(descriptor.pivot_scale),module.pivot.origin)
+	if next == module.pivot: return
+	module.pivot = next
+	module.socket_points = {}
 
 func set_slot_angles(angles: Array) -> void:
 	for module in modules:
 		if int(module.assignment.slot) < angles.size():
-			_set_pivot(module,-float(angles[module.assignment.slot])-_mount(module).basis.orthonormalized().get_euler().y)
+			_mount(module)
+			_set_pivot(module,-float(angles[module.assignment.slot])-float(module.mount_yaw))
 
 func project(point: Vector3) -> Vector2:
 	var local := camera_transform.basis.transposed()*(point-camera_transform.origin)
@@ -201,25 +227,35 @@ func project(point: Vector3) -> Vector2:
 	return Vector2((normal.x*0.5+0.5)*size.x,(-normal.y*0.5+0.5)*size.y)
 
 func screen_muzzle_for_slot(slot: int, ordinal := 0) -> Vector2:
-	for module in modules:
-		if int(module.assignment.slot) != slot: continue
-		var transform := _mount(module)
-		var root_scale := VIEW.CARRIER_WEAPON_SCALE if module.assignment.carrier == "drone" else 1.0
-		transform = transform*Transform3D(Basis.from_scale(Vector3.ONE*root_scale),Vector3.ZERO)
-		var chain: Array = module.descriptor.pivot_chain
-		for index in chain.size(): transform = transform*(module.pivot if index == chain.size()-1 else chain[index])
-		var sockets: Array = module.descriptor.sockets
-		return project(_global(transform,sockets[1] if ordinal%2 == 1 and sockets.size()>1 else sockets[0]).origin)
-	return Vector2.ZERO
+	var module: Dictionary = module_by_slot.get(slot,{})
+	if module.is_empty(): return Vector2.ZERO
+	var transform := _mount(module)
+	var sockets: Array = module.descriptor.sockets
+	var socket_index := 1 if ordinal%2 == 1 and sockets.size()>1 else 0
+	if module.socket_points.has(socket_index): return module.socket_points[socket_index]
+	var root_scale := VIEW.CARRIER_WEAPON_SCALE if module.assignment.carrier == "drone" else 1.0
+	transform = transform*Transform3D(Basis.from_scale(Vector3.ONE*root_scale),Vector3.ZERO)
+	var chain: Array = module.descriptor.pivot_chain
+	for index in chain.size(): transform = transform*(module.pivot if index == chain.size()-1 else chain[index])
+	var point := project(_global(transform,sockets[socket_index]).origin)
+	module.socket_points[socket_index] = point
+	return point
 
 func screen_mount_for_slot(slot:int) -> Vector2:
-	for module in modules:
-		if int(module.assignment.slot)==slot:return project(_mount(module).origin)
-	return Vector2.ZERO
+	var module: Dictionary = module_by_slot.get(slot,{})
+	if module.is_empty(): return Vector2.ZERO
+	_mount(module)
+	return module.mount_position
 
 func screen_muzzle_for_drone(id: String, ordinal: int) -> Vector2:
-	for member in drones:
-		if member.id == id:
-			var sockets: Array = drone_sockets[member.weapon].points
-			if not sockets.is_empty(): return project((member.transform*sockets[posmod(ordinal,sockets.size())]).origin)
-	return rendered_position
+	var member: Dictionary = drone_by_id.get(id,{})
+	if member.is_empty(): return rendered_position
+	var sockets: Array = drone_sockets[member.weapon].points
+	if sockets.is_empty(): return rendered_position
+	if not member.has("socket_transform") or member.socket_transform != member.transform:
+		member.socket_transform = member.transform
+		member.socket_points = {}
+	var socket_index := posmod(ordinal,sockets.size())
+	if not member.socket_points.has(socket_index):
+		member.socket_points[socket_index] = project((member.transform*sockets[socket_index]).origin)
+	return member.socket_points[socket_index]

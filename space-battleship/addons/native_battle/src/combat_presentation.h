@@ -68,6 +68,7 @@ class SpaceCombatPresentation : public RefCounted {
     bool templates_ready = false;
     Ref<ArrayMesh> pulse_mesh;
     std::vector<Ref<MultiMesh>> pulse_pool;
+    std::vector<PackedFloat32Array> pulse_buffers;
     std::vector<Transform2D> pulse_transforms;
     size_t pulse_cursor = 0;
     struct ContactEvent {Vector2 point,direction;double born;bool launch,critical;int type;};
@@ -331,14 +332,26 @@ void SpaceCombatPresentation::prepare_pulse_mesh() {
 void SpaceCombatPresentation::flush_pulses(RID canvas) {
     if(pulse_transforms.empty())return;
     if(pulse_cursor==pulse_pool.size()) {
-        Ref<MultiMesh> batch;batch.instantiate();batch->set_transform_format(MultiMesh::TRANSFORM_2D);batch->set_mesh(pulse_mesh);pulse_pool.push_back(batch);
+        Ref<MultiMesh> batch;batch.instantiate();batch->set_transform_format(MultiMesh::TRANSFORM_2D);batch->set_mesh(pulse_mesh);pulse_pool.push_back(batch);pulse_buffers.emplace_back();
     }
-    Ref<MultiMesh> batch=pulse_pool[pulse_cursor++];
+    const size_t slot=pulse_cursor++;
+    Ref<MultiMesh> batch=pulse_pool[slot];
     if(batch->get_instance_count()<int64_t(pulse_transforms.size())) {
         int capacity=std::max(8,batch->get_instance_count());while(capacity<int64_t(pulse_transforms.size()))capacity*=2;batch->set_instance_count(capacity);
     }
+    // Godot 4.7.2 TRANSFORM_2D, without colors/custom data: two padded
+    // rows of four floats. Upload allocated capacity, draw only live instances.
+    PackedFloat32Array &buffer=pulse_buffers[slot];
+    const int64_t buffer_size=int64_t(batch->get_instance_count())*8;
+    if(buffer.size()!=buffer_size){buffer.resize(buffer_size);buffer.fill(0.0f);}
+    float *write=buffer.ptrw();
+    for(size_t i=0;i<pulse_transforms.size();++i) {
+        const Transform2D &t=pulse_transforms[i];float *row=write+i*8;
+        row[0]=t[0].x;row[1]=t[1].x;row[2]=0.0f;row[3]=t[2].x;
+        row[4]=t[0].y;row[5]=t[1].y;row[6]=0.0f;row[7]=t[2].y;
+    }
+    batch->set_buffer(buffer);
     batch->set_visible_instance_count(pulse_transforms.size());
-    for(size_t i=0;i<pulse_transforms.size();++i)batch->set_instance_transform_2d(i,pulse_transforms[i]);
     RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
 }
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
@@ -352,6 +365,7 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
     Ref<SpaceCombatFlightFrame> result;result.instantiate();result->recycler=Ref<SpaceCombatPresentation>(this);
     if(!spare_frames.empty()){result->flights.swap(spare_frames.back());spare_frames.pop_back();}
     result->flights.reserve(shots.size());
+    begin();
     auto append=[&](Dictionary p,Dictionary v,Ref<SpaceMotionLease> m,Ref<SpaceVisualLease> visual,Vector2 point,int budget,String key,bool hostile,bool chain) {
         PreparedFlight f;f.shot=p;f.visual=v;f.motion=m;f.visual_state=visual;f.point=point;f.budget=budget;f.key=key;f.hostile=hostile;f.chain=chain;
         result->flights.push_back(std::move(f));
@@ -366,6 +380,9 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
         // still have an authoritative native position and heading; the cap must
         // not reintroduce one script call/getter for each flying projectile.
         if(m.is_null()||bool(p.get("beam",false))||!(chain||missile||((pulse||enemy)&&(v.is_empty()||(visual.is_valid()&&v.has("fixed_step")))))) {
+            // Script preparation may draw a beam/trail into this same layer.
+            // Keep preceding native trails before that script command sequence.
+            paint(rid);
             Dictionary f=surface->call("_prepare_projectile_flight",p,index,offset);
             if(!f.is_empty())append(p,f["visual"],m,Ref<SpaceVisualLease>(Dictionary(f["visual"]).get("visual_lease",Variant())),f["pos"],f["budget"],key,hostile,chain);
             continue;
@@ -384,9 +401,10 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
         if(enemy) {
             double angle=visual.is_valid()?visual->angle:engine_angle(m->motion().direction);Vector2 axis=engine_from_angle(angle);
             Color color=Color::html(int64_t(p.get("type",0))==2?"ffaf61":"64b5ff");color.a=0.16;
-            RenderingServer::get_singleton()->canvas_item_add_line(rid,point-axis*15,point,color,1.0,true);
+            line(point-axis*15,point,color,1.0);
         }
     }
+    paint(rid);
     return result;
 }
 void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vector2 offset) {
@@ -430,20 +448,22 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
             continue;
         }
         if(is_pulse||is_enemy) {
-            paint(rid);if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
             const Ref<SpaceVisualLease> &native_visual=f.visual_state;
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
             double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",engine_angle(direction)));Vector2 axis=engine_from_angle(angle);
-            if(is_pulse){pulse_transforms.emplace_back(axis,-axis.orthogonal(),point);continue;}
+            if(is_pulse){paint(rid);pulse_transforms.emplace_back(axis,-axis.orthogonal(),point);continue;}
             flush_pulses(rid);
-            RenderingServer *rs=RenderingServer::get_singleton();Color color=Color::html(int64_t(shot.get("type",0))==2?"ffaf61":"64b5ff");
+            // Append enemy cores in shot order, sharing the triangle stream
+            // with missiles/chains. MultiMesh and script draws remain barriers.
+            Color color=Color::html(int64_t(shot.get("type",0))==2?"ffaf61":"64b5ff");
             if(int64_t(shot.get("type",0))==2) {
-                Color glow=color;glow.a=0.5;rs->canvas_item_add_line(rid,point-axis*9,point-axis,glow,1.5,true);
-                rs->canvas_item_add_line(rid,point,point+axis*8,color,3.5,true);
-                rs->canvas_item_add_line(rid,point+axis*5,point+axis*8,Color::html("ffe5bf"),2.0,true);
+                Color glow=color;glow.a=0.5;line(point-axis*9,point-axis,glow,1.5);
+                line(point,point+axis*8,color,3.5);
+                line(point+axis*5,point+axis*8,Color::html("ffe5bf"),2.0);
             } else {
-                rs->canvas_item_add_line(rid,point-axis*9,point+axis*9,color,2.0,true);
-                rs->canvas_item_add_line(rid,point-axis*7,point+axis*7,Color::html("d8f3ff"),1.0,true);
+                line(point-axis*9,point+axis*9,color,2.0);
+                line(point-axis*7,point+axis*7,Color::html("d8f3ff"),1.0);
             }
             continue;
         }
