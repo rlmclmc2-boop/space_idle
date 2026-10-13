@@ -109,6 +109,27 @@ public:
         }
         return top;
     }
+    Vector2 damage_text_position(Vector2 origin,const Dictionary &metrics,Vector2 limits,const Dictionary &excluded,const Array &occupied,const Array &enemies) const {
+        // One synchronous search over the caller's current layout. No cached text,
+        // identity, age or enemy state survives this invocation.
+        double width=metrics["width"],height=metrics["height"],ascent=metrics["ascent"];
+        std::vector<Rect2> text_bounds,enemy_bounds;
+        text_bounds.reserve(occupied.size());enemy_bounds.reserve(enemies.size());
+        for(int i=0;i<occupied.size();++i){Array row=occupied[i];if(!same(row[0],excluded))text_bounds.push_back(row[1]);}
+        for(int i=0;i<enemies.size();++i)enemy_bounds.push_back(enemies[i]);
+        for(int row=0;row<2;++row)for(int shift:{0,-56,56,-140,140}){
+            // Utility clamp preserves the script's edge behavior for text wider
+            // than the available view; do not use std::clamp with inverted limits.
+            Vector2 point(UtilityFunctions::clampf(double(origin.x)-width/2.0+shift,8.0,double(limits.x)-8.0-width),double(origin.y)-row*(height+8.0));
+            Rect2 bounds=Rect2(battle_point(point)-Vector2(0,ascent),Vector2(width,height)).grow(4);
+            if(bounds.position.y<8||(bounds.position+bounds.size).y>double(limits.y)-8)continue;
+            bool blocked=false;Rect2 text_clearance=bounds.grow(8);
+            for(const Rect2 &other:text_bounds)if(text_clearance.intersects(other)){blocked=true;break;}
+            if(!blocked)for(const Rect2 &other:enemy_bounds)if(bounds.intersects(other)){blocked=true;break;}
+            if(!blocked)return point;
+        }
+        return Vector2(INFINITY,INFINITY);
+    }
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
         ERR_FAIL_INDEX(category,2);
         contact_events[category].push_back({point,direction,born,launch,critical,type});
@@ -531,6 +552,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
     }
 }
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("damage_text_position","origin","metrics","limits","excluded","occupied","enemies"),&SpaceCombatPresentation::damage_text_position);
     ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
     ClassDB::bind_method(D_METHOD("rotated_outlines_min_y","outlines","angle"),&SpaceCombatPresentation::rotated_outlines_min_y);
     ClassDB::bind_method(D_METHOD("create_visual","shot","angle","mount","origin","logical","spread"),&SpaceCombatPresentation::create_visual);

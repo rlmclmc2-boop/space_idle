@@ -2697,6 +2697,8 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 		for entry in floats:
 			if entry.get("damage",false):damage_layout_occupy(entry,context)
 	var metrics := damage_layout_metrics(value,size_value,context)
+	if game!=null and game.combat_presentation!=null:
+		return game.combat_presentation.damage_text_position(origin,metrics,Vector2(BattleGame.BATTLE_SIZE.x,BATTLE_VIEW_SIZE.y),excluded_entry,context.occupied,context.enemies)
 	var width: float=metrics.width
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
