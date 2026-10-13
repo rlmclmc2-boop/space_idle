@@ -186,8 +186,6 @@ func run()->void:
  var startup_config=config(scene)
  print("CACHE_ON_START ",JSON.stringify(startup_config))
  g.event.connect(scene.watch)
- for viewport in [root,scene.ship_view.viewport]:
-  RenderingServer.viewport_set_measure_render_time(viewport.get_viewport_rid(),true)
  var begin=snapshot(scene);var warm_start=Time.get_ticks_usec()
  scene.set_process(true)
  while scene.logical_step_count()-begin.steps<240:await RenderingServer.frame_post_draw
@@ -200,16 +198,20 @@ func run()->void:
   await RenderingServer.frame_post_draw
   var now=Time.get_ticks_usec();frames.append(now-previous);previous=now
   bodies.append(g.projectiles.size());floats_raw.append(scene.floats.size());pending_raw.append(scene.damage_pending.size())
-  render_rows.append(render_times(scene))
   primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME));drawcalls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
  scene.set_process(false);scene.track_frames=false
  var wall=Time.get_ticks_usec()-sample_start;var final=snapshot(scene);var seconds=final.game-baseline.game;var ratio=seconds/(wall/1000000.0)
  var row={"engine_render_times":render_rows,"runtime_config_start":startup_config,"mode":"cache_on_actual1x_default60fps_auto","retained":true,"frames_us_raw":frames,"projectiles_raw":bodies,"floats_raw":floats_raw,"pending_raw":pending_raw,"primitives_raw":primitives,"drawcalls_raw":drawcalls,"frame_trace":scene.observed_frames,"warm_steps":baseline.steps-begin.steps,"sample_steps":final.steps-baseline.steps,"warm_game_seconds":baseline.game-begin.game,"game_seconds":seconds,"warm_wall_seconds":warm_wall/1000000.0,"wall_seconds":wall/1000000.0,"game_wall_ratio":ratio,"logic_hz":(final.steps-baseline.steps)/(wall/1000000.0),"render_hz":frames.size()/(wall/1000000.0),"actual_1x_pass":absf(ratio-1.0)<0.035,"warm_fires":baseline.fires-begin.fires,"fires":final.fires-baseline.fires,"warm_hits":baseline.hits-begin.hits,"hits":final.hits-baseline.hits,"warm_purchases":baseline.purchases-begin.purchases,"purchases":final.purchases-baseline.purchases,"purchases_total":final.purchases-begin.purchases,"handoffs":final.handoffs-begin.handoffs}
+ # GPU timestamp collection is diagnostic work, outside the clean sample.
+ for viewport in [root,scene.ship_view.viewport]:
+  RenderingServer.viewport_set_measure_render_time(viewport.get_viewport_rid(),true)
+ row.engine_render_times_scope="post_sample_geometry_diagnostic"
  scene.verify_geometry=true
  scene.set_process(true)
  var observe_start=Time.get_ticks_msec();var next_capture=0
  while Time.get_ticks_msec()-observe_start<6000:
   await RenderingServer.frame_post_draw
+  render_rows.append(render_times(scene))
   if Time.get_ticks_msec()-observe_start>=next_capture:
    root.get_texture().get_image().save_png("res://.runtime/clean-flight-%02d.png"%(next_capture/500))
    next_capture+=500
