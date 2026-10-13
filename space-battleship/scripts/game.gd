@@ -2826,7 +2826,8 @@ func tick(dt: float) -> void:
 		set("motion_clock",float(get("motion_clock"))+native_step_remaining)
 
 	if native_wave_waiting and state==State.COMBAT:
-		since_hit+=dt;advance_jewel_repair(dt);finish_combat_step(dt)
+		if not advance_jewel_repair(dt):return
+		finish_combat_step(dt)
 		if has_alive_enemy():native_wave_waiting=false
 		return
 	if state==State.COMBAT and native_execution_requested and native_execution==null:
@@ -2838,8 +2839,7 @@ func tick(dt: float) -> void:
 		native_step_phase="idle";native_step_remaining=0.0
 		return
 	if state == State.LEVEL_CLEAR:
-		since_hit+=dt
-		advance_jewel_repair(dt)
+		if not advance_jewel_repair(dt):return
 		if state!=State.LEVEL_CLEAR:return
 		tick_projectiles(dt)
 		if state != State.LEVEL_CLEAR:
@@ -2878,14 +2878,9 @@ func tick(dt: float) -> void:
 	if not is_active():
 		return
 	drone_combat.advance(self,dt)
-	since_hit += dt
-	var defence_jewels := advance_jewel_repair(dt)
+	if not advance_jewel_repair(dt):return
 	if state==State.RETREAT:return
 	advance_jewel_repeats(dt)
-	var shield_entry := first_equipment_entry("shield")
-	var shield := combat_equipment_row("shield", int(shield_entry.level)) if not shield_entry.is_empty() else combat_equipment_row("shield", 1)
-	if not defence_jewels and since_hit >= float(shield.para3):
-		player.shield = N.minimum(max_shield(),N.add(player.shield,N.multiply(max_shield(),float(shield.para2)*dt)))
 	if state == State.TRAVEL:
 		tick_projectiles(dt)
 		if state != State.TRAVEL:
@@ -4073,26 +4068,34 @@ func advance_enhancement_deferred_tick() -> void:
 		if N.compare(cleared_amount,0)>0:enhancement_branches.cleared(self)
 
 func advance_jewel_repair(dt: float) -> bool:
-	if paused or dt<=0:return true
+	if paused or dt<=0 or state==State.RETREAT or N.compare(player.armour,0)<=0:return true
+	var memory_interval := enhancement_parameter("memory_interval")
+	var deferred_interval := enhancement_parameter("deferred_interval")
+	if not is_finite(dt) or memory_interval<=0.000000001 or deferred_interval<=0.000000001 or not is_finite(memory_interval) or not is_finite(deferred_interval) or enhancement_memory_elapsed<0 or enhancement_memory_elapsed>=memory_interval or enhancement_deferred_elapsed<0 or enhancement_deferred_elapsed>=deferred_interval:
+		push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid periodic phase")
+		return false
 	var rest := dt
 	while rest>0.000000001:
-		var memory_interval := enhancement_parameter("memory_interval")
-		var deferred_interval := enhancement_parameter("deferred_interval")
 		var step := minf(rest,minf(memory_interval-enhancement_memory_elapsed,deferred_interval-enhancement_deferred_elapsed))
-		enhancement_branches.advance_defense(self,step)
+		if step<=0 or not is_finite(step):
+			push_error("PLAYER_DEFENCE_TIME_CONTRACT nonprogressing repair piece")
+			return false
 		enhancement_defense_time+=step
+		since_hit+=step
 		enhancement_memory_elapsed+=step
 		enhancement_deferred_elapsed+=step
 		rest=maxf(0.0,rest-step)
+		# Integrate the elapsed interval before consuming its endpoint events.
+		advance_enhancement_repair_step(step,0)
+		enhancement_branches.advance_defense(self,step)
+		if state==State.RETREAT or N.compare(player.armour,0)<=0:return true
 		if enhancement_deferred_elapsed+0.000000001>=deferred_interval:
 			enhancement_deferred_elapsed=maxf(0.0,enhancement_deferred_elapsed-deferred_interval)
 			advance_enhancement_deferred_tick()
-			if state==State.RETREAT:return true
-		var memory_ticks := 0
+			if state==State.RETREAT or N.compare(player.armour,0)<=0:return true
 		if enhancement_memory_elapsed+0.000000001>=memory_interval:
 			enhancement_memory_elapsed=maxf(0.0,enhancement_memory_elapsed-memory_interval)
-			memory_ticks=1
-		advance_enhancement_repair_step(step,memory_ticks)
+			advance_enhancement_repair_step(0.0,1)
 	return true
 
 func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
@@ -4103,12 +4106,14 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 		for index in capacities[key].indices:
 			var entry := slot_entry("defence",index)
 			var maximum = capacities[key].maxima[index]
-			var elapsed := float(jewel_defence_times.get(index,since_hit-dt))+dt
+			var previous_elapsed := float(jewel_defence_times.get(index,since_hit-dt))
+			var elapsed := previous_elapsed+dt
 			jewel_defence_times[index]=elapsed
 			if key=="shield":
 				var row := combat_equipment_row(key,int(entry.level))
-				if elapsed>=float(row.para3):
-					var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(maximum,float(row.para2)*dt))
+				var healing_dt := maxf(0.0,elapsed-float(row.para3))-maxf(0.0,previous_elapsed-float(row.para3))
+				if healing_dt>0:
+					var recovered = N.minimum(jewel_defence_damage.get(index,0),N.multiply(maximum,float(row.para2)*healing_dt))
 					jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)
 					player[key]=N.minimum(capacities[key].total,N.add(player[key],recovered))
 			# Ordinary shield repair still runs every step; memory recovery only reads
