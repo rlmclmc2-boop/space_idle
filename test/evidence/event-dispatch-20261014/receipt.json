@@ -1,0 +1,22 @@
+{
+  "source_commit": "e1353c97461b4783cd6fc1a7278bb040708786ab",
+  "dll_sha256": "a7ec883a52d4ec070e4a9da9f2057150f013f7eb51ed524b10aa5a003200b652",
+  "files": {
+    "decision.json": "5bb3e5f677272def78c78e9c2b3424bef2901d7d53c28f4b2188f6eb3e825b9d",
+    "event-dispatch-current.json": "0e34a2012d229e7d2cf38f7fafc64337200f486ba9aec01f75e5572915e6c83c",
+    "event-dispatch-current.txt": "e355cc9d83bd08c4aefbd8439132b0005d49abf32daf2b5531556386570d8604",
+    "event-probe-calibration.json": "f6b15d986142aaf95096c3387cd20706559ad7c731380e58af33bd260ab63dd3",
+    "event-probe-calibration.txt": "99010b2af6bff2fac95f83f91ba5c9b859979832cab2bcb113d2f0cb49933a18",
+    "event_dispatch_probe.gd": "94c47759beb743f63df31e27e024e981fb671895b0ddba5a7d5090e1bb680300",
+    "prepare_event_dispatch_current.py": "b6a824201c9da8c9e57b00f90c345798c6c08c33d02ca58b7a454839a030ba92",
+    "qa_event_dispatch_current.gd": "1aa6a7975c7719d2af35d5edfce5aceca5332022c149da6cfb407c2ffa8027fd",
+    "qa_event_probe_calibration.gd": "5dbbd69e3b5aacb986a2308fd7f469640960a817beae88bc48be00f1af4b2746"
+  },
+  "battle_command": "Godot_v4.7.2-stable_win64_console.exe --path <isolate> --rendering-method gl_compatibility --script res://qa_event_dispatch_current.gd",
+  "calibration_command": "same executable --headless --path <isolate> --script res://qa_event_probe_calibration.gd",
+  "env": {
+    "PERF_NATIVE": "1",
+    "APPDATA": "test/work/battle-fix-20261013/roaming",
+    "LOCALAPPDATA": "test/work/battle-fix-20261013/local"
+  }
+}

@@ -1,0 +1,444 @@
+{
+  "source_commit": "e1353c97461b4783cd6fc1a7278bb040708786ab",
+  "production_source_same_as": "346c67f8",
+  "dll_sha256": "a7ec883a52d4ec070e4a9da9f2057150f013f7eb51ed524b10aa5a003200b652",
+  "scope": "One valid event-dispatch diagnostic, same existing 30s high-load/visible-AI fixture. Only hit/projectile_impact/fire native emit sites instrumented. Original actual listeners synchronously invoked in original order; flags asserted zero; original connections restored after run. No algorithm A/B and no production edits.",
+  "frames": 943,
+  "whole_ms_instrumented": 31.825230116648992,
+  "whole_p95_ms_instrumented": 41.105,
+  "wall_seconds": 30.011192,
+  "game_seconds": 30.0166666666661,
+  "logic_hz": 60.01094525002539,
+  "steps": 1801,
+  "native_same_session": true,
+  "activity": {
+    "fires": 13013,
+    "hits": 49012,
+    "purchases": 360,
+    "handoffs": 0
+  },
+  "target_events": 93679,
+  "target_event_calls_per_frame": 99.34146341463415,
+  "irrelevant_early_return_calls": 562074,
+  "irrelevant_listener_body_ms_per_frame_including_callable_overhead": 0.7211399787910923,
+  "necessary_presentation_body_ms_per_frame": 1.907068928950159,
+  "diagnostic_observer_body_ms_per_frame": 0.2904220572640509,
+  "measured_probe_bookkeeping_ms_per_frame": 1.3616670201484624,
+  "dispatch_residual_ms_per_frame_with_unmeasured_wrapper_overhead": 1.042102863202545,
+  "calibrated_six_empty_listener_broadcast_ms_per_frame": 0.15479883536585365,
+  "conservative_candidate_cost_estimate_ms_per_frame": 0.8759388141569459,
+  "calibrated_full_probe_added_ms_per_frame_estimate": 2.267766926829268,
+  "nested_other_listener_calls": 0,
+  "nested_focus_emit_calls": 0,
+  "emit_costs": {
+    "fire": {
+      "calls": 13013,
+      "dispatch_residual_us": 147750,
+      "inclusive_us": 1175511,
+      "listener_wrapper_us": 1027761,
+      "nested_emit_calls": 0,
+      "inclusive_ms_per_frame": 1.2465652173913042,
+      "dispatch_residual_ms_per_frame": 0.15668080593849415
+    },
+    "hit": {
+      "calls": 49012,
+      "dispatch_residual_us": 506439,
+      "inclusive_us": 2422893,
+      "listener_wrapper_us": 1916454,
+      "nested_emit_calls": 0,
+      "inclusive_ms_per_frame": 2.569345705196182,
+      "dispatch_residual_ms_per_frame": 0.537050901378579
+    },
+    "projectile_impact": {
+      "calls": 31654,
+      "dispatch_residual_us": 328514,
+      "inclusive_us": 1420620,
+      "listener_wrapper_us": 1092106,
+      "nested_emit_calls": 0,
+      "inclusive_ms_per_frame": 1.5064899257688231,
+      "dispatch_residual_ms_per_frame": 0.3483711558854719
+    }
+  },
+  "listeners": [
+    {
+      "class": "RefCounted",
+      "flags": 0,
+      "id": 0,
+      "method": "_compiled_configuration_event",
+      "script": "res://scripts/presented_battle_game.gd",
+      "role": "irrelevant early return",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 13363,
+          "body_inclusive_us": 13363,
+          "bookkeeping_us": 19149,
+          "calls": 13013,
+          "max_body_us": 41,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.014170731707317072
+        },
+        "hit": {
+          "body_exclusive_us": 45209,
+          "body_inclusive_us": 45209,
+          "bookkeeping_us": 69202,
+          "calls": 49012,
+          "max_body_us": 41,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.047941675503711555
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 29261,
+          "body_inclusive_us": 29261,
+          "bookkeeping_us": 47518,
+          "calls": 31654,
+          "max_body_us": 66,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.031029692470837752
+        }
+      }
+    },
+    {
+      "class": "RefCounted",
+      "flags": 0,
+      "id": 1,
+      "method": "on_event",
+      "script": "res://scripts/crew_system.gd",
+      "role": "irrelevant early return",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 23048,
+          "body_inclusive_us": 23048,
+          "bookkeeping_us": 17711,
+          "calls": 13013,
+          "max_body_us": 10,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.024441145281018026
+        },
+        "hit": {
+          "body_exclusive_us": 78665,
+          "body_inclusive_us": 78665,
+          "bookkeeping_us": 65805,
+          "calls": 49012,
+          "max_body_us": 202,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.08341993637327677
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 52710,
+          "body_inclusive_us": 52710,
+          "bookkeeping_us": 43668,
+          "calls": 31654,
+          "max_body_us": 42,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.055896076352067864
+        }
+      }
+    },
+    {
+      "class": "Node2D",
+      "flags": 0,
+      "id": 2,
+      "method": "on_event",
+      "script": "",
+      "role": "necessary battlefield presentation",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 675156,
+          "body_inclusive_us": 675156,
+          "bookkeeping_us": 26160,
+          "calls": 13013,
+          "max_body_us": 313,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.715966065747614
+        },
+        "hit": {
+          "body_exclusive_us": 768916,
+          "body_inclusive_us": 768916,
+          "bookkeeping_us": 72888,
+          "calls": 49012,
+          "max_body_us": 151,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.8153934252386003
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 354294,
+          "body_inclusive_us": 354294,
+          "bookkeeping_us": 48247,
+          "calls": 31654,
+          "max_body_us": 466,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.3757094379639449
+        }
+      }
+    },
+    {
+      "class": "Control",
+      "flags": 0,
+      "id": 3,
+      "method": "on_game_event",
+      "script": "res://scripts/hightech_workshop.gd",
+      "role": "irrelevant early return",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 12375,
+          "body_inclusive_us": 12375,
+          "bookkeeping_us": 18364,
+          "calls": 13013,
+          "max_body_us": 11,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.013123011664899258
+        },
+        "hit": {
+          "body_exclusive_us": 40293,
+          "body_inclusive_us": 40293,
+          "bookkeeping_us": 63844,
+          "calls": 49012,
+          "max_body_us": 25,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.04272852598091198
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 26720,
+          "body_inclusive_us": 26720,
+          "bookkeeping_us": 41861,
+          "calls": 31654,
+          "max_body_us": 58,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.02833510074231177
+        }
+      }
+    },
+    {
+      "class": "Panel",
+      "flags": 0,
+      "id": 4,
+      "method": "on_game_event",
+      "script": "res://scripts/reactor_panel.gd",
+      "role": "irrelevant early return",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 15906,
+          "body_inclusive_us": 15906,
+          "bookkeeping_us": 17944,
+          "calls": 13013,
+          "max_body_us": 19,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.01686744432661718
+        },
+        "hit": {
+          "body_exclusive_us": 48605,
+          "body_inclusive_us": 48605,
+          "bookkeeping_us": 65356,
+          "calls": 49012,
+          "max_body_us": 51,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.05154294803817604
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 31022,
+          "body_inclusive_us": 31022,
+          "bookkeeping_us": 43071,
+          "calls": 31654,
+          "max_body_us": 28,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.032897136797454936
+        }
+      }
+    },
+    {
+      "class": "Control",
+      "flags": 0,
+      "id": 5,
+      "method": "_on_log_event",
+      "script": "res://scripts/planet_panel.gd",
+      "role": "irrelevant early return",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 7512,
+          "body_inclusive_us": 7512,
+          "bookkeeping_us": 17668,
+          "calls": 13013,
+          "max_body_us": 8,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.007966065747613998
+        },
+        "hit": {
+          "body_exclusive_us": 22938,
+          "body_inclusive_us": 22938,
+          "bookkeeping_us": 64805,
+          "calls": 49012,
+          "max_body_us": 49,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.024324496288441147
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 15552,
+          "body_inclusive_us": 15552,
+          "bookkeeping_us": 42363,
+          "calls": 31654,
+          "max_body_us": 93,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.01649204665959703
+        }
+      }
+    },
+    {
+      "class": "Control",
+      "flags": 0,
+      "id": 6,
+      "method": "on_event",
+      "script": "res://scripts/hyperspace_panel.gd",
+      "role": "irrelevant early return",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 33778,
+          "body_inclusive_us": 33778,
+          "bookkeeping_us": 17428,
+          "calls": 13013,
+          "max_body_us": 321,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.03581972428419937
+        },
+        "hit": {
+          "body_exclusive_us": 110115,
+          "body_inclusive_us": 110115,
+          "bookkeeping_us": 65631,
+          "calls": 49012,
+          "max_body_us": 71,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.1167709437963945
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 72963,
+          "body_inclusive_us": 72963,
+          "bookkeeping_us": 42313,
+          "calls": 31654,
+          "max_body_us": 51,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.07737327677624603
+        }
+      }
+    },
+    {
+      "class": "RefCounted",
+      "flags": 0,
+      "id": 7,
+      "method": "on_event",
+      "script": "res://combat_stress_fixture.gd",
+      "role": "diagnostic observer",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 40650,
+          "body_inclusive_us": 40650,
+          "bookkeeping_us": 17957,
+          "calls": 13013,
+          "max_body_us": 106,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.04310710498409332
+        },
+        "hit": {
+          "body_exclusive_us": 76285,
+          "body_inclusive_us": 76285,
+          "bookkeeping_us": 65133,
+          "calls": 49012,
+          "max_body_us": 60,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.08089607635206787
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 32293,
+          "body_inclusive_us": 32293,
+          "bookkeeping_us": 41504,
+          "calls": 31654,
+          "max_body_us": 31,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.03424496288441145
+        }
+      }
+    },
+    {
+      "class": "Node2D",
+      "flags": 0,
+      "id": 8,
+      "method": "watch",
+      "script": "",
+      "role": "diagnostic observer",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 8437,
+          "body_inclusive_us": 8437,
+          "bookkeeping_us": 17782,
+          "calls": 13013,
+          "max_body_us": 14,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.008946977730646871
+        },
+        "hit": {
+          "body_exclusive_us": 31869,
+          "body_inclusive_us": 31869,
+          "bookkeeping_us": 64326,
+          "calls": 49012,
+          "max_body_us": 26,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.03379533404029692
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 19321,
+          "body_inclusive_us": 19321,
+          "bookkeeping_us": 41982,
+          "calls": 31654,
+          "max_body_us": 28,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.020488865323435843
+        }
+      }
+    },
+    {
+      "class": "SceneTree",
+      "flags": 0,
+      "id": 9,
+      "method": "record_event",
+      "script": "res://qa_event_dispatch_current.gd",
+      "role": "diagnostic observer",
+      "events": {
+        "fire": {
+          "body_exclusive_us": 9693,
+          "body_inclusive_us": 9693,
+          "bookkeeping_us": 17680,
+          "calls": 13013,
+          "max_body_us": 15,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.010278897136797456
+        },
+        "hit": {
+          "body_exclusive_us": 31844,
+          "body_inclusive_us": 31844,
+          "bookkeeping_us": 64725,
+          "calls": 49012,
+          "max_body_us": 67,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.03376882290562036
+        },
+        "projectile_impact": {
+          "body_exclusive_us": 23476,
+          "body_inclusive_us": 23476,
+          "bookkeeping_us": 41967,
+          "calls": 31654,
+          "max_body_us": 26,
+          "nested_us": 0,
+          "body_exclusive_ms_per_frame": 0.024895015906680806
+        }
+      }
+    }
+  ],
+  "decision": "Stop typed-subscription direction. Measured irrelevant bodies 0.721ms/frame plus conservatively charged six-empty-listener full-broadcast calibration 0.155ms/frame = estimated 0.876ms/frame before replacement routing cost. No evidence of >1ms/frame net saving; no production implementation.",
+  "limitations": [
+    "0.876ms is a conservative empirical candidate-cost estimate, not a mathematical bound or measured whole-frame gain. Empty signal calibration uses same engine headless and may differ from rendered workload.",
+    "Listener bodies include Callable.call overhead and timer effects; no-op calibration charges entire six-listener broadcast, including empty callback invocation, so some call overhead is double-counted conservatively. No correction was sold as a performance improvement.",
+    "Raw emit residual 1.042ms/frame still includes wrapper entry/exit, lookup and extra Callable invocation. It is not pure engine dispatch and cannot be added as removable cost without accounting for probes.",
+    "Separate empty-listener calibration estimates full wrapping perturbation; 1.362ms/frame measured bookkeeping is only part of it. Whole-frame 31.825ms is instrumented and must not be compared to prior 27.54ms as a regression or saving.",
+    "Three diagnostic listeners are excluded from production-removable work. Main battlefield listener remains necessary; no damage text, muzzle or effect work counted as removable.",
+    "No nested selected emits or other nested listener calls occurred; arithmetic reconciliation verifies emit inclusive = listener exclusive + measured bookkeeping + residual for each kind.",
+    "Initial probe connection attempt was invalid because static bound callbacks collided; it is discarded entirely. Unique per-listener forwarding objects were then used for the only accepted full sample."
+  ]
+}
