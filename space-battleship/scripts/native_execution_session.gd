@@ -69,9 +69,13 @@ func handoff_to_legacy(game:RefCounted,reason:String)->bool:
 	game.event.emit("native_execution_handoff",{"reason":reason,"clock":exported.clock})
 	return true
 
-func advance(game:RefCounted,dt:float)->void:
-	if kernel==null:return
-	kernel.advance(dt)
+func advance(game:RefCounted,dt:float)->bool:
+	if kernel==null:return false
+	if not kernel.advance(dt):
+		if not handoff_to_legacy(game,"numeric_range"):
+			push_error("Native numeric boundary could not transfer its untouched combat step")
+			return true
+		return false
 	game.native_step_phase="native_done";game.native_step_remaining=0.0
 	production_seconds+=dt
 	var values:Dictionary=kernel.metrics()
@@ -90,7 +94,7 @@ func advance(game:RefCounted,dt:float)->void:
 	if "motion_clock" in game:game.motion_clock=float(values.clock)
 	ticks+=1
 	consume_feedback(game)
-	if handed_off:return
+	if handed_off:return true
 	game.since_hit=float(kernel.metrics().get("since_hit",game.since_hit+dt))
 	if bool(kernel.metrics().get("final_cleared",false)):
 		if handoff_to_legacy(game,"final_complete"):game.finish_combat_step(dt)
@@ -101,6 +105,7 @@ func advance(game:RefCounted,dt:float)->void:
 		# Existing finish_combat_step owns the original clear/travel filtering.
 		# Transfer first so non-final waves keep their already-fired carriers.
 		if handoff_to_legacy(game,"wave_complete"):game.finish_combat_step(dt)
+	return true
 
 func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	var points=PackedVector2Array();var muzzles=PackedVector2Array()

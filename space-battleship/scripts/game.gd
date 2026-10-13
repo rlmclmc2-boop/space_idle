@@ -2852,9 +2852,11 @@ func tick(dt: float) -> void:
 			native_execution_requested=false
 			# Cold whole-encounter legacy selection. No native state was installed.
 	if native_execution!=null:
-		native_execution.advance(self,dt)
-		native_step_phase="idle";native_step_remaining=0.0
-		return
+		if native_execution.advance(self,dt):
+			native_step_phase="idle";native_step_remaining=0.0
+			return
+		# The kernel rejected before consuming combat; shared economy already ran.
+		if "motion_clock" in self:set("motion_clock",float(get("motion_clock"))+native_step_remaining)
 	if state == State.LEVEL_CLEAR:
 		if not advance_jewel_repair(dt):return
 		if state!=State.LEVEL_CLEAR:return

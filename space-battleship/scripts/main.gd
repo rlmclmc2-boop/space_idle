@@ -424,7 +424,7 @@ func _process(delta: float) -> void:
 		build_ui()
 	if battle_slice_runtime!=null:battle_slice_runtime.sync_screen_scale(enemy_recognition_screen_scale())
 	sync_accelerated_visual_mode()
-	var dt := maxf(0,delta) if background_unfocused else minf(delta,0.1)
+	var dt := maxf(0,delta)
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
 	if not game.paused:

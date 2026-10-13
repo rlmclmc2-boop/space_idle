@@ -129,9 +129,23 @@ try {
     foreach ($file in @('project.godot','main.tscn')) { Copy-Item -LiteralPath (Join-Path $project $file) -Destination $staging }
     foreach ($folder in @('scripts','assets')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
     New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
-    foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json')) {
+    foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json','hyperspace_config.json','hyperspace_entity_schema.json','hyperspace_visuals.json','space_enemy_candidates.json','space_enemy_reward_catalog.json','space_enemy_reward_recipes.json','space_enemy_reward_sources.json','space_enemy_routes.json')) {
         Copy-Item -LiteralPath (Join-Path $project "data/$dataFile") -Destination (Join-Path $staging 'data')
     }
+    # Only runtime extension metadata/binary and the presentation resources it uses.
+    foreach ($relative in @('addons/native_battle/space_native.gdextension','bin/space_native.dll','addons/flexible_toon_shader/flexible_toon.gdshader','addons/flexible_toon_shader/LICENSE','dev/toon_ship/chain_vfx.gd','dev/toon_ship/missile_vfx.gd','dev/toon_ship/continuous_beam_vfx.gd','dev/toon_ship/rail_vfx.gd','dev/toon_ship/pulse_vfx.gd','dev/toon_ship/hybrid_layout.gd','dev/toon_ship/hybrid_manifest.json','dev/toon_ship/shield.gdshader','dev/toon_ship/exhaust.gdshader')) {
+        $destination = Join-Path $staging $relative
+        New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
+        Copy-Item -LiteralPath (Join-Path $project $relative) -Destination $destination
+    }
+    foreach ($folder in @('hulls','weapons')) {
+        $destination = Join-Path $staging ('dev/toon_ship/' + $folder)
+        New-Item -ItemType Directory -Force -Path $destination | Out-Null
+        foreach ($file in Get-ChildItem -LiteralPath (Join-Path $project ('dev/toon_ship/' + $folder)) -File | Where-Object { $_.Extension -in @('.glb','.tscn') }) {
+            Copy-Item -LiteralPath $file.FullName -Destination $destination
+        }
+    }
+    $nativeHash = (Get-FileHash -LiteralPath (Join-Path $project 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
     $presetPath = Join-Path $project 'export_presets.cfg'
     $preset = [IO.File]::ReadAllText($presetPath)
     $templateSetting = '(?m)^custom_template/release\s*=\s*[^\r\n]*'
@@ -149,9 +163,16 @@ try {
     Stage 'Export release / embed PCK'
     $candidate = Join-Path $candidateDir 'SpaceBattleship.exe'
     $null = Run $engine @('--headless','--path',$staging,'--export-release','Windows Single EXE',$candidate) $run 'export' 300 -isolated
-    Stage 'Verify single executable structure'
-    $files = @(Get-ChildItem -LiteralPath $candidateDir -Force)
-    if ($files.Count -ne 1 -or $files[0].Name -ne 'SpaceBattleship.exe') { throw "Export produced unexpected files in $candidateDir" }
+    Stage 'Verify runtime payload whitelist'
+    $files = @(Get-ChildItem -LiteralPath $candidateDir -Recurse -File -Force)
+    $allowed = @('SpaceBattleship.exe','space_native.dll','bin/space_native.dll')
+    foreach ($file in $files) {
+        $relative = $file.FullName.Substring($candidateDir.Length + 1).Replace('\','/')
+        if ($relative -notin $allowed) { throw "Unexpected release payload: $relative" }
+    }
+    $nativeFiles = @($files | Where-Object { $_.Name -eq 'space_native.dll' })
+    if ($files.Count -ne 2 -or $nativeFiles.Count -ne 1) { throw "Expected exactly EXE and required native DLL in $candidateDir" }
+    if ((Get-FileHash -LiteralPath $nativeFiles[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nativeHash) { throw 'Exported native DLL differs from validated source DLL' }
     $stream = [IO.File]::OpenRead($candidate)
     $reader = New-Object IO.BinaryReader($stream)
     try {
@@ -217,11 +238,22 @@ try {
     $null = Run $engine @('--headless','--path',$staging,'--export-release','Windows Single EXE',$verifier) $run 'verify-export' 300 -isolated
     Stage 'Remove intermediate project before independent launch'
     Remove-Work $staging
+    Stage 'Create ZIP and independently unpack runtime'
+    $publishDir = Join-Path $run 'publish'
+    $unpacked = Join-Path $run 'zip-runtime'
+    New-Item -ItemType Directory -Force -Path $publishDir | Out-Null
+    $zipPath = Join-Path $publishDir 'SpaceBattleship.zip'
+    Compress-Archive -Path (Join-Path $candidateDir '*') -DestinationPath $zipPath
+    Expand-Archive -LiteralPath $zipPath -DestinationPath $unpacked
+    $candidate = Join-Path $unpacked 'SpaceBattleship.exe'
+    $zipNative = Join-Path $unpacked ($nativeFiles[0].FullName.Substring($candidateDir.Length + 1))
+    if ((Get-FileHash -LiteralPath $zipNative -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nativeHash) { throw 'ZIP native DLL mismatch' }
     Stage 'Run release verification in isolated user directory'
     $null = Run $verifier @('--','--capture','--capture-all') (Join-Path $run 'empty-cwd') 'verify-runtime' 30 -isolated
     $reportPath = Join-Path $run 'user/roaming/SpaceBattleship/release-verification.json'
     if (!(Test-Path -LiteralPath $reportPath)) { throw "Runtime verification did not complete: $reportPath" }
     $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+    if ($report.native_sha256 -ne $nativeHash -or !$report.native_admitted) { throw 'Release native DLL/kernel proof failed' }
     if (!$report.passed) { throw "Runtime checks failed: $reportPath`r`n$($report | ConvertTo-Json -Depth 5)" }
     Stage 'Launch normal game entry point'
     Remove-Work $verifyDir
@@ -241,12 +273,12 @@ try {
     }
     $null = Run $candidate @('--verbose','--quit-after','90') (Join-Path $run 'empty-cwd') 'normal-relaunch' 60 -isolated
     Stage 'Publish verified release'
-    $hashStream = [IO.File]::OpenRead($candidate)
+    $hashStream = [IO.File]::OpenRead($zipPath)
     $sha256 = [Security.Cryptography.SHA256]::Create()
     try { $digest = [BitConverter]::ToString($sha256.ComputeHash($hashStream)).Replace('-','') }
     finally { $sha256.Dispose(); $hashStream.Dispose() }
     # Publish via one directory rename only after every gate succeeds.
-    $safeCandidate = Assert-InWork $candidateDir
+    $safeCandidate = Assert-InWork $publishDir
     for ($attempt = 0; $attempt -lt 20; $attempt++) {
         try { [IO.Directory]::Move($safeCandidate, $release); break }
         catch {
@@ -258,7 +290,7 @@ try {
     Note "SHA256: $digest"
     Note "Verification report/screenshot: $(Split-Path $reportPath)"
     Note "Build log: $log"
-    Note "SUCCESS: $(Join-Path $release 'SpaceBattleship.exe')"
+    Note "SUCCESS: $(Join-Path $release 'SpaceBattleship.zip')"
 } catch {
     $failure = "FAILED STAGE: $stage`r`n$($_.Exception.Message)`r`nLocation: $($_.InvocationInfo.PositionMessage)`r`nBuild log: $log`r`nWork directory: $run"
     Write-Host $failure -ForegroundColor Red
@@ -269,7 +301,7 @@ try {
         }
         # Candidate is never a release; remove it on any failed gate.
         if ($run) {
-            foreach ($folder in @('candidate','verification')) {
+            foreach ($folder in @('candidate','verification','publish','zip-runtime')) {
                 try { Remove-Work (Join-Path $run $folder) }
                 catch { Note "Cleanup error (isolated outside release): $($_.Exception.Message)" }
             }

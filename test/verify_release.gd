@@ -1,6 +1,9 @@
 extends Node
 
 var failures: Array[String] = []
+var native_admitted:=false
+var native_sha256:=""
+var native_path:=""
 
 func check(ok: bool, message: String) -> void:
 	if not ok:
@@ -28,8 +31,29 @@ func verify() -> void:
 	var main = scene.instantiate()
 	root.add_child(main)
 	get_tree().current_scene = main
+	check(ClassDB.class_exists("SpaceCombatKernel"),"Native kernel class missing from release")
+	check(main.game.native_execution_auto and main.game.compiled_combat_rules!=null,"Normal entry must enable native and compiled rules")
+	for relative in ["space_native.dll","bin/space_native.dll"]:
+		var path=OS.get_executable_path().get_base_dir().path_join(relative)
+		if FileAccess.file_exists(path):native_path=path;native_sha256=FileAccess.get_sha256(path)
 	for frame in range(90):
 		await get_tree().process_frame
+		if main.game.native_execution!=null:native_admitted=main.game.native_execution.kernel.get_class()=="SpaceCombatKernel"
+	if not native_admitted:
+		# Check a legal supported loadout through ordinary equip/start APIs; the
+		# fresh starter may have an empty module and legitimately select legacy.
+		for key in ["armour","shield"]:
+			if not main.game.profile.unlocked.has(key):main.game.profile.unlocked.append(key)
+		for index in main.game.defense_entries().size():
+			main.game.equip_slot("defence",index,"armour" if index==0 else "shield")
+		main.game.start(1,false)
+		for step in range(300):
+			main.game.tick(1.0/60.0)
+			if main.game.native_execution!=null:
+				native_admitted=main.game.native_execution.kernel.get_class()=="SpaceCombatKernel"
+				break
+	check(native_admitted,"Normal release game did not admit actual native kernel")
+	check(native_sha256.length()==64,"Missing release DLL hash proof")
 	check(main.db.levels.size() > 0 and main.db.equipment.size() > 0, "Missing embedded game data")
 	check(main.font is FontVariation and main.font.base_font is FontFile, "Release must use embedded font")
 	var text_server := TextServerManager.get_primary_interface()
@@ -70,7 +94,7 @@ func verify() -> void:
 func finish() -> void:
 	var report := {"passed": failures.is_empty(), "failures": failures,
 		"executable": OS.get_executable_path(), "user_data": OS.get_user_data_dir(),
-		"renderer": RenderingServer.get_video_adapter_name()}
+		"renderer": RenderingServer.get_video_adapter_name(),"native_admitted":native_admitted,"native_sha256":native_sha256,"native_path":native_path}
 	var file := FileAccess.open("user://release-verification.json", FileAccess.WRITE)
 	if file == null:
 		get_tree().quit(2)

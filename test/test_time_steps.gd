@@ -43,7 +43,7 @@ func run() -> void:
 			game.speed = speed
 			game.profile.chronoParticles = game.chrono_capacity()
 			scene.game = game
-			var expected_real := minf(delta,0.1)
+			var expected_real := maxf(delta,0.0)
 			var clock_before: float = scene.clock
 			scene._process(delta)
 			var total := 0.0
@@ -57,7 +57,7 @@ func run() -> void:
 			check(is_equal_approx(game.planet_seconds,total) and is_equal_approx(game.research_seconds,total) and is_equal_approx(game.production_seconds,total),"Exploration, research and production share game time: %s/%s" % [speed,delta])
 			check(is_equal_approx(game.resource_prune_elapsed,total/speed),"Resource history pruning interval follows online real time: %s/%s" % [speed,delta])
 			check(is_equal_approx(float(game.profile.chronoParticles),game.chrono_capacity()-expected_real*game.chrono_cost(speed)),"Particle cost follows real time once: %s/%s" % [speed,delta])
-			check(is_equal_approx(scene.clock-clock_before,expected_real),"UI clock uses clamped real time: %s/%s" % [speed,delta])
+			check(is_equal_approx(scene.clock-clock_before,expected_real),"UI clock retains complete foreground real time: %s/%s" % [speed,delta])
 			game.state = BattleGame.State.LEVEL_CLEAR
 			game.clear_timer = 100.0
 			var tick_count_before := game.steps.size()

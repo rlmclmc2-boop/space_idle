@@ -18,7 +18,7 @@ def main():
     workspace = area / 'Moved workspace 中文'
     project = workspace / 'Renamed game 中文'
     project.mkdir(parents=True)
-    for folder in ('scripts', 'assets', 'data'):
+    for folder in ('scripts', 'assets', 'data', 'dev', 'addons', 'bin'):
         shutil.copytree(SOURCE / folder, project / folder,
                         ignore=shutil.ignore_patterns('__pycache__', '.import_state.json'))
     for name in ('project.godot', 'main.tscn', 'export_presets.cfg'):
@@ -56,17 +56,17 @@ def main():
                                     stderr=subprocess.STDOUT, timeout=600)
         assert result.returncode == 0, f'Build failed ({result.returncode}); see {area / "launcher.log"}'
         files = list((workspace / 'release').iterdir())
-        assert len(files) == 1 and files[0].name == 'SpaceBattleship.exe'
+        assert len(files) == 1 and files[0].name == 'SpaceBattleship.zip'
         log_text = (workspace / 'build.log').read_text(encoding='utf-8')
         assert f'Detected project: {mapped_workspace / project.name}' in log_text
-        assert f'SUCCESS: {mapped_workspace / "release/SpaceBattleship.exe"}' in log_text
+        assert f'SUCCESS: {mapped_workspace / "release/SpaceBattleship.zip"}' in log_text
         assert str(SOURCE) not in log_text, 'Build referenced original checkout'
         assert stale_path not in log_text, 'Build used stale template path'
         assert preset_path.read_text(encoding='utf-8') == original_preset, 'Source preset was changed'
         (area / 'results.txt').write_text(
             'PASS: non-source drive alias, renamed project, Chinese/spaces, unrelated cwd, '
             'stale absolute template rebound without changing source preset, full release '
-            'build/runtime verification, exactly one EXE.\n', encoding='utf-8')
+            'build/runtime verification, one ZIP with EXE and required native DLL.\n', encoding='utf-8')
         print((area / 'results.txt').read_text(encoding='utf-8'), flush=True)
     finally:
         subprocess.run(['subst', drive, '/d'], check=True)
