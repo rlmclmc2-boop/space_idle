@@ -1,7 +1,7 @@
 extends SceneTree
 class RefusedTransfer extends "res://scripts/native_execution_session.gd":
 	func handoff_to_legacy(_game:RefCounted,_reason:String)->bool:return false
-	func prepare_geometry(_geometry:RefCounted,_game:RefCounted)->void:pass
+	func prepare_geometry(_geometry:RefCounted,_game:RefCounted,_seconds:float=1.0/60.0)->void:pass
 class SharedObservedGame extends "res://scripts/presented_battle_game.gd":
 	var shared_calls:=0
 	func advance_shared_clock_and_economy(dt:float)->void:
