@@ -1651,6 +1651,7 @@ func battle_logical_point(point: Vector2) -> Vector2:
 		return Vector2(point.x,point.y-BATTLE_LINEAR_INVERSE_OFFSET)
 	if point.y>=640.0 and point.y<=2048.0:
 		return Vector2(point.x,point.y-220.0+BATTLE_LINEAR_INVERSE_OFFSET)
+	if game.combat_presentation!=null:return game.combat_presentation.battle_logical_point(point)
 	var low := point.y-220.0
 	var high := point.y
 	for iteration in BATTLE_INVERSE_STEPS:
@@ -1744,6 +1745,9 @@ func straight_projectile_point(logical_point: Vector2, visual: Dictionary) -> Ve
 
 func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, visual: Dictionary = {}) -> Vector2:
 	var pos := game.projectile_position(shot)
+	if shot.has("fixed_screen_step"):
+		var ray_distance:float=(pos-Vector2(shot.launch_point)).dot(game.projectile_direction(shot))
+		return battle_logical_point(Vector2(shot.fixed_screen_origin)+Vector2(shot.fixed_screen_step)*ray_distance)
 	if visual.is_empty():visual = projectile_visual(shot)
 	if visual.has("fixed_step"):return straight_projectile_point(pos,visual)
 	var converge := 1.0

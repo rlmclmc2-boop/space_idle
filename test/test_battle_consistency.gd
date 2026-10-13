@@ -1,10 +1,14 @@
 extends SceneTree
 class HullAuthority extends RefCounted:
+ var fx_time:=0.0
+ var shape_calls:=0
  func enemy_frontline_y_limit(_enemy:Dictionary)->float:return 42.0
  func enemy_render_position(_enemy:Dictionary)->Vector2:return Vector2(100,12)
  func enemy_render_width(_enemy:Dictionary)->float:return 20.0
  func enemy_render_angle(_enemy:Dictionary)->float:return -PI
- func enemy_recognition_geometry(_enemy:Dictionary,_width:float=-1.0)->Dictionary:return {"inner":PackedVector2Array([Vector2(-10,-20),Vector2(10,-20),Vector2(10,20),Vector2(-10,20)])}
+ func enemy_recognition_geometry(_enemy:Dictionary,_width:float=-1.0)->Dictionary:
+  shape_calls+=1
+  return {"inner":PackedVector2Array([Vector2(-10,-20),Vector2(10,-20),Vector2(10,20),Vector2(-10,20)])}
 ## Run in an isolated project with the built SpaceCombatKernel extension loaded.
 var checks:=0
 var failures:=0
@@ -55,6 +59,16 @@ func ownership_case()->void:
  k.cancel()
 func _initialize()->void:
  check(ClassDB.class_exists("SpaceCombatKernel"),"native extension must be loaded")
+ var presentation=ClassDB.instantiate("SpaceCombatPresentation")
+ for y in [-600.0,-512.0,220.0,220.001,273.0,442.0,639.999,640.0,2048.0,2100.0]:
+  var low:float=y-220.0;var high:float=y
+  for i in 20:
+   var middle:float=(low+high)*0.5
+   var point:=Vector2(0,middle)
+   var mapped:=Vector2(point.x,point.y+smoothstep(220.0,420.0,point.y)*220.0)
+   if mapped.y<y:low=middle
+   else:high=middle
+  check(presentation.battle_logical_point(Vector2(45,y)).distance_to(Vector2(45,(low+high)*0.5))<0.001,"native reuse preserves twenty-step inverse at "+str(y))
  ownership_case()
  run_case(12,true)
  run_case(30,false)
@@ -62,5 +76,10 @@ func _initialize()->void:
  check(model._frontline({})==42.0,"legacy display host keeps its frontline contract")
  var shot={"target":{},"x":80.0,"y":0.0,"direction":Vector2.RIGHT,"speed":1200.0,"fixed_screen_step":Vector2.RIGHT,"fixed_screen_origin":Vector2.ZERO,"launch_point":Vector2.ZERO}
  check(is_equal_approx(model.ballistic_contact(shot,1.0/60.0),0.5),"handoff screen ray hits same moved hull boundary")
+ model.ballistic_contact(shot,1.0/60.0)
+ check(model.host.shape_calls==1,"two shots share one exact-clock hull publication")
+ model.host.fx_time=1.0
+ model.ballistic_contact(shot,1.0/60.0)
+ check(model.host.shape_calls==2,"moving-clock geometry never reuses a stale hull")
  print("BATTLE CONSISTENCY: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)

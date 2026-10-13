@@ -595,6 +595,7 @@ func battle_logical_point(point: Vector2) -> Vector2:
 		return Vector2(point.x,point.y-BATTLE_LINEAR_INVERSE_OFFSET)
 	if point.y>=640.0 and point.y<=2048.0:
 		return Vector2(point.x,point.y-220.0+BATTLE_LINEAR_INVERSE_OFFSET)
+	if game.combat_presentation!=null:return game.combat_presentation.battle_logical_point(point)
 	var low := point.y-220.0
 	var high := point.y
 	for iteration in BATTLE_INVERSE_STEPS:

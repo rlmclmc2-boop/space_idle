@@ -98,6 +98,7 @@ class SpaceCombatPresentation : public RefCounted {
 protected:
     static void _bind_methods();
 public:
+    Vector2 battle_logical_point(Vector2 point) const { return inverse_battle_point(point); }
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
         ERR_FAIL_INDEX(category,2);
         contact_events[category].push_back({point,direction,born,launch,critical,type});
@@ -387,12 +388,20 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
             if(!f.is_empty())append(p,f["visual"],m,Ref<SpaceVisualLease>(Dictionary(f["visual"]).get("visual_lease",Variant())),f["pos"],f["budget"],key,hostile,chain);
             continue;
         }
-        Vector2 logical=position(m->motion());
-        if(!missile&&!v.is_empty()&&v.has("fixed_step")) {
-            double distance=(logical-Vector2(v["logical_origin"])).dot(Vector2(v["fixed_direction"]));
-            logical=inverse_battle_point(Vector2(v["fixed_origin"])+Vector2(v["fixed_step"])*distance);
+        Vector2 logical=position(m->motion()), point;
+        if(p.has("fixed_screen_step")) {
+            // The committed ray already owns screen coordinates, including flights
+            // beyond the capped decorative visual list. Do not inverse/forward it.
+            double distance=(logical-Vector2(p["launch_point"])).dot(m->motion().direction);
+            point=Vector2(p["fixed_screen_origin"])+Vector2(p["fixed_screen_step"])*distance+offset;
+        } else {
+            if(!missile&&!v.is_empty()&&v.has("fixed_step")) {
+                double distance=(logical-Vector2(v["logical_origin"])).dot(Vector2(v["fixed_direction"]));
+                logical=inverse_battle_point(Vector2(v["fixed_origin"])+Vector2(v["fixed_step"])*distance);
+            }
+            point=battle_point(logical)+offset;
         }
-        Vector2 point=battle_point(logical)+offset;int budget=1;
+        int budget=1;
         if(missile&&visual.is_valid()&&visual->samples>5) {
             int nearby=0;for(int j=0;j<particles.size();++j){Dictionary particle=particles[j];if(Vector2(particle["pos"]).distance_squared_to(point)<6400)++nearby;}
             budget=std::min(1,std::max(0,18-nearby));
@@ -451,7 +460,7 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
             if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
             const Ref<SpaceVisualLease> &native_visual=f.visual_state;
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
-            double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",engine_angle(direction)));Vector2 axis=engine_from_angle(angle);
+            double angle=shot.has("fixed_screen_step")?engine_angle(Vector2(shot["fixed_screen_step"])):native_visual.is_valid()?native_visual->angle:double(visual.get("angle",engine_angle(direction)));Vector2 axis=engine_from_angle(angle);
             if(is_pulse){paint(rid);pulse_transforms.emplace_back(axis,-axis.orthogonal(),point);continue;}
             flush_pulses(rid);
             // Append enemy cores in shot order, sharing the triangle stream
@@ -512,6 +521,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
     }
 }
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
     ClassDB::bind_method(D_METHOD("create_visual","shot","angle","mount","origin","logical","spread"),&SpaceCombatPresentation::create_visual);
     ClassDB::bind_method(D_METHOD("register_visual","shot","visual","index"),&SpaceCombatPresentation::register_visual);
     ClassDB::bind_method(D_METHOD("find_visual","visuals","shot"),&SpaceCombatPresentation::find_visual);

@@ -2,6 +2,8 @@ extends RefCounted
 ## A read-only spatial publication for one exact logical/presentation clock.
 ## Authority remains BattleGame; callbacks keep their original order. No RNG.
 var host
+var ballistic_clock:float=-INF
+var ballistic_shapes:Dictionary={}
 var active=false
 var compiling=false
 var clock=-INF
@@ -141,7 +143,7 @@ func fleet_bounds()->Array[Rect2]:
 
 func invalidate_membership()->void:
 	# Event-time identity/alive changes must be visible before the next hit.
-	clock=-INF;bounds_revision=-1;shape_revision+=1
+	clock=-INF;bounds_revision=-1;shape_revision+=1;ballistic_clock=-INF;ballistic_shapes.clear()
 
 func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
 	# One complete display publication. Native painters consume this packet;
@@ -169,19 +171,32 @@ func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
 	result.merge({"position":point+offset,"width":width,"angle":angle,"light":host.enemy_hull_light(enemy),"types":host.enemy_attack_types(enemy),"packet":packet,"status":status,"layout":host.enemy_status_layout(enemy,point+offset,width,angle,outline),"mounts":poses})
 	return result
 
-func ballistic_contact(shot:Dictionary,dt:float)->float:
-	# Handoff retains the fixed screen ray and queries the current hull authority.
-	var enemy:Dictionary=shot.target
+func ballistic_shape(enemy:Dictionary)->Dictionary:
+	# Publish one exact-clock hull per live entity to both execution owners.
+	if ballistic_clock!=host.fx_time:
+		ballistic_clock=host.fx_time;ballistic_shapes.clear()
+	var uid:int=int(enemy.get("uid",-1))
+	var cached:Dictionary=ballistic_shapes.get(uid,{})
+	if not cached.is_empty() and is_same(cached.entity,enemy):return cached
 	var center:Vector2=host.enemy_render_position(enemy)
 	var packet:Dictionary=host.enemy_recognition_geometry(enemy)
+	var angle:float=PI+host.enemy_render_angle(enemy)
 	var hull=PackedVector2Array()
-	for vertex in packet.inner:hull.append(center+Vector2(vertex).rotated(PI+host.enemy_render_angle(enemy)))
+	for vertex in packet.inner:hull.append(center+Vector2(vertex).rotated(angle))
+	var result={"entity":enemy,"center":center,"hull":hull}
+	ballistic_shapes[uid]=result
+	return result
+
+func ballistic_contact(shot:Dictionary,dt:float)->float:
+	# Handoff retains the fixed screen ray and shares the current hull publication.
+	var hull:PackedVector2Array=ballistic_shape(shot.target).hull
 	var direction:Vector2=shot.direction;var step:Vector2=shot.fixed_screen_step
 	var start:Vector2=shot.fixed_screen_origin+step*(Vector2(shot.x,shot.y)-Vector2(shot.launch_point)).dot(direction)
 	var movement:=step*float(shot.speed)*dt
+	var length:=movement.length_squared()
 	if Geometry2D.is_point_in_polygon(start,hull):return 0.0
 	var first:=2.0
 	for i in hull.size():
 		var contact=Geometry2D.segment_intersects_segment(start,start+movement,hull[i],hull[(i+1)%hull.size()])
-		if contact!=null and movement.length_squared()>0:first=minf(first,(Vector2(contact)-start).dot(movement)/movement.length_squared())
+		if contact!=null and length>0:first=minf(first,(Vector2(contact)-start).dot(movement)/length)
 	return first
