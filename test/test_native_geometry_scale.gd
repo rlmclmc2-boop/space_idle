@@ -80,6 +80,42 @@ func rail_charge_contract(scene)->void:
 	check(fires[0]>=2 and seen[0] and seen[1] and upgraded,"player rail charge rises in two actual firing cycles")
 	check(enemy_seen,"enemy rail charge reads its native root deadline")
 	g.event.disconnect(watcher)
+func same_clock_fleet_threshold(geometry,g)->void:
+	var original_enemies:Array[Dictionary]=g.enemies
+	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
+	var original_target:Vector2=pose.target;var original_born:float=pose.born
+	var original_explicit=enemy.get("explicit_formation",null)
+	var original_columns=enemy.get("formation_columns",null)
+	var original_max_y:float=geometry.battle_visual.enemy_max_y
+	g.enemies=original_enemies.duplicate();g.enemies.clear();g.enemies.append(enemy)
+	for index in 9:
+		var other:Dictionary=enemy.duplicate(true);other.uid=9000+index;other.slot=100+index;g.enemies.append(other)
+	enemy.explicit_formation=false;enemy.formation_columns=10
+	pose.target=Vector2(original_target.x,10000);pose.born=geometry.fx_time-2.0
+	geometry.battle_visual.enemy_max_y=0.2
+	geometry.enemy_entry_batch_active=true;geometry.enemy_provider_query_active=true
+	var before:Vector2=geometry._source_enemy_render_position(enemy)
+	geometry.enemy_provider_query_active=false;geometry.after_tick()
+	var clock:float=geometry.fx_time
+	var removed:Dictionary=g.enemies.pop_back()
+	var cached:Vector2=geometry._source_enemy_render_position(enemy)
+	pose.erase("steady_position_key");pose.erase("steady_position_time")
+	var expected:Vector2=geometry._source_enemy_render_position(enemy)
+	check(before!=expected,"10 to 9 fixture changes the non-explicit frontline clamp")
+	check(cached==expected and geometry.fx_time==clock,"same-clock 10 to 9 equals uncached solve")
+	geometry.enemy_entry_batch_active=true;geometry.enemy_provider_query_active=true
+	geometry._source_enemy_render_position(enemy)
+	geometry.enemy_provider_query_active=false;geometry.after_tick();g.enemies.append(removed)
+	cached=geometry._source_enemy_render_position(enemy)
+	pose.erase("steady_position_key");pose.erase("steady_position_time")
+	check(cached==geometry._source_enemy_render_position(enemy) and geometry.fx_time==clock,"same-clock 9 to 10 equals uncached solve")
+	g.enemies=original_enemies;pose.target=original_target;pose.born=original_born
+	geometry.battle_visual.enemy_max_y=original_max_y
+	if original_explicit==null:enemy.erase("explicit_formation")
+	else:enemy.explicit_formation=original_explicit
+	if original_columns==null:enemy.erase("formation_columns")
+	else:enemy.formation_columns=original_columns
+
 func steady_position_publication(geometry,g)->void:
 	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
 	pose.born=geometry.fx_time-2.0
@@ -169,6 +205,7 @@ func run()->void:
 	check(missile_origin_match[0] and missile_origin_match[1]>0,"ordinal0 input, actual missile birth and fire feedback share the muzzle")
 	g.event.disconnect(muzzle_watcher)
 	steady_position_publication(geometry,g)
+	same_clock_fleet_threshold(geometry,g)
 	var transferred_poses:Dictionary=geometry.enemy_poses;var transferred_turrets:Dictionary=geometry.turret_visuals
 	var remaining_enemy:Dictionary=g.enemies.back();var old_pose:Dictionary=geometry.enemy_pose(remaining_enemy)
 	var pose_values=[old_pose.born,old_pose.phase,old_pose.rotation]

@@ -515,7 +515,7 @@ func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
 	# entry-fleet calculation and never reuse a result across animation time.
 	var appearance:=enemy_appearance(enemy)
-	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,pose.target,pose.logical_position,
+	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,game.enemies.size()>=10,pose.target,pose.logical_position,
 		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,
 		enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),
 		enemy.get("max_shield",0),enemy.get("shieldRecovery",0),enemy.get("shieldType",0),
