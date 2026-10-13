@@ -125,7 +125,8 @@ class SpaceCombatKernel : public RefCounted {
         bool player = false, critical = false;
         int64_t uid = 0;
         double amount = 0, absorbed = 0, time = 0;
-        Vector2 point, direction;
+        Vector2 point, direction, target_point;
+        int64_t target_uid = -1;
         Dictionary shot;
     };
     std::vector<Actor> actors;
@@ -158,6 +159,7 @@ class SpaceCombatKernel : public RefCounted {
     int64_t drop_uid = 0;
     bool drop_rules = false;
     bool admitted = false, stopped = false, scatter = false, executing = false;
+    bool final_encounter = false, final_cleared = false;
     int chain_count = 0, prism_count = 0;
     double crit_rate = 0, crit_multiplier = 2, repeat_probability = 0, repeat_multiplier = 1,
            repeat_delay = 0, secondary_probability = 0, scatter_bonus = 0, prism_bonus = 0;
@@ -278,6 +280,9 @@ class SpaceCombatKernel : public RefCounted {
         e.point = p;
         e.direction = f.lease.is_valid() ? f.lease->motion().direction : Vector2(0, -1);
         e.shot = f.view;
+        e.target_point = f.aim;
+        Actor *target = resolve(f.target);
+        e.target_uid = target ? target->uid : -1;
         feedback.push_back(e);
     }
     std::shared_ptr<Instance> instance(std::shared_ptr<const Attack> a, bool beam = false) {
@@ -611,6 +616,17 @@ class SpaceCombatKernel : public RefCounted {
                         birth(wi, t, inst, raw / inst->attack->damage, false, true, origin);
             }
         }
+        commit_final_wipe();
+    }
+    void commit_final_wipe() {
+        if (!final_encounter || final_cleared || actors.empty()) return;
+        for (const Actor &a : actors) if (a.live) return;
+        final_cleared = true;
+        // Completion is committed before any later boundary carrier can hit.
+        for (size_t id : active) retire(id, false);
+        while (!roots.empty()) roots.pop();
+        while (!ejections.empty()) ejections.pop();
+        while (!repeats.empty()) repeats.pop();
     }
     double counter_bonus(double count, bool incoming = false) const {
         double growth = incoming ? defence_counter_growth : counter_growth;
@@ -777,6 +793,7 @@ class SpaceCombatKernel : public RefCounted {
         }
     }
     void player_hit(double raw, int type, double at) {
+        if (final_cleared) return;
         ++incoming_counter;
         last_incoming_at = at;
         if (!module_defence) {
@@ -913,16 +930,20 @@ class SpaceCombatKernel : public RefCounted {
                 birth(wi, h, inst, 1);
         } else
             launch(wi, candidates.front(), a, 1);
+        if (final_cleared) return;
         if (w.kind != 3 && a->repeats)
             repeats.push(
                 {clock + repeat_delay, ++event_serial, 2, wi, 0, candidates.front(), a, w.repeat_multiplier});
         if (w.kind != 3 && a->secondary && candidates.size() > 1) {
+            Vector2 target_position = actors[candidates[1].index].point;
+            int64_t target_uid = actors[candidates[1].index].uid;
             launch(wi, candidates[1], a, 1, true, false);
             Effect secondary;
             secondary.kind = 8;
             secondary.time = clock;
-            secondary.point = actors[candidates[0].index].logical;
-            secondary.shot = target_view(candidates[1]);
+            secondary.point = actors[candidates[0].index].point;
+            secondary.target_point = target_position;
+            secondary.target_uid = target_uid;
             secondary.type = w.type;
             feedback.push_back(secondary);
         }
@@ -932,7 +953,7 @@ class SpaceCombatKernel : public RefCounted {
         clock += dt;
         ++step_serial;
         recover(dt);
-        if (stopped) {
+        if (stopped || final_cleared) {
             compact();
             executing = false;
             return;
@@ -952,15 +973,15 @@ class SpaceCombatKernel : public RefCounted {
             }
         }
         std::vector<Timed> reschedule;
-        while (!roots.empty() && roots.top().at <= clock + 1e-9) {
+        while (!roots.empty() && !final_cleared && roots.top().at <= clock + 1e-9) {
             Timed q = roots.top();
             roots.pop();
             primary(q.weapon);
             q.at = clock + weapons[q.weapon].interval;
-            if (weapons[q.weapon].kind != 3)
+            if (!final_cleared && weapons[q.weapon].kind != 3)
                 reschedule.push_back(q);
         }
-        for (const Timed &q : reschedule)
+        if (!final_cleared) for (const Timed &q : reschedule)
             roots.push(q);
         while (!ejections.empty() && ejections.top().at <= clock + 1e-9) {
             Timed q = ejections.top();
@@ -1022,22 +1043,25 @@ class SpaceCombatKernel : public RefCounted {
                 player_hit(raw, f.type, p.at);
             else
                 hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, p.at, f.weapon);
-            if (f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
+            if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
                 auto candidates = targets(f.type, p.at);
                 for (Handle h : candidates)
                     if (h.index != f.target.index) {
+                        Vector2 target_position = actors[h.index].point;
+                        int64_t target_uid = actors[h.index].uid;
                         hit_enemy(h, raw, f.type, f.instance, false, p.at, f.weapon);
                         Effect secondary;
                         secondary.kind = 8;
                         secondary.time = p.at;
-                        secondary.point = f.logical_aim;
-                        secondary.shot = target_view(h);
+                        secondary.point = f.aim;
+                        secondary.target_point = target_position;
+                        secondary.target_uid = target_uid;
                         secondary.type = f.type;
                         feedback.push_back(secondary);
                         break;
                     }
             }
-            if (f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
+            if (!final_cleared && f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
                 Timed pending{clock + repeat_delay,
                               ++event_serial,
                               2,
@@ -1191,6 +1215,7 @@ class SpaceCombatKernel : public RefCounted {
         flight_rows.set_typed(Variant::DICTIONARY, StringName(), Variant());
         admitted = false;
         stopped = false;
+        final_encounter = d.get("final_encounter", false); final_cleared = false;
         ++encounter_generation;
         if (!finite_descriptor(d) || !d.has("player") || !d.has("enemies") || !d.has("weapons") ||
             !Array(d.get("unsupported_rules", Array())).is_empty())
@@ -1479,7 +1504,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!admitted || stopped || !std::isfinite(seconds) || seconds <= 0)
             return;
         double end = clock + seconds;
-        while (clock + 1e-9 < end && !stopped) {
+        while (clock + 1e-9 < end && (!stopped || final_cleared)) {
             double next = end;
             if (!ejections.empty() && ejections.top().at > clock + 1e-9)
                 next = std::min(next, ejections.top().at);
@@ -1488,7 +1513,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     Dictionary export_handoff() const {
         Dictionary out;
-        if (!admitted || stopped || executing) return out;
+        if (!admitted || (stopped && !final_cleared) || executing) return out;
         out["schema"] = 1; out["revision"] = int64_t(step_serial); out["clock"] = clock;
         out["player"] = player_row; out["enemies"] = actor_rows;
         out["buffers"] = buffer_rows; out["losses"] = loss_rows; out["defence_times"] = defence_time_rows;
@@ -1571,7 +1596,7 @@ class SpaceCombatKernel : public RefCounted {
         return out;
     }
     bool commit_handoff(int64_t revision) {
-        if (!admitted || stopped || executing || revision != int64_t(step_serial)) return false;
+        if (!admitted || (stopped && !final_cleared) || executing || revision != int64_t(step_serial)) return false;
         stopped = true; admitted = false;
         while (!roots.empty()) roots.pop(); while (!ejections.empty()) ejections.pop(); while (!repeats.empty()) repeats.pop();
         // Drop executor references only. Published rows/leases stay live for the
@@ -1644,6 +1669,8 @@ class SpaceCombatKernel : public RefCounted {
             d["clock"] = e.time;
             d["position"] = e.point;
             d["direction"] = e.direction;
+            d["target_position"] = e.target_point;
+            d["target_uid"] = e.target_uid;
             if (!e.shot.is_empty())
                 d["shot"] = e.shot;
             values.push_back(d);
@@ -1695,6 +1722,7 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary metrics() const {
         Dictionary d;
         d["admitted"] = admitted;
+        d["final_cleared"] = final_cleared;
         d["clock"] = clock;
         d["since_hit"] = clock - last_incoming_at;
         d["steps"] = int64_t(step_serial);

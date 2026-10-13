@@ -104,6 +104,7 @@ func snapshot()->void:
 			view.descriptor(uid,geometry.display_descriptor(enemy));born[uid]=true
 		if not game.enemies.has(enemy):geometry.freeze_display_entity(enemy)
 	# One final record, not an event-time world publication.
+	geometry.finish_display_boundary()
 	var values:Dictionary=geometry.display_frame(retained.values())
 	view.apply(values);frame=values.fleet
 	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
@@ -136,8 +137,8 @@ func on_event(kind:String,info:Dictionary)->bool:
 			var shot:Dictionary=info.shot
 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.spread=float(info.get("spread",0.0))
 			if e.style!=4:
-				e.position=geometry.visual_muzzle(shot);e.direction=game.projectile_direction(shot)
-				e.aim=geometry.target_point(shot.target) if not shot.target.is_empty() else e.position+e.direction*100.0
+				e.position=Vector2(info.x,info.y);e.direction=Vector2(info.direction) if info.has("direction") else game.projectile_direction(shot)
+				e.aim=Vector2(info.aim) if info.has("aim") else geometry.target_point(shot.target) if not shot.target.is_empty() else e.position+e.direction*100.0
 				if e.style==3:
 					e.direction=(geometry.battle_point(e.aim)-geometry.battle_point(e.position)).normalized()
 					e.width=scene.rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0)))
@@ -174,7 +175,7 @@ func on_event(kind:String,info:Dictionary)->bool:
 		"beam_started","beam_hit":
 			var shot:Dictionary=info.shot
 			if bool(shot.get("hostile",false)):
-				e.position=geometry.visual_muzzle(shot) if kind=="beam_started" else geometry.target_point(shot.target)
+				e.position=geometry.visual_muzzle(shot) if kind=="beam_started" else Vector2(info.pos) if info.has("pos") else geometry.target_point(shot.target)
 				scene.weapon_flash(e.position,scene.ORANGE,7.0,0.08)
 		"critical_impact":
 			e.position=info.pos;e.direction=info.direction;consume(e)
@@ -233,9 +234,17 @@ func request_legacy_display()->void:
 	if not advancing:
 		close();scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
 func close()->void:
+	if not started:return
+	started=false
 	scene.ship_view.numeric_slice_only=false
 	scene.simulation_geometry_view=null
 	scene.enemy_poses=geometry.enemy_poses
+	for record in geometry.boundary_dead_geometry.values():
+		var slot:int=int(record.entity.slot)
+		if not scene.enemy_poses.has(slot) or is_same(scene.enemy_poses[slot].entity,record.entity):scene.enemy_poses[slot]=record.pose
+	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
+	# Move ownership: cleanup must not clear the containers now held by Main.
+	geometry.enemy_poses={};geometry.turret_visuals={}
 	geometry.close({"providers":previous,"spatial":previous_spatial})
 	started=false
 

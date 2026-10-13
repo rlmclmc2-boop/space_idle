@@ -97,6 +97,13 @@ func run()->void:
 	check(g.admit_native_compiled_execution("native_low_contract"),"sole native kernel admitted")
 	g.native_execution_auto=true
 	check(scene.attach_native_display(),"sole native geometry owner attached")
+	var missile_origin_match=[true,0]
+	var muzzle_watcher=func(kind:String,info:Dictionary):
+		if kind=="fire" and not bool(info.shot.hostile) and str(info.shot.key)=="missile":
+			var published:Vector2=Vector2(info.x,info.y)
+			missile_origin_match[0]=missile_origin_match[0] and published.distance_to(Vector2(info.shot.launch_point))<0.001 and published.distance_to(scene.battle_slice_runtime.geometry.visual_muzzle(info.shot))<0.001
+			missile_origin_match[1]+=1
+	g.event.connect(muzzle_watcher)
 	for i in 120:scene._process(1.0/60.0)
 	for i in 120:
 		if g.native_execution.kernel.metrics().ejection_queue>0:break
@@ -138,6 +145,24 @@ func run()->void:
 		if not runtime.view.rows.has(uid):break
 		scene._process(1.0/60.0)
 	check(not runtime.view.rows.has(uid) and not geometry.boundary_dead_geometry.has(uid),"existing reference lifetime retires departed geometry")
+	check(missile_origin_match[0] and missile_origin_match[1]>0,"ordinal0 input, actual missile birth and fire feedback share the muzzle")
+	g.event.disconnect(muzzle_watcher)
+	var transferred_poses:Dictionary=geometry.enemy_poses;var transferred_turrets:Dictionary=geometry.turret_visuals
+	var remaining_enemy:Dictionary=g.enemies.back();var old_pose:Dictionary=geometry.enemy_pose(remaining_enemy)
+	var pose_values=[old_pose.born,old_pose.phase,old_pose.rotation]
+	var turret_values:Dictionary={}
+	for slot in transferred_turrets:
+		var value:Dictionary=transferred_turrets[slot]
+		turret_values[slot]={"pose":value,"entry":value.entry,"target":value.target,"angle":value.angle,"recoil":value.recoil,"fired_at":value.get("fired_at",-INF)}
+	check(g.native_before_configuration_change(),"one cold whole-owner display handoff")
+	check(scene.battle_slice_runtime==null and is_same(scene.enemy_poses,transferred_poses) and is_same(scene.turret_visuals,transferred_turrets),"handoff transfers original containers once")
+	check(not transferred_poses.is_empty() and not transferred_turrets.is_empty() and geometry.enemy_poses.is_empty() and geometry.turret_visuals.is_empty(),"retired geometry cleanup cannot empty receiver state")
+	check(is_same(scene.enemy_poses[int(remaining_enemy.slot)],old_pose) and [old_pose.born,old_pose.phase,old_pose.rotation]==pose_values,"handoff preserves original entity pose and entrance age")
+	for slot in turret_values:
+		var before:Dictionary=turret_values[slot];var after:Dictionary=scene.turret_visuals[slot]
+		check(is_same(after,before.pose) and is_same(after.entry,before.entry) and is_same(after.target,before.target) and after.angle==before.angle and after.recoil==before.recoil and after.get("fired_at",-INF)==before.fired_at,"handoff preserves turret identity, target, angle and recoil "+str(slot))
+	scene._process(0.0)
+	check(is_same(scene.enemy_poses[int(remaining_enemy.slot)],old_pose) and old_pose.born==pose_values[0],"legacy zero step does not replay entry")
 	FileAccess.open("res://.runtime/native-scale-result.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"evidence":evidence}))
 	print("NATIVE_SCALE_RESULT ",checks," checks, ",failures," failures")
 	g.begin_retreat();scene.queue_free();await process_frame;await process_frame

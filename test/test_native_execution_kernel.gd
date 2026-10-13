@@ -102,12 +102,78 @@ func hostile_beam_contract()->void:
  k.advance(0.3)
  check(k.metrics().root_attacks==2 and is_equal_approx(k.cooldown_remaining(0),0.3),"second firing cycle uses the same authoritative deadline")
  k.cancel()
+func lifecycle_contract()->void:
+ const STEP=1.0/60.0
+ for final in [false,true]:
+  var d=world(1);d.final_encounter=final;d.enemies[0].hp=5.0
+  var friendly=weapon(1);friendly.remaining=2.0*STEP;friendly.interval=10.0;friendly.repeat_probability=1.0
+  var hostile=weapon(0,true);hostile.damage=1000.0;hostile.speed=3000.0;hostile.interval=10.0
+  d.weapons=[friendly,hostile]
+  var k=core(d);k.advance(STEP);k.advance(STEP)
+  check(k.enemy_views()[0].hp==0.0,"last target actually killed")
+  if final:
+   check(k.metrics().final_cleared and k.player_view().armour==100.0 and k.projectile_views().is_empty(),"final wipe commits before later lethal in-flight hit")
+   check(k.metrics().repeat_queue==0 and k.metrics().ejection_queue==0,"final wipe leaves no delayed births")
+  else:check(not k.metrics().final_cleared and k.player_view().armour==0.0,"normal wave preserves lethal ordinary in-flight hit")
+  k.cancel()
+ var terminal=world(2);terminal.final_encounter=true;terminal.ejection_gap=0.12-STEP
+ terminal.enemies=[actor(100,10000.0,5.0)];terminal.weapons[0].salvo=2;terminal.weapons[0].interval=10.0
+ var last=weapon(1);last.slot=1;last.remaining=0.12;last.interval=10.0;terminal.weapons.append(last)
+ terminal.defences=[{"layer":1,"type":2,"base":100.0,"factor":1.0,"maximum":100.0}]
+ terminal.deferred_interval=0.125;terminal.deferred_duration=0.125;terminal.deferred={1:{"armour":200.0,"shield":0.0}}
+ var committed=core(terminal)
+ for i in 8:committed.advance(STEP)
+ var receipt:Dictionary=committed.export_handoff()
+ check(committed.metrics().final_cleared and committed.player_view().armour==0.0 and not receipt.is_empty(),"later due debt preserves already-committed final completion snapshot")
+ check(committed.commit_handoff(int(receipt.get("revision",-1))),"committed final state can transfer even after later terminal debt")
+ var d=world(0);d.chain_count=1;d.enemies=[actor(100,30.0,5.0),actor(101,100.0,5.0)]
+ var later=weapon(1);later.slot=1;later.remaining=5.0*STEP;later.interval=10.0
+ d.weapons.append(later)
+ var k=core(d)
+ for i in 5:k.advance(STEP)
+ var chain_seen=false
+ for row in k.take_feedback():
+  if int(row.kind)==4:chain_seen=row.target_uid==101 and row.target_position==Vector2(100,0)
+ check(chain_seen and k.enemy_views()[1].hp==0.0,"chain feedback retains event coordinates after target death")
+ k.cancel()
+ for kind in [1,3]:
+  d=world(kind);d.execution_scope="native_low_contract";d.secondary_probability=1.0;d.drop_rules_compiled=true
+  d.enemies=[actor(100,30.0,1e9),actor(101,100.0,5.0)];d.enemies[1].armourType=1
+  d.enemies[1].compiled_drops=[{"resource":1,"chance":1.0,"base":2.0,"amount":2.0}]
+  var g=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false);g.state=BattleGame.State.COMBAT
+  var observed=[];g.event.connect(func(event,info):
+   if event=="enhancement_secondary":observed.append(info))
+  check(g.admit_native_execution(d),"secondary lethal feedback Game admission "+str(kind))
+  g.tick(STEP)
+  check(observed.size()==1 and observed[0].target_uid==101 and observed[0].target==Vector2(100,0),"lethal secondary feedback consumes frozen coordinates "+str(kind))
+  check(g.enemies[1].hp==0.0 and g.drops.size()==1 and g.drops[0].amount==2.0,"secondary death/drop settle exactly once "+str(kind))
+  g.begin_retreat()
+func final_game_contract()->void:
+ const STEP=1.0/60.0
+ var g=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
+ g.profile.loadout.weapons[0].key="cannon";g.invalidate_stat_cache();g.reset_player()
+ g.state=BattleGame.State.COMBAT;g.stage=1;g.group_index=g.db.levels[0].groups.size()
+ var d=world(1);d.execution_scope="native_low_contract";d.final_encounter=true;d.enemies[0].hp=5.0
+ var friendly=weapon(1);friendly.remaining=2.0*STEP;friendly.interval=10.0
+ var hostile=weapon(0,true);hostile.damage=1000.0;hostile.speed=3000.0;hostile.interval=10.0
+ d.weapons=[friendly,hostile]
+ check(g.is_final_encounter() and g.admit_native_execution(d),"Game final encounter admission")
+ g.tick(STEP);g.tick(STEP)
+ check(g.native_execution==null and g.state==BattleGame.State.LEVEL_CLEAR and g.profile.cleared.has(1) and g.player.armour>0,"session commits final clear instead of later enemy-hit retreat")
+ g.begin_retreat()
 func _initialize()->void:call_deferred("run")
 func run()->void:
+ var dll_path="res://bin/space_native.dll";var dll_hash=FileAccess.get_sha256(dll_path)
+ var expected=OS.get_environment("QA_NATIVE_SHA256")
+ if not expected.is_empty():
+  check(GDExtensionManager.is_extension_loaded("res://addons/native_battle/space_native.gdextension") and GDExtensionManager.get_extension("res://addons/native_battle/space_native.gdextension").is_library_open() and dll_hash==expected,"expected rebuilt project native library is loaded")
+ print("NATIVE_LIBRARY_PROOF ",JSON.stringify({"pid":OS.get_process_id(),"path":ProjectSettings.globalize_path(dll_path),"sha256":dll_hash}))
  check(ClassDB.class_exists("SpaceCombatKernel"),"native extension class registered")
  if not ClassDB.class_exists("SpaceCombatKernel"):quit(1);return
  timing_contract()
  hostile_beam_contract()
+ lifecycle_contract()
+ final_game_contract()
  for kind in [0,1,2,3]:
   var d=world(kind);d.enemies[0].x=100.0
   var k=core(d)
