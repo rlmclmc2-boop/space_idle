@@ -79,8 +79,33 @@ func set_visible(key: String) -> void:
 	if key==visible_key:return
 	visible_key=key
 
+# Preflight before shared clock/income changes. Preserve the exact existing
+# visible/hidden and crew-change flush ordering without advancing either RNG.
+func prepare_native_advance(g,dt:float)->bool:
+	if g.native_execution==null or dt<=0 or g.paused:return true
+	for key in regions:
+		var region=regions[key]
+		if not region.state.status in ["exploring","developing"]:continue
+		var count:=crew_count(g,key)
+		var pending:float=elapsed[key]
+		# Ordinary crew commands already transfer before assignment. Defensively
+		# transfer an externally changed nonempty pending crew contract as well.
+		if count!=int(elapsed_crew[key]) and pending>0:return g.native_execution.handoff_to_legacy(g,"galaxy_crew_configuration")
+		if count<=0:continue
+		var visible:bool=key==visible_key
+		var settled:=0.0
+		if visible!=bool(elapsed_visible[key]) and pending>0:
+			settled=pending;pending=0.0
+		pending+=dt
+		if pending>=setting(g,"visible_tick" if visible else "hidden_tick"):settled+=pending
+		# A switch may flush old time and then consume a due new batch. Check
+		# their combined work so the second part cannot cross an unseen boundary.
+		if region.revision_due(settled,count):return g.native_execution.handoff_to_legacy(g,"galaxy_configuration")
+	return true
+
 func advance(g, dt: float) -> void:
 	if dt<=0 or g.paused or regions.is_empty():return
+	if not prepare_native_advance(g,dt):return
 	# Unlock checks run at the same bounded online cadence, never from UI reads.
 	income_elapsed+=dt
 	if income_elapsed>=setting(g,"income_interval"):
@@ -97,23 +122,25 @@ func advance(g, dt: float) -> void:
 		var region=regions[key]
 		if not region.state.status in ["exploring","developing"]:continue
 		var count := crew_count(g,key)
-		if count!=int(elapsed_crew[key]):flush_pending(g,key)
+		if count!=int(elapsed_crew[key]) and not flush_pending(g,key):return
 		elapsed_crew[key]=count
 		if count<=0:continue
 		var visible: bool=key==visible_key
 		# A visibility switch cannot replay hidden time through per-ship logic.
 		if visible!=bool(elapsed_visible[key]) and float(elapsed[key])>0:
-			advance_region(g,key,float(elapsed[key]),bool(elapsed_visible[key]) and visible)
+			if not advance_region(g,key,float(elapsed[key]),bool(elapsed_visible[key]) and visible):return
 			elapsed[key]=0.0
 		elapsed_visible[key]=visible
 		elapsed[key]+=dt
 		var interval := setting(g,"visible_tick" if visible else "hidden_tick")
 		if elapsed[key]<interval:continue
-		advance_region(g,key,float(elapsed[key]),visible)
+		if not advance_region(g,key,float(elapsed[key]),visible):return
 		elapsed[key]=0.0
 
-func advance_region(g, key: String, dt: float, visible: bool) -> void:
+func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 	var region=regions[key]
+	if g.native_execution!=null and region.revision_due(dt,int(elapsed_crew[key])):
+		if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return false
 	var before := int(region.building_revision)
 	g.capture_refit_health()
 	region.advance(dt,int(elapsed_crew[key]),visible)
@@ -126,12 +153,14 @@ func advance_region(g, key: String, dt: float, visible: bool) -> void:
 	g.save_dirty=true
 	g.event.emit("galaxy_changed",{"key":key})
 	if region.state.status=="complete":refresh_unlocks(g)
+	return true
 
-func flush_pending(g, key: String) -> void:
-	if not regions.has(key) or float(elapsed.get(key,0))<=0:return
+func flush_pending(g, key: String) -> bool:
+	if not regions.has(key) or float(elapsed.get(key,0))<=0:return true
 	# Settle only time already earned, using the crew present during that time.
-	advance_region(g,key,float(elapsed[key]),false)
+	if not advance_region(g,key,float(elapsed[key]),false):return false
 	elapsed[key]=0.0
+	return true
 
 func save_data() -> Dictionary:
 	var result := {}

@@ -47,11 +47,7 @@ func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 	for key in totals.legendary:
 		if key not in ["scatter_pulse","prism_tower"]:return {"error":"unsupported_legendary:"+str(key)}
 	if not g.drone_combat.delayed.is_empty() or not g.drone_combat.disabled.is_empty() or g.drone_combat.black_hole_remaining>0:return {"error":"unsupported_pending_drone_state"}
-	for key in g.galaxy.regions:
-		var region=g.galaxy.regions[key]
-		if region.state.status in ["exploring","developing"]:
-			for member in g.profile.crew:
-				if member.assignmentType=="galaxy_explore" and str(member.targetId)==str(key) and g.crew.active(g,member):return {"error":"unsupported_autonomous_galaxy_configuration"}
+	# Galaxy progression preflights its first refit boundary before mutation.
 	var enemies:Array=[];var weapons:Array=[];var defence:Array=[]
 	var growth=0.0;var defence_growth=0.0;var effect_level=0.0
 	for enemy in g.enemies:

@@ -2841,6 +2841,11 @@ func tick(dt: float) -> void:
 	# kernel.clock, so restore the captured step endpoint rather than adding twice.
 	var motion_step_end:=float(get("motion_clock"))+(dt if native_at_entry!=null else 0.0) if "motion_clock" in self else 0.0
 	native_step_phase="shared";native_step_remaining=dt
+	# A galaxy refit must transfer before this step changes clocks, income or
+	# region work. Failed preparation leaves the complete step in the caller.
+	if not galaxy.prepare_native_advance(self,dt):
+		native_step_phase="blocked";paused=true
+		return
 	advance_shared_clock_and_economy(dt)
 	if native_execution!=null and native_execution.paused_by_configuration:
 		native_execution.handoff_to_legacy(self,"configuration_notification")

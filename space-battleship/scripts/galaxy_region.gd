@@ -222,6 +222,30 @@ func select_upgrades() -> Array:
 		active.append(slot)
 		building_revision+=1
 	return active
+# Read-only first-boundary check. Before the first revision, only work/time can
+# change; no random choice, map paint or refit is needed to locate that boundary.
+func revision_due(elapsed: float, crew_count: int) -> bool:
+	if elapsed<=0 or crew_count<=0 or not state.status in ["exploring","developing"]:return false
+	var construction := slots.filter(func(slot):return slot.status=="constructing")
+	if construction.is_empty() and occupied_count<slots.size():
+		if float(state.build_elapsed)+elapsed+0.0000001<float(row.build_interval):return false
+		# advance() stops if no eligible next building exists.
+		return slots.any(func(slot):return slot.status=="empty" and slot_unlocked(slot) and builds.has(slot.type))
+	var developing:bool=state.status=="developing" or progress()>=1
+	var upgrading := slots.filter(func(slot):return slot.status=="upgrading") if developing else []
+	if developing and upgrading.size()<int(row.concurrent_upgrade_count) and slots.any(func(slot):return slot.status=="active" and slot.level<int(builds[slot.type].max_lv)):return true
+	var power:=float(row.explore_power_base)+crew_count*float(row.explore_power_per_crew)
+	if not construction.is_empty():
+		var current:Dictionary=construction[0]
+		var work_left:=maxf(0.0,work_cost()-float(current.work))
+		if work_left<=0.0000001 or power>0:
+			var work_time:=work_left/power if work_left>0.0000001 else 0.0
+			if work_time+float(current.construction)<=elapsed+0.0000001:return true
+	var share:float=(float(row.upgrade_power_base)+crew_count*float(row.upgrade_power_per_crew))/maxi(1,upgrading.size())
+	for slot in upgrading:
+		if share>0 and upgrade_cost(slot)-float(slot.upgrade_progress)<=share*elapsed+0.0000001:return true
+	return false
+
 func advance(elapsed: float, crew_count: int, _visible: bool=false) -> void:
 	if elapsed<=0 or crew_count<=0 or not state.status in ["exploring","developing"]:return
 	var remaining := elapsed
