@@ -41,10 +41,23 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 	var front:=maxf(top,player_front-host.BATTLE_VIEW_SIZE.y*clampf(gap,0.0,1.0)-model_width*1.6)
 	if explicit or host.game.enemies.size()<10:front=minf(front,host.BATTLE_VIEW_SIZE.y*maximum)
 	front=maxf(top,front)
+	var fixed_rows:bool=not explicit and enemy.get("size_formation",false) and int(enemy.get("formation_count",0))>5
+	if fixed_rows:front=host.BATTLE_VIEW_SIZE.y*0.52
 	layout={"revision":host.fixed_layout_revision,"width":model_width,"top":top,"frontline":front,"scale":scale_value,"variance":pose.variance,"size":enemy.size}
 	pose.fixed_layout=layout
 	if not pose.get("fixed_target_initialized",false):
-		# Source coordinates already own explicit and size-sorted formations.
+		# Keep row membership, but author equal display spacing independently of
+		# the nonlinear combat projection. Compute once, never fit ship outlines.
+		if fixed_rows:
+			var source_rows:Array=[]
+			for member in host.game.enemies:
+				var source_y:float=float(member.y)
+				if not source_rows.has(source_y):source_rows.append(source_y)
+			source_rows.sort()
+			var row:int=source_rows.find(float(enemy.y))
+			var pitch:float=minf(196.0,(front-110.0)/maxi(1,source_rows.size()-1))
+			pose.target.y=110.0+maxi(0,row)*pitch
+		# Explicit layouts retain their authored coordinates.
 		# Legacy dense slots receive evenly spaced fixed rows once at birth.
 		if not explicit and not enemy.get("size_formation",false) and host.game.enemies.size()>=10:
 			var columns:=maxi(1,int(enemy.get("formation_columns",5)))
