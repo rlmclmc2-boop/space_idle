@@ -2181,6 +2181,7 @@ func targets(damage_type: int = 0) -> Array[Dictionary]:
 	var alive: Array[Dictionary] = []
 	for e in enemies:
 		if e.hp > 0:
+			if damage_type!=0 and not settle_enemy_shield(e,enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time):return []
 			alive.append(e)
 	var resistance:Dictionary={}
 	if compiled_combat_rules!=null and damage_type!=0:
@@ -2205,7 +2206,7 @@ func has_alive_enemy() -> bool:
 	return false
 
 func enemy_resistance_type(enemy: Dictionary) -> int:
-	settle_enemy_shield(enemy,enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
+	if not settle_enemy_shield(enemy,enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time):return -1
 	return int(enemy.get("shieldType",0)) if N.compare(enemy.get("shield",0),0)>0 else int(enemy.armourType)
 
 func reduced_damage(raw, type: int, resistance: int) -> Variant:
@@ -2386,6 +2387,9 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 	# Flying rounds and asynchronous chain hops hit at the step boundary. Beam
 	# periods can precede it, so merge periods across mounts before those hits.
 	var hits: Array[Dictionary] = []
+	var previous_query_time:=enemy_shield_hit_time
+	# Rebinding happens at step start, before any scheduled period in this step.
+	enemy_shield_hit_time=enemy_shield_time-dt
 	for index in pending.size():
 		var shot: Dictionary = pending[index]
 		if not shot.get("beam",false) or not projectiles.has(shot):continue
@@ -2395,6 +2399,7 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 			var due := float(shot.next_hit_at)
 			hits.append({"at":enemy_shield_time-float(shot.elapsed)+due,"due":due,"index":index,"shot":shot})
 			shot.next_hit_at=due+float(weapon.cd)
+	enemy_shield_hit_time=previous_query_time
 	hits.sort_custom(func(a,b):return a.index<b.index if a.at==b.at else a.at<b.at)
 	for item in hits:
 		var shot: Dictionary = item.shot
@@ -2461,6 +2466,9 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		push_error("legacy executor called during native ownership");return
 	if enemy.hp <= 0:
 		return
+	var hit_time:=enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time
+	# Reject a future ledger before rolls, buffs, counters or damage can mutate.
+	if not settle_enemy_shield(enemy,hit_time):return
 	if context.is_empty():
 		main_attack_serial+=1;context=CombatContext.root(main_attack_serial,"direct","")
 	if drone_combat.absorb(self,raw,false):return
@@ -2479,10 +2487,8 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	var absorbed = 0.0
 	if float(enemy.get("max_shield",0))>0:
 		incoming=N.maximum(1,incoming)
-		var at := maxf(float(enemy.get("shield_updated_at",enemy_shield_time)),enemy_shield_time if enemy_shield_hit_time<0 else enemy_shield_hit_time)
-		settle_enemy_shield(enemy,at)
 		# A periodic beam hit is a hit, even though the whole beam is one attack.
-		enemy.shield_hit_at=at
+		enemy.shield_hit_at=hit_time
 		if N.compare(enemy.get("shield",0),0)>0:
 			var factor := 1.0-resistance if type==int(enemy.get("shieldType",0)) else 1.0
 			absorbed=N.minimum(enemy.shield,N.maximum(1,N.multiply(incoming,factor)))
@@ -2788,15 +2794,20 @@ func weapon_cooldown_after_shot(_remaining_before: float, _dt: float, interval: 
 	# Every multiplier uses the same fixed-step attack schedule as X1.
 	return interval
 
-func settle_enemy_shield(enemy: Dictionary, at: float) -> void:
-	if native_execution!=null:return
-	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return
+func settle_enemy_shield(enemy: Dictionary, at: float) -> bool:
+	if native_execution!=null:return true
+	if float(enemy.hp)<=0 or float(enemy.get("max_shield",0))<=0:return true
 	var before := float(enemy.get("shield_updated_at",at))
+	if at+0.000000001<before:
+		push_error("ENEMY_SHIELD_TIME_CONTRACT uid=%s event=%s ledger=%s"%[enemy.get("uid",-1),at,before])
+		return false
+	if at<=before:return true
 	var ready_at := float(enemy.get("shield_hit_at",at))+float(enemy.get("shieldDelay",0))
 	var healing_time := maxf(0,at-ready_at)-maxf(0,before-ready_at)
 	if healing_time>0:
 		enemy.shield=N.minimum(enemy.max_shield,N.add(enemy.shield,N.multiply(enemy.max_shield,float(enemy.get("shieldRecovery",0))*healing_time)))
 	enemy.shield_updated_at=at
+	return true
 
 func advance_enemy_shields(dt: float) -> void:
 	enemy_shield_time+=dt
