@@ -1,0 +1,68 @@
+{
+  "decision": "Retain after one A/B/A: >1ms full-frame gain against both identical-DLL controls. Stop this direction.",
+  "baseline": "d298e4cb",
+  "candidate": "6f270683",
+  "cause": "after_tick ends the read model; final display recomputes settled enemy positions at the same fx_time.",
+  "change": "Extend existing steady-position exact-input publication across this boundary. Full existing key still validates time, logical location, pose, appearance, formation, visual configuration and screen scale. Entry and cold queries keep the original solve. No new independent position authority.",
+  "diagnostic_only": {
+    "frames": 96,
+    "source_position_calls_per_frame": 53.4375,
+    "source_position_inclusive_ms_per_frame": 4.69504,
+    "clearance_calls_per_frame": 106.875,
+    "clearance_inclusive_ms_per_frame": 3.95322,
+    "note": "Instrumented nested times, not acceptance results. About 15 extra final-display calls per frame; 1.32ms is proportional potential, not measured exclusive savings. Five wrappers time source position, clearance, recognition mounts, width_at_y, geometry descriptor."
+  },
+  "samples": {
+    "A1": {
+      "whole_ms": 37.986056603773584,
+      "busy_ms": 37.920264150943396,
+      "steps": 241,
+      "fires": 1751,
+      "hits": 6540,
+      "hits_per_step": 27.136929460580912,
+      "mean_projectiles": 364.24528301886795,
+      "mean_floats": 11.19811320754717,
+      "logic_hz": 59.8527572501309,
+      "purchases": 48,
+      "handoffs": 0
+    },
+    "B": {
+      "whole_ms": 35.97038738738739,
+      "busy_ms": 35.90792792792793,
+      "steps": 240,
+      "fires": 1750,
+      "hits": 6528,
+      "hits_per_step": 27.2,
+      "mean_projectiles": 365.6936936936937,
+      "mean_floats": 11.288288288288289,
+      "logic_hz": 60.1092033952684,
+      "purchases": 48,
+      "handoffs": 0
+    },
+    "A2": {
+      "whole_ms": 37.17598148148148,
+      "busy_ms": 37.111509259259265,
+      "steps": 242,
+      "fires": 1769,
+      "hits": 6572,
+      "hits_per_step": 27.15702479338843,
+      "mean_projectiles": 364.24074074074076,
+      "mean_floats": 11.037037037037036,
+      "logic_hz": 60.2735973001413,
+      "purchases": 48,
+      "handoffs": 0
+    }
+  },
+  "baseline_mean_minus_B_ms": 1.610631655240141,
+  "control_drift_ms": -0.8100751222921048,
+  "checks": 136,
+  "failures": 0,
+  "visual_evidence_local_only": "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\astra-direct-steady-position-B.png",
+  "visual_sha256": "c3814cea454f63fd0d9786e446bd150268794ea718123b5094defcd2dffea75a",
+  "limits": [
+    "One A/B/A is not a long-term or percentile guarantee.",
+    "Do not add gains across independently timed rounds or compare their absolute means as controlled regressions.",
+    "High-load <10ms goal remains unmet. No engine rebuild; accessibility Disabled=2.",
+    "PNG remains local per upload scope; ordinary projectile/hit fluctuation is reported, not treated as equal-load benefit."
+  ]
+}
