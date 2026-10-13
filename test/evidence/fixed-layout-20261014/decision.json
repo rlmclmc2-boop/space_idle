@@ -1,0 +1,143 @@
+{
+  "decision": "Performance criterion met against both controls; retain candidate for parent visual/code acceptance. No further microtuning in this direction.",
+  "baseline": "52d8e727",
+  "candidate": "4e9bbaf3",
+  "production_commits": [
+    "b36623b6",
+    "4e9bbaf3"
+  ],
+  "test_commit": "74d2b835 plus lifecycle assertions in 4e9bbaf3",
+  "change": "Fixed model width and initialized formation bounds replace depth scaling, iterative top-envelope fitting, and per-query complete position keys. Current revision includes boundary configuration/member checks; none of their cost is removed from these samples.",
+  "samples": {
+    "A1": {
+      "sample_steps": 242,
+      "fires": 1769,
+      "hits": 6572,
+      "purchases": 48,
+      "handoffs": 0,
+      "logic_hz": 59.996881153864,
+      "render_hz": 29.7505195804284,
+      "actual_1x_pass": true,
+      "whole_ms": 33.61269166666666,
+      "frames": 120,
+      "mean_projectiles": 364.125,
+      "mean_floats": 10.975,
+      "hits_per_step": 27.15702479338843,
+      "fires_per_step": 7.309917355371901,
+      "phase_ms": {
+        "_draw_muzzle_cues_us": 1.1190333333333333,
+        "advance_game_time_us": 15.894208333333333,
+        "draw_battle_foreground_us": 3.3992916666666666,
+        "draw_battle_us": 2.5812083333333335,
+        "main_process_us": 20.305383333333335
+      }
+    },
+    "B": {
+      "sample_steps": 240,
+      "fires": 1751,
+      "hits": 6522,
+      "purchases": 48,
+      "handoffs": 0,
+      "logic_hz": 59.9807611708545,
+      "render_hz": 36.4882963789365,
+      "actual_1x_pass": true,
+      "whole_ms": 27.40591780821918,
+      "frames": 146,
+      "mean_projectiles": 358.82876712328766,
+      "mean_floats": 10.45890410958904,
+      "hits_per_step": 27.175,
+      "fires_per_step": 7.295833333333333,
+      "phase_ms": {
+        "_draw_muzzle_cues_us": 1.1317534246575343,
+        "advance_game_time_us": 10.665349315068493,
+        "draw_battle_foreground_us": 3.366821917808219,
+        "draw_battle_us": 2.4938835616438353,
+        "main_process_us": 15.006054794520548
+      }
+    },
+    "A2": {
+      "sample_steps": 241,
+      "fires": 1751,
+      "hits": 6540,
+      "purchases": 48,
+      "handoffs": 0,
+      "logic_hz": 60.3224623579074,
+      "render_hz": 25.2803680421106,
+      "actual_1x_pass": true,
+      "whole_ms": 39.55619801980198,
+      "frames": 101,
+      "mean_projectiles": 363.66336633663366,
+      "mean_floats": 11.049504950495049,
+      "hits_per_step": 27.136929460580912,
+      "fires_per_step": 7.265560165975104,
+      "phase_ms": {
+        "_draw_muzzle_cues_us": 1.1956534653465347,
+        "advance_game_time_us": 20.08491089108911,
+        "draw_battle_foreground_us": 3.6630198019801976,
+        "draw_battle_us": 2.8641386138613862,
+        "main_process_us": 24.989831683168315
+      }
+    }
+  },
+  "gain_against_A1_ms": 6.206773858447484,
+  "gain_against_A2_ms": 12.150280211582803,
+  "control_drift_ms": 5.943506353135319,
+  "checks": {
+    "native_geometry_scale": 167,
+    "failures": 0,
+    "verified_hits": 2294,
+    "outside_hull_hits": 0,
+    "aim_thefts": 0,
+    "primary_target_mismatches": 0,
+    "invalid_straight_retirements": 0,
+    "input_check": {
+      "default_max_fps": 60,
+      "logical_steps_while_paused": 0,
+      "pause_input": true,
+      "paused_render_frames": 3,
+      "resume_input": true
+    }
+  },
+  "visual_evidence_local_only": [
+    {
+      "path": "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\astra-direct-fixed-layout-B.png",
+      "sha256": "baaca82fe7bfbb2533858b1c99dc0f449c2d62ae1334bba42742ce21f55a8a76"
+    },
+    {
+      "path": "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\clean-flight-00.png",
+      "sha256": "93cee7b83d2a022d9d2f16d0b1615ab348313ab8555288cd56b35418c6a1de6a"
+    },
+    {
+      "path": "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\clean-flight-11.png",
+      "sha256": "a582d454107b7ae18e4fad0e7a761fe48602037f8a231f3dc1c7996b7d38680d"
+    }
+  ],
+  "visual_tradeoff": "All 15 ships and weapon effects remain. Ship widths are constant across depth; the first two rows have closer protection outlines than the baseline, with small tip overlap visible in the captured frame. Hulls remain individually readable. Parent should assess this fixed-layout tradeoff; if spacing is rejected, adjust authored model dimensions/spacing, not dynamic collision compensation.",
+  "post_sample_render_timing": {
+    "root": {
+      "cpu_ms": 2.8026097562254932,
+      "gpu_ms": 0.44795121870389804
+    },
+    "ship": {
+      "cpu_ms": 0.7978902459144592,
+      "gpu_ms": 2.722628049734162
+    }
+  },
+  "post_sample_render_note": "Collected only after the clean performance window during hit checks; not directly comparable to clean frame timing.",
+  "source_sha256": {
+    "enemy_fixed_layout.gd": "9ff4620be51132d5ee9d8cca9c45a28376e664da136312d048ced8062659770a",
+    "simulation_geometry_authority.gd": "bf6da0f0483ae8e3d5fc1268245b029a031158bd9a7af693d490ad7edba159f7",
+    "battle_slice_runtime.gd": "278113f8e1cd0007dbbc86fefdb939d6304582625dead51e515ee024567af0a9",
+    "battle_read_model.gd": "7f3b86888026e695a31b9c9a051b758df6d1b904e527e799632dd12795d5b3c0",
+    "main.gd": "10711ef4a71cac6c10095cbadd16c27719b421a9055db88fb3adfc6720eab1f0"
+  },
+  "limits": [
+    "Large control drift (5.944ms); neither 12.150ms nor the midpoint is a stable gain guarantee. Single completed A/B/A.",
+    "Earlier A1/B run was interrupted for parent-reviewed lifecycle correction before A2; excluded from acceptance.",
+    "Geometry changes alter contact timing and instantaneous projectile/floating-text population; counters are reported, not represented as exactly equal workload.",
+    "Raw B: 240 steps, 1751 launches, 6522 hits, 48 purchases, 0 handoffs; firing and damage rules, projectile cap and fixed logic rate unchanged.",
+    "167 focused checks cover six size classes, explicit layouts, actual viewport changes, pause/zero-step config edits, frozen deaths, retirement and atomic handoff/new identity.",
+    "No engine or native DLL build. Accessibility Disabled=2. PNG remains local; no Library.",
+    "High-load <10ms target remains unmet."
+  ]
+}
