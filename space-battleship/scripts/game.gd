@@ -2832,7 +2832,14 @@ func advance_enemy_shields(dt: float) -> void:
 
 func tick(dt: float) -> void:
 	if paused:return
+	if native_execution!=null and native_execution.advance_blocked:
+		paused=true
+		push_error("Native combat step remains blocked pending explicit cancellation or successful transfer")
+		return
 	var native_at_entry=native_execution
+	# Presented.tick already advanced motion on a legacy entry. Handoff restores
+	# kernel.clock, so restore the captured step endpoint rather than adding twice.
+	var motion_step_end:=float(get("motion_clock"))+(dt if native_at_entry!=null else 0.0) if "motion_clock" in self else 0.0
 	native_step_phase="shared";native_step_remaining=dt
 	advance_shared_clock_and_economy(dt)
 	if native_execution!=null and native_execution.paused_by_configuration:
@@ -2840,7 +2847,7 @@ func tick(dt: float) -> void:
 	# Presented.tick advanced this clock itself on a legacy entry. If a shared
 	# callback handed off a native entry, only its unexecuted combat phase remains.
 	if native_at_entry!=null and native_execution==null and native_step_remaining>0 and "motion_clock" in self:
-		set("motion_clock",float(get("motion_clock"))+native_step_remaining)
+		set("motion_clock",motion_step_end)
 
 	if native_wave_waiting and state==State.COMBAT:
 		if not advance_jewel_repair(dt):return
@@ -2855,8 +2862,10 @@ func tick(dt: float) -> void:
 		if native_execution.advance(self,dt):
 			native_step_phase="idle";native_step_remaining=0.0
 			return
-		# The kernel rejected before consuming combat; shared economy already ran.
-		if "motion_clock" in self:set("motion_clock",float(get("motion_clock"))+native_step_remaining)
+		# A failed transfer retains the owner and the unconsumed combat phase.
+		if native_execution!=null:return
+		# Successful transfer resumes only combat; shared economy already ran.
+		if "motion_clock" in self:set("motion_clock",motion_step_end)
 	if state == State.LEVEL_CLEAR:
 		if not advance_jewel_repair(dt):return
 		if state!=State.LEVEL_CLEAR:return

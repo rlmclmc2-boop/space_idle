@@ -11,6 +11,7 @@ var production_seconds:=0.0
 var ticks:=0
 var feedback_rows:=0
 var handed_off:=false
+var advance_blocked:=false
 
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
@@ -73,8 +74,9 @@ func advance(game:RefCounted,dt:float)->bool:
 	if kernel==null:return false
 	if not kernel.advance(dt):
 		if not handoff_to_legacy(game,"numeric_range"):
+			advance_blocked=true;game.paused=true;game.native_step_phase="blocked"
 			push_error("Native numeric boundary could not transfer its untouched combat step")
-			return true
+			return false
 		return false
 	game.native_step_phase="native_done";game.native_step_remaining=0.0
 	production_seconds+=dt

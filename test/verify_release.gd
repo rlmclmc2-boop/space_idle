@@ -4,6 +4,10 @@ var failures: Array[String] = []
 var native_admitted:=false
 var native_sha256:=""
 var native_path:=""
+var default_native_auto:=false
+var default_compiled:=false
+var default_cache:=false
+var default_save:=false
 
 func check(ok: bool, message: String) -> void:
 	if not ok:
@@ -32,7 +36,10 @@ func verify() -> void:
 	root.add_child(main)
 	get_tree().current_scene = main
 	check(ClassDB.class_exists("SpaceCombatKernel"),"Native kernel class missing from release")
-	check(main.game.native_execution_auto and main.game.compiled_combat_rules!=null,"Normal entry must enable native and compiled rules")
+	default_native_auto=main.game.native_execution_auto;default_compiled=main.game.compiled_combat_rules!=null
+	default_cache=main.game.stat_cache_enabled;default_save=main.game.save_enabled
+	check(default_native_auto and default_compiled,"Normal entry must enable native and compiled rules")
+	check(default_cache and default_save,"Normal entry must enable statistics cache and persistence")
 	for relative in ["space_native.dll","bin/space_native.dll"]:
 		var path=OS.get_executable_path().get_base_dir().path_join(relative)
 		if FileAccess.file_exists(path):native_path=path;native_sha256=FileAccess.get_sha256(path)
@@ -94,7 +101,7 @@ func verify() -> void:
 func finish() -> void:
 	var report := {"passed": failures.is_empty(), "failures": failures,
 		"executable": OS.get_executable_path(), "user_data": OS.get_user_data_dir(),
-		"renderer": RenderingServer.get_video_adapter_name(),"native_admitted":native_admitted,"native_sha256":native_sha256,"native_path":native_path}
+		"renderer": RenderingServer.get_video_adapter_name(),"native_admitted":native_admitted,"native_sha256":native_sha256,"native_path":native_path,"default_native_auto":default_native_auto,"default_compiled":default_compiled,"default_cache":default_cache,"default_save":default_save}
 	var file := FileAccess.open("user://release-verification.json", FileAccess.WRITE)
 	if file == null:
 		get_tree().quit(2)

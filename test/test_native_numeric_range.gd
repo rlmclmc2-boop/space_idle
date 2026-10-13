@@ -74,5 +74,13 @@ func run()->void:
 	check(g.native_execution==null and g.native_handoff_count==1,"numeric growth transfers whole encounter before combat")
 	check(g.shared_calls==shared_before+1 and is_equal_approx(g.enemy_shield_time-before_clock,1.0/60.0) and g.native_step_remaining==0.0,"fallback consumes shared economy and combat step exactly once")
 	g.begin_retreat()
+	var cold=SharedObservedGame.new(ShipDatabase.new(),false);cold.profile.unlocked=BattleGame.EQUIPMENT.duplicate();cold.profile.loadout.defence=[{"key":"armour","level":1},{"key":"shield","level":1}]
+	cold.stat_cache_enabled=true;cold.invalidate_stat_cache();cold.save_enabled=false;cold.reset_player();cold.state=BattleGame.State.COMBAT
+	cold.enemies.assign([{"uid":100,"slot":0,"x":286.0,"y":100.0,"hp":1e8,"max_hp":1e8,"armourType":2,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
+	cold.profile.enhancementAttacks=9007199254740990;cold.native_execution_requested=true;cold.native_execution_scope="native_low_contract";cold.motion_clock=100.0
+	cold.tick(1.0/60.0)
+	check(cold.native_execution==null and cold.native_handoff_count==1,"cold admission can safely reject its first combat step")
+	check(is_equal_approx(cold.motion_clock,100.0+1.0/60.0) and cold.shared_calls==1 and is_equal_approx(cold.enemy_shield_time,1.0/60.0),"legacy-entry cold fallback restores already advanced endpoint without double clock/shared work")
+	cold.begin_retreat()
 	print("NATIVE_NUMERIC_RANGE_CHECKS ",checks," FAILURES ",failures)
 	quit(0 if failures==0 else 1)

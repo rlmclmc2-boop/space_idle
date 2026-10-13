@@ -488,6 +488,7 @@ func advance_game_time(seconds: float) -> void:
 			battle_slice_runtime.advance(0.0);return
 		before_logical_game_tick(STEP)
 		game.tick(STEP)
+		if game.native_step_phase=="blocked":return
 		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
 
 func uses_logical_battle_pose() -> bool:

@@ -70,7 +70,11 @@ func advance(seconds:float)->void:
 		scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 		scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
 		if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
-		game.tick(STEP);geometry.after_tick()
+		game.tick(STEP)
+		if game.native_step_phase=="blocked":
+			advancing=false;scene.game_time_remainder=remainder
+			return
+		geometry.after_tick()
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
 		if detach_requested:
 			advancing=false

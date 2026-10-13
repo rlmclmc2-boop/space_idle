@@ -258,7 +258,9 @@ try {
     Stage 'Launch normal game entry point'
     Remove-Work $verifyDir
     $savePath = Join-Path $run 'user/roaming/SpaceBattleship/progress.json'
-    Remove-Item -LiteralPath (Assert-InWork $savePath)
+    # The verifier proved an explicit save. Normal launch must load it; the
+    # product saves only on its real-time deadline or an explicit user action.
+    if (!(Test-Path -LiteralPath $savePath)) { throw 'Verified explicit save missing before normal launch' }
     $frames = Join-Path $run 'final-exe-frames'
     New-Item -ItemType Directory -Path $frames | Out-Null
     # Movie Maker retains active Ogg playback on shutdown. Capture visuals with
@@ -268,8 +270,8 @@ try {
     try {
         $null = Run $candidate @('--write-movie',(Join-Path $frames 'frame.png'),'--fixed-fps','30','--quit-after','3') (Join-Path $run 'empty-cwd') 'normal-launch' 60 -isolated
     } finally { Remove-Item -LiteralPath $musicSettings -Force }
-    if (!(Test-Path -LiteralPath $savePath) -or @(Get-ChildItem -LiteralPath $frames -Filter '*.png').Count -eq 0) {
-        throw "Final EXE failed to create its own save or rendered frames: $savePath ; $frames"
+    if (@(Get-ChildItem -LiteralPath $frames -Filter '*.png').Count -eq 0) {
+        throw "Final ZIP executable failed to render independent frames: $frames"
     }
     $null = Run $candidate @('--verbose','--quit-after','90') (Join-Path $run 'empty-cwd') 'normal-relaunch' 60 -isolated
     Stage 'Publish verified release'
