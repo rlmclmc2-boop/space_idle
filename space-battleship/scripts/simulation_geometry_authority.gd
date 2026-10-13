@@ -3,6 +3,7 @@ extends RefCounted
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
 var game:BattleGame
 var db:ShipDatabase
+var fleet_angles_dirty := true
 var fleet_pose
 var player_anchor=Vector2.ZERO
 var screen_scale=1.0
@@ -696,6 +697,7 @@ func prepare(owner,simulation:BattleGame)->void:
 		fleet_pose.carriers[index].transform=owner.ship_view.carriers[index].transform
 		fleet_pose.carriers[index].euler=owner.ship_view.carriers[index].rotation
 	for index in fleet_pose.drones.size():fleet_pose.drones[index].transform=owner.hyperspace_visual.nodes[index].transform
+	fleet_pose.invalidate_pose()
 	battle_read_model.setup(self)
 	prepared=true
 
@@ -773,11 +775,10 @@ func before_tick(dt:float)->void:
 	sync_hull()
 	fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
 	demo_time+=dt
-	var aim:Vector2=player_render_position()+Vector2(0,-450)
-	if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
-	fleet_pose.pose(player_render_position(),reference_height,0.0,aim,demo_time,false,dt)
+	fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,dt)
 	fx_time+=dt
 	advance_turrets(dt)
+	sync_fleet_angles()
 	canonical_generation+=1
 
 func finish_display_boundary()->void:
@@ -805,13 +806,25 @@ func target_point(target:Dictionary)->Vector2:
 	var result=battle_logical_point(entity_render_position(target))
 	enemy_provider_query_active=previous
 	return result
-func launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
-	var angles=[]
+func sync_fleet_angles()->void:
+	var angles:Array=[]
 	for index in game.weapon_entries().size():angles.append(turret_angle(index))
 	fleet_pose.set_slot_angles(angles)
+	fleet_angles_dirty=false
+
+func ensure_fleet_geometry()->void:
+	if fleet_pose.configuration_dirty:
+		fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+		fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,0.0)
+		fleet_angles_dirty=true
+	if fleet_angles_dirty:sync_fleet_angles()
+
+func launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
+	ensure_fleet_geometry()
 	var point:Vector2=battle_logical_point(fleet_pose.screen_muzzle_for_slot(slot,ordinal))
 	return {"position":point,"direction":(aim-point).normalized()}
 func drone_launch_pose(identity:String,aim:Vector2,ordinal:int)->Dictionary:
+	ensure_fleet_geometry()
 	var point:Vector2=battle_logical_point(fleet_pose.screen_muzzle_for_drone(identity,ordinal))
 	return {"position":point,"direction":(aim-point).normalized()}
 func rail_geometry(shot:Dictionary)->Dictionary:
@@ -828,6 +841,7 @@ func on_simulation_event(kind:String,info:Dictionary)->void:
 		battle_read_model.invalidate_membership()
 		enemy_entry_distance_time=-INF
 		fleet_pose.configuration_dirty=true
+		fleet_angles_dirty=true
 	if kind in ["fire","beam_started"] and info.has("shot"):
 		var shot:Dictionary=info.shot
 		var mount=shot_mount(shot)
@@ -908,14 +922,7 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	var result={"player_position":player_render_position(),"enemies":values,"shapes":pending_display_shapes}
 	pending_display_shapes=[]
 	if with_fleet:
-		if fleet_pose.configuration_dirty:
-			fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
-			var aim:Vector2=player_render_position()+Vector2(0,-450)
-			if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
-			fleet_pose.pose(player_render_position(),reference_height,0.0,aim,demo_time,false,0.0)
-		var angles:Array=[]
-		for index in game.weapon_entries().size():angles.append(turret_angle(index))
-		fleet_pose.set_slot_angles(angles)
+		ensure_fleet_geometry()
 		var pivots:Array=[];var carriers:Array=[];var drones:Dictionary={}
 		for module in fleet_pose.modules:pivots.append({"slot":int(module.assignment.slot),"transform":module.pivot})
 		for carrier in fleet_pose.carriers:carriers.append(carrier.transform)
