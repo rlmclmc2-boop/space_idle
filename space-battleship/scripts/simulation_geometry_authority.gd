@@ -547,10 +547,10 @@ func _source_enemy_render_position(enemy: Dictionary) -> Vector2:
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var position_key:Array=[]
 	# Ordinary pose queries and cold drawing keep their cheaper local paths.
-	# Guidance opts in explicitly; other logic needs a busy projectile scene.
+	# Busy logic publishes the existing exact-input key for final display reuse.
 	# Drawing only checks a solved position from this exact logical pose time.
-	# Do not construct the full key for a cold/sparse draw; keep its old path.
-	var reuse_steady:=not (battle_read_model_enabled and battle_read_model.ready()) and enemy_entry_batch_active and enter==1.0 and ((not battle_draw_active and (enemy_provider_query_active or game.projectiles.size()>=32)) or (battle_draw_active and float(pose.get("steady_position_time",-INF))==fx_time))
+	# A cold/sparse query without a publication keeps its original path.
+	var reuse_steady:=enter==1.0 and ((enemy_entry_batch_active and not battle_draw_active and (enemy_provider_query_active or game.projectiles.size()>=32)) or float(pose.get("steady_position_time",-INF))==fx_time)
 	if reuse_steady:
 		position_key=enemy_steady_position_key(enemy,pose)
 		if pose.get("steady_position_key",[])==position_key:

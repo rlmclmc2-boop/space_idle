@@ -80,6 +80,21 @@ func rail_charge_contract(scene)->void:
 	check(fires[0]>=2 and seen[0] and seen[1] and upgraded,"player rail charge rises in two actual firing cycles")
 	check(enemy_seen,"enemy rail charge reads its native root deadline")
 	g.event.disconnect(watcher)
+func steady_position_publication(geometry,g)->void:
+	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
+	pose.born=geometry.fx_time-2.0
+	for key in ["unchanged","target","rotation","phase","variance","logical_position","entry_x","duration","born","logical_enemy"]:
+		geometry.enemy_entry_batch_active=true;geometry.enemy_provider_query_active=true
+		geometry._source_enemy_render_position(enemy)
+		geometry.enemy_provider_query_active=false;geometry.after_tick()
+		if key=="logical_enemy":enemy.x+=1.0
+		elif key!="unchanged":
+			pose[key]+=Vector2(1,2) if pose[key] is Vector2 else 0.03
+		var cached:Vector2=geometry._source_enemy_render_position(enemy)
+		pose.erase("steady_position_key");pose.erase("steady_position_time")
+		var original:Vector2=geometry._source_enemy_render_position(enemy)
+		check(cached==original,"post-step exact position and same-clock mutation: "+key)
+
 func run()->void:
 	var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
 	scene.automation_args=["--capture"];scene.music_on=false
@@ -153,6 +168,7 @@ func run()->void:
 	check(not runtime.view.rows.has(uid) and not geometry.boundary_dead_geometry.has(uid),"existing reference lifetime retires departed geometry")
 	check(missile_origin_match[0] and missile_origin_match[1]>0,"ordinal0 input, actual missile birth and fire feedback share the muzzle")
 	g.event.disconnect(muzzle_watcher)
+	steady_position_publication(geometry,g)
 	var transferred_poses:Dictionary=geometry.enemy_poses;var transferred_turrets:Dictionary=geometry.turret_visuals
 	var remaining_enemy:Dictionary=g.enemies.back();var old_pose:Dictionary=geometry.enemy_pose(remaining_enemy)
 	var pose_values=[old_pose.born,old_pose.phase,old_pose.rotation]
