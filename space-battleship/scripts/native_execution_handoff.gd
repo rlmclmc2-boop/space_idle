@@ -42,8 +42,9 @@ func bind_instance(raw:Dictionary,snapshot:Dictionary,game)->Dictionary:
 			row.effects.append(effect)
 	instances[id]=row
 	return row
-func context(snapshot:Dictionary,derived:bool,game)->Dictionary:
-	return game.CombatContext.derive(snapshot.combat_context,"native_committed_derived") if derived else snapshot.combat_context
+func context(snapshot:Dictionary,derived:bool,game,chain_allowance:=true)->Dictionary:
+	if not derived:return snapshot.combat_context
+	return game.CombatContext.derive_with_chain(snapshot.combat_context,"native_committed_derived") if chain_allowance else game.CombatContext.derive(snapshot.combat_context,"chain")
 func attack(snapshot:Dictionary,instance:Dictionary,multiplier:float,derived:bool,game)->Dictionary:
 	return {"damage":float(snapshot.damage)*multiplier,"effects":instance.effects,"critical":snapshot.critical,"critical_bonus_applied":snapshot.critical_bonus_applied,"main_attack_id":snapshot.id,"attack_instance_id":instance.id,"combat_context":context(snapshot,derived,game)}
 func prepare(game,session,snapshot:Dictionary)->bool:
@@ -61,7 +62,7 @@ func prepare(game,session,snapshot:Dictionary)->bool:
 		var root=bind_snapshot(native.snapshot,game,weapon)
 		var instance=bind_instance(native.instance,root,game)
 		var view:Dictionary=native.view
-		var patch={"x":native.position.x,"y":native.position.y,"direction":native.direction,"speed":native.speed,"damage":native.damage,"entry":entry_for(game,weapon),"source":state.enemies[int(weapon.source)] if bool(weapon.hostile) else state.player,"source_uid":int(state.enemies[int(weapon.source)].uid) if bool(weapon.hostile) else 0,"main_attack_id":root.id,"attack_instance_id":instance.id,"attack_instance":instance,"attack_snapshot":root,"jewelEffects":instance.effects,"critical_bonus_applied":root.critical_bonus_applied,"combat_context":context(root,bool(native.instance_derived) or bool(native.chain),game)}
+		var patch={"x":native.position.x,"y":native.position.y,"direction":native.direction,"speed":native.speed,"damage":native.damage,"entry":entry_for(game,weapon),"source":state.enemies[int(weapon.source)] if bool(weapon.hostile) else state.player,"source_uid":int(state.enemies[int(weapon.source)].uid) if bool(weapon.hostile) else 0,"main_attack_id":root.id,"attack_instance_id":instance.id,"attack_instance":instance,"attack_snapshot":root,"jewelEffects":instance.effects,"critical_bonus_applied":root.critical_bonus_applied,"combat_context":context(root,bool(native.instance_derived) or bool(native.chain),game,not bool(native.chain))}
 		if bool(native.beam):
 			patch.elapsed=native.age;patch.ticks=native.ticks;patch.charge=native.charge;patch.next_hit_at=native.next_hit
 			patch.repeat_multiplier=native.multiplier;patch.repeat_origin_multiplier=1.0;patch.repeat_depth=1 if bool(native.repeated) else 0

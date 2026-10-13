@@ -5,6 +5,12 @@ static func root(id: int,source_id: String,weapon: String) -> Dictionary:
 	return {"root_id":id,"batch_id":id,"source_id":source_id,"weapon":weapon,"trigger_depth":0,"trigger":"","guidance_factors":{}}
 static func can_trigger(context: Dictionary) -> bool:
 	return int(context.get("trigger_depth",0))==0
+static func can_chain(context: Dictionary) -> bool:
+	return bool(context.get("chain_allowance",can_trigger(context)))
+static func derive_with_chain(context: Dictionary,trigger: String) -> Dictionary:
+	var result:=derive(context,trigger)
+	if not result.is_empty():result.chain_allowance=true
+	return result
 static func derive(context: Dictionary,trigger: String) -> Dictionary:
-	if not can_trigger(context):return {}
+	if not can_trigger(context) and not (trigger=="chain" and can_chain(context)):return {}
 	return {"root_id":int(context.get("root_id",0)),"batch_id":int(context.get("batch_id",0)),"source_id":str(context.get("source_id","direct")),"weapon":str(context.get("weapon","")),"trigger_depth":MAX_TRIGGER_DEPTH,"trigger":trigger,"guidance_factors":{}}

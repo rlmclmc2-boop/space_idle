@@ -2294,7 +2294,7 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 			jewel_attack(mount)
 			launch_snapshot=enhancement_attack_contexts[mount].snapshot
 			finish_enhancement_attack(mount)
-		player_launch_payload={"entry":entry,"mount":mount,"salvo_ordinal":0,"beam":true,"combat_context":CombatContext.derive(launch_snapshot.combat_context,"repeat_or_secondary") if repeated else launch_snapshot.combat_context}
+		player_launch_payload={"entry":entry,"mount":mount,"salvo_ordinal":0,"beam":true,"combat_context":CombatContext.derive_with_chain(launch_snapshot.combat_context,"repeat_or_secondary") if repeated else launch_snapshot.combat_context}
 	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset)
 	player_launch_payload=previous_payload
 	var shot: Dictionary = projectiles.back()
@@ -2515,7 +2515,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 				if adjacent.hp > 0 and abs(int(adjacent.slot) - int(enemy.slot)) in [1, 2]:
 					hit_enemy(adjacent, float(enemy.max_hp) * float(enemy.jewelExplosion), type,[],false,CombatContext.derive(context,"interference_explosion"))
 
-	if CombatContext.can_trigger(context):launch_enhancement_chain(enemy,base_raw,type,effects,critical,chain_origin,context)
+	if CombatContext.can_chain(context):launch_enhancement_chain(enemy,base_raw,type,effects,critical,chain_origin,context)
 
 func freeze_higgs_geometry(shot: Dictionary) -> void:
 	if not shot.has("higgs"):return
@@ -3496,7 +3496,7 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 		context.snapshot.instance=new_attack_instance(context.snapshot)
 		context.instance=context.snapshot.instance
 	var attack:=attack_from_snapshot(context.snapshot,multiplier,context.get("instance",{}))
-	attack.combat_context=CombatContext.derive(context.snapshot.combat_context,"repeat_or_secondary") if context.get("derived",false) and CombatContext.can_trigger(context.snapshot.combat_context) else context.snapshot.combat_context
+	attack.combat_context=CombatContext.derive_with_chain(context.snapshot.combat_context,"repeat_or_secondary") if context.get("derived",false) and CombatContext.can_trigger(context.snapshot.combat_context) else context.snapshot.combat_context
 	return attack
 
 func attack_from_snapshot(snapshot: Dictionary, multiplier: float, instance: Dictionary = {}) -> Dictionary:
@@ -3626,7 +3626,6 @@ func select_chain_targets(primary: Dictionary, type: int, count: int) -> Array:
 	return result
 
 func bind_beam_chain(shot: Dictionary) -> void:
-	if shot.get("repeated",false):shot.attack_instance.chain.count=0
 	var prism: Dictionary=hyperspace_totals().legendary.get("prism_tower",{})
 	if not shot.get("repeated",false) and not prism.is_empty() and not projectiles.any(func(p):return not is_same(p,shot) and p.get("prism_tower",false) and long_laser_valid(p)):
 		shot.prism_tower=true;shot.attack_instance.chain.count=int(prism.constants.nearby_targets)
@@ -3677,7 +3676,7 @@ func chain_damage_effects(effects: Array) -> Array:
 	return continued
 
 func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array, critical: bool, origin := Vector2.INF, context: Dictionary = {}) -> void:
-	if not CombatContext.can_trigger(context):return
+	if not CombatContext.can_chain(context):return
 	var effect:Dictionary={}
 	for candidate in effects:
 		if candidate.get("chain",false) and not candidate.get("chain_used",false):effect=candidate;break

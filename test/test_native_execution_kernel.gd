@@ -303,6 +303,127 @@ func shield_phase_repeat_contract()->void:
  k=core(d);k.advance(STEP);k.take_feedback();k.advance(3.0*STEP)
  check(is_zero_approx(k.player_view().armour) and is_equal_approx(k.metrics().clock,4.0*STEP) and is_equal_approx(k.metrics().defence_time,0.064),"death consumes logical-step tail while defence freezes at actual death time")
  k.cancel()
+func chain_allowance_contract()->void:
+ const STEP=1.0/60.0
+ for kind in [0,1,2]:
+  var d=world(kind);d.enemies=[actor(100,30,1e9,4),actor(101,100,1e9,0),actor(102,170,1e9,1)]
+  d.chain_count=1;d.repeat_delay=0.1;d.ejection_gap=STEP
+  d.weapons[0].interval=10.0;d.weapons[0].salvo=2;d.weapons[0].repeat_probability=1.0;d.weapons[0].repeat_multiplier=0.5
+  d.weapons[0].secondary_probability=1.0;d.weapons[0].critical_rate=1.0;d.weapons[0].critical_multiplier=2.0
+  var k=core(d);var chains=[]
+  k.advance(STEP)
+  var pending:Dictionary=k.export_handoff();var root_instances={};var primary_seen=false;var secondary_seen=false
+  for row in pending.flights:
+   if not bool(row.chain):
+    root_instances[int(row.instance.id)]=true
+    if bool(row.instance_derived):secondary_seen=true
+    else:primary_seen=true
+  for row in pending.ejections:
+   root_instances[int(row.instance.id)]=true
+   if bool(row.derived):secondary_seen=true
+   else:primary_seen=true
+  # Instant cannon carriers retire immediately; its visible chain still has the root instance.
+  if kind!=1:check(root_instances.size()==1 and primary_seen and secondary_seen,"root and secondary share instance but retain separate carrier provenance "+str(kind))
+  for e in k.take_feedback():
+   if int(e.kind)==4:chains.append({"damage":float(e.shot.damage),"critical":bool(e.shot.critical)})
+  for i in 119:
+   k.advance(STEP)
+   for e in k.take_feedback():
+    if int(e.kind)==4:chains.append({"damage":float(e.shot.damage),"critical":bool(e.shot.critical)})
+  check(k.metrics().root_attacks==2 and chains.size()==2,"normal salvo plus secondary share one allowance; independent repeat owns another "+str(kind))
+  if chains.size()==2:check(is_equal_approx(chains[0].damage,20.0) and is_equal_approx(chains[1].damage,10.0) and chains[0].critical and chains[1].critical,"repeat chain inherits root critical outcome and its original multiplier "+str(kind))
+  k.cancel()
+ # A repeat killing its target may fan its own chain, but never a death explosion.
+ var d=world(1);d.enemies=[actor(100,30,15,4),actor(101,100,100,5)];d.enemies[0].jewelExplosion=1.0
+ d.chain_count=1;d.repeat_delay=0.1;d.weapons[0].interval=10.0;d.weapons[0].repeat_probability=1.0;d.weapons[0].repeat_multiplier=0.5
+ var k=core(d)
+ for i in 30:k.advance(STEP)
+ check(k.enemy_views()[0].hp==0.0 and is_equal_approx(k.enemy_views()[1].hp,85.0),"derived lethal repeat fans once without opening death explosion permission")
+ k.cancel()
+ # Repeat30B is exactly one secondary hit, not a second continuous beam or extra link fanout.
+ d=world(3);d.enemies=[actor(100,30,1e9,4),actor(101,100,1e9,0)];d.chain_count=1
+ d.weapons[0].interval=0.05;d.weapons[0].secondary_probability=1.0
+ k=core(d);var births=0;var secondary_hits=0
+ for i in 7:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==0:births+=1
+   if int(e.kind)==8:secondary_hits+=1
+ check(births==1 and secondary_hits==1 and k.metrics().root_attacks==1 and k.metrics().hits==7,"Repeat30B single beam hit shares links without creating a sustained beam")
+ k.cancel()
+ # Ordinary Repeat startup retains its independent, fixed chain links.
+ d=world(3);d.enemies=[actor(100,30,1e9,4),actor(101,100,1e9,0),actor(102,170,1e9,1)];d.chain_count=1;d.repeat_delay=0.1
+ d.weapons[0].interval=0.05;d.weapons[0].repeat_probability=1.0
+ k=core(d)
+ for i in 7:k.advance(STEP)
+ var beams:Array=k.projectile_views().filter(func(shot):return bool(shot.get("beam",false)))
+ check(beams.size()==2 and k.metrics().root_attacks==2 and k.metrics().hits==8,"ordinary Repeat owns a second beam startup and fixed links")
+ if beams.size()==2:check(beams[0].attack_instance.id!=beams[1].attack_instance.id and beams[0].attack_instance.chain.links.size()==1 and beams[1].attack_instance.chain.links.size()==1,"continuous repeat snapshots independent link allowance")
+ check(k.hit_handle(k.actor_handle(100),1e12,1),"break repeat linked target")
+ for i in 12:k.advance(STEP)
+ check(k.enemy_views()[2].hp==1e9,"broken repeat beam link never replaces itself or recursively chains")
+ k.cancel()
+func main_chain_permission_contract()->void:
+ const Context=preload("res://scripts/combat_context.gd")
+ var root=Context.root(71,"module:0","laser")
+ var derived=Context.derive_with_chain(root,"repeat_or_secondary")
+ var hop=Context.derive(derived,"chain")
+ check(Context.can_chain(derived) and not Context.can_trigger(derived),"derived allowance does not grant new attack/death decisions")
+ check(not hop.is_empty() and not Context.can_chain(hop) and not Context.can_trigger(hop) and hop.root_id==root.root_id,"chain hop keeps provenance and cannot recursively trigger")
+ for compiled in [false,true]:
+  var g=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
+  g.stat_cache_enabled=true;g.save_enabled=false;g.invalidate_stat_cache()
+  if compiled:g.enable_compiled_combat_rules()
+  g.state=BattleGame.State.COMBAT;g.enemies=[actor(100,30,1000,4),actor(101,100,1000,0),actor(102,170,1000,1)]
+  var snapshot={"id":71,"damage":10.0,"critical":true,"critical_bonus_applied":true,"effects":[{"kind":"hyperspace_chain","chain":true,"chain_targets":1}],"combat_context":root}
+  var instance=g.new_attack_instance(snapshot);var rng_before:int=g.rng.state
+  var ordinary:Dictionary=g.attack_from_snapshot(snapshot,1.0,instance)
+  var secondary:Dictionary=g.attack_from_snapshot(snapshot,1.0,instance)
+  var repeated_instance=g.new_attack_instance(snapshot);var repeated:Dictionary=g.attack_from_snapshot(snapshot,1.0,repeated_instance)
+  check(g.rng.state==rng_before and ordinary.attack_instance_id==secondary.attack_instance_id and repeated.attack_instance_id!=ordinary.attack_instance_id and repeated.critical==ordinary.critical,"main payloads retain root outcome and shared/fresh instances "+str(compiled))
+  g.hit_enemy(g.enemies[0],ordinary.damage,1,ordinary.effects,ordinary.critical,root)
+  g.hit_enemy(g.enemies[1],secondary.damage,1,secondary.effects,secondary.critical,derived)
+  g.hit_enemy(g.enemies[0],repeated.damage,1,repeated.effects,repeated.critical,derived)
+  var hops:Array=g.projectiles.filter(func(shot):return bool(shot.get("chain_hop",false)))
+  check(hops.size()==2,"main ordinary/secondary consume one allowance, repeat consumes its own "+str(compiled))
+  for shot in hops:g.advance_chain_projectile(shot,1.0)
+  check(g.projectiles.size()==2 and g.enemies[1].hp==970.0 and g.enemies[2].hp==1000.0,"main chain arrival settles once without another fanout "+str(compiled))
+  g.begin_retreat()
+func chain_handoff_contract()->void:
+ const STEP=1.0/60.0
+ const Context=preload("res://scripts/combat_context.gd")
+ for compiled in [false,true]:
+  for kind in [0,2]:
+   var g=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
+   g.stat_cache_enabled=true;g.save_enabled=false;g.profile.loadout.weapons[0].key="missile" if kind==2 else "laser";g.invalidate_stat_cache()
+   if compiled:g.enable_compiled_combat_rules()
+   g.state=BattleGame.State.COMBAT
+   var d=world(kind);d.execution_scope="native_low_contract";d.enemies=[actor(100,30,1000,4),actor(101,100,1000,0)]
+   d.repeat_delay=0.1;d.ejection_gap=0.12;d.chain_count=1;d.weapons[0].interval=10.0
+   d.weapons[0].source=-1;d.weapons[0].salvo=2;d.weapons[0].row.para1=2.0 if kind==2 else 720.0
+   d.weapons[0].repeat_probability=1.0;d.weapons[0].secondary_probability=1.0;d.weapons[0].critical_rate=1.0
+   d.weapons[0].transfer_effects=[{"kind":"hyperspace_chain","chain":true,"chain_targets":1}]
+   check(g.admit_native_execution(d),"chain fixture native admission "+str(kind)+str(compiled))
+   g.native_execution.advance(g,STEP)
+   var owner=g.native_execution;var rng_before:int=g.rng.state
+   check(owner.handoff_to_legacy(g,"chain_contract"),"chain in-flight/pending atomic handoff "+str(kind)+str(compiled))
+   var instance_ids={};var primary_seen=false;var secondary_seen=false
+   for shot in g.projectiles:
+    if bool(shot.get("chain_hop",false)):continue
+    instance_ids[int(shot.attack_instance_id)]=true
+    if Context.can_trigger(shot.combat_context):primary_seen=true
+    else:secondary_seen=true
+    check(Context.can_chain(shot.combat_context),"handoff carrier keeps allowance permission")
+   for pending in g.missile_queue:
+    instance_ids[int(pending.attack.attack_instance_id)]=true
+    if Context.can_trigger(pending.attack.combat_context):primary_seen=true
+    else:secondary_seen=true
+    check(Context.can_chain(pending.attack.combat_context),"handoff ejection keeps allowance permission")
+   check(instance_ids.size()==1 and primary_seen and secondary_seen,"handoff shares instance while preserving root/secondary provenance")
+   var previous_serial:int=g.attack_instance_serial
+   g.advance_jewel_repeats(0.1)
+   check(g.attack_instance_serial==previous_serial+1 and g.rng.state==rng_before,"post-handoff independent repeat builds one new instance without reroll")
+   g.begin_retreat()
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var dll_path="res://bin/space_native.dll";var dll_hash=FileAccess.get_sha256(dll_path)
@@ -319,6 +440,9 @@ func run()->void:
  shield_event_contract()
  player_defence_event_contract()
  shield_phase_repeat_contract()
+ chain_allowance_contract()
+ main_chain_permission_contract()
+ chain_handoff_contract()
  for kind in [0,1,2,3]:
   var d=world(kind);d.enemies[0].x=100.0
   var k=core(d)
