@@ -8,6 +8,8 @@ var elapsed_crew := {}
 var visible_key := ""
 var effect_generation := 0
 var income_elapsed := 0.0
+var native_prepared := false
+var native_refit:Dictionary={}
 
 func setting(g, key: String) -> float:
 	return float(g.db.data.galaxy_config[key].value)
@@ -82,7 +84,11 @@ func set_visible(key: String) -> void:
 # Preflight before shared clock/income changes. Preserve the exact existing
 # visible/hidden and crew-change flush ordering without advancing either RNG.
 func prepare_native_advance(g,dt:float)->bool:
-	if g.native_execution==null or dt<=0 or g.paused:return true
+	if g.native_execution==null or dt<=0 or g.paused:
+		native_prepared=false;native_refit.clear();return true
+	if native_prepared:return true
+	native_refit.clear()
+	var candidate:Dictionary={}
 	for key in regions:
 		var region=regions[key]
 		if not region.state.status in ["exploring","developing"]:continue
@@ -100,12 +106,30 @@ func prepare_native_advance(g,dt:float)->bool:
 		if pending>=setting(g,"visible_tick" if visible else "hidden_tick"):settled+=pending
 		# A switch may flush old time and then consume a due new batch. Check
 		# their combined work so the second part cannot cross an unseen boundary.
-		if region.revision_due(settled,count):return g.native_execution.handoff_to_legacy(g,"galaxy_configuration")
+		if region.revision_due(settled,count):
+			# Keep this command to one exact region settlement. Multiple revisions
+			# inside that settlement are already owned by Region.advance().
+			if not candidate.is_empty() or (visible!=bool(elapsed_visible[key]) and float(elapsed[key])>0):
+				return g.native_execution.handoff_to_legacy(g,"galaxy_compound_configuration")
+			candidate={"key":key,"dt":settled,"count":count}
+	if not candidate.is_empty():
+		if not prepare_region_refit(g,candidate.key,candidate.dt,candidate.count):return false
+	native_prepared=true
+	return true
+
+func prepare_region_refit(g,key:String,dt:float,count:int)->bool:
+	var region=regions[key]
+	var predicted=region.predict_advance(dt,count)
+	var session=g.native_execution
+	var plan:Dictionary=session.prepare_galaxy_refit(g,effects.projected_multipliers(self,key,predicted)) if session.has_method("prepare_galaxy_refit") else {}
+	if plan.is_empty():return session.handoff_to_legacy(g,"galaxy_configuration")
+	native_refit={"key":key,"dt":dt,"count":count,"region":predicted,"plan":plan,"session":session}
 	return true
 
 func advance(g, dt: float) -> void:
 	if dt<=0 or g.paused or regions.is_empty():return
 	if not prepare_native_advance(g,dt):return
+	native_prepared=false
 	# Unlock checks run at the same bounded online cadence, never from UI reads.
 	income_elapsed+=dt
 	if income_elapsed>=setting(g,"income_interval"):
@@ -140,7 +164,21 @@ func advance(g, dt: float) -> void:
 func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 	var region=regions[key]
 	if g.native_execution!=null and region.revision_due(dt,int(elapsed_crew[key])):
-		if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return false
+		if native_refit.is_empty() and not prepare_region_refit(g,key,dt,int(elapsed_crew[key])):return false
+		if g.native_execution!=null:
+			var match_plan:bool=not native_refit.is_empty() and native_refit.key==key and is_equal_approx(native_refit.dt,dt) and native_refit.count==int(elapsed_crew[key]) and native_refit.session==g.native_execution
+			if match_plan and not g.native_execution.paused_by_configuration and g.native_execution.commit_galaxy_refit(g,native_refit.plan):
+				# No callback between committing the kernel and the region. Publish
+				# map changes and ordinary notifications only after both agree.
+				region.commit_prediction(native_refit.region)
+				native_refit.clear();effect_generation+=1
+				g.native_numeric_update=true;g.invalidate_stat_cache();g.native_numeric_update=false
+				g.enhancement_branches.reconcile(g)
+				region.sync_map()
+				notify_region_advance(g,key,true)
+				return true
+			if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return false
+	if g.native_execution==null or native_refit.get("key","")==key:native_refit.clear()
 	var before := int(region.building_revision)
 	g.capture_refit_health()
 	region.advance(dt,int(elapsed_crew[key]),visible)
@@ -148,12 +186,16 @@ func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 		effect_generation+=1
 		g.invalidate_stat_cache()
 		g.apply_refit_health()
+	notify_region_advance(g,key,before!=region.building_revision)
+	return true
+
+func notify_region_advance(g,key:String,refitted:bool)->void:
+	if refitted:
 		for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
 		g.event.emit("reactor_changed",{})
 	g.save_dirty=true
 	g.event.emit("galaxy_changed",{"key":key})
-	if region.state.status=="complete":refresh_unlocks(g)
-	return true
+	if regions[key].state.status=="complete":refresh_unlocks(g)
 
 func flush_pending(g, key: String) -> bool:
 	if not regions.has(key) or float(elapsed.get(key,0))<=0:return true

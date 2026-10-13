@@ -66,6 +66,9 @@ func advance(seconds:float)->void:
 	remainder+=seconds
 	const STEP=1.0/60.0
 	while remainder+0.0000000001>=STEP:
+		if not game.prepare_logical_step(STEP):
+			advancing=false;scene.game_time_remainder=remainder
+			return
 		geometry.before_tick(STEP)
 		scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 		scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship

@@ -17,16 +17,16 @@ func native_weapon_row(row:Dictionary,kind:int)->bool:
 	if kind==2 and not native_integer(row.get("para1")):return false
 	if kind==3 and (not native_fields(row,["para2"]) or (row.get("para3")!=null and not native_scalar(row.para3))):return false
 	return true
-func external_factor(g,entry:Dictionary,totals:Dictionary)->Variant:
+func external_factor(g,entry:Dictionary,totals:Dictionary,galaxy_values:Dictionary={})->Variant:
 	var attack=entry.key in KEYS
-	var values:Array=[g.planet_equipment_multiplier(),g.crew.system_effect(g,"equip_bonus"),g.galaxy.multiplier("equipment_value"),totals.get("damage" if attack else "defence"),totals.weapon_damage.get(entry.key,1.0) if attack else totals.get(entry.key,1.0),totals.get("base_damage" if attack else "base_defence",1.0)]
+	var values:Array=[g.planet_equipment_multiplier(),g.crew.system_effect(g,"equip_bonus"),galaxy_values.get("equipment_value",g.galaxy.multiplier("equipment_value")),totals.get("damage" if attack else "defence"),totals.weapon_damage.get(entry.key,1.0) if attack else totals.get(entry.key,1.0),totals.get("base_damage" if attack else "base_defence",1.0)]
 	for value in values:
 		if not native_scalar(value):return null
 	# Preserve the original grouping while rejecting before scalar conversion.
 	var drone=float(values[3])*float(values[4])
 	var result=float(values[0])*float(values[1])*float(values[2])*drone*float(values[5])
 	return result if is_finite(drone) and is_finite(result) else null
-func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
+func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->Dictionary:
 	if scope not in ["native_low_contract","native_rich15_layer2"]:return {"error":"unsupported_scope"}
 	if (("damage_stats" in g) and g.damage_stats.enabled) or g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}
 	for category in ["weapons","defence"]:
@@ -59,7 +59,7 @@ func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 		if (not enemy.get("drops",[]).is_empty() and not native_scalar(enemy.get("res_ratio"))) or (not enemy.get("equipment",[]).is_empty() and not native_scalar(enemy.get("dmgMultiple"))):return {"error":"unsupported_native_scalar:enemy"}
 		for drop in enemy.get("drops",[]):
 			if typeof(drop)!=TYPE_DICTIONARY or not native_integer(drop.get("resourceId")) or not native_scalar(drop.get("chance")):return {"error":"unsupported_native_scalar:drop"}
-			var multiplier=g.reactor_multiplier("smelting") if int(drop.resourceId)==1 else 1.0
+			var multiplier=g.reactor_multiplier("smelting",float(galaxy_values.get("charge_max",-1.0))) if int(drop.resourceId)==1 else 1.0
 			var base=N.ceiling(N.multiply(N.multiply(drop.amount,N.multiply(float(enemy.res_ratio),multiplier)),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
 			var amount=N.ceiling(N.multiply(base,g.planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base
 			view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
@@ -86,12 +86,12 @@ func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 			for effect in transfer_effects:
 				if effect.kind=="repeat":effect.chain=true;effect.chain_targets=chain;found=true
 			if not found:transfer_effects.append({"kind":"hyperspace_chain","chain":true,"chain_targets":chain})
-		var factor=external_factor(g,entry,totals)
+		var factor=external_factor(g,entry,totals,galaxy_values)
 		if not native_scalar(factor):return {"error":"unsupported_native_scalar:weapon_factor"}
 		if KEYS.find(entry.key)!=3 and not native_scalar(g.cooldowns.get(g.slot_id("weapons",index),row.cd)):return {"error":"unsupported_native_scalar:cooldown"}
 		var kind=KEYS.find(entry.key)
 		var offset:Vector2=g.player_weapon_offset(index)
-		weapons.append({"kind":kind,"type":int(row.dmgtype),"slot":index,"source":-1,"hostile":false,"damage":g.equipment_stat(entry.key,int(entry.level)),"factor":factor,"interval":float(row.cd),"remaining":float(g.cooldowns.get(g.slot_id("weapons",index),row.cd)) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0,"salvo":int(row.para1) if kind==2 else 1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(g.player.x,g.player.y)+offset,"entry":entry.duplicate(true),"row":row.duplicate(true),"transfer_effects":transfer_effects,"critical_rate":critical.x,"critical_multiplier":critical.y,"repeat_probability":g.enhancement_branches.repeat_probability(g,entry),"repeat_multiplier":repeat_factor,"chain_count":chain,"secondary_probability":g.enhancement_parameter("repeat_b3_probability") if g.enhancement_branch_active(entry,"repeat",3,"B") else 0.0})
+		weapons.append({"kind":kind,"type":int(row.dmgtype),"slot":index,"source":-1,"hostile":false,"damage":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"interval":float(row.cd),"remaining":float(g.cooldowns.get(g.slot_id("weapons",index),row.cd)) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0,"salvo":int(row.para1) if kind==2 else 1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(g.player.x,g.player.y)+offset,"entry":entry.duplicate(true),"row":row.duplicate(true),"transfer_effects":transfer_effects,"critical_rate":critical.x,"critical_multiplier":critical.y,"repeat_probability":g.enhancement_branches.repeat_probability(g,entry),"repeat_multiplier":repeat_factor,"chain_count":chain,"secondary_probability":g.enhancement_parameter("repeat_b3_probability") if g.enhancement_branch_active(entry,"repeat",3,"B") else 0.0})
 	for source in enemies.size():
 		var enemy:Dictionary=enemies[source]
 		for slot in enemy.equipment.size():
@@ -119,9 +119,9 @@ func compile(g,scope:String,upgrade:Dictionary={})->Dictionary:
 		if not native_scalar(g.jewel_defence_times.get(index,g.since_hit)):return {"error":"unsupported_native_scalar:defence_time"}
 		var row:Dictionary=g.combat_equipment_row(entry.key,int(entry.level))
 		if not native_integer(row.get("dmgtype",0)) or (entry.key=="shield" and not native_fields(row,["para2","para3"])):return {"error":"unsupported_native_scalar:defence_row"}
-		var factor=external_factor(g,entry,totals)
+		var factor=external_factor(g,entry,totals,galaxy_values)
 		if not native_scalar(factor):return {"error":"unsupported_native_scalar:defence_factor"}
-		defence.append({"layer":0 if entry.key=="shield" else 1,"type":int(row.get("dmgtype",0)),"base":g.equipment_stat(entry.key,int(entry.level)),"factor":factor,"maximum":g.jewel_equipment_stat(entry,-1,null,false),"loss":g.jewel_defence_damage.get(index,0.0),"buffer":g.enhancement_buffers.get(index,0.0),"last_hit":g.enhancement_defense_time-float(g.jewel_defence_times.get(index,g.since_hit)),"delay":float(row.para3) if entry.key=="shield" else 0.0,"rate":float(row.para2) if entry.key=="shield" else 0.0,"memory_heal":memory_heal,"memory_cap":memory_cap,"deferred_fraction":deferred})
+		defence.append({"entry":entry.duplicate(true),"layer":0 if entry.key=="shield" else 1,"type":int(row.get("dmgtype",0)),"base":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"maximum":g.jewel_equipment_stat(entry,-1,null,false,float(galaxy_values.get("equipment_value",-1.0)),float(galaxy_values.get("charge_max",-1.0))),"loss":g.jewel_defence_damage.get(index,0.0),"buffer":g.enhancement_buffers.get(index,0.0),"last_hit":g.enhancement_defense_time-float(g.jewel_defence_times.get(index,g.since_hit)),"delay":float(row.para3) if entry.key=="shield" else 0.0,"rate":float(row.para2) if entry.key=="shield" else 0.0,"memory_heal":memory_heal,"memory_cap":memory_cap,"deferred_fraction":deferred})
 	var scatter:Dictionary=totals.legendary.get("scatter_pulse",{});var prism:Dictionary=totals.legendary.get("prism_tower",{})
 	if not native_fields(g.db.config,["dmgReduce"]) or not native_scalar(g.db.config.get("jewelDrop",0)):return {"error":"unsupported_native_scalar:config"}
 	if not native_scalar(scatter.get("parameters",{}).get("single_target_bonus",0.0)) or not native_integer(prism.get("constants",{}).get("nearby_targets",0)) or not native_scalar(prism.get("parameters",{}).get("maximum_multiplier_bonus",0.0)):return {"error":"unsupported_native_scalar:legendary"}

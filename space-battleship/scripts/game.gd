@@ -1053,10 +1053,10 @@ func permanent_level_tooltip(actual: int, target: String) -> String:
 	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
-func equipment_stat(key: String, level: int) -> Variant:
+func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
 	# Base equipment values exclude attack/hit counters. Retain their projection
 	# across volleys; full stat invalidation covers every modifier/level change.
-	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled else {}
+	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled and galaxy_charge<0 else {}
 	var levels: Dictionary = bases.get(key,{})
 	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
@@ -1065,10 +1065,10 @@ func equipment_stat(key: String, level: int) -> Variant:
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if effective_hightech_level(tech) > 0:
 		value = N.ceiling(N.multiply(value,N.power(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech))))
-	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons")
+	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
 	if reactor_bonus != 1.0:
 		value = N.ceiling(N.multiply(value,reactor_bonus))
-	if stat_cache_enabled:
+	if stat_cache_enabled and galaxy_charge<0:
 		# Bound previews as well as equipped modules; reads never retain entries.
 		if levels.size()>=32:levels.clear()
 		levels[level]=value
@@ -1090,12 +1090,12 @@ func reactor_available_modules() -> PackedStringArray:
 func reactor_unlocked() -> bool:
 	return content_unlocked("feature", "reactor")
 
-func reactor_energy(level := -1) -> float:
+func reactor_energy(level := -1, galaxy_charge := -1.0) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * galaxy.multiplier("charge_max") * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
+	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * (galaxy.multiplier("charge_max") if galaxy_charge<0 else galaxy_charge) * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
 
-func reactor_capacity() -> int:
-	return maxi(0, int(floor(reactor_energy())))
+func reactor_capacity(galaxy_charge := -1.0) -> int:
+	return maxi(0, int(floor(reactor_energy(-1,galaxy_charge))))
 
 func reactor_upgrade_cost(level := -1) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
@@ -1110,10 +1110,10 @@ func reactor_effective_ratio(key: String) -> float:
 	if not reactor_unlocked() or not reactor_module_unlocked(key):return 0.0
 	return float(profile.reactorAllocation.get(key,0))/maxf(1.0,reactor_capacity())+charge_free_ratio()
 
-func reactor_multiplier(key: String) -> float:
+func reactor_multiplier(key: String, galaxy_charge := -1.0) -> float:
 	if not reactor_module_unlocked(key):return 1.0
 	var allocation := float(profile.reactorAllocation.get(key,0))
-	if reactor_unlocked():allocation+=float(reactor_capacity())*charge_free_ratio()
+	if reactor_unlocked():allocation+=float(reactor_capacity(galaxy_charge))*charge_free_ratio()
 	return 1.0 + pow(float(allocation),float(db.config.reactorBoostExponent)) / float(db.config.reactorPercentScale) if allocation > 0 else 1.0
 
 func reactor_max_upgrades() -> int:
@@ -2830,6 +2830,11 @@ func advance_enemy_shields(dt: float) -> void:
 	enemy_shield_time+=dt
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 
+func prepare_logical_step(dt:float)->bool:
+	if galaxy.prepare_native_advance(self,dt):return true
+	native_step_phase="blocked";paused=true
+	return false
+
 func tick(dt: float) -> void:
 	if paused:return
 	if native_execution!=null and native_execution.advance_blocked:
@@ -2843,9 +2848,7 @@ func tick(dt: float) -> void:
 	native_step_phase="shared";native_step_remaining=dt
 	# A galaxy refit must transfer before this step changes clocks, income or
 	# region work. Failed preparation leaves the complete step in the caller.
-	if not galaxy.prepare_native_advance(self,dt):
-		native_step_phase="blocked";paused=true
-		return
+	if not prepare_logical_step(dt):return
 	advance_shared_clock_and_economy(dt)
 	if native_execution!=null and native_execution.paused_by_configuration:
 		native_execution.handoff_to_legacy(self,"configuration_notification")
@@ -3449,10 +3452,10 @@ func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
 func jewel_effects(entry: Dictionary) -> Array:
 	return enhancement_effects(entry)
 
-func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true) -> Variant:
+func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true, galaxy_equipment := -1.0, galaxy_charge := -1.0) -> Variant:
 	if str(entry.get("key", "")).is_empty():
 		return 0
-	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level)
+	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level,galaxy_charge)
 	var projected := entry
 	if level>=0:
 		projected=entry.duplicate()
@@ -3471,7 +3474,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
 	var drones:=hyperspace_totals()
 	var drone_multiplier: float=float(drones.damage)*float(drones.weapon_damage.get(str(entry.key),1.0)) if WEAPON_KEYS.has(str(entry.key)) else float(drones.defence)*float(drones.get(str(entry.key),1.0))
-	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),galaxy.multiplier("equipment_value")),drone_multiplier)
+	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),(galaxy.multiplier("equipment_value") if galaxy_equipment<0 else galaxy_equipment)),drone_multiplier)
 
 func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
 	var row := combat_equipment_row(str(entry.key), int(entry.level))

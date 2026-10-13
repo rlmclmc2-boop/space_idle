@@ -490,6 +490,7 @@ func advance_game_time(seconds: float) -> void:
 	while game_time_remainder + 0.0000000001 >= STEP:
 		if attach_native_display():
 			battle_slice_runtime.advance(0.0);return
+		if not game.prepare_logical_step(STEP):return
 		before_logical_game_tick(STEP)
 		game.tick(STEP)
 		if game.native_step_phase=="blocked":return

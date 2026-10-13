@@ -13,6 +13,19 @@ func building_detail(region, slot: Dictionary) -> Dictionary:
 func invalidate() -> void:
 	generation=-1
 
+func projected_multipliers(system, key:String, predicted)->Dictionary:
+	var result:Dictionary={}
+	for effect in MULTIPLIERS:result[effect]=1.0
+	for region_key in system.regions:
+		var region=predicted if region_key==key else system.regions[region_key]
+		var values:Dictionary={}
+		for effect in MULTIPLIERS:values[effect]=1.0
+		for slot in region.slots:
+			var detail:=building_detail(region,slot)
+			if values.has(detail.type):values[detail.type]+=detail.amount
+		for effect in MULTIPLIERS:result[effect]*=values[effect]
+	return result
+
 func refresh(system) -> void:
 	if generation==system.effect_generation:return
 	cache.clear()

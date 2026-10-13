@@ -56,6 +56,31 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 	weapons=descriptor.weapons
 	return true
 
+func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
+	if not kernel.has_method("can_refit_configuration"):return {}
+	for key in ["equipment_value","charge_max"]:
+		if not values.has(key) or not is_finite(float(values[key])) or float(values[key])<0:return {}
+	var energy:float=game.reactor_energy(-1,float(values.charge_max))
+	if not is_finite(energy) or energy<0 or energy>=9223372036854775808.0:return {}
+	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{},values)
+	if descriptor.has("error"):return {}
+	var ratios:Dictionary=game.refit_health_ratios.duplicate()
+	for key in ["armour","shield"]:
+		var old_max=game.stat(key)
+		if game.N.compare(old_max,0)>0:ratios[key]=clampf(game.N.ratio(game.player[key],old_max),0,1)
+		var maximum=0.0
+		for defence in descriptor.defences:
+			if int(defence.layer)==(1 if key=="armour" else 0):maximum=game.N.add(maximum,defence.maximum)
+		descriptor.player[key]=game.N.multiply(maximum,ratios[key])
+	if not kernel.can_refit_configuration(descriptor):return {}
+	return {"descriptor":descriptor,"ratios":ratios}
+
+func commit_galaxy_refit(game,plan:Dictionary)->bool:
+	if not kernel.refit_configuration(plan.descriptor):return false
+	weapons=plan.descriptor.weapons
+	game.refit_health_ratios=plan.ratios
+	return true
+
 func handoff_to_legacy(game:RefCounted,reason:String)->bool:
 	if handed_off:return game.native_execution==null
 	var exported:Dictionary=kernel.export_handoff()

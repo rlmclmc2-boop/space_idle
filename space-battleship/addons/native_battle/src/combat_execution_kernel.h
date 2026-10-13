@@ -118,6 +118,7 @@ class SpaceCombatKernel : public RefCounted {
         const std::vector<Timed> &entries() const { return this->c; }
     };
     struct Defence {
+        Dictionary entry;
         int layer = 0, type = 0;
         double base = 0, factor = 1, maximum = 0, loss = 0, buffer = 0, delay = 0, rate = 0, last_hit = 0,
                memory_heal = 0, memory_cap = 0, deferred_fraction = 0;
@@ -327,7 +328,7 @@ class SpaceCombatKernel : public RefCounted {
         for (int i = 0; i < defs.size(); ++i) {
             if (Variant(defs[i]).get_type() != Variant::DICTIONARY) return false;
             Dictionary v = defs[i];
-            if (!schema_integers(v, {"layer","type"}) ||
+            if (!schema_types(v, Variant::DICTIONARY, {"entry"}) || !schema_integers(v, {"layer","type"}) ||
                 !numeric_fields(v, {"base","factor","maximum","loss","buffer","delay","rate","last_hit","memory_heal","memory_cap","deferred_fraction"}) ||
                 !schema_nonnegative(v, {"base","factor","maximum","loss","buffer","delay","rate","memory_heal","memory_cap","deferred_fraction"}) ||
                 int(v.get("layer", 0)) < 0 || int(v.get("layer", 0)) > 1 ||
@@ -1453,8 +1454,9 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("advance", "seconds"), &SpaceCombatKernel::advance);
         ClassDB::bind_method(D_METHOD("can_advance", "seconds"), &SpaceCombatKernel::can_advance);
         ClassDB::bind_method(D_METHOD("can_update_configuration", "descriptor"), &SpaceCombatKernel::can_update_configuration);
-        ClassDB::bind_method(D_METHOD("update_configuration", "descriptor"),
-                             &SpaceCombatKernel::update_configuration);
+        ClassDB::bind_method(D_METHOD("update_configuration", "descriptor"), &SpaceCombatKernel::update_configuration);
+        ClassDB::bind_method(D_METHOD("can_refit_configuration", "descriptor"), &SpaceCombatKernel::can_refit_configuration);
+        ClassDB::bind_method(D_METHOD("refit_configuration", "descriptor"), &SpaceCombatKernel::refit_configuration);
         ClassDB::bind_method(D_METHOD("target_views", "type"), &SpaceCombatKernel::target_views);
         ClassDB::bind_method(D_METHOD("input_player_point", "point"), &SpaceCombatKernel::input_player_point);
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
@@ -1762,6 +1764,7 @@ class SpaceCombatKernel : public RefCounted {
         for (int i = 0; i < defs.size(); ++i) {
             Dictionary v = defs[i];
             Defence a;
+            a.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             a.layer = v.get("layer", 0);
             a.type = v.get("type", 0);
             a.base = v.get("base", 0.0);
@@ -1833,9 +1836,46 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary player = d.get("player", Dictionary());
         return player.has("armour") && player.has("shield") && numeric_fields(player, {"armour","shield"}) && double(player["armour"]) >= 0 && double(player["shield"]) >= 0;
     }
+    bool can_refit_configuration(Dictionary d) const {
+        if (!can_update_configuration(d) || double(Dictionary(d["player"])["armour"]) <= 0) return false;
+        // Galaxy refits change numeric equipment/health and resource amounts only.
+        Array rows = d["weapons"], defs = d["defences"], enemies = d["enemies"];
+        for (int i = 0; i < rows.size(); ++i) {
+            Dictionary v = rows[i]; const Weapon &w = weapons[i];
+            if (double(v["interval"]) != w.interval ||
+                double(v["speed"]) != w.speed || int(v["salvo"]) != w.salvo ||
+                double(v["charge"]) != w.charge || double(v["ramp"]) != w.ramp ||
+                double(v["maximum"]) != w.maximum || Dictionary(v["entry"]) != w.entry ||
+                Dictionary(v["row"]) != w.row) return false;
+        }
+        for (int i = 0; i < defs.size(); ++i) {
+            Dictionary v = defs[i]; const Defence &a = defences[i];
+            if (Dictionary(v.get("entry", Dictionary())) != a.entry || double(v["delay"]) != a.delay || double(v["rate"]) != a.rate) return false;
+        }
+        if (double(d["jewel_probability"]) != jewel_probability || double(d["jewel_ratio"]) != jewel_ratio) return false;
+        for (int i = 0; i < enemies.size(); ++i) {
+            Dictionary v = enemies[i]; const Actor &a = actors[i];
+            Array drops = v["compiled_drops"];
+            if (int(v["jewel_rolls"]) != a.jewel_rolls || drops.size() != int(a.drops.size())) return false;
+            for (int j = 0; j < drops.size(); ++j) {
+                Dictionary drop = drops[j];
+                if (int(drop["resource"]) != a.drops[j].resource || double(drop["chance"]) != a.drops[j].chance) return false;
+            }
+        }
+        return true;
+    }
+    bool refit_configuration(Dictionary d) {
+        if (!can_refit_configuration(d)) return false;
+        apply_configuration(d, true);
+        return true;
+    }
     bool update_configuration(Dictionary d) {
-        // Validate the complete update before any field, queue or live attack changes.
         if (!can_update_configuration(d)) return false;
+        apply_configuration(d, false);
+        return true;
+    }
+    void apply_configuration(Dictionary d, bool refit) {
+        // Both entrypoints validate before touching fields or published rows.
         Array rows = d["weapons"], defs = d["defences"];
         for (int i = 0; i < rows.size(); ++i) {
             Dictionary v = rows[i];
@@ -1863,6 +1903,7 @@ class SpaceCombatKernel : public RefCounted {
         for (int i = 0; i < defs.size(); ++i) {
             Dictionary v = defs[i];
             Defence &a = defences[i];
+            a.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             a.layer = v["layer"];
             a.base = v["base"];
             a.factor = v["factor"];
@@ -1886,11 +1927,23 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary player = d["player"];
         player_hp = player["armour"];
         player_shield = player["shield"];
+        if (refit) {
+            for (Defence &a : defences) a.loss = 0;
+            Array enemies = d["enemies"];
+            for (int i = 0; i < enemies.size(); ++i) {
+                Dictionary v = enemies[i]; Array drops = v["compiled_drops"];
+                for (int j = 0; j < drops.size(); ++j) {
+                    Dictionary row = drops[j];
+                    actors[i].drops[j].base = row["base"];
+                    actors[i].drops[j].amount = row["amount"];
+                }
+                actors[i].view["compiled_drops"] = drops.duplicate(true);
+            }
+        }
         retain_configuration_bounds();
         reconcile_defence();
         publish_player();
-        compact();
-        return true;
+        if (!refit) compact();
     }
     Array target_views(int type) {
         Array values;

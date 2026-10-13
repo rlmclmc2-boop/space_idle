@@ -246,7 +246,25 @@ func revision_due(elapsed: float, crew_count: int) -> bool:
 		if share>0 and upgrade_cost(slot)-float(slot.upgrade_progress)<=share*elapsed+0.0000001:return true
 	return false
 
-func advance(elapsed: float, crew_count: int, _visible: bool=false) -> void:
+# Prediction owns only building/work state. Map painting and its RNG remain live
+# and run once, after the refit is committed.
+func predict_advance(dt:float, count:int):
+	var next=get_script().new()
+	next.row=row;next.builds=builds;next.blueprint=blueprint
+	next.state=state.duplicate(true);next.slots=next.state.slots
+	next.building_revision=building_revision;next.random.state=random.state
+	next.refresh_counts()
+	next.advance(dt,count,false,false)
+	return next
+
+func commit_prediction(next)->void:
+	for key in next.state:
+		if key not in ["slots","blueprint"]:state[key]=next.state[key]
+	for i in slots.size():slots[i].merge(next.slots[i],true)
+	building_revision=next.building_revision;random.state=next.random.state
+	refresh_counts()
+
+func advance(elapsed: float, crew_count: int, _visible: bool=false, paint_map:bool=true) -> void:
 	if elapsed<=0 or crew_count<=0 or not state.status in ["exploring","developing"]:return
 	var remaining := elapsed
 	var power := float(row.explore_power_base)+crew_count*float(row.explore_power_per_crew)
@@ -293,7 +311,7 @@ func advance(elapsed: float, crew_count: int, _visible: bool=false) -> void:
 		refresh_counts()
 		if progress()>=1:state.status="developing"
 		if is_complete():state.status="complete"
-	sync_map()
+	if paint_map:sync_map()
 func save_data() -> Dictionary:
 	if compressed_revision!=revision:
 		compressed_map=Marshalls.raw_to_base64(cells.compress(FileAccess.COMPRESSION_DEFLATE))
