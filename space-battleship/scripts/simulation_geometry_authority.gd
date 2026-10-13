@@ -190,10 +190,12 @@ func enemy_recognition_mounts(enemy:Dictionary)->Array:
 func turret_pose(index: int) -> Dictionary:
 	if turret_ship!=str(game.profile.selectedShip):
 		turret_visuals.clear()
+		fleet_angles_dirty=true
 		turret_ship = str(game.profile.selectedShip)
 	var entry := game.slot_entry("weapons",index)
 	if not turret_visuals.has(index) or not is_same(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
 		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
+		fleet_angles_dirty=true
 	return turret_visuals[index]
 
 func turret_muzzle(index:int)->Vector2:
@@ -820,6 +822,8 @@ func ensure_fleet_geometry()->void:
 	if fleet_angles_dirty:sync_fleet_angles()
 
 func launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
+	# Launch providers run before fire feedback; validate only this source slot.
+	turret_pose(slot)
 	ensure_fleet_geometry()
 	var point:Vector2=battle_logical_point(fleet_pose.screen_muzzle_for_slot(slot,ordinal))
 	return {"position":point,"direction":(aim-point).normalized()}
