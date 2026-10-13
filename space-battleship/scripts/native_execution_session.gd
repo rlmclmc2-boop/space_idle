@@ -72,6 +72,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 		for defence in descriptor.defences:
 			if int(defence.layer)==(1 if key=="armour" else 0):maximum=game.N.add(maximum,defence.maximum)
 		descriptor.player[key]=game.N.multiply(maximum,ratios[key])
+	descriptor.refit_token=kernel.refit_token()
 	if not kernel.can_refit_configuration(descriptor):return {}
 	return {"descriptor":descriptor,"ratios":ratios}
 

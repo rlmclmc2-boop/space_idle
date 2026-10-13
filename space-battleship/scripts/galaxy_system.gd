@@ -164,7 +164,7 @@ func advance(g, dt: float) -> void:
 func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 	var region=regions[key]
 	if g.native_execution!=null and region.revision_due(dt,int(elapsed_crew[key])):
-		if native_refit.is_empty() and not prepare_region_refit(g,key,dt,int(elapsed_crew[key])):return false
+		if native_refit.is_empty() and not prepare_region_refit(g,key,dt,int(elapsed_crew[key])):return block_region_advance(g)
 		if g.native_execution!=null:
 			var match_plan:bool=not native_refit.is_empty() and native_refit.key==key and is_equal_approx(native_refit.dt,dt) and native_refit.count==int(elapsed_crew[key]) and native_refit.session==g.native_execution
 			if match_plan and not g.native_execution.paused_by_configuration and g.native_execution.commit_galaxy_refit(g,native_refit.plan):
@@ -177,7 +177,7 @@ func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 				region.sync_map()
 				notify_region_advance(g,key,true)
 				return true
-			if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return false
+			if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return block_region_advance(g)
 	if g.native_execution==null or native_refit.get("key","")==key:native_refit.clear()
 	var before := int(region.building_revision)
 	g.capture_refit_health()
@@ -188,6 +188,10 @@ func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 		g.apply_refit_health()
 	notify_region_advance(g,key,before!=region.building_revision)
 	return true
+
+func block_region_advance(g)->bool:
+	g.native_execution.advance_blocked=true;g.native_step_phase="blocked";g.paused=true
+	return false
 
 func notify_region_advance(g,key:String,refitted:bool)->void:
 	if refitted:

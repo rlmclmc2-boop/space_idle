@@ -30,7 +30,10 @@ func _initialize()->void:
    var before=r.save_data().duplicate(true);var rng=r.random.state;var map_rng=r.map_random.state
    var due:bool=r.revision_due(dt,1)
    check(before==r.save_data() and rng==r.random.state and map_rng==r.map_random.state,"preflight pure "+mode)
+   var projected=r.predict_advance(dt,1)
+   check(before==r.save_data() and rng==r.random.state and map_rng==r.map_random.state,"building prediction leaves live state untouched "+mode)
    var revision:int=r.building_revision;r.advance(dt,1)
+   check(projected.state==r.state and projected.building_revision==r.building_revision and projected.random.state==r.random.state,"prediction matches actual state and random continuation "+mode)
    check(due==(r.building_revision!=revision),"boundary prediction "+mode+" "+str(dt))
  # Final work completion is not full progress: construction participates
  # in node_progress(). Cover transition to upgrading with time left in dt.
@@ -62,6 +65,7 @@ func _initialize()->void:
  check(not g.galaxy.flush_pending(g,"galaxy_1") and g.galaxy.elapsed.galaxy_1==10.0 and region.save_data()==state,"direct flush failure retains all work")
  # Visibility switch flushes 9 seconds, then a one-second batch: combined
  # work reaches the ten-second opening boundary before either part mutates.
+ g.paused=false;refusal.advance_blocked=false # Independent visibility-switch refusal case.
  g.galaxy.elapsed.galaxy_1=9.0;g.galaxy.elapsed_visible.galaxy_1=false;g.galaxy.set_visible("galaxy_1")
  check(not g.galaxy.prepare_native_advance(g,1.0) and g.galaxy.elapsed.galaxy_1==9.0 and region.save_data()==state,"switch preflights combined pending/new batch")
  g.native_execution=null

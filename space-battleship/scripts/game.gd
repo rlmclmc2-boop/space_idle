@@ -2831,6 +2831,8 @@ func advance_enemy_shields(dt: float) -> void:
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)
 
 func prepare_logical_step(dt:float)->bool:
+	if native_execution!=null and native_execution.advance_blocked:
+		native_step_phase="blocked";paused=true;return false
 	if galaxy.prepare_native_advance(self,dt):return true
 	native_step_phase="blocked";paused=true
 	return false
@@ -2850,6 +2852,7 @@ func tick(dt: float) -> void:
 	# region work. Failed preparation leaves the complete step in the caller.
 	if not prepare_logical_step(dt):return
 	advance_shared_clock_and_economy(dt)
+	if native_step_phase=="blocked":return
 	if native_execution!=null and native_execution.paused_by_configuration:
 		native_execution.handoff_to_legacy(self,"configuration_notification")
 	# Presented.tick advanced this clock itself on a legacy entry. If a shared
@@ -4382,6 +4385,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy.advance(self,dt)
+	if native_step_phase=="blocked":return
 	crew.advance(self,dt)
 	advance_auto_gen(dt)
 	advance_hightech(dt, dt / maxf(speed, 0.001))

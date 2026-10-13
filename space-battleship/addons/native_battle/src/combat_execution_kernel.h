@@ -163,6 +163,7 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary buffer_rows, loss_rows, defence_time_rows;
     Vector2 player_point;
     uint32_t encounter_generation = 1;
+    uint64_t refit_epoch = 0;
     uint64_t step_serial = 0, event_serial = 0, attack_serial = 0, instance_serial = 0, flight_serial = 0;
     double clock = 0, player_hp = 0, player_shield = 0, resistance = 0.5;
     double last_incoming_at = -100;
@@ -1455,6 +1456,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("can_advance", "seconds"), &SpaceCombatKernel::can_advance);
         ClassDB::bind_method(D_METHOD("can_update_configuration", "descriptor"), &SpaceCombatKernel::can_update_configuration);
         ClassDB::bind_method(D_METHOD("update_configuration", "descriptor"), &SpaceCombatKernel::update_configuration);
+        ClassDB::bind_method(D_METHOD("refit_token"), &SpaceCombatKernel::refit_token);
         ClassDB::bind_method(D_METHOD("can_refit_configuration", "descriptor"), &SpaceCombatKernel::can_refit_configuration);
         ClassDB::bind_method(D_METHOD("refit_configuration", "descriptor"), &SpaceCombatKernel::refit_configuration);
         ClassDB::bind_method(D_METHOD("target_views", "type"), &SpaceCombatKernel::target_views);
@@ -1836,7 +1838,17 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary player = d.get("player", Dictionary());
         return player.has("armour") && player.has("shield") && numeric_fields(player, {"armour","shield"}) && double(player["armour"]) >= 0 && double(player["shield"]) >= 0;
     }
+    Dictionary refit_token() const {
+        Dictionary token;
+        token["epoch"] = int64_t(refit_epoch); token["step"] = int64_t(step_serial);
+        token["rng"] = rng->get_state();
+        token["armour"] = player_row.get("armour", 0.0);
+        token["shield"] = player_row.get("shield", 0.0);
+        return token;
+    }
     bool can_refit_configuration(Dictionary d) const {
+        if (Variant(d.get("refit_token", Variant())).get_type() != Variant::DICTIONARY ||
+            Dictionary(d["refit_token"]) != refit_token()) return false;
         if (!can_update_configuration(d) || double(Dictionary(d["player"])["armour"]) <= 0) return false;
         // Galaxy refits change numeric equipment/health and resource amounts only.
         Array rows = d["weapons"], defs = d["defences"], enemies = d["enemies"];
@@ -1845,8 +1857,12 @@ class SpaceCombatKernel : public RefCounted {
             if (double(v["interval"]) != w.interval ||
                 double(v["speed"]) != w.speed || int(v["salvo"]) != w.salvo ||
                 double(v["charge"]) != w.charge || double(v["ramp"]) != w.ramp ||
-                double(v["maximum"]) != w.maximum || Dictionary(v["entry"]) != w.entry ||
-                Dictionary(v["row"]) != w.row) return false;
+                double(v["maximum"]) != w.maximum || Dictionary(v["entry"]) != w.entry) return false;
+            // Compiled rows may omit UI names, descriptions and purchase costs.
+            // Compare combat fields, not incidental cold/compiled row metadata.
+            Dictionary row = v["row"];
+            for (const char *field : {"level","dmgtype","dmg","dmgMulti","cd","para1","para2","para3","para4","cri","criDmg"})
+                if (row.get(field, Variant()) != w.row.get(field, Variant())) return false;
         }
         for (int i = 0; i < defs.size(); ++i) {
             Dictionary v = defs[i]; const Defence &a = defences[i];
@@ -1875,6 +1891,7 @@ class SpaceCombatKernel : public RefCounted {
         return true;
     }
     void apply_configuration(Dictionary d, bool refit) {
+        ++refit_epoch;
         // Both entrypoints validate before touching fields or published rows.
         Array rows = d["weapons"], defs = d["defences"];
         for (int i = 0; i < rows.size(); ++i) {
@@ -2184,6 +2201,7 @@ class SpaceCombatKernel : public RefCounted {
             ++stale_rejections;
             return false;
         }
+        ++refit_epoch;
         hit_enemy(h, raw, type, {}, false, clock, 0);
         compact();
         return true;
@@ -2191,6 +2209,7 @@ class SpaceCombatKernel : public RefCounted {
     bool receive_player_hit(double raw, int type) {
         if (!admitted || stopped || !std::isfinite(raw) || raw < 0)
             return false;
+        ++refit_epoch;
         player_hit(raw, type, clock);
         return true;
     }
