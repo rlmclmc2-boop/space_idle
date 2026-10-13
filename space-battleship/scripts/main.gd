@@ -1470,6 +1470,8 @@ func enemy_render_width(enemy: Dictionary) -> float:
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
+	if simulation_geometry_view==null and enemy_pose(enemy).has("fixed_layout"):
+		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.width_at(enemy,y)
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
 	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
@@ -1522,6 +1524,8 @@ func enemy_safe_entry_distance()->float:
 	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
+	if simulation_geometry_view==null and enemy_poses.has(int(enemy.slot)) and is_same(enemy_poses[int(enemy.slot)].entity,enemy) and enemy_poses[int(enemy.slot)].has("fixed_layout"):
+		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).frontline)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).frontline)
 	# Measure empty firing space between hull envelopes, not entity centres.
 	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
@@ -1546,6 +1550,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
+	if pose.has("fixed_layout"):return preload("res://scripts/enemy_fixed_layout.gd").position(self,enemy,pose)
 	var age := maxf(0,fx_time-float(pose.born))
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position

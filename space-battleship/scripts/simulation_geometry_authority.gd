@@ -1,5 +1,6 @@
 extends RefCounted
 ## Prototype simulation-owned mathematical geometry. No active scene objects.
+const FIXED_LAYOUT=preload("res://scripts/enemy_fixed_layout.gd")
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
 var game:BattleGame
 var db:ShipDatabase
@@ -413,10 +414,6 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 		offset = Vector2.ZERO
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
-	if columns==5 and game.enemies.size()>=10 and not enemy.get("explicit_formation",false):
-		var rows:=ceili(float(game.enemies.size())/columns)
-		var top:=maxf(100.0,(78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*enemy_config_visual_scale(int(enemy.size))+28.0)
-		target.y=lerpf(top,_source_enemy_frontline_y_limit(enemy),float(slot/columns)/maxf(1.0,rows-1))+offset.y
 	if not enemy.get("explicit_formation",false):target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
 	var pose := {"entity":enemy,"logical_position":Vector2(enemy.x,enemy.y),"target":target,"phase":phase,"born":fx_time,
 		"variance":rng.randf_range(battle_visual.enemy_scale_variance.x,battle_visual.enemy_scale_variance.y),
@@ -432,101 +429,22 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.width_at(enemy,y)
 	return _source_enemy_render_width_at_y(enemy,y)
 
-func _source_enemy_render_width_at_y(enemy: Dictionary, y:float,variance:float=-1.0,frozen_frontline:float=INF) -> float:
-	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
-	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
-	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
-	var frontline:=enemy_frontline_y_limit(enemy) if frozen_frontline==INF else frozen_frontline
-	var depth := clampf((y-90.0)/maxf(1.0,frontline-90.0),0,1)
-	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*(float(enemy_pose(enemy).variance) if variance<0.0 else variance)
-	# Explicit formations reserve fixed screen-pixel mount/protection margins.
-	# On compact windows, reduce the drawn hull as well as its mount envelope;
-	# never validate with a larger fake screen scale or waive real collisions.
-	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:
-		width*=minf(1.0,enemy_recognition_screen_scale()/0.6)
-	# Full five-column fleets reserve space for hover and protection outlines.
-	return minf(width,ENEMY_FORMATION_WIDTH_CAP) if int(enemy.get("formation_count",0))>=4 else width
+func _source_enemy_render_width_at_y(enemy:Dictionary,_y:float,variance:float=-1.0,_frozen_frontline:float=INF)->float:
+	if variance>=0.0:return FIXED_LAYOUT.width(self,enemy,variance)
+	return float(FIXED_LAYOUT.ensure(self,enemy,enemy_pose(enemy)).width)
 
-func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
-	var pose:=enemy_pose(enemy)
-	var width:=enemy_render_width_at_y(enemy,y)
-	var scale_value:=enemy_recognition_screen_scale()
-	var key:=Vector2(ceili(width*scale_value/2.0),scale_value)
-	if not pose.has("top_geometries"):pose.top_geometries={}
-	# The target and top-bound solver sample different width buckets; keep each
-	# cached separately so stationary frames never rebuild alternating envelopes.
-	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=geometry_from_descriptor(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition_mounts(enemy),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
-	var outlines:Array=[packet.inner]
-	if float(enemy.get("max_shield",0))>0:
-		outlines.append(packet.outer)
-		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
-	var top:=0.0
-	# A synchronous outline query shares one ship angle across all vertices.
-	var angle:=PI+enemy_render_angle(enemy)
-	if game.combat_presentation!=null:top=game.combat_presentation.rotated_outlines_min_y(outlines,angle)
-	else:
-		for outline in outlines:
-			for point in outline:top=minf(top,Vector2(point).rotated(angle).y)
-	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
-	var status_space:=28.0 if game.is_boss_encounter() else 16.0
-	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
+func enemy_display_top_clearance(enemy:Dictionary,_y:float)->float:
+	return float(FIXED_LAYOUT.ensure(self,enemy,enemy_pose(enemy)).top)
 
 func enemy_safe_entry_distance()->float:
-	# All ships share this fleet-wide limit. Reuse it only inside one synchronous
-	# process/draw batch at the same animation time; standalone queries stay live.
-	if enemy_entry_batch_active and enemy_entry_distance_time==fx_time:
-		return enemy_entry_distance_value
-	var distance:=float(battle_visual.enemy_entry_distance)
-	for enemy in game.enemies:
-		var pose:=enemy_pose(enemy)
-		var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
-		var hover_margin:=float(battle_visual.enemy_idle_y)*(0.25 if enemy.get("size_formation",false) else 1.0)
-		distance=minf(distance,maxf(0.0,target.y-enemy_display_top_clearance(enemy,target.y)-hover_margin))
-	if enemy_entry_batch_active:
-		enemy_entry_distance_time=fx_time
-		enemy_entry_distance_value=distance
-	return distance
+	return float(battle_visual.enemy_entry_distance)
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.frontline(enemy)
 	return _source_enemy_frontline_y_limit(enemy)
 
-func _source_enemy_frontline_y_limit(enemy: Dictionary) -> float:
-	# Measure empty firing space between hull envelopes, not entity centres.
-	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
-	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
-	var player_front := BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)-absf(float(battle_visual.player_idle_y))-player_half_height
-	var enemy_half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
-	# The legacy cap fits one row. Fifteen-slot groups need the third row;
-	# retain the same measured clearance from the player hull.
-	var max_y := maxf(float(battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(battle_visual.enemy_max_y)
-	# Explicit coordinates deliberately reserve the same authored battlefield
-	# depth budget; this does not claim or require five columns.
-	if enemy.get("explicit_formation",false):max_y=maxf(float(battle_visual.enemy_max_y),0.52)
-	var min_gap:=float(battle_visual.enemy_player_min_gap)
-	if enemy.get("explicit_formation",false):
-		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
-	var clearance:=player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height
-	if game.enemies.size()>=10 and not enemy.get("explicit_formation",false):return clearance
-	return minf(BATTLE_VIEW_SIZE.y*max_y,clearance)
-
-func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
-	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
-	# entry-fleet calculation and never reuse a result across animation time.
-	var appearance:=enemy_appearance(enemy)
-	return [fx_time,Vector2(enemy.x,enemy.y),enemy.size,game.enemies.size()>=10,pose.target,pose.logical_position,
-		pose.phase,pose.rotation,pose.variance,pose.born,pose.duration,pose.entry_x,
-		enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),
-		enemy.get("max_shield",0),enemy.get("shieldRecovery",0),enemy.get("shieldType",0),
-		game.is_final_encounter(),game.is_boss_encounter(),appearance.signature,int(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))).identity),
-		battle_visual.enemy_idle_x,battle_visual.enemy_idle_y,battle_visual.enemy_idle_rotation,
-		battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,battle_visual.enemy_scale_variance.y,battle_visual.enemy_base_scale,
-		battle_visual.enemy_max_y,battle_visual.enemy_player_min_gap,battle_visual.player_core_scale,
-		battle_visual.player_idle_rotation,battle_visual.player_idle_y,battle_visual.player_ship_y,
-		enemy_config_visual_scale(int(enemy.size)),db.config.get("explicitEnemyPlayerMinGap",battle_visual.enemy_player_min_gap),
-		player_base_art_scale(),player_art_scale(),enemy_recognition_screen_scale(),
-		ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0),ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)]
+func _source_enemy_frontline_y_limit(enemy:Dictionary)->float:
+	return float(FIXED_LAYOUT.ensure(self,enemy,enemy_pose(enemy)).frontline)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
@@ -537,53 +455,12 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":point}
 	return point
 
-func _source_enemy_render_position(enemy: Dictionary) -> Vector2:
+func _source_enemy_render_position(enemy:Dictionary)->Vector2:
 	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
 	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.value.position
-	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
-	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
-	var pose := enemy_pose(enemy)
-	var age := maxf(0,fx_time-float(pose.born))
-	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
-	var position_key:Array=[]
-	# Ordinary pose queries and cold drawing keep their cheaper local paths.
-	# Busy logic publishes the existing exact-input key for final display reuse.
-	# Drawing only checks a solved position from this exact logical pose time.
-	# A cold/sparse query without a publication keeps its original path.
-	var reuse_steady:=enter==1.0 and ((enemy_entry_batch_active and not battle_draw_active and (enemy_provider_query_active or game.projectiles.size()>=32)) or float(pose.get("steady_position_time",-INF))==fx_time)
-	if reuse_steady:
-		position_key=enemy_steady_position_key(enemy,pose)
-		if pose.get("steady_position_key",[])==position_key:
-			if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":pose.steady_position}
-			return pose.steady_position
-	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
-	if not enemy.get("explicit_formation",false):target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
-	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
-	if enemy.get("size_formation",false):hover *= 0.25
-	# Shared approach distance keeps each column separated even during entry.
-	# Once entry is complete its distance contributes exactly zero. Avoid the
-	# fleet-wide clearance calculation without caching moving entity state.
-	var entry_distance := enemy_safe_entry_distance() if enter<1.0 else 0.0
-	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))+hover*enter
-	# Explicit formations own their authored top boundary. Their final clamp
-	# never reads minimum_y; do not solve the unused legacy envelope per query.
-	if enemy.get("explicit_formation",false):
-		position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
-	else:
-		var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
-		# Keep the original local top-bound solve for legacy formations.
-		var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
-		for iteration in 3:
-			var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
-			if next_minimum==minimum_y:break
-			minimum_y=next_minimum
-		position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
-	if reuse_steady:
-		pose.steady_position_key=position_key
-		pose.steady_position=position
-		pose.steady_position_time=fx_time
-	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
-	return position
+	var point:Vector2=FIXED_LAYOUT.position(self,enemy,enemy_pose(enemy))
+	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":point}
+	return point
 
 func entity_render_position(entity: Dictionary) -> Vector2:
 	if is_same(entity,game.player):return player_render_position()
@@ -746,7 +623,7 @@ func sync_screen_scale(value:float)->bool:
 
 func invalidate_pose_scale(pose:Dictionary)->void:
 	# Shield recovery and birth/animation history are not geometry caches.
-	for key in ["top_geometries","steady_position_key","steady_position_time","recognition_signature","recognition_geometry","recognition_contract_signature","recognition_width_packets","recognition_width_order"]:pose.erase(key)
+	for key in ["fixed_layout","top_geometries","steady_position_key","steady_position_time","recognition_signature","recognition_geometry","recognition_contract_signature","recognition_width_packets","recognition_width_order"]:pose.erase(key)
 
 func freeze_display_entity(enemy:Dictionary,current:bool=false)->void:
 	var uid:int=int(enemy.uid)
@@ -860,6 +737,7 @@ func on_simulation_event(kind:String,info:Dictionary)->void:
 	var changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if changed:
 		display_row_cache.clear()
+		for pose in enemy_poses.values():pose.erase("fixed_layout")
 		sync_hull()
 		battle_read_model.invalidate_membership()
 		enemy_entry_distance_time=-INF
