@@ -1442,6 +1442,7 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	var offset := Vector2(0,rng.randf_range(-battle_visual.enemy_offset_y,battle_visual.enemy_offset_y))
 	var large := game.is_final_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
 	var columns:=int(enemy.get("formation_columns",10))
+	if game.enemies.size()>columns and not enemy.get("explicit_formation",false):columns=5
 	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
 	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
 	if enemy.get("size_formation",false):
@@ -1449,6 +1450,10 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 		offset = Vector2.ZERO
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
+	if columns==5 and game.enemies.size()>=10 and not enemy.get("explicit_formation",false):
+		var rows:=ceili(float(game.enemies.size())/columns)
+		var top:=maxf(100.0,(78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*enemy_config_visual_scale(int(enemy.size))+28.0)
+		target.y=lerpf(top,enemy_frontline_y_limit(enemy),float(slot/columns)/maxf(1.0,rows-1))+offset.y
 	if not enemy.get("explicit_formation",false):target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
 	var pose := {"entity":enemy,"logical_position":Vector2(enemy.x,enemy.y),"target":target,"phase":phase,"born":fx_time,
 		"variance":rng.randf_range(battle_visual.enemy_scale_variance.x,battle_visual.enemy_scale_variance.y),
@@ -1532,7 +1537,9 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	var min_gap:=float(battle_visual.enemy_player_min_gap)
 	if enemy.get("explicit_formation",false):
 		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
-	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height)
+	var clearance:=player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height
+	if game.enemies.size()>=10 and not enemy.get("explicit_formation",false):return clearance
+	return minf(BATTLE_VIEW_SIZE.y*max_y,clearance)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).position
@@ -1658,7 +1665,9 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	var mount := shot_mount(shot)
 	if mount>=0 and simulation_geometry_view==null:
 		var pose := turret_pose(mount)
-		if key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time):
+		var owns_primary:=bool(shot.get("owns_primary_aim",not bool(shot.get("repeated",false)) and not bool(shot.get("chain_hop",false))))
+		var needs_target:bool=pose.target.is_empty() or not game.enemies.has(pose.target) or float(pose.target.get("hp",0))<=0
+		if owns_primary and needs_target and (key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time)):
 			pose.target = shot.target
 			pose.fired_at = fx_time
 		if key=="cannon":pose.recoil = 0.13
@@ -2677,7 +2686,7 @@ func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Di
 	var width: float=metrics.width if not metrics.is_empty() else font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x
 	var ascent: float=metrics.ascent if not metrics.is_empty() else font.get_ascent(size_value)
 	var height: float=metrics.height if not metrics.is_empty() else font.get_height(size_value)
-	return Rect2(pos-Vector2(maxf(0,92-width)/2,ascent),Vector2(maxf(92,width),height)).grow(4)
+	return Rect2(pos-Vector2(0,ascent),Vector2(width,height)).grow(4)
 
 func damage_text_position(origin: Vector2, value: String, size_value := 19, excluded_entry: Dictionary = {}, context: Dictionary = {}) -> Vector2:
 	if context.is_empty():
@@ -2688,9 +2697,9 @@ func damage_text_position(origin: Vector2, value: String, size_value := 19, excl
 	var width: float=metrics.width
 	for row in 2:
 		for shift in [0,-56,56,-140,140]:
-			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*40)
+			var pos := Vector2(clampf(origin.x-width/2+shift,8,BattleGame.BATTLE_SIZE.x-8-width),origin.y-row*(float(metrics.height)+8.0))
 			var bounds := damage_text_rect(battle_point(pos),value,size_value,metrics)
-			if bounds.position.y<8:continue
+			if bounds.position.y<8 or bounds.end.y>BATTLE_VIEW_SIZE.y-8:continue
 			var blocked := false
 			for item in context.occupied:
 				if not is_same(item[0],excluded_entry) and bounds.grow(8).intersects(item[1]):blocked=true;break

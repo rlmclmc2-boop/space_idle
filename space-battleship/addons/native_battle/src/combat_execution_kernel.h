@@ -22,7 +22,8 @@ class SpaceCombatKernel : public RefCounted {
         double hp = 0, max_hp = 0, shield = 0, max_shield = 0, delay = 0, recovery = 0, shield_at = 0,
                hit_at = 0;
         int armour_type = 0, shield_type = 0, slot = 0;
-        Vector2 logical, point;
+        Vector2 logical, point, screen_point;
+        PackedVector2Array collision_hull;
         Dictionary view;
         std::vector<DropRule> drops;
         int jewel_rolls = 0;
@@ -45,7 +46,7 @@ class SpaceCombatKernel : public RefCounted {
         double crit_rate = 0, crit_multiplier = 2, repeat_probability = 0, repeat_multiplier = 1,
                secondary_probability = 0;
         int chain_count = 0;
-        Vector2 muzzle;
+        Vector2 muzzle, screen_muzzle;
         Dictionary entry, row;
         int64_t beam = -1;
         std::shared_ptr<const BirthConfig> birth;
@@ -671,6 +672,12 @@ class SpaceCombatKernel : public RefCounted {
         f.view["critical"] = inst->attack->critical;
         f.view["attack_instance"] = inst->view;
         f.view["repeated"] = repeated;
+        f.view["owns_primary_aim"] = !w.hostile && !repeated && !chain;
+        if (!w.hostile && m.kind == 0 && t && t->collision_hull.size() >= 3) {
+            f.view["ballistic_target_origin"] = aim;
+            f.view["fixed_screen_origin"] = w.screen_muzzle;
+            f.view["fixed_screen_step"] = (t->screen_point - w.screen_muzzle) / std::max(0.001, distance(from, aim));
+        }
         Dictionary context;
         context["source_id"] = w.hostile ? String("enemy:") + String::num_int64(actors[w.source.index].uid)
                                : w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"])
@@ -1393,9 +1400,17 @@ class SpaceCombatKernel : public RefCounted {
                         m.direction = unit(delta);
                         impact = distance(position(m), aim) <= m.speed * dt;
                     } else {
-                        double along = delta.dot(m.direction);
-                        impact = along >= 0 && along <= m.speed * dt &&
-                                 std::abs(double(delta.cross(m.direction))) <= 0.5;
+                        if (!f.hostile && t && f.view.has("fixed_screen_step")) {
+                            Vector2 step = f.view["fixed_screen_step"], origin = f.view["fixed_screen_origin"];
+                            Vector2 start = origin + step * double((position(m)-Vector2(f.view["launch_point"])).dot(m.direction));
+                            double ratio = hull_contact(start, step * m.speed * dt, t->collision_hull);
+                            impact = ratio <= 1.0;
+                            if (impact) aim = position(m) + m.direction * m.speed * dt * ratio;
+                        } else {
+                            double along = delta.dot(m.direction);
+                            impact = along >= 0 && along <= m.speed * dt &&
+                                     std::abs(double(delta.cross(m.direction))) <= 0.5;
+                        }
                     }
                 }
             }
@@ -1432,6 +1447,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
                              &SpaceCombatKernel::input_geometry);
+        ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles"), &SpaceCombatKernel::input_ballistic_geometry);
         ClassDB::bind_method(D_METHOD("advance", "seconds"), &SpaceCombatKernel::advance);
         ClassDB::bind_method(D_METHOD("can_advance", "seconds"), &SpaceCombatKernel::can_advance);
         ClassDB::bind_method(D_METHOD("can_update_configuration", "descriptor"), &SpaceCombatKernel::can_update_configuration);
@@ -1880,6 +1896,29 @@ class SpaceCombatKernel : public RefCounted {
         for (Handle h : targets(type, clock))
             values.push_back(actors[h.index].view);
         return values;
+    }
+    void input_ballistic_geometry(Array hulls, PackedVector2Array points, PackedVector2Array muzzles) {
+        for (int i = 0; i < int(actors.size()) && i < hulls.size() && i < points.size(); ++i) {
+            actors[i].collision_hull = hulls[i];
+            actors[i].screen_point = points[i];
+        }
+        for (int i = 0; i < int(weapons.size()) && i < muzzles.size(); ++i)
+            weapons[i].screen_muzzle = muzzles[i];
+    }
+    // Return the first contact along the visible fixed ray. Geometry is authored
+    // by the same presentation authority that draws the hull; no seeking here.
+    static double hull_contact(Vector2 p, Vector2 movement, const PackedVector2Array &hull) {
+        bool inside = false;
+        double first = 2.0;
+        for (int i = 0, j = hull.size() - 1; i < hull.size(); j = i++) {
+            Vector2 a = hull[j], b = hull[i], edge = b - a;
+            if ((a.y > p.y) != (b.y > p.y) && p.x < (b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x) inside = !inside;
+            double cross = movement.cross(edge);
+            if (std::abs(cross) < 1e-9) continue;
+            double along = (a-p).cross(edge)/cross, side = (a-p).cross(movement)/cross;
+            if (along >= 0 && along <= 1 && side >= 0 && side <= 1) first = std::min(first, along);
+        }
+        return inside ? 0.0 : first;
     }
     void input_player_point(Vector2 point) {
         player_point = point;

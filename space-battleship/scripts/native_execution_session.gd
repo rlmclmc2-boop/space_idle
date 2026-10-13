@@ -121,6 +121,15 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 		elif weapon.entry.has("drone_id"):
 			muzzles.append(geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position)
 		else:muzzles.append(geometry.launch_pose(int(weapon.slot),aim,0).position)
+	var hulls:Array=[];var screen_points=PackedVector2Array();var screen_muzzles=PackedVector2Array()
+	for actor in actor_rows:
+		var center:Vector2=geometry.enemy_render_position(actor)
+		var packet:Dictionary=geometry.enemy_recognition_geometry(actor,geometry.enemy_render_width(actor))
+		var hull=PackedVector2Array()
+		for vertex in packet.inner:hull.append(center+Vector2(vertex).rotated(PI+geometry.enemy_render_angle(actor)))
+		hulls.append(hull);screen_points.append(center)
+	for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
+	kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles)
 	kernel.input_geometry(points,muzzles)
 	kernel.input_player_point(aim)
 

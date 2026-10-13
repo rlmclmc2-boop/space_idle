@@ -197,7 +197,10 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
 		visual={"shot":shot,"angle":angle,"mount":mount,"origin":e.position,"logical_origin":game.projectile_position(shot),"spread":e.spread,"age":0.0,"head":0,"samples":1,"trail":trail,"trail_times":times}
 	scene.projectile_visuals.append(visual)
 	if game.combat_presentation!=null:game.combat_presentation.register_visual(shot,visual,scene.projectile_visuals.size()-1)
-	if geometry.weapon_key(shot) in ["laser","cannon"] and not shot.target.is_empty():
+	if shot.has("fixed_screen_step"):
+		visual.fixed_origin=shot.fixed_screen_origin;visual.fixed_step=shot.fixed_screen_step
+		visual.fixed_direction=game.projectile_direction(shot);visual.angle=Vector2(visual.fixed_step).angle()
+	elif geometry.weapon_key(shot) in ["laser","cannon"] and not shot.target.is_empty():
 		var aim:Vector2=shot.get("ballistic_target_origin",Vector2(shot.target.x,shot.target.y))
 		var target:Vector2=geometry.battle_point(aim) if shot.has("ballistic_target_origin") else geometry.entity_render_position(shot.target)
 		visual.fixed_origin=geometry.battle_point(e.position)

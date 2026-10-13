@@ -3031,6 +3031,11 @@ func _tick_legacy_projectiles(dt: float) -> void:
 			# intersect this step's segment; proximity alone must not bend the shot.
 			var along: float = delta.dot(shot.direction)
 			var intersects := along>=0 and along<=float(shot.speed)*dt and absf(delta.cross(shot.direction))<=0.5
+			if shot.has("fixed_screen_step"):
+				var ratio:=fixed_ballistic_contact(shot,dt)
+				if ratio>=0:
+					intersects=ratio<=1.0
+					if intersects:impact_point=Vector2(shot.x,shot.y)+Vector2(shot.direction)*float(shot.speed)*dt*ratio
 			if (delta.length() <= shot.speed*dt) if homing else intersects:
 				shot.dead = true
 				event.emit("projectile_impact", {"shot":shot,"pos":impact_point})
@@ -3049,6 +3054,9 @@ func _tick_legacy_projectiles(dt: float) -> void:
 		if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:
 			shot.dead = true
 	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
+
+func fixed_ballistic_contact(_shot:Dictionary,_dt:float)->float:
+	return -1.0
 
 func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
 	return false

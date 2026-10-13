@@ -300,7 +300,7 @@ func advance_turrets(dt: float) -> void:
 		if not shot.get("beam",false) or shot.hostile or shot.get("repeated",false):continue
 		var mount:=int(shot.mount)
 		if mount<0 or mount>=entries.size() or str(entries[mount].get("key","")).is_empty() or beam_targets.has(mount):continue
-		if game.long_laser_valid(shot):beam_targets[mount]=shot.target
+		if not bool(shot.get("chain_hop",false)) and game.long_laser_valid(shot):beam_targets[mount]=shot.target
 	for index in turret_visuals.keys():
 		if int(index)>=entries.size() or str(entries[index].key).is_empty():turret_visuals.erase(index)
 	for index in entries.size():
@@ -396,6 +396,7 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	var offset := Vector2(0,rng.randf_range(-battle_visual.enemy_offset_y,battle_visual.enemy_offset_y))
 	var large := game.is_final_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
 	var columns:=int(enemy.get("formation_columns",10))
+	if game.enemies.size()>columns and not enemy.get("explicit_formation",false):columns=5
 	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
 	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
 	if enemy.get("size_formation",false):
@@ -403,6 +404,10 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 		offset = Vector2.ZERO
 	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
 	var target := anchor+offset
+	if columns==5 and game.enemies.size()>=10 and not enemy.get("explicit_formation",false):
+		var rows:=ceili(float(game.enemies.size())/columns)
+		var top:=maxf(100.0,(78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*enemy_config_visual_scale(int(enemy.size))+28.0)
+		target.y=lerpf(top,_source_enemy_frontline_y_limit(enemy),float(slot/columns)/maxf(1.0,rows-1))+offset.y
 	if not enemy.get("explicit_formation",false):target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
 	var pose := {"entity":enemy,"logical_position":Vector2(enemy.x,enemy.y),"target":target,"phase":phase,"born":fx_time,
 		"variance":rng.randf_range(battle_visual.enemy_scale_variance.x,battle_visual.enemy_scale_variance.y),
@@ -491,7 +496,9 @@ func _source_enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	var min_gap:=float(battle_visual.enemy_player_min_gap)
 	if enemy.get("explicit_formation",false):
 		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
-	return minf(BATTLE_VIEW_SIZE.y*max_y,player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height)
+	var clearance:=player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height
+	if game.enemies.size()>=10 and not enemy.get("explicit_formation",false):return clearance
+	return minf(BATTLE_VIEW_SIZE.y*max_y,clearance)
 
 func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 	# Exact live inputs of the settled pose/width/top-bound solve. Retain no
@@ -854,12 +861,14 @@ func on_simulation_event(kind:String,info:Dictionary)->void:
 		if kind=="beam_started":pose.fired_at=fx_time;return
 		var key=weapon_key(shot)
 		if key=="longLaser":return
+		if key=="cannon":pose.recoil=0.13
+		if not bool(shot.get("owns_primary_aim",not bool(shot.get("repeated",false)) and not bool(shot.get("chain_hop",false)))):return
+		if not pose.target.is_empty() and game.enemies.has(pose.target) and float(pose.target.get("hp",0))>0:return
 		# This is combat geometry state, historically written by weapon_launch.
 		# Preserve synchronous event order and same-substep missile release targets.
 		if key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time):
 			pose.target=shot.target
 			pose.fired_at=fx_time
-		if key=="cannon":pose.recoil=0.13
 
 func drone_identity(shot:Dictionary)->String:
 	if bool(shot.get("hostile",false)):return ""

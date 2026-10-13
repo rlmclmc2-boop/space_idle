@@ -225,6 +225,9 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 	if launch_records.size()>=2048:launch_records.pop_front()
 	launch_records.append({"time":motion_clock,"serial":int(shot.serial),"mount":int(shot.mount),"ordinal":int(packet.ordinal),"position":origin,"target_alive":target_alive,"target_uid":int(shot.target.get("uid",-1)),"damage":shot.damage})
 
+func fixed_ballistic_contact(shot:Dictionary,dt:float)->float:
+	return target_spatial_source.ballistic_contact(shot,dt) if target_spatial_source!=null and target_spatial_source.has_method("ballistic_contact") else -1.0
+
 func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 	if bool(shot.hostile) or not bool(shot.get("prototype_missile",false)):return false
 	shot.motion_age=float(shot.motion_age)+dt

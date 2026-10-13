@@ -72,12 +72,7 @@ func _width_base(enemy:Dictionary)->Dictionary:
 	return {"base":base,"scale":host.enemy_config_visual_scale(int(enemy.size)),"explicit_scale":minf(1.0,float(config.screen_scale)/0.6) if enemy.get("explicit_formation",false) and int(enemy.size)>=4 else 1.0,"capped":int(enemy.get("formation_count",0))>=4}
 
 func _frontline(enemy:Dictionary)->float:
-	var half=(78.0 if bool(config.final) else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*host.enemy_config_visual_scale(int(enemy.size))
-	var max_y=maxf(float(host.battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(host.battle_visual.enemy_max_y)
-	if enemy.get("explicit_formation",false):max_y=maxf(float(host.battle_visual.enemy_max_y),0.52)
-	var gap=float(host.battle_visual.enemy_player_min_gap)
-	if enemy.get("explicit_formation",false):gap=clampf(float(host.db.config.get("explicitEnemyPlayerMinGap",gap)),0.0,1.0)
-	return minf(host.BATTLE_VIEW_SIZE.y*max_y,float(config.player_front)-host.BATTLE_VIEW_SIZE.y*gap-half)
+	return host._source_enemy_frontline_y_limit(enemy) if host.has_method("_source_enemy_frontline_y_limit") else host.enemy_frontline_y_limit(enemy)
 
 func components(enemy:Dictionary)->Array:
 	return appearance(enemy).components
@@ -173,3 +168,20 @@ func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
 	for component in components_value:poses.append(host.enemy_component_pose(enemy,component,point,width))
 	result.merge({"position":point+offset,"width":width,"angle":angle,"light":host.enemy_hull_light(enemy),"types":host.enemy_attack_types(enemy),"packet":packet,"status":status,"layout":host.enemy_status_layout(enemy,point+offset,width,angle,outline),"mounts":poses})
 	return result
+
+func ballistic_contact(shot:Dictionary,dt:float)->float:
+	# Handoff retains the fixed screen ray and queries the current hull authority.
+	var enemy:Dictionary=shot.target
+	var center:Vector2=host.enemy_render_position(enemy)
+	var packet:Dictionary=host.enemy_recognition_geometry(enemy)
+	var hull=PackedVector2Array()
+	for vertex in packet.inner:hull.append(center+Vector2(vertex).rotated(PI+host.enemy_render_angle(enemy)))
+	var direction:Vector2=shot.direction;var step:Vector2=shot.fixed_screen_step
+	var start:Vector2=shot.fixed_screen_origin+step*(Vector2(shot.x,shot.y)-Vector2(shot.launch_point)).dot(direction)
+	var movement:=step*float(shot.speed)*dt
+	if Geometry2D.is_point_in_polygon(start,hull):return 0.0
+	var first:=2.0
+	for i in hull.size():
+		var contact=Geometry2D.segment_intersects_segment(start,start+movement,hull[i],hull[(i+1)%hull.size()])
+		if contact!=null and movement.length_squared()>0:first=minf(first,(Vector2(contact)-start).dot(movement)/movement.length_squared())
+	return first
