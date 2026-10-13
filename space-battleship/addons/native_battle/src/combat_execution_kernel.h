@@ -106,6 +106,7 @@ class SpaceCombatKernel : public RefCounted {
         std::shared_ptr<Instance> instance;
         size_t owner_flight = SIZE_MAX;
         uint32_t owner_generation = 0;
+        bool damage_derived = false; // Carrier provenance is separate from shared chain allowance.
     };
     struct Later {
         bool operator()(const Timed &a, const Timed &b) const {
@@ -462,7 +463,7 @@ class SpaceCombatKernel : public RefCounted {
             inst->beam = true;
             inst->primary = target;
             inst->chain_used = true;
-            inst->count = repeated || w.hostile ? 0 : w.chain_count;
+            inst->count = w.hostile ? 0 : w.chain_count;
             auto candidates = targets(w.type, clock);
             if (!w.hostile && !repeated && prism_count > 0) {
                 bool available = true;
@@ -504,7 +505,7 @@ class SpaceCombatKernel : public RefCounted {
         return id;
     }
     void hit_enemy(Handle h, double raw, int type, const std::shared_ptr<Instance> &inst, bool trigger,
-                   double at, int wi) {
+                   double at, int wi, bool chain_trigger = false) {
         Actor *a = resolve(h);
         if (!a) {
             ++stale_rejections;
@@ -601,7 +602,9 @@ class SpaceCombatKernel : public RefCounted {
                 }
             }
         }
-        if (trigger && inst && !inst->ended && !inst->derived) {
+        // Death/attack triggers stay gated by trigger; an independent chain allowance
+        // does not grant those decisions to repeats, secondary copies or chain hops.
+        if ((trigger || chain_trigger) && inst && !inst->ended) {
             if (inst->beam) {
                 if (inst->primary.index == h.index)
                     for (Handle link : inst->links)
@@ -870,7 +873,8 @@ class SpaceCombatKernel : public RefCounted {
         incoming_effect(loss, absorbed, type, at);
     }
     void launch(int wi, Handle target, std::shared_ptr<const Attack> a, double multiplier,
-                bool repeated = false, bool distribute = true, double inherited_maximum = -1) {
+                bool repeated = false, bool distribute = true, double inherited_maximum = -1,
+                std::shared_ptr<Instance> shared_instance = {}) {
         Weapon w = committed_weapon(wi, a->birth);
         if (repeated && w.kind == 3) {
             for (Handle choice : targets(w.type, clock)) {
@@ -879,14 +883,17 @@ class SpaceCombatKernel : public RefCounted {
                 if (!occupied) { target = choice; break; }
             }
         }
-        auto inst = instance(a);
-        inst->derived = repeated;
+        auto inst = shared_instance ? shared_instance : instance(a);
+        if (!shared_instance) inst->derived = repeated;
         if (w.kind == 2 && !w.hostile) {
             auto choices = targets(w.type, clock);
-            for (int n = 0; n < w.salvo; ++n)
-                ejections.push({clock + n * ejection_gap, ++event_serial, 1, wi, n,
-                                distribute && !choices.empty() ? choices[n % choices.size()] : target, a,
-                                multiplier, inst});
+            for (int n = 0; n < w.salvo; ++n) {
+                Timed pending{clock + n * ejection_gap, ++event_serial, 1, wi, n,
+                              distribute && !choices.empty() ? choices[n % choices.size()] : target, a,
+                              multiplier, inst};
+                pending.damage_derived = repeated;
+                ejections.push(pending);
+            }
             return;
         }
         size_t id = birth(wi, target, inst, multiplier, repeated);
@@ -901,7 +908,7 @@ class SpaceCombatKernel : public RefCounted {
                 weapons[wi].beam = id;
         } else if (w.kind == 1 && !w.hostile) {
             effect(1, f, f.aim, clock);
-            hit_enemy(target, f.damage, f.type, inst, true, clock, wi);
+            hit_enemy(target, f.damage, f.type, inst, !repeated, clock, wi, true);
             retire(id);
         }
     }
@@ -932,12 +939,12 @@ class SpaceCombatKernel : public RefCounted {
             launch(wi, {}, a, 1);
             return;
         }
+        auto primary_instance = instance(a);
         if (scatter && w.kind == 0) {
-            auto inst = instance(a);
             for (Handle h : candidates)
-                birth(wi, h, inst, 1);
+                birth(wi, h, primary_instance, 1);
         } else
-            launch(wi, candidates.front(), a, 1);
+            launch(wi, candidates.front(), a, 1, false, true, -1, primary_instance);
         if (final_cleared) return;
         if (w.kind != 3 && a->repeats)
             repeats.push(
@@ -945,7 +952,7 @@ class SpaceCombatKernel : public RefCounted {
         if (w.kind != 3 && a->secondary && candidates.size() > 1) {
             Vector2 target_position = actors[candidates[1].index].point;
             int64_t target_uid = actors[candidates[1].index].uid;
-            launch(wi, candidates[1], a, 1, true, false);
+            launch(wi, candidates[1], a, 1, true, false, -1, primary_instance);
             Effect secondary;
             secondary.kind = 8;
             secondary.time = clock;
@@ -1008,7 +1015,7 @@ class SpaceCombatKernel : public RefCounted {
             if (f.hostile)
                 player_hit(raw, f.type, p.at);
             else
-                hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, p.at, f.weapon);
+                hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, p.at, f.weapon, true);
             if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
                 auto candidates = targets(f.type, p.at);
                 for (Handle h : candidates)
@@ -1095,7 +1102,7 @@ class SpaceCombatKernel : public RefCounted {
                 q.target = t.front();
             }
             birth(q.weapon, q.target, q.instance ? q.instance : instance(q.attack), q.multiplier,
-                  q.instance && q.instance->derived);
+                  q.damage_derived);
         }
         beam_periods(0.0, true, defence_at);
         if (stopped || final_cleared) { compact(); executing = false; return; }
@@ -1168,7 +1175,7 @@ class SpaceCombatKernel : public RefCounted {
                 if (f.hostile)
                     player_hit(f.damage, f.type, clock);
                 else
-                    hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain, clock, f.weapon);
+                    hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain && !f.repeated, clock, f.weapon, !f.chain);
                 retire(id);
                 continue;
             }
@@ -1583,7 +1590,7 @@ class SpaceCombatKernel : public RefCounted {
             const Flight &f = flights[id]; if (!f.live) continue;
             Dictionary row; row["view"] = f.view; row["weapon_index"] = f.weapon;
             row["snapshot"] = attack_view(f.instance->attack); row["instance"] = instance_view(f.instance);
-            row["instance_derived"] = f.instance->derived; row["damage"] = f.damage;
+            row["instance_derived"] = f.repeated; row["damage"] = f.damage;
             row["multiplier"] = f.multiplier; row["age"] = f.age; row["next_hit"] = f.next_hit;
             row["ticks"] = f.ticks; row["charge"] = f.charge; row["interval"] = f.interval;
             row["ramp"] = f.ramp; row["maximum"] = f.maximum; row["cruise_speed"] = f.cruise_speed;
@@ -1616,7 +1623,7 @@ class SpaceCombatKernel : public RefCounted {
                 row["weapon_index"] = q.weapon; row["due"] = q.at; row["remaining"] = nonnegative(q.at - clock);
                 row["ordinal"] = q.ordinal; row["multiplier"] = q.multiplier;
                 row["target"] = q.target.index < actors.size() ? actors[q.target.index].view : Dictionary();
-                row["snapshot"] = attack_view(q.attack); row["instance"] = instance_view(q.instance); row["derived"] = q.instance && q.instance->derived;
+                row["snapshot"] = attack_view(q.attack); row["instance"] = instance_view(q.instance); row["derived"] = q.damage_derived;
                 row["owner_index"] = q.owner_flight == SIZE_MAX ? -1 : int64_t(q.owner_flight);
                 row["owner_generation"] = int64_t(q.owner_generation); rows.push_back(row);
             }

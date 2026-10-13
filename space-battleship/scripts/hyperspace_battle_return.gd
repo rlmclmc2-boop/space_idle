@@ -41,7 +41,7 @@ static func capture(g)->String:
 		var entries:Array=g.combat_weapon_entries() if kind=="weapons" else g.defense_entries()
 		for index in entries.size():codec.bindings.append({"kind":kind,"index":index,"entry":entries[index]})
 	var root:Dictionary={"player":g.player,"enemies":g.enemies,"projectiles":g.projectiles,"jewel_repeats":g.jewel_repeats,"drone_delayed":g.drone_combat.delayed,"branch_weapons":g.enhancement_branches.weapons,"branch_defenses":g.enhancement_branches.defenses,"attack_contexts":g.enhancement_attack_contexts}
-	for key in ["retreat_from","retreat_target","retreat_elapsed","guard_index","guard_elapsed","guard_engaged","first_clear","enemy_shield_time","enemy_shield_hit_time"]:root[key]=g.get(key)
+	for key in ["retreat_from","retreat_target","retreat_elapsed","guard_index","guard_elapsed","guard_engaged","first_clear","enemy_shield_time","enemy_shield_hit_time","enhancement_memory_due_pending","enhancement_deferred_due_pending"]:root[key]=g.get(key)
 	for key in ["pending_hits","missile_queue","motion_clock","release_context"]:
 		if g.get(key)!=null:root[key]=g.get(key)
 	var graph:Variant=codec.encode(root)
@@ -132,6 +132,8 @@ static func valid(text:String)->bool:
 		if not preload("res://scripts/hyperspace_config.gd").integer(root.get(key)):return false
 	for key in ["guard_engaged","first_clear"]:
 		if not root.get(key) is bool:return false
+	for key in ["enhancement_memory_due_pending","enhancement_deferred_due_pending"]:
+		if root.has(key) and not root[key] is bool:return false
 	return true
 
 static func restore(g,text:String)->void:
@@ -141,7 +143,7 @@ static func restore(g,text:String)->void:
 	g.enemies.assign(root.enemies);g.projectiles.assign(root.projectiles);g.jewel_repeats.assign(root.jewel_repeats)
 	g.drone_combat.delayed=root.drone_delayed
 	g.enhancement_branches.weapons=root.branch_weapons;g.enhancement_branches.defenses=root.branch_defenses;g.enhancement_attack_contexts=root.attack_contexts
-	for key in ["retreat_from","retreat_target","retreat_elapsed","guard_index","guard_elapsed","guard_engaged","first_clear","enemy_shield_time","enemy_shield_hit_time","motion_clock","release_context"]:
+	for key in ["retreat_from","retreat_target","retreat_elapsed","guard_index","guard_elapsed","guard_engaged","first_clear","enemy_shield_time","enemy_shield_hit_time","motion_clock","release_context","enhancement_memory_due_pending","enhancement_deferred_due_pending"]:
 		if root.has(key):g.set(key,root[key])
 	for key in ["pending_hits","missile_queue"]:
 		if root.has(key):g.get(key).assign(root[key])

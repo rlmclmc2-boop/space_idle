@@ -206,6 +206,22 @@ func memory_resistance(g,index: int,type: int) -> float:
  if not active(g,entry,"memory_material",2,"B") or data.lockout>0 or data.resistance_time<=0 or int(data.resistance_type)!=type:return 0.0
  return resistance(g,entry,g.enhancement_parameter("memory_b2_resistance"))
 
+func next_defense_step(g) -> float:
+ reconcile(g)
+ var step:=INF
+ for remaining in [memory_reduction_remaining,clear_reduction_remaining]:
+  if remaining>0:step=minf(step,float(remaining))
+ for index in g.defense_entries().size():
+  var entry:Dictionary=g.slot_entry("defence",index);var data:=defense(g,index)
+  for field in ["resistance_time","lockout","cover_time"]:
+   if float(data[field])>0:step=minf(step,float(data[field]))
+  if active(g,entry,"adaptation",2,"B"):
+   var interval:float=g.enhancement_parameter("adaptation_b2_interval")
+   if not is_finite(interval) or interval<=0.000000001:
+    push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid cover interval");return -1.0
+   step=minf(step,maxf(0.0,interval-float(data.cover_elapsed)))
+ return step
+
 func advance_defense(g,dt: float) -> void:
  reconcile(g)
  memory_reduction_remaining=maxf(0.0,memory_reduction_remaining-dt)
