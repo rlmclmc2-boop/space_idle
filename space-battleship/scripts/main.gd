@@ -422,6 +422,7 @@ func _process(delta: float) -> void:
 	if ui_rebuild_pending and not get_viewport().gui_is_dragging():
 		ui_rebuild_pending = false
 		build_ui()
+	if battle_slice_runtime!=null:battle_slice_runtime.sync_screen_scale(enemy_recognition_screen_scale())
 	sync_accelerated_visual_mode()
 	var dt := maxf(0,delta) if background_unfocused else minf(delta,0.1)
 	clock += dt
@@ -1001,13 +1002,13 @@ func railgun_component_charge(component, enemy: Dictionary = {}) -> float:
 			continue
 		else:
 			if slot>=enemy.cooldowns.size() or str(enemy.equipment[slot].name).replace("_mon", "").replace("-mon", "")!="cannon":continue
-			remaining=float(enemy.cooldowns[slot])
+			remaining=float(game.native_execution.kernel.cooldown_remaining(slot,int(enemy.uid))) if game.native_execution!=null else float(enemy.cooldowns[slot])
 		progress=maxf(progress,railgun_fx.charge(remaining,maxf(0.01,game.speed)))
 	return progress
 
 func player_railgun_charge(slot: int) -> float:
 	var entry: Dictionary=game.slot_entry("weapons",slot)
-	var remaining := float(game.cooldowns.get(game.slot_id("weapons",slot),INF))
+	var remaining := float(game.native_execution.kernel.cooldown_remaining(slot)) if game.native_execution!=null else float(game.cooldowns.get(game.slot_id("weapons",slot),INF))
 	var base: Dictionary=db.equip("cannon",int(entry.get("level",1)))
 	return railgun_fx.player_charge(remaining,game.enhancement_branches.cooldown_multiplier(game,entry),float(base.cd))
 

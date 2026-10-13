@@ -15,10 +15,99 @@ func core(d:Dictionary):
  var k=ClassDB.instantiate("SpaceCombatKernel")
  check(k.configure(d),"admission")
  return k
+func timing_contract()->void:
+ const STEP=1.0/60.0
+ for kind in [0,1,2,3]:
+  var d=world(kind);d.enemies[0].hp=1e9;d.enemies[0].max_hp=1e9
+  d.weapons[0].interval=0.03;d.weapons[0].charge=-1.0
+  var k=core(d);var launches:Array=[];var periods:Array=[]
+  for step in 60:
+   k.advance(STEP)
+   for e in k.take_feedback():
+    if int(e.kind)==0:launches.append(step+1)
+    if int(e.kind)==6:periods.append(float(e.clock))
+  if kind==3:
+   check(launches==[1] and periods.size()==32,"persistent beam uses CD for32 periods, not new roots")
+   for i in periods.size():check(is_equal_approx(periods[i],STEP+0.03*(i+1)),"beam period has authored due time")
+  else:
+   var expected:Array=[]
+   for step in range(1,61,2):expected.append(step)
+   check(launches==expected and k.metrics().root_attacks==30,"fixed-step reset CD across weapon "+str(kind))
+  k.cancel()
+ var d=world(3);d.enemies[0].hp=1e9;d.enemies[0].max_hp=1e9
+ d.weapons[0].charge=0.1;d.weapons[0].interval=0.05
+ var k=core(d);var periods:Array=[]
+ for step in 20:
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==6:periods.append(float(e.clock))
+ check(periods.size()==5 and is_equal_approx(k.enemy_views()[0].hp,1e9-50.0),"nonzero charge pays exactly five continuous periods")
+ for i in periods.size():check(is_equal_approx(periods[i],STEP+0.1+0.05*i),"charge then authored continuous period time")
+ k.cancel()
+ for kind in [0,1,2,3]:
+  d=world(kind);d.enemies[0].hp=1e9;d.enemies[0].max_hp=1e9
+  d.weapons[0].interval=10.0;d.weapons[0].charge=0.05;d.weapons[0].repeat_probability=1.0;d.repeat_delay=0.1
+  k=core(d);var births:Array=[]
+  var repeat_step=10 if kind==3 else 7
+  for step in repeat_step-1:
+   k.advance(STEP)
+   for e in k.take_feedback():
+    if int(e.kind)==0:births.append(float(e.clock))
+  check(births.size()==1 and k.metrics().repeat_queue==1,"repeat waits full delay for weapon "+str(kind))
+  k.advance(STEP)
+  for e in k.take_feedback():
+   if int(e.kind)==0:births.append(float(e.clock))
+  check(births.size()==2 and is_equal_approx(births[1],repeat_step*STEP),"probability1 repeat born once at due boundary "+str(kind))
+  for step in 60:
+   k.advance(STEP)
+   for e in k.take_feedback():
+    if int(e.kind)==0:births.append(float(e.clock))
+  check(births.size()==2 and k.metrics().repeat_queue==0 and k.metrics().root_attacks==2,"derived repeat cannot recursively repeat "+str(kind))
+  k.cancel()
+func hostile_beam_contract()->void:
+ const STEP=1.0/60.0
+ var d=world(3);d.enemies=[actor(100),actor(101,200.0)]
+ var pulse=weapon(0,true);pulse.damage=7.0;pulse.interval=10.0
+ d.weapons=[weapon(3,true),pulse];d.weapons[0].interval=0.05
+ var k=core(d);k.advance(STEP);k.take_feedback()
+ var beam:Dictionary=k.projectile_views().filter(func(shot):return bool(shot.get("beam",false)))[0]
+ var shield:float=k.player_view().shield
+ check(k.hit_handle(k.actor_handle(100),1000.0,1),"hostile beam source killed while another enemy lives")
+ check(beam.dead and k.projectile_views().any(func(shot):return not bool(shot.get("beam",false)) and not bool(shot.dead)),"source death retires only continuous beam, ordinary carrier survives")
+ k.take_feedback()
+ for i in 3:k.advance(STEP)
+ var incoming=0
+ for e in k.take_feedback():
+  if int(e.kind)==2 and bool(e.player):incoming+=1
+ check(incoming==0 and k.player_view().shield==shield,"dead hostile source cannot pay another beam period")
+ for i in 10:k.advance(STEP)
+ for e in k.take_feedback():
+  if int(e.kind)==2 and bool(e.player):incoming+=1
+ check(incoming==1 and k.player_view().shield<shield,"ordinary hostile in-flight shot still settles once after source death")
+ k.cancel()
+ d=world(3);d.enemies=[actor(100),actor(101,200.0)]
+ var friendly=weapon(3);friendly.damage=1000.0
+ d.weapons=[friendly,weapon(3,true)]
+ k=core(d);k.advance(STEP)
+ check(k.enemy_views()[0].hp==0.0 and k.player_view().shield==100.0,"earlier lethal period invalidates later queued hostile period in same segment")
+ k.cancel()
+ d=world(1);d.weapons[0].source=-1;d.weapons[0].remaining=0.3;d.weapons[0].interval=0.3;d.repeat_delay=0.1;d.defences=[]
+ k=core(d);k.advance(0.1)
+ var before:Dictionary=k.export_handoff().duplicate(true)
+ check(is_equal_approx(k.cooldown_remaining(0),0.2) and k.export_handoff()==before,"cooldown read observes root deadline without mutation")
+ k.advance(0.2)
+ check(is_equal_approx(k.cooldown_remaining(0),0.3),"first shot publishes next root cooldown")
+ d.weapons[0].damage=20.0
+ check(k.update_configuration(d) and is_equal_approx(k.cooldown_remaining(0),0.3),"numeric update preserves pending root deadline")
+ k.advance(0.3)
+ check(k.metrics().root_attacks==2 and is_equal_approx(k.cooldown_remaining(0),0.3),"second firing cycle uses the same authoritative deadline")
+ k.cancel()
 func _initialize()->void:call_deferred("run")
 func run()->void:
  check(ClassDB.class_exists("SpaceCombatKernel"),"native extension class registered")
  if not ClassDB.class_exists("SpaceCombatKernel"):quit(1);return
+ timing_contract()
+ hostile_beam_contract()
  for kind in [0,1,2,3]:
   var d=world(kind);d.enemies[0].x=100.0
   var k=core(d)
@@ -106,7 +195,7 @@ func run()->void:
  var observed=[];g.event.connect(func(kind,info):observed.append({"kind":kind,"info":info}))
  d=world(0);d.execution_scope="native_low_contract";d.enemies=[actor(100,30,5,4),actor(101,1000,100,0)]
  check(g.admit_native_execution(d),"one existing Game accepts bounded native execution")
- check(not g.native_lifecycle_allowed() and not is_same(g.enemies,old_enemies) and not is_same(g.player,old_player) and not is_same(g.projectiles,old_projectiles),"old bodies and callback pipeline retired at admission")
+ check(g.native_execution!=null and g.native_execution.kernel.metrics().old_game_callbacks==0 and not is_same(g.enemies,old_enemies) and not is_same(g.player,old_player) and not is_same(g.projectiles,old_projectiles),"old bodies and callback pipeline retired at admission")
  var stable_enemies=g.enemies;var stable_player=g.player;var stable_projectiles=g.projectiles
  for i in 5:g.tick(1.0/60.0)
  check(g.enemies[0].hp==0.0,"Game read view observes native real lethal settlement")

@@ -2254,7 +2254,12 @@ func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Diction
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
 func long_laser_valid(shot: Dictionary) -> bool:
-	if native_execution!=null:return state==State.COMBAT and not bool(shot.dead) and not shot.target.is_empty() and (N.compare(player.armour,0)>0 if bool(shot.hostile) else float(shot.target.hp)>0)
+	if native_execution!=null:
+		if state!=State.COMBAT or bool(shot.dead) or shot.target.is_empty():return false
+		if bool(shot.hostile):
+			var source:Dictionary=shot.get("source",{})
+			return not source.is_empty() and float(source.get("hp",0))>0 and is_same(native_execution.actor_by_uid.get(int(source.get("uid",-1)),{}),source) and N.compare(player.armour,0)>0
+		return float(shot.target.hp)>0
 	if state != State.COMBAT or shot.dead or shot.target.is_empty() or not is_same(shot.target, shot.locked_target):
 		return false
 	if shot.hostile:

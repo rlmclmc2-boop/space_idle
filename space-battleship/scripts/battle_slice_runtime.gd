@@ -53,6 +53,14 @@ func install(root)->void:
 	snapshot()
 	scene.ship_view.numeric_slice_only=true
 	started=true
+func sync_screen_scale(value:float)->bool:
+	if not geometry.sync_screen_scale(value):return false
+	snapshot()
+	scene.paused_presentation_signature=""
+	# A zero-step/paused frame may keep the normal draw signature unchanged.
+	scene.battle_layer.queue_redraw();scene.battle_hud_layer.queue_redraw()
+	scene.pulse_layer.queue_redraw()
+	return true
 func advance(seconds:float)->void:
 	advancing=true
 	remainder+=seconds
@@ -76,12 +84,13 @@ func advance(seconds:float)->void:
 	advancing=false
 func snapshot()->void:
 	var retained:Dictionary={}
-	for enemy in game.enemies:retained[int(enemy.uid)]=true
+	for enemy in game.enemies:retained[int(enemy.uid)]=enemy
 	# Labels and in-flight shots may still reference a departed target.
 	for entry in scene.floats+scene.damage_pending:
-		if entry.has("target_entity"):retained[int(entry.target_entity.uid)]=true
+		if entry.has("target_entity"):retained[int(entry.target_entity.uid)]=entry.target_entity
 	for shot in game.projectiles:
-		if not shot.target.is_empty() and shot.target.has("uid"):retained[int(shot.target.uid)]=true
+		for entity in [shot.get("target",{}),shot.get("source",{})]:
+			if not entity.is_empty() and entity.has("uid") and born.has(int(entity.uid)):retained[int(entity.uid)]=entity
 	for uid in born.keys():
 		if not retained.has(uid):
 			born.erase(uid);view.retire(uid);geometry.retire_display_entity(uid)
@@ -89,12 +98,13 @@ func snapshot()->void:
 	for shot in game.projectiles:active_serials[int(shot.serial)]=true
 	for serial in muzzle_values.keys():
 		if not active_serials.has(serial):muzzle_values.erase(serial)
-	for enemy in game.enemies:
+	for enemy in retained.values():
 		var uid=int(enemy.uid)
 		if not born.has(uid):
 			view.descriptor(uid,geometry.display_descriptor(enemy));born[uid]=true
+		if not game.enemies.has(enemy):geometry.freeze_display_entity(enemy)
 	# One final record, not an event-time world publication.
-	var values:Dictionary=geometry.display_frame(game.enemies)
+	var values:Dictionary=geometry.display_frame(retained.values())
 	view.apply(values);frame=values.fleet
 	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship

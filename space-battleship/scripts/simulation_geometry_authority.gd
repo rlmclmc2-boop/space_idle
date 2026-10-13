@@ -230,11 +230,11 @@ func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.IN
 		return row.components[int(component.owner_slot)]
 	return _source_enemy_component_pose(enemy,component,render_position,known_width)
 
-func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0)->Dictionary:
+func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0,frozen_angle:float=INF)->Dictionary:
 	var point:Dictionary=component.hardpoint
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y) if known_width<0.0 else known_width
-	var hull_angle:=enemy_render_angle(enemy)
+	var hull_angle:=enemy_render_angle(enemy) if frozen_angle==INF else frozen_angle
 	var normalized:Array=point.pos
 	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
@@ -378,6 +378,8 @@ func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) ->
 	return Vector2(BattleGame.enemy_slot_position(slot).x,(130.0 if large else 120.0)+scale_offset)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
+	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
+	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.pose
 	# One mutable pose per slot, with exact entity identity. Residual access
 	# to a dead/departed entity may recreate this legacy pose; appearance
 	# publications own their immutable descriptors independently. Consumers
@@ -413,12 +415,13 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.width_at(enemy,y)
 	return _source_enemy_render_width_at_y(enemy,y)
 
-func _source_enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
+func _source_enemy_render_width_at_y(enemy: Dictionary, y:float,variance:float=-1.0,frozen_frontline:float=INF) -> float:
 	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
 	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
 	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
-	var depth := clampf((y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
-	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*float(enemy_pose(enemy).variance)
+	var frontline:=enemy_frontline_y_limit(enemy) if frozen_frontline==INF else frozen_frontline
+	var depth := clampf((y-90.0)/maxf(1.0,frontline-90.0),0,1)
+	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*(float(enemy_pose(enemy).variance) if variance<0.0 else variance)
 	# Explicit formations reserve fixed screen-pixel mount/protection margins.
 	# On compact windows, reduce the drawn hull as well as its mount envelope;
 	# never validate with a larger fake screen scale or waive real collisions.
@@ -505,6 +508,8 @@ func enemy_steady_position_key(enemy:Dictionary,pose:Dictionary)->Array:
 		ProjectSettings.get_setting("visuals/enemy_protection_gap_pixels",2.0),ProjectSettings.get_setting("visuals/enemy_protection_layer_gap_pixels",2.5)]
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
+	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
+	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.value.position
 	var cached:Dictionary=battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var point:Vector2=battle_read_model.position(enemy) if battle_read_model_enabled and battle_read_model.active else _source_enemy_render_position(enemy)
@@ -512,6 +517,8 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	return point
 
 func _source_enemy_render_position(enemy: Dictionary) -> Vector2:
+	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
+	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.value.position
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
 	var pose := enemy_pose(enemy)
@@ -692,6 +699,42 @@ func prepare(owner,simulation:BattleGame)->void:
 	battle_read_model.setup(self)
 	prepared=true
 
+func sync_screen_scale(value:float)->bool:
+	if not is_finite(value) or value<=0.0 or is_equal_approx(screen_scale,value):return false
+	screen_scale=value
+	display_row_cache.clear();display_shapes.clear();pending_display_shapes.clear()
+	battle_draw_enemy_positions.clear();enemy_entry_distance_time=-INF
+	battle_read_model.invalidate_membership()
+	for pose in enemy_poses.values():invalidate_pose_scale(pose)
+	for record in boundary_dead_geometry.values():
+		invalidate_pose_scale(record.pose)
+		var enemy:Dictionary=record.entity;var row:Dictionary=record.value.duplicate()
+		var variance:float=record.pose.variance;var frontline:float=row.frontline
+		var width:=_source_enemy_render_width_at_y(enemy,row.position.y,variance,frontline)
+		row.width=width
+		row.width_low=_source_enemy_render_width_at_y(enemy,90.0,variance,frontline)
+		row.width_high=_source_enemy_render_width_at_y(enemy,floorf(frontline),variance,frontline)
+		var components:Dictionary={}
+		for component in record.pose.appearance.components:
+			components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,row.position,width,row.angle)
+		row.components=components;row.recognition_id=display_shape(enemy,width,record.pose)
+		record.value=row
+	return true
+
+func invalidate_pose_scale(pose:Dictionary)->void:
+	# Shield recovery and birth/animation history are not geometry caches.
+	for key in ["top_geometries","steady_position_key","steady_position_time","recognition_signature","recognition_geometry","recognition_contract_signature","recognition_width_packets","recognition_width_order"]:pose.erase(key)
+
+func freeze_display_entity(enemy:Dictionary,current:bool=false)->void:
+	var uid:int=int(enemy.uid)
+	if boundary_dead_geometry.has(uid) and is_same(boundary_dead_geometry[uid].entity,enemy):return
+	var cached:Dictionary=display_row_cache.get(uid,{})
+	if not current and not cached.is_empty() and is_same(cached.entity,enemy):
+		boundary_dead_geometry[uid]={"entity":enemy,"pose":cached.pose,"value":cached.value}
+	else:
+		var row:=display_enemy(enemy)
+		boundary_dead_geometry[uid]={"entity":enemy,"pose":enemy_pose(enemy),"value":row}
+
 func player_render_position()->Vector2:
 	return player_anchor
 func player_idle_angle()->float:return 0.0
@@ -741,14 +784,14 @@ func finish_display_boundary()->void:
 	# Original label placement consumes the completed pose before Main removes
 	# dead pose caches. Preserve that display value while source cleanup remains
 	# at its required logical boundary; a later residual query may recreate pose.
-	boundary_dead_geometry.clear()
 	for enemy in game.enemies:
-		if GrowthNumber.compare(enemy.get("hp",0),0)<=0:boundary_dead_geometry[int(enemy.uid)]=display_enemy(enemy)
+		if GrowthNumber.compare(enemy.get("hp",0),0)<=0:freeze_display_entity(enemy,true)
 	# Match Main.refresh_draw_layers once per external advance, not per substep.
 	# Legacy dead/departed records may be queried again and recreate their pose.
 	for slot in enemy_poses.keys():
 		var record:Dictionary=enemy_poses[slot].entity
-		if not game.enemies.has(record) or GrowthNumber.compare(record.get("hp",0),0)<=0:enemy_poses.erase(slot)
+		if not game.enemies.has(record) or GrowthNumber.compare(record.get("hp",0),0)<=0:
+			freeze_display_entity(record);enemy_poses.erase(slot)
 	for enemy in game.enemies:
 		if GrowthNumber.compare(enemy.get("hp",0),0)>0:enemy_pose(enemy)
 func after_tick()->void:
@@ -775,6 +818,9 @@ func rail_geometry(shot:Dictionary)->Dictionary:
 	return {"origin":battle_point(visual_muzzle(shot)),"aim":entity_render_position(shot.target),"bounds":BATTLE_VIEW_SIZE,"full_width":maxf(12.0,float(db.weapon_motion_value("rail_trail_width",28.0)))*maxf(1.0,float(shot.get("rail_width_multiplier",1.0)))}
 
 func on_simulation_event(kind:String,info:Dictionary)->void:
+	if kind=="explode":
+		for enemy in game.enemies:
+			if int(enemy.uid)==int(info.get("uid",-1)):freeze_display_entity(enemy,true);break
 	var changed=kind in ["state","encounter","explode","retreat","wave_clear","ship_changed","module_changed","upgrade"] or (kind=="equipment_stats" and not bool(info.get("counter_only",false)))
 	if changed:
 		display_row_cache.clear()
@@ -832,6 +878,8 @@ func display_descriptor(enemy:Dictionary)->Dictionary:
 		components.append({"hardpoint":component.hardpoint.duplicate(true),"profile":component.profile.duplicate(true),"slots":component.slots.duplicate(),"owner_slot":component.owner_slot,"damage_type":component.damage_type})
 	return {"components":components,"mounts":appearance.mounts.duplicate(true),"types":appearance.types.duplicate()}
 func display_enemy(enemy:Dictionary)->Dictionary:
+	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
+	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.value
 	var uid:int=int(enemy.uid);var pose:Dictionary=enemy_pose(enemy)
 	var logical:Vector2=Vector2(enemy.x,enemy.y)
 	var cached:Dictionary=display_row_cache.get(uid,{})
@@ -856,7 +904,7 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	for enemy in enemies:
 		if enemy.has("uid"):
 			var uid:int=int(enemy.uid)
-			values[uid]=boundary_dead_geometry[uid] if with_fleet and boundary_dead_geometry.has(uid) else display_enemy(enemy)
+			values[uid]=boundary_dead_geometry[uid].value if with_fleet and boundary_dead_geometry.has(uid) else display_enemy(enemy)
 	var result={"player_position":player_render_position(),"enemies":values,"shapes":pending_display_shapes}
 	pending_display_shapes=[]
 	if with_fleet:
@@ -875,11 +923,11 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":pivots,"carriers":carriers,"drones":drones,"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
 	return result
 
-func display_shape(enemy:Dictionary,width:float)->String:
+func display_shape(enemy:Dictionary,width:float,frozen_pose:Dictionary={})->String:
 	# Static outline packets travel only on birth/bucket/contract changes. Their
 	# stable entity+bucket ID avoids repeating every packed outline in hit events.
 	var uid:int=int(enemy.uid);var bucket:int=ceili(width*maxf(0.1,screen_scale)/2.0)
-	var packet:Dictionary=enemy_recognition_geometry(enemy,width)
+	var packet:Dictionary=enemy_recognition_geometry(enemy,width) if frozen_pose.is_empty() else geometry_from_descriptor(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,frozen_pose.appearance.mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,frozen_pose,screen_scale,int(enemy.size)>=4)
 	if not display_shapes.has(uid):display_shapes[uid]={}
 	var packets:Dictionary=display_shapes[uid];var identity:String=str(uid)+":"+str(bucket)
 	if not packets.has(bucket) or (not is_same(packets[bucket],packet) and packets[bucket]!=packet):

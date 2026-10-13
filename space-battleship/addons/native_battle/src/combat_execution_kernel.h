@@ -112,6 +112,9 @@ class SpaceCombatKernel : public RefCounted {
             return a.at == b.at ? a.serial > b.serial : a.at > b.at;
         }
     };
+    struct RootQueue : std::priority_queue<Timed, std::vector<Timed>, Later> {
+        const std::vector<Timed> &entries() const { return this->c; }
+    };
     struct Defence {
         int layer = 0, type = 0;
         double base = 0, factor = 1, maximum = 0, loss = 0, buffer = 0, delay = 0, rate = 0, last_hit = 0,
@@ -138,7 +141,8 @@ class SpaceCombatKernel : public RefCounted {
 
     std::deque<Flight> flights;
     std::vector<size_t> active, free_flights, retired;
-    std::priority_queue<Timed, std::vector<Timed>, Later> roots, ejections, repeats;
+    RootQueue roots;
+    std::priority_queue<Timed, std::vector<Timed>, Later> ejections, repeats;
     std::vector<Effect> feedback;
     std::shared_ptr<MotionArena> motion_arena = std::make_shared<MotionArena>();
     Ref<RandomNumberGenerator> rng;
@@ -577,6 +581,8 @@ class SpaceCombatKernel : public RefCounted {
                         hit_enemy(handle(index), a->max_hp * a->explosion, type, {}, false, at, wi);
             for (size_t id : active) {
                 Flight &f = flights[id];
+                if (f.live && f.beam && f.hostile && f.source.index == h.index)
+                    retire(id);
                 if (f.instance && f.instance->beam) {
                     Dictionary c = f.instance->view["chain"];
                     Array links = c.get("links", Array());
@@ -1001,8 +1007,10 @@ class SpaceCombatKernel : public RefCounted {
         });
         for (const Period &p : periods) {
             Flight &f = flights[p.id];
-            if (!f.live || (!f.hostile && !resolve(f.target)))
+            if (!f.live || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
+                if (f.live) retire(p.id);
                 continue;
+            }
             ++f.ticks;
             f.view["ticks"] = f.ticks;
             double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : p.due;
@@ -1124,7 +1132,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         for (size_t id : active) {
             Flight &f = flights[id];
-            if (f.live && f.beam && !f.hostile && !resolve(f.target))
+            if (f.live && f.beam && (f.hostile ? !resolve(f.source) : !resolve(f.target)))
                 retire(id);
         }
         for (Actor &a : actors)
@@ -1162,6 +1170,8 @@ class SpaceCombatKernel : public RefCounted {
                              &SpaceCombatKernel::receive_player_hit);
         ClassDB::bind_method(D_METHOD("cancel"), &SpaceCombatKernel::cancel);
         ClassDB::bind_method(D_METHOD("metrics"), &SpaceCombatKernel::metrics);
+        ClassDB::bind_method(D_METHOD("cooldown_remaining", "slot", "source_uid"),
+                             &SpaceCombatKernel::cooldown_remaining, DEFVAL(int64_t(-1)));
     }
 
   public:
@@ -1603,6 +1613,19 @@ class SpaceCombatKernel : public RefCounted {
     }
     Array projectile_views() const {
         return flight_rows;
+    }
+    double cooldown_remaining(int slot, int64_t source_uid = -1) const {
+        // Read the existing root deadline; no mirrored clock or exported world.
+        if (!admitted || stopped) return std::numeric_limits<double>::infinity();
+        for (const Timed &due : roots.entries()) {
+            const Weapon &w = weapons[due.weapon];
+            if (w.slot != slot || w.hostile != (source_uid >= 0)) continue;
+            if (w.hostile && (w.source.index >= actors.size() ||
+                actors[w.source.index].uid != source_uid || !actors[w.source.index].live ||
+                actors[w.source.index].generation != w.source.generation)) continue;
+            return nonnegative(due.at - clock);
+        }
+        return std::numeric_limits<double>::infinity();
     }
     Dictionary player_view() const {
         return player_row;
