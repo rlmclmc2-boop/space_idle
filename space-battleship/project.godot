@@ -11,6 +11,9 @@ config/version="0.2.0"
 config/use_custom_user_dir.release=true
 config/custom_user_dir_name.release="SpaceBattleship"
 
+[accessibility]
+general/accessibility_support=2
+
 [debug]
 enemy_fleet_lab/enabled=true
 balance_lab/enabled=true
