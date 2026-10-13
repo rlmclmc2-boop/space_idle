@@ -864,12 +864,10 @@ func on_simulation_event(kind:String,info:Dictionary)->void:
 		if key=="longLaser":return
 		if key=="cannon":pose.recoil=0.13
 		if not bool(shot.get("owns_primary_aim",not bool(shot.get("repeated",false)) and not bool(shot.get("chain_hop",false)))):return
-		if not pose.target.is_empty() and game.enemies.has(pose.target) and float(pose.target.get("hp",0))>0:return
-		# This is combat geometry state, historically written by weapon_launch.
-		# Preserve synchronous event order and same-substep missile release targets.
-		if key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time):
-			pose.target=shot.target
-			pose.fired_at=fx_time
+		# Follow the kernel's main selection. Distributed tubes/scatter births carry
+		# that same owner target; repeats and secondary/chain carriers cannot write it.
+		pose.target=shot.get("primary_target",shot.target)
+		pose.fired_at=fx_time
 
 func drone_identity(shot:Dictionary)->String:
 	if bool(shot.get("hostile",false)):return ""

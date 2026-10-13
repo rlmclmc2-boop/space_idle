@@ -673,6 +673,7 @@ class SpaceCombatKernel : public RefCounted {
         f.view["attack_instance"] = inst->view;
         f.view["repeated"] = repeated;
         f.view["owns_primary_aim"] = !w.hostile && !repeated && !chain;
+        f.view["primary_target"] = inst->view.get("primary_target", f.view["target"]);
         if (!w.hostile && m.kind == 0 && t && t->collision_hull.size() >= 3) {
             f.view["ballistic_target_origin"] = aim;
             f.view["fixed_screen_origin"] = w.screen_muzzle;
@@ -1181,6 +1182,7 @@ class SpaceCombatKernel : public RefCounted {
             return;
         }
         auto primary_instance = instance(a);
+        primary_instance->view["primary_target"] = target_view(candidates.front());
         if (scatter && w.kind == 0) {
             for (Handle h : candidates)
                 birth(wi, h, primary_instance, 1);

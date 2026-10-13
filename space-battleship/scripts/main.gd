@@ -1667,9 +1667,8 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	if mount>=0 and simulation_geometry_view==null:
 		var pose := turret_pose(mount)
 		var owns_primary:=bool(shot.get("owns_primary_aim",not bool(shot.get("repeated",false)) and not bool(shot.get("chain_hop",false))))
-		var needs_target:bool=pose.target.is_empty() or not game.enemies.has(pose.target) or float(pose.target.get("hp",0))<=0
-		if owns_primary and needs_target and (key!="missile" or not is_equal_approx(float(pose.get("fired_at",-1)),fx_time)):
-			pose.target = shot.target
+		if owns_primary:
+			pose.target = shot.get("primary_target",shot.target)
 			pose.fired_at = fx_time
 		if key=="cannon":pose.recoil = 0.13
 	# Mount target feeds canonical missile release geometry even in fast mode.
