@@ -164,6 +164,7 @@ public:
     void flight(Vector2 point,Vector2 axis,double age,bool powered,Dictionary visual,Vector2 offset,double budget);
     Ref<SpaceCombatFlightFrame> prepare_flights(Object *surface,Array shots,Vector2 offset);
     void draw_flights(Object *surface,Variant prepared,Vector2 offset);
+    void draw_beam_active(CanvasItem *surface,Vector2 muzzle,Vector2 target,double clock,double width,double power,double pulse);
     void advance_visuals(Object *surface,double dt);
 };
 SpaceCombatFlightFrame::~SpaceCombatFlightFrame(){if(recycler.is_valid())recycler->recycle_frame(flights);}
@@ -530,7 +531,51 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
         }
     }
 }
+// Exact active-beam command sequence from continuous_beam_vfx.gd. This routine
+// only draws supplied state; beam validity, hit pulses and targets stay in script.
+void SpaceCombatPresentation::draw_beam_active(CanvasItem *surface,Vector2 muzzle,Vector2 target,double clock,double width,double power,double pulse) {
+    if(!surface||!muzzle.is_finite()||!target.is_finite()||!std::isfinite(clock)||!std::isfinite(width)||!std::isfinite(power)||!std::isfinite(pulse)||width<=0.0)return;
+    Vector2 delta=target-muzzle;double distance=delta.length();
+    if(distance<0.5)return;
+    Vector2 direction=delta/distance,across=direction.orthogonal();
+    double intensity=std::clamp(power,0.0,1.0),hit_pulse=std::clamp(pulse,0.0,1.0);
+    static const Color low("8deaff"),middle("2688ff"),high("925bff"),peak("f04aff"),core("edfff9");
+    auto ramp=[&](double value){return value>=0.999999?peak:value<0.5?low.lerp(middle,value*2.0):middle.lerp(high,(value-0.5)*2.0);};
+    Color energy=ramp(intensity);bool full=intensity>=0.999999;
+    double body_width=std::max(0.7,width)*Math::lerp(0.65,1.8,intensity);
+    double core_width=std::max(0.35,body_width*(full?0.40:0.28));
+    surface->draw_line(muzzle,target,Color(energy,0.025+intensity*0.14),body_width*2.1,true);
+    surface->draw_line(muzzle,target,Color(energy,0.15+intensity*0.60),body_width,true);
+    surface->draw_line(muzzle,target,Color(core,0.22+intensity*0.73+hit_pulse*0.05),core_width,true);
+    double segment_length=std::min(14.0,distance*0.07);
+    for(int index=0;index<3;++index){
+        double phase=Math::fposmod(clock*0.85+double(index)/3.0,1.0);
+        double along=phase*std::max(0.0,distance-segment_length);
+        Vector2 offset=((across*std::sin(clock*2.0+double(index)*2.1))*body_width)*0.22;
+        Vector2 start=muzzle+direction*along+offset;
+        surface->draw_line(start,start+direction*segment_length,Color(core,0.06+intensity*0.16),std::max(0.7,core_width*0.55),true);
+    }
+    surface->draw_circle(muzzle,body_width*0.63,Color(energy,0.27));
+    surface->draw_circle(muzzle,core_width*0.75,Color(core,0.25+intensity*0.65));
+    // Preserve the script's second orthogonal operation and 25-point contact ring.
+    across=direction.orthogonal();energy=ramp(intensity);
+    double radius=1.8+body_width*0.40+intensity*3.0+hit_pulse*0.35;
+    surface->draw_circle(target,radius*1.25,Color(energy,0.11+hit_pulse*0.07));
+    PackedVector2Array ring;ring.resize(25);
+    for(int index=0;index<25;++index){
+        double angle=Math::TAU*double(index)/24.0;
+        ring.set(index,target+(across*std::cos(angle))*radius+((direction*std::sin(angle))*radius)*0.42);
+    }
+    surface->draw_polyline(ring,Color(energy,0.56+hit_pulse*0.18),1.2,true);
+    surface->draw_circle(target,0.7+body_width*0.12+intensity*1.2+hit_pulse*0.15,Color(core,0.25+intensity*0.70));
+    for(double side:{-1.0,1.0}){
+        double shift=std::sin(clock*3.0+side)*0.8;
+        Vector2 tip=target+((across*side)*radius)*1.3-direction*(1.5+shift);
+        surface->draw_line(target+((across*side)*radius)*0.65,tip,Color(energy,0.4+hit_pulse*0.25),1.0,true);
+    }
+}
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("draw_beam_active","surface","muzzle","target","clock","width","power","pulse"),&SpaceCombatPresentation::draw_beam_active);
     ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
     ClassDB::bind_method(D_METHOD("rotated_outlines_min_y","outlines","angle"),&SpaceCombatPresentation::rotated_outlines_min_y);
     ClassDB::bind_method(D_METHOD("create_visual","shot","angle","mount","origin","logical","spread"),&SpaceCombatPresentation::create_visual);

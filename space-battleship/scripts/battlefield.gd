@@ -493,7 +493,10 @@ func draw_beam_override(shot:Dictionary,offset:Vector2,core:bool=true)->bool:
 		CONTINUOUS_BEAM_VFX.charge(draw_surface,muzzle,target,float(shot.elapsed)/float(shot.charge),fx_time)
 	elif int(shot.ticks)>0:
 		var style:=beam_style(shot)
-		CONTINUOUS_BEAM_VFX.active(draw_surface,muzzle,target,fx_time,float(style.width),float(style.power),float(style.pulse))
+		if game.combat_presentation!=null:
+			game.combat_presentation.draw_beam_active(draw_surface,muzzle,target,fx_time,float(style.width),float(style.power),float(style.pulse))
+		else:
+			CONTINUOUS_BEAM_VFX.active(draw_surface,muzzle,target,fx_time,float(style.width),float(style.power),float(style.pulse))
 		if beam_full_started.has(int(shot.serial)):
 			CONTINUOUS_BEAM_VFX.full_cue(draw_surface,target,fx_time-float(beam_full_started[int(shot.serial)]))
 		for linked in game.beam_chain_targets(shot):
