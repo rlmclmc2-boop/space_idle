@@ -1,0 +1,67 @@
+{
+  "scope": "Same-cloud A/B/A graphical comparison; NOT real-1x acceptance and NOT Windows absolute comparison",
+  "baseline": "1a2c2a80d6f60853d51bb3b829c3b7898885a401",
+  "candidate": "9f9c762dd6985bbd3b6c6552e9adb1a06441d5ac",
+  "engine": "4.7.2.stable.official.ed1daf0bf",
+  "renderer": "OpenGL Compatibility / Mesa llvmpipe LLVM19.1.7 256bits",
+  "window": [
+    1180,
+    812
+  ],
+  "requested_vsync": 1,
+  "actual_vsync": 0,
+  "accessibility_enabled": false,
+  "cap": 60,
+  "audio": "Dummy fallback; music disabled in both",
+  "sample": "240 warm logical steps then >=240 sample logical steps; adjacent frame_post_draw wall intervals; full scene/rendering; post-sample screenshot excluded",
+  "driver_sha256": "9752bce54c023fa53f2ad14f95ce53a9a5e38dd5d807650378f6ff9f38317fde",
+  "bindings_commit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "extension_api_sha256": "d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986",
+  "native_flags": "template_release linux x86_64 lto=none -fno-fast-math -ffp-contract=off",
+  "results": [
+    {
+      "file": "result-current-1791907361.json",
+      "mean_frame_ms": 375.9570333333333,
+      "logical_hz": 21.2789669912684,
+      "steps": 240,
+      "fires": 1751,
+      "hits": 6528,
+      "purchases": 48,
+      "actual_1x_pass": false
+    },
+    {
+      "file": "result-main-1791907330.json",
+      "mean_frame_ms": 208.21303333333333,
+      "logical_hz": 38.4218420487679,
+      "steps": 240,
+      "fires": 1751,
+      "hits": 5198,
+      "purchases": 48,
+      "actual_1x_pass": false
+    },
+    {
+      "file": "result-main-1791907385.json",
+      "mean_frame_ms": 205.79853333333332,
+      "logical_hz": 38.8727297111076,
+      "steps": 240,
+      "fires": 1751,
+      "hits": 5198,
+      "purchases": 48,
+      "actual_1x_pass": false
+    }
+  ],
+  "caveats": [
+    "Software rendering bottleneck; both versions fail real-1x throughput.",
+    "Current hit count differs due to correctness changes; not an equal-work pure optimization estimate.",
+    "Window manager constrained original requested1373x883 to1180x812 equally.",
+    "No claim explaining historical25.68/36.52ms.",
+    "Later current-version tail diagnostic averaged164.596ms/frame versus375.957ms in initial sample; cloud slowdown percentage is NOT established. Tail instrumentation differs but is only a timestamp per frame."
+  ],
+  "tail_diagnostic": {
+    "mean_us": 825.0322580645161,
+    "median_us": 274,
+    "max_us": 5143,
+    "sample_count": 31,
+    "mean_frame_ms": 164.59593548387096
+  }
+}
