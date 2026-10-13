@@ -1,4 +1,6 @@
 extends "res://scripts/main.gd"
+var retained_contacts
+var retained_contacts_enabled := true
 ## Live battle presentation. Save, inventory and unlock authority remains BattleGame.
 
 const PROTOTYPE_GAME := preload("res://scripts/presented_battle_game.gd")
@@ -445,6 +447,7 @@ func on_event(kind:String,info:Dictionary)->void:
 
 
 func reset_battle_transients_for_scene() -> void:
+	if is_instance_valid(retained_contacts):retained_contacts.clear()
 	destruction_events.clear()
 	rail_events.clear()
 	missile_events.clear()
@@ -769,6 +772,8 @@ func battle_meter(rect:Rect2,ratio:float,color:Color)->void:
 
 func create_draw_layers() -> void:
 	super.create_draw_layers()
+	retained_contacts=preload("res://scripts/retained_enemy_contacts.gd").new()
+	battle_layer.add_child(retained_contacts);retained_contacts.setup(self)
 	var star_material:ShaderMaterial=stars_layer.material
 	star_material.set_shader_parameter("route_atlas",ROUTE_SCENERY_ATLAS)
 	scenery_material_route=""
@@ -1033,4 +1038,18 @@ func attach_native_display()->bool:
 	if game.native_execution==null or not game.native_execution_auto or battle_slice_runtime!=null:return false
 	battle_slice_runtime=preload("res://scripts/battle_slice_runtime.gd").new()
 	battle_slice_runtime.install(self)
+	return true
+
+func draw_retained_enemy_contacts(offset:Vector2,boss:bool)->bool:
+	if not is_instance_valid(retained_contacts):return false
+	retained_contacts.visible=retained_contacts_enabled
+	if not retained_contacts_enabled:return false
+	retained_contacts.sync(offset,boss)
+	return true
+
+func retain_battle_foreground(flights:Variant,shots:Array,offset:Vector2)->bool:
+	if not is_instance_valid(retained_contacts):return false
+	retained_contacts.visible=retained_contacts_enabled
+	if not retained_contacts_enabled:return false
+	retained_contacts.stage_foreground(flights,shots,offset)
 	return true

@@ -3025,52 +3025,13 @@ func draw_battle() -> void:
 	if GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT:
 		draw_ship(player_render_position()+offset,0.24,false,1,not accelerated_visual_mode and GrowthNumber.compare(game.player.shield,0)>0)
 		if not accelerated_visual_mode:draw_engine_wake(player_render_position()+offset)
-	for enemy in game.enemies:
-		if enemy.hp <= 0:
-			continue
-		draw_enemy_hull_and_status(enemy,offset,boss_battle)
-	# Visible bullets/flames must leave the top-mounted barrels above the hull.
-	if game.combat_presentation!=null:game.combat_presentation.draw_flights(self,flights,offset)
-	else:
-		for flight in flights:_draw_projectile_foreground_flight(flight,offset)
-	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
-	for shot in visible_projectiles:
-		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
-		if draw_beam_override(shot,offset):continue
-		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
-			var pos := battle_point(visual_muzzle(shot))+offset
-			var color := ORANGE if shot.hostile else CYAN
-			var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
-			var radius := lerpf(28.0,8.0,progress)
-			draw_surface.draw_circle(pos,4.0+progress*8.0,Color(color,0.2+progress*0.4))
-			draw_surface.draw_circle(pos,2.0+progress*3.0,Color.WHITE)
-			draw_surface.draw_arc(pos,radius,-PI/2,-PI/2+TAU*progress,32,color,2.0,true)
-			for ray in range(6):
-				var direction := Vector2.from_angle(float(ray)*TAU/6+float(shot.elapsed)*3)
-				draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
-		elif int(shot.ticks)>0:
-			var beam := beam_style(shot)
-			var end := entity_render_position(shot.target)+offset
-			var color := ORANGE if shot.hostile else CYAN
-			var pos := battle_point(visual_muzzle(shot))+offset
-			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width*float(battle_visual.laser_glow_scale),true)
-			draw_surface.draw_line(pos,end,Color(1,1,1,0.5+beam.pulse*0.4),beam.width*0.38,true)
-			for stream in range(4):
-				var phase := fposmod(float(shot.elapsed)*2.0+float(stream)*0.25,1.0)
-				var flow: Vector2 = pos.lerp(end,phase)
-				draw_surface.draw_line(flow,flow.lerp(end,0.035),Color(1,1,1,0.12+beam.pulse*0.5),beam.width*0.55,true)
-			draw_surface.draw_circle(pos,beam.width*1.3,Color(color,0.45))
-			draw_surface.draw_circle(end,4.0+beam.pulse*3.0,Color(color,0.3+beam.pulse*0.3))
-			draw_surface.draw_circle(end,1.8+beam.pulse*1.8,Color.WHITE)
-			var spark_size: float = float(battle_visual.beam_hit_spark_scale)*(3.0+float(beam.pulse)*4.0)
-			for spark in 2:
-				var direction := Vector2.from_angle(float(shot.elapsed)*13.0+float(spark)*PI)
-				draw_surface.draw_line(end+direction*2.0,end+direction*spark_size,Color(color,0.3+beam.pulse*0.55),1.0,true)
-	if not accelerated_visual_mode:draw_battle_particles(offset,true)
-	for f in floats:
-		if accelerated_visual_mode:continue
-		if not f.get("damage",false) or not show_damage_numbers:continue
-		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
+	if not draw_retained_enemy_contacts(offset,boss_battle):
+		for enemy in game.enemies:
+			if enemy.hp <= 0:
+				continue
+			draw_enemy_hull_and_status(enemy,offset,boss_battle)
+	if not retain_battle_foreground(flights,visible_projectiles,offset):
+		draw_battle_foreground(flights,visible_projectiles,offset)
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
 	enemy_entry_batch_active=false
@@ -3601,3 +3562,57 @@ func queue_projectile_packet(_flight:Dictionary,_offset:Vector2=Vector2.ZERO)->b
 
 func flush_projectile_packet_batch()->void:
 	pass
+
+func draw_retained_enemy_contacts(_offset: Vector2, _boss: bool) -> bool:
+	return false
+
+func retain_battle_foreground(_flights: Variant, _shots: Array, _offset: Vector2) -> bool:
+	return false
+
+func draw_battle_foreground(flights: Variant, visible_projectiles: Array, offset: Vector2) -> void:
+	# Visible bullets/flames must leave the top-mounted barrels above the hull.
+	if game.combat_presentation!=null:game.combat_presentation.draw_flights(self,flights,offset)
+	else:
+		for flight in flights:_draw_projectile_foreground_flight(flight,offset)
+	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
+	for shot in visible_projectiles:
+		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
+		if draw_beam_override(shot,offset):continue
+		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
+			var pos := battle_point(visual_muzzle(shot))+offset
+			var color := ORANGE if shot.hostile else CYAN
+			var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
+			var radius := lerpf(28.0,8.0,progress)
+			draw_surface.draw_circle(pos,4.0+progress*8.0,Color(color,0.2+progress*0.4))
+			draw_surface.draw_circle(pos,2.0+progress*3.0,Color.WHITE)
+			draw_surface.draw_arc(pos,radius,-PI/2,-PI/2+TAU*progress,32,color,2.0,true)
+			for ray in range(6):
+				var direction := Vector2.from_angle(float(ray)*TAU/6+float(shot.elapsed)*3)
+				draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
+		elif int(shot.ticks)>0:
+			var beam := beam_style(shot)
+			var end := entity_render_position(shot.target)+offset
+			var color := ORANGE if shot.hostile else CYAN
+			var pos := battle_point(visual_muzzle(shot))+offset
+			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width*float(battle_visual.laser_glow_scale),true)
+			draw_surface.draw_line(pos,end,Color(1,1,1,0.5+beam.pulse*0.4),beam.width*0.38,true)
+			for stream in range(4):
+				var phase := fposmod(float(shot.elapsed)*2.0+float(stream)*0.25,1.0)
+				var flow: Vector2 = pos.lerp(end,phase)
+				draw_surface.draw_line(flow,flow.lerp(end,0.035),Color(1,1,1,0.12+beam.pulse*0.5),beam.width*0.55,true)
+			draw_surface.draw_circle(pos,beam.width*1.3,Color(color,0.45))
+			draw_surface.draw_circle(end,4.0+beam.pulse*3.0,Color(color,0.3+beam.pulse*0.3))
+			draw_surface.draw_circle(end,1.8+beam.pulse*1.8,Color.WHITE)
+			var spark_size: float = float(battle_visual.beam_hit_spark_scale)*(3.0+float(beam.pulse)*4.0)
+			for spark in 2:
+				var direction := Vector2.from_angle(float(shot.elapsed)*13.0+float(spark)*PI)
+				draw_surface.draw_line(end+direction*2.0,end+direction*spark_size,Color(color,0.3+beam.pulse*0.55),1.0,true)
+	if not accelerated_visual_mode:draw_battle_particles(offset,true)
+	for f in floats:
+		if accelerated_visual_mode:continue
+		if not f.get("damage",false) or not show_damage_numbers:continue
+		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
+	battle_draw_active=false
+	battle_draw_enemy_positions.clear()
+	enemy_entry_batch_active=false
+	enemy_entry_distance_time=-INF

@@ -115,7 +115,7 @@ func geometry_from_profile(identity:int,profile:PackedVector2Array,width:float,m
 	envelope_builds+=1
 	return result
 
-func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictionary) -> Dictionary:
+func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictionary, result=null) -> Dictionary:
 	var alive := N.compare(enemy.get("hp",0),0)>0
 	var capacity = enemy.get("max_shield",0)
 	var amount = enemy.get("shield",0)
@@ -133,7 +133,11 @@ func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictiona
 		cache.recognition_shield_clock=shield_clock
 		cache.recognition_shield_amount=amount.duplicate(true) if amount is Dictionary else amount
 		cache.recognition_recovering=recovering
-	return {"alive":alive,"active":active,"repair":repair,"fraction":fraction,"recovering":recovering and not paused,"show_hull":not active or int(enemy.get("armourType",0))!=int(enemy.get("shieldType",0))}
+	if result==null:result={}
+	result.alive=alive;result.active=active;result.repair=repair;result.fraction=fraction
+	result.recovering=recovering and not paused
+	result.show_hull=not active or int(enemy.get("armourType",0))!=int(enemy.get("shieldType",0))
+	return result
 
 func closed(surface: CanvasItem, outline: PackedVector2Array, color: Color, stroke: float) -> void:
 	var path := outline.duplicate()
@@ -249,3 +253,39 @@ func draw_contact(surface: CanvasItem, pos: Vector2, axis: Vector2, age: float, 
 	else:
 		surface.draw_line(pos-side*radius,pos+side*radius,color,1.2,true)
 		surface.draw_line(pos-axis*radius*0.6,pos+axis*radius*0.6,color,1.0,true)
+
+func draw_deck_body(surface:CanvasItem,width:float,physical:bool)->void:
+	var y=width*0.23
+	if physical:
+		surface.draw_rect(Rect2(-width*0.18,y-width*0.19,width*0.36,width*0.48),Color("17212a"))
+		for sign_value in [-1,1]:
+			var x=float(sign_value)*width*0.10
+			surface.draw_rect(Rect2(x-width*0.035,y-width*0.14,width*0.07,width*0.33),Color("c2c9c9"))
+			surface.draw_rect(Rect2(x-width*0.022,y+width*0.12,width*0.044,width*0.055),Color("080d13"))
+	else:
+		surface.draw_colored_polygon(PackedVector2Array([Vector2(0,y-width*0.22),Vector2(width*0.17,y),Vector2(0,y+width*0.22),Vector2(-width*0.17,y)]),Color("17212a"))
+		surface.draw_colored_polygon(PackedVector2Array([Vector2(0,y-width*0.15),Vector2(width*0.12,y),Vector2(0,y+width*0.15),Vector2(-width*0.12,y)]),Color("b8a2d8"))
+
+func draw_deck_strokes(surface:CanvasItem,width:float,physical:bool)->void:
+	var y=width*0.23
+	if physical:
+		for stripe in 3:surface.draw_line(Vector2(-width*0.15,y+width*(0.21+stripe*0.025)),Vector2(width*0.15,y+width*(0.21+stripe*0.025)),Color("757f83"),maxf(0.8,width*0.018),true)
+	else:
+		for sign_value in [-1,1]:
+			var x=float(sign_value)*width*0.19
+			surface.draw_polyline(PackedVector2Array([Vector2(x*0.65,y-width*0.24),Vector2(x,y-width*0.13),Vector2(x,y+width*0.13),Vector2(x*0.65,y+width*0.24)]),Color("c2c9c9"),maxf(1.0,width*0.045),true)
+
+func draw_weapon_body(surface:CanvasItem,w:float,physical:bool)->void:
+	surface.draw_rect(Rect2(-w*0.24,-w*0.22,w*0.48,w*0.42),Color("36424b"))
+	if physical:
+		surface.draw_rect(Rect2(-w*0.16,-w*0.15,w*0.32,w*0.84),Color("ac886a"))
+		surface.draw_rect(Rect2(-w*0.23,w*0.48,w*0.46,w*0.25),Color("6e594a"))
+		surface.draw_rect(Rect2(-w*0.15,w*0.57,w*0.30,w*0.14),Color("080d13"))
+	else:
+		for side in [-1,1]:
+			var fork=PackedVector2Array([Vector2(side*w*0.17,-w*0.18),Vector2(side*w*0.60,-w*0.08),Vector2(side*w*0.60,w*0.45),Vector2(side*w*0.41,w*0.45),Vector2(side*w*0.41,w*0.07),Vector2(side*w*0.17,0)])
+			surface.draw_colored_polygon(fork,Color("aabfc6"))
+		surface.draw_rect(Rect2(-w*0.13,w*0.02,w*0.26,w*0.16),ENERGY)
+
+func draw_weapon_strokes(surface:CanvasItem,w:float)->void:
+	for side in [-1,1]:surface.draw_line(Vector2(side*w*0.49,w*0.20),Vector2(side*w*0.49,w*0.44),ENERGY,maxf(1,w*0.10),true)
