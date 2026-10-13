@@ -1,0 +1,390 @@
+{
+  "source_commit": "f7f5c2b5",
+  "decision": "Stop both proposed small optimizations: measured costs below 1ms/frame; no production edit and no A/B/A. Active galaxy native-admission limitation is a separate unresolved opportunity, not measured saving.",
+  "scenarios": {
+    "hidden-rate": {
+      "frames": 45,
+      "wall_seconds": 7.02716,
+      "game_seconds": 6.00000000000008,
+      "steps": 360,
+      "whole_ms": 156.15911111111112,
+      "native_active": false,
+      "handoffs_before_after": [
+        1,
+        1
+      ],
+      "resource_samples_start_end": [
+        56,
+        51
+      ],
+      "rows": {
+        "main.prune_resource_samples": {
+          "calls": 151,
+          "inclusive_us": 4168,
+          "exclusive_us": 452,
+          "same_frame_extra_calls": 106,
+          "same_frame_extra_inclusive_us": 2745,
+          "inclusive_ms_per_frame": 0.09262222222222222,
+          "exclusive_ms_per_frame": 0.010044444444444444,
+          "same_frame_extra_inclusive_ms_per_frame": 0.061
+        },
+        "game.prune_resource_samples": {
+          "calls": 153,
+          "inclusive_us": 3803,
+          "exclusive_us": 3768,
+          "same_frame_extra_calls": 108,
+          "same_frame_extra_inclusive_us": 2535,
+          "inclusive_ms_per_frame": 0.0845111111111111,
+          "exclusive_ms_per_frame": 0.08373333333333334,
+          "same_frame_extra_inclusive_ms_per_frame": 0.05633333333333333
+        },
+        "game.advance_shared_clock_and_economy": {
+          "calls": 397,
+          "inclusive_us": 452176,
+          "exclusive_us": 253103,
+          "same_frame_extra_calls": 352,
+          "same_frame_extra_inclusive_us": 435583,
+          "inclusive_ms_per_frame": 10.048355555555556,
+          "exclusive_ms_per_frame": 5.624511111111111,
+          "same_frame_extra_inclusive_ms_per_frame": 9.679622222222223
+        },
+        "galaxy_system.advance": {
+          "calls": 397,
+          "inclusive_us": 199021,
+          "exclusive_us": 10673,
+          "same_frame_extra_calls": 352,
+          "same_frame_extra_inclusive_us": 197577,
+          "inclusive_ms_per_frame": 4.422688888888889,
+          "exclusive_ms_per_frame": 0.23717777777777777,
+          "same_frame_extra_inclusive_ms_per_frame": 4.3906
+        },
+        "main.refresh_draw_layers": {
+          "calls": 45,
+          "inclusive_us": 27257,
+          "exclusive_us": 19579,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.6057111111111111,
+          "exclusive_ms_per_frame": 0.4350888888888889,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "main.resource_display": {
+          "calls": 106,
+          "inclusive_us": 9144,
+          "exclusive_us": 2158,
+          "same_frame_extra_calls": 61,
+          "same_frame_extra_inclusive_us": 4637,
+          "inclusive_ms_per_frame": 0.2032,
+          "exclusive_ms_per_frame": 0.04795555555555556,
+          "same_frame_extra_inclusive_ms_per_frame": 0.10304444444444445
+        },
+        "game.resource_minute_total": {
+          "calls": 106,
+          "inclusive_us": 4241,
+          "exclusive_us": 4241,
+          "same_frame_extra_calls": 61,
+          "same_frame_extra_inclusive_us": 2316,
+          "inclusive_ms_per_frame": 0.09424444444444444,
+          "exclusive_ms_per_frame": 0.09424444444444444,
+          "same_frame_extra_inclusive_ms_per_frame": 0.05146666666666667
+        },
+        "main.draw_resources": {
+          "calls": 8,
+          "inclusive_us": 3248,
+          "exclusive_us": 1782,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.07217777777777777,
+          "exclusive_ms_per_frame": 0.0396,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "galaxy_effect_aggregator.rates": {
+          "calls": 1,
+          "inclusive_us": 130,
+          "exclusive_us": 12,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.0028888888888888888,
+          "exclusive_ms_per_frame": 0.0002666666666666667,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "game.production_minute_total": {
+          "calls": 2,
+          "inclusive_us": 118,
+          "exclusive_us": 118,
+          "same_frame_extra_calls": 1,
+          "same_frame_extra_inclusive_us": 50,
+          "inclusive_ms_per_frame": 0.0026222222222222224,
+          "exclusive_ms_per_frame": 0.0026222222222222224,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0011111111111111111
+        },
+        "event.galaxy_income": {
+          "calls": 1,
+          "inclusive_us": 8,
+          "exclusive_us": 5,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.00017777777777777779,
+          "exclusive_ms_per_frame": 0.0001111111111111111,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "galaxy_panel.refresh.hidden": {
+          "calls": 2,
+          "inclusive_us": 6,
+          "exclusive_us": 6,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.00013333333333333334,
+          "exclusive_ms_per_frame": 0.00013333333333333334,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "galaxy_system.advance_region": {
+          "calls": 1,
+          "inclusive_us": 188210,
+          "exclusive_us": 188202,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 4.182444444444444,
+          "exclusive_ms_per_frame": 4.182266666666666,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "event.galaxy_changed": {
+          "calls": 1,
+          "inclusive_us": 8,
+          "exclusive_us": 5,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.00017777777777777779,
+          "exclusive_ms_per_frame": 0.0001111111111111111,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        }
+      }
+    },
+    "visible-rate": {
+      "frames": 46,
+      "wall_seconds": 7.546271,
+      "game_seconds": 6.11666666666674,
+      "steps": 367,
+      "whole_ms": 164.04936956521738,
+      "native_active": false,
+      "handoffs_before_after": [
+        1,
+        1
+      ],
+      "resource_samples_start_end": [
+        56,
+        51
+      ],
+      "rows": {
+        "main.prune_resource_samples": {
+          "calls": 156,
+          "inclusive_us": 4299,
+          "exclusive_us": 442,
+          "same_frame_extra_calls": 110,
+          "same_frame_extra_inclusive_us": 2773,
+          "inclusive_ms_per_frame": 0.09345652173913044,
+          "exclusive_ms_per_frame": 0.009608695652173913,
+          "same_frame_extra_inclusive_ms_per_frame": 0.06028260869565217
+        },
+        "game.prune_resource_samples": {
+          "calls": 158,
+          "inclusive_us": 3931,
+          "exclusive_us": 3914,
+          "same_frame_extra_calls": 112,
+          "same_frame_extra_inclusive_us": 2573,
+          "inclusive_ms_per_frame": 0.08545652173913043,
+          "exclusive_ms_per_frame": 0.08508695652173913,
+          "same_frame_extra_inclusive_ms_per_frame": 0.05593478260869565
+        },
+        "game.advance_shared_clock_and_economy": {
+          "calls": 405,
+          "inclusive_us": 246090,
+          "exclusive_us": 228795,
+          "same_frame_extra_calls": 359,
+          "same_frame_extra_inclusive_us": 228014,
+          "inclusive_ms_per_frame": 5.349782608695652,
+          "exclusive_ms_per_frame": 4.973804347826087,
+          "same_frame_extra_inclusive_ms_per_frame": 4.956826086956522
+        },
+        "galaxy_system.advance": {
+          "calls": 405,
+          "inclusive_us": 17238,
+          "exclusive_us": 10724,
+          "same_frame_extra_calls": 359,
+          "same_frame_extra_inclusive_us": 15016,
+          "inclusive_ms_per_frame": 0.37473913043478263,
+          "exclusive_ms_per_frame": 0.2331304347826087,
+          "same_frame_extra_inclusive_ms_per_frame": 0.32643478260869563
+        },
+        "galaxy_panel.refresh_sample": {
+          "calls": 46,
+          "inclusive_us": 2676,
+          "exclusive_us": 365,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.058173913043478256,
+          "exclusive_ms_per_frame": 0.007934782608695653,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "galaxy_panel.refresh.visible": {
+          "calls": 13,
+          "inclusive_us": 6093,
+          "exclusive_us": 2155,
+          "same_frame_extra_calls": 1,
+          "same_frame_extra_inclusive_us": 1621,
+          "inclusive_ms_per_frame": 0.13245652173913045,
+          "exclusive_ms_per_frame": 0.04684782608695652,
+          "same_frame_extra_inclusive_ms_per_frame": 0.035239130434782606
+        },
+        "galaxy_map.refresh": {
+          "calls": 13,
+          "inclusive_us": 1888,
+          "exclusive_us": 1888,
+          "same_frame_extra_calls": 1,
+          "same_frame_extra_inclusive_us": 1326,
+          "inclusive_ms_per_frame": 0.04104347826086956,
+          "exclusive_ms_per_frame": 0.04104347826086956,
+          "same_frame_extra_inclusive_ms_per_frame": 0.028826086956521738
+        },
+        "galaxy_effect_aggregator.rates": {
+          "calls": 14,
+          "inclusive_us": 2127,
+          "exclusive_us": 197,
+          "same_frame_extra_calls": 2,
+          "same_frame_extra_inclusive_us": 333,
+          "inclusive_ms_per_frame": 0.04623913043478261,
+          "exclusive_ms_per_frame": 0.004282608695652174,
+          "same_frame_extra_inclusive_ms_per_frame": 0.007239130434782608
+        },
+        "game.production_minute_total": {
+          "calls": 28,
+          "inclusive_us": 1930,
+          "exclusive_us": 1930,
+          "same_frame_extra_calls": 16,
+          "same_frame_extra_inclusive_us": 991,
+          "inclusive_ms_per_frame": 0.041956521739130434,
+          "exclusive_ms_per_frame": 0.041956521739130434,
+          "same_frame_extra_inclusive_ms_per_frame": 0.021543478260869567
+        },
+        "galaxy_panel.refresh_detail": {
+          "calls": 13,
+          "inclusive_us": 60,
+          "exclusive_us": 60,
+          "same_frame_extra_calls": 1,
+          "same_frame_extra_inclusive_us": 4,
+          "inclusive_ms_per_frame": 0.0013043478260869566,
+          "exclusive_ms_per_frame": 0.0013043478260869566,
+          "same_frame_extra_inclusive_ms_per_frame": 8.695652173913043e-05
+        },
+        "main.refresh_draw_layers": {
+          "calls": 46,
+          "inclusive_us": 27976,
+          "exclusive_us": 19876,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.6081739130434782,
+          "exclusive_ms_per_frame": 0.4320869565217391,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "main.resource_display": {
+          "calls": 110,
+          "inclusive_us": 9597,
+          "exclusive_us": 2489,
+          "same_frame_extra_calls": 64,
+          "same_frame_extra_inclusive_us": 4775,
+          "inclusive_ms_per_frame": 0.20863043478260868,
+          "exclusive_ms_per_frame": 0.05410869565217392,
+          "same_frame_extra_inclusive_ms_per_frame": 0.10380434782608695
+        },
+        "game.resource_minute_total": {
+          "calls": 110,
+          "inclusive_us": 4335,
+          "exclusive_us": 4335,
+          "same_frame_extra_calls": 64,
+          "same_frame_extra_inclusive_us": 2349,
+          "inclusive_ms_per_frame": 0.0942391304347826,
+          "exclusive_ms_per_frame": 0.0942391304347826,
+          "same_frame_extra_inclusive_ms_per_frame": 0.05106521739130435
+        },
+        "main.draw_resources": {
+          "calls": 9,
+          "inclusive_us": 3415,
+          "exclusive_us": 1918,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.07423913043478261,
+          "exclusive_ms_per_frame": 0.04169565217391304,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "galaxy_system.advance_region": {
+          "calls": 6,
+          "inclusive_us": 5892,
+          "exclusive_us": 2558,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.12808695652173913,
+          "exclusive_ms_per_frame": 0.05560869565217391,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "event.galaxy_changed": {
+          "calls": 6,
+          "inclusive_us": 3334,
+          "exclusive_us": 29,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.07247826086956521,
+          "exclusive_ms_per_frame": 0.0006304347826086957,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        },
+        "event.galaxy_income": {
+          "calls": 1,
+          "inclusive_us": 485,
+          "exclusive_us": 8,
+          "same_frame_extra_calls": 0,
+          "same_frame_extra_inclusive_us": 0,
+          "inclusive_ms_per_frame": 0.010543478260869564,
+          "exclusive_ms_per_frame": 0.00017391304347826085,
+          "same_frame_extra_inclusive_ms_per_frame": 0.0
+        }
+      }
+    }
+  },
+  "fixture": "Same deterministic high-health battle and 15 level-1 active galaxy slots, one ordinary crew exploring; bounded synthetic one-minute history of 60 receipts at one per second alternating resource IDs. Four game seconds warmup then >=360 logical steps; no prolonged growth simulation.",
+  "scope_correction": "Setup initially admitted native combat before assigning galaxy crew. This caused one handoff before sampling. Both final data files measure the real legacy fallback required by current active-galaxy policy, not native performance. A corrected order attempt stopped at native admission with unsupported_autonomous_galaxy_configuration; no sample from that attempt used. Original local invalid-setup filename meant invalid for native comparison, not unusable as scoped system diagnostics.",
+  "limits": [
+    "Hidden and visible pages have different existing region update cadence, event counts, simulation progress and rendering; whole-frame delta is NOT optimization gain.",
+    "Same-frame extra calls are an upper-bound repetition count per function, not duplicate identical arguments; the two resource IDs are distinct required sums.",
+    "Timings include isolated wrapper overhead; no subtraction or net saving claim. Exclusive spans remove measured nested children only.",
+    "Synthetic history is bounded and explicitly declared; held-health combat alone supplied zero ordinary receipts.",
+    "Hidden region advance spike about188ms occurred once; neither its cause nor removability is established.",
+    "Native rejection is explicit in native_execution_compiler.gd:50-54. Do not bypass it without correct autonomous configuration reconciliation."
+  ],
+  "source_probe_sha256": {
+    "main.gd": {
+      "source_sha256": "10711ef4a71cac6c10095cbadd16c27719b421a9055db88fb3adfc6720eab1f0",
+      "probe_sha256": "52526bd470f34d1fa0363eabb5756f17462bef66597bf8151916a8ee39225fe8"
+    },
+    "game.gd": {
+      "source_sha256": "a114989b29f203d615b0d6a4bc5eac67b5c9496c33a1813195762fd210ac28bf",
+      "probe_sha256": "5580dd4fe4d313dc30d2a28c4417f9463d1c36f828a8f073860fba20ddb4c716"
+    },
+    "galaxy_system.gd": {
+      "source_sha256": "73de54cb079735684291a1f61459d8d427f4988e90ab969d3efa40e2b8196f24",
+      "probe_sha256": "0113b6ec37eadfe76ed4de3f947038681dd671016526eb6a52cc5586cc28701a"
+    },
+    "galaxy_panel.gd": {
+      "source_sha256": "4efbb607fe24d2b4805584d943dc8471f821bcc453e460347fc52a4d393d4638",
+      "probe_sha256": "279ea11f02f0dbd8be47f0da98f140c2dc9558e0b57a8281de2cd1f68639dd96"
+    },
+    "galaxy_map.gd": {
+      "source_sha256": "5baa112ffdcf4f6c66154c1cba1327499feace1922611518955a951b4b62e543",
+      "probe_sha256": "11227e4a2f6bff57b5f78ed5599778574fa40f11e65cbc0c3bbe57ce1e41f7f1"
+    },
+    "galaxy_effect_aggregator.gd": {
+      "source_sha256": "1e13746d921e07bea1da1047de7f0356c66fe2ebd971ce1e42cdb353f81ddb79",
+      "probe_sha256": "f4b43bec4d45e02bfc4306841fcedc15c27edfaca495db98cee404626e3115f3"
+    }
+  },
+  "dll_sha256": "97c1122c07ddb459ee7b4dc420455188c8a2d8507ca2653bc84b26cd048837ca",
+  "project_sha256": "3524ce28d9a27e240d961a6c25e3c89897f158a52b19af319d4be60c4c544a0a"
+}
