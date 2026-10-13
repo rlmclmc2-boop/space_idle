@@ -1,0 +1,44 @@
+{
+  "source": "44538bff",
+  "scope": "Diagnostics for additional directions; no new production optimization. Accepted position-reuse direction remains closed.",
+  "fleet_costs": {
+    "geometry_launch_pose_ms_per_frame": 0.24916964285714285,
+    "fleet_set_slot_angles_ms_per_frame": 0.0649017857142857,
+    "fleet_configure_ms_per_frame": 0.008991071428571428,
+    "fleet_screen_muzzle_for_slot_ms_per_frame": 0.1041875,
+    "fleet_screen_muzzle_for_drone_ms_per_frame": 0.05719642857142857,
+    "geometry_before_tick_ms_per_frame": 4.189366071428571,
+    "geometry_sync_fleet_angles_ms_per_frame": 0.16220535714285714,
+    "geometry_advance_turrets_ms_per_frame": 3.7790625,
+    "geometry_drone_launch_pose_ms_per_frame": 0.09774107142857143,
+    "fleet_pose_base_ms_per_frame": 0.05129464285714285
+  },
+  "nesting": "geometry_before_tick includes geometry_advance_turrets and fleet pose work; geometry_advance_turrets includes enemy read-model publication. Do not treat its 3.779ms as independent turret work. launch/drone_launch include their fleet screen muzzle calls.",
+  "fleet_decision": "Do not implement: configure .009ms, pose_base .051ms, set_slot_angles .065ms, screen muzzle queries .161ms combined. No >1ms potential for this separate fleet-transform direction.",
+  "render": {
+    "root": {
+      "cpu_ms": 2.7421574040695473,
+      "draw_calls_0": 0,
+      "draw_calls_1": 0,
+      "draw_calls_2": 754.2222222222222,
+      "gpu_ms": 0.346685184372796
+    },
+    "ship": {
+      "cpu_ms": 0.7863888878513265,
+      "draw_calls_0": 386,
+      "draw_calls_1": 0,
+      "draw_calls_2": 0,
+      "gpu_ms": 2.664379623201159
+    }
+  },
+  "visible_3d_meshes": 129,
+  "visible_3d_surfaces": 203,
+  "render_decision": "Root canvas about 754 draws / 2.74ms CPU, ship 386 visible draws / .79ms CPU and 2.66ms GPU. These are whole-stage costs, not removable overhead. Existing native flight painter already batches ordered triangle streams; static enemy parts already retain Canvas commands. No demonstrated quality-preserving >1ms elimination was found.",
+  "layer_diagnostic_limits": "Frozen-frame visibility isolation only, never an accepted optimization or equal-work benchmark. Foreground accounts for about 302 canvas draws but its isolated CPU reduction was only .35ms. Equipment hiding caused layout/visibility side effects and that CPU result is invalid for cost attribution. Do not sum isolation deltas. All production visibility and quality remain unchanged.",
+  "driver_hashes": {
+    "qa_astra_direct.gd": "1d33031989ff8650b4209b2ad52d92215871ca2a168a9fa9665bfbe9a683f01a",
+    "qa_astra_render_split.gd": "336f7d29c1afd6acec5168080d4768809db8f096585484cb721336dd39242a92",
+    "qa_astra_layer_split.gd": "b8509aa0f2e3edc9a909d8f90a2d6d9926142bf1ba0cfa9014d3234c2e184b86"
+  },
+  "unresolved": "High-load <10ms target remains unmet. A further optimization needs an identifiable removable >1ms dataflow or draw submission cost; current totals alone are insufficient. No more microtuning or failed-direction repeats."
+}
