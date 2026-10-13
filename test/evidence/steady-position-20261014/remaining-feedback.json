@@ -1,0 +1,23 @@
+{
+  "source": "f894e00f",
+  "scope": "Instrumented current-source diagnostic only. No production change or performance claim.",
+  "frames": 102,
+  "costs": {
+    "feedback_kind_2_ms_per_frame": 1.8821764705882353,
+    "feedback_kind_0_calls": 17.34313725490196,
+    "feedback_kind_1_calls": 41.78431372549019,
+    "feedback_kind_8_calls": 0.18627450980392157,
+    "feedback_kind_1_ms_per_frame": 0.929578431372549,
+    "feedback_kind_4_ms_per_frame": 0.43347058823529416,
+    "feedback_kind_6_calls": 2.0588235294117645,
+    "feedback_kind_8_ms_per_frame": 0.00434313725490196,
+    "feedback_kind_0_ms_per_frame": 1.1832156862745098,
+    "feedback_conversion_ms_per_frame": 0.4688333333333333,
+    "feedback_kind_2_calls": 64.43137254901961,
+    "feedback_kind_6_ms_per_frame": 0.05537254901960784,
+    "feedback_kind_4_calls": 24.80392156862745
+  },
+  "units": "*_ms_per_frame: milliseconds per frame; *_calls: calls per frame",
+  "decision": "Do not implement another feedback conversion experiment: only 0.469ms/frame. Fire and damage event totals include required listeners, history, arithmetic and presentation; they are not removable overhead. No distinct demonstrated >1ms opportunity identified here.",
+  "limits": "Earlier damage-merge scan measurement was a different run; do not subtract it from this hit-event total. Existing failed feedback conversion experiment remains rejected. High-load <10ms target unresolved."
+}
