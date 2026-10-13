@@ -1,19 +1,35 @@
 {
   "economy-cost": {
-    "advance_shared_clock_and_economy_us": 1.1819000000000002,
-    "prepare_numeric_batch_us": 0.27265,
-    "compile_us": 0.20054166666666665,
-    "kernel_advance_us": 0.8560416666666666,
-    "consume_feedback_us": 3.921616666666667
+    "advance_shared_clock_and_economy_ms_per_frame": 1.1819000000000002,
+    "prepare_numeric_batch_ms_per_frame": 0.27265,
+    "compile_ms_per_frame": 0.20054166666666665,
+    "kernel_advance_ms_per_frame": 0.8560416666666666,
+    "consume_feedback_ms_per_frame": 3.921616666666667
   },
   "hull-cost": {
-    "hull_transform_us": 0.08751428571428573
+    "hull_transform_ms_per_frame": 0.08751428571428573
   },
   "snapshot-cost": {
-    "snapshot_scan_us": 0.7587166666666667,
-    "snapshot_geometry_us": 0.4797166666666666,
-    "snapshot_beam_us": 0.255225
+    "snapshot_scan_ms_per_frame": 0.7587166666666667,
+    "snapshot_geometry_ms_per_frame": 0.4797166666666666,
+    "snapshot_beam_ms_per_frame": 0.255225
   },
-  "decision": "No additional implementation: independent measured subcosts do not demonstrate a new >1ms removable cost. Previously handled geometry/feedback/drawing directions are not reopened. High-load <10ms target remains unmet.",
-  "measurement_note": "Diagnostic wrappers only in isolated test copies. Nested durations are not additive. These runs do not replace the accepted A/B/A whole-frame comparison."
+  "decision": "These specific subcosts did not establish another >1ms saving. Geometry and feedback as whole subsystems remain open to genuinely different dataflow optimizations. The <10ms target remains unmet.",
+  "measurement_note": "Diagnostic wrappers only in isolated test copies. Nested durations are not additive. These runs do not replace the accepted A/B/A whole-frame comparison.",
+  "nesting": {
+    "advance_game_time_ms_per_frame": 14.5356,
+    "inside_advance_game_time": [
+      "fixed-step geometry.before_tick",
+      "native prepare_geometry",
+      "game.tick (includes shared economy, kernel advance, feedback)",
+      "geometry.after_tick",
+      "final snapshot"
+    ],
+    "inside_shared_economy": [
+      "prepare_numeric_batch (0.27265ms)",
+      "compile (0.20054ms, nested inside prepare_numeric_batch)"
+    ],
+    "unassigned_advance_remainder_ms_per_frame": 8.576041666666667,
+    "remainder_note": "Approximate residual from the economy diagnostic only; do not subtract separately measured hull/snapshot runs or nested compile costs from it."
+  }
 }
