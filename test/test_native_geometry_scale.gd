@@ -217,6 +217,8 @@ func run()->void:
 		var before:Dictionary=turret_values[slot];var after:Dictionary=scene.turret_visuals[slot]
 		check(is_same(after,before.pose) and is_same(after.entry,before.entry) and is_same(after.target,before.target) and after.angle==before.angle and after.recoil==before.recoil and after.get("fired_at",-INF)==before.fired_at,"handoff preserves turret identity, target, angle and recoil "+str(slot))
 	check(scene.enemy_render_position(remaining_enemy).distance_to(fixed_position)<0.001 and scene.enemy_render_width(remaining_enemy)==fixed_width,"handoff preserves shared fixed model position and width")
+	check(g.target_spatial_source==scene.battle_read_model and scene.battle_read_model.host==scene,"handoff binds fixed-ray collision to live legacy host")
+	check(not g.target_spatial_source.ballistic_shape(remaining_enemy).hull.is_empty(),"handoff can publish an in-flight fixed-ray hull before another frame")
 	scene._process(0.0)
 	check(is_same(scene.enemy_poses[int(remaining_enemy.slot)],old_pose) and old_pose.born==pose_values[0],"legacy zero step does not replay entry")
 	old_pose.erase("fixed_layout")

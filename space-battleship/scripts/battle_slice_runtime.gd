@@ -254,6 +254,11 @@ func close()->void:
 	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
 	# Move ownership: cleanup must not clear the containers now held by Main.
 	geometry.enemy_poses={};geometry.turret_visuals={}
+	# In-flight fixed rays need a live hull publisher after ownership returns.
+	# Cold native admission may never have initialized Main's read model.
+	scene.battle_read_model.setup(scene)
+	scene.battle_read_model.invalidate_membership()
+	if previous_spatial==null:previous_spatial=scene.battle_read_model
 	geometry.close({"providers":previous,"spatial":previous_spatial})
 	started=false
 
