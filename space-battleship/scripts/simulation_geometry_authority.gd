@@ -296,7 +296,10 @@ func advance_turrets(dt: float) -> void:
 	# this invocation; identity guards slot reuse, and nothing survives a step.
 	var target_positions: Dictionary = {}
 	var beam_targets:Dictionary={}
-	for shot in game.projectiles if game.state==BattleGame.State.COMBAT and not entries.is_empty() else []:
+	var beam_candidates:Array=[]
+	if game.state==BattleGame.State.COMBAT and not entries.is_empty():
+		beam_candidates=game.native_execution.kernel.primary_beam_views() if game.native_execution!=null else game.projectiles
+	for shot in beam_candidates:
 		if not shot.get("beam",false) or shot.hostile or shot.get("repeated",false):continue
 		var mount:=int(shot.mount)
 		if mount<0 or mount>=entries.size() or str(entries[mount].get("key","")).is_empty() or beam_targets.has(mount):continue

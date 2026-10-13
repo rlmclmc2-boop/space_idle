@@ -153,7 +153,7 @@ class SpaceCombatKernel : public RefCounted {
     std::deque<Flight> flights;
     std::vector<size_t> active, free_flights, retired;
     RootQueue roots;
-    std::priority_queue<Timed, std::vector<Timed>, Later> ejections, repeats;
+    RootQueue ejections, repeats;
     std::vector<Effect> feedback;
     std::shared_ptr<MotionArena> motion_arena = std::make_shared<MotionArena>();
     Ref<RandomNumberGenerator> rng;
@@ -1447,6 +1447,9 @@ class SpaceCombatKernel : public RefCounted {
   protected:
     static void _bind_methods() {
         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
+        ClassDB::bind_method(D_METHOD("required_muzzles", "seconds"), &SpaceCombatKernel::required_muzzles);
+        ClassDB::bind_method(D_METHOD("primary_beam_views"), &SpaceCombatKernel::primary_beam_views);
+        ClassDB::bind_method(D_METHOD("input_muzzles", "indices", "logical", "screen"), &SpaceCombatKernel::input_muzzles);
         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
                              &SpaceCombatKernel::input_geometry);
         ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles"), &SpaceCombatKernel::input_ballistic_geometry);
@@ -1924,6 +1927,58 @@ class SpaceCombatKernel : public RefCounted {
     }
     void input_player_point(Vector2 point) {
         player_point = point;
+    }
+    static void mark_due_muzzles(const std::vector<Timed> &heap, size_t index, double end,
+                                 std::vector<uint8_t> &needed) {
+        // The priority heap orders by time. A future parent excludes its whole
+        // subtree; inspect due entries without copying or mutating the queue.
+        if (index >= heap.size() || heap[index].at > end) return;
+        needed[heap[index].weapon] = 1;
+        mark_due_muzzles(heap, index * 2 + 1, end, needed);
+        mark_due_muzzles(heap, index * 2 + 2, end, needed);
+    }
+    Array primary_beam_views() const {
+        // Weapon.beam already owns the sole primary beam. Derived beams never
+        // replace this index. Preserve projectile-view order for shared slots.
+        std::vector<const Flight *> beams;
+        for (const Weapon &w : weapons) {
+            if (w.hostile || w.beam < 0) continue;
+            const Flight &f = flights[w.beam];
+            if (f.live && f.beam && !f.repeated && !f.chain) beams.push_back(&f);
+        }
+        std::sort(beams.begin(), beams.end(), [](const Flight *a, const Flight *b) {
+            return a->active_index < b->active_index;
+        });
+        Array result;
+        for (const Flight *f : beams) result.push_back(f->view);
+        return result;
+    }
+    PackedInt32Array required_muzzles(double seconds) const {
+        PackedInt32Array indices;
+        if (!admitted || stopped || !std::isfinite(seconds) || seconds <= 0) return indices;
+        std::vector<uint8_t> needed(weapons.size(), 0);
+        // Numeric updates preserve weapon identity/kind. Conservatively supply
+        // every beam weapon, including derived beams and a beam that can retire
+        // and enqueue its replacement inside this advance. Never scan flights.
+        for (size_t i = 0; i < weapons.size(); ++i) needed[i] = weapons[i].kind == 3;
+        const double end = clock + seconds + 1e-9;
+        mark_due_muzzles(roots.entries(), 0, end, needed);
+        mark_due_muzzles(ejections.entries(), 0, end, needed);
+        mark_due_muzzles(repeats.entries(), 0, end, needed);
+        // Synchronously generated secondary/repeat/ejection events retain their
+        // originating weapon index, already included above. Chain births use
+        // their explicit impact origin instead of a weapon muzzle.
+        for (size_t i = 0; i < needed.size(); ++i) if (needed[i]) indices.append(i);
+        return indices;
+    }
+    void input_muzzles(PackedInt32Array indices, PackedVector2Array logical, PackedVector2Array screen) {
+        if (indices.size() != logical.size() || indices.size() != screen.size()) return;
+        for (int i = 0; i < indices.size(); ++i) {
+            int wi = indices[i];
+            if (wi < 0 || wi >= int(weapons.size())) continue;
+            weapons[wi].muzzle = logical[i];
+            weapons[wi].screen_muzzle = screen[i];
+        }
     }
     void input_geometry(PackedVector2Array points, PackedVector2Array muzzles) {
         for (int i = 0; i < points.size() && i < int(actors.size()); ++i)
