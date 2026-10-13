@@ -127,6 +127,11 @@ var enhancement_deferred: Dictionary = {}
 var refit_health_ratios := {"armour":1.0,"shield":1.0}
 var enemy_shield_time := 0.0
 var enemy_shield_hit_time := -1.0
+# These are a local combat-span mapping, not a second persistent defence clock.
+var _legacy_defence_span_active:=false
+var _legacy_defence_origin:=0.0
+var _legacy_combat_origin:=0.0
+var _legacy_combat_end:=0.0
 
 # Overridden only by the isolated Debug simulator. Live games retain wall time.
 func economy_time() -> float:
@@ -2402,6 +2407,7 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 	enemy_shield_hit_time=previous_query_time
 	hits.sort_custom(func(a,b):return a.index<b.index if a.at==b.at else a.at<b.at)
 	for item in hits:
+		if not _legacy_advance_defence_to(float(item.at)):return
 		var shot: Dictionary = item.shot
 		if not projectiles.has(shot) or not long_laser_valid(shot):continue
 		apply_long_laser_hit(shot,float(item.due))
@@ -2522,6 +2528,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 					hit_enemy(adjacent, float(enemy.max_hp) * float(enemy.jewelExplosion), type,[],false,CombatContext.derive(context,"interference_explosion"))
 
 	if CombatContext.can_chain(context):launch_enhancement_chain(enemy,base_raw,type,effects,critical,chain_origin,context)
+	if _legacy_defence_span_active:_legacy_defence_stopped()
 
 func freeze_higgs_geometry(shot: Dictionary) -> void:
 	if not shot.has("higgs"):return
@@ -2877,10 +2884,16 @@ func tick(dt: float) -> void:
 		return
 	if not is_active():
 		return
-	drone_combat.advance(self,dt)
-	if not advance_jewel_repair(dt):return
-	if state==State.RETREAT:return
+	if state==State.COMBAT:
+		_legacy_begin_defence_span(dt)
+		drone_combat.advance_boundary(self,dt)
+		if _legacy_defence_stopped():_legacy_end_defence_span();return
+	else:
+		drone_combat.advance(self,dt)
+		if not advance_jewel_repair(dt):return
+		if state==State.RETREAT:return
 	advance_jewel_repeats(dt)
+	if _legacy_defence_span_active and _legacy_defence_stopped():_legacy_end_defence_span();return
 	if state == State.TRAVEL:
 		tick_projectiles(dt)
 		if state != State.TRAVEL:
@@ -2956,13 +2969,20 @@ func projectile_target_point(shot:Dictionary)->Vector2:
 func tick_projectiles(dt: float) -> void:
 	if native_execution!=null:
 		push_error("legacy executor called during native ownership");return
+	if state==State.COMBAT and not _legacy_defence_span_active:_legacy_begin_defence_span(dt)
+	_tick_legacy_projectiles(dt)
+	_legacy_end_defence_span()
+
+func _tick_legacy_projectiles(dt: float) -> void:
 	# Overrides select pending launches at step start; only this base advances
 	# the shield clock, before resolving scheduled periods and boundary hits.
-	if state==State.COMBAT:enemy_shield_time+=dt
+	if state==State.COMBAT or _legacy_defence_span_active:enemy_shield_time+=dt
 	var pending := projectiles.duplicate()
-	var shield_timing := enemies.any(func(enemy):return float(enemy.get("max_shield",0))>0)
-	if shield_timing:tick_shield_beams(pending,dt)
+	# Player defence needs the same ordered periods even without enemy shields.
+	tick_shield_beams(pending,dt)
+	if not _legacy_advance_defence_to(enemy_shield_time):return
 	for index in pending.size():
+		if _legacy_defence_span_active and _legacy_defence_stopped():break
 		var shot: Dictionary = pending[index]
 		# Usually the live array retains its order for the whole step. Identity at
 		# the snapshot index avoids a full membership scan for every flying shot.
@@ -2975,9 +2995,7 @@ func tick_projectiles(dt: float) -> void:
 			continue
 		if advance_higgs_projectile(shot,dt):continue
 		if advance_custom_projectile(shot,dt):continue
-		if shot.get("beam", false):
-			if not shield_timing:tick_long_laser(shot, dt)
-			continue
+		if shot.get("beam", false):continue
 		if not shot.target.is_empty():
 			var target_dead: bool = N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
 			if target_dead:
@@ -4067,16 +4085,54 @@ func advance_enhancement_deferred_tick() -> void:
 		enhancement_deferred.clear()
 		if N.compare(cleared_amount,0)>0:enhancement_branches.cleared(self)
 
+func _legacy_begin_defence_span(dt:float)->void:
+	_legacy_defence_span_active=true
+	_legacy_defence_origin=enhancement_defense_time
+	_legacy_combat_origin=enemy_shield_time
+	_legacy_combat_end=enemy_shield_time+dt
+
+func _legacy_end_defence_span()->void:
+	if not _legacy_defence_span_active:return
+	# Terminal events consume the logical tail without replaying defence or hits.
+	enemy_shield_time=_legacy_combat_end
+	_legacy_defence_span_active=false
+	native_step_phase="idle";native_step_remaining=0.0
+
+func _legacy_defence_stopped()->bool:
+	if _legacy_defence_span_active and state==State.COMBAT and is_final_encounter() and not has_alive_enemy():
+		finish_combat_step(0.0)
+	return state==State.RETREAT or N.compare(player.armour,0)<=0 or (_legacy_defence_span_active and state!=State.COMBAT)
+
+func _legacy_advance_defence_to(combat_at:float)->bool:
+	if not _legacy_defence_span_active:return true
+	if _legacy_defence_stopped():return false
+	var target:=_legacy_defence_origin+(combat_at-_legacy_combat_origin)
+	if target+0.000000001<enhancement_defense_time or combat_at>_legacy_combat_end+0.000000001:
+		push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid event cursor");return false
+	if not advance_jewel_repair(maxf(0.0,target-enhancement_defense_time)):return false
+	return not _legacy_defence_stopped()
+
 func advance_jewel_repair(dt: float) -> bool:
-	if paused or dt<=0 or state==State.RETREAT or N.compare(player.armour,0)<=0:return true
+	if paused or dt<0 or state==State.RETREAT or N.compare(player.armour,0)<=0:return true
 	var memory_interval := enhancement_parameter("memory_interval")
 	var deferred_interval := enhancement_parameter("deferred_interval")
 	if not is_finite(dt) or memory_interval<=0.000000001 or deferred_interval<=0.000000001 or not is_finite(memory_interval) or not is_finite(deferred_interval) or enhancement_memory_elapsed<0 or enhancement_memory_elapsed>=memory_interval or enhancement_deferred_elapsed<0 or enhancement_deferred_elapsed>=deferred_interval:
 		push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid periodic phase")
 		return false
 	var rest := dt
-	while rest>0.000000001:
+	while true:
+		if enhancement_branches.next_defense_step(self)<0:return false
+		if _legacy_defence_span_active and drone_combat.next_incoming_step(self)<0:return false
+		var previous_query_time:=enemy_shield_hit_time
+		if _legacy_defence_span_active:enemy_shield_hit_time=_legacy_combat_origin+(enhancement_defense_time-_legacy_defence_origin)
+		enhancement_branches.advance_defense(self,0.0)
+		if _legacy_defence_span_active:drone_combat.advance_incoming(self,0.0)
+		enemy_shield_hit_time=previous_query_time
+		if _legacy_defence_stopped():return true
+		if rest<=0.000000001:break
 		var step := minf(rest,minf(memory_interval-enhancement_memory_elapsed,deferred_interval-enhancement_deferred_elapsed))
+		step=minf(step,enhancement_branches.next_defense_step(self))
+		if _legacy_defence_span_active:step=minf(step,drone_combat.next_incoming_step(self))
 		if step<=0 or not is_finite(step):
 			push_error("PLAYER_DEFENCE_TIME_CONTRACT nonprogressing repair piece")
 			return false
@@ -4086,16 +4142,19 @@ func advance_jewel_repair(dt: float) -> bool:
 		enhancement_deferred_elapsed+=step
 		rest=maxf(0.0,rest-step)
 		# Integrate the elapsed interval before consuming its endpoint events.
+		if _legacy_defence_span_active:enemy_shield_hit_time=_legacy_combat_origin+(enhancement_defense_time-_legacy_defence_origin)
 		advance_enhancement_repair_step(step,0)
 		enhancement_branches.advance_defense(self,step)
-		if state==State.RETREAT or N.compare(player.armour,0)<=0:return true
+		if _legacy_defence_span_active:drone_combat.advance_incoming(self,step)
+		if _legacy_defence_stopped():enemy_shield_hit_time=previous_query_time;return true
 		if enhancement_deferred_elapsed+0.000000001>=deferred_interval:
 			enhancement_deferred_elapsed=maxf(0.0,enhancement_deferred_elapsed-deferred_interval)
 			advance_enhancement_deferred_tick()
-			if state==State.RETREAT or N.compare(player.armour,0)<=0:return true
+			if _legacy_defence_stopped():enemy_shield_hit_time=previous_query_time;return true
 		if enhancement_memory_elapsed+0.000000001>=memory_interval:
 			enhancement_memory_elapsed=maxf(0.0,enhancement_memory_elapsed-memory_interval)
 			advance_enhancement_repair_step(0.0,1)
+		enemy_shield_hit_time=previous_query_time
 	return true
 
 func advance_enhancement_repair_step(dt: float, ticks: int) -> void:

@@ -90,17 +90,30 @@ func try_rebuild(g) -> bool:
 	g.jewel_defence_damage.clear();g.enhancement_deferred.clear();g.sync_jewel_defence_damage()
 	g.event.emit("hyperspace_rebuild",{"drone_id":ids[0],"stacks":rebuild_stacks});return true
 func advance(g,dt: float) -> void:
-	dodge_cooldown=maxf(0.0,dodge_cooldown-dt)
+	advance_boundary(g,dt)
+	advance_incoming(g,dt)
+
+func advance_boundary(g,dt: float) -> void:
 	for pending in delayed.duplicate():
 		pending.remaining-=dt
 		if pending.remaining>0.000000001:continue
 		delayed.erase(pending)
 		for target in g.enemies.duplicate():
 			if N.compare(target.hp,0)>0:g.hit_enemy(target,pending.damage,int(pending.type),[],false,pending.context)
+func next_incoming_step(g) -> float:
+	var step:=dodge_cooldown if dodge_cooldown>0 else INF
+	var black:=effect(g,"black_hole")
+	if black.is_empty():return step
+	if float(black.constants.period)<=0.000000001 or float(black.constants.absorption_duration)<=0.000000001:
+		push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid absorption interval");return -1.0
+	return minf(step,black_hole_remaining if black_hole_remaining>0 else maxf(0.0,float(black.constants.period)-black_hole_elapsed))
+
+func advance_incoming(g,dt: float) -> void:
+	dodge_cooldown=maxf(0.0,dodge_cooldown-dt)
 	var black:=effect(g,"black_hole")
 	if black.is_empty():black_hole_remaining=0.0;black_hole_damage=0.0;return
 	var remaining:=maxf(0.0,dt)
-	while remaining>0.000000001:
+	while remaining>0.000000001 or (black_hole_remaining>0 and black_hole_remaining<=0.000000001) or (black_hole_remaining<=0 and black_hole_elapsed+0.000000001>=float(black.constants.period)):
 		if black_hole_remaining<=0:
 			var waiting:=maxf(0.0,float(black.constants.period)-black_hole_elapsed)
 			var step:=minf(remaining,waiting)
@@ -118,3 +131,4 @@ func advance(g,dt: float) -> void:
 			for target in g.enemies.duplicate():
 				if N.compare(damage,0)>0 and N.compare(target.hp,0)>0:g.hit_enemy(target,damage,int(g.db.equip(str(g.profile.hyperspace.inventory.drones[black.drone_id].weapon),1).dmgtype),[],false,context)
 			g.event.emit("hyperspace_black_hole",{"active":false})
+			if g._legacy_defence_stopped():return
