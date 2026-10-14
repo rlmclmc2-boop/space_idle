@@ -59,6 +59,10 @@ var distance := 0.0
 var travel_origin := INF
 var group_index := 0
 var enemies: Array[Dictionary] = []
+# Legacy: complete live shot collection. Native: bound compatibility rows only;
+# compact laser inventory/motion belongs to kernel. Native presentation uses
+# typed membership; explicit full compatibility requests must check null from
+# kernel.projectile_views(). Handoff replaces this with the complete collection.
 var projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
 var native_execution_requested:=false

@@ -60,7 +60,9 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	for index in game.defense_entries().size():
 		var entry:Dictionary=game.slot_entry("defence",index)
 		game.enhancement_buffer_owners[index]={"entry":entry,"key":str(entry.key)}
-	game.projectiles=kernel.projectile_views()
+	# Internal compatibility/presentation subset while kernel owns combat.
+	# Explicit complete consumers use projectile_views(), which can fail with null.
+	game.projectiles=kernel.presentation_projectile_rows() if kernel.has_method("presentation_projectile_rows") else kernel.projectile_views()
 	return true
 
 func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->bool:
@@ -223,7 +225,12 @@ func consume_feedback(game:RefCounted)->void:
 			# Frozen value feedback, including same-step retired births. No shot
 			# lookup or complete compatibility Dictionary is created here.
 			var info={"native_laser":row.native_laser,"x":p.x,"y":p.y,"pos":p,"type":row.type,"direction":row.direction,"aim":row.target_position,"critical":row.critical}
-			game.event.emit("fire" if int(row.kind)==0 else "projectile_impact",info)
+			match int(row.kind):
+				0:game.event.emit("fire",info)
+				1:game.event.emit("projectile_impact",info)
+				5:pass # Original retirement publishes only friendly missile retirement.
+				9:game.event.emit("critical_impact",{"pos":p,"direction":row.direction})
+				_:push_error("Unexpected compact laser feedback kind: "+str(row.kind))
 			continue
 		match int(row.kind):
 			0:

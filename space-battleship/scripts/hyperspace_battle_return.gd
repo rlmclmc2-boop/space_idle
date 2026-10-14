@@ -40,6 +40,9 @@ func encode(value:Variant)->Variant:
 	error="unsupported_actor_value";return null
 
 static func capture(g)->String:
+	# Never silently encode a native presentation subset. The entry transaction
+	# must complete native handoff before calling this legacy graph serializer.
+	if g.native_execution!=null:return ""
 	var codec= new()
 	for kind in ["weapons","defence"]:
 		var entries:Array=g.combat_weapon_entries() if kind=="weapons" else g.defense_entries()

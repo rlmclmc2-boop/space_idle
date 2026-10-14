@@ -76,7 +76,8 @@ func boundary_reason(g)->String:
 	if g.state not in [g.State.MAIN_MENU,g.State.LEVEL_SELECT,g.State.TRAVEL,g.State.LEVEL_CLEAR,g.State.UPGRADE]:return "battle"
 	for enemy in g.enemies:
 		if g.N.compare(enemy.hp,0)>0:return "battle"
-	if not g.projectiles.is_empty() or (g.get("missile_queue") is Array and not g.get("missile_queue").is_empty()) or not g.jewel_repeats.is_empty() or not g.drone_combat.delayed.is_empty():return "projectiles"
+	var has_projectiles:bool=int(g.native_execution.kernel.metrics().active_flights)>0 if g.native_execution!=null else not g.projectiles.is_empty()
+	if has_projectiles or (g.get("missile_queue") is Array and not g.get("missile_queue").is_empty()) or not g.jewel_repeats.is_empty() or not g.drone_combat.delayed.is_empty():return "projectiles"
 	return ""
 func dispatch_queued(g)->bool:
 	if queued.is_empty():return false
@@ -101,6 +102,9 @@ func start(g,route: String,level: int) -> bool:
 		bound_registry=reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g))
 		if bound_registry.is_empty():last_error=reward_binder.last_error;production_accepted=false;return false
 		production_accepted=true
+	# Return receipts require the complete legacy actor graph, not native
+	# presentation rows. Failed cold transfer must not settle/spend/start.
+	if not g.native_before_configuration_change():last_error="native_transfer_failed";return false
 	# Existing earned drops settle by their ordinary rule, before freezing the main run.
 	g.settle_drops()
 	var point=Return.journey(g);var frozen=Return.capture(g)

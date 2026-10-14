@@ -60,7 +60,7 @@ class SpaceCombatKernel : public RefCounted {
     static std::shared_ptr<const BirthConfig> birth_config(const Weapon &w, Dictionary v, double delay) {
         auto b = std::make_shared<BirthConfig>();
         b->weapon = w.row.duplicate(true); b->weapon.make_read_only();
-        b->entry = w.entry;
+        b->entry = w.entry.duplicate(true); b->entry.make_read_only();
         b->effects = Array(v.get("transfer_effects", Array())).duplicate(true);
         for (int i = 0; i < b->effects.size(); ++i) { Dictionary e = b->effects[i]; e.make_read_only(); }
         b->effects.make_read_only(); b->slot = w.slot; b->kind = w.kind; b->type = w.type;
@@ -102,6 +102,10 @@ class SpaceCombatKernel : public RefCounted {
         bool live = false, hostile = false, beam = false, repeated = false, chain = false, prism = false;
         size_t active_index = 0, beam_index = 0, compatibility_index = SIZE_MAX;
         bool compact_laser = false, target_view_cleared = false;
+        bool view_repeated = false, owns_primary_aim = false;
+        // The row at actual carrier birth can differ from Attack.birth after
+        // an upgrade while a repeat is queued. Retain that immutable descriptor.
+        std::shared_ptr<const BirthConfig> view_birth;
         uint64_t born_step = 0, serial = 0;
         int weapon = -1, type = 0;
         Handle source, target;
@@ -696,9 +700,9 @@ class SpaceCombatKernel : public RefCounted {
         e.direction = f.lease.is_valid() ? f.lease->motion().direction : Vector2(0, -1);
         if (f.compact_laser) {
             e.compact_laser = true; e.laser_serial = f.serial;
-            e.laser_mount = f.instance->attack->birth->slot;
-            e.laser_drone = f.instance->attack->birth->entry.has("drone_id");
-            e.laser_owns_aim = !f.repeated && !f.chain;
+            e.laser_mount = f.view_birth->slot;
+            e.laser_drone = f.view_birth->entry.has("drone_id");
+            e.laser_owns_aim = f.owns_primary_aim;
             e.laser_primary = f.instance->view.get("primary_target", target_view(f.target));
             e.laser_launch = f.launch_point; e.laser_ray_origin = f.ray_origin; e.laser_ray_step = f.ray_step;
         } else e.shot = f.view;
@@ -772,6 +776,7 @@ class SpaceCombatKernel : public RefCounted {
             f.lease.unref();
             f.instance.reset();
             f.context.reset();
+            f.view_birth.reset();
             f.view = Dictionary();
             free_flights.push_back(id);
         }
@@ -804,6 +809,7 @@ class SpaceCombatKernel : public RefCounted {
         f.multiplier = multiplier;
         f.damage = inst->attack->damage * multiplier;
         f.repeated = repeated || inst->derived;
+        f.view_repeated = repeated; f.owns_primary_aim = !w.hostile && !repeated && !chain;
         f.chain = chain;
         f.beam = w.kind == 3 && !chain;
         f.serial = ++flight_serial;
@@ -850,6 +856,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         if (compact_laser_births && !w.hostile && w.kind == 0 && !chain && t && t->collision_hull.size() >= 3) {
             f.compact_laser = true; ++compact_laser_count; f.fixed_ray = true;
+            f.view_birth = weapons[wi].birth;
             f.launch_point = from; f.ray_origin = w.screen_muzzle;
             f.ray_step = (t->screen_point - w.screen_muzzle) / std::max(0.001, distance(from, aim));
             if (t->stationary_geometry) refresh_ray_contact(f, *t);
@@ -1815,6 +1822,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("loss_view"), &SpaceCombatKernel::loss_view);
         ClassDB::bind_method(D_METHOD("defence_time_view"), &SpaceCombatKernel::defence_time_view);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
+        ClassDB::bind_method(D_METHOD("presentation_projectile_rows"), &SpaceCombatKernel::presentation_projectile_rows);
         ClassDB::bind_method(D_METHOD("presentation_membership"), &SpaceCombatKernel::presentation_membership);
         ClassDB::bind_method(D_METHOD("presentation_beams"), &SpaceCombatKernel::presentation_beams);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
@@ -2476,12 +2484,12 @@ class SpaceCombatKernel : public RefCounted {
         return true;
     }
     bool valid_laser_view(const Flight &f) const {
-        return f.live && f.fixed_ray && f.lease.is_valid() && f.instance && f.instance->attack && f.instance->attack->birth &&
+        return f.live && f.fixed_ray && f.lease.is_valid() && f.instance && f.instance->attack && f.instance->attack->birth && f.view_birth &&
             f.lease->arena == motion_arena && f.lease->slot < motion_arena->motions.size() &&
             f.lease->motion().generation == f.lease->generation;
     }
     Dictionary laser_view(const Flight &f) const {
-        const auto &birth = *f.instance->attack->birth;
+        const auto &birth = *f.view_birth;
         const Motion &m = f.lease->motion();
         Dictionary v;
         v["serial"] = int64_t(f.serial); v["x"] = f.launch_point.x; v["y"] = f.launch_point.y;
@@ -2492,18 +2500,22 @@ class SpaceCombatKernel : public RefCounted {
         v["entry"] = birth.entry; v["mount"] = birth.slot; v["motion_lease"] = f.lease;
         v["direction"] = m.direction; v["speed"] = m.speed; v["chain_hop"] = false; v["prototype_missile"] = false;
         v["critical"] = f.instance->attack->critical; v["attack_instance"] = f.instance->view;
-        v["repeated"] = f.repeated; v["owns_primary_aim"] = !f.repeated;
+        v["repeated"] = f.view_repeated; v["owns_primary_aim"] = f.owns_primary_aim;
         v["primary_target"] = f.instance->view.get("primary_target", v["target"]);
         v["ballistic_target_origin"] = f.aim; v["fixed_screen_origin"] = f.ray_origin; v["fixed_screen_step"] = f.ray_step;
         Dictionary context;
         context["source_id"] = birth.entry.has("drone_id") ? String("drone:") + String(birth.entry["drone_id"]) : String("module:") + String::num_int64(birth.slot);
-        context["trigger_depth"] = f.repeated ? 1 : 0; v["combat_context"] = context; v["prism_tower"] = false;
+        context["trigger_depth"] = f.view_repeated ? 1 : 0; v["combat_context"] = context; v["prism_tower"] = false;
         return v;
     }
     // Cold presentation transition: prepare all missing rows first. A failure
     // leaves mode, rows, handles and the sole combat owner untouched.
     int64_t set_compact_laser_births(bool enabled) {
-        if (executing || !admitted || stopped) return -1;
+        if (executing) return -1;
+        // Terminal owners must not block Main's next delta/exit/reselection.
+        // Cancel/handoff normally leave no flights; otherwise close the views
+        // before allowing the existing lifecycle path to continue.
+        if (!admitted || stopped) enabled = false;
         if (enabled) { compact_laser_births = true; return laser_view_revision; }
         if (compact_laser_count == 0) { compact_laser_births = false; return laser_view_revision; }
         std::vector<std::pair<size_t, Dictionary>> pending;
@@ -2665,9 +2677,15 @@ class SpaceCombatKernel : public RefCounted {
     Array enemy_views() const {
         return actor_rows;
     }
-    Array projectile_views() const {
+    // Explicit full compatibility request. NIL is failure, never a partial
+    // collection or an empty collection pretending that no flights exist.
+    Variant projectile_views() {
+        if (set_compact_laser_births(false) < 0) return Variant();
         return flight_rows;
     }
+    // Internal native presentation binding only. Compact laser bodies remain
+    // in typed active membership; this array is not a projectile inventory.
+    Array presentation_projectile_rows() const { return flight_rows; }
     Array presentation_beams() const {
         // Compaction swaps the full flight order independently of beam order.
         // Sort only these beam indices to preserve the existing alpha draw order.

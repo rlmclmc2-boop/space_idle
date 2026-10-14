@@ -58,14 +58,16 @@ protected:
 public:
     ~SpaceCombatFlightFrame();
     int64_t size() const{return persistent?order.size():flights.size();}
-    Array to_array() const {
+    Variant to_array() const {
         Array result; Dictionary cold_by_serial;
         if (persistent && kernel.is_valid()) {
             // Explicit compatibility-array demand is a cold fallback boundary.
             // Freeze no second motion state; every reconstructed row shares lease.
-            if (kernel->set_compact_laser_births(false)<0) return result;
-            for (int i=0;i<kernel->projectile_views().size();++i) {
-                Dictionary shot=kernel->projectile_views()[i];cold_by_serial[shot["serial"]]=shot;
+            Variant complete=kernel->projectile_views();
+            if(complete.get_type()!=Variant::ARRAY)return Variant(); // Keep this frame intact on failure.
+            Array shots=complete;
+            for (int i=0;i<shots.size();++i) {
+                Dictionary shot=shots[i];cold_by_serial[shot["serial"]]=shot;
             }
         }
         if(persistent) {
@@ -508,7 +510,7 @@ void SpaceCombatPresentation::flush_pulses(RID canvas) {
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
     if (!supports_compact_lasers(surface) && retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped) {
         if (retained_kernel->set_compact_laser_births(false)<0) return retained_frame;
-        shots=retained_kernel->projectile_views(); surface->call("restore_native_laser_visuals"); clear_retained_frame();
+        shots=retained_kernel->presentation_projectile_rows(); surface->call("restore_native_laser_visuals"); clear_retained_frame();
     }
     if (retained_kernel.is_valid() && (!retained_kernel->admitted || retained_kernel->stopped)) clear_retained_frame();
     if(bool(surface->get("accelerated_visual_mode")))clear_retained_frame();
@@ -580,7 +582,9 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
         if(direct.is_valid()&&direct->persistent&&direct==retained_frame) {
             if(supports_compact_lasers(surface)){draw_retained(surface,offset);return;}
             if(!bool(surface->call("prepare_native_laser_display",true)))return;
-            Array fallback=direct->to_array();clear_retained_frame();draw_flights(surface,fallback,offset);return;
+            Variant fallback=direct->to_array();
+            if(fallback.get_type()!=Variant::ARRAY)return; // Do not clear/recycle the previous display.
+            clear_retained_frame();draw_flights(surface,fallback,offset);return;
         }
     }
     ++old_draws;
