@@ -8,6 +8,8 @@
 
 class SpaceCombatKernel : public RefCounted {
     GDCLASS(SpaceCombatKernel, RefCounted)
+    // Presentation reads the existing active order and generation; it never owns combat.
+    friend class SpaceCombatPresentation;
     struct Handle {
         uint32_t index = UINT32_MAX, generation = 0;
     };

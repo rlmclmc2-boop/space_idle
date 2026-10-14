@@ -1,0 +1,45 @@
+{
+  "compiler": "D:\\CodexTools\\llvm-mingw\\llvm-mingw-20261006-ucrt-x86_64\\bin\\x86_64-w64-mingw32-clang++.exe",
+  "compiler_sha256": "ee85bef2c733e24a26c22be3df94bd631cf9528a048fce91241c182a936737fe",
+  "compile_flags": [
+    "-c",
+    "-std=c++17",
+    "-fno-exceptions",
+    "-Wwrite-strings",
+    "-fvisibility=hidden",
+    "-O3",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-DWINDOWS_ENABLED",
+    "-DTHREADS_ENABLED",
+    "-DNDEBUG",
+    "-DGDEXTENSION",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gen\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gdextension"
+  ],
+  "link_flags": [
+    "-shared",
+    "-Wl,--no-undefined",
+    "-static",
+    "-static-libgcc",
+    "-static-libstdc++"
+  ],
+  "godot_cpp_library_sha256": "37123d5132db4deff052d47265ed684640246e280f6a441322817874e4819a29",
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "source_sha256": {
+    "space-battleship\\addons\\native_battle\\src\\combat_execution_kernel.h": "5b73c56afe3c097575ad580b46c63862098f3b3d3c4199a44d98e9180fd49b4a",
+    "space-battleship\\addons\\native_battle\\src\\combat_presentation.h": "8463d740f36418b4294866c2050a0b47f361c0e2944470930c3f40206a55a80d",
+    "space-battleship\\addons\\native_battle\\src\\combat_retained_presentation.h": "a63ec872ed86c25c1ed6e5aad6a1edf1f867d5d8e4961a6f11d50a639f5ed322",
+    "space-battleship\\addons\\native_battle\\src\\space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118"
+  },
+  "shader_sha256": "42a8641286757782ae6bf3ddab9697f13187781446626da5748781d7aaab2449",
+  "dll_sha256": "6d84494b100787381c5f582db77e9b141e5185f069572ff106a225d674f308c3",
+  "unit_source_sha256": "7e7b485df90d9e507cc5b7ec1afecf1fbd2157251a23b268a8f741f37936356a",
+  "image_sha256": {
+    "strip-RF2A1.png": "d6cf8ed5aae4e5de076a04fd551bcf68f2899dd35fd24409f6ea128ff27afdae",
+    "strip-RF2A2.png": "01a003d8b0be225da4663d961220ab6da9100b2ffba710ea67b59c900ad7412e",
+    "strip-RF2B.png": "9f1f901ba22bd08243eb2b70878cb5359c3ac5f3b6c7a008837fd7b225b75798"
+  }
+}

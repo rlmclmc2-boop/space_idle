@@ -1,0 +1,468 @@
+{
+  "base": "dcae0803",
+  "case": "Same candidate DLL, retained presentation configured GPU for B and null for A; GPU contacts enabled in all cases. Same frozen full-view fixture, GL 1373x883, uncapped, VSync off, true 1x / 60Hz, full busy frames.",
+  "runs": {
+    "RF2A1": {
+      "frames": 311,
+      "frame_ms": 25.83749196141479,
+      "steps": 480,
+      "game_seconds": 8.00000000000014,
+      "step_groups": {
+        "2": {
+          "count": 163,
+          "mean_ms": 28.24679754601227
+        },
+        "1": {
+          "count": 145,
+          "mean_ms": 23.02828965517241
+        },
+        "3": {
+          "count": 3,
+          "mean_ms": 30.709999999999997
+        }
+      },
+      "cpu_ms_per_game_second": 998.0468749999825,
+      "root_render_cpu_ms": 2.7965498422886395,
+      "root_render_gpu_ms": 0.4320064315458586,
+      "mean_projectiles": 362.56913183279744,
+      "mean_floats": 5.192926045016077,
+      "retained_delta": {
+        "advances": 0,
+        "births": 0,
+        "draws": 0,
+        "old_advance": 311,
+        "old_draw": 311,
+        "old_prepare": 311,
+        "upload_bytes": 0
+      },
+      "live_before": 0,
+      "live_after": 0,
+      "dll_sha256": "6d84494b100787381c5f582db77e9b141e5185f069572ff106a225d674f308c3"
+    },
+    "RF2B": {
+      "frames": 394,
+      "frame_ms": 20.383091370558375,
+      "steps": 480,
+      "game_seconds": 8.00000000000014,
+      "step_groups": {
+        "1": {
+          "count": 310,
+          "mean_ms": 19.14426129032258
+        },
+        "2": {
+          "count": 82,
+          "mean_ms": 24.783719512195123
+        },
+        "3": {
+          "count": 2,
+          "mean_ms": 31.976
+        }
+      },
+      "cpu_ms_per_game_second": 1001.9531249999824,
+      "root_render_cpu_ms": 2.5958121863718566,
+      "root_render_gpu_ms": 0.46635786878881114,
+      "mean_projectiles": 362.7715736040609,
+      "mean_floats": 5.16751269035533,
+      "retained_delta": {
+        "advances": 394,
+        "births": 8481,
+        "draws": 394,
+        "old_advance": 0,
+        "old_draw": 0,
+        "old_prepare": 0,
+        "upload_bytes": 61472256
+      },
+      "live_before": 312,
+      "live_after": 363,
+      "dll_sha256": "6d84494b100787381c5f582db77e9b141e5185f069572ff106a225d674f308c3"
+    },
+    "RF2A2": {
+      "frames": 301,
+      "frame_ms": 26.642634551495014,
+      "steps": 480,
+      "game_seconds": 8.00000000000014,
+      "step_groups": {
+        "2": {
+          "count": 165,
+          "mean_ms": 28.812224242424243
+        },
+        "1": {
+          "count": 129,
+          "mean_ms": 23.55674418604651
+        },
+        "3": {
+          "count": 7,
+          "mean_ms": 32.37085714285714
+        }
+      },
+      "cpu_ms_per_game_second": 1001.9531249999824,
+      "root_render_cpu_ms": 2.8467641225288873,
+      "root_render_gpu_ms": 0.42184717552210416,
+      "mean_projectiles": 362.89700996677743,
+      "mean_floats": 5.2425249169435215,
+      "retained_delta": {
+        "advances": 0,
+        "births": 0,
+        "draws": 0,
+        "old_advance": 301,
+        "old_draw": 301,
+        "old_prepare": 301,
+        "upload_bytes": 0
+      },
+      "live_before": 0,
+      "live_after": 0,
+      "dll_sha256": "6d84494b100787381c5f582db77e9b141e5185f069572ff106a225d674f308c3"
+    }
+  },
+  "whole_frame_gains_ms": [
+    5.454400590856416,
+    6.259543180936639
+  ],
+  "one_step_busy_frame_gains_ms": [
+    3.884028364849833,
+    4.412482895723933
+  ],
+  "events_equal": {
+    "beam_hit": 420,
+    "enhancement_chain": 4961,
+    "enhancement_secondary": 48,
+    "equipment_stats": 206,
+    "fire": 3520,
+    "galaxy_unlocked": 1,
+    "hit": 13050,
+    "projectile_impact": 8430,
+    "resources_changed": 96,
+    "upgrade": 96,
+    "upgrades_completed": 8
+  },
+  "canonical_before_after_equal": true,
+  "normalization": "Only RNG seed metadata excluded; actual RNG state and all remaining canonical kernel values equal.",
+  "unit": {
+    "chain": true,
+    "handoff": true,
+    "max_fixed_ray_error_pixels": 8.63167442730628e-05,
+    "over_cap": true,
+    "passed": true,
+    "pause_exact": true,
+    "pre_handoff_metrics": {
+      "advances": 66,
+      "births": 853,
+      "draws": 66,
+      "live": 287,
+      "old_advance": 0,
+      "old_draw": 0,
+      "old_prepare": 0,
+      "upload_bytes": 3981312
+    },
+    "reset": true,
+    "samples": [
+      {
+        "live": 283,
+        "step": 0
+      },
+      {
+        "live": 283,
+        "step": 1
+      },
+      {
+        "live": 283,
+        "step": 2
+      },
+      {
+        "live": 283,
+        "step": 3
+      },
+      {
+        "live": 283,
+        "step": 4
+      },
+      {
+        "live": 283,
+        "step": 5
+      },
+      {
+        "live": 283,
+        "step": 6
+      },
+      {
+        "live": 283,
+        "step": 7
+      },
+      {
+        "live": 283,
+        "step": 8
+      },
+      {
+        "live": 283,
+        "step": 9
+      },
+      {
+        "live": 283,
+        "step": 10
+      },
+      {
+        "live": 283,
+        "step": 11
+      },
+      {
+        "live": 283,
+        "step": 12
+      },
+      {
+        "live": 283,
+        "step": 13
+      },
+      {
+        "live": 283,
+        "step": 14
+      },
+      {
+        "live": 283,
+        "step": 15
+      },
+      {
+        "live": 283,
+        "step": 16
+      },
+      {
+        "live": 283,
+        "step": 17
+      },
+      {
+        "live": 283,
+        "step": 18
+      },
+      {
+        "live": 283,
+        "step": 19
+      },
+      {
+        "live": 283,
+        "step": 20
+      },
+      {
+        "live": 280,
+        "step": 21
+      },
+      {
+        "live": 236,
+        "step": 22
+      },
+      {
+        "live": 179,
+        "step": 23
+      },
+      {
+        "live": 430,
+        "step": 24
+      },
+      {
+        "live": 402,
+        "step": 25
+      },
+      {
+        "live": 376,
+        "step": 26
+      },
+      {
+        "live": 354,
+        "step": 27
+      },
+      {
+        "live": 334,
+        "step": 28
+      },
+      {
+        "live": 321,
+        "step": 29
+      },
+      {
+        "live": 311,
+        "step": 30
+      },
+      {
+        "live": 304,
+        "step": 31
+      },
+      {
+        "live": 295,
+        "step": 32
+      },
+      {
+        "live": 288,
+        "step": 33
+      },
+      {
+        "live": 285,
+        "step": 34
+      },
+      {
+        "live": 285,
+        "step": 35
+      },
+      {
+        "live": 285,
+        "step": 36
+      },
+      {
+        "live": 285,
+        "step": 37
+      },
+      {
+        "live": 285,
+        "step": 38
+      },
+      {
+        "live": 285,
+        "step": 39
+      },
+      {
+        "live": 285,
+        "step": 40
+      },
+      {
+        "live": 285,
+        "step": 41
+      },
+      {
+        "live": 285,
+        "step": 42
+      },
+      {
+        "live": 285,
+        "step": 43
+      },
+      {
+        "live": 285,
+        "step": 44
+      },
+      {
+        "live": 282,
+        "step": 45
+      },
+      {
+        "live": 238,
+        "step": 46
+      },
+      {
+        "live": 181,
+        "step": 47
+      },
+      {
+        "live": 432,
+        "step": 48
+      },
+      {
+        "live": 404,
+        "step": 49
+      },
+      {
+        "live": 378,
+        "step": 50
+      },
+      {
+        "live": 356,
+        "step": 51
+      },
+      {
+        "live": 336,
+        "step": 52
+      },
+      {
+        "live": 323,
+        "step": 53
+      },
+      {
+        "live": 313,
+        "step": 54
+      },
+      {
+        "live": 306,
+        "step": 55
+      },
+      {
+        "live": 297,
+        "step": 56
+      },
+      {
+        "live": 290,
+        "step": 57
+      },
+      {
+        "live": 287,
+        "step": 58
+      },
+      {
+        "live": 287,
+        "step": 59
+      },
+      {
+        "live": 287,
+        "step": 60
+      },
+      {
+        "live": 288,
+        "step": 61
+      },
+      {
+        "live": 288,
+        "step": 62
+      },
+      {
+        "live": 287,
+        "step": 63
+      },
+      {
+        "live": 287,
+        "step": 64
+      }
+    ]
+  },
+  "pixel_comparisons": [
+    {
+      "step": 3,
+      "max_channel_difference": 249,
+      "mean_absolute_channel_difference": 0.037240397135416665,
+      "pixels_channel_difference_gt8": 222,
+      "total_pixels": 307200
+    },
+    {
+      "step": 25,
+      "max_channel_difference": 249,
+      "mean_absolute_channel_difference": 0.046776529947916666,
+      "pixels_channel_difference_gt8": 381,
+      "total_pixels": 307200
+    },
+    {
+      "step": 60,
+      "max_channel_difference": 202,
+      "mean_absolute_channel_difference": 0.01672607421875,
+      "pixels_channel_difference_gt8": 220,
+      "total_pixels": 307200
+    }
+  ],
+  "pixel_policy": "Not bitwise equality. Full-view and direct comparison images visually inspected; topology, bodies, trails and alpha barriers preserved. Direct test CPU-export analytic ray error does not measure GPU half-float error. GL custom anchor split prevents long-clock quantization displacement.",
+  "retired_work": [
+    "Normal path never enters old advance_visuals, prepare_flights or draw_flights bodies (measured counters zero).",
+    "No full active/serial dictionaries, birth classification each frame, PreparedFlight object copying, or old per-pulse transforms vector.",
+    "Chain/enemy per-vertex template/line emission replaced by immutable GPU topology; pulse position from simulation time and committed anchor."
+  ],
+  "retained_work": [
+    "One direct scan of native active slot IDs and motion leases remains, fused with needed dynamic visual updates. Current kernel swap order is authoritative; no duplicate combat store or events decoder.",
+    "Capped decorative list retirement checks remain; index entries change at registration/retirement, not a full rebuild.",
+    "Missile short history, CPU missile geometry, enemy background trail, beams and unsupported/fallback script operations remain.",
+    "Mixed GPU instance buffers still upload per display and include allocated capacity; upload and batching costs are included in measured frames."
+  ],
+  "limitations": [
+    "Frame count/catch-up distribution differs. One-step groups independently exceed >1ms retention threshold.",
+    "Total CPU/game-second is approximately unchanged; extra display frames consume recovered budget. Do not claim proportional total CPU savings.",
+    "Fixture is synthetic held-health/loadout stress, not a measurement of the user save.",
+    "Raw runner source field is inherited stale metadata; build-receipt source hashes and common DLL hash identify this version."
+  ],
+  "image_paths": [
+    "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\strip-RF2A1.png",
+    "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\strip-RF2B.png",
+    "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\space-battleship\\.runtime\\strip-RF2A2.png"
+  ],
+  "official_custom_data_precision_reference": "https://docs.godotengine.org/en/stable/classes/class_multimesh.html#class-multimesh-method-set-instance-custom-data"
+}

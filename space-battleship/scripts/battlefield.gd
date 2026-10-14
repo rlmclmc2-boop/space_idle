@@ -126,6 +126,8 @@ func _ready() -> void:
 		var contact_material:=ShaderMaterial.new();contact_material.shader=contact_topology.SHADER
 		pulse_layer.material=contact_material
 		game.combat_presentation.configure_contact_gpu([contact_topology.build(0),contact_topology.build(1)],pulse_layer.get_canvas_item(),contact_material)
+		var flight_material:=ShaderMaterial.new();flight_material.shader=preload("res://shaders/retained_flights.gdshader")
+		game.combat_presentation.configure_retained_gpu(flight_material)
 	_set_reference_dimensions()
 	_sync_parameters()
 	ship_view.set_pose(player_render_position(),reference_height,0.0,player_render_position()+Vector2(0,-450),demo_time,false,false)

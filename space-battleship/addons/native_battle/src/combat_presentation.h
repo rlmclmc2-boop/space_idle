@@ -30,6 +30,14 @@ struct PreparedFlight {
     String key;
     int budget=1;
     bool hostile=false,chain=false;
+    uint32_t generation=0;
+    uint64_t serial=0;
+    int render_kind=-1,damage_type=0;
+    bool beam=false,fixed=false,draw=true;
+    Vector2 launch,ray_origin,ray_step,ray_direction,axis;
+    double anchor_time=0,anchor_speed=0;
+    Vector2 anchor_point;
+
     Dictionary legacy() const {
         Dictionary f;f["shot"]=shot;f["visual"]=visual;f["pos"]=point;f["budget"]=budget;return f;
     }
@@ -40,12 +48,16 @@ class SpaceCombatFlightFrame : public RefCounted {
     friend class SpaceCombatPresentation;
     Ref<SpaceCombatPresentation> recycler;
     std::vector<PreparedFlight> flights;
+    std::vector<size_t> order,background;
+    bool persistent=false;
+    double presentation_time=0;
+    Vector2 presentation_offset;
 protected:
     static void _bind_methods(){ClassDB::bind_method(D_METHOD("size"),&SpaceCombatFlightFrame::size);ClassDB::bind_method(D_METHOD("to_array"),&SpaceCombatFlightFrame::to_array);}
 public:
     ~SpaceCombatFlightFrame();
-    int64_t size() const{return flights.size();}
-    Array to_array() const{Array result;for(const PreparedFlight &f:flights)result.push_back(f.legacy());return result;}
+    int64_t size() const{return persistent?order.size():flights.size();}
+    Array to_array() const{Array result;if(persistent){for(size_t id:order)if(flights[id].draw){const auto &f=flights[id];Dictionary row=f.legacy();Vector2 point=f.point;if(f.render_kind==0&&f.fixed)point+=f.axis*float(f.anchor_speed*f.ray_step.length()*(presentation_time-f.anchor_time));row["pos"]=point+presentation_offset;result.push_back(row);}}else for(const PreparedFlight &f:flights)result.push_back(f.legacy());return result;}
 };
 class SpaceCombatPresentation : public RefCounted {
     GDCLASS(SpaceCombatPresentation,RefCounted)
@@ -53,6 +65,22 @@ class SpaceCombatPresentation : public RefCounted {
     std::vector<std::vector<PreparedFlight>> spare_frames;
     void recycle_frame(std::vector<PreparedFlight> &flights){flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}}
     Dictionary visual_by_serial;
+    Ref<SpaceCombatKernel> retained_kernel;
+    Ref<SpaceCombatFlightFrame> retained_frame;
+    Ref<ShaderMaterial> retained_material;
+    Ref<ArrayMesh> retained_mesh;
+    std::vector<Ref<MultiMesh>> retained_batches;
+    std::vector<PackedFloat32Array> retained_buffers;
+    std::vector<float> retained_upload;
+    std::vector<RID> retained_canvases;
+    size_t retained_cursor=0;
+    int64_t old_advances=0,old_prepares=0,old_draws=0,retained_advances=0,retained_births=0,retained_draws=0,retained_upload_bytes=0;
+    bool advance_retained(Object *surface,double dt);
+    void prepare_retained(Object *surface,Vector2 offset);
+    void draw_retained(Object *surface,Vector2 offset);
+    void prepare_retained_mesh();
+    void flush_retained(RID canvas);
+
     std::vector<Vector2> vertices;
     std::vector<Color> colors;
     PackedVector2Array packed_vertices;
@@ -106,6 +134,17 @@ class SpaceCombatPresentation : public RefCounted {
 protected:
     static void _bind_methods();
 public:
+    void configure_retained_gpu(Ref<ShaderMaterial> material) {
+        for(RID canvas:retained_canvases)if(canvas.is_valid())RenderingServer::get_singleton()->canvas_item_set_material(canvas,RID());
+        retained_canvases.clear();
+        if(retained_frame.is_valid()){retained_frame->order.clear();retained_frame->background.clear();retained_frame->flights.clear();}
+        retained_frame.unref();retained_kernel.unref();retained_material=material;
+        // Canvas commands retain RIDs, not Ref ownership. Hide until their next
+        // repaint instead of freeing meshes referenced by an existing command.
+        for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
+        retained_upload.clear();
+    }
+    Dictionary retained_metrics() const {Dictionary d;d["old_advance"]=old_advances;d["old_prepare"]=old_prepares;d["old_draw"]=old_draws;d["advances"]=retained_advances;d["births"]=retained_births;d["draws"]=retained_draws;d["upload_bytes"]=retained_upload_bytes;d["live"]=retained_frame.is_valid()?retained_frame->size():0;return d;}
     Vector2 battle_logical_point(Vector2 point) const { return inverse_battle_point(point); }
     double rotated_outlines_min_y(const Array &outlines,double angle) const {
         // Same per-vertex float rotation as Vector2.rotated in the script solver.
@@ -427,6 +466,8 @@ void SpaceCombatPresentation::flush_pulses(RID canvas) {
     RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
 }
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
+    if(retained_frame.is_valid()&&retained_kernel.is_valid()&&!bool(surface->get("accelerated_visual_mode"))){prepare_retained(surface,offset);return retained_frame;}
+    ++old_prepares;
     // References and the serial index exist only for this draw. The native
     // continuous state and the original visual records remain authoritative.
     Dictionary index;Array visuals=surface->get("projectile_visuals"),particles=surface->get("particles");
@@ -488,6 +529,8 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
     return result;
 }
 void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vector2 offset) {
+    if(prepared.get_type()==Variant::OBJECT){Ref<SpaceCombatFlightFrame> direct=prepared;if(direct.is_valid()&&direct->persistent&&direct==retained_frame){draw_retained(surface,offset);return;}}
+    ++old_draws;
     Ref<SpaceCombatFlightFrame> frame;
     if(prepared.get_type()==Variant::OBJECT)frame=prepared;
     std::vector<PreparedFlight> compatibility;
@@ -552,6 +595,8 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
     paint(rid);flush_pulses(rid);if(script_run)surface->call("flush_projectile_packet_batch");
 }
 void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
+    if(advance_retained(surface,dt))return;
+    ++old_advances;
     Object *game=surface->get("game");Array shots=game->get("projectiles"),visuals=surface->get("projectile_visuals");
     Dictionary active;int density=0;
     for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;if(!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile")++density;}
@@ -591,7 +636,10 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
         }
     }
 }
+#include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
+    ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
     ClassDB::bind_method(D_METHOD("configure_contact_gpu","meshes","canvas","material"),&SpaceCombatPresentation::configure_contact_gpu);
     ClassDB::bind_method(D_METHOD("contact_gpu_metrics"),&SpaceCombatPresentation::contact_gpu_metrics);
     ClassDB::bind_method(D_METHOD("damage_text_position","origin","metrics","limits","excluded","occupied","enemies"),&SpaceCombatPresentation::damage_text_position);
