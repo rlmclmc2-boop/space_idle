@@ -10,6 +10,7 @@ def diff(a,b,p=""):
  return [] if a==b else [p]
 out={}
 for case in ["mixed","laser","cannon","missile","longLaser"]:
+ if not (root/(case+"_A.json")).exists() and not (root/(case+"_A.json.gz")).exists():continue
  a=read(root/(case+"_A.json"));b=read(root/(case+"_B.json"));pair={}
  for label,d in [("A",a),("B",b)]:
   v=sorted(d["frames_us_raw"]);n=len(v)

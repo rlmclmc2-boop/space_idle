@@ -1,0 +1,40 @@
+{
+  "A": {
+    "frame_weighted_mean_ms": 6.2204433229813665,
+    "frames": 2576,
+    "runs": [
+      {
+        "run": "turret-beam-paired",
+        "mean_ms": 6.24540639625585,
+        "system_cpu_busy_mean": 13.891009706439394,
+        "valid": true
+      },
+      {
+        "run": "cannon-load-control",
+        "mean_ms": 6.195711746522411,
+        "system_cpu_busy_mean": 13.11598184752131,
+        "valid": true
+      }
+    ]
+  },
+  "B": {
+    "frame_weighted_mean_ms": 6.32847963621985,
+    "frames": 2529,
+    "runs": [
+      {
+        "run": "turret-beam-paired",
+        "mean_ms": 6.792593378607809,
+        "system_cpu_busy_mean": 19.543678977272727,
+        "valid": true
+      },
+      {
+        "run": "cannon-load-control",
+        "mean_ms": 5.923797187268689,
+        "system_cpu_busy_mean": 9.958812888500388,
+        "valid": true
+      }
+    ]
+  },
+  "net_mean_gain_ms": -0.1080363132384834,
+  "interpretation": "Retain both valid pairs. This control does not establish a positive cannon gain; no 0.5ms gain claim. System-wide CPU busy values support a load-confounding concern, not proof of its cause."
+}

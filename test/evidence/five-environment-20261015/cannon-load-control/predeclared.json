@@ -1,0 +1,5 @@
+{
+  "reason": "The final cannon B sample is valid but its system CPU busy mean is19.54%, versus13.89% in adjacent A and~10% in two earlier pairs. All three wall phases rose. One opposite-order A/B control is justified to investigate a new apparent0.547ms regression.",
+  "policy": "Keep the original pair as valid. Do not discard it, replace its numbers, or claim the faster repeat is the true result. Report both and pooled frame-weighted means. No other environments repeated.",
+  "source": "9075f7a4"
+}
