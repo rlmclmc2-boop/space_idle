@@ -149,6 +149,8 @@ func configuration_template(descriptor:Dictionary)->Dictionary:
 func compile_numeric_update(g,template:Dictionary,weapon_levels:Dictionary,defence_levels:Dictionary,affected:Array)->Dictionary:
 	if (("damage_stats" in g) and g.damage_stats.enabled) or g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}
 	if not g.drone_combat.delayed.is_empty() or not g.drone_combat.disabled.is_empty() or g.drone_combat.black_hole_remaining>0:return {"error":"unsupported_pending_drone_state"}
+	for index in weapon_levels:
+		if not native_integer(index) or not native_integer(weapon_levels[index]) or index<0 or index>=g.loadout_entries("weapons").size():return {"error":"numeric_update_weapon"}
 	var result:Dictionary=template.duplicate()
 	var rows:Array=template.weapons.duplicate()
 	var defs:Array=template.defences.duplicate()

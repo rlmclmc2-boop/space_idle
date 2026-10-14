@@ -46,7 +46,6 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	var candidate:RefCounted=ClassDB.instantiate("SpaceCombatKernel")
 	if not candidate.configure(descriptor):return false
 	kernel=candidate
-	retain_numeric_template(game,descriptor)
 	execution_scope=descriptor.execution_scope
 	retain_numeric_template(game,descriptor)
 	weapons=descriptor.weapons

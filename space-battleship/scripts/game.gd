@@ -2789,7 +2789,8 @@ func upgrade_equipment_batch(mode: String) -> bool:
 		else:compiled_combat_rules.compile(self)
 	if native_execution!=null and not native_upgrade_batch.is_empty():
 		if not native_execution.commit_numeric_batch(self,native_upgrade_batch):
-			push_error("prevalidated native batch changed during synchronous commit")
+			if int(native_upgrade_batch.get("epoch",-1))==combat_configuration_epoch and not native_execution.paused_by_configuration:
+				push_error("prevalidated native batch changed during synchronous commit")
 			native_before_configuration_change()
 	native_upgrade_batch={}
 	_upgrade_batch=false
