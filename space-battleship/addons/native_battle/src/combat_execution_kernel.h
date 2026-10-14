@@ -20,6 +20,8 @@ class SpaceCombatKernel : public RefCounted {
     struct Actor {
         uint32_t generation = 1;
         int64_t uid = 0, guidance_layers = 0;
+        uint64_t guidance_firsts = 0, guidance_reuses = 0, guidance_growth = 0, missile_hits = 0, derived_missile_hits = 0;
+        double first_guidance_factor = 0, last_guidance_factor = 0, min_guidance_factor = 0, max_guidance_factor = 0;
         bool live = true;
         double hp = 0, max_hp = 0, shield = 0, max_shield = 0, delay = 0, recovery = 0, shield_at = 0,
                hit_at = 0;
@@ -198,7 +200,7 @@ class SpaceCombatKernel : public RefCounted {
     double guidance_multiplier = 1, wild_multiplier = 1, wild_blast = 0;
     int64_t guidance_limit = 0, wild_period = 0, missile_attacks = 0;
     int wild_damage_type = 0;
-    uint64_t context_serial = 0;
+    uint64_t context_serial = 0, wild_replacements = 0, wild_detonations = 0, wild_recursion_blocks = 0;
     double retained_guidance_layers = 0, retained_guidance_factor = 1, retained_wild_blast = 1;
     std::shared_ptr<MissileContext> missile_context(const Weapon &w, uint64_t root, bool derived, bool chain = false) {
         auto c = std::make_shared<MissileContext>(); c->id = ++context_serial; c->root = root;
@@ -915,18 +917,29 @@ class SpaceCombatKernel : public RefCounted {
         shield(*a, at);
         a->hit_at = at;
         const double base_raw = raw;
+        if (context) {
+            ++a->missile_hits;
+            if (context->derived) ++a->derived_missile_hits;
+            if (context->wild && context->wild_used) ++wild_recursion_blocks;
+        }
         if (guidance_enabled && context) {
             auto found = context->factors.find(a->uid);
             if (found == context->factors.end()) {
                 double factor = std::pow(guidance_multiplier,double(a->guidance_layers));
                 found = context->factors.emplace(a->uid,factor).first;
+                if (a->guidance_firsts++ == 0) a->first_guidance_factor = a->min_guidance_factor = a->max_guidance_factor = factor;
+                a->last_guidance_factor = factor;
+                a->min_guidance_factor = std::min(a->min_guidance_factor,factor);
+                a->max_guidance_factor = std::max(a->max_guidance_factor,factor);
                 retained_guidance_factor = std::max(retained_guidance_factor,factor);
                 if (!context->derived) {
+                    int64_t previous_layers = a->guidance_layers;
                     a->guidance_layers = guidance_limited ? std::min(a->guidance_layers+1,guidance_limit) : a->guidance_layers+1;
+                    if (a->guidance_layers > previous_layers) a->guidance_growth += a->guidance_layers - previous_layers;
                     a->view["guidance_layers"] = a->guidance_layers;
                     retained_guidance_layers = std::max(retained_guidance_layers,double(a->guidance_layers));
                 }
-            }
+            } else ++a->guidance_reuses;
             raw *= found->second;
         }
         double incoming = raw * (1 + a->interference), absorbed = 0, damage = 0;
@@ -967,6 +980,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         // Birth freezes base damage and blast fraction; impact uses the current missile damage type, as Game does.
         if (context && context->wild && !context->wild_used) {
+            ++wild_detonations;
             context->wild_used = true; // Shared context is marked before recursive AoE.
             for (size_t i = 0; i < actors.size(); ++i)
                 if (actors[i].live && actors[i].hp > 0)
@@ -1379,6 +1393,7 @@ class SpaceCombatKernel : public RefCounted {
             ++missile_attacks;
             a->context = missile_context(w,a->id,wild);
             if (wild) {
+                ++wild_replacements;
                 a->damage *= wild_multiplier;
                 a->context->wild = true; a->context->blast = wild_blast;
                 retained_wild_blast = std::max(retained_wild_blast,wild_blast);
@@ -1671,6 +1686,7 @@ class SpaceCombatKernel : public RefCounted {
 
   protected:
     static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("missile_legend_metrics"), &SpaceCombatKernel::missile_legend_metrics);
         ClassDB::bind_method(D_METHOD("supports_missile_legends"), &SpaceCombatKernel::supports_missile_legends);
         ClassDB::bind_method(D_METHOD("supports_strange_matter"), &SpaceCombatKernel::supports_strange_matter);
         ClassDB::bind_method(D_METHOD("supports_laser_charge"), &SpaceCombatKernel::supports_laser_charge);
@@ -1850,6 +1866,26 @@ class SpaceCombatKernel : public RefCounted {
             double(drop_uid) + retained_drop_bound >= 9223372036854775808.0) return false;
         return true;
     }
+    // Read only on demand; no per-step Dictionary/Array allocation for diagnostics.
+    Dictionary missile_legend_metrics() const {
+        Dictionary out; Array targets;
+        uint64_t firsts = 0, reuses = 0, growth = 0, hits = 0, derived = 0;
+        for (const Actor &a : actors) {
+            Dictionary row; row["uid"] = a.uid; row["layers"] = a.guidance_layers;
+            row["cache_firsts"] = int64_t(a.guidance_firsts); row["cache_hits"] = int64_t(a.guidance_reuses);
+            row["effective_layer_growth"] = int64_t(a.guidance_growth);
+            row["first_factor"] = a.first_guidance_factor; row["last_factor"] = a.last_guidance_factor;
+            row["min_factor"] = a.min_guidance_factor; row["max_factor"] = a.max_guidance_factor;
+            row["missile_hits"] = int64_t(a.missile_hits); row["derived_hits"] = int64_t(a.derived_missile_hits);
+            targets.push_back(row); firsts += a.guidance_firsts; reuses += a.guidance_reuses;
+            growth += a.guidance_growth; hits += a.missile_hits; derived += a.derived_missile_hits;
+        }
+        out["targets"] = targets; out["cache_firsts"] = int64_t(firsts); out["cache_hits"] = int64_t(reuses);
+        out["effective_layer_growth"] = int64_t(growth); out["missile_hits"] = int64_t(hits); out["derived_hits"] = int64_t(derived);
+        out["missile_attacks"] = missile_attacks; out["wild_substitutions"] = int64_t(wild_replacements);
+        out["wild_blasts"] = int64_t(wild_detonations); out["recursion_blocked_entries"] = int64_t(wild_recursion_blocks);
+        return out;
+    }
     bool supports_missile_legends() const { return true; }
     bool supports_strange_matter() const { return true; }
     bool supports_laser_charge() const { return true; }
@@ -1908,6 +1944,7 @@ class SpaceCombatKernel : public RefCounted {
         rng.instantiate();
         rng->set_state(int64_t(d.get("rng_state", 1)));
         missile_attacks = d.get("missile_attacks",0); context_serial = 0;
+        wild_replacements = wild_detonations = wild_recursion_blocks = 0;
         retained_guidance_layers = 0; retained_guidance_factor = 1; retained_wild_blast = 1;
         crit_rate = d.get("critical_rate", 0.0);
         crit_multiplier = d.get("critical_multiplier", 2.0);
