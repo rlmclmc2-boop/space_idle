@@ -19,6 +19,7 @@ var description: Label
 var category_buttons := {}
 var entry_buttons := {}
 var snapshot: Array = []
+var refresh_state: Array = []
 
 func setup(owner: Node) -> void:
 	host = owner
@@ -140,15 +141,18 @@ func show_detail(row: Dictionary) -> void:
 
 func refresh() -> void:
 	if not is_instance_valid(host):return
+	var opened: bool = host.help_open and host.game.pending_unlocks.is_empty()
+	var rect: Rect2 = host.overlay_panel_rect(Vector2(820,551)) if opened else Rect2()
+	var state := [host.game,host.game.tutorial_revision(),opened,showing_archive,system,selected,rect,host.ui.position,UIText.catalog_revision]
+	if state == refresh_state:return
+	refresh_state = state
 	var ids: Array[String] = host.game.tutorial_unlocks()
 	var unread: Array[String] = host.game.unread_tutorial_unlocks()
 	host.set_ui_value(entry_badge,"visible",not unread.is_empty())
 	host.set_ui_value(archive_badge,"visible",not unread.is_empty())
-	var opened: bool = host.help_open and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(tabs,"visible",opened)
 	host.set_ui_value(content,"visible",opened and showing_archive)
 	if not opened:return
-	var rect: Rect2 = host.overlay_panel_rect(Vector2(820,551))
 	var scale_value := rect.size.x/820.0
 	host.set_ui_value(tabs,"position",rect.position-host.ui.position+Vector2(400,24)*scale_value)
 	host.set_ui_value(tabs,"scale",Vector2.ONE*scale_value)
@@ -156,7 +160,7 @@ func refresh() -> void:
 	host.set_ui_value(content,"scale",Vector2.ONE*scale_value)
 	if not showing_archive:return
 	# IDs already passed tutorial_unlocks eligibility. Read their current config rows
-	# directly; only the synthetic entry needs the domain projection. No cross-frame cache.
+	# directly; only the synthetic entry needs the domain projection.
 	var definitions: Dictionary = host.game.db.data.get("unlock",{})
 	var rows: Dictionary = {}
 	var grouped: Dictionary = {}

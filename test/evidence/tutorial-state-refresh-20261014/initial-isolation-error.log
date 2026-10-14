@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: Preload file "res://shaders/retained_flights.gdshader" does not exist.
+   at: GDScript::reload (res://scripts/battlefield.gd:130)
+   GDScript backtrace (most recent call first):
+       [0] run (D:/CodexBuild/space_idle/stable-integration/test/work/test_unlock_tutorial-h6i757g0/test/test_unlock_tutorial.gd:22)
+ERROR: Failed to load script "res://scripts/battlefield.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)
+   GDScript backtrace (most recent call first):
+       [0] run (D:/CodexBuild/space_idle/stable-integration/test/work/test_unlock_tutorial-h6i757g0/test/test_unlock_tutorial.gd:22)
+SCRIPT ERROR: Invalid assignment of property or key 'automation_args' with value of type 'Array' on a base object of type 'Node2D'.
+   at: run (D:/CodexBuild/space_idle/stable-integration/test/work/test_unlock_tutorial-h6i757g0/test/test_unlock_tutorial.gd:23)
+   GDScript backtrace (most recent call first):
+       [0] run (D:/CodexBuild/space_idle/stable-integration/test/work/test_unlock_tutorial-h6i757g0/test/test_unlock_tutorial.gd:23)

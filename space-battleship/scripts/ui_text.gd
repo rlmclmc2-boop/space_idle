@@ -6,6 +6,7 @@ static var contracts: Dictionary = {}
 static var bindings: Dictionary = {}
 static var deleted: Dictionary = {}
 static var loaded := false
+static var catalog_revision := 0
 static var parameter_pattern: RegEx
 
 static func pattern() -> RegEx:
@@ -48,6 +49,7 @@ static func reload_catalog() -> PackedStringArray:
 		contracts = contract.entries
 		bindings = contract.get("bindings", {})
 		loaded = true
+		catalog_revision += 1
 	return errors
 
 static func parameters(value: String) -> Array:

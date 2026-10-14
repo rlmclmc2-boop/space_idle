@@ -1,0 +1,41 @@
+{
+  "base_commit": "2e11c260c6d9a769d8486ee1766805cac69cf5a0",
+  "test": "test_unlock_tutorial.gd",
+  "checks": 50,
+  "failures": 0,
+  "exit_code": 0,
+  "mode": "headless correctness only; no performance sample",
+  "engine": "Godot 4.7.2 stable ed1daf0bf",
+  "initial_command": "python test/run.py test_unlock_tutorial.gd --headless --godot D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe --timeout 180",
+  "isolation": "test/work/test_unlock_tutorial-h6i757g0; APPDATA/LOCALAPPDATA under its userdata directory",
+  "initial_failure": "Existing test/run.py omitted shaders. Main scene failed to parse before assertions. Only verified owned processes 22716/16928 were stopped. No gameplay assertion failed.",
+  "retry": "Copied production shaders plus final changed scripts and test into the same isolated project; ran Godot --headless --path <isolated project> --script <isolated test> with the same isolated user directories. No native extension rebuilt or performance test run. test/run.py now copies shaders for reproducibility.",
+  "coverage": [
+    "closed unread stable refresh: zero eligibility scans",
+    "closed all-read stable refresh: zero eligibility scans",
+    "caller collection isolation",
+    "configuration notification",
+    "real clear_level notice and one shared eligibility rebuild",
+    "seen versus read through gate change",
+    "unrelated galaxy/planet/income events do not invalidate",
+    "building activation gate",
+    "legacy galaxy settlement completion gate",
+    "existing hyperspace threshold/config alternatives",
+    "notice real-time/manual confirmation",
+    "save/import/old save and reforge read preservation",
+    "UI reopening and entry-control reuse"
+  ],
+  "limitations": [
+    "Native galaxy completion invalidation is present in the commit_prediction path but not dynamically exercised in this headless tutorial test.",
+    "No rendered screenshot or whole-frame performance claim.",
+    "In-place out-of-band edits to collection/config data must use rebuild_unlocks, notify_configuration_changed, or explicit invalidate_tutorial_unlocks; arbitrary dictionary mutation is not watched each frame."
+  ],
+  "sha256": {
+    "space-battleship/scripts/game.gd": "a006c6fd2f397c11ac116189d7f11f8de06f3647a3e068cf05c6e3a2f7e4fed1",
+    "space-battleship/scripts/galaxy_system.gd": "e6923c9bbfe6b3d2b2ae1adcd1706d6708d99e1997e901e7e48fa76cac0eff04",
+    "space-battleship/scripts/planet_buildings.gd": "7775b9b13c848bd49ce7225588db7baed0d66068c0f9a4f94a74e974c0c37a33",
+    "space-battleship/scripts/unlock_tutorial.gd": "989c004878f052cd26a6f91382880ea9caec67570a53f40d154704f04b7cf4f8",
+    "space-battleship/scripts/ui_text.gd": "4216456342ad32c734cf4f5d6ead9f3ccbf668034d369a92a615b4be499afde3",
+    "test/test_unlock_tutorial.gd": "5a54630a1d164344955ac04882939b762e54c88e636623f3fc2ff219384392ca"
+  }
+}

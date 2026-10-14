@@ -1,4 +1,10 @@
 extends SceneTree
+class CountedGame extends BattleGame:
+	var eligibility_scans := 0
+	func _compute_tutorial_unlocks() -> Array[String]:
+		eligibility_scans += 1
+		return super._compute_tutorial_unlocks()
+
 const Transfer := preload("res://scripts/save_transfer.gd")
 var checks := 0
 var failures := 0
@@ -26,6 +32,7 @@ func run() -> void:
 	g.paused = true
 	g.profile.onboarding.completed = true
 	scene.beginner_guide.refresh()
+	test_projection(scene)
 	var tutorial = scene.unlock_tutorial
 	var laser := g.db.unlock_id("equipment","laser")
 	var missile := g.db.unlock_id("equipment","missile")
@@ -155,3 +162,76 @@ func run() -> void:
 	scene.queue_free()
 	await process_frame
 	quit(1 if failures else 0)
+
+# Exercise the production UI refresh with a counted domain owner; no frame timing probe.
+func test_projection(scene) -> void:
+	var original: BattleGame = scene.game
+	var g := CountedGame.new(ShipDatabase.new(),false)
+	scene.game = g
+	scene.help_open = false
+	scene.refresh_navigation()
+	var scans := g.eligibility_scans
+	for i in 20:scene.refresh_navigation()
+	check(g.eligibility_scans==scans and scene.unlock_tutorial.entry_badge.visible,"Closed unread archive has zero stable-frame eligibility scans")
+	var ids := g.tutorial_unlocks()
+	for id in ids:g.read_tutorial_unlock(id)
+	scene.refresh_navigation()
+	scans = g.eligibility_scans
+	for i in 20:scene.refresh_navigation()
+	check(g.eligibility_scans==scans and not scene.unlock_tutorial.entry_badge.visible,"Closed fully read archive has zero stable-frame eligibility scans")
+	var copy := g.tutorial_unlocks()
+	copy.clear()
+	check(g.tutorial_unlocks()==ids,"Caller cannot mutate cached eligibility")
+	var unread_copy := g.unread_tutorial_unlocks()
+	unread_copy.append("invalid")
+	check(g.unread_tutorial_unlocks().is_empty(),"Caller cannot mutate cached unread projection")
+	g.db.data.unlock["tutorial_probe"]={"type":"feature","target":"tutorial_probe","level":2,"title":"Probe","desc":"Probe"}
+	g.notify_configuration_changed()
+	check(not g.tutorial_unlocks().has("tutorial_probe"),"Configuration replacement invalidates a warmed projection")
+	g.stage=2
+	g.clear_level()
+	scans=g.eligibility_scans
+	scene.refresh_navigation()
+	check(g.tutorial_unlocks().has("tutorial_probe") and g.unread_tutorial_unlocks().has("tutorial_probe") and g.pending_unlocks.has("tutorial_probe"),"Cleared gate updates archive and retains the real unlock notice")
+	check(g.eligibility_scans==scans+1,"Eligibility and unread queries share one recomputation")
+	g.pending_unlocks.assign(["tutorial_probe"])
+	g.acknowledge_unlocks()
+	g.db.data.unlock.tutorial_probe.level=999
+	g.notify_configuration_changed()
+	check(g.tutorial_unlocks().has("tutorial_probe") and g.unread_tutorial_unlocks().has("tutorial_probe"),"Acknowledged knowledge survives gate changes without becoming read")
+	g.read_tutorial_unlock("tutorial_probe")
+	g.tutorial_revision()
+	scans=g.eligibility_scans
+	for i in 20:
+		g.event.emit("galaxy_changed",{"key":"galaxy_1"})
+		g.event.emit("galaxy_income",{"id":"1","amount":1})
+		g.event.emit("planet_changed",{"id":"1"})
+		scene.refresh_navigation()
+	check(g.eligibility_scans==scans,"Unrelated income and progress notifications do not invalidate eligibility")
+	# A configured building gate must change at activation, not exploration progress.
+	var planet1 := g.db.unlock_id("planet","1")
+	var planet2 := g.db.unlock_id("planet","2")
+	g.profile.grantedUnlocks.append(planet1)
+	g.profile.grantedUnlocks.append(planet2)
+	g.profile.planets["1"].conquered=true
+	g.profile.planets["1"].buildings.shipyard.status="ready"
+	g.db.data.planet_buff={"probe":{"planet_id":1,"source":"conquer","condition":"building_complete","source_id":"shipyard","buff_type":"planet_unlock","target":"planet","stack":"max","value":2}}
+	g.rebuild_unlocks()
+	check(not g.tutorial_unlocks().has(planet2),"Building-dependent planet stays absent before activation")
+	check(g.planet_buildings.activate(g,"1","shipyard") and g.tutorial_unlocks().has(planet2),"Actual building activation invalidates the planet gate")
+	# Small valid galaxy fixture completes through the real legacy settlement entry.
+	var row: Dictionary=g.db.data.galaxy.galaxy_1.duplicate(true)
+	row.merge({"map_w":20,"map_h":20,"start_w":2,"start_h":2,"building_slot_count":4,"explore_work_total":100.0,"explore_power_base":1.0,"explore_power_per_crew":1.0,"build_interval":2.0,"construction_time":2.0,"upgrade_power_base":1.0,"upgrade_power_per_crew":1.0,"upgrade_cost_lv2":4.0,"upgrade_cost_lv3":4.0,"upgrade_cost_lv4":4.0,"upgrade_cost_lv5":4.0,"concurrent_upgrade_count":2},true)
+	var region=preload("res://scripts/galaxy_region.gd").new()
+	region.setup(row,g.db.data.galaxy_build,8)
+	region.state.status="exploring"
+	g.galaxy.regions={"galaxy_1":region}
+	g.galaxy.elapsed_crew.galaxy_1=1
+	g.db.data.galaxy={"probe":{"unlock_type":"galaxy_complete","unlock_value":"galaxy_1"}}
+	g.db.data.unlock["feature/galaxy"].level=0
+	g.notify_configuration_changed()
+	check(not g.tutorial_unlocks().has("feature/galaxy"),"Galaxy completion gate is absent before completion")
+	check(g.galaxy.advance_region(g,"galaxy_1",1000.0,false) and region.state.status=="complete" and g.tutorial_unlocks().has("feature/galaxy"),"Actual galaxy completion invalidates tutorial eligibility")
+	scene.game=original
+	scene.unlock_tutorial.refresh_state=[]
+	scene.refresh_navigation()

@@ -15,6 +15,7 @@ func setting(g, key: String) -> float:
 	return float(g.db.data.galaxy_config[key].value)
 
 func load_state(g, raw: Dictionary) -> void:
+	g.invalidate_tutorial_unlocks()
 	regions.clear()
 	elapsed.clear()
 	elapsed_visible.clear()
@@ -163,6 +164,7 @@ func advance(g, dt: float) -> void:
 
 func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 	var region=regions[key]
+	var was_complete: bool = region.state.status=="complete"
 	if g.native_execution!=null and region.revision_due(dt,int(elapsed_crew[key])):
 		if native_refit.is_empty() and not prepare_region_refit(g,key,dt,int(elapsed_crew[key])):return block_region_advance(g)
 		if g.native_execution!=null:
@@ -171,6 +173,7 @@ func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 				# No callback between committing the kernel and the region. Publish
 				# map changes and ordinary notifications only after both agree.
 				region.commit_prediction(native_refit.region)
+				if not was_complete and region.state.status=="complete":g.invalidate_tutorial_unlocks()
 				native_refit.clear();effect_generation+=1
 				g.native_numeric_update=true;g.invalidate_stat_cache();g.native_numeric_update=false
 				g.enhancement_branches.reconcile(g)
@@ -182,6 +185,7 @@ func advance_region(g, key: String, dt: float, visible: bool) -> bool:
 	var before := int(region.building_revision)
 	g.capture_refit_health()
 	region.advance(dt,int(elapsed_crew[key]),visible)
+	if not was_complete and region.state.status=="complete":g.invalidate_tutorial_unlocks()
 	if before!=region.building_revision:
 		effect_generation+=1
 		g.invalidate_stat_cache()
