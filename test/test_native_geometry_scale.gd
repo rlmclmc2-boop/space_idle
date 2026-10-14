@@ -158,6 +158,33 @@ func incremental_geometry_contract(scene)->void:
 		check(sink.muzzles==expected_muzzles and sink.player==aim,"incremental muzzle publication equals full reference phase "+str(phase))
 	session.kernel=actual_kernel;session.geometry_muzzles=PackedVector2Array();session.prepare_geometry(geometry,game)
 
+func gpu_beam_contract(scene)->void:
+	var owner=scene.retained_contacts;var layer=owner.beam_layer
+	var before:Dictionary=contract(scene)
+	scene._process(0.0);await process_frame;await RenderingServer.frame_post_draw
+	check(layer.records.size()>0,"GPU beam fixture publishes valid beams")
+	var builds:Dictionary={};var snapshots:Dictionary={};var gpu_count:int=0
+	for serial in layer.records:
+		var row:Dictionary=layer.records[serial]
+		if not row.gpu:continue
+		gpu_count+=1;builds[serial]=row.body.builds;snapshots[serial]=row.body.values.duplicate(true)
+		var start:Vector2=scene.battle_point(scene.visual_muzzle(row.shot))+owner.frame.offset
+		var end:Vector2=scene.entity_render_position(row.shot.target)+owner.frame.offset
+		check(row.body.position.distance_to(start)<0.001 and (row.body.position+Vector2(row.body.values[0],0).rotated(row.body.rotation)).distance_to(end)<0.001,"GPU beam endpoints match geometry publication")
+	check(gpu_count>0,"fixture reaches GPU continuous-beam path")
+	for i in 3:
+		scene._process(0.0);await process_frame;await RenderingServer.frame_post_draw
+	for serial in builds:
+		check(layer.records[serial].body.builds==builds[serial],"retained quad does not regenerate draw commands")
+		check(layer.records[serial].body.values==snapshots[serial],"zero-time publication preserves animation uniforms")
+	check(owner.foreground.get_child(0)==layer and owner.foreground.get_child(1)==owner.foreground_overlay,"beam layer remains between flights and particles/text")
+	get_root().get_texture().get_image().save_png("res://.runtime/gpu-beam-on.png")
+	scene.retained_gpu_beams_enabled=false;owner.stage_foreground(owner.frame.flights,owner.frame.shots,owner.frame.offset);await process_frame;await RenderingServer.frame_post_draw
+	check(layer.records.is_empty() and not layer.visible and not owner.foreground_overlay.visible,"fallback toggle retires GPU commands without duplicate overlays")
+	get_root().get_texture().get_image().save_png("res://.runtime/gpu-beam-off.png")
+	scene.retained_gpu_beams_enabled=true;owner.stage_foreground(owner.frame.flights,owner.frame.shots,owner.frame.offset);await process_frame;await RenderingServer.frame_post_draw
+	check(contract(scene)==before,"GPU presentation and fallback switch preserve complete kernel state")
+
 func residence_contract(scene)->void:
 	var runtime=scene.battle_slice_runtime;var geometry=runtime.geometry;var g=scene.game
 	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
@@ -254,6 +281,7 @@ func run()->void:
 	g.db.config[config_key]=old_scale_config;scene._process(0.0)
 	var steps:int=runtime.logical_steps;g.paused=false;scene._process(1.0/60.0)
 	check(runtime.logical_steps==steps+1,"resume advances exactly one next logical step")
+	await gpu_beam_contract(scene)
 	residence_contract(scene)
 	await rail_charge_contract(scene)
 	var dead:Dictionary=g.enemies[0];var uid:int=int(dead.uid)
