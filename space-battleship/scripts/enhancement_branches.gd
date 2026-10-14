@@ -114,13 +114,16 @@ func finish_attack(g,context: Dictionary) -> void:
  g.invalidate_equipment_counter(str(data.entry.get("key","")))
 
 
+func bind_weapon_entry(g,owner:Dictionary)->Dictionary:
+ var index:int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,owner))
+ return {} if index<0 else weapon(g,index)
+
 func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={},include_timed_buffs := true) -> Variant:
  var result = 1.0+float(a_count(g,entry,"proficiency"))*g.enhancement_parameter("proficiency_a_damage_bonus")
  if not include_timed_buffs:return result
  var owner: Dictionary=entry if original_entry.is_empty() else original_entry
- var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,owner))
- if index<0:return result
- var data:=weapon(g,index)
+ var data:=bind_weapon_entry(g,owner)
+ if data.is_empty():return result
  if active(g,entry,"proficiency",1,"B"):
   var jumps:=int(floor(float(data.dwell)/g.enhancement_parameter("proficiency_b1_interval")))
   result=N.multiply(result,N.power(1.0+g.enhancement_parameter("proficiency_b1_growth"),jumps))

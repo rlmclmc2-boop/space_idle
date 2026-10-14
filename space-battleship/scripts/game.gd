@@ -2736,6 +2736,14 @@ func upgrade(key: String, levels := 1) -> bool:
 			break
 	return upgrade_slot(category, index, levels)
 
+func upgrade_capacity_value(entry:Dictionary,original_key:String)->Variant:
+	if WEAPON_KEYS.has(original_key):
+		# Weapon values never enter the capacity delta. Preserve the original
+		# identity-based timed-state binding at both purchase observation points.
+		if WEAPON_KEYS.has(str(entry.get("key",""))):enhancement_branches.bind_weapon_entry(self,entry)
+		return 0.0
+	return jewel_equipment_stat(entry)
+
 func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if not can_upgrade_slot(category, index, levels):
 		return false
@@ -2755,11 +2763,11 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	native_numeric_update=native_updated
 	for id in costs:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
-	var before = jewel_equipment_stat(entry)
+	var before = upgrade_capacity_value(entry,key)
 	profile.loadout[category][index].level = int(entry.level) + levels
 	resources_changed(costs.keys())
 	invalidate_stat_cache(native_updated)
-	var after = jewel_equipment_stat(entry)
+	var after = upgrade_capacity_value(entry,key)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
 	if (not native_updated or batch_update) and key == "armour" and state != State.RETREAT:
 		player.armour = N.add(player.armour,N.subtract(after,before))
