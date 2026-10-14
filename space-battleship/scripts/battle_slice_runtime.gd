@@ -81,6 +81,7 @@ func advance(seconds:float)->void:
 		scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 		scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
 		if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
+		scene.shield_before_hit=game.player.shield
 		game.tick(STEP)
 		if game.native_step_phase=="blocked":
 			advancing=false;scene.game_time_remainder=remainder
@@ -147,7 +148,9 @@ func on_event(kind:String,info:Dictionary)->bool:
 	# without allocating an Effect and a second dictionary for the same hit.
 	if kind=="hit":
 		scene.queue_damage_number(info)
-		if bool(info.player):scene.player_hit_at=geometry.fx_time
+		if bool(info.player):
+			if GrowthNumber.compare(scene.shield_before_hit,0)>0:scene.player_hit_at=geometry.fx_time
+			scene.shield_before_hit=game.player.shield
 		return true
 	# Chain carriers own their flight visual, but never emit an impact flash.
 	if kind=="projectile_impact" and bool(info.shot.get("chain_hop",false)):return true

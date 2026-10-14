@@ -336,8 +336,9 @@ func _process_battlefield(delta: float) -> void:
 		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
 	if battle_slice_runtime==null:
 		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
-	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
-	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
+	var shield_impact:=maxf(0.0,1.0-(fx_time-player_hit_at)/0.38)
+	ship_view.shield.visible = shield_enabled and (GrowthNumber.compare(game.player.shield,0)>0 or shield_impact>0.0)
+	ship_view.shield_material.set_shader_parameter("impact_strength",shield_impact)
 	var angles: Array = []
 	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
 	if battle_slice_runtime==null:ship_view.set_slot_angles(angles)
@@ -424,6 +425,11 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="projectile_impact" and bool(info.shot.get("hostile",false)) and is_instance_valid(ship_view):
+		var incoming:Vector2=game.projectile_direction(info.shot)
+		if incoming.is_finite() and incoming.length_squared()>0.0001:
+			var local_direction:Vector3=ship_view.shield.global_basis.inverse()*Vector3(-incoming.x,0.85,-incoming.y)
+			ship_view.shield_material.set_shader_parameter("hit_direction",local_direction.normalized())
 	if kind=="native_execution_handoff" and battle_slice_runtime!=null:
 		battle_slice_runtime.request_legacy_display();return
 	if kind=="state" and game.native_execution==null and battle_slice_runtime!=null:battle_slice_runtime.request_legacy_display()
@@ -444,6 +450,7 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="projectile_impact" and info.shot.get("chain_hop",false):return
 	if kind=="hit" and bool(info.get("player",false)):
 		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=fx_time
+		shield_before_hit=game.player.shield
 	if kind=="explode":
 		if info.has("slot"):death_drop_positions[int(info.uid)]=enemy_drop_anchor(info)
 		if fast_mode_enabled():return

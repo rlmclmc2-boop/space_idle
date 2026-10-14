@@ -2666,21 +2666,22 @@ func resolve_damage_origin(entry: Dictionary) -> void:
 		half_height=0.0
 		for point in enemy_recognition_geometry(enemy).inner:
 			half_height=maxf(half_height,absf(Vector2(point).rotated(angle).y))
-	var top:=battle_logical_point(anchor-Vector2(0,half_height+18))
-	# Two short-lived lanes stay beside their own hull, rather than searching
-	# unrelated free space at the far edge of the battlefield.
-	entry.direction=-1.0
-	if top.y<70.0:
-		top=battle_logical_point(anchor+Vector2(0,half_height+30))
-		entry.direction=1.0
-	entry.origin=top
+	entry.tag_anchor=anchor
+	entry.tag_half_height=half_height
+	entry.origin=battle_logical_point(anchor-Vector2(0,half_height+18))
 	entry.needs_origin=false
 
 func position_damage_tag(entry:Dictionary,metrics:Dictionary,initial:bool)->void:
 	entry.pos.x=clampf(float(entry.origin.x)-float(metrics.width)*0.5,8.0,BattleGame.BATTLE_SIZE.x-8.0-float(metrics.width))
 	if initial:
-		entry.pos.y=float(entry.origin.y)+float(entry.direction)*int(entry.lane)*(float(metrics.height)+4.0)
-		entry.pos.y=clampf(entry.pos.y,float(metrics.ascent)+8.0,BATTLE_VIEW_SIZE.y-8.0)
+		# Place in display coordinates before converting back to the shared
+		# drifting-label position. The battle corridor is not an affine map.
+		var anchor:Vector2=entry.tag_anchor
+		var y:=anchor.y-float(entry.tag_half_height)-18.0
+		if int(entry.lane)==1:
+			y=y-float(metrics.height)-4.0 if entry.target=="player" else anchor.y+float(entry.tag_half_height)+float(metrics.ascent)+8.0
+		y=clampf(y,float(metrics.ascent)+8.0,BATTLE_VIEW_SIZE.y-8.0)
+		entry.pos.y=battle_logical_point(Vector2(anchor.x,y)).y
 	entry.tag_size=Vector2(metrics.width,metrics.height)
 	entry.tag_ascent=metrics.ascent
 
