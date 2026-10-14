@@ -2834,11 +2834,15 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	native_numeric_update=native_updated
 	for id in costs:
 		profile.resources[id] = N.subtract(profile.resources[id],costs[id])
-	var before = jewel_equipment_stat(entry)
+	# Only defence capacity deltas consume these values. Keep their evaluation
+	# on either side of the original level/cache mutation; weapon upgrades have
+	# already passed the same purchase/native admission checks above.
+	var weapon_upgrade := WEAPON_KEYS.has(key)
+	var before = 0.0 if weapon_upgrade else jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
 	resources_changed(costs.keys())
 	invalidate_stat_cache()
-	var after = jewel_equipment_stat(entry)
+	var after = 0.0 if weapon_upgrade else jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
 	if (not native_updated or batch_update) and key == "armour" and state != State.RETREAT:
 		player.armour = N.add(player.armour,N.subtract(after,before))

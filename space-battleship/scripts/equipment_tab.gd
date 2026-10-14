@@ -450,12 +450,28 @@ func card_level_text(entry: Dictionary, category: String, active: bool) -> Strin
 	var row: Dictionary = host.game.player_weapon_row(entry)
 	return UIText.t("equipment.card_weapon_context",{"level":level,"type":UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical"),"seconds":host.number(float(row.cd))})
 
-func equipment_item(category: String, index: int) -> Dictionary:
+func equipment_item(category: String, index: int, projections: Variant = null) -> Dictionary:
 	var entry: Dictionary = host.game.module_entry(category,index)
 	var key := str(entry.get("key",""))
 	var active: bool = index<host.game.active_slot_count(category)
 	var equipped := not key.is_empty()
-	var projection: Dictionary=host.equipment_display_snapshot(entry) if equipped else {"base":0.0,"expected":0.0}
+	var projection: Dictionary
+	if not equipped:
+		projection={"base":0.0,"expected":0.0}
+	elif projections==null:
+		projection=host.equipment_display_snapshot(entry)
+	else:
+		# Only refresh_slots owns this synchronous cache. Full entry values are
+		# sufficient here: snapshot excludes identity-owned timed buffs. Never
+		# share slot-specific card context, affordability or previews.
+		if not projections.has(entry):
+			var shared:Dictionary=host.equipment_display_snapshot(entry).duplicate(true)
+			# GrowthNumber values are {m,e}; freeze owned copies, not game values.
+			for field in ["base","expected"]:
+				if shared.get(field) is Dictionary:shared[field].make_read_only()
+			shared.make_read_only()
+			projections[entry.duplicate(true)]=shared
+		projection=projections[entry]
 	var value = projection.expected
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
@@ -491,11 +507,12 @@ func refresh_slots(changed: Array) -> void:
 		if selected==id:
 			selected="";selected_slot=-1;pending_key="";draft_context=[];picker_open=false
 	var quotes := {}
+	var projections:Dictionary={}
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
 			var id: String = module_card_id(category,index)
 			if changed.is_empty() or dirty or changed.has(id) or not items.has(id):
-				items[id] = equipment_item(category,index)
+				items[id] = equipment_item(category,index,projections)
 				stats_dirty.erase(id)
 				sort_dirty = true
 			if not cards.has(id):

@@ -117,6 +117,10 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 			var amount=N.ceiling(N.multiply(base,g.planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base
 			view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
 		enemies.append(view)
+	# Call-local only: recipes depend on category; external_factor reads entry.key
+	# and the shared configuration, never source identity, slot or level.
+	var recipes:Dictionary={}
+	var factors:Dictionary={}
 	var endless_slot:int=g.endless_source_slot(weapon_levels)
 	for index in g.combat_weapon_entries().size():
 		var entry:Dictionary=g.projected_combat_entry(index,weapon_levels)
@@ -127,20 +131,24 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 		if not native_weapon_row(row,KEYS.find(entry.key)):return {"error":"unsupported_native_scalar:player_weapon"}
 		var critical:Vector2=g.jewel_critical(entry,null,false,totals)
 		var chain=int(totals.chain_count);var repeat_factor=1.0
-		for effect in g.enhancement_recipe(entry):
+		if not recipes.has("weapons"):recipes.weapons=g.enhancement_recipe(entry)
+		var recipe:Array=recipes.weapons
+		for effect in recipe:
 			if effect.kind=="proficiency" and not native_fields(effect,["p2","level"]):return {"error":"unsupported_native_scalar:proficiency"}
 			if effect.kind=="repeat" and (not native_scalar(effect.get("p4")) or not native_integer(effect.get("level"))):return {"error":"unsupported_native_scalar:repeat"}
 			if effect.kind=="proficiency":growth=float(effect.p2);effect_level=float(effect.level)
 			if effect.kind=="repeat":
 				repeat_factor=1.0+float(effect.p4)*int(effect.level)
 				if g.enhancement_branch_active(entry,"repeat",1,"B"):chain+=int(g.enhancement_parameter("repeat_b1_targets"))
-		var transfer_effects:Array=g.enhancement_recipe(entry).duplicate(true)
+		# Each birth descriptor owns mutable chain annotations, never the shared recipe.
+		var transfer_effects:Array=recipe.duplicate(true)
 		if chain>0:
 			var found=false
 			for effect in transfer_effects:
 				if effect.kind=="repeat":effect.chain=true;effect.chain_targets=chain;found=true
 			if not found:transfer_effects.append({"kind":"hyperspace_chain","chain":true,"chain_targets":chain})
-		var factor=external_factor(g,entry,totals,galaxy_values)
+		if not factors.has(entry.key):factors[entry.key]=external_factor(g,entry,totals,galaxy_values)
+		var factor=factors[entry.key]
 		if not native_scalar(factor):return {"error":"unsupported_native_scalar:weapon_factor"}
 		if KEYS.find(entry.key)!=3 and not native_scalar(g.cooldowns.get(g.slot_id("weapons",index),row.cd)):return {"error":"unsupported_native_scalar:cooldown"}
 		var kind=KEYS.find(entry.key)
@@ -163,7 +171,8 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 			entry=entry.duplicate();entry.level=int(upgrade.level)
 		if entry.key not in ["shield","armour"]:return {"error":"unsupported_defence"}
 		var memory_heal=0.0;var memory_cap=0.0;var deferred=0.0
-		for effect in g.enhancement_recipe(entry):
+		if not recipes.has("defence"):recipes.defence=g.enhancement_recipe(entry)
+		for effect in recipes.defence:
 			if effect.kind=="adaptation" and not native_fields(effect,["p2","level"]):return {"error":"unsupported_native_scalar:adaptation"}
 			if effect.kind=="memory_material" and (not native_fields(effect,["p2","p4"]) or not native_integer(effect.get("level"))):return {"error":"unsupported_native_scalar:memory"}
 			if effect.kind=="adaptation":defence_growth=float(effect.p2);effect_level=float(effect.level)
@@ -173,7 +182,8 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 		if not native_scalar(g.jewel_defence_times.get(index,g.since_hit)):return {"error":"unsupported_native_scalar:defence_time"}
 		var row:Dictionary=g.combat_equipment_row(entry.key,int(entry.level))
 		if not native_integer(row.get("dmgtype",0)) or (entry.key=="shield" and not native_fields(row,["para2","para3"])):return {"error":"unsupported_native_scalar:defence_row"}
-		var factor=external_factor(g,entry,totals,galaxy_values)
+		if not factors.has(entry.key):factors[entry.key]=external_factor(g,entry,totals,galaxy_values)
+		var factor=factors[entry.key]
 		if not native_scalar(factor):return {"error":"unsupported_native_scalar:defence_factor"}
 		defence.append({"entry":entry.duplicate(true),"layer":0 if entry.key=="shield" else 1,"type":int(row.get("dmgtype",0)),"base":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"maximum":g.jewel_equipment_stat(entry,-1,null,false,float(galaxy_values.get("equipment_value",-1.0)),float(galaxy_values.get("charge_max",-1.0))),"loss":g.jewel_defence_damage.get(index,0.0),"buffer":g.enhancement_buffers.get(index,0.0),"last_hit":g.enhancement_defense_time-float(g.jewel_defence_times.get(index,g.since_hit)),"delay":float(row.para3) if entry.key=="shield" else 0.0,"rate":float(row.para2) if entry.key=="shield" else 0.0,"memory_heal":memory_heal,"memory_cap":memory_cap,"deferred_fraction":deferred})
 	var scatter:Dictionary=totals.legendary.get("scatter_pulse",{});var prism:Dictionary=totals.legendary.get("prism_tower",{})
