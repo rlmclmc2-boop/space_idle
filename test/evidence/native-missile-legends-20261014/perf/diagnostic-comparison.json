@@ -1,0 +1,153 @@
+{
+  "classification": "coverage diagnostic only; asymmetric per-step state export overhead contaminates full-frame comparison; do not claim production net benefit or ordinary regression from these raw timings",
+  "runs": {
+    "Aordinary": {
+      "mean_frame_ms": 28.335811387900357,
+      "actual_1x": true,
+      "game_wall_ratio": 1.00472446561848,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "admission_error": "",
+      "observer_ms_in_sample": 3053.219,
+      "sample_wall_ms": 7962.382,
+      "sample_counts": {
+        "derived_hits": 2840,
+        "missile_hits": 3260,
+        "native_steps": 480,
+        "roots": 104
+      },
+      "all_counts": {
+        "derived_hits": 3666,
+        "missile_hits": 4239,
+        "native_steps": 720,
+        "roots": 156
+      },
+      "observation_errors": [],
+      "cancelled_repeats": 0,
+      "cancelled_ejections": 0,
+      "first_values_published": 0,
+      "first_values_total": 0,
+      "sample_steps": 480,
+      "samples": 281
+    },
+    "Bordinary": {
+      "mean_frame_ms": 68.77053448275862,
+      "actual_1x": true,
+      "game_wall_ratio": 1.00283312894343,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "admission_error": "",
+      "observer_ms_in_sample": 4652.593,
+      "sample_wall_ms": 7977.399,
+      "sample_counts": {
+        "derived_hits": 2845,
+        "missile_hits": 3265,
+        "native_steps": 480,
+        "roots": 104
+      },
+      "all_counts": {
+        "derived_hits": 3678,
+        "missile_hits": 4251,
+        "native_steps": 722,
+        "roots": 156
+      },
+      "observation_errors": [],
+      "cancelled_repeats": 0,
+      "cancelled_ejections": 0,
+      "first_values_published": 0,
+      "first_values_total": 0,
+      "sample_steps": 480,
+      "samples": 116
+    },
+    "Alegend": {
+      "mean_frame_ms": 19.81021534653465,
+      "actual_1x": true,
+      "game_wall_ratio": 0.999581425278189,
+      "performance_sample_valid": true,
+      "native_admitted": false,
+      "admission_error": "unsupported_legendary:precise_guidance",
+      "observer_ms_in_sample": 50.073,
+      "sample_wall_ms": 8003.349999999999,
+      "sample_counts": {
+        "cache_firsts": 2781,
+        "cache_hits": 26,
+        "derived_hits": 2495,
+        "effective_layer_growth": 312,
+        "legacy_hit_enemy": 2807,
+        "legacy_jewel_attack": 698,
+        "missile_hits": 2807,
+        "recursion_blocked_entries": 390,
+        "roots": 104,
+        "wild_blast_hits": 390,
+        "wild_blasts": 26,
+        "wild_substitutions": 26
+      },
+      "all_counts": {
+        "cache_firsts": 3644,
+        "cache_hits": 35,
+        "derived_hits": 3251,
+        "effective_layer_growth": 428,
+        "legacy_hit_enemy": 3679,
+        "legacy_jewel_attack": 1011,
+        "missile_hits": 3679,
+        "recursion_blocked_entries": 525,
+        "roots": 156,
+        "wild_blast_hits": 525,
+        "wild_blasts": 35,
+        "wild_substitutions": 39
+      },
+      "observation_errors": [],
+      "cancelled_repeats": 0,
+      "cancelled_ejections": 0,
+      "first_values_published": 3644,
+      "first_values_total": 3644,
+      "sample_steps": 480,
+      "samples": 404
+    },
+    "Blegend": {
+      "mean_frame_ms": 34.762222707423575,
+      "actual_1x": true,
+      "game_wall_ratio": 1.00495278417775,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "admission_error": "",
+      "observer_ms_in_sample": 3860.68,
+      "sample_wall_ms": 7960.573,
+      "sample_counts": {
+        "cache_firsts": 2742,
+        "cache_hits": 66,
+        "derived_hits": 2496,
+        "effective_layer_growth": 312,
+        "missile_hits": 2808,
+        "native_steps": 480,
+        "recursion_blocked_entries": 390,
+        "roots": 104,
+        "wild_blast_hits": 390,
+        "wild_blasts": 26,
+        "wild_substitutions": 26
+      },
+      "all_counts": {
+        "cache_firsts": 3597,
+        "cache_hits": 85,
+        "derived_hits": 3254,
+        "effective_layer_growth": 428,
+        "missile_hits": 3682,
+        "native_steps": 721,
+        "recursion_blocked_entries": 525,
+        "roots": 156,
+        "wild_blast_hits": 525,
+        "wild_blasts": 35,
+        "wild_substitutions": 39
+      },
+      "observation_errors": [],
+      "cancelled_repeats": 0,
+      "cancelled_ejections": 0,
+      "first_values_published": 742,
+      "first_values_total": 3597,
+      "sample_steps": 480,
+      "samples": 229
+    }
+  },
+  "production_dll_unchanged_during_runs": true,
+  "next_action": "replace per-step exported-state observation with native lightweight counters; build and verify new counters, then measure same full configurations without state export"
+}
