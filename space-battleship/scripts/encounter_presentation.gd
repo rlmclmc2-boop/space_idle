@@ -55,7 +55,7 @@ func sync(game,delta:float) -> bool:
 		scenery_time+=delta
 		scenery_presence=move_toward(scenery_presence,0.0 if route.is_empty() else 1.0,delta/1.6)
 		age+=delta
-		transition=minf(2.0,transition+delta)
+		transition=minf(3.4 if departure else 2.0,transition+delta)
 		leader_fall=minf(2.0,leader_fall+delta)
 		clear_age=minf(2.0,clear_age+delta)
 	return changed

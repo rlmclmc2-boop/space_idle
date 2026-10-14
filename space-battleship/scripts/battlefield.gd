@@ -1040,17 +1040,21 @@ func draw_encounter_backdrop()->void:
 	# metadata shader. Use the existing battle layer, behind combat drawings.
 	encounter_presentation.draw_space(draw_surface,BATTLE_VIEW_SIZE)
 	var cue := ""
-	if encounter_presentation.transition<1.8:
-		if encounter_presentation.departure:
+	if encounter_presentation.departure:
+		if not battle_transition_blocked() and encounter_presentation.transition<3.4:
 			cue=UIText.t("battle.return_cleared" if encounter_presentation.return_success else "battle.return_main")
-		elif not encounter_presentation.route.is_empty():
+	elif encounter_presentation.transition<1.8:
+		if not encounter_presentation.route.is_empty():
 			cue=UIText.t("hyperspace."+encounter_presentation.route)
 	elif encounter_presentation.clear_age<1.8:
 		cue=UIText.t("battle.finale_cleared")
 	if not cue.is_empty():
-		var cue_width := font.get_string_size(cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18).x
-		draw_surface.draw_rect(Rect2(Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5-14,62),Vector2(cue_width+28,34)),Color("101b2b"))
-		draw_surface.draw_string(font,Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5,86),cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18,encounter_presentation.accent)
+		var cue_size:=26 if encounter_presentation.departure else 18
+		var cue_width := font.get_string_size(cue,HORIZONTAL_ALIGNMENT_LEFT,-1,cue_size).x
+		var cue_position:=Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5,92 if encounter_presentation.departure else 86)
+		draw_surface.draw_rect(Rect2(Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5-14,62),Vector2(cue_width+28,44 if encounter_presentation.departure else 34)),Color("101b2b"))
+		if encounter_presentation.departure:draw_surface.draw_string_outline(font,cue_position,cue,HORIZONTAL_ALIGNMENT_LEFT,-1,cue_size,3,Color("050c13"))
+		draw_surface.draw_string(font,cue_position,cue,HORIZONTAL_ALIGNMENT_LEFT,-1,cue_size,BATTLE_CREAM if encounter_presentation.departure else encounter_presentation.accent)
 
 func box(rect:Rect2,color:=PANEL,border:=LINE)->void:
 	if is_instance_valid(overlay_layer) and draw_surface==overlay_layer:
