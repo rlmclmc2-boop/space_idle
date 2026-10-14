@@ -1,0 +1,20 @@
+{
+  "begin": {
+    "user_us": 8375000.0,
+    "kernel_us": 2375000.0,
+    "perf_counter_ns": 446319867641000
+  },
+  "end": {
+    "user_us": 16296875.0,
+    "kernel_us": 2437500.0,
+    "perf_counter_ns": 446327913314500
+  },
+  "label": "DF3A2",
+  "launcher_pid": 28988,
+  "pid": 25188,
+  "exe": "Godot_v4.7.2-stable_win64.exe",
+  "method": "Windows GetProcessTimes user+kernel CPU for the verified sole Godot game child of the owned console launcher, summed across its threads. File ACK surrounds the sample; CPU begins just before start ACK and ends before end ACK. Export/JSON/image saving happens only after end ACK; no unrelated process sampled.",
+  "dll_sha256": "76482031f9c1422a95f83e701a609701ac4849ce7de18544a1359f1f52bdefee",
+  "cpu_us": 7984375.0,
+  "cpu_window_seconds": 8.0456735
+}
