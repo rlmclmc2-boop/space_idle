@@ -62,12 +62,18 @@ func sync_screen_scale(value:float)->bool:
 	scene.pulse_layer.queue_redraw()
 	return true
 func advance(seconds:float)->void:
+	if scene.battle_transition_blocked():return
 	advancing=true
 	if game.native_cancelled_step>0:
 		remainder=maxf(0.0,remainder-game.native_cancelled_step);game.native_cancelled_step=0.0
 	remainder+=seconds
 	const STEP=1.0/60.0
 	while remainder+0.0000000001>=STEP:
+		# Return can begin inside the preceding substep. Keep unconsumed debt,
+		# but do not prepare geometry or tick the restored mainline during departure.
+		if scene.battle_transition_blocked():
+			advancing=false;scene.game_time_remainder=remainder
+			return
 		if not game.prepare_logical_step(STEP):
 			advancing=false;scene.game_time_remainder=remainder
 			return

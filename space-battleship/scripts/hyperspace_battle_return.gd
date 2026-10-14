@@ -19,7 +19,11 @@ func encode(value:Variant)->Variant:
 		if value is Dictionary:
 			for binding in bindings:
 				if is_same(value,binding.entry):node.binding={"kind":binding.kind,"index":binding.index,"key":str(value.key)};break
-			for key in value:node.items.append([encode(key),encode(value[key])])
+			for key in value:
+				# Handoff already exported scalar motion. This retired lease only
+				# keeps existing display consumers alive; it is not saveable state.
+				if (key is String or key is StringName) and str(key)=="retired_native_motion_lease":continue
+				node.items.append([encode(key),encode(value[key])])
 		else:
 			for item in value:node.items.append(encode(item))
 		nodes[id]=node;return {"ref":id}
