@@ -3,6 +3,7 @@
 #include <godot_cpp/classes/geometry2d.hpp>
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/multi_mesh.hpp>
+#include <godot_cpp/classes/shader_material.hpp>
 #include <godot_cpp/classes/font.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/math.hpp>

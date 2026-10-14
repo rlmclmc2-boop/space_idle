@@ -1,0 +1,40 @@
+{
+  "base_commit": "ecfc23f327e112bfdc28577a61fbde0ad033560e",
+  "compiler": "D:\\CodexTools\\llvm-mingw\\llvm-mingw-20261006-ucrt-x86_64\\bin\\x86_64-w64-mingw32-clang++.exe",
+  "compile_flags": [
+    "-c",
+    "-std=c++17",
+    "-fno-exceptions",
+    "-Wwrite-strings",
+    "-fvisibility=hidden",
+    "-O3",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-DWINDOWS_ENABLED",
+    "-DTHREADS_ENABLED",
+    "-DNDEBUG",
+    "-DGDEXTENSION",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gen\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gdextension"
+  ],
+  "link_flags": [
+    "-shared",
+    "-Wl,--no-undefined",
+    "-static",
+    "-static-libgcc",
+    "-static-libstdc++"
+  ],
+  "godot_cpp_library_sha256": "37123d5132db4deff052d47265ed684640246e280f6a441322817874e4819a29",
+  "dll_sha256": "a4215219db065d1039f07b6b0ade178f8d5c9ec2c85e96b58dfbd7b61fa347bc",
+  "source_sha256": {
+    "addons/native_battle/src/space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "addons/native_battle/src/combat_presentation.h": "9a34c4cb2ca23fd0c471cc5730cf061c9e0c8867970018fe39cdd21288036bf6",
+    "scripts/battlefield.gd": "024d6d04e49aeb17263b50453dbce31eae5d17eacb79e59af4183c2f6df505ec",
+    "scripts/gpu_contact_mesh.gd": "4cee7e7bacfb0b37edb4d491c545c442244359a84cd12cb8bdac3c921e41adbb",
+    "shaders/gpu_contacts.gdshader": "300d53dc725cabdd73f5a219a7ea6221d75bc3cdcfafb6e472a8f01ff0747b0c"
+  },
+  "note": "Direct compile/link of current space_native.cpp with existing pinned binding archive. No engine rebuild. Binary and caches excluded from Git. Sources below use original worktree bytes.",
+  "post_validation_text_restore": "Final diff review restored two pre-existing middle-dot UI separators accidentally decoded as a Chinese glyph during editing. All A/B/A runs shared the same unintended glyph; timing comparison remains matched. No other production text change retained; final screenshot contains that pre-restoration glyph."
+}

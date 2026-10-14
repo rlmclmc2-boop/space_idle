@@ -74,6 +74,14 @@ class SpaceCombatPresentation : public RefCounted {
     struct ContactEvent {Vector2 point,direction;double born;bool launch,critical;int type;};
     std::array<std::vector<ContactEvent>,2> contact_events;
     std::vector<Vector2> contact_path;
+    RID gpu_contact_canvas;
+    Ref<ShaderMaterial> gpu_contact_material;
+    std::array<Ref<MultiMesh>,2> gpu_contact_batches;
+    std::array<PackedFloat32Array,2> gpu_contact_buffers;
+    std::array<bool,2> contact_dirty{{true,true}};
+    double contact_epoch=0;
+    int64_t gpu_contact_uploads=0,gpu_contact_instances=0;
+    bool draw_gpu_contacts(double now,bool pulse_enabled);
 
     void tri(Vector2 a, Vector2 b, Vector2 c, Color ca, Color cb, Color cc) {
         vertices.push_back(a); vertices.push_back(b); vertices.push_back(c);
@@ -132,13 +140,23 @@ public:
     }
     void record_contact(int category,Vector2 point,Vector2 direction,double born,bool launch,bool critical,int type) {
         ERR_FAIL_INDEX(category,2);
-        contact_events[category].push_back({point,direction,born,launch,critical,type});
+        contact_events[category].push_back({point,direction,born,launch,critical,type});contact_dirty[category]=true;
     }
     void prune_contacts(double now,bool clear_enemy) {
-        for(int k=0;k<2;++k){auto &events=contact_events[k];
-            events.erase(std::remove_if(events.begin(),events.end(),[&](const ContactEvent &e){return (k==0&&clear_enemy)||!(now-e.born<(k==0?0.12:0.14));}),events.end());}
+        for(int k=0;k<2;++k){auto &events=contact_events[k];size_t old_size=events.size();
+            events.erase(std::remove_if(events.begin(),events.end(),[&](const ContactEvent &e){return (k==0&&clear_enemy)||!(now-e.born<(k==0?0.12:0.14));}),events.end());if(events.size()!=old_size)contact_dirty[k]=true;}
     }
-    void clear_contacts(){for(auto &events:contact_events)events.clear();}
+    void clear_contacts(){for(int k=0;k<2;++k){contact_events[k].clear();contact_dirty[k]=true;if(gpu_contact_batches[k].is_valid())gpu_contact_batches[k]->set_visible_instance_count(0);}}
+    void configure_contact_gpu(Array meshes,RID canvas,Ref<ShaderMaterial> material) {
+        gpu_contact_canvas=canvas;gpu_contact_material=material;
+        for(int k=0;k<2;++k){gpu_contact_batches[k].unref();gpu_contact_buffers[k]=PackedFloat32Array();contact_dirty[k]=true;}
+        if(!canvas.is_valid()||material.is_null())return;
+        ERR_FAIL_COND(meshes.size()!=2);
+        for(int k=0;k<2;++k){auto &batch=gpu_contact_batches[k];batch.instantiate();batch->set_transform_format(MultiMesh::TRANSFORM_2D);batch->set_use_custom_data(true);batch->set_mesh(meshes[k]);
+            batch->set_custom_aabb(AABB(Vector3(-8192,-8192,-1),Vector3(16384,16384,2)));
+        }
+    }
+    Dictionary contact_gpu_metrics() const {Dictionary result;result["enabled"]=gpu_contact_canvas.is_valid();result["uploads"]=gpu_contact_uploads;result["uploaded_instances"]=gpu_contact_instances;return result;}
     Array contact_snapshot(int category) const {
         ERR_FAIL_INDEX_V(category,2,Array());
         Array result;for(const ContactEvent &e:contact_events[category]){Dictionary d;d["position"]=e.point;d["direction"]=e.direction;d["born"]=e.born;
@@ -307,7 +325,29 @@ void SpaceCombatPresentation::flight(Vector2 point,Vector2 axis,double age,bool 
     } else if(age<0.22){smoke.a=(1.0-age/0.22)*0.30;disk(nozzle-axis*3.0,2.5,smoke);}
     template_at(body,body_colors,point,axis);
 }
+bool SpaceCombatPresentation::draw_gpu_contacts(double now,bool pulse_enabled) {
+    if(!gpu_contact_canvas.is_valid()||gpu_contact_material.is_null())return false;
+    if(std::abs(now-contact_epoch)>128.0){contact_epoch=now;contact_dirty={true,true};}
+    gpu_contact_material->set_shader_parameter("clock",float(now-contact_epoch));
+    for(int k=0;k<2;++k){auto &batch=gpu_contact_batches[k];auto &events=contact_events[k];
+        if(contact_dirty[k]){
+            int capacity=batch->get_instance_count();if(capacity<int(events.size())){capacity=std::max(capacity,8);while(capacity<int(events.size()))capacity*=2;batch->set_instance_count(capacity);}
+            auto &buffer=gpu_contact_buffers[k];buffer.resize(capacity*12);float *out=buffer.ptrw();
+            for(size_t i=0;i<events.size();++i){const auto &e=events[i];float *row=out+i*12;Vector2 p=battle_point(e.point),axis=(k==0&&!e.launch&&e.type==2)?Vector2(1,0):e.direction;
+                // Contacts use the exact supplied direction, not a new targeting solve.
+                row[0]=axis.x;row[1]=-axis.y;row[2]=0;row[3]=p.x;row[4]=axis.y;row[5]=axis.x;row[6]=0;row[7]=p.y;
+                row[8]=float(e.born-contact_epoch);row[9]=(e.type==2?100.0f:0.0f)+float(engine_angle(axis));row[10]=e.launch?11.0f:10.0f;row[11]=e.critical?1.0f:0.0f;
+                if(!p.is_finite()||!axis.is_finite()||(k==1&&e.launch&&axis.is_zero_approx())){row[0]=row[1]=row[4]=row[5]=0;row[3]=row[7]=0;}
+            }
+            if(capacity>0)batch->set_buffer(buffer);++gpu_contact_uploads;gpu_contact_instances+=events.size();contact_dirty[k]=false;
+        }
+        batch->set_visible_instance_count(k==1&&!pulse_enabled?0:events.size());
+        if(batch->get_visible_instance_count()>0)RenderingServer::get_singleton()->canvas_item_add_multimesh(gpu_contact_canvas,batch->get_rid());
+    }
+    return true;
+}
 void SpaceCombatPresentation::draw_contacts(RID canvas,double now,bool pulse_enabled) {
+    if(draw_gpu_contacts(now,pulse_enabled))return;
     begin();
     for(const ContactEvent &e:contact_events[0]) {
         Vector2 p=battle_point(e.point),axis=e.direction,side=axis.orthogonal();double age=now-e.born;
@@ -552,6 +592,8 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
     }
 }
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("configure_contact_gpu","meshes","canvas","material"),&SpaceCombatPresentation::configure_contact_gpu);
+    ClassDB::bind_method(D_METHOD("contact_gpu_metrics"),&SpaceCombatPresentation::contact_gpu_metrics);
     ClassDB::bind_method(D_METHOD("damage_text_position","origin","metrics","limits","excluded","occupied","enemies"),&SpaceCombatPresentation::damage_text_position);
     ClassDB::bind_method(D_METHOD("battle_logical_point","point"),&SpaceCombatPresentation::battle_logical_point);
     ClassDB::bind_method(D_METHOD("rotated_outlines_min_y","outlines","angle"),&SpaceCombatPresentation::rotated_outlines_min_y);

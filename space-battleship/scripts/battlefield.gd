@@ -120,6 +120,12 @@ func _ready() -> void:
 	pulse_layer.z_index = 2
 	battle_clip.add_child(pulse_layer)
 	pulse_layer.draw.connect(_draw_muzzle_cues)
+	# Keep original draw order: persistent GPU instances submit at the contact call site.
+	if game.combat_presentation!=null:
+		var contact_topology=preload("res://scripts/gpu_contact_mesh.gd")
+		var contact_material:=ShaderMaterial.new();contact_material.shader=contact_topology.SHADER
+		pulse_layer.material=contact_material
+		game.combat_presentation.configure_contact_gpu([contact_topology.build(0),contact_topology.build(1)],pulse_layer.get_canvas_item(),contact_material)
 	_set_reference_dimensions()
 	_sync_parameters()
 	ship_view.set_pose(player_render_position(),reference_height,0.0,player_render_position()+Vector2(0,-450),demo_time,false,false)
