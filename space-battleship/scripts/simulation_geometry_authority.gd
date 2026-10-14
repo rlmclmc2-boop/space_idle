@@ -3,6 +3,14 @@ extends RefCounted
 const FIXED_LAYOUT=preload("res://scripts/enemy_fixed_layout.gd")
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
 var fixed_enemy_layout:=true
+# Geometry publication belongs to this authority. Consumers retain only derived values.
+var target_geometry_revision:=0
+var target_geometry_signature:Array=[]
+var target_geometry_entities:Array=[]
+var fleet_geometry_revision:=0
+var fleet_geometry_signature:Array=[]
+var fleet_display_revision:int=-1
+var fleet_display_arrays:Dictionary={}
 var fixed_layout_revision:=0
 var fixed_layout_signature:Array=[]
 var game:BattleGame
@@ -227,7 +235,7 @@ func shot_mount(shot: Dictionary) -> int:
 
 func enemy_render_angle(enemy:Dictionary)->float:
 	var pose:=enemy_pose(enemy)
-	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+	return float(pose.rotation)
 
 # Supplied positions stay within one synchronous solve; no value survives it.
 
@@ -678,6 +686,31 @@ func sync_hull()->void:
 	fleet_pose.configuration_dirty=true
 	fleet_pose.configure(key,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
 
+func refresh_target_geometry()->void:
+	# One boundary scan. Include exact identity, entry progress and actual movement;
+	# elapsed time alone is not a dependency of a resident hull.
+	var signature:Array=[fixed_layout_revision,battle_read_model.shape_revision,player_anchor,screen_scale]
+	var entities:Array=[]
+	var replaced:bool=target_geometry_entities.size()!=game.enemies.size()
+	for enemy in game.enemies:
+		var index:int=entities.size()
+		entities.append(enemy)
+		if not replaced and not is_same(target_geometry_entities[index],enemy):replaced=true
+		var pose:Dictionary=enemy_pose(enemy)
+		signature.append([int(enemy.uid),Vector2(enemy.x,enemy.y),enemy.hp>0,pose.target,pose.logical_position,pose.born,pose.duration,pose.entry_x,pose.rotation,pose.variance,minf(fx_time,float(pose.born)+float(pose.duration))])
+	if not replaced and signature==target_geometry_signature:return
+	target_geometry_signature=signature;target_geometry_entities=entities
+	target_geometry_revision+=1
+
+func refresh_fleet_geometry()->void:
+	ensure_fleet_geometry()
+	var signature:Array=[current_hull,fleet_pose.ship_transform,fleet_pose.rendered_position,fleet_pose.rendered_height]
+	for module in fleet_pose.modules:signature.append([module.assignment,module.pivot])
+	for carrier in fleet_pose.carriers:signature.append(carrier.transform)
+	for drone in fleet_pose.drones:signature.append([drone.id,drone.transform])
+	if signature==fleet_geometry_signature:return
+	fleet_geometry_signature=signature;fleet_geometry_revision+=1
+
 func before_tick(dt:float)->void:
 	assert(prepared)
 	sync_fixed_layout()
@@ -813,13 +846,12 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	var uid:int=int(enemy.uid);var pose:Dictionary=enemy_pose(enemy)
 	var logical:Vector2=Vector2(enemy.x,enemy.y)
 	var cached:Dictionary=display_row_cache.get(uid,{})
-	# Reuse only this exact source pose/time/identity/logical position. Event-time
-	# and final-frame consumers share one solve; unknown custom-position queries
-	# below retain their original mathematical path.
-	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and cached.clock==fx_time and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
+	# The pose owns stationary geometry. Clock changes alone do not invalidate
+	# this immutable row; entry, layout, aim anchor and authoring changes do.
+	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and is_same(cached.layout,pose.get("fixed_layout")) and cached.settled and fx_time>=float(pose.born)+float(pose.duration) and cached.player_anchor==player_anchor and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
 		display_row_reuses+=1;return cached.value
-	display_row_builds+=1
 	var position:Vector2=enemy_render_position(enemy)
+	display_row_builds+=1
 	var width:float=enemy_render_width_at_y(enemy,position.y)
 	var components:Dictionary={}
 	for component in enemy_weapon_components(enemy):
@@ -827,7 +859,7 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	var values:Dictionary={}
 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
 	var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
-	display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"appearance":pose.get("appearance"),"value":result}
+	display_row_cache[uid]={"settled":fx_time>=float(pose.born)+float(pose.duration),"entity":enemy,"pose":pose,"layout":pose.get("fixed_layout"),"player_anchor":player_anchor,"logical":logical,"appearance":pose.get("appearance"),"value":result}
 	return result
 func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	var values:Dictionary={}
@@ -839,11 +871,15 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	pending_display_shapes=[]
 	if with_fleet:
 		ensure_fleet_geometry()
-		var pivots:Array=[];var carriers:Array=[];var drones:Dictionary={}
-		for module in fleet_pose.modules:pivots.append({"slot":int(module.assignment.slot),"transform":module.pivot})
-		for carrier in fleet_pose.carriers:carriers.append(carrier.transform)
-		for drone in fleet_pose.drones:drones[str(drone.id)]=drone.transform
-		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":pivots,"carriers":carriers,"drones":drones,"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
+		refresh_fleet_geometry()
+		if fleet_display_revision!=fleet_geometry_revision:
+			var pivots:Array=[];var carriers:Array=[];var drones:Dictionary={}
+			for module in fleet_pose.modules:pivots.append({"slot":int(module.assignment.slot),"transform":module.pivot})
+			for carrier in fleet_pose.carriers:carriers.append(carrier.transform)
+			for drone in fleet_pose.drones:drones[str(drone.id)]=drone.transform
+			fleet_display_arrays={"pivots":pivots,"carriers":carriers,"drones":drones}
+			fleet_display_revision=fleet_geometry_revision
+		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":fleet_display_arrays.pivots,"carriers":fleet_display_arrays.carriers,"drones":fleet_display_arrays.drones,"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
 	return result
 
 func display_shape(enemy:Dictionary,width:float,frozen_pose:Dictionary={})->String:

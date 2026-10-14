@@ -89,8 +89,8 @@ func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
    view.body_baker.attach(nodes[i],"hyperspace:"+str(nodes[i].get_meta("weapon"))+":"+str(style_keys[identities[i]]))
   body_bake_pending=false
  for i in nodes.size():
-  var offset: Vector2=OFFSETS[i];var bob=sin(view.orbit_elapsed*TAU/8.0+i)*2.0
-  var center: Vector2=view.rendered_position+(offset+Vector2(0,bob))*zoom
+  var offset: Vector2=OFFSETS[i]
+  var center: Vector2=view.rendered_position+offset*zoom
   if zoom==1.0:
    center.x=clampf(center.x,28,view.size.x-28);center.y=clampf(center.y,32,view.size.y-60)
   nodes[i].global_position=Vector3((center.x-view.size.x*0.5)*view.WORLD_PER_PIXEL,0.5,(center.y-view.size.y*0.5)*view.WORLD_PER_PIXEL)
@@ -110,7 +110,8 @@ func apply_geometry_frame(view,frame:Dictionary,disabled:Array=[])->void:
   body_bake_pending=false
  for index in nodes.size():
   assert(frame.drones.has(identities[index]),"Missing drone geometry descriptor")
-  nodes[index].transform=frame.drones[identities[index]];nodes[index].visible=not disabled.has(identities[index])
+  if nodes[index].transform!=frame.drones[identities[index]]:nodes[index].transform=frame.drones[identities[index]]
+  nodes[index].visible=not disabled.has(identities[index])
   var ring=nodes[index].get_node_or_null("Appearance/UltimateOrbit")
   if ring!=null and animated and bool(Appearance.settings().get("animate",true)):ring.rotation.y=view.orbit_elapsed*0.45
  view.body_baker.guard_resolution(float(int(view.viewport.size.x*view.viewport.scaling_3d_scale))/view.camera.size)

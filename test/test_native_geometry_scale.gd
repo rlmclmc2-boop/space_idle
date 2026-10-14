@@ -116,6 +116,91 @@ func steady_position_publication(geometry,g)->void:
 		var original:Vector2=geometry._source_enemy_render_position(enemy)
 		check(cached==original,"post-step exact position and same-clock mutation: "+key)
 
+class GeometrySink extends RefCounted:
+	var hulls:Array=[]
+	var centers:=PackedVector2Array()
+	var points:=PackedVector2Array()
+	var muzzles:=PackedVector2Array()
+	var screen_muzzles:=PackedVector2Array()
+	var player:=Vector2.ZERO
+	var submissions:=0
+	func input_ballistic_geometry(h:Array,p:PackedVector2Array,m:PackedVector2Array,_stationary:PackedByteArray=PackedByteArray())->void:
+		submissions+=1
+		if not h.is_empty():hulls=h.duplicate(true);centers=p.duplicate()
+		if not m.is_empty():screen_muzzles=m.duplicate()
+	func input_geometry(p:PackedVector2Array,m:PackedVector2Array)->void:
+		if not p.is_empty():points=p.duplicate()
+		if not m.is_empty():muzzles=m.duplicate()
+	func input_player_point(p:Vector2)->void:player=p
+
+func incremental_geometry_contract(scene)->void:
+	var geometry=scene.battle_slice_runtime.geometry;var game=scene.game
+	var session=game.native_execution;var actual_kernel=session.kernel
+	var sink=GeometrySink.new();session.kernel=sink;session.geometry_muzzles=PackedVector2Array();session.geometry_player=Vector2.INF
+	for phase in 4:
+		if phase==2:game.enemies.back().x+=3.0
+		if phase==3:game.enemies.back().x-=3.0
+		var before:int=sink.submissions
+		session.prepare_geometry(geometry,game)
+		if phase==1:check(sink.submissions==before,"unchanged publication makes no native geometry submission")
+		var expected_points:=PackedVector2Array();var expected_hulls:Array=[];var expected_centers:=PackedVector2Array()
+		for actor in session.actor_rows:
+			var shape:Dictionary=geometry.battle_read_model.ballistic_shape(actor)
+			expected_hulls.append(shape.hull);expected_centers.append(shape.center);expected_points.append(geometry.battle_logical_point(shape.center))
+		var expected_muzzles:=PackedVector2Array();var aim:Vector2=geometry.target_point(game.player)
+		for weapon in session.weapons:
+			if bool(weapon.hostile):
+				var actor:Dictionary=session.actor_rows[int(weapon.source)];var point:Vector2=geometry.enemy_render_position(actor)
+				expected_muzzles.append(geometry.battle_logical_point(point+geometry.execution_enemy_port_offset(actor,int(weapon.slot),point)))
+			elif weapon.entry.has("drone_id"):expected_muzzles.append(geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position)
+			else:expected_muzzles.append(geometry.launch_pose(int(weapon.slot),aim,0).position)
+		check(sink.hulls==expected_hulls and sink.centers==expected_centers and sink.points==expected_points,"incremental target publication equals full reference phase "+str(phase))
+		check(sink.muzzles==expected_muzzles and sink.player==aim,"incremental muzzle publication equals full reference phase "+str(phase))
+	session.kernel=actual_kernel;session.geometry_muzzles=PackedVector2Array();session.prepare_geometry(geometry,game)
+
+func residence_contract(scene)->void:
+	var runtime=scene.battle_slice_runtime;var geometry=runtime.geometry;var g=scene.game
+	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
+	var row:Dictionary=geometry.display_enemy(enemy)
+	var shape:Dictionary=geometry.battle_read_model.ballistic_shape(enemy)
+	var key:Array=pose.residence_key
+	var body:Transform3D=geometry.fleet_pose.ship_transform
+	var builds:int=geometry.display_row_builds;var applied:int=runtime.view.applied_rows
+	for i in 30:scene._process(1.0/60.0)
+	check(geometry.fleet_pose.ship_transform==body,"stationary player root unchanged across logical steps")
+	check(is_same(pose.residence_key,key),"stationary position solver exits without replacing its owner publication")
+	check(is_same(geometry.display_enemy(enemy),row) and geometry.display_row_builds==builds,"stationary enemy rows not rebuilt across steps")
+	check(runtime.view.applied_rows==applied,"stationary display rows not recopied across frames")
+	check(is_same(geometry.battle_read_model.ballistic_shape(enemy),shape),"stationary collision hull reused across steps")
+	incremental_geometry_contract(scene)
+	var clock:float=geometry.fx_time;var born:float=pose.born
+	pose.born=clock
+	var entry:Vector2=geometry.enemy_render_position(enemy)
+	geometry.fx_time=clock+float(pose.duration)
+	var settled:Vector2=geometry.enemy_render_position(enemy)
+	geometry.fx_time+=0.5
+	check(entry!=settled and geometry.enemy_render_position(enemy)==settled,"entry reaches exact fixed endpoint without hover")
+	pose.born=born;geometry.fx_time=clock
+	var old_x:float=enemy.x;enemy.x+=3.0
+	var moved:Dictionary=geometry.display_enemy(enemy)
+	check(moved.position.x!=row.position.x and not is_same(geometry.battle_read_model.ballistic_shape(enemy),shape),"logical movement invalidates display and collision together")
+	enemy.x=old_x;geometry.battle_read_model.invalidate_membership();runtime.snapshot()
+	# Descriptor-only fleet fixture checks fixed drone bodies and moving carriers.
+	var fleet=preload("res://scripts/logical_fleet_pose.gd").new();fleet.prepare(scene.ship_view)
+	var entries:Array=[]
+	for i in 8:entries.append({"key":"laser"})
+	var bag={"generation":1,"equipped":["fixed-drone"],"drones":{"fixed-drone":{"weapon":"laser"}}}
+	fleet.configure("Heavy_Battleship",entries,8,bag)
+	fleet.pose_base(Vector2(286,800),200,0,0,false,1.0/60.0)
+	var fixture_body:Transform3D=fleet.ship_transform
+	var drone:Transform3D=fleet.drones[0].transform;var carrier:Transform3D=fleet.carriers[0].transform
+	var muzzle:Vector2=fleet.screen_muzzle_for_drone("fixed-drone",0)
+	fleet.pose_base(Vector2(286,800),200,0,1,false,1.0/60.0)
+	check(fleet.drones[0].transform==drone and fleet.screen_muzzle_for_drone("fixed-drone",0)==muzzle,"fixed drone body and muzzle do not bob")
+	check(fleet.carriers[0].transform!=carrier,"carrier orbit remains dynamic")
+	fleet.pose_base(Vector2(286,800),220,0,1,false,0)
+	check(fleet.ship_transform!=fixture_body,"fleet scale change rebuilds base")
+
 func run()->void:
 	var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
 	scene.automation_args=["--capture"];scene.music_on=false
@@ -169,6 +254,7 @@ func run()->void:
 	g.db.config[config_key]=old_scale_config;scene._process(0.0)
 	var steps:int=runtime.logical_steps;g.paused=false;scene._process(1.0/60.0)
 	check(runtime.logical_steps==steps+1,"resume advances exactly one next logical step")
+	residence_contract(scene)
 	await rail_charge_contract(scene)
 	var dead:Dictionary=g.enemies[0];var uid:int=int(dead.uid)
 	var hostile_beam:Dictionary={}

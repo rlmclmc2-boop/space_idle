@@ -67,6 +67,8 @@ class DisplayRecord extends RefCounted:
  var order_index:int=-1
  var packet_bucket:int=-999999
  var packet_repair:bool=false
+ var body_signature:Array=[]
+ var mount_signature:Array=[]
  var packet_large:bool=false
 
 var paint_owner
@@ -107,6 +109,7 @@ func create_record(enemy:Dictionary)->DisplayRecord:
  return record
 
 func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
+ record.body_signature.clear();record.mount_signature.clear()
  var enemy=record.entity
  record.shape_revision=int(spatial.shape_revision);record.boss=boss
  record.source_id=spatial.source_id;record.appearance=spatial.appearance
@@ -222,16 +225,19 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  if not is_equal_approx(record.screen_scale,scale_value):
   record.screen_scale=scale_value;record.packet_bucket=-999999
  var angle:float=paint_owner.enemy_render_angle(enemy)
- var depth=clampf((point.y-90.0)/maxf(1.0,float(spatial.frontline)-90.0),0,1)
- var light=lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
- record.root.position=pos;record.hull.rotation=PI+angle
- record.hull.scale=Vector2.ONE*width;record.hull.self_modulate=Color(light,light,light,1)
- record.deck.rotation=PI+angle
- for prefix in ["deck_physical_","deck_energy_"]:
-  var body:Part=record.deck.pieces[prefix+"body"]
-  if not body.visible:continue
-  body.scale=Vector2.ONE*width
-  set_stroke_width(record.deck.pieces[prefix+"strokes"],width)
+ var body_key:Array=[pos,width,angle,record.screen_scale]
+ if record.body_signature!=body_key:
+  record.body_signature=body_key
+  var depth=clampf((point.y-90.0)/maxf(1.0,float(spatial.frontline)-90.0),0,1)
+  var light=lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
+  record.root.position=pos;record.hull.rotation=PI+angle
+  record.hull.scale=Vector2.ONE*width;record.hull.self_modulate=Color(light,light,light,1)
+  record.deck.rotation=PI+angle
+  for prefix in ["deck_physical_","deck_energy_"]:
+   var body:Part=record.deck.pieces[prefix+"body"]
+   if not body.visible:continue
+   body.scale=Vector2.ONE*width
+   set_stroke_width(record.deck.pieces[prefix+"strokes"],width)
  var repair:bool=float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0
  var bucket=ceili(width*maxf(0.1,record.screen_scale)/2.0)
  var large:bool=int(enemy.size)>=4
@@ -259,7 +265,7 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  if status.recovering and record.protection_clock!=paint_owner.game.enemy_shield_time:changed=true
  record.packet=packet;record.armour=armour;record.shield_type=shield_type;record.size=size
  record.protection_width=width;record.protection_clock=paint_owner.game.enemy_shield_time
- record.protection.rotation=PI+angle
+ if record.protection.rotation!=PI+angle:record.protection.rotation=PI+angle
  if changed:
   record.protection.data.width=width;record.protection.data.packet=packet;record.protection.data.clock=paint_owner.game.enemy_shield_time
   record.protection.queue_redraw()
@@ -270,6 +276,9 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   if shield_type==1 and size>=4:outline=packet.front if status.show_hull and armour in [1,2] else packet.single_front
  elif not (status.show_hull and armour in [1,2]) and not status.repair:outline=PackedVector2Array()
  update_meters(record,pos,width,angle,outline)
+ var mount_key:Array=[point,width,angle,record.screen_scale,paint_owner.player_render_position()]
+ if record.mount_signature==mount_key:return
+ record.mount_signature=mount_key
  var desired:float=0.0
  if paint_owner.simulation_geometry_view==null:desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-angle,-PI,PI)
  var min_width=15.0/maxf(0.1,record.screen_scale)

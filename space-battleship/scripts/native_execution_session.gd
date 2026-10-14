@@ -14,6 +14,13 @@ var handed_off:=false
 var advance_blocked:=false
 var galaxy_refit_blocked:=false
 var blocked_shared_step:=0.0
+var target_geometry_revision:int=-1
+var fleet_geometry_revision:int=-1
+var hostile_weapon_indices:Array[int]=[]
+var friendly_weapon_indices:Array[int]=[]
+var weapon_geometry_keys:Dictionary={}
+var geometry_muzzles:=PackedVector2Array()
+var geometry_player:=Vector2.INF
 
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
@@ -25,6 +32,7 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
 	weapons=descriptor.weapons
+	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	actor_rows=kernel.enemy_views()
 	for row in actor_rows:actor_by_uid[int(row.uid)]=row
 	# Retire old queues and bodies before publishing the new owner. These are
@@ -56,6 +64,7 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
+	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true
 
 func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
@@ -81,6 +90,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	if not kernel.refit_configuration(plan.descriptor):return false
 	weapons=plan.descriptor.weapons
+	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	game.refit_health_ratios=plan.ratios
 	return true
 
@@ -139,25 +149,61 @@ func advance(game:RefCounted,dt:float)->bool:
 	return true
 
 func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
-	var points=PackedVector2Array();var muzzles=PackedVector2Array()
-	var hulls:Array=[];var screen_points=PackedVector2Array();var screen_muzzles=PackedVector2Array()
-	for actor in actor_rows:
-		var shape:Dictionary=geometry.battle_read_model.ballistic_shape(actor)
-		points.append(geometry.battle_logical_point(shape.center))
-		hulls.append(shape.hull);screen_points.append(shape.center)
+	geometry.battle_read_model.ensure_clock()
+	geometry.refresh_target_geometry()
+	geometry.refresh_fleet_geometry()
+	var topology_changed:bool=geometry_muzzles.size()!=weapons.size()
+	if topology_changed:
+		hostile_weapon_indices.clear();friendly_weapon_indices.clear();weapon_geometry_keys.clear()
+		geometry_muzzles.resize(weapons.size())
+		for index in weapons.size():
+			if bool(weapons[index].hostile):hostile_weapon_indices.append(index)
+			else:friendly_weapon_indices.append(index)
+	var targets_changed:bool=topology_changed or target_geometry_revision!=geometry.target_geometry_revision
+	var fleet_changed:bool=topology_changed or fleet_geometry_revision!=geometry.fleet_geometry_revision
 	var aim:Vector2=geometry.target_point(game.player)
-	for weapon in weapons:
-		if bool(weapon.hostile):
+	if not targets_changed and not fleet_changed and geometry_player==aim:return
+	var points=PackedVector2Array();var hulls:Array=[];var screen_points=PackedVector2Array();var stationary=PackedByteArray()
+	if targets_changed:
+		for actor in actor_rows:
+			var shape:Dictionary=geometry.battle_read_model.ballistic_shape(actor)
+			points.append(geometry.battle_logical_point(shape.center))
+			hulls.append(shape.hull);screen_points.append(shape.center)
+			var pose:Dictionary=geometry.enemy_pose(actor)
+			stationary.append(1 if geometry.fx_time>=float(pose.born)+float(pose.duration) and Vector2(actor.x,actor.y)==pose.logical_position else 0)
+	var muzzles_changed:bool=false
+	if targets_changed or geometry_player!=aim:
+		for index in hostile_weapon_indices:
+			var weapon:Dictionary=weapons[index]
 			var actor:Dictionary=actor_rows[int(weapon.source)]
 			var position:Vector2=geometry.enemy_render_position(actor)
-			muzzles.append(geometry.battle_logical_point(position+geometry.execution_enemy_port_offset(actor,int(weapon.slot),position)))
-		elif weapon.entry.has("drone_id"):
-			muzzles.append(geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position)
-		else:muzzles.append(geometry.launch_pose(int(weapon.slot),aim,0).position)
-	for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
-	kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles)
-	kernel.input_geometry(points,muzzles)
-	kernel.input_player_point(aim)
+			var point:Vector2=geometry.battle_logical_point(position+geometry.execution_enemy_port_offset(actor,int(weapon.slot),position))
+			if topology_changed or geometry_muzzles[index]!=point:muzzles_changed=true;geometry_muzzles[index]=point
+	if fleet_changed:
+		for index in friendly_weapon_indices:
+			var weapon:Dictionary=weapons[index]
+			var key:Array=[]
+			if weapon.entry.has("drone_id"):
+				var drone:Dictionary=geometry.fleet_pose.drone_by_id.get(str(weapon.entry.drone_id),{})
+				key=[drone.get("transform"),geometry.fleet_pose.rendered_position]
+			else:
+				var module:Dictionary=geometry.fleet_pose.module_by_slot.get(int(weapon.slot),{})
+				key=[module.get("mount_root"),module.get("pivot"),geometry.current_hull]
+			if weapon_geometry_keys.get(index,[])==key:continue
+			weapon_geometry_keys[index]=key
+			var point:Vector2
+			if weapon.entry.has("drone_id"):point=geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position
+			else:point=geometry.launch_pose(int(weapon.slot),aim,0).position
+			if topology_changed or geometry_muzzles[index]!=point:muzzles_changed=true;geometry_muzzles[index]=point
+	var muzzles=PackedVector2Array();var screen_muzzles=PackedVector2Array()
+	if muzzles_changed:
+		muzzles=geometry_muzzles
+		for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
+	if targets_changed or muzzles_changed:
+		kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles,stationary)
+		kernel.input_geometry(points,muzzles)
+	target_geometry_revision=geometry.target_geometry_revision;fleet_geometry_revision=geometry.fleet_geometry_revision
+	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)
 
 func consume_feedback(game:RefCounted)->void:
 	for row in kernel.take_feedback():
@@ -231,4 +277,5 @@ func commit_numeric_batch(game,batch:Dictionary)->bool:
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
+	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true
