@@ -1,0 +1,70 @@
+{
+  "mode": "fixed 720-step correctness attribution; no new performance sampling",
+  "sides": {
+    "A": {
+      "eligible_survival_attempts": 105,
+      "successful_survival_triggers": 39,
+      "kill_triggers": 0,
+      "packets": 39,
+      "due": 33,
+      "derived_hits": 495,
+      "remaining": 6,
+      "max_packet_product_relative_error": 0.0,
+      "repeat_cancellations": 15,
+      "counts": {
+        "drone_fire": 74,
+        "enhancement_chain": 2134,
+        "enhancement_secondary": 20,
+        "fire": 394,
+        "hit": 2853
+      },
+      "chain_arrivals": 1979,
+      "chain_outstanding": 155,
+      "no_recursive_packets": true
+    },
+    "B": {
+      "eligible_survival_attempts": 105,
+      "successful_survival_triggers": 39,
+      "kill_triggers": 0,
+      "packets": 39,
+      "due": 33,
+      "derived_hits": 495,
+      "remaining": 6,
+      "max_packet_product_relative_error": 0.0,
+      "repeat_cancellations": 0,
+      "counts": {
+        "drone_fire": 89,
+        "enhancement_chain": 2299,
+        "enhancement_secondary": 20,
+        "fire": 409,
+        "hit": 3045
+      },
+      "chain_arrivals": 2156,
+      "chain_outstanding": 143,
+      "no_recursive_packets": true
+    }
+  },
+  "source_ordinal_trigger_match": {
+    "count": 105,
+    "max_raw_relative_error": 0.02278481012658229,
+    "step_delta_min": -1,
+    "step_delta_max": 0
+  },
+  "hit_delta_decomposition": {
+    "extra_direct_cannon_hits": 15,
+    "extra_chain_births": 165,
+    "fewer_chain_packets_still_outstanding_at_step720": 12,
+    "extra_chain_arrivals": 177,
+    "total_extra_hits": 192,
+    "extra_strange_hits": 0
+  },
+  "interpretation": "All 15 cancelled legacy drone repeats match native derived fire at the same step/source; every native repeat retains its own parent raw times 9. Each preserved repeat starts 11 chains: 165 extra births. A ends with 155 chains outstanding, B143, hence 177 extra arrivals and 192 extra hits including 15 direct cannon hits. The residual12 is a contact-window count, not assigned per instance or solely to hull geometry. No combat workload reduction was used.",
+  "coverage_limits": "Held-health fixture has zero kills: kill-spawn branch is covered by the previously passed 73-check suite. Native display omits attack IDs; successful packets join by unique source within step (asserted), raw product and exported packet context. Failed attempts retain root=0 in native observer. Due hits are matched against the first ordered native feedback rows by uid/clock and critical=false. Two B observer-schema attempts were rejected; only final B.log/B.json used. Production and DLL unchanged.",
+  "primary_critical_by_source_ordinal_equal": true,
+  "end_rng_equal": true,
+  "attack_counter_end": {
+    "A": 194,
+    "B": 209
+  },
+  "damage_note": "Raw damage is recorded separately; the retained-repeat difference also increases proficiency attack counters from194 to209. This report does not attribute every raw difference solely to that counter. Per-source ordinal critical/RNG/trigger outcomes remain aligned, each side packet damage is exactly its recorded base_raw times1.889; native repeat damage is its native parent snapshot times9."
+}
