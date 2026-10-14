@@ -1,0 +1,12 @@
+{
+  "source": "274e973affbcceb92974452f4f67e8f72a7f9032",
+  "dll_sha256": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
+  "sources": {
+    "space-battleship\\addons\\native_battle\\src\\combat_execution_kernel.h": "db74f799b15f93f1a2a716bd966208691ed9691c3b7c1ef24651c134d58b348b",
+    "space-battleship\\addons\\native_battle\\src\\combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1",
+    "space-battleship\\addons\\native_battle\\src\\combat_retained_presentation.h": "040c563ab80ce63553a5acc45c7a8e32e7209e3bceb1960045da9bfc72f30a4d",
+    "space-battleship\\addons\\native_battle\\src\\space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "space-battleship\\addons\\native_battle\\SConstruct": "9d060ef9e7a0c61533865ce9d93c17cea9a61eb55071aa5789c6c247f8441147",
+    "space-battleship\\addons\\native_battle\\build_native.ps1": "39f885a65d5b4f1caf1c8f4a7e9058f505c60328521236e50e3cb8d7b1f160de"
+  }
+}

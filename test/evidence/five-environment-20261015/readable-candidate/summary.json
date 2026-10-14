@@ -1,0 +1,40 @@
+{
+  "mixed": {
+    "frames": 629,
+    "steps": 480,
+    "mean_ms": 12.560360890302066,
+    "p95_ms": 18.208,
+    "p99_ms": 42.126,
+    "actual_1x": true,
+    "ratio": 1.0125964466472,
+    "sample_valid": true,
+    "native_admitted": true,
+    "fires": 3458,
+    "hits": 13050,
+    "floats_mean": 30.993640699523052,
+    "pending_mean": 13.43402225755167,
+    "drawcalls_mean": 963.9634340222575,
+    "wall_phase_means_ms": {
+      "post_to_main": 0.04535453100158982,
+      "main": 6.3185341812400635,
+      "main_to_predraw": 3.1749697933227345,
+      "draw": 3.021502384737679
+    },
+    "events": {
+      "beam_hit": 420,
+      "enemy_hits": 12930,
+      "enhancement_chain": 4961,
+      "enhancement_secondary": 43,
+      "equipment_stats": 202,
+      "fire": 3458,
+      "friendly_periods": 420,
+      "galaxy_unlocked": 1,
+      "hit": 13050,
+      "player_hits": 120,
+      "projectile_impact": 8430,
+      "resources_changed": 96,
+      "upgrade": 96,
+      "upgrades_completed": 8
+    }
+  }
+}

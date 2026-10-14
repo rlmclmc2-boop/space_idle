@@ -1,0 +1,373 @@
+{
+  "mixed": {
+    "A": {
+      "mean_ms": 13.044910743801653,
+      "p95_ms": 19.236,
+      "frames": 605,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "beam_hit": 420,
+        "enemy_hits": 12930,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 43,
+        "equipment_stats": 202,
+        "fire": 3458,
+        "friendly_periods": 420,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "player_hits": 120,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 5.102479338842975,
+      "drawcalls_mean": 965.100826446281,
+      "state_hash_before": "5e370f26d7e4d18d774e936f60e3ab1996f55fdc29ff477d2db7885b8793abb3",
+      "state_hash_after": "80bb36c7eef5d3c56cc671dddefbba0ae2727c2ff1e55d4e5dda17c51dda8778"
+    },
+    "B": {
+      "mean_ms": 12.63734928229665,
+      "p95_ms": 18.759,
+      "frames": 627,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "beam_hit": 420,
+        "enemy_hits": 12930,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 43,
+        "equipment_stats": 202,
+        "fire": 3458,
+        "friendly_periods": 420,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "player_hits": 120,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 30.99840510366826,
+      "drawcalls_mean": 963.9888357256779,
+      "state_hash_before": "dd71f00b743be5bf64871acaf24c7c05d1bd0fe004832a7e947ee563c53fa6d8",
+      "state_hash_after": "fe0094b09d9d37261b52a7f52c02a3e3bc4487a767bcb31d904e9911cdf026d5"
+    },
+    "net_mean_gain_ms": 0.4075614615050025,
+    "candidate_under_10ms": false,
+    "events_exact_equal": true,
+    "canonical_differences": {
+      "state_before": [
+        "/rng/seed"
+      ],
+      "state_after": [
+        "/rng/seed"
+      ]
+    },
+    "canonical_rng_state_exact_equal": {
+      "state_before": true,
+      "state_after": true
+    },
+    "raw_hash_equal": false,
+    "hash_note": "Raw hashes remain different: the ONLY recursive canonical differences are /rng/seed, construction metadata of the new RNG instance. Authoritative copied rng.state and every other exported field are exactly equal. No raw data was normalized."
+  },
+  "laser": {
+    "A": {
+      "mean_ms": 13.964727433628319,
+      "p95_ms": 26.37,
+      "frames": 565,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "enemy_hits": 18316,
+        "enhancement_chain": 10527,
+        "enhancement_secondary": 90,
+        "equipment_stats": 183,
+        "fire": 7906,
+        "galaxy_unlocked": 1,
+        "hit": 18436,
+        "player_hits": 120,
+        "projectile_impact": 18436,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 5.162831858407079,
+      "drawcalls_mean": 753.6159292035398,
+      "state_hash_before": "92a6d95e407ae4eced3ac0d9ee00f67701f86972b151daf15dcbe6281bc88124",
+      "state_hash_after": "854f3f98e2c0aed67874e544ce7a64211f2b69584f24480b6ca3a8dc9a0aacba"
+    },
+    "B": {
+      "mean_ms": 14.22376036036036,
+      "p95_ms": 26.821,
+      "frames": 555,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "enemy_hits": 18316,
+        "enhancement_chain": 10527,
+        "enhancement_secondary": 90,
+        "equipment_stats": 183,
+        "fire": 7906,
+        "galaxy_unlocked": 1,
+        "hit": 18436,
+        "player_hits": 120,
+        "projectile_impact": 18436,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 30.99279279279279,
+      "drawcalls_mean": 812.3261261261262,
+      "state_hash_before": "1fa580bc96fcca3ee74dcd1d5828cbd263dbeef5d82d9d4e9887c12e9710a83a",
+      "state_hash_after": "3edff036c15e5859a2a60d8ad27dc991de7134ca7e09c90e75dd4fcc991b5c80"
+    },
+    "net_mean_gain_ms": -0.2590329267320417,
+    "candidate_under_10ms": false,
+    "events_exact_equal": true,
+    "canonical_differences": {
+      "state_before": [
+        "/rng/seed"
+      ],
+      "state_after": [
+        "/rng/seed"
+      ]
+    },
+    "canonical_rng_state_exact_equal": {
+      "state_before": true,
+      "state_after": true
+    },
+    "raw_hash_equal": false,
+    "hash_note": "Raw hashes remain different: the ONLY recursive canonical differences are /rng/seed, construction metadata of the new RNG instance. Authoritative copied rng.state and every other exported field are exactly equal. No raw data was normalized."
+  },
+  "cannon": {
+    "A": {
+      "mean_ms": 6.083333333333333,
+      "p95_ms": 8.538,
+      "frames": 1317,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "enemy_hits": 2115,
+        "enhancement_chain": 1705,
+        "enhancement_secondary": 14,
+        "equipment_stats": 89,
+        "fire": 289,
+        "galaxy_unlocked": 1,
+        "hit": 2235,
+        "player_hits": 120,
+        "projectile_impact": 1860,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 4.526955201214882,
+      "drawcalls_mean": 850.7228549734244,
+      "state_hash_before": "b03d2fb44b156ade11d6b820a3fa7ee2e4dbc27e5fcfb994fb7a2c1df3bd0722",
+      "state_hash_after": "637ed8d5417db1681cecfc1bdfb91dd4ca61ef993cb364e7c7094fa43d5dbb94"
+    },
+    "B": {
+      "mean_ms": 6.381605095541401,
+      "p95_ms": 9.435,
+      "frames": 1256,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "enemy_hits": 2115,
+        "enhancement_chain": 1705,
+        "enhancement_secondary": 14,
+        "equipment_stats": 89,
+        "fire": 289,
+        "galaxy_unlocked": 1,
+        "hit": 2235,
+        "player_hits": 120,
+        "projectile_impact": 1860,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 23.47452229299363,
+      "drawcalls_mean": 894.8176751592357,
+      "state_hash_before": "661e3b7f509737229d10805d53b19afabe69ed953ce1e7acdb2e4fcc4f744394",
+      "state_hash_after": "01c6bb2573653847817299d31b560269eca3d6cb417db493e46e56cee8b2064e"
+    },
+    "net_mean_gain_ms": -0.29827176220806795,
+    "candidate_under_10ms": true,
+    "events_exact_equal": true,
+    "canonical_differences": {
+      "state_before": [
+        "/rng/seed"
+      ],
+      "state_after": [
+        "/rng/seed"
+      ]
+    },
+    "canonical_rng_state_exact_equal": {
+      "state_before": true,
+      "state_after": true
+    },
+    "raw_hash_equal": false,
+    "hash_note": "Raw hashes remain different: the ONLY recursive canonical differences are /rng/seed, construction metadata of the new RNG instance. Authoritative copied rng.state and every other exported field are exactly equal. No raw data was normalized."
+  },
+  "missile": {
+    "A": {
+      "mean_ms": 10.037143757881463,
+      "p95_ms": 12.954,
+      "frames": 793,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "enemy_hits": 2803,
+        "enhancement_chain": 1716,
+        "enhancement_secondary": 12,
+        "equipment_stats": 88,
+        "fire": 821,
+        "galaxy_unlocked": 1,
+        "hit": 2923,
+        "player_hits": 120,
+        "projectile_impact": 2533,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 4.997477931904162,
+      "drawcalls_mean": 1016.7679697351829,
+      "state_hash_before": "1355c1c5f3263a3421ad8f1e9a244868d8b9424493f108f25d59de3c527b54bb",
+      "state_hash_after": "107ac8df6c5215567c692c76ce76d7ff950bbb4b660ebdb4cf0df8e6fc3d5115"
+    },
+    "B": {
+      "mean_ms": 10.035868852459016,
+      "p95_ms": 13.343,
+      "frames": 793,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "enemy_hits": 2803,
+        "enhancement_chain": 1716,
+        "enhancement_secondary": 12,
+        "equipment_stats": 88,
+        "fire": 821,
+        "galaxy_unlocked": 1,
+        "hit": 2923,
+        "player_hits": 120,
+        "projectile_impact": 2533,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 26.774274905422445,
+      "drawcalls_mean": 1067.7402269861286,
+      "state_hash_before": "cecc6607acb6b04d3d958dda5f92c5ccba47f71a2833fdac3f4770aba3eb90a4",
+      "state_hash_after": "21115a7c885c50564938fb2c1e18643480f6b8e9a994427206a0606caec2f518"
+    },
+    "net_mean_gain_ms": 0.0012749054224467926,
+    "candidate_under_10ms": false,
+    "events_exact_equal": true,
+    "canonical_differences": {
+      "state_before": [
+        "/rng/seed"
+      ],
+      "state_after": [
+        "/rng/seed"
+      ]
+    },
+    "canonical_rng_state_exact_equal": {
+      "state_before": true,
+      "state_after": true
+    },
+    "raw_hash_equal": false,
+    "hash_note": "Raw hashes remain different: the ONLY recursive canonical differences are /rng/seed, construction metadata of the new RNG instance. Authoritative copied rng.state and every other exported field are exactly equal. No raw data was normalized."
+  },
+  "longLaser": {
+    "A": {
+      "mean_ms": 11.92795508982036,
+      "p95_ms": 21.363,
+      "frames": 668,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "beam_hit": 1820,
+        "critical_impact": 420,
+        "enemy_hits": 21420,
+        "equipment_stats": 72,
+        "fire": 120,
+        "friendly_periods": 1820,
+        "galaxy_unlocked": 1,
+        "hit": 21540,
+        "player_hits": 120,
+        "projectile_impact": 120,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 4.986526946107785,
+      "drawcalls_mean": 1058.9101796407185,
+      "state_hash_before": "b72197a69c4386daa113c983e6f144c2d0041845b2dc810c7c1bfda59dc230a1",
+      "state_hash_after": "6e7298e5d0b94605f4c25305d71635f47bd120d931640fbe3bdc2f63ed1eb995"
+    },
+    "B": {
+      "mean_ms": 9.873720843672455,
+      "p95_ms": 20.051,
+      "frames": 806,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "beam_hit": 1820,
+        "critical_impact": 420,
+        "enemy_hits": 21420,
+        "equipment_stats": 72,
+        "fire": 120,
+        "friendly_periods": 1820,
+        "galaxy_unlocked": 1,
+        "hit": 21540,
+        "player_hits": 120,
+        "projectile_impact": 120,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 25.003722084367247,
+      "drawcalls_mean": 826.0930521091811,
+      "state_hash_before": "94459bbfe4e7900616e721393bfe11d31832476e7f015790a57cf1ceb4d1097f",
+      "state_hash_after": "203e533afcfe6ab82a89963e1b05fe074396b0d658c90293ff28d75d3b99537f"
+    },
+    "net_mean_gain_ms": 2.054234246147905,
+    "candidate_under_10ms": true,
+    "events_exact_equal": true,
+    "canonical_differences": {
+      "state_before": [
+        "/rng/seed"
+      ],
+      "state_after": [
+        "/rng/seed"
+      ]
+    },
+    "canonical_rng_state_exact_equal": {
+      "state_before": true,
+      "state_after": true
+    },
+    "raw_hash_equal": false,
+    "hash_note": "Raw hashes remain different: the ONLY recursive canonical differences are /rng/seed, construction metadata of the new RNG instance. Authoritative copied rng.state and every other exported field are exactly equal. No raw data was normalized."
+  }
+}

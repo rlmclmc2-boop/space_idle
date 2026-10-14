@@ -1,0 +1,60 @@
+{
+  "refs": {
+    "mixed_B": "124b16f8b58326e881430420068d9714e957ae73"
+  },
+  "order": [
+    "mixed_B"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "mixed_B",
+      "source": "124b16f8b58326e881430420068d9714e957ae73",
+      "changed_source_hashes": {
+        "space-battleship/dev/toon_ship/shield.gdshader": "3d77884627cfa1132fd7d9ea3cedf509bb69f7ef4c0028f21fd3f9d9badfdbac",
+        "space-battleship/scripts/battle_slice_runtime.gd": "8744b6f2909a8a8b3215d074ee46b2cf97dfdeb524feccf4ca8dd3b570ab9d14",
+        "space-battleship/scripts/battlefield.gd": "0f989e6758a3e9cf7f16860696c121ddec6a8d26c2b66b3cf4acf10274340610",
+        "space-battleship/scripts/main.gd": "ef7e78257f838d0b9726df91eb4f67a03ba66a56fbd5d576c07e3ecaef931148",
+        "space-battleship/scripts/retained_beam_foreground.gd": "9bb7490cde04e147931ce3721dfd608185f0bbed5b89c23aec354d58a2bef389",
+        "space-battleship/shaders/retained_beams.gdshader": "d5ae20bc0ea17df9149857910fae2f1202d3ec367108c3212f043ddfa9e7614e"
+      },
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\mixed\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792008566.4926376,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "73c0cecb6f5c2a949ee3765f7fa566925084512a2a1003ef0618fbf7e1b12fff",
+      "exit": 0,
+      "completed_unix": 1792008587.0554674,
+      "json_sha256": "ae59c92d4172534922eca19e0e7a58dd9165a3e66166a0436c5db6ddf0327d38",
+      "png_sha256": "5fefa4c595303b9dd502179f7b2f1db01b67874615ccf7e54a78a4fbff1b4b0f",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {},
+  "dll_sha256": {
+    "mixed_B": "73c0cecb6f5c2a949ee3765f7fa566925084512a2a1003ef0618fbf7e1b12fff"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "2b8f81017b6d47fbdd1bf70152d3626a724d16960b16265849246ee9fa90e74f",
+  "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+  "probe_policy": {
+    "whole_state_reads_per_run": 2,
+    "counter_reads_per_run": 2,
+    "per_step_exports": 0,
+    "per_step_scans": 0,
+    "counter_increment_cost_included": true
+  },
+  "scope": "Instrumented current mixed environment only after typed membership and single summary card, after full five-environment AB. Inclusive per-phase costs are diagnostic and include overhead; no acceptance or net-gain claim. A exact production54a9fa10; B committed beam-instance/readable-tag/shield candidate. Changed source hashes per run. Same accepted DLL, original fixture and full visual workload. No source mutation outside six recorded files."
+}

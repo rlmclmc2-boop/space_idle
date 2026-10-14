@@ -1,0 +1,51 @@
+{
+  "refs": {
+    "longLaser": "9d18e5108d2f448f2df90e83bae6ef346834ec49"
+  },
+  "order": [
+    "longLaser"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "longLaser",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\longLaser\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792005685.7640312,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+      "exit": 0,
+      "completed_unix": 1792005706.7450137,
+      "json_sha256": "dedaf2990421693c1fe2918da7251ff0636e21a297fc3b6f174b5394a35831da",
+      "png_sha256": "1714a93c3a0cc834bbe200d026e37d7493d7786935cacb1571984464eeecbe9c",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {},
+  "dll_sha256": {
+    "longLaser": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "9ba21496b60b053da82ff8b0e83268b631207cf30c889f0684938793b04e0b38",
+  "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+  "probe_policy": {
+    "whole_state_reads_per_run": 2,
+    "counter_reads_per_run": 2,
+    "per_step_exports": 0,
+    "per_step_scans": 0,
+    "counter_increment_cost_included": true
+  },
+  "scope": "First beam-instance candidate check in existing continuous-laser environment. Only the two committed renderer files differ from baseline; source/ref recorded. Not accepted until visual comparison and all five environments."
+}

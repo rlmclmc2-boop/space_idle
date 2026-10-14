@@ -1,0 +1,62 @@
+{
+  "source": "30b87f32",
+  "native_build_source": "274e973affbcceb92974452f4f67e8f72a7f9032",
+  "checks": {
+    "ordered_membership_basic": {
+      "checks": 3147,
+      "failures": 0,
+      "log": "ordered-beam-check.log"
+    },
+    "beam_compaction_order": {
+      "checks": 2058,
+      "failures": 0,
+      "orders": [
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          2
+        ]
+      ],
+      "log": "ordered-beam-compaction-check4.log"
+    },
+    "handoff": {
+      "checks": 45,
+      "failures": 0,
+      "log": "presentation-membership-handoff.log",
+      "reused_after_read_only_beam_method_addition": true
+    },
+    "damage_summary": {
+      "checks": 13,
+      "failures": 0,
+      "log": "damage-summary-check2.log"
+    },
+    "actual_shield_feedback": {
+      "checks": 20,
+      "failures": 0,
+      "log": "shield-visible-pixels-check.log",
+      "changed_pixels_over_0_04": {
+        "gdscript": 2788,
+        "native": 2800
+      },
+      "native_difference_bbox": [
+        146,
+        633,
+        255,
+        784
+      ],
+      "native_changed_pixels_inside_ship_roi": 2800
+    },
+    "beam_shader_visual": {
+      "cases": 5,
+      "failed": 0,
+      "tolerance": "mean maximum-channel error <0.001 and >2/255 error pixels <0.5%; not pixel identical"
+    },
+    "ui_catalog": "2340 rows, valid"
+  },
+  "fixture_failures": "Earlier logs retained: indentation parse error; cannon has no persistent flight rows; multi-beam test needed a hull with sufficient slots and earlier ordinary births; shield admission/profile-state fixtures corrected. These were not accepted runs.",
+  "native_muzzle_scope": "Cannon is instantaneous in the low fixture: no retained cannon row observed. Empty-set membership checked; rich cannon environment and exact events provide the nonempty workload check.",
+  "damage_semantics": "Simplified mode now has one recent 0.2s total per enemy, combines damage types/critical and marks any critical contribution with gold plus star. Each actual hit stays independently in the 40-record history. Full mode retains separate critical/type groups; player incoming labels unchanged. This is an explicit display semantics change, not a numeric/combat change."
+}
