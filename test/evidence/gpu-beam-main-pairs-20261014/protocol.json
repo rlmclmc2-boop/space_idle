@@ -1,0 +1,16 @@
+{
+  "baseline": "e7cc31e026fd390b24daa188256ee7f5f33a67e9",
+  "candidate": "0a8ec88440b3329ddd0a99025d9eb1d20b587746",
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2",
+    "A3",
+    "B3"
+  ],
+  "warm_steps": 240,
+  "sample_steps": 480,
+  "rule": "Exactly six runs, all retained; no selection, rerun or additional sample. Full rich15 layer2 equipment view and purchase scheduler match recent main baseline. QA uncapped/VSync off, speed/time_scale1, logic60Hz. Same accepted DLL. Passive system-wide CPU load only, no system/process tuning.",
+  "correctness": "Exact previously reviewed patch transplanted without semantic changes. Reuse196 geometry+14 bounds checks; no broad retest. Full state/event equivalence checked on all six runs."
+}

@@ -1,0 +1,66 @@
+{
+  "status": "Read-only configuration proposal; not yet applied or executed. Await parent sequencing decision.",
+  "source": "e7cc31e026fd390b24daa188256ee7f5f33a67e9",
+  "common": {
+    "ordinary_weapon_slots": 8,
+    "ordinary_start_level": 150,
+    "drone_count": 5,
+    "drone_level": 20,
+    "drone_weapon_level_bonus": 1,
+    "affixes": [
+      "chain_count T1",
+      "attack_speed T1",
+      "repeat_chance T1"
+    ],
+    "generation": "existing Rewards.create_drone seeded419 and bounded rejection for requested effect; Bag.valid_drone/Bag.valid and set_equipped validation; record generated parameters and aggregation manifest",
+    "enemy": "same15 held-health enemies/template/positions/defence/seed1701 as current rich15 layer2",
+    "enhancement": "level40, proficiency2B/repeat1B/repeat3B unchanged",
+    "timing": "warm240 sample480 logic steps,1x60Hz,uncapped/VSync off,full effects",
+    "samples": 4,
+    "not_AB": "Different weapon mechanics and effect-trigger counts; never treat cross-scenario wall-time differences as optimization gain"
+  },
+  "scenes": [
+    {
+      "weapon": "laser",
+      "legendary": [
+        "scatter_pulse",
+        "laser_charge"
+      ],
+      "gold_drones": 3,
+      "evidence": "game.gd3007-3019 scatter targets;drone_combat_effects.gd25-31 charge multiplier;single-target scatter bonus not exercised by15 living enemies"
+    },
+    {
+      "weapon": "cannon",
+      "legendary": [
+        "strange_matter"
+      ],
+      "gold_drones": 4,
+      "excluded": "higgs_cannon incompatible with13 cannon sources: hyperspace_system.gd308-318 max1. No illegal bypass and no extra single-cannon run without parent choice.",
+      "evidence": "drone_combat_effects.gd48-52 nonlethal40% delayed branch can trigger;held-health scenario does not cover kill-spawns branch"
+    },
+    {
+      "weapon": "missile",
+      "legendary": [
+        "precise_guidance",
+        "wild_missile"
+      ],
+      "gold_drones": 3,
+      "evidence": "game.gd2623+ precise_guidance first-hit-per-batch;drone_combat_effects.gd38-46 wild substitution and blast"
+    },
+    {
+      "weapon": "longLaser",
+      "legendary": [
+        "prism_tower",
+        "endless_beam"
+      ],
+      "gold_drones": 3,
+      "evidence": "game.gd3738-3751 prism limited to one live main tower;game.gd3547-3561/2366 endless applies to selected source. No death/wave transition coverage from held-health fixture."
+    }
+  ],
+  "limits": [
+    "At most2 legendary among5 drones; generic legendary effects excluded to avoid expanding matrix.",
+    "High pressure configuration retained, actual firing/active projectiles/beams/links/hits may differ;measure rather than assume equal load.",
+    "Current mixed baseline foreground2.0771ms does not prove beams dominate each single-weapon scenario."
+  ],
+  "proposed_sequence": "First four baseline-only distribution captures if parent agrees;GPU fixed6 remains separate, no4x6Cartesian expansion."
+}
