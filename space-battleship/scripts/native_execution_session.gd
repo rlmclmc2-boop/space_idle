@@ -14,6 +14,9 @@ var handed_off:=false
 var advance_blocked:=false
 var galaxy_refit_blocked:=false
 var blocked_shared_step:=0.0
+var geometry_shapes:Array=[]
+var geometry_muzzles:=PackedVector2Array()
+var geometry_player:=Vector2.INF
 
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
@@ -25,6 +28,7 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
 	weapons=descriptor.weapons
+	geometry_shapes.clear();geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	actor_rows=kernel.enemy_views()
 	for row in actor_rows:actor_by_uid[int(row.uid)]=row
 	# Retire old queues and bodies before publishing the new owner. These are
@@ -56,6 +60,7 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
+	geometry_shapes.clear();geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true
 
 func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
@@ -81,6 +86,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	if not kernel.refit_configuration(plan.descriptor):return false
 	weapons=plan.descriptor.weapons
+	geometry_shapes.clear();geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	game.refit_health_ratios=plan.ratios
 	return true
 
@@ -141,10 +147,16 @@ func advance(game:RefCounted,dt:float)->bool:
 func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	var points=PackedVector2Array();var muzzles=PackedVector2Array()
 	var hulls:Array=[];var screen_points=PackedVector2Array();var screen_muzzles=PackedVector2Array()
-	for actor in actor_rows:
-		var shape:Dictionary=geometry.battle_read_model.ballistic_shape(actor)
-		points.append(geometry.battle_logical_point(shape.center))
-		hulls.append(shape.hull);screen_points.append(shape.center)
+	var shapes:Array=[];var changed:bool=geometry_shapes.size()!=actor_rows.size()
+	for index in actor_rows.size():
+		var shape:Dictionary=geometry.battle_read_model.ballistic_shape(actor_rows[index])
+		shapes.append(shape)
+		if not changed and not is_same(geometry_shapes[index],shape):changed=true
+	if changed:
+		geometry_shapes=shapes
+		for shape in shapes:
+			points.append(geometry.battle_logical_point(shape.center))
+			hulls.append(shape.hull);screen_points.append(shape.center)
 	var aim:Vector2=geometry.target_point(game.player)
 	for weapon in weapons:
 		if bool(weapon.hostile):
@@ -154,10 +166,15 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 		elif weapon.entry.has("drone_id"):
 			muzzles.append(geometry.drone_launch_pose(str(weapon.entry.drone_id),aim,0).position)
 		else:muzzles.append(geometry.launch_pose(int(weapon.slot),aim,0).position)
-	for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
-	kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles)
-	kernel.input_geometry(points,muzzles)
-	kernel.input_player_point(aim)
+	if muzzles==geometry_muzzles:muzzles=PackedVector2Array()
+	else:
+		geometry_muzzles=muzzles
+		for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
+	if changed or not muzzles.is_empty():
+		kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles)
+		kernel.input_geometry(points,muzzles)
+	if geometry_player!=aim:
+		geometry_player=aim;kernel.input_player_point(aim)
 
 func consume_feedback(game:RefCounted)->void:
 	for row in kernel.take_feedback():
@@ -231,4 +248,5 @@ func commit_numeric_batch(game,batch:Dictionary)->bool:
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
+	geometry_shapes.clear();geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true

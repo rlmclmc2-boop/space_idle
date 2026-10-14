@@ -24,7 +24,7 @@ func begin(force:bool=false)->void:
 	var next_config={"base_scale":host.player_base_art_scale(),"art_scale":host.player_art_scale(),"screen_scale":host.enemy_recognition_screen_scale(),"final":host.game.is_final_encounter(),"boss":host.game.is_boss_encounter()}
 	var signature=[float(next_config.base_scale),float(next_config.art_scale),float(next_config.screen_scale),bool(next_config.final),bool(next_config.boss),host.battle_visual.hash(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap)]
 	if not force and clock==host.fx_time and signature==config_signature:return
-	if force or signature!=config_signature:shape_revision+=1
+	if force or signature!=config_signature:shape_revision+=1;bounds_revision=-1
 	config=next_config;config_signature=signature
 	var visual=host.battle_visual
 	config.player_front=host.BATTLE_VIEW_SIZE.y*float(visual.player_ship_y)-absf(float(visual.player_idle_y))-(host.SHIP_ART_CANVAS.y*float(visual.player_core_scale)/2.0+host.SHIP_ART_CANVAS.x*float(visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(visual.player_idle_rotation)))))*float(config.art_scale)
@@ -37,11 +37,11 @@ func begin(force:bool=false)->void:
 		# Appearance contracts are resolved once at the boundary, never per query.
 		if int(old.get("shape_revision",-1))!=shape_revision:
 			compile_shape(enemy,old)
-		old.position_clock=-INF
+		if host.get("fixed_enemy_layout")!=true:old.position_clock=-INF
 	for uid in records.keys():
-		if not present.has(uid):records.erase(uid)
+		if not present.has(uid):records.erase(uid);ballistic_shapes.erase(uid)
 	compiling=false
-	clock=host.fx_time;geometry_revision+=1;bounds_revision=-1
+	clock=host.fx_time
 	# Publish the complete spatial table at the boundary. Display consumers do
 	# not independently walk the same geometry dependency graph.
 	for enemy in host.game.enemies:
@@ -118,8 +118,10 @@ func position(enemy:Dictionary)->Vector2:
 	return row.position
 
 func _publish_position(enemy:Dictionary,row:Dictionary,logical:Vector2)->void:
-	row.position=host._source_enemy_render_position(enemy);row.logical=logical;row.position_clock=clock
-	geometry_revision+=1;bounds_revision=-1
+	var point:Vector2=host._source_enemy_render_position(enemy)
+	if row.get("position",Vector2.INF)!=point:
+		geometry_revision+=1;bounds_revision=-1
+	row.position=point;row.logical=logical;row.position_clock=clock
 
 func fleet_bounds()->Array[Rect2]:
 	ensure_clock()
@@ -175,17 +177,15 @@ func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
 
 func ballistic_shape(enemy:Dictionary)->Dictionary:
 	# Publish one exact-clock hull per live entity to both execution owners.
-	if ballistic_clock!=host.fx_time:
-		ballistic_clock=host.fx_time;ballistic_shapes.clear()
 	var uid:int=int(enemy.get("uid",-1))
 	var cached:Dictionary=ballistic_shapes.get(uid,{})
-	if not cached.is_empty() and is_same(cached.entity,enemy):return cached
 	var center:Vector2=host.enemy_render_position(enemy)
 	var packet:Dictionary=host.enemy_recognition_geometry(enemy)
 	var angle:float=PI+host.enemy_render_angle(enemy)
+	if not cached.is_empty() and is_same(cached.entity,enemy) and cached.center==center and cached.angle==angle and is_same(cached.packet,packet):return cached
 	var hull=PackedVector2Array()
 	for vertex in packet.inner:hull.append(center+Vector2(vertex).rotated(angle))
-	var result={"entity":enemy,"center":center,"hull":hull}
+	var result={"entity":enemy,"center":center,"hull":hull,"angle":angle,"packet":packet}
 	ballistic_shapes[uid]=result
 	return result
 

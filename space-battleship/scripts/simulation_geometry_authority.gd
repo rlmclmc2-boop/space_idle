@@ -227,7 +227,7 @@ func shot_mount(shot: Dictionary) -> int:
 
 func enemy_render_angle(enemy:Dictionary)->float:
 	var pose:=enemy_pose(enemy)
-	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
+	return float(pose.rotation)
 
 # Supplied positions stay within one synchronous solve; no value survives it.
 
@@ -813,13 +813,12 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	var uid:int=int(enemy.uid);var pose:Dictionary=enemy_pose(enemy)
 	var logical:Vector2=Vector2(enemy.x,enemy.y)
 	var cached:Dictionary=display_row_cache.get(uid,{})
-	# Reuse only this exact source pose/time/identity/logical position. Event-time
-	# and final-frame consumers share one solve; unknown custom-position queries
-	# below retain their original mathematical path.
-	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and cached.clock==fx_time and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
+	var position:Vector2=enemy_render_position(enemy)
+	# The pose owns stationary geometry. Clock changes alone do not invalidate
+	# this immutable row; entry, layout, aim anchor and authoring changes do.
+	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and is_same(cached.layout,pose.get("fixed_layout")) and cached.value.position==position and cached.player_anchor==player_anchor and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
 		display_row_reuses+=1;return cached.value
 	display_row_builds+=1
-	var position:Vector2=enemy_render_position(enemy)
 	var width:float=enemy_render_width_at_y(enemy,position.y)
 	var components:Dictionary={}
 	for component in enemy_weapon_components(enemy):
@@ -827,7 +826,7 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	var values:Dictionary={}
 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
 	var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
-	display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"appearance":pose.get("appearance"),"value":result}
+	display_row_cache[uid]={"entity":enemy,"pose":pose,"layout":pose.get("fixed_layout"),"player_anchor":player_anchor,"logical":logical,"appearance":pose.get("appearance"),"value":result}
 	return result
 func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 	var values:Dictionary={}
