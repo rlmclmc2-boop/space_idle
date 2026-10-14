@@ -9,7 +9,7 @@ class Batch extends MultiMeshInstance2D:
  var bounds:=Rect2()
  func _init()->void:
   multimesh=MultiMesh.new();multimesh.transform_format=MultiMesh.TRANSFORM_2D
-  multimesh.use_colors=true;multimesh.mesh=QuadMesh.new()
+  multimesh.use_custom_data=true;multimesh.mesh=QuadMesh.new()
   material=ShaderMaterial.new();material.shader=SHADER
  func begin(count:int)->void:
   if capacity<count:
@@ -50,7 +50,8 @@ func piece(index:int,retired:bool):
  return pieces[index]
 func sync(scene,events:Array,clock:float,budget:float)->void:
  var index:=0;var batch:Batch
- for event in events:
+ for event_index in events.size():
+  var event:Dictionary=events[event_index]
   var age:=clock-float(event.born)
   if event.kind=="retired":
    if batch!=null:batch.finish();batch=null
@@ -59,7 +60,11 @@ func sync(scene,events:Array,clock:float,budget:float)->void:
    node.point=scene.battle_point(Vector2(event.position)+Vector2(event.direction)*float(event.speed)*minf(age,coast))
    node.direction=event.direction;node.age=age;node.coast=coast;node.serial=int(event.serial);node.queue_redraw()
   else:
-   if batch==null:batch=piece(index,false);index+=1;batch.begin(events.size())
+   if batch==null:
+    batch=piece(index,false);index+=1
+    var count:=1
+    while event_index+count<events.size() and events[event_index+count].kind!="retired":count+=1
+    batch.begin(count)
    batch.append_event(scene.battle_point(Vector2(event.position)),event.direction,age,budget,bool(event.get("critical",false)),event.kind=="fire")
  if batch!=null:batch.finish()
  for i in range(index,pieces.size()):pieces[i].hide()
