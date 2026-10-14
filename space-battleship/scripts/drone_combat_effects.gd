@@ -14,6 +14,13 @@ var missile_attacks:=0
 func reset() -> void:
 	delayed.clear();disabled.clear();rebuild_bonus=0.0;rebuild_stacks=0;dodge_cooldown=0.0
 	black_hole_elapsed=0.0;black_hole_remaining=0.0;black_hole_damage=0.0;missile_attacks=0
+func restore_rebuild(g) -> void:
+	if disabled.is_empty() and rebuild_stacks==0 and rebuild_bonus==0.0:return
+	disabled.clear();rebuild_stacks=0;rebuild_bonus=0.0
+	# Only expire the encounter's reconstruction cost/bonus, never heal or reset other effects.
+	g.invalidate_stat_cache()
+	g.event.emit("hyperspace_rebuild",{"restored":true,"stacks":0})
+	for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
 func effect(g,key: String) -> Dictionary:
 	if g.profile.hyperspace.inventory.equipped.is_empty():return {}
 	return g.hyperspace_totals().legendary.get(key,{})

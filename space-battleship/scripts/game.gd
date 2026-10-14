@@ -2503,6 +2503,7 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 func begin_retreat() -> void:
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
+	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
 	guard_arrived = false
@@ -2703,6 +2704,7 @@ func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionar
 			collect(drop, true)
 
 func clear_level() -> void:
+	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,true);return
 	var previous := available_unlocks()
@@ -4495,6 +4497,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():
+		drone_combat.restore_rebuild(self)
 		if guarding_here():
 			if guard_engaged and is_final_encounter():
 				guard_engaged = false
