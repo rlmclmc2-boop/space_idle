@@ -4,17 +4,31 @@ const BEAM_SHADER=preload("res://shaders/retained_beams.gdshader")
 class Quad extends Node2D:
  var values:Array=[]
  var builds:int=0
+ var cull_bounds:=Rect2(-128,-128,2304,256)
  func _init()->void:
   material=ShaderMaterial.new();material.shader=BEAM_SHADER
  func _draw()->void:
   builds+=1
-  # Conservative CPU culling bounds; vertex shader emits the actual narrow quad.
+  # Vertex shader emits the actual quad. Publication expands CPU culling only.
   draw_rect(Rect2(-128,-128,2304,256),Color.WHITE)
  func publish(start:Vector2,end:Vector2,state:Vector4,clock:float,cue:float,link:bool)->void:
+  # Keep the former continuous-beam finite guards at the GPU boundary too.
+  if not start.is_finite() or not end.is_finite() or not state.is_finite() or not is_finite(clock) or not is_finite(cue) or state.x<=0.0:
+   hide();return
   var delta:Vector2=end-start
+  var length:float=delta.length()
+  var body:float=maxf(0.7,state.x)*lerpf(0.65,1.8,clampf(state.y,0,1))
+  var pad:float=maxf(24.0,body*3.0+10.0)
+  if not is_finite(length) or not is_finite(pad) or not is_finite(length+pad*2.0):
+   hide();return
+  show()
+  var needed:=Rect2(-pad,-pad,length+pad*2.0,pad*2.0)
+  if not cull_bounds.encloses(needed):
+   cull_bounds=cull_bounds.merge(needed)
+   RenderingServer.canvas_item_set_custom_rect(get_canvas_item(),true,cull_bounds)
   var angle:float=delta.angle() if delta.length_squared()>=0.25 else -PI/2
   position=start;rotation=angle
-  var next:Array=[delta.length(),state,Vector4(clock,cue,angle,1.0 if link else 0.0)]
+  var next:Array=[length,state,Vector4(clock,cue,angle,1.0 if link else 0.0)]
   if next==values:return
   if values.is_empty() or values[0]!=next[0]:material.set_shader_parameter("beam_length",next[0])
   if values.is_empty() or values[1]!=next[1]:material.set_shader_parameter("state",next[1])
