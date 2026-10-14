@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+BEAM_RENDER_CHECK [{"case":0,"maximum":0.152941182255745,"mean_max_channel_error":0.0000820234746896631,"pass":true,"pixels_over_2_255":322,"reference_colored_pixels":20751},{"case":1,"maximum":0.00392159819602966,"mean_max_channel_error":0.00000110701039801597,"pass":true,"pixels_over_2_255":0,"reference_colored_pixels":747},{"case":2,"maximum":0.188235282897949,"mean_max_channel_error":0.000134023034412678,"pass":true,"pixels_over_2_255":725,"reference_colored_pixels":32891},{"case":3,"maximum":0.254901975393295,"mean_max_channel_error":0.0000150044775182323,"pass":true,"pixels_over_2_255":50,"reference_colored_pixels":8504},{"case":4,"maximum":0.00392156839370728,"mean_max_channel_error":0.000051879879720218,"pass":true,"pixels_over_2_255":0,"reference_colored_pixels":20744}]

@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+MEMBERSHIP_CASE longLaser observed_rows=502
+FAIL multiple overlapping beams covered
+FAIL compaction changed beam order during coverage
+BEAM_ORDERS ["[1]"]
+PRESENTATION_MEMBERSHIP checks=1407 failures=2
