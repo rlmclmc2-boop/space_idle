@@ -1,0 +1,79 @@
+{
+  "mixed": {
+    "A": {
+      "mean_ms": 10.761949659863946,
+      "p95_ms": 17.336,
+      "frames": 735,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "beam_hit": 420,
+        "enemy_hits": 12930,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 43,
+        "equipment_stats": 202,
+        "fire": 3458,
+        "friendly_periods": 420,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "player_hits": 120,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 16.00408163265306,
+      "drawcalls_mean": 933.6897959183674,
+      "state_hash_before": "e36084e5c5c038015b389e9da506c5b6d5e028c783290ee8fec2137934b59581",
+      "state_hash_after": "1215b2484278ec55e97ab8778a0fc66f98f742bdfa2a040af5eb565eff90fb01"
+    },
+    "B": {
+      "mean_ms": 9.070026315789473,
+      "p95_ms": 15.078,
+      "frames": 874,
+      "valid": true,
+      "actual_1x": true,
+      "warm_steps": 240,
+      "steps": 480,
+      "events": {
+        "beam_hit": 420,
+        "enemy_hits": 12930,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 43,
+        "equipment_stats": 202,
+        "fire": 3458,
+        "friendly_periods": 420,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "player_hits": 120,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "floats_mean": 16.008009153318078,
+      "drawcalls_mean": 855.3409610983982,
+      "state_hash_before": "73d12849720734ed557b2cf84986f896dd4b6a1bbcc4db5232b2e52a3b57513d",
+      "state_hash_after": "5a7dccaa1caa818b72f9bb339c470084da8cfe18cde8333c25f4915ef6800daa"
+    },
+    "net_mean_gain_ms": 1.691923344074473,
+    "candidate_under_10ms": true,
+    "events_exact_equal": true,
+    "canonical_differences": {
+      "state_before": [
+        "/rng/seed"
+      ],
+      "state_after": [
+        "/rng/seed"
+      ]
+    },
+    "canonical_rng_state_exact_equal": {
+      "state_before": true,
+      "state_after": true
+    },
+    "raw_hash_equal": false,
+    "hash_note": "Raw hashes remain different: the ONLY recursive canonical differences are /rng/seed, construction metadata of the new RNG instance. Authoritative copied rng.state and every other exported field are exactly equal. No raw data was normalized."
+  }
+}

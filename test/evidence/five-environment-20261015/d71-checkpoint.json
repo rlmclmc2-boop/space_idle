@@ -1,0 +1,169 @@
+{
+  "production_source": "9075f7a4d12b1e6dd269b836f6dedb4b574fed30",
+  "baseline": "54a9fa10205c512fef324b138d70b25c53f05b77",
+  "native_build": "test/artifacts/ordered-beam-20261015",
+  "dll_sha256": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
+  "status": "Implemented, correctness and five full-frame pairs completed. Four candidate environments are under 10ms; mixed remains above 10ms. No all-five performance acceptance claim.",
+  "package_results": {
+    "mixed": {
+      "A_mean_ms": 13.562058119658118,
+      "B_mean_ms": 10.557892904953146,
+      "net_mean_gain_ms": 3.0041652147049724,
+      "candidate_under_10ms": false,
+      "valid": true,
+      "events_exact_equal": true,
+      "canonical_differences": {
+        "state_before": [
+          "/rng/seed"
+        ],
+        "state_after": [
+          "/rng/seed"
+        ]
+      },
+      "A_p95_ms": 19.394,
+      "B_p95_ms": 16.665
+    },
+    "laser": {
+      "A_mean_ms": 13.674297577854672,
+      "B_mean_ms": 8.958873015873015,
+      "net_mean_gain_ms": 4.715424561981656,
+      "candidate_under_10ms": true,
+      "valid": true,
+      "events_exact_equal": true,
+      "canonical_differences": {
+        "state_before": [
+          "/rng/seed"
+        ],
+        "state_after": [
+          "/rng/seed"
+        ]
+      },
+      "A_p95_ms": 26.268,
+      "B_p95_ms": 22.264
+    },
+    "cannon": {
+      "A_mean_ms": 6.24540639625585,
+      "B_mean_ms": 6.792593378607809,
+      "net_mean_gain_ms": -0.5471869823519588,
+      "candidate_under_10ms": true,
+      "valid": true,
+      "events_exact_equal": true,
+      "canonical_differences": {
+        "state_before": [
+          "/rng/seed"
+        ],
+        "state_after": [
+          "/rng/seed"
+        ]
+      },
+      "A_p95_ms": 8.953,
+      "B_p95_ms": 10.354
+    },
+    "missile": {
+      "A_mean_ms": 9.846746287128713,
+      "B_mean_ms": 9.01587443438914,
+      "net_mean_gain_ms": 0.8308718527395733,
+      "candidate_under_10ms": true,
+      "valid": true,
+      "events_exact_equal": true,
+      "canonical_differences": {
+        "state_before": [
+          "/rng/seed"
+        ],
+        "state_after": [
+          "/rng/seed"
+        ]
+      },
+      "A_p95_ms": 12.589,
+      "B_p95_ms": 11.551
+    },
+    "longLaser": {
+      "A_mean_ms": 11.846307578008915,
+      "B_mean_ms": 9.579280048076924,
+      "net_mean_gain_ms": 2.2670275299319904,
+      "candidate_under_10ms": true,
+      "valid": true,
+      "events_exact_equal": true,
+      "canonical_differences": {
+        "state_before": [
+          "/rng/seed"
+        ],
+        "state_after": [
+          "/rng/seed"
+        ]
+      },
+      "A_p95_ms": 21.227,
+      "B_p95_ms": 18.522
+    }
+  },
+  "perception": "One held damage card per enemy above its hull, 18px logical font, dark backplate, gold/star when the recent sum includes a critical. Individual hit history remains intact. Full mode retains type/critical groups. Actual native and GDS shield depletion impacts are visible in isolated framebuffer comparison, retain a 0.38s real flash, and expire without armor-only retrigger.",
+  "true_exits": [
+    "BattleSliceRuntime.snapshot no longer traverses every projectile dictionary for actor retention, muzzle membership, or beam muzzle updates in a supported native encounter. Legacy and old-extension fallback preserved.",
+    "RetainedBeamForeground.sync and Battlefield._process beam-power cues read the ordered canonical beam subset. Ordinary projectiles no longer enter either GDScript loop.",
+    "Beam body plus its links use one MultiMesh stream per original beam; cross-beam/fallback draw order preserved.",
+    "Damage flush no longer builds whole-field obstacle occupancy or searches ten empty-space candidates per tag.",
+    "SimulationGeometryAuthority.advance_turrets now uses the exact ordered native beam subset. Ordinary flights no longer enter logical main-beam lookup; repeat exclusion and first-main-beam target ownership remain unchanged."
+  ],
+  "owners": {
+    "combat": "One SpaceCombatKernel still owns flight order/generation, actors, hits, damage, fire cadence, RNG and drops. presentation_membership/presentation_beams are const reads of typed canonical indices; no second Game or alternate combat state.",
+    "beam_order": "Beam indices are sorted by current canonical active_index each publication, matching full projectile array after swap compaction.",
+    "geometry": "Existing SimulationGeometryAuthority remains the only spatial owner. No change to entry, aiming, drone/carrier orbit, death freeze or return receipts in this presentation batch.",
+    "tag": "Scene owns presentation-only recent sum/card; canonical per-hit raw records are still individually retained."
+  },
+  "validation": "correctness/review.json; turret-beam-paired/comparison.json; cannon-load-control/pooled.json; earlier candidates and failed fixture logs preserved. Raw samples compressed losslessly, not normalized.",
+  "known_limits": [
+    "Mixed final mean 10.558ms remains above10ms. Final cannon B/A pair regressed0.547ms with higher system CPU load; a predeclared opposite-order control and pooled results are retained. No positive cannon gain established. Other four final pair gains pass0.5ms; no statistical-confidence claim.",
+    "Raw state hashes differ solely at RNG seed construction metadata; authoritative rng.state and every other canonical field match exactly before and after. Do not report raw hash equality.",
+    "The five held-health environments are synthetic checks, not the parent's independent 20-stage real play. No packaging, no main merge/push.",
+    "Parent review: mixed candidate p95=16.665ms; near10ms mean does not mean all busy frames meet10ms. Third-row139Qa/11.1Qa cards remain close to neighboring labels/beams; preserve this readability remainder without a new layout redesign."
+  ],
+  "shield_cost": "Original cannon ON/OFF diagnostic: actual two-setter CPU inclusive mean about 0.0031ms/frame. Whole ship-viewport GPU time 1.503ms ON versus 1.540ms OFF cannot isolate shield cost; no positive removable GPU gain established.",
+  "rollback": "Baseline production remains reachable at 54a9fa10 (same production tree as 95737dbf). Intermediate candidates and both native builds preserved; no rollback executed.",
+  "cannon_control": {
+    "A": {
+      "frame_weighted_mean_ms": 6.2204433229813665,
+      "frames": 2576,
+      "runs": [
+        {
+          "run": "turret-beam-paired",
+          "mean_ms": 6.24540639625585,
+          "system_cpu_busy_mean": 13.891009706439394,
+          "valid": true
+        },
+        {
+          "run": "cannon-load-control",
+          "mean_ms": 6.195711746522411,
+          "system_cpu_busy_mean": 13.11598184752131,
+          "valid": true
+        }
+      ]
+    },
+    "B": {
+      "frame_weighted_mean_ms": 6.32847963621985,
+      "frames": 2529,
+      "runs": [
+        {
+          "run": "turret-beam-paired",
+          "mean_ms": 6.792593378607809,
+          "system_cpu_busy_mean": 19.543678977272727,
+          "valid": true
+        },
+        {
+          "run": "cannon-load-control",
+          "mean_ms": 5.923797187268689,
+          "system_cpu_busy_mean": 9.958812888500388,
+          "valid": true
+        }
+      ]
+    },
+    "net_mean_gain_ms": -0.1080363132384834,
+    "interpretation": "Retain both valid pairs. This control does not establish a positive cannon gain; no 0.5ms gain claim. System-wide CPU busy values support a load-confounding concern, not proof of its cause."
+  },
+  "source_validation_note": "9075f7a4 only replaces the logical beam-lookup input by the identity-and-order-equivalent subset verified across compaction. Final five environments confirm exact event equality and full canonical equality except RNG seed metadata. Earlier geometry791 checks were not repeated.",
+  "continued_trials": [
+    {
+      "path": "mixed-stream-trial/decision.json",
+      "status": "rejected; exact production rollback to d71b7342; retained candidate still available"
+    }
+  ]
+}

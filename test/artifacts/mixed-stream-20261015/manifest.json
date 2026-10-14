@@ -1,0 +1,11 @@
+{
+  "source": "3120617d6ea1e23264ba660dc7606766cd4d7e5d",
+  "dll_sha256": "d50b9d9befeb110141c42c0b48e42db9fd5b76727588fd51b7cf3fc499c0c80b",
+  "sources": {
+    "space-battleship\\addons\\native_battle\\src\\combat_execution_kernel.h": "db74f799b15f93f1a2a716bd966208691ed9691c3b7c1ef24651c134d58b348b",
+    "space-battleship\\addons\\native_battle\\src\\combat_presentation.h": "f4c3f1e73449d78ad4805c82af31c90d2ccab47aefe724079e8a603b1cfaa506",
+    "space-battleship\\addons\\native_battle\\src\\combat_retained_presentation.h": "aabafd5ed9f52ffc448b20de35e062d5496c278f58c6a06f71c1284c017cdf15",
+    "space-battleship\\addons\\native_battle\\src\\space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "space-battleship\\shaders\\retained_flights.gdshader": "5ef9d1e18d4ba938cb7d35e4e0df28bd949cbca01af09b6da2f15eda4a90c738"
+  }
+}

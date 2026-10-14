@@ -1,0 +1,104 @@
+{
+  "refs": {
+    "mixed_A": "d71b73427e6c740b72d6a4f9c6ecdd477a73b0d4",
+    "mixed_B": "3120617d6ea1e23264ba660dc7606766cd4d7e5d"
+  },
+  "order": [
+    "mixed_A",
+    "mixed_B"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "mixed_A",
+      "source": "d71b73427e6c740b72d6a4f9c6ecdd477a73b0d4",
+      "changed_source_hashes": {
+        "space-battleship/shaders/retained_flights.gdshader": "dc2725c9752c83f93da009414eb8c771d622f3a6097f36f04a6e965af4c94559",
+        "space-battleship/scripts/simulation_geometry_authority.gd": "69fa11791148a3c58c88991092fc692696893e657c82ba51e6c76b68b280bda7",
+        "space-battleship/scripts/native_execution_session.gd": "83c669e4fa4cf8e6a91de3c22b2e1f1274393654a33e4acae4de78bcecdb95d1",
+        "space-battleship/data/ui_text.json": "4f7c9583cb02087822132a5bdfe085993d07240898e1e9ed17bfcc0898631a7c",
+        "space-battleship/dev/toon_ship/shield.gdshader": "3d77884627cfa1132fd7d9ea3cedf509bb69f7ef4c0028f21fd3f9d9badfdbac",
+        "space-battleship/scripts/battle_slice_runtime.gd": "8744b6f2909a8a8b3215d074ee46b2cf97dfdeb524feccf4ca8dd3b570ab9d14",
+        "space-battleship/scripts/battlefield.gd": "c210b056b4b2f7dd8ccb0cf21de0504453f2e065b9d80282cabc15ec7fe9b7a5",
+        "space-battleship/scripts/main.gd": "75a534dc0ccd65d254f91f5c3b328f2daececb4306406eab53bb0d6f0ab9a48f",
+        "space-battleship/scripts/retained_beam_foreground.gd": "d8beb7edda09ac4f2ae50d4038d391feb83bb07859a6beaa155cccc69755a28e",
+        "space-battleship/shaders/retained_beams.gdshader": "d5ae20bc0ea17df9149857910fae2f1202d3ec367108c3212f043ddfa9e7614e"
+      },
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\mixed\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792010687.1712744,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
+      "exit": 0,
+      "completed_unix": 1792010707.6159449,
+      "json_sha256": "506a685552ccecca1c9581cbba77f6933e452c604a454b92b66f59dbd8910f4a",
+      "png_sha256": "cc1a859b60f7ba8005567a24aec7e6ea685fbd19c298044a89781fe99e43467b",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "mixed_B",
+      "source": "3120617d6ea1e23264ba660dc7606766cd4d7e5d",
+      "changed_source_hashes": {
+        "space-battleship/shaders/retained_flights.gdshader": "6dc167828f56f9432209d6c254970c5c1174f2727c35cdb5986fcba1f5cc0cab",
+        "space-battleship/scripts/simulation_geometry_authority.gd": "69fa11791148a3c58c88991092fc692696893e657c82ba51e6c76b68b280bda7",
+        "space-battleship/scripts/native_execution_session.gd": "83c669e4fa4cf8e6a91de3c22b2e1f1274393654a33e4acae4de78bcecdb95d1",
+        "space-battleship/data/ui_text.json": "4f7c9583cb02087822132a5bdfe085993d07240898e1e9ed17bfcc0898631a7c",
+        "space-battleship/dev/toon_ship/shield.gdshader": "3d77884627cfa1132fd7d9ea3cedf509bb69f7ef4c0028f21fd3f9d9badfdbac",
+        "space-battleship/scripts/battle_slice_runtime.gd": "8744b6f2909a8a8b3215d074ee46b2cf97dfdeb524feccf4ca8dd3b570ab9d14",
+        "space-battleship/scripts/battlefield.gd": "c210b056b4b2f7dd8ccb0cf21de0504453f2e065b9d80282cabc15ec7fe9b7a5",
+        "space-battleship/scripts/main.gd": "75a534dc0ccd65d254f91f5c3b328f2daececb4306406eab53bb0d6f0ab9a48f",
+        "space-battleship/scripts/retained_beam_foreground.gd": "d8beb7edda09ac4f2ae50d4038d391feb83bb07859a6beaa155cccc69755a28e",
+        "space-battleship/shaders/retained_beams.gdshader": "d5ae20bc0ea17df9149857910fae2f1202d3ec367108c3212f043ddfa9e7614e"
+      },
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\mixed\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792010708.1711786,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "d50b9d9befeb110141c42c0b48e42db9fd5b76727588fd51b7cf3fc499c0c80b",
+      "exit": 0,
+      "completed_unix": 1792010728.6525354,
+      "json_sha256": "e5eda7effce0b3dbb07cb19977a455ce14b757be52f69ae89d46586cbfc3cef1",
+      "png_sha256": "1e7a4f41c9c510ec4dffa5e9d0c637b1227862db370533424233593db5f1ca09",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {},
+  "dll_sha256": {
+    "mixed_A": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
+    "mixed_B": "d50b9d9befeb110141c42c0b48e42db9fd5b76727588fd51b7cf3fc499c0c80b"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "1c5d95c4f61afee29cc5f149f75ed7725eb1ca31707350e6056dc9bdd08eff2b",
+  "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+  "probe_policy": {
+    "whole_state_reads_per_run": 2,
+    "counter_reads_per_run": 2,
+    "per_step_exports": 0,
+    "per_step_scans": 0,
+    "counter_increment_cost_included": true
+  },
+  "scope": "Incremental A/B trial in the existing mixed environment: A=d71b7342 with ordered-beam DLL, B=3120617d with mixed-stream DLL. Full visuals, original fixture, real1x60Hz, unchanged full-wall timing. One additional presentation metrics read after the timed sample. Rejected; no visual-equivalence acceptance or five-environment rollout."
+}

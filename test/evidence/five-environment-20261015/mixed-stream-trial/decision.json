@@ -1,0 +1,51 @@
+{
+  "decision": "rejected and production source restored exactly to d71b7342",
+  "reason": "Only~51 draw calls removed, while stream triangle/color/UV upload reached~3.2MB per streamed frame. Whole-frame mean regressed3.532ms and predraw grew2.551ms. Do not repeat this flattening approach. No additional correctness or five-environment reruns needed for a rejected trial.",
+  "rows": {
+    "mixed_A": {
+      "mean_ms": 10.951269709543569,
+      "p95_ms": 17.424,
+      "valid": true,
+      "drawcalls": 933.9668049792531,
+      "presentation": {
+        "advances": 1108,
+        "births": 12026,
+        "draws": 1108,
+        "live": 354,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 133922688
+      },
+      "wall_phase_means": {
+        "main": 4.811557399723375,
+        "predraw": 3.087199170124481,
+        "draw": 3.0063278008298755
+      }
+    },
+    "mixed_B": {
+      "mean_ms": 14.483133699633699,
+      "p95_ms": 19.981,
+      "valid": true,
+      "drawcalls": 882.6080586080586,
+      "presentation": {
+        "advances": 820,
+        "births": 12026,
+        "draws": 820,
+        "live": 354,
+        "mixed_stream_draws": 748,
+        "mixed_stream_upload_bytes": 2382984288,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 838656
+      },
+      "wall_phase_means": {
+        "main": 5.89214652014652,
+        "predraw": 5.6379212454212455,
+        "draw": 2.8950641025641026
+      }
+    }
+  },
+  "rollback_commit": "e10ae04b93b533821055d0249583eb3af00f6352"
+}

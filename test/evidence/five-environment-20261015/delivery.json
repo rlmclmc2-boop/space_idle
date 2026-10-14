@@ -1,15 +1,19 @@
 {
-  "production_source": "9075f7a4d12b1e6dd269b836f6dedb4b574fed30",
-  "baseline": "54a9fa10205c512fef324b138d70b25c53f05b77",
+  "production_source": "34760647624a89674e54115e3cf976e059b680ef",
+  "incremental_baseline": "d71b73427e6c740b72d6a4f9c6ecdd477a73b0d4",
   "native_build": "test/artifacts/ordered-beam-20261015",
   "dll_sha256": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
-  "status": "Implemented, correctness and five full-frame pairs completed. Four candidate environments are under 10ms; mixed remains above 10ms. No all-five performance acceptance claim.",
+  "status": "All five selected fixture means are below10ms. Mixed9.513ms, p9516.022ms: busy frames do not all meet10ms. Final incremental mixed gain1.008ms and missile gain2.888ms exceed0.5ms. No main acceptance or statistical-confidence claim.",
   "package_results": {
     "mixed": {
-      "A_mean_ms": 13.562058119658118,
-      "B_mean_ms": 10.557892904953146,
-      "net_mean_gain_ms": 3.0041652147049724,
-      "candidate_under_10ms": false,
+      "evidence": "missile-event-order-pairs",
+      "measured_B_source": "34760647624a89674e54115e3cf976e059b680ef",
+      "A_mean_ms": 10.521094289508632,
+      "B_mean_ms": 9.513135491606715,
+      "A_p95_ms": 16.853,
+      "B_p95_ms": 16.022,
+      "net_mean_gain_ms": 1.0079587979019173,
+      "candidate_under_10ms": true,
       "valid": true,
       "events_exact_equal": true,
       "canonical_differences": {
@@ -22,9 +26,13 @@
       }
     },
     "laser": {
-      "A_mean_ms": 13.674297577854672,
-      "B_mean_ms": 8.958873015873015,
-      "net_mean_gain_ms": 4.715424561981656,
+      "evidence": "missile-event-other-pairs",
+      "measured_B_source": "bb74382d4de314d5107dd8f99df991e51db23691",
+      "A_mean_ms": 8.682645764576458,
+      "B_mean_ms": 9.057207807118255,
+      "A_p95_ms": 21.443,
+      "B_p95_ms": 22.803,
+      "net_mean_gain_ms": -0.3745620425417968,
       "candidate_under_10ms": true,
       "valid": true,
       "events_exact_equal": true,
@@ -35,12 +43,17 @@
         "state_after": [
           "/rng/seed"
         ]
-      }
+      },
+      "reuse_note": "bb74382d pair reused. This fixture equips ordinary and drone weapons only from its named family (combat_stress_fixture.gd33-38); no missile effects enter the later custom-data/order code. No repeated unrelated run. Small observed regressions retained, no positive gain claim."
     },
     "cannon": {
-      "A_mean_ms": 6.24540639625585,
-      "B_mean_ms": 6.792593378607809,
-      "net_mean_gain_ms": -0.5471869823519588,
+      "evidence": "missile-event-other-pairs",
+      "measured_B_source": "bb74382d4de314d5107dd8f99df991e51db23691",
+      "A_mean_ms": 5.895793966151582,
+      "B_mean_ms": 5.971697986577181,
+      "A_p95_ms": 8.313,
+      "B_p95_ms": 8.462,
+      "net_mean_gain_ms": -0.07590402042559852,
       "candidate_under_10ms": true,
       "valid": true,
       "events_exact_equal": true,
@@ -51,12 +64,17 @@
         "state_after": [
           "/rng/seed"
         ]
-      }
+      },
+      "reuse_note": "bb74382d pair reused. This fixture equips ordinary and drone weapons only from its named family (combat_stress_fixture.gd33-38); no missile effects enter the later custom-data/order code. No repeated unrelated run. Small observed regressions retained, no positive gain claim."
     },
     "missile": {
-      "A_mean_ms": 9.846746287128713,
-      "B_mean_ms": 9.01587443438914,
-      "net_mean_gain_ms": 0.8308718527395733,
+      "evidence": "missile-event-order-pairs",
+      "measured_B_source": "34760647624a89674e54115e3cf976e059b680ef",
+      "A_mean_ms": 9.465168646080759,
+      "B_mean_ms": 6.577355904211395,
+      "A_p95_ms": 12.314,
+      "B_p95_ms": 9.248,
+      "net_mean_gain_ms": 2.8878127418693635,
       "candidate_under_10ms": true,
       "valid": true,
       "events_exact_equal": true,
@@ -70,9 +88,13 @@
       }
     },
     "longLaser": {
-      "A_mean_ms": 11.846307578008915,
-      "B_mean_ms": 9.579280048076924,
-      "net_mean_gain_ms": 2.2670275299319904,
+      "evidence": "missile-event-other-pairs",
+      "measured_B_source": "bb74382d4de314d5107dd8f99df991e51db23691",
+      "A_mean_ms": 9.470442330558859,
+      "B_mean_ms": 9.808389642416769,
+      "A_p95_ms": 18.074,
+      "B_p95_ms": 19.007,
+      "net_mean_gain_ms": -0.33794731185790994,
       "candidate_under_10ms": true,
       "valid": true,
       "events_exact_equal": true,
@@ -83,70 +105,36 @@
         "state_after": [
           "/rng/seed"
         ]
-      }
+      },
+      "reuse_note": "bb74382d pair reused. This fixture equips ordinary and drone weapons only from its named family (combat_stress_fixture.gd33-38); no missile effects enter the later custom-data/order code. No repeated unrelated run. Small observed regressions retained, no positive gain claim."
     }
   },
-  "perception": "One held damage card per enemy above its hull, 18px logical font, dark backplate, gold/star when the recent sum includes a critical. Individual hit history remains intact. Full mode retains type/critical groups. Actual native and GDS shield depletion impacts are visible in isolated framebuffer comparison, retain a 0.38s real flash, and expire without armor-only retrigger.",
+  "change": "Only the previously scripted missile launch/contact painter becomes one ordered MultiMesh run, with identical event count, positions, direction, age, brightness budget, critical scaling and smoke/fire/spark layers. Retired casings retain their original flight/breakup painter and divide draw runs. Existing native GPU contacts, projectile bodies, beam rendering and gameplay are unchanged.",
   "true_exits": [
     "BattleSliceRuntime.snapshot no longer traverses every projectile dictionary for actor retention, muzzle membership, or beam muzzle updates in a supported native encounter. Legacy and old-extension fallback preserved.",
     "RetainedBeamForeground.sync and Battlefield._process beam-power cues read the ordered canonical beam subset. Ordinary projectiles no longer enter either GDScript loop.",
     "Beam body plus its links use one MultiMesh stream per original beam; cross-beam/fallback draw order preserved.",
     "Damage flush no longer builds whole-field obstacle occupancy or searches ten empty-space candidates per tag.",
-    "SimulationGeometryAuthority.advance_turrets now uses the exact ordered native beam subset. Ordinary flights no longer enter logical main-beam lookup; repeat exclusion and first-main-beam target ownership remain unchanged."
+    "SimulationGeometryAuthority.advance_turrets now uses the exact ordered native beam subset. Ordinary flights no longer enter logical main-beam lookup; repeat exclusion and first-main-beam target ownership remain unchanged.",
+    "Per-frame MissileVFX.flash/impact draw_line/draw_circle submissions leave the script path. GPU instances evaluate those shapes and fade curves; no events or visual layers are removed."
   ],
   "owners": {
     "combat": "One SpaceCombatKernel still owns flight order/generation, actors, hits, damage, fire cadence, RNG and drops. presentation_membership/presentation_beams are const reads of typed canonical indices; no second Game or alternate combat state.",
     "beam_order": "Beam indices are sorted by current canonical active_index each publication, matching full projectile array after swap compaction.",
     "geometry": "Existing SimulationGeometryAuthority remains the only spatial owner. No change to entry, aiming, drone/carrier orbit, death freeze or return receipts in this presentation batch.",
-    "tag": "Scene owns presentation-only recent sum/card; canonical per-hit raw records are still individually retained."
+    "tag": "Scene owns presentation-only recent sum/card; canonical per-hit raw records are still individually retained.",
+    "missile_events": "The existing scene missile_events array and fx_time remain sole event/time owners. Renderer owns only GPU buffers and numeric casing presentation. Each sync updates instances; empty or disabled runs hide; deferred replacements reorder reused nodes too. No event subscriptions, second Game, or gameplay RNG."
   },
-  "validation": "correctness/review.json; turret-beam-paired/comparison.json; cannon-load-control/pooled.json; earlier candidates and failed fixture logs preserved. Raw samples compressed losslessly, not normalized.",
+  "validation": "missile-event-correctness/receipt.json (16 final visual/order/lifecycle/modulation cases); missile-event-selected.json and every raw pair retained. Original correctness/review.json and geometry791 checks reused. Before/after events exact and authoritative RNG state plus every canonical field exact except construction /rng/seed metadata; raw hashes not equal.",
   "known_limits": [
-    "Mixed final mean 10.558ms remains above10ms. Final cannon B/A pair regressed0.547ms with higher system CPU load; a predeclared opposite-order control and pooled results are retained. No positive cannon gain established. Other four final pair gains pass0.5ms; no statistical-confidence claim.",
-    "Raw state hashes differ solely at RNG seed construction metadata; authoritative rng.state and every other canonical field match exactly before and after. Do not report raw hash equality.",
-    "The five held-health environments are synthetic checks, not the parent's independent 20-stage real play. No packaging, no main merge/push."
+    "P95 remains above10ms for mixed, laser and longLaser; means are not per-frame guarantees.",
+    "Laser/cannon/longLaser incremental pairs show small regressions; no positive gain is established for them. Prior cannon pooled regression0.108ms is retained in d71-checkpoint.json.",
+    "Procedural raster edges differ from legacy polygons/AA within recorded pixel tolerances; not pixel-identical.",
+    "Third-row139Qa/11.1Qa labels remain close to neighboring labels/beams; no layout redesign performed.",
+    "Synthetic held-health five-environment evidence is not independent natural progression or parent20-stage play. No packaging, no main merge/push."
   ],
-  "shield_cost": "Original cannon ON/OFF diagnostic: actual two-setter CPU inclusive mean about 0.0031ms/frame. Whole ship-viewport GPU time 1.503ms ON versus 1.540ms OFF cannot isolate shield cost; no positive removable GPU gain established.",
-  "rollback": "Baseline production remains reachable at 54a9fa10 (same production tree as 95737dbf). Intermediate candidates and both native builds preserved; no rollback executed.",
-  "cannon_control": {
-    "A": {
-      "frame_weighted_mean_ms": 6.2204433229813665,
-      "frames": 2576,
-      "runs": [
-        {
-          "run": "turret-beam-paired",
-          "mean_ms": 6.24540639625585,
-          "system_cpu_busy_mean": 13.891009706439394,
-          "valid": true
-        },
-        {
-          "run": "cannon-load-control",
-          "mean_ms": 6.195711746522411,
-          "system_cpu_busy_mean": 13.11598184752131,
-          "valid": true
-        }
-      ]
-    },
-    "B": {
-      "frame_weighted_mean_ms": 6.32847963621985,
-      "frames": 2529,
-      "runs": [
-        {
-          "run": "turret-beam-paired",
-          "mean_ms": 6.792593378607809,
-          "system_cpu_busy_mean": 19.543678977272727,
-          "valid": true
-        },
-        {
-          "run": "cannon-load-control",
-          "mean_ms": 5.923797187268689,
-          "system_cpu_busy_mean": 9.958812888500388,
-          "valid": true
-        }
-      ]
-    },
-    "net_mean_gain_ms": -0.1080363132384834,
-    "interpretation": "Retain both valid pairs. This control does not establish a positive cannon gain; no 0.5ms gain claim. System-wide CPU busy values support a load-confounding concern, not proof of its cause."
-  },
-  "source_validation_note": "9075f7a4 only replaces the logical beam-lookup input by the identity-and-order-equivalent subset verified across compaction. Final five environments confirm exact event equality and full canonical equality except RNG seed metadata. Earlier geometry791 checks were not repeated."
+  "rejected_trial": "mixed-stream-trial/decision.json: flattened mixed flight stream regressed whole-frame mean3.532ms, rolled back at e10ae04b. Rejected DLL/manifest/log preserved; do not use native-stable/bin output (rejected build).",
+  "runtime_note": "All tests explicitly copied the accepted ordered-beam artifact DLL. The pre-existing ignored workspace space-battleship/bin/space_native.dll was not used or overwritten; its older hash97c1122c07ddb459ee7b4dc420455188c8a2d8507ca2653bc84b26cd048837ca is not the tested artifact.",
+  "previous_checkpoint": "d71-checkpoint.json",
+  "rollback": "d71b7342 is the accepted prior candidate; 54a9fa10 is original baseline. New production commits bb74382d,19ffa165,34760647. Reverting those three restores d71 production. Rejected stream commits96eb2742/3120617d were already reversed by e10ae04b."
 }
