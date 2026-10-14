@@ -1,0 +1,119 @@
+{
+  "selected_for_parent_review_only": "Persistent display record lifecycle instead of full per-render snapshot reconstruction. Largest measured still-unimplemented snapshot scope; not approved for implementation or a demonstrated net win.",
+  "production_implementation": false,
+  "baseline_drift_ms": 4.1349970439189185,
+  "candidates": [
+    {
+      "direction": "display snapshot lifecycle",
+      "entrypoints": [
+        "battle_slice_runtime.gd:snapshot",
+        "simulation_geometry_authority.gd:display_frame/display_enemy",
+        "simulation_geometry_view.gd:apply"
+      ],
+      "evidence": {
+        "snapshot_exclusive_ms_per_frame": 1.2783416370106762,
+        "display_frame_exclusive_ms_per_frame": 1.1704163701067616,
+        "gross_scope_ms_per_frame": 2.448758007117438,
+        "D_retained_snapshot_ms_per_frame": 0.8771062500000001
+      },
+      "loops": "Each rendered snapshot rebuilds retained enemy dictionary, scans floats/pending, scans projectiles for target/source retention, scans them again for active serials, checks birth/death references, packs all enemy/fleet records, duplicates rows in view.apply, and scans projectiles for beam muzzles. Existing samples average about364 active projectiles; loop/retention count is not a measured allocation cost.",
+      "old_path_exit": "Replace per-render reconstruction of retained/active-serial sets and redundant view row copying. Keep canonical geometry, final numeric pose, dead/frozen references, and current beam muzzle semantics.",
+      "minimal_proposal": "Use existing native birth/retirement feedback internally to maintain source/target reference counts and persistent display records. Commit only required final values at current display boundary. No public event suppression, no lower display/logic cadence, no new authoritative gameplay state.",
+      "new_costs": [
+        "Acquire/release per flight and floating-label lifetime; target changes/retargeting/chain links; generation-safe entity identity.",
+        "Native/legacy handoff and readmission must reconstruct identical retained membership; death-frame freeze and lingering shots/labels must retain old entity until last reference.",
+        "Numeric component/recognition/fleet computations needed for full-quality rendering remain. Additional maintenance, synchronization and handoff work must be measured."
+      ],
+      "net_space": "Unknown;2.448ms is the whole measured scope, not savings. D leaves0.877ms/frame of lifecycle work and omits useful display computation. Cannot justify net >1ms plus4.135ms whole-frame drift from current evidence. Stop implementation pending parent review."
+    },
+    {
+      "direction": "geometry input protocol",
+      "entrypoints": [
+        "native_execution_session.gd:prepare_geometry",
+        "battle_read_model.gd:ballistic_shape"
+      ],
+      "evidence_ms_per_frame": 2.055665480427046,
+      "old_path_exit": "Only repeated container/coordinate publication could be replaced; one authoritative hull/real muzzle update per60Hz step remains.",
+      "new_costs": "Fixed buffers need descriptor generation, ship/weapon membership, scaling invalidation, and handoff synchronization; moving-hull narrow phase and muzzle motion remain.",
+      "net_space": "Unknown fraction of2.056ms, below observed drift even if eliminated. Existing hull dedup/inverse-map direction is closed; no renamed cache experiment proposed."
+    },
+    {
+      "direction": "native residence/readmission",
+      "entrypoints": [
+        "Game.admit_native_compiled_execution",
+        "NativeExecutionSession.handoff_to_legacy"
+      ],
+      "evidence": [
+        {
+          "game": 3.11999999999999,
+          "group": 1,
+          "success": true,
+          "us": 2617
+        },
+        {
+          "game": 10.6533333333334,
+          "group": 2,
+          "success": true,
+          "us": 2722
+        },
+        {
+          "game": 18.1866666666669,
+          "group": 3,
+          "success": true,
+          "us": 2614
+        },
+        {
+          "game": 7.65333333333331,
+          "reason": "wave_complete",
+          "success": true,
+          "us": 362
+        },
+        {
+          "game": 15.186666666667,
+          "reason": "wave_complete",
+          "success": true,
+          "us": 448
+        }
+      ],
+      "amortized_ms_per_frame": 0.008282608695652173,
+      "old_path_exit": "Replacing cold native transitions would require whole-encounter ownership across ordinary wave travel and new enemy descriptor membership.",
+      "new_costs": "Carry old flights/attack snapshots across waves, update targets/drop authority and reconstruct next encounter safely.",
+      "net_space": "Three admissions plus two transfers total8.763ms over1058 frames,0.00828ms/frame. No >1ms steady opportunity demonstrated. Prior galaxy refit direction stays closed."
+    },
+    {
+      "direction": "battle node/render submission",
+      "evidence": {
+        "ship_apply_nodes_ms_per_frame": 0.09591814946619218,
+        "battlefield_process_exclusive_ms_per_frame": 0.39154448398576513,
+        "foreground_painter_ms_per_frame": 3.442170818505338,
+        "battle_painter_ms_per_frame": 1.7942170818505339,
+        "root_render": {
+          "cpu_ms": 2.9040391487583146,
+          "gpu_ms": 0.41077935812312094
+        },
+        "ship_render": {
+          "cpu_ms": 0.8039857649718315,
+          "gpu_ms": 2.8083024826762517
+        }
+      },
+      "old_path_exit": "A full-quality replacement would need to eliminate original command construction/submission while reproducing ordered effects/occlusion exactly, not merely hide layers.",
+      "new_costs": "Persistent command ownership must handle topology/lifetime/transforms/transparency/material changes. Existing ordered native triangle batching and closed beam drawing work already apply.",
+      "net_space": "A->B establishes a large dependency cost, not a new implementable algorithm. Node-write-only scope is small. No distinct >1ms full-quality candidate beyond closed drawing directions established; render-window waiting remains unsplit."
+    },
+    {
+      "direction": "native kernel algorithm",
+      "entrypoints": [
+        "combat_execution_kernel.h:advance/segment/targets"
+      ],
+      "evidence_ms_per_frame": 0.7929110320284698,
+      "old_path_exit": "Would replace target sort or active-flight iteration only, preserving exact scheduler order and hit rules.",
+      "new_costs": "Target/beam occupancy indexes need shield-break/death/repeat/retarget invalidation.",
+      "net_space": "Entire current kernel advance0.793ms/frame; individual loops cannot establish >1ms here. Do not implement."
+    }
+  ],
+  "open_evidence_gaps": [
+    "Snapshot scope not split into mandatory numerical display solves versus removable collection/copy/lifecycle rebuilding; gross scope cannot be promised as net savings.",
+    "Render submission/GPU/wait window4.117ms inPA is not reliably separated. B/C/D are frame-capped; high waiting fractions are not residual CPU hotspots.",
+    "No new large implementation or further diagnostic sweep initiated. These findings do not assert every uninvestigated direction is exhausted."
+  ]
+}

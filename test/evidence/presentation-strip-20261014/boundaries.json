@@ -1,5 +1,5 @@
 {
-  "status": "Scripts for parent review; raw measurements and final attribution pending. No production edit.",
+  "status": "Four-stage clean and detailed diagnostics plus finite natural sample completed. See comparison.json, raw gzipped JSON, and candidate-review.json. No production edits.",
   "source_main": "346c67f8856dac075cc604e21c41fe96220f78df",
   "dll_sha256": "a7ec883a52d4ec070e4a9da9f2057150f013f7eb51ed524b10aa5a003200b652",
   "B": [
