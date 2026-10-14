@@ -86,14 +86,6 @@ class SpaceCombatPresentation : public RefCounted {
     void draw_retained(Object *surface,Vector2 offset);
     void prepare_retained_mesh();
     void flush_retained(RID canvas);
-    // Same ordered triangles, one stream across mixed missile/pulse boundaries.
-    std::array<std::vector<Vector2>,4> retained_templates;
-    std::array<std::vector<Color>,4> retained_template_colors;
-    std::vector<Vector2> retained_stream_uv;
-    PackedVector2Array packed_stream_uv;
-    int64_t mixed_stream_draws=0,mixed_stream_upload_bytes=0;
-    void draw_retained_stream(Object *surface,Vector2 offset,RID canvas);
-    void flush_retained_stream(RID canvas);
 
     std::vector<Vector2> vertices;
     std::vector<Color> colors;
@@ -158,7 +150,7 @@ public:
         for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
         retained_upload.clear();
     }
-    Dictionary retained_metrics() const {Dictionary d;d["old_advance"]=old_advances;d["old_prepare"]=old_prepares;d["old_draw"]=old_draws;d["advances"]=retained_advances;d["births"]=retained_births;d["draws"]=retained_draws;d["upload_bytes"]=retained_upload_bytes;d["live"]=retained_frame.is_valid()?retained_frame->size():0;d["mixed_stream_draws"]=mixed_stream_draws;d["mixed_stream_upload_bytes"]=mixed_stream_upload_bytes;return d;}
+    Dictionary retained_metrics() const {Dictionary d;d["old_advance"]=old_advances;d["old_prepare"]=old_prepares;d["old_draw"]=old_draws;d["advances"]=retained_advances;d["births"]=retained_births;d["draws"]=retained_draws;d["upload_bytes"]=retained_upload_bytes;d["live"]=retained_frame.is_valid()?retained_frame->size():0;return d;}
     Vector2 battle_logical_point(Vector2 point) const { return inverse_battle_point(point); }
     double rotated_outlines_min_y(const Array &outlines,double angle) const {
         // Same per-vertex float rotation as Vector2.rotated in the script solver.
