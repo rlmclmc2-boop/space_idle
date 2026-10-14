@@ -144,7 +144,7 @@ try {
         New-Item -ItemType Directory -Force -Path (Join-Path $run ('user/' + $folder)) | Out-Null
     }
     foreach ($file in @('project.godot','main.tscn')) { Copy-Item -LiteralPath (Join-Path $project $file) -Destination $staging }
-    foreach ($folder in @('scripts','assets')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
+    foreach ($folder in @('scripts','assets','shaders')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
     New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
     foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json','hyperspace_config.json','hyperspace_entity_schema.json','hyperspace_visuals.json','space_enemy_candidates.json','space_enemy_reward_catalog.json','space_enemy_reward_recipes.json','space_enemy_reward_sources.json','space_enemy_routes.json')) {
         Copy-Item -LiteralPath (Join-Path $project "data/$dataFile") -Destination (Join-Path $staging 'data')
