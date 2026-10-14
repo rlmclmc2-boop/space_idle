@@ -163,12 +163,14 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	var fleet_changed:bool=topology_changed or fleet_geometry_revision!=geometry.fleet_geometry_revision
 	var aim:Vector2=geometry.target_point(game.player)
 	if not targets_changed and not fleet_changed and geometry_player==aim:return
-	var points=PackedVector2Array();var hulls:Array=[];var screen_points=PackedVector2Array()
+	var points=PackedVector2Array();var hulls:Array=[];var screen_points=PackedVector2Array();var stationary=PackedByteArray()
 	if targets_changed:
 		for actor in actor_rows:
 			var shape:Dictionary=geometry.battle_read_model.ballistic_shape(actor)
 			points.append(geometry.battle_logical_point(shape.center))
 			hulls.append(shape.hull);screen_points.append(shape.center)
+			var pose:Dictionary=geometry.enemy_pose(actor)
+			stationary.append(1 if geometry.fx_time>=float(pose.born)+float(pose.duration) and Vector2(actor.x,actor.y)==pose.logical_position else 0)
 	var muzzles_changed:bool=false
 	if targets_changed or geometry_player!=aim:
 		for index in hostile_weapon_indices:
@@ -198,7 +200,7 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 		muzzles=geometry_muzzles
 		for muzzle in muzzles:screen_muzzles.append(geometry.battle_point(muzzle))
 	if targets_changed or muzzles_changed:
-		kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles)
+		kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles,stationary)
 		kernel.input_geometry(points,muzzles)
 	target_geometry_revision=geometry.target_geometry_revision;fleet_geometry_revision=geometry.fleet_geometry_revision
 	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)

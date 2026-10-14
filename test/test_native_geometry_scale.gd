@@ -124,7 +124,7 @@ class GeometrySink extends RefCounted:
 	var screen_muzzles:=PackedVector2Array()
 	var player:=Vector2.ZERO
 	var submissions:=0
-	func input_ballistic_geometry(h:Array,p:PackedVector2Array,m:PackedVector2Array)->void:
+	func input_ballistic_geometry(h:Array,p:PackedVector2Array,m:PackedVector2Array,_stationary:PackedByteArray=PackedByteArray())->void:
 		submissions+=1
 		if not h.is_empty():hulls=h.duplicate(true);centers=p.duplicate()
 		if not m.is_empty():screen_muzzles=m.duplicate()

@@ -26,6 +26,8 @@ class SpaceCombatKernel : public RefCounted {
         int armour_type = 0, shield_type = 0, slot = 0;
         Vector2 logical, point, screen_point;
         PackedVector2Array collision_hull;
+        uint64_t geometry_revision = 0;
+        bool stationary_geometry = false;
         Dictionary view;
         std::vector<DropRule> drops;
         int jewel_rolls = 0;
@@ -96,6 +98,10 @@ class SpaceCombatKernel : public RefCounted {
                ramp = 1, maximum = 1;
         int ticks = 0;
         Vector2 aim, logical_aim;
+        bool fixed_ray = false;
+        Vector2 ray_origin, ray_step, launch_point;
+        uint64_t contact_revision = 0;
+        double contact_distance = -1;
         Ref<SpaceMotionLease> lease;
         Dictionary view;
     };
@@ -181,6 +187,7 @@ class SpaceCombatKernel : public RefCounted {
            cruise_at = 0.65, lifetime = 4.5, orphan_lifetime = 30, brake_range = 120, brake_angle = 0.3,
            min_speed = 60, brake_factor = 0.7, hit_radius = 5, chain_speed = 720;
     uint64_t root_attacks = 0, hit_count = 0, dead_count = 0, stale_rejections = 0, physics_visits = 0;
+    uint64_t ballistic_checks = 0, ballistic_skips = 0, ballistic_ray_queries = 0;
     Actor *resolve(Handle h) {
         return h.index < actors.size() && actors[h.index].generation == h.generation && actors[h.index].live
                    ? &actors[h.index]
@@ -682,6 +689,9 @@ class SpaceCombatKernel : public RefCounted {
             f.view["ballistic_target_origin"] = aim;
             f.view["fixed_screen_origin"] = w.screen_muzzle;
             f.view["fixed_screen_step"] = (t->screen_point - w.screen_muzzle) / std::max(0.001, distance(from, aim));
+            f.fixed_ray = true; f.ray_origin = w.screen_muzzle;
+            f.ray_step = f.view["fixed_screen_step"]; f.launch_point = from;
+            if (!f.beam && t->stationary_geometry) refresh_ray_contact(f, *t);
         }
         Dictionary context;
         context["source_id"] = w.hostile ? String("enemy:") + String::num_int64(actors[w.source.index].uid)
@@ -1406,12 +1416,24 @@ class SpaceCombatKernel : public RefCounted {
                         m.direction = unit(delta);
                         impact = distance(position(m), aim) <= m.speed * dt;
                     } else {
-                        if (!f.hostile && t && f.view.has("fixed_screen_step")) {
-                            Vector2 step = f.view["fixed_screen_step"], origin = f.view["fixed_screen_origin"];
-                            Vector2 start = origin + step * double((position(m)-Vector2(f.view["launch_point"])).dot(m.direction));
-                            double ratio = hull_contact(start, step * m.speed * dt, t->collision_hull);
-                            impact = ratio <= 1.0;
-                            if (impact) aim = position(m) + m.direction * m.speed * dt * ratio;
+                        if (!f.hostile && t && f.fixed_ray) {
+                            const double progress = (position(m) - f.launch_point).dot(m.direction);
+                            if (t->stationary_geometry && f.contact_revision != t->geometry_revision)
+                                refresh_ray_contact(f, *t);
+                            // The birth ray is a conservative far-contact gate, not a future hit.
+                            // Keep the exact segment predicate at contact, preserving float rounding,
+                            // impact coordinates, born_step and active-order damage settlement.
+                            const double margin = std::max(1.0, std::abs(f.contact_distance) * 1e-4);
+                            if (t->stationary_geometry && f.contact_distance >= 0 &&
+                                progress + m.speed * dt < f.contact_distance - margin) {
+                                ++ballistic_skips;
+                            } else {
+                                ++ballistic_checks;
+                                Vector2 start = f.ray_origin + f.ray_step * progress;
+                                double ratio = hull_contact(start, f.ray_step * m.speed * dt, t->collision_hull);
+                                impact = ratio <= 1.0;
+                                if (impact) aim = position(m) + m.direction * m.speed * dt * ratio;
+                            }
                         } else {
                             double along = delta.dot(m.direction);
                             impact = along >= 0 && along <= m.speed * dt &&
@@ -1453,7 +1475,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
                              &SpaceCombatKernel::input_geometry);
-        ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles"), &SpaceCombatKernel::input_ballistic_geometry);
+        ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles", "stationary"), &SpaceCombatKernel::input_ballistic_geometry, DEFVAL(PackedByteArray()));
         ClassDB::bind_method(D_METHOD("advance", "seconds"), &SpaceCombatKernel::advance);
         ClassDB::bind_method(D_METHOD("can_advance", "seconds"), &SpaceCombatKernel::can_advance);
         ClassDB::bind_method(D_METHOD("can_update_configuration", "descriptor"), &SpaceCombatKernel::can_update_configuration);
@@ -1802,6 +1824,7 @@ class SpaceCombatKernel : public RefCounted {
         retain_configuration_bounds(true);
         publish_player();
         root_attacks = hit_count = dead_count = stale_rejections = physics_visits = 0;
+        ballistic_checks = ballistic_skips = ballistic_ray_queries = 0;
         return admitted;
     }
     bool can_update_configuration(Dictionary d) const {
@@ -1971,13 +1994,39 @@ class SpaceCombatKernel : public RefCounted {
             values.push_back(actors[h.index].view);
         return values;
     }
-    void input_ballistic_geometry(Array hulls, PackedVector2Array points, PackedVector2Array muzzles) {
+    void input_ballistic_geometry(Array hulls, PackedVector2Array points, PackedVector2Array muzzles, PackedByteArray stationary = PackedByteArray()) {
         for (int i = 0; i < int(actors.size()) && i < hulls.size() && i < points.size(); ++i) {
-            actors[i].collision_hull = hulls[i];
+            const PackedVector2Array hull = hulls[i];
+            const bool fixed = i < stationary.size() && stationary[i] != 0;
+            if (actors[i].collision_hull != hull || actors[i].stationary_geometry != fixed)
+                ++actors[i].geometry_revision;
+            actors[i].collision_hull = hull;
+            actors[i].stationary_geometry = fixed;
             actors[i].screen_point = points[i];
         }
         for (int i = 0; i < int(weapons.size()) && i < muzzles.size(); ++i)
             weapons[i].screen_muzzle = muzzles[i];
+    }
+    void refresh_ray_contact(Flight &f, const Actor &target) {
+        ++ballistic_ray_queries;
+        f.contact_revision = target.geometry_revision;
+        f.contact_distance = -1;
+        bool inside = false;
+        const Vector2 p = f.ray_origin, ray = f.ray_step;
+        const auto &hull = target.collision_hull;
+        for (int i = 0, j = hull.size() - 1; i < hull.size(); j = i++) {
+            const Vector2 a = hull[j], b = hull[i], edge = b - a;
+            if ((a.y > p.y) != (b.y > p.y) && p.x < (b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x) inside = !inside;
+            const double cross = ray.cross(edge);
+            if (cross == 0.0) continue;
+            const double along = (a-p).cross(edge)/cross, side = (a-p).cross(ray)/cross;
+            // Expand vertex acceptance only for this rejection gate. The original
+            // polygon predicate below still decides the actual contact.
+            if (along >= -1.0 && side >= -1e-4 && side <= 1.0001 && (f.contact_distance < 0 || along < f.contact_distance))
+                f.contact_distance = std::max(0.0, along);
+        }
+        if (inside) f.contact_distance = 0;
+        // A miss/degenerate ray conservatively keeps the original per-segment test.
     }
     // Return the first contact along the visible fixed ray. Geometry is authored
     // by the same presentation authority that draws the hull; no seeking here.
@@ -2244,6 +2293,9 @@ class SpaceCombatKernel : public RefCounted {
         d["deaths"] = int64_t(dead_count);
         d["stale_handle_rejections"] = int64_t(stale_rejections);
         d["physics_visits"] = int64_t(physics_visits);
+        d["ballistic_checks"] = int64_t(ballistic_checks);
+        d["ballistic_skips"] = int64_t(ballistic_skips);
+        d["ballistic_ray_queries"] = int64_t(ballistic_ray_queries);
         d["attack_counter"] = attack_counter;
         d["incoming_counter"] = incoming_counter;
         d["drop_uid"] = drop_uid;

@@ -480,15 +480,71 @@ func chain_first_and_hop_transfer_contract()->void:
    g.advance_chain_projectile(hops[0],1.0)
    check(g.enemies[1].hp<=0 and g.enemies[0].hp==980.0 and g.projectiles.size()==1,"transferred lethal chain neither death-explodes nor recursively fans")
   g.begin_retreat()
+func fixed_ray_trace(cached:bool,scenario:int,kind:int)->Dictionary:
+ var d=world(kind);d.enemies=[actor(100,300.0,1000.0,0),actor(101,550.0,1000.0,1)]
+ d.weapons[0].speed=360.0;d.weapons[0].interval=0.2;d.weapons[0].source=-1;d.defences=[];d.repeat_delay=0.1
+ if scenario==4:
+  d.enemies[0].hp=15.0;d.weapons.append(d.weapons[0].duplicate(true));d.weapons[1].slot=1
+ var k=core(d);var events:Array=[];var frames:Array=[]
+ var hull=PackedVector2Array([Vector2(280,-12),Vector2(320,-12),Vector2(320,12),Vector2(280,12)])
+ var other=PackedVector2Array([Vector2(530,-12),Vector2(570,-12),Vector2(570,12),Vector2(530,12)])
+ var centers=PackedVector2Array([Vector2(300,0),Vector2(550,0)])
+ var muzzles=PackedVector2Array([Vector2.ZERO])
+ if scenario==4:muzzles.append(Vector2.ZERO)
+ for step in 90:
+  var fixed:bool=cached
+  if scenario==1 and step<25: # Entry/moving target keeps the old predicate.
+   fixed=false
+   hull=PackedVector2Array([Vector2(280+step,-12),Vector2(320+step,-12),Vector2(320+step,12),Vector2(280+step,12)])
+  if scenario==2 and step==25: # Geometry changes while rays are already in flight.
+   hull=PackedVector2Array([Vector2(180,-25),Vector2(420,-25),Vector2(420,25),Vector2(180,25)])
+  if scenario==3 and step==25:k.hit_handle(k.actor_handle(100),1e9,1)
+  if scenario==5 and step==25:check(k.update_configuration(d),"fixed-ray numeric configuration boundary")
+  if scenario==6 and step==25:check(k.configure(d),"fixed-ray encounter generation replacement")
+  if scenario==7:hull=PackedVector2Array([Vector2(280,2),Vector2(320,2),Vector2(320,12),Vector2(280,12)]) # miss stays conservative
+  if scenario==8:hull=PackedVector2Array([Vector2(-2,-2),Vector2(320,-2),Vector2(320,2),Vector2(-2,2)]) # starts inside
+  if scenario==9:hull=PackedVector2Array([Vector2(280,0),Vector2(320,20),Vector2(320,40)]) # grazing vertex
+  if scenario==10:
+   centers[0]=Vector2(300,37);hull=PackedVector2Array()
+   for corner in [Vector2(-20,-12),Vector2(20,-12),Vector2(20,12),Vector2(-20,12)]:hull.append(centers[0]+corner.rotated(0.73))
+  if scenario==11:hull=PackedVector2Array([Vector2(280,-20),Vector2(320,-20),Vector2(320,20),Vector2(280,20),Vector2(300,0)]) # concave edge
+  k.input_ballistic_geometry([hull,other],centers,muzzles,PackedByteArray([1 if fixed else 0,1 if fixed else 0]))
+  k.input_geometry(centers,muzzles)
+  k.advance(1.0/60.0)
+  for event in k.take_feedback():
+   events.append([step,event.kind,event.clock,event.position,event.amount,event.absorbed,event.get("uid",-1),event.get("target_uid",-1)])
+  var positions:Array=[]
+  for shot in k.projectile_views():positions.append([shot.serial,shot.motion_lease.position(),shot.motion_lease.direction(),shot.motion_lease.speed(),shot.get("dead",false)])
+  var hp:Array=[]
+  for enemy in k.enemy_views():hp.append([enemy.uid,enemy.hp,enemy.shield])
+  frames.append([positions,hp,k.rng_source().state])
+ var metrics:Dictionary=k.metrics();k.cancel()
+ return {"events":events,"frames":frames,"metrics":metrics}
+
+func fixed_ray_contract()->void:
+ var saved_checks:=checks
+ var total_skips:int=0;var total_checks:int=0;var total_queries:int=0
+ for scenario in 12:
+  for kind in [0,1,2,3]:
+   var reference:Dictionary=fixed_ray_trace(false,scenario,kind)
+   var cached:Dictionary=fixed_ray_trace(true,scenario,kind)
+   check(reference.events==cached.events and reference.frames==cached.frames,"cached ray preserves exact ordered feedback, motion, HP and RNG: "+str(scenario)+"/"+str(kind))
+   if kind in [2,3]:check(int(cached.metrics.ballistic_skips)==0,"missiles and beams retain dynamic/original branch")
+   total_skips+=int(cached.metrics.ballistic_skips);total_checks+=int(cached.metrics.ballistic_checks);total_queries+=int(cached.metrics.ballistic_ray_queries)
+ check(total_skips>0 and total_queries>0,"fixed target rays actually leave per-step polygon traversal")
+ print("FIXED_RAY_RESULT ",JSON.stringify({"checks":checks-saved_checks,"skips":total_skips,"exact_checks":total_checks,"ray_queries":total_queries}))
+
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var dll_path="res://bin/space_native.dll";var dll_hash=FileAccess.get_sha256(dll_path)
+ var extension_path="res://space_native.gdextension" if FileAccess.file_exists("res://space_native.gdextension") else "res://addons/native_battle/space_native.gdextension"
  var expected=OS.get_environment("QA_NATIVE_SHA256")
  if not expected.is_empty():
-  check(GDExtensionManager.is_extension_loaded("res://addons/native_battle/space_native.gdextension") and GDExtensionManager.get_extension("res://addons/native_battle/space_native.gdextension").is_library_open() and dll_hash==expected,"expected rebuilt project native library is loaded")
+  check(GDExtensionManager.is_extension_loaded(extension_path) and GDExtensionManager.get_extension(extension_path).is_library_open() and dll_hash==expected,"expected rebuilt project native library is loaded")
  print("NATIVE_LIBRARY_PROOF ",JSON.stringify({"pid":OS.get_process_id(),"path":ProjectSettings.globalize_path(dll_path),"sha256":dll_hash}))
  check(ClassDB.class_exists("SpaceCombatKernel"),"native extension class registered")
  if not ClassDB.class_exists("SpaceCombatKernel"):quit(1);return
+ fixed_ray_contract()
  timing_contract()
  hostile_beam_contract()
  lifecycle_contract()
