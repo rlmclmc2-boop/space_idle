@@ -1,0 +1,22 @@
+{
+  "baseline": "63b93069",
+  "candidate": "b6a81045",
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2",
+    "A3",
+    "B3"
+  ],
+  "steps": 240,
+  "warmup_steps": 180,
+  "flags": {
+    "retained_gpu_beams_enabled": false,
+    "damage_display_cache_enabled": false
+  },
+  "native_dll": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+  "acceptance": "User permits peak reduction below0.5ms overall mean; must show identifiable peak reduction without increased other-frame cost or gameplay change. Report all samples, boundary frames, tail and full mean; no selective reruns.",
+  "boundary": "Frame crossing relative step60,120,180,240, plus separately report immediately following frame for catchup context. Ordinary and all-frame means retained.",
+  "scope": "Same existing full scene, true1x60Hz uncapped, original purchases/research/exploration/effects. No baseline load removal or scheduling change."
+}
