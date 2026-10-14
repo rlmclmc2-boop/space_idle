@@ -1,0 +1,47 @@
+{
+  "baseline": "63b93069",
+  "candidate": "63bfa881",
+  "all_equivalent": true,
+  "executed_runs": 6,
+  "extra_runs": 0,
+  "full_sample_preserved": true,
+  "mean_paired_A_minus_B_ms": {
+    "all": -0.5734450337985718,
+    "boundary": 6.393083333333333,
+    "ordinary": -0.7453002332120136,
+    "following": 4.304555555555555
+  },
+  "interpretation": [
+    "Boundary mean decreases in all three pairs, substantially in pairs1/2; pair3 decrease is only0.90325ms and boundary maximum worsens3.076ms.",
+    "All-frame mean improves pair1 but worsens pairs2/3. Ordinary mean worsens0.450776ms and2.092496ms in pairs2/3; pair3 p95/p99/max also worsen.",
+    "Peak reduction has measured support but stable overall improvement and absence of ordinary-frame regression are not established. Parent decides user-authorized spike tradeoff. No main integration performed.",
+    "B3 is retained in full; cause of slower ordinary frames is unresolved. No claim of background process/cache interference; no selective reruns.",
+    "Current candidate is the combined numeric-only, geometry retention and unused weapon value exit, not isolated marginal benefit of b629. Segment costs are not used as net frame gains."
+  ],
+  "long_frame_counts": {
+    "A1": {
+      "33.3333333333": 6,
+      "40": 2
+    },
+    "B1": {
+      "33.3333333333": 0,
+      "40": 0
+    },
+    "A2": {
+      "33.3333333333": 4,
+      "40": 2
+    },
+    "B2": {
+      "33.3333333333": 1,
+      "40": 0
+    },
+    "A3": {
+      "33.3333333333": 4,
+      "40": 1
+    },
+    "B3": {
+      "33.3333333333": 5,
+      "40": 3
+    }
+  }
+}

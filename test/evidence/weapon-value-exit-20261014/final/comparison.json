@@ -1,0 +1,183 @@
+{
+  "baseline": "63b93069",
+  "candidate": "63bfa88122d3dac8c962629665bf2de190a00e86",
+  "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+  "cases": {
+    "A1": {
+      "source": "63b93069",
+      "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+      "frame_ms": 17.71000438596491,
+      "frame_median_ms": 16.5915,
+      "frames": 228,
+      "steps": 240,
+      "events": {
+        "beam_hit": 210,
+        "enhancement_chain": 2508,
+        "enhancement_secondary": 24,
+        "equipment_stats": 103,
+        "fire": 1769,
+        "hit": 6520,
+        "projectile_impact": 4210,
+        "resources_changed": 48,
+        "upgrade": 48,
+        "upgrades_completed": 4
+      },
+      "beam_metrics_before": {},
+      "beam_metrics_after": {}
+    },
+    "B1": {
+      "source": "63bfa88122d3dac8c962629665bf2de190a00e86",
+      "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+      "frame_ms": 17.07282553191489,
+      "frame_median_ms": 16.363,
+      "frames": 235,
+      "steps": 240,
+      "events": {
+        "beam_hit": 210,
+        "enhancement_chain": 2508,
+        "enhancement_secondary": 24,
+        "equipment_stats": 103,
+        "fire": 1769,
+        "hit": 6520,
+        "projectile_impact": 4210,
+        "resources_changed": 48,
+        "upgrade": 48,
+        "upgrades_completed": 4
+      },
+      "beam_metrics_before": {
+        "beams": 0,
+        "links": 0,
+        "live_quad_builds": 0,
+        "publications": 0
+      },
+      "beam_metrics_after": {
+        "beams": 0,
+        "links": 0,
+        "live_quad_builds": 0,
+        "publications": 0
+      }
+    },
+    "B2": {
+      "source": "63bfa88122d3dac8c962629665bf2de190a00e86",
+      "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+      "frame_ms": 17.081817021276596,
+      "frame_median_ms": 16.317,
+      "frames": 235,
+      "steps": 240,
+      "events": {
+        "beam_hit": 210,
+        "enhancement_chain": 2508,
+        "enhancement_secondary": 24,
+        "equipment_stats": 103,
+        "fire": 1769,
+        "hit": 6520,
+        "projectile_impact": 4210,
+        "resources_changed": 48,
+        "upgrade": 48,
+        "upgrades_completed": 4
+      },
+      "beam_metrics_before": {
+        "beams": 0,
+        "links": 0,
+        "live_quad_builds": 0,
+        "publications": 0
+      },
+      "beam_metrics_after": {
+        "beams": 0,
+        "links": 0,
+        "live_quad_builds": 0,
+        "publications": 0
+      }
+    },
+    "A2": {
+      "source": "63b93069",
+      "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+      "frame_ms": 16.841041841004184,
+      "frame_median_ms": 16.012,
+      "frames": 239,
+      "steps": 240,
+      "events": {
+        "beam_hit": 210,
+        "enhancement_chain": 2508,
+        "enhancement_secondary": 24,
+        "equipment_stats": 103,
+        "fire": 1769,
+        "hit": 6520,
+        "projectile_impact": 4210,
+        "resources_changed": 48,
+        "upgrade": 48,
+        "upgrades_completed": 4
+      },
+      "beam_metrics_before": {},
+      "beam_metrics_after": {}
+    },
+    "A3": {
+      "source": "63b93069",
+      "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+      "frame_ms": 17.20562660944206,
+      "frame_median_ms": 16.321,
+      "frames": 233,
+      "steps": 240,
+      "events": {
+        "beam_hit": 210,
+        "enhancement_chain": 2508,
+        "enhancement_secondary": 24,
+        "equipment_stats": 103,
+        "fire": 1769,
+        "hit": 6520,
+        "projectile_impact": 4210,
+        "resources_changed": 48,
+        "upgrade": 48,
+        "upgrades_completed": 4
+      },
+      "beam_metrics_before": {},
+      "beam_metrics_after": {}
+    },
+    "B3": {
+      "source": "63bfa88122d3dac8c962629665bf2de190a00e86",
+      "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+      "frame_ms": 19.322365384615384,
+      "frame_median_ms": 17.561,
+      "frames": 208,
+      "steps": 240,
+      "events": {
+        "beam_hit": 210,
+        "enhancement_chain": 2508,
+        "enhancement_secondary": 24,
+        "equipment_stats": 103,
+        "fire": 1769,
+        "hit": 6520,
+        "projectile_impact": 4210,
+        "resources_changed": 48,
+        "upgrade": 48,
+        "upgrades_completed": 4
+      },
+      "beam_metrics_before": {
+        "beams": 0,
+        "links": 0,
+        "live_quad_builds": 0,
+        "publications": 0
+      },
+      "beam_metrics_after": {
+        "beams": 0,
+        "links": 0,
+        "live_quad_builds": 0,
+        "publications": 0
+      }
+    }
+  },
+  "paired_A_minus_B_ms": [
+    0.6371788540500205,
+    -0.2407751802724114,
+    -2.1167387751733244
+  ],
+  "mean_paired_gain_ms": -0.5734450337985718,
+  "baseline_range_ms": [
+    16.841041841004184,
+    17.71000438596491
+  ],
+  "candidate_range_ms": [
+    17.07282553191489,
+    19.322365384615384
+  ]
+}

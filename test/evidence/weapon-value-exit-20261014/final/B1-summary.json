@@ -1,0 +1,32 @@
+{
+  "source": "63bfa88122d3dac8c962629665bf2de190a00e86",
+  "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+  "frame_ms": 17.07282553191489,
+  "frame_median_ms": 16.363,
+  "frames": 235,
+  "steps": 240,
+  "events": {
+    "beam_hit": 210,
+    "enhancement_chain": 2508,
+    "enhancement_secondary": 24,
+    "equipment_stats": 103,
+    "fire": 1769,
+    "hit": 6520,
+    "projectile_impact": 4210,
+    "resources_changed": 48,
+    "upgrade": 48,
+    "upgrades_completed": 4
+  },
+  "beam_metrics_before": {
+    "beams": 0,
+    "links": 0,
+    "live_quad_builds": 0,
+    "publications": 0
+  },
+  "beam_metrics_after": {
+    "beams": 0,
+    "links": 0,
+    "live_quad_builds": 0,
+    "publications": 0
+  }
+}
