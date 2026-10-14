@@ -1,0 +1,31 @@
+{
+  "baseline": "63b93069",
+  "candidate": "63bfa881",
+  "order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2",
+    "A3",
+    "B3"
+  ],
+  "warmup_steps": 180,
+  "steps": 240,
+  "flags": {
+    "retained_gpu_beams_enabled": false,
+    "damage_display_cache_enabled": false
+  },
+  "dll_both_sides": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+  "dll_source": "a47461d0 native kernel; only read-only numeric_update_context and binding added, no combat advance changes; baseline does not call new method. Both sides same binary.",
+  "acceptance": "Report peak and average effects separately, including ordinary-frame regressions. Parent judges spike value; no mechanical all-metrics-positive rule. No claimed attribution gain used as frame gain.",
+  "precondition": "122 focused checks pass on weapon value exit; previous numeric update344 checks pass. Single diagnostic preserves state/events and confirms unused values exit.",
+  "scope": "Same full busy scene,true1x60Hz uncapped, original purchases/research/exploration/effects,saves disabled,D-only isolated project.",
+  "statistics": {
+    "all": "Every measured frame: n,mean,median,p95,p99,max; no deletion",
+    "boundary": "Frames crossing steps60,120,180,240; list every frame with index/step/ms and aggregate mean/median/tails",
+    "following": "Next recorded frame after each boundary if available; final boundary may have no following sample. List all and report stats.",
+    "ordinary": "Excludes boundary and following frames; nonboundary additionally includes following for direct prior comparison. All-frame results always retain every sample.",
+    "quantiles": "Sorted element at min(n-1,int(n*p)), consistent with preceding runs.",
+    "pairs": "All three A-minus-B differences for every section and metric; positive means candidate faster. No reruns or selection."
+  }
+}
