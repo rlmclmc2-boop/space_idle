@@ -2632,15 +2632,27 @@ func queue_damage_number(info: Dictionary) -> void:
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
 	var category := int(info.type) if damage_mode==1 or info.player else 0
+	var summary:bool=damage_mode==0 and not bool(info.player)
+	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
 	for entries in [floats,damage_pending]:
 		for entry in entries:
-			if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):
-				entry.amount = GrowthNumber.add(entry.amount,info.amount)
-				entry.absorbed = GrowthNumber.add(entry.get("absorbed",0),absorbed)
-				entry.display_dirty = true
+			if entry.get("target","")!=target or entry.type!=category:continue
+			if summary and entry.get("summary",false):
+				if fx_time-entry.born>=0.2:
+					entry.amount=info.amount;entry.absorbed=absorbed;entry.born=fx_time;entry.critical=critical
+				else:
+					entry.amount=GrowthNumber.add(entry.amount,info.amount)
+					entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
+					entry.critical=bool(entry.critical) or critical
+				entry.life=duration;entry.color=Color("ffd477") if entry.critical else Color("f1f5fa")
+				entry.display_dirty=true
 				return
-	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
+			if not summary and entry.critical==critical and fx_time-entry.born<0.2 and not entry.get("retiring",false):
+				entry.amount=GrowthNumber.add(entry.amount,info.amount)
+				entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
+				entry.display_dirty=true
+				return
+	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":20 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
 	# Keep a same-frame killed target alive until its final display anchor is read.
 	if not info.player:
 		for enemy in game.enemies:
@@ -2671,6 +2683,10 @@ func resolve_damage_origin(entry: Dictionary) -> void:
 	entry.origin=battle_logical_point(anchor-Vector2(0,half_height+18))
 	entry.needs_origin=false
 
+func damage_tag_text(entry:Dictionary)->String:
+	var value:=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+	return value+"\u2605" if entry.get("summary",false) and entry.critical else value
+
 func position_damage_tag(entry:Dictionary,metrics:Dictionary,initial:bool)->void:
 	entry.pos.x=clampf(float(entry.origin.x)-float(metrics.width)*0.5,8.0,BattleGame.BATTLE_SIZE.x-8.0-float(metrics.width))
 	if initial:
@@ -2695,7 +2711,7 @@ func flush_damage_numbers(_frame_delta: float = 0.0) -> void:
 		if not slots.has(target):slots[target]=[]
 		slots[target].append(entry)
 		if not entry.get("display_dirty",false):continue
-		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+		entry.text=damage_tag_text(entry)
 		position_damage_tag(entry,damage_layout_metrics(entry.text,entry.size,context),false)
 		entry.display_dirty=false
 	for entry in damage_pending.duplicate():
@@ -2705,7 +2721,7 @@ func flush_damage_numbers(_frame_delta: float = 0.0) -> void:
 		if active.size()>=2:
 			active[0].life=minf(float(active[0].life),0.08);active[0].retiring=true
 			continue
-		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+		entry.text=damage_tag_text(entry)
 		resolve_damage_origin(entry)
 		entry.lane=1-int(active[0].get("lane",0)) if not active.is_empty() else 0
 		position_damage_tag(entry,damage_layout_metrics(entry.text,entry.size,context),true)

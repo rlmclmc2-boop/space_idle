@@ -4725,7 +4725,7 @@
   },
   {
     "key": "main.build_ui.text_19",
-    "text": "精简",
+    "text": "简化（最近伤害合计；★含暴击）",
     "params": "",
     "category": "settings",
     "note": "固定文字",
