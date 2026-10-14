@@ -1,0 +1,60 @@
+{
+  "runs": {
+    "A": {
+      "retained_beams": 16,
+      "retained_periods": 1104,
+      "retained_link_hits": 11730,
+      "periods_not_represented_by_retained_serials": 40,
+      "remaining_link_hits": 440,
+      "chain_accounting_closes": true,
+      "warm_and_sample_births": 81,
+      "sample_births": 40,
+      "sample_upgrade_batches": 8,
+      "primary_beams": 13,
+      "repeat_beams": 8,
+      "endless_slots": [
+        0
+      ],
+      "prism_slots": [
+        0
+      ],
+      "sample_enemy_hits": 13322,
+      "sample_chain_hits": 12170
+    },
+    "B": {
+      "retained_beams": 26,
+      "retained_periods": 1820,
+      "retained_link_hits": 19600,
+      "periods_not_represented_by_retained_serials": 0,
+      "remaining_link_hits": 0,
+      "chain_accounting_closes": true,
+      "warm_and_sample_births": 26,
+      "sample_births": 0,
+      "sample_upgrade_batches": 8,
+      "primary_beams": 13,
+      "repeat_beams": 13,
+      "endless_slots": [
+        0
+      ],
+      "prism_slots": [
+        0
+      ],
+      "sample_enemy_hits": 21420,
+      "sample_chain_hits": 19600
+    }
+  },
+  "upgrade_schedule_equal_excluding_render_frame": true,
+  "explanation": "A baseline rebuilds changed-level drone entries in combat_weapon_entries; its long_laser_valid requires entry object identity and pending repeats require identity too. Endpoints show 16 retained ordinary primary/repeat beams, five replaced drone primary beams, and no drone repeats. Its 40 sample startups equal five drones times eight upgrade batches. B preserves numeric-upgrade snapshots and all 26 primary/repeat beams; this is the approved contract, not less combat work. A remaining 40 periods and 440 chain hits close the aggregate accounting; no per-step trajectory replay was collected.",
+  "period_delta": {
+    "B_minus_A": 676,
+    "retained_ordinary_phase_delta": 16,
+    "drone_primary_delta": 310,
+    "drone_repeat_delta": 350,
+    "note": "The retained ordinary beams have endpoint tick deltas 69 in A versus 70 in B. This is an observed boundary-phase difference; no claim attributes it to an individual startup time or changes the configured interval."
+  },
+  "rng": "Different by design because A executes additional startup/repeat decisions after upgrades. Not asserted equal.",
+  "visual_review": "Both saved PNGs show full equipment UI, all 15 enemies and active beam/chain presentation; B also shows sustained drone beams. No display reduction.",
+  "no_new_sampling_for_attribution": true,
+  "clean_candidate": "2db97caa57c867982c4702f97fe69b5e791a5330",
+  "known_limitation": "Existing wave-end atomic handoff resumes the old Game; no cross-wave native re-admission change. Earlier accepted death/travel/retarget checks reused."
+}

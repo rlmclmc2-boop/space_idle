@@ -1,0 +1,24 @@
+{
+  "clean_candidate": "2db97caa57c867982c4702f97fe69b5e791a5330",
+  "baseline": "0d14ce90b4dafceafd0e6adb295652daf6df48c3",
+  "candidate_dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+  "baseline_dll_sha256": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+  "sampling": "Exactly one serial A/B, 240 warm steps and 480 measured steps each; full UI, cap0, VSync0, focused, speed1, 60Hz logic. Both sides valid actual1x. No further sampling.",
+  "mean_ms": {
+    "A": 18.966389548693588,
+    "B": 12.172716463414634
+  },
+  "p95_ms": {
+    "A": 30.34,
+    "B": 21.64175
+  },
+  "p99_ms": {
+    "A": 47.7616,
+    "B": 39.6122
+  },
+  "observed_mean_saving_ms": 6.793673085278954,
+  "interpretation": "Observed single-pair full-frame difference, not a repeated statistical estimate. No observer cost subtracted. B performs more real periods and chain hits under the approved upgrade-preservation semantics. See attribution.json.",
+  "correctness_reused": "364 passing checks; baseline legacy Lab test limitation remains recorded outside this perf directory.",
+  "production_changes_after_correctness": false,
+  "unified_release_packaging_complete": false
+}

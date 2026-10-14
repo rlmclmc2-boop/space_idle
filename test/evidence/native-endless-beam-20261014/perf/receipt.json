@@ -1,0 +1,81 @@
+{
+  "refs": {
+    "A": "0d14ce90b4dafceafd0e6adb295652daf6df48c3",
+    "B": "2db97caa57c867982c4702f97fe69b5e791a5330"
+  },
+  "order": [
+    "A",
+    "B"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "A",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-beam-perf\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791999097.4985113,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+      "exit": 0,
+      "completed_unix": 1791999117.1620831,
+      "json_sha256": "180c6ebcdef4ac8c56271bf06b1e53b82b7412cc66e361d8eed8dfbbd6f60dff",
+      "png_sha256": "9859b361cc6eb3d0c26ea171cd70c93b0329a0878e84777cc181e002e76d588a",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "B",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-beam-perf\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791999117.1710591,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+      "exit": 0,
+      "completed_unix": 1791999137.3612733,
+      "json_sha256": "e84999718414156dd6f6e428bd058c00960b5e2b7b9dfbc15eb2db833bb78935",
+      "png_sha256": "11ce0aa5a2266f47084502f9a336e4ace1f0ad1e1c87ffba7755f609079db76e",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {
+    "A": 0,
+    "B": 0
+  },
+  "dll_sha256": {
+    "A": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+    "B": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "789154ddaba074cdcad6a75c9e721d93f5fc3bafa4ea5f2685929d3fd0ab331c",
+  "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+  "probe_policy": {
+    "whole_state_reads_per_run": 2,
+    "counter_reads_per_run": 2,
+    "per_step_exports": 0,
+    "per_step_scans": 0,
+    "counter_increment_cost_included": true
+  },
+  "scope": "One serial full longLaser AB pair, 8 ordinary slots plus 5 drones, legal prism_tower and endless_beam. Actual1x uncapped focused display; overloaded sides diagnostic only. All observation cost included."
+}
