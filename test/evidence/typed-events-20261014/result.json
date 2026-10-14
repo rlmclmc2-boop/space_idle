@@ -1,0 +1,66 @@
+{
+  "base": "85ada8bc6c18834310c9ddf494f92697c7c09182",
+  "work_branch_parent": "9b8c5b6aa110eef85a514391771ad9bfd89f8018",
+  "candidate": "Game-owned typed subscription table with a lazy persistent native Godot Signal for each event kind; existing emit sites unchanged, six irrelevant subscriber groups filtered at channel registration, wildcard listeners retain ordered full delivery. No all-event wrapper filtering.",
+  "decision": "REJECT and restore: whole frame slower than both original-source controls. No further tuning or widening.",
+  "threshold_ms": 0.5,
+  "runs": {
+    "TEA1": {
+      "whole_ms": 21.415373333333335,
+      "frames": 375,
+      "steps": 480,
+      "native_steps": 480,
+      "zero_step_frames": 0,
+      "one_step_ms": 19.95514598540146,
+      "cpu_ms_per_game_second": 999.9999999999825,
+      "mean_projectiles": 363.904,
+      "mean_floats": 5.237333333333333,
+      "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8"
+    },
+    "TEB": {
+      "whole_ms": 22.401183844011143,
+      "frames": 359,
+      "steps": 480,
+      "native_steps": 480,
+      "zero_step_frames": 0,
+      "one_step_ms": 20.634942386831277,
+      "cpu_ms_per_game_second": 1001.9531249999824,
+      "mean_projectiles": 363.55153203342616,
+      "mean_floats": 5.2005571030640665,
+      "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8"
+    },
+    "TEA2": {
+      "whole_ms": 21.40772192513369,
+      "frames": 374,
+      "steps": 480,
+      "native_steps": 480,
+      "zero_step_frames": 0,
+      "one_step_ms": 19.850516605166053,
+      "cpu_ms_per_game_second": 999.9999999999825,
+      "mean_projectiles": 363.620320855615,
+      "mean_floats": 5.251336898395722,
+      "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8"
+    }
+  },
+  "gain_vs_faster_control_ms": -0.993461918877454,
+  "control_drift_ms": 0.007651408199645715,
+  "same_state_and_events": true,
+  "normalization": "Only seed metadata and the redundant seed-containing kernel_hash excluded; actual RNG state compared.",
+  "events": {
+    "beam_hit": 420,
+    "enhancement_chain": 4961,
+    "enhancement_secondary": 48,
+    "equipment_stats": 206,
+    "fire": 3520,
+    "galaxy_unlocked": 1,
+    "hit": 13050,
+    "projectile_impact": 8430,
+    "resources_changed": 96,
+    "upgrade": 96,
+    "upgrades_completed": 8
+  },
+  "lifecycle": "Direct comparison against ordinary Godot signal passes: registration order, nested emission, mutable payload, subscribe/unsubscribe during emission, freed subscriber, reconnect. Typed unrelated callbacks0 vs original10 in this fixture.",
+  "acceptance_method": "One existing DF2 scene A/B/A, complete480 fixed steps, full quality true1x/60Hz. A uses original85ada8bc production source; B includes complete GDScript router cost. Same85ada8bc DLL allthree, no build. QA subscription API adapted outside timing, otherwise unchanged.",
+  "limits": "Old0.876ms was instrumented gross estimate, not net. This candidate avoids irrelevant callbacks but adds script channel lookup/delivery; no exclusive measurement attributes the slowdown. No claim that every possible typed-event implementation is exhausted.",
+  "archive": "Candidate patch plus new script and regression stored as rejected evidence only; requires reapplying candidate to run. Historical raw source label346c67f8 is inherited; actual baseline/source selection described here and in prepare_typed.py."
+}

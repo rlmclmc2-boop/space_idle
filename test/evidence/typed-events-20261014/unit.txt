@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+GAME_EVENTS_OK order/reentry/mutation/connect/disconnect/freed/reconnect; irrelevant=0 original=10
