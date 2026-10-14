@@ -1,0 +1,30 @@
+{
+  "pid": 24548,
+  "exe": "Godot_v4.7.2-stable_win64.exe",
+  "begin": {
+    "user_us": 8281250.0,
+    "kernel_us": 2625000.0,
+    "clock_ns": 454716996502500
+  },
+  "end": {
+    "user_us": 12234375.0,
+    "kernel_us": 2671875.0,
+    "clock_ns": 454721038234300
+  },
+  "label": "FG-locate",
+  "cpu_us": 4000000.0,
+  "cpu_window_seconds": 4.0417318,
+  "script_sha256": {
+    "space-battleship/scripts/battle_read_model.gd": "764c53a5213d174d51a54ae5e50494c5200416ab4dbad531518c0d26c4acec0d",
+    "space-battleship/scripts/enemy_fixed_layout.gd": "5ab8f2a2afd1bd138a64f151feced3a6b3128637b1073f70a04a608d483536af",
+    "space-battleship/scripts/hyperspace_drone_visual.gd": "d5fadde21f80e4e99b81f61bca7c6ddef263ad5bc70106ec6dec5fb92cfcf92f",
+    "space-battleship/scripts/logical_fleet_pose.gd": "ac5255d78a157f083d0bb67f50ad9f0cfbb8d711eb5aaebc4a920b28e8e02c4e",
+    "space-battleship/scripts/main.gd": "00bda6bff8f1fb6ba07c76cf0823ef6a8ade66e1825d2064a850e07c7fcb4045",
+    "space-battleship/scripts/native_execution_session.gd": "8e32d6b0012f0c091559844f7a0b2bf1c91cc74bbf672a25ac5b3eb625972de7",
+    "space-battleship/scripts/presented_ship_view.gd": "1feeadeaf2a718137b0cc3178ea0f76772e799a42f36a3ed07cbb28e2061368a",
+    "space-battleship/scripts/retained_enemy_contacts.gd": "9fa0fb80f317dc7306fbfbd6541b0194fb0061bf5127395ee0f2810a99bb4a9d",
+    "space-battleship/scripts/simulation_geometry_authority.gd": "f85aaa68679efbc1f619e858f787c9587412a00d98036bb4d2a177fc17fc85e7",
+    "space-battleship/scripts/simulation_geometry_view.gd": "651fe168346aad72eb151497169133178b8d88683b0cbd817b69b423c274adc7"
+  },
+  "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e"
+}

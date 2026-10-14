@@ -1,0 +1,8 @@
+{
+  "space-battleship/scripts/battlefield.gd": "9b6c5ed89f1b8b2a178f3cacf69e9850d9bfbc7ad4c9e29375e8374f29c723f6",
+  "space-battleship/scripts/main.gd": "59ef02a8aea1392aee77e51ac6887116d46ee296af82e6e8b9756c9b1e7acd99",
+  "space-battleship/scripts/retained_beam_foreground.gd": "48d2e8b35584f6b3b04ce97076268c8c0712c602726704d490ab13eb32e8b034",
+  "space-battleship/scripts/retained_enemy_contacts.gd": "74a15c02e88dae01affc9241501703ccb40cb899ec705eb1ba990fa93d0f26ee",
+  "space-battleship/shaders/retained_beams.gdshader": "e1bb234ba6ab6f3ab011fb13378121d8aa99bbfaa2785e0495169f2d7de06d1e",
+  "test/test_native_geometry_scale.gd": "5db9f314210e914589c7c238f9c925a2926bd1b1c80668e39a13b4093f36af70"
+}
