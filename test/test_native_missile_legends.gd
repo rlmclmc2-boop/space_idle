@@ -43,6 +43,9 @@ func run()->void:
  step(k,50)
  check(k.enemy_views()[0].hp==1e6-360 and k.enemy_views()[0].guidance_layers==4,"independent root uses next layer once")
  check(k.metrics().missile_attacks==2,"one missile count per root")
+ var observed=k.missile_legend_metrics()
+ check(observed.cache_firsts==2 and observed.cache_hits==4 and observed.effective_layer_growth==2 and observed.missile_hits==6,"on-demand native guidance counters")
+ check(observed.targets[0].first_factor==4.0 and observed.targets[0].last_factor==8.0 and observed.targets[0].min_factor==4.0 and observed.targets[0].max_factor==8.0,"on-demand per-target first factor extrema")
  d=world();d.weapons[0].repeat_probability=1.0;d.weapons[0].secondary_probability=1.0;d.weapons[0].chain_count=1;d.enemies.append(actor(101));d.hit_radius=0.01
  check(k.configure(d),"derived contexts admission");step(k,1)
  var state=k.export_handoff();var normal=[];var derived=[]
@@ -79,6 +82,8 @@ func run()->void:
   var events=k.take_feedback();var deaths=events.filter(func(e):return e.kind==3);var drops=events.filter(func(e):return e.kind==7)
   check(deaths.size()==1 and drops.size()==1 and k.metrics().deaths==1,"native one death/drop "+str(scenario))
   check(k.metrics().hits==(1 if scenario==1 else 2 if scenario==0 else 3),"wild once-only AoE "+str(scenario))
+  observed=k.missile_legend_metrics()
+  check(observed.wild_substitutions==1 and observed.wild_blasts==1 and observed.recursion_blocked_entries==(0 if scenario==1 else 1 if scenario==0 else 2),"actual native wild counters "+str(scenario))
   if scenario<2:check(k.metrics().final_cleared,"final clear after unique death "+str(scenario))
   var g=fixture();g.guidance=null;g.enemies[0].hp=d.enemies[0].hp;g.enemies[0].drops=[{"chance":1.0,"amount":1.0,"resourceId":3}]
   if scenario==2:
