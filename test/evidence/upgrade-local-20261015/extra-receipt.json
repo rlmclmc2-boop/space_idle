@@ -1,0 +1,23 @@
+{
+  "source": "4c124809",
+  "reference": "8304c0c5",
+  "test": "test/test_upgrade_local_extra.gd",
+  "base_harness": "test/test_upgrade_local_reuse.gd (run overridden; previous 99 checks not executed)",
+  "result": {
+    "checks": 46,
+    "failures": [],
+    "handoff": "refusal branch uses explicit unavailable-handoff fixture",
+    "scope": "only additional drone/endless/invalid-upgrade-entry checks; no previous99 rerun"
+  },
+  "exit_code": 0,
+  "dll_sha256": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
+  "coverage": [
+    "Valid generated/equipped legendary endless longLaser drone, compiled rules off/on",
+    "Projected slot4 level3->6 overtakes slot3 level5; actual native upgrade_slot purchase; drone maximum level increment1; endless slot3->4; exact old/new descriptor and kernel parity",
+    "Live native batch entry with emitted shots: dmgReduce GrowthNumber and missile_attacks=-1 reject compilation; forced unavailable handoff returns false once; wallet/loadout/projectile values/kernel unchanged"
+  ],
+  "limitations": [
+    "Unavailable handoff deliberately injected by overriding native_before_configuration_change; real successful fallback handoff not newly tested",
+    "No production changes, native build, frame measurement, or previous99 rerun"
+  ]
+}
