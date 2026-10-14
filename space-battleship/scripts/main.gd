@@ -220,7 +220,17 @@ var save_transfer_feedback: Label
 var pending_import: Dictionary = {}
 var import_committing := false
 
+func capture_release_viewport() -> void:
+	# Explicit packaging capture only; keep normal gameplay and defaults intact.
+	for frame in range(45):
+		await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	if get_viewport().get_texture().get_image().save_png("user://release-launch.png") != OK:
+		push_error("Release viewport capture failed")
+
 func _ready() -> void:
+	if OS.get_cmdline_user_args().has("--release-screenshot"):
+		call_deferred("capture_release_viewport")
 	if preload("res://scripts/hyperspace_appearance.gd").reload_config():
 		preload("res://scripts/hyperspace_drone_visual.gd").base_materials.clear()
 	var from_save_import := get_tree().has_meta("save_import_backup")

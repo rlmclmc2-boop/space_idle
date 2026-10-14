@@ -1,6 +1,9 @@
 # Windows PowerShell 5.1; no Python, SDK, or third-party module required.
 [CmdletBinding()]
-param()
+param(
+    [Parameter(Mandatory=$true)][ValidatePattern('^[0-9a-f]{40}$')][string]$ExpectedSourceCommit,
+    [Parameter(Mandatory=$true)][string]$NativeBuildManifest
+)
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 $project = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -99,6 +102,20 @@ try {
     }
     $run = Join-Path $workRoot ('release-' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [Guid]::NewGuid().ToString('N').Substring(0,8))
     New-Item -ItemType Directory -Path $run | Out-Null
+    Stage 'Verify pinned source and native build'
+    $head = (& git -C $root rev-parse HEAD).Trim()
+    if ($LASTEXITCODE -ne 0 -or $head -ne $ExpectedSourceCommit) { throw 'Unexpected source commit' }
+    & git -C $root diff --exit-code $ExpectedSourceCommit -- space-battleship test/verify_release.gd
+    if ($LASTEXITCODE -ne 0) { throw 'Release source differs from pinned commit' }
+    $nativeBuild = Get-Content -LiteralPath $NativeBuildManifest -Raw | ConvertFrom-Json
+    if ($nativeBuild.build_exit -ne 0 -or $nativeBuild.dll_sha256 -notmatch '^[0-9a-f]{64}$') { throw 'Invalid native build manifest' }
+    foreach ($name in @('space_native.cpp','combat_execution_kernel.h','combat_presentation.h')) {
+        $actual = (Get-FileHash -LiteralPath (Join-Path $project ('addons/native_battle/src/' + $name)) -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($actual -ne $nativeBuild.source_sha256.$name) { throw "Native source differs from verified build: $name" }
+    }
+    $nativeHash = (Get-FileHash -LiteralPath (Join-Path $project 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ($nativeHash -ne $nativeBuild.dll_sha256) { throw 'Native DLL differs from verified build' }
+    Note "Pinned source: $head; native DLL SHA256: $nativeHash"
     Stage 'Clean / quarantine previous release'
     if (Test-Path -LiteralPath $release) {
         $previous = Assert-InWork (Join-Path $run 'previous-release-not-current')
@@ -145,7 +162,7 @@ try {
             Copy-Item -LiteralPath $file.FullName -Destination $destination
         }
     }
-    $nativeHash = (Get-FileHash -LiteralPath (Join-Path $project 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
+    if ((Get-FileHash -LiteralPath (Join-Path $staging 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nativeHash) { throw 'Staged native DLL mismatch' }
     $presetPath = Join-Path $project 'export_presets.cfg'
     $preset = [IO.File]::ReadAllText($presetPath)
     $templateSetting = '(?m)^custom_template/release\s*=\s*[^\r\n]*'
@@ -249,7 +266,7 @@ try {
     $zipNative = Join-Path $unpacked ($nativeFiles[0].FullName.Substring($candidateDir.Length + 1))
     if ((Get-FileHash -LiteralPath $zipNative -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nativeHash) { throw 'ZIP native DLL mismatch' }
     Stage 'Run release verification in isolated user directory'
-    $null = Run $verifier @('--','--capture','--capture-all') (Join-Path $run 'empty-cwd') 'verify-runtime' 30 -isolated
+    $null = Run $verifier @('--max-fps','0','--disable-vsync','--','--capture','--capture-all') (Join-Path $run 'empty-cwd') 'verify-runtime' 30 -isolated
     $reportPath = Join-Path $run 'user/roaming/SpaceBattleship/release-verification.json'
     if (!(Test-Path -LiteralPath $reportPath)) { throw "Runtime verification did not complete: $reportPath" }
     $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
@@ -261,19 +278,12 @@ try {
     # The verifier proved an explicit save. Normal launch must load it; the
     # product saves only on its real-time deadline or an explicit user action.
     if (!(Test-Path -LiteralPath $savePath)) { throw 'Verified explicit save missing before normal launch' }
-    $frames = Join-Path $run 'final-exe-frames'
-    New-Item -ItemType Directory -Path $frames | Out-Null
-    # Movie Maker retains active Ogg playback on shutdown. Capture visuals with
-    # music off only in the isolated user directory; test default audio below.
-    $musicSettings = Assert-InWork (Join-Path $run 'user/roaming/SpaceBattleship/music_settings.cfg')
-    [IO.File]::WriteAllText($musicSettings, "[audio]`r`nmusic_on=false`r`n", $utf8)
-    try {
-        $null = Run $candidate @('--write-movie',(Join-Path $frames 'frame.png'),'--fixed-fps','30','--quit-after','3') (Join-Path $run 'empty-cwd') 'normal-launch' 60 -isolated
-    } finally { Remove-Item -LiteralPath $musicSettings -Force }
-    if (@(Get-ChildItem -LiteralPath $frames -Filter '*.png').Count -eq 0) {
-        throw "Final ZIP executable failed to render independent frames: $frames"
+    $finalScreenshot = Join-Path $run 'user/roaming/SpaceBattleship/release-launch.png'
+    $null = Run $candidate @('--max-fps','0','--disable-vsync','--verbose','--quit-after','90','--','--release-screenshot') (Join-Path $run 'empty-cwd') 'normal-launch' 60 -isolated
+    if (!(Test-Path -LiteralPath $finalScreenshot -PathType Leaf) -or (Get-Item -LiteralPath $finalScreenshot).Length -eq 0) {
+        throw "Final ZIP executable failed to capture its rendered viewport: $finalScreenshot"
     }
-    $null = Run $candidate @('--verbose','--quit-after','90') (Join-Path $run 'empty-cwd') 'normal-relaunch' 60 -isolated
+    Note "Native admission evidence: independent verifier; final ZIP executable evidence: normal startup and rendered viewport $finalScreenshot"
     Stage 'Publish verified release'
     $hashStream = [IO.File]::OpenRead($zipPath)
     $sha256 = [Security.Cryptography.SHA256]::Create()
