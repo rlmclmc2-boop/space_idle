@@ -28,6 +28,7 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("requires_drop_rules",false) and not descriptor.get("drop_rules_compiled",false):return false
 	if descriptor.get("enemies",[]).size()>(15 if descriptor.execution_scope=="native_rich15_layer2" else 2):return false
 	var candidate:RefCounted=ClassDB.instantiate("SpaceCombatKernel")
+	if descriptor.get("requires_laser_charge",false) and (not candidate.has_method("supports_laser_charge") or not candidate.supports_laser_charge()):return false
 	if not candidate.configure(descriptor):return false
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
