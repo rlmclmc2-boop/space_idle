@@ -18,6 +18,27 @@ func _initialize()->void:call_deferred("run")
 func picture(scene)->void:
 	scene.battle_layer.queue_redraw();scene.pulse_layer.queue_redraw()
 	await process_frame;await RenderingServer.frame_post_draw
+func audit_ports(scene,enemy:Dictionary)->void:
+	var retained=scene.retained_contacts
+	var record=retained.records[int(enemy.uid)]
+	var width:float=scene.enemy_render_width(enemy)
+	var angle:float=scene.enemy_render_angle(enemy)
+	var pixel_scale:float=scene.enemy_recognition_screen_scale()
+	check(record.supported and record.root.get_children().all(func(node):return node.kind!="weapon_group"),"ordinary port owner has no rotating weapon nodes")
+	for component in scene.enemy_weapon_components(enemy):
+		var canonical:Dictionary=scene.enemy_component_pose(enemy,component)
+		var matches:Array=record.ports.filter(func(port):return port.slot==int(component.owner_slot))
+		check(matches.size()==1,"one immutable port descriptor for actual weapon slot")
+		if matches.is_empty():continue
+		var port:Dictionary=matches[0]
+		var radius:float=retained.port_radius(port,width,pixel_scale)
+		var local:Vector2=Vector2(canonical.muzzle).rotated(-PI-angle)-Vector2(port.position)*width
+		var texture=retained.OMNI_PHYSICAL if port.physical else retained.OMNI_ENERGY
+		var pixels:Image=texture.get_image()
+		var sample:Vector2=(Vector2.ONE*0.5+local/(radius*2))*Vector2(pixels.get_size())
+		check(Rect2(Vector2.ZERO,Vector2(pixels.get_size())).has_point(sample) and pixels.get_pixelv(Vector2i(sample)).a>0.95,"actual authoritative muzzle is on an opaque emitter pixel")
+		check(float(canonical.port.length())<=radius*(30.0/32.0) and radius<=0.6*maxf(float(canonical.width),15.0/pixel_scale),"full logical aim sweep fits a bounded omnidirectional face")
+
 func run()->void:
 	var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
 	scene.automation_args=["--capture"];scene.music_on=false
@@ -60,6 +81,20 @@ func run()->void:
 	for enemy in g.enemies:
 		var record=retained.records[int(enemy.uid)]
 		check(record.hull.builds==hull_builds[enemy.uid] and record.deck.pieces.deck_physical_body.builds==body_builds[enemy.uid],"unchanged hull/body commands survive parent redraw")
+	for enemy in g.enemies:audit_ports(scene,enemy)
+	var port_builds:Dictionary={};var port_transforms:Dictionary={}
+	for enemy in g.enemies:
+		var record=retained.records[int(enemy.uid)]
+		port_builds[enemy.uid]=record.ports_over.builds
+		port_transforms[enemy.uid]=record.ports_over.transform
+	var rng_before:int=g.rng.state
+	var kernel_before:Dictionary=g.native_execution.kernel.metrics().duplicate(true)
+	scene.fx_time+=0.1
+	await picture(scene)
+	for enemy in g.enemies:
+		var record=retained.records[int(enemy.uid)]
+		check(record.ports_over.builds==port_builds[enemy.uid] and record.ports_over.transform==port_transforms[enemy.uid],"time and parent redraw do not rebuild or rotate ordinary ports")
+	check(g.rng.state==rng_before and g.native_execution.kernel.metrics()==kernel_before,"port rendering does not advance kernel or consume gameplay RNG")
 	root.get_texture().get_image().save_png("res://.runtime/retained-native-on.png")
 	scene.retained_contacts_enabled=false;await picture(scene)
 	check(not retained.visible,"direct painter switch hides retained child commands")
@@ -70,12 +105,14 @@ func run()->void:
 	var enemy:Dictionary=g.enemies[0]
 	var record=retained.records[int(enemy.uid)]
 	var old_hull=record.hull.builds
+	var old_ports=record.ports_over.builds
 	var old_protection=record.protection.builds;var old_meter=record.shield.builds
 	# Display-only fixtures mutate published scalar state while paused, never tick it.
 	enemy.shield=500.0
 	await picture(scene)
 	check(record.shield.builds>old_meter and record.protection.builds>old_protection,"shield fraction invalidates protection and meter")
 	check(record.hull.builds==old_hull,"shield change does not rebuild hull")
+	check(record.ports_over.builds==old_ports,"shield changes do not rebuild static ports")
 	var original_scale=scene.battle_layer.scale
 	scene.battle_layer.scale=original_scale*0.8
 	await picture(scene)
@@ -106,6 +143,32 @@ func run()->void:
 	check(retained.records.is_empty(),"explicit scene reset keeps no retained enemies")
 	# Reset is allowed to restage an empty foreground, with no prior flight lease.
 	check(retained.frame.get("shots",[])==g.projectiles,"reset restages only legitimate in-flight Game shots")
+	# Six authored hull sizes, only in-memory presentation fixtures after handoff.
+	for i in 6:
+		var e=template.duplicate(true);e.uid=900+i;e.slot=i;e.size=i+1
+		e.x=110.0+175.0*(i%3);e.y=180.0+220.0*(i/3);e.explicit_formation=true
+		e.hp=1000.0;e.max_hp=1000.0;e.armourType=0;e.shield=0.0;e.max_shield=0.0
+		e.equipment=[{"name":"cannon-mon"},{"name":"laser_mon"}];e.cooldowns=[0.0,0.0]
+		g.enemies.append(e)
+	scene.enemy_poses.clear();scene.battle_read_model.invalidate_membership()
+	scene.fx_time+=5.0
+	await picture(scene)
+	# Pose creation starts entry; reach residence without a combat tick.
+	scene.fx_time+=5.0
+	await picture(scene)
+	for e in g.enemies:audit_ports(scene,e)
+	root.get_texture().get_image().save_png("res://.runtime/ordinary-six-ports.png")
+	var encounter:Dictionary=g.db.levels[g.stage-1].groups[g.group_index-1]
+	var group:Dictionary=g.db.groups[str(int(encounter.id))]
+	var old_tier:Variant=group.get("combatTier")
+	group.combatTier="boss";scene.encounter_presentation.sync(g,0.0)
+	await picture(scene)
+	for e in g.enemies:
+		var boss_record=retained.records[int(e.uid)]
+		check(not boss_record.supported and boss_record.fallback.visible and not boss_record.ports_over.visible and not boss_record.ports_under.visible,"boss and escorts retain original painter and aimed weapons")
+	root.get_texture().get_image().save_png("res://.runtime/boss-original-painter.png")
+	if old_tier==null:group.erase("combatTier")
+	else:group.combatTier=old_tier
 	g.begin_retreat();scene.queue_free();await process_frame;await process_frame
 	print("Retained native display: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

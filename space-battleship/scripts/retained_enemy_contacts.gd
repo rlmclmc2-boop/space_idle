@@ -1,7 +1,10 @@
 extends Node2D
 ## Native Canvas command owners. Motion updates transforms; true shape/status
-## changes rebuild only their own part. No textures, offscreen views or scaling
+## changes rebuild only their own part. No offscreen views or scaling
 ## approximation. Unrecognized mounts and leaders use the original painter.
+## Supported ordinary contacts use static omnidirectional ports, never aimed nodes.
+const OMNI_PHYSICAL=preload("res://assets/ships/enemy/ports/physical.svg")
+const OMNI_ENERGY=preload("res://assets/ships/enemy/ports/energy.svg")
 class Part extends Node2D:
  var host
  var kind:String
@@ -16,18 +19,6 @@ class Part extends Node2D:
   builds+=1
   if kind=="foreground" or not data.is_empty():host.paint(self,kind,data)
 
-class MountRecord extends RefCounted:
- var node:Part
- var physical:bool
- var normalized:Vector2
- var module_factor:float
- var port_factor:Vector2
- var base_rotation:float
- var aim_limit:float
- var aim_factor:float
- var under:bool
- var owner_slot:int
-
 class DisplayRecord extends RefCounted:
  var entity:Dictionary
  var root:Node2D
@@ -37,7 +28,9 @@ class DisplayRecord extends RefCounted:
  var protection:Part
  var health:Part
  var shield:Part
- var mounts:Array[MountRecord]=[]
+ var ports_under:Part
+ var ports_over:Part
+ var ports:Array[Dictionary]=[]
  var shape_revision:int=-1
  var source_id:int=-1
  var legacy_signature:String=""
@@ -68,7 +61,6 @@ class DisplayRecord extends RefCounted:
  var packet_bucket:int=-999999
  var packet_repair:bool=false
  var body_signature:Array=[]
- var mount_signature:Array=[]
  var packet_large:bool=false
 
 var paint_owner
@@ -92,16 +84,18 @@ func build_deck(parent:Node2D)->Part:
  for kind in ["deck_physical_body","deck_physical_strokes","deck_energy_body","deck_energy_strokes"]:group.pieces[kind]=part(group,kind)
  return group
 
-func build_weapon(parent:Node2D)->Part:
- var group=part(parent,"weapon_group")
- group.pieces.body=part(group,"weapon_body");group.pieces.strokes=part(group,"weapon_strokes")
- return group
+func port_radius(port:Dictionary,width:float,screen_scale:float)->float:
+ # The opaque SVG face covers the unchanged logical muzzle sweep, regardless
+ # of aim. Its radius is 30/32 of the image; pad by one physical screen pixel.
+ return maxf(4.0/maxf(screen_scale,0.1),float(port.reach)*width/(30.0/32.0)+1.0/maxf(screen_scale,0.1))
 
 func create_record(enemy:Dictionary)->DisplayRecord:
  var record=DisplayRecord.new();record.entity=enemy
  record.root=Node2D.new();add_child(record.root)
- record.fallback=part(record.root,"fallback");record.hull=part(record.root,"hull")
+ record.fallback=part(record.root,"fallback");record.ports_under=part(record.root,"ports")
+ record.hull=part(record.root,"hull")
  record.deck=build_deck(record.root);record.protection=part(record.root,"protection")
+ record.ports_over=part(record.root,"ports")
  record.health=part(record.root,"meter");record.shield=part(record.root,"meter")
  record.health.data={"rect":Rect2(),"ratio":-INF,"color":paint_owner.BATTLE_WARM}
  record.shield.data={"rect":Rect2(),"ratio":-INF,"color":Color.WHITE}
@@ -109,7 +103,7 @@ func create_record(enemy:Dictionary)->DisplayRecord:
  return record
 
 func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
- record.body_signature.clear();record.mount_signature.clear()
+ record.body_signature.clear()
  var enemy=record.entity
  record.shape_revision=int(spatial.shape_revision);record.boss=boss
  record.source_id=spatial.source_id;record.appearance=spatial.appearance
@@ -128,10 +122,9 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  for damage_type in paint_owner.enemy_attack_types(enemy):
   if damage_type==2:record.physical=true
   if damage_type==1:record.energy=true
- for mount in record.mounts:mount.node.hide();mount.node.queue_free()
- record.mounts.clear()
+ record.ports.clear();record.ports_under.signature.clear();record.ports_over.signature.clear()
  record.fallback.visible=not record.supported
- for node in [record.hull,record.deck,record.protection,record.health,record.shield]:node.visible=record.supported
+ for node in [record.hull,record.deck,record.protection,record.health,record.shield,record.ports_under,record.ports_over]:node.visible=record.supported
  if not record.supported:return
  record.hull.data={"texture":record.texture};record.hull.queue_redraw()
  for physical in [true,false]:
@@ -143,34 +136,12 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   body.data={"physical":physical};body.queue_redraw()
   strokes.data={"width":-INF,"physical":physical}
  for component in components:
-  var mount=MountRecord.new();mount.node=build_weapon(record.root)
-  mount.physical=component.damage_type==2
   var point:Dictionary=component.hardpoint
-  mount.normalized=Vector2(float(point.pos[0]),float(point.pos[1])*2.0)
-  mount.module_factor=0.42*float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
-  mount.base_rotation=deg_to_rad(float(point.get("base_rotation",0)))
+  var factor=0.42*float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
   var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
-  mount.port_factor=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))
-  # The canonical aim chooses the first component owning owner_slot. Resolve
-  # that same owner once; grouping/overlapping slots retain their old meaning.
-  var aim_component=paint_owner.enemy_component_for_slot(enemy,component.owner_slot)
-  var role:String=aim_component.mode() if aim_component!=null else ""
-  mount.aim_factor=1.0 if role=="main" else 0.2 if role=="secondary" else 0.0
-  mount.aim_limit=deg_to_rad(float(aim_component.hardpoint.get("rotation_limit",0))) if aim_component!=null else 0.0
-  mount.under=int(point.get("z",1))<=0
-  mount.owner_slot=int(component.owner_slot)
-  mount.node.pieces.body.data={"physical":mount.physical};mount.node.pieces.body.queue_redraw()
-  mount.node.pieces.strokes.visible=not mount.physical
-  mount.node.pieces.strokes.data={"width":-INF}
-  record.mounts.append(mount)
- # Stable paint order is compiled only when identity/appearance changes.
- var ordered:Array=[record.fallback]
- for mount in record.mounts:
-  if mount.under:ordered.append(mount.node)
- ordered.append_array([record.hull,record.deck,record.protection])
- for mount in record.mounts:
-  if not mount.under:ordered.append(mount.node)
- ordered.append_array([record.health,record.shield])
+  record.ports.append({"slot":int(component.owner_slot),"position":Vector2(float(point.pos[0]),float(point.pos[1])*2.0),"reach":Vector2(float(muzzle[0][0]),float(muzzle[0][1])).length()*factor,"physical":component.damage_type==2,"under":int(point.get("z",1))<=0})
+ # Existing under/over deck order, with one static owner per port layer.
+ var ordered:Array=[record.fallback,record.ports_under,record.hull,record.deck,record.protection,record.ports_over,record.health,record.shield]
  for index in ordered.size():record.root.move_child(ordered[index],index)
  record.packet={};record.packet_bucket=-999999;record.protection_width=-INF;record.protection_clock=-INF
 
@@ -233,6 +204,7 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   record.root.position=pos;record.hull.rotation=PI+angle
   record.hull.scale=Vector2.ONE*width;record.hull.self_modulate=Color(light,light,light,1)
   record.deck.rotation=PI+angle
+  record.ports_under.rotation=PI+angle;record.ports_over.rotation=PI+angle
   for prefix in ["deck_physical_","deck_energy_"]:
    var body:Part=record.deck.pieces[prefix+"body"]
    if not body.visible:continue
@@ -276,27 +248,14 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   if shield_type==1 and size>=4:outline=packet.front if status.show_hull and armour in [1,2] else packet.single_front
  elif not (status.show_hull and armour in [1,2]) and not status.repair:outline=PackedVector2Array()
  update_meters(record,pos,width,angle,outline)
- var mount_key:Array=[point,width,angle,record.screen_scale,paint_owner.player_render_position()]
- if record.mount_signature==mount_key:return
- record.mount_signature=mount_key
- var desired:float=0.0
- if paint_owner.simulation_geometry_view==null:desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-angle,-PI,PI)
- var min_width=15.0/maxf(0.1,record.screen_scale)
- for mount in record.mounts:
-  var module_width=width*mount.module_factor
-  var w=maxf(min_width,module_width)
-  var mount_angle:float
-  var origin:Vector2
-  if paint_owner.simulation_geometry_view!=null:
-   var geometry:Dictionary=paint_owner.simulation_geometry_view.row(enemy).components[mount.owner_slot]
-   mount_angle=geometry.angle;origin=geometry.origin
-  else:
-   mount_angle=PI/2+angle+clampf(desired,-mount.aim_limit,mount.aim_limit)*mount.aim_factor+mount.base_rotation
-   origin=(mount.normalized*width).rotated(PI+angle)
-  var shift=mount.port_factor*module_width-Vector2((0.64 if mount.physical else 0.45)*w,0)
-  mount.node.position=origin+shift.rotated(mount_angle);mount.node.rotation=mount_angle-PI/2
-  mount.node.pieces.body.scale=Vector2.ONE*w
-  if not mount.physical:set_stroke_width(mount.node.pieces.strokes,w)
+ # Aim never enters a port layer's transform or draw signature.
+ for under in [true,false]:
+  var node:Part=record.ports_under if under else record.ports_over
+  if node.signature==[width,record.screen_scale]:continue
+  var ports:Array=[]
+  for port in record.ports:
+   if port.under==under:ports.append({"position":port.position*width,"radius":port_radius(port,width,record.screen_scale),"physical":port.physical})
+  node.update({"ports":ports},[width,record.screen_scale])
 
 func set_stroke_width(node:Part,width:float)->void:
  if node.data.width==width:return
@@ -336,8 +295,9 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
    surface.draw_texture_rect(data.texture,Rect2(Vector2(-0.5,-1.0),Vector2(1.0,2.0)),false,Color.WHITE)
   "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
   "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
-  "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
-  "weapon_strokes":paint_owner.enemy_recognition.draw_weapon_strokes(surface,data.width)
+  "ports":
+   for port in data.ports:
+    surface.draw_texture_rect(OMNI_PHYSICAL if port.physical else OMNI_ENERGY,Rect2(port.position-Vector2.ONE*port.radius,Vector2.ONE*port.radius*2),false)
   "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
   "fallback":paint_owner.draw_enemy_hull_and_status(data.enemy,data.offset,data.boss)
