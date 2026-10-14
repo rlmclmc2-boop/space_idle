@@ -467,7 +467,7 @@ func _process(delta: float) -> void:
 			particles = particles.filter(func(p):return p.life > 0)
 		for f in floats:
 			f.life -= dt
-			if f.get("damage",false):f.pos.y -= dt*12
+			if f.get("damage",false) and not f.has("tag_size"):f.pos.y -= dt*12
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
