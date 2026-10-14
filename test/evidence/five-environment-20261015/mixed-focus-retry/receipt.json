@@ -1,0 +1,132 @@
+{
+  "refs": {
+    "mixed": "09b756a2a9cd0e1b389af2bdb8d54b9236aba433",
+    "cannon": "09b756a2a9cd0e1b389af2bdb8d54b9236aba433",
+    "missile": "09b756a2a9cd0e1b389af2bdb8d54b9236aba433",
+    "longLaser": "09b756a2a9cd0e1b389af2bdb8d54b9236aba433"
+  },
+  "order": [
+    "mixed",
+    "cannon",
+    "missile",
+    "longLaser"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "mixed",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\mixed\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792005058.2778406,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+      "exit": 0,
+      "completed_unix": 1792005078.663643,
+      "json_sha256": "5c823a7379b3c5f55b694f429fa125cc70f2c1bb7e8c65ff8a69be3f3796f354",
+      "png_sha256": "b3d967e846a282fefba513e38544f264b604873791305d61756f9cca6c6c862e",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "cannon",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\cannon\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792005078.7065282,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+      "exit": 0,
+      "completed_unix": 1792005099.158592,
+      "json_sha256": "7ec9362cf9b26921faabd4ead576828ac0ad36909b2742043c8d0a5519ce3f15",
+      "png_sha256": "da6673bd0823fe66dd3e10be952c8681955ffe9bde7b023e0aab6fc591049dc8",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "missile",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\missile\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792005099.1805325,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+      "exit": 0,
+      "completed_unix": 1792005119.425712,
+      "json_sha256": "c940b688dd508e6b03865ed5718c2152cfda061aa40af99b637dbd705953f399",
+      "png_sha256": "e69bb4e6fb8f3276985c079ad70f18162c7c9fdc82f3182d9e71f7543a2574ef",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "longLaser",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\five-environment-20261015-baseline\\longLaser\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1792005119.4516425,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+      "exit": 0,
+      "completed_unix": 1792005139.647833,
+      "json_sha256": "1d33aea2d56e7fece4344047de6fafd067fe9c5e97da1e0b49df3a3d9d878a78",
+      "png_sha256": "7577055d5adf508958b6ccb7ab60c97173d2e02072916cee2ef8870330bb9f32",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {},
+  "dll_sha256": {
+    "mixed": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+    "cannon": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+    "missile": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+    "longLaser": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "9ba21496b60b053da82ff8b0e83268b631207cf30c889f0684938793b04e0b38",
+  "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+  "probe_policy": {
+    "whole_state_reads_per_run": 2,
+    "counter_reads_per_run": 2,
+    "per_step_exports": 0,
+    "per_step_scans": 0,
+    "counter_increment_cost_included": true
+  },
+  "scope": "Failed-focus baseline retries; laser original is valid and not rerun. Same load, source, DLL and timing formula; request window focus before warmup."
+}
