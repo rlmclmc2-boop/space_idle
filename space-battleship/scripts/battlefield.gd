@@ -300,11 +300,14 @@ func _process_battlefield(delta: float) -> void:
 		hold_departure_scene();return
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 	var valid_beams:Dictionary={}
-	for shot in game.projectiles:
+	var beam_shots:Array=game.projectiles
+	if game.native_execution!=null and game.native_execution.kernel.has_method("presentation_beams"):
+		beam_shots=game.native_execution.kernel.presentation_beams()
+	for shot in beam_shots:
 		if not bool(shot.get("beam",false)) or bool(shot.hostile) or not game.long_laser_valid(shot):continue
 		var serial:=int(shot.serial)
 		valid_beams[serial]=true
-		if int(shot.ticks)>0 and float(beam_style(shot).power)>=0.999999 and not beam_full_started.has(serial):
+		if not beam_full_started.has(serial) and int(shot.ticks)>0 and float(beam_style(shot).power)>=0.999999:
 			beam_full_started[serial]=fx_time;beam_full_cue_count+=1
 	for serial in beam_full_started.keys():
 		if not valid_beams.has(serial):beam_full_started.erase(serial)
