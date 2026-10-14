@@ -1,0 +1,43 @@
+{
+  "base": "85ada8bc",
+  "runs": {
+    "SDA1": {
+      "frame_ms": 21.618857526881722,
+      "frames": 372,
+      "snapshot_before": {
+        "legacy": 181,
+        "shared": 1
+      },
+      "snapshot_after": {
+        "legacy": 553,
+        "shared": 1
+      }
+    },
+    "SDB": {
+      "frame_ms": 20.634526992287917,
+      "frames": 389,
+      "snapshot_before": {
+        "legacy": 0,
+        "shared": 207
+      },
+      "snapshot_after": {
+        "legacy": 0,
+        "shared": 596
+      }
+    },
+    "SDA2": {
+      "frame_ms": 20.68399228791774,
+      "frames": 389,
+      "snapshot_before": {
+        "legacy": 188,
+        "shared": 1
+      },
+      "snapshot_after": {
+        "legacy": 577,
+        "shared": 1
+      }
+    }
+  },
+  "threshold_ms": 0.5,
+  "decision": "Reject: B minus later A only 0.049ms; smaller than control drift. Restore all production changes. Next unmodified larger boundary: native feedback serialization and GDScript reconstruction."
+}

@@ -1,0 +1,39 @@
+{
+  "compiler": "D:\\CodexTools\\llvm-mingw\\llvm-mingw-20261006-ucrt-x86_64\\bin\\x86_64-w64-mingw32-clang++.exe",
+  "compiler_sha256": "ee85bef2c733e24a26c22be3df94bd631cf9528a048fce91241c182a936737fe",
+  "compile_flags": [
+    "-c",
+    "-std=c++17",
+    "-fno-exceptions",
+    "-Wwrite-strings",
+    "-fvisibility=hidden",
+    "-O3",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-DWINDOWS_ENABLED",
+    "-DTHREADS_ENABLED",
+    "-DNDEBUG",
+    "-DGDEXTENSION",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gen\\include",
+    "-ID:\\CodexBuild\\space_idle\\godot-cpp\\gdextension"
+  ],
+  "link_flags": [
+    "-shared",
+    "-Wl,--no-undefined",
+    "-static",
+    "-static-libgcc",
+    "-static-libstdc++"
+  ],
+  "godot_cpp_library_sha256": "37123d5132db4deff052d47265ed684640246e280f6a441322817874e4819a29",
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "dll_sha256": "358af54c002271572dfb364ef79df1dcb6c8cdba3c614d46e79568c826e28dea",
+  "source_sha256": {
+    "space-battleship\\addons\\native_battle\\src\\combat_execution_kernel.h": "af20e2b0db7849ebe1657389752031d3239cd724781853843dfad2a47d7bf72a",
+    "space-battleship\\addons\\native_battle\\src\\combat_presentation.h": "5a0bf040a362b2424978ec631e7727dfcf2e5a26cfb2f1cc503bc2bd13354662",
+    "space-battleship\\addons\\native_battle\\src\\combat_retained_presentation.h": "040c563ab80ce63553a5acc45c7a8e32e7209e3bceb1960045da9bfc72f30a4d",
+    "space-battleship\\addons\\native_battle\\src\\space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118"
+  },
+  "script_sha256": "0052661a60c4fd92ccb5a957ea5167e613bc719cdda23a405478d44d9d37ef25"
+}

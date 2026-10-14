@@ -1,0 +1,205 @@
+diff --git a/space-battleship/addons/native_battle/src/combat_presentation.h b/space-battleship/addons/native_battle/src/combat_presentation.h
+index 49e8822c..af5b4e99 100644
+--- a/space-battleship/addons/native_battle/src/combat_presentation.h
++++ b/space-battleship/addons/native_battle/src/combat_presentation.h
+@@ -150,6 +150,15 @@ public:
+         for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
+         retained_upload.clear();
+     }
++    Dictionary snapshot_references(Ref<SpaceCombatKernel> kernel,Array enemies,Array floats,Array pending,Dictionary born,Dictionary muzzles) const {
++        Dictionary retained,alive;Array beams;std::unordered_map<uint64_t,bool> serials;
++        for(int i=0;i<enemies.size();++i){Dictionary e=enemies[i];retained[e["uid"]]=e;alive[e["uid"]]=e;}
++        for(const Array &entries:{floats,pending})for(int i=0;i<entries.size();++i){Dictionary entry=entries[i];if(entry.has("target_entity")){Dictionary e=entry["target_entity"];retained[e["uid"]]=e;}}
++        if(kernel.is_valid())for(size_t id:kernel->active){const auto &f=kernel->flights[id];if(!f.live)continue;serials[f.serial]=true;if(f.beam)beams.append(f.view);
++            for(const char *key:{"target","source"}){Dictionary e=f.view.get(key,Dictionary());if(!e.is_empty()&&e.has("uid")&&born.has(e["uid"]))retained[e["uid"]]=e;}}
++        Array keys=muzzles.keys();for(int i=0;i<keys.size();++i)if(!serials.count(int64_t(keys[i])))muzzles.erase(keys[i]);
++        Dictionary result;result["retained"]=retained;result["alive"]=alive;result["beams"]=beams;return result;
++    }
+     Dictionary retained_metrics() const {Dictionary d;d["old_advance"]=old_advances;d["old_prepare"]=old_prepares;d["old_draw"]=old_draws;d["advances"]=retained_advances;d["births"]=retained_births;d["draws"]=retained_draws;d["upload_bytes"]=retained_upload_bytes;d["live"]=retained_frame.is_valid()?retained_frame->size():0;return d;}
+     Vector2 battle_logical_point(Vector2 point) const { return inverse_battle_point(point); }
+     double rotated_outlines_min_y(const Array &outlines,double angle) const {
+@@ -645,6 +654,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
+ }
+ #include "combat_retained_presentation.h"
+ void SpaceCombatPresentation::_bind_methods(){
++    ClassDB::bind_method(D_METHOD("snapshot_references","kernel","enemies","floats","pending","born","muzzles"),&SpaceCombatPresentation::snapshot_references);
+     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
+     ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
+     ClassDB::bind_method(D_METHOD("configure_contact_gpu","meshes","canvas","material"),&SpaceCombatPresentation::configure_contact_gpu);
+diff --git a/space-battleship/scripts/battle_slice_runtime.gd b/space-battleship/scripts/battle_slice_runtime.gd
+index 4f96a8cb..419a86b1 100644
+--- a/space-battleship/scripts/battle_slice_runtime.gd
++++ b/space-battleship/scripts/battle_slice_runtime.gd
+@@ -29,6 +29,9 @@ var previous:Dictionary={}
+ var previous_spatial
+ var born:Dictionary={}
+ var muzzle_values:Dictionary={}
++var shared_display:=true
++var shared_snapshots:=0
++var legacy_snapshots:=0
+ var started:=false
+ var advancing:=false
+ var detach_requested:=false
+@@ -92,6 +95,10 @@ func advance(seconds:float)->void:
+ 	scene.game_time_remainder=remainder
+ 	advancing=false
+ func snapshot()->void:
++	if shared_display and game.native_execution!=null and game.combat_presentation!=null:
++		shared_snapshot();return
++	legacy_snapshots+=1
++	geometry.shared_display=false
+ 	geometry.sync_fixed_layout()
+ 	var retained:Dictionary={}
+ 	for enemy in game.enemies:retained[int(enemy.uid)]=enemy
+@@ -122,6 +129,27 @@ func snapshot()->void:
+ 	for shot in game.projectiles:
+ 		if str(shot.get("key","")) in ["longLaser","longLaser_mon","longLaser-mon"]:
+ 			muzzle_values[int(shot.serial)]=geometry.visual_muzzle(shot)
++func shared_snapshot()->void:
++	shared_snapshots+=1
++	geometry.shared_display=true
++	geometry.sync_fixed_layout()
++	var refs:Dictionary=game.combat_presentation.snapshot_references(game.native_execution.kernel,game.enemies,scene.floats,scene.damage_pending,born,muzzle_values)
++	var retained:Dictionary=refs.retained
++	for uid in born.keys():
++		if not retained.has(uid):born.erase(uid);view.retire(uid);geometry.retire_display_entity(uid)
++	# Reopen the completed geometry boundary; an unchanged clock reuses its
++	# spatial solves instead of taking the uncached source path after after_tick.
++	geometry.battle_read_model.begin()
++	for uid in retained:
++		var enemy:Dictionary=retained[uid]
++		if not born.has(uid):view.descriptor(uid,geometry.display_descriptor(enemy));born[uid]=true
++		if not is_same(refs.alive.get(uid),enemy):geometry.freeze_display_entity(enemy)
++	geometry.finish_display_boundary()
++	geometry.publish_shared(view,retained.values());frame=view.fleet
++	geometry.battle_read_model.end()
++	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
++	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
++	for shot in refs.beams:muzzle_values[int(shot.serial)]=geometry.visual_muzzle(shot)
+ func apply_nodes()->void:
+ 	scene.ship_view.apply_geometry_frame(frame,scene.shield_enabled)
+ 	scene.hyperspace_visual.apply_geometry_frame(scene.ship_view,frame,game.drone_combat.disabled)
+diff --git a/space-battleship/scripts/simulation_geometry_authority.gd b/space-battleship/scripts/simulation_geometry_authority.gd
+index 8fda9bb7..7f487efa 100644
+--- a/space-battleship/scripts/simulation_geometry_authority.gd
++++ b/space-battleship/scripts/simulation_geometry_authority.gd
+@@ -237,7 +237,7 @@ func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.IN
+ 		return row.components[int(component.owner_slot)]
+ 	return _source_enemy_component_pose(enemy,component,render_position,known_width)
+ 
+-func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0,frozen_angle:float=INF)->Dictionary:
++func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0,frozen_angle:float=INF,result:Dictionary={})->Dictionary:
+ 	var point:Dictionary=component.hardpoint
+ 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+ 	var width:=enemy_render_width_at_y(enemy,position.y) if known_width<0.0 else known_width
+@@ -249,7 +249,9 @@ func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Ve
+ 	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot,position)+deg_to_rad(float(point.get("base_rotation",0)))
+ 	var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
+ 	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
+-	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
++	if result.is_empty():return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
++	result.origin=origin;result.angle=angle;result.width=module_width;result.port=port;result.muzzle=origin+port.rotated(angle)
++	return result
+ 
+ func execution_enemy_port_offset(enemy:Dictionary,index:int,render_position:Vector2)->Vector2:
+ 	# A native input asks only for this muzzle, not a complete display packet.
+@@ -513,6 +515,8 @@ func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Di
+ var reference_height=0.0
+ var demo_time=0.0
+ var canonical_generation=0
++var shared_display:=false
++var shared_fleet:Dictionary={}
+ var prepared=false
+ var previous_providers:Dictionary={}
+ var previous_spatial_source
+@@ -821,13 +825,26 @@ func display_enemy(enemy:Dictionary)->Dictionary:
+ 	display_row_builds+=1
+ 	var position:Vector2=enemy_render_position(enemy)
+ 	var width:float=enemy_render_width_at_y(enemy,position.y)
+-	var components:Dictionary={}
++	if not shared_display:
++		var components:Dictionary={}
++		for component in enemy_weapon_components(enemy):
++			components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,position,width)
++		var values:Dictionary={}
++		for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
++		var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
++		display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"appearance":pose.get("appearance"),"value":result}
++		return result
++	var persistent:bool=shared_display and not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and is_same(cached.appearance,pose.get("appearance"))
++	var result:Dictionary=cached.value if persistent else {"components":{},"pose":{}}
++	var components:Dictionary=result.components;var values:Dictionary=result.pose
+ 	for component in enemy_weapon_components(enemy):
+-		components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,position,width)
+-	var values:Dictionary={}
++		var slot:int=int(component.owner_slot)
++		components[slot]=_source_enemy_component_pose(enemy,component,position,width,INF,components.get(slot,{}) if persistent else {})
+ 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
+-	var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
+-	display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"appearance":pose.get("appearance"),"value":result}
++	result.position=position;result.width=width;result.angle=enemy_render_angle(enemy);result.frontline=enemy_frontline_y_limit(enemy)
++	result.width_low=enemy_render_width_at_y(enemy,90.0);result.width_high=enemy_render_width_at_y(enemy,floorf(result.frontline));result.recognition_id=display_shape(enemy,width)
++	if persistent:cached.clock=fx_time;cached.logical=logical
++	else:display_row_cache[uid]={"entity":enemy,"pose":pose,"clock":fx_time,"logical":logical,"appearance":pose.get("appearance"),"value":result}
+ 	return result
+ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
+ 	var values:Dictionary={}
+@@ -846,6 +863,30 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
+ 		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":pivots,"carriers":carriers,"drones":drones,"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
+ 	return result
+ 
++func publish_shared(view:RefCounted,enemies:Array)->void:
++	# No complete frame packet and no display-side row duplicate/pose merge.
++	view.player_position=player_render_position()
++	for enemy in enemies:
++		var uid:int=int(enemy.uid)
++		var row:Dictionary=boundary_dead_geometry[uid].value if boundary_dead_geometry.has(uid) else display_enemy(enemy)
++		view.bind_shared(uid,row)
++	view.publish_shapes(pending_display_shapes);pending_display_shapes=[]
++	ensure_fleet_geometry()
++	if shared_fleet.is_empty():shared_fleet={"pivots":[],"carriers":[],"drones":{}}
++	var pivots:Array=shared_fleet.pivots;var carriers:Array=shared_fleet.carriers;var drones:Dictionary=shared_fleet.drones
++	pivots.resize(fleet_pose.modules.size());carriers.resize(fleet_pose.carriers.size())
++	for i in fleet_pose.modules.size():
++		if pivots[i]==null:pivots[i]={}
++		pivots[i].slot=int(fleet_pose.modules[i].assignment.slot);pivots[i].transform=fleet_pose.modules[i].pivot
++	for i in fleet_pose.carriers.size():carriers[i]=fleet_pose.carriers[i].transform
++	for id in drones.keys():
++		if not fleet_pose.drone_by_id.has(id):drones.erase(id)
++	for drone in fleet_pose.drones:drones[str(drone.id)]=drone.transform
++	shared_fleet.hull=current_hull;shared_fleet.ship=fleet_pose.ship_transform
++	shared_fleet.rendered_position=fleet_pose.rendered_position;shared_fleet.rendered_height=fleet_pose.rendered_height
++	shared_fleet.orbit_center=fleet_pose.orbit_center;shared_fleet.orbit_elapsed=fleet_pose.orbit_elapsed;shared_fleet.elapsed=fleet_pose.elapsed
++	view.fleet=shared_fleet;view.ready=true
++
+ func display_shape(enemy:Dictionary,width:float,frozen_pose:Dictionary={})->String:
+ 	# Static outline packets travel only on birth/bucket/contract changes. Their
+ 	# stable entity+bucket ID avoids repeating every packed outline in hit events.
+diff --git a/space-battleship/scripts/simulation_geometry_view.gd b/space-battleship/scripts/simulation_geometry_view.gd
+index 7cb00db1..cf6bc3fc 100644
+--- a/space-battleship/scripts/simulation_geometry_view.gd
++++ b/space-battleship/scripts/simulation_geometry_view.gd
+@@ -41,6 +41,23 @@ func apply(value:Dictionary)->void:
+ 		# Preserve display animation history while replacing source-owned pose values.
+ 		poses[int(uid)].merge(row.pose,true)
+ 	ready=true
++func bind_shared(uid:int,value:Dictionary)->void:
++	if not poses.has(uid):poses[uid]=value.pose
++	elif not is_same(poses[uid],value.pose):
++		# Cold row replacement (freeze/scale/owner) keeps display animation keys.
++		poses[uid].merge(value.pose,true);value.pose=poses[uid]
++	rows[uid]=value;applied_rows+=1
++	spatials[uid].position=value.position;spatials[uid].frontline=value.frontline
++	if shapes.has(str(value.recognition_id)):value.recognition=shapes[str(value.recognition_id)]
++func publish_shapes(packets:Array)->void:
++	for shape in packets:
++		shapes[str(shape.id)]=shape.value
++		if not shape_members.has(int(shape.uid)):shape_members[int(shape.uid)]={}
++		shape_members[int(shape.uid)][str(shape.id)]=true
++	for uid in rows:
++		var row:Dictionary=rows[uid]
++		assert(shapes.has(str(row.recognition_id)),"Display missing immutable shape publication")
++		row.recognition=shapes[str(row.recognition_id)]
+ func row(enemy:Dictionary)->Dictionary:
+ 	var value:Dictionary=rows.get(int(enemy.uid),{})
+ 	assert(not value.is_empty(),"Display geometry missing entity "+str(enemy.uid))
