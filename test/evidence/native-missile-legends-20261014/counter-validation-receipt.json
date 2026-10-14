@@ -1,0 +1,24 @@
+{
+  "dll_sha256": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+  "source_base": "1f159007",
+  "kind": "isolated headless correctness, not real-time performance",
+  "cap": 0,
+  "vsync": 0,
+  "runs": [
+    {
+      "label": "test_native_missile_counters",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_missile_counters.gd"
+      ],
+      "exit": 0
+    }
+  ]
+}

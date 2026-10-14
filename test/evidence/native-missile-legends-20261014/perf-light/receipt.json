@@ -1,0 +1,131 @@
+{
+  "refs": {
+    "A": "ce3ab502c17a9d00d598d8ff75aaa7a9b53b3ed8",
+    "B": "1f159007d9416902a90d1cf58717ba1babe5b857"
+  },
+  "order": [
+    "Aordinary",
+    "Bordinary",
+    "Alegend",
+    "Blegend"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "Aordinary",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-perf\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791996394.7870224,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf",
+      "exit": 0,
+      "completed_unix": 1791996415.2282636,
+      "json_sha256": "9c432f3e9361111258cd8f4572e1a1d9dd2103af5abb8185b2f60a9cc28ff1de",
+      "png_sha256": "bcc395f382cd4d6be8e24b1d0effd052a549bc3c9bee34e3656ec1f3fe07ee67",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "Bordinary",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-perf\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791996415.261181,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+      "exit": 0,
+      "completed_unix": 1791996435.5224993,
+      "json_sha256": "d0b24c85e3301c4623962cd71004ba4dcb3ef04beef980759b01e3fb25eed7a5",
+      "png_sha256": "a38f377b4b63c03bb55e2f46358a2e94daa6c3250c58b91268460d69a15a9721",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "Alegend",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-perf\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791996435.559047,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf",
+      "exit": 0,
+      "completed_unix": 1791996455.0543346,
+      "json_sha256": "5523ad5ff25a8fa79b49afc2d0715fbcaa87734a040278b86c59f138dce49d7b",
+      "png_sha256": "59b0bea237161a26979a73d4878c05a5ab2133c0d8b3d7af44cdeca870555778",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "Blegend",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-perf\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791996455.068297,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+      "exit": 0,
+      "completed_unix": 1791996475.2712774,
+      "json_sha256": "354b8d50dc78c4652a0996c1d56ca7f869fe9fc88955fe4b3f798c6967936750",
+      "png_sha256": "23b28168dcd7c2ebedb421e9040e55bbde01fd91721cc13cbe52ed7005b890f5",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {
+    "A": 0,
+    "B": 0
+  },
+  "dll_sha256": {
+    "A": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf",
+    "B": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "809351675972aeaa63acf8c4b35757f730c96b655f7c80c688dfad0515e6bc66",
+  "fixture_sha256": "bddf25cb6f0d3fd8c684bb23b673991157cbd49ce776bc68d5a85dfe56a0b5ba",
+  "probe_policy": {
+    "whole_state_reads_per_run": 2,
+    "counter_reads_per_run": 2,
+    "per_step_exports": 0,
+    "per_step_scans": 0,
+    "counter_increment_cost_included": true
+  },
+  "scope": "One lightweight full-legend missile AB pair plus separately labelled ordinary-missile control pair, current main versus corrected candidate. Preserve full legends, ordinary native admission/fallback, actual1x checks, uncapped/VSync off; overloaded sides remain diagnostics."
+}

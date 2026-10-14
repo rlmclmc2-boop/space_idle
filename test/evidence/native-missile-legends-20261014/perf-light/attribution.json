@@ -1,0 +1,78 @@
+{
+  "legend_carrier_accounting": {
+    "A": {
+      "sample_start_carriers": 119,
+      "sample_births": 2537,
+      "sample_impacts": 2537,
+      "sample_end_carriers": 119,
+      "sample_conservation": true,
+      "whole_births": 3438,
+      "whole_impacts": 3319,
+      "whole_aoe_hits": 525,
+      "whole_carrier_conservation": true,
+      "game_rng_start": "-1908656094583263945",
+      "game_rng_end": "-1885320985555791041",
+      "drops": 0,
+      "enemies_alive": 15
+    },
+    "B": {
+      "sample_start_carriers": 122,
+      "sample_births": 2537,
+      "sample_impacts": 2534,
+      "sample_end_carriers": 125,
+      "sample_conservation": true,
+      "whole_births": 3438,
+      "whole_impacts": 3313,
+      "whole_aoe_hits": 525,
+      "whole_carrier_conservation": true,
+      "game_rng_start": "-1908656094583263945",
+      "game_rng_end": "-1885320985555791041",
+      "drops": 0,
+      "enemies_alive": 15
+    }
+  },
+  "legend_arrival_difference": {
+    "sample_B_impacts_minus_A": -3,
+    "whole_B_impacts_minus_A": -6,
+    "B_extra_carriers_at_sample_start": 3,
+    "B_extra_carriers_at_sample_end": 6,
+    "interpretation": "Aggregate difference closes exactly in still-live carriers, not fewer births, deaths, lost projectiles or fewer wild explosions. No claim assigns the six carriers to a geometry function or individual instance."
+  },
+  "cache_accounting": {
+    "whole_A_firsts": 3644,
+    "whole_B_firsts": 3589,
+    "whole_A_reuses": 35,
+    "whole_B_reuses": 84,
+    "additional_reuses": 49,
+    "not_yet_arrived_hits": 6,
+    "first_count_difference_equals_reuse_shift_plus_arrival_difference": true,
+    "interpretation": "Derived-salvo shared cache correction intentionally replaces repeated first evaluations; target 111 carries all 49 additional reuses. Prior detailed coverage and targeted tests verify the context boundary."
+  },
+  "wild_accounting": {
+    "roots_both": 156,
+    "substitutions_both": 39,
+    "detonations_both": 35,
+    "remaining_unused_wild_B": 4,
+    "aoe_hits_both": 525,
+    "targets_per_detonation": 15,
+    "effective_layer_growth_both": 428
+  },
+  "earlier_full_coverage_diagnostic": {
+    "repeat_cancellations_A": 0,
+    "ejection_cancellations_A": 0,
+    "observation_errors_A": [],
+    "note": "No cancellation or death occurred in this held-health load; do not attribute this sample difference to known repeat-lifecycle or death-reentry fixes. Death uniqueness was tested separately."
+  },
+  "ordinary": {
+    "state_before_common_native_state_equal": true,
+    "state_before_game_rng_equal": true,
+    "state_after_common_native_state_equal": true,
+    "state_after_game_rng_equal": true
+  },
+  "ordinary_common_projection_exclusions": [
+    "native_context",
+    "missile_attacks",
+    "RandomNumberGenerator.seed metadata (kernel instantiates RNG then assigns the authoritative state; state matches exactly)"
+  ],
+  "sampling_runs_added_for_attribution": 0
+}

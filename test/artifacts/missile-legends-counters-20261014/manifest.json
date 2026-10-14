@@ -1,0 +1,16 @@
+{
+  "production_commit": "1f159007d9416902a90d1cf58717ba1babe5b857",
+  "clean_candidate_with_test": "0d14ce90b4dafceafd0e6adb295652daf6df48c3",
+  "dll_sha256": "39326233a0c85814a2b18cd8ec09c33775ce0fcfc19f8c4fa50f23e58a2ad749",
+  "dll_bytes": 1586688,
+  "build_exit": 0,
+  "build_log": "test/evidence/native-missile-legends-20261014/build-counters.log",
+  "counter_validation_checks": 5,
+  "counter_validation_failures": 0,
+  "earlier_accepted_checks_not_repeated": 209,
+  "source_sha256": {
+    "space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "combat_execution_kernel.h": "11c32967236ff4b6b60c7ccf8ad4a59bd1bdf8e6a96dc149dd17710aa1d04190",
+    "combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1"
+  }
+}
