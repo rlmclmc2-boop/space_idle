@@ -198,6 +198,9 @@ void SpaceCombatPresentation::flush_retained_stream(RID canvas) {
 }
 void SpaceCombatPresentation::draw_retained_stream(Object *surface,Vector2 offset,RID canvas) {
     ++mixed_stream_draws;
+    // Match the retained MultiMesh culling bounds: birth anchors may lie offscreen
+    // while the GPU clock has already moved their triangles into the viewport.
+    RenderingServer::get_singleton()->canvas_item_set_custom_rect(canvas,true,Rect2(Vector2(-8192,-8192),Vector2(16384,16384)));
     // Quarter-second epochs bound cancellation/UV quantization while retaining
     // the canonical birth anchor and GPU-clock straight-flight projection.
     const double epoch=std::floor(retained_kernel->clock*4.0)/4.0;
