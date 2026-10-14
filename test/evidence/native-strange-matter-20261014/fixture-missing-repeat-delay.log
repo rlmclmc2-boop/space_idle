@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+CONFIG cap=0 vsync=1 display=headless
+FAIL: configuration removal preserves existing packet
+STRANGE_MATTER checks=62 failures=1

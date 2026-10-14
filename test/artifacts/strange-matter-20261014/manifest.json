@@ -1,0 +1,13 @@
+{
+  "production_commit": "4fb0c252",
+  "clean_candidate_with_test": "ce3ab502",
+  "dll_sha256": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf",
+  "dll_bytes": 1571840,
+  "build_exit": 0,
+  "build_log": "test/evidence/native-strange-matter-20261014/build.log",
+  "source_sha256": {
+    "space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "combat_execution_kernel.h": "f20fb6f9da5abac118870e625e91602cf47716372ccb034de3fbdc47bd06100a",
+    "combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1"
+  }
+}

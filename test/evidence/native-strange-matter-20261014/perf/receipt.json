@@ -1,0 +1,68 @@
+{
+  "refs": {
+    "A": "9cca3923e1067cefade30153c05cbdf30825d714",
+    "B": "ce3ab502c17a9d00d598d8ff75aaa7a9b53b3ed8"
+  },
+  "order": [
+    "A1",
+    "B1"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "A1",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\strange-matter-main-20261014\\test\\work\\strange-matter-perf\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791992112.3062248,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342",
+      "exit": 0,
+      "completed_unix": 1791992132.1658,
+      "json_sha256": "ff896036357c18765b5816f32fcb20f11f83fb9bdfaa5426494abef531453188",
+      "png_sha256": "18bfeafa22a3e8b3edd004fda180a4dd7a359a1695c6360a2a37883d60f1ef1e",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "B1",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\strange-matter-main-20261014\\test\\work\\strange-matter-perf\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791992132.1857467,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf",
+      "exit": 0,
+      "completed_unix": 1791992152.6391096,
+      "json_sha256": "2c62dfe1afaff911161f4e35321dfc38454be40711ef8e62731e045df99e8a5e",
+      "png_sha256": "0bc40890819609b7fede7793f76b9cccd3f9a462c13cd5b48a3ca4245163de0b",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {
+    "A": 0,
+    "B": 0
+  },
+  "dll_sha256": {
+    "A": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342",
+    "B": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "1b4f7d1deb6aebc6d2edcc730c14629a47c867ef49dee6f033eecc9268f0d7eb",
+  "fixture_sha256": "146f8baffb8135cc731c313ffbaecafc63a8031b7711d8463ca77e8ec51f076e",
+  "scope": "One same-configuration cannon AB pair on accepted laser-charge main versus strange-matter candidate. Preserve full legends, ordinary native admission/fallback, actual1x checks, uncapped/VSync off; overloaded sides remain diagnostics."
+}

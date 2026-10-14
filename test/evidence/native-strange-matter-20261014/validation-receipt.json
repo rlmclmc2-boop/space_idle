@@ -1,0 +1,60 @@
+{
+  "dll_sha256": "ababa3df25330a0e4f12cc0b9fbb4757b9413f981d81930beec04b7b0510ecdf",
+  "source_base": "4fb0c252",
+  "kind": "isolated headless correctness, not real-time performance",
+  "cap": 0,
+  "runs": [
+    {
+      "label": "test_native_strange_matter",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\strange-matter-main-20261014\\test\\work\\strange-matter-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_strange_matter.gd"
+      ],
+      "exit": 0,
+      "checks": 73,
+      "receipt_source": "completed tool result and retained test log"
+    },
+    {
+      "label": "test_native_numeric_upgrade",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\strange-matter-main-20261014\\test\\work\\strange-matter-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_upgrade.gd"
+      ],
+      "exit": 0,
+      "checks": 69
+    },
+    {
+      "label": "test_native_numeric_range",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\strange-matter-main-20261014\\test\\work\\strange-matter-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_range.gd"
+      ],
+      "exit": 0,
+      "checks": 39
+    }
+  ],
+  "vsync_requested": 0,
+  "headless_vsync_getter": 1,
+  "fixture_correction": "First 62-check attempt had one failure: world descriptor omitted existing repeat_delay=.1 and numeric update was refused. Added explicit repeat_delay plus finite-product control. Production unchanged. Final expanded suite 73/0."
+}
