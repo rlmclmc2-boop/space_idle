@@ -19,6 +19,7 @@ const MISSILE_VFX := preload("res://dev/toon_ship/missile_vfx.gd")
 const CONTINUOUS_BEAM_VFX := preload("res://dev/toon_ship/continuous_beam_vfx.gd")
 const RAIL_VFX := preload("res://dev/toon_ship/rail_vfx.gd")
 var rail_vfx = RAIL_VFX.new()
+var retained_missile_events:Node2D
 const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
@@ -413,18 +414,14 @@ func _draw_muzzle_cues() -> void:
 				rail_vfx.penetration(pulse_layer,point,battle_point(Vector2(event.aim)),event.direction,age,budget,battle_clip.size,float(event.get("full_width",rail_vfx.discharge_width())))
 			else:rail_vfx.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget)
 
+	if not is_instance_valid(retained_missile_events):
+		retained_missile_events=preload("res://scripts/retained_missile_events.gd").new()
+		pulse_layer.add_child(retained_missile_events)
+	retained_missile_events.visible=missile_vfx_enabled
 	if missile_vfx_enabled:
 		var budget:=clampf(2.0/sqrt(maxf(1.0,float(missile_events.size()))),0.45,1.0)
-		for event in missile_events:
-			var age:=fx_time-float(event.born)
-			var point:=battle_point(Vector2(event.position))
-			if event.kind=="retired":
-				var coast_time:float=minf(age,float(event.coast_time))
-				point=battle_point(Vector2(event.position)+Vector2(event.direction)*float(event.speed)*coast_time)
-				if age<float(event.coast_time):MISSILE_VFX.flight(pulse_layer,point,event.direction,1.0,int(event.serial),1.0,true,false)
-				else:MISSILE_VFX.retire(pulse_layer,point,event.direction,age-float(event.coast_time))
-			elif event.kind=="fire":MISSILE_VFX.flash(pulse_layer,point,event.direction,age,budget)
-			else:MISSILE_VFX.impact(pulse_layer,point,event.direction,age,bool(event.critical),budget,int(event.serial))
+		retained_missile_events.sync(self,missile_events,fx_time,budget)
+
 
 
 func on_event(kind:String,info:Dictionary)->void:
