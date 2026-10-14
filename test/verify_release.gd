@@ -18,6 +18,7 @@ func _ready() -> void:
 
 func verify() -> void:
 	var root := get_tree().root
+	root.grab_focus()
 	check(OS.has_feature("release") and not OS.has_feature("debug"), "Expected release template")
 	check(not ProjectSettings.get_setting_with_override("debug/file_logging/enable_file_logging"), "File logging must be disabled")
 	check(not FileAccess.file_exists("res://tools/import_workbook.py"), "Development tools leaked into pack")
@@ -99,7 +100,11 @@ func verify() -> void:
 	finish()
 
 func finish() -> void:
+	check(Engine.max_fps == 0,"Release verifier frame cap is enabled")
+	check(DisplayServer.window_get_vsync_mode() == DisplayServer.VSYNC_DISABLED,"Release verifier VSync is enabled")
+	check(get_window().has_focus(),"Release verifier is not focused")
 	var report := {"passed": failures.is_empty(), "failures": failures,
+		"max_fps":Engine.max_fps,"vsync":DisplayServer.window_get_vsync_mode(),"focused":get_window().has_focus(),
 		"executable": OS.get_executable_path(), "user_data": OS.get_user_data_dir(),
 		"renderer": RenderingServer.get_video_adapter_name(),"native_admitted":native_admitted,"native_sha256":native_sha256,"native_path":native_path,"default_native_auto":default_native_auto,"default_compiled":default_compiled,"default_cache":default_cache,"default_save":default_save}
 	var file := FileAccess.open("user://release-verification.json", FileAccess.WRITE)

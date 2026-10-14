@@ -222,9 +222,17 @@ var import_committing := false
 
 func capture_release_viewport() -> void:
 	# Explicit packaging capture only; keep normal gameplay and defaults intact.
+	get_window().grab_focus()
 	for frame in range(45):
 		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
+	var runtime := {"max_fps":Engine.max_fps,"vsync":DisplayServer.window_get_vsync_mode(),"focused":get_window().has_focus(),"executable":OS.get_executable_path()}
+	var report := FileAccess.open("user://release-launch.json",FileAccess.WRITE)
+	if report == null:
+		push_error("Release viewport report failed")
+		return
+	report.store_string(JSON.stringify(runtime,"\t"))
+	report.close()
 	if get_viewport().get_texture().get_image().save_png("user://release-launch.png") != OK:
 		push_error("Release viewport capture failed")
 

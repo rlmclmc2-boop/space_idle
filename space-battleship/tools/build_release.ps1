@@ -283,6 +283,8 @@ try {
     if (!(Test-Path -LiteralPath $finalScreenshot -PathType Leaf) -or (Get-Item -LiteralPath $finalScreenshot).Length -eq 0) {
         throw "Final ZIP executable failed to capture its rendered viewport: $finalScreenshot"
     }
+    $runtime = Get-Content -LiteralPath (Join-Path $run 'user/roaming/SpaceBattleship/release-launch.json') -Raw | ConvertFrom-Json
+    if ($runtime.max_fps -ne 0 -or $runtime.vsync -ne 0 -or !$runtime.focused) { throw 'Final EXE runtime cap/VSync/focus gate failed' }
     Note "Native admission evidence: independent verifier; final ZIP executable evidence: normal startup and rendered viewport $finalScreenshot"
     Stage 'Publish verified release'
     $hashStream = [IO.File]::OpenRead($zipPath)
