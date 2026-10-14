@@ -1,0 +1,75 @@
+{
+  "dll_sha256": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342",
+  "source_base": "d51b875a",
+  "kind": "isolated headless correctness, not real-time performance",
+  "cap": 0,
+  "vsync": "headless backend reports 1; no display presentation or VSync pacing; requested disabled, not a measured VSync=0 claim",
+  "runs": [
+    {
+      "label": "import",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "test_native_laser_charge",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_laser_charge.gd"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "test_native_numeric_upgrade",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_upgrade.gd"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "test_native_numeric_range",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_range.gd"
+      ],
+      "exit": 0
+    }
+  ],
+  "build": {
+    "exit": 0,
+    "command": "build_native.ps1 -Jobs 1",
+    "dll_sha256": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342"
+  }
+}

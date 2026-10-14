@@ -22,13 +22,17 @@ var weapon_geometry_keys:Dictionary={}
 var geometry_muzzles:=PackedVector2Array()
 var geometry_player:=Vector2.INF
 
+# Check only at configuration boundaries, including an already-running old DLL.
+func supports_configuration(candidate:RefCounted,descriptor:Dictionary)->bool:
+	return not descriptor.get("requires_laser_charge",false) or (candidate.has_method("supports_laser_charge") and candidate.supports_laser_charge())
+
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
 	if not ClassDB.class_exists("SpaceCombatKernel"):return false
 	if descriptor.get("requires_drop_rules",false) and not descriptor.get("drop_rules_compiled",false):return false
 	if descriptor.get("enemies",[]).size()>(15 if descriptor.execution_scope=="native_rich15_layer2" else 2):return false
 	var candidate:RefCounted=ClassDB.instantiate("SpaceCombatKernel")
-	if descriptor.get("requires_laser_charge",false) and (not candidate.has_method("supports_laser_charge") or not candidate.supports_laser_charge()):return false
+	if not supports_configuration(candidate,descriptor):return false
 	if not candidate.configure(descriptor):return false
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
@@ -59,7 +63,7 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 	var entry:Dictionary=game.slot_entry(category,index)
 	var projected=entry.duplicate();projected.level=int(entry.level)+levels
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"category":category,"index":index,"level":projected.level})
-	if descriptor.has("error"):return false
+	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return false
 	if category=="defence" and str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
 		var difference=game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry))
 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
@@ -75,7 +79,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 	var energy:float=game.reactor_energy(-1,float(values.charge_max))
 	if not is_finite(energy) or energy<0 or energy>=9223372036854775808.0:return {}
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{},values)
-	if descriptor.has("error"):return {}
+	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	var ratios:Dictionary=game.refit_health_ratios.duplicate()
 	for key in ["armour","shield"]:
 		var old_max=game.stat(key)
@@ -89,6 +93,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 	return {"descriptor":descriptor,"ratios":ratios}
 
 func commit_galaxy_refit(game,plan:Dictionary)->bool:
+	if not supports_configuration(kernel,plan.descriptor):return false
 	if not kernel.refit_configuration(plan.descriptor):return false
 	weapons=plan.descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
@@ -266,7 +271,7 @@ func prepare_numeric_batch(game,mode:String)->Dictionary:
 					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
 	if planned.is_empty():return {"skip":true}
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
-	if descriptor.has("error"):return {}
+	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	descriptor.player=player
 	if not kernel.can_update_configuration(descriptor):return {}
 	return {"descriptor":descriptor,"planned":planned}
@@ -275,6 +280,7 @@ func commit_numeric_batch(game,batch:Dictionary)->bool:
 	# Main performed its original sequential purchases and defence deltas. No
 	# combat advances inside this synchronous, prevalidated command boundary.
 	var descriptor:Dictionary=batch.descriptor
+	if not supports_configuration(kernel,descriptor):return false
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
