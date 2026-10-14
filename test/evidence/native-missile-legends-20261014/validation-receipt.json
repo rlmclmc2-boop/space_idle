@@ -1,0 +1,79 @@
+{
+  "dll_sha256": "f9807bbf52fd726a9696a22cbc9abc251c88704291d5643d9afdd0fb24ae519d",
+  "source_base": "3ed91ce9",
+  "kind": "isolated headless correctness, not real-time performance",
+  "cap": 0,
+  "runs": [
+    {
+      "label": "test_native_missile_legends",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_missile_legends.gd"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "test_native_execution_handoff",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_execution_handoff.gd"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "test_native_numeric_range",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_range.gd"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "test_native_numeric_upgrade",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\missile-legends-main-20261014\\test\\work\\missile-legends-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_upgrade.gd"
+      ],
+      "exit": 0
+    }
+  ],
+  "requested_vsync": 0,
+  "headless_reported_vsync": 1,
+  "checks": {
+    "test_native_missile_legends": 56,
+    "test_native_execution_handoff": 45,
+    "test_native_numeric_range": 39,
+    "test_native_numeric_upgrade": 69
+  },
+  "failures": 0,
+  "fixture_correction": "Initial 48-check run had one Game AoE type mismatch: the synthetic kernel used type 1 while Game used its table type. The in-memory Game fixture now explicitly uses missile type 1; failed log retained. No production changes followed the initial build.",
+  "full_frame_comparison": "Not run in this correction/targeted-validation stage."
+}
