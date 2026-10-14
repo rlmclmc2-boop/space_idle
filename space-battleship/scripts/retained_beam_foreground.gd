@@ -10,6 +10,7 @@ class BeamBatch extends MultiMeshInstance2D:
  var builds:int=0
  var uploads:int=0
  var bounds:=Rect2()
+ var valid_clock:bool=true
  func _init()->void:
   multimesh=MultiMesh.new()
   multimesh.transform_format=MultiMesh.TRANSFORM_2D
@@ -21,10 +22,10 @@ class BeamBatch extends MultiMeshInstance2D:
    capacity=maxi(4,capacity)
    while capacity<count:capacity*=2
    multimesh.instance_count=capacity;buffer.resize(capacity*16);builds+=1
-  used=0;bounds=Rect2()
-  material.set_shader_parameter("clock",clock)
+  used=0;bounds=Rect2();valid_clock=is_finite(clock)
+  if valid_clock:material.set_shader_parameter("clock",clock)
  func append_ray(start:Vector2,end:Vector2,state:Vector4,cue:float,link:bool)->void:
-  if not start.is_finite() or not end.is_finite() or not state.is_finite() or not is_finite(cue) or state.x<=0.0:return
+  if not valid_clock or not start.is_finite() or not end.is_finite() or not state.is_finite() or not is_finite(cue) or state.x<=0.0:return
   var delta:=end-start;var length:=delta.length()
   var body:=maxf(0.7,state.x)*lerpf(0.65,1.8,clampf(state.y,0,1))
   var pad:=maxf(24.0,body*3.0+10.0)

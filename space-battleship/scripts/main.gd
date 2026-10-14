@@ -2640,7 +2640,7 @@ func queue_damage_number(info: Dictionary) -> void:
 				entry.display_dirty = true
 				return
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
-	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
+	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
 	# Keep a same-frame killed target alive until its final display anchor is read.
 	if not info.player:
 		for enemy in game.enemies:
@@ -2657,53 +2657,60 @@ func read_damage_history() -> Array[String]:
 
 func resolve_damage_origin(entry: Dictionary) -> void:
 	if not entry.get("needs_origin",false):return
-	var height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
+	var half_height := SHIP_ART_CANVAS.y*player_art_scale()*float(battle_visual.player_core_scale)/2
 	var anchor := player_render_position()
 	var enemy: Dictionary = entry.get("target_entity",{})
 	if not enemy.is_empty():
-		height=enemy_render_width(enemy);anchor=enemy_render_position(enemy)
-	entry.origin=battle_logical_point(anchor-Vector2(0,height+16))
+		anchor=enemy_render_position(enemy)
+		var angle:=PI+enemy_render_angle(enemy)
+		half_height=0.0
+		for point in enemy_recognition_geometry(enemy).inner:
+			half_height=maxf(half_height,absf(Vector2(point).rotated(angle).y))
+	var top:=battle_logical_point(anchor-Vector2(0,half_height+18))
+	# Two short-lived lanes stay beside their own hull, rather than searching
+	# unrelated free space at the far edge of the battlefield.
+	entry.direction=-1.0
+	if top.y<70.0:
+		top=battle_logical_point(anchor+Vector2(0,half_height+30))
+		entry.direction=1.0
+	entry.origin=top
 	entry.needs_origin=false
 
-func flush_damage_numbers(frame_delta: float = 0.0) -> void:
+func position_damage_tag(entry:Dictionary,metrics:Dictionary,initial:bool)->void:
+	entry.pos.x=clampf(float(entry.origin.x)-float(metrics.width)*0.5,8.0,BattleGame.BATTLE_SIZE.x-8.0-float(metrics.width))
+	if initial:
+		entry.pos.y=float(entry.origin.y)+float(entry.direction)*int(entry.lane)*(float(metrics.height)+4.0)
+		entry.pos.y=clampf(entry.pos.y,float(metrics.ascent)+8.0,BATTLE_VIEW_SIZE.y-8.0)
+	entry.tag_size=Vector2(metrics.width,metrics.height)
+	entry.tag_ascent=metrics.ascent
+
+func flush_damage_numbers(_frame_delta: float = 0.0) -> void:
 	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
-	# Final strings and geometry are shared by all placement queries this frame.
-	var context := {"metrics":{},"occupied":[],"enemies":damage_text_enemy_bounds()}
-	for entry in floats+damage_pending:
-		if entry.get("display_dirty",false):
-			entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+	var context:Dictionary={"metrics":{}}
+	var slots:Dictionary={}
 	for entry in floats:
-		if entry.get("damage",false):damage_layout_occupy(entry,context)
-	for entry in floats:
-		if not entry.get("display_dirty",false):continue
-		var adjusted := damage_text_position(entry.origin-Vector2(0,frame_delta*12),entry.text,entry.size,entry,context)
-		if adjusted!=Vector2.INF:entry.pos=adjusted
-		else:
-			entry.life=minf(float(entry.life),0.08);entry.retiring=true
-		entry.display_dirty=false
-		damage_layout_occupy(entry,context)
-	var slots := {}
-	for entry in floats:
-		var target: String=entry.get("target","")
+		if not entry.get("damage",false):continue
+		var target:String=entry.target
 		if not slots.has(target):slots[target]=[]
 		slots[target].append(entry)
+		if not entry.get("display_dirty",false):continue
+		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
+		position_damage_tag(entry,damage_layout_metrics(entry.text,entry.size,context),false)
+		entry.display_dirty=false
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
 			damage_pending.erase(entry);continue
-		var active: Array=slots.get(entry.target,[])
+		var active:Array=slots.get(entry.target,[])
 		if active.size()>=2:
 			active[0].life=minf(float(active[0].life),0.08);active[0].retiring=true
 			continue
+		entry.text=incoming_damage_text(entry.amount,entry.absorbed,entry.type) if entry.target=="player" else damage_feedback_text(entry.amount,entry.absorbed)
 		resolve_damage_origin(entry)
-		var drift := frame_delta if fx_time-entry.born<=frame_delta+0.0000001 else 0.0
-		var pos := damage_text_position(entry.origin-Vector2(0,drift*12),entry.text,entry.size,{},context)
-		if pos==Vector2.INF:
-			if fx_time-entry.born>0.2:damage_pending.erase(entry)
-			continue
-		entry.pos=pos;entry.life-=drift;entry.display_dirty=false
+		entry.lane=1-int(active[0].get("lane",0)) if not active.is_empty() else 0
+		position_damage_tag(entry,damage_layout_metrics(entry.text,entry.size,context),true)
+		entry.display_dirty=false
 		floats.append(entry);damage_pending.erase(entry)
 		active.append(entry);slots[entry.target]=active
-		damage_layout_occupy(entry,context)
 
 func damage_layout_metrics(value: String, size_value: int, context: Dictionary) -> Dictionary:
 	var key=[value,size_value]
@@ -3678,7 +3685,12 @@ func draw_foreground_overlay(offset:Vector2)->void:
 	for f in floats:
 		if accelerated_visual_mode:continue
 		if not f.get("damage",false) or not show_damage_numbers:continue
-		text_at(str(f.text),battle_point(f.pos),int(f.get("size",18)),Color(f.color,clampf(float(f.life)/0.2,0,1)))
+		var alpha:=clampf(float(f.life)/0.2,0,1)
+		var point:=battle_point(f.pos)
+		if f.has("tag_size"):
+			var panel:=Rect2(point-Vector2(0,float(f.tag_ascent)),Vector2(f.tag_size)).grow(3.0)
+			draw_surface.draw_rect(panel,Color(0.025,0.06,0.085,alpha*0.88))
+		text_at(str(f.text),point,int(f.get("size",20)),Color(f.color,alpha))
 	battle_draw_active=false
 	battle_draw_enemy_positions.clear()
 	enemy_entry_batch_active=false
