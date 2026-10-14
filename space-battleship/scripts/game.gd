@@ -93,6 +93,15 @@ var stat_cache: Dictionary = {}
 var jewel_defence_capacity_cache: Dictionary = {}
 var login_chrono_particles := 0.0
 var pending_unlocks: Array[String] = []
+# Derived tutorial projection belongs to this Game, never to UI controls.
+var _tutorial_ids: Array[String] = []
+var _tutorial_unread: Array[String] = []
+var _tutorial_dirty := true
+var _tutorial_read_dirty := true
+var _tutorial_revision := 0
+var _tutorial_highest := -1
+var _tutorial_hyperspace_gate := -1
+var _tutorial_db: ShipDatabase
 var retreat_from := 0.0
 var retreat_target := 0.0
 var retreat_elapsed := 0.0
@@ -235,7 +244,33 @@ func available_unlocks() -> Array[String]:
 		if unlock_available(str(id)):result.append(str(id))
 	return result
 
+func invalidate_tutorial_unlocks() -> void:
+	_tutorial_dirty = true
+	_tutorial_read_dirty = true
+
+func tutorial_revision() -> int:
+	# These scalar gates also cover temporary database ownership and live gate edits.
+	var highest := int(profile.highestLevel)
+	var gate := int(hyperspace.config.unlock_stage)
+	if _tutorial_db != db or highest != _tutorial_highest or gate != _tutorial_hyperspace_gate:
+		invalidate_tutorial_unlocks()
+		_tutorial_db = db
+		_tutorial_highest = highest
+		_tutorial_hyperspace_gate = gate
+	if _tutorial_dirty:
+		_tutorial_ids = _compute_tutorial_unlocks()
+		_tutorial_dirty = false
+	if _tutorial_read_dirty:
+		_tutorial_unread = _tutorial_ids.filter(func(id):return not profile.get("readUnlocks", []).has(id))
+		_tutorial_read_dirty = false
+		_tutorial_revision += 1
+	return _tutorial_revision
+
 func tutorial_unlocks() -> Array[String]:
+	tutorial_revision()
+	return _tutorial_ids.duplicate()
+
+func _compute_tutorial_unlocks() -> Array[String]:
 	# Seen notices also retain earned knowledge through a reforge's new run.
 	var result: Array[String] = []
 	for id in db.data.get("unlock", {}):
@@ -251,11 +286,13 @@ func tutorial_unlock_row(id: String) -> Dictionary:
 	return db.data.get("unlock",{}).get(id,{})
 
 func unread_tutorial_unlocks() -> Array[String]:
-	return tutorial_unlocks().filter(func(id):return not profile.get("readUnlocks", []).has(id))
+	tutorial_revision()
+	return _tutorial_unread.duplicate()
 
 func read_tutorial_unlock(id: String) -> bool:
 	if not tutorial_unlocks().has(id) or profile.get("readUnlocks", []).has(id):return false
 	profile.readUnlocks.append(id)
+	_tutorial_read_dirty = true
 	if id=="hyperspace" and not profile.seenUnlocks.has(id):profile.seenUnlocks.append(id)
 	save_dirty = true
 	event.emit("tutorial_read", {"id":id})
@@ -371,6 +408,7 @@ func load_progress_data(raw: Dictionary) -> void:
 			if key is String and not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
 	if profile.has("journey"):
 		profile.journey.pendingUnlocks = profile.journey.get("pendingUnlocks",[]).filter(func(key):return not profile.seenUnlocks.has(key))
+	invalidate_tutorial_unlocks()
 	# A notification acknowledgement is not a tutorial read. Old saves backfill
 	# earned entries as unread, without replaying notices or granting rewards.
 	if raw.get("readUnlocks") is Array:
@@ -415,6 +453,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	profile.chronoParticles = minf(float(particles), chrono_capacity()) if nonnegative_number(particles) else 0.0
 	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
 	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
+	invalidate_tutorial_unlocks()
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -568,6 +607,7 @@ func load_hightech(raw: Dictionary) -> void:
 				drops.append(restored)
 
 func rebuild_unlocks() -> void:
+	invalidate_tutorial_unlocks()
 	profile.highestLevel = 1
 	for n in profile.cleared:
 		profile.highestLevel = mini(db.levels.size(), maxi(profile.highestLevel, int(n) + 1))
@@ -781,6 +821,7 @@ func combat_equipment_row(key:String,level:int)->Dictionary:
 		if not row.is_empty():return row
 	return db.equip(key,level)
 func _compiled_configuration_event(kind:String,_info:Dictionary)->void:
+	if kind in ["configuration_changed","progress_loaded"]:invalidate_tutorial_unlocks()
 	if compiled_combat_rules!=null and kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed","configuration_changed"]:compiled_combat_rules.compile(self)
 func notify_configuration_changed()->void:
 	if not native_before_configuration_change():return
@@ -1464,6 +1505,7 @@ func migrate_planet_ids(raw: Dictionary) -> Dictionary:
 	return migrated
 
 func load_planets(raw) -> void:
+	invalidate_tutorial_unlocks()
 	invalidate_stat_cache()
 	profile.planets = {}
 	var pending := {}
@@ -1573,6 +1615,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.chronoParticles=profile.chronoParticles
 	next.productionElapsed=production_time()
 	profile=next
+	invalidate_tutorial_unlocks()
 	manual_hyperspace.cancel_queue(self,"round_changed")
 	hyperspace.scheduler.reset()
 	crew.reset_schedule(self)
@@ -2474,7 +2517,9 @@ func acknowledge_unlocks() -> void:
 	# One page per item keeps simultaneous unlocks readable without dropping any.
 	if not pending_unlocks.is_empty():
 		var key: String = pending_unlocks.pop_front()
-		if not profile.seenUnlocks.has(key):profile.seenUnlocks.append(key)
+		if not profile.seenUnlocks.has(key):
+			profile.seenUnlocks.append(key)
+			invalidate_tutorial_unlocks()
 	save_dirty = true
 	event.emit("state", {"state":state})
 

@@ -29,7 +29,7 @@ def main():
     game = area / "space-battleship"
     game.mkdir()
     source = workspace / "space-battleship"
-    for name in ("scripts", "tools", "data", "config_excel", "assets", "addons", "dev"):
+    for name in ("scripts", "shaders", "tools", "data", "config_excel", "assets", "addons", "dev"):
         shutil.copytree(source / name, game / name,
                         ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*", "*.blend", "*.blend1"))
     for name in ("project.godot", "main.tscn", "level_editor.tscn"):

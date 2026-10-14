@@ -42,6 +42,7 @@ func activate(g, planet_id: String, building_id: String) -> bool:
 		if str(row.id) != building_id:continue
 		if not g.native_before_configuration_change():return false
 		item.status = "built"
+		g.invalidate_tutorial_unlocks()
 		if str(row.type) == "auto_explore":g.planet_progress(planet_id).auto_explore = true
 		g.invalidate_stat_cache()
 		g.save_dirty = true
