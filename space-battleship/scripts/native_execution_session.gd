@@ -24,6 +24,7 @@ var geometry_player:=Vector2.INF
 
 # Check only at configuration boundaries, including an already-running old DLL.
 func supports_configuration(candidate:RefCounted,descriptor:Dictionary)->bool:
+	if descriptor.get("requires_endless_beam",false) and (not candidate.has_method("supports_endless_beam") or not candidate.supports_endless_beam()):return false
 	if descriptor.get("requires_missile_legends",false) and (not candidate.has_method("supports_missile_legends") or not candidate.supports_missile_legends()):return false
 	if descriptor.get("requires_strange_matter",false) and (not candidate.has_method("supports_strange_matter") or not candidate.supports_strange_matter()):return false
 	return not descriptor.get("requires_laser_charge",false) or (candidate.has_method("supports_laser_charge") and candidate.supports_laser_charge())

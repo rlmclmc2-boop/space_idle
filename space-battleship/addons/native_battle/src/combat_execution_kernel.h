@@ -44,7 +44,7 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Weapon {
         int kind = 0, type = 0, slot = 0;
-        bool hostile = false;
+        bool hostile = false, endless = false;
         Handle source;
         double interval = 1, remaining = 1, base = 1, factor = 1, speed = 30, charge = 0, ramp = 1,
                maximum = 1;
@@ -109,6 +109,7 @@ class SpaceCombatKernel : public RefCounted {
                ramp = 1, maximum = 1;
         int ticks = 0;
         Vector2 aim, logical_aim;
+        bool await_target = false;
         bool fixed_ray = false;
         Vector2 ray_origin, ray_step, launch_point;
         uint64_t contact_revision = 0;
@@ -381,7 +382,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!finite_descriptor(d) || !schema_required(d, {"player","enemies","weapons"}) ||
             !schema_types(d, Variant::DICTIONARY, {"player","deferred"}) ||
             !schema_types(d, Variant::ARRAY, {"enemies","weapons","defences","unsupported_rules"}) ||
-            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_strange_matter","requires_laser_charge","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
+            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_strange_matter","requires_laser_charge","requires_endless_beam","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
             !schema_integers(d, {"chain_count","prism_count"}) ||
             !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}, false) ||
             !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
@@ -437,11 +438,12 @@ class SpaceCombatKernel : public RefCounted {
                     !schema_nonnegative(drop, {"amount","base","resource"}) || !schema_probabilities(drop, {"chance"})) return false;
             }
         }
+        int endless_sources = 0;
         for (int i = 0; i < weapons.size(); ++i) {
             if (Variant(weapons[i]).get_type() != Variant::DICTIONARY) return false;
             Dictionary v = weapons[i];
             if (!schema_required(v, {"kind"}) || !schema_integers(v, {"kind","type","slot","source","salvo","chain_count"}) ||
-                !schema_types(v, Variant::BOOL, {"hostile"}) || !schema_types(v, Variant::VECTOR2, {"muzzle"}) ||
+                !schema_types(v, Variant::BOOL, {"hostile","endless"}) || !schema_types(v, Variant::VECTOR2, {"muzzle"}) ||
                 !schema_types(v, Variant::DICTIONARY, {"entry","row"}) || !schema_types(v, Variant::ARRAY, {"transfer_effects"}) ||
                 !numeric_fields(v, {"damage","factor","interval","remaining","speed","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","secondary_probability"}) ||
                 !schema_nonnegative(v, {"damage","factor","ramp","maximum","critical_multiplier","repeat_multiplier","chain_count","slot"}) ||
@@ -449,6 +451,11 @@ class SpaceCombatKernel : public RefCounted {
             int kind = v["kind"], source = v.get("source", -1);
             if (kind < 0 || kind > 3 || int(v.get("type",1)) < 0 || int(v.get("type",1)) > 2 || double(v.get("interval", 1.0)) <= 0 || double(v.get("speed", 720.0)) <= 0 ||
                 int(v.get("salvo", 1)) < 1 || (bool(v.get("hostile", false)) && (source < 0 || source >= enemies.size()))) return false;
+            if (bool(v.get("endless", false))) {
+                Dictionary entry = v.get("entry", Dictionary());
+                if (++endless_sources > 1 || !bool(d.get("requires_endless_beam",false)) || kind != 3 ||
+                    bool(v.get("hostile",false)) || entry.has("drone_id")) return false;
+            }
             Array effects = v.get("transfer_effects", Array());
             for (int j = 0; j < effects.size(); ++j)
                 if (Variant(effects[j]).get_type() != Variant::DICTIONARY) return false;
@@ -856,6 +863,8 @@ class SpaceCombatKernel : public RefCounted {
             f.maximum = w.maximum;
             f.next_hit = f.charge >= 0 ? f.charge : f.interval;
             f.view["beam"] = true;
+            f.view["endless"] = !f.hostile && !f.repeated && w.endless;
+            f.view["await_target"] = false;
             f.view["locked_target"] = w.hostile ? player_row : target_view(target);
             f.view["elapsed"] = 0.0;
             f.view["charge"] = f.charge;
@@ -1434,6 +1443,38 @@ class SpaceCombatKernel : public RefCounted {
             feedback.push_back(secondary);
         }
     }
+    bool endless_eligible(const Flight &f) const {
+        return f.live && f.beam && !f.hostile && !f.repeated && weapons[f.weapon].endless &&
+               !stopped && !final_cleared && double(player_row.get("armour",0.0)) > 0;
+    }
+    // One owner keeps the existing attack, charge, tick clock and frozen link count.
+    // Rebinding happens only at the next segment start, never halfway through hits.
+    bool retain_endless_target(Flight &f, double at, bool rebind) {
+        if (!endless_eligible(f)) return false;
+        f.await_target = true; f.view["await_target"] = true; f.view["dead"] = false;
+        auto inst = f.instance;
+        inst->links.clear(); inst->ended = false;
+        Dictionary chain = inst->view["chain"];
+        chain["links"] = Array(); chain["ended"] = false;
+        if (!rebind) return true;
+        auto candidates = targets(f.type, at);
+        if (candidates.empty()) return true;
+        f.target = candidates.front(); inst->primary = f.target;
+        f.view["target"] = target_view(f.target); f.view["locked_target"] = target_view(f.target);
+        inst->view["primary_target"] = target_view(f.target); chain["primary"] = target_view(f.target);
+        f.await_target = false; f.view["await_target"] = false;
+        f.aim = actors[f.target.index].point;
+        if (f.prism) std::sort(candidates.begin(), candidates.end(), [&](Handle a, Handle b) {
+            return distance(actors[a.index].point,f.aim) < distance(actors[b.index].point,f.aim);
+        });
+        Array links;
+        for (Handle h : candidates) if (h.index != f.target.index && int(inst->links.size()) < inst->count) {
+            inst->links.push_back(h);
+            Dictionary link; link["target"] = target_view(h); link["broken"] = false; links.push_back(link);
+        }
+        chain["links"] = links;
+        return true;
+    }
     void beam_periods(double dt, bool newborn, double &defence_at) {
         // Scheduled periods are ordered before boundary roots can query future shields.
         struct Period {
@@ -1447,6 +1488,10 @@ class SpaceCombatKernel : public RefCounted {
             Flight &f = flights[id];
             if (!f.live || !f.beam || ((f.born_step == step_serial) != newborn))
                 continue;
+            if (!f.hostile && !resolve(f.target)) {
+                if (!retain_endless_target(f, clock - dt, true)) { retire(id); continue; }
+                if (f.await_target) continue;
+            }
             Vector2 muzzle = weapons[f.weapon].muzzle;
             Motion &motion = f.lease->motion();
             motion.x = muzzle.x;
@@ -1473,7 +1518,7 @@ class SpaceCombatKernel : public RefCounted {
             if (stopped) break;
             Flight &f = flights[p.id];
             if (!f.live || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
-                if (f.live) retire(p.id);
+                if (f.live && (f.hostile || !retain_endless_target(f,p.at,false))) retire(p.id);
                 continue;
             }
             ++f.ticks;
@@ -1675,8 +1720,9 @@ class SpaceCombatKernel : public RefCounted {
         }
         for (size_t id : active) {
             Flight &f = flights[id];
-            if (f.live && f.beam && (f.hostile ? !resolve(f.source) : !resolve(f.target)))
-                retire(id);
+            if (f.live && f.beam && (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
+                if (f.hostile || !retain_endless_target(f,clock,false)) retire(id);
+            }
         }
         for (Actor &a : actors)
             shield(a, clock);
@@ -1687,6 +1733,7 @@ class SpaceCombatKernel : public RefCounted {
   protected:
     static void _bind_methods() {
         ClassDB::bind_method(D_METHOD("missile_legend_metrics"), &SpaceCombatKernel::missile_legend_metrics);
+        ClassDB::bind_method(D_METHOD("supports_endless_beam"), &SpaceCombatKernel::supports_endless_beam);
         ClassDB::bind_method(D_METHOD("supports_missile_legends"), &SpaceCombatKernel::supports_missile_legends);
         ClassDB::bind_method(D_METHOD("supports_strange_matter"), &SpaceCombatKernel::supports_strange_matter);
         ClassDB::bind_method(D_METHOD("supports_laser_charge"), &SpaceCombatKernel::supports_laser_charge);
@@ -1757,6 +1804,15 @@ class SpaceCombatKernel : public RefCounted {
         if (!admitted || stopped || executing || !std::isfinite(seconds) || seconds <= 0 ||
             !std::isfinite(clock + seconds) || !std::isfinite(defence_time + seconds)) return false;
         const double exact_limit = 9007199254740992.0;
+        for (size_t id : active) {
+            const Flight &f = flights[id];
+            if (!f.live || !f.beam) continue;
+            double future_age = f.age + seconds;
+            double ticks = std::max(0.0,std::floor((future_age-f.next_hit)/f.interval)+1);
+            if (!std::isfinite(future_age) || future_age <= f.age || future_age >= exact_limit ||
+                f.next_hit + f.interval <= f.next_hit || !std::isfinite(f.next_hit + f.interval) ||
+                double(f.ticks) + ticks >= 2147483647.0) return false;
+        }
         // Normal roots reschedule after processing. Owned beams can retire/restart once
         // per segment. Every extra segment needs an existing or newly ejected missile.
         double normal = double(roots.size()) * (1 + std::ceil(seconds / retained_min_interval));
@@ -1886,6 +1942,7 @@ class SpaceCombatKernel : public RefCounted {
         out["wild_blasts"] = int64_t(wild_detonations); out["recursion_blocked_entries"] = int64_t(wild_recursion_blocks);
         return out;
     }
+    bool supports_endless_beam() const { return true; }
     bool supports_missile_legends() const { return true; }
     bool supports_strange_matter() const { return true; }
     bool supports_laser_charge() const { return true; }
@@ -2036,6 +2093,7 @@ class SpaceCombatKernel : public RefCounted {
             w.charge = v.get("charge", 0.0);
             w.ramp = v.get("ramp", 1.0);
             w.maximum = v.get("maximum", 1.0);
+            w.endless = v.get("endless", false);
             w.muzzle = v.get("muzzle", Vector2(286, 520));
             w.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             w.row = Dictionary(v.get("row", Dictionary())).duplicate(true);
@@ -2210,6 +2268,7 @@ class SpaceCombatKernel : public RefCounted {
             w.charge = v.get("charge", -1.0);
             w.ramp = v.get("ramp", 1.0);
             w.maximum = v.get("maximum", 1.0);
+            w.endless = v.get("endless", false);
             w.crit_rate = v.get("critical_rate", 0.0);
             w.crit_multiplier = v.get("critical_multiplier", 2.0);
             w.repeat_probability = v.get("repeat_probability", 0.0);
@@ -2219,6 +2278,10 @@ class SpaceCombatKernel : public RefCounted {
             w.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             w.row = Dictionary(v.get("row", Dictionary())).duplicate(true);
             w.birth = birth_config(w, v, repeat_delay);
+        }
+        for (size_t id : active) {
+            Flight &f = flights[id];
+            if (f.live && f.beam) f.view["endless"] = endless_eligible(f);
         }
         for (int i = 0; i < defs.size(); ++i) {
             Dictionary v = defs[i];
@@ -2405,6 +2468,7 @@ class SpaceCombatKernel : public RefCounted {
             row["ticks"] = f.ticks; row["charge"] = f.charge; row["interval"] = f.interval;
             row["ramp"] = f.ramp; row["maximum"] = f.maximum; row["cruise_speed"] = f.cruise_speed;
             row["native_index"] = int64_t(id); row["native_generation"] = int64_t(f.generation);
+            row["endless"] = endless_eligible(f); row["await_target"] = f.await_target;
             row["beam"] = f.beam; row["chain"] = f.chain; row["repeated"] = f.repeated;
             row["hostile"] = f.hostile;
             const Motion &m = f.lease->motion(); row["position"] = position(m); row["direction"] = m.direction;

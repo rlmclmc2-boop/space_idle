@@ -100,6 +100,10 @@ func prepare(game,session,snapshot:Dictionary)->bool:
 		var patch={"x":native.position.x,"y":native.position.y,"direction":native.direction,"speed":native.speed,"damage":native.damage,"entry":entry_for(game,weapon),"source":state.enemies[int(weapon.source)] if bool(weapon.hostile) else state.player,"source_uid":int(state.enemies[int(weapon.source)].uid) if bool(weapon.hostile) else 0,"main_attack_id":root.id,"attack_instance_id":instance.id,"attack_instance":instance,"attack_snapshot":root,"jewelEffects":instance.effects,"critical_bonus_applied":root.critical_bonus_applied,"combat_context":context(root,bool(native.instance_derived) or bool(native.chain),game,not bool(native.chain))}
 		if not native.get("native_context",{}).is_empty():patch.combat_context=bind_missile_context(native.native_context)
 		if bool(native.beam):
+			if typeof(native.get("endless",false))!=TYPE_BOOL or typeof(native.get("await_target",false))!=TYPE_BOOL:error="invalid_endless_beam_state";return false
+			if native.get("endless",false) and (bool(native.hostile) or bool(native.repeated) or weapon.entry.has("drone_id")):error="invalid_endless_beam_source";return false
+			patch.endless=native.get("endless",false);patch.await_target=native.get("await_target",false);patch.dead=false
+			patch.prism_bonus_applied=bool(view.get("prism_tower",false))
 			patch.elapsed=native.age;patch.ticks=native.ticks;patch.charge=native.charge;patch.next_hit_at=native.next_hit
 			patch.repeat_multiplier=native.multiplier;patch.repeat_origin_multiplier=1.0;patch.repeat_depth=1 if bool(native.repeated) else 0
 			patch.weapon=root.weapon;patch.charged_multiplier=1.0

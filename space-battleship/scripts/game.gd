@@ -1954,7 +1954,7 @@ func change_state(next: State) -> void:
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
 	if next != State.COMBAT:
-		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and p.get("endless",false) and not p.get("repeated",false)))
+		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and endless_beam_eligible(p)))
 	if next == State.TRAVEL:
 		travel_origin = INF
 		cooldowns.clear()
@@ -2307,7 +2307,22 @@ func prepare_projectile(_shot: Dictionary, _source: Dictionary, _weapon: Diction
 	pass
 
 # A beam is one persistent projectile per mount; timing belongs to that object.
+func beam_source_valid(shot:Dictionary) -> bool:
+	var entry:Dictionary=combat_entry(int(shot.mount))
+	# Numeric upgrades replace dictionaries, but do not replace the attack.
+	return is_same(shot.source,player) and entry.get("key","")=="longLaser" and shot.entry.get("key","")=="longLaser" and entry.get("drone_id","")==shot.entry.get("drone_id","")
+
+func endless_beam_eligible(shot:Dictionary) -> bool:
+	return shot.get("beam",false) and not shot.get("dead",false) and not shot.hostile and not shot.get("repeated",false) and N.compare(player.armour,0)>0 and beam_source_valid(shot) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and int(shot.mount)==endless_source_slot()
+
+func await_endless_target(shot:Dictionary) -> void:
+	shot.await_target=true
+	var chain:Dictionary=shot.attack_instance.chain
+	chain.links.clear()
+	chain.ended=false
+
 func long_laser_valid(shot: Dictionary) -> bool:
+	if shot.get("await_target",false):return false
 	if native_execution!=null:
 		if state!=State.COMBAT or bool(shot.dead) or shot.target.is_empty():return false
 		if bool(shot.hostile):
@@ -2318,11 +2333,11 @@ func long_laser_valid(shot: Dictionary) -> bool:
 		return false
 	if shot.hostile:
 		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and N.compare(player.armour,0)>0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
-	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and is_same(shot.entry, combat_entry(shot.mount)) and shot.entry.key == "longLaser"
+	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and beam_source_valid(shot)
 
 func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0, repeat_depth := 0, repeat_origin_multiplier := 1.0, inherited_snapshot: Dictionary = {}) -> void:
 	for shot in projectiles:
-		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and int(shot.get("repeat_depth",0))==repeat_depth and (long_laser_valid(shot) or shot.get("await_target",false)):
+		if shot.get("beam", false) and shot.hostile == hostile and is_same(shot.source, source) and shot.mount == mount and bool(shot.get("repeated",false)) == repeated and int(shot.get("repeat_depth",0))==repeat_depth and (long_laser_valid(shot) or (shot.get("await_target",false) and endless_beam_eligible(shot))):
 			return
 	var candidates: Array = targets(int(weapon.dmgtype)) if not hostile else []
 	var target: Dictionary = player if hostile else (candidates[0] if not candidates.is_empty() else {})
@@ -2363,7 +2378,7 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 		shot.main_attack_id=shot.attack_snapshot.id
 		shot.attack_instance=new_attack_instance(shot.attack_snapshot) if repeated else shot.attack_snapshot.instance
 		shot.attack_instance_id=shot.attack_instance.id
-		shot.endless=not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(entry,endless_source()) and not repeated
+		shot.endless=endless_beam_eligible(shot)
 		bind_beam_chain(shot)
 
 	event.emit("beam_started", {"shot":shot})
@@ -2372,13 +2387,15 @@ func long_laser_multiplier(weapon: Dictionary, duration: float) -> float:
 	return minf(1.0 + (float(weapon.para2) - 1.0) * duration / float(weapon.para1), float(weapon.para2)) if float(weapon.para1) > 0 else float(weapon.para2)
 
 func advance_long_laser(shot: Dictionary, dt: float) -> bool:
-	if shot.get("endless",false) and not shot.get("repeated",false) and state==State.TRAVEL and is_same(shot.entry,combat_entry(int(shot.mount))):shot.await_target=true;return false
-	if not long_laser_valid(shot) and not shot.hostile and not shot.get("repeated",false):
-		var endless: Dictionary=hyperspace_totals().legendary.get("endless_beam",{})
-		if not endless.is_empty() and is_same(shot.entry,endless_source()) and is_same(shot.entry,combat_entry(int(shot.mount))) and state==State.COMBAT and N.compare(player.armour,0)>0:
-			var candidates:=targets(int(shot.weapon.dmgtype))
-			if not candidates.is_empty():
-				shot.await_target=false;shot.target=candidates[0];shot.locked_target=shot.target;shot.attack_instance.chain.links.clear();bind_beam_chain(shot)
+	shot.endless=endless_beam_eligible(shot)
+	if shot.endless and state==State.TRAVEL:
+		await_endless_target(shot);return false
+	if not long_laser_valid(shot) and shot.endless and state==State.COMBAT:
+		var candidates:=targets(int(shot.weapon.dmgtype))
+		if candidates.is_empty():
+			await_endless_target(shot);return false
+		shot.await_target=false;shot.target=candidates[0];shot.locked_target=shot.target
+		shot.attack_instance.chain.links.clear();bind_beam_chain(shot,true)
 	if not long_laser_valid(shot):
 		shot.dead = true
 		end_beam_chain(shot)
@@ -2423,8 +2440,10 @@ func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 		launch_enhancement_secondary(int(shot.mount),shot.target,weapon,boost*multiplier,true)
 		enhancement_attack_contexts.erase(int(shot.mount))
 	if not projectiles.has(shot) or not long_laser_valid(shot):
-		shot.dead = true
-		end_beam_chain(shot)
+		if projectiles.has(shot) and endless_beam_eligible(shot):await_endless_target(shot)
+		else:
+			shot.dead = true
+			end_beam_chain(shot)
 	enemy_shield_hit_time=previous_hit_time
 
 func tick_long_laser(shot: Dictionary, dt: float) -> void:
@@ -2434,7 +2453,7 @@ func tick_long_laser(shot: Dictionary, dt: float) -> void:
 		var due := float(shot.next_hit_at)
 		shot.next_hit_at=due+float(weapon.cd)
 		apply_long_laser_hit(shot,due)
-		if shot.dead:break
+		if shot.dead or shot.get("await_target",false):break
 
 func tick_shield_beams(pending: Array, dt: float) -> void:
 	if _legacy_defence_span_active and _legacy_defence_stopped():return
@@ -2988,7 +3007,7 @@ func tick(dt: float) -> void:
 		if group_index < level.groups.size() and distance+0.000001 >= float(level.groups[group_index].position)*float(level.length):
 			spawn_group()
 		return
-	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p) or (not p.hostile and not p.get("repeated",false) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and is_same(p.entry,endless_source())))
+	projectiles = projectiles.filter(func(p): return not p.get("beam", false) or long_laser_valid(p) or endless_beam_eligible(p))
 	for index in range(combat_weapon_entries().size()):
 		var entry: Dictionary = combat_weapon_entries()[index]
 		var key := str(entry.key)
@@ -3112,7 +3131,7 @@ func _tick_legacy_projectiles(dt: float) -> void:
 		# Include the rendered trail before removing an off-screen projectile.
 		if shot.x < -32 or shot.x > BATTLE_SIZE.x+32 or shot.y < -32 or shot.y > BATTLE_SIZE.y+32:
 			shot.dead = true
-	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p)))
+	projectiles = projectiles.filter(func(p): return not p.dead and (not p.get("beam", false) or long_laser_valid(p) or endless_beam_eligible(p)))
 
 func fixed_ballistic_contact(_shot:Dictionary,_dt:float)->float:
 	return -1.0
@@ -3756,16 +3775,16 @@ func select_chain_targets(primary: Dictionary, type: int, count: int) -> Array:
 		visited[int(target.uid)]=true;result.append(target)
 	return result
 
-func bind_beam_chain(shot: Dictionary) -> void:
+func bind_beam_chain(shot: Dictionary, rebind:=false) -> void:
 	var prism: Dictionary=hyperspace_totals().legendary.get("prism_tower",{})
-	if not shot.get("repeated",false) and not prism.is_empty() and not projectiles.any(func(p):return not is_same(p,shot) and p.get("prism_tower",false) and long_laser_valid(p)):
+	if not rebind and not shot.get("repeated",false) and not prism.is_empty() and not projectiles.any(func(p):return not is_same(p,shot) and p.get("prism_tower",false) and long_laser_valid(p)):
 		shot.prism_tower=true;shot.attack_instance.chain.count=int(prism.constants.nearby_targets)
 		if not shot.get("prism_bonus_applied",false):
 			shot.prism_bonus_applied=true
 			shot.weapon.para2=float(shot.weapon.para2)+float(prism.parameters.maximum_multiplier_bonus)
 			shot.attack_snapshot.weapon.para2=float(shot.attack_snapshot.weapon.para2)+float(prism.parameters.maximum_multiplier_bonus)
 	var chain:Dictionary=shot.attack_instance.chain
-	chain.beam=true;chain.used=true;chain.primary=shot.target
+	chain.beam=true;chain.used=true;chain.ended=false;chain.primary=shot.target
 	var candidates:=select_chain_targets(shot.target,int(shot.weapon.dmgtype),enemies.size())
 	if shot.get("prism_tower",false):candidates.sort_custom(func(a,b):return chain_target_point(a).distance_squared_to(chain_target_point(shot.target))<chain_target_point(b).distance_squared_to(chain_target_point(shot.target)))
 	for target in candidates.slice(0,int(chain.count)):
