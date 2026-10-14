@@ -9,9 +9,6 @@ var execution_scope:=""
 var weapons:Array=[]
 var production_seconds:=0.0
 var ticks:=0
-var direct_feedback:=true
-var direct_feedback_batches:=0
-var legacy_feedback_batches:=0
 var feedback_rows:=0
 var handed_off:=false
 var advance_blocked:=false
@@ -163,21 +160,6 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	kernel.input_player_point(aim)
 
 func consume_feedback(game:RefCounted)->void:
-	if direct_feedback:
-		direct_feedback_batches+=1
-		var batch:Dictionary=kernel.take_events(actor_by_uid);feedback_rows+=int(batch.count)
-		for event in batch.events:
-			if event[0]=="":game.drops.append(event[1])
-			else:
-				if event[0]=="prototype_missile_retired":
-					var shot:Dictionary=event[2]
-					if not shot.get("prototype_missile",false) or bool(shot.hostile):continue
-					event[1].serial=shot.serial
-					event[1].speed=game.projectile_speed(shot)
-				game.event.emit(event[0],event[1])
-				if event[0]=="fire" and event[1].shot.get("beam",false):game.event.emit("beam_started",{"shot":event[1].shot})
-		return
-	legacy_feedback_batches+=1
 	for row in kernel.take_feedback():
 		feedback_rows+=1
 		var p:Vector2=row.position

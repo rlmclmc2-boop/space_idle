@@ -1475,7 +1475,6 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("take_feedback"), &SpaceCombatKernel::take_feedback);
-        ClassDB::bind_method(D_METHOD("take_events","actor_by_uid"), &SpaceCombatKernel::take_events);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
         ClassDB::bind_method(D_METHOD("hit_handle", "handle", "raw", "type"), &SpaceCombatKernel::hit_handle);
         ClassDB::bind_method(D_METHOD("receive_player_hit", "raw", "type"),
@@ -2162,37 +2161,6 @@ class SpaceCombatKernel : public RefCounted {
     }
     Dictionary player_view() const {
         return player_row;
-    }
-    Dictionary take_events(Dictionary actor_by_uid) {
-        ERR_FAIL_COND_V(executing,Dictionary());
-        Array events;
-        // Publish the final event payload once. Signal delivery remains in the
-        // original GDScript observer boundary; no per-event Object callback.
-        std::vector<Effect> pending;pending.swap(feedback);
-        for(const Effect &e:pending) {
-            Dictionary info;StringName name;
-            switch(e.kind) {
-            case 0:
-                name="fire";info["x"]=e.point.x;info["y"]=e.point.y;info["type"]=e.type;info["shot"]=e.shot;info["spread"]=0.0;info["direction"]=e.direction;info["aim"]=e.target_point;
-                events.append(Array::make(String(name),info));
-                continue;
-            case 1:name="projectile_impact";info["shot"]=e.shot;info["pos"]=e.point;break;
-            case 2:
-                name="hit";info["x"]=e.point.x;info["y"]=e.point.y;info["amount"]=e.amount;info["absorbed"]=e.absorbed;info["player"]=e.player;info["type"]=e.type;info["uid"]=e.uid;info["critical"]=e.critical;break;
-            case 3:name="explode";info=actor_by_uid[e.uid];break;
-            case 4:name="enhancement_chain";info["source"]=e.point;info["target"]=e.target_point;info["target_uid"]=e.target_uid;info["weapon"]=e.shot["key"];info["shot"]=e.shot;break;
-            case 9:name="critical_impact";info["pos"]=e.point;info["direction"]=e.direction;break;
-            case 7:events.append(Array::make(String(),e.shot));continue;
-            case 8:name="enhancement_secondary";info["source"]=e.point;info["target"]=e.target_point;info["target_uid"]=e.target_uid;info["weapon"]="native";info["beam"]=true;break;
-            case 6:name="beam_hit";info["shot"]=e.shot;info["pos"]=e.point;break;
-            case 5:
-                // Eligibility and serial are observer-mutable: read them at delivery.
-                name="prototype_missile_retired";info["reason"]="native_retire";info["time"]=e.time;info["position"]=e.point;info["direction"]=e.direction;info["coast"]=false;events.append(Array::make(String(name),info,e.shot));continue;
-            default:continue;
-            }
-            events.append(Array::make(String(name),info));
-        }
-        Dictionary result;result["count"]=int64_t(pending.size());result["events"]=events;return result;
     }
     Array take_feedback() {
         Array values;
