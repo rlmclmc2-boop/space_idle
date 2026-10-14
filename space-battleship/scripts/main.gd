@@ -1257,12 +1257,15 @@ func enemy_render_angle(enemy:Dictionary)->float:
 	return float(pose.rotation)
 
 # Supplied positions stay within one synchronous solve; no value survives it.
+const ENEMY_FIXED_PORTS=preload("res://scripts/enemy_fixed_ports.gd")
+
 func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).components[int(component.owner_slot)]
 	var point:Dictionary=component.hardpoint
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y)
 	var hull_angle:=enemy_render_angle(enemy)
+	if ENEMY_FIXED_PORTS.enabled(game):return ENEMY_FIXED_PORTS.pose(point,width,hull_angle)
 	var normalized:Array=point.pos
 	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
@@ -1281,6 +1284,7 @@ func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.IN
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y)
 	var angle:=float(enemy_pose(enemy).rotation)
+	if ENEMY_FIXED_PORTS.enabled(game):return ENEMY_FIXED_PORTS.pose(point,width,angle).muzzle
 	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
 	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
@@ -1355,6 +1359,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if shot.get("fixed_enemy_port",false) and not shot.get("beam",false):return Vector2(shot.launch_point)
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var pos := game.projectile_position(shot)
 	if shot.hostile:
@@ -1756,6 +1761,7 @@ func straight_projectile_point(logical_point: Vector2, visual: Dictionary) -> Ve
 
 func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, visual: Dictionary = {}) -> Vector2:
 	var pos := game.projectile_position(shot)
+	if shot.get("fixed_enemy_port",false):return pos
 	if shot.has("fixed_screen_step"):
 		var ray_distance:float=(pos-Vector2(shot.launch_point)).dot(game.projectile_direction(shot))
 		return battle_logical_point(Vector2(shot.fixed_screen_origin)+Vector2(shot.fixed_screen_step)*ray_distance)
@@ -3225,6 +3231,13 @@ func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
 func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):
 		if (int(component.hardpoint.get("z",1))<=0)!=under_hull:continue
+		if ENEMY_FIXED_PORTS.enabled(game):
+			var port:Dictionary=ENEMY_FIXED_PORTS.descriptor(component)
+			var width:float=enemy_render_width(enemy)
+			var center:Vector2=pos+(Vector2(port.position)*width).rotated(PI+enemy_render_angle(enemy))
+			var radius:float=ENEMY_FIXED_PORTS.radius(port,width,enemy_recognition_screen_scale())
+			draw_surface.draw_texture_rect(preload("res://assets/ships/enemy/ports/physical.svg") if port.physical else preload("res://assets/ships/enemy/ports/energy.svg"),Rect2(center-Vector2.ONE*radius,Vector2.ONE*radius*2),false)
+			continue
 		var pose:=enemy_component_pose(enemy,component)
 		var weapon_class := str(component.profile.get("visual_class",""))
 		if (component.damage_type==2 and weapon_class=="gun") or (component.damage_type==1 and weapon_class=="energy"):

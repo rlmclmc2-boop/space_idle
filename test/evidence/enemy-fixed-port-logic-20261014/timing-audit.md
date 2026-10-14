@@ -1,0 +1,15 @@
+# Read-only timing audit
+
+The 85c76e79 A/B measures **post-draw cadence, not busy-frame CPU time**. In ../enemy-omni-ports-perf-20261014/driver.gd:126-137, T0 = get_ticks_usec() immediately after the warmup baseline; each Ti is read upon resuming from await RenderingServer.frame_post_draw. Frame i = (Ti - Ti-1)/1000 ms; the arithmetic mean is sum(frame_i)/N (analyze.py:8). The first interval starts at sample_start rather than the previous signal. Sample workload scans after a timestamp lie inside the next interval. Screenshot readback is after the measured window.
+
+The interval includes whatever frame-limit sleep, VSync/swap blocking, OS scheduling and other waiting occurs between those callbacks, alongside actual work; none is subtracted. Runtime records max_fps=60 and vsync=1 on both sides. A post-draw callback is not a timestamp of physical display scanout. The shared 16.647 ms median is consistent with cadence limiting, but does not identify separate sleep/VSync durations; individual frames can be below 16.667 ms. Subtracting a fixed 16.667 ms would be invalid.
+
+Available new A/B data: complete cadence samples, workload counters and configuration. engine_render_times is empty; no main-start/end, pre-draw, thread-CPU or wait spans were captured. Therefore main-thread work, rendering submission/wait and limiter sleep cannot be separated for these runs. The observed -0.051541 ms mean difference is not a measured busy-frame saving, does not prove removing rotation ineffective, and cannot validate the user's complete busy-frame <10 ms goal.
+
+Historical evidence has two different configurations:
+- ../frame-ledger-20261014/qa_astra_frame_ledger.gd:213,235-242 uses the same post-draw outer interval and keeps cap 60; it additionally records signal/main/pre-draw anchors. Its gaps remain wall time, not proven sleep or CPU work.
+- ../current-frame-ledger-20261014 uses qa_original.gd frozen in ../typed-events-20261014. Lines 93-97 explicitly set max_fps=0 and VSync disabled; lines 118-129 measure adjacent post-draw intervals and phase anchors. run.py:174-183 partitions those intervals. That old source is 85ada8bc and DLL d1693705..., not this A/B's e7cc31e0/85c76e79 and DLL 45c507c3.... Do not combine its absolute values with this capped pair.
+
+Read-only recomputation of historical CFP.json.gz (373 frames): main callback wall 12.766743 ms; main end to pre-draw 4.857670 ms (includes deferred draw/other work); pre-to-post draw 3.826635 ms (submission/driver/GPU waits unsplit); post-draw to process signal 0.080866 ms; signal to main 0.002233 ms; total 21.534147 ms. These five disjoint wall segments sum to that old cadence. They are not five CPU-exclusive counters. Existing instrumented attribution further assigns 16.574180 ms to script spans, 1.133332 ms to unassigned gaps and 3.826635 ms to submission/wait. Root/ship GPU timestamps overlap and must not be added. These are historical diagnostic bounds, not the current candidate's busy cost.
+
+No new run, FPS/VSync setting change or root-cause claim was made for this audit.

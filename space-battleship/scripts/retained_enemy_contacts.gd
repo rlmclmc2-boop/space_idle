@@ -1,8 +1,9 @@
 extends Node2D
 ## Native Canvas command owners. Motion updates transforms; true shape/status
 ## changes rebuild only their own part. No offscreen views or scaling
-## approximation. Unrecognized mounts and leaders use the original painter.
+## approximation. Boss encounters and leaders use the original painter.
 ## Supported ordinary contacts use static omnidirectional ports, never aimed nodes.
+const FIXED_PORTS=preload("res://scripts/enemy_fixed_ports.gd")
 const OMNI_PHYSICAL=preload("res://assets/ships/enemy/ports/physical.svg")
 const OMNI_ENERGY=preload("res://assets/ships/enemy/ports/energy.svg")
 class Part extends Node2D:
@@ -85,9 +86,7 @@ func build_deck(parent:Node2D)->Part:
  return group
 
 func port_radius(port:Dictionary,width:float,screen_scale:float)->float:
- # The opaque SVG face covers the unchanged logical muzzle sweep, regardless
- # of aim. Its radius is 30/32 of the image; pad by one physical screen pixel.
- return maxf(4.0/maxf(screen_scale,0.1),float(port.reach)*width/(30.0/32.0)+1.0/maxf(screen_scale,0.1))
+ return FIXED_PORTS.radius(port,width,screen_scale)
 
 func create_record(enemy:Dictionary)->DisplayRecord:
  var record=DisplayRecord.new();record.entity=enemy
@@ -115,9 +114,6 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.descriptors=spatial.appearance.mounts
  record.supported=not boss and not paint_owner.encounter_presentation.is_leader(enemy)
  var components:Array=spatial.components
- for component in components:
-  var visual_class=str(component.profile.get("visual_class",""))
-  if not ((component.damage_type==2 and visual_class=="gun") or (component.damage_type==1 and visual_class=="energy")):record.supported=false
  record.physical=false;record.energy=false
  for damage_type in paint_owner.enemy_attack_types(enemy):
   if damage_type==2:record.physical=true
@@ -135,11 +131,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   body.visible=enabled;strokes.visible=enabled
   body.data={"physical":physical};body.queue_redraw()
   strokes.data={"width":-INF,"physical":physical}
- for component in components:
-  var point:Dictionary=component.hardpoint
-  var factor=0.42*float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
-  var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
-  record.ports.append({"slot":int(component.owner_slot),"position":Vector2(float(point.pos[0]),float(point.pos[1])*2.0),"reach":Vector2(float(muzzle[0][0]),float(muzzle[0][1])).length()*factor,"physical":component.damage_type==2,"under":int(point.get("z",1))<=0})
+ for component in components:record.ports.append(FIXED_PORTS.descriptor(component))
  # Existing under/over deck order, with one static owner per port layer.
  var ordered:Array=[record.fallback,record.ports_under,record.hull,record.deck,record.protection,record.ports_over,record.health,record.shield]
  for index in ordered.size():record.root.move_child(ordered[index],index)

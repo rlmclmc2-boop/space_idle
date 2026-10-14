@@ -42,9 +42,10 @@ func install(root)->void:
 	root.battle_read_model.end()
 	geometry.prepare(root,game)
 	previous_spatial=game.target_spatial_source
-	for key in ["target_provider","launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:
+	for key in ["target_provider","launch_provider","enemy_launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:
 		previous[key]=game.get(key)
 	game.target_provider=geometry.target_point;game.launch_provider=geometry.launch_pose
+	game.enemy_launch_provider=geometry.enemy_launch_pose
 	game.drone_launch_provider=geometry.drone_launch_pose;game.target_spatial_source=geometry.battle_read_model
 	game.rail_geometry_provider=geometry.rail_geometry;game.rail_target_point_provider=geometry.entity_render_position
 	scene.simulation_geometry_view=view

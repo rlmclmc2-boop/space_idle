@@ -137,6 +137,7 @@ func create_battle_game(persist:bool)->BattleGame:
 	var prototype=PROTOTYPE_GAME.new(db,persist)
 	db=prototype.db
 	prototype.launch_provider=_prototype_launch_pose
+	prototype.enemy_launch_provider=_prototype_enemy_launch_pose
 	prototype.drone_launch_provider=_prototype_drone_launch_pose
 	prototype.target_provider=_prototype_target_point
 	prototype.rail_geometry_provider=_rail_geometry
@@ -177,6 +178,11 @@ func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary
 	var logical:=battle_logical_point(point)
 	return {"position":logical,"direction":(aim-logical).normalized()}
 
+
+func _prototype_enemy_launch_pose(enemy:Dictionary,shot:Dictionary)->Dictionary:
+	var position:=enemy_render_position(enemy)
+	var slot:int=enemy_shot_mount(enemy,shot)
+	return {"position":battle_logical_point(position+enemy_port_offset(enemy,slot,position)),"mount":slot}
 
 func _visual_drone_id(shot:Dictionary)->String:
 	if bool(shot.get("hostile",false)):return ""

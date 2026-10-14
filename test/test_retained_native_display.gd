@@ -1,10 +1,20 @@
 extends SceneTree
+class GeometryAudit extends "res://scripts/simulation_geometry_authority.gd":
+	var aim_calls:=0
+	func enemy_weapon_angle(enemy:Dictionary,index:int,render_position:=Vector2.INF)->float:
+		aim_calls+=1
+		return super.enemy_weapon_angle(enemy,index,render_position)
 class UI extends "res://scripts/battlefield.gd":
+	var enemy_aim_calls:=0
+	func enemy_weapon_angle(enemy:Dictionary,index:int,render_position:=Vector2.INF)->float:
+		enemy_aim_calls+=1
+		return super.enemy_weapon_angle(enemy,index,render_position)
 	func show_qa_tools()->void:pass
 	func show_chrono_login_report()->void:pass
 	func create_battle_game(_persist:bool)->BattleGame:
 		var g=preload("res://scripts/presented_battle_game.gd").new(db,false)
 		db=g.db;g.native_execution_auto=false
+		g.enemy_launch_provider=_prototype_enemy_launch_pose
 		g.launch_provider=_prototype_launch_pose;g.drone_launch_provider=_prototype_drone_launch_pose
 		g.target_provider=_prototype_target_point;g.rail_geometry_provider=_rail_geometry;g.rail_target_point_provider=entity_render_position
 		g.enable_compiled_combat_rules()
@@ -37,7 +47,7 @@ func audit_ports(scene,enemy:Dictionary)->void:
 		var pixels:Image=texture.get_image()
 		var sample:Vector2=(Vector2.ONE*0.5+local/(radius*2))*Vector2(pixels.get_size())
 		check(Rect2(Vector2.ZERO,Vector2(pixels.get_size())).has_point(sample) and pixels.get_pixelv(Vector2i(sample)).a>0.95,"actual authoritative muzzle is on an opaque emitter pixel")
-		check(float(canonical.port.length())<=radius*(30.0/32.0) and radius<=0.6*maxf(float(canonical.width),15.0/pixel_scale),"full logical aim sweep fits a bounded omnidirectional face")
+		check(Vector2(canonical.port)==Vector2.ZERO and local.length()<0.0001,"logical muzzle equals the static visible emitter center")
 
 func run()->void:
 	var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
@@ -51,14 +61,41 @@ func run()->void:
 	var template:Dictionary=g.enemies[0].duplicate(true);g.enemies.clear()
 	for i in 2:
 		var enemy=template.duplicate(true);enemy.uid=500+i;enemy.slot=i;enemy.x=110+150*i;enemy.y=340
-		enemy.hp=1e100;enemy.max_hp=1e100;enemy.size=i+1;enemy.equipment=[{"name":"laser_mon"},{"name":"cannon_mon"}];enemy.cooldowns=[0.0,0.0]
+		enemy.hp=1e100;enemy.max_hp=1e100;enemy.size=6;enemy.equipment=[{"name":"laser_mon"},{"name":"cannon-mon"},{"name":"missile-mon"},{"name":"longLaser-mon"}];enemy.cooldowns=[0.0,0.0,0.0,0.0]
 		enemy.armourType=i%2+1;enemy.shieldType=i%2+1;enemy.max_shield=1000.0;enemy.shield=1000.0;enemy.shieldRecovery=0.05
 		g.enemies.append(enemy)
+	g.player.armour=1e12
 	scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(0)
 	check(g.admit_native_compiled_execution("native_low_contract"),"low-load sole native owner admitted")
 	g.native_execution_auto=true
 	check(scene.attach_native_display(),"existing numeric view attached")
+	var hostile_keys:Dictionary={}
+	var watch_fire=func(kind:String,info:Dictionary):
+		if kind!="fire" or not info.shot.hostile:return
+		var shot:Dictionary=info.shot
+		hostile_keys[str(shot.key)]=true
+		var geometry=scene.battle_slice_runtime.geometry
+		var position:Vector2=geometry.enemy_render_position(shot.source)
+		var expected:Vector2=geometry.battle_logical_point(position+geometry.enemy_port_offset(shot.source,int(shot.mount),position))
+		check(Vector2(shot.launch_point).is_equal_approx(expected),"native birth uses fixed port for "+str(shot.key))
+	g.event.connect(watch_fire)
 	for frame in 165:scene._process(1.0/60.0)
+	for key in ["laser_mon","cannon-mon","missile-mon","longLaser-mon"]:check(hostile_keys.has(key),"native fixture launches "+key)
+	var audit=GeometryAudit.new();audit.prepare(scene,g)
+	for e in g.enemies:audit.enemy_pose(e)
+	audit.fx_time+=10.0
+	for e in g.enemies:
+		var row:Dictionary=audit.display_enemy(e)
+		for component in audit.enemy_weapon_components(e):
+			var old:Vector2=audit.execution_enemy_port_offset(e,int(component.owner_slot),Vector2(row.position))
+			audit.player_anchor.x+=70.0
+			check(is_same(row,audit.display_enemy(e)),"ordinary row does not invalidate on player aim change")
+			check(audit.execution_enemy_port_offset(e,int(component.owner_slot),Vector2(row.position)).is_equal_approx(old),"moving player aim never moves ordinary logical port")
+			audit.player_anchor.x-=70.0
+		check(is_same(row,audit.display_enemy(e)),"settled ordinary component publication is reused")
+	check(audit.aim_calls==0,"ordinary numeric geometry never calls enemy_weapon_angle")
+	audit.game=null;audit.battle_read_model.host=null;audit.fleet_pose=null
+
 	g.paused=true;scene._process(0.0)
 	# Ensure both ordinary and critical label colors are observable at live hulls.
 	for enemy in g.enemies:
@@ -119,9 +156,26 @@ func run()->void:
 	check(is_equal_approx(record.screen_scale,scene.enemy_recognition_screen_scale()),"live display scale refreshes pixel-width contract")
 	check(record.root.position.is_equal_approx(view.row(enemy).position),"scale reads existing numeric position without solving another geometry")
 	scene.battle_layer.scale=original_scale;await picture(scene)
+	g.event.disconnect(watch_fire)
 	# Cold transfer keeps this test out of native identity/settlement mutation.
 	check(g.native_before_configuration_change(),"whole cold transfer for legacy display boundaries")
 	check(scene.battle_slice_runtime==null and scene.simulation_geometry_view==null,"native geometry closes at transfer")
+	for e in g.enemies:
+		for slot in e.equipment.size():
+			var weapon:Dictionary=g.db.enemy_weapon(str(e.equipment[slot].name))
+			g.fire(e,g.player,weapon,1.0,true,str(e.equipment[slot].name),g.enemy_weapon_offset(e,slot),0.0,slot)
+			var shot:Dictionary=g.projectiles.back()
+			var expected:Vector2=scene.battle_logical_point(scene.enemy_render_position(e)+scene.enemy_port_offset(e,slot))
+			check(shot.get("fixed_enemy_port",false) and Vector2(shot.launch_point).is_equal_approx(expected),"legacy handoff launch uses same fixed origin")
+			check(g.projectile_target_point(shot).is_equal_approx(g.target_point(g.player)),"legacy hostile aims at rendered player authority")
+	check(scene.enemy_aim_calls==0,"direct painter and legacy launch never rotate ordinary turrets")
+	var beams:Array=g.projectiles.filter(func(shot):return shot.hostile and shot.get("beam",false) and not shot.dead)
+	check(not beams.is_empty(),"hostile continuous beams survive the actual handoff")
+	for beam in beams:
+		check(beam.get("fixed_enemy_port",false),"native beam retains fixed-port semantics after handoff")
+		check(g.advance_long_laser(beam,1.0/60.0),"transferred live beam remains valid")
+		var expected:Vector2=scene.battle_logical_point(scene.enemy_render_position(beam.source)+scene.enemy_port_offset(beam.source,int(beam.mount)))
+		check(g.projectile_position(beam).is_equal_approx(expected),"legacy continuous beam follows same fixed outlet")
 	await picture(scene)
 	check(retained.records[int(enemy.uid)].source_id==0,"same retained actor switches to main canonical getters")
 	var old_root=retained.records[int(enemy.uid)].root
@@ -148,7 +202,7 @@ func run()->void:
 		var e=template.duplicate(true);e.uid=900+i;e.slot=i;e.size=i+1
 		e.x=110.0+175.0*(i%3);e.y=180.0+220.0*(i/3);e.explicit_formation=true
 		e.hp=1000.0;e.max_hp=1000.0;e.armourType=0;e.shield=0.0;e.max_shield=0.0
-		e.equipment=[{"name":"cannon-mon"},{"name":"laser_mon"}];e.cooldowns=[0.0,0.0]
+		e.equipment=[{"name":"missile-mon"},{"name":"longLaser-mon"}];e.cooldowns=[0.0,0.0]
 		g.enemies.append(e)
 	scene.enemy_poses.clear();scene.battle_read_model.invalidate_membership()
 	scene.fx_time+=5.0
@@ -166,6 +220,7 @@ func run()->void:
 	for e in g.enemies:
 		var boss_record=retained.records[int(e.uid)]
 		check(not boss_record.supported and boss_record.fallback.visible and not boss_record.ports_over.visible and not boss_record.ports_under.visible,"boss and escorts retain original painter and aimed weapons")
+	check(scene.enemy_aim_calls>0,"Boss fallback still executes original turret aim")
 	root.get_texture().get_image().save_png("res://.runtime/boss-original-painter.png")
 	if old_tier==null:group.erase("combatTier")
 	else:group.combatTier=old_tier

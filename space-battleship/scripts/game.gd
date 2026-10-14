@@ -2291,13 +2291,14 @@ func player_weapon_offset(index: int) -> Vector2:
 	var visuals = preload("res://scripts/ship_visuals.gd")
 	return visuals.muzzle(str(profile.selectedShip), index).rotated(-PI/2) * visuals.scale_for(db.ship(str(profile.selectedShip)))
 
-func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
+func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0, source_mount:int=-1) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
 	projectiles.append({"x":float(source.x) + offset.x,"y":float(source.y) + offset.y, "target":target,"damage":raw,"type":int(weapon.dmgtype),"speed":float(speed_parameter)*db.projectile_pixels_per_unit(hostile),"hostile":hostile,"key":key,"dead":false})
 	var shot: Dictionary = projectiles.back()
 	projectile_serial += 1
 	shot.serial = projectile_serial
 	shot.source_uid=int(source.get("uid",0))
+	if hostile and source_mount>=0 and not is_boss_encounter():shot.source=source;shot.mount=source_mount
 	if not hostile and not player_launch_payload.is_empty():shot.merge(player_launch_payload)
 	shot.direction = Vector2(0,1 if hostile else -1) if key.replace("_mon", "").replace("-mon", "") == "missile" else Vector2(target.x - shot.x, target.y - shot.y).normalized()
 	prepare_projectile(shot,source,weapon,visual_spread)
@@ -2349,7 +2350,7 @@ func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, moun
 			launch_snapshot=enhancement_attack_contexts[mount].snapshot
 			finish_enhancement_attack(mount)
 		player_launch_payload={"entry":entry,"mount":mount,"salvo_ordinal":0,"beam":true,"combat_context":CombatContext.derive_with_chain(launch_snapshot.combat_context,"repeat_or_secondary") if repeated else launch_snapshot.combat_context}
-	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset)
+	fire(source, target, weapon, 0, hostile, "longLaser-mon" if hostile else "longLaser", offset,0.0,mount if hostile else -1)
 	player_launch_payload=previous_payload
 	var shot: Dictionary = projectiles.back()
 	shot.merge({"beam":true, "repeated":repeated, "repeat_multiplier":repeat_multiplier, "repeat_depth":repeat_depth, "repeat_origin_multiplier":repeat_origin_multiplier, "charged_multiplier":1.0, "locked_target":target, "source":source, "mount":mount, "entry":entry, "elapsed":0.0, "ticks":0, "weapon":weapon, "charge":maxf(0,float(weapon.para3)) if weapon.get("para3") != null else -1.0})
@@ -3035,7 +3036,7 @@ func tick(dt: float) -> void:
 				var entry: Dictionary = enemy.equipment[i]
 				var weapon := db.enemy_weapon(entry.name)
 				var raw := ceilf(float(weapon.dmg) * float(enemy.dmgMultiple) * ratio("atkRatio"))
-				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
+				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i),0.0,i)
 				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
 	tick_projectiles(dt)
 	for enemy in enemies:settle_enemy_shield(enemy,enemy_shield_time)

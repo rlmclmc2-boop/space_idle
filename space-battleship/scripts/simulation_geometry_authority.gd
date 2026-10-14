@@ -1,5 +1,6 @@
 extends RefCounted
 ## Prototype simulation-owned mathematical geometry. No active scene objects.
+const ENEMY_FIXED_PORTS=preload("res://scripts/enemy_fixed_ports.gd")
 const FIXED_LAYOUT=preload("res://scripts/enemy_fixed_layout.gd")
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
 var fixed_enemy_layout:=true
@@ -245,11 +246,12 @@ func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.IN
 		return row.components[int(component.owner_slot)]
 	return _source_enemy_component_pose(enemy,component,render_position,known_width)
 
-func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0,frozen_angle:float=INF)->Dictionary:
+func _source_enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF,known_width:float=-1.0,frozen_angle:float=INF,fixed_port:Variant=null)->Dictionary:
 	var point:Dictionary=component.hardpoint
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y) if known_width<0.0 else known_width
 	var hull_angle:=enemy_render_angle(enemy) if frozen_angle==INF else frozen_angle
+	if (ENEMY_FIXED_PORTS.enabled(game) if fixed_port==null else bool(fixed_port)):return ENEMY_FIXED_PORTS.pose(point,width,hull_angle)
 	var normalized:Array=point.pos
 	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
@@ -277,6 +279,7 @@ func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.IN
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y)
 	var angle:=float(enemy_pose(enemy).rotation)
+	if ENEMY_FIXED_PORTS.enabled(game):return ENEMY_FIXED_PORTS.pose(point,width,angle).muzzle
 	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
 	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
 	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
@@ -355,6 +358,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if shot.get("fixed_enemy_port",false) and not shot.get("beam",false):return Vector2(shot.launch_point)
 	var identity=drone_identity(shot)
 	if not identity.is_empty():return drone_launch_pose(identity,Vector2.ZERO,0).position
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
@@ -639,7 +643,7 @@ func refresh_frozen_layouts()->void:
 		row.width_high=_source_enemy_render_width_at_y(enemy,floorf(frontline),variance,frontline)
 		var components:Dictionary={}
 		for component in record.pose.appearance.components:
-			components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,row.position,width,row.angle)
+			components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,row.position,width,row.angle,row.get("fixed_ports",false))
 		row.components=components;row.recognition_id=display_shape(enemy,width,record.pose)
 		record.value=row
 
@@ -689,7 +693,8 @@ func sync_hull()->void:
 func refresh_target_geometry()->void:
 	# One boundary scan. Include exact identity, entry progress and actual movement;
 	# elapsed time alone is not a dependency of a resident hull.
-	var signature:Array=[fixed_layout_revision,battle_read_model.shape_revision,player_anchor,screen_scale]
+	var signature:Array=[fixed_layout_revision,battle_read_model.shape_revision,screen_scale,ENEMY_FIXED_PORTS.enabled(game)]
+	if not ENEMY_FIXED_PORTS.enabled(game):signature.append(player_anchor)
 	var entities:Array=[]
 	var replaced:bool=target_geometry_entities.size()!=game.enemies.size()
 	for enemy in game.enemies:
@@ -764,6 +769,11 @@ func ensure_fleet_geometry()->void:
 		fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,0.0)
 		fleet_angles_dirty=true
 	if fleet_angles_dirty:sync_fleet_angles()
+
+func enemy_launch_pose(enemy:Dictionary,shot:Dictionary)->Dictionary:
+	var position:=enemy_render_position(enemy)
+	var slot:int=enemy_shot_mount(enemy,shot)
+	return {"position":battle_logical_point(position+enemy_port_offset(enemy,slot,position)),"mount":slot}
 
 func launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	# Launch providers run before fire feedback; validate only this source slot.
@@ -845,10 +855,11 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.value
 	var uid:int=int(enemy.uid);var pose:Dictionary=enemy_pose(enemy)
 	var logical:Vector2=Vector2(enemy.x,enemy.y)
+	var fixed_ports:bool=ENEMY_FIXED_PORTS.enabled(game)
 	var cached:Dictionary=display_row_cache.get(uid,{})
 	# The pose owns stationary geometry. Clock changes alone do not invalidate
 	# this immutable row; entry, layout, aim anchor and authoring changes do.
-	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and is_same(cached.layout,pose.get("fixed_layout")) and cached.settled and fx_time>=float(pose.born)+float(pose.duration) and cached.player_anchor==player_anchor and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
+	if not cached.is_empty() and is_same(cached.entity,enemy) and is_same(cached.pose,pose) and is_same(cached.layout,pose.get("fixed_layout")) and cached.settled and fx_time>=float(pose.born)+float(pose.duration) and cached.value.get("fixed_ports",false)==fixed_ports and (fixed_ports or cached.player_anchor==player_anchor) and cached.logical==logical and display_pose_values_match(cached.value.pose,pose) and is_same(cached.appearance,pose.get("appearance")):
 		display_row_reuses+=1;return cached.value
 	var position:Vector2=enemy_render_position(enemy)
 	display_row_builds+=1
@@ -858,7 +869,7 @@ func display_enemy(enemy:Dictionary)->Dictionary:
 		components[int(component.owner_slot)]=_source_enemy_component_pose(enemy,component,position,width)
 	var values:Dictionary={}
 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:values[key]=pose[key]
-	var result={"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
+	var result={"fixed_ports":fixed_ports,"position":position,"width":width,"angle":enemy_render_angle(enemy),"frontline":enemy_frontline_y_limit(enemy),"width_low":enemy_render_width_at_y(enemy,90.0),"width_high":enemy_render_width_at_y(enemy,floorf(enemy_frontline_y_limit(enemy))),"components":components,"recognition_id":display_shape(enemy,width),"pose":values}
 	display_row_cache[uid]={"settled":fx_time>=float(pose.born)+float(pose.duration),"entity":enemy,"pose":pose,"layout":pose.get("fixed_layout"),"player_anchor":player_anchor,"logical":logical,"appearance":pose.get("appearance"),"value":result}
 	return result
 func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:

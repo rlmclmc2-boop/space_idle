@@ -22,6 +22,7 @@ var MISSILE_HIT_RADIUS := 5.0
 var MISSILE_LAUNCH_EDGE_MARGIN := 55.0
 var MISSILE_LAUNCH_FORWARD_Y := -0.12
 var drone_launch_provider:=Callable()
+var enemy_launch_provider:=Callable()
 var launch_provider:Callable
 var target_provider:Callable
 var missile_queue:Array[Dictionary]=[]
@@ -154,7 +155,7 @@ func chain_target_point(target:Dictionary)->Vector2:
 	return target_point(target)
 
 func projectile_target_point(shot:Dictionary)->Vector2:
-	if bool(shot.hostile):return super.projectile_target_point(shot)
+	if bool(shot.hostile) and not shot.get("fixed_enemy_port",false):return super.projectile_target_point(shot)
 	return target_point(shot.target)
 
 func target_point(target:Dictionary)->Vector2:
@@ -182,8 +183,22 @@ func tick_projectiles(dt:float)->void:
 		release_context={}
 	super.tick_projectiles(dt)
 
+func advance_long_laser(shot:Dictionary,dt:float)->bool:
+	var active:bool=super.advance_long_laser(shot,dt)
+	if active and shot.get("fixed_enemy_port",false) and enemy_launch_provider.is_valid():
+		var pose:Dictionary=enemy_launch_provider.call(shot.source,shot)
+		shot.x=pose.position.x;shot.y=pose.position.y;shot.launch_point=pose.position
+		shot.direction=(target_point(shot.target)-Vector2(pose.position)).normalized()
+	return active
+
 func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_spread:float)->void:
-	if bool(shot.hostile):return
+	if bool(shot.hostile):
+		if preload("res://scripts/enemy_fixed_ports.gd").enabled(self) and enemy_launch_provider.is_valid():
+			var pose:Dictionary=enemy_launch_provider.call(_source,shot)
+			shot.source=_source;shot.mount=pose.mount;shot.fixed_enemy_port=true
+			shot.x=pose.position.x;shot.y=pose.position.y;shot.launch_point=pose.position
+			shot.direction=(target_point(shot.target)-Vector2(pose.position)).normalized()
+		return
 	if str(shot.key)!="missile":
 		var aim:Vector2=target_point(shot.target)
 		var entry:Dictionary=shot.get("entry",{})

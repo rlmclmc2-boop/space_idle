@@ -172,7 +172,7 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 			var pose:Dictionary=geometry.enemy_pose(actor)
 			stationary.append(1 if geometry.fx_time>=float(pose.born)+float(pose.duration) and Vector2(actor.x,actor.y)==pose.logical_position else 0)
 	var muzzles_changed:bool=false
-	if targets_changed or geometry_player!=aim:
+	if targets_changed or (geometry_player!=aim and not geometry.ENEMY_FIXED_PORTS.enabled(game)):
 		for index in hostile_weapon_indices:
 			var weapon:Dictionary=weapons[index]
 			var actor:Dictionary=actor_rows[int(weapon.source)]
@@ -211,6 +211,7 @@ func consume_feedback(game:RefCounted)->void:
 		var p:Vector2=row.position
 		match int(row.kind):
 			0:
+				if row.shot.hostile and preload("res://scripts/enemy_fixed_ports.gd").enabled(game):row.shot.fixed_enemy_port=true
 				game.event.emit("fire",{"x":p.x,"y":p.y,"type":row.type,"shot":row.shot,"spread":0.0,"direction":row.direction,"aim":row.target_position})
 				if row.shot.get("beam",false):game.event.emit("beam_started",{"shot":row.shot})
 			1:game.event.emit("projectile_impact",{"shot":row.shot,"pos":p})
