@@ -1,39 +1,48 @@
 extends Node2D
-## Presentation only. One retained quad per beam/link; kernel owns every hit.
+## Presentation only. One instance stream per beam; kernel owns every hit.
 const BEAM_SHADER=preload("res://shaders/retained_beams.gdshader")
-class Quad extends Node2D:
- var values:Array=[]
+class BeamBatch extends MultiMeshInstance2D:
+ # One instance stream per original beam preserves ordering across fallback
+ # painters. Color/custom data carry unbounded float shader parameters.
+ var buffer:=PackedFloat32Array()
+ var capacity:int=0
+ var used:int=0
  var builds:int=0
- var cull_bounds:=Rect2(-128,-128,2304,256)
+ var uploads:int=0
+ var bounds:=Rect2()
  func _init()->void:
+  multimesh=MultiMesh.new()
+  multimesh.transform_format=MultiMesh.TRANSFORM_2D
+  multimesh.use_colors=true;multimesh.use_custom_data=true
+  multimesh.mesh=QuadMesh.new()
   material=ShaderMaterial.new();material.shader=BEAM_SHADER
- func _draw()->void:
-  builds+=1
-  # Vertex shader emits the actual quad. Publication expands CPU culling only.
-  draw_rect(Rect2(-128,-128,2304,256),Color.WHITE)
- func publish(start:Vector2,end:Vector2,state:Vector4,clock:float,cue:float,link:bool)->void:
-  # Keep the former continuous-beam finite guards at the GPU boundary too.
-  if not start.is_finite() or not end.is_finite() or not state.is_finite() or not is_finite(clock) or not is_finite(cue) or state.x<=0.0:
-   hide();return
-  var delta:Vector2=end-start
-  var length:float=delta.length()
-  var body:float=maxf(0.7,state.x)*lerpf(0.65,1.8,clampf(state.y,0,1))
-  var pad:float=maxf(24.0,body*3.0+10.0)
-  if not is_finite(length) or not is_finite(pad) or not is_finite(length+pad*2.0):
-   hide();return
-  show()
-  var needed:=Rect2(-pad,-pad,length+pad*2.0,pad*2.0)
-  if not cull_bounds.encloses(needed):
-   cull_bounds=cull_bounds.merge(needed)
-   RenderingServer.canvas_item_set_custom_rect(get_canvas_item(),true,cull_bounds)
-  var angle:float=delta.angle() if delta.length_squared()>=0.25 else -PI/2
-  position=start;rotation=angle
-  var next:Array=[length,state,Vector4(clock,cue,angle,1.0 if link else 0.0)]
-  if next==values:return
-  if values.is_empty() or values[0]!=next[0]:material.set_shader_parameter("beam_length",next[0])
-  if values.is_empty() or values[1]!=next[1]:material.set_shader_parameter("state",next[1])
-  if values.is_empty() or values[2]!=next[2]:material.set_shader_parameter("timing",next[2])
-  values=next
+ func begin(count:int,clock:float)->void:
+  if capacity<count:
+   capacity=maxi(4,capacity)
+   while capacity<count:capacity*=2
+   multimesh.instance_count=capacity;buffer.resize(capacity*16);builds+=1
+  used=0;bounds=Rect2()
+  material.set_shader_parameter("clock",clock)
+ func append_ray(start:Vector2,end:Vector2,state:Vector4,cue:float,link:bool)->void:
+  if not start.is_finite() or not end.is_finite() or not state.is_finite() or not is_finite(cue) or state.x<=0.0:return
+  var delta:=end-start;var length:=delta.length()
+  var body:=maxf(0.7,state.x)*lerpf(0.65,1.8,clampf(state.y,0,1))
+  var pad:=maxf(24.0,body*3.0+10.0)
+  if not is_finite(length+pad*2.0):return
+  var angle:=delta.angle() if delta.length_squared()>=0.25 else -PI/2
+  var c:=cos(angle);var s:=sin(angle);var i:=used*16
+  buffer[i]=c;buffer[i+1]=-s;buffer[i+2]=0;buffer[i+3]=start.x
+  buffer[i+4]=s;buffer[i+5]=c;buffer[i+6]=0;buffer[i+7]=start.y
+  buffer[i+8]=length;buffer[i+9]=cue;buffer[i+10]=angle;buffer[i+11]=1.0 if link else 0.0
+  buffer[i+12]=state.x;buffer[i+13]=state.y;buffer[i+14]=state.z;buffer[i+15]=state.w
+  var ray_bounds:=Rect2(start,Vector2.ZERO).expand(end).grow(pad*1.42)
+  bounds=ray_bounds if used==0 else bounds.merge(ray_bounds)
+  used+=1
+ func finish()->void:
+  multimesh.visible_instance_count=used
+  if used==0:return
+  multimesh.buffer=buffer;uploads+=1
+  RenderingServer.canvas_item_set_custom_rect(get_canvas_item(),true,bounds)
 class Fallback extends Node2D:
  var scene
  var shot:Dictionary={}
@@ -57,7 +66,7 @@ func sync(owner,shots:Array,offset:Vector2)->void:
    row.root.hide();row.root.queue_free();records.erase(serial);row={}
   if row.is_empty():
    var root:=Node2D.new();add_child(root)
-   var body=Quad.new() if gpu else Fallback.new();root.add_child(body)
+   var body=BeamBatch.new() if gpu else Fallback.new();root.add_child(body)
    row={"root":root,"body":body,"shot":shot,"gpu":gpu,"links":[]};records[serial]=row
   if row.root.get_index()!=order:move_child(row.root,order)
   order+=1
@@ -72,12 +81,11 @@ func sync(owner,shots:Array,offset:Vector2)->void:
    var style:Dictionary=owner.beam_style(shot);state=Vector4(style.width,style.power,style.pulse,-1)
    if owner.beam_full_started.has(serial):cue=owner.fx_time-float(owner.beam_full_started[serial])
    links=owner.game.beam_chain_targets(shot)
-  row.body.publish(start,end,state,owner.fx_time,cue,false);publications+=1
-  while row.links.size()>links.size():
-   var tail=row.links.pop_back();tail.hide();tail.queue_free()
-  while row.links.size()<links.size():
-   var node=Quad.new();row.root.add_child(node);row.links.append(node)
-  for index in links.size():row.links[index].publish(end,owner.entity_render_position(links[index])+offset,Vector4(1,0,0,-1),owner.fx_time,-1,true)
+  row.body.begin(1+links.size(),owner.fx_time)
+  row.body.append_ray(start,end,state,cue,false);publications+=1
+  for target in links:row.body.append_ray(end,owner.entity_render_position(target)+offset,Vector4(1,0,0,-1),-1,true)
+  row.body.finish()
+  row.links=links
  for serial in records.keys():
   if not present.has(serial):
    records[serial].root.hide();records[serial].root.queue_free();records.erase(serial)
@@ -89,5 +97,5 @@ func metrics()->Dictionary:
  for row in records.values():
   if row.gpu:
    builds+=row.body.builds
-   for node in row.links:builds+=node.builds;links+=1
+   links+=row.links.size()
  return {"beams":records.size(),"links":links,"live_quad_builds":builds,"publications":publications}
