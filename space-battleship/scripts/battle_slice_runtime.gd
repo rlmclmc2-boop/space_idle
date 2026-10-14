@@ -168,7 +168,12 @@ func on_event(kind:String,info:Dictionary)->bool:
 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.position=Vector2(info.pos)
 			e.direction=game.projectile_direction(shot);e.critical=bool(shot.get("critical",false))
 			var visual:Dictionary=scene.projectile_visual(shot)
-			if visual.has("fixed_step"):e.position=scene.straight_projectile_point(e.position,visual)
+			if shot.has("fixed_screen_step"):
+				# Feedback may arrive after this step moved the body. Use its committed birth ray.
+				var distance:float=(e.position-Vector2(shot.launch_point)).dot(game.projectile_direction(shot))
+				e.position=geometry.battle_logical_point(Vector2(shot.fixed_screen_origin)+Vector2(shot.fixed_screen_step)*distance)
+				e.direction=Vector2(shot.fixed_screen_step).normalized()
+			elif visual.has("fixed_step"):e.position=scene.straight_projectile_point(e.position,visual)
 			if not bool(shot.get("chain_hop",false)):consume(e)
 		"explode":
 			e.uid=int(info.get("uid",0));e.position=Vector2(info.x,info.y);e.width=34.0
@@ -208,6 +213,7 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
 	scene.projectile_visuals.append(visual)
 	if game.combat_presentation!=null:game.combat_presentation.register_visual(shot,visual,scene.projectile_visuals.size()-1)
 	if shot.has("fixed_screen_step"):
+		visual.logical_origin=shot.launch_point
 		visual.fixed_origin=shot.fixed_screen_origin;visual.fixed_step=shot.fixed_screen_step
 		visual.fixed_direction=game.projectile_direction(shot);visual.angle=Vector2(visual.fixed_step).angle()
 	elif geometry.weapon_key(shot) in ["laser","cannon"] and not shot.target.is_empty():
