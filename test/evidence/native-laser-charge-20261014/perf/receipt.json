@@ -1,0 +1,68 @@
+{
+  "refs": {
+    "A": "0a8ec88440b3329ddd0a99025d9eb1d20b587746",
+    "B": "53d8ece29d3ff39f01be537db1d9a0bf05ad9697"
+  },
+  "order": [
+    "A1",
+    "B1"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "A1",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-perf\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791989309.9297361,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791989336.9857724,
+      "json_sha256": "11c7b865599b48a4456fb2c360980d002d3e731f72b5905c87e45c327d9a1309",
+      "png_sha256": "a1eede93a28f2e75c601b970180f739d2ea0fd5f87bf0be05e6c04aaafac845e",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "B1",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-perf\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791989336.9927552,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342",
+      "exit": 0,
+      "completed_unix": 1791989357.7270057,
+      "json_sha256": "49110673bb57d3261d444976bdd809388ad645c287f362edfebf9b1f60cdca21",
+      "png_sha256": "455f4a002ffd1591035bde7d3ff2ada6241a811d7765023541fee12cd571975c",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {
+    "A": 0,
+    "B": 0
+  },
+  "dll_sha256": {
+    "A": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+    "B": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "1b4f7d1deb6aebc6d2edcc730c14629a47c867ef49dee6f033eecc9268f0d7eb",
+  "fixture_sha256": "146f8baffb8135cc731c313ffbaecafc63a8031b7711d8463ca77e8ec51f076e",
+  "scope": "One same-configuration pulse AB pair on current GPU main versus laser-charge candidate. Preserve full legends, ordinary native admission/fallback, actual1x checks, uncapped/VSync off; overloaded sides remain diagnostics."
+}
