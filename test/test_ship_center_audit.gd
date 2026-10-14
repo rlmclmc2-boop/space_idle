@@ -20,6 +20,11 @@ func _initialize()->void:
   for item in boxes.slice(1):box=box.merge(item)
   rows.append({"kind":"player_glb","key":key,"path":row.path,"bounds":str(box),"center_minus_origin":str(box.get_center()),"center_z_per_height":box.get_center().z/box.size.z,"authored_span":row.model_span})
   node.free()
+ for weapon in ["laser","longLaser","missile","cannon"]:
+  var node=preload("res://scripts/hyperspace_appearance.gd").scene(weapon).instantiate();var boxes:Array=[]
+  bounds(node,Transform3D.IDENTITY,boxes);var box:AABB=boxes[0]
+  for item in boxes.slice(1):box=box.merge(item)
+  rows.append({"kind":"equipped_drone","key":weapon,"bounds":str(box),"center_minus_origin":str(box.get_center()),"targetable":false,"contract":"full root transform and socket chain shared by numeric and visible owners"});node.free()
  DirAccess.make_dir_recursive_absolute("res://.runtime")
  var file=FileAccess.open("res://.runtime/ship-center-audit.json",FileAccess.WRITE);file.store_string(JSON.stringify(rows,"\t"));file.close()
  print(JSON.stringify(rows));quit()

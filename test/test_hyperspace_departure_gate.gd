@@ -51,6 +51,28 @@ func run()->void:
  check(g.enemies.size()>0 and scene.ship_view.visible,"old encounter may spawn and render only after exit")
  check(g.native_execution!=null,"normal restored encounter can admit native execution")
  await capture(scene,"complete")
+ # Preserve real nonempty native-born flights through manual entry/return.
+ for i in 180:
+  if not g.projectiles.is_empty():break
+  scene._process(1.0/60.0)
+ check(not g.projectiles.is_empty(),"real in-flight mainline projectiles exist before manual entry")
+ if g.native_execution!=null:check(g.native_execution.handoff_to_legacy(g,"return_residual_check"),"real residual native handoff succeeds")
+ g.native_execution_auto=false
+ if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.request_legacy_display()
+ var actors=preload("res://scripts/hyperspace_battle_return.gd")
+ var residual=actors.capture(g);var residual_count=g.projectiles.size()
+ check(not residual.is_empty(),"residual graph excludes retired display leases but retains scalar state")
+ check(g.start_hyperspace("alpha",g.hyperspace.current_layer(g,"alpha")+1),"manual entry freezes nonempty residuals")
+ scene._process(0.0)
+ for i in 20:scene.encounter_presentation.sync(g,0.1)
+ check(g.exit_hyperspace_challenge(),"manual return restores nonempty residuals")
+ check(g.projectiles.size()==residual_count and actors.capture(g)==residual,"residual projectiles and shared actor graph restore exactly")
+ for i in 8:scene._process(0.1)
+ check(scene.battle_transition_blocked() and actors.capture(g)==residual,"nonempty old flights cannot advance during departure")
+ check(not scene.pulse_layer.visible and not scene.ship_view.visible,"restored live flights are not rendered during departure")
+ while scene.battle_transition_blocked():scene._process(0.1)
+ scene._process(1.0/60.0)
+ check(actors.capture(g)!=residual,"restored flight simulation resumes after departure")
  # A paused mainline battle must restore without forcing an unpause or hanging the gate.
  g.paused=true
  var paused_actors=preload("res://scripts/hyperspace_battle_return.gd").capture(g)
