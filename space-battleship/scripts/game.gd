@@ -3546,21 +3546,32 @@ func finish_enhancement_attack(index: int) -> void:
 	if enhancement_attack_contexts.has(index):enhancement_branches.finish_attack(self,enhancement_attack_contexts[index])
 	enhancement_attack_contexts.erase(index)
 
+func endless_source_slot(weapon_levels:Dictionary={}) -> int:
+	# Ordinary enabled weapon slots only; strict > retains the first tied slot.
+	# The compiler supplies projected levels before an atomic numeric upgrade.
+	var entries:=weapon_entries()
+	var best:=-1
+	var best_level:=-1
+	for index in entries.size():
+		var entry:Dictionary=entries[index]
+		if entry.key!="longLaser":continue
+		var level:=int(weapon_levels.get(index,entry.level))
+		if best<0 or level>best_level:best=index;best_level=level
+	return best
+
 func endless_source() -> Dictionary:
 	if stat_cache.has("hyperspace_endless_source"):return stat_cache.hyperspace_endless_source
-	var best: Dictionary={}
-	for entry in weapon_entries():
-		if entry.key!="longLaser":continue
-		if best.is_empty() or int(entry.level)>int(best.level):best=entry
+	var index:=endless_source_slot()
+	var best:Dictionary=weapon_entries()[index] if index>=0 else {}
 	stat_cache.hyperspace_endless_source=best;return best
 
-func player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}) -> Dictionary:
+func player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}, endless_selected:Variant=null) -> Dictionary:
 	var weapon := combat_equipment_row(str(entry.key),int(entry.level)).duplicate()
 	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
 	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(drones.attack_speed)
 	if entry.key=="longLaser":
 		var endless: Dictionary=drones.legendary.get("endless_beam",{})
-		if not endless.is_empty() and is_same(entry,endless_source()):weapon.para2=float(weapon.para2)+float(endless.parameters.maximum_multiplier_bonus)
+		if not endless.is_empty() and (is_same(entry,endless_source()) if endless_selected==null else bool(endless_selected)):weapon.para2=float(weapon.para2)+float(endless.parameters.maximum_multiplier_bonus)
 	return weapon
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:

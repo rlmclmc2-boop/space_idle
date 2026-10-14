@@ -111,12 +111,13 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 			var amount=N.ceiling(N.multiply(base,g.planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base
 			view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
 		enemies.append(view)
+	var endless_slot:int=g.endless_source_slot(weapon_levels)
 	for index in g.combat_weapon_entries().size():
 		var entry:Dictionary=g.projected_combat_entry(index,weapon_levels)
 		if str(entry.key).is_empty():continue
 		if not entry.key in KEYS:return {"error":"unsupported_weapon"}
 		if not native_integer(entry.get("level")):return {"error":"unsupported_native_scalar:weapon_level"}
-		var row:Dictionary=g.player_weapon_row(entry,totals)
+		var row:Dictionary=g.player_weapon_row(entry,totals,index==endless_slot)
 		if not native_weapon_row(row,KEYS.find(entry.key)):return {"error":"unsupported_native_scalar:player_weapon"}
 		var critical:Vector2=g.jewel_critical(entry,null,false,totals)
 		var chain=int(totals.chain_count);var repeat_factor=1.0
