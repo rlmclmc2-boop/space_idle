@@ -1,0 +1,124 @@
+{
+  "source": "same A0a8ec884 / B53d8ece2 and DLLs as existing pair; QA observers only",
+  "steps": 720,
+  "fixed_dt": 0.016666666666666666,
+  "same_complete_config": true,
+  "same_purchase_steps": true,
+  "charge_multiplier": 3.481,
+  "repeat_delay_steps": 30,
+  "repeat_factor": 9.0,
+  "chain_allowance": 11,
+  "sides": {
+    "A": {
+      "root_batches": 714,
+      "root_pulses": 10710,
+      "secondary_pulses": 138,
+      "repeat_pulses": 557,
+      "hostile_pulses": 180,
+      "fires": 11585,
+      "hits": 24256,
+      "impacts": {
+        "primary": 10456,
+        "derived": 665,
+        "chain": 13135
+      },
+      "chain_carriers_born": 13486,
+      "chain_instances_used": 1226,
+      "repeat_identity_drops": 130,
+      "repeat_snapshot_checks": 557,
+      "repeat_max_relative_error": 2.220446049250313e-16,
+      "final_attack_counter": 1271,
+      "cap": 0,
+      "vsync": 0,
+      "focus_end": true
+    },
+    "B": {
+      "root_batches": 714,
+      "root_pulses": 10710,
+      "secondary_pulses": 138,
+      "repeat_pulses": 687,
+      "hostile_pulses": 180,
+      "fires": 11715,
+      "hits": 25849,
+      "impacts": {
+        "primary": 10478,
+        "derived": 797,
+        "chain": 14574
+      },
+      "chain_carriers_born": 14960,
+      "chain_instances_used": 1360,
+      "repeat_identity_drops": 0,
+      "repeat_snapshot_checks": 687,
+      "repeat_max_relative_error": 2.220446049250313e-16,
+      "final_attack_counter": 1401,
+      "cap": 0,
+      "vsync": 0,
+      "focus_end": true
+    }
+  },
+  "root_correspondence": {
+    "same_count_targets_critical": true,
+    "native_minus_legacy_step_offsets": {
+      "0": 660,
+      "-1": 54
+    },
+    "advanced_source": "module:0 only; existing deadline epsilon vs repeated subtraction"
+  },
+  "first_combat_difference": {
+    "step": 23,
+    "legacy_hits": 5,
+    "native_hits": 6,
+    "same_fires": 181,
+    "same_attacks": 12,
+    "same_rng": true,
+    "cause": "Existing launch/geometry/contact paths: native publishes one weapon muzzle per geometry step plus fixed screen ray/visible hull; legacy prepares each target launch and fresh shots use target-point along/cross tolerance0.5. Observed first contact divergence precedes repeat cancellation and module0 deadline offset. No claim that hull alone quantitatively explains every difference."
+  },
+  "repeat_cause": {
+    "first_drop_step": 69,
+    "old_level": 151,
+    "new_level": 152,
+    "total": 130,
+    "cause": "combat_weapon_entries replaces projected drone entry when its level changes; advance_jewel_repeats rejects old identity. Kernel retains birth snapshot as required; no extra RNG/repeat decisions."
+  },
+  "hit_decomposition": {
+    "total_delta": 1593,
+    "primary_contact_delta": 22,
+    "derived_contact_delta": 132,
+    "chain_arrival_delta": 1439,
+    "additional_chain_instances": 134,
+    "additional_chain_carriers": 1474,
+    "additional_chain_carriers_not_arrived": 35,
+    "interpretation": "Native has130 additional eligible repeat instances and134 net additional instances that used their chain allowance; four is the residual net contact-window difference, not a claim that each extra instance was individually traced. Each allowance creates11 carriers, explaining1474 additional births;1439 extra arrivals leave35 extra outstanding carriers. Existing geometry/contact timing explains why arrival counts need not match."
+  },
+  "damage_oracle": {
+    "charge_multiplier": 3.481,
+    "checks": 1428,
+    "failures": [],
+    "method": "No battle replay. Re-evaluate each recorded root using shared GDS equipment/legendary/critical rules, recorded per-source step and attack order, same upgrade levels; comparisons tolerate JSON scalar encoding only.",
+    "sides": {
+      "A": {
+        "attack_counter": 1271,
+        "max_relative_error": 1.11022302462516e-16,
+        "roots": 714
+      },
+      "B": {
+        "attack_counter": 1401,
+        "max_relative_error": 1.11022302462516e-16,
+        "roots": 714
+      }
+    }
+  },
+  "conclusion": "Coverage and numeric semantics closed for this full held-health loadout; no deleted mechanism/load or altered formula found. No strict trajectory/RNG/event equality requirement. Original overloaded A frame time remains ineligible as1x net-savings proof. Candidate restored actual1x in prior B1; parent acceptance pending.",
+  "source_locations": {
+    "legacy_drone_projection": "scripts/game.gd:762-777",
+    "legacy_repeat_identity_guard": "scripts/game.gd:3857-3867",
+    "legacy_per_target_launch": "scripts/presented_battle_game.gd:184-201",
+    "legacy_point_contact": "scripts/game.gd:3084-3095",
+    "native_geometry_input": "scripts/native_execution_session.gd:158-213",
+    "native_birth_ray": "addons/native_battle/src/combat_execution_kernel.h:694-701",
+    "native_repeat_snapshot": "addons/native_battle/src/combat_execution_kernel.h:1337-1351",
+    "native_single_chain_allowance": "addons/native_battle/src/combat_execution_kernel.h:867-882",
+    "native_hull_contact": "addons/native_battle/src/combat_execution_kernel.h:1428-1451",
+    "note": "Candidate53d8ece2 line numbers; these paths predate charge except the new multiplier and capability guard."
+  }
+}

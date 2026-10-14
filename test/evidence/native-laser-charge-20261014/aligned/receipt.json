@@ -1,0 +1,34 @@
+[
+  {
+    "side": "A",
+    "command": [
+      "D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe",
+      "--path",
+      "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-perf\\A\\space-battleship",
+      "--rendering-method",
+      "gl_compatibility",
+      "--max-fps",
+      "0",
+      "--disable-vsync",
+      "--script",
+      "res://charge_aligned.gd"
+    ],
+    "exit": 0
+  },
+  {
+    "side": "B",
+    "command": [
+      "D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe",
+      "--path",
+      "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\laser-charge-main-20261014\\test\\work\\laser-charge-perf\\B\\space-battleship",
+      "--rendering-method",
+      "gl_compatibility",
+      "--max-fps",
+      "0",
+      "--disable-vsync",
+      "--script",
+      "res://charge_aligned.gd"
+    ],
+    "exit": 0
+  }
+]
