@@ -4,35 +4,41 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
     Object *game=surface->get("game");Object *session=game->get("native_execution");
     Ref<SpaceCombatKernel> kernel;
     if(session&&!bool(session->get("handed_off")))kernel=session->get("kernel");
-    if(retained_material.is_null()||kernel.is_null()||!kernel->admitted||kernel->stopped||
+    if(bool(surface->get("accelerated_visual_mode"))||retained_material.is_null()||kernel.is_null()||!kernel->admitted||kernel->stopped||
        !bool(surface->get("prototype_enabled"))||!bool(surface->get("pulse_vfx_enabled"))||
        !bool(surface->get("enemy_vfx_enabled"))||!bool(surface->get("missile_vfx_enabled"))) {
-        if(retained_frame.is_valid()) {
-            retained_frame->order.clear();retained_frame->background.clear();retained_frame->flights.clear();
-            retained_frame.unref();retained_kernel.unref();
-            for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
-        }
+        clear_retained_frame();
         return false;
     }
     ++retained_advances;
-    if(retained_kernel!=kernel||retained_frame.is_null()) {
-        retained_kernel=kernel;retained_frame.instantiate();retained_frame->persistent=true;
+    Array visuals=surface->get("projectile_visuals");
+    if(retained_kernel!=kernel||retained_frame.is_null()||retained_encounter!=kernel->encounter_generation) {
+        // Cold ownership/reset boundary only: serials may restart. Keep records
+        // registered for this exact flight, never a same-number previous encounter.
+        std::unordered_map<uint64_t,const SpaceCombatKernel::Flight*> current;
+        for(size_t id:kernel->active)if(kernel->flights[id].live)current[kernel->flights[id].serial]=&kernel->flights[id];
+        visual_by_serial.clear();
+        for(int i=visuals.size()-1;i>=0;--i){Dictionary v=visuals[i],shot=v["shot"];uint64_t serial=int64_t(shot.get("serial",0));auto found=current.find(serial);
+            if(found==current.end()||!same(found->second->view,shot))visuals.remove_at(i);
+            else visual_by_serial[int64_t(serial)]=v;
+        }
+        retained_kernel=kernel;retained_encounter=kernel->encounter_generation;retained_frame.instantiate();retained_frame->persistent=true;
     }
+    auto forget_visual=[&](const Variant &serial,const Dictionary &shot){Dictionary indexed=visual_by_serial.get(serial,Dictionary());if(!indexed.is_empty()&&same(indexed["shot"],shot))visual_by_serial.erase(serial);};
     auto &frame=*retained_frame.ptr();
     // Lease lifetime is not liveness. Check the kernel slot, generation AND lease.
     for(size_t id:frame.order) {
         auto &f=frame.flights[id];
         if(id>=kernel->flights.size()||!kernel->flights[id].live||kernel->flights[id].generation!=f.generation||kernel->flights[id].lease!=f.motion) {
-            visual_by_serial.erase(int64_t(f.serial));f=PreparedFlight();
+            forget_visual(int64_t(f.serial),f.shot);f=PreparedFlight();
         }
     }
-    Array visuals=surface->get("projectile_visuals");
     // The capped compatibility/decorative records survive fallback. No active-shot
     // dictionary or serial index is rebuilt. Retired-before-first-display births
     // are removed here too, so their references cannot pin a motion slot forever.
     for(int i=visuals.size()-1;i>=0;--i) {
         Dictionary v=visuals[i],shot=v["shot"];
-        if(bool(shot.get("dead",false))){visual_by_serial.erase(shot.get("serial",Variant()));visuals.remove_at(i);}
+        if(bool(shot.get("dead",false))){forget_visual(shot.get("serial",Variant()),shot);visuals.remove_at(i);}
     }
     frame.flights.resize(kernel->flights.size());frame.order.clear();frame.background.clear();
     frame.order.reserve(kernel->active.size());int density=0;
@@ -43,7 +49,9 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
             ++retained_births;f=PreparedFlight();f.generation=source.generation;f.serial=source.serial;
             f.shot=source.view;f.motion=source.lease;f.hostile=source.hostile;f.chain=source.chain;f.beam=source.beam;f.damage_type=source.type;
             f.key=String(source.view.get("key","")).replace("_mon","").replace("-mon","");
-            f.visual=visual_by_serial.get(int64_t(source.serial),Dictionary());f.visual_state=f.visual.get("visual_lease",Variant());
+            f.visual=visual_by_serial.get(int64_t(source.serial),Dictionary());
+            if(!f.visual.is_empty()&&!same(f.visual["shot"],source.view))f.visual=Dictionary();
+            f.visual_state=f.visual.get("visual_lease",Variant());
             f.fixed=source.view.has("fixed_screen_step");
             if(f.fixed){f.launch=source.view["launch_point"];f.ray_origin=source.view["fixed_screen_origin"];f.ray_step=source.view["fixed_screen_step"];f.ray_direction=f.motion->motion().direction;}
             else if(f.visual.has("fixed_step")){f.fixed=true;f.launch=f.visual["logical_origin"];f.ray_origin=f.visual["fixed_origin"];f.ray_step=f.visual["fixed_step"];f.ray_direction=f.visual["fixed_direction"];}

@@ -21,7 +21,7 @@ class Painter extends Node2D:
  var frame
  func _draw():
   draw_surface=self
-  frame=native.prepare_flights(self,game.projectiles,Vector2.ZERO)
+  frame=native.prepare_flights(self,[] if accelerated_visual_mode else game.projectiles,Vector2.ZERO)
   # A translucent intervening hull distinguishes background and foreground.
   draw_rect(Rect2(170,175,220,50),Color(0.3,0.2,0.4,0.4))
   native.draw_flights(self,frame,Vector2.ZERO)
@@ -121,7 +121,35 @@ func run():
  await process_frame;await RenderingServer.frame_post_draw
  assert(painters[1].frame.size()==game.projectiles.size() and painters[1].frame.size()>256)
  for row in painters[1].frame.to_array():assert(not is_same(row.shot,retired_shot))
+ # Different live kernel, restarted serials: stale visuals must not cross owners.
+ var previous_kernel=kernel
+ for i in 2:
+  var old:Dictionary=game.projectiles[i]
+  var stale:Dictionary=painters[1].native.create_visual(old,0,0,Vector2.ZERO,Vector2.ZERO,0)
+  painters[1].projectile_visuals.append(stale);painters[1].native.register_visual(old,stale,0)
+ kernel=ClassDB.instantiate("SpaceCombatKernel");assert(kernel.configure(d));install_geometry(kernel,d)
+ session.kernel=kernel;game.projectiles=kernel.projectile_views();assert(kernel.advance(1.0/60.0));kernel.take_feedback()
+ var fresh:Dictionary=painters[1].native.create_visual(game.projectiles[0],0,0,Vector2.ZERO,Vector2.ZERO,0)
+ painters[1].projectile_visuals.append(fresh);painters[1].native.register_visual(game.projectiles[0],fresh,0)
+ for painter in painters:painter.native.advance_visuals(painter,0.0);painter.queue_redraw()
+ await process_frame;await RenderingServer.frame_post_draw
+ var switched:Array=painters[1].frame.to_array()
+ assert(is_same(switched[0].visual,fresh),"keep newly registered same-serial record")
+ assert(switched[1].visual.is_empty(),"unregistered replacement must not inherit old visual")
+ for row in switched:assert(row.visual.is_empty() or is_same(row.visual.shot,row.shot))
+ previous_kernel.cancel()
+ # Real fast-display entry skips advance_projectile_visuals entirely. Prepare
+ # must drop the retained frame even in that route; direct advance also falls back.
+ var calls:Dictionary=painters[1].native.retained_metrics()
+ painters[1].accelerated_visual_mode=true;painters[1].queue_redraw()
+ await process_frame;await RenderingServer.frame_post_draw
+ assert(painters[1].frame.size()==0 and painters[1].native.retained_metrics().live==0)
+ painters[1].native.advance_visuals(painters[1],0.0)
+ assert(painters[1].native.retained_metrics().old_advance==calls.old_advance+1)
+ painters[1].accelerated_visual_mode=false;painters[1].native.advance_visuals(painters[1],0.0);painters[1].queue_redraw()
+ await process_frame;await RenderingServer.frame_post_draw
+ assert(painters[1].frame.size()==game.projectiles.size())
  painters[1].native.configure_retained_gpu(null)
- FileAccess.open("res://.runtime/retained-unit.json",FileAccess.WRITE).store_string(JSON.stringify({"passed":true,"max_fixed_ray_error_pixels":max_error,"pre_handoff_metrics":metric,"samples":summary,"over_cap":saw_over_cap,"chain":saw_chain,"pause_exact":true,"handoff":true,"reset":true}))
+ FileAccess.open("res://.runtime/retained-unit.json",FileAccess.WRITE).store_string(JSON.stringify({"passed":true,"max_fixed_ray_error_pixels":max_error,"pre_handoff_metrics":metric,"samples":summary,"over_cap":saw_over_cap,"chain":saw_chain,"pause_exact":true,"handoff":true,"reset":true,"kernel_identity":true,"accelerated_display_roundtrip":true}))
  print("RETAINED_FLIGHTS_UNIT_OK error=",max_error)
  kernel.cancel();quit()

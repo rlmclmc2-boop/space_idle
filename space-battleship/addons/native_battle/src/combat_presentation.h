@@ -66,6 +66,7 @@ class SpaceCombatPresentation : public RefCounted {
     void recycle_frame(std::vector<PreparedFlight> &flights){flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}}
     Dictionary visual_by_serial;
     Ref<SpaceCombatKernel> retained_kernel;
+    uint32_t retained_encounter=0;
     Ref<SpaceCombatFlightFrame> retained_frame;
     Ref<ShaderMaterial> retained_material;
     Ref<ArrayMesh> retained_mesh;
@@ -75,6 +76,11 @@ class SpaceCombatPresentation : public RefCounted {
     std::vector<RID> retained_canvases;
     size_t retained_cursor=0;
     int64_t old_advances=0,old_prepares=0,old_draws=0,retained_advances=0,retained_births=0,retained_draws=0,retained_upload_bytes=0;
+    void clear_retained_frame() {
+        if(retained_frame.is_valid()){retained_frame->order.clear();retained_frame->background.clear();retained_frame->flights.clear();}
+        retained_frame.unref();retained_kernel.unref();retained_encounter=0;
+        for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
+    }
     bool advance_retained(Object *surface,double dt);
     void prepare_retained(Object *surface,Vector2 offset);
     void draw_retained(Object *surface,Vector2 offset);
@@ -466,7 +472,8 @@ void SpaceCombatPresentation::flush_pulses(RID canvas) {
     RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
 }
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
-    if(retained_frame.is_valid()&&retained_kernel.is_valid()&&!bool(surface->get("accelerated_visual_mode"))){prepare_retained(surface,offset);return retained_frame;}
+    if(bool(surface->get("accelerated_visual_mode")))clear_retained_frame();
+    if(retained_frame.is_valid()&&retained_kernel.is_valid()){prepare_retained(surface,offset);return retained_frame;}
     ++old_prepares;
     // References and the serial index exist only for this draw. The native
     // continuous state and the original visual records remain authoritative.

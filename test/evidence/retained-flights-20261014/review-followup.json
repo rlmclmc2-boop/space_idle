@@ -1,0 +1,38 @@
+{
+  "reviewed_base": "97c3fa3de19426bc254e05e7718681c948b90dab",
+  "fixes": [
+    "Validate cached visual shot identity at birth; identity-guard retirement erasure.",
+    "Rebuild visual index only at kernel ownership/encounter-generation boundary, rejecting foreign records and retaining already registered current records.",
+    "Accelerated visual mode rejects retained advance; prepare also clears retained state because real fast display skips advance entirely."
+  ],
+  "targeted_unit": {
+    "accelerated_display_roundtrip": true,
+    "chain": true,
+    "handoff": true,
+    "kernel_identity": true,
+    "max_fixed_ray_error_pixels": 8.63167442730628e-05,
+    "over_cap": true,
+    "passed": true,
+    "pause_exact": true,
+    "pre_handoff_metrics": {
+      "advances": 66,
+      "births": 853,
+      "draws": 66,
+      "live": 287,
+      "old_advance": 0,
+      "old_draw": 0,
+      "old_prepare": 0,
+      "upload_bytes": 3981312
+    },
+    "reset": true
+  },
+  "performance": "Not rerun per review scope. Prior RF2 A/B/A belongs to 97c3fa3d; do not relabel its source/DLL as this revision.",
+  "source_sha256": {
+    "space-battleship/addons/native_battle/src/combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1",
+    "space-battleship/addons/native_battle/src/combat_retained_presentation.h": "040c563ab80ce63553a5acc45c7a8e32e7209e3bceb1960045da9bfc72f30a4d",
+    "test/test_retained_flights.gd": "b05846b167b6eb667b1448c0936cc2cf698f68ec266721eee21a95cce6edcd5f"
+  },
+  "unit_dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8",
+  "images": "Existing saved image content copied to images/. Full-view hashes match the original build receipt; all copied image hashes equal runtime files after the targeted regression.",
+  "image_sha256_file": "images/sha256.json"
+}
