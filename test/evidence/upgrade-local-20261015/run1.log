@@ -1,0 +1,19 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+FAIL kernel post-upgrade exact except construction seed
+FAIL future birth/update parity
+FAIL equal full entry different insertion order shares projection
+FAIL shared projection exact identity
+FAIL different level is distinct; equal inactive entry shares only projection
+SCRIPT ERROR: Invalid access to property or key 'trigger' on a base object of type 'Dictionary'.
+   at: UI.equipment_expected_details (res://scripts/main.gd:3397)
+   GDScript backtrace (most recent call first):
+       [0] equipment_expected_details (res://scripts/main.gd:3397)
+       [1] module_tooltip (res://scripts/equipment_tab.gd:488)
+       [2] equipment_item (res://scripts/equipment_tab.gd:479)
+       [3] ui_checks (res://qa_upgrade_local.gd:105)
+       [4] run (res://qa_upgrade_local.gd:118)
+FAIL refresh_slots scoped cache
+FAIL next refresh uses fresh cache
+UPGRADE_LOCAL_CHECK {"checks":95,"failures":["kernel post-upgrade exact except construction seed","future birth/update parity","equal full entry different insertion order shares projection","shared projection exact identity","different level is distinct; equal inactive entry shares only projection","refresh_slots scoped cache","next refresh uses fresh cache"]}

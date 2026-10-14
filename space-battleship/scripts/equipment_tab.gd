@@ -464,14 +464,16 @@ func equipment_item(category: String, index: int, projections: Variant = null) -
 		# Only refresh_slots owns this synchronous cache. Full entry values are
 		# sufficient here: snapshot excludes identity-owned timed buffs. Never
 		# share slot-specific card context, affordability or previews.
-		if not projections.has(entry):
+		var cached:int=projections.find_custom(func(row):return row.entry==entry)
+		if cached<0:
 			var shared:Dictionary=host.equipment_display_snapshot(entry).duplicate(true)
 			# GrowthNumber values are {m,e}; freeze owned copies, not game values.
 			for field in ["base","expected"]:
 				if shared.get(field) is Dictionary:shared[field].make_read_only()
 			shared.make_read_only()
-			projections[entry.duplicate(true)]=shared
-		projection=projections[entry]
+			projections.append({"entry":entry.duplicate(true),"projection":shared})
+			cached=projections.size()-1
+		projection=projections[cached].projection
 	var value = projection.expected
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
@@ -507,7 +509,7 @@ func refresh_slots(changed: Array) -> void:
 		if selected==id:
 			selected="";selected_slot=-1;pending_key="";draft_context=[];picker_open=false
 	var quotes := {}
-	var projections:Dictionary={}
+	var projections:Array=[]
 	for category in ["weapons","defence"]:
 		for index in host.game.module_entries(category).size():
 			var id: String = module_card_id(category,index)
