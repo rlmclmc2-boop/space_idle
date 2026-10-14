@@ -111,6 +111,8 @@ const IMPACT_SCALE := 0.65
 var show_damage_numbers := true
 var damage_mode := 0 # 0 simplified, 1 all (damage types), 2 off
 var damage_pending: Array[Dictionary] = []
+var damage_display_cache_enabled:=true
+var damage_display_index=preload("res://scripts/damage_display_index.gd").new()
 var damage_history: Array[String]:
 	get:return read_damage_history()
 var damage_history_records: Array = []
@@ -455,7 +457,9 @@ func _process(delta: float) -> void:
 			particles = particles.filter(func(p):return p.life > 0)
 		for f in floats:
 			f.life -= dt
-			if f.get("damage",false):f.pos.y -= dt*12
+			if f.get("damage",false):
+				f.pos.y -= dt*12
+				if f.life<=0:damage_display_index.remove_active(f)
 		floats = floats.filter(func(f):return f.life > 0)
 		for effect in pickup_effects:effect.life -= dt
 		pickup_effects = pickup_effects.filter(func(effect):return effect.life>0)
@@ -519,6 +523,7 @@ func sync_accelerated_visual_mode() -> void:
 	particles.clear()
 	beam_visuals.clear()
 	projectile_visuals.clear()
+	damage_display_index.clear()
 	damage_pending.clear()
 	floats = floats.filter(func(entry):return not entry.get("damage",false))
 	shake = 0.0
@@ -1894,6 +1899,7 @@ func reset_battle_transients_for_scene() -> void:
 	particles.clear()
 	beam_visuals.clear()
 	projectile_visuals.clear()
+	damage_display_index.clear()
 	damage_pending.clear()
 	floats.clear()
 	pickup_effects.clear()
@@ -2571,6 +2577,7 @@ func sync_battle_visibility() -> void:
 func set_damage_mode(mode: int) -> void:
 	damage_mode = mode
 	show_damage_numbers = mode != 2
+	damage_display_index.clear()
 	damage_pending.clear()
 	floats = floats.filter(func(f):return not f.get("damage",false))
 	battle_layer.queue_redraw()
@@ -2602,13 +2609,20 @@ func queue_damage_number(info: Dictionary) -> void:
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
 	var category := int(info.type) if damage_mode==1 or info.player else 0
-	for entries in [floats,damage_pending]:
-		for entry in entries:
-			if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):
-				entry.amount = GrowthNumber.add(entry.amount,info.amount)
-				entry.absorbed = GrowthNumber.add(entry.get("absorbed",0),absorbed)
-				entry.display_dirty = true
-				return
+	var matched:Dictionary={}
+	if damage_display_cache_enabled:
+		damage_display_index.ensure(floats,damage_pending)
+		matched=damage_display_index.find(target,critical,category,fx_time)
+	else:
+		for entries in [floats,damage_pending]:
+			for entry in entries:
+				if entry.get("target","")==target and entry.critical==critical and entry.type==category and fx_time-entry.born<0.2 and not entry.get("retiring",false):matched=entry;break
+			if not matched.is_empty():break
+	if not matched.is_empty():
+		matched.amount=GrowthNumber.add(matched.amount,info.amount)
+		matched.absorbed=GrowthNumber.add(matched.get("absorbed",0),absorbed)
+		matched.display_dirty=true
+		return
 	var duration := float(battle_visual.damage_number_critical_duration) if critical else float(battle_visual.damage_number_normal_duration)
 	var entry := {"target":target,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("cbd0d7"),"size":19 if critical else 15,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
 	# Keep a same-frame killed target alive until its final display anchor is read.
@@ -2616,6 +2630,7 @@ func queue_damage_number(info: Dictionary) -> void:
 		for enemy in game.enemies:
 			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
+	if damage_display_cache_enabled:damage_display_index.append_pending(entry)
 
 func read_damage_history() -> Array[String]:
 	var result: Array[String] = []
@@ -2637,6 +2652,7 @@ func resolve_damage_origin(entry: Dictionary) -> void:
 
 func flush_damage_numbers(frame_delta: float = 0.0) -> void:
 	if damage_pending.is_empty() and not floats.any(func(entry):return entry.get("display_dirty",false)):return
+	if damage_display_cache_enabled:damage_display_index.ensure(floats,damage_pending)
 	# Final strings and geometry are shared by all placement queries this frame.
 	var context := {"metrics":{},"occupied":[],"enemies":damage_text_enemy_bounds()}
 	for entry in floats+damage_pending:
@@ -2652,14 +2668,15 @@ func flush_damage_numbers(frame_delta: float = 0.0) -> void:
 			entry.life=minf(float(entry.life),0.08);entry.retiring=true
 		entry.display_dirty=false
 		damage_layout_occupy(entry,context)
-	var slots := {}
-	for entry in floats:
-		var target: String=entry.get("target","")
-		if not slots.has(target):slots[target]=[]
-		slots[target].append(entry)
+	var slots:Dictionary=damage_display_index.slots if damage_display_cache_enabled else {}
+	if not damage_display_cache_enabled:
+		for entry in floats:
+			var target: String=entry.get("target","")
+			if not slots.has(target):slots[target]=[]
+			slots[target].append(entry)
 	for entry in damage_pending.duplicate():
 		if fx_time-entry.born>0.3:
-			damage_pending.erase(entry);continue
+			damage_pending.erase(entry);damage_display_index.remove_pending(entry);continue
 		var active: Array=slots.get(entry.target,[])
 		if active.size()>=2:
 			active[0].life=minf(float(active[0].life),0.08);active[0].retiring=true
@@ -2668,14 +2685,16 @@ func flush_damage_numbers(frame_delta: float = 0.0) -> void:
 		var drift := frame_delta if fx_time-entry.born<=frame_delta+0.0000001 else 0.0
 		var pos := damage_text_position(entry.origin-Vector2(0,drift*12),entry.text,entry.size,{},context)
 		if pos==Vector2.INF:
-			if fx_time-entry.born>0.2:damage_pending.erase(entry)
+			if fx_time-entry.born>0.2:damage_pending.erase(entry);damage_display_index.remove_pending(entry)
 			continue
 		entry.pos=pos;entry.life-=drift;entry.display_dirty=false
 		floats.append(entry);damage_pending.erase(entry)
-		active.append(entry);slots[entry.target]=active
+		if damage_display_cache_enabled:damage_display_index.promote(entry)
+		else:active.append(entry);slots[entry.target]=active
 		damage_layout_occupy(entry,context)
 
 func damage_layout_metrics(value: String, size_value: int, context: Dictionary) -> Dictionary:
+	if damage_display_cache_enabled:return damage_display_index.measure(font,value,size_value)
 	var key=[value,size_value]
 	if not context.metrics.has(key):
 		context.metrics[key]={"width":font.get_string_size(value,HORIZONTAL_ALIGNMENT_LEFT,-1,size_value).x,"ascent":font.get_ascent(size_value),"height":font.get_height(size_value)}
@@ -2688,6 +2707,7 @@ func damage_layout_occupy(entry: Dictionary, context: Dictionary) -> void:
 	context.occupied.append([entry,bounds])
 
 func damage_text_enemy_bounds() -> Array[Rect2]:
+	if damage_display_cache_enabled and damage_display_index.cached_obstacles(simulation_geometry_view,game.enemies,Vector2(battle_visual.enemy_idle_x,battle_visual.enemy_idle_y)):return damage_display_index.obstacles
 	var result: Array[Rect2] = []
 	for enemy in game.enemies:
 		if enemy.hp<=0:continue
@@ -2695,6 +2715,7 @@ func damage_text_enemy_bounds() -> Array[Rect2]:
 		var center := enemy_render_position(enemy)
 		var envelope := Vector2(half_width*0.6,half_width*1.15)+Vector2(float(battle_visual.enemy_idle_x),float(battle_visual.enemy_idle_y))
 		result.append(Rect2(center-envelope,envelope*2.0))
+	if damage_display_cache_enabled:damage_display_index.obstacles=result;damage_display_index.obstacle_builds+=1
 	return result
 
 func damage_text_rect(pos: Vector2, value: String, size_value := 19, metrics: Dictionary = {}) -> Rect2:
