@@ -1,7 +1,7 @@
 from pathlib import Path
 import hashlib,io,json,os,shutil,subprocess,tarfile,time
 ROOT=Path(__file__).resolve().parents[3];E=Path(__file__).resolve().parent
-AREA=ROOT/'test/work/gpu-beam-main-pairs-20261014'
+AREA=ROOT/'test/work/gpu-beam-main-pairs-ready-20261014'
 ENGINE=Path('D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe')
 DLL=Path('D:/CodexBuild/space_idle/stable-integration/test/work/battle-fix-20261013/native-ray/contact-candidate.dll')
 REFS={'A':'e7cc31e026fd390b24daa188256ee7f5f33a67e9','B':'0a8ec88440b3329ddd0a99025d9eb1d20b587746'}
@@ -38,7 +38,7 @@ for label,ref in REFS.items():
  archive=subprocess.check_output(['git','archive',ref,'space-battleship'],cwd=ROOT)
  with tarfile.open(fileobj=io.BytesIO(archive)) as tf:tf.extractall(target,filter='data')
  project=target/'space-battleship';(project/'bin').mkdir(exist_ok=True)
- shutil.copy2(DLL,project/'bin/space_native.dll');shutil.copy2(ROOT/'space-battleship/space_native.gdextension',project/'space_native.gdextension')
+ shutil.copy2(DLL,project/'bin/space_native.dll');shutil.copy2(ROOT/'test/work/battle-fix-20261013/tutorial-integration/space-battleship/space_native.gdextension',project/'space_native.gdextension')
  for a,z in [('driver.gd','port_perf.gd'),('combat_stress_fixture.gd','combat_stress_fixture.gd')]:shutil.copy2(E/a,project/z)
  (project/'.runtime').mkdir(exist_ok=True)
  env=os.environ.copy()
