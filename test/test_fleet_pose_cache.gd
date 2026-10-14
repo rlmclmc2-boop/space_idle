@@ -63,8 +63,9 @@ func check_reset(mode: String, kind: String) -> void:
 func check_launch_before_fire() -> void:
 	var geometry = fixture()
 	geometry.game.profile.loadout.weapons[0] = {"key":"laser","level":1}
-	check(is_equal_approx(launch_x(geometry),100.0),"provider before fire reads replaced entry angle")
+	check(is_equal_approx(launch_x(geometry),105.0),"value-equivalent entry replacement retains aim")
 	check(not geometry.fleet_angles_dirty,"provider before fire completes synchronization")
+	check(is_same(geometry.turret_visuals[0].entry,geometry.game.slot_entry("weapons",0)),"numeric replacement rebinds current entry")
 	var syncs: int = geometry.fleet_pose.syncs
 	launch_x(geometry)
 	check(geometry.fleet_pose.syncs==syncs,"provider repeated read does not scan all angles again")
@@ -72,7 +73,7 @@ func check_launch_before_fire() -> void:
 	geometry.fleet_pose = null
 func run() -> void:
 	check_launch_before_fire()
-	for mode in ["entry_identity","entry_key","missing_pose","ship_owner"]:
+	for mode in ["entry_key","missing_pose","ship_owner"]:
 		check_reset(mode,"fire")
 	check_reset("beam_entry","beam_started")
 	print("fleet_pose_cache checks=",checks," failures=",failures)

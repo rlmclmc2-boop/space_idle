@@ -2,6 +2,12 @@ extends RefCounted
 ## Cold compiler for the authorized layer2 fixture. No running battle is evaluated.
 const N=preload("res://scripts/growth_number.gd")
 const KEYS=["laser","cannon","missile","longLaser"]
+# Only numeric batches retain this compiler. Keys snapshot every input used by
+# these two static projections; live actor/clock/counter/debt fields stay fresh.
+var reuse_static:=false
+var enemy_static:Array=[]
+var hostile_static:Array=[]
+var static_builds:=0
 const ALLOWED_BRANCHES={"proficiency":{"2":"B"},"repeat":{"1":"B","3":"B"},"critical":{}}
 func native_scalar(value:Variant)->bool:
 	return (typeof(value)==TYPE_INT or typeof(value)==TYPE_FLOAT) and is_finite(float(value))
@@ -50,19 +56,10 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 	# Galaxy progression preflights its first refit boundary before mutation.
 	var enemies:Array=[];var weapons:Array=[];var defence:Array=[]
 	var growth=0.0;var defence_growth=0.0;var effect_level=0.0
-	for enemy in g.enemies:
-		if not native_integer(enemy.get("armourType",0)) or not native_integer(enemy.get("shieldType",0)):return {"error":"unsupported_native_scalar:enemy_type"}
-		var view:Dictionary=enemy.duplicate(true)
-		view.armourType=int(enemy.get("armourType",0));view.shieldType=int(enemy.get("shieldType",0))
-		view.compiled_drops=[]
-		view.jewel_rolls=preload("res://scripts/candidate_rewards.gd").rolls(enemy.get("jewelDropRolls",1)) if g.jewels_unlocked() else 0
-		if (not enemy.get("drops",[]).is_empty() and not native_scalar(enemy.get("res_ratio"))) or (not enemy.get("equipment",[]).is_empty() and not native_scalar(enemy.get("dmgMultiple"))):return {"error":"unsupported_native_scalar:enemy"}
-		for drop in enemy.get("drops",[]):
-			if typeof(drop)!=TYPE_DICTIONARY or not native_integer(drop.get("resourceId")) or not native_scalar(drop.get("chance")):return {"error":"unsupported_native_scalar:drop"}
-			var multiplier=g.reactor_multiplier("smelting",float(galaxy_values.get("charge_max",-1.0))) if int(drop.resourceId)==1 else 1.0
-			var base=N.ceiling(N.multiply(N.multiply(drop.amount,N.multiply(float(enemy.res_ratio),multiplier)),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
-			var amount=N.ceiling(N.multiply(base,g.planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base
-			view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
+	if reuse_static:enemy_static.resize(g.enemies.size());hostile_static.resize(g.enemies.size())
+	for index in g.enemies.size():
+		var view:Dictionary=enemy_projection(g,g.enemies[index],galaxy_values,index)
+		if view.has("error"):return view
 		enemies.append(view)
 	for index in g.combat_weapon_entries().size():
 		var entry:Dictionary=g.projected_combat_entry(index,weapon_levels)
@@ -100,7 +97,23 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 			if kind<0:return {"error":"unsupported_hostile_weapon"}
 			if not native_weapon_row(row,kind) or not native_scalar(row.get("dmg")) or not native_scalar(g.ratio("atkRatio")):return {"error":"unsupported_native_scalar:hostile_weapon"}
 			if kind!=3 and (slot>=enemy.cooldowns.size() or not native_scalar(enemy.cooldowns[slot])):return {"error":"unsupported_native_scalar:hostile_cooldown"}
-			weapons.append({"kind":kind,"type":int(row.dmgtype),"slot":slot,"hostile":true,"source":source,"damage":ceilf(float(row.dmg)*float(enemy.dmgMultiple)*g.ratio("atkRatio")),"interval":float(row.cd),"remaining":float(enemy.cooldowns[slot]) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit(true) if kind!=3 else 1.0,"salvo":1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(enemy.x,enemy.y)+g.enemy_weapon_offset(enemy,slot),"entry":entry,"row":row})
+			var pixels=g.db.projectile_pixels_per_unit(true)
+			var ratio=g.ratio("atkRatio")
+			var signature:Array=[entry,row,enemy.dmgMultiple,ratio,pixels]
+			if reuse_static and hostile_static[source]==null:hostile_static[source]={}
+			var cached:Dictionary=hostile_static[source].get(slot,{}) if reuse_static else {}
+			var compiled:Dictionary
+			if reuse_static and cached.get("key",[])==signature:
+				compiled=cached.value.duplicate()
+			else:
+				compiled={"kind":kind,"type":int(row.dmgtype),"slot":slot,"hostile":true,"source":source,"damage":ceilf(float(row.dmg)*float(enemy.dmgMultiple)*ratio),"interval":float(row.cd),"remaining":float(enemy.cooldowns[slot]) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*pixels if kind!=3 else 1.0,"salvo":1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(enemy.x,enemy.y)+g.enemy_weapon_offset(enemy,slot),"entry":entry,"row":row}
+				if reuse_static:
+					hostile_static[source][slot]={"key":signature.duplicate(true),"value":compiled.duplicate(true)}
+					static_builds+=1
+			compiled.remaining=float(enemy.cooldowns[slot]) if kind!=3 else 0.0
+			compiled.muzzle=Vector2(enemy.x,enemy.y)+g.enemy_weapon_offset(enemy,slot)
+			compiled.entry=entry;compiled.row=row
+			weapons.append(compiled)
 	for index in g.defense_entries().size():
 		var entry:Dictionary=g.slot_entry("defence",index)
 		if defence_levels.has(index):
@@ -127,3 +140,34 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 	if not native_scalar(scatter.get("parameters",{}).get("single_target_bonus",0.0)) or not native_integer(prism.get("constants",{}).get("nearby_targets",0)) or not native_scalar(prism.get("parameters",{}).get("maximum_multiplier_bonus",0.0)):return {"error":"unsupported_native_scalar:legendary"}
 	var player:Dictionary=g.player.duplicate(true);player.armour_type=0;player.shield_type=0
 	return {"execution_scope":scope,"final_encounter":g.is_final_encounter(),"since_hit":g.since_hit,"projectile_serial":g.projectile_serial,"attack_serial":g.main_attack_serial,"instance_serial":g.attack_instance_serial,"ejection_gap":g.EJECTION_GAP,"launch_speed":g.MISSILE_LAUNCH_SPEED,"turn_rate":g.MISSILE_TURN_RATE,"ignition":g.MISSILE_IGNITION,"seek":g.MISSILE_SEEK_START,"cruise_at":g.MISSILE_CRUISE_AT,"lifetime":g.MISSILE_LIFETIME,"orphan_lifetime":g.ORPHAN_LIFETIME,"brake_range":g.MISSILE_BRAKE_RANGE,"brake_angle":g.MISSILE_BRAKE_ANGLE,"min_speed":g.MISSILE_MIN_GUIDED_SPEED,"brake_factor":g.MISSILE_BRAKE_FACTOR,"hit_radius":g.MISSILE_HIT_RADIUS,"chain_speed":g.db.weapon_motion_value("chain_carrier_speed",720.0),"player":player,"enemies":enemies,"weapons":weapons,"defences":defence,"clock":g.enemy_shield_time,"rng_state":g.rng.state,"resistance":float(g.db.config.dmgReduce),"attack_counter":g.profile.enhancementAttacks,"incoming_counter":g.profile.enhancementHits,"counter_growth":growth,"defence_counter_growth":defence_growth,"counter_level":effect_level,"counter_log_base":g.enhancement_parameter("counter_log_base"),"counter_round_scale":g.enhancement_parameter("bonus_round_scale"),"repeat_delay":g.enhancement_parameter("repeat_delay"),"scatter":not scatter.is_empty(),"scatter_bonus":float(scatter.get("parameters",{}).get("single_target_bonus",0.0)),"prism_count":int(prism.get("constants",{}).get("nearby_targets",0)),"prism_bonus":float(prism.get("parameters",{}).get("maximum_multiplier_bonus",0.0)),"memory_interval":g.enhancement_parameter("memory_interval"),"deferred_interval":g.enhancement_parameter("deferred_interval"),"deferred_duration":g.enhancement_parameter("deferred_duration"),"clear_probability":g.enhancement_branches.clear_probability(g),"defence_time":g.enhancement_defense_time,"memory_elapsed":g.enhancement_memory_elapsed,"deferred_elapsed":g.enhancement_deferred_elapsed,"deferred_tick":g.enhancement_deferred_tick,"deferred":g.enhancement_deferred.duplicate(true),"drop_rules_compiled":true,"requires_drop_rules":true,"requires_module_defense":true,"drop_uid":g.uid,"jewel_probability":float(g.db.config.get("jewelDrop",0)),"jewel_ratio":g.jewel_ratio()}
+
+func enemy_projection(g,enemy:Dictionary,galaxy_values:Dictionary,index:int)->Dictionary:
+	if not native_integer(enemy.get("armourType",0)) or not native_integer(enemy.get("shieldType",0)):return {"error":"unsupported_native_scalar:enemy_type"}
+	var view:Dictionary=enemy.duplicate(not reuse_static)
+	view.armourType=int(enemy.get("armourType",0));view.shieldType=int(enemy.get("shieldType",0))
+	var drops:Array=enemy.get("drops",[])
+	var has_iron:=false;var has_resources:=false
+	for drop in drops:
+		if typeof(drop)!=TYPE_DICTIONARY or not native_integer(drop.get("resourceId")) or not native_scalar(drop.get("chance")):return {"error":"unsupported_native_scalar:drop"}
+		has_iron=has_iron or int(drop.resourceId)==1
+		has_resources=has_resources or int(drop.resourceId) in [1,2]
+	if (not drops.is_empty() and not native_scalar(enemy.get("res_ratio"))) or (not enemy.get("equipment",[]).is_empty() and not native_scalar(enemy.get("dmgMultiple"))):return {"error":"unsupported_native_scalar:enemy"}
+	var smelting=g.reactor_multiplier("smelting",float(galaxy_values.get("charge_max",-1.0))) if has_iron else 1.0
+	var planet=g.planet_resource_multiplier() if has_resources else 1.0
+	var unlocked:bool=g.jewels_unlocked()
+	var key:Array=[drops,enemy.get("res_ratio"),enemy.get("jewelIron",0),enemy.get("jewelDropRolls",1),unlocked,smelting,planet]
+	var cached:Dictionary=enemy_static[index] if reuse_static and enemy_static[index]!=null else {}
+	if reuse_static and cached.get("key",[])==key:
+		view.compiled_drops=cached.drops.duplicate(true);view.jewel_rolls=cached.rolls
+		return view
+	view.compiled_drops=[]
+	view.jewel_rolls=preload("res://scripts/candidate_rewards.gd").rolls(enemy.get("jewelDropRolls",1)) if unlocked else 0
+	for drop in drops:
+		var multiplier=smelting if int(drop.resourceId)==1 else 1.0
+		var base=N.ceiling(N.multiply(N.multiply(drop.amount,N.multiply(float(enemy.res_ratio),multiplier)),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
+		var amount=N.ceiling(N.multiply(base,planet)) if int(drop.resourceId) in [1,2] else base
+		view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
+	if reuse_static:
+		enemy_static[index]={"key":key.duplicate(true),"drops":view.compiled_drops.duplicate(true),"rolls":view.jewel_rolls}
+		static_builds+=1
+	return view

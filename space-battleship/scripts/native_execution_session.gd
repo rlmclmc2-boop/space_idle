@@ -1,6 +1,8 @@
 extends RefCounted
 ## Explicit low-load execution boundary. Rich content stays refused until its
 ## rule compiler is complete; this session never runs a shadow Game battle.
+var batch_compiler=preload("res://scripts/native_execution_compiler.gd").new()
+var incremental_numeric_batches:=true
 var kernel:RefCounted
 var actor_rows:Array[Dictionary]=[]
 var actor_by_uid:Dictionary={}
@@ -264,18 +266,27 @@ func prepare_numeric_batch(game,mode:String)->Dictionary:
 				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
 					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
 	if planned.is_empty():return {"skip":true}
-	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
+	batch_compiler.reuse_static=incremental_numeric_batches
+	var descriptor:Dictionary=batch_compiler.compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
 	if descriptor.has("error"):return {}
 	descriptor.player=player
 	if not kernel.can_update_configuration(descriptor):return {}
-	return {"descriptor":descriptor,"planned":planned}
+	return {"descriptor":descriptor,"planned":planned,"owner":self,"token":kernel.refit_token()}
 
 func commit_numeric_batch(game,batch:Dictionary)->bool:
 	# Main performed its original sequential purchases and defence deltas. No
 	# combat advances inside this synchronous, prevalidated command boundary.
+	if game.native_execution!=self or batch.get("owner")!=self or paused_by_configuration:return false
+	var token:Dictionary=kernel.refit_token()
+	for key in ["epoch","step","rng"]:
+		if token[key]!=batch.token[key]:return false
+	for category in ["weapons","defence"]:
+		for index in game.loadout_entries(category).size():
+			var plan:Dictionary=batch.planned.get(game.slot_id(category,index),{})
+			if not plan.is_empty() and int(game.slot_entry(category,index).level)!=int(plan.before)+int(plan.levels):return false
 	var descriptor:Dictionary=batch.descriptor
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+	# Numeric batches retain weapon order and sockets; publication revisions stay valid.
 	return true

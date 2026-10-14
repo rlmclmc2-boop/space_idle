@@ -107,7 +107,7 @@ func weapon_key(shot: Dictionary) -> String:
 func turret_angle(index: int) -> float:
 	if turret_ship!=str(game.profile.selectedShip) or not turret_visuals.has(index):return 0.0
 	var pose: Dictionary = turret_visuals[index]
-	return float(pose.angle) if is_same(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
+	return float(pose.angle) if pose.key==str(game.slot_entry("weapons",index).key) else 0.0
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
 	return visual_config.get("ships",{}).get(ship_key,{})
@@ -205,9 +205,11 @@ func turret_pose(index: int) -> Dictionary:
 		fleet_angles_dirty=true
 		turret_ship = str(game.profile.selectedShip)
 	var entry := game.slot_entry("weapons",index)
-	if not turret_visuals.has(index) or not is_same(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
+	if not turret_visuals.has(index) or turret_visuals[index].key!=str(entry.key):
 		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
 		fleet_angles_dirty=true
+	# A numeric replacement keeps aim/recoil, but readers bind the current entry.
+	turret_visuals[index].entry=entry
 	return turret_visuals[index]
 
 func turret_muzzle(index:int)->Vector2:
@@ -779,6 +781,15 @@ func rail_geometry(shot:Dictionary)->Dictionary:
 	return {"origin":battle_point(visual_muzzle(shot)),"aim":entity_render_position(shot.target),"bounds":BATTLE_VIEW_SIZE,"full_width":maxf(12.0,float(db.weapon_motion_value("rail_trail_width",28.0)))*maxf(1.0,float(shot.get("rail_width_multiplier",1.0)))}
 
 func on_simulation_event(kind:String,info:Dictionary)->void:
+	if kind=="upgrade":
+		# Purchase events remain public. Levels/capacity do not alter geometry.
+		# Compare structural values, not Array/Dictionary identity or bag generation.
+		sync_hull()
+		if not fleet_pose.geometry_matches(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory):
+			fleet_pose.configuration_dirty=true;fleet_angles_dirty=true
+		for index in turret_visuals.keys():
+			if int(index)<game.weapon_entries().size():turret_pose(int(index))
+		return
 	if kind=="explode":
 		for enemy in game.enemies:
 			if int(enemy.uid)==int(info.get("uid",-1)):freeze_display_entity(enemy,true);break
