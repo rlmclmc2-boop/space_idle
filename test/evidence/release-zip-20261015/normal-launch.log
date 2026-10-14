@@ -1,0 +1,361 @@
+WorkerThreadPool: 16 threads, 4 max low-priority.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Native OpenGL API detected: 3.3: NVIDIA - NVIDIA GeForce RTX 2060
+NVAPI: Init OK!
+NVAPI: Disabled OpenGL threaded optimization successfully
+NVAPI: Disabled G-SYNC for windowed mode successfully
+SDL: Init OK!
+Using "winink" pen tablet driver...
+Shader 'CanvasSdfShaderGLES3' SHA256: 3bcf16d107e8847730a37d786605b95d9aa2299a46ddc79b52d2a7ff5ea44957
+Shader 'SkeletonShaderGLES3' SHA256: a480643dcc70513a57480a9c5529315e237dfe3341a51a86af611b33fefa3141
+Shader 'ParticlesShaderGLES3' SHA256: 258890921e15535d42583ecc8afe13a81c24bf732df842b1326b5977ae886b0f
+Shader 'ParticlesCopyShaderGLES3' SHA256: 5ce5f0b33e1f7991aae2c7be164a81ec5599a294bd42107b2c3b9769ffba5a61
+Shader 'CopyShaderGLES3' SHA256: 7e4e2f18dc31fe6d2bde277877419203eea77503b19163249c6c4a15072ff4dd
+Shader 'CubemapFilterShaderGLES3' SHA256: 427ac544e73e5f35d205383c3f1b9e4e1c28ec67688806c62e9b2ccefd030959
+Shader 'GlowShaderGLES3' SHA256: 3e5742fa3bdf193f7aa8027ec2ed47fa6a21f4b5d07946805546f7fc15dbde19
+Shader 'PostShaderGLES3' SHA256: abf9887be404cb459a4483f5204157034132ad61c0681c3fd47ef084af5b0785
+Shader 'FeedShaderGLES3' SHA256: 8bf01559499d3c9f41f666e7de4b3d7a248d16af447b18cbc48a21d1b95b6537
+Shader 'CanvasShaderGLES3' SHA256: 294dce189e51f8213d6287fdcabc4385b638537f4ee97bc252fa239f06c2f4d0
+Shader 'CanvasOcclusionShaderGLES3' SHA256: 529ed06bfe230841bc3e9140dcb177731c674b501b210ce712a565e738b58603
+Shader 'SceneShaderGLES3' SHA256: c4d6923ba67245bbdf5e6d9499c031a2be1adb25c233e89a15121581283eba8b
+Shader 'SkyShaderGLES3' SHA256: 9f21d7906d751ee6e9494c80a43d63ece18cfff26131c5035583720c9a57e2ce
+Shader 'TexBlitShaderGLES3' SHA256: 3b417ed9fbd54806ad50ed4bebb7167375ef914bb4ee0b82199f9f0da6647267
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+WASAPI: Activated output_device using IAudioClient3 interface
+WASAPI: wFormatTag = 65534
+WASAPI: nChannels = 2
+WASAPI: nSamplesPerSec = 48000
+WASAPI: nAvgBytesPerSec = 384000
+WASAPI: nBlockAlign = 8
+WASAPI: wBitsPerSample = 32
+WASAPI: cbSize = 22
+WASAPI: mix_rate = 48000
+WASAPI: fundamental_period_frames = 480
+WASAPI: min_period_frames = 480
+WASAPI: max_period_frames = 480
+WASAPI: selected a period frame size of 480
+WASAPI: detected 2 channels
+WASAPI: audio buffer frames: 480 calculated latency: 10ms
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+CORE API HASH: 0
+EDITOR API HASH: 0
+SceneTreeFTI: traversal method DEFAULT
+Loaded system CA certificates
+Loading resource: res://.godot/exported/133200997/export-3070c538c03ee49b7677ff960a3f5195-main.scn remapped: res://.godot/exported/133200997/export-3070c538c03ee49b7677ff960a3f5195-main.scn
+Loading resource: res://scripts/battlefield.gdc remapped: res://scripts/battlefield.gdc
+Loading resource: res://scripts/starfield.gdshader remapped: res://scripts/starfield.gdshader
+Completed load for: 'res://scripts/starfield.gdshader' remapped 'res://scripts/starfield.gdshader' at thread -1
+Loading resource: res://assets/backgrounds/hyperspace/routes_atlas.png remapped: res://assets/backgrounds/hyperspace/routes_atlas.png
+Loading resource: res://.godot/imported/routes_atlas.png-66ca8d3421406efd436ec62fce62cda8.ctex remapped: res://.godot/imported/routes_atlas.png-66ca8d3421406efd436ec62fce62cda8.ctex
+Completed load for: 'res://assets/backgrounds/hyperspace/routes_atlas.png' remapped 'res://assets/backgrounds/hyperspace/routes_atlas.png' at thread -1
+Loading resource: res://scripts/solid_background.gdshader remapped: res://scripts/solid_background.gdshader
+Completed load for: 'res://scripts/solid_background.gdshader' remapped 'res://scripts/solid_background.gdshader' at thread -1
+Loading resource: res://assets/audio/bgm/deep_space_idle_01.ogg remapped: res://assets/audio/bgm/deep_space_idle_01.ogg
+Loading resource: res://.godot/imported/deep_space_idle_01.ogg-029fadd5d986c514cf6628f78c696026.oggvorbisstr remapped: res://.godot/imported/deep_space_idle_01.ogg-029fadd5d986c514cf6628f78c696026.oggvorbisstr
+Completed load for: 'res://assets/audio/bgm/deep_space_idle_01.ogg' remapped 'res://assets/audio/bgm/deep_space_idle_01.ogg' at thread -1
+Loading resource: res://shaders/retained_flights.gdshader remapped: res://shaders/retained_flights.gdshader
+Completed load for: 'res://shaders/retained_flights.gdshader' remapped 'res://shaders/retained_flights.gdshader' at thread -1
+Loading resource: res://assets/resources/iron.svg remapped: res://assets/resources/iron.svg
+Loading resource: res://.godot/imported/iron.svg-8310bb69b8d84fdc1127bb6085995e47.ctex remapped: res://.godot/imported/iron.svg-8310bb69b8d84fdc1127bb6085995e47.ctex
+Completed load for: 'res://assets/resources/iron.svg' remapped 'res://assets/resources/iron.svg' at thread -1
+Loading resource: res://assets/resources/uranium.svg remapped: res://assets/resources/uranium.svg
+Loading resource: res://.godot/imported/uranium.svg-da97d5d91f9ca0eb8d98b7587c90ccf5.ctex remapped: res://.godot/imported/uranium.svg-da97d5d91f9ca0eb8d98b7587c90ccf5.ctex
+Completed load for: 'res://assets/resources/uranium.svg' remapped 'res://assets/resources/uranium.svg' at thread -1
+Loading resource: res://assets/resources/fragment.svg remapped: res://assets/resources/fragment.svg
+Loading resource: res://.godot/imported/fragment.svg-36b9580378fcb6f83e777d0bc9ca1e2d.ctex remapped: res://.godot/imported/fragment.svg-36b9580378fcb6f83e777d0bc9ca1e2d.ctex
+Completed load for: 'res://assets/resources/fragment.svg' remapped 'res://assets/resources/fragment.svg' at thread -1
+Loading resource: res://assets/ui/shell/equipment.svg remapped: res://assets/ui/shell/equipment.svg
+Loading resource: res://.godot/imported/equipment.svg-39e246c7028d8991eb2b31b420b38928.ctex remapped: res://.godot/imported/equipment.svg-39e246c7028d8991eb2b31b420b38928.ctex
+Completed load for: 'res://assets/ui/shell/equipment.svg' remapped 'res://assets/ui/shell/equipment.svg' at thread -1
+Loading resource: res://assets/ui/shell/research.svg remapped: res://assets/ui/shell/research.svg
+Loading resource: res://.godot/imported/research.svg-42b0a13498c4652b9db3986c7a674cb0.ctex remapped: res://.godot/imported/research.svg-42b0a13498c4652b9db3986c7a674cb0.ctex
+Completed load for: 'res://assets/ui/shell/research.svg' remapped 'res://assets/ui/shell/research.svg' at thread -1
+Loading resource: res://assets/ui/shell/reactor.svg remapped: res://assets/ui/shell/reactor.svg
+Loading resource: res://.godot/imported/reactor.svg-798322a05590d6126ae7f674390c8e97.ctex remapped: res://.godot/imported/reactor.svg-798322a05590d6126ae7f674390c8e97.ctex
+Completed load for: 'res://assets/ui/shell/reactor.svg' remapped 'res://assets/ui/shell/reactor.svg' at thread -1
+Loading resource: res://assets/ui/shell/ship.svg remapped: res://assets/ui/shell/ship.svg
+Loading resource: res://.godot/imported/ship.svg-542d804625909eb20007853b0338793c.ctex remapped: res://.godot/imported/ship.svg-542d804625909eb20007853b0338793c.ctex
+Completed load for: 'res://assets/ui/shell/ship.svg' remapped 'res://assets/ui/shell/ship.svg' at thread -1
+Loading resource: res://assets/ui/shell/enhancement.svg remapped: res://assets/ui/shell/enhancement.svg
+Loading resource: res://.godot/imported/enhancement.svg-54624af6476fe4d03e2203cca9445708.ctex remapped: res://.godot/imported/enhancement.svg-54624af6476fe4d03e2203cca9445708.ctex
+Completed load for: 'res://assets/ui/shell/enhancement.svg' remapped 'res://assets/ui/shell/enhancement.svg' at thread -1
+Loading resource: res://assets/ui/shell/crew.svg remapped: res://assets/ui/shell/crew.svg
+Loading resource: res://.godot/imported/crew.svg-185c84b6115ba2606ea083e7b99288ac.ctex remapped: res://.godot/imported/crew.svg-185c84b6115ba2606ea083e7b99288ac.ctex
+Completed load for: 'res://assets/ui/shell/crew.svg' remapped 'res://assets/ui/shell/crew.svg' at thread -1
+Loading resource: res://assets/ui/shell/planet.svg remapped: res://assets/ui/shell/planet.svg
+Loading resource: res://.godot/imported/planet.svg-95a63aead9af16020c6605d47687f5cb.ctex remapped: res://.godot/imported/planet.svg-95a63aead9af16020c6605d47687f5cb.ctex
+Completed load for: 'res://assets/ui/shell/planet.svg' remapped 'res://assets/ui/shell/planet.svg' at thread -1
+Loading resource: res://assets/ui/shell/chrono.svg remapped: res://assets/ui/shell/chrono.svg
+Loading resource: res://.godot/imported/chrono.svg-ba484726c74b348cd68e1ccc3c807951.ctex remapped: res://.godot/imported/chrono.svg-ba484726c74b348cd68e1ccc3c807951.ctex
+Completed load for: 'res://assets/ui/shell/chrono.svg' remapped 'res://assets/ui/shell/chrono.svg' at thread -1
+Loading resource: res://assets/ui/shell/galaxy.svg remapped: res://assets/ui/shell/galaxy.svg
+Loading resource: res://.godot/imported/galaxy.svg-8ece3e3d3f797719aa92fecccd3d5f61.ctex remapped: res://.godot/imported/galaxy.svg-8ece3e3d3f797719aa92fecccd3d5f61.ctex
+Completed load for: 'res://assets/ui/shell/galaxy.svg' remapped 'res://assets/ui/shell/galaxy.svg' at thread -1
+Loading resource: res://assets/ui/shell/hyperspace.svg remapped: res://assets/ui/shell/hyperspace.svg
+Loading resource: res://.godot/imported/hyperspace.svg-c77175dc89300fff0ed13797a049f1f7.ctex remapped: res://.godot/imported/hyperspace.svg-c77175dc89300fff0ed13797a049f1f7.ctex
+Completed load for: 'res://assets/ui/shell/hyperspace.svg' remapped 'res://assets/ui/shell/hyperspace.svg' at thread -1
+Loading resource: res://assets/ui/shell/save.svg remapped: res://assets/ui/shell/save.svg
+Loading resource: res://.godot/imported/save.svg-5adb60057abc1c1fbfcbcecc9b1082d9.ctex remapped: res://.godot/imported/save.svg-5adb60057abc1c1fbfcbcecc9b1082d9.ctex
+Completed load for: 'res://assets/ui/shell/save.svg' remapped 'res://assets/ui/shell/save.svg' at thread -1
+Loading resource: res://assets/fonts/NotoSansSC.ttf remapped: res://assets/fonts/NotoSansSC.ttf
+Loading resource: res://.godot/imported/NotoSansSC.ttf-53e7d2951cb723449d16fcecb813db38.fontdata remapped: res://.godot/imported/NotoSansSC.ttf-53e7d2951cb723449d16fcecb813db38.fontdata
+Completed load for: 'res://assets/fonts/NotoSansSC.ttf' remapped 'res://assets/fonts/NotoSansSC.ttf' at thread -1
+Loading resource: res://assets/ui/dialog/check.svg remapped: res://assets/ui/dialog/check.svg
+Loading resource: res://.godot/imported/check.svg-9ef5b8cdf936d2369ed86a1699a09861.ctex remapped: res://.godot/imported/check.svg-9ef5b8cdf936d2369ed86a1699a09861.ctex
+Completed load for: 'res://assets/ui/dialog/check.svg' remapped 'res://assets/ui/dialog/check.svg' at thread -1
+Loading resource: res://assets/ui/dialog/radio-on.svg remapped: res://assets/ui/dialog/radio-on.svg
+Loading resource: res://.godot/imported/radio-on.svg-d9f015dd88b533e0a75d8f579778cfb3.ctex remapped: res://.godot/imported/radio-on.svg-d9f015dd88b533e0a75d8f579778cfb3.ctex
+Completed load for: 'res://assets/ui/dialog/radio-on.svg' remapped 'res://assets/ui/dialog/radio-on.svg' at thread -1
+Loading resource: res://assets/ui/dialog/radio-off.svg remapped: res://assets/ui/dialog/radio-off.svg
+Loading resource: res://.godot/imported/radio-off.svg-f92343ecfe454abddd563c054db8acd9.ctex remapped: res://.godot/imported/radio-off.svg-f92343ecfe454abddd563c054db8acd9.ctex
+Completed load for: 'res://assets/ui/dialog/radio-off.svg' remapped 'res://assets/ui/dialog/radio-off.svg' at thread -1
+Loading resource: res://addons/flexible_toon_shader/flexible_toon.gdshader remapped: res://addons/flexible_toon_shader/flexible_toon.gdshader
+Completed load for: 'res://addons/flexible_toon_shader/flexible_toon.gdshader' remapped 'res://addons/flexible_toon_shader/flexible_toon.gdshader' at thread -1
+Loading resource: res://assets/ui/shell/jewel.svg remapped: res://assets/ui/shell/jewel.svg
+Loading resource: res://.godot/imported/jewel.svg-807595183f082a69f1e12f4c073f6463.ctex remapped: res://.godot/imported/jewel.svg-807595183f082a69f1e12f4c073f6463.ctex
+Completed load for: 'res://assets/ui/shell/jewel.svg' remapped 'res://assets/ui/shell/jewel.svg' at thread -1
+Loading resource: res://assets/ui/crew/locked.svg remapped: res://assets/ui/crew/locked.svg
+Loading resource: res://.godot/imported/locked.svg-07aa311aec2e1c1ea5a69a9a9201c305.ctex remapped: res://.godot/imported/locked.svg-07aa311aec2e1c1ea5a69a9a9201c305.ctex
+Completed load for: 'res://assets/ui/crew/locked.svg' remapped 'res://assets/ui/crew/locked.svg' at thread -1
+Loading resource: res://assets/planets/orbital/models/auto_explore-icon.png remapped: res://assets/planets/orbital/models/auto_explore-icon.png
+Loading resource: res://.godot/imported/auto_explore-icon.png-b01fad3af0f3c368727bdd382052efec.ctex remapped: res://.godot/imported/auto_explore-icon.png-b01fad3af0f3c368727bdd382052efec.ctex
+Completed load for: 'res://assets/planets/orbital/models/auto_explore-icon.png' remapped 'res://assets/planets/orbital/models/auto_explore-icon.png' at thread -1
+Loading resource: res://assets/planets/orbital/models/refinery-icon.png remapped: res://assets/planets/orbital/models/refinery-icon.png
+Loading resource: res://.godot/imported/refinery-icon.png-e5fe1be1678111266790cdbac019df17.ctex remapped: res://.godot/imported/refinery-icon.png-e5fe1be1678111266790cdbac019df17.ctex
+Completed load for: 'res://assets/planets/orbital/models/refinery-icon.png' remapped 'res://assets/planets/orbital/models/refinery-icon.png' at thread -1
+Loading resource: res://assets/planets/orbital/models/equipment-icon.png remapped: res://assets/planets/orbital/models/equipment-icon.png
+Loading resource: res://.godot/imported/equipment-icon.png-19d346b45c0ebf957e39bae88cdbd6fa.ctex remapped: res://.godot/imported/equipment-icon.png-19d346b45c0ebf957e39bae88cdbd6fa.ctex
+Completed load for: 'res://assets/planets/orbital/models/equipment-icon.png' remapped 'res://assets/planets/orbital/models/equipment-icon.png' at thread -1
+Loading resource: res://assets/planets/orbital/models/shipyard-icon.png remapped: res://assets/planets/orbital/models/shipyard-icon.png
+Loading resource: res://.godot/imported/shipyard-icon.png-128c69077e95e91e95d065dd081b12fb.ctex remapped: res://.godot/imported/shipyard-icon.png-128c69077e95e91e95d065dd081b12fb.ctex
+Completed load for: 'res://assets/planets/orbital/models/shipyard-icon.png' remapped 'res://assets/planets/orbital/models/shipyard-icon.png' at thread -1
+Loading resource: res://assets/planets/orbital/scout-v1.png remapped: res://assets/planets/orbital/scout-v1.png
+Loading resource: res://.godot/imported/scout-v1.png-e3869f68c8b892c827861653a85f768e.ctex remapped: res://.godot/imported/scout-v1.png-e3869f68c8b892c827861653a85f768e.ctex
+Completed load for: 'res://assets/planets/orbital/scout-v1.png' remapped 'res://assets/planets/orbital/scout-v1.png' at thread -1
+Loading resource: res://assets/planets/toon/exploration-field.svg remapped: res://assets/planets/toon/exploration-field.svg
+Loading resource: res://.godot/imported/exploration-field.svg-cddf96d1ecd6a20f33fb547e800b164e.ctex remapped: res://.godot/imported/exploration-field.svg-cddf96d1ecd6a20f33fb547e800b164e.ctex
+Completed load for: 'res://assets/planets/toon/exploration-field.svg' remapped 'res://assets/planets/toon/exploration-field.svg' at thread -1
+Loading resource: res://assets/planets/toon/origin-surface.svg remapped: res://assets/planets/toon/origin-surface.svg
+Loading resource: res://.godot/imported/origin-surface.svg-c6570cafd0c40349c6472a040ed3eebc.ctex remapped: res://.godot/imported/origin-surface.svg-c6570cafd0c40349c6472a040ed3eebc.ctex
+Completed load for: 'res://assets/planets/toon/origin-surface.svg' remapped 'res://assets/planets/toon/origin-surface.svg' at thread -1
+Loading resource: res://assets/planets/toon/origin-clouds.svg remapped: res://assets/planets/toon/origin-clouds.svg
+Loading resource: res://.godot/imported/origin-clouds.svg-6e965d588bb1bb75d39ca425d1a952f4.ctex remapped: res://.godot/imported/origin-clouds.svg-6e965d588bb1bb75d39ca425d1a952f4.ctex
+Completed load for: 'res://assets/planets/toon/origin-clouds.svg' remapped 'res://assets/planets/toon/origin-clouds.svg' at thread -1
+Loading resource: res://scripts/rotating_planet.gdshader remapped: res://scripts/rotating_planet.gdshader
+Completed load for: 'res://scripts/rotating_planet.gdshader' remapped 'res://scripts/rotating_planet.gdshader' at thread -1
+Loading resource: res://scripts/galaxy_space.gdshader remapped: res://scripts/galaxy_space.gdshader
+Completed load for: 'res://scripts/galaxy_space.gdshader' remapped 'res://scripts/galaxy_space.gdshader' at thread -1
+Loading resource: res://assets/galaxy/v3/galaxy_field.svg remapped: res://assets/galaxy/v3/galaxy_field.svg
+Loading resource: res://.godot/imported/galaxy_field.svg-a2eba00ebc3af78e99148e33ace99162.ctex remapped: res://.godot/imported/galaxy_field.svg-a2eba00ebc3af78e99148e33ace99162.ctex
+Completed load for: 'res://assets/galaxy/v3/galaxy_field.svg' remapped 'res://assets/galaxy/v3/galaxy_field.svg' at thread -1
+Loading resource: res://scripts/galaxy_construction.gdshader remapped: res://scripts/galaxy_construction.gdshader
+Completed load for: 'res://scripts/galaxy_construction.gdshader' remapped 'res://scripts/galaxy_construction.gdshader' at thread -1
+Loading resource: res://assets/ui/reactor/weapon.svg remapped: res://assets/ui/reactor/weapon.svg
+Loading resource: res://.godot/imported/weapon.svg-e5162052838a6ebf93d1f1ed4b6ea270.ctex remapped: res://.godot/imported/weapon.svg-e5162052838a6ebf93d1f1ed4b6ea270.ctex
+Completed load for: 'res://assets/ui/reactor/weapon.svg' remapped 'res://assets/ui/reactor/weapon.svg' at thread -1
+Loading resource: res://assets/ui/reactor/defence.svg remapped: res://assets/ui/reactor/defence.svg
+Loading resource: res://.godot/imported/defence.svg-0b4e330502fca9ec3db0432f818048ef.ctex remapped: res://.godot/imported/defence.svg-0b4e330502fca9ec3db0432f818048ef.ctex
+Completed load for: 'res://assets/ui/reactor/defence.svg' remapped 'res://assets/ui/reactor/defence.svg' at thread -1
+Loading resource: res://assets/ui/reactor/smelting.svg remapped: res://assets/ui/reactor/smelting.svg
+Loading resource: res://.godot/imported/smelting.svg-4a5ea7caee677b6aabab5c8d77baf5ea.ctex remapped: res://.godot/imported/smelting.svg-4a5ea7caee677b6aabab5c8d77baf5ea.ctex
+Completed load for: 'res://assets/ui/reactor/smelting.svg' remapped 'res://assets/ui/reactor/smelting.svg' at thread -1
+Loading resource: res://assets/ui/reactor/condensation.svg remapped: res://assets/ui/reactor/condensation.svg
+Loading resource: res://.godot/imported/condensation.svg-78bcba113a26167aaf7c037fcd6c0fd2.ctex remapped: res://.godot/imported/condensation.svg-78bcba113a26167aaf7c037fcd6c0fd2.ctex
+Completed load for: 'res://assets/ui/reactor/condensation.svg' remapped 'res://assets/ui/reactor/condensation.svg' at thread -1
+Loading resource: res://assets/ui/reactor/toon-console.svg remapped: res://assets/ui/reactor/toon-console.svg
+Loading resource: res://.godot/imported/toon-console.svg-2c21c63c966f56f214b6333ff74de08d.ctex remapped: res://.godot/imported/toon-console.svg-2c21c63c966f56f214b6333ff74de08d.ctex
+Completed load for: 'res://assets/ui/reactor/toon-console.svg' remapped 'res://assets/ui/reactor/toon-console.svg' at thread -1
+Loading resource: res://assets/ui/reactor/toon-bay.svg remapped: res://assets/ui/reactor/toon-bay.svg
+Loading resource: res://.godot/imported/toon-bay.svg-09e672a0d4cb0cf92f9e33f87fac501c.ctex remapped: res://.godot/imported/toon-bay.svg-09e672a0d4cb0cf92f9e33f87fac501c.ctex
+Completed load for: 'res://assets/ui/reactor/toon-bay.svg' remapped 'res://assets/ui/reactor/toon-bay.svg' at thread -1
+Loading resource: res://assets/ui/reactor/orb.gdshader remapped: res://assets/ui/reactor/orb.gdshader
+Completed load for: 'res://assets/ui/reactor/orb.gdshader' remapped 'res://assets/ui/reactor/orb.gdshader' at thread -1
+Loading resource: res://assets/hightech/prototypes/iron-workstation-cartoon-v1.png remapped: res://assets/hightech/prototypes/iron-workstation-cartoon-v1.png
+Loading resource: res://.godot/imported/iron-workstation-cartoon-v1.png-1fbb39df727ff5587fa71bea558c39d9.ctex remapped: res://.godot/imported/iron-workstation-cartoon-v1.png-1fbb39df727ff5587fa71bea558c39d9.ctex
+Completed load for: 'res://assets/hightech/prototypes/iron-workstation-cartoon-v1.png' remapped 'res://assets/hightech/prototypes/iron-workstation-cartoon-v1.png' at thread -1
+Loading resource: res://assets/hightech/machines/energy-focus-cartoon.png remapped: res://assets/hightech/machines/energy-focus-cartoon.png
+Loading resource: res://.godot/imported/energy-focus-cartoon.png-6eda40b6fd75078a8ff8af93fcbccdad.ctex remapped: res://.godot/imported/energy-focus-cartoon.png-6eda40b6fd75078a8ff8af93fcbccdad.ctex
+Completed load for: 'res://assets/hightech/machines/energy-focus-cartoon.png' remapped 'res://assets/hightech/machines/energy-focus-cartoon.png' at thread -1
+Loading resource: res://assets/hightech/machines/armour-press-cartoon.png remapped: res://assets/hightech/machines/armour-press-cartoon.png
+Loading resource: res://.godot/imported/armour-press-cartoon.png-09515183bc90a66173647293491b3131.ctex remapped: res://.godot/imported/armour-press-cartoon.png-09515183bc90a66173647293491b3131.ctex
+Completed load for: 'res://assets/hightech/machines/armour-press-cartoon.png' remapped 'res://assets/hightech/machines/armour-press-cartoon.png' at thread -1
+Loading resource: res://assets/hightech/machines/jewel-synthesizer-cartoon.png remapped: res://assets/hightech/machines/jewel-synthesizer-cartoon.png
+Loading resource: res://.godot/imported/jewel-synthesizer-cartoon.png-8b558f820de55589a468c0178b6b792e.ctex remapped: res://.godot/imported/jewel-synthesizer-cartoon.png-8b558f820de55589a468c0178b6b792e.ctex
+Completed load for: 'res://assets/hightech/machines/jewel-synthesizer-cartoon.png' remapped 'res://assets/hightech/machines/jewel-synthesizer-cartoon.png' at thread -1
+Loading resource: res://assets/hightech/orbital-atlas.png remapped: res://assets/hightech/orbital-atlas.png
+Loading resource: res://.godot/imported/orbital-atlas.png-b4776591aa63870938ec569e3c8cd257.ctex remapped: res://.godot/imported/orbital-atlas.png-b4776591aa63870938ec569e3c8cd257.ctex
+Completed load for: 'res://assets/hightech/orbital-atlas.png' remapped 'res://assets/hightech/orbital-atlas.png' at thread -1
+Loading resource: res://scripts/hightech_assembly.gdshader remapped: res://scripts/hightech_assembly.gdshader
+Completed load for: 'res://scripts/hightech_assembly.gdshader' remapped 'res://scripts/hightech_assembly.gdshader' at thread -1
+Loading resource: res://assets/hightech/unrevealed-bay.svg remapped: res://assets/hightech/unrevealed-bay.svg
+Loading resource: res://.godot/imported/unrevealed-bay.svg-a83cbba70e72416869e9931b0736a215.ctex remapped: res://.godot/imported/unrevealed-bay.svg-a83cbba70e72416869e9931b0736a215.ctex
+Completed load for: 'res://assets/hightech/unrevealed-bay.svg' remapped 'res://assets/hightech/unrevealed-bay.svg' at thread -1
+Loading resource: res://.godot/exported/133200997/export-13922d5ca3b84bb5cb2f5da06e8169fc-pulse_laser.scn remapped: res://.godot/exported/133200997/export-13922d5ca3b84bb5cb2f5da06e8169fc-pulse_laser.scn
+Loading resource: res://assets/ships/player/toon_v1/weapons/pulse_laser.glb remapped: res://assets/ships/player/toon_v1/weapons/pulse_laser.glb
+Loading resource: res://.godot/imported/pulse_laser.glb-6690c3550289fcc55257cad6e567ed43.scn remapped: res://.godot/imported/pulse_laser.glb-6690c3550289fcc55257cad6e567ed43.scn
+Completed load for: 'res://assets/ships/player/toon_v1/weapons/pulse_laser.glb' remapped 'res://assets/ships/player/toon_v1/weapons/pulse_laser.glb' at thread -1
+Completed load for: 'res://assets/ships/player/toon_v1/weapons/pulse_laser.tscn' remapped 'res://.godot/exported/133200997/export-13922d5ca3b84bb5cb2f5da06e8169fc-pulse_laser.scn' at thread -1
+Loading resource: res://dev/toon_ship/shield.gdshader remapped: res://dev/toon_ship/shield.gdshader
+Completed load for: 'res://dev/toon_ship/shield.gdshader' remapped 'res://dev/toon_ship/shield.gdshader' at thread -1
+Loading resource: res://dev/toon_ship/exhaust.gdshader remapped: res://dev/toon_ship/exhaust.gdshader
+Completed load for: 'res://dev/toon_ship/exhaust.gdshader' remapped 'res://dev/toon_ship/exhaust.gdshader' at thread -1
+Loading resource: res://scripts/flat_ship_compositor.gdshader remapped: res://scripts/flat_ship_compositor.gdshader
+Completed load for: 'res://scripts/flat_ship_compositor.gdshader' remapped 'res://scripts/flat_ship_compositor.gdshader' at thread -1
+Loading resource: res://scripts/baked_ship_body.gdshader remapped: res://scripts/baked_ship_body.gdshader
+Completed load for: 'res://scripts/baked_ship_body.gdshader' remapped 'res://scripts/baked_ship_body.gdshader' at thread -1
+Loading resource: res://shaders/gpu_contacts.gdshader remapped: res://shaders/gpu_contacts.gdshader
+Completed load for: 'res://shaders/gpu_contacts.gdshader' remapped 'res://shaders/gpu_contacts.gdshader' at thread -1
+Loading resource: res://shaders/retained_beams.gdshader remapped: res://shaders/retained_beams.gdshader
+Completed load for: 'res://shaders/retained_beams.gdshader' remapped 'res://shaders/retained_beams.gdshader' at thread -1
+Completed load for: 'res://scripts/battlefield.gd' remapped 'res://scripts/battlefield.gdc' at thread -1
+Completed load for: 'res://main.tscn' remapped 'res://.godot/exported/133200997/export-3070c538c03ee49b7677ff960a3f5195-main.scn' at thread -1
+Loading resource: res://.godot/exported/133200997/export-19229dfd1effea73d209554ff180994f-NotoSansSC-Regular.res remapped: res://.godot/exported/133200997/export-19229dfd1effea73d209554ff180994f-NotoSansSC-Regular.res
+Completed load for: 'res://assets/fonts/NotoSansSC-Regular.tres' remapped 'res://.godot/exported/133200997/export-19229dfd1effea73d209554ff180994f-NotoSansSC-Regular.res' at thread -1
+Loading resource: res://assets/fonts/NotoSansSymbols2-Regular.ttf remapped: res://assets/fonts/NotoSansSymbols2-Regular.ttf
+Loading resource: res://.godot/imported/NotoSansSymbols2-Regular.ttf-7788f1b789d60481fa956b02b4581693.fontdata remapped: res://.godot/imported/NotoSansSymbols2-Regular.ttf-7788f1b789d60481fa956b02b4581693.fontdata
+Completed load for: 'res://assets/fonts/NotoSansSymbols2-Regular.ttf' remapped 'res://assets/fonts/NotoSansSymbols2-Regular.ttf' at thread -1
+Loading resource: res://assets/ui/equipment/cartoon_laser.svg remapped: res://assets/ui/equipment/cartoon_laser.svg
+Loading resource: res://.godot/imported/cartoon_laser.svg-f0c2ffa04ccea2dd29b686351668295e.ctex remapped: res://.godot/imported/cartoon_laser.svg-f0c2ffa04ccea2dd29b686351668295e.ctex
+Completed load for: 'res://assets/ui/equipment/cartoon_laser.svg' remapped 'res://assets/ui/equipment/cartoon_laser.svg' at thread -1
+Loading resource: res://assets/ui/equipment/cartoon_armour.svg remapped: res://assets/ui/equipment/cartoon_armour.svg
+Loading resource: res://.godot/imported/cartoon_armour.svg-a606220d36fa610bf8a286887deb77f7.ctex remapped: res://.godot/imported/cartoon_armour.svg-a606220d36fa610bf8a286887deb77f7.ctex
+Completed load for: 'res://assets/ui/equipment/cartoon_armour.svg' remapped 'res://assets/ui/equipment/cartoon_armour.svg' at thread -1
+Loading resource: res://assets/ui/equipment/cartoon_shield.svg remapped: res://assets/ui/equipment/cartoon_shield.svg
+Loading resource: res://.godot/imported/cartoon_shield.svg-3617fd74176f11db17c5dfe6f2ea6d03.ctex remapped: res://.godot/imported/cartoon_shield.svg-3617fd74176f11db17c5dfe6f2ea6d03.ctex
+Completed load for: 'res://assets/ui/equipment/cartoon_shield.svg' remapped 'res://assets/ui/equipment/cartoon_shield.svg' at thread -1
+Loading resource: res://assets/ui/reactor/toon-weapons.svg remapped: res://assets/ui/reactor/toon-weapons.svg
+Loading resource: res://.godot/imported/toon-weapons.svg-83a3da280ee8c1d5b8498a5ceb2a7eef.ctex remapped: res://.godot/imported/toon-weapons.svg-83a3da280ee8c1d5b8498a5ceb2a7eef.ctex
+Completed load for: 'res://assets/ui/reactor/toon-weapons.svg' remapped 'res://assets/ui/reactor/toon-weapons.svg' at thread -1
+Loading resource: res://assets/ui/reactor/toon-defence.svg remapped: res://assets/ui/reactor/toon-defence.svg
+Loading resource: res://.godot/imported/toon-defence.svg-cad08175bd56131026bc78d072d3fea1.ctex remapped: res://.godot/imported/toon-defence.svg-cad08175bd56131026bc78d072d3fea1.ctex
+Completed load for: 'res://assets/ui/reactor/toon-defence.svg' remapped 'res://assets/ui/reactor/toon-defence.svg' at thread -1
+Loading resource: res://assets/ui/reactor/toon-smelting.svg remapped: res://assets/ui/reactor/toon-smelting.svg
+Loading resource: res://.godot/imported/toon-smelting.svg-19c6c0bbea53715154dd6d958cc43d6b.ctex remapped: res://.godot/imported/toon-smelting.svg-19c6c0bbea53715154dd6d958cc43d6b.ctex
+Completed load for: 'res://assets/ui/reactor/toon-smelting.svg' remapped 'res://assets/ui/reactor/toon-smelting.svg' at thread -1
+Loading resource: res://assets/ui/reactor/toon-condensation.svg remapped: res://assets/ui/reactor/toon-condensation.svg
+Loading resource: res://.godot/imported/toon-condensation.svg-30f43373e315629d342ed7e6a305680f.ctex remapped: res://.godot/imported/toon-condensation.svg-30f43373e315629d342ed7e6a305680f.ctex
+Completed load for: 'res://assets/ui/reactor/toon-condensation.svg' remapped 'res://assets/ui/reactor/toon-condensation.svg' at thread -1
+Loading resource: res://assets/ui/ships/Frigate.png remapped: res://assets/ui/ships/Frigate.png
+Loading resource: res://.godot/imported/Frigate.png-0d0d4fdb56ddc5e024c0201f080546a9.ctex remapped: res://.godot/imported/Frigate.png-0d0d4fdb56ddc5e024c0201f080546a9.ctex
+Completed load for: 'res://assets/ui/ships/Frigate.png' remapped 'res://assets/ui/ships/Frigate.png' at thread -1
+Loading resource: res://assets/ui/ships/Destroyer.png remapped: res://assets/ui/ships/Destroyer.png
+Loading resource: res://.godot/imported/Destroyer.png-220944a99523d6ea374573a632e9c16f.ctex remapped: res://.godot/imported/Destroyer.png-220944a99523d6ea374573a632e9c16f.ctex
+Completed load for: 'res://assets/ui/ships/Destroyer.png' remapped 'res://assets/ui/ships/Destroyer.png' at thread -1
+Loading resource: res://assets/ui/ships/Cruiser.png remapped: res://assets/ui/ships/Cruiser.png
+Loading resource: res://.godot/imported/Cruiser.png-1a85f4fac2a2750a9658cc16ee7c731f.ctex remapped: res://.godot/imported/Cruiser.png-1a85f4fac2a2750a9658cc16ee7c731f.ctex
+Completed load for: 'res://assets/ui/ships/Cruiser.png' remapped 'res://assets/ui/ships/Cruiser.png' at thread -1
+Loading resource: res://assets/ui/ships/Battleship.png remapped: res://assets/ui/ships/Battleship.png
+Loading resource: res://.godot/imported/Battleship.png-b58ef7669bd85f13db5427877a276e02.ctex remapped: res://.godot/imported/Battleship.png-b58ef7669bd85f13db5427877a276e02.ctex
+Completed load for: 'res://assets/ui/ships/Battleship.png' remapped 'res://assets/ui/ships/Battleship.png' at thread -1
+Loading resource: res://assets/ui/ships/Heavy_Battleship.png remapped: res://assets/ui/ships/Heavy_Battleship.png
+Loading resource: res://.godot/imported/Heavy_Battleship.png-4366d4cec7e2071f33826f7f26670a7a.ctex remapped: res://.godot/imported/Heavy_Battleship.png-4366d4cec7e2071f33826f7f26670a7a.ctex
+Completed load for: 'res://assets/ui/ships/Heavy_Battleship.png' remapped 'res://assets/ui/ships/Heavy_Battleship.png' at thread -1
+Loading resource: res://assets/ui/ships/WeaponDrone.png remapped: res://assets/ui/ships/WeaponDrone.png
+Loading resource: res://.godot/imported/WeaponDrone.png-dfd9395d89c3095e9de716e07423b92f.ctex remapped: res://.godot/imported/WeaponDrone.png-dfd9395d89c3095e9de716e07423b92f.ctex
+Completed load for: 'res://assets/ui/ships/WeaponDrone.png' remapped 'res://assets/ui/ships/WeaponDrone.png' at thread -1
+Loading resource: res://assets/planets/orbital/models/auto_explore.glb remapped: res://assets/planets/orbital/models/auto_explore.glb
+Loading resource: res://.godot/imported/auto_explore.glb-35200ecf0e7f7e0d878eff0236d0a395.scn remapped: res://.godot/imported/auto_explore.glb-35200ecf0e7f7e0d878eff0236d0a395.scn
+Completed load for: 'res://assets/planets/orbital/models/auto_explore.glb' remapped 'res://assets/planets/orbital/models/auto_explore.glb' at thread -1
+Loading resource: res://assets/planets/orbital/models/refinery.glb remapped: res://assets/planets/orbital/models/refinery.glb
+Loading resource: res://.godot/imported/refinery.glb-36a7cf70c31d4101020850f14654435b.scn remapped: res://.godot/imported/refinery.glb-36a7cf70c31d4101020850f14654435b.scn
+Completed load for: 'res://assets/planets/orbital/models/refinery.glb' remapped 'res://assets/planets/orbital/models/refinery.glb' at thread -1
+Loading resource: res://assets/planets/orbital/models/equipment.glb remapped: res://assets/planets/orbital/models/equipment.glb
+Loading resource: res://.godot/imported/equipment.glb-cfaabe2b442f128f911a3fd755d8c9ba.scn remapped: res://.godot/imported/equipment.glb-cfaabe2b442f128f911a3fd755d8c9ba.scn
+Completed load for: 'res://assets/planets/orbital/models/equipment.glb' remapped 'res://assets/planets/orbital/models/equipment.glb' at thread -1
+Loading resource: res://assets/planets/orbital/models/shipyard.glb remapped: res://assets/planets/orbital/models/shipyard.glb
+Loading resource: res://.godot/imported/shipyard.glb-386733d229511fa496eb9daec3e50e54.scn remapped: res://.godot/imported/shipyard.glb-386733d229511fa496eb9daec3e50e54.scn
+Completed load for: 'res://assets/planets/orbital/models/shipyard.glb' remapped 'res://assets/planets/orbital/models/shipyard.glb' at thread -1
+Loading resource: res://assets/hyperspace/icons/pulse.png remapped: res://assets/hyperspace/icons/pulse.png
+Loading resource: res://.godot/imported/pulse.png-5757cf949b6b130542bc648118e91ddb.ctex remapped: res://.godot/imported/pulse.png-5757cf949b6b130542bc648118e91ddb.ctex
+Completed load for: 'res://assets/hyperspace/icons/pulse.png' remapped 'res://assets/hyperspace/icons/pulse.png' at thread -1
+Loading resource: res://assets/hyperspace/icons/missile.png remapped: res://assets/hyperspace/icons/missile.png
+Loading resource: res://.godot/imported/missile.png-fd13cbcfb2d27b3dcd6ef77b482e4133.ctex remapped: res://.godot/imported/missile.png-fd13cbcfb2d27b3dcd6ef77b482e4133.ctex
+Completed load for: 'res://assets/hyperspace/icons/missile.png' remapped 'res://assets/hyperspace/icons/missile.png' at thread -1
+Loading resource: res://assets/hyperspace/icons/rail.png remapped: res://assets/hyperspace/icons/rail.png
+Loading resource: res://.godot/imported/rail.png-86314f7cbcab339107790f79354bba09.ctex remapped: res://.godot/imported/rail.png-86314f7cbcab339107790f79354bba09.ctex
+Completed load for: 'res://assets/hyperspace/icons/rail.png' remapped 'res://assets/hyperspace/icons/rail.png' at thread -1
+Loading resource: res://assets/hyperspace/icons/beam.png remapped: res://assets/hyperspace/icons/beam.png
+Loading resource: res://.godot/imported/beam.png-ddaffa2d2e4751847b40f4590a01df9d.ctex remapped: res://.godot/imported/beam.png-ddaffa2d2e4751847b40f4590a01df9d.ctex
+Completed load for: 'res://assets/hyperspace/icons/beam.png' remapped 'res://assets/hyperspace/icons/beam.png' at thread -1
+Loading resource: res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png remapped: res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png
+Loading resource: res://.godot/imported/enemy-scout-1slot.png-540b9485c554c65583200d8dbc01160e.ctex remapped: res://.godot/imported/enemy-scout-1slot.png-540b9485c554c65583200d8dbc01160e.ctex
+Completed load for: 'res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png' remapped 'res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png' at thread -1
+Loading resource: res://assets/ships/enemy/toon_v1/enemy-medium-1slot.png remapped: res://assets/ships/enemy/toon_v1/enemy-medium-1slot.png
+Loading resource: res://.godot/imported/enemy-medium-1slot.png-c951389003b8d843aec61322e21eac85.ctex remapped: res://.godot/imported/enemy-medium-1slot.png-c951389003b8d843aec61322e21eac85.ctex
+Completed load for: 'res://assets/ships/enemy/toon_v1/enemy-medium-1slot.png' remapped 'res://assets/ships/enemy/toon_v1/enemy-medium-1slot.png' at thread -1
+Loading resource: res://assets/ships/enemy/toon_v1/enemy-medium-2slot.png remapped: res://assets/ships/enemy/toon_v1/enemy-medium-2slot.png
+Loading resource: res://.godot/imported/enemy-medium-2slot.png-bb168e7c04c9b9bd83affcb32c3d0ca4.ctex remapped: res://.godot/imported/enemy-medium-2slot.png-bb168e7c04c9b9bd83affcb32c3d0ca4.ctex
+Completed load for: 'res://assets/ships/enemy/toon_v1/enemy-medium-2slot.png' remapped 'res://assets/ships/enemy/toon_v1/enemy-medium-2slot.png' at thread -1
+Loading resource: res://assets/ships/enemy/toon_v1/enemy-large-4slot.png remapped: res://assets/ships/enemy/toon_v1/enemy-large-4slot.png
+Loading resource: res://.godot/imported/enemy-large-4slot.png-db8f37fa819a2dd807c7e858ca3bd92e.ctex remapped: res://.godot/imported/enemy-large-4slot.png-db8f37fa819a2dd807c7e858ca3bd92e.ctex
+Completed load for: 'res://assets/ships/enemy/toon_v1/enemy-large-4slot.png' remapped 'res://assets/ships/enemy/toon_v1/enemy-large-4slot.png' at thread -1
+Loading resource: res://assets/ships/enemy/toon_v1/enemy-large-6slot.png remapped: res://assets/ships/enemy/toon_v1/enemy-large-6slot.png
+Loading resource: res://.godot/imported/enemy-large-6slot.png-07cef3ce8a056a5e5ae907973dfa0032.ctex remapped: res://.godot/imported/enemy-large-6slot.png-07cef3ce8a056a5e5ae907973dfa0032.ctex
+Completed load for: 'res://assets/ships/enemy/toon_v1/enemy-large-6slot.png' remapped 'res://assets/ships/enemy/toon_v1/enemy-large-6slot.png' at thread -1
+Loading resource: res://assets/ships/enemy/toon_v1/enemy-super-8slot.png remapped: res://assets/ships/enemy/toon_v1/enemy-super-8slot.png
+Loading resource: res://.godot/imported/enemy-super-8slot.png-a20963caf0a83697e4e243cc9514d7c9.ctex remapped: res://.godot/imported/enemy-super-8slot.png-a20963caf0a83697e4e243cc9514d7c9.ctex
+Completed load for: 'res://assets/ships/enemy/toon_v1/enemy-super-8slot.png' remapped 'res://assets/ships/enemy/toon_v1/enemy-super-8slot.png' at thread -1
+Loading resource: res://dev/toon_ship/hulls/frigate.glb remapped: res://dev/toon_ship/hulls/frigate.glb
+Loading resource: res://.godot/imported/frigate.glb-b66c2ba25290d2c7dc142563d1cc1590.scn remapped: res://.godot/imported/frigate.glb-b66c2ba25290d2c7dc142563d1cc1590.scn
+Completed load for: 'res://dev/toon_ship/hulls/frigate.glb' remapped 'res://dev/toon_ship/hulls/frigate.glb' at thread -1
+Loading resource: res://assets/ships/player/player-scout-3slot.png remapped: res://assets/ships/player/player-scout-3slot.png
+Loading resource: res://.godot/imported/player-scout-3slot.png-7fd61281dacc1571aa67022eeb523189.ctex remapped: res://.godot/imported/player-scout-3slot.png-7fd61281dacc1571aa67022eeb523189.ctex
+Completed load for: 'res://assets/ships/player/player-scout-3slot.png' remapped 'res://assets/ships/player/player-scout-3slot.png' at thread -1
+Loading resource: res://assets/ships/player/player-interceptor-4slot.png remapped: res://assets/ships/player/player-interceptor-4slot.png
+Loading resource: res://.godot/imported/player-interceptor-4slot.png-b17f7fb7faa7014d97202017989cbbc1.ctex remapped: res://.godot/imported/player-interceptor-4slot.png-b17f7fb7faa7014d97202017989cbbc1.ctex
+Completed load for: 'res://assets/ships/player/player-interceptor-4slot.png' remapped 'res://assets/ships/player/player-interceptor-4slot.png' at thread -1
+Loading resource: res://assets/ships/player/player-cruiser-5slot.png remapped: res://assets/ships/player/player-cruiser-5slot.png
+Loading resource: res://.godot/imported/player-cruiser-5slot.png-6e6c53c034d865609c299020c9024c11.ctex remapped: res://.godot/imported/player-cruiser-5slot.png-6e6c53c034d865609c299020c9024c11.ctex
+Completed load for: 'res://assets/ships/player/player-cruiser-5slot.png' remapped 'res://assets/ships/player/player-cruiser-5slot.png' at thread -1
+Loading resource: res://assets/ships/player/player-battleship-6slot.png remapped: res://assets/ships/player/player-battleship-6slot.png
+Loading resource: res://.godot/imported/player-battleship-6slot.png-da55fd0c4669758da6fc17aa6a6dae55.ctex remapped: res://.godot/imported/player-battleship-6slot.png-da55fd0c4669758da6fc17aa6a6dae55.ctex
+Completed load for: 'res://assets/ships/player/player-battleship-6slot.png' remapped 'res://assets/ships/player/player-battleship-6slot.png' at thread -1
+Loading resource: res://assets/ships/player/player-dreadnought-8slot.png remapped: res://assets/ships/player/player-dreadnought-8slot.png
+Loading resource: res://.godot/imported/player-dreadnought-8slot.png-3405a1307d0940174545bad8b87eb94d.ctex remapped: res://.godot/imported/player-dreadnought-8slot.png-3405a1307d0940174545bad8b87eb94d.ctex
+Completed load for: 'res://assets/ships/player/player-dreadnought-8slot.png' remapped 'res://assets/ships/player/player-dreadnought-8slot.png' at thread -1
+Loading resource: res://dev/toon_ship/hulls/frigate.glb remapped: res://dev/toon_ship/hulls/frigate.glb
+Loading resource: res://.godot/imported/frigate.glb-b66c2ba25290d2c7dc142563d1cc1590.scn remapped: res://.godot/imported/frigate.glb-b66c2ba25290d2c7dc142563d1cc1590.scn
+Completed load for: 'res://dev/toon_ship/hulls/frigate.glb' remapped 'res://dev/toon_ship/hulls/frigate.glb' at thread -1
+Loading resource: res://dev/toon_ship/hulls/destroyer.glb remapped: res://dev/toon_ship/hulls/destroyer.glb
+Loading resource: res://.godot/imported/destroyer.glb-b5d119dadc4cde44bfd25c7ba558e177.scn remapped: res://.godot/imported/destroyer.glb-b5d119dadc4cde44bfd25c7ba558e177.scn
+Completed load for: 'res://dev/toon_ship/hulls/destroyer.glb' remapped 'res://dev/toon_ship/hulls/destroyer.glb' at thread -1
+Loading resource: res://dev/toon_ship/hulls/cruiser.glb remapped: res://dev/toon_ship/hulls/cruiser.glb
+Loading resource: res://.godot/imported/cruiser.glb-b31b308a1e32b273f0fee897349737a5.scn remapped: res://.godot/imported/cruiser.glb-b31b308a1e32b273f0fee897349737a5.scn
+Completed load for: 'res://dev/toon_ship/hulls/cruiser.glb' remapped 'res://dev/toon_ship/hulls/cruiser.glb' at thread -1
+Loading resource: res://dev/toon_ship/hulls/battleship.glb remapped: res://dev/toon_ship/hulls/battleship.glb
+Loading resource: res://.godot/imported/battleship.glb-99cecb56517c2e9e7b35d3973a6185a6.scn remapped: res://.godot/imported/battleship.glb-99cecb56517c2e9e7b35d3973a6185a6.scn
+Completed load for: 'res://dev/toon_ship/hulls/battleship.glb' remapped 'res://dev/toon_ship/hulls/battleship.glb' at thread -1
+Loading resource: res://dev/toon_ship/hulls/heavy_battleship.glb remapped: res://dev/toon_ship/hulls/heavy_battleship.glb
+Loading resource: res://.godot/imported/heavy_battleship.glb-c9835108f0823b630ae0e667165330b1.scn remapped: res://.godot/imported/heavy_battleship.glb-c9835108f0823b630ae0e667165330b1.scn
+Completed load for: 'res://dev/toon_ship/hulls/heavy_battleship.glb' remapped 'res://dev/toon_ship/hulls/heavy_battleship.glb' at thread -1
+Loading resource: res://dev/toon_ship/hulls/weapon_drone.glb remapped: res://dev/toon_ship/hulls/weapon_drone.glb
+Loading resource: res://.godot/imported/weapon_drone.glb-f39eb8984239774e22d11a50f6a0d699.scn remapped: res://.godot/imported/weapon_drone.glb-f39eb8984239774e22d11a50f6a0d699.scn
+Completed load for: 'res://dev/toon_ship/hulls/weapon_drone.glb' remapped 'res://dev/toon_ship/hulls/weapon_drone.glb' at thread -1
+Loading resource: res://assets/hyperspace/models/pulse.glb remapped: res://assets/hyperspace/models/pulse.glb
+Loading resource: res://.godot/imported/pulse.glb-dd9393732288248e7bc42d1a80c9da8a.scn remapped: res://.godot/imported/pulse.glb-dd9393732288248e7bc42d1a80c9da8a.scn
+Completed load for: 'res://assets/hyperspace/models/pulse.glb' remapped 'res://assets/hyperspace/models/pulse.glb' at thread -1
+Loading resource: res://assets/ships/player/toon_v1/weapons/missile.glb remapped: res://assets/ships/player/toon_v1/weapons/missile.glb
+Loading resource: res://.godot/imported/missile.glb-0bdbd1374b8e57d727c65546bc5490d0.scn remapped: res://.godot/imported/missile.glb-0bdbd1374b8e57d727c65546bc5490d0.scn
+Completed load for: 'res://assets/ships/player/toon_v1/weapons/missile.glb' remapped 'res://assets/ships/player/toon_v1/weapons/missile.glb' at thread -1
+Loading resource: res://assets/hyperspace/models/missile.glb remapped: res://assets/hyperspace/models/missile.glb
+Loading resource: res://.godot/imported/missile.glb-dd568d6f612e9bfd3474fd32f235bc0e.scn remapped: res://.godot/imported/missile.glb-dd568d6f612e9bfd3474fd32f235bc0e.scn
+Completed load for: 'res://assets/hyperspace/models/missile.glb' remapped 'res://assets/hyperspace/models/missile.glb' at thread -1
+Loading resource: res://assets/ships/player/toon_v1/weapons/cannon.glb remapped: res://assets/ships/player/toon_v1/weapons/cannon.glb
+Loading resource: res://.godot/imported/cannon.glb-d744e846e211b8a68ac22c9bc48cfff7.scn remapped: res://.godot/imported/cannon.glb-d744e846e211b8a68ac22c9bc48cfff7.scn
+Completed load for: 'res://assets/ships/player/toon_v1/weapons/cannon.glb' remapped 'res://assets/ships/player/toon_v1/weapons/cannon.glb' at thread -1
+Loading resource: res://assets/hyperspace/models/rail.glb remapped: res://assets/hyperspace/models/rail.glb
+Loading resource: res://.godot/imported/rail.glb-f0d68fde6e13f1aad78f90226e3d1b82.scn remapped: res://.godot/imported/rail.glb-f0d68fde6e13f1aad78f90226e3d1b82.scn
+Completed load for: 'res://assets/hyperspace/models/rail.glb' remapped 'res://assets/hyperspace/models/rail.glb' at thread -1
+Loading resource: res://assets/ships/player/toon_v1/weapons/long_laser.glb remapped: res://assets/ships/player/toon_v1/weapons/long_laser.glb
+Loading resource: res://.godot/imported/long_laser.glb-524b16efcbabb1dd6ca315048806d2fb.scn remapped: res://.godot/imported/long_laser.glb-524b16efcbabb1dd6ca315048806d2fb.scn
+Completed load for: 'res://assets/ships/player/toon_v1/weapons/long_laser.glb' remapped 'res://assets/ships/player/toon_v1/weapons/long_laser.glb' at thread -1
+Loading resource: res://assets/hyperspace/models/beam.glb remapped: res://assets/hyperspace/models/beam.glb
+Loading resource: res://.godot/imported/beam.glb-f3416e118f5004aca0ac2df54e323a20.scn remapped: res://.godot/imported/beam.glb-f3416e118f5004aca0ac2df54e323a20.scn
+Completed load for: 'res://assets/hyperspace/models/beam.glb' remapped 'res://assets/hyperspace/models/beam.glb' at thread -1
+XR: Clearing primary interface
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"
+

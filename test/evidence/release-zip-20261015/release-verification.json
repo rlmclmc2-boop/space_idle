@@ -1,0 +1,17 @@
+{
+	"default_cache": true,
+	"default_compiled": true,
+	"default_native_auto": true,
+	"default_save": true,
+	"executable": "D:/CodexBuild/space_idle/stable-integration/test/work/endless-beam-main-20261014/test/work/release-20261015-015043-21acd561/verification/Verify.exe",
+	"failures": [],
+	"focused": true,
+	"max_fps": 0,
+	"native_admitted": true,
+	"native_path": "D:/CodexBuild/space_idle/stable-integration/test/work/endless-beam-main-20261014/test/work/release-20261015-015043-21acd561/verification/space_native.dll",
+	"native_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+	"passed": true,
+	"renderer": "NVIDIA GeForce RTX 2060",
+	"user_data": "D:/CodexBuild/space_idle/stable-integration/test/work/endless-beam-main-20261014/test/work/release-20261015-015043-21acd561/user/roaming/SpaceBattleship",
+	"vsync": 0
+}

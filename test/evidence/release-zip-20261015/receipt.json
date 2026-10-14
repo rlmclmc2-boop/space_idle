@@ -1,0 +1,70 @@
+{
+  "accepted_packaging_base": "77d406e4d9912e29d18281fda033de43ba2f0a60",
+  "build_commit": "f058900bf6a318fe94a3841aaab5bf627f8d24ff",
+  "production_main_base": "2db97caa57c867982c4702f97fe69b5e791a5330",
+  "source_additions": [
+    "085bbe8b: actual cap/vsync/focus receipts and gates",
+    "f058900b: include three required runtime shaders omitted by old staging whitelist"
+  ],
+  "native_rebuilt": false,
+  "native_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+  "prior_correctness_checks_reused": 364,
+  "performance_rerun": false,
+  "attempts": [
+    {
+      "run": "release-20261015-014935-f5229924",
+      "result": "import failed before any export: omitted shaders/retained_flights.gdshader",
+      "corrected_by": "f058900b"
+    },
+    {
+      "run": "release-20261015-015043-21acd561",
+      "result": "all packaging gates passed"
+    }
+  ],
+  "independent_verifier": {
+    "native_admitted": true,
+    "passed": true,
+    "max_fps": 0,
+    "vsync": 0,
+    "focused": true,
+    "scope": "same-stage separate verifier EXE, not final ZIP EXE"
+  },
+  "final_zip_executable": {
+    "normal_startup": true,
+    "rendered_viewport": true,
+    "max_fps": 0,
+    "vsync": 0,
+    "focused": true,
+    "scope": "normal scene, isolated verifier save reused; explicit screenshot only; no direct native admission assertion",
+    "visual_inspection": "UI and ships rendered; isolated offline-settlement dialog visible. Screenshot is not performance evidence."
+  },
+  "zip": {
+    "local_path": "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\release\\SpaceBattleship.zip",
+    "bytes": 195072110,
+    "sha256": "48b8c449b0d8ffe9da4969d847c47e1aa6b285e0cb98beb8d73c24ddae9b9580",
+    "members": [
+      {
+        "path": "space_native.dll",
+        "bytes": 1602048,
+        "compressed_bytes": 609490,
+        "sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+      },
+      {
+        "path": "SpaceBattleship.exe",
+        "bytes": 273960536,
+        "compressed_bytes": 194462376,
+        "sha256": "05f8a500117bdcfefbc523dff7698d3ab68d060b70c6beb3c948c41a090f3832"
+      }
+    ],
+    "git_upload": "not attempted: exceeds ordinary GitHub single-file limit; no alternate destination used"
+  },
+  "excluded_from_git": [
+    "ZIP (oversized)",
+    "isolated progress.json",
+    "isolated user directories",
+    "import caches",
+    "editor/export template binaries"
+  ],
+  "formal_installation_modified": false,
+  "main_modified": false
+}
