@@ -183,6 +183,7 @@ class SpaceCombatKernel : public RefCounted {
     int chain_count = 0, prism_count = 0;
     double crit_rate = 0, crit_multiplier = 2, repeat_probability = 0, repeat_multiplier = 1,
            repeat_delay = 0, secondary_probability = 0, scatter_bonus = 0, prism_bonus = 0;
+    double laser_charge_multiplier = 1;
     double ejection_gap = 0.12, launch_speed = 120, turn_rate = 4, ignition = 0.22, seek = 0.4,
            cruise_at = 0.65, lifetime = 4.5, orphan_lifetime = 30, brake_range = 120, brake_angle = 0.3,
            min_speed = 60, brake_factor = 0.7, hit_radius = 5, chain_speed = 720;
@@ -277,13 +278,15 @@ class SpaceCombatKernel : public RefCounted {
         if (!finite_descriptor(d) || !schema_required(d, {"player","enemies","weapons"}) ||
             !schema_types(d, Variant::DICTIONARY, {"player","deferred"}) ||
             !schema_types(d, Variant::ARRAY, {"enemies","weapons","defences","unsupported_rules"}) ||
-            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
+            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_laser_charge","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
             !schema_integers(d, {"chain_count","prism_count"}) ||
             !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}, false) ||
-            !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
+            !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
         if (!Array(d.get("unsupported_rules", Array())).is_empty() ||
             !schema_nonnegative(d, {"since_hit","launch_speed","turn_rate","ignition","seek","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","critical_multiplier","repeat_multiplier","repeat_delay","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","scatter_bonus","prism_bonus","deferred_duration","defence_time","memory_elapsed","deferred_elapsed","jewel_ratio","chain_count","prism_count","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}) ||
             !schema_probabilities(d, {"resistance","critical_rate","repeat_probability","secondary_probability","clear_probability","jewel_probability"})) return false;
+        if ((bool(d.get("requires_laser_charge", false)) && !d.has("laser_charge_multiplier")) ||
+            double(d.get("laser_charge_multiplier", 1.0)) < 1) return false;
         double mi = d.get("memory_interval", 1.0), di = d.get("deferred_interval", 1.0);
         double lb = d.get("counter_log_base", 10.0);
         if (double(d.get("chain_speed",720.0)) <= 0 || double(d.get("ejection_gap", .12)) <= 0 || double(d.get("cruise_at", .65)) <= double(d.get("ignition", .22)) ||
@@ -407,8 +410,12 @@ class SpaceCombatKernel : public RefCounted {
             }
             raw *= double(v.get("factor", 1.0));
             if (!std::isfinite(raw)) return false;
-            if (!bool(v.get("hostile", false)) && bool(d.get("scatter",false)) && int(v["kind"]) == 0)
-                raw *= 1 + double(d.get("scatter_bonus", 0.0));
+            if (!bool(v.get("hostile", false)) && int(v["kind"]) == 0) {
+                double legendary = (bool(d.get("scatter",false)) ? 1 + double(d.get("scatter_bonus", 0.0)) : 1) *
+                    double(d.get("laser_charge_multiplier", 1.0));
+                if (!std::isfinite(legendary)) return false;
+                raw *= legendary;
+            }
             if (!std::isfinite(raw)) return false;
             // Both branches must be representable, regardless of the next RNG draw.
             double critical = raw * double(v.get("critical_multiplier", d.get("critical_multiplier", 2.0)));
@@ -1182,9 +1189,11 @@ class SpaceCombatKernel : public RefCounted {
         ++root_attacks;
         if (!w.hostile)
             ++attack_counter;
+        // Match weapon_multiplier grouping before multiplying the rounded base.
+        double legendary = !w.hostile && w.kind == 0 ?
+            (scatter && candidates.size() == 1 ? 1 + scatter_bonus : 1) * laser_charge_multiplier : 1;
         a->damage = (w.hostile ? w.base : std::ceil(w.base * (1 + counter_bonus(attack_counter)))) *
-                    w.factor *
-                    (!w.hostile && scatter && w.kind == 0 && candidates.size() == 1 ? 1 + scatter_bonus : 1);
+                    w.factor * legendary;
         a->critical = !w.hostile && rng->randf() < w.crit_rate;
         if (a->critical)
             a->damage *= w.crit_multiplier;
@@ -1472,6 +1481,7 @@ class SpaceCombatKernel : public RefCounted {
 
   protected:
     static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("supports_laser_charge"), &SpaceCombatKernel::supports_laser_charge);
         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
                              &SpaceCombatKernel::input_geometry);
@@ -1583,7 +1593,10 @@ class SpaceCombatKernel : public RefCounted {
             if (!std::isfinite(base)) return false;
             double damage = (w.hostile ? base : std::ceil(base)) * w.factor;
             if (!std::isfinite(damage)) return false;
-            damage *= std::max(1.0,1 + scatter_bonus);
+            double legendary = !w.hostile && w.kind == 0 ?
+                (scatter ? 1 + scatter_bonus : 1) * laser_charge_multiplier : 1;
+            if (!std::isfinite(legendary)) return false;
+            damage *= legendary;
             if (!std::isfinite(damage)) return false;
             damage *= std::max(1.0,w.crit_multiplier);
             if (!std::isfinite(damage)) return false;
@@ -1619,6 +1632,7 @@ class SpaceCombatKernel : public RefCounted {
             double(drop_uid) + retained_drop_bound >= 9223372036854775808.0) return false;
         return true;
     }
+    bool supports_laser_charge() const { return true; }
     bool configure(Dictionary d) {
         if (!configuration_schema(d) || !configuration_arithmetic(d, double(d.get("attack_counter",0.0)), double(d.get("incoming_counter",0.0)))) return false;
         cancel();
@@ -1682,6 +1696,7 @@ class SpaceCombatKernel : public RefCounted {
         chain_count = d.get("chain_count", 0);
         scatter = d.get("scatter", false);
         scatter_bonus = d.get("scatter_bonus", 0.0);
+        laser_charge_multiplier = d.get("laser_charge_multiplier", 1.0);
         prism_count = d.get("prism_count", 0);
         prism_bonus = d.get("prism_bonus", 0.0);
         Array values = d["enemies"];
@@ -1964,6 +1979,7 @@ class SpaceCombatKernel : public RefCounted {
         repeat_delay = d.get("repeat_delay", repeat_delay);
         scatter = d.get("scatter", scatter);
         scatter_bonus = d.get("scatter_bonus", scatter_bonus);
+        laser_charge_multiplier = d.get("laser_charge_multiplier", 1.0);
         prism_count = d.get("prism_count", prism_count);
         prism_bonus = d.get("prism_bonus", prism_bonus);
         Dictionary player = d["player"];
