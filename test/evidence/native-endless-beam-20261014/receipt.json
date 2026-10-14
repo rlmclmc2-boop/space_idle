@@ -1,0 +1,160 @@
+{
+  "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+  "kind": "isolated headless correctness, not performance",
+  "runs": [
+    {
+      "label": "import",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--editor",
+        "--import",
+        "--quit"
+      ],
+      "exit": 0,
+      "log": "import-0.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_native_endless_beam",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_endless_beam.gd"
+      ],
+      "exit": 1,
+      "log": "test_native_endless_beam-1.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_native_endless_beam",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_endless_beam.gd"
+      ],
+      "exit": 0,
+      "log": "test_native_endless_beam-2.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_native_execution_handoff",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_execution_handoff.gd"
+      ],
+      "exit": 0,
+      "log": "test_native_execution_handoff-3.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_native_numeric_upgrade",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_upgrade.gd"
+      ],
+      "exit": 0,
+      "log": "test_native_numeric_upgrade-4.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_native_numeric_range",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_numeric_range.gd"
+      ],
+      "exit": 0,
+      "log": "test_native_numeric_range-5.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_legacy_beam_shield_timing",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_legacy_beam_shield_timing.gd"
+      ],
+      "exit": 0,
+      "log": "test_legacy_beam_shield_timing-6.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_enemy_shield_timing",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_enemy_shield_timing.gd"
+      ],
+      "exit": "timeout_120s",
+      "log": "test_enemy_shield_timing-7.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    },
+    {
+      "label": "test_native_endless_beam",
+      "command": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\endless-beam-main-20261014\\test\\work\\endless-validation\\space-battleship",
+        "--headless",
+        "--max-fps",
+        "0",
+        "--disable-vsync",
+        "--script",
+        "res://test_native_endless_beam.gd"
+      ],
+      "exit": 0,
+      "log": "test_native_endless_beam-8.log",
+      "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab"
+    }
+  ]
+}

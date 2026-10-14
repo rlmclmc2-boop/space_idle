@@ -1,0 +1,8 @@
+{
+  "test": "test_enemy_shield_timing.gd",
+  "baseline": "0d14ce90b4dafceafd0e6adb295652daf6df48c3",
+  "dependency": "space-battleship/scripts/balance_game.gd:192",
+  "reason": "Baseline override jewel_equipment_stat accepts four parameters; current Game parent accepts six. Also historical direct beam fixture settles at event=1.0 after shield ledger=1.4. No Lab production change or assertion weakening attempted.",
+  "covered_current_temporal_suite": "test_legacy_beam_shield_timing.gd: 133 checks, zero failures",
+  "log": "test_enemy_shield_timing-7.log"
+}

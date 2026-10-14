@@ -1,0 +1,24 @@
+{
+  "clean_candidate": "2db97caa57c867982c4702f97fe69b5e791a5330",
+  "production_commit": "283bdb5e41d5db9d05469a37dcb1441eff46ab36",
+  "baseline": "0d14ce90b4dafceafd0e6adb295652daf6df48c3",
+  "dll_sha256": "974e879a0d107f2c07c20b32e6f9cdd7939122cb4e7b3ed4618039b3012d0bab",
+  "dll_bytes": 1602048,
+  "build_exit": 0,
+  "checks": {
+    "endless": 78,
+    "handoff": 45,
+    "numeric_update": 69,
+    "numeric_range": 39,
+    "legacy_beam_shield_timing": 133
+  },
+  "total_checks": 364,
+  "failures_in_completed_suites": 0,
+  "not_completed": "test_enemy_shield_timing: existing Lab signature mismatch and stale temporal fixture, then owned-process timeout; see baseline-test-limitation.json",
+  "performance_run": false,
+  "source_sha256": {
+    "space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "combat_execution_kernel.h": "01c6d2894e3a0690b7a60bfd9ff05e82a8ae00956df425c663b97fda30ca0ee3",
+    "combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1"
+  }
+}

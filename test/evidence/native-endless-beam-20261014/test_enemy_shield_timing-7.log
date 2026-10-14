@@ -1,0 +1,31 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: The function signature doesn't match the parent. Parent signature is "jewel_equipment_stat(Dictionary, int = <default>, Variant = <default>, bool = <default>, float = <default>, float = <default>) -> Variant".
+   at: GDScript::reload (res://scripts/balance_game.gd:192)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+   at: GDScript::reload (res://test_enemy_shield_timing.gd:0)
+ERROR: Failed to load script "res://test_enemy_shield_timing.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)
+ERROR: ENEMY_SHIELD_TIME_CONTRACT uid=1 event=1.0 ledger=1.4
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] settle_enemy_shield (res://scripts/game.gd:2888)
+       [1] hit_enemy (res://scripts/game.gd:2554)
+       [2] apply_long_laser_hit (res://scripts/game.gd:2439)
+       [3] tick_long_laser (res://scripts/game.gd:2455)
+       [4] run (res://test_enemy_shield_timing.gd:101)
+low-level beam resolver uses caller clock and scheduled due without advancing clock twice
+SCRIPT ERROR: Invalid call. Nonexistent function 'new' in base 'GDScript'.
+   at: fixture (res://test_enemy_shield_timing.gd:21)
+   GDScript backtrace (most recent call first):
+       [0] fixture (res://test_enemy_shield_timing.gd:21)
+       [1] run (res://test_enemy_shield_timing.gd:104)
+SCRIPT ERROR: Invalid call. Nonexistent function 'new' in base 'GDScript'.
+   at: fixture (res://test_enemy_shield_timing.gd:21)
+   GDScript backtrace (most recent call first):
+       [0] fixture (res://test_enemy_shield_timing.gd:21)
+       [1] run (res://test_enemy_shield_timing.gd:104)
+SCRIPT ERROR: Invalid assignment of property or key 'simulation_mode' with value of type 'String' on a base object of type 'Nil'.
+   at: run (res://test_enemy_shield_timing.gd:104)
+   GDScript backtrace (most recent call first):
+       [0] run (res://test_enemy_shield_timing.gd:104)

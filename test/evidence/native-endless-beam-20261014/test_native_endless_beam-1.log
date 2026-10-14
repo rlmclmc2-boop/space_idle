@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: Cannot find member "CLEAR" in base "BattleGame.State".
+   at: GDScript::reload (res://test_native_endless_beam.gd:135)
+ERROR: Failed to load script "res://test_native_endless_beam.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)
