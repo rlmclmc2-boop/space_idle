@@ -1,0 +1,228 @@
+{
+  "weapon": "cannon",
+  "source": "e7cc31e0",
+  "frames": 183,
+  "full_wall_ms": {
+    "mean": 46.268612021857926,
+    "median": 16.885,
+    "p95": 151.271,
+    "p99": 188.516,
+    "max": 212.161
+  },
+  "phases": {
+    "post_to_main": {
+      "wall_ms": {
+        "mean": 0.0507103825136612,
+        "median": 0.049,
+        "p95": 0.073,
+        "p99": 0.103,
+        "max": 0.11
+      },
+      "exclusive_ms_per_frame": {},
+      "unattributed_ms_per_frame": 0.0507103825136612
+    },
+    "main": {
+      "wall_ms": {
+        "mean": 38.6792349726776,
+        "median": 9.739,
+        "p95": 141.305,
+        "p99": 179.389,
+        "max": 201.166
+      },
+      "exclusive_ms_per_frame": {
+        "main._process": 38.100508196721314,
+        "battlefield._process": 0.5161420765027322
+      },
+      "unattributed_ms_per_frame": 0.06258469945355191
+    },
+    "main_end_to_pre": {
+      "wall_ms": {
+        "mean": 4.9932295081967215,
+        "median": 4.688,
+        "p95": 7.57,
+        "p99": 9.256,
+        "max": 10.335
+      },
+      "exclusive_ms_per_frame": {
+        "main.draw_battle": 3.2740601092896178,
+        "battlefield._draw_muzzle_cues": 0.6435081967213115,
+        "main.draw_battle_foreground": 0.2640273224043716,
+        "enemy_defence_inspector._process": 0.03927868852459017,
+        "retained_enemy_contacts._draw": 0.015114754098360656,
+        "main.draw_stars": 0.008453551912568306,
+        "ship_body_baker._sync_shadow_policy": 0.008322404371584699,
+        "battlefield.draw_battle": 0.007726775956284153,
+        "beginner_guide._process": 0.004158469945355191,
+        "hyperspace_panel._process": 0.0019180327868852458
+      },
+      "unattributed_ms_per_frame": 0.7266612021857923
+    },
+    "pre_to_post": {
+      "wall_ms": {
+        "mean": 2.5454371584699453,
+        "median": 2.39,
+        "p95": 3.924,
+        "p99": 4.57,
+        "max": 4.878
+      },
+      "exclusive_ms_per_frame": {},
+      "unattributed_ms_per_frame": 2.5454371584699453
+    }
+  },
+  "closure_max_us": 0,
+  "logic_step_distribution": {
+    "2": 6,
+    "1": 118,
+    "5": 12,
+    "7": 15,
+    "8": 11,
+    "9": 5,
+    "4": 4,
+    "6": 4,
+    "3": 4,
+    "0": 4
+  },
+  "warm_steps": 240,
+  "sample_steps": 480,
+  "game_seconds": 8.00000000000019,
+  "wall_seconds": 8.467171,
+  "game_wall_ratio": 0.944825609403683,
+  "actual_1x_pass": false,
+  "limiter_and_focus_valid": true,
+  "performance_sample_valid": false,
+  "focus_false_frames": 0,
+  "background_unfocused_frames": 0,
+  "native_admitted": false,
+  "admission_error": "unsupported_legendary:strange_matter",
+  "fires_by_weapon": {
+    "cannon": 159
+  },
+  "legendary_counts": {
+    "strange_matter_detonations": 25,
+    "strange_matter_scheduled": 31
+  },
+  "activity": {
+    "beams": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "max": 0
+    },
+    "links": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "max": 0
+    },
+    "chain_hops": {
+      "mean": 26.939890710382514,
+      "median": 8,
+      "p95": 136,
+      "p99": 143,
+      "max": 143
+    },
+    "prism_beams": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "max": 0
+    },
+    "endless_beams": {
+      "mean": 0,
+      "median": 0,
+      "p95": 0,
+      "p99": 0,
+      "max": 0
+    },
+    "active_by_weapon": {
+      "chain": {
+        "mean": 26.939890710382514,
+        "median": 8,
+        "p95": 136,
+        "p99": 143,
+        "max": 143
+      }
+    }
+  },
+  "work": {
+    "fires": 279,
+    "hits": 2115,
+    "purchases": 96,
+    "handoffs": 0,
+    "events": {
+      "enhancement_chain": 1595,
+      "enhancement_secondary": 14,
+      "equipment_stats": 265,
+      "fire": 279,
+      "galaxy_unlocked": 1,
+      "hit": 2115,
+      "projectile_impact": 1740,
+      "resources_changed": 96,
+      "upgrade": 96,
+      "upgrades_completed": 8
+    },
+    "rng_state": "651411081618128475",
+    "enemies_alive": 15
+  },
+  "sampling_config": {
+    "accelerated_visual_mode": false,
+    "combat_presentation": true,
+    "compiled_rules": true,
+    "enemy_fx": true,
+    "engine_max_fps": 0,
+    "fixed_logic_hz": 60,
+    "independent_qualification_plan": false,
+    "missile_fx": true,
+    "native_active": false,
+    "native_auto": true,
+    "old_pipeline_class": false,
+    "pulse_fx": true,
+    "retained": true,
+    "save_enabled": false,
+    "speed": 1.0,
+    "stat_cache_enabled": true,
+    "time_scale": 1.0,
+    "vsync": 0,
+    "window": "(1373, 883)"
+  },
+  "config_end": {
+    "accelerated_visual_mode": false,
+    "combat_presentation": true,
+    "compiled_rules": true,
+    "enemy_fx": true,
+    "engine_max_fps": 0,
+    "fixed_logic_hz": 60,
+    "independent_qualification_plan": false,
+    "missile_fx": true,
+    "native_active": false,
+    "native_auto": true,
+    "old_pipeline_class": false,
+    "pulse_fx": true,
+    "retained": true,
+    "save_enabled": false,
+    "speed": 1.0,
+    "stat_cache_enabled": true,
+    "time_scale": 1.0,
+    "vsync": 0,
+    "window": "(1373, 883)"
+  },
+  "system_cpu_busy_percent": {
+    "mean": 8.50949754901961,
+    "median": 8.712121212121215,
+    "p95": 11.1328125,
+    "p99": 11.1328125,
+    "max": 11.1328125
+  },
+  "system_cpu_samples": 17,
+  "probe_bookkeeping_us": 3869,
+  "limits": [
+    "Instrumented single scenario, not AB; different weapon/effect work cannot be called optimization gain.",
+    "Exclusive callback wall time only; driver/GPU/OS waits remain unsplit.",
+    "Existing native compiler rejects unsupported legendary combinations; ordinary production GDS fallback retained, not new parallel world.",
+    "Held-health scene excludes kill/wave transition branches. Enabled and actually triggered effects are separate.",
+    "Counters and per-frame activity scan have overhead included in timing. No overhead subtraction."
+  ]
+}

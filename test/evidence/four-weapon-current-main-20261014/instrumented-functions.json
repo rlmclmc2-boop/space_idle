@@ -1,0 +1,172 @@
+[
+  {
+    "file": "balance_panel.gd",
+    "function": "_process",
+    "source_line": 220
+  },
+  {
+    "file": "battlefield.gd",
+    "function": "_process",
+    "source_line": 252
+  },
+  {
+    "file": "battlefield.gd",
+    "function": "_draw_muzzle_cues",
+    "source_line": 331
+  },
+  {
+    "file": "battlefield.gd",
+    "function": "draw_battle",
+    "source_line": 749
+  },
+  {
+    "file": "beginner_guide.gd",
+    "function": "_process",
+    "source_line": 75
+  },
+  {
+    "file": "chrono_panel.gd",
+    "function": "_process",
+    "source_line": 7
+  },
+  {
+    "file": "chrono_panel.gd",
+    "function": "_draw",
+    "source_line": 14
+  },
+  {
+    "file": "config_panel.gd",
+    "function": "_process",
+    "source_line": 244
+  },
+  {
+    "file": "enemy_defence_inspector.gd",
+    "function": "_process",
+    "source_line": 77
+  },
+  {
+    "file": "flat_ship_compositor.gd",
+    "function": "_process",
+    "source_line": 44
+  },
+  {
+    "file": "fleet_analysis_panel.gd",
+    "function": "_process",
+    "source_line": 261
+  },
+  {
+    "file": "fleet_battle_panel.gd",
+    "function": "_process",
+    "source_line": 161
+  },
+  {
+    "file": "fleet_level_panel.gd",
+    "function": "_process",
+    "source_line": 115
+  },
+  {
+    "file": "galaxy_map.gd",
+    "function": "_process",
+    "source_line": 505
+  },
+  {
+    "file": "hightech_workshop.gd",
+    "function": "_process",
+    "source_line": 364
+  },
+  {
+    "file": "hyperspace_panel.gd",
+    "function": "_process",
+    "source_line": 310
+  },
+  {
+    "file": "level_editor.gd",
+    "function": "_process",
+    "source_line": 381
+  },
+  {
+    "file": "main.gd",
+    "function": "_process",
+    "source_line": 415
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_background",
+    "source_line": 2739
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_chrome",
+    "source_line": 2753
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_vertical_battle_hud",
+    "source_line": 2761
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_stars",
+    "source_line": 2852
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_resources",
+    "source_line": 2894
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_overlay",
+    "source_line": 2945
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_battle_resources",
+    "source_line": 3029
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_battle",
+    "source_line": 3034
+  },
+  {
+    "file": "main.gd",
+    "function": "draw_battle_foreground",
+    "source_line": 3600
+  },
+  {
+    "file": "presented_ship_view.gd",
+    "function": "_sync_render_scale",
+    "source_line": 144
+  },
+  {
+    "file": "presented_ship_view.gd",
+    "function": "_commit_fleet_redraw",
+    "source_line": 470
+  },
+  {
+    "file": "reactor_visual.gd",
+    "function": "_process",
+    "source_line": 51
+  },
+  {
+    "file": "reactor_visual.gd",
+    "function": "_draw",
+    "source_line": 104
+  },
+  {
+    "file": "retained_enemy_contacts.gd",
+    "function": "_draw",
+    "source_line": 15
+  },
+  {
+    "file": "ship_body_baker.gd",
+    "function": "_finish",
+    "source_line": 226
+  },
+  {
+    "file": "ship_body_baker.gd",
+    "function": "_sync_shadow_policy",
+    "source_line": 284
+  }
+]

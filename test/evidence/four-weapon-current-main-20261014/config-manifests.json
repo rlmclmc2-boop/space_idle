@@ -1,0 +1,1470 @@
+{
+  "laser": {
+    "alive_enemies": 15,
+    "branches": {
+      "defence": {
+        "adaptation": {},
+        "delayed_damage": {},
+        "memory_material": {}
+      },
+      "weapons": {
+        "critical": {},
+        "proficiency": {
+          "2": "B"
+        },
+        "repeat": {
+          "1": "B",
+          "3": "B"
+        }
+      }
+    },
+    "combat_sources": [
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "drone_id": "perf:layer2:0",
+        "key": "laser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:1",
+        "key": "laser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:2",
+        "key": "laser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:3",
+        "key": "laser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:4",
+        "key": "laser",
+        "level": 151
+      }
+    ],
+    "drones": {
+      "perf:layer2:0": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-2657330839817066981",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:0",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "scatter_pulse",
+          "parameters": {
+            "single_target_bonus": 2.801
+          }
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "laser"
+      },
+      "perf:layer2:1": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "6093729441860595794",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:1",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "laser_charge",
+          "parameters": {
+            "maximum_bonus": 2.481
+          }
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "laser"
+      },
+      "perf:layer2:2": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.149
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-2316731023078886592",
+        "hanging_slots": 1,
+        "hangings": [],
+        "id": "perf:layer2:2",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "laser"
+      },
+      "perf:layer2:3": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.138
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-3872985280022218636",
+        "hanging_slots": 1,
+        "hangings": [],
+        "id": "perf:layer2:3",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "laser"
+      },
+      "perf:layer2:4": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.134
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.147
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-5711350611765653341",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:4",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "laser"
+      }
+    },
+    "enhancement_effective_level": 40,
+    "equipped": [
+      "perf:layer2:0",
+      "perf:layer2:1",
+      "perf:layer2:2",
+      "perf:layer2:3",
+      "perf:layer2:4"
+    ],
+    "layer": 2,
+    "ordinary": [
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      },
+      {
+        "key": "laser",
+        "level": 150
+      }
+    ],
+    "rng": "7273103727351848851",
+    "scope": "synthetic held-health battle fixture, no natural progression claim",
+    "totals": {
+      "affixes": {
+        "attack_speed": 0.7,
+        "chain_count": 10.0,
+        "repeat_chance": 0.718
+      },
+      "armour": 1.0,
+      "attack_speed": 1.7,
+      "chain_count": 10,
+      "critical_chance": 0.0,
+      "critical_damage": 1.0,
+      "damage": 1.0,
+      "defence": 1.0,
+      "hangings": {},
+      "legendary": {
+        "laser_charge": {
+          "constants": {
+            "bonus_per_laser": 0.5
+          },
+          "drone_id": "perf:layer2:1",
+          "parameters": {
+            "maximum_bonus": 2.481
+          },
+          "score": 2.481
+        },
+        "scatter_pulse": {
+          "constants": {},
+          "drone_id": "perf:layer2:0",
+          "parameters": {
+            "single_target_bonus": 2.801
+          },
+          "score": 2.801
+        }
+      },
+      "repeat_chance": 0.718,
+      "shield": 1.0,
+      "weapon_damage": {
+        "cannon": 1.0,
+        "laser": 1.0,
+        "longLaser": 1.0,
+        "missile": 1.0
+      }
+    }
+  },
+  "cannon": {
+    "alive_enemies": 15,
+    "branches": {
+      "defence": {
+        "adaptation": {},
+        "delayed_damage": {},
+        "memory_material": {}
+      },
+      "weapons": {
+        "critical": {},
+        "proficiency": {
+          "2": "B"
+        },
+        "repeat": {
+          "1": "B",
+          "3": "B"
+        }
+      }
+    },
+    "combat_sources": [
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "drone_id": "perf:layer2:0",
+        "key": "cannon",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:1",
+        "key": "cannon",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:2",
+        "key": "cannon",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:3",
+        "key": "cannon",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:4",
+        "key": "cannon",
+        "level": 151
+      }
+    ],
+    "drones": {
+      "perf:layer2:0": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-7543372088848890644",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:0",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "strange_matter",
+          "parameters": {
+            "damage_multiplier": 1.889
+          }
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "cannon"
+      },
+      "perf:layer2:1": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.147
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-3405808399755204530",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:1",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "cannon"
+      },
+      "perf:layer2:2": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-3650349317684520867",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:2",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "cannon"
+      },
+      "perf:layer2:3": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.149
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.133
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "8752155151606226523",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:3",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "cannon"
+      },
+      "perf:layer2:4": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.138
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "1836747157526025971",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:4",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "cannon"
+      }
+    },
+    "enhancement_effective_level": 40,
+    "equipped": [
+      "perf:layer2:0",
+      "perf:layer2:1",
+      "perf:layer2:2",
+      "perf:layer2:3",
+      "perf:layer2:4"
+    ],
+    "layer": 2,
+    "ordinary": [
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      },
+      {
+        "key": "cannon",
+        "level": 150
+      }
+    ],
+    "rng": "7273103727351848851",
+    "scope": "synthetic held-health battle fixture, no natural progression claim",
+    "totals": {
+      "affixes": {
+        "attack_speed": 0.72,
+        "chain_count": 10.0,
+        "repeat_chance": 0.695
+      },
+      "armour": 1.0,
+      "attack_speed": 1.72,
+      "chain_count": 10,
+      "critical_chance": 0.0,
+      "critical_damage": 1.0,
+      "damage": 1.0,
+      "defence": 1.0,
+      "hangings": {},
+      "legendary": {
+        "strange_matter": {
+          "constants": {
+            "delay": 1.0,
+            "kill_spawns": 2.0,
+            "spawn_probability": 0.4
+          },
+          "drone_id": "perf:layer2:0",
+          "parameters": {
+            "damage_multiplier": 1.889
+          },
+          "score": 1.889
+        }
+      },
+      "repeat_chance": 0.695,
+      "shield": 1.0,
+      "weapon_damage": {
+        "cannon": 1.0,
+        "laser": 1.0,
+        "longLaser": 1.0,
+        "missile": 1.0
+      }
+    }
+  },
+  "missile": {
+    "alive_enemies": 15,
+    "branches": {
+      "defence": {
+        "adaptation": {},
+        "delayed_damage": {},
+        "memory_material": {}
+      },
+      "weapons": {
+        "critical": {},
+        "proficiency": {
+          "2": "B"
+        },
+        "repeat": {
+          "1": "B",
+          "3": "B"
+        }
+      }
+    },
+    "combat_sources": [
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "drone_id": "perf:layer2:0",
+        "key": "missile",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:1",
+        "key": "missile",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:2",
+        "key": "missile",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:3",
+        "key": "missile",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:4",
+        "key": "missile",
+        "level": 151
+      }
+    ],
+    "drones": {
+      "perf:layer2:0": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-7922852657467891627",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:0",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "precise_guidance",
+          "parameters": {}
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "perf:layer2:1": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-2103041248605655370",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:1",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "wild_missile",
+          "parameters": {
+            "damage_multiplier": 8.134
+          }
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "perf:layer2:2": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.149
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.133
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "8752155151606226523",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:2",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "perf:layer2:3": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.138
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "1836747157526025971",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:3",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      },
+      "perf:layer2:4": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.134
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.147
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-5711350611765653341",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:4",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "missile"
+      }
+    },
+    "enhancement_effective_level": 40,
+    "equipped": [
+      "perf:layer2:0",
+      "perf:layer2:1",
+      "perf:layer2:2",
+      "perf:layer2:3",
+      "perf:layer2:4"
+    ],
+    "layer": 2,
+    "ordinary": [
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      },
+      {
+        "key": "missile",
+        "level": 150
+      }
+    ],
+    "rng": "7273103727351848851",
+    "scope": "synthetic held-health battle fixture, no natural progression claim",
+    "totals": {
+      "affixes": {
+        "attack_speed": 0.707,
+        "chain_count": 10.0,
+        "repeat_chance": 0.701
+      },
+      "armour": 1.0,
+      "attack_speed": 1.707,
+      "chain_count": 10,
+      "critical_chance": 0.0,
+      "critical_damage": 1.0,
+      "damage": 1.0,
+      "defence": 1.0,
+      "hangings": {},
+      "legendary": {
+        "precise_guidance": {
+          "constants": {
+            "counting_policy": "first_hit_per_batch_per_target",
+            "stack_limit": 0.0,
+            "stack_limit_enabled": false,
+            "stack_multiplier": 1.5
+          },
+          "drone_id": "perf:layer2:0",
+          "parameters": {},
+          "score": 0.0
+        },
+        "wild_missile": {
+          "constants": {
+            "attack_period": 3.0,
+            "blast_fraction": 0.5
+          },
+          "drone_id": "perf:layer2:1",
+          "parameters": {
+            "damage_multiplier": 8.134
+          },
+          "score": 8.134
+        }
+      },
+      "repeat_chance": 0.701,
+      "shield": 1.0,
+      "weapon_damage": {
+        "cannon": 1.0,
+        "laser": 1.0,
+        "longLaser": 1.0,
+        "missile": 1.0
+      }
+    }
+  },
+  "longLaser": {
+    "alive_enemies": 15,
+    "branches": {
+      "defence": {
+        "adaptation": {},
+        "delayed_damage": {},
+        "memory_material": {}
+      },
+      "weapons": {
+        "critical": {},
+        "proficiency": {
+          "2": "B"
+        },
+        "repeat": {
+          "1": "B",
+          "3": "B"
+        }
+      }
+    },
+    "combat_sources": [
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "drone_id": "perf:layer2:0",
+        "key": "longLaser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:1",
+        "key": "longLaser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:2",
+        "key": "longLaser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:3",
+        "key": "longLaser",
+        "level": 151
+      },
+      {
+        "drone_id": "perf:layer2:4",
+        "key": "longLaser",
+        "level": 151
+      }
+    ],
+    "drones": {
+      "perf:layer2:0": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-2657330839817066981",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:0",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "prism_tower",
+          "parameters": {
+            "maximum_multiplier_bonus": 1.663
+          }
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "longLaser"
+      },
+      "perf:layer2:1": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "6093729441860595794",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:1",
+        "legendary": true,
+        "legendary_effect": {
+          "effect_id": "endless_beam",
+          "parameters": {
+            "maximum_multiplier_bonus": 1.481
+          }
+        },
+        "level": 20,
+        "omen": false,
+        "origin_quality": "legendary",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "longLaser"
+      },
+      "perf:layer2:2": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.141
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.149
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-2316731023078886592",
+        "hanging_slots": 1,
+        "hangings": [],
+        "id": "perf:layer2:2",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "longLaser"
+      },
+      "perf:layer2:3": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.142
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.138
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-3872985280022218636",
+        "hanging_slots": 1,
+        "hangings": [],
+        "id": "perf:layer2:3",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "longLaser"
+      },
+      "perf:layer2:4": {
+        "affixes": [
+          {
+            "key": "chain_count",
+            "locked": false,
+            "tier": 1,
+            "value": 2.0
+          },
+          {
+            "key": "attack_speed",
+            "locked": false,
+            "tier": 1,
+            "value": 0.134
+          },
+          {
+            "key": "repeat_chance",
+            "locked": false,
+            "tier": 1,
+            "value": 0.147
+          }
+        ],
+        "blue_source_bonus": false,
+        "forge_revision": 0,
+        "forge_rng_state": "-5711350611765653341",
+        "hanging_slots": 0,
+        "hangings": [],
+        "id": "perf:layer2:4",
+        "legendary": false,
+        "legendary_effect": {},
+        "level": 20,
+        "omen": false,
+        "origin_quality": "gold",
+        "planet_id": "1",
+        "preserved_hanging_slots": 0,
+        "ultimate": false,
+        "ultimate_affix": {},
+        "weapon": "longLaser"
+      }
+    },
+    "enhancement_effective_level": 40,
+    "equipped": [
+      "perf:layer2:0",
+      "perf:layer2:1",
+      "perf:layer2:2",
+      "perf:layer2:3",
+      "perf:layer2:4"
+    ],
+    "layer": 2,
+    "ordinary": [
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      },
+      {
+        "key": "longLaser",
+        "level": 150
+      }
+    ],
+    "rng": "7273103727351848851",
+    "scope": "synthetic held-health battle fixture, no natural progression claim",
+    "totals": {
+      "affixes": {
+        "attack_speed": 0.7,
+        "chain_count": 10.0,
+        "repeat_chance": 0.718
+      },
+      "armour": 1.0,
+      "attack_speed": 1.7,
+      "chain_count": 10,
+      "critical_chance": 0.0,
+      "critical_damage": 1.0,
+      "damage": 1.0,
+      "defence": 1.0,
+      "hangings": {},
+      "legendary": {
+        "endless_beam": {
+          "constants": {},
+          "drone_id": "perf:layer2:1",
+          "parameters": {
+            "maximum_multiplier_bonus": 1.481
+          },
+          "score": 1.481
+        },
+        "prism_tower": {
+          "constants": {
+            "maximum_towers": 1.0,
+            "nearby_targets": 5.0
+          },
+          "drone_id": "perf:layer2:0",
+          "parameters": {
+            "maximum_multiplier_bonus": 1.663
+          },
+          "score": 1.663
+        }
+      },
+      "repeat_chance": 0.718,
+      "shield": 1.0,
+      "weapon_damage": {
+        "cannon": 1.0,
+        "laser": 1.0,
+        "longLaser": 1.0,
+        "missile": 1.0
+      }
+    }
+  }
+}

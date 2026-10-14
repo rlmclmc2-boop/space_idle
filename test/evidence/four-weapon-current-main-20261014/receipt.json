@@ -1,0 +1,107 @@
+{
+  "refs": {
+    "A": "e7cc31e026fd390b24daa188256ee7f5f33a67e9"
+  },
+  "order": [
+    "laser",
+    "cannon",
+    "missile",
+    "longLaser"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "laser",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\four-weapon-current-main-20261014\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791986599.8310602,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791986695.3646948,
+      "json_sha256": "45c10a891f07ab2abfb45b10ed93f9942ed903cfd8679361302be596d653c998",
+      "png_sha256": "856a033c74196cf0187eed6e07d8111fd536778bb251c641a9d8c14256225988",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "cannon",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\four-weapon-current-main-20261014\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791986695.3706784,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791986715.364351,
+      "json_sha256": "a65e3d36832e6d83dff2f7077d6d58f0fed2d592cfaa3c966cd1b73f8794e746",
+      "png_sha256": "2fdfea8fd6648e9d26d41681ae8de05e5eaba3861b96b5acd45c12e8fcf4496c",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "missile",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\four-weapon-current-main-20261014\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791986715.3723302,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791986742.095593,
+      "json_sha256": "ba76cd1e957535d2352ff2800d2645d15b0828b91ccf5ca081fa84bb003fae41",
+      "png_sha256": "c609f6978232696fcf1819ccc758158fe98e2e416632b967ea67b674c3c0d153",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "longLaser",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\four-weapon-current-main-20261014\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791986742.1015768,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791986761.8051252,
+      "json_sha256": "67a3eb82a4c0c3a25bfe89eaff09d54a5d613cb3df61bea91c446cd5c733e33b",
+      "png_sha256": "88c5da240ce189ffc8d4bb527197cee53945c34e8699f0342ab55c82a38e6d6f",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {
+    "A": 0
+  },
+  "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "5fb4b317b5a0c22af4e5b9844747b0dcb76fb15ba561f3e43bd85268256f61d5",
+  "fixture_sha256": "146f8baffb8135cc731c313ffbaecafc63a8031b7711d8463ca77e8ec51f076e",
+  "scope": "Four instrumented baseline weapon scenarios; not optimization AB. Normal production admission/fallback; QA uncapped/VSync off, real1x60Hz, full effects; actual workload and legendary counters."
+}

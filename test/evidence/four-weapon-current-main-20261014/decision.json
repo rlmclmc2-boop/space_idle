@@ -1,0 +1,47 @@
+{
+  "source": "e7cc31e0",
+  "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+  "four_runs_complete": true,
+  "reruns": 0,
+  "all_import_and_run_exit_zero": true,
+  "all_limiting_and_focus_checks_pass": true,
+  "real_time_1x_pass": {
+    "laser": false,
+    "cannon": false,
+    "missile": false,
+    "longLaser": true
+  },
+  "conclusion": "All four legal full-legendary configurations fall back through existing compiler admission. Only longLaser sustained actual1x within existing3.5% tolerance. Other three are retained overload diagnostics, not valid real-time1x comparison samples; no repeats or load reductions. Cross-weapon differences are not optimization gains.",
+  "native_boundary": "native_execution_compiler.gd47-48 accepts only scatter_pulse/prism_tower. laser_charge/strange_matter/precise_guidance/endless_beam cause normal refusal; same accepted native DLL remains loaded for presentation. No kernel rule changed.",
+  "legendary_observation": {
+    "laser": {
+      "laser_charge_multiplier_evaluations": 481,
+      "scatter_attack_batches": 481
+    },
+    "cannon": {
+      "strange_matter_detonations": 25,
+      "strange_matter_scheduled": 31
+    },
+    "missile": {
+      "precise_guidance_layer_increments": 313,
+      "wild_missile_fires": 26
+    },
+    "longLaser": {
+      "new_prism_or_endless_main_beams_in_sample": 0,
+      "prism_active_each_frame": 1,
+      "endless_active_each_frame": 1,
+      "sampled_frames": 183,
+      "beam_hit_events": 1144,
+      "note": "Established during warmup; active flags observed throughout sample. No unsupported claim of newly triggered births in sample."
+    }
+  },
+  "uncovered": [
+    "Higgs cannon incompatible with13 cannon sources; no fifth scenario.",
+    "Held-health enemy fixture does not cover strange-matter kill-spawns, scatter single-target multiplier or endless death/wave-reacquisition.",
+    "Native implementation of currently unsupported legends is outside this task.",
+    "Legendary parameter values and T1 affix rolls are recorded per scenario; do not assume equal numerical attack load."
+  ],
+  "screenshots_reviewed": true,
+  "timing": "Full cycle and four disjoint wall spans; nested callbacks exclusive with residual; all frame closure errors0us. Counter/trace overhead included; driver/GPU waits unsplit.",
+  "scope": "All four remain accepted-main source plus QA observations only; candidate beam code not used. No production edits, native rebuild or player save access."
+}
