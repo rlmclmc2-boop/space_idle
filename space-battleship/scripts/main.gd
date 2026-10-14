@@ -3598,10 +3598,17 @@ func retain_battle_foreground(_flights: Variant, _shots: Array, _offset: Vector2
 	return false
 
 func draw_battle_foreground(flights: Variant, visible_projectiles: Array, offset: Vector2) -> void:
+	draw_foreground_flights(flights,offset)
+	draw_foreground_beams(visible_projectiles,offset)
+	draw_foreground_overlay(offset)
+
+func draw_foreground_flights(flights:Variant,offset:Vector2)->void:
 	# Visible bullets/flames must leave the top-mounted barrels above the hull.
 	if game.combat_presentation!=null:game.combat_presentation.draw_flights(self,flights,offset)
 	else:
 		for flight in flights:_draw_projectile_foreground_flight(flight,offset)
+
+func draw_foreground_beams(visible_projectiles:Array,offset:Vector2)->void:
 	# Muzzle charge and the burn point sit above hulls; the beam stays behind them.
 	for shot in visible_projectiles:
 		if not shot.get("beam",false) or not game.long_laser_valid(shot):continue
@@ -3635,6 +3642,8 @@ func draw_battle_foreground(flights: Variant, visible_projectiles: Array, offset
 			for spark in 2:
 				var direction := Vector2.from_angle(float(shot.elapsed)*13.0+float(spark)*PI)
 				draw_surface.draw_line(end+direction*2.0,end+direction*spark_size,Color(color,0.3+beam.pulse*0.55),1.0,true)
+
+func draw_foreground_overlay(offset:Vector2)->void:
 	if not accelerated_visual_mode:draw_battle_particles(offset,true)
 	for f in floats:
 		if accelerated_visual_mode:continue

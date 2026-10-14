@@ -1,6 +1,7 @@
 extends "res://scripts/main.gd"
 var retained_contacts
 var retained_contacts_enabled := true
+var retained_gpu_beams_enabled := true
 ## Live battle presentation. Save, inventory and unlock authority remains BattleGame.
 
 const PROTOTYPE_GAME := preload("res://scripts/presented_battle_game.gd")

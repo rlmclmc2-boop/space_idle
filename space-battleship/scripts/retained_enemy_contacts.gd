@@ -14,7 +14,7 @@ class Part extends Node2D:
   signature=key.duplicate(true);data=values;queue_redraw()
  func _draw()->void:
   builds+=1
-  if kind=="foreground" or not data.is_empty():host.paint(self,kind,data)
+  if kind.begins_with("foreground") or not data.is_empty():host.paint(self,kind,data)
 
 class MountRecord extends RefCounted:
  var node:Part
@@ -74,6 +74,8 @@ class DisplayRecord extends RefCounted:
 var paint_owner
 var records:Dictionary={}
 var foreground:Part
+var beam_layer
+var foreground_overlay:Part
 var frame:Dictionary={}
 var saved_positions:Dictionary={}
 
@@ -81,6 +83,8 @@ func setup(scene)->void:
  paint_owner=scene
  foreground=Part.new();foreground.host=self;foreground.kind="foreground"
  add_child(foreground)
+ beam_layer=preload("res://scripts/retained_beam_foreground.gd").new();foreground.add_child(beam_layer)
+ foreground_overlay=part(foreground,"foreground_overlay")
 
 func part(root:Node2D,kind:String)->Part:
  var result=Part.new();result.host=self;result.kind=kind
@@ -327,6 +331,11 @@ func meter(node:Part,position_value:Vector2,size_value:Vector2,ratio:float,color
 func stage_foreground(flights:Variant,shots:Array,offset:Vector2)->void:
  frame={"flights":flights,"shots":shots,"offset":offset}
  saved_positions=paint_owner.battle_draw_enemy_positions.duplicate()
+ var gpu:bool=paint_owner.retained_gpu_beams_enabled
+ beam_layer.visible=gpu;foreground_overlay.visible=gpu
+ if gpu:
+  beam_layer.sync(paint_owner,shots,offset);foreground_overlay.queue_redraw()
+ elif not beam_layer.records.is_empty():beam_layer.clear()
  foreground.queue_redraw()
 
 func paint(surface:Part,kind:String,data:Dictionary)->void:
@@ -345,7 +354,10 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
    if frame.is_empty():paint_owner.draw_surface=previous;return
    paint_owner.battle_draw_active=true;paint_owner.enemy_entry_batch_active=true
    paint_owner.battle_draw_enemy_positions=saved_positions.duplicate()
-   paint_owner.draw_battle_foreground(frame.flights,frame.shots,frame.offset)
+   if paint_owner.retained_gpu_beams_enabled:paint_owner.draw_foreground_flights(frame.flights,frame.offset)
+   else:paint_owner.draw_battle_foreground(frame.flights,frame.shots,frame.offset)
+  "foreground_overlay":
+   if not frame.is_empty():paint_owner.draw_foreground_overlay(frame.offset)
  paint_owner.draw_surface=previous
 
 func display_spatial(record:DisplayRecord,enemy:Dictionary)->Dictionary:
@@ -366,6 +378,8 @@ func display_spatial(record:DisplayRecord,enemy:Dictionary)->Dictionary:
 func clear()->void:
  # Drop held flight leases immediately at explicit scene reset/exit.
  frame.clear();saved_positions.clear()
+ if is_instance_valid(beam_layer):beam_layer.clear()
+ if is_instance_valid(foreground_overlay):foreground_overlay.queue_redraw()
  for record in records.values():
   record.root.hide();record.root.queue_free()
  records.clear()
