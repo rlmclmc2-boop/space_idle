@@ -1,0 +1,177 @@
+{
+  "scope": "One ordered A/B only; all samples retained; no outlier exclusion; capped actual-1x full frame cadence, not uncapped CPU cost",
+  "quantiles": "median=statistics.median; p95/p99=nearest rank ceil(p*n)-1",
+  "sides": {
+    "A": {
+      "frames": {
+        "n": 231,
+        "mean_ms": 17.310593073593072,
+        "median_ms": 16.647,
+        "p95_ms": 22.877,
+        "p99_ms": 43.903,
+        "max_ms": 45.053,
+        "min_ms": 12.092
+      },
+      "sample_steps": 240,
+      "warm_steps": 240,
+      "game_seconds": 3.99999999999999,
+      "wall_seconds": 3.998757,
+      "game_wall_ratio": 1.00031084659558,
+      "actual_1x_pass": true,
+      "fires": 1751,
+      "hits": 6533,
+      "purchases": 48,
+      "handoffs": 0,
+      "rng_state": "4413361150658287999",
+      "stress_counts": {
+        "beam_hit": 333,
+        "beam_started": 6,
+        "drone_fire": 1324,
+        "enhancement_chain": 4444,
+        "enhancement_secondary": 46,
+        "fire": 3391,
+        "hit": 11090
+      },
+      "all_enemies_supported": true,
+      "enemy_count": 15,
+      "unfocused_frames": 0,
+      "window_focused": false,
+      "runtime_config": {
+        "accelerated_visual_mode": false,
+        "combat_presentation": true,
+        "compiled_rules": true,
+        "enemy_fx": true,
+        "engine_max_fps": 60,
+        "fixed_logic_hz": 60,
+        "independent_qualification_plan": false,
+        "missile_fx": true,
+        "native_active": true,
+        "native_auto": true,
+        "old_pipeline_class": false,
+        "pulse_fx": true,
+        "retained": true,
+        "save_enabled": false,
+        "speed": 1.0,
+        "stat_cache_enabled": true,
+        "time_scale": 1.0,
+        "vsync": 1,
+        "window": "(1373, 883)"
+      },
+      "projectiles_raw": {
+        "mean": 362.7012987012987,
+        "max": 425
+      },
+      "floats_raw": {
+        "mean": 4.848484848484849,
+        "max": 6
+      },
+      "pending_raw": {
+        "mean": 26.584415584415584,
+        "max": 30
+      },
+      "drawcalls_raw": {
+        "mean": 1066.2034632034631,
+        "max": 1116.0
+      },
+      "primitives_raw": {
+        "mean": 176027.2380952381,
+        "max": 193432.0
+      }
+    },
+    "B": {
+      "frames": {
+        "n": 231,
+        "mean_ms": 17.259051948051948,
+        "median_ms": 16.647,
+        "p95_ms": 21.184,
+        "p99_ms": 46.04,
+        "max_ms": 47.271,
+        "min_ms": 12.73
+      },
+      "sample_steps": 240,
+      "warm_steps": 240,
+      "game_seconds": 3.99999999999999,
+      "wall_seconds": 3.986853,
+      "game_wall_ratio": 1.0032975883485,
+      "actual_1x_pass": true,
+      "fires": 1751,
+      "hits": 6533,
+      "purchases": 48,
+      "handoffs": 0,
+      "rng_state": "4413361150658287999",
+      "stress_counts": {
+        "beam_hit": 333,
+        "beam_started": 6,
+        "drone_fire": 1324,
+        "enhancement_chain": 4444,
+        "enhancement_secondary": 46,
+        "fire": 3391,
+        "hit": 11090
+      },
+      "all_enemies_supported": true,
+      "enemy_count": 15,
+      "unfocused_frames": 0,
+      "window_focused": false,
+      "runtime_config": {
+        "accelerated_visual_mode": false,
+        "combat_presentation": true,
+        "compiled_rules": true,
+        "enemy_fx": true,
+        "engine_max_fps": 60,
+        "fixed_logic_hz": 60,
+        "independent_qualification_plan": false,
+        "missile_fx": true,
+        "native_active": true,
+        "native_auto": true,
+        "old_pipeline_class": false,
+        "pulse_fx": true,
+        "retained": true,
+        "save_enabled": false,
+        "speed": 1.0,
+        "stat_cache_enabled": true,
+        "time_scale": 1.0,
+        "vsync": 1,
+        "window": "(1373, 883)"
+      },
+      "projectiles_raw": {
+        "mean": 362.6926406926407,
+        "max": 425
+      },
+      "floats_raw": {
+        "mean": 4.904761904761905,
+        "max": 7
+      },
+      "pending_raw": {
+        "mean": 26.48051948051948,
+        "max": 30
+      },
+      "drawcalls_raw": {
+        "mean": 1066.2164502164503,
+        "max": 1115.0
+      },
+      "primitives_raw": {
+        "mean": 175924.99567099568,
+        "max": 193342.0
+      }
+    }
+  },
+  "B_minus_A_ms": {
+    "mean_ms": -0.051541125541124444,
+    "median_ms": 0.0,
+    "p95_ms": -1.6929999999999978,
+    "p99_ms": 2.1370000000000005,
+    "max_ms": 2.2180000000000035
+  },
+  "workload_equal": {
+    "sample_steps": true,
+    "warm_steps": true,
+    "fires": true,
+    "hits": true,
+    "purchases": true,
+    "handoffs": true,
+    "rng_state": true,
+    "stress_counts": true,
+    "enemy_count": true
+  },
+  "fixture_equal": true
+}

@@ -1,0 +1,69 @@
+{
+  "refs": {
+    "A": "e7cc31e026fd390b24daa188256ee7f5f33a67e9",
+    "B": "85c76e794838be595be1722ccbb08b9a24bca852"
+  },
+  "order": [
+    "A",
+    "B"
+  ],
+  "warm_steps": 240,
+  "sample_steps": 240,
+  "runs": [
+    {
+      "label": "A",
+      "start_unix": 1791981784.0883698,
+      "end_unix": 1791981799.9671636,
+      "exit": 0,
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\tutorial-integration\\test\\work\\ordinary-port-ab\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "json_sha256": "6882f6acaca6bc1f68cb9fa2f6c8339cddf9c30d9969f7fd86832b1e57e2bfda",
+      "png_sha256": "c5ab89f61d13591778c79db7023984cbb43c63c8758c8e338f097b03a9b44e06"
+    },
+    {
+      "label": "B",
+      "start_unix": 1791981799.97614,
+      "end_unix": 1791981815.9836857,
+      "exit": 0,
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\tutorial-integration\\test\\work\\ordinary-port-ab\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "json_sha256": "8d1959284a0a6f506e9822135cf07a049cf864a4525dd54af8de2ccddc0e5c3d",
+      "png_sha256": "c79a52d4704a09e99ccc6284fdb88b9bf8d49547b64570c6ace52681bbe49f4a"
+    }
+  ],
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+  "driver_sha256": "c598bec4438e96dfc55aa03fa6adf31537b53c5e12f86e98264dcd4642731555",
+  "fixture_sha256": "2582ec8b7902bfe35e2c58b6a0f68a2df9715dd47c3ee78620c57c4262ae02ac",
+  "policy": "One A/B only; default cap, full presentation, actual 1x; no rejected candidates or production instrumentation.",
+  "startup_failure": {
+    "stage": "before warmup and sampling",
+    "reason": "unavailable optional native_readonly_observer added to reused driver",
+    "runner_exit": 1,
+    "timeout_seconds": 90,
+    "samples": 0,
+    "resolution": "removed additional call; existing g.event and conditional fixture observer retained"
+  },
+  "imports": {
+    "A": "previous successful import reused; script-only repair",
+    "B": "previous successful import reused; script-only repair"
+  }
+}
