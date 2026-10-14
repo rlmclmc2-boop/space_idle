@@ -1,0 +1,111 @@
+{
+  "source": "63b93069",
+  "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+  "runs": {
+    "A": {
+      "all": {
+        "frames": 232,
+        "mean_ms": 17.377219827586206,
+        "median_ms": 16.5715,
+        "p95_ms": 22.897,
+        "p99_ms": 39.142,
+        "max_ms": 42.997
+      },
+      "steps": 240,
+      "game_seconds": 3.99999999999999,
+      "exit_code": 0,
+      "counts": {
+        "enabled:refresh_navigation": 232,
+        "executed:draw.battlefield.gd._draw_muzzle_cues": 232,
+        "executed:draw.battlefield.gd.draw_battle": 232,
+        "executed:draw.battlefield.gd.draw_stars": 232,
+        "executed:draw.main.gd.draw_battle": 232,
+        "executed:draw.main.gd.draw_battle_foreground": 232,
+        "executed:draw.main.gd.draw_stars": 232,
+        "executed:draw.retained_enemy_contacts.gd.paint": 232,
+        "executed:node.apply_nodes": 232,
+        "executed:node.fleet_pose": 232,
+        "executed:node.fleet_setup": 232,
+        "executed:producer.battle_refresh": 232,
+        "executed:producer.contact_cleanup": 232,
+        "executed:producer.damage_display": 6520,
+        "executed:producer.display_frame": 232,
+        "executed:producer.flush_damage_numbers": 232,
+        "executed:producer.visual_advance": 232,
+        "kept.native_execution_session.gd.consume_feedback": 240,
+        "kept.native_execution_session.gd.prepare_geometry": 240,
+        "kept.simulation_geometry_authority.gd.after_tick": 240,
+        "kept.simulation_geometry_authority.gd.before_tick": 240,
+        "kept.simulation_geometry_authority.gd.finish_display_boundary": 232,
+        "kept.simulation_geometry_authority.gd.on_simulation_event": 6447,
+        "logic.tick": 240
+      },
+      "help_open": false,
+      "pending_unlocks": []
+    },
+    "B": {
+      "all": {
+        "frames": 237,
+        "mean_ms": 16.990291139240508,
+        "median_ms": 16.116,
+        "p95_ms": 22.365,
+        "p99_ms": 39.293,
+        "max_ms": 41.934
+      },
+      "steps": 240,
+      "game_seconds": 3.99999999999999,
+      "exit_code": 0,
+      "counts": {
+        "disabled:refresh_navigation": 237,
+        "executed:draw.battlefield.gd._draw_muzzle_cues": 237,
+        "executed:draw.battlefield.gd.draw_battle": 237,
+        "executed:draw.battlefield.gd.draw_stars": 237,
+        "executed:draw.main.gd.draw_battle": 237,
+        "executed:draw.main.gd.draw_battle_foreground": 237,
+        "executed:draw.main.gd.draw_stars": 237,
+        "executed:draw.retained_enemy_contacts.gd.paint": 237,
+        "executed:node.apply_nodes": 237,
+        "executed:node.fleet_pose": 237,
+        "executed:node.fleet_setup": 237,
+        "executed:producer.battle_refresh": 237,
+        "executed:producer.contact_cleanup": 237,
+        "executed:producer.damage_display": 6520,
+        "executed:producer.display_frame": 237,
+        "executed:producer.flush_damage_numbers": 237,
+        "executed:producer.visual_advance": 237,
+        "kept.native_execution_session.gd.consume_feedback": 240,
+        "kept.native_execution_session.gd.prepare_geometry": 240,
+        "kept.simulation_geometry_authority.gd.after_tick": 240,
+        "kept.simulation_geometry_authority.gd.before_tick": 240,
+        "kept.simulation_geometry_authority.gd.finish_display_boundary": 237,
+        "kept.simulation_geometry_authority.gd.on_simulation_event": 6447,
+        "logic.tick": 240
+      },
+      "help_open": false,
+      "pending_unlocks": []
+    }
+  },
+  "equivalence": {
+    "before": true,
+    "after": true,
+    "state_before": true,
+    "state_after": true,
+    "events": true,
+    "config": true
+  },
+  "limits": "One short pair only; no extra samples. Disabled navigation is incomplete UI and cannot ship. A-minus-B is an observed full-frame difference, not stable net savings or a proven theoretical bound. Small differences may be masked by variation.",
+  "A_minus_B_ms": {
+    "mean_ms": 0.38692868834569794,
+    "median_ms": 0.4555000000000007,
+    "p95_ms": 0.532,
+    "p99_ms": -0.15099999999999625,
+    "max_ms": 1.0630000000000024
+  },
+  "other_work": "Logic/state/events/config identical. Per-frame draw/display counts vary with achieved frame count; no other path intentionally disabled. This fixture has no open help/pending notice, so it cannot demonstrate live navigation correctness.",
+  "cleanup": {
+    "navigation_disable_removed": true,
+    "isolated_baseline": "63b93069",
+    "isolated_dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+    "production_source_untouched": true
+  }
+}
