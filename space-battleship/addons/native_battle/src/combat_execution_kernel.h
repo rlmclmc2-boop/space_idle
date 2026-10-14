@@ -458,6 +458,12 @@ class SpaceCombatKernel : public RefCounted {
         if (first > std::numeric_limits<int64_t>::max() - int64_t(std::max(1.0,portions))) return false;
         Array weapons = d["weapons"], enemies = d["enemies"], defs = d.get("defences", Array());
         double raw_bound = retained_raw;
+        // A configuration change also affects eligible hits from retained attacks.
+        if (bool(d.get("requires_strange_matter",false))) {
+            double derived = retained_raw * double(d.get("strange_damage_multiplier",0.0));
+            if (!std::isfinite(derived)) return false;
+            raw_bound = std::max(raw_bound, derived);
+        }
         for (int i = 0; i < weapons.size(); ++i) {
             Dictionary v = weapons[i];
             double raw = v.get("damage", 1.0);
@@ -1668,6 +1674,11 @@ class SpaceCombatKernel : public RefCounted {
         if (!std::isfinite(recovery_elapsed) || !std::isfinite(retained_recovery_bound*recovery_elapsed) ||
             !std::isfinite(retained_shield_bound + retained_recovery_bound*recovery_elapsed)) return false;
         double raw = std::max(std::max(retained_damage_bound,retained_explosion_bound),retained_strange_damage);
+        if (strange_enabled) {
+            double derived = retained_damage_bound * strange_multiplier;
+            if (!std::isfinite(derived)) return false;
+            raw = std::max(raw, derived);
+        }
         for (const Weapon &w : weapons) {
             double base = w.hostile ? w.base : w.base * (1 + attack_bonus);
             if (!std::isfinite(base)) return false;
