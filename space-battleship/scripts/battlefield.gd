@@ -140,6 +140,8 @@ func create_battle_game(persist:bool)->BattleGame:
 	prototype.launch_provider=_prototype_launch_pose
 	prototype.drone_launch_provider=_prototype_drone_launch_pose
 	prototype.target_provider=_prototype_target_point
+	battle_read_model.setup(self)
+	prototype.target_spatial_source=battle_read_model
 	prototype.rail_geometry_provider=_rail_geometry
 	prototype.rail_target_point_provider=entity_render_position
 	prototype.native_execution_auto=true
@@ -166,7 +168,7 @@ func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	# paused close-up inspection magnification.
 	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
 	var logical:=battle_logical_point(point)
-	return {"position":logical,"direction":(aim-logical).normalized()}
+	return {"position":logical,"direction":(aim-logical).normalized(),"screen_origin":point,"screen_aim":battle_point(aim)}
 
 
 func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary:
@@ -176,7 +178,7 @@ func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary
 	var point:Vector2=hyperspace_visual.screen_muzzle_for_drone(id,ordinal,ship_view)
 	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
 	var logical:=battle_logical_point(point)
-	return {"position":logical,"direction":(aim-logical).normalized()}
+	return {"position":logical,"direction":(aim-logical).normalized(),"screen_origin":point,"screen_aim":battle_point(aim)}
 
 
 func _visual_drone_id(shot:Dictionary)->String:
@@ -916,16 +918,16 @@ func enemy_hull_bounds(texture: Texture2D) -> Rect2:
 	var texture_key:=texture.get_instance_id()
 	if not hull_opaque_bounds.has(texture_key):
 		var pixels:=texture.get_image().get_used_rect()
-		hull_opaque_bounds[texture_key]=Rect2(Vector2(pixels.position)/texture.get_size()-Vector2(0.5,0.5),Vector2(pixels.size)/texture.get_size())
+		hull_opaque_bounds[texture_key]=Rect2(-Vector2(pixels.size)/texture.get_size()*0.5,Vector2(pixels.size)/texture.get_size())
 	return hull_opaque_bounds[texture_key]
 
 func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool)->void:
 	var pos:=enemy_render_position(enemy)+offset
 	var width:=enemy_render_width(enemy)
 	var leader := encounter_presentation.is_leader(enemy)
-	# The armor silhouette alone grows. Hardpoints, contact geometry, entry
-	# bounds and all provider coordinates retain their original cached values.
-	var hull_width := width*(1.65 if leader and encounter_presentation.tier=="ultimate" else 1.35 if leader else 1.0)
+	# The published width already includes the actor's encounter scale. Body,
+	# mounts, collision and protection consume this same dimension.
+	var hull_width := width
 	var dimensions:=Vector2(hull_width,hull_width*2.0)
 	var angle:=enemy_render_angle(enemy)
 	var light:=enemy_hull_light(enemy)
@@ -934,19 +936,13 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
-	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
+	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
 	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
-	# Scale only the protection draw transform, never the shared geometry
-	# packet/pose cache consumed by entry limits and combat providers.
-	var protection_scale:float=hull_width/width if width>0.0 else 1.0
-	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE*protection_scale)
+	draw_surface.draw_set_transform(pos,PI+angle)
 	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
 	var outline:PackedVector2Array=protection_outline
-	if leader:
-		outline=PackedVector2Array()
-		for point in protection_outline:outline.append(point*protection_scale)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
 	var layout:=enemy_status_layout(enemy,pos,hull_width,angle,outline)

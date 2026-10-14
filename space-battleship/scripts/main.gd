@@ -41,7 +41,7 @@ const BATTLE_VISUAL_DEFAULTS := {
 	"environment_event_enabled":true, "environment_event_interval":55.0,
 	"boss_destroy_shake":3.0
 }
-var fixed_enemy_layout:=false # Geometry policy survives cache eviction and owner handoff.
+var fixed_enemy_layout:=true # Shared residence/entry policy, including GDScript-only execution.
 var fixed_layout_revision:=0
 var fixed_layout_signature:Array=[]
 var battle_visual: Dictionary = BATTLE_VISUAL_DEFAULTS.duplicate()
@@ -257,6 +257,17 @@ func _ready() -> void:
 		push_error("Invalid ship weapon visual profiles")
 		return
 	visual_config = parsed_visuals
+	# Imported texture bounds define the origin once. Rebase authored mounts
+	# together with the sprite; the numeric owner receives these descriptors.
+	for key in visual_config.ships:
+		if not str(key).begins_with("enemy_"):continue
+		var row:Dictionary=visual_config.ships[key]
+		var texture:Texture2D=load(str(row.texture))
+		var image:=texture.get_image()
+		var offset:Vector2=(preload("res://scripts/enemy_protection_geometry.gd").image_center(image)-texture.get_size()*0.5)/texture.get_size()
+		row.origin_offset=offset
+		for point in row.hardpoints:
+			point.pos=[float(point.pos[0])-offset.x,float(point.pos[1])-offset.y]
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
 	game = create_battle_game(not automation_args.has("--capture"))
@@ -779,7 +790,10 @@ func on_event(kind: String, info: Dictionary) -> void:
 			if fast_mode_enabled():return
 			var visual := projectile_visual(info.shot)
 			var impact: Vector2 = Vector2(info.pos) if info.shot.has("ballistic_target_origin") else visual_effect_point(info.pos)
-			if visual.has("fixed_step"):
+			if info.shot.has("fixed_screen_step"):
+				var distance:float=(Vector2(info.pos)-Vector2(info.shot.launch_point)).dot(game.projectile_direction(info.shot))
+				impact=battle_logical_point(Vector2(info.shot.fixed_screen_origin)+Vector2(info.shot.fixed_screen_step)*distance)
+			elif visual.has("fixed_step"):
 				impact=straight_projectile_point(info.pos,visual)
 			weapon_impact(info.shot,impact)
 		"fire":
@@ -1480,6 +1494,11 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
+func enemy_hull_rect(enemy:Dictionary,width:float)->Rect2:
+	var dimensions:=Vector2(width,width*2.0)
+	var row:Dictionary=visual_config.ships["enemy_"+str(clampi(int(enemy.size),1,6))]
+	return Rect2(-dimensions*0.5-Vector2(row.get("origin_offset",Vector2.ZERO))*dimensions,dimensions)
+
 func enemy_render_width(enemy: Dictionary) -> float:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
@@ -1499,7 +1518,7 @@ func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:
 		width*=minf(1.0,enemy_recognition_screen_scale()/0.6)
 	# Full five-column fleets reserve space for hover and protection outlines.
-	return minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width
+	return (minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width)*float(enemy.get("hull_scale",1.0))
 
 func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	var pose:=enemy_pose(enemy)
@@ -1711,7 +1730,12 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 			var trail := PackedVector2Array();trail.resize(14);trail.fill(pos)
 			projectile_visuals.append({"shot":shot,"angle":angle,"mount":mount,"age":0.0,"origin":pos,"logical_origin":game.projectile_position(shot),"spread":spread,"trail":trail,"head":0,"samples":1,"trail_times":PackedFloat32Array([0,0,0,0,0,0,0,0,0,0,0,0,0,0])})
 		if game.combat_presentation!=null and game.combat_presentation.has_method("register_visual"):game.combat_presentation.register_visual(shot,projectile_visuals.back(),projectile_visuals.size()-1)
-		if key in ["laser","cannon"] and not shot.target.is_empty():
+		if shot.has("fixed_screen_step"):
+			var visual:Dictionary=projectile_visuals.back()
+			visual.logical_origin=shot.launch_point;visual.fixed_origin=shot.fixed_screen_origin
+			visual.fixed_step=shot.fixed_screen_step;visual.fixed_direction=game.projectile_direction(shot)
+			visual.angle=Vector2(visual.fixed_step).angle()
+		elif key in ["laser","cannon"] and not shot.target.is_empty():
 			var visual: Dictionary=projectile_visuals.back()
 			# Presented pulses already launch toward a projected aim. Map their
 			# committed segment once, rather than scaling it by the old logical target.
@@ -3081,7 +3105,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
 	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
 	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
-	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
+	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_hull_rect(enemy,dimensions.x),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
 	enemy_recognition.draw_attack_deck(draw_surface,dimensions.x,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,pose)

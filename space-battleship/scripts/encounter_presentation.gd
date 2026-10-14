@@ -46,11 +46,9 @@ func sync(game,delta:float) -> bool:
 		age=0.0
 	# Choose once from the actual encounter; do not promote escorts after death.
 	if leader_uid<0 and game.state==BattleGame.State.COMBAT and tier in ["boss","ultimate"]:
-		var largest := -1
 		for enemy in game.enemies:
-			if int(enemy.size)>largest:
-				largest=int(enemy.size)
-				leader_uid=int(enemy.uid)
+			if bool(enemy.get("encounter_leader",false)):
+				leader_uid=int(enemy.uid);break
 	if not game.paused:
 		scenery_time+=delta
 		scenery_presence=move_toward(scenery_presence,0.0 if route.is_empty() else 1.0,delta/1.6)

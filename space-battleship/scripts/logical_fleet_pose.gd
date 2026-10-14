@@ -151,7 +151,7 @@ func pose_base(center: Vector2, height: float, angle: float, time: float, close_
 	var signature:Array=[hull_key,rendered_position,rendered_height,angle,size]
 	if base_signature==signature:return
 	base_signature=signature
-	ship_transform = Transform3D(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center)
+	ship_transform = preload("res://scripts/ship_geometry_convention.gd").centered_transform(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center,manifest.hulls[hull_key])
 	var zoom := 2.8 if close_up else 1.0
 	for index in drones.size():
 		var member: Dictionary = drones[index]

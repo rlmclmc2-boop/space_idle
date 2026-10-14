@@ -403,9 +403,8 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	ship.scale = Vector3.ONE*scale_value
 	orbit_center = Vector3((rendered_position.x-size.x*0.5)*WORLD_PER_PIXEL,0,(rendered_position.y-size.y*0.5)*WORLD_PER_PIXEL)
 	orbit_elapsed += clampf(visual_delta,0.0,0.10)
-	# Restrained anchored hull motion. Carrier orbits use orbit_center, not this bob.
-	ship.position = orbit_center
-	ship.rotation = Vector3(0,-angle,0)
+	# Centre the full imported assembly, preserving every socket/body relation.
+	ship.transform = preload("res://scripts/ship_geometry_convention.gd").centered_transform(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center,hull_config)
 	_update_carriers(scale_value,visual_delta)
 	body_baker.guard_resolution(float(int(viewport.size.x*viewport.scaling_3d_scale))/camera.size)
 	aim_at(target)

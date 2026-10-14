@@ -6,7 +6,7 @@ static func sync(host)->bool:
 	# build the old full parameter key for each position query.
 	var members:Array=[]
 	for enemy in host.game.enemies:
-		members.append([int(enemy.uid),int(enemy.slot),int(enemy.size),enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0)])
+		members.append([int(enemy.uid),int(enemy.slot),int(enemy.size),enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),enemy.get("hull_scale",1.0)])
 	var scales:Array=[]
 	for size_class in range(1,7):scales.append(host.enemy_config_visual_scale(size_class))
 	var signature:Array=[host.battle_visual.hash(),host.player_base_art_scale(),host.player_art_scale(),host.enemy_recognition_screen_scale(),host.game.is_final_encounter(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap),scales,members]
@@ -21,7 +21,7 @@ static func width(host,enemy:Dictionary,variance:float)->float:
 	# A model has one width throughout entry/hover, independent of screen Y.
 	var value:float=base*host.enemy_config_visual_scale(int(enemy.size))*variance
 	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:value*=minf(1.0,host.enemy_recognition_screen_scale()/0.6)
-	return minf(value,74.0) if int(enemy.get("formation_count",0))>=4 else value
+	return (minf(value,74.0) if int(enemy.get("formation_count",0))>=4 else value)*float(enemy.get("hull_scale",1.0))
 
 static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 	var scale_value:float=host.enemy_recognition_screen_scale()
@@ -67,7 +67,9 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 			var rows:=ceili(float(host.game.enemies.size())/columns)
 			pose.target.y=lerpf(top+float(visual.enemy_entry_distance),front,float(int(enemy.slot)/columns)/maxf(1.0,rows-1))
 		pose.fixed_target_initialized=true
-	layout.entry_distance=minf(float(visual.enemy_entry_distance),maxf(0.0,float(pose.target.y)-top-absf(float(visual.enemy_idle_y))))
+	# Entry travels the authored distance; the resident top limit is not an
+	# animation clamp. The former clamp collapsed front-row entry to ~8 px.
+	layout.entry_distance=maxf(0.0,float(visual.enemy_entry_distance))
 	return layout
 
 static func position(host,enemy:Dictionary,pose:Dictionary)->Vector2:
@@ -80,11 +82,11 @@ static func position(host,enemy:Dictionary,pose:Dictionary)->Vector2:
 	var age:=maxf(0.0,float(host.fx_time)-float(pose.born))
 	var enter:=1.0-pow(1.0-clampf(age/float(pose.duration),0.0,1.0),3)
 	var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
+	if not enemy.get("explicit_formation",false):target.y=maxf(target.y,float(layout.top))
+	target.y=minf(target.y,floorf(float(layout.frontline)))
 	var point:=target+Vector2(float(pose.entry_x)*(1.0-enter),-float(layout.entry_distance)*(1.0-enter))
 	if not enemy.get("explicit_formation",false):
 		point.x=clampf(point.x,54.0,host.BATTLE_VIEW_SIZE.x-54.0)
-		point.y=maxf(point.y,float(layout.top))
-	point.y=minf(point.y,floorf(float(layout.frontline)))
 	if enter==1.0:
 		pose.residence_key=key;pose.residence_position=point
 	return point

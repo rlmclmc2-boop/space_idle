@@ -2149,6 +2149,17 @@ func encounter_tier() -> String:
 func is_boss_encounter() -> bool:
 	return encounter_tier() in ["boss","ultimate"]
 
+func publish_encounter_geometry() -> void:
+	# Persist the chosen encounter leader on its actor. Death and residual shots
+	# must not promote escorts or depend on a presentation object's lifetime.
+	var leader:Dictionary={}
+	if is_boss_encounter():
+		for enemy in enemies:
+			if leader.is_empty() or int(enemy.size)>int(leader.size):leader=enemy
+	for enemy in enemies:
+		enemy.encounter_leader=is_same(enemy,leader)
+		enemy.hull_scale=(1.65 if encounter_tier()=="ultimate" else 1.35) if enemy.encounter_leader else 1.0
+
 func spawn_group(keep_distance := false) -> void:
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
@@ -2204,6 +2215,7 @@ func spawn_group(keep_distance := false) -> void:
 		for entry in row.equipment:
 			enemy.cooldowns.append(float(db.enemy_weapon(entry.name).cd))
 		enemies.append(enemy)
+	publish_encounter_geometry()
 	if not manual_hyperspace.active and is_boss_encounter() and not profile.bossSeen.has(stage):
 		profile.bossSeen.append(stage)
 		save_dirty = true

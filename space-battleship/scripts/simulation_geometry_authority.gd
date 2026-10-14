@@ -770,11 +770,11 @@ func launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	turret_pose(slot)
 	ensure_fleet_geometry()
 	var point:Vector2=battle_logical_point(fleet_pose.screen_muzzle_for_slot(slot,ordinal))
-	return {"position":point,"direction":(aim-point).normalized()}
+	return {"position":point,"direction":(aim-point).normalized(),"screen_origin":battle_point(point),"screen_aim":battle_point(aim)}
 func drone_launch_pose(identity:String,aim:Vector2,ordinal:int)->Dictionary:
 	ensure_fleet_geometry()
 	var point:Vector2=battle_logical_point(fleet_pose.screen_muzzle_for_drone(identity,ordinal))
-	return {"position":point,"direction":(aim-point).normalized()}
+	return {"position":point,"direction":(aim-point).normalized(),"screen_origin":battle_point(point),"screen_aim":battle_point(aim)}
 func rail_geometry(shot:Dictionary)->Dictionary:
 	return {"origin":battle_point(visual_muzzle(shot)),"aim":entity_render_position(shot.target),"bounds":BATTLE_VIEW_SIZE,"full_width":maxf(12.0,float(db.weapon_motion_value("rail_trail_width",28.0)))*maxf(1.0,float(shot.get("rail_width_multiplier",1.0)))}
 

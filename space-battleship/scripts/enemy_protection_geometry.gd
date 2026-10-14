@@ -12,12 +12,17 @@ static func fit(points: PackedVector2Array, gap: float, tip_fraction := 0.5) -> 
 	var shoulder := height*(1.0-tip_fraction)
 	return PackedVector2Array([Vector2(0,-height),Vector2(half_width,-shoulder),Vector2(half_width,shoulder),Vector2(0,height),Vector2(-half_width,shoulder),Vector2(-half_width,-shoulder)])
 
+static func image_center(image:Image)->Vector2:
+	var used:=image.get_used_rect()
+	return Vector2(used.position)+Vector2(used.size)*0.5
+
 static func alpha_boundary(image: Image) -> PackedVector2Array:
 	image.convert(Image.FORMAT_RGBA8)
 	var bytes := image.get_data()
 	var width := image.get_width()
 	var height := image.get_height()
 	var points := PackedVector2Array()
+	var center:=image_center(image)
 	for y in height:
 		var left := width
 		var right := -1
@@ -26,7 +31,7 @@ static func alpha_boundary(image: Image) -> PackedVector2Array:
 		if right<0:continue
 		# Pixel-cell corners cover alpha AA fringes, not just pixel centres.
 		for point in [Vector2(left,y),Vector2(right+1,y),Vector2(right+1,y+1),Vector2(left,y+1)]:
-			points.append((point-Vector2(width,height)/2.0)/float(width))
+			points.append((point-center)/float(width))
 	return points
 
 static func weapon_bounds(width: float, physical: bool) -> PackedVector2Array:
