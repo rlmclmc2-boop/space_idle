@@ -1774,6 +1774,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("defence_time_view"), &SpaceCombatKernel::defence_time_view);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
         ClassDB::bind_method(D_METHOD("presentation_membership"), &SpaceCombatKernel::presentation_membership);
+        ClassDB::bind_method(D_METHOD("presentation_beams"), &SpaceCombatKernel::presentation_beams);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("take_feedback"), &SpaceCombatKernel::take_feedback);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
@@ -2569,14 +2570,24 @@ class SpaceCombatKernel : public RefCounted {
     Array projectile_views() const {
         return flight_rows;
     }
+    Array presentation_beams() const {
+        // Compaction swaps the full flight order independently of beam order.
+        // Sort only these beam indices to preserve the existing alpha draw order.
+        std::vector<size_t> ordered = active_beams;
+        std::sort(ordered.begin(), ordered.end(), [this](size_t a, size_t b) {
+            return flights[a].active_index < flights[b].active_index;
+        });
+        Array beams;
+        for (size_t id : ordered) beams.push_back(flights[id].view);
+        return beams;
+    }
     Dictionary presentation_membership() const {
         // Read existing typed ownership, never another combat snapshot. All actor
         // rows (including dead actors) survive for this kernel's whole encounter.
-        Array beams;
+        Array beams = presentation_beams();
         PackedInt64Array muzzle_serials;
         for (size_t id : active_beams) {
             const Flight &f = flights[id];
-            beams.push_back(f.view);
             muzzle_serials.push_back(int64_t(f.serial));
         }
         // Only rail and beam feedback owns a retained muzzle in the scene.

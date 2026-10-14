@@ -57,6 +57,10 @@ var scene
 var publications:int=0
 func sync(owner,shots:Array,offset:Vector2)->void:
  scene=owner
+ # Read the kernel's ordered beam subset; ordinary flights never enter this renderer.
+ # Legacy and old-extension sessions keep the existing full-array fallback.
+ if owner.game.native_execution!=null and owner.game.native_execution.kernel.has_method("presentation_beams"):
+  shots=owner.game.native_execution.kernel.presentation_beams()
  var present:Dictionary={};var order:int=0
  for shot in shots:
   if not shot.get("beam",false) or not owner.game.long_laser_valid(shot):continue

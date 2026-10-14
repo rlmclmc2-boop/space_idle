@@ -2652,7 +2652,7 @@ func queue_damage_number(info: Dictionary) -> void:
 				entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
 				entry.display_dirty=true
 				return
-	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":20 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
+	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
 	# Keep a same-frame killed target alive until its final display anchor is read.
 	if not info.player:
 		for enemy in game.enemies:
