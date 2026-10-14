@@ -6,6 +6,7 @@ var patches:Array=[]
 var shots:Array[Dictionary]=[]
 var missile_queue:Array[Dictionary]=[]
 var repeats:Array[Dictionary]=[]
+var strange_pending:Array=[]
 var cooldowns:Dictionary={}
 var enemy_cooldowns:Array=[]
 var snapshots:Dictionary={}
@@ -51,6 +52,16 @@ func prepare(game,session,snapshot:Dictionary)->bool:
 	state=snapshot
 	if state.is_empty() or int(state.get("schema",0))!=1:error="invalid_native_handoff_schema";return false
 	if not is_finite(float(state.clock)):error="invalid_native_handoff_clock";return false
+	var strange_rows=state.get("strange_pending",[])
+	if typeof(strange_rows)!=TYPE_ARRAY:error="invalid_strange_queue";return false
+	for packet in strange_rows:
+		if typeof(packet)!=TYPE_DICTIONARY:error="invalid_strange_packet";return false
+		for key in ["remaining","damage"]:
+			if typeof(packet.get(key)) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(packet[key])) or float(packet[key])<0:error="invalid_strange_scalar";return false
+		if typeof(packet.get("type"))!=TYPE_INT or int(packet.type)<0 or int(packet.type)>2 or typeof(packet.get("context"))!=TYPE_DICTIONARY:error="invalid_strange_context";return false
+		var provenance:Dictionary=packet.context
+		if typeof(provenance.get("root_id"))!=TYPE_INT or int(provenance.root_id)<0 or typeof(provenance.get("batch_id"))!=TYPE_INT or provenance.batch_id!=provenance.root_id or typeof(provenance.get("source_id"))!=TYPE_STRING or provenance.get("weapon")!="cannon" or typeof(provenance.get("trigger_depth"))!=TYPE_INT or provenance.trigger_depth!=1 or provenance.get("trigger")!="strange_matter" or provenance.has("chain_allowance") or typeof(provenance.get("guidance_factors"))!=TYPE_DICTIONARY or not provenance.guidance_factors.is_empty():error="invalid_strange_context";return false
+		strange_pending.append(packet.duplicate(true))
 	var weapons:Array=session.weapons
 	for enemy in state.enemies:enemy_cooldowns.append(enemy.get("cooldowns",[]).duplicate())
 	for pending in state.cooldowns:
@@ -107,4 +118,5 @@ func commit_views(game)->void:
 	game.cooldowns=cooldowns
 	for index in enemy_cooldowns.size():game.enemies[index].cooldowns=enemy_cooldowns[index]
 	game.projectiles=shots;game.missile_queue=missile_queue;game.jewel_repeats=repeats
+	game.drone_combat.delayed=strange_pending
 	game.refresh_missile_target_registry()

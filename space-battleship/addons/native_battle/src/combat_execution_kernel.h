@@ -184,6 +184,58 @@ class SpaceCombatKernel : public RefCounted {
     double crit_rate = 0, crit_multiplier = 2, repeat_probability = 0, repeat_multiplier = 1,
            repeat_delay = 0, secondary_probability = 0, scatter_bonus = 0, prism_bonus = 0;
     double laser_charge_multiplier = 1;
+    struct StrangePacket {
+        uint64_t order = 0, root = 0;
+        double damage = 0;
+        int type = 0;
+        String source;
+    };
+    // Deadlines select due work; insertion order controls settlement and cold export.
+    std::multimap<double, StrangePacket> strange_pending;
+    uint64_t strange_serial = 0;
+    bool strange_enabled = false;
+    double strange_probability = 0, strange_delay = 0, strange_multiplier = 0, strange_boundary_end = 0;
+    double retained_strange_damage = 0;
+    int strange_kill_spawns = 0, strange_type = 0;
+    void configure_strange(Dictionary d) {
+        strange_enabled = d.get("requires_strange_matter", false);
+        strange_probability = d.get("strange_probability", 0.0);
+        strange_delay = d.get("strange_delay", 0.0);
+        strange_multiplier = d.get("strange_damage_multiplier", 0.0);
+        strange_kill_spawns = d.get("strange_kill_spawns", 0);
+        strange_type = d.get("strange_damage_type", 0);
+    }
+    Array export_strange() const {
+        std::map<uint64_t, Dictionary> ordered;
+        for (const auto &item : strange_pending) {
+            const StrangePacket &p = item.second;
+            Dictionary context, row;
+            context["root_id"] = int64_t(p.root); context["batch_id"] = int64_t(p.root);
+            context["source_id"] = p.source; context["weapon"] = "cannon";
+            context["trigger_depth"] = 1; context["trigger"] = "strange_matter";
+            context["guidance_factors"] = Dictionary();
+            row["remaining"] = nonnegative(item.first - clock); row["damage"] = p.damage;
+            row["type"] = p.type; row["context"] = context;
+            ordered.emplace(p.order, row);
+        }
+        Array rows;
+        for (const auto &item : ordered) rows.append(item.second);
+        return rows;
+    }
+    void advance_strange(double end) {
+        std::map<uint64_t, StrangePacket> due;
+        while (!strange_pending.empty() && strange_pending.begin()->first <= end + 1e-9) {
+            const auto first = strange_pending.begin();
+            due.emplace(first->second.order, first->second);
+            strange_pending.erase(first);
+        }
+        for (const auto &item : due) {
+            const StrangePacket &p = item.second;
+            for (size_t i = 0; i < actors.size(); ++i)
+                if (actors[i].live) hit_enemy(handle(i), p.damage, p.type, {}, false, clock, -1, false);
+        }
+        if (strange_pending.empty()) retained_strange_damage = 0;
+    }
     double ejection_gap = 0.12, launch_speed = 120, turn_rate = 4, ignition = 0.22, seek = 0.4,
            cruise_at = 0.65, lifetime = 4.5, orphan_lifetime = 30, brake_range = 120, brake_angle = 0.3,
            min_speed = 60, brake_factor = 0.7, hit_radius = 5, chain_speed = 720;
@@ -278,7 +330,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!finite_descriptor(d) || !schema_required(d, {"player","enemies","weapons"}) ||
             !schema_types(d, Variant::DICTIONARY, {"player","deferred"}) ||
             !schema_types(d, Variant::ARRAY, {"enemies","weapons","defences","unsupported_rules"}) ||
-            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_laser_charge","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
+            !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_strange_matter","requires_laser_charge","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
             !schema_integers(d, {"chain_count","prism_count"}) ||
             !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}, false) ||
             !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
@@ -287,6 +339,11 @@ class SpaceCombatKernel : public RefCounted {
             !schema_probabilities(d, {"resistance","critical_rate","repeat_probability","secondary_probability","clear_probability","jewel_probability"})) return false;
         if ((bool(d.get("requires_laser_charge", false)) && !d.has("laser_charge_multiplier")) ||
             double(d.get("laser_charge_multiplier", 1.0)) < 1) return false;
+        if (!numeric_fields(d, {"strange_probability","strange_delay","strange_damage_multiplier"}) ||
+            !schema_integers(d, {"strange_kill_spawns","strange_damage_type"}) ||
+            !schema_nonnegative(d, {"strange_delay","strange_damage_multiplier","strange_kill_spawns","strange_damage_type"}) ||
+            !schema_probabilities(d, {"strange_probability"}) || int(d.get("strange_damage_type",0)) > 2 ||
+            (bool(d.get("requires_strange_matter",false)) && !schema_required(d, {"strange_probability","strange_delay","strange_damage_multiplier","strange_kill_spawns","strange_damage_type"}))) return false;
         double mi = d.get("memory_interval", 1.0), di = d.get("deferred_interval", 1.0);
         double lb = d.get("counter_log_base", 10.0);
         if (double(d.get("chain_speed",720.0)) <= 0 || double(d.get("ejection_gap", .12)) <= 0 || double(d.get("cruise_at", .65)) <= double(d.get("ignition", .22)) ||
@@ -388,7 +445,8 @@ class SpaceCombatKernel : public RefCounted {
         defence_bonus = std::max(defence_bonus,next_defence_bonus);
         double clock_value = d.get("clock", 0.0), defence_clock = d.get("defence_time", 0.0);
         if (!std::isfinite(clock_value - double(d.get("since_hit", 100.0))) ||
-            !std::isfinite(clock_value + double(d.get("repeat_delay", .1)))) return false;
+            !std::isfinite(clock_value + double(d.get("repeat_delay", .1))) ||
+            !std::isfinite(clock_value + double(d.get("strange_delay", 0.0)))) return false;
         double portions = std::ceil(double(d.get("deferred_duration",1.0)) / double(d.get("deferred_interval",1.0)));
         double first_at = defence_clock + double(d.get("deferred_interval",1.0)) - 1e-9;
         double first_tick = std::ceil(first_at / double(d.get("deferred_interval",1.0)));
@@ -421,6 +479,11 @@ class SpaceCombatKernel : public RefCounted {
             double critical = raw * double(v.get("critical_multiplier", d.get("critical_multiplier", 2.0)));
             if (!std::isfinite(critical)) return false;
             raw = std::max(raw, critical);
+            if (bool(d.get("requires_strange_matter",false)) && !bool(v.get("hostile",false)) && int(v["kind"]) == 1) {
+                double derived = raw * double(d.get("strange_damage_multiplier",0.0));
+                if (!std::isfinite(derived)) return false;
+                raw_bound = std::max(raw_bound, derived);
+            }
             double repeated = raw * double(v.get("repeat_multiplier", d.get("repeat_multiplier", 1.0)));
             if (!std::isfinite(repeated)) return false;
             raw = std::max(raw, repeated);
@@ -798,6 +861,18 @@ class SpaceCombatKernel : public RefCounted {
         e.critical = inst && inst->attack->critical;
         e.point = a->point;
         feedback.push_back(e);
+        if (strange_enabled && trigger && inst && wi >= 0 && !weapons[wi].hostile && weapons[wi].kind == 1) {
+            const Weapon &w = weapons[wi];
+            int count = a->hp <= 0 ? strange_kill_spawns : (rng->randf() < strange_probability ? 1 : 0);
+            for (int i = 0; i < count; ++i) {
+                StrangePacket p;
+                p.order = ++strange_serial; p.root = inst->attack->id;
+                p.damage = raw * strange_multiplier; p.type = strange_type;
+                p.source = w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"]) : String("module:") + String::num_int64(w.slot);
+                strange_pending.emplace(strange_boundary_end + strange_delay, p);
+                retained_strange_damage = std::max(retained_strange_damage, p.damage);
+            }
+        }
         Vector2 origin = a->point;
         if (a->hp <= 0) {
             a->live = false;
@@ -1481,6 +1556,7 @@ class SpaceCombatKernel : public RefCounted {
 
   protected:
     static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("supports_strange_matter"), &SpaceCombatKernel::supports_strange_matter);
         ClassDB::bind_method(D_METHOD("supports_laser_charge"), &SpaceCombatKernel::supports_laser_charge);
         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
@@ -1560,9 +1636,13 @@ class SpaceCombatKernel : public RefCounted {
         // Repeated beams cannot repeat again; secondary shares the primary instance.
         double births = carriers + periods * copies;
         double hits = births * std::max(1.0,double(actors.size())) + double(actors.size()) * double(actors.size());
+        double strange_births = strange_enabled ? hits * std::max(1, strange_kill_spawns) : 0;
+        hits += double(strange_pending.size()) * double(actors.size());
+        if (!std::isfinite(clock + seconds + strange_delay) ||
+            double(strange_serial) + strange_births >= exact_limit) return false;
         double attack_end = attack_counter + root_bound + double(repeats.size()) + periods;
         double incoming_end = incoming_counter + hits;
-        double events = births + hits + root_bound + periods + retained_drop_bound;
+        double events = births + hits + root_bound + periods + retained_drop_bound + strange_births;
         if (!std::isfinite(events) || events >= exact_limit || attack_end >= exact_limit || incoming_end >= exact_limit ||
             double(event_serial) + events >= exact_limit || double(flight_serial) + births >= exact_limit ||
             double(instance_serial) + births >= exact_limit || double(attack_serial) + root_bound >= exact_limit ||
@@ -1587,7 +1667,7 @@ class SpaceCombatKernel : public RefCounted {
         double recovery_elapsed = retained_shield_elapsed + clock - envelope_clock + seconds;
         if (!std::isfinite(recovery_elapsed) || !std::isfinite(retained_recovery_bound*recovery_elapsed) ||
             !std::isfinite(retained_shield_bound + retained_recovery_bound*recovery_elapsed)) return false;
-        double raw = std::max(retained_damage_bound,retained_explosion_bound);
+        double raw = std::max(std::max(retained_damage_bound,retained_explosion_bound),retained_strange_damage);
         for (const Weapon &w : weapons) {
             double base = w.hostile ? w.base : w.base * (1 + attack_bonus);
             if (!std::isfinite(base)) return false;
@@ -1600,6 +1680,11 @@ class SpaceCombatKernel : public RefCounted {
             if (!std::isfinite(damage)) return false;
             damage *= std::max(1.0,w.crit_multiplier);
             if (!std::isfinite(damage)) return false;
+            if (strange_enabled && !w.hostile && w.kind == 1) {
+                double derived = damage * strange_multiplier;
+                if (!std::isfinite(derived)) return false;
+                raw = std::max(raw, derived);
+            }
             damage *= retained_repeat_bound;
             if (!std::isfinite(damage)) return false;
             damage *= retained_maximum_bound;
@@ -1632,6 +1717,7 @@ class SpaceCombatKernel : public RefCounted {
             double(drop_uid) + retained_drop_bound >= 9223372036854775808.0) return false;
         return true;
     }
+    bool supports_strange_matter() const { return true; }
     bool supports_laser_charge() const { return true; }
     bool configure(Dictionary d) {
         if (!configuration_schema(d) || !configuration_arithmetic(d, double(d.get("attack_counter",0.0)), double(d.get("incoming_counter",0.0)))) return false;
@@ -1697,6 +1783,7 @@ class SpaceCombatKernel : public RefCounted {
         scatter = d.get("scatter", false);
         scatter_bonus = d.get("scatter_bonus", 0.0);
         laser_charge_multiplier = d.get("laser_charge_multiplier", 1.0);
+        configure_strange(d);
         prism_count = d.get("prism_count", 0);
         prism_bonus = d.get("prism_bonus", 0.0);
         Array values = d["enemies"];
@@ -1844,7 +1931,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     bool can_update_configuration(Dictionary d) const {
         if (!admitted || stopped || executing || !configuration_schema(d) ||
-            !configuration_arithmetic(d, attack_counter, incoming_counter, retained_damage_bound, retained_debt_bound)) return false;
+            !configuration_arithmetic(d, attack_counter, incoming_counter, std::max(retained_damage_bound, retained_strange_damage), retained_debt_bound)) return false;
         Array enemies = d.get("enemies", Array());
         if (enemies.size() != int(actors.size())) return false;
         for (int i = 0; i < enemies.size(); ++i) {
@@ -1980,6 +2067,7 @@ class SpaceCombatKernel : public RefCounted {
         scatter = d.get("scatter", scatter);
         scatter_bonus = d.get("scatter_bonus", scatter_bonus);
         laser_charge_multiplier = d.get("laser_charge_multiplier", 1.0);
+        configure_strange(d);
         prism_count = d.get("prism_count", prism_count);
         prism_bonus = d.get("prism_bonus", prism_bonus);
         Dictionary player = d["player"];
@@ -2071,6 +2159,12 @@ class SpaceCombatKernel : public RefCounted {
     bool advance(double seconds) {
         if (!can_advance(seconds)) return false;
         double end = clock + seconds;
+        // One logical boundary, before movement/ejection subdivisions. Newborn packets
+        // cannot run until the next advance, including a zero configured delay.
+        strange_boundary_end = end;
+        executing = true;
+        advance_strange(end);
+        executing = false;
         while (clock + 1e-9 < end && (!stopped || final_cleared)) {
             double next = end;
             if (!ejections.empty() && ejections.top().at > clock + 1e-9)
@@ -2085,6 +2179,7 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary export_handoff() const {
         Dictionary out;
         if (!admitted || (stopped && !final_cleared) || executing) return out;
+        out["strange_pending"] = export_strange();
         out["schema"] = 1; out["revision"] = int64_t(step_serial); out["clock"] = clock;
         out["player"] = player_row; out["enemies"] = actor_rows;
         out["buffers"] = buffer_rows; out["losses"] = loss_rows; out["defence_times"] = defence_time_rows;
@@ -2170,6 +2265,7 @@ class SpaceCombatKernel : public RefCounted {
     bool commit_handoff(int64_t revision) {
         if (!admitted || (stopped && !final_cleared) || executing || revision != int64_t(step_serial)) return false;
         stopped = true; admitted = false;
+        strange_pending.clear(); retained_strange_damage = 0;
         while (!roots.empty()) roots.pop(); while (!ejections.empty()) ejections.pop(); while (!repeats.empty()) repeats.pop();
         // Drop executor references only. Published rows/leases stay live for the
         // receiving Game and visual surface; no retire/dead/effect is emitted.
@@ -2184,6 +2280,7 @@ class SpaceCombatKernel : public RefCounted {
             Dictionary payment; payment["shield"] = item.second[0]; payment["armour"] = item.second[1];
             due[item.first] = payment;
         }
+        values["strange_pending"] = export_strange();
         values["deferred"] = due; values["defence_time"] = defence_time;
         values["memory_elapsed"] = memory_elapsed; values["deferred_elapsed"] = deferred_elapsed; values["deferred_tick"] = deferred_tick;
         values["projectile_serial"] = int64_t(flight_serial); values["attack_serial"] = int64_t(attack_serial);
@@ -2282,6 +2379,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     void cancel() {
         stopped = true;
+        strange_pending.clear(); strange_serial = 0; retained_strange_damage = 0;
         while (!roots.empty())
             roots.pop();
         while (!ejections.empty())
@@ -2301,6 +2399,7 @@ class SpaceCombatKernel : public RefCounted {
         d["since_hit"] = nonnegative(clock - last_incoming_at);
         d["steps"] = int64_t(step_serial);
         d["active_flights"] = int64_t(active.size());
+        d["strange_pending"] = int64_t(strange_pending.size());
         d["root_attacks"] = int64_t(root_attacks);
         d["attack_counter"] = attack_counter;
         d["incoming_counter"] = incoming_counter;
