@@ -41,8 +41,7 @@ func scenario(compiled:bool,reverse:bool,mode:String)->void:
  if mode=="multiple":a.shield=10.0;a.shieldDelay=0.002;early=0.003;late=0.002;interval=0.004
  var dead=actor(99,2);dead.hp=0.0
  var rows:Array[Dictionary]=[dead,a,b];g.enemies=rows
- var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(g,"native_low_contract")
- check(descriptor.get("error","")=="unsupported_legendary:endless_beam" and not g.admit_native_compiled_execution("native_low_contract") and g.native_execution==null,"endless configuration selects actual legacy fallback")
+ check(g.native_execution==null,"explicit legacy timing fixture has no native owner")
  var endless=beam(g,0,late,interval);var normal=beam(g,1,early,interval)
  endless.target=dead;endless.locked_target=dead
  check(is_same(g.endless_source(),endless.entry),"endless fixture uses actual eligible source identity")

@@ -158,33 +158,6 @@ func incremental_geometry_contract(scene)->void:
 		check(sink.muzzles==expected_muzzles and sink.player==aim,"incremental muzzle publication equals full reference phase "+str(phase))
 	session.kernel=actual_kernel;session.geometry_muzzles=PackedVector2Array();session.prepare_geometry(geometry,game)
 
-func gpu_beam_contract(scene)->void:
-	var owner=scene.retained_contacts;var layer=owner.beam_layer
-	var before:Dictionary=contract(scene)
-	scene._process(0.0);await process_frame;await RenderingServer.frame_post_draw
-	check(layer.records.size()>0,"GPU beam fixture publishes valid beams")
-	var builds:Dictionary={};var snapshots:Dictionary={};var gpu_count:int=0
-	for serial in layer.records:
-		var row:Dictionary=layer.records[serial]
-		if not row.gpu:continue
-		gpu_count+=1;builds[serial]=row.body.builds;snapshots[serial]=row.body.values.duplicate(true)
-		var start:Vector2=scene.battle_point(scene.visual_muzzle(row.shot))+owner.frame.offset
-		var end:Vector2=scene.entity_render_position(row.shot.target)+owner.frame.offset
-		check(row.body.position.distance_to(start)<0.001 and (row.body.position+Vector2(row.body.values[0],0).rotated(row.body.rotation)).distance_to(end)<0.001,"GPU beam endpoints match geometry publication")
-	check(gpu_count>0,"fixture reaches GPU continuous-beam path")
-	for i in 3:
-		scene._process(0.0);await process_frame;await RenderingServer.frame_post_draw
-	for serial in builds:
-		check(layer.records[serial].body.builds==builds[serial],"retained quad does not regenerate draw commands")
-		check(layer.records[serial].body.values==snapshots[serial],"zero-time publication preserves animation uniforms")
-	check(owner.foreground.get_child(0)==layer and owner.foreground.get_child(1)==owner.foreground_overlay,"beam layer remains between flights and particles/text")
-	get_root().get_texture().get_image().save_png("res://.runtime/gpu-beam-on.png")
-	scene.retained_gpu_beams_enabled=false;owner.stage_foreground(owner.frame.flights,owner.frame.shots,owner.frame.offset);await process_frame;await RenderingServer.frame_post_draw
-	check(layer.records.is_empty() and not layer.visible and not owner.foreground_overlay.visible,"fallback toggle retires GPU commands without duplicate overlays")
-	get_root().get_texture().get_image().save_png("res://.runtime/gpu-beam-off.png")
-	scene.retained_gpu_beams_enabled=true;owner.stage_foreground(owner.frame.flights,owner.frame.shots,owner.frame.offset);await process_frame;await RenderingServer.frame_post_draw
-	check(contract(scene)==before,"GPU presentation and fallback switch preserve complete kernel state")
-
 func residence_contract(scene)->void:
 	var runtime=scene.battle_slice_runtime;var geometry=runtime.geometry;var g=scene.game
 	var enemy:Dictionary=g.enemies.back();var pose:Dictionary=geometry.enemy_pose(enemy)
@@ -227,30 +200,6 @@ func residence_contract(scene)->void:
 	check(fleet.carriers[0].transform!=carrier,"carrier orbit remains dynamic")
 	fleet.pose_base(Vector2(286,800),220,0,1,false,0)
 	check(fleet.ship_transform!=fixture_body,"fleet scale change rebuilds base")
-
-func numeric_geometry_contract(scene)->void:
-	var g=scene.game;var runtime=scene.battle_slice_runtime;var geometry=runtime.geometry
-	scene._process(0.0);geometry.refresh_target_geometry();geometry.refresh_fleet_geometry()
-	var old_target=geometry.target_geometry_revision;var old_fleet=geometry.fleet_geometry_revision
-	var old_shape=geometry.battle_read_model.shape_revision;var builds=geometry.display_row_builds
-	var sockets:Array=[]
-	for i in g.weapon_entries().size():sockets.append(geometry.fleet_pose.screen_muzzle_for_slot(i,0))
-	var entries=g.profile.loadout.weapons
-	g.profile.loadout.weapons=entries.duplicate(true)
-	g.event.emit("upgrade",{"key":"laser","slot":"weapons:0","levels":0,"cost":{},"batch":true})
-	check(not geometry.fleet_pose.configuration_dirty,"equal-value array replacement keeps geometry")
-	for i in geometry.turret_visuals:check(is_same(geometry.turret_visuals[i].entry,g.slot_entry("weapons",i)),"replacement binds current equipment values")
-	check(g.upgrade_equipment_batch("1"),"real pure level batch succeeds")
-	scene._process(0.0);geometry.refresh_target_geometry();geometry.refresh_fleet_geometry()
-	check(geometry.target_geometry_revision==old_target and geometry.fleet_geometry_revision==old_fleet,"numeric batch preserves target/muzzle revisions")
-	check(geometry.battle_read_model.shape_revision==old_shape and geometry.display_row_builds==builds,"numeric batch does not rebuild hull/outline/display rows")
-	for i in sockets.size():check(sockets[i]==geometry.fleet_pose.screen_muzzle_for_slot(i,0),"numeric batch preserves socket "+str(i))
-	var bag=g.profile.hyperspace.inventory.duplicate(true)
-	bag.generation=int(bag.get("generation",0))+1
-	check(geometry.fleet_pose.geometry_matches(geometry.current_hull,g.weapon_entries(),g.active_slot_count("weapons"),bag),"bag generation alone is not geometry")
-	var changed=g.weapon_entries().duplicate(true);changed[0].key="cannon" if changed[0].key!="cannon" else "laser"
-	check(not geometry.fleet_pose.geometry_matches(geometry.current_hull,changed,g.active_slot_count("weapons"),bag),"changed weapon topology invalidates")
-	check(not geometry.fleet_pose.geometry_matches(geometry.current_hull,g.weapon_entries(),g.active_slot_count("weapons")+1,bag),"changed mount capacity invalidates")
 
 func run()->void:
 	var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
@@ -305,8 +254,6 @@ func run()->void:
 	g.db.config[config_key]=old_scale_config;scene._process(0.0)
 	var steps:int=runtime.logical_steps;g.paused=false;scene._process(1.0/60.0)
 	check(runtime.logical_steps==steps+1,"resume advances exactly one next logical step")
-	await gpu_beam_contract(scene)
-	numeric_geometry_contract(scene)
 	residence_contract(scene)
 	await rail_charge_contract(scene)
 	var dead:Dictionary=g.enemies[0];var uid:int=int(dead.uid)

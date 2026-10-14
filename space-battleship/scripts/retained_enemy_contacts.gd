@@ -137,7 +137,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.fallback.visible=not record.supported
  for node in [record.hull,record.deck,record.protection,record.health,record.shield]:node.visible=record.supported
  if not record.supported:return
- record.hull.data={"texture":record.texture};record.hull.queue_redraw()
+ record.hull.data={"texture":record.texture,"rect":paint_owner.enemy_hull_rect(enemy,1.0)};record.hull.queue_redraw()
  for physical in [true,false]:
   var prefix="deck_physical_" if physical else "deck_energy_"
   var body:Part=record.deck.pieces[prefix+"body"]
@@ -342,7 +342,7 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
  var previous=paint_owner.draw_surface;paint_owner.draw_surface=surface
  match kind:
   "hull":
-   surface.draw_texture_rect(data.texture,Rect2(Vector2(-0.5,-1.0),Vector2(1.0,2.0)),false,Color.WHITE)
+   surface.draw_texture_rect(data.texture,data.rect,false,Color.WHITE)
   "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
   "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
   "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)

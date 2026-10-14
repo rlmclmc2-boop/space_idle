@@ -1,22 +1,6 @@
 extends RefCounted
 ## Explicit low-load execution boundary. Rich content stays refused until its
 ## rule compiler is complete; this session never runs a shadow Game battle.
-var numeric_compiler=preload("res://scripts/native_execution_compiler.gd").new()
-var incremental_numeric_batches:=true
-var numeric_template:Dictionary={}
-var numeric_epoch:int=-1
-var numeric_weapon_indices:Dictionary={}
-func retain_numeric_template(game,descriptor:Dictionary)->void:
-	numeric_template=numeric_compiler.configuration_template(descriptor)
-	numeric_epoch=game.combat_configuration_epoch
-	numeric_weapon_indices={}
-	for index in descriptor.weapons.size():
-		var row:Dictionary=descriptor.weapons[index]
-		if bool(row.hostile):continue
-		var key:String=str(row.entry.key)
-		if not numeric_weapon_indices.has(key):numeric_weapon_indices[key]=[]
-		numeric_weapon_indices[key].append(index)
-
 var kernel:RefCounted
 var actor_rows:Array[Dictionary]=[]
 var actor_by_uid:Dictionary={}
@@ -38,16 +22,23 @@ var weapon_geometry_keys:Dictionary={}
 var geometry_muzzles:=PackedVector2Array()
 var geometry_player:=Vector2.INF
 
+# Check only at configuration boundaries, including an already-running old DLL.
+func supports_configuration(candidate:RefCounted,descriptor:Dictionary)->bool:
+	if descriptor.get("requires_endless_beam",false) and (not candidate.has_method("supports_endless_beam") or not candidate.supports_endless_beam()):return false
+	if descriptor.get("requires_missile_legends",false) and (not candidate.has_method("supports_missile_legends") or not candidate.supports_missile_legends()):return false
+	if descriptor.get("requires_strange_matter",false) and (not candidate.has_method("supports_strange_matter") or not candidate.supports_strange_matter()):return false
+	return not descriptor.get("requires_laser_charge",false) or (candidate.has_method("supports_laser_charge") and candidate.supports_laser_charge())
+
 func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("execution_scope","") not in ["native_low_contract","native_rich15_layer2"]:return false
 	if not ClassDB.class_exists("SpaceCombatKernel"):return false
 	if descriptor.get("requires_drop_rules",false) and not descriptor.get("drop_rules_compiled",false):return false
 	if descriptor.get("enemies",[]).size()>(15 if descriptor.execution_scope=="native_rich15_layer2" else 2):return false
 	var candidate:RefCounted=ClassDB.instantiate("SpaceCombatKernel")
+	if not supports_configuration(candidate,descriptor):return false
 	if not candidate.configure(descriptor):return false
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
-	retain_numeric_template(game,descriptor)
 	weapons=descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	actor_rows=kernel.enemy_views()
@@ -75,12 +66,11 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 	var entry:Dictionary=game.slot_entry(category,index)
 	var projected=entry.duplicate();projected.level=int(entry.level)+levels
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"category":category,"index":index,"level":projected.level})
-	if descriptor.has("error"):return false
+	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return false
 	if category=="defence" and str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
 		var difference=game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry))
 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
 	if not kernel.update_configuration(descriptor):return false
-	retain_numeric_template(game,descriptor)
 	weapons=descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true
@@ -92,7 +82,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 	var energy:float=game.reactor_energy(-1,float(values.charge_max))
 	if not is_finite(energy) or energy<0 or energy>=9223372036854775808.0:return {}
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{},values)
-	if descriptor.has("error"):return {}
+	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	var ratios:Dictionary=game.refit_health_ratios.duplicate()
 	for key in ["armour","shield"]:
 		var old_max=game.stat(key)
@@ -106,8 +96,8 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 	return {"descriptor":descriptor,"ratios":ratios}
 
 func commit_galaxy_refit(game,plan:Dictionary)->bool:
+	if not supports_configuration(kernel,plan.descriptor):return false
 	if not kernel.refit_configuration(plan.descriptor):return false
-	retain_numeric_template(game,plan.descriptor)
 	weapons=plan.descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	game.refit_health_ratios=plan.ratios
@@ -252,6 +242,8 @@ func cancel(game:RefCounted)->void:
 	var released:Dictionary=kernel.exit_state()
 	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)
 	game.attack_instance_serial=int(released.instance_serial);game.uid=int(released.drop_uid)
+	game.drone_combat.delayed=released.get("strange_pending",[])
+	game.drone_combat.missile_attacks=int(released.get("missile_attacks",game.drone_combat.missile_attacks))
 	game.enhancement_deferred=released.deferred
 	game.enhancement_defense_time=float(released.defence_time);game.enhancement_memory_elapsed=float(released.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(released.deferred_elapsed);game.enhancement_deferred_tick=int(released.deferred_tick)
@@ -283,39 +275,19 @@ func prepare_numeric_batch(game,mode:String)->Dictionary:
 				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
 					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
 	if planned.is_empty():return {"skip":true}
-	var epoch:int=game.combat_configuration_epoch
-	var descriptor:Dictionary
-	if incremental_numeric_batches and numeric_epoch==epoch and not numeric_template.is_empty() and not paused_by_configuration:
-		var affected:Array=[]
-		for index in weapon_levels:
-			for row_index in numeric_weapon_indices.get(str(game.slot_entry("weapons",index).key),[]):
-				if not affected.has(row_index):affected.append(row_index)
-		descriptor=numeric_compiler.compile_numeric_update(game,numeric_template,weapon_levels,defence_levels,affected)
-	else:
-		descriptor=numeric_compiler.compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
-	if descriptor.has("error"):return {}
-	var next_template:Dictionary=numeric_compiler.configuration_template(descriptor)
-	descriptor=numeric_compiler.bind_numeric_context(descriptor,kernel.numeric_update_context(),defence_levels)
-	if descriptor.has("error"):return {}
+	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
+	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	descriptor.player=player
 	if not kernel.can_update_configuration(descriptor):return {}
-	return {"descriptor":descriptor,"planned":planned,"owner":self,"token":kernel.refit_token(),"epoch":epoch,"next_template":next_template}
+	return {"descriptor":descriptor,"planned":planned}
 
 func commit_numeric_batch(game,batch:Dictionary)->bool:
 	# Main performed its original sequential purchases and defence deltas. No
 	# combat advances inside this synchronous, prevalidated command boundary.
-	if game.native_execution!=self or batch.get("owner")!=self or paused_by_configuration or int(batch.get("epoch",-1))!=game.combat_configuration_epoch:return false
-	var token:Dictionary=kernel.refit_token()
-	for key in ["epoch","step","rng"]:
-		if token[key]!=batch.token[key]:return false
-	for category in ["weapons","defence"]:
-		for index in game.loadout_entries(category).size():
-			var plan:Dictionary=batch.planned.get(game.slot_id(category,index),{})
-			if not plan.is_empty() and int(game.slot_entry(category,index).level)!=int(plan.before)+int(plan.levels):return false
 	var descriptor:Dictionary=batch.descriptor
+	if not supports_configuration(kernel,descriptor):return false
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
-	retain_numeric_template(game,batch.next_template)
 	weapons=descriptor.weapons
-	# Numeric batches retain weapon order and sockets; publication revisions stay valid.
+	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true

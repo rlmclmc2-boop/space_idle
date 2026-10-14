@@ -1,0 +1,100 @@
+{
+  "base": "2db97caa57c867982c4702f97fe69b5e791a5330",
+  "complete_candidate_tree": "07c709cee7804990e57dc31d836e7a56988b4741",
+  "production_commits": [
+    "6ad4509c",
+    "95394905",
+    "587942f3",
+    "ee68de75",
+    "1be9e311",
+    "07c709ce"
+  ],
+  "checks": {
+    "native_hull_weapon_matrix": [
+      420,
+      0
+    ],
+    "gdscript_hull_weapon_matrix": [
+      252,
+      0
+    ],
+    "drone_rebuild_snapshot": [
+      57,
+      0
+    ],
+    "departure_batch_debt": [
+      6,
+      0
+    ],
+    "return_nonempty_residuals": [
+      23,
+      0
+    ],
+    "dead_target_pulses": [
+      9,
+      0
+    ],
+    "real_first_encounter_entry": [
+      24,
+      0
+    ]
+  },
+  "coverage": "Each execution path covers 4 weapons x 6 enemy hulls, all 5 player hulls, normal/boss/ultimate display sizes, launch anchors, actual impacts, feedback anchors and incoming target centre. Pulse uses fixed-ray hull surface; beam, guided missile and ordinary rail use their existing centre endpoints. Not a claim of equal hit timing versus the former incorrect GDScript geometry.",
+  "authorities": {
+    "encounter_scale": "Game publishes encounter_leader and hull_scale on the actor at birth. All geometry and drawing read the same width; dead and residual references retain it. Older manual receipts acquire missing metadata at restoration.",
+    "model_origin": "Enemy alpha bounds centre rebases sprite and all authored hardpoints at load. Player whole-assembly transform uses imported XZ bounds centre, including socket chains. Auxiliary drones/carriers are not damage targets; their full root/socket transform remains shared.",
+    "residence": "Existing pose owns final location and entry progress. Fixed layout is enabled for both execution paths. Resident clamping precedes entry translation; stationary clocks do not regenerate geometry.",
+    "return": "Existing single Game restores scalar actor/flight graph. Retired native display lease is excluded only from serialization. Scene gate stops later native substeps while preserving debt; no second Game or wall-time catch-up."
+  },
+  "findings": {
+    "gdscript_offset": "Presented fire used projected logical aim, but display reconstructed the straight segment from raw target.x/y. New births carry committed projected aim/ray; GDScript pulse uses the same hull contact publisher as native.",
+    "entry": "Top clamp had shortened first-row entry to roughly8px. Authored50px travel is now separate from final bounds. Real stage1 tested in both execution paths.",
+    "dead_target": "Legal double-pulse loadout: no primary birth after target death; already-fired pulse serials survive and continue straight. No attack rate, damage, drop or lifetime reduction.",
+    "residual_return": "Nonempty native-born flights formerly carried an unserializable retired motion lease after handoff. Scalar graph now roundtrips; blocked transition does not advance/render restored flights."
+  },
+  "prior_test_limitation": "Existing legacy player defence timing fixture has four-argument override against six-argument parent; not passed and no unrelated Lab fix.",
+  "remaining": [
+    "Five-environment current baseline and full-frame optimization are next, not complete.",
+    "Damage text readability and shield-hit actual trigger/visibility/cost require current evidence.",
+    "No packaging or main merge."
+  ],
+  "existing_environments": [
+    {
+      "name": "mixed rich15 layer2",
+      "fixture": "test/combat_stress_fixture.gd",
+      "status": "pending current post-correctness baseline"
+    },
+    {
+      "name": "full pulse",
+      "legendary": [
+        "scatter_pulse",
+        "laser_charge"
+      ],
+      "status": "pending current post-correctness baseline"
+    },
+    {
+      "name": "full cannon/rail",
+      "legendary": [
+        "strange_matter"
+      ],
+      "status": "previous evidence below10ms; pending current post-correctness baseline"
+    },
+    {
+      "name": "full missile",
+      "legendary": [
+        "precise_guidance",
+        "wild_missile"
+      ],
+      "status": "pending current post-correctness baseline"
+    },
+    {
+      "name": "full continuous laser",
+      "legendary": [
+        "prism_tower",
+        "endless_beam"
+      ],
+      "status": "pending current post-correctness baseline"
+    }
+  ],
+  "performance_claim": "None in this correctness batch. No new environment, load reduction, net gain or less-than10ms claim."
+}

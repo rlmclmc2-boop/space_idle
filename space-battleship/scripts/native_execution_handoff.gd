@@ -6,15 +6,38 @@ var patches:Array=[]
 var shots:Array[Dictionary]=[]
 var missile_queue:Array[Dictionary]=[]
 var repeats:Array[Dictionary]=[]
+var strange_pending:Array=[]
 var cooldowns:Dictionary={}
 var enemy_cooldowns:Array=[]
 var snapshots:Dictionary={}
+var missile_contexts:Dictionary={}
 var instances:Dictionary={}
 var flight_by_handle:Dictionary={}
 var error:=""
 
 func entry_for(game,weapon:Dictionary)->Dictionary:
 	return state.enemies[int(weapon.source)].equipment[int(weapon.slot)] if bool(weapon.hostile) else game.combat_entry(int(weapon.slot))
+func bind_missile_context(record:Dictionary)->Dictionary:
+	if typeof(record.get("id"))!=TYPE_INT or int(record.id)<=0 or typeof(record.get("value"))!=TYPE_DICTIONARY:
+		error="invalid_missile_context";return {}
+	var value:Dictionary=record.value
+	if typeof(value.get("root_id"))!=TYPE_INT or int(value.root_id)<0 or value.get("batch_id")!=value.root_id or typeof(value.get("source_id"))!=TYPE_STRING or value.get("weapon")!="missile" or typeof(value.get("trigger_depth"))!=TYPE_INT or int(value.trigger_depth) not in [0,1] or typeof(value.get("trigger"))!=TYPE_STRING or typeof(value.get("guidance_factors"))!=TYPE_DICTIONARY:
+		error="invalid_missile_context";return {}
+	for key in ["wild_missile","wild_used","chain_allowance"]:
+		if value.has(key) and typeof(value[key])!=TYPE_BOOL:error="invalid_missile_context";return {}
+	if value.get("wild_missile",false):
+		if value.trigger_depth!=1 or value.trigger!="wild_missile" or value.has("chain_allowance") or not value.has("wild_used") or typeof(value.get("blast_fraction")) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(value.blast_fraction)) or float(value.blast_fraction)<0:
+			error="invalid_wild_context";return {}
+	for uid in value.guidance_factors:
+		var factor=value.guidance_factors[uid]
+		if typeof(uid)!=TYPE_STRING or not uid.is_valid_int() or typeof(factor) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(factor)) or float(factor)<0:
+			error="invalid_guidance_factor";return {}
+	var id=int(record.id)
+	if missile_contexts.has(id):
+		if missile_contexts[id]!=value:error="inconsistent_missile_context";return {}
+		return missile_contexts[id]
+	missile_contexts[id]=value.duplicate(true)
+	return missile_contexts[id]
 func bind_snapshot(raw:Dictionary,game,weapon:Dictionary)->Dictionary:
 	var id=int(raw.id)
 	if snapshots.has(id):return snapshots[id]
@@ -23,6 +46,7 @@ func bind_snapshot(raw:Dictionary,game,weapon:Dictionary)->Dictionary:
 	for effect in row.effects:
 		effect.source=int(weapon.slot);effect.weapon_key=str(weapon.entry.get("key",weapon.row.get("name","")));effect.main_attack_id=id
 	row.combat_context=game.CombatContext.root(id,"enemy:"+str(state.enemies[int(weapon.source)].uid) if bool(weapon.hostile) else "drone:"+str(weapon.entry.drone_id) if weapon.entry.has("drone_id") else "module:%d"%int(weapon.slot),str(weapon.entry.get("key",weapon.row.get("name",""))))
+	if not raw.get("native_context",{}).is_empty():row.combat_context=bind_missile_context(raw.native_context)
 	snapshots[id]=row
 	return row
 func bind_instance(raw:Dictionary,snapshot:Dictionary,game)->Dictionary:
@@ -51,6 +75,17 @@ func prepare(game,session,snapshot:Dictionary)->bool:
 	state=snapshot
 	if state.is_empty() or int(state.get("schema",0))!=1:error="invalid_native_handoff_schema";return false
 	if not is_finite(float(state.clock)):error="invalid_native_handoff_clock";return false
+	if typeof(state.get("missile_attacks",0))!=TYPE_INT or int(state.get("missile_attacks",0))<0:error="invalid_missile_counter";return false
+	var strange_rows=state.get("strange_pending",[])
+	if typeof(strange_rows)!=TYPE_ARRAY:error="invalid_strange_queue";return false
+	for packet in strange_rows:
+		if typeof(packet)!=TYPE_DICTIONARY:error="invalid_strange_packet";return false
+		for key in ["remaining","damage"]:
+			if typeof(packet.get(key)) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(packet[key])) or float(packet[key])<0:error="invalid_strange_scalar";return false
+		if typeof(packet.get("type"))!=TYPE_INT or int(packet.type)<0 or int(packet.type)>2 or typeof(packet.get("context"))!=TYPE_DICTIONARY:error="invalid_strange_context";return false
+		var provenance:Dictionary=packet.context
+		if typeof(provenance.get("root_id"))!=TYPE_INT or int(provenance.root_id)<0 or typeof(provenance.get("batch_id"))!=TYPE_INT or provenance.batch_id!=provenance.root_id or typeof(provenance.get("source_id"))!=TYPE_STRING or provenance.get("weapon")!="cannon" or typeof(provenance.get("trigger_depth"))!=TYPE_INT or provenance.trigger_depth!=1 or provenance.get("trigger")!="strange_matter" or provenance.has("chain_allowance") or typeof(provenance.get("guidance_factors"))!=TYPE_DICTIONARY or not provenance.guidance_factors.is_empty():error="invalid_strange_context";return false
+		strange_pending.append(packet.duplicate(true))
 	var weapons:Array=session.weapons
 	for enemy in state.enemies:enemy_cooldowns.append(enemy.get("cooldowns",[]).duplicate())
 	for pending in state.cooldowns:
@@ -63,7 +98,12 @@ func prepare(game,session,snapshot:Dictionary)->bool:
 		var instance=bind_instance(native.instance,root,game)
 		var view:Dictionary=native.view
 		var patch={"x":native.position.x,"y":native.position.y,"direction":native.direction,"speed":native.speed,"damage":native.damage,"entry":entry_for(game,weapon),"source":state.enemies[int(weapon.source)] if bool(weapon.hostile) else state.player,"source_uid":int(state.enemies[int(weapon.source)].uid) if bool(weapon.hostile) else 0,"main_attack_id":root.id,"attack_instance_id":instance.id,"attack_instance":instance,"attack_snapshot":root,"jewelEffects":instance.effects,"critical_bonus_applied":root.critical_bonus_applied,"combat_context":context(root,bool(native.instance_derived) or bool(native.chain),game,not bool(native.chain))}
+		if not native.get("native_context",{}).is_empty():patch.combat_context=bind_missile_context(native.native_context)
 		if bool(native.beam):
+			if typeof(native.get("endless",false))!=TYPE_BOOL or typeof(native.get("await_target",false))!=TYPE_BOOL:error="invalid_endless_beam_state";return false
+			if native.get("endless",false) and (bool(native.hostile) or bool(native.repeated) or weapon.entry.has("drone_id")):error="invalid_endless_beam_source";return false
+			patch.endless=native.get("endless",false);patch.await_target=native.get("await_target",false);patch.dead=false
+			patch.prism_bonus_applied=bool(view.get("prism_tower",false))
 			patch.elapsed=native.age;patch.ticks=native.ticks;patch.charge=native.charge;patch.next_hit_at=native.next_hit
 			patch.repeat_multiplier=native.multiplier;patch.repeat_origin_multiplier=1.0;patch.repeat_depth=1 if bool(native.repeated) else 0
 			patch.weapon=root.weapon;patch.charged_multiplier=1.0
@@ -78,14 +118,17 @@ func prepare(game,session,snapshot:Dictionary)->bool:
 		var root=bind_snapshot(native.snapshot,game,weapon)
 		if native.instance.is_empty():error="missing_ejection_shared_instance";return false
 		var instance=bind_instance(native.instance,root,game)
-		missile_queue.append({"mount":int(weapon.slot),"entry":entry_for(game,weapon),"source":state.player,"target":native.target,"aim":Vector2(native.target.get("x",0),native.target.get("y",0)),"weapon":root.weapon,"attack":attack(root,instance,float(native.multiplier),bool(native.get("derived",false)),game),"offset":game.player_weapon_offset(int(weapon.slot)),"spread":game.missile_visual_spread(int(native.ordinal),int(weapon.salvo)),"ordinal":int(native.ordinal),"count":int(weapon.salvo),"due":float(native.due)})
+		var pending_attack=attack(root,instance,float(native.multiplier),bool(native.get("derived",false)),game)
+		if not native.get("native_context",{}).is_empty():pending_attack.combat_context=bind_missile_context(native.native_context)
+		var count=int(root.weapon.get("para1",weapon.salvo))
+		missile_queue.append({"mount":int(weapon.slot),"entry":entry_for(game,weapon),"source":state.player,"target":native.target,"aim":Vector2(native.target.get("x",0),native.target.get("y",0)),"weapon":root.weapon,"attack":pending_attack,"offset":game.player_weapon_offset(int(weapon.slot)),"spread":game.missile_visual_spread(int(native.ordinal),count),"ordinal":int(native.ordinal),"count":count,"due":float(native.due)})
 	for native in state.repeats:
 		var weapon:Dictionary=weapons[int(native.weapon_index)]
 		var root=bind_snapshot(native.snapshot,game,weapon)
 		var pending={"index":int(weapon.slot),"entry":entry_for(game,weapon),"remaining":float(native.remaining),"multiplier":float(native.multiplier),"depth":1,"origin_multiplier":1.0,"snapshot":root,"execution":{"launched":false},"parent_execution":{}}
 		if int(native.owner_index)>=0:pending.beam=flight_by_handle.get("%d:%d"%[native.owner_index,native.owner_generation],{})
 		repeats.append(pending)
-	return true
+	return error.is_empty()
 func commit_views(game)->void:
 	for item in patches:
 		item.view.merge(item.values,true)
@@ -107,4 +150,6 @@ func commit_views(game)->void:
 	game.cooldowns=cooldowns
 	for index in enemy_cooldowns.size():game.enemies[index].cooldowns=enemy_cooldowns[index]
 	game.projectiles=shots;game.missile_queue=missile_queue;game.jewel_repeats=repeats
+	game.drone_combat.delayed=strange_pending
+	game.drone_combat.missile_attacks=int(state.get("missile_attacks",game.drone_combat.missile_attacks))
 	game.refresh_missile_target_registry()

@@ -1,0 +1,73 @@
+{
+  "base": "2db97caa57c867982c4702f97fe69b5e791a5330",
+  "candidate": "ee68de752d804e8c9f8bb43b9a18caa76d141953",
+  "status": "Independent correctness candidates; broad hull alignment and full-frame optimization remain unaccepted and incomplete.",
+  "checks": {
+    "drone_rebuild": {
+      "checks": 48,
+      "failures": 0
+    },
+    "native_handoff": {
+      "checks": 45,
+      "failures": 0
+    },
+    "pulse_anchor": {
+      "checks": 18,
+      "failures": 0
+    },
+    "departure": {
+      "checks": 14,
+      "failures": 0
+    }
+  },
+  "blocked_test": {
+    "path": "test/test_legacy_player_defence_timing.gd",
+    "reason": "Existing jewel_equipment_stat override accepts 4 arguments while parent accepts 6; fixture cannot parse. Not counted as passed."
+  },
+  "scope_limits": [
+    "No performance samples in this correctness batch.",
+    "No packaging, main push, numeric tuning, attack-frequency changes or native rebuild in this batch.",
+    "Pulse test covers native allied fixed-ray pulse and delayed/missing display records; does not validate every hull or weapon.",
+    "Paused return preserves serialized actor state; fixture does not prove preservation of a nonempty in-flight set."
+  ],
+  "geometry_findings": [
+    {
+      "source": "space-battleship/scripts/battlefield.gd:922",
+      "finding": "Leader hull/protection drawing scales 1.35 or 1.65 while collision packet and hardpoints remain original size. This is a confirmed distinct coordinate-scale inconsistency; no broad correction committed."
+    },
+    {
+      "source": "space-battleship/scripts/battle_read_model.gd:185",
+      "finding": "Enemy collision hull and center are transformed about fixed placement origin using unscaled packet.inner."
+    },
+    {
+      "source": "space-battleship/scripts/enemy_protection_geometry.gd:18",
+      "finding": "Alpha boundary uses texture canvas center. Alpha bounding-box center offsets are measured, not proof that authored pivots are invalid."
+    },
+    {
+      "source": "space-battleship/scripts/logical_fleet_pose.gd:143",
+      "finding": "Player GLB root transform retains authored origin; all 5 models and shared drone/carrier measured. Recentring body alone would desynchronize sockets; any normalization must share the authoritative full transform."
+    },
+    {
+      "source": "space-battleship/addons/native_battle/src/combat_execution_kernel.h:1705",
+      "finding": "Native allied pulse impact is actual segment/hull contact on fixed birth ray."
+    },
+    {
+      "source": "space-battleship/addons/native_battle/src/combat_execution_kernel.h:1514",
+      "finding": "Continuous beam aims at actor point; this is a center endpoint, not a surface-contact intersection."
+    },
+    {
+      "source": "space-battleship/addons/native_battle/src/combat_execution_kernel.h:1652",
+      "finding": "Native missile already guides toward actor center and checks nearest segment distance against hit_radius; impact feedback uses center."
+    },
+    {
+      "source": "space-battleship/addons/native_battle/src/combat_execution_kernel.h:1384",
+      "finding": "Ordinary allied cannon/rail branch resolves immediate target hit and center feedback; it does not run the ordinary pulse hull-intersection path."
+    }
+  ],
+  "drone_ownership": "drone_combat owns disabled/rebuild_stacks/rebuild_bonus. restore_rebuild invalidates future source/stat caches; existing born attacks keep their snapshots. Manual return restores separately frozen mainline reconstruction state. No second Game owner.",
+  "remaining": [
+    "Review shared origin/scale convention before broader geometry change; validate all 6 enemy / 5 player hulls and four weapon paths.",
+    "Add nonempty residual-projectile return case and native birth snapshot-specific drone assertions if required for acceptance.",
+    "All five preexisting performance environments remain to be addressed after correctness review; no new ordering or success claim."
+  ]
+}

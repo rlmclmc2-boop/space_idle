@@ -1,5 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-NATIVE_LIBRARY_PROOF {"path":"D:/CodexBuild/space_idle/stable-integration/test/work/battle-fix-20261013/space-battleship/bin/space_native.dll","pid":42912,"sha256":"45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e"}
-FIXED_RAY_RESULT {"checks":185,"exact_checks":48,"ray_queries":201,"skips":4668}
-NATIVE EXECUTION KERNEL: 486 checks, 0 failures

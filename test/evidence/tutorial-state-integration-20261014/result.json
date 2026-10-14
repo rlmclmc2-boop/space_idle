@@ -1,0 +1,29 @@
+{
+  "base_commit": "ab293a068e74c57526933438dbdae4332d825119",
+  "construction": "Detached worktree at accepted main; only tutorial diff applied. Configuration invalidation uses the existing handler without procurement combat_configuration_epoch.",
+  "import_exit": 0,
+  "test_exit": 0,
+  "checks": 54,
+  "failures": 0,
+  "test": "test/test_unlock_tutorial.gd",
+  "mode": "headless correctness on the actual pending integration tree; no performance comparison",
+  "engine": "Godot 4.7.2 stable ed1daf0bf",
+  "command": "Godot_v4.7.2-stable_win64_console.exe --path <this worktree>/space-battleship --headless --script <this worktree>/test/test_unlock_tutorial.gd",
+  "user_isolation": "APPDATA and LOCALAPPDATA under this worktree/test/work/tutorial-user; no player save access",
+  "coverage": "Previous 50 assertions plus unchanged-ID configuration text refresh, catalog revision updating existing entry/detail/tab, hidden setup reuse, visible setup reuse.",
+  "native_completion": "Static review only: both commit_prediction and legacy advance invalidate on transition to complete before notifications. Dynamic test covers the legacy settlement. The tutorial fixture has no native admission/refit session; adding one would expand the requested scope. No native rebuild performed.",
+  "uncovered": [
+    "Rendered screenshot/visual output and full-frame performance were not tested.",
+    "Arbitrary in-place collection/config edits outside mutation entrypoints still require explicit invalidation."
+  ],
+  "sha256": {
+    "space-battleship/scripts/game.gd": "6521772a25f69cb4827feedd8ec7d33594ea0530d6f119515e43427a9081edfc",
+    "space-battleship/scripts/galaxy_system.gd": "e6923c9bbfe6b3d2b2ae1adcd1706d6708d99e1997e901e7e48fa76cac0eff04",
+    "space-battleship/scripts/planet_buildings.gd": "7775b9b13c848bd49ce7225588db7baed0d66068c0f9a4f94a74e974c0c37a33",
+    "space-battleship/scripts/unlock_tutorial.gd": "dc823fd4931766b882e3829969f3d3a3705770d4e06a706dba7bbab37f04ba70",
+    "space-battleship/scripts/ui_text.gd": "4216456342ad32c734cf4f5d6ead9f3ccbf668034d369a92a615b4be499afde3",
+    "test/run.py": "eeab809ebdd7e8be4f2638a08814df755750c89e74861083af8f52a442e7f970",
+    "test/test_unlock_tutorial.gd": "2bdea0ceba8a38cb63c2eac26f9ce67e856075daed4612b0dbc41fe8d8418daf"
+  },
+  "patch_sha256": "f1efe4edb287b6a02cda5906e224e8b717f709e8bdf588d1b50e5f5bf780dcc2"
+}

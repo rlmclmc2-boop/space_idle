@@ -194,6 +194,12 @@ func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_s
 		if not pose.is_empty():
 			shot.x=pose.position.x;shot.y=pose.position.y
 			shot.launch_point=pose.position
+			# The visible straight segment must use the same projected aim as logic.
+			shot.ballistic_target_origin=aim
+			if str(shot.key)=="laser" and pose.has("screen_origin") and target_spatial_source!=null:
+				# Same committed screen ray and hull contact as native execution.
+				shot.fixed_screen_origin=pose.screen_origin
+				shot.fixed_screen_step=(Vector2(pose.screen_aim)-Vector2(pose.screen_origin))/maxf(0.001,Vector2(pose.position).distance_to(aim))
 			shot.direction=(aim-Vector2(shot.x,shot.y)).normalized()
 		if str(shot.key)=="cannon":shot.speed=float(shot.speed)*RAIL_SPEED_FACTOR
 		return

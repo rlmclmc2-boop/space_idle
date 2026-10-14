@@ -85,6 +85,14 @@ func run() -> void:
 	var entry_instance: int = tutorial.entry_buttons[missile].button.get_instance_id()
 	tutorial.refresh()
 	check(tutorial.entry_buttons[missile].button.get_instance_id()==entry_instance,"Read refresh reuses entry controls")
+	var old_title: String = str(g.db.data.unlock[missile].title)
+	g.db.data.unlock[missile].title = "Changed entry title"
+	g.notify_configuration_changed()
+	tutorial.refresh()
+	check(tutorial.entry_buttons[missile].button.text=="Changed entry title" and tutorial.entry_buttons[missile].button.get_instance_id()==entry_instance,"Configuration text refresh passes unchanged ID snapshot without replacing controls")
+	g.db.data.unlock[missile].title = old_title
+	g.notify_configuration_changed()
+
 	g.profile.highestLevel = hyperspace_gate
 	tutorial.select_system("hyperspace")
 	check(tutorial.category_buttons.hyperspace.button.visible and tutorial.entry_buttons.hyperspace.badge.visible,"Unlocked hyperspace has an unread category and entry")
@@ -93,6 +101,19 @@ func run() -> void:
 	check(tutorial.title.text==UIText.t("hyperspace.title") and tutorial.description.text==UIText.t("tutorial.hyperspace.description"),"Hyperspace entry projects registered content")
 	check(g.profile.readUnlocks.has("hyperspace") and not tutorial.entry_buttons.hyperspace.badge.visible,"Explicit hyperspace read clears its entry badge")
 	await capture("03b-hyperspace-read")
+	var hyper_button: int = tutorial.entry_buttons.hyperspace.button.get_instance_id()
+	var old_catalog_title: String = UIText.entries["hyperspace.title"]
+	var old_basics: String = UIText.entries["tutorial.basics"]
+	UIText.entries["hyperspace.title"]="Changed catalog title"
+	UIText.entries["tutorial.basics"]="Changed basics"
+	UIText.catalog_revision+=1
+	tutorial.refresh()
+	check(tutorial.title.text=="Changed catalog title" and tutorial.entry_buttons.hyperspace.button.text=="Changed catalog title" and tutorial.basics_button.text=="Changed basics" and tutorial.entry_buttons.hyperspace.button.get_instance_id()==hyper_button,"Catalog revision updates detail, existing entry and tab despite unchanged snapshot")
+	UIText.entries["hyperspace.title"]=old_catalog_title
+	UIText.entries["tutorial.basics"]=old_basics
+	UIText.catalog_revision+=1
+	tutorial.refresh()
+
 	scene.help_open = false
 	scene.refresh_navigation()
 	tutorial.open_entry(laser)
@@ -158,6 +179,16 @@ func run() -> void:
 	tutorial.select_system("equipment")
 	await capture("04-all-systems")
 	check(["equipment","ships","hightech","reactor","enhancement","crew","planets","galaxy"].all(func(id):return tutorial.category_buttons[id].button.visible),"Unlocked systems have archive categories")
+	scene.help_open=false
+	tutorial.refresh()
+	tutorial.setup(scene)
+	check(not tutorial.tabs.visible and not tutorial.content.visible and tutorial.get_child_count()==2 and tutorial.entry_buttons.is_empty(),"Reused setup clears hidden control snapshots and removes prior subtree")
+	scene.help_open=true
+	tutorial.set_archive(true)
+	tutorial.select_system("equipment")
+	var previous_entries: int = tutorial.entries.get_instance_id()
+	tutorial.setup(scene)
+	check(tutorial.entries.get_instance_id()!=previous_entries and not tutorial.entry_buttons.is_empty() and tutorial.entry_buttons.values().all(func(item):return item.button.get_parent()==tutorial.entries),"Reused visible setup repopulates new controls even when IDs are unchanged")
 	print("UNLOCK TUTORIAL: %d checks, %d failures" % [checks,failures])
 	scene.queue_free()
 	await process_frame

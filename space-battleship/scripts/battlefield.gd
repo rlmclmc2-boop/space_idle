@@ -140,6 +140,8 @@ func create_battle_game(persist:bool)->BattleGame:
 	prototype.launch_provider=_prototype_launch_pose
 	prototype.drone_launch_provider=_prototype_drone_launch_pose
 	prototype.target_provider=_prototype_target_point
+	battle_read_model.setup(self)
+	prototype.target_spatial_source=battle_read_model
 	prototype.rail_geometry_provider=_rail_geometry
 	prototype.rail_target_point_provider=entity_render_position
 	prototype.native_execution_auto=true
@@ -166,7 +168,7 @@ func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	# paused close-up inspection magnification.
 	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
 	var logical:=battle_logical_point(point)
-	return {"position":logical,"direction":(aim-logical).normalized()}
+	return {"position":logical,"direction":(aim-logical).normalized(),"screen_origin":point,"screen_aim":battle_point(aim)}
 
 
 func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary:
@@ -176,7 +178,7 @@ func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary
 	var point:Vector2=hyperspace_visual.screen_muzzle_for_drone(id,ordinal,ship_view)
 	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
 	var logical:=battle_logical_point(point)
-	return {"position":logical,"direction":(aim-logical).normalized()}
+	return {"position":logical,"direction":(aim-logical).normalized(),"screen_origin":point,"screen_aim":battle_point(aim)}
 
 
 func _visual_drone_id(shot:Dictionary)->String:
@@ -250,7 +252,22 @@ func before_logical_game_tick(dt:float) -> void:
 	fx_time+=dt
 	advance_turrets(dt)
 
+func battle_transition_blocked() -> bool:
+	return encounter_presentation.departure_active()
+
+func hold_departure_scene() -> void:
+	# Hide and stop actual render owners; no overlay conceals an advancing battle.
+	if is_instance_valid(ship_view):ship_view.set_rendering(false)
+	if is_instance_valid(retained_contacts):retained_contacts.hide()
+	if is_instance_valid(pulse_layer):pulse_layer.hide()
+	if is_instance_valid(drop_layer):drop_layer.hide()
+
 func _process(delta: float) -> void:
+	if battle_transition_blocked():
+		hold_departure_scene()
+		encounter_presentation.sync(game,minf(delta,0.1))
+		stars_layer.queue_redraw();battle_layer.queue_redraw()
+		return
 	# End the batch even when the presentation exits early. Each fixed logical
 	# step changes fx_time, so accelerated combat never reuses an older limit.
 	enemy_entry_batch_active=true
@@ -279,6 +296,8 @@ func _process_battlefield(delta: float) -> void:
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	super._process(delta)
+	if battle_transition_blocked():
+		hold_departure_scene();return
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 	var valid_beams:Dictionary={}
 	for shot in game.projectiles:
@@ -416,6 +435,7 @@ func on_event(kind:String,info:Dictionary)->void:
 		encounter_presentation.sync(game,0.0)
 		if not bool(info.get("active",false)):
 			reset_battle_transients_for_scene()
+			if battle_transition_blocked():hold_departure_scene()
 		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
 		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
@@ -750,6 +770,7 @@ func player_render_position() -> Vector2:
 func draw_battle() -> void:
 	if effects_enabled:
 		draw_encounter_backdrop()
+		if battle_transition_blocked():return
 		# The inherited renderer owns batch entry/exit and cache invalidation.
 		super.draw_battle()
 
@@ -897,16 +918,16 @@ func enemy_hull_bounds(texture: Texture2D) -> Rect2:
 	var texture_key:=texture.get_instance_id()
 	if not hull_opaque_bounds.has(texture_key):
 		var pixels:=texture.get_image().get_used_rect()
-		hull_opaque_bounds[texture_key]=Rect2(Vector2(pixels.position)/texture.get_size()-Vector2(0.5,0.5),Vector2(pixels.size)/texture.get_size())
+		hull_opaque_bounds[texture_key]=Rect2(-Vector2(pixels.size)/texture.get_size()*0.5,Vector2(pixels.size)/texture.get_size())
 	return hull_opaque_bounds[texture_key]
 
 func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool)->void:
 	var pos:=enemy_render_position(enemy)+offset
 	var width:=enemy_render_width(enemy)
 	var leader := encounter_presentation.is_leader(enemy)
-	# The armor silhouette alone grows. Hardpoints, contact geometry, entry
-	# bounds and all provider coordinates retain their original cached values.
-	var hull_width := width*(1.65 if leader and encounter_presentation.tier=="ultimate" else 1.35 if leader else 1.0)
+	# The published width already includes the actor's encounter scale. Body,
+	# mounts, collision and protection consume this same dimension.
+	var hull_width := width
 	var dimensions:=Vector2(hull_width,hull_width*2.0)
 	var angle:=enemy_render_angle(enemy)
 	var light:=enemy_hull_light(enemy)
@@ -915,19 +936,13 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
-	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),Rect2(-dimensions/2,dimensions),false,Color(light,light,light,1.0))
+	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
 	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
-	# Scale only the protection draw transform, never the shared geometry
-	# packet/pose cache consumed by entry limits and combat providers.
-	var protection_scale:float=hull_width/width if width>0.0 else 1.0
-	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE*protection_scale)
+	draw_surface.draw_set_transform(pos,PI+angle)
 	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
 	var outline:PackedVector2Array=protection_outline
-	if leader:
-		outline=PackedVector2Array()
-		for point in protection_outline:outline.append(point*protection_scale)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
 	var layout:=enemy_status_layout(enemy,pos,hull_width,angle,outline)
@@ -1021,17 +1036,21 @@ func draw_encounter_backdrop()->void:
 	# metadata shader. Use the existing battle layer, behind combat drawings.
 	encounter_presentation.draw_space(draw_surface,BATTLE_VIEW_SIZE)
 	var cue := ""
-	if encounter_presentation.transition<1.8:
-		if encounter_presentation.departure:
+	if encounter_presentation.departure:
+		if not battle_transition_blocked() and encounter_presentation.transition<3.4:
 			cue=UIText.t("battle.return_cleared" if encounter_presentation.return_success else "battle.return_main")
-		elif not encounter_presentation.route.is_empty():
+	elif encounter_presentation.transition<1.8:
+		if not encounter_presentation.route.is_empty():
 			cue=UIText.t("hyperspace."+encounter_presentation.route)
 	elif encounter_presentation.clear_age<1.8:
 		cue=UIText.t("battle.finale_cleared")
 	if not cue.is_empty():
-		var cue_width := font.get_string_size(cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18).x
-		draw_surface.draw_rect(Rect2(Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5-14,62),Vector2(cue_width+28,34)),Color("101b2b"))
-		draw_surface.draw_string(font,Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5,86),cue,HORIZONTAL_ALIGNMENT_LEFT,-1,18,encounter_presentation.accent)
+		var cue_size:=26 if encounter_presentation.departure else 18
+		var cue_width := font.get_string_size(cue,HORIZONTAL_ALIGNMENT_LEFT,-1,cue_size).x
+		var cue_position:=Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5,92 if encounter_presentation.departure else 86)
+		draw_surface.draw_rect(Rect2(Vector2((BATTLE_VIEW_SIZE.x-cue_width)*0.5-14,62),Vector2(cue_width+28,44 if encounter_presentation.departure else 34)),Color("101b2b"))
+		if encounter_presentation.departure:draw_surface.draw_string_outline(font,cue_position,cue,HORIZONTAL_ALIGNMENT_LEFT,-1,cue_size,3,Color("050c13"))
+		draw_surface.draw_string(font,cue_position,cue,HORIZONTAL_ALIGNMENT_LEFT,-1,cue_size,BATTLE_CREAM if encounter_presentation.departure else encounter_presentation.accent)
 
 func box(rect:Rect2,color:=PANEL,border:=LINE)->void:
 	if is_instance_valid(overlay_layer) and draw_surface==overlay_layer:

@@ -1,8 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-ERROR: prevalidated native batch changed during synchronous commit
-   at: push_error (core/variant/variant_utility.cpp:1023)
-   GDScript backtrace (most recent call first):
-       [0] upgrade_equipment_batch (res://scripts/game.gd:2792)
-       [1] run (res://.runtime/test_native_numeric_incremental.gd:68)
-NATIVE NUMERIC UPDATE: 25 checks, 0 failures

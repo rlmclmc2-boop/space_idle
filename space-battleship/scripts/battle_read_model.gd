@@ -111,7 +111,7 @@ func width_at(enemy:Dictionary,y:float)->float:
 	var depth=clampf((y-90.0)/maxf(1.0,float(row.frontline)-90.0),0,1)
 	var width=float(row.width_base.base)*float(row.width_base.scale)*lerpf(host.battle_visual.enemy_depth_scale_min,host.battle_visual.enemy_depth_scale_max,depth)*float(host.enemy_pose(enemy).variance)
 	width*=float(row.width_base.explicit_scale)
-	return minf(width,host.ENEMY_FORMATION_WIDTH_CAP) if row.width_base.capped else width
+	return (minf(width,host.ENEMY_FORMATION_WIDTH_CAP) if row.width_base.capped else width)*float(enemy.get("hull_scale",1.0))
 
 func position(enemy:Dictionary)->Vector2:
 	ensure_clock();var row=entry(enemy)

@@ -1,7 +1,0 @@
-[configuration]
-entry_symbol = "space_native_init"
-compatibility_minimum = "4.7"
-
-[libraries]
-windows.debug.x86_64 = "res://bin/space_native.dll"
-windows.release.x86_64 = "res://bin/space_native.dll"

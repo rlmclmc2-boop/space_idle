@@ -85,23 +85,6 @@ func _global(root: Transform3D, chain: Array) -> Transform3D:
 	for transform in chain: root = root * transform
 	return root
 
-func geometry_matches(key:String,entries:Array,capacity:int,bag:Dictionary)->bool:
-	if key!=hull_key or capacity!=configured_capacity or entries.size()!=configured_entries.size():return false
-	for index in entries.size():
-		if str(entries[index].get("key",""))!=configured_entries[index].key:return false
-	var ids:Array=[];var appearances:Dictionary={}
-	for id in bag.get("equipped",[]):
-		var data:Dictionary=bag.get("drones",{}).get(id,{})
-		var weapon:String=str(data.get("weapon",""))
-		if not drone_sockets.has(weapon):continue
-		var appearance:Dictionary={"weapon":weapon,"legendary":bool(data.get("legendary",false)),"origin_quality":str(data.get("origin_quality","white")),"ultimate":bool(data.get("ultimate",false)),"affixes":[]}
-		for affix in data.get("affixes",[]):appearance.affixes.append({"tier":int(affix.get("tier",6)),"key":str(affix.get("key",""))})
-		var ultimate:Dictionary=data.get("ultimate_affix",{})
-		if not ultimate.is_empty():appearance.ultimate_affix={"tier":int(ultimate.get("tier",6)),"key":str(ultimate.get("key",""))}
-		ids.append(str(id));appearances[str(id)]=appearance
-		if ids.size()==5:break
-	return ids==configured_bag.get("equipped",[]) and appearances==configured_bag.get("drones",{})
-
 func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> void:
 	if not configuration_dirty and key == hull_key: return
 	configuration_dirty = false
@@ -168,7 +151,7 @@ func pose_base(center: Vector2, height: float, angle: float, time: float, close_
 	var signature:Array=[hull_key,rendered_position,rendered_height,angle,size]
 	if base_signature==signature:return
 	base_signature=signature
-	ship_transform = Transform3D(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center)
+	ship_transform = preload("res://scripts/ship_geometry_convention.gd").centered_transform(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center,manifest.hulls[hull_key])
 	var zoom := 2.8 if close_up else 1.0
 	for index in drones.size():
 		var member: Dictionary = drones[index]

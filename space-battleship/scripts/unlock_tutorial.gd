@@ -6,6 +6,7 @@ var showing_archive := false
 var system := "equipment"
 var selected := ""
 var tabs: HBoxContainer
+var basics_button: Button
 var archive_button: Button
 var entry_badge: Label
 var archive_badge: Label
@@ -22,6 +23,15 @@ var snapshot: Array = []
 var refresh_state: Array = []
 
 func setup(owner: Node) -> void:
+	# Explicit UI rebuild can reuse this owner; projections must follow new controls.
+	refresh_state.clear()
+	snapshot.clear()
+	category_buttons.clear()
+	entry_buttons.clear()
+	if is_instance_valid(entry_badge):entry_badge.free()
+	for child in get_children():
+		remove_child(child)
+		child.queue_free()
 	host = owner
 	name = "UnlockTutorial"
 	z_index = 3
@@ -31,7 +41,7 @@ func setup(owner: Node) -> void:
 	tabs = HBoxContainer.new()
 	tabs.add_theme_constant_override("separation",12)
 	add_child(tabs)
-	make_button(tabs,UIText.t("tutorial.basics"),func():set_archive(false))
+	basics_button = make_button(tabs,UIText.t("tutorial.basics"),func():set_archive(false))
 	archive_button = make_button(tabs,UIText.t("tutorial.unlocks"),func():set_archive(true))
 	archive_badge = dot(archive_button)
 	archive_badge.position = Vector2(142,4)
@@ -146,6 +156,9 @@ func refresh() -> void:
 	var state := [host.game,host.game.tutorial_revision(),opened,showing_archive,system,selected,rect,host.ui.position,UIText.catalog_revision]
 	if state == refresh_state:return
 	refresh_state = state
+	host.set_ui_value(basics_button,"text",UIText.t("tutorial.basics"))
+	host.set_ui_value(archive_button,"text",UIText.t("tutorial.unlocks"))
+	for id in SYSTEMS:host.set_ui_value(category_buttons[id].button,"text",UIText.t("tutorial.system."+id))
 	var ids: Array[String] = host.game.tutorial_unlocks()
 	var unread: Array[String] = host.game.unread_tutorial_unlocks()
 	host.set_ui_value(entry_badge,"visible",not unread.is_empty())
@@ -199,6 +212,7 @@ func refresh() -> void:
 			entry_buttons[id] = {"button":button,"badge":badge}
 		snapshot = filtered.duplicate()
 	for id in entry_buttons:
+		host.set_ui_value(entry_buttons[id].button,"text",str(rows[id].get("title","")))
 		host.set_ui_value(entry_buttons[id].badge,"visible",unread_ids.has(id))
 		host.set_ui_value(entry_buttons[id].button,"button_pressed",selected==id)
 	show_detail(rows.get(selected,{}))

@@ -45,13 +45,66 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 	if not native_fields(totals,["damage","defence"]) or not native_integer(totals.get("chain_count")):return {"error":"unsupported_native_scalar:totals"}
 	if typeof(totals.get("weapon_damage"))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:weapon_damage"}
 	for key in totals.legendary:
-		if key not in ["scatter_pulse","prism_tower"]:return {"error":"unsupported_legendary:"+str(key)}
+		if key not in ["scatter_pulse","prism_tower","laser_charge","strange_matter","precise_guidance","wild_missile","endless_beam"]:return {"error":"unsupported_legendary:"+str(key)}
 	if not g.drone_combat.delayed.is_empty() or not g.drone_combat.disabled.is_empty() or g.drone_combat.black_hole_remaining>0:return {"error":"unsupported_pending_drone_state"}
+	if totals.legendary.has("endless_beam"):
+		var endless=totals.legendary.endless_beam
+		if typeof(endless)!=TYPE_DICTIONARY or typeof(endless.get("parameters"))!=TYPE_DICTIONARY or typeof(endless.get("constants"))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:endless_beam"}
+		if endless.constants.size()!=0 or endless.parameters.keys()!=["maximum_multiplier_bonus"]:return {"error":"unsupported_native_contract:endless_beam"}
+		var bonus=endless.parameters.maximum_multiplier_bonus
+		if not native_scalar(bonus) or float(bonus)<0:return {"error":"unsupported_native_scalar:endless_beam"}
+	# Charge is a configuration-derived multiplier, never a per-hit source scan.
+	var charge_multiplier:=1.0
+	if totals.legendary.has("laser_charge"):
+		var charge=totals.legendary.laser_charge
+		if typeof(charge)!=TYPE_DICTIONARY or typeof(charge.get("parameters"))!=TYPE_DICTIONARY or typeof(charge.get("constants"))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:laser_charge"}
+		var maximum=charge.parameters.get("maximum_bonus")
+		var per_source=charge.constants.get("bonus_per_laser")
+		if not native_scalar(maximum) or not native_scalar(per_source):return {"error":"unsupported_native_scalar:laser_charge"}
+		if float(maximum)<0 or float(per_source)<0:return {"error":"unsupported_native_range:laser_charge"}
+		var sources:=0
+		for entry in g.combat_weapon_entries():
+			if entry.key=="laser":sources+=1
+		var uncapped:float=float(per_source)*sources
+		if not is_finite(uncapped):return {"error":"unsupported_native_arithmetic:laser_charge"}
+		charge_multiplier=1.0+minf(float(maximum),uncapped)
+		if not is_finite(charge_multiplier):return {"error":"unsupported_native_arithmetic:laser_charge"}
+	var strange_probability:=0.0;var strange_delay:=0.0;var strange_multiplier:=0.0
+	var strange_count:=0;var strange_type:=0
+	if totals.legendary.has("strange_matter"):
+		var strange=totals.legendary.strange_matter
+		if typeof(strange)!=TYPE_DICTIONARY or typeof(strange.get("parameters"))!=TYPE_DICTIONARY or typeof(strange.get("constants"))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:strange_matter"}
+		if not native_fields(strange.constants,["spawn_probability","delay"]) or not native_fields(strange.parameters,["damage_multiplier"]) or not native_integer(strange.constants.get("kill_spawns")):return {"error":"unsupported_native_scalar:strange_matter"}
+		strange_probability=float(strange.constants.spawn_probability);strange_delay=float(strange.constants.delay)
+		strange_multiplier=float(strange.parameters.damage_multiplier);strange_count=int(strange.constants.kill_spawns)
+		var damage_type=g.db.equip("cannon",1).get("dmgtype")
+		if not native_integer(damage_type):return {"error":"unsupported_native_scalar:strange_type"}
+		strange_type=int(damage_type)
+		if strange_probability<0 or strange_probability>1 or strange_delay<0 or strange_multiplier<0 or strange_count<0 or strange_type<0 or strange_type>2:return {"error":"unsupported_native_range:strange_matter"}
+	var guidance_multiplier:=1.0;var guidance_limit:=0;var guidance_limited:=false
+	var wild_multiplier:=1.0;var wild_period:=0;var wild_blast:=0.0
+	var missile_type=g.db.equip("missile",1).get("dmgtype")
+	if not native_integer(missile_type) or int(missile_type)<0 or int(missile_type)>2:return {"error":"unsupported_native_range:missile_type"}
+	if totals.legendary.has("precise_guidance"):
+		var effect=totals.legendary.precise_guidance
+		if typeof(effect)!=TYPE_DICTIONARY or typeof(effect.get("constants"))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:precise_guidance"}
+		var c:Dictionary=effect.constants
+		if not native_scalar(c.get("stack_multiplier")) or not native_integer(c.get("stack_limit")) or typeof(c.get("stack_limit_enabled"))!=TYPE_BOOL or c.get("counting_policy")!="first_hit_per_batch_per_target":return {"error":"unsupported_native_scalar:precise_guidance"}
+		guidance_multiplier=float(c.stack_multiplier);guidance_limit=int(c.stack_limit);guidance_limited=c.stack_limit_enabled
+		if guidance_multiplier<0 or guidance_limit<0:return {"error":"unsupported_native_range:precise_guidance"}
+	if totals.legendary.has("wild_missile"):
+		var effect=totals.legendary.wild_missile
+		if typeof(effect)!=TYPE_DICTIONARY or typeof(effect.get("constants"))!=TYPE_DICTIONARY or typeof(effect.get("parameters"))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:wild_missile"}
+		if not native_scalar(effect.parameters.get("damage_multiplier")) or not native_scalar(effect.constants.get("blast_fraction")) or not native_integer(effect.constants.get("attack_period")):return {"error":"unsupported_native_scalar:wild_missile"}
+		wild_multiplier=float(effect.parameters.damage_multiplier);wild_blast=float(effect.constants.blast_fraction);wild_period=int(effect.constants.attack_period)
+		if wild_multiplier<0 or wild_blast<0 or wild_period<0:return {"error":"unsupported_native_range:wild_missile"}
+	if not native_integer(g.drone_combat.missile_attacks) or g.drone_combat.missile_attacks<0:return {"error":"unsupported_native_range:missile_attacks"}
 	# Galaxy progression preflights its first refit boundary before mutation.
 	var enemies:Array=[];var weapons:Array=[];var defence:Array=[]
 	var growth=0.0;var defence_growth=0.0;var effect_level=0.0
 	for enemy in g.enemies:
 		if not native_integer(enemy.get("armourType",0)) or not native_integer(enemy.get("shieldType",0)):return {"error":"unsupported_native_scalar:enemy_type"}
+		if not native_integer(enemy.get("guidance_layers",0)) or int(enemy.get("guidance_layers",0))<0:return {"error":"unsupported_native_range:guidance_layers"}
 		var view:Dictionary=enemy.duplicate(true)
 		view.armourType=int(enemy.get("armourType",0));view.shieldType=int(enemy.get("shieldType",0))
 		view.compiled_drops=[]
@@ -64,12 +117,13 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 			var amount=N.ceiling(N.multiply(base,g.planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base
 			view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
 		enemies.append(view)
+	var endless_slot:int=g.endless_source_slot(weapon_levels)
 	for index in g.combat_weapon_entries().size():
 		var entry:Dictionary=g.projected_combat_entry(index,weapon_levels)
 		if str(entry.key).is_empty():continue
 		if not entry.key in KEYS:return {"error":"unsupported_weapon"}
 		if not native_integer(entry.get("level")):return {"error":"unsupported_native_scalar:weapon_level"}
-		var row:Dictionary=g.player_weapon_row(entry,totals)
+		var row:Dictionary=g.player_weapon_row(entry,totals,index==endless_slot)
 		if not native_weapon_row(row,KEYS.find(entry.key)):return {"error":"unsupported_native_scalar:player_weapon"}
 		var critical:Vector2=g.jewel_critical(entry,null,false,totals)
 		var chain=int(totals.chain_count);var repeat_factor=1.0
@@ -91,7 +145,7 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 		if KEYS.find(entry.key)!=3 and not native_scalar(g.cooldowns.get(g.slot_id("weapons",index),row.cd)):return {"error":"unsupported_native_scalar:cooldown"}
 		var kind=KEYS.find(entry.key)
 		var offset:Vector2=g.player_weapon_offset(index)
-		weapons.append({"kind":kind,"type":int(row.dmgtype),"slot":index,"source":-1,"hostile":false,"damage":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"interval":float(row.cd),"remaining":float(g.cooldowns.get(g.slot_id("weapons",index),row.cd)) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0,"salvo":int(row.para1) if kind==2 else 1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(g.player.x,g.player.y)+offset,"entry":entry.duplicate(true),"row":row.duplicate(true),"transfer_effects":transfer_effects,"critical_rate":critical.x,"critical_multiplier":critical.y,"repeat_probability":g.enhancement_branches.repeat_probability(g,entry),"repeat_multiplier":repeat_factor,"chain_count":chain,"secondary_probability":g.enhancement_parameter("repeat_b3_probability") if g.enhancement_branch_active(entry,"repeat",3,"B") else 0.0})
+		weapons.append({"endless":totals.legendary.has("endless_beam") and index==endless_slot,"kind":kind,"type":int(row.dmgtype),"slot":index,"source":-1,"hostile":false,"damage":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"interval":float(row.cd),"remaining":float(g.cooldowns.get(g.slot_id("weapons",index),row.cd)) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0,"salvo":int(row.para1) if kind==2 else 1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(g.player.x,g.player.y)+offset,"entry":entry.duplicate(true),"row":row.duplicate(true),"transfer_effects":transfer_effects,"critical_rate":critical.x,"critical_multiplier":critical.y,"repeat_probability":g.enhancement_branches.repeat_probability(g,entry),"repeat_multiplier":repeat_factor,"chain_count":chain,"secondary_probability":g.enhancement_parameter("repeat_b3_probability") if g.enhancement_branch_active(entry,"repeat",3,"B") else 0.0})
 	for source in enemies.size():
 		var enemy:Dictionary=enemies[source]
 		for slot in enemy.equipment.size():
@@ -126,81 +180,4 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 	if not native_fields(g.db.config,["dmgReduce"]) or not native_scalar(g.db.config.get("jewelDrop",0)):return {"error":"unsupported_native_scalar:config"}
 	if not native_scalar(scatter.get("parameters",{}).get("single_target_bonus",0.0)) or not native_integer(prism.get("constants",{}).get("nearby_targets",0)) or not native_scalar(prism.get("parameters",{}).get("maximum_multiplier_bonus",0.0)):return {"error":"unsupported_native_scalar:legendary"}
 	var player:Dictionary=g.player.duplicate(true);player.armour_type=0;player.shield_type=0
-	return {"execution_scope":scope,"final_encounter":g.is_final_encounter(),"since_hit":g.since_hit,"projectile_serial":g.projectile_serial,"attack_serial":g.main_attack_serial,"instance_serial":g.attack_instance_serial,"ejection_gap":g.EJECTION_GAP,"launch_speed":g.MISSILE_LAUNCH_SPEED,"turn_rate":g.MISSILE_TURN_RATE,"ignition":g.MISSILE_IGNITION,"seek":g.MISSILE_SEEK_START,"cruise_at":g.MISSILE_CRUISE_AT,"lifetime":g.MISSILE_LIFETIME,"orphan_lifetime":g.ORPHAN_LIFETIME,"brake_range":g.MISSILE_BRAKE_RANGE,"brake_angle":g.MISSILE_BRAKE_ANGLE,"min_speed":g.MISSILE_MIN_GUIDED_SPEED,"brake_factor":g.MISSILE_BRAKE_FACTOR,"hit_radius":g.MISSILE_HIT_RADIUS,"chain_speed":g.db.weapon_motion_value("chain_carrier_speed",720.0),"player":player,"enemies":enemies,"weapons":weapons,"defences":defence,"clock":g.enemy_shield_time,"rng_state":g.rng.state,"resistance":float(g.db.config.dmgReduce),"attack_counter":g.profile.enhancementAttacks,"incoming_counter":g.profile.enhancementHits,"counter_growth":growth,"defence_counter_growth":defence_growth,"counter_level":effect_level,"counter_log_base":g.enhancement_parameter("counter_log_base"),"counter_round_scale":g.enhancement_parameter("bonus_round_scale"),"repeat_delay":g.enhancement_parameter("repeat_delay"),"scatter":not scatter.is_empty(),"scatter_bonus":float(scatter.get("parameters",{}).get("single_target_bonus",0.0)),"prism_count":int(prism.get("constants",{}).get("nearby_targets",0)),"prism_bonus":float(prism.get("parameters",{}).get("maximum_multiplier_bonus",0.0)),"memory_interval":g.enhancement_parameter("memory_interval"),"deferred_interval":g.enhancement_parameter("deferred_interval"),"deferred_duration":g.enhancement_parameter("deferred_duration"),"clear_probability":g.enhancement_branches.clear_probability(g),"defence_time":g.enhancement_defense_time,"memory_elapsed":g.enhancement_memory_elapsed,"deferred_elapsed":g.enhancement_deferred_elapsed,"deferred_tick":g.enhancement_deferred_tick,"deferred":g.enhancement_deferred.duplicate(true),"drop_rules_compiled":true,"requires_drop_rules":true,"requires_module_defense":true,"drop_uid":g.uid,"jewel_probability":float(g.db.config.get("jewelDrop",0)),"jewel_ratio":g.jewel_ratio()}
-
-# Immutable derived configuration only. No actor, player or debt snapshot is kept.
-func freeze_value(value:Variant)->Variant:
-	if value is Dictionary:
-		if value.is_read_only():return value
-		var copy:Dictionary={}
-		for key in value:copy[key]=freeze_value(value[key])
-		copy.make_read_only();return copy
-	if value is Array:
-		if value.is_read_only():return value
-		var copy:Array=[]
-		for item in value:copy.append(freeze_value(item))
-		copy.make_read_only();return copy
-	return value
-func configuration_template(descriptor:Dictionary)->Dictionary:
-	var value:Dictionary=descriptor.duplicate()
-	for key in ["player","enemies","deferred"]:value.erase(key)
-	return freeze_value(value)
-
-func compile_numeric_update(g,template:Dictionary,weapon_levels:Dictionary,defence_levels:Dictionary,affected:Array)->Dictionary:
-	if (("damage_stats" in g) and g.damage_stats.enabled) or g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}
-	if not g.drone_combat.delayed.is_empty() or not g.drone_combat.disabled.is_empty() or g.drone_combat.black_hole_remaining>0:return {"error":"unsupported_pending_drone_state"}
-	for index in weapon_levels:
-		if not native_integer(index) or not native_integer(weapon_levels[index]) or index<0 or index>=g.loadout_entries("weapons").size():return {"error":"numeric_update_weapon"}
-	var result:Dictionary=template.duplicate()
-	var rows:Array=template.weapons.duplicate()
-	var defs:Array=template.defences.duplicate()
-	var totals:Dictionary=g.hyperspace_totals()
-	for index in affected:
-		var old:Dictionary=rows[index]
-		var entry:Dictionary=g.projected_combat_entry(int(old.slot),weapon_levels)
-		if entry==old.entry:continue
-		if entry.key!=old.entry.key or not native_integer(entry.get("level")):return {"error":"numeric_update_structure"}
-		var row:Dictionary=g.player_weapon_row(entry,totals)
-		var kind:int=int(old.kind)
-		if not native_weapon_row(row,kind):return {"error":"unsupported_native_scalar:player_weapon"}
-		var v:Dictionary=old.duplicate()
-		var critical:Vector2=g.jewel_critical(entry,null,false,totals)
-		v.entry=entry.duplicate(true);v.row=row.duplicate(true)
-		v.type=int(row.dmgtype);v.damage=g.equipment_stat(entry.key,int(entry.level))
-		v.interval=float(row.cd)
-		v.speed=float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0
-		v.salvo=int(row.para1) if kind==2 else 1
-		v.charge=float(row.para3) if kind==3 and row.get("para3")!=null else -1.0
-		v.ramp=float(row.para1) if kind==3 else 1.0;v.maximum=float(row.para2) if kind==3 else 1.0
-		v.critical_rate=critical.x;v.critical_multiplier=critical.y
-		rows[index]=freeze_value(v)
-	for index in defence_levels:
-		if not native_integer(defence_levels[index]) or index<0 or index>=defs.size():return {"error":"numeric_update_defence"}
-		var entry:Dictionary=g.slot_entry("defence",index).duplicate();entry.level=int(defence_levels[index])
-		if entry.key!=defs[index].entry.key:return {"error":"numeric_update_structure"}
-		var row:Dictionary=g.combat_equipment_row(entry.key,int(entry.level))
-		if not native_integer(row.get("dmgtype",0)) or (entry.key=="shield" and not native_fields(row,["para2","para3"])):return {"error":"unsupported_native_scalar:defence_row"}
-		var v:Dictionary=defs[index].duplicate();v.entry=entry
-		v.type=int(row.get("dmgtype",0));v.base=g.equipment_stat(entry.key,int(entry.level))
-		v.maximum=g.jewel_equipment_stat(entry,-1,null,false)
-		v.delay=float(row.para3) if entry.key=="shield" else 0.0;v.rate=float(row.para2) if entry.key=="shield" else 0.0
-		defs[index]=freeze_value(v)
-	result.weapons=rows;result.defences=defs
-	return result
-
-func bind_numeric_context(descriptor:Dictionary,context:Dictionary,changed_defences:Dictionary)->Dictionary:
-	if context.is_empty():return {"error":"native_context_unavailable"}
-	var result:Dictionary=descriptor.duplicate()
-	for key in context:
-		if key not in ["weapon_remaining","defence_rows"]:result[key]=context[key]
-	var rows:Array=[];var defs:Array=[]
-	if descriptor.weapons.size()!=context.weapon_remaining.size() or descriptor.defences.size()!=context.defence_rows.size():return {"error":"native_context_structure"}
-	for i in descriptor.weapons.size():
-		var row:Dictionary=descriptor.weapons[i].duplicate();row.remaining=context.weapon_remaining[i];rows.append(row)
-	for i in descriptor.defences.size():
-		var row:Dictionary=descriptor.defences[i].duplicate();var live:Dictionary=context.defence_rows[i]
-		for key in ["loss","buffer","last_hit"]:row[key]=live[key]
-		if not changed_defences.has(i):row.maximum=live.maximum
-		defs.append(row)
-	result.weapons=rows;result.defences=defs
-	return result
+	return {"requires_endless_beam":totals.legendary.has("endless_beam"),"execution_scope":scope,"final_encounter":g.is_final_encounter(),"since_hit":g.since_hit,"projectile_serial":g.projectile_serial,"attack_serial":g.main_attack_serial,"instance_serial":g.attack_instance_serial,"ejection_gap":g.EJECTION_GAP,"launch_speed":g.MISSILE_LAUNCH_SPEED,"turn_rate":g.MISSILE_TURN_RATE,"ignition":g.MISSILE_IGNITION,"seek":g.MISSILE_SEEK_START,"cruise_at":g.MISSILE_CRUISE_AT,"lifetime":g.MISSILE_LIFETIME,"orphan_lifetime":g.ORPHAN_LIFETIME,"brake_range":g.MISSILE_BRAKE_RANGE,"brake_angle":g.MISSILE_BRAKE_ANGLE,"min_speed":g.MISSILE_MIN_GUIDED_SPEED,"brake_factor":g.MISSILE_BRAKE_FACTOR,"hit_radius":g.MISSILE_HIT_RADIUS,"chain_speed":g.db.weapon_motion_value("chain_carrier_speed",720.0),"player":player,"enemies":enemies,"weapons":weapons,"defences":defence,"clock":g.enemy_shield_time,"rng_state":g.rng.state,"resistance":float(g.db.config.dmgReduce),"attack_counter":g.profile.enhancementAttacks,"incoming_counter":g.profile.enhancementHits,"counter_growth":growth,"defence_counter_growth":defence_growth,"counter_level":effect_level,"counter_log_base":g.enhancement_parameter("counter_log_base"),"counter_round_scale":g.enhancement_parameter("bonus_round_scale"),"repeat_delay":g.enhancement_parameter("repeat_delay"),"requires_missile_legends":totals.legendary.has("precise_guidance") or totals.legendary.has("wild_missile") or weapons.any(func(w):return not w.hostile and int(w.kind)==2),"precise_guidance":totals.legendary.has("precise_guidance"),"guidance_multiplier":guidance_multiplier,"guidance_limited":guidance_limited,"guidance_limit":guidance_limit,"wild_missile":totals.legendary.has("wild_missile"),"wild_multiplier":wild_multiplier,"wild_period":wild_period,"wild_blast":wild_blast,"wild_damage_type":int(missile_type),"missile_attacks":g.drone_combat.missile_attacks,"requires_strange_matter":totals.legendary.has("strange_matter"),"strange_probability":strange_probability,"strange_delay":strange_delay,"strange_damage_multiplier":strange_multiplier,"strange_kill_spawns":strange_count,"strange_damage_type":strange_type,"requires_laser_charge":totals.legendary.has("laser_charge"),"laser_charge_multiplier":charge_multiplier,"scatter":not scatter.is_empty(),"scatter_bonus":float(scatter.get("parameters",{}).get("single_target_bonus",0.0)),"prism_count":int(prism.get("constants",{}).get("nearby_targets",0)),"prism_bonus":float(prism.get("parameters",{}).get("maximum_multiplier_bonus",0.0)),"memory_interval":g.enhancement_parameter("memory_interval"),"deferred_interval":g.enhancement_parameter("deferred_interval"),"deferred_duration":g.enhancement_parameter("deferred_duration"),"clear_probability":g.enhancement_branches.clear_probability(g),"defence_time":g.enhancement_defense_time,"memory_elapsed":g.enhancement_memory_elapsed,"deferred_elapsed":g.enhancement_deferred_elapsed,"deferred_tick":g.enhancement_deferred_tick,"deferred":g.enhancement_deferred.duplicate(true),"drop_rules_compiled":true,"requires_drop_rules":true,"requires_module_defense":true,"drop_uid":g.uid,"jewel_probability":float(g.db.config.get("jewelDrop",0)),"jewel_ratio":g.jewel_ratio()}

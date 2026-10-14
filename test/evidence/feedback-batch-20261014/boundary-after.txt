@@ -1,4 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-SAME_BATCH_RETIRE_OK legacy=1 batch=1 serial=777 speed=321 clock=1/60
-NATIVE_FEEDBACK_OK checks=720 events={ "fire": 207, "projectile_impact": 252, "hit": 360, "enhancement_chain": 74, "explode": 8, "beam_started": 3, "beam_hit": 69 }
