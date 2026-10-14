@@ -72,19 +72,14 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 
 static func position(host,enemy:Dictionary,pose:Dictionary)->Vector2:
 	var layout:=ensure(host,enemy,pose)
-	# The existing pose owns residence. Time matters only while entering; logical
-	# movement and layout/authoring changes invalidate the exact final position.
-	var logical:=Vector2(enemy.x,enemy.y)
-	var key:Array=[layout.revision,layout.width,layout.top,layout.frontline,pose.target,pose.logical_position,logical,pose.born,pose.duration,pose.entry_x,layout.entry_distance,enemy.get("explicit_formation",false)]
-	if pose.get("residence_key",[])==key and host.fx_time>=float(pose.born)+float(pose.duration):return pose.residence_position
 	var age:=maxf(0.0,float(host.fx_time)-float(pose.born))
 	var enter:=1.0-pow(1.0-clampf(age/float(pose.duration),0.0,1.0),3)
 	var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
-	var point:=target+Vector2(float(pose.entry_x)*(1.0-enter),-float(layout.entry_distance)*(1.0-enter))
+	var hover:=Vector2(sin(host.fx_time*1.13+float(pose.phase))*float(host.battle_visual.enemy_idle_x),sin(host.fx_time*0.91+float(pose.phase))*float(host.battle_visual.enemy_idle_y))
+	if enemy.get("size_formation",false):hover*=0.25
+	var point:=target+Vector2(float(pose.entry_x)*(1.0-enter),-float(layout.entry_distance)*(1.0-enter))+hover*enter
 	if not enemy.get("explicit_formation",false):
 		point.x=clampf(point.x,54.0,host.BATTLE_VIEW_SIZE.x-54.0)
 		point.y=maxf(point.y,float(layout.top))
 	point.y=minf(point.y,floorf(float(layout.frontline)))
-	if enter==1.0:
-		pose.residence_key=key;pose.residence_position=point
 	return point

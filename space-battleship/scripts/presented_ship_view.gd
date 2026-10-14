@@ -404,8 +404,8 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	orbit_center = Vector3((rendered_position.x-size.x*0.5)*WORLD_PER_PIXEL,0,(rendered_position.y-size.y*0.5)*WORLD_PER_PIXEL)
 	orbit_elapsed += clampf(visual_delta,0.0,0.10)
 	# Restrained anchored hull motion. Carrier orbits use orbit_center, not this bob.
-	ship.position = orbit_center
-	ship.rotation = Vector3(0,-angle,0)
+	ship.position = orbit_center+Vector3(0,0,sin(orbit_elapsed*TAU/8.0)*1.2*WORLD_PER_PIXEL)
+	ship.rotation = Vector3(0,-angle+sin(orbit_elapsed*TAU/10.0)*deg_to_rad(0.65),0)
 	_update_carriers(scale_value,visual_delta)
 	body_baker.guard_resolution(float(int(viewport.size.x*viewport.scaling_3d_scale))/camera.size)
 	aim_at(target)
@@ -493,13 +493,12 @@ var numeric_slice_only:=false
 func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
 	assert(str(frame.hull)==hull_key,"Fleet geometry/configuration generation mismatch")
 	elapsed=frame.elapsed;rendered_height=frame.rendered_height;rendered_position=frame.rendered_position
-	orbit_center=frame.orbit_center;orbit_elapsed=frame.orbit_elapsed
-	if ship.transform!=frame.ship:ship.transform=frame.ship
+	orbit_center=frame.orbit_center;orbit_elapsed=frame.orbit_elapsed;ship.transform=frame.ship
 	assert(carriers.size()==frame.carriers.size() and modules.size()==frame.pivots.size(),"Fleet descriptor membership mismatch")
 	for index in carriers.size():carriers[index].transform=frame.carriers[index];carriers[index].visible=true
 	for index in modules.size():
 		assert(int(modules[index].slot)==int(frame.pivots[index].slot))
-		if modules[index].pivot.transform!=frame.pivots[index].transform:modules[index].pivot.transform=frame.pivots[index].transform
+		modules[index].pivot.transform=frame.pivots[index].transform
 	shield.visible=shield_enabled
 	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(elapsed,3.8)/0.6))
 	for index in exhaust_nodes.size():exhaust_nodes[index].scale.z=1.0+sin(elapsed*9+float(index))*0.06

@@ -28,7 +28,6 @@ var size := Vector2.ZERO
 var camera_transform := Transform3D.IDENTITY
 var projection := Projection.IDENTITY
 var configuration_dirty := true
-var base_signature:Array=[]
 var configured_entries:Array=[]
 var configured_capacity:=0
 var configured_bag:Dictionary={}
@@ -147,15 +146,14 @@ func pose_base(center: Vector2, height: float, angle: float, time: float, close_
 	var scale_value: float = rendered_height / float(manifest.hulls[hull_key].model_span) * VIEW.WORLD_PER_PIXEL
 	orbit_center = Vector3((rendered_position.x-size.x*0.5)*VIEW.WORLD_PER_PIXEL,0,(rendered_position.y-size.y*0.5)*VIEW.WORLD_PER_PIXEL)
 	orbit_elapsed += clampf(dt,0.0,0.10)
+	var rotation := Vector3(0,-angle+sin(orbit_elapsed*TAU/10.0)*deg_to_rad(0.65),0)
+	ship_transform = Transform3D(Basis.from_euler(rotation).scaled_local(Vector3.ONE*scale_value),orbit_center+Vector3(0,0,sin(orbit_elapsed*TAU/8.0)*1.2*VIEW.WORLD_PER_PIXEL))
 	_pose_carriers(scale_value)
-	var signature:Array=[hull_key,rendered_position,rendered_height,angle,size]
-	if base_signature==signature:return
-	base_signature=signature
-	ship_transform = Transform3D(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center)
 	var zoom := 2.8 if close_up else 1.0
 	for index in drones.size():
 		var member: Dictionary = drones[index]
-		var point: Vector2 = rendered_position+DRONES.OFFSETS[index]*zoom
+		var bob := sin(orbit_elapsed*TAU/8.0+index)*2.0
+		var point: Vector2 = rendered_position+(DRONES.OFFSETS[index]+Vector2(0,bob))*zoom
 		if zoom == 1.0:
 			point.x = clampf(point.x,28,size.x-28); point.y = clampf(point.y,32,size.y-60)
 		# Native set_global_position dirties Euler/scale before set_scale.
@@ -185,7 +183,6 @@ func _pose_carriers(scale_value: float) -> void:
 		carrier.transform = Transform3D(Basis.from_euler(carrier.euler).scaled_local(scaled.get_scale()),orbit_center+Vector3(sin(theta)*radius.x*radial,-1.6*scale_value,-cos(theta)*radius.y*radial))
 
 func invalidate_pose() -> void:
-	base_signature.clear()
 	# Configuration and ownership capture can replace transforms without a step.
 	# Projection descriptors are immutable after prepare; invalidate here if changed.
 	for module in modules:

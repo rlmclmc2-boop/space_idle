@@ -24,8 +24,6 @@ func descriptor(uid:int,value:Dictionary)->void:
 		component.damage_type=int(item.damage_type);components.append(component)
 	appearances[uid]={"components":components,"mounts":value.mounts,"types":value.types}
 	spatials[uid]={"shape_revision":1,"appearance":appearances[uid],"components":components}
-var source_rows:Dictionary={}
-
 func apply(value:Dictionary)->void:
 	for shape in value.get("shapes",[]):
 		shapes[str(shape.id)]=shape.value
@@ -35,8 +33,6 @@ func apply(value:Dictionary)->void:
 	if value.has("fleet"):
 		fleet=value.fleet;fleet_configuration_version=int(value.get("configuration_version",0))
 	for uid in value.get("enemies",{}):
-		if source_rows.has(uid) and is_same(source_rows[uid],value.enemies[uid]):continue
-		source_rows[uid]=value.enemies[uid]
 		var row:Dictionary=value.enemies[uid].duplicate()
 		assert(shapes.has(str(row.recognition_id)),"Display missing immutable shape publication")
 		row.recognition=shapes[str(row.recognition_id)];rows[int(uid)]=row;applied_rows+=1
@@ -57,7 +53,7 @@ func appearance(enemy:Dictionary)->Dictionary:
 	assert(not value.is_empty(),"Display geometry missing birth descriptor")
 	return value
 func retire(uid:int)->void:
-	rows.erase(uid);poses.erase(uid);appearances.erase(uid);spatials.erase(uid);source_rows.erase(uid)
+	rows.erase(uid);poses.erase(uid);appearances.erase(uid);spatials.erase(uid)
 	for identity in shape_members.get(uid,{}):shapes.erase(identity)
 	shape_members.erase(uid)
 

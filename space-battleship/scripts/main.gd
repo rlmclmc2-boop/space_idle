@@ -1254,7 +1254,7 @@ func shot_mount(shot: Dictionary) -> int:
 func enemy_render_angle(enemy:Dictionary)->float:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).angle)
 	var pose:=enemy_pose(enemy)
-	return float(pose.rotation)
+	return float(pose.rotation)+deg_to_rad(float(battle_visual.enemy_idle_rotation))*sin(fx_time*0.83+float(pose.phase))
 
 # Supplied positions stay within one synchronous solve; no value survives it.
 func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
@@ -1564,11 +1564,13 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
 	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 	if not enemy.get("explicit_formation",false):target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
+	var hover := Vector2(sin(fx_time*1.13+float(pose.phase))*float(battle_visual.enemy_idle_x),sin(fx_time*0.91+float(pose.phase))*float(battle_visual.enemy_idle_y))
+	if enemy.get("size_formation",false):hover *= 0.25
 	# Shared approach distance keeps each column separated even during entry.
 	# Once entry is complete its distance contributes exactly zero. Avoid the
 	# fleet-wide clearance calculation without caching moving entity state.
 	var entry_distance := enemy_safe_entry_distance() if enter<1.0 else 0.0
-	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))
+	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))+hover*enter
 	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
 	# Clamp the final animated position, so hover, entry and ship changes cannot
 	# cross the front line. Logical entity coordinates remain untouched.
