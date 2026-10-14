@@ -6,7 +6,7 @@
   "files": {
     "analyze_strip_ledger.py": "23d08a5469d251a43388b1f64661d6bdb1e4e8a84005082316a76df22301db7a",
     "boundaries.json": "0fba3d9904de9645b966154366ace6c22f1300b4ca6f412029eb6ffa47439f31",
-    "candidate-review.json": "7292b078e3a38a394fa1f70049e4618d43693206d171dd4db634fdb92bd47703",
+    "candidate-review.json": "903a73dc9c159731a5a4133189eb6b6062d3a05750dde316cc1ad13e417eda3a",
     "collect_strip_evidence.py": "15d3ff51418cb05da485aaf3bfc9bcc9a60c00050fdfcbeac6ef881d4fb3182f",
     "comparison.json": "4ddfa451ab77e9de1e486b041fa2b9067eb41474283c63421a9f4357ed0a4257",
     "natural-current.json": "3aa11e66d02b79795fb76b0c147b55eeb4eb12af68e3e7ea11c199ffbde270e7",
@@ -54,5 +54,6 @@
   },
   "connection_note": "Transient exec transport failure happened after measured natural process exited and before read-only analysis; no disconnected interval is included in measured post_draw samples.",
   "isolate_restored": true,
-  "reproduction": "Existing isolated project with matching native DLL and frozen qa_galaxy_residence.gd/combat_stress_fixture.gd. prepare_strip.py + run_strip.py for clean; prepare_strip.py --profile + run_strip_profile.py for detailed. A5 runs same driver atSTRIP_MODE0/STRIP_PROFILE0 after profiling; prepare_natural.py then qa_natural_current.gd for bounded natural sample. Separate qa_strip_probe_calibration.gd measures empty probe pair only."
+  "reproduction": "Existing isolated project with matching native DLL and frozen qa_galaxy_residence.gd/combat_stress_fixture.gd. prepare_strip.py + run_strip.py for clean; prepare_strip.py --profile + run_strip_profile.py for detailed. A5 runs same driver atSTRIP_MODE0/STRIP_PROFILE0 after profiling; prepare_natural.py then qa_natural_current.gd for bounded natural sample. Separate qa_strip_probe_calibration.gd measures empty probe pair only.",
+  "candidate_review_revision": "Read-only source/evidence review updated against uncapped20e84889; no new runs or production changes. candidate-review hash uses LF-normalized UTF-8; all original sample receipts unchanged."
 }
