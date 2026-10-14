@@ -1,0 +1,550 @@
+{
+  "metric": "uncapped_qa_actual1x_full_wall_frame_v1",
+  "outer_interval": "previous post-draw resume to current post-draw resume; first starts at sample_start",
+  "phase_scope": "disjoint wall intervals, include synchronous driver/GPU and scheduling waits; not exclusive CPU",
+  "quantiles": "median middle values; p95/p99 nearest rank; no samples excluded",
+  "sides": {
+    "A": {
+      "warm_steps": 240,
+      "sample_steps": 480,
+      "warm_game_seconds": 3.99999999999999,
+      "game_seconds": 8.00000000000019,
+      "warm_wall_seconds": 4.102823,
+      "wall_seconds": 7.976664,
+      "game_wall_ratio": 1.00292553378207,
+      "actual_1x_pass": true,
+      "warm_fires": 1640,
+      "fires": 3458,
+      "warm_hits": 4557,
+      "hits": 13053,
+      "warm_purchases": 48,
+      "purchases": 96,
+      "handoffs": 0,
+      "rng_state": "6308591778909403009",
+      "kernel_metrics": {
+        "active_flights": 352,
+        "admitted": true,
+        "attack_counter": 658.0,
+        "ballistic_checks": 8776,
+        "ballistic_ray_queries": 4321,
+        "ballistic_skips": 103060,
+        "clock": 12.0000000000002,
+        "deaths": 0,
+        "defence_time": 11.9999999999999,
+        "deferred_elapsed": 0.0,
+        "deferred_tick": 60,
+        "drop_uid": 9,
+        "ejection_queue": 12,
+        "final_cleared": false,
+        "hits": 17610,
+        "incoming_counter": 165.0,
+        "memory_elapsed": 0.0,
+        "module_defence": true,
+        "object_refreshes": 0,
+        "old_game_callbacks": 0,
+        "physics_visits": 264196,
+        "repeat_queue": 16,
+        "root_attacks": 838,
+        "since_hit": 0.033333333333335,
+        "stale_handle_rejections": 0,
+        "steps": 787
+      },
+      "runtime_config_start": {
+        "accelerated_visual_mode": false,
+        "combat_presentation": true,
+        "compiled_rules": true,
+        "enemy_fx": true,
+        "engine_max_fps": 0,
+        "fixed_logic_hz": 60,
+        "independent_qualification_plan": false,
+        "missile_fx": true,
+        "native_active": true,
+        "native_auto": true,
+        "old_pipeline_class": false,
+        "pulse_fx": true,
+        "retained": true,
+        "save_enabled": false,
+        "speed": 1.0,
+        "stat_cache_enabled": true,
+        "time_scale": 1.0,
+        "vsync": 0,
+        "window": "(1373, 883)"
+      },
+      "runtime_config_end": {
+        "accelerated_visual_mode": false,
+        "combat_presentation": true,
+        "compiled_rules": true,
+        "enemy_fx": true,
+        "engine_max_fps": 0,
+        "fixed_logic_hz": 60,
+        "independent_qualification_plan": false,
+        "missile_fx": true,
+        "native_active": true,
+        "native_auto": true,
+        "old_pipeline_class": false,
+        "pulse_fx": true,
+        "retained": true,
+        "save_enabled": false,
+        "speed": 1.0,
+        "stat_cache_enabled": true,
+        "time_scale": 1.0,
+        "vsync": 0,
+        "window": "(1373, 883)"
+      },
+      "window_focused": true,
+      "background_unfocused": false,
+      "video_adapter": "NVIDIA GeForce RTX 2060",
+      "rendering_method": "gl_compatibility",
+      "enemy_supported": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "full_wall_frame": {
+        "count": 518,
+        "mean_ms": 15.398940154440155,
+        "median_ms": 14.7115,
+        "p95_ms": 20.748,
+        "p99_ms": 43.327,
+        "max_ms": 48.951,
+        "total_ms": 7976.651
+      },
+      "phases": {
+        "main_callback": {
+          "count": 518,
+          "mean_ms": 7.371291505791506,
+          "median_ms": 6.6095,
+          "p95_ms": 12.355,
+          "p99_ms": 33.257,
+          "max_ms": 38.606,
+          "total_ms": 3818.329
+        },
+        "main_end_to_pre_draw": {
+          "count": 518,
+          "mean_ms": 4.308820463320464,
+          "median_ms": 4.1025,
+          "p95_ms": 5.372,
+          "p99_ms": 6.54,
+          "max_ms": 8.134,
+          "total_ms": 2231.969
+        },
+        "pre_to_post_draw": {
+          "count": 518,
+          "mean_ms": 3.664915057915058,
+          "median_ms": 3.5235,
+          "p95_ms": 4.713,
+          "p99_ms": 5.283,
+          "max_ms": 6.66,
+          "total_ms": 1898.426
+        },
+        "post_to_next_main": {
+          "count": 518,
+          "mean_ms": 0.05391312741312741,
+          "median_ms": 0.051,
+          "p95_ms": 0.078,
+          "p99_ms": 0.097,
+          "max_ms": 0.115,
+          "total_ms": 27.927
+        }
+      },
+      "phase_ms_per_logic_step": {
+        "main_callback": 7.954852083333334,
+        "main_end_to_pre_draw": 4.649935416666667,
+        "pre_to_post_draw": 3.9550541666666663,
+        "post_to_next_main": 0.05818125
+      },
+      "cumulative_wall_ms_per_logic_step": 16.618022916666668,
+      "closure_max_abs_us": 0,
+      "closure_total_us": 0,
+      "logic_steps_from_phases": 480,
+      "steps_per_frame": {
+        "0": {
+          "frames": 61,
+          "frame_stats": {
+            "count": 61,
+            "mean_ms": 10.61888524590164,
+            "median_ms": 10.563,
+            "p95_ms": 11.585,
+            "p99_ms": 11.852,
+            "max_ms": 11.852,
+            "total_ms": 647.752
+          }
+        },
+        "1": {
+          "frames": 437,
+          "frame_stats": {
+            "count": 437,
+            "mean_ms": 15.874528604118995,
+            "median_ms": 14.958,
+            "p95_ms": 20.501,
+            "p99_ms": 43.836,
+            "max_ms": 48.951,
+            "total_ms": 6937.169
+          }
+        },
+        "2": {
+          "frames": 18,
+          "frame_stats": {
+            "count": 18,
+            "mean_ms": 18.93511111111111,
+            "median_ms": 18.71,
+            "p95_ms": 24.515,
+            "p99_ms": 24.515,
+            "max_ms": 24.515,
+            "total_ms": 340.832
+          }
+        },
+        "3": {
+          "frames": 1,
+          "frame_stats": {
+            "count": 1,
+            "mean_ms": 22.649,
+            "median_ms": 22.649,
+            "p95_ms": 22.649,
+            "p99_ms": 22.649,
+            "max_ms": 22.649,
+            "total_ms": 22.649
+          }
+        },
+        "4": {
+          "frames": 1,
+          "frame_stats": {
+            "count": 1,
+            "mean_ms": 28.249,
+            "median_ms": 28.249,
+            "p95_ms": 28.249,
+            "p99_ms": 28.249,
+            "max_ms": 28.249,
+            "total_ms": 28.249
+          }
+        }
+      },
+      "stress_counts": {
+        "beam_hit": 543,
+        "beam_started": 6,
+        "drone_fire": 1979,
+        "enhancement_chain": 6930,
+        "enhancement_secondary": 70,
+        "fire": 5098,
+        "hit": 17610
+      },
+      "unfocused_frame_count": 0,
+      "projectiles_raw": {
+        "sum_per_frame_observations": 188053,
+        "mean": 363.0366795366795,
+        "max": 427
+      },
+      "floats_raw": {
+        "sum_per_frame_observations": 2618,
+        "mean": 5.054054054054054,
+        "max": 7
+      },
+      "pending_raw": {
+        "sum_per_frame_observations": 13132,
+        "mean": 25.35135135135135,
+        "max": 30
+      },
+      "primitives_raw": {
+        "sum_per_frame_observations": 91243213.0,
+        "mean": 176145.19884169885,
+        "max": 194555.0
+      },
+      "drawcalls_raw": {
+        "sum_per_frame_observations": 552535.0,
+        "mean": 1066.6698841698842,
+        "max": 1120.0
+      }
+    },
+    "B": {
+      "warm_steps": 240,
+      "sample_steps": 480,
+      "warm_game_seconds": 3.99999999999999,
+      "game_seconds": 8.00000000000019,
+      "warm_wall_seconds": 4.074075,
+      "wall_seconds": 7.994986,
+      "game_wall_ratio": 1.00062714306194,
+      "actual_1x_pass": true,
+      "warm_fires": 1640,
+      "fires": 3458,
+      "warm_hits": 4557,
+      "hits": 13053,
+      "warm_purchases": 48,
+      "purchases": 96,
+      "handoffs": 0,
+      "rng_state": "6308591778909403009",
+      "kernel_metrics": {
+        "active_flights": 352,
+        "admitted": true,
+        "attack_counter": 658.0,
+        "ballistic_checks": 8776,
+        "ballistic_ray_queries": 4321,
+        "ballistic_skips": 103060,
+        "clock": 12.0000000000002,
+        "deaths": 0,
+        "defence_time": 11.9999999999999,
+        "deferred_elapsed": 0.0,
+        "deferred_tick": 60,
+        "drop_uid": 9,
+        "ejection_queue": 12,
+        "final_cleared": false,
+        "hits": 17610,
+        "incoming_counter": 165.0,
+        "memory_elapsed": 0.0,
+        "module_defence": true,
+        "object_refreshes": 0,
+        "old_game_callbacks": 0,
+        "physics_visits": 264426,
+        "repeat_queue": 16,
+        "root_attacks": 838,
+        "since_hit": 0.0166666666666675,
+        "stale_handle_rejections": 0,
+        "steps": 787
+      },
+      "runtime_config_start": {
+        "accelerated_visual_mode": false,
+        "combat_presentation": true,
+        "compiled_rules": true,
+        "enemy_fx": true,
+        "engine_max_fps": 0,
+        "fixed_logic_hz": 60,
+        "independent_qualification_plan": false,
+        "missile_fx": true,
+        "native_active": true,
+        "native_auto": true,
+        "old_pipeline_class": false,
+        "pulse_fx": true,
+        "retained": true,
+        "save_enabled": false,
+        "speed": 1.0,
+        "stat_cache_enabled": true,
+        "time_scale": 1.0,
+        "vsync": 0,
+        "window": "(1373, 883)"
+      },
+      "runtime_config_end": {
+        "accelerated_visual_mode": false,
+        "combat_presentation": true,
+        "compiled_rules": true,
+        "enemy_fx": true,
+        "engine_max_fps": 0,
+        "fixed_logic_hz": 60,
+        "independent_qualification_plan": false,
+        "missile_fx": true,
+        "native_active": true,
+        "native_auto": true,
+        "old_pipeline_class": false,
+        "pulse_fx": true,
+        "retained": true,
+        "save_enabled": false,
+        "speed": 1.0,
+        "stat_cache_enabled": true,
+        "time_scale": 1.0,
+        "vsync": 0,
+        "window": "(1373, 883)"
+      },
+      "window_focused": true,
+      "background_unfocused": false,
+      "video_adapter": "NVIDIA GeForce RTX 2060",
+      "rendering_method": "gl_compatibility",
+      "enemy_supported": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "full_wall_frame": {
+        "count": 520,
+        "mean_ms": 15.374944230769232,
+        "median_ms": 14.648,
+        "p95_ms": 20.413,
+        "p99_ms": 43.258,
+        "max_ms": 50.307,
+        "total_ms": 7994.971
+      },
+      "phases": {
+        "main_callback": {
+          "count": 520,
+          "mean_ms": 7.386955769230769,
+          "median_ms": 6.552,
+          "p95_ms": 12.264,
+          "p99_ms": 33.308,
+          "max_ms": 38.567,
+          "total_ms": 3841.217
+        },
+        "main_end_to_pre_draw": {
+          "count": 520,
+          "mean_ms": 4.301794230769231,
+          "median_ms": 4.1155,
+          "p95_ms": 5.29,
+          "p99_ms": 6.57,
+          "max_ms": 7.352,
+          "total_ms": 2236.933
+        },
+        "pre_to_post_draw": {
+          "count": 520,
+          "mean_ms": 3.632857692307692,
+          "median_ms": 3.5,
+          "p95_ms": 4.559,
+          "p99_ms": 5.354,
+          "max_ms": 6.413,
+          "total_ms": 1889.086
+        },
+        "post_to_next_main": {
+          "count": 520,
+          "mean_ms": 0.05333653846153846,
+          "median_ms": 0.05,
+          "p95_ms": 0.076,
+          "p99_ms": 0.088,
+          "max_ms": 0.14,
+          "total_ms": 27.735
+        }
+      },
+      "phase_ms_per_logic_step": {
+        "main_callback": 8.002535416666667,
+        "main_end_to_pre_draw": 4.660277083333333,
+        "pre_to_post_draw": 3.935595833333333,
+        "post_to_next_main": 0.05778125
+      },
+      "cumulative_wall_ms_per_logic_step": 16.656189583333333,
+      "closure_max_abs_us": 0,
+      "closure_total_us": 0,
+      "logic_steps_from_phases": 480,
+      "steps_per_frame": {
+        "0": {
+          "frames": 56,
+          "frame_stats": {
+            "count": 56,
+            "mean_ms": 10.810089285714286,
+            "median_ms": 10.71,
+            "p95_ms": 12.068,
+            "p99_ms": 13.032,
+            "max_ms": 13.032,
+            "total_ms": 605.365
+          }
+        },
+        "1": {
+          "frames": 450,
+          "frame_stats": {
+            "count": 450,
+            "mean_ms": 15.81650888888889,
+            "median_ms": 14.839,
+            "p95_ms": 20.349,
+            "p99_ms": 43.53,
+            "max_ms": 50.307,
+            "total_ms": 7117.429
+          }
+        },
+        "2": {
+          "frames": 12,
+          "frame_stats": {
+            "count": 12,
+            "mean_ms": 18.292333333333332,
+            "median_ms": 17.347,
+            "p95_ms": 24.22,
+            "p99_ms": 24.22,
+            "max_ms": 24.22,
+            "total_ms": 219.508
+          }
+        },
+        "3": {
+          "frames": 2,
+          "frame_stats": {
+            "count": 2,
+            "mean_ms": 26.3345,
+            "median_ms": 26.3345,
+            "p95_ms": 29.873,
+            "p99_ms": 29.873,
+            "max_ms": 29.873,
+            "total_ms": 52.669
+          }
+        }
+      },
+      "stress_counts": {
+        "beam_hit": 543,
+        "beam_started": 6,
+        "drone_fire": 1979,
+        "enhancement_chain": 6930,
+        "enhancement_secondary": 70,
+        "fire": 5098,
+        "hit": 17610
+      },
+      "unfocused_frame_count": 0,
+      "projectiles_raw": {
+        "sum_per_frame_observations": 188987,
+        "mean": 363.4365384615385,
+        "max": 427
+      },
+      "floats_raw": {
+        "sum_per_frame_observations": 2629,
+        "mean": 5.055769230769231,
+        "max": 7
+      },
+      "pending_raw": {
+        "sum_per_frame_observations": 13159,
+        "mean": 25.30576923076923,
+        "max": 30
+      },
+      "primitives_raw": {
+        "sum_per_frame_observations": 91588501.0,
+        "mean": 176131.7326923077,
+        "max": 194463.0
+      },
+      "drawcalls_raw": {
+        "sum_per_frame_observations": 553772.0,
+        "mean": 1064.946153846154,
+        "max": 1124.0
+      }
+    }
+  },
+  "B_minus_A_full_wall_ms": {
+    "mean_ms": -0.02399592367092218,
+    "median_ms": -0.06349999999999945,
+    "p95_ms": -0.33500000000000085,
+    "p99_ms": -0.06899999999999551,
+    "max_ms": 1.3560000000000016
+  },
+  "B_minus_A_phase_mean_ms": {
+    "main_callback": 0.015664263439263415,
+    "main_end_to_pre_draw": -0.007026232551232248,
+    "pre_to_post_draw": -0.03205736560736572,
+    "post_to_next_main": -0.0005765889515889494
+  },
+  "equal_workload": {
+    "warm_steps": true,
+    "sample_steps": true,
+    "warm_fires": true,
+    "fires": true,
+    "warm_hits": true,
+    "hits": true,
+    "warm_purchases": true,
+    "purchases": true,
+    "handoffs": true,
+    "rng_state": true,
+    "stress_counts": true,
+    "kernel_metrics": false
+  },
+  "fixture_equal": true
+}

@@ -1,0 +1,65 @@
+{
+  "refs": {
+    "A": "e7cc31e026fd390b24daa188256ee7f5f33a67e9",
+    "B": "4b79775a7402c9ef19ab9fc29071a190f8645f4e"
+  },
+  "order": [
+    "A",
+    "B"
+  ],
+  "warm_step_target": 240,
+  "sample_step_target": 480,
+  "runs": [
+    {
+      "label": "A",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\tutorial-integration\\test\\work\\fixed-port-uncapped-ab\\A\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791983803.0327368,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791983825.8924117,
+      "json_sha256": "742fc868d1d9f8bc8bfe4342af084afd398a8d0ef21be88eed2888794604a405",
+      "png_sha256": "6bb8ee1356adbe9c14b42f714d26f4a8bf733d9ab3cc6ae515dff4b6b664cbab",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    },
+    {
+      "label": "B",
+      "cmd": [
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+        "--path",
+        "D:\\CodexBuild\\space_idle\\stable-integration\\test\\work\\battle-fix-20261013\\tutorial-integration\\test\\work\\fixed-port-uncapped-ab\\B\\space-battleship",
+        "--rendering-method",
+        "gl_compatibility",
+        "--script",
+        "res://port_perf.gd"
+      ],
+      "started_unix": 1791983825.9003904,
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+      "exit": 0,
+      "completed_unix": 1791983845.5781314,
+      "json_sha256": "6b97567e391c0bd16d4bb5a4fa113f6254fdf17de0750f97fc971d6b3d20dda7",
+      "png_sha256": "b4f7ef1bcf7c0486b9ea8501a7f1ad39bb2452291dc1f34d97c0afa0ea1723e0",
+      "invalid_order_or_closure_frames": [],
+      "sample_count_equal": true
+    }
+  ],
+  "imports": {
+    "A": 0,
+    "B": 0
+  },
+  "dll_sha256": "45c507c31570d021e9f04f4056c35a92f201f4f028e392b6a65aef2befdf1f1e",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "4b6dc50e1316e545419dbc5f4f459431298a21e098d9d1d42b6ac6fcc49fcb09",
+  "fixture_sha256": "2582ec8b7902bfe35e2c58b6a0f68a2df9715dd47c3ee78620c57c4262ae02ac",
+  "scope": "QA-only cap=0/VSync off; actual speed/time_scale 1; full rich15 layer2; four wall spans, not exclusive CPU time"
+}
