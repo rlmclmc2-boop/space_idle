@@ -1359,7 +1359,9 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
-	if shot.get("fixed_enemy_port",false) and not shot.get("beam",false):return Vector2(shot.launch_point)
+	if shot.get("fixed_enemy_port",false):
+		if not shot.get("beam",false):return Vector2(shot.launch_point)
+		return ENEMY_FIXED_PORTS.launch_position(self,shot.source,int(shot.mount))
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var pos := game.projectile_position(shot)
 	if shot.hostile:

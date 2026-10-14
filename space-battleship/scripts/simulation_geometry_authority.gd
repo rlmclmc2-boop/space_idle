@@ -358,7 +358,9 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
-	if shot.get("fixed_enemy_port",false) and not shot.get("beam",false):return Vector2(shot.launch_point)
+	if shot.get("fixed_enemy_port",false):
+		if not shot.get("beam",false):return Vector2(shot.launch_point)
+		return ENEMY_FIXED_PORTS.launch_position(self,shot.source,int(shot.mount))
 	var identity=drone_identity(shot)
 	if not identity.is_empty():return drone_launch_pose(identity,Vector2.ZERO,0).position
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
@@ -771,8 +773,9 @@ func ensure_fleet_geometry()->void:
 	if fleet_angles_dirty:sync_fleet_angles()
 
 func enemy_launch_pose(enemy:Dictionary,shot:Dictionary)->Dictionary:
-	var position:=enemy_render_position(enemy)
 	var slot:int=enemy_shot_mount(enemy,shot)
+	if shot.get("fixed_enemy_port",false):return {"position":ENEMY_FIXED_PORTS.launch_position(self,enemy,slot),"mount":slot}
+	var position:=enemy_render_position(enemy)
 	return {"position":battle_logical_point(position+enemy_port_offset(enemy,slot,position)),"mount":slot}
 
 func launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:

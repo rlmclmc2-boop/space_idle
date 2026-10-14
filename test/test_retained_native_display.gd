@@ -176,6 +176,21 @@ func run()->void:
 		check(g.advance_long_laser(beam,1.0/60.0),"transferred live beam remains valid")
 		var expected:Vector2=scene.battle_logical_point(scene.enemy_render_position(beam.source)+scene.enemy_port_offset(beam.source,int(beam.mount)))
 		check(g.projectile_position(beam).is_equal_approx(expected),"legacy continuous beam follows same fixed outlet")
+		var encounter_row:Dictionary=g.db.levels[g.stage-1].groups[g.group_index-1]
+		var group_row:Dictionary=g.db.groups[str(int(encounter_row.id))]
+		var tier_before:Variant=group_row.get("combatTier")
+		var aim_calls_before:int=scene.enemy_aim_calls
+		group_row.combatTier="boss"
+		check(g.advance_long_laser(beam,1.0/60.0),"live source beam remains valid while encounter tier changes")
+		check(g.projectile_position(beam).is_equal_approx(expected) and scene.visual_muzzle(beam).is_equal_approx(expected),"committed fixed beam keeps logical and visual outlet after tier change")
+		check(scene.enemy_aim_calls==aim_calls_before,"committed fixed beam never re-enters ordinary rotation after tier change")
+		var numeric=GeometryAudit.new();numeric.prepare(scene,g)
+		check(numeric.enemy_launch_pose(beam.source,beam).position.is_equal_approx(numeric.visual_muzzle(beam)),"numeric provider and visual publication retain birth semantics")
+		check(numeric.aim_calls==0,"numeric fixed beam bypasses current Boss angle rule")
+		numeric.game=null;numeric.battle_read_model.host=null;numeric.fleet_pose=null
+		if tier_before==null:group_row.erase("combatTier")
+		else:group_row.combatTier=tier_before
+
 	await picture(scene)
 	check(retained.records[int(enemy.uid)].source_id==0,"same retained actor switches to main canonical getters")
 	var old_root=retained.records[int(enemy.uid)].root

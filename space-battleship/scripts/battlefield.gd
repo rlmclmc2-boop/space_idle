@@ -180,8 +180,9 @@ func _prototype_drone_launch_pose(id:String,aim:Vector2,ordinal:int)->Dictionary
 
 
 func _prototype_enemy_launch_pose(enemy:Dictionary,shot:Dictionary)->Dictionary:
-	var position:=enemy_render_position(enemy)
 	var slot:int=enemy_shot_mount(enemy,shot)
+	if shot.get("fixed_enemy_port",false):return {"position":ENEMY_FIXED_PORTS.launch_position(self,enemy,slot),"mount":slot}
+	var position:=enemy_render_position(enemy)
 	return {"position":battle_logical_point(position+enemy_port_offset(enemy,slot,position)),"mount":slot}
 
 func _visual_drone_id(shot:Dictionary)->String:
