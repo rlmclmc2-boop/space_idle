@@ -25,7 +25,7 @@ func run()->void:
  var hit={"kind":"impact","born":0.97,"position":Vector2(121,119),"direction":Vector2(0.4,-0.6),"critical":true,"serial":2}
  var retired={"kind":"retired","born":0.96,"position":Vector2(123,120),"direction":Vector2.UP,"coast_time":0.1,"speed":20.0,"serial":3}
  var rows:Array=[];var failures:=0
- for mode in 5:
+ for mode in 7:
   var events:Array=[]
   match mode:
    0:events=[launch,hit,retired,hit,launch]
@@ -33,8 +33,15 @@ func run()->void:
    2:events=[]
    3:events=[hit,retired,launch];retired.coast_time=0.01
    4:events=[launch,hit];launch.direction=Vector2.ZERO;hit.direction=Vector2.ZERO
+   5:events=[hit,retired,hit]
+   6:
+    renderer.sync(scene,[hit,retired,hit],1.0,0.45)
+    events=[retired,retired,retired]
   var before:=events.duplicate(true);painter.events=events;painter.queue_redraw();renderer.sync(scene,events,1.0,0.45)
-  if events!=before:failures+=1
+  var visible_children=renderer.get_children().filter(func(n):return n.visible)
+  var visible_pieces=renderer.pieces.filter(func(n):return n.visible)
+  var ordered:bool=visible_children==visible_pieces
+  if events!=before or not ordered:failures+=1
   await process_frame;await RenderingServer.frame_post_draw;await process_frame;await RenderingServer.frame_post_draw;await process_frame;await RenderingServer.frame_post_draw
   var a=old.get_texture().get_image();var b=fresh.get_texture().get_image();var total:=0.0;var changed:=0;var colored:=0
   for y in 256:
@@ -45,7 +52,7 @@ func run()->void:
     if bc.a>0.01:colored+=1
   var pass_case:=total/(256*256)<0.001 and changed<256*256*0.005 and (mode!=2 or colored==0)
   if not pass_case:failures+=1
-  rows.append({"case":mode,"mean_max_channel_error":total/(256*256),"pixels_over_2_255":changed,"colored":colored,"input_unchanged":events==before,"pass":pass_case})
+  rows.append({"case":mode,"mean_max_channel_error":total/(256*256),"pixels_over_2_255":changed,"colored":colored,"input_unchanged":events==before,"live_child_order":ordered,"pass":pass_case})
   a.save_png("res://.runtime/missile-order-ref-%d.png"%mode);b.save_png("res://.runtime/missile-order-new-%d.png"%mode)
  FileAccess.open("res://.runtime/missile-order-check.json",FileAccess.WRITE).store_string(JSON.stringify({"cases":rows,"failures":failures}))
  print("MISSILE_ORDER_CHECK ",JSON.stringify(rows));quit(failures)

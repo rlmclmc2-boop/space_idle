@@ -46,6 +46,9 @@ func piece(index:int,retired:bool):
  if index==pieces.size():pieces.append(null)
  if pieces[index]==null:
   pieces[index]=Casing.new() if retired else Batch.new();add_child(pieces[index]);move_child(pieces[index],index)
+ # Deferred deletion leaves hidden children until frame end. Order every live
+ # piece, including reused ones, so replacement cannot cross a casing barrier.
+ if pieces[index].get_index()!=index:move_child(pieces[index],index)
  pieces[index].show()
  return pieces[index]
 func sync(scene,events:Array,clock:float,budget:float)->void:
