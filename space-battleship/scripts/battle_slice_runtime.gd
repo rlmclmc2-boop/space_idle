@@ -100,19 +100,29 @@ func advance(seconds:float)->void:
 	advancing=false
 func snapshot()->void:
 	geometry.sync_fixed_layout()
+	var membership:Dictionary={}
+	if game.native_execution!=null and game.native_execution.kernel.has_method("presentation_membership"):
+		membership=game.native_execution.kernel.presentation_membership()
+	var native_membership:bool=not membership.is_empty()
 	var retained:Dictionary={}
 	for enemy in game.enemies:retained[int(enemy.uid)]=enemy
 	# Labels and in-flight shots may still reference a departed target.
 	for entry in scene.floats+scene.damage_pending:
 		if entry.has("target_entity"):retained[int(entry.target_entity.uid)]=entry.target_entity
-	for shot in game.projectiles:
-		for entity in [shot.get("target",{}),shot.get("source",{})]:
-			if not entity.is_empty() and entity.has("uid") and born.has(int(entity.uid)):retained[int(entity.uid)]=entity
+	# The native encounter retains every source/target actor in game.enemies.
+	# Only the legacy handoff/old-extension path needs to discover extra owners.
+	if not native_membership:
+		for shot in game.projectiles:
+			for entity in [shot.get("target",{}),shot.get("source",{})]:
+				if not entity.is_empty() and entity.has("uid") and born.has(int(entity.uid)):retained[int(entity.uid)]=entity
 	for uid in born.keys():
 		if not retained.has(uid):
 			born.erase(uid);view.retire(uid);geometry.retire_display_entity(uid)
 	var active_serials:Dictionary={}
-	for shot in game.projectiles:active_serials[int(shot.serial)]=true
+	if native_membership:
+		for serial in membership.muzzle_serials:active_serials[int(serial)]=true
+	elif not muzzle_values.is_empty():
+		for shot in game.projectiles:active_serials[int(shot.serial)]=true
 	for serial in muzzle_values.keys():
 		if not active_serials.has(serial):muzzle_values.erase(serial)
 	for enemy in retained.values():
@@ -126,7 +136,8 @@ func snapshot()->void:
 	view.apply(values);frame=values.fleet
 	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
-	for shot in game.projectiles:
+	var beam_shots:Array=membership.beams if native_membership else game.projectiles
+	for shot in beam_shots:
 		if str(shot.get("key","")) in ["longLaser","longLaser_mon","longLaser-mon"]:
 			muzzle_values[int(shot.serial)]=geometry.visual_muzzle(shot)
 func apply_nodes()->void:

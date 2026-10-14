@@ -1773,6 +1773,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("loss_view"), &SpaceCombatKernel::loss_view);
         ClassDB::bind_method(D_METHOD("defence_time_view"), &SpaceCombatKernel::defence_time_view);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
+        ClassDB::bind_method(D_METHOD("presentation_membership"), &SpaceCombatKernel::presentation_membership);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("take_feedback"), &SpaceCombatKernel::take_feedback);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
@@ -2568,6 +2569,29 @@ class SpaceCombatKernel : public RefCounted {
     Array projectile_views() const {
         return flight_rows;
     }
+    Dictionary presentation_membership() const {
+        // Read existing typed ownership, never another combat snapshot. All actor
+        // rows (including dead actors) survive for this kernel's whole encounter.
+        Array beams;
+        PackedInt64Array muzzle_serials;
+        for (size_t id : active_beams) {
+            const Flight &f = flights[id];
+            beams.push_back(f.view);
+            muzzle_serials.push_back(int64_t(f.serial));
+        }
+        // Only rail and beam feedback owns a retained muzzle in the scene.
+        // Ordinary flight rows need no GDScript traversal at display publication.
+        for (size_t id : active) {
+            const Flight &f = flights[id];
+            if (!f.beam && f.weapon >= 0 && weapons[f.weapon].kind == 1)
+                muzzle_serials.push_back(int64_t(f.serial));
+        }
+        Dictionary result;
+        result["beams"] = beams;
+        result["muzzle_serials"] = muzzle_serials;
+        return result;
+    }
+
     double cooldown_remaining(int slot, int64_t source_uid = -1) const {
         // Read the existing root deadline; no mirrored clock or exported world.
         if (!admitted || stopped) return std::numeric_limits<double>::infinity();
