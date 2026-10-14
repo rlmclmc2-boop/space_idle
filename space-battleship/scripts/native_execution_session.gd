@@ -24,6 +24,7 @@ var geometry_player:=Vector2.INF
 
 # Check only at configuration boundaries, including an already-running old DLL.
 func supports_configuration(candidate:RefCounted,descriptor:Dictionary)->bool:
+	if descriptor.get("requires_missile_legends",false) and (not candidate.has_method("supports_missile_legends") or not candidate.supports_missile_legends()):return false
 	if descriptor.get("requires_strange_matter",false) and (not candidate.has_method("supports_strange_matter") or not candidate.supports_strange_matter()):return false
 	return not descriptor.get("requires_laser_charge",false) or (candidate.has_method("supports_laser_charge") and candidate.supports_laser_charge())
 
@@ -241,6 +242,7 @@ func cancel(game:RefCounted)->void:
 	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)
 	game.attack_instance_serial=int(released.instance_serial);game.uid=int(released.drop_uid)
 	game.drone_combat.delayed=released.get("strange_pending",[])
+	game.drone_combat.missile_attacks=int(released.get("missile_attacks",game.drone_combat.missile_attacks))
 	game.enhancement_deferred=released.deferred
 	game.enhancement_defense_time=float(released.defence_time);game.enhancement_memory_elapsed=float(released.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(released.deferred_elapsed);game.enhancement_deferred_tick=int(released.deferred_tick)
