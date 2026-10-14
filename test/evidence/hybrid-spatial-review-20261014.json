@@ -1,0 +1,80 @@
+{
+  "source": "712b0b3c; analysis only, no run/build/renderer change. GPU-contact result is separate.",
+  "decision": "Technically feasible hybrid, but no demonstrated >1ms net opportunity yet. Do not switch renderer or implement a compute backend on current aggregate timings alone. Preferred boundary fuses lazy hull expansion with conservative fixed-ray edge candidate generation; CPU owns exact predicates and all rule/motion state.",
+  "current_dependencies": [
+    {
+      "source": "combat_execution_kernel.h:489-506",
+      "fact": "targets is not a geometric nearest-neighbor kernel: updates shield(at), filters live actors, sorts current shield/armour resistance then logical.y and slot. With15 actors, there is no existing N-projectile by N-enemy broadphase to replace."
+    },
+    {
+      "source": "combat_execution_kernel.h:1297-1445,2004-2012",
+      "fact": "Each60Hz advance can split at ejection deadlines. Segment runs old beam periods, defence recovery, boundary repeats, roots, ejections, newborn beam periods, then active-order motion snapshot. Newborn flights and flights appended by later hits do not move in that segment. Preserve this order, not a new global time-of-impact sort."
+    },
+    {
+      "source": "combat_execution_kernel.h:1360-1436",
+      "fact": "Each moving flight normally tests its already-bound target. Straight friendly rays test that target hull; homing missiles update age/speed/steering and use swept point-radius; chains/enemy homing use current aim; others use along/cross test. Orphan/death paths differ. CPU double/scalar and float Vector2 rounding are existing contracts."
+    },
+    {
+      "source": "combat_execution_kernel.h:750-865",
+      "fact": "Hits synchronously alter shield/hp, increment dead target generation, trigger recursive adjacent explosions, break links/retire beams, create chain flights and consume drop RNG. Target priorities can change within the same segment; frozen top-K alive lists are unsafe."
+    },
+    {
+      "source": "battle_read_model.gd:176-203;native_execution_session.gd:141-162",
+      "fact": "ballistic_shape rotates every packet.inner vertex into a new world hull once per entity/clock. prepare_geometry publishes hulls, centers, inverse-mapped points and weapon muzzles before kernel.advance. These publications are shared with the existing CPU/legacy authority; they are not free GPU-ready input."
+    }
+  ],
+  "cost_evidence": {
+    "authority": "presentation-uncapped-20261014/comparison.json UPA, same unchanged kernel as712b; GPU-contact A/B did not reprofile these scopes.",
+    "kernel_advance_ms_per_display_frame": 0.7825845070422536,
+    "kernel_advance_ms_per_logic_step": 0.46302916666666666,
+    "prepare_geometry_ms_per_display_frame": 1.9985704225352112,
+    "prepare_geometry_ms_per_logic_step": 1.1824875,
+    "before_tick_ms_per_display_frame": 1.330595070422535,
+    "snapshot_and_display_gross_ms_per_frame": 2.441404929577465,
+    "interpretation": "Space arithmetic is a subset of0.783ms kernel, so offloading only that subset cannot directly delete >1ms CPU/frame at this measured workload. Larger publisher/pose scopes contain mandatory identity, aiming, recognition, coordinate and container work: do not label their totals GPU-removable. End-to-end catch-up feedback is not proof of a larger deleted CPU scope.",
+    "observed_mean_all_projectiles_latest_GCB": 363.1495016611296,
+    "actors": 15,
+    "missing_decision_ledger": "Exclusive cost/counts of ballistic world-hull expansion+publication and eligible fixed-ray edge scans, including segment count, eligible flight count, hull edges, actual candidates/uncertain cases. Existing samples do not separate this removable boundary. A later backend validation must subtract packet/dispatch/fence/readback/exact-confirmation costs; none are measured here. No test started."
+  },
+  "minimal_boundary": [
+    "CPU keeps authoritative local outline packet, pose/angle, actor/flight slot+generation and shape epoch. Introduce a geometry descriptor instead of eagerly materializing every transformed hull for native execution. Keep center/aim/muzzle and original pose updates on CPU. Upload local packet only when its content/width/recognition revision changes; it is not assumed immutable forever.",
+    "After old/new beam and scheduled attacks settle and before motion loop, capture immutable jobs only for pre-existing friendly fixed-ray flights. GPU expands hull edges from descriptors and emits conservative candidate edge masks for both segment intersection and start-point ray-crossing parity. False positives allowed; false negatives forbidden. A hit-only edge list is insufficient when the segment starts inside a hull.",
+    "CPU traverses existing active order, rechecks flight generation/live/born_step, target generation/live, shape epoch and stop/final-clear state. Use only GPU-selected edges for original CPU rotated-vertex and hull_contact predicates, including point-in-polygon parity. Apply original hit/damage/chain/drop logic immediately. Confident empty masks bypass full hull scans; ambiguous masks include every edge. No second full CPU broadphase in normal GPU path.",
+    "Conservative rejection must enclose the original CPU arithmetic result, including GPU float/FMA and CPU rotated-coordinate differences. Use proved bounded interval/outward rounding with uncertain edges retained; an arbitrary epsilon or treating GPU float contact times as authoritative is not acceptable. Until proved, exact CPU kernel remains the selected backend, not an always-running shadow.",
+    "CPU motion arithmetic remains for this minimum boundary. Existing hostile/chain/homing paths remain CPU because they are rule-state-dependent and not the removed fixed-ray edge loop. Legacy handoff lazily materializes the same canonical hull when required; no old/native full-world double execution."
+  ],
+  "intra_step_correctness": {
+    "shield_change": "Geometry mask excludes shield eligibility and target rank. Later hit uses current shield and original damage rules. CPU targets(at) reorders from current state; do not cache its step-start result.",
+    "target_death": "Discard geometry result for dead/reused handle at its turn; follow existing straight/orphan motion. Do not redirect the straight shot to another hull: current code only tests its bound target.",
+    "new_chains": "CPU births links in original order. motion_count snapshot and born_step exclude them from current-segment movement, so this boundary needs no extra GPU round for them. They enter a later segment batch.",
+    "penetration": "Current native path tested here retires the finite projectile after its bound-target hit; do not silently introduce all-hull nearest-hit/penetration. Rail/multi-target effects and synchronous recursive hits keep current CPU launch/hit rules. Any future genuinely sequential geometric piercing must retain all conservative ordered candidates and revalidate after each hit, or dispatch another dependent round.",
+    "homing_extension": "If steering is offloaded later, earlier hits can change target-alive versus orphan choice before this flight runs. Possible bounded speculative alive/orphan proposals for the same target, selected by CPU without duplicate full motion, still need numeric-contract proof. Arbitrary retarget/recursive dependent paths need additional rounds or CPU-only per-job fallback. One frozen trajectory for every flight is incorrect."
+  },
+  "synchronization": {
+    "minimum": "One dispatch/readback rendezvous per eligible segment, after scheduled rule phases and before the first CPU consumer. Hull descriptors may be uploaded once per logical geometry epoch. A60Hz step can contain multiple segments, and a display frame multiple steps; do not budget one fence per rendered frame.",
+    "overlap": "Only independent CPU work may overlap. Hits, later targets, RNG and the next dependent segment cannot advance past unavailable results. Ordinary2-3-frame async latency changes gameplay chronology and is disallowed.",
+    "more_rounds": "Not needed for shield/death invalidation or newborn chain motion under this narrow boundary. Needed if expanding into newly dependent spatial queries/retarget trajectories that cannot be conservatively covered by the original batch."
+  },
+  "transfer_layout_proposal": {
+    "not_measured": "Sizing model only; actual eligible F,H and segment S absent.",
+    "upload": "16-byte batch/geometry epoch header +32 bytes per eligible flight(slot/generation,target slot/generation,screen start.xy,delta.xy) +32 bytes per actor geometry descriptor. Local outline coordinates8*sum(H) bytes on shape revision. Persistent buffers reused.",
+    "readback": "Per job8-byte identity + two32-bit edge masks per ceil(H/32), i.e.8+8*ceil(H/32) bytes. Both segment-edge and parity-edge candidates retained; all-ones denotes uncertainty. No capped top-K or silent overflow.",
+    "example": "Illustrative F=364(all average shots treated as eligible),E=15,H=64(not observed): full upload19,824 bytes; reply8,736 bytes per batch. Stable shape packets omit7,680 upload bytes. Multiply flight/reply traffic and fences by segment count S; about1.7MB/s at60 batches/s is bandwidth sizing, not latency measurement.",
+    "geometry_growth": "Allocate from exact counts or reject job before dispatch. Capacity failure takes CPU path for that uncommitted segment; never truncate candidates."
+  },
+  "fallback": [
+    "Choose one backend before committing each spatial job/segment. Unsupported renderer/device, unproved numerics or capacity uses original CPU path only.",
+    "On GPU submission/readback error, validate tokens, discard results and execute CPU spatial work once from saved immutable segment inputs at the same motion cursor. Earlier rule phases must not replay. GPU has never modified authoritative state.",
+    "A wall-time timeout alone does not cancel an in-flight GPU command. Ignore late completions by epoch, retain buffers until safe, disable future offload; do not race or free resources still in use. No ongoing shadow comparison outside an explicitly authorized validation."
+  ],
+  "renderer_decision": {
+    "official_compute": "Godot RenderingDevice compute requires Forward+ or Mobile. Compatibility has no RenderingDevice; creating a local device is not a supported escape hatch in that mode.",
+    "alternatives": "Compatibility fragment-pass GPGPU is theoretically possible for fixed-size masks, but exact data encoding, conservative math, readback and render-thread synchronization need a new tested data path. It does not remove rendezvous latency. An external Vulkan/OpenCL native compute device could coexist with GL but adds backend/device/lifetime work and CPU transfer boundaries. Neither is an existing drop-in capability here.",
+    "scope_if_RD_chosen": "Renderer switch is project-wide visual/platform validation, not just enabling one shader. Review flexible_toon spatial lighting and sRGB paths, ship SubViewport transparency/compositing, HDR/tonemapping, MSAA, Canvas materials including gpu_contacts, and output color/alpha equivalence. No asset replacement assumed; fixes/import/validation workload is unmeasured. No switch performed.",
+    "sources": [
+      "https://docs.godotengine.org/en/stable/classes/class_renderingdevice.html",
+      "https://docs.godotengine.org/en/stable/tutorials/shaders/compute_shaders.html",
+      "https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html"
+    ]
+  }
+}
