@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+CPU_MARK UPD begin
+CPU_MARK UPD end
+STRIP_RESULT UPD frames=2074 wall=8.003514 steps=480 native=480
