@@ -1478,6 +1478,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles", "stationary"), &SpaceCombatKernel::input_ballistic_geometry, DEFVAL(PackedByteArray()));
         ClassDB::bind_method(D_METHOD("advance", "seconds"), &SpaceCombatKernel::advance);
         ClassDB::bind_method(D_METHOD("can_advance", "seconds"), &SpaceCombatKernel::can_advance);
+        ClassDB::bind_method(D_METHOD("numeric_update_context"), &SpaceCombatKernel::numeric_update_context);
         ClassDB::bind_method(D_METHOD("can_update_configuration", "descriptor"), &SpaceCombatKernel::can_update_configuration);
         ClassDB::bind_method(D_METHOD("update_configuration", "descriptor"), &SpaceCombatKernel::update_configuration);
         ClassDB::bind_method(D_METHOD("refit_token"), &SpaceCombatKernel::refit_token);
@@ -1826,6 +1827,34 @@ class SpaceCombatKernel : public RefCounted {
         root_attacks = hit_count = dead_count = stale_rejections = physics_visits = 0;
         ballistic_checks = ballistic_skips = ballistic_ray_queries = 0;
         return admitted;
+    }
+    Dictionary numeric_update_context() const {
+        Dictionary out;
+        if (!admitted || stopped || executing) return out;
+        out["player"] = player_row.duplicate(); out["enemies"] = actor_rows;
+        out["clock"] = clock; out["since_hit"] = nonnegative(clock - last_incoming_at);
+        out["defence_time"] = defence_time; out["memory_elapsed"] = memory_elapsed;
+        out["deferred_elapsed"] = deferred_elapsed; out["deferred_tick"] = deferred_tick;
+        out["attack_counter"] = attack_counter; out["incoming_counter"] = incoming_counter;
+        out["projectile_serial"] = int64_t(flight_serial); out["attack_serial"] = int64_t(attack_serial);
+        out["instance_serial"] = int64_t(instance_serial); out["drop_uid"] = drop_uid;
+        out["rng_state"] = rng->get_state();
+        Dictionary deferred;
+        for (const auto &item : debts) { Dictionary due; due["shield"] = item.second[0]; due["armour"] = item.second[1]; deferred[item.first] = due; }
+        out["deferred"] = deferred;
+        Array remaining, live_defences;
+        for (const Weapon &w : weapons) {
+            double due = w.kind == 3 ? 0.0 : cooldown_remaining(w.slot, w.hostile ? actors[w.source.index].uid : -1);
+            // No pending root (e.g. dead source): validation has no future deadline.
+            // Applying numeric configuration never overwrites the root queue.
+            remaining.push_back(std::isfinite(due) ? due : 0.0);
+        }
+        for (const Defence &d : defences) {
+            Dictionary row; row["loss"] = d.loss; row["buffer"] = d.buffer;
+            row["last_hit"] = d.last_hit; row["maximum"] = d.maximum; live_defences.push_back(row);
+        }
+        out["weapon_remaining"] = remaining; out["defence_rows"] = live_defences;
+        return out;
     }
     bool can_update_configuration(Dictionary d) const {
         if (!admitted || stopped || executing || !configuration_schema(d) ||

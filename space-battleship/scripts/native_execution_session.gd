@@ -1,8 +1,22 @@
 extends RefCounted
 ## Explicit low-load execution boundary. Rich content stays refused until its
 ## rule compiler is complete; this session never runs a shadow Game battle.
-var batch_compiler=preload("res://scripts/native_execution_compiler.gd").new()
+var numeric_compiler=preload("res://scripts/native_execution_compiler.gd").new()
 var incremental_numeric_batches:=true
+var numeric_template:Dictionary={}
+var numeric_epoch:int=-1
+var numeric_weapon_indices:Dictionary={}
+func retain_numeric_template(game,descriptor:Dictionary)->void:
+	numeric_template=numeric_compiler.configuration_template(descriptor)
+	numeric_epoch=game.combat_configuration_epoch
+	numeric_weapon_indices={}
+	for index in descriptor.weapons.size():
+		var row:Dictionary=descriptor.weapons[index]
+		if bool(row.hostile):continue
+		var key:String=str(row.entry.key)
+		if not numeric_weapon_indices.has(key):numeric_weapon_indices[key]=[]
+		numeric_weapon_indices[key].append(index)
+
 var kernel:RefCounted
 var actor_rows:Array[Dictionary]=[]
 var actor_by_uid:Dictionary={}
@@ -32,7 +46,9 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	var candidate:RefCounted=ClassDB.instantiate("SpaceCombatKernel")
 	if not candidate.configure(descriptor):return false
 	kernel=candidate
+	retain_numeric_template(game,descriptor)
 	execution_scope=descriptor.execution_scope
+	retain_numeric_template(game,descriptor)
 	weapons=descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	actor_rows=kernel.enemy_views()
@@ -65,6 +81,7 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 		var difference=game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry))
 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
 	if not kernel.update_configuration(descriptor):return false
+	retain_numeric_template(game,descriptor)
 	weapons=descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true
@@ -91,6 +108,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 
 func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	if not kernel.refit_configuration(plan.descriptor):return false
+	retain_numeric_template(game,plan.descriptor)
 	weapons=plan.descriptor.weapons
 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	game.refit_health_ratios=plan.ratios
@@ -266,17 +284,28 @@ func prepare_numeric_batch(game,mode:String)->Dictionary:
 				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
 					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
 	if planned.is_empty():return {"skip":true}
-	batch_compiler.reuse_static=incremental_numeric_batches
-	var descriptor:Dictionary=batch_compiler.compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
+	var epoch:int=game.combat_configuration_epoch
+	var descriptor:Dictionary
+	if incremental_numeric_batches and numeric_epoch==epoch and not numeric_template.is_empty() and not paused_by_configuration:
+		var affected:Array=[]
+		for index in weapon_levels:
+			for row_index in numeric_weapon_indices.get(str(game.slot_entry("weapons",index).key),[]):
+				if not affected.has(row_index):affected.append(row_index)
+		descriptor=numeric_compiler.compile_numeric_update(game,numeric_template,weapon_levels,defence_levels,affected)
+	else:
+		descriptor=numeric_compiler.compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
+	if descriptor.has("error"):return {}
+	var next_template:Dictionary=numeric_compiler.configuration_template(descriptor)
+	descriptor=numeric_compiler.bind_numeric_context(descriptor,kernel.numeric_update_context(),defence_levels)
 	if descriptor.has("error"):return {}
 	descriptor.player=player
 	if not kernel.can_update_configuration(descriptor):return {}
-	return {"descriptor":descriptor,"planned":planned,"owner":self,"token":kernel.refit_token()}
+	return {"descriptor":descriptor,"planned":planned,"owner":self,"token":kernel.refit_token(),"epoch":epoch,"next_template":next_template}
 
 func commit_numeric_batch(game,batch:Dictionary)->bool:
 	# Main performed its original sequential purchases and defence deltas. No
 	# combat advances inside this synchronous, prevalidated command boundary.
-	if game.native_execution!=self or batch.get("owner")!=self or paused_by_configuration:return false
+	if game.native_execution!=self or batch.get("owner")!=self or paused_by_configuration or int(batch.get("epoch",-1))!=game.combat_configuration_epoch:return false
 	var token:Dictionary=kernel.refit_token()
 	for key in ["epoch","step","rng"]:
 		if token[key]!=batch.token[key]:return false
@@ -287,6 +316,7 @@ func commit_numeric_batch(game,batch:Dictionary)->bool:
 	var descriptor:Dictionary=batch.descriptor
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
+	retain_numeric_template(game,batch.next_template)
 	weapons=descriptor.weapons
 	# Numeric batches retain weapon order and sockets; publication revisions stay valid.
 	return true

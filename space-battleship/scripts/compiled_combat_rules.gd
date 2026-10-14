@@ -37,12 +37,22 @@ func compile(g)->void:
    flags[effect]=bits;counts[effect]=count
   flags.make_read_only();counts.make_read_only();masks[category]=flags;a_counts[category]=counts
  rows={}
- for entry in g.combat_weapon_entries()+g.defense_entries():
-  if str(entry.get("key",""))=="":continue
-  add_row(g,str(entry.key),int(entry.level));add_row(g,str(entry.key),g.effective_equipment_level(int(entry.level)))
- add_row(g,"shield",1)
+ refresh_equipment_rows(g)
  rows.make_read_only();parameters.make_read_only();masks.make_read_only();a_counts.make_read_only()
  builds+=1;compiling=false
+func refresh_equipment_rows(g)->void:
+ # A new table bounds retained levels; immutable recipes/parameters/masks survive.
+ var previous:Dictionary=rows
+ rows={}
+ for entry in g.combat_weapon_entries()+g.defense_entries():
+  if str(entry.get("key",""))=="":continue
+  for level in [int(entry.level),g.effective_equipment_level(int(entry.level))]:
+   var identity=str(entry.key)+":"+str(level)
+   if previous.has(identity):rows[identity]=previous[identity]
+   else:add_row(g,str(entry.key),level)
+ if previous.has("shield:1"):rows["shield:1"]=previous["shield:1"]
+ else:add_row(g,"shield",1)
+ rows.make_read_only()
 func add_row(g,key:String,level:int)->void:
  var identity=key+":"+str(level)
  if rows.has(identity):return

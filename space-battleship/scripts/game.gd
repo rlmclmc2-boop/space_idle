@@ -63,6 +63,7 @@ var projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
 var native_execution_requested:=false
 var native_execution_auto:=false
+var combat_configuration_epoch:int=0
 var native_numeric_update:=false
 var native_execution_scope:=""
 var native_wave_waiting:=false
@@ -781,6 +782,7 @@ func combat_equipment_row(key:String,level:int)->Dictionary:
 		if not row.is_empty():return row
 	return db.equip(key,level)
 func _compiled_configuration_event(kind:String,_info:Dictionary)->void:
+	if kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed","configuration_changed"]:combat_configuration_epoch+=1
 	if compiled_combat_rules!=null and kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed","configuration_changed"]:compiled_combat_rules.compile(self)
 func notify_configuration_changed()->void:
 	if not native_before_configuration_change():return
@@ -792,8 +794,9 @@ func enhancement_branch_active(entry:Dictionary,effect:String,node:int,choice:St
 	var category="weapons" if effect in ["proficiency","repeat","critical"] else "defence"
 	return not entry.is_empty() and enhancement_branch_choice(category,effect,node)==choice and enhancement_branch_unlocked(category,effect,node) and has_enhancement_effect(entry,effect)
 
-func invalidate_stat_cache() -> void:
-	if native_execution!=null and not native_numeric_update:native_execution.configuration_changed()
+func invalidate_stat_cache(numeric_level:bool=false) -> void:
+	if not numeric_level:combat_configuration_epoch+=1
+	if native_execution!=null and not numeric_level:native_execution.configuration_changed()
 	combat_sources_dirty=true
 	stat_cache.clear()
 	jewel_defence_capacity_cache.clear()
@@ -2755,7 +2758,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
 	resources_changed(costs.keys())
-	invalidate_stat_cache()
+	invalidate_stat_cache(native_updated)
 	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
 	if (not native_updated or batch_update) and key == "armour" and state != State.RETREAT:
@@ -2781,7 +2784,9 @@ func upgrade_equipment_batch(mode: String) -> bool:
 		for index in loadout_entries(category).size():
 			var amount: int=max_upgrade_amount_slot(category,index) if mode=="max" else int(mode)
 			if amount>0:upgrade_slot(category,index,amount)
-	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
+	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:
+		if int(native_upgrade_batch.get("epoch",-1))==combat_configuration_epoch:compiled_combat_rules.refresh_equipment_rows(self)
+		else:compiled_combat_rules.compile(self)
 	if native_execution!=null and not native_upgrade_batch.is_empty():
 		if not native_execution.commit_numeric_batch(self,native_upgrade_batch):
 			push_error("prevalidated native batch changed during synchronous commit")
@@ -4329,6 +4334,7 @@ func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> vo
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 
 func native_before_configuration_change()->bool:
+	combat_configuration_epoch+=1
 	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
 
 

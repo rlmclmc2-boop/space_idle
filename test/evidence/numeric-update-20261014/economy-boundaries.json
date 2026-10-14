@@ -1,0 +1,66 @@
+[
+  {
+    "step": 61,
+    "inclusive_ms": {
+      "economy.native_execution_compiler.enemy_projection": 1.376,
+      "economy.native_execution_compiler.compile": 6.384,
+      "economy.native_execution_session.prepare_numeric_batch": 8.709,
+      "economy.crew_system.invalidate_resources": 0.291,
+      "economy.game.invalidate_stat_cache": 0.147,
+      "economy.game.upgrade_slot": 10.452,
+      "economy.compiled_combat_rules.compile": 0.717,
+      "economy.native_execution_session.commit_numeric_batch": 1.886,
+      "economy.game.upgrade_equipment_batch": 21.944,
+      "economy.crew_system.advance": 22.031,
+      "game.advance_shared_clock_and_economy": 22.606
+    }
+  },
+  {
+    "step": 120,
+    "inclusive_ms": {
+      "economy.crew_system.advance": 20.477,
+      "game.advance_shared_clock_and_economy": 21.042,
+      "economy.native_execution_compiler.enemy_projection": 1.374,
+      "economy.native_execution_compiler.compile": 5.802,
+      "economy.native_execution_session.prepare_numeric_batch": 7.805,
+      "economy.crew_system.invalidate_resources": 0.286,
+      "economy.game.invalidate_stat_cache": 0.078,
+      "economy.game.upgrade_slot": 9.946,
+      "economy.compiled_combat_rules.compile": 0.706,
+      "economy.native_execution_session.commit_numeric_batch": 1.781,
+      "economy.game.upgrade_equipment_batch": 20.393
+    }
+  },
+  {
+    "step": 180,
+    "inclusive_ms": {
+      "economy.native_execution_compiler.enemy_projection": 1.361,
+      "economy.native_execution_compiler.compile": 5.827,
+      "economy.native_execution_session.prepare_numeric_batch": 7.838,
+      "economy.crew_system.invalidate_resources": 0.288,
+      "economy.game.invalidate_stat_cache": 0.077,
+      "economy.game.upgrade_slot": 9.834,
+      "economy.compiled_combat_rules.compile": 0.702,
+      "economy.native_execution_session.commit_numeric_batch": 1.768,
+      "economy.game.upgrade_equipment_batch": 20.287,
+      "economy.crew_system.advance": 20.366,
+      "game.advance_shared_clock_and_economy": 20.645
+    }
+  },
+  {
+    "step": 240,
+    "inclusive_ms": {
+      "economy.native_execution_compiler.enemy_projection": 1.377,
+      "economy.native_execution_compiler.compile": 5.858,
+      "economy.native_execution_session.prepare_numeric_batch": 7.865,
+      "economy.crew_system.invalidate_resources": 0.29,
+      "economy.game.invalidate_stat_cache": 0.076,
+      "economy.game.upgrade_slot": 9.925,
+      "economy.compiled_combat_rules.compile": 0.71,
+      "economy.native_execution_session.commit_numeric_batch": 1.874,
+      "economy.game.upgrade_equipment_batch": 20.533,
+      "economy.crew_system.advance": 20.614,
+      "game.advance_shared_clock_and_economy": 20.895
+    }
+  }
+]
