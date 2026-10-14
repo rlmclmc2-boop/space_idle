@@ -1,0 +1,93 @@
+--- a/space_native.cpp
++++ b/space_native.cpp
+@@ -12,6 +12,7 @@
+ #include <algorithm>
+ #include <array>
+ #include <cmath>
++#include <chrono>
+ #include <deque>
+ #include <vector>
+ #include <memory>
+--- a/combat_execution_kernel.h
++++ b/combat_execution_kernel.h
+@@ -178,6 +178,10 @@
+     double ejection_gap = 0.12, launch_speed = 120, turn_rate = 4, ignition = 0.22, seek = 0.4,
+            cruise_at = 0.65, lifetime = 4.5, orphan_lifetime = 30, brake_range = 120, brake_angle = 0.3,
+            min_speed = 60, brake_factor = 0.7, hit_radius = 5, chain_speed = 720;
++    bool spatial_probe_enabled=false;
++    uint64_t spatial_segments=0,spatial_calls=0,spatial_edges=0,spatial_ns=0,spatial_hits=0,spatial_pairs_ns=0,spatial_segment_eligible=0;
++    std::map<uint64_t,uint64_t> spatial_unique,spatial_edge_hist,spatial_segment_hist;
++    static uint64_t spatial_now(){return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();}
+     uint64_t root_attacks = 0, hit_count = 0, dead_count = 0, stale_rejections = 0, physics_visits = 0;
+     Actor *resolve(Handle h) {
+         return h.index < actors.size() && actors[h.index].generation == h.generation && actors[h.index].live
+@@ -1298,6 +1302,7 @@
+         executing = true;
+         clock += dt;
+         ++step_serial;
++        if(spatial_probe_enabled){++spatial_segments;spatial_segment_eligible=0;}
+         double defence_at = clock - dt;
+         // Preserve committed completion while settling its already-owned defence tail.
+         if (final_cleared && !stopped) recover(dt, defence_at);
+@@ -1407,6 +1412,7 @@
+                         if (!f.hostile && t && f.view.has("fixed_screen_step")) {
+                             Vector2 step = f.view["fixed_screen_step"], origin = f.view["fixed_screen_origin"];
+                             Vector2 start = origin + step * double((position(m)-Vector2(f.view["launch_point"])).dot(m.direction));
++                            if(spatial_probe_enabled){++spatial_segment_eligible;++spatial_unique[f.serial];}
+                             double ratio = hull_contact(start, step * m.speed * dt, t->collision_hull);
+                             impact = ratio <= 1.0;
+                             if (impact) aim = position(m) + m.direction * m.speed * dt * ratio;
+@@ -1440,6 +1446,7 @@
+             if (f.live && f.beam && (f.hostile ? !resolve(f.source) : !resolve(f.target)))
+                 retire(id);
+         }
++        if(spatial_probe_enabled)++spatial_segment_hist[spatial_segment_eligible];
+         for (Actor &a : actors)
+             shield(a, clock);
+         compact();
+@@ -1448,6 +1455,8 @@
+ 
+   protected:
+     static void _bind_methods() {
++        ClassDB::bind_method(D_METHOD("spatial_probe","enabled"),&SpaceCombatKernel::spatial_probe);
++        ClassDB::bind_method(D_METHOD("spatial_probe_metrics"),&SpaceCombatKernel::spatial_probe_metrics);
+         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
+         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
+                              &SpaceCombatKernel::input_geometry);
+@@ -1979,7 +1988,8 @@
+     }
+     // Return the first contact along the visible fixed ray. Geometry is authored
+     // by the same presentation authority that draws the hull; no seeking here.
+-    static double hull_contact(Vector2 p, Vector2 movement, const PackedVector2Array &hull) {
++    double hull_contact(Vector2 p, Vector2 movement, const PackedVector2Array &hull) {
++        uint64_t probe_start=spatial_probe_enabled?spatial_now():0;
+         bool inside = false;
+         double first = 2.0;
+         for (int i = 0, j = hull.size() - 1; i < hull.size(); j = i++) {
+@@ -1990,7 +2000,9 @@
+             double along = (a-p).cross(edge)/cross, side = (a-p).cross(movement)/cross;
+             if (along >= 0 && along <= 1 && side >= 0 && side <= 1) first = std::min(first, along);
+         }
+-        return inside ? 0.0 : first;
++        double answer=inside?0.0:first;
++        if(spatial_probe_enabled){spatial_ns+=spatial_now()-probe_start;++spatial_calls;spatial_edges+=hull.size();++spatial_edge_hist[hull.size()];if(answer<=1.0)++spatial_hits;}
++        return answer;
+     }
+     void input_player_point(Vector2 point) {
+         player_point = point;
+@@ -2226,6 +2238,15 @@
+         if (!executing)
+             compact();
+     }
++    void spatial_probe(bool enabled){
++        spatial_probe_enabled=enabled;spatial_segments=spatial_calls=spatial_edges=spatial_ns=spatial_hits=spatial_pairs_ns=0;
++        spatial_unique.clear();spatial_edge_hist.clear();spatial_segment_hist.clear();
++        if(enabled){auto start=spatial_now();for(int i=0;i<10000;++i){volatile auto a=spatial_now();volatile auto b=spatial_now();(void)a;(void)b;}spatial_pairs_ns=spatial_now()-start;}
++    }
++    Dictionary spatial_probe_metrics() const {
++        Dictionary d;d["segments"]=int64_t(spatial_segments);d["eligible_calls"]=int64_t(spatial_calls);d["unique_eligible_flights"]=int64_t(spatial_unique.size());d["edge_visits"]=int64_t(spatial_edges);d["edge_scan_ns"]=int64_t(spatial_ns);d["contacts"]=int64_t(spatial_hits);d["empty_10000_pairs_ns"]=int64_t(spatial_pairs_ns);
++        Dictionary edges,segments;for(auto p:spatial_edge_hist)edges[int64_t(p.first)]=int64_t(p.second);for(auto p:spatial_segment_hist)segments[int64_t(p.first)]=int64_t(p.second);d["edge_hist"]=edges;d["eligible_per_segment_hist"]=segments;return d;
++    }
+     Dictionary metrics() const {
+         Dictionary d;
+         d["admitted"] = admitted;

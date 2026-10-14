@@ -1,0 +1,8 @@
+{
+  "base_commit": "712b0b3cad3c6960646e14998cc80a567cc369f4",
+  "probe_dll_sha256": "04a2a59b828fd226cd965ce8f7885a6204767fa3e1f4a10edfe07257336a4fcd",
+  "production_dll_sha256": "a4215219db065d1039f07b6b0ade178f8d5c9ec2c85e96b58dfbd7b61fa347bc",
+  "build_flags_reference": "../gpu-contacts-20261014/build-receipt.json",
+  "no_production_edits": true,
+  "restored_isolated_scripts_and_dll": true
+}

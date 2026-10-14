@@ -1,6 +1,6 @@
 {
   "source": "712b0b3c; analysis only, no run/build/renderer change. GPU-contact result is separate.",
-  "decision": "Technically feasible hybrid, but no demonstrated >1ms net opportunity yet. Do not switch renderer or implement a compute backend on current aggregate timings alone. Preferred boundary fuses lazy hull expansion with conservative fixed-ray edge candidate generation; CPU owns exact predicates and all rule/motion state.",
+  "decision": "Superseded by spatial-cost-20261014/decision.json: measured generous removable budget0.209ms/busy frame. Stop this specific fixed-ray hull/edge route; do not switch renderer for it. Other GPU presentation routes remain open.",
   "current_dependencies": [
     {
       "source": "combat_execution_kernel.h:489-506",
@@ -12,7 +12,7 @@
     },
     {
       "source": "combat_execution_kernel.h:1360-1436",
-      "fact": "Each moving flight normally tests its already-bound target. Straight friendly rays test that target hull; homing missiles update age/speed/steering and use swept point-radius; chains/enemy homing use current aim; others use along/cross test. Orphan/death paths differ. CPU double/scalar and float Vector2 rounding are existing contracts."
+      "fact": "Each moving flight normally tests its already-bound target. Straight friendly rays test that target hull; homing missiles update age/speed/steering and use swept point-radius; chains/enemy homing use current aim; others use along/cross test. Orphan/death paths differ. CPU double/scalar and float Vector2 rounding are current implementation details, not mandatory future bitwise contracts."
     },
     {
       "source": "combat_execution_kernel.h:750-865",
@@ -40,7 +40,7 @@
     "CPU keeps authoritative local outline packet, pose/angle, actor/flight slot+generation and shape epoch. Introduce a geometry descriptor instead of eagerly materializing every transformed hull for native execution. Keep center/aim/muzzle and original pose updates on CPU. Upload local packet only when its content/width/recognition revision changes; it is not assumed immutable forever.",
     "After old/new beam and scheduled attacks settle and before motion loop, capture immutable jobs only for pre-existing friendly fixed-ray flights. GPU expands hull edges from descriptors and emits conservative candidate edge masks for both segment intersection and start-point ray-crossing parity. False positives allowed; false negatives forbidden. A hit-only edge list is insufficient when the segment starts inside a hull.",
     "CPU traverses existing active order, rechecks flight generation/live/born_step, target generation/live, shape epoch and stop/final-clear state. Use only GPU-selected edges for original CPU rotated-vertex and hull_contact predicates, including point-in-polygon parity. Apply original hit/damage/chain/drop logic immediately. Confident empty masks bypass full hull scans; ambiguous masks include every edge. No second full CPU broadphase in normal GPU path.",
-    "Conservative rejection must enclose the original CPU arithmetic result, including GPU float/FMA and CPU rotated-coordinate differences. Use proved bounded interval/outward rounding with uncertain edges retained; an arbitrary epsilon or treating GPU float contact times as authoritative is not acceptable. Until proved, exact CPU kernel remains the selected backend, not an always-running shadow.",
+    "Conservative rejection must not omit collisions under the explicitly defined hull/radius/boundary contract. Numerical tolerances and ambiguous candidates need a documented policy and CPU authoritative confirmation; do not impose bitwise identity with legacy CPU arithmetic.",
     "CPU motion arithmetic remains for this minimum boundary. Existing hostile/chain/homing paths remain CPU because they are rule-state-dependent and not the removed fixed-ray edge loop. Legacy handoff lazily materializes the same canonical hull when required; no old/native full-world double execution."
   ],
   "intra_step_correctness": {
@@ -48,7 +48,7 @@
     "target_death": "Discard geometry result for dead/reused handle at its turn; follow existing straight/orphan motion. Do not redirect the straight shot to another hull: current code only tests its bound target.",
     "new_chains": "CPU births links in original order. motion_count snapshot and born_step exclude them from current-segment movement, so this boundary needs no extra GPU round for them. They enter a later segment batch.",
     "penetration": "Current native path tested here retires the finite projectile after its bound-target hit; do not silently introduce all-hull nearest-hit/penetration. Rail/multi-target effects and synchronous recursive hits keep current CPU launch/hit rules. Any future genuinely sequential geometric piercing must retain all conservative ordered candidates and revalidate after each hit, or dispatch another dependent round.",
-    "homing_extension": "If steering is offloaded later, earlier hits can change target-alive versus orphan choice before this flight runs. Possible bounded speculative alive/orphan proposals for the same target, selected by CPU without duplicate full motion, still need numeric-contract proof. Arbitrary retarget/recursive dependent paths need additional rounds or CPU-only per-job fallback. One frozen trajectory for every flight is incorrect."
+    "homing_extension": "If steering is offloaded later, earlier hits can change target-alive versus orphan choice before this flight runs. Possible bounded speculative alive/orphan proposals for the same target, selected by CPU without duplicate full motion, still need collision-contract validation. Arbitrary retarget/recursive dependent paths need additional rounds or CPU-only per-job fallback. One frozen trajectory for every flight is incorrect."
   },
   "synchronization": {
     "minimum": "One dispatch/readback rendezvous per eligible segment, after scheduled rule phases and before the first CPU consumer. Hull descriptors may be uploaded once per logical geometry epoch. A60Hz step can contain multiple segments, and a display frame multiple steps; do not budget one fence per rendered frame.",
@@ -76,5 +76,6 @@
       "https://docs.godotengine.org/en/stable/tutorials/shaders/compute_shaders.html",
       "https://docs.godotengine.org/en/stable/tutorials/rendering/renderers.html"
     ]
-  }
+  },
+  "contract_clarification": "Preserve agreed collision contract, rule semantics, lifecycle and visual consistency; no requirement to replicate incidental legacy float trajectories, random sequences or pixels bit-for-bit."
 }
