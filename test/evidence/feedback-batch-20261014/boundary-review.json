@@ -1,0 +1,47 @@
+{
+  "reviewed_commit": "dedd8ff72d39725e3345bb3caf8f325339355d1d",
+  "fix": "Preserve kind5 prototype_missile/hostile eligibility, serial and speed reads at GDScript delivery after preceding listeners. Native batch carries immutable retirement fields and live shot reference.",
+  "regression": "One native advance births a pulse with prototype=false. cancel retires it at the same1/60 clock before delivery. Fire observer changes prototype=true,hostile=false,serial=777,speed=321. Baseline legacy emits one retirement; dedd8ff batch fails; fixed batch and legacy each emit one identical retirement.",
+  "source_evidence": [
+    {
+      "path": "space-battleship/scripts/battle_slice_runtime.gd",
+      "lines": [
+        185,
+        186,
+        187,
+        241
+      ],
+      "finding": "Active event listener reads retirement serial/speed and writes missile_events with those values."
+    },
+    {
+      "path": "space-battleship/scripts/battlefield.gd",
+      "lines": [
+        441,
+        444,
+        446
+      ],
+      "finding": "Fallback listener stores retirement serial/speed; projectile_impact dispatch also reads shot.prototype_missile."
+    },
+    {
+      "path": "space-battleship/addons/native_battle/src/combat_execution_kernel.h",
+      "lines": [
+        675
+      ],
+      "finding": "Native birth initializes prototype_missile. No claim that the actual native fire listener changes serial or eligibility; regression observer deliberately mutates shared fields to verify the old publication contract."
+    },
+    {
+      "path": "space-battleship/scripts/presented_battle_game.gd",
+      "lines": [
+        220
+      ],
+      "finding": "Other missile launch path writes shared shot.prototype_missile before publishing; distinct from synthetic test listener."
+    }
+  ],
+  "validation": "Same-batch targeted regression passes, plus existing720 payload/order/drop-count comparisons. No performance rerun. result.json remains a dedd8ff sample, not a measurement of this fix.",
+  "dll_sha256": "76482031f9c1422a95f83e701a609701ac4849ce7de18544a1359f1f52bdefee",
+  "source_sha256": {
+    "space-battleship\\addons\\native_battle\\src\\combat_execution_kernel.h": "5a725977dd18f9b708e9159fa8cc15d52d5f11d8149a457c0b2b52119b303f85",
+    "space-battleship\\scripts\\native_execution_session.gd": "6c0041c36eb249323eeae167e02b85399f7d2f072c1934b2547f836a21e43777",
+    "test\\test_native_feedback.gd": "fea6ee1d1fff2ad9e96294f00848bcb9624731e3c2720dd220d7b0ec25f49bc1"
+  }
+}

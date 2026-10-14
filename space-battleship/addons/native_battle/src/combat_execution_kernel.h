@@ -2186,8 +2186,8 @@ class SpaceCombatKernel : public RefCounted {
             case 8:name="enhancement_secondary";info["source"]=e.point;info["target"]=e.target_point;info["target_uid"]=e.target_uid;info["weapon"]="native";info["beam"]=true;break;
             case 6:name="beam_hit";info["shot"]=e.shot;info["pos"]=e.point;break;
             case 5:
-                if(!bool(e.shot.get("prototype_missile",false))||bool(e.shot.get("hostile",false)))continue;
-                name="prototype_missile_retired";info["serial"]=e.shot["serial"];info["reason"]="native_retire";info["time"]=e.time;info["position"]=e.point;info["direction"]=e.direction;info["coast"]=false;events.append(Array::make(String(name),info,e.shot));continue;
+                // Eligibility and serial are observer-mutable: read them at delivery.
+                name="prototype_missile_retired";info["reason"]="native_retire";info["time"]=e.time;info["position"]=e.point;info["direction"]=e.direction;info["coast"]=false;events.append(Array::make(String(name),info,e.shot));continue;
             default:continue;
             }
             events.append(Array::make(String(name),info));

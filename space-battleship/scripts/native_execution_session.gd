@@ -169,7 +169,11 @@ func consume_feedback(game:RefCounted)->void:
 		for event in batch.events:
 			if event[0]=="":game.drops.append(event[1])
 			else:
-				if event.size()==3:event[1].speed=game.projectile_speed(event[2])
+				if event[0]=="prototype_missile_retired":
+					var shot:Dictionary=event[2]
+					if not shot.get("prototype_missile",false) or bool(shot.hostile):continue
+					event[1].serial=shot.serial
+					event[1].speed=game.projectile_speed(shot)
 				game.event.emit(event[0],event[1])
 				if event[0]=="fire" and event[1].shot.get("beam",false):game.event.emit("beam_started",{"shot":event[1].shot})
 		return
