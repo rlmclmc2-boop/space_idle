@@ -2561,9 +2561,11 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
 		enemy.hp=N.subtract(enemy.hp,amount)
 	amount=N.add(amount,absorbed)
+	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
+	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
 	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
 	drone_combat.on_hit(self,enemy,base_raw,context)
-	if enemy.hp <= 0:
+	if killed_by_hit:
 		enemy.erase("guidance_layers")
 		break_beam_chain_target(enemy)
 		if is_final_encounter() and targets().is_empty():
@@ -3606,7 +3608,13 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 		context.snapshot.instance=new_attack_instance(context.snapshot)
 		context.instance=context.snapshot.instance
 	var attack:=attack_from_snapshot(context.snapshot,multiplier,context.get("instance",{}))
-	attack.combat_context=CombatContext.derive_with_chain(context.snapshot.combat_context,"repeat_or_secondary") if context.get("derived",false) and CombatContext.can_trigger(context.snapshot.combat_context) else context.snapshot.combat_context
+	attack.combat_context=context.snapshot.combat_context
+	if context.get("derived",false) and CombatContext.can_trigger(context.snapshot.combat_context):
+		if entry.key=="missile":
+			# A derived salvo freezes guidance once per target, independently of its shared chain instance.
+			if not context.has("derived_combat_context"):context.derived_combat_context=CombatContext.derive_with_chain(context.snapshot.combat_context,"repeat_or_secondary")
+			attack.combat_context=context.derived_combat_context
+		else:attack.combat_context=CombatContext.derive_with_chain(context.snapshot.combat_context,"repeat_or_secondary")
 	return attack
 
 func attack_from_snapshot(snapshot: Dictionary, multiplier: float, instance: Dictionary = {}) -> Dictionary:
@@ -3701,6 +3709,7 @@ func launch_enhancement_secondary(index: int, primary: Dictionary, weapon: Dicti
 	var candidates: Array=targets(int(weapon.dmgtype)).filter(func(enemy):return not is_same(enemy,primary))
 	if candidates.is_empty():return
 	var target: Dictionary=candidates[0]
+	context.erase("derived_combat_context")
 	context.derived=true
 	if beam_tick:
 		var attack := jewel_attack(index,multiplier)
@@ -3709,6 +3718,7 @@ func launch_enhancement_secondary(index: int, primary: Dictionary, weapon: Dicti
 		var count := int(weapon.para1) if str(entry.key)=="missile" else 1
 		for i in count:jewel_fire(index,target,weapon,player_weapon_offset(index),multiplier,missile_visual_spread(i,count) if str(entry.key)=="missile" else 0.0,i,count)
 	context.derived=false
+	context.erase("derived_combat_context")
 	event.emit("enhancement_secondary",{"source":Vector2(primary.x,primary.y),"target":Vector2(target.x,target.y),"weapon":str(entry.key),"beam":beam_tick})
 
 func new_attack_instance(snapshot: Dictionary) -> Dictionary:

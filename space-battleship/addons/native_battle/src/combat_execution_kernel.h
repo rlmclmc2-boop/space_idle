@@ -965,6 +965,7 @@ class SpaceCombatKernel : public RefCounted {
                 retained_strange_damage = std::max(retained_strange_damage, p.damage);
             }
         }
+        // Birth freezes base damage and blast fraction; impact uses the current missile damage type, as Game does.
         if (context && context->wild && !context->wild_used) {
             context->wild_used = true; // Shared context is marked before recursive AoE.
             for (size_t i = 0; i < actors.size(); ++i)
@@ -972,7 +973,7 @@ class SpaceCombatKernel : public RefCounted {
                     hit_enemy(handle(i),base_raw*context->blast,wild_damage_type,{},false,at,wi,false,context);
         }
         Vector2 origin = a->point;
-        if (a->hp <= 0) {
+        if (a->hp <= 0 && a->live) {
             a->guidance_layers = 0; a->view.erase("guidance_layers");
             a->live = false;
             ++a->generation;
@@ -1323,12 +1324,13 @@ class SpaceCombatKernel : public RefCounted {
         if (!shared_instance) inst->derived = repeated;
         if (w.kind == 2 && !w.hostile) {
             auto choices = targets(w.type, clock);
+            auto salvo_context = repeated ? missile_context(w,a->id,true) : a->context;
             for (int n = 0; n < w.salvo; ++n) {
                 Timed pending{clock + n * ejection_gap, ++event_serial, 1, wi, n,
                               distribute && !choices.empty() ? choices[n % choices.size()] : target, a,
                               multiplier, inst};
                 pending.damage_derived = repeated;
-                pending.context = repeated ? missile_context(w,a->id,true) : a->context;
+                pending.context = salvo_context;
                 ejections.push(pending);
             }
             return;
@@ -1758,8 +1760,7 @@ class SpaceCombatKernel : public RefCounted {
         // Every retained wild context can explode once; no recursive explosion.
         hits *= 1 + double(actors.size());
         double incoming_end = incoming_counter + hits;
-        // Legacy wild self-blast death settles again in the outer hit; reserve both drops.
-        double events = births + hits + root_bound + periods + 2 * retained_drop_bound + strange_births;
+        double events = births + hits + root_bound + periods + retained_drop_bound + strange_births;
         if (!std::isfinite(events) || events >= exact_limit || attack_end >= exact_limit || incoming_end >= exact_limit ||
             double(event_serial) + events >= exact_limit || double(flight_serial) + births >= exact_limit ||
             double(instance_serial) + births >= exact_limit || double(attack_serial) + root_bound >= exact_limit ||
@@ -1846,7 +1847,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!std::isfinite(periods_due + portions) || double(deferred_tick) + periods_due + portions >= 9223372036854775808.0 ||
             !std::isfinite((defence_time + seconds + deferred_interval) / deferred_interval) ||
             std::ceil((defence_time + seconds + deferred_interval) / deferred_interval) + portions >= 9223372036854775808.0 ||
-            double(drop_uid) + 2 * retained_drop_bound >= 9223372036854775808.0) return false;
+            double(drop_uid) + retained_drop_bound >= 9223372036854775808.0) return false;
         return true;
     }
     bool supports_missile_legends() const { return true; }
