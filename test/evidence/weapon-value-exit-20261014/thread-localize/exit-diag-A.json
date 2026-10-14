@@ -1,0 +1,7 @@
+{
+  "complete_result_saved": true,
+  "process_exit": "nonzero; exact code not preserved by original assertion",
+  "sample_repeated": false,
+  "process_cpu_window": "not persisted before assertion; unrecoverable",
+  "counter_errors": 0
+}

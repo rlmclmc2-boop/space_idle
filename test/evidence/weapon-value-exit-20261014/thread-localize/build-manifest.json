@@ -1,0 +1,15 @@
+{
+  "source_ref": "63bfa881",
+  "production_source_unchanged": true,
+  "dll_sha256": "cf223065d7ba18d28e279c3cfe7284a90148b2463446598f5fba8084e75014b8",
+  "binding_library_sha256": "96a3595aab6cbd916d4de1d0cea3da677c86bce370b643330e76e9304c601713",
+  "probe_sha256": "bca328e079c6ce1d81ff1a4b30078f23dfc7ee8f4859ae2eb52706cc1e305c00",
+  "compile_link_commands": "direct-commands.json",
+  "source_delta": "diagnostic.patch + thread_probe.h",
+  "build_logs": [
+    "build.txt",
+    "build-cached.txt",
+    "build-direct.txt"
+  ],
+  "failure_note": "First two SCons attempts stopped owned build processes; direct extension compile/link succeeded. Diagnostic A/B output complete but abnormal exits documented in exit-diag-*.json."
+}
