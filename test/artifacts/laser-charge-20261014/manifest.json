@@ -1,0 +1,18 @@
+{
+  "clean_delivery": "9cca3923e1067cefade30153c05cbdf30825d714",
+  "base": "0a8ec88440b3329ddd0a99025d9eb1d20b587746",
+  "dll_sha256": "ffd4d59ae966680d659ca123d44d2415572be87ca80aea409d761f979c6ca342",
+  "source_matches_build_directory": true,
+  "native_sources": {
+    "space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "combat_execution_kernel.h": "7588005bb25fd924c389f9fd2afa61633bde1d13a1588d61c05466f09aba4d99",
+    "combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1"
+  },
+  "install_relative_to_project": {
+    "space_native.dll": "bin/space_native.dll",
+    "space_native.gdextension": "addons/native_battle/space_native.gdextension"
+  },
+  "entry_symbol": "space_native_init",
+  "engine": "Godot4.7.2 windows x86_64 single precision",
+  "packaging": "tools/build_release.ps1 consumes the staged metadata and DLL, copies both, verifies export/ZIP DLL hash and native admission; it does not rebuild the extension. No production directory was changed by this delivery."
+}
