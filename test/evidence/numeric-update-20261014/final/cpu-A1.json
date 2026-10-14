@@ -1,0 +1,37 @@
+{
+  "pid": 39380,
+  "exe": "Godot_v4.7.2-stable_win64.exe",
+  "begin": {
+    "user_us": 8250000.0,
+    "kernel_us": 2609375.0,
+    "clock_ns": 460002180521800
+  },
+  "end": {
+    "user_us": 12218750.0,
+    "kernel_us": 2640625.0,
+    "clock_ns": 460006196275400
+  },
+  "label": "A1",
+  "cpu_us": 4000000.0,
+  "cpu_window_seconds": 4.0157536,
+  "script_sha256": {
+    "space-battleship/scripts/battle_read_model.gd": "764c53a5213d174d51a54ae5e50494c5200416ab4dbad531518c0d26c4acec0d",
+    "space-battleship/scripts/battlefield.gd": "b570211697de81059ae3ba9cf54a726c3196982906049aaa9eac4d75fc3acc7b",
+    "space-battleship/scripts/compiled_combat_rules.gd": "53e1ac8e8205cb83a62cb86edc11f2303be85619cde02112f7838053717fcd2a",
+    "space-battleship/scripts/damage_display_index.gd": "6e039462ca85caf6a0fb60ecb03865921aaa886c2fe4bf09c8136701ccf6646c",
+    "space-battleship/scripts/enemy_fixed_layout.gd": "5ab8f2a2afd1bd138a64f151feced3a6b3128637b1073f70a04a608d483536af",
+    "space-battleship/scripts/game.gd": "fc5c2cdce810e5c833a879eda08ad5649e5a92d2289f294081ad9141d77f5e35",
+    "space-battleship/scripts/hyperspace_drone_visual.gd": "d5fadde21f80e4e99b81f61bca7c6ddef263ad5bc70106ec6dec5fb92cfcf92f",
+    "space-battleship/scripts/logical_fleet_pose.gd": "ac5255d78a157f083d0bb67f50ad9f0cfbb8d711eb5aaebc4a920b28e8e02c4e",
+    "space-battleship/scripts/main.gd": "8f2bc13ac0f8681654ecf8c68c30f37721d8abdc8de4b48318f0c10a52507a5d",
+    "space-battleship/scripts/native_execution_compiler.gd": "f18cdda4736c5fb18baacca238fd6f9feb57b6a1888d1ddb238beb2f865939a9",
+    "space-battleship/scripts/native_execution_session.gd": "a0ac36ecd7883c948ea8e3950a2ce3e51f4ec6377611bd2f531a7909824ee849",
+    "space-battleship/scripts/presented_ship_view.gd": "1feeadeaf2a718137b0cc3178ea0f76772e799a42f36a3ed07cbb28e2061368a",
+    "space-battleship/scripts/retained_beam_foreground.gd": "021275515657560bc346b4c1240f1740d590cedf16ffdc3f34a6d966f71d1c2d",
+    "space-battleship/scripts/retained_enemy_contacts.gd": "2851d3cfb4dd99db6008bc8c035669ebfb849de495d41e8b9a464d4dbdb10e5d",
+    "space-battleship/scripts/simulation_geometry_authority.gd": "1949a89e24ceeefd28cc3b63acdd58524deb6da4a897ba591b4becf44beada1a",
+    "space-battleship/scripts/simulation_geometry_view.gd": "651fe168346aad72eb151497169133178b8d88683b0cbd817b69b423c274adc7",
+    "space-battleship/shaders/retained_beams.gdshader": "d7c82ddc2689f0122c6252a924081d11943234b19e395cbfbcf9eaf9e1cb839a"
+  },
+  "dll_sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e"
+}

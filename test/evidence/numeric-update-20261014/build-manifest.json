@@ -1,0 +1,22 @@
+{
+  "dll": "space_native.dll",
+  "sha256": "052b231e64bae9efb9e2601fc221f26390ee5346758bed5f5da278b2235caf4e",
+  "bytes": 1566208,
+  "kernel_source_commit": "a47461d0",
+  "candidate_source_commit": "4454d680",
+  "source_sha256": {
+    "space-battleship/addons/native_battle/src/combat_execution_kernel.h": "e9063b783f456a17409e71585de683095242cc2906c4784d8bf5288c680b4b48",
+    "space-battleship/addons/native_battle/src/space_native.cpp": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+    "space-battleship/addons/native_battle/src/combat_presentation.h": "28dcc3aa1f30ad5f65b78aa92b358c7ea49d388d2d378fe535d6a29db2dd50c1",
+    "space-battleship/addons/native_battle/SConstruct": "9d060ef9e7a0c61533865ce9d93c17cea9a61eb55071aa5789c6c247f8441147"
+  },
+  "build": "existing D:/CodexTools llvm-mingw and pinned godot-cpp via build_native.ps1 -Jobs1; no engine rebuild",
+  "checks": {
+    "numeric_update": 25,
+    "numeric_upgrade": 69,
+    "numeric_range": 39,
+    "native_geometry": 211,
+    "failures": 0
+  },
+  "notes": "Pure read-only numeric_update_context added. Existing complete configuration schema/arithmetic and apply paths retained. Same binary used by both final acceptance sides."
+}

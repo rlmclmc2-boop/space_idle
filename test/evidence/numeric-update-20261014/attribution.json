@@ -1,0 +1,14 @@
+{
+  "baseline": "b6a81045",
+  "candidate": "4454d680",
+  "equivalence": {
+    "state_before": true,
+    "state_after": true,
+    "events": true
+  },
+  "candidate_full_native_compile_calls": 0,
+  "candidate_full_combat_rules_compile_calls": 0,
+  "candidate_numeric_compile_calls": 4,
+  "candidate_equipment_rows_calls": 4,
+  "limits": "One instrumented run per source, attribution only. Parent spans inclusive, not summed with children. Not whole-frame net benefit acceptance. Original sequential purchase body still about10ms per batch."
+}
