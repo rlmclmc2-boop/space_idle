@@ -250,7 +250,22 @@ func before_logical_game_tick(dt:float) -> void:
 	fx_time+=dt
 	advance_turrets(dt)
 
+func battle_transition_blocked() -> bool:
+	return encounter_presentation.departure_active()
+
+func hold_departure_scene() -> void:
+	# Hide and stop actual render owners; no overlay conceals an advancing battle.
+	if is_instance_valid(ship_view):ship_view.set_rendering(false)
+	if is_instance_valid(retained_contacts):retained_contacts.hide()
+	if is_instance_valid(pulse_layer):pulse_layer.hide()
+	if is_instance_valid(drop_layer):drop_layer.hide()
+
 func _process(delta: float) -> void:
+	if battle_transition_blocked():
+		hold_departure_scene()
+		encounter_presentation.sync(game,minf(delta,0.1))
+		stars_layer.queue_redraw();battle_layer.queue_redraw()
+		return
 	# End the batch even when the presentation exits early. Each fixed logical
 	# step changes fx_time, so accelerated combat never reuses an older limit.
 	enemy_entry_batch_active=true
@@ -279,6 +294,8 @@ func _process_battlefield(delta: float) -> void:
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	super._process(delta)
+	if battle_transition_blocked():
+		hold_departure_scene();return
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)
 	var valid_beams:Dictionary={}
 	for shot in game.projectiles:
@@ -416,6 +433,7 @@ func on_event(kind:String,info:Dictionary)->void:
 		encounter_presentation.sync(game,0.0)
 		if not bool(info.get("active",false)):
 			reset_battle_transients_for_scene()
+			if battle_transition_blocked():hold_departure_scene()
 		if is_instance_valid(stars_layer):stars_layer.queue_redraw()
 		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
@@ -750,6 +768,7 @@ func player_render_position() -> Vector2:
 func draw_battle() -> void:
 	if effects_enabled:
 		draw_encounter_backdrop()
+		if battle_transition_blocked():return
 		# The inherited renderer owns batch entry/exit and cache invalidation.
 		super.draw_battle()
 

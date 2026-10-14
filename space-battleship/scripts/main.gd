@@ -441,6 +441,7 @@ func _process(delta: float) -> void:
 		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.profile.chronoParticles <= 0):
 			game.speed = game.default_speed()
 			advance_game_time((dt - boosted) * game.speed)
+		if battle_transition_blocked():return
 		if not accelerated_visual_mode:
 			sync_beam_visuals()
 			advance_projectile_visuals(dt)
@@ -476,7 +477,11 @@ func _process(delta: float) -> void:
 			get_viewport().get_texture().get_image().save_png("res://preview" + ("-unlock" if automation_args.has("--capture-unlock") else "-all" if automation_args.has("--capture-all") else "-combat") + ".png")
 			get_tree().quit()
 
+func battle_transition_blocked() -> bool:
+	return false
+
 func advance_game_time(seconds: float) -> void:
+	if battle_transition_blocked():return
 	if battle_slice_runtime!=null:battle_slice_runtime.advance(seconds);return
 	if game == null or not is_finite(seconds) or seconds < 0:return
 	var instance := game.get_instance_id()
@@ -491,6 +496,7 @@ func advance_game_time(seconds: float) -> void:
 	game_time_remainder += seconds
 	const STEP := 1.0/60.0
 	while game_time_remainder + 0.0000000001 >= STEP:
+		if battle_transition_blocked():return
 		if attach_native_display():
 			battle_slice_runtime.advance(0.0);return
 		if not game.prepare_logical_step(STEP):return

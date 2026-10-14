@@ -60,6 +60,9 @@ func sync(game,delta:float) -> bool:
 		clear_age=minf(2.0,clear_age+delta)
 	return changed
 
+func departure_active() -> bool:
+	return departure and (transition<1.6 or scenery_presence>0.0)
+
 func is_leader(enemy:Dictionary) -> bool:
 	return int(enemy.get("uid",-2))==leader_uid
 
