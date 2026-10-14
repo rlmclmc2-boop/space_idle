@@ -99,7 +99,7 @@ class SpaceCombatKernel : public RefCounted {
     struct Flight {
         uint32_t generation = 1;
         bool live = false, hostile = false, beam = false, repeated = false, chain = false, prism = false;
-        size_t active_index = 0;
+        size_t active_index = 0, beam_index = 0;
         uint64_t born_step = 0, serial = 0;
         int weapon = -1, type = 0;
         Handle source, target;
@@ -173,7 +173,7 @@ class SpaceCombatKernel : public RefCounted {
     bool module_defence = false;
 
     std::deque<Flight> flights;
-    std::vector<size_t> active, free_flights, retired;
+    std::vector<size_t> active, active_beams, free_flights, retired;
     RootQueue roots;
     std::priority_queue<Timed, std::vector<Timed>, Later> ejections, repeats;
     std::vector<Effect> feedback;
@@ -708,6 +708,11 @@ class SpaceCombatKernel : public RefCounted {
         if (!f.live)
             return;
         f.live = false;
+        if (f.beam) {
+            active_beams[f.beam_index] = active_beams.back();
+            flights[active_beams.back()].beam_index = f.beam_index;
+            active_beams.pop_back();
+        }
         f.view["dead"] = true;
         retired.push_back(id);
         if (f.beam && f.weapon >= 0 && weapons[f.weapon].beam == int64_t(id)) {
@@ -857,6 +862,7 @@ class SpaceCombatKernel : public RefCounted {
         f.view["combat_context"] = context;
         f.view["prism_tower"] = false;
         if (f.beam) {
+            f.beam_index = active_beams.size(); active_beams.push_back(id);
             f.charge = w.charge;
             f.interval = w.interval;
             f.ramp = w.ramp;
@@ -1047,6 +1053,13 @@ class SpaceCombatKernel : public RefCounted {
                         hit_enemy(handle(index), a->max_hp * a->explosion, type, {}, false, at, wi);
             for (size_t id : active) {
                 Flight &f = flights[id];
+                if (endless_eligible(f) && f.target.index == h.index && !f.await_target) {
+                    // All beam ages were projected to the segment end. Roll back
+                    // only its post-death tail; waiting never creates catch-up debt.
+                    f.age = std::max(0.0,f.age - std::max(0.0,clock-at));
+                    f.await_target = true; f.view["await_target"] = true; f.view["elapsed"] = f.age;
+                    // Keep links until this hit finishes its inherited chain work.
+                }
                 if (f.live && f.beam && f.hostile && f.source.index == h.index)
                     retire(id);
                 if (f.instance && f.instance->beam) {
@@ -1502,10 +1515,8 @@ class SpaceCombatKernel : public RefCounted {
             motion.direction = unit(f.aim - muzzle);
             if (f.born_step < step_serial)
                 f.age += dt;
-            while (f.next_hit <= f.age + 1e-9) {
-                periods.push_back({clock - f.age + f.next_hit, f.next_hit, id});
-                f.next_hit += f.interval;
-            }
+            for (double due = f.next_hit; due <= f.age + 1e-9; due += f.interval)
+                periods.push_back({clock - f.age + due, due, id});
             f.view["elapsed"] = f.age;
         }
         std::sort(periods.begin(), periods.end(), [&](const Period &a, const Period &b) {
@@ -1517,10 +1528,12 @@ class SpaceCombatKernel : public RefCounted {
             defence_at = std::max(defence_at, p.at);
             if (stopped) break;
             Flight &f = flights[p.id];
-            if (!f.live || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
+            if (!f.live || f.await_target || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
                 if (f.live && (f.hostile || !retain_endless_target(f,p.at,false))) retire(p.id);
                 continue;
             }
+            // Collection is speculative; only an executed hit consumes its period.
+            f.next_hit = p.due + f.interval;
             ++f.ticks;
             f.view["ticks"] = f.ticks;
             double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : p.due;
@@ -1804,9 +1817,10 @@ class SpaceCombatKernel : public RefCounted {
         if (!admitted || stopped || executing || !std::isfinite(seconds) || seconds <= 0 ||
             !std::isfinite(clock + seconds) || !std::isfinite(defence_time + seconds)) return false;
         const double exact_limit = 9007199254740992.0;
-        for (size_t id : active) {
+        // Only live beams: missile/pulse populations add no preflight scan.
+        // Birth/retire maintain this dense index in O(1).
+        for (size_t id : active_beams) {
             const Flight &f = flights[id];
-            if (!f.live || !f.beam) continue;
             double future_age = f.age + seconds;
             double ticks = std::max(0.0,std::floor((future_age-f.next_hit)/f.interval)+1);
             if (!std::isfinite(future_age) || future_age <= f.age || future_age >= exact_limit ||
@@ -2514,7 +2528,7 @@ class SpaceCombatKernel : public RefCounted {
         while (!roots.empty()) roots.pop(); while (!ejections.empty()) ejections.pop(); while (!repeats.empty()) repeats.pop();
         // Drop executor references only. Published rows/leases stay live for the
         // receiving Game and visual surface; no retire/dead/effect is emitted.
-        flights.clear(); active.clear(); free_flights.clear(); retired.clear();
+        flights.clear(); active.clear(); active_beams.clear(); free_flights.clear(); retired.clear();
         flight_rows = Array(); actor_rows = Array(); actors.clear(); weapons.clear(); defences.clear(); debts.clear();
         return true;
     }

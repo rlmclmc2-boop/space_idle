@@ -2473,16 +2473,18 @@ func tick_shield_beams(pending: Array, dt: float) -> void:
 		if not shot.get("beam",false) or not projectiles.has(shot):continue
 		if not advance_long_laser(shot,dt):continue
 		var weapon: Dictionary = db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
-		while float(shot.next_hit_at)<=float(shot.elapsed)+0.000000001:
-			var due := float(shot.next_hit_at)
+		var due:=float(shot.next_hit_at)
+		while due<=float(shot.elapsed)+0.000000001:
 			hits.append({"at":enemy_shield_time-float(shot.elapsed)+due,"due":due,"index":index,"shot":shot})
-			shot.next_hit_at=due+float(weapon.cd)
+			due+=float(weapon.cd)
 	enemy_shield_hit_time=previous_query_time
 	hits.sort_custom(func(a,b):return a.index<b.index if a.at==b.at else a.at<b.at)
 	for item in hits:
 		if not _legacy_advance_defence_to(float(item.at)):return
 		var shot: Dictionary = item.shot
 		if not projectiles.has(shot) or not long_laser_valid(shot):continue
+		var weapon:Dictionary=db.enemy_weapon(shot.entry.name) if shot.hostile else shot.attack_snapshot.weapon
+		shot.next_hit_at=float(item.due)+float(weapon.cd)
 		apply_long_laser_hit(shot,float(item.due))
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
@@ -2586,7 +2588,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	drone_combat.on_hit(self,enemy,base_raw,context)
 	if killed_by_hit:
 		enemy.erase("guidance_layers")
-		break_beam_chain_target(enemy)
+		break_beam_chain_target(enemy,hit_time)
 		if is_final_encounter() and targets().is_empty():
 			projectiles.clear()
 		event.emit("explode", enemy)
@@ -3798,9 +3800,14 @@ func end_beam_chain(shot: Dictionary) -> void:
 	var chain:Dictionary=shot.get("attack_instance",{}).get("chain",{})
 	if not chain.is_empty():chain.ended=true;chain.links.clear()
 
-func break_beam_chain_target(target: Dictionary) -> void:
+func break_beam_chain_target(target: Dictionary, at:float=INF) -> void:
 	for shot in projectiles:
 		if not shot.get("beam",false):continue
+		if is_same(shot.target,target) and endless_beam_eligible(shot) and not shot.get("await_target",false):
+			# Freeze at the death instant, not the already-projected step end.
+			# Preserve links until the killing hit has propagated its chain.
+			if is_finite(at):shot.elapsed=maxf(0.0,float(shot.elapsed)-maxf(0.0,enemy_shield_time-at))
+			shot.await_target=true
 		for link in shot.get("attack_instance",{}).get("chain",{}).get("links",[]):
 			if is_same(link.target,target):link.broken=true
 
