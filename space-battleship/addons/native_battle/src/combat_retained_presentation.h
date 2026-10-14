@@ -4,9 +4,13 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
     Object *game=surface->get("game");Object *session=game->get("native_execution");
     Ref<SpaceCombatKernel> kernel;
     if(session&&!bool(session->get("handed_off")))kernel=session->get("kernel");
-    if(bool(surface->get("accelerated_visual_mode"))||retained_material.is_null()||kernel.is_null()||!kernel->admitted||kernel->stopped||
+    if(!supports_compact_lasers(surface)||kernel.is_null()||!kernel->admitted||kernel->stopped||
        !bool(surface->get("prototype_enabled"))||!bool(surface->get("pulse_vfx_enabled"))||
        !bool(surface->get("enemy_vfx_enabled"))||!bool(surface->get("missile_vfx_enabled"))) {
+        // Materialize before changing presentation owner. Failure keeps the
+        // retained table and kernel intact; advance_visuals must not fall back.
+        if (kernel.is_valid() && kernel->admitted && !kernel->stopped && kernel->set_compact_laser_births(false)<0) return true;
+        surface->call("restore_native_laser_visuals");
         clear_retained_frame();
         return false;
     }
@@ -22,7 +26,7 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
             if(found==current.end()||!same(found->second->view,shot))visuals.remove_at(i);
             else visual_by_serial[int64_t(serial)]=v;
         }
-        retained_kernel=kernel;retained_encounter=kernel->encounter_generation;retained_frame.instantiate();retained_frame->persistent=true;
+        retained_kernel=kernel;retained_encounter=kernel->encounter_generation;retained_frame.instantiate();retained_frame->persistent=true;retained_frame->kernel=kernel;
     }
     auto forget_visual=[&](const Variant &serial,const Dictionary &shot){Dictionary indexed=visual_by_serial.get(serial,Dictionary());if(!indexed.is_empty()&&same(indexed["shot"],shot))visual_by_serial.erase(serial);};
     auto &frame=*retained_frame.ptr();
@@ -45,15 +49,15 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
     for(size_t id:kernel->active) {
         const auto &source=kernel->flights[id];if(!source.live)continue;
         auto &f=frame.flights[id];
-        if(f.generation!=source.generation||f.motion!=source.lease) {
+        if(f.generation!=source.generation||f.motion!=source.lease||(f.shot.is_empty()&&!source.view.is_empty())) {
             ++retained_births;f=PreparedFlight();f.generation=source.generation;f.serial=source.serial;
             f.shot=source.view;f.motion=source.lease;f.hostile=source.hostile;f.chain=source.chain;f.beam=source.beam;f.damage_type=source.type;
-            f.key=String(source.view.get("key","")).replace("_mon","").replace("-mon","");
+            f.key=source.compact_laser ? String("laser") : String(source.view.get("key","")).replace("_mon","").replace("-mon","");
             f.visual=visual_by_serial.get(int64_t(source.serial),Dictionary());
             if(!f.visual.is_empty()&&!same(f.visual["shot"],source.view))f.visual=Dictionary();
             f.visual_state=f.visual.get("visual_lease",Variant());
-            f.fixed=source.view.has("fixed_screen_step");
-            if(f.fixed){f.launch=source.view["launch_point"];f.ray_origin=source.view["fixed_screen_origin"];f.ray_step=source.view["fixed_screen_step"];f.ray_direction=f.motion->motion().direction;}
+            f.fixed=source.fixed_ray;
+            if(f.fixed){f.launch=source.launch_point;f.ray_origin=source.ray_origin;f.ray_step=source.ray_step;f.ray_direction=f.motion->motion().direction;}
             else if(f.visual.has("fixed_step")){f.fixed=true;f.launch=f.visual["logical_origin"];f.ray_origin=f.visual["fixed_origin"];f.ray_step=f.visual["fixed_step"];f.ray_direction=f.visual["fixed_direction"];}
             f.render_kind=f.beam?-1:f.chain?1:(!f.hostile&&f.key=="laser")?0:(f.hostile&&(f.key=="laser"||f.key=="cannon"))?(source.type==2?3:2):-1;
             f.anchor_speed=-1;

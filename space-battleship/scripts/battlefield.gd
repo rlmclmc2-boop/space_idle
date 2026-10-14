@@ -425,6 +425,13 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	# Compact laser feedback has no shot object; its lifetime is the immutable
+	# packet, even if the kernel recycled the flight before this signal.
+	if info.has("native_laser"):
+		assert(battle_slice_runtime!=null,"Compact feedback requires its admitted presentation consumer")
+		if battle_slice_runtime!=null:battle_slice_runtime.on_event(kind,info)
+		return
+	if kind=="native_execution_handoff":restore_native_laser_visuals()
 	if kind=="projectile_impact" and bool(info.shot.get("hostile",false)) and is_instance_valid(ship_view):
 		var incoming:Vector2=game.projectile_direction(info.shot)
 		if incoming.is_finite() and incoming.length_squared()>0.0001:
@@ -1068,6 +1075,19 @@ func box(rect:Rect2,color:=PANEL,border:=LINE)->void:
 		style.set_corner_radius_all(8)
 		draw_surface.draw_style_box(style,rect)
 	else:super.box(rect,color,border)
+
+func prepare_native_laser_display(force_legacy:=false)->bool:
+	if game.native_execution==null:
+		restore_native_laser_visuals();return true
+	var kernel=game.native_execution.kernel
+	if not kernel.has_method("set_compact_laser_births"):return true
+	var supported:bool=not force_legacy and game.combat_presentation!=null and game.combat_presentation.has_method("supports_compact_lasers") and game.combat_presentation.supports_compact_lasers(self)
+	var revision:int=kernel.set_compact_laser_births(supported)
+	if revision<0:return false
+	if not supported or revision!=game.native_execution.laser_view_revision:
+		restore_native_laser_visuals()
+		game.native_execution.laser_view_revision=revision
+	return true
 
 func attach_native_display()->bool:
 	if game.native_execution==null or not game.native_execution_auto or battle_slice_runtime!=null:return false

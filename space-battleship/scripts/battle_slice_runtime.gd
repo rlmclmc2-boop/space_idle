@@ -90,7 +90,7 @@ func advance(seconds:float)->void:
 		logical_steps+=1;remainder=maxf(0,remainder-STEP)
 		if detach_requested:
 			advancing=false
-			close()
+			if not close():return
 			scene.battle_slice_runtime=null
 			scene.game_time_remainder=remainder
 			scene.advance_game_time(0.0)
@@ -104,6 +104,11 @@ func snapshot()->void:
 	if game.native_execution!=null and game.native_execution.kernel.has_method("presentation_membership"):
 		membership=game.native_execution.kernel.presentation_membership()
 	var native_membership:bool=not membership.is_empty()
+	if native_membership and membership.has("compact_laser_serials"):
+		var live:Dictionary={}
+		for serial in membership.compact_laser_serials:live[int(serial)]=true
+		for serial in scene.native_laser_visuals.keys():
+			if not live.has(serial):scene.native_laser_visuals.erase(serial)
 	var retained:Dictionary={}
 	for enemy in game.enemies:retained[int(enemy.uid)]=enemy
 	# Labels and in-flight shots may still reference a departed target.
@@ -155,6 +160,22 @@ func style(shot:Dictionary)->int:
 		"longLaser":return 4
 	return 1
 func on_event(kind:String,info:Dictionary)->bool:
+	if info.has("native_laser"):
+		var laser:Dictionary=info.native_laser
+		if kind=="fire":
+			if not bool(laser.drone) and bool(laser.owns_primary_aim) and int(laser.mount)>=0 and int(laser.mount)<game.weapon_entries().size():
+				var pose=geometry.turret_pose(int(laser.mount))
+				pose.target=laser.primary_target;pose.fired_at=geometry.fx_time
+			# Reserve only the old decorative cap slot, not a shot/visual object.
+			if scene.projectile_visuals.size()+scene.native_laser_visuals.size()<256:scene.native_laser_visuals[int(laser.serial)]=true
+		var e=Effect.new();e.kind=0 if kind=="fire" else 4;e.style=1
+		e.serial=int(laser.serial);e.position=Vector2(info.x,info.y);e.direction=info.direction;e.damage_type=int(info.type);e.critical=bool(info.critical)
+		if kind!="fire":
+			var distance:float=(e.position-Vector2(laser.launch)).dot(e.direction)
+			e.position=geometry.battle_logical_point(Vector2(laser.ray_origin)+Vector2(laser.ray_step)*distance)
+			e.direction=Vector2(laser.ray_step).normalized()
+		consume(e)
+		return true
 	# These feedback events never mutate geometry. Preserve every damage record
 	# without allocating an Effect and a second dictionary for the same hit.
 	if kind=="hit":
@@ -220,7 +241,7 @@ func on_event(kind:String,info:Dictionary)->bool:
 			e.position=info.pos;e.direction=info.direction;consume(e)
 	return true
 func spawn_visual(shot:Dictionary,e:Effect)->void:
-	if scene.projectile_visuals.size()>=256:return
+	if scene.projectile_visuals.size()+scene.native_laser_visuals.size()>=256:return
 	var mount=geometry.shot_mount(shot)
 	var angle=e.direction.angle()
 	var visual:Dictionary
@@ -272,9 +293,11 @@ func consume(e:Effect)->void:
 func request_legacy_display()->void:
 	detach_requested=true
 	if not advancing:
-		close();scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
-func close()->void:
-	if not started:return
+		if not close():return
+		scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
+func close()->bool:
+	if not started:return true
+	if not scene.prepare_native_laser_display(true):return false
 	started=false
 	scene.ship_view.numeric_slice_only=false
 	scene.simulation_geometry_view=null
@@ -292,6 +315,7 @@ func close()->void:
 	if previous_spatial==null:previous_spatial=scene.battle_read_model
 	geometry.close({"providers":previous,"spatial":previous_spatial})
 	started=false
+	return true
 
 func record_contact(e:Effect,launch:bool,critical:bool)->void:
 	if game.combat_presentation!=null:

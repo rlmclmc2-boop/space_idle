@@ -49,6 +49,7 @@ class SpaceCombatFlightFrame : public RefCounted {
     Ref<SpaceCombatPresentation> recycler;
     std::vector<PreparedFlight> flights;
     std::vector<size_t> order,background;
+    Ref<SpaceCombatKernel> kernel;
     bool persistent=false;
     double presentation_time=0;
     Vector2 presentation_offset;
@@ -57,7 +58,32 @@ protected:
 public:
     ~SpaceCombatFlightFrame();
     int64_t size() const{return persistent?order.size():flights.size();}
-    Array to_array() const{Array result;if(persistent){for(size_t id:order)if(flights[id].draw){const auto &f=flights[id];Dictionary row=f.legacy();Vector2 point=f.point;if(f.render_kind==0&&f.fixed)point+=f.axis*float(f.anchor_speed*f.ray_step.length()*(presentation_time-f.anchor_time));row["pos"]=point+presentation_offset;result.push_back(row);}}else for(const PreparedFlight &f:flights)result.push_back(f.legacy());return result;}
+    Array to_array() const {
+        Array result; Dictionary cold_by_serial;
+        if (persistent && kernel.is_valid()) {
+            // Explicit compatibility-array demand is a cold fallback boundary.
+            // Freeze no second motion state; every reconstructed row shares lease.
+            if (kernel->set_compact_laser_births(false)<0) return result;
+            for (int i=0;i<kernel->projectile_views().size();++i) {
+                Dictionary shot=kernel->projectile_views()[i];cold_by_serial[shot["serial"]]=shot;
+            }
+        }
+        if(persistent) {
+            for(size_t id:order) if(flights[id].draw) {
+                const auto &f=flights[id];Dictionary row=f.legacy();
+                if(f.shot.is_empty()) {
+                    Dictionary shot=cold_by_serial.get(int64_t(f.serial),Dictionary());
+                    if(shot.is_empty())continue;
+                    row["shot"]=shot;
+                    Dictionary visual; visual["angle"]=f.axis.angle(); row["visual"]=visual;
+                }
+                Vector2 point=f.point;
+                if(f.render_kind==0&&f.fixed)point+=f.axis*float(f.anchor_speed*f.ray_step.length()*(presentation_time-f.anchor_time));
+                row["pos"]=point+presentation_offset;result.push_back(row);
+            }
+        } else for(const PreparedFlight &f:flights)result.push_back(f.legacy());
+        return result;
+    }
 };
 class SpaceCombatPresentation : public RefCounted {
     GDCLASS(SpaceCombatPresentation,RefCounted)
@@ -141,6 +167,7 @@ protected:
     static void _bind_methods();
 public:
     void configure_retained_gpu(Ref<ShaderMaterial> material) {
+        if(retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped && retained_kernel->set_compact_laser_births(false)<0)return;
         for(RID canvas:retained_canvases)if(canvas.is_valid())RenderingServer::get_singleton()->canvas_item_set_material(canvas,RID());
         retained_canvases.clear();
         if(retained_frame.is_valid()){retained_frame->order.clear();retained_frame->background.clear();retained_frame->flights.clear();}
@@ -207,6 +234,13 @@ public:
         Array result;for(const ContactEvent &e:contact_events[category]){Dictionary d;d["position"]=e.point;d["direction"]=e.direction;d["born"]=e.born;
             if(category==0){d["damage_type"]=e.type;if(e.launch)d["kind"]="fire";}
             else {d["kind"]=e.launch?"fire":"hit";d["critical"]=e.critical;}result.push_back(d);}return result;
+    }
+    bool supports_compact_lasers(Object *surface) const {
+        Object *slice=surface->get("battle_slice_runtime");
+        return slice!=nullptr && !retained_material.is_null() && !bool(surface->get("accelerated_visual_mode")) &&
+            bool(surface->get("retained_contacts_enabled")) &&
+            bool(surface->get("prototype_enabled")) && bool(surface->get("pulse_vfx_enabled")) &&
+            bool(surface->get("enemy_vfx_enabled")) && bool(surface->get("missile_vfx_enabled"));
     }
     Dictionary create_visual(Dictionary shot,double angle,int64_t mount,Vector2 origin,Vector2 logical,double spread) {
         Dictionary v;v["shot"]=shot;v["angle"]=angle;v["mount"]=mount;v["age"]=0.0;v["origin"]=origin;v["logical_origin"]=logical;v["spread"]=spread;v["head"]=0;v["samples"]=1;
@@ -472,6 +506,11 @@ void SpaceCombatPresentation::flush_pulses(RID canvas) {
     RenderingServer::get_singleton()->canvas_item_add_multimesh(canvas,batch->get_rid());pulse_transforms.clear();
 }
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
+    if (!supports_compact_lasers(surface) && retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped) {
+        if (retained_kernel->set_compact_laser_births(false)<0) return retained_frame;
+        shots=retained_kernel->projectile_views(); surface->call("restore_native_laser_visuals"); clear_retained_frame();
+    }
+    if (retained_kernel.is_valid() && (!retained_kernel->admitted || retained_kernel->stopped)) clear_retained_frame();
     if(bool(surface->get("accelerated_visual_mode")))clear_retained_frame();
     if(retained_frame.is_valid()&&retained_kernel.is_valid()){prepare_retained(surface,offset);return retained_frame;}
     ++old_prepares;
@@ -536,7 +575,14 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
     return result;
 }
 void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vector2 offset) {
-    if(prepared.get_type()==Variant::OBJECT){Ref<SpaceCombatFlightFrame> direct=prepared;if(direct.is_valid()&&direct->persistent&&direct==retained_frame){draw_retained(surface,offset);return;}}
+    if(prepared.get_type()==Variant::OBJECT) {
+        Ref<SpaceCombatFlightFrame> direct=prepared;
+        if(direct.is_valid()&&direct->persistent&&direct==retained_frame) {
+            if(supports_compact_lasers(surface)){draw_retained(surface,offset);return;}
+            if(!bool(surface->call("prepare_native_laser_display",true)))return;
+            Array fallback=direct->to_array();clear_retained_frame();draw_flights(surface,fallback,offset);return;
+        }
+    }
     ++old_draws;
     Ref<SpaceCombatFlightFrame> frame;
     if(prepared.get_type()==Variant::OBJECT)frame=prepared;
@@ -645,6 +691,7 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 }
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("supports_compact_lasers","surface"),&SpaceCombatPresentation::supports_compact_lasers);
     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
     ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
     ClassDB::bind_method(D_METHOD("configure_contact_gpu","meshes","canvas","material"),&SpaceCombatPresentation::configure_contact_gpu);

@@ -11,6 +11,7 @@ var production_seconds:=0.0
 var ticks:=0
 var feedback_rows:=0
 var handed_off:=false
+var laser_view_revision:=0
 var advance_blocked:=false
 var galaxy_refit_blocked:=false
 var blocked_shared_step:=0.0
@@ -218,6 +219,12 @@ func consume_feedback(game:RefCounted)->void:
 	for row in kernel.take_feedback():
 		feedback_rows+=1
 		var p:Vector2=row.position
+		if row.has("native_laser"):
+			# Frozen value feedback, including same-step retired births. No shot
+			# lookup or complete compatibility Dictionary is created here.
+			var info={"native_laser":row.native_laser,"x":p.x,"y":p.y,"pos":p,"type":row.type,"direction":row.direction,"aim":row.target_position,"critical":row.critical}
+			game.event.emit("fire" if int(row.kind)==0 else "projectile_impact",info)
+			continue
 		match int(row.kind):
 			0:
 				game.event.emit("fire",{"x":p.x,"y":p.y,"type":row.type,"shot":row.shot,"spread":0.0,"direction":row.direction,"aim":row.target_position})

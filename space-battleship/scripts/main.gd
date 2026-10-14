@@ -439,6 +439,7 @@ func _process(delta: float) -> void:
 		build_ui()
 	if battle_slice_runtime!=null:battle_slice_runtime.sync_screen_scale(enemy_recognition_screen_scale())
 	sync_accelerated_visual_mode()
+	if not prepare_native_laser_display():return
 	var dt := maxf(0,delta)
 	clock += dt
 	prune_resource_samples(Time.get_unix_time_from_system())
@@ -529,6 +530,7 @@ func sync_accelerated_visual_mode() -> void:
 	var enabled := fast_mode_enabled()
 	if enabled == accelerated_visual_mode:
 		return
+	if enabled and not prepare_native_laser_display(true):return
 	accelerated_visual_mode = enabled
 	if not enabled:
 		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
@@ -1762,7 +1764,37 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	if fire_vfx in ["hatch","flash"]:
 		weapon_smoke(pos,Color("8992a0"),1,0.14,4.0)
 
+# Serial-only reservations preserve the existing decorative cap while compact
+# native lasers have no visual Dictionary. They never contain combat state.
+var native_laser_visuals:Dictionary={}
+func prepare_native_laser_display(_force_legacy:=false)->bool:
+	if game.native_execution!=null and game.native_execution.kernel.has_method("set_compact_laser_births"):
+		if int(game.native_execution.kernel.set_compact_laser_births(false))<0:return false
+	restore_native_laser_visuals()
+	return true
+
+func restore_native_laser_visuals()->void:
+	if native_laser_visuals.is_empty():return
+	# Called only after cold materialization/atomic handoff. Do not replay fire,
+	# recoil, sound or damage. Unretained births remain outside the original cap.
+	for shot in game.projectiles:
+		if not native_laser_visuals.has(int(shot.get("serial",-1))):continue
+		if bool(shot.get("dead",false)):continue
+		if not projectile_visual(shot).is_empty():continue
+		var origin:Vector2=shot.launch_point
+		var direction:Vector2=game.projectile_direction(shot)
+		var visual={"shot":shot,"mount":int(shot.mount),"origin":origin,"logical_origin":origin,"spread":0.0,"age":0.0,"angle":Vector2(shot.fixed_screen_step).angle(),"head":0,"samples":1,"fixed_origin":shot.fixed_screen_origin,"fixed_step":shot.fixed_screen_step,"fixed_direction":direction}
+		var trail:=PackedVector2Array();trail.resize(14);trail.fill(game.projectile_position(shot))
+		var times:=PackedFloat32Array();times.resize(14);times.fill(0.0)
+		visual.trail=trail;visual.trail_times=times
+		projectile_visuals.append(visual)
+		if game.combat_presentation!=null:
+			game.combat_presentation.register_visual(shot,visual,projectile_visuals.size()-1)
+			game.combat_presentation.bind_visual(visual)
+	native_laser_visuals.clear()
+
 func advance_projectile_visuals(dt: float) -> void:
+	if not prepare_native_laser_display():return
 	if fast_mode_enabled():
 		projectile_visuals.clear()
 		return
@@ -3086,6 +3118,7 @@ func draw_battle_resources() -> void:
 		RESOURCE_ART.draw_drop(draw_surface,drop,drop_render_position(drop),clock)
 
 func draw_battle() -> void:
+	if not prepare_native_laser_display():return
 	enemy_entry_batch_active=true
 	enemy_entry_distance_time=-INF
 	player_weapon_components()
@@ -3576,7 +3609,7 @@ func attach_native_display()->bool:
 
 func _exit_tree()->void:
 	if battle_slice_runtime!=null:
-		battle_slice_runtime.close();battle_slice_runtime=null
+		if battle_slice_runtime.close():battle_slice_runtime=null
 
 func _advance_projectile_visual_record(visual:Dictionary,dt:float)->void:
 	visual.age += dt
