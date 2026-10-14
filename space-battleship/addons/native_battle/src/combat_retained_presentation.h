@@ -120,10 +120,10 @@ void SpaceCombatPresentation::prepare_retained_mesh() {
     prepare_pulse_mesh();prepare_templates();
     PackedVector3Array points;PackedColorArray tints;PackedVector2Array tags;PackedInt32Array indices;
     auto append=[&](const std::vector<Vector2> &v,const std::vector<Color> &c,int kind,bool turn){
-        for(size_t i=0;i<v.size();++i){Vector2 p=turn?Vector2(-v[i].y,v[i].x):v[i];indices.push_back(points.size());points.push_back(Vector3(p.x,p.y,0));tints.push_back(c[i]);tags.push_back(Vector2(kind,0));}
+        for(size_t i=0;i<v.size();++i){Vector2 p=turn?Vector2(-v[i].y,v[i].x):v[i];indices.push_back(points.size());points.push_back(Vector3(p.x,p.y,0));tints.push_back(c[i]);tags.push_back(Vector2(kind,0));retained_templates[kind].push_back(p);retained_template_colors[kind].push_back(c[i]);}
     };
     Array pulse=pulse_mesh->surface_get_arrays(0);PackedVector3Array pv=pulse[Mesh::ARRAY_VERTEX];PackedColorArray pc=pulse[Mesh::ARRAY_COLOR];
-    for(int i=0;i<pv.size();++i){indices.push_back(points.size());points.push_back(pv[i]);tints.push_back(pc[i]);tags.push_back(Vector2(0,0));}
+    for(int i=0;i<pv.size();++i){indices.push_back(points.size());points.push_back(pv[i]);tints.push_back(pc[i]);tags.push_back(Vector2(0,0));retained_templates[0].push_back(Vector2(pv[i].x,pv[i].y));retained_template_colors[0].push_back(pc[i]);}
     append(chain,chain_colors,1,true);
     for(int kind=2;kind<=3;++kind) {
         begin();Color color=Color::html(kind==3?"ffaf61":"64b5ff");
@@ -146,6 +146,10 @@ void SpaceCombatPresentation::flush_retained(RID canvas) {
 void SpaceCombatPresentation::draw_retained(Object *surface,Vector2 offset) {
     ++retained_draws;prepare_retained_mesh();Object *canvas=surface->get("draw_surface");RID rid=canvas->call("get_canvas_item");
     if(std::find(retained_canvases.begin(),retained_canvases.end(),rid)==retained_canvases.end()){retained_canvases.push_back(rid);RenderingServer::get_singleton()->canvas_item_set_material(rid,retained_material->get_rid());}
+    bool missiles=false,instances=false;
+    for(size_t id:retained_frame->order) {const auto &f=retained_frame->flights[id];if(!f.draw)continue;
+        missiles|=!f.hostile&&!f.beam&&f.key=="missile";instances|=f.render_kind>=0;}
+    if(missiles&&instances){draw_retained_stream(surface,offset,rid);return;}
     double epoch=std::floor(retained_kernel->clock/128.0)*128.0;
     retained_material->set_shader_parameter("simulation_clock",float(retained_kernel->clock-epoch));
     retained_cursor=0;retained_upload.clear();begin();bool script_run=false;
@@ -179,4 +183,51 @@ void SpaceCombatPresentation::draw_retained(Object *surface,Vector2 offset) {
     }
     paint(rid);flush_retained(rid);if(script_run)surface->call("flush_projectile_packet_batch");
     for(size_t i=retained_cursor;i<retained_batches.size();++i)retained_batches[i]->set_visible_instance_count(0);
+}
+
+void SpaceCombatPresentation::flush_retained_stream(RID canvas) {
+    if(vertices.empty())return;
+    retained_stream_uv.resize(vertices.size(),Vector2());
+    packed_vertices.resize(vertices.size());packed_colors.resize(colors.size());packed_stream_uv.resize(vertices.size());
+    std::copy(vertices.begin(),vertices.end(),packed_vertices.ptrw());
+    std::copy(colors.begin(),colors.end(),packed_colors.ptrw());
+    std::copy(retained_stream_uv.begin(),retained_stream_uv.end(),packed_stream_uv.ptrw());
+    RenderingServer::get_singleton()->canvas_item_add_triangle_array(canvas,PackedInt32Array(),packed_vertices,packed_colors,packed_stream_uv);
+    mixed_stream_upload_bytes+=vertices.size()*(sizeof(Vector2)*2+sizeof(Color));
+    vertices.clear();colors.clear();retained_stream_uv.clear();
+}
+void SpaceCombatPresentation::draw_retained_stream(Object *surface,Vector2 offset,RID canvas) {
+    ++mixed_stream_draws;
+    // Quarter-second epochs bound cancellation/UV quantization while retaining
+    // the canonical birth anchor and GPU-clock straight-flight projection.
+    const double epoch=std::floor(retained_kernel->clock*4.0)/4.0;
+    retained_material->set_shader_parameter("stream_clock",float(retained_kernel->clock-epoch));
+    begin();retained_stream_uv.clear();bool script_run=false;
+    for(size_t id:retained_frame->order) {
+        const auto &f=retained_frame->flights[id];if(!f.draw)continue;
+        if(f.render_kind>=0) {
+            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+            Vector2 point=f.point+offset,velocity;
+            if(f.render_kind==0&&f.fixed) {
+                const double speed=f.anchor_speed*f.ray_step.length();
+                if(std::abs(speed)<=60000.0) {
+                    point+=f.axis*float(speed*(epoch-f.anchor_time));velocity=f.axis*float(speed);
+                } else {const Motion &m=f.motion->motion();point=f.ray_origin+f.ray_step*double((position(m)-f.launch).dot(m.direction))+offset;}
+            }
+            const Transform2D transform(f.axis,Vector2(-f.axis.y,f.axis.x),point);
+            const auto &points=retained_templates[f.render_kind];const auto &tints=retained_template_colors[f.render_kind];
+            // Legacy UVs are untouched. Only this reserved negative range denotes motion.
+            const Vector2 uv=velocity.is_zero_approx()?Vector2():Vector2(velocity.x,-65536.0f-velocity.y);
+            for(size_t i=0;i<points.size();++i){vertices.push_back(transform.xform(points[i]));colors.push_back(tints[i]);retained_stream_uv.push_back(uv);}
+        } else if(!f.hostile&&f.key=="missile"&&!f.beam) {
+            if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+            flight(f.point+offset,f.axis,f.motion->motion().age,!Dictionary(f.shot["target"]).is_empty(),f.visual,offset,f.budget==0?0.5:1.0);
+            retained_stream_uv.resize(vertices.size(),Vector2());
+        } else {
+            flush_retained_stream(canvas);Dictionary legacy=f.legacy();legacy["pos"]=f.point+offset;
+            surface->call("_draw_projectile_foreground_flight",legacy,offset);script_run=true;
+        }
+    }
+    flush_retained_stream(canvas);if(script_run)surface->call("flush_projectile_packet_batch");
+    for(auto &batch:retained_batches)batch->set_visible_instance_count(0);
 }
