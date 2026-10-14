@@ -1,0 +1,247 @@
+{
+  "source": "85ada8bc6c18834310c9ddf494f92697c7c09182",
+  "tree": "9d79b2a2b9e3798fa258f6aa3f25786bf14c8491",
+  "qa_dll": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8",
+  "cases": {
+    "CFA1": {
+      "frame_ms": 20.6732912371134,
+      "frames": 388,
+      "steps": 480,
+      "wall_seconds": 8.021237,
+      "game_seconds": 8.00000000000014,
+      "events": {
+        "beam_hit": 420,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 48,
+        "equipment_stats": 206,
+        "fire": 3520,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "before": "9cced19dd1fb8857b7ed059cd4dd149da7ac245c7b6c9a528ac163756a76b69e",
+      "after": "da14f862a413a58efeb85df56e33e8bde3f1412ef8859e3f44ebd909335dbd41",
+      "cpu_ms": 7984.375,
+      "cpu_ms_per_game_second": 998.0468749999825,
+      "calibration_10000_pairs_us": 7013,
+      "render_cpu_ms": 2.606213918051769,
+      "render_gpu_ms": 0.4672139175620276,
+      "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8",
+      "script_sha256": {
+        "game.gd": "fc5c2cdce810e5c833a879eda08ad5649e5a92d2289f294081ad9141d77f5e35",
+        "main.gd": "e18ac5b6ca8c362ec484046d8f3c4c9103510b042df949883f00dee9f3c21a11",
+        "battlefield.gd": "f7e63607dbdbe93e25ec76a706665dee234e1fdcb7f42b123c80a0d891fe563c",
+        "battle_slice_runtime.gd": "c15e225db5f3d4f0fc133507964d2d5e366d111d5550f1862b2919482f4af313",
+        "native_execution_session.gd": "3be7387bb5087f04bb591ff76c3156556b10c2df258c1054f0a83ef9a4501362",
+        "simulation_geometry_authority.gd": "360ee5c4294047b8988eb02f03f62a040594065f4db9b442af4fc5be0a1840f0"
+      },
+      "step_groups": {
+        "1": {
+          "count": 302,
+          "mean_ms": 19.456029801324505
+        },
+        "2": {
+          "count": 80,
+          "mean_ms": 24.689875
+        },
+        "3": {
+          "count": 6,
+          "mean_ms": 28.387666666666668
+        }
+      }
+    },
+    "CFP": {
+      "frame_ms": 21.53414745308311,
+      "frames": 373,
+      "steps": 480,
+      "wall_seconds": 8.032237,
+      "game_seconds": 8.00000000000014,
+      "events": {
+        "beam_hit": 420,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 48,
+        "equipment_stats": 206,
+        "fire": 3520,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "before": "7b6d3e15b43374f5ff73f661d66a919a091fa55a2abbc5f2793e2eb0b8f51755",
+      "after": "da14f862a413a58efeb85df56e33e8bde3f1412ef8859e3f44ebd909335dbd41",
+      "cpu_ms": 7968.75,
+      "cpu_ms_per_game_second": 996.0937499999825,
+      "calibration_10000_pairs_us": 7275,
+      "render_cpu_ms": 2.629131363160489,
+      "render_gpu_ms": 0.46930562994435393,
+      "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8",
+      "script_sha256": {
+        "game.gd": "811be3ce331a286a00c46d13194b294280b9370a14cac7bc4fb1cee19e35612b",
+        "main.gd": "2b9c118873bafb63ca3f9f285bb5b7c2ba7d21442b12d643f6b7e7475b2a4ac2",
+        "battlefield.gd": "efb8c733e4701884650ffa7bd0b3c23457552c72197fd97eaa04dadad07765ee",
+        "battle_slice_runtime.gd": "7c81f4f62862d93ec42583770888c66429d97682caafb12e348a672fb4640424",
+        "native_execution_session.gd": "b6cd081a0ee85b15b251572d5b0a9453b41f19774dfc44bd75b8d66751f44065",
+        "simulation_geometry_authority.gd": "243f7b97686f207f2ef87caba5d90921315098c553b79df79452d6a4bc1b710a"
+      },
+      "step_groups": {
+        "1": {
+          "count": 272,
+          "mean_ms": 20.179110294117645
+        },
+        "2": {
+          "count": 95,
+          "mean_ms": 24.927894736842106
+        },
+        "3": {
+          "count": 6,
+          "mean_ms": 29.228166666666667
+        }
+      },
+      "ledger": {
+        "exclusive_us": {
+          "gap.postdraw_to_signal": 30163,
+          "gap.signal_to_main": 833,
+          "main.unwrapped": 1205,
+          "battlefield._process": 6107,
+          "battlefield._process_battlefield": 140900,
+          "main._process": 106272,
+          "main.advance_game_time": 1326,
+          "battle_slice_runtime.advance": 11765,
+          "simulation_geometry_authority.before_tick": 383570,
+          "native_execution_session.prepare_geometry": 579445,
+          "game.tick": 7316,
+          "game.advance_shared_clock_and_economy": 289834,
+          "native_execution_session.advance": 33327,
+          "native.kernel_advance": 231156,
+          "battlefield.on_event": 79460,
+          "battle_slice_runtime.on_event": 408242,
+          "native_execution_session.consume_feedback": 447693,
+          "native.take_feedback": 99807,
+          "battle_slice_runtime.spawn_visual": 92608,
+          "battle_slice_runtime.consume": 26110,
+          "simulation_geometry_authority.after_tick": 1178,
+          "battle_slice_runtime.snapshot": 476925,
+          "simulation_geometry_authority.finish_display_boundary": 31453,
+          "simulation_geometry_authority.display_frame": 438638,
+          "main.sync_beam_visuals": 1572,
+          "main.advance_projectile_visuals": 169519,
+          "main.flush_damage_numbers": 279386,
+          "main.refresh_visible_cards": 1797,
+          "main.refresh_navigation": 232818,
+          "main.refresh_draw_layers": 145381,
+          "battle_slice_runtime.apply_nodes": 35819,
+          "flat_ship_compositor.sync": 1348,
+          "gap.after_main_before_render": 391737,
+          "hightech_workshop._process": 2388,
+          "main.draw_stars": 3944,
+          "main.draw_battle": 47931,
+          "retained_enemy_contacts.sync": 301968,
+          "battlefield._draw_muzzle_cues": 248315,
+          "retained_enemy_contacts.paint": 6121,
+          "main.draw_battle_foreground": 783963,
+          "render_submission_gpu_wait_unsplit": 1427335,
+          "hightech_workshop.refresh": 25544,
+          "equipment_tab.refresh_slots": 18
+        },
+        "calls": {
+          "simulation_geometry_authority.before_tick": 480,
+          "native_execution_session.prepare_geometry": 480,
+          "game.advance_shared_clock_and_economy": 480,
+          "native.kernel_advance": 480,
+          "battle_slice_runtime.on_event": 30836,
+          "battlefield.on_event": 30836,
+          "native.take_feedback": 480,
+          "battle_slice_runtime.spawn_visual": 3520,
+          "battle_slice_runtime.consume": 6982,
+          "native_execution_session.consume_feedback": 480,
+          "native_execution_session.advance": 480,
+          "game.tick": 480,
+          "simulation_geometry_authority.after_tick": 480,
+          "simulation_geometry_authority.finish_display_boundary": 373,
+          "simulation_geometry_authority.display_frame": 373,
+          "battle_slice_runtime.snapshot": 373,
+          "battle_slice_runtime.advance": 373,
+          "main.advance_game_time": 373,
+          "main.sync_beam_visuals": 373,
+          "main.advance_projectile_visuals": 373,
+          "main.flush_damage_numbers": 373,
+          "main.refresh_visible_cards": 373,
+          "main.refresh_navigation": 373,
+          "main.refresh_draw_layers": 373,
+          "main._process": 373,
+          "battle_slice_runtime.apply_nodes": 373,
+          "flat_ship_compositor.sync": 373,
+          "battlefield._process_battlefield": 373,
+          "battlefield._process": 373,
+          "hightech_workshop._process": 373,
+          "main.draw_stars": 373,
+          "retained_enemy_contacts.sync": 373,
+          "main.draw_battle": 373,
+          "battlefield._draw_muzzle_cues": 373,
+          "main.draw_battle_foreground": 373,
+          "retained_enemy_contacts.paint": 373,
+          "hightech_workshop.refresh": 38,
+          "equipment_tab.refresh_slots": 8
+        },
+        "closure_us": 0
+      }
+    },
+    "CFA2": {
+      "frame_ms": 21.916278688524592,
+      "frames": 366,
+      "steps": 480,
+      "wall_seconds": 8.021358,
+      "game_seconds": 8.00000000000014,
+      "events": {
+        "beam_hit": 420,
+        "enhancement_chain": 4961,
+        "enhancement_secondary": 48,
+        "equipment_stats": 206,
+        "fire": 3520,
+        "galaxy_unlocked": 1,
+        "hit": 13050,
+        "projectile_impact": 8430,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "before": "0a31f33f734046354ee850a68cd6a721a955898b00d0004260d248a796c22c9a",
+      "after": "da14f862a413a58efeb85df56e33e8bde3f1412ef8859e3f44ebd909335dbd41",
+      "cpu_ms": 7984.375,
+      "cpu_ms_per_game_second": 998.0468749999825,
+      "calibration_10000_pairs_us": 7044,
+      "render_cpu_ms": 2.7269180322605404,
+      "render_gpu_ms": 0.48394535555214174,
+      "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8",
+      "script_sha256": {
+        "game.gd": "fc5c2cdce810e5c833a879eda08ad5649e5a92d2289f294081ad9141d77f5e35",
+        "main.gd": "e18ac5b6ca8c362ec484046d8f3c4c9103510b042df949883f00dee9f3c21a11",
+        "battlefield.gd": "f7e63607dbdbe93e25ec76a706665dee234e1fdcb7f42b123c80a0d891fe563c",
+        "battle_slice_runtime.gd": "c15e225db5f3d4f0fc133507964d2d5e366d111d5550f1862b2919482f4af313",
+        "native_execution_session.gd": "3be7387bb5087f04bb591ff76c3156556b10c2df258c1054f0a83ef9a4501362",
+        "simulation_geometry_authority.gd": "360ee5c4294047b8988eb02f03f62a040594065f4db9b442af4fc5be0a1840f0"
+      },
+      "step_groups": {
+        "1": {
+          "count": 254,
+          "mean_ms": 20.02238188976378
+        },
+        "2": {
+          "count": 110,
+          "mean_ms": 26.182636363636362
+        },
+        "3": {
+          "count": 2,
+          "mean_ms": 27.7915
+        }
+      }
+    }
+  },
+  "control_drift_ms": 1.2429874514111923,
+  "probe_effect_vs_control_mean_ms": 0.23936249026411716
+}

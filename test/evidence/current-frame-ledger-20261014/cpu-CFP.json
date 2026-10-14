@@ -1,0 +1,26 @@
+{
+  "pid": 47072,
+  "exe": "Godot_v4.7.2-stable_win64.exe",
+  "begin": {
+    "user_us": 8750000.0,
+    "kernel_us": 2140625.0,
+    "clock_ns": 448887695317000
+  },
+  "end": {
+    "user_us": 16671875.0,
+    "kernel_us": 2187500.0,
+    "clock_ns": 448895729073400
+  },
+  "label": "CFP",
+  "cpu_us": 7968750.0,
+  "cpu_window_seconds": 8.0337564,
+  "script_sha256": {
+    "game.gd": "811be3ce331a286a00c46d13194b294280b9370a14cac7bc4fb1cee19e35612b",
+    "main.gd": "2b9c118873bafb63ca3f9f285bb5b7c2ba7d21442b12d643f6b7e7475b2a4ac2",
+    "battlefield.gd": "efb8c733e4701884650ffa7bd0b3c23457552c72197fd97eaa04dadad07765ee",
+    "battle_slice_runtime.gd": "7c81f4f62862d93ec42583770888c66429d97682caafb12e348a672fb4640424",
+    "native_execution_session.gd": "b6cd081a0ee85b15b251572d5b0a9453b41f19774dfc44bd75b8d66751f44065",
+    "simulation_geometry_authority.gd": "243f7b97686f207f2ef87caba5d90921315098c553b79df79452d6a4bc1b710a"
+  },
+  "dll_sha256": "d169370581d158da56669f084e74ee95b6b580b7955d2b4e12e46e7016d0d6f8"
+}
