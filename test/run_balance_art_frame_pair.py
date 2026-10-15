@@ -17,6 +17,9 @@ PARTS = ("scripts", "shaders", "tools", "data", "assets", "addons", "dev", "proj
 REFS = (("before", "a5fa51bdae92c817caab1071a8b2a4242c0e503b"),
         ("after", "25fa50757ad4317f2d0a5c34154f11ccc26a81d7"))
 
+MIXED = os.environ.get("PERF_MIXED_OPENING") == "1"
+LABEL = "balance-art-mixed" if MIXED else "balance-art"
+
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -29,7 +32,7 @@ def checked(command, cwd, env, log, timeout):
         raise RuntimeError(f"{log}: exit={result.returncode}\n{data[-3500:]}")
 
 def run(label, ref):
-    area = Path(tempfile.mkdtemp(prefix=f"balance-art-{label}-", dir=WORK))
+    area = Path(tempfile.mkdtemp(prefix=f"{LABEL}-{label}-", dir=WORK))
     subprocess.run(["icacls", str(area), "/inheritance:e"], check=True,
                    stdout=subprocess.DEVNULL)
     archive = area / "source.tar"
@@ -54,7 +57,7 @@ def run(label, ref):
         path = area / "userdata" / folder
         path.mkdir(parents=True, exist_ok=True)
         env[key] = str(path)
-    env.update(PERF_NATIVE="1", PERF_SIDE=label, PERF_ART_PAIR="1")
+    env.update(PERF_NATIVE="1", PERF_SIDE=label, PERF_ART_PAIR="1", PERF_MIXED_OPENING="1" if MIXED else "0")
     engine = str(ENGINE)
     checked([engine, "--headless", "--editor", "--import", "--quit", "--path", str(project)],
             project, env, area / "import.log", 180)
@@ -67,7 +70,7 @@ def run(label, ref):
                           "game_data_sha256":sha(project / "data/game_data.json"),
                           "visual_data_sha256":sha(project / "data/ship_weapon_visuals.json"),
                           "harness_sha256":sha(SCRIPT),"area":str(area)}
-    out = WORK / f"balance-art-{label}-full-frame.json"
+    out = WORK / f"{LABEL}-{label}-full-frame.json"
     out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
     print(label, "evidence", out, "steps", result["sample_steps"],
           "focused", result["sample_focus_start"], result["sample_focus_end"],
@@ -83,6 +86,12 @@ if __name__ == "__main__":
         assert row["runtime_config_start"]["save_enabled"] is False
         assert row["native_active"] is True and row["handoffs"] == 0
         assert row["sample_steps"] == 240 and row["actual_1x_pass"]
+    if MIXED:
+        expected={"swarm":5,"anchor":5,"shielded":5}
+        for row in (before,after):
+            subjects=row["visual_subjects"]
+            assert len(subjects)==15
+            assert {name:sum(item["archetype_id"]==name for item in subjects) for name in expected}==expected
+            assert len({item["texture"] for item in subjects})==3
+        assert {item["ship_key"] for item in after["visual_subjects"]}=={"enemy_opening_triangle_energy","enemy_opening_slab_energy","enemy_opening_u_energy"}
     print("BALANCE_ART_FULL_FRAME_PAIR complete", flush=True)
-
-

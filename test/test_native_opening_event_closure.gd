@@ -61,6 +61,8 @@ func run()->void:
 		var candidate=ClassDB.instantiate("SpaceCombatKernel")
 		var session=preload("res://scripts/native_execution_session.gd").new()
 		print("NATIVE_ADMISSION_DETAIL scope ",descriptor.get("execution_scope","")," count ",descriptor.get("enemies",[]).size()," drop ",descriptor.get("requires_drop_rules",false),"/",descriptor.get("drop_rules_compiled",false)," supports ",session.supports_configuration(candidate,descriptor)," configured ",candidate.configure(descriptor))
+		for view in descriptor.enemies:
+			print("NATIVE_ENEMY_FIELDS ",view.uid," reactiveReduction=",view.get("reactiveReduction",null)," type=",typeof(view.get("reactiveReduction",null))," reactive_stacks=",view.get("reactive_stacks",null)," type=",typeof(view.get("reactive_stacks",null))," reactive_volley_at=",view.get("reactive_volley_at",null)," type=",typeof(view.get("reactive_volley_at",null)))
 		quit(2);return
 	assert(game.stat_cache_enabled and not game.save_enabled,"cache/no-save gate")
 	if owner=="native" and scene.battle_slice_runtime==null:assert(scene.attach_native_display(),"native display attachment")
@@ -79,7 +81,7 @@ func run()->void:
 		if stage==3 and point==5:
 			for enemy in game.enemies:
 				if int(enemy.uid)==int(initial[0].uid):shield_samples.append({"tick":tick_index,"shield":enemy.shield,"hp":enemy.hp,"shield_hit_at":enemy.get("shield_hit_at",null),"clock":game.production_time()})
-		if owner=="native" and deaths.size()>0 and (tick_index>=int(deaths[0].tick)+2 or game.native_handoff_count>0):
+		if owner=="native" and not (stage==3 and point==3) and deaths.size()>0 and (tick_index>=int(deaths[0].tick)+2 or game.native_handoff_count>0):
 			if game.native_handoff_count>0:
 				for extra in 2:
 					scene._process(STEP)

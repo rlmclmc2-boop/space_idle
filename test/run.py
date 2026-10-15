@@ -50,7 +50,7 @@ def main():
     if args.test in {"test_weapon_scale_contract.gd", "probe_weapon_roles.gd"}:
         (game / "qa").mkdir(exist_ok=True)
         shutil.copy2(tests / "fixtures/opening_frozen_contract.json", game / "qa/opening_frozen_contract.json")
-    if args.test in {"test_native_weapon_scale.gd", "test_native_opening_art_integration.gd", "test_native_opening_event_closure.gd", "test_reactive_native_descriptor.gd"} or (args.test == "probe_weapon_roles.gd" and any(os.environ.get(key) == "1" for key in ("SPACE_BALANCE_NATIVE_ROLES", "SPACE_BALANCE_NATIVE_SCALE_CANDIDATE", "SPACE_BALANCE_TYPED_SCALES", "SPACE_BALANCE_TYPED_CANDIDATE", "SPACE_BALANCE_TYPED_LEVEL_SLOTS", "SPACE_BALANCE_FOUR_BUDGET", "SPACE_BALANCE_PRIORITY_BUDGET"))):
+    if args.test in {"test_native_weapon_scale.gd", "test_native_opening_art_integration.gd", "test_native_opening_event_closure.gd", "test_reactive_native_descriptor.gd", "test_shield_gap_recovery.gd"} or (args.test == "probe_weapon_roles.gd" and any(os.environ.get(key) == "1" for key in ("SPACE_BALANCE_NATIVE_ROLES", "SPACE_BALANCE_NATIVE_SCALE_CANDIDATE", "SPACE_BALANCE_TYPED_SCALES", "SPACE_BALANCE_TYPED_CANDIDATE", "SPACE_BALANCE_TYPED_LEVEL_SLOTS", "SPACE_BALANCE_FOUR_BUDGET", "SPACE_BALANCE_PRIORITY_BUDGET"))):
         native = tests / "native-build/project/bin/space_native.dll"
         if not native.is_file():
             raise RuntimeError("isolated native build missing: " + str(native))

@@ -171,11 +171,26 @@ func run()->void:
  g.profile.resources={"1":1e80,"2":1e80};g.profile.loadout={"weapons":[],"defence":[]}
  for key in ["missile","missile","cannon","longLaser","laser","missile","cannon","longLaser"]:g.profile.loadout.weapons.append({"key":key,"level":150})
  for key in ["shield","armour","shield","armour"]:g.profile.loadout.defence.append({"key":key,"level":150})
- g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT;g.spawn_group()
- var template=g.enemies[0].duplicate(true);g.enemies.clear()
- for i in 15:
-  var e=template.duplicate(true);e.uid=100+i;e.slot=i;e.x=80+80*(i%5);e.y=150+80*(i/5);e.hp=1e100;e.max_hp=1e100
-  g.enemies.append(e)
+ g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
+ var mixed:=OS.get_environment("PERF_MIXED_OPENING")=="1"
+ if mixed:
+  var slots:Array=[]
+  for i in 5:slots.append_array([271012,271019,271028])
+  g.db.groups["33001"].slots=slots
+ g.spawn_group()
+ if mixed:
+  assert(g.enemies.size()==15,"fixed mixed encounter has fifteen actors")
+  for i in 15:
+   var e:Dictionary=g.enemies[i];e.uid=100+i;e.slot=i;e.x=80+80*(i%5);e.y=150+80*(i/5);e.hp=1e100;e.max_hp=1e100
+ else:
+  var template=g.enemies[0].duplicate(true);g.enemies.clear()
+  for i in 15:
+   var e=template.duplicate(true);e.uid=100+i;e.slot=i;e.x=80+80*(i%5);e.y=150+80*(i/5);e.hp=1e100;e.max_hp=1e100
+   g.enemies.append(e)
+ var visual_subjects:Array=[]
+ for e in g.enemies:
+  var ship_key:String=scene.enemy_ship_key(e) if scene.has_method("enemy_ship_key") else "enemy_"+str(clampi(int(e.size),1,6))
+  visual_subjects.append({"archetype_id":str(e.get("archetype_id","")),"ship_key":ship_key,"texture":scene.ship_hull_texture(ship_key).resource_path})
  var stress=preload("res://combat_stress_fixture.gd").new();assert(stress.configure(g,2))
  scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(0)
 
@@ -209,6 +224,7 @@ func run()->void:
  scene.set_process(false);scene.track_frames=false
  var wall=Time.get_ticks_usec()-sample_start;var final=snapshot(scene);var seconds=final.game-baseline.game;var ratio=seconds/(wall/1000000.0)
  var row={"engine_render_times":render_rows,"runtime_config_start":startup_config,"mode":"cache_on_actual1x_default60fps_auto","retained":true,"frames_us_raw":frames,"main_us_raw":main_us_raw,"sample_focus_start":sample_focus_start,"sample_focus_end":root.has_focus(),"projectiles_raw":bodies,"floats_raw":floats_raw,"pending_raw":pending_raw,"primitives_raw":primitives,"drawcalls_raw":drawcalls,"frame_trace":scene.observed_frames,"warm_steps":baseline.steps-begin.steps,"sample_steps":final.steps-baseline.steps,"warm_game_seconds":baseline.game-begin.game,"game_seconds":seconds,"warm_wall_seconds":warm_wall/1000000.0,"wall_seconds":wall/1000000.0,"game_wall_ratio":ratio,"logic_hz":(final.steps-baseline.steps)/(wall/1000000.0),"render_hz":frames.size()/(wall/1000000.0),"actual_1x_pass":absf(ratio-1.0)<0.035,"warm_fires":baseline.fires-begin.fires,"fires":final.fires-baseline.fires,"warm_hits":baseline.hits-begin.hits,"hits":final.hits-baseline.hits,"warm_purchases":baseline.purchases-begin.purchases,"purchases":final.purchases-baseline.purchases,"purchases_total":final.purchases-begin.purchases,"handoffs":final.handoffs-begin.handoffs}
+ row.visual_subjects=visual_subjects
  # GPU timestamp collection is diagnostic work, outside the clean sample.
  for viewport in [root,scene.ship_view.viewport]:
   RenderingServer.viewport_set_measure_render_time(viewport.get_viewport_rid(),true)

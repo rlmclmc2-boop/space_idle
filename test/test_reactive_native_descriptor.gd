@@ -37,11 +37,17 @@ func run()->void:
 	var rejected:Array=[]
 	for pair in [["reactiveReduction","1"],["reactiveReduction",1.5],["reactiveReduction",-1],["reactiveReduction",2],["reactive_stacks","1"],["reactive_stacks",4],["reactive_volley_at","bad"]]:
 		var key:String=pair[0];reactive[key]=pair[1]
+		var enemies_before:Array=g.enemies.duplicate(true)
+		var player_before:Dictionary=g.player.duplicate(true)
+		var projectiles_before:Array=g.projectiles.duplicate(true)
+		var cooldowns_before:Dictionary=g.cooldowns.duplicate(true)
+		var rng_before:int=g.rng.state
+		var clock_before:float=g.production_time()
 		var result:Dictionary=Compiler.new().compile(g,"native_rich15_layer2")
 		check(result.has("error"),"malformed "+key+" rejected")
+		check(is_same(g.enemies[0],reactive) and g.enemies==enemies_before and g.player==player_before and g.projectiles==projectiles_before and g.cooldowns==cooldowns_before and g.rng.state==rng_before and g.production_time()==clock_before and g.native_execution==null,"rejection leaves source and combat state unchanged before restoration")
 		rejected.append({"key":key,"value":str(pair[1]),"error":result.get("error","")})
 		reactive.clear();reactive.merge(original.duplicate(true),true)
-		check(g.native_execution==null and g.projectiles.is_empty() and reactive==original,"rejection has no combat-state mutation")
 	check(g.admit_native_compiled_execution("native_rich15_layer2"),"authored 3-3 admits native after valid normalization")
 	var row={"checks":checks,"source_type":typeof(original.reactiveReduction),"descriptor_type":typeof(compiled.enemies[0].reactiveReduction),"rejections":rejected,"native_active":g.native_execution!=null,"save":g.save_enabled}
 	print("REACTIVE_NATIVE_DESCRIPTOR ",JSON.stringify(row))
