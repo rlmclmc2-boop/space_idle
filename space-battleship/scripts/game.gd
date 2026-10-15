@@ -65,6 +65,7 @@ var enemies: Array[Dictionary] = []
 # kernel.projectile_views(). Handoff replaces this with the complete collection.
 var projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
+var native_presentation_surface:WeakRef
 var native_execution_requested:=false
 var native_execution_auto:=false
 var native_numeric_update:=false
@@ -4447,6 +4448,9 @@ func admit_native_execution(descriptor:Dictionary)->bool:
 	var session=preload("res://scripts/native_execution_session.gd").new()
 	if not session.admit(self,descriptor):return false
 	native_execution=session
+	if native_presentation_surface!=null:
+		var surface=native_presentation_surface.get_ref()
+		if is_instance_valid(surface):session.bind_presentation_surface(surface)
 	native_execution_requested=true;native_execution_scope=descriptor.execution_scope
 	return true
 

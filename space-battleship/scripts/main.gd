@@ -2650,16 +2650,18 @@ func incoming_damage_text(amount, absorbed, damage_type: int, exact := false) ->
 	if damage_type not in [1,2]:return value
 	return UIText.t("battle.incoming_damage",{"type":UIText.t("equipment.energy" if damage_type==1 else "equipment.physical"),"damage":value})
 
-func queue_damage_number(info: Dictionary) -> void:
+func queue_damage_number(info: Dictionary,record_history:=true,event_time:=NAN) -> void:
 	if fast_mode_enabled():return
+	var at:float=fx_time if is_nan(event_time) else event_time
 	var absorbed = info.get("absorbed",0)
 	var amount = info.amount
 	# Each hit remains a record; only owned scalar numbers enter the bounded ring.
-	var row = [bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),{"m":amount.m,"e":amount.e} if amount is Dictionary else amount,{"m":absorbed.m,"e":absorbed.e} if absorbed is Dictionary else absorbed]
-	if damage_history_records.size()<40:damage_history_records.append(row)
-	else:
-		damage_history_records[damage_history_head]=row
-		damage_history_head=(damage_history_head+1)%40
+	if record_history:
+		var row = [bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),{"m":amount.m,"e":amount.e} if amount is Dictionary else amount,{"m":absorbed.m,"e":absorbed.e} if absorbed is Dictionary else absorbed]
+		if damage_history_records.size()<40:damage_history_records.append(row)
+		else:
+			damage_history_records[damage_history_head]=row
+			damage_history_head=(damage_history_head+1)%40
 	if not show_damage_numbers:return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
@@ -2670,8 +2672,8 @@ func queue_damage_number(info: Dictionary) -> void:
 		for entry in entries:
 			if entry.get("target","")!=target or entry.type!=category:continue
 			if summary and entry.get("summary",false):
-				if fx_time-entry.born>=0.2:
-					entry.amount=info.amount;entry.absorbed=absorbed;entry.born=fx_time;entry.critical=critical
+				if at-entry.born>=0.2:
+					entry.amount=info.amount;entry.absorbed=absorbed;entry.born=at;entry.critical=critical
 				else:
 					entry.amount=GrowthNumber.add(entry.amount,info.amount)
 					entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
@@ -2679,22 +2681,27 @@ func queue_damage_number(info: Dictionary) -> void:
 				entry.life=duration;entry.color=Color("ffd477") if entry.critical else Color("f1f5fa")
 				entry.display_dirty=true
 				return
-			if not summary and entry.critical==critical and fx_time-entry.born<0.2 and not entry.get("retiring",false):
+			if not summary and entry.critical==critical and at-entry.born<0.2 and not entry.get("retiring",false):
 				entry.amount=GrowthNumber.add(entry.amount,info.amount)
 				entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
 				entry.display_dirty=true
 				return
-	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
+	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":at,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
 	# Keep a same-frame killed target alive until its final display anchor is read.
 	if not info.player:
 		for enemy in game.enemies:
 			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
 
+func native_damage_history_rows() -> Array:
+	var rows:Array=[]
+	for i in damage_history_records.size():rows.append(damage_history_records[(damage_history_head+i)%damage_history_records.size()])
+	return rows
+
 func read_damage_history() -> Array[String]:
 	var result: Array[String] = []
-	for i in damage_history_records.size():
-		var row: Array = damage_history_records[(damage_history_head+i)%damage_history_records.size()]
+	var rows:Array=game.combat_presentation.pulse_history_snapshot() if game!=null and game.native_execution!=null and game.native_execution.pulse_feedback_owned and game.combat_presentation!=null else native_damage_history_rows()
+	for row in rows:
 		var exact: String = incoming_damage_text(row[4],row[5],int(row[2]),true) if row[0] else damage_feedback_text(row[4],row[5],true)
 		result.append(UIText.t("battle.damage_record",{"target":UIText.t("battle.queue_damage_number.text_01") if row[0] else UIText.t("battle.queue_damage_number.text_02",{"uid":"%s" % row[1]}),"critical":UIText.t("battle.queue_damage_number.text_03") if row[3] else "","damage":exact}))
 	return result

@@ -24,36 +24,86 @@ var geometry_muzzles:=PackedVector2Array()
 var geometry_player:=Vector2.INF
 var presentation_surface
 var pulse_feedback_compatibility:=false
-# The collector has no frame publication yet. Keep this exit disabled until its
-# sound, turret, critical, label and history state can replace the old consumer.
+# Keep disabled until the complete route has passed parent review and correctness.
 const PULSE_FEEDBACK_PROTOTYPE:=false
+var pulse_feedback_owned:=false
+var pulse_history_carry:Array=[]
 
 func bind_presentation_surface(surface:Node)->void:
 	presentation_surface=surface
+	if not pulse_history_carry.is_empty():
+		surface.damage_history_records=pulse_history_carry
+		surface.damage_history_head=0
+		pulse_history_carry=[]
 
 func reviewed_pulse_listeners(game:RefCounted)->bool:
 	if pulse_feedback_compatibility or not is_instance_valid(presentation_surface):return false
 	# Scan once at the synchronous feedback boundary, after counter events. Cold
 	# callbacks must return here before another native hot batch is admitted.
-	const OWNERS={
-		"res://scripts/game.gd":["_compiled_configuration_event"],
-		"res://scripts/crew_system.gd":["on_event"],
-		"res://scripts/battlefield.gd":["on_event"],
-		"res://scripts/hightech_workshop.gd":["on_game_event"],
-		"res://scripts/hyperspace_panel.gd":["on_event"],
-		"res://scripts/planet_panel.gd":["_on_log_event"],
-		"res://scripts/reactor_panel.gd":["on_game_event"],
-		"res://scripts/hyperspace_reforge_dialog.gd":["on_game_event"]
-	}
+	# Concurrent direct Signal.connect from a worker is outside this main-thread
+	# admission contract; an observed unknown connection sticks to compatibility.
 	for connection in game.event.get_connections():
 		var callback:Callable=connection.callable
 		var owner:Object=callback.get_object()
-		if owner==null or not is_instance_valid(owner) or int(connection.flags)!=0:
+		if owner==null or not is_instance_valid(owner) or int(connection.flags)!=0 or callback!=Callable(owner,callback.get_method()):
+			pulse_feedback_compatibility=true;return false
+		var method:=str(callback.get_method())
+		if owner==game and method=="_compiled_configuration_event":continue
+		if owner==game.crew and method=="on_event":continue
+		if owner==presentation_surface and method=="on_event":continue
+		if not owner is Node or not presentation_surface.is_ancestor_of(owner):
 			pulse_feedback_compatibility=true;return false
 		var script:Script=owner.get_script()
-		if script==null or not OWNERS.get(script.resource_path,[]).has(str(callback.get_method())):
-			pulse_feedback_compatibility=true;return false
+		var path:=script.resource_path if script!=null else ""
+		# Rebuilt panels can remain connected. Accept only live descendants bound
+		# to this exact scene/game, never a same-script object elsewhere.
+		match path:
+			"res://scripts/planet_panel.gd":
+				if method=="_on_log_event" and owner.host==presentation_surface:continue
+			"res://scripts/hyperspace_panel.gd":
+				if method=="on_event" and owner.host==presentation_surface:continue
+			"res://scripts/reactor_panel.gd":
+				if method=="on_game_event" and owner.host==presentation_surface:continue
+			"res://scripts/hightech_workshop.gd":
+				if method=="on_game_event" and owner.game==game:continue
+			"res://scripts/hyperspace_reforge_dialog.gd":
+				var parent=owner.get_parent()
+				if method=="on_game_event" and owner.game==game and parent!=null and parent.get_script()!=null and parent.get_script().resource_path=="res://scripts/planet_panel.gd" and parent.host==presentation_surface:continue
+		pulse_feedback_compatibility=true;return false
 	return true
+
+func publish_pulse_frame(game:RefCounted)->void:
+	if not pulse_feedback_owned or not is_instance_valid(presentation_surface):return
+	var presenter:RefCounted=game.combat_presentation
+	if presenter==null or not presenter.pulse_frame_pending():return
+	var scene=presentation_surface
+	for row in presenter.take_pulse_frame():
+		match int(row.kind):
+			0:
+				if scene.projectile_visuals.size()+scene.native_laser_visuals.size()<256:scene.native_laser_visuals[int(row.serial)]=true
+				scene.beep(620 if int(row.type)==1 else 200)
+			2:
+				scene.queue_damage_number({"player":false,"uid":row.uid,"type":row.type,"amount":row.amount,"absorbed":row.absorbed,"critical":row.critical},false,float(row.display_time))
+			9:
+				scene.weapon_flash(row.position,Color.WHITE,14.0,0.08)
+				scene.beam_ring(row.position,scene.ORANGE,0.12,11)
+				scene.weapon_sparks(row.position,7,140,row.direction)
+
+func release_pulse_feedback(game:RefCounted)->void:
+	if not pulse_feedback_owned:return
+	publish_pulse_frame(game)
+	var presenter:RefCounted=game.combat_presentation
+	if presenter==null:
+		game.paused=true
+		push_error("Native pulse presentation disappeared before ordered feedback publication")
+		return
+	var rows:Array=presenter.pulse_history_snapshot()
+	if is_instance_valid(presentation_surface):
+		presentation_surface.damage_history_records=rows
+		presentation_surface.damage_history_head=0
+	else:pulse_history_carry=rows
+	presenter.clear_pulse_feedback()
+	pulse_feedback_owned=false
 
 # Check only at configuration boundaries, including an already-running old DLL.
 func supports_configuration(candidate:RefCounted,descriptor:Dictionary)->bool:
@@ -139,6 +189,7 @@ func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	return true
 
 func handoff_to_legacy(game:RefCounted,reason:String)->bool:
+	release_pulse_feedback(game)
 	if galaxy_refit_blocked:return false # Partial shared work cannot be replayed by another owner.
 	if handed_off:return game.native_execution==null
 	var exported:Dictionary=kernel.export_handoff()
@@ -250,12 +301,27 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)
 
 func consume_feedback(game:RefCounted)->void:
+	if PULSE_FEEDBACK_PROTOTYPE and kernel.feedback_count()==0:return
 	# Sole-owner exit: a successful native stage removes the kernel's ordered
 	# feedback. The compatibility loop below must never replay that batch.
-	if PULSE_FEEDBACK_PROTOTYPE and presentation_surface.show_damage_numbers and presentation_surface.damage_mode==0 and reviewed_pulse_listeners(game):
+	if PULSE_FEEDBACK_PROTOTYPE and is_instance_valid(presentation_surface) and presentation_surface.battle_slice_runtime!=null and not presentation_surface.fast_mode_enabled() and presentation_surface.show_damage_numbers and presentation_surface.damage_mode==0 and reviewed_pulse_listeners(game):
 		var presenter:RefCounted=game.combat_presentation
-		if presenter!=null and presenter.pulse_feedback_eligible(kernel) and presenter.stage_pulse_feedback(kernel,presentation_surface.fx_time):
-			return
+		if presenter!=null and presenter.supports_compact_lasers(presentation_surface) and presenter.pulse_feedback_eligible(kernel):
+			if not pulse_feedback_owned:
+				presenter.import_pulse_history(presentation_surface.native_damage_history_rows())
+			var taken:int=int(presenter.stage_pulse_feedback(kernel,presentation_surface.fx_time))
+			if taken>=0:
+				pulse_feedback_owned=true;feedback_rows+=taken
+				# Geometry for the next logical substep reads these poses. Apply only
+				# each mount's last frozen aim, before another substep can begin.
+				for update in presenter.take_pulse_turret_updates():
+					if int(update.mount)>=0 and int(update.mount)<game.weapon_entries().size():
+						var pose=presentation_surface.battle_slice_runtime.geometry.turret_pose(int(update.mount))
+						pose.target=update.target;pose.fired_at=float(update.display_time)
+				return
+	# Cold/mixed feedback stays entirely on the original ordered route. Publish
+	# any preceding native batch first, then transfer its history ring to Main.
+	release_pulse_feedback(game)
 	for row in kernel.take_feedback():
 		feedback_rows+=1
 		var p:Vector2=row.position
@@ -288,6 +354,7 @@ func consume_feedback(game:RefCounted)->void:
 
 func cancel(game:RefCounted)->void:
 	if kernel==null:return
+	release_pulse_feedback(game)
 	if galaxy_refit_blocked:
 		game.native_cancelled_step+=blocked_shared_step;blocked_shared_step=0.0
 		game.native_step_phase="idle";game.native_step_remaining=0.0

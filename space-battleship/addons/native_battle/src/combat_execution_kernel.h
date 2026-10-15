@@ -162,6 +162,7 @@ class SpaceCombatKernel : public RefCounted {
         // Value-owned feedback survives compact()/slot reuse. No flight lookup
         // after emission and no compatibility shot/lease allocation for lasers.
         bool compact_laser = false, laser_owns_aim = false, laser_drone = false;
+        bool pulse_laser_hit = false;
         uint64_t laser_serial = 0;
         int laser_mount = -1;
         Vector2 laser_launch, laser_ray_origin, laser_ray_step;
@@ -972,7 +973,8 @@ class SpaceCombatKernel : public RefCounted {
         return id;
     }
     void hit_enemy(Handle h, double raw, int type, const std::shared_ptr<Instance> &inst, bool trigger,
-                   double at, int wi, bool chain_trigger = false, const std::shared_ptr<MissileContext> &context = {}) {
+                   double at, int wi, bool chain_trigger = false, const std::shared_ptr<MissileContext> &context = {},
+                   bool pulse_laser_hit = false) {
         Actor *a = resolve(h);
         if (!a) {
             ++stale_rejections;
@@ -1028,6 +1030,7 @@ class SpaceCombatKernel : public RefCounted {
         e.amount = damage + absorbed;
         e.time = at;
         e.critical = inst && inst->attack->critical;
+        e.pulse_laser_hit = pulse_laser_hit;
         e.point = a->point;
         feedback.push_back(e);
         if (strange_enabled && trigger && inst && wi >= 0 && !weapons[wi].hostile && weapons[wi].kind == 1) {
@@ -1771,7 +1774,7 @@ class SpaceCombatKernel : public RefCounted {
                 if (f.hostile)
                     player_hit(f.damage, f.type, clock);
                 else
-                    hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain && !f.repeated && !(f.context && f.context->derived), clock, f.weapon, !f.chain && !(f.context && f.context->wild), f.context);
+                    hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain && !f.repeated && !(f.context && f.context->derived), clock, f.weapon, !f.chain && !(f.context && f.context->wild), f.context, f.compact_laser);
                 retire(id);
                 continue;
             }
@@ -1829,6 +1832,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("presentation_beams"), &SpaceCombatKernel::presentation_beams);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("take_feedback"), &SpaceCombatKernel::take_feedback);
+        ClassDB::bind_method(D_METHOD("feedback_count"), &SpaceCombatKernel::feedback_count);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
         ClassDB::bind_method(D_METHOD("hit_handle", "handle", "raw", "type"), &SpaceCombatKernel::hit_handle);
         ClassDB::bind_method(D_METHOD("receive_player_hit", "raw", "type"),
@@ -2739,6 +2743,7 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary player_view() const {
         return player_row;
     }
+    int64_t feedback_count() const { return feedback.size(); }
     Array take_feedback() {
         Array values;
         for (const Effect &e : feedback) {

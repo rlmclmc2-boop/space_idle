@@ -92,9 +92,11 @@ class SpaceCombatPresentation : public RefCounted {
     friend class SpaceCombatFlightFrame;
     // Prototype owner for the ordered compact-pulse feedback run. This state
     // belongs to presentation, never to the numeric kernel or a second Game.
-    struct PulseHit { bool player, critical; int64_t uid; int type; double amount, absorbed, time; };
+    struct PulseHit { bool player, critical; int64_t uid; int type; Variant amount, absorbed; };
     std::deque<PulseHit> pulse_history;
     std::vector<SpaceCombatKernel::Effect> pulse_pending;
+    std::vector<double> pulse_display_times;
+    std::map<int, std::pair<Dictionary,double>> pulse_turret_updates;
     std::vector<std::vector<PreparedFlight>> spare_frames;
     void recycle_frame(std::vector<PreparedFlight> &flights){flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}}
     Dictionary visual_by_serial;
@@ -174,22 +176,26 @@ protected:
     static void _bind_methods();
 public:
     bool pulse_feedback_eligible(Ref<SpaceCombatKernel> kernel) const {
-        if (kernel.is_null() || !kernel->admitted || kernel->stopped || !pulse_pending.empty()) return false;
+        if (kernel.is_null() || !kernel->admitted || kernel->stopped) return false;
         for (const SpaceCombatKernel::Effect &e : kernel->feedback) {
             // A cold event or another weapon keeps the complete ordered batch
             // on the compatibility route. No native side effect has occurred.
             if ((e.kind == 0 || e.kind == 1 || e.kind == 5) && e.compact_laser) continue;
-            if (e.kind == 2 && !e.player) continue;
+            if (e.kind == 2 && e.pulse_laser_hit && !e.player) continue;
             if (e.kind == 9 && e.compact_laser) continue;
             return false;
         }
         return !kernel->feedback.empty();
     }
-    bool stage_pulse_feedback(Ref<SpaceCombatKernel> kernel, double display_time) {
-        if (!pulse_feedback_eligible(kernel)) return false;
-        pulse_pending.swap(kernel->feedback); // sole owner; take_feedback cannot replay this batch
-        for (const SpaceCombatKernel::Effect &e : pulse_pending) {
+    int64_t stage_pulse_feedback(Ref<SpaceCombatKernel> kernel, double display_time) {
+        if (!pulse_feedback_eligible(kernel)) return -1;
+        const int64_t count = kernel->feedback.size();
+        pulse_pending.reserve(pulse_pending.size() + count);
+        pulse_display_times.reserve(pulse_display_times.size() + count);
+        for (SpaceCombatKernel::Effect &e : kernel->feedback) {
             if (e.kind == 0 || e.kind == 1) {
+                if (e.kind == 0 && !e.laser_drone && e.laser_owns_aim)
+                    pulse_turret_updates[e.laser_mount] = {e.laser_primary,display_time};
                 Vector2 point = e.point, direction = e.direction;
                 if (e.kind == 1) {
                     double distance = (point - e.laser_launch).dot(direction);
@@ -198,11 +204,66 @@ public:
                 }
                 record_contact(1, point, direction, display_time, e.kind == 0, e.critical, e.type);
             } else if (e.kind == 2) {
-                pulse_history.push_back({e.player,e.critical,e.uid,e.type,e.amount,e.absorbed,e.time});
+                pulse_history.push_back({e.player,e.critical,e.uid,e.type,e.amount,e.absorbed});
                 if (pulse_history.size() > 40) pulse_history.pop_front();
             }
+            pulse_pending.push_back(std::move(e));
+            pulse_display_times.push_back(display_time);
         }
-        return true;
+        kernel->feedback.clear(); // sole owner; take_feedback cannot replay this batch
+        return count;
+    }
+    void import_pulse_history(Array rows) {
+        pulse_history.clear();
+        for (int i = 0; i < rows.size(); ++i) {
+            Array row = rows[i];
+            if (row.size() != 6) continue;
+            pulse_history.push_back({bool(row[0]),bool(row[3]),int64_t(row[1]),int(row[2]),row[4],row[5]});
+            if (pulse_history.size() > 40) pulse_history.pop_front();
+        }
+    }
+    Array pulse_history_snapshot() const {
+        Array rows;
+        for (const PulseHit &hit : pulse_history) {
+            Array row; row.push_back(hit.player); row.push_back(hit.uid); row.push_back(hit.type);
+            row.push_back(hit.critical); row.push_back(hit.amount); row.push_back(hit.absorbed);
+            rows.push_back(row);
+        }
+        return rows;
+    }
+    Array take_pulse_turret_updates() {
+        Array rows;
+        for (const auto &item : pulse_turret_updates) {
+            Dictionary row; row["mount"] = item.first; row["target"] = item.second.first;
+            row["display_time"] = item.second.second; rows.push_back(row);
+        }
+        pulse_turret_updates.clear();
+        return rows;
+    }
+    Array take_pulse_frame() {
+        Array rows;
+        for (size_t i = 0; i < pulse_pending.size(); ++i) {
+            const SpaceCombatKernel::Effect &e = pulse_pending[i];
+            Dictionary row;
+            if (e.kind == 0) {
+                row["kind"] = 0; row["type"] = e.type; row["mount"] = e.laser_mount;
+                row["drone"] = e.laser_drone; row["owns_aim"] = e.laser_owns_aim;
+                row["primary_target"] = e.laser_primary; row["serial"] = int64_t(e.laser_serial);
+            } else if (e.kind == 2) {
+                row["kind"] = 2; row["uid"] = e.uid; row["type"] = e.type;
+                row["amount"] = e.amount; row["absorbed"] = e.absorbed; row["critical"] = e.critical;
+            } else if (e.kind == 9) {
+                row["kind"] = 9; row["position"] = e.point; row["direction"] = e.direction;
+            } else continue; // contact already recorded; retirement has no old callback
+            row["display_time"] = pulse_display_times[i];
+            rows.push_back(row);
+        }
+        pulse_pending.clear(); pulse_display_times.clear();
+        return rows;
+    }
+    bool pulse_frame_pending() const { return !pulse_pending.empty(); }
+    void clear_pulse_feedback() {
+        pulse_pending.clear(); pulse_display_times.clear(); pulse_history.clear(); pulse_turret_updates.clear();
     }
     void configure_retained_gpu(Ref<ShaderMaterial> material) {
         if(retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped && retained_kernel->set_compact_laser_births(false)<0)return;
@@ -733,6 +794,12 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 void SpaceCombatPresentation::_bind_methods(){
     ClassDB::bind_method(D_METHOD("pulse_feedback_eligible","kernel"),&SpaceCombatPresentation::pulse_feedback_eligible);
     ClassDB::bind_method(D_METHOD("stage_pulse_feedback","kernel","display_time"),&SpaceCombatPresentation::stage_pulse_feedback);
+    ClassDB::bind_method(D_METHOD("import_pulse_history","rows"),&SpaceCombatPresentation::import_pulse_history);
+    ClassDB::bind_method(D_METHOD("pulse_history_snapshot"),&SpaceCombatPresentation::pulse_history_snapshot);
+    ClassDB::bind_method(D_METHOD("take_pulse_turret_updates"),&SpaceCombatPresentation::take_pulse_turret_updates);
+    ClassDB::bind_method(D_METHOD("take_pulse_frame"),&SpaceCombatPresentation::take_pulse_frame);
+    ClassDB::bind_method(D_METHOD("pulse_frame_pending"),&SpaceCombatPresentation::pulse_frame_pending);
+    ClassDB::bind_method(D_METHOD("clear_pulse_feedback"),&SpaceCombatPresentation::clear_pulse_feedback);
     ClassDB::bind_method(D_METHOD("supports_compact_lasers","surface"),&SpaceCombatPresentation::supports_compact_lasers);
     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
     ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
