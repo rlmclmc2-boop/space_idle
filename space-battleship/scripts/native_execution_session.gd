@@ -22,6 +22,38 @@ var friendly_weapon_indices:Array[int]=[]
 var weapon_geometry_keys:Dictionary={}
 var geometry_muzzles:=PackedVector2Array()
 var geometry_player:=Vector2.INF
+var presentation_surface
+var pulse_feedback_compatibility:=false
+# The collector has no frame publication yet. Keep this exit disabled until its
+# sound, turret, critical, label and history state can replace the old consumer.
+const PULSE_FEEDBACK_PROTOTYPE:=false
+
+func bind_presentation_surface(surface:Node)->void:
+	presentation_surface=surface
+
+func reviewed_pulse_listeners(game:RefCounted)->bool:
+	if pulse_feedback_compatibility or not is_instance_valid(presentation_surface):return false
+	# Scan once at the synchronous feedback boundary, after counter events. Cold
+	# callbacks must return here before another native hot batch is admitted.
+	const OWNERS={
+		"res://scripts/game.gd":["_compiled_configuration_event"],
+		"res://scripts/crew_system.gd":["on_event"],
+		"res://scripts/battlefield.gd":["on_event"],
+		"res://scripts/hightech_workshop.gd":["on_game_event"],
+		"res://scripts/hyperspace_panel.gd":["on_event"],
+		"res://scripts/planet_panel.gd":["_on_log_event"],
+		"res://scripts/reactor_panel.gd":["on_game_event"],
+		"res://scripts/hyperspace_reforge_dialog.gd":["on_game_event"]
+	}
+	for connection in game.event.get_connections():
+		var callback:Callable=connection.callable
+		var owner:Object=callback.get_object()
+		if owner==null or not is_instance_valid(owner) or int(connection.flags)!=0:
+			pulse_feedback_compatibility=true;return false
+		var script:Script=owner.get_script()
+		if script==null or not OWNERS.get(script.resource_path,[]).has(str(callback.get_method())):
+			pulse_feedback_compatibility=true;return false
+	return true
 
 # Check only at configuration boundaries, including an already-running old DLL.
 func supports_configuration(candidate:RefCounted,descriptor:Dictionary)->bool:
@@ -218,6 +250,12 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)
 
 func consume_feedback(game:RefCounted)->void:
+	# Sole-owner exit: a successful native stage removes the kernel's ordered
+	# feedback. The compatibility loop below must never replay that batch.
+	if PULSE_FEEDBACK_PROTOTYPE and presentation_surface.show_damage_numbers and presentation_surface.damage_mode==0 and reviewed_pulse_listeners(game):
+		var presenter:RefCounted=game.combat_presentation
+		if presenter!=null and presenter.pulse_feedback_eligible(kernel) and presenter.stage_pulse_feedback(kernel,presentation_surface.fx_time):
+			return
 	for row in kernel.take_feedback():
 		feedback_rows+=1
 		var p:Vector2=row.position

@@ -34,6 +34,7 @@ var advancing:=false
 var detach_requested:=false
 func install(root)->void:
 	scene=root;game=root.game
+	if game.native_execution!=null:game.native_execution.bind_presentation_surface(root)
 	root.fixed_enemy_layout=true
 	remainder=root.game_time_remainder
 	root.time_step_game_id=game.get_instance_id()

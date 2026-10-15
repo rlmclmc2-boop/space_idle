@@ -90,6 +90,11 @@ public:
 class SpaceCombatPresentation : public RefCounted {
     GDCLASS(SpaceCombatPresentation,RefCounted)
     friend class SpaceCombatFlightFrame;
+    // Prototype owner for the ordered compact-pulse feedback run. This state
+    // belongs to presentation, never to the numeric kernel or a second Game.
+    struct PulseHit { bool player, critical; int64_t uid; int type; double amount, absorbed, time; };
+    std::deque<PulseHit> pulse_history;
+    std::vector<SpaceCombatKernel::Effect> pulse_pending;
     std::vector<std::vector<PreparedFlight>> spare_frames;
     void recycle_frame(std::vector<PreparedFlight> &flights){flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}}
     Dictionary visual_by_serial;
@@ -168,6 +173,37 @@ class SpaceCombatPresentation : public RefCounted {
 protected:
     static void _bind_methods();
 public:
+    bool pulse_feedback_eligible(Ref<SpaceCombatKernel> kernel) const {
+        if (kernel.is_null() || !kernel->admitted || kernel->stopped || !pulse_pending.empty()) return false;
+        for (const SpaceCombatKernel::Effect &e : kernel->feedback) {
+            // A cold event or another weapon keeps the complete ordered batch
+            // on the compatibility route. No native side effect has occurred.
+            if ((e.kind == 0 || e.kind == 1 || e.kind == 5) && e.compact_laser) continue;
+            if (e.kind == 2 && !e.player) continue;
+            if (e.kind == 9 && e.compact_laser) continue;
+            return false;
+        }
+        return !kernel->feedback.empty();
+    }
+    bool stage_pulse_feedback(Ref<SpaceCombatKernel> kernel, double display_time) {
+        if (!pulse_feedback_eligible(kernel)) return false;
+        pulse_pending.swap(kernel->feedback); // sole owner; take_feedback cannot replay this batch
+        for (const SpaceCombatKernel::Effect &e : pulse_pending) {
+            if (e.kind == 0 || e.kind == 1) {
+                Vector2 point = e.point, direction = e.direction;
+                if (e.kind == 1) {
+                    double distance = (point - e.laser_launch).dot(direction);
+                    point = inverse_battle_point(e.laser_ray_origin + e.laser_ray_step * distance);
+                    direction = e.laser_ray_step.normalized();
+                }
+                record_contact(1, point, direction, display_time, e.kind == 0, e.critical, e.type);
+            } else if (e.kind == 2) {
+                pulse_history.push_back({e.player,e.critical,e.uid,e.type,e.amount,e.absorbed,e.time});
+                if (pulse_history.size() > 40) pulse_history.pop_front();
+            }
+        }
+        return true;
+    }
     void configure_retained_gpu(Ref<ShaderMaterial> material) {
         if(retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped && retained_kernel->set_compact_laser_births(false)<0)return;
         for(RID canvas:retained_canvases)if(canvas.is_valid())RenderingServer::get_singleton()->canvas_item_set_material(canvas,RID());
@@ -695,6 +731,8 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 }
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
+    ClassDB::bind_method(D_METHOD("pulse_feedback_eligible","kernel"),&SpaceCombatPresentation::pulse_feedback_eligible);
+    ClassDB::bind_method(D_METHOD("stage_pulse_feedback","kernel","display_time"),&SpaceCombatPresentation::stage_pulse_feedback);
     ClassDB::bind_method(D_METHOD("supports_compact_lasers","surface"),&SpaceCombatPresentation::supports_compact_lasers);
     ClassDB::bind_method(D_METHOD("configure_retained_gpu","material"),&SpaceCombatPresentation::configure_retained_gpu);
     ClassDB::bind_method(D_METHOD("retained_metrics"),&SpaceCombatPresentation::retained_metrics);
