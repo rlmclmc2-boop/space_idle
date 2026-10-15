@@ -1,0 +1,12 @@
+{
+  "head": "d65051d35340f34464252f81abceafebde572d44",
+  "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f",
+  "driver_sha256": "89c3cbe6facc6dd8869e9cda075b7b860f6529d46afa890edfe1afbcf4090ee0",
+  "run_script_sha256": "f334f9e678a6b5af8a13935b5d45cb1fd6a4a17ceb8fe0aeff889c631a0c1e81",
+  "off-raw.json_sha256": "1953d9bd78f35b9159022b9edeb1147f11511c2d870b5ee062a0c71fbc8a271f",
+  "off-import.log_sha256": "0115c51df1f02a09b9db29008ee67490d10c23f5eb0982ba5e4d9059f685051f",
+  "off-run.log_sha256": "e8c79d71fe2ac6d95e7a3092d3c84a1d47ea3a8ea124a7229ed3c01aa5011cf5",
+  "on-raw.json_sha256": "0ddd33740a5aa01c5f4b442ecf2867da47e87c8e74390d5b11ada7fa9bd8f6d1",
+  "on-import.log_sha256": "0115c51df1f02a09b9db29008ee67490d10c23f5eb0982ba5e4d9059f685051f",
+  "on-run.log_sha256": "2d0fb01971864ac3cfba118018da9c82c6a3517283c4a77a0d3177aebd42bec2"
+}
