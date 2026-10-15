@@ -1,5 +1,7 @@
 # Four-weapon type-first output budget for review
 
+**Historical first candidate:** the [revision after targeted testing](BUDGET-REVISION.md) supersedes the 1000/3.5 cannon recommendation below.
+
 **Decision state:** formula-based proposal only. No authoritative Excel/JSON or combat rule changed here. The pulse's 1.5 s baseline cooldown is fixed by the user. Other base damage, cooldown, missile count, and same-target salvo policy may be considered. This proposal changes two base damages and simplifies one beam tick interval; it changes no firing or targeting rule. It keeps a four-tube 2.4 s missile launcher and allows multiple tubes to concentrate on one surviving enemy; disabling that concentration could make the last enemy linger. The 18-point opening stays unmounted pending this review and a later economy/pressure check.
 
 ## Long-run constraints before encounter geometry
