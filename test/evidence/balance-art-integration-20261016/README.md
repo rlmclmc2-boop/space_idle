@@ -62,3 +62,16 @@
 | 前2 | 240 | 777/4508 | 19.90/35.40 | 8.32 | 99.4% |
 
 运行前定的首尾门槛是帧墙中位及每逻辑步主过程耗时各相差不超过5%，**且三段必须同逻辑步及同战斗事件量**。首尾数值差约4.1%与0.4%，但前1超出3逻辑步并多61次开火、143次受击，故夹测无效。同期只读采样显示系统CPU近满载，一个现有后台进程在每段图形运行期累计约346–366 CPU秒；这是明显环境负载，不能由进程名推断机制或擅自终止。此夹测不能排除美术回退，亦不能宣称合并后更快；不再追加样本。脚本会将同事件/5%门槛作为夹测退出条件。
+
+
+## Recovered-host uncapped mixed-art bracket (2026-10-16, first scheduled recheck)
+
+A read-only preflight on the same BJNLPC-0459 host found 2.1% system CPU over 3.67 s, 0.0 CPU seconds for HipsDaemon.exe, and no existing Godot process. We then ran exactly one before -> after -> before bracket with the existing `test/run_balance_art_frame_pair.py` runner. Source refs were `a5fa51bd` (before) and `25fa5075` (after). Each segment used isolated D: projects, full `main.tscn`, Godot 4.7.2 and the same native DLL, 1373x883 GL Compatibility rendering, mixed authored swarm/anchor/shielded actors, a 240-step warmup and a 240-step sample. The runtime records `engine_max_fps=0`, `vsync_mode=0`, `speed=1.0`, `native_active=true`, `handoffs=0`, focus at both sample boundaries and `background_unfocused=false`; runner configuration kept cache on and saving off. Raw records are `balance-art-mixed-uncapped-recovered-bracket-{before1,after,before2}-full-frame.json`.
+
+| Segment | Logic steps, fires, hits | Render frames | Frame median / P95 | Main `_process` total per logic step | Render Hz | Host CPU median |
+|---|---:|---:|---:|---:|---:|---:|
+| Before 1 | 240, 777, 4508 | 509 | 7.063 / 11.162 ms | 5.948 ms | 127.05 | 8.9% |
+| After | 240, 777, 4508 | 512 | 6.827 / 11.678 ms | 6.028 ms | 128.04 | 9.15% |
+| Before 2 | 240, 777, 4508 | 501 | 7.124 / 11.510 ms | 5.960 ms | 125.02 | 8.8% |
+
+The before endpoints differ by 0.86% in median frame time and 0.20% in summed main-process time per logic step, both below the predeclared 5% stability gate. The after median frame time is 3.3-4.2% lower than the endpoints; its P95 is 1.5-4.6% higher and main-process time per logic step 1.1-1.3% higher. These small, mixed differences do not show a material full-frame regression in this four-second sample. Render-frame wall time includes rendering and scheduling waits, so it cannot isolate GPU cost or prove equivalent longer-session pacing. System CPU medians show the earlier 99-100% background saturation had cleared; the host-load process ranking excludes the newly launched Godot process and must not be read as its CPU breakdown. The prior saturated bracket remains invalid because its first segment had 243 steps and different combat events.
