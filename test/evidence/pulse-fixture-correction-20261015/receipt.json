@@ -1,0 +1,31 @@
+{
+  "source_head": "6cc82162f21b0f80d6577382529df1e44cd77436",
+  "source_session_sha256": "70dffc05283780f0ec0824b2b48c711a4350cb096801c5fd4928f9b380597ef9",
+  "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f",
+  "driver_sha256": "92158ae5e0b11d25c358379b3f141841d7083b6caaf62a734aaae36a5011502b",
+  "frozen_fixture_sha256": {
+    "laser": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+    "mixed": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+  },
+  "frozen_laser_manifest_sha256": "c700fc3484c7ad6ee3c73a905e46e24255901d6410f7697bc18916f6d697ae90",
+  "qa_sources": {
+    "on": {
+      "session_sha256": "abed5d76da6877f3ce78801b821523a83656e66d323bb5a96268aa8da03e7690",
+      "driver_sha256": "92158ae5e0b11d25c358379b3f141841d7083b6caaf62a734aaae36a5011502b",
+      "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f"
+    }
+  },
+  "runs": {
+    "laser-on-probe": {
+      "raw_sha256": "de4d84c199511de9e1be53063774daa3bb04f340960b952328a5175f73045503",
+      "log_checkout_sha256": "d45bb836b4662711515a2dd706907f5244d344437f33cdbcea7538392f41760e",
+      "frames": 252,
+      "hot_batches": 0,
+      "hot_rows": 0,
+      "cold_batches": 120,
+      "cold_rows": 13445
+    }
+  },
+  "import_log_sha256": "5eb59e03913ad5290a0943ff93d194835036e1be5f5ec46c76ab928f0afd0c9b",
+  "frozen_laser_raw_sha256": "bafdb531d1902c22a9a0b5bb04833f31c83d7942ffa99f05312c7bd5d14bfde0"
+}
