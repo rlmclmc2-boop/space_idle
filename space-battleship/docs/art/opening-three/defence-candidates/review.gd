@@ -78,7 +78,7 @@ func run():
 			mounts.append({"source_pixel":[point.x,point.y],"alpha":im.get_pixelv(Vector2i(point)).a})
 		var serialized=[]
 		for v in profile:serialized.append([v.x,v.y])
-		audit.append({"name":item.name,"bounds":[im.get_used_rect().position.x,im.get_used_rect().position.y,im.get_used_rect().size.x,im.get_used_rect().size.y],"old_bounds":str(old.get_used_rect()),"profile":serialized,"reference_key":item.reference_key,"maximum_support_difference_normalized_by_canvas_width":delta,"mount_center_alpha":mounts,"u_gap_is_not_a_hole_in_convex_profile":item.family=="u"})
+		audit.append({"name":item.name,"bounds":[im.get_used_rect().position.x,im.get_used_rect().position.y,im.get_used_rect().size.x,im.get_used_rect().size.y],"old_bounds":str(old.get_used_rect()),"profile":serialized,"reference_key":item.reference_key,"maximum_support_difference_normalized_by_canvas_width":delta,"mount_center_alpha":mounts,"center_alpha":im.get_pixelv(Vector2i(center)).a,"convex_profile_does_not_preserve_notches":true})
 		var gray=im.duplicate()
 		for y in gray.get_height():
 			for x in gray.get_width():

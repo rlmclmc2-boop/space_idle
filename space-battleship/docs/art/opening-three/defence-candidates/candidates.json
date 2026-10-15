@@ -6,17 +6,22 @@
       "family": "triangle",
       "armourType": 2,
       "texture": "hulls/triangle-physical.png",
+      "source_file": "source/six-hulls.png",
       "source_box": [
         34,
         19,
         563,
         483
       ],
+      "family_extent": [
+        720,
+        640
+      ],
       "bounds": [
         83,
-        571,
+        567,
         803,
-        1203
+        1207
       ],
       "reference_key": "enemy_1",
       "reference_texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
@@ -47,17 +52,22 @@
       "family": "slab",
       "armourType": 2,
       "texture": "hulls/slab-physical.png",
+      "source_file": "source/six-hulls.png",
       "source_box": [
         548,
         49,
         994,
         497
       ],
+      "family_extent": [
+        720,
+        710
+      ],
       "bounds": [
-        85,
-        527,
-        802,
-        1247
+        83,
+        532,
+        803,
+        1242
       ],
       "reference_key": "enemy_4",
       "reference_texture": "res://assets/ships/enemy/toon_v1/enemy-large-4slot.png",
@@ -123,16 +133,21 @@
       "family": "u",
       "armourType": 2,
       "texture": "hulls/u-physical.png",
+      "source_file": "source/u-structure-revision.png",
       "source_box": [
-        1055,
-        58,
-        1473,
-        510
+        1054,
+        54,
+        1485,
+        496
+      ],
+      "family_extent": [
+        700,
+        720
       ],
       "bounds": [
-        110,
+        93,
         527,
-        776,
+        793,
         1247
       ],
       "reference_key": "enemy_6",
@@ -219,17 +234,22 @@
       "family": "triangle",
       "armourType": 1,
       "texture": "hulls/triangle-energy.png",
+      "source_file": "source/six-hulls.png",
       "source_box": [
         42,
         512,
         557,
         976
       ],
+      "family_extent": [
+        720,
+        640
+      ],
       "bounds": [
         83,
-        562,
+        567,
         803,
-        1211
+        1207
       ],
       "reference_key": "enemy_1",
       "reference_texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
@@ -260,17 +280,22 @@
       "family": "slab",
       "armourType": 1,
       "texture": "hulls/slab-energy.png",
+      "source_file": "source/six-hulls.png",
       "source_box": [
         543,
         544,
         994,
         977
       ],
+      "family_extent": [
+        720,
+        710
+      ],
       "bounds": [
         83,
-        541,
+        532,
         803,
-        1232
+        1242
       ],
       "reference_key": "enemy_4",
       "reference_texture": "res://assets/ships/enemy/toon_v1/enemy-large-4slot.png",
@@ -336,16 +361,21 @@
       "family": "u",
       "armourType": 1,
       "texture": "hulls/u-energy.png",
+      "source_file": "source/u-structure-revision.png",
       "source_box": [
-        1053,
-        542,
-        1477,
-        995
+        1051,
+        535,
+        1486,
+        978
+      ],
+      "family_extent": [
+        700,
+        720
       ],
       "bounds": [
-        106,
+        93,
         527,
-        780,
+        793,
         1247
       ],
       "reference_key": "enemy_6",

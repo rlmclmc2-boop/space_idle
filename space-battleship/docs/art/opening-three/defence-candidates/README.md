@@ -1,41 +1,56 @@
 # 防御优先：三族 × 两种装甲材质候选
 
-![Godot实际渲染：30/50/80px、灰度、共享挂点与现有盾状态](review.png)
+[舰体30/50/80px与灰度](review.png) · [真实武器组件与包络](mounted-review.png) · [30px朝向/盾状态](state-review.png) · [盾状态灰度](state-review-grayscale.png)
 
-本轮仅新增待审资产、离线准备/审稿脚本和证据；未改生产代码、背景、敌人行或战点。旧[共享ship_key提案](../binding-proposal/README.md)保留，八种小灯片变体撤回。six-hulls源图由ImageGen基于R03轮廓制作，不是Blender模型；prepare.py仅连通域提取、等比缩放与透明画布规范化。
+本轮仅更新待审资产、离线审稿代码和证据；生产配置、敌人绑定、数值、碰撞算法、背景均未改。沿用[共享ship_key提案](../binding-proposal/README.md)，同一资产描述必须同时进入显示与既有几何权威。新旧轮廓不同不是否决条件，不再要求旧壳等价，也不套隐藏旧壳。
+
+## 本轮收敛
+
+- 同族两材质使用相同外接尺度：三角720×640、宽板720×710、U族700×720；同族共享原有挂点/slot_map。alpha不要求逐像素一致。标准画布仍887×1774 RGBA、舰首朝上、四周透明；审稿中战斗方向旋转180°。
+- U族保留前双叉，尾部改平桥，中央补实心凹甲板与横梁。中央不再是透明洞；现有凸包仍会跨过舰首凹口，不作可穿透承诺。修订只使用新源图的U列，另外两族保留上轮源。
+- 盾类别增加审稿用形状：抗物理为双横肋，抗能量为空心菱形，均放在既有有效盾轮廓内侧。只在alive且当前盾量>0时显示；未新增外包络或盾机制。灰度图可审两个类别的形状差异。
 
 ## 识别契约
 
-| 数据 | 视觉责任 | 不应混淆 |
+| 数据 | 视觉责任 | 边界 |
 |---|---|---|
-| armourType=2 | 三族共用横向宽厚叠甲、深横缝、金属倒角 | 不是攻击类型，也不代表绝对物理免疫 |
-| armourType=1 | 三族共用连续浅色陶瓷纵面、深色中槽 | 不是护盾；无盾/破盾后材质仍在 |
-| shieldType | 现有独立盾层的类别信号 | 不据此改装甲材质；hit.type是攻击类型 |
-| max_shield / shield | 无容量、有效、耗尽三个事实状态 | 耗尽时不保留完整有效盾轮廓 |
-| 实际盾量增长 | 现有回流表现 | 不把计时器到期视为已经恢复 |
-| 真实装备/机制反馈 | 炮口与命中等短时反馈，次于稳定防御识别 | 不编造蓄力窗口、免伤分项或同轮批次 |
+| armourType=2 | 横向宽厚叠甲、深横缝、金属倒角 | 不是攻击类型或绝对免疫 |
+| armourType=1 | 浅色陶瓷纵面、深色中槽 | 无盾/破盾后仍保留材质 |
+| shieldType | 独立盾层类别＋双横肋/菱形 | 不改舰体材质；hit.type是攻击类型 |
+| max_shield / shield | 无容量、有效、耗尽 | 无盾/耗尽不画有效盾类别标记 |
+| 真实盾量增长 | 现有恢复回流 | 不把延迟到期当恢复；暂停抑制回流 |
+| 装备与真实事件 | 炮口、发射、命中、机制反馈 | 不预测攻击窗口或猜免伤分项 |
 
-橙/蓝仅辅助；装甲通过大面方向和材质明暗区分。护盾状态栏直接调用当前enemy_recognition_visual.gd，采用合成只读输入，不是战斗录像，也未新增盾类别规则。当前盾类别在小尺寸仍较依赖颜色，不能据此宣称全部防御类型已完成非颜色识别；下轮应先审类别形状信号，再沿既有发布/绘制路径实现。
+shield_shape_proposal.gd继承并调用现有识别绘制，只增加上述标记；当前不导入生产代码。state-review为合成只读状态，使用现有state函数，不是战斗录像。无盾格的离散角括号仍是既有装甲提示，不是有效盾轮廓。
 
-## 资产规格与共享挂点
+## 真实挂点/包络证据
 
-- hulls内六张均887×1774 RGBA、舰首朝上，导出时不烘焙武器或护盾；审稿图旋转180°。实际舰体长边720px，短边等比，画布四边留透明区。生成源的实体alpha约253/255，边缘抗锯齿保留；透明区RGB已清零。
-- 源提示：三列三角/宽板/开放U、两排横叠金属/纵向陶瓷，正交俯视、舰首朝上、下右照明、石墨与暗红敌方框架、无武器/文字/背景/发光；第二次清理背景。结果由prepare.py可重建。源图中U族两端尖角偏强，朝向辨识弱于三角，仍是待修候选。
-- candidates.json的enabled=false。三角临时对照enemy_1、宽板enemy_4、U形enemy_6；同族两材质逐字段复制同一现有hardpoints/slot_map，仅供审查，不是敌人绑定、不代表实际装备数量。
-- 六图挂点**中心**均落在alpha内（0.984–0.996），不等于完整武器/转角包络通过。没有移动挂点，也未为好看另造炮口。
+mounted_review.gd调用现有compose_weapon_components、_source_enemy_component_pose、geometry_from_descriptor和main.gd::draw_enemy_weapon_components。仅为离线固定转角覆盖enemy_weapon_angle；没有自写炮口公式或另算生产碰撞。
 
-## 几何审查结论：不能直接替换
+- 六候选×cannon-mon/laser_mon/missile-mon×30/50/80px＝54组；每挂点采样181个合法角度，以现有mount_corners和边距离审计核对权威inner包络，结果见mounted-audit.json。
+- 每组把对应已有slot_map全装同一种真实武器作为覆盖审查；**不是拟上线敌人装备表**。三角对照enemy_1、宽板enemy_4、U族enemy_6，仍未绑定这些旧敌人。
+- 屏幕图绿色为从新alpha＋实际挂点派生的现有inner包络；淡橙线为炮口合法扫掠，亮点为正向炮口。武器绘制使用现有最小15px规则，不缩小或藏掉它们。
+- 54组武器与舰体均在包络内。此结果不是碰撞命中/性能全验收；没有发射、伤害或实玩推进。
 
-review.gd调用既有hull_profile → alpha_boundary → convex_hull；未改算法。geometry-audit.json记录每张候选完整profile、旧bounds、挂点采样和360方向支撑差。比较坐标均为既有画布宽度归一化，非屏幕像素/伤害距离。
+几何明细见geometry-audit.json；它调用既有hull_profile/alpha_boundary/convex_hull，同时保留旧资源差异作参考，不以旧壳等价作为批准门槛。完整武器包络审查比上一轮仅检查挂点中心前进了一步。
 
-| 族 | 对照旧资源 | 最大轮廓支撑差（物理 / 能量） |
-|---|---|---|
-| 三角 | enemy_1 | 0.2295 / 0.2285 |
-| 宽板 | enemy_4 | 0.1831 / 0.1883 |
-| U | enemy_6 | 0.3522 / 0.3464 |
+## 仍需父审的绑定边界
 
-新舰体更紧凑，不能承诺旧碰撞/缩放等价；同族两材质的alpha也并非逐像素相同。U形中央透明区被现有凸包覆盖，不能承诺弹体可穿过。下一步应先收敛同族共用alpha和轮廓尺度，完成真实装备包络/落点审查，再由父决定统一ship_key接入；不得单独给新图套不一致的旧碰撞。
+U族30px平尾/双叉比原双端尖角明确；但全装四个炮/能量器的覆盖样本明显遮挡甲面，不能宣称所有30px实际装备都识别通过。下一步需父给定批准的id/archetype/现有equipment组合，再做同资产描述的有限绑定与真实视口核验；不改敌人装备或数量解决遮挡。
 
-验证：隔离副本Godot4.6.3 / gl_compatibility / Mesa llvmpipe成功渲染review.png并生成审计。直接源图加载仅用于离线脚本，不是导出加载方案。未做Windows原生性能验收，未启动新档实玩或平衡测试。
+申请父审阅下列**未生效**映射（沿用fffa4790草案身份和防御类别），确认获准项及其权威equipment组合；批准前维持enabled=false。
 
-复现（在隔离项目中）：先python prepare.py，再以Godot --path <project> --rendering-method gl_compatibility --audio-driver Dummy --script res://docs/art/opening-three/defence-candidates/review.gd运行。文档目录不进入生产资源清单。
+| 草案身份 | 候选 |
+|---|---|
+| 270001/scout、270002/sentry | triangle-physical |
+| 270003/interceptor、270004/swarm | triangle-energy |
+| 270005/anchor、270006/reactive | slab-energy |
+| 270007/shielded、270008/command | u-energy；shielded仍由真实shieldType/当前盾量显示独立盾层 |
+
+slab-physical与u-physical仅用于跨族材质一致性审查，不由此新增敌人。盾标记也请父独立批准；首次接入仍须走既有共享appearance/几何发布，不单改某条绘制路径。若实际组合遮挡严重，优先调整舰体可读大面与既有表现分层，不自行改射速、弹体数量、战斗规模或几何算法。
+
+## 资产来源与复现
+
+ImageGen基于R03制作；无Blender模型。提示为正交俯视、舰首朝上、下右照明、三列三角/宽板/U、横叠金属与纵向陶瓷两材质、石墨/暗红框架、无武器/文字/背景/发光；U修订提示为前叉保留、短平尾桥、中央实心甲板。prepare.py仅提取连通域、规范同族尺度并置入透明画布；源保存在source。
+
+隔离项目先运行prepare.py，再用Godot --path <project> --rendering-method gl_compatibility --audio-driver Dummy --script res://docs/art/opening-three/defence-candidates/review.gd；mounted_review.gd同法生成武器/状态/灰度证据。验证环境为Godot4.6.3、Mesa llvmpipe；未运行Windows原生性能验收或新档测试。直接源图读取仅用于离线审稿，生产仍需正式导入路径。
