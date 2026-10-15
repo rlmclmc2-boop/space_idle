@@ -318471,13 +318471,13 @@
     },
     "memory_heal_fraction": {
       "id": "memory_heal_fraction",
-      "value": 0.01,
+      "value": 0.0005,
       "unit": "比例/级/次",
       "des": "每次回复自身最大防御×系数×有效等级"
     },
     "memory_buffer_fraction": {
       "id": "memory_buffer_fraction",
-      "value": 0.1,
+      "value": 0.05,
       "unit": "比例/级",
       "des": "保护上限＝自身最大防御×系数×有效等级；无衰减"
     },
