@@ -140,16 +140,13 @@ func start(g,route:String,level:int,mode:String,crew_id:String="",main_return:Di
 	var duration:=0.0
 	if mode=="manual":
 		if not eligible_level(g,route,level):return {}
-		if float(s.energy)<float(config.ticket):return {}
 	elif level!=current_layer(g,route) or best_x1(g,route,level)<=0 or not Bag.has_space(s.inventory,config):return {}
 	if not main_return.is_empty() and (mode!="manual" or not main_return.get("journey") is Dictionary or not main_return.get("state") is Dictionary or not preload("res://scripts/hyperspace_main_return.gd").valid(main_return.state,main_return.journey,g.db.levels.size())):return {}
 	if mode=="auto" and not Permission.crew_available(g,crew_id):return {}
 	if mode!="manual":duration=idle_duration(g,best_x1(g,route,level),crew_id if mode=="auto" else "")
 	if mode!="manual" and (not is_finite(duration) or duration<=0):return {}
 	var next:Dictionary=s.duplicate(true)
-	var ticket:float=float(config.ticket) if mode=="manual" else 0.0
-	next.energy=float(next.energy)-ticket
-	var receipt:Dictionary={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":main_return.get("journey",{}).duplicate(true),"ticket":ticket,"duration":duration,"work":0.0,"reward":{}}
+	var receipt:Dictionary={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":main_return.get("journey",{}).duplicate(true),"ticket":0.0,"duration":duration,"work":0.0,"reward":{}}
 	receipt.merge(luck_snapshot(g,route))
 	var private_rng:=RandomNumberGenerator.new()
 	private_rng.seed=(str(s.random_state)+"|"+route+"|"+str(s.round_id)+"|"+str(s.next_run)).hash()

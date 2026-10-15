@@ -130,14 +130,12 @@ func cold_handoff_contract():
  check(snapshot.flights.size()>0 and owner.kernel.presentation_projectile_rows().is_empty(),"cold handoff begins with typed-only live flights")
  var serials=[]
  for row in snapshot.flights:serials.append(row.view.serial)
- var energy=float(g.profile.hyperspace.energy);var ticket=float(g.hyperspace.config.ticket)
+ g.profile.hyperspace.energy=0.0
+ var energy=float(g.profile.hyperspace.energy)
  var flight_count=int(owner.kernel.metrics().active_flights);var rng_state=int(owner.kernel.rng_source().state)
  var lease=snapshot.flights[0].view.motion_lease
  var instance_id=int(snapshot.flights[0].instance.id)
  var motion=snapshot.flights[0].position
- g.profile.hyperspace.energy=ticket-1.0
- check(not g.start_hyperspace("alpha",1) and g.native_execution==owner and float(g.profile.hyperspace.energy)==ticket-1.0 and int(owner.kernel.metrics().active_flights)==flight_count,"insufficient ticket refuses entry before cold transfer")
- g.profile.hyperspace.energy=energy
  owner.galaxy_refit_blocked=true
  check(not g.start_hyperspace("alpha",1),"failed actual manual entry refuses unsafe cold transfer")
  check(g.manual_hyperspace.last_error=="native_transfer_failed" and g.native_execution==owner and float(g.profile.hyperspace.energy)==energy and int(owner.kernel.metrics().active_flights)==flight_count and int(owner.kernel.rng_source().state)==rng_state,"failed transfer retains authority, flights, RNG and energy")
@@ -146,12 +144,12 @@ func cold_handoff_contract():
  check(failed_serials==serials and is_same(owner.kernel.export_handoff().flights[0].view.motion_lease,lease),"failed transfer retains flight serials and lease identity")
  owner.galaxy_refit_blocked=false
  check(g.start_hyperspace("alpha",1),"actual manual entry commits cold transfer")
- check(g.native_execution==null and g.manual_hyperspace.active and float(g.profile.hyperspace.energy)==energy-ticket and float(g.profile.hyperspace.active.ticket)==ticket,"actual entry deducts authored ticket once after transfer")
- check(not g.start_hyperspace("alpha",1) and float(g.profile.hyperspace.energy)==energy-ticket,"repeat entry cannot deduct again")
+ check(g.native_execution==null and g.manual_hyperspace.active and float(g.profile.hyperspace.energy)==energy and float(g.profile.hyperspace.active.ticket)==0.0,"actual entry at zero energy preserves free challenge contract")
+ check(not g.start_hyperspace("alpha",1) and float(g.profile.hyperspace.energy)==energy,"repeat entry leaves free challenge resources unchanged")
  check(g.exit_hyperspace_challenge(),"manual exit restores frozen main encounter")
  var received=[]
  for shot in g.projectiles:received.append(shot.serial)
- check(received==serials and g.native_execution==null and float(g.profile.hyperspace.energy)==energy,"cold handoff preserves flight serials and refunds once")
+ check(received==serials and g.native_execution==null and float(g.profile.hyperspace.energy)==energy,"cold handoff preserves flight serials without phantom refund")
  check(g.projectiles.size()>0 and int(g.projectiles[0].attack_instance_id)==instance_id and is_equal_approx(float(g.projectiles[0].x),float(motion.x)) and is_equal_approx(float(g.projectiles[0].y),float(motion.y)),"manual return preserves instance identity and carrier position")
  g.begin_retreat()
 class PacketKernel extends RefCounted:
