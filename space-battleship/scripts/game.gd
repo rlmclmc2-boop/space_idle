@@ -982,7 +982,11 @@ func invalidate_module_attack(index: int) -> void:
 	if entry.is_empty() or str(entry.key).is_empty():
 		cooldowns.erase(slot_id("weapons",index))
 	else:
-		cooldowns[slot_id("weapons",index)] = float(db.equip(str(entry.key),int(entry.level)).cd)
+		var cd := float(db.equip(str(entry.key),int(entry.level)).cd)
+		# Loadout edits while travelling keep the upcoming encounter's quick salvo.
+		if state == State.TRAVEL and str(entry.key) == "missile":
+			cd = minf(cd,0.4)
+		cooldowns[slot_id("weapons",index)] = cd
 
 func slot_equipment_locked(category: String, index: int) -> bool:
 	return category=="defence" and index==0
