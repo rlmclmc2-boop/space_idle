@@ -1215,6 +1215,10 @@ func enemy_ship_key(enemy:Dictionary)->String:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return str(simulation_geometry_view.appearance(enemy).ship_key)
 	return enemy_visual_identity.resolve(enemy,visual_config)
 
+func enemy_attack_deck_visible(enemy:Dictionary)->bool:
+	# New hulls carry defence identity in their material; actual weapons remain.
+	return not enemy_ship_key(enemy).begins_with("enemy_opening_")
+
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).components
 	var pose := enemy_pose(enemy)
@@ -3172,7 +3176,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
 	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
 	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,dimensions.x),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
-	enemy_recognition.draw_attack_deck(draw_surface,dimensions.x,enemy_attack_types(enemy))
+	if enemy_attack_deck_visible(enemy):enemy_recognition.draw_attack_deck(draw_surface,dimensions.x,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,pose)
 	var outline: PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,dimensions.x,packet,status,game.enemy_shield_time)

@@ -1,5 +1,7 @@
 # 最小生命周期补证
 
+> 本页为4e930a3c生命周期与遮挡发现的证据。后续装饰收敛见[13敌前后对照](deck-readability/README.md)。
+
 生产改动仅simulation_geometry_authority.prepare的一处缺省值：没有asset_ready标记时保留旧纹理捕获，显式false仍跳过。旧/隔离owner不必新增该字段才可准备旧资源。候选解析仍要求明确asset_ready=true，不会因此把未知候选自动启用；所有纹理读取仍在prepare主线程边界。
 
 只走一条流程：slot=0的shielded死亡，slot=0新uid的scout出生，并保留旧实例引用。随后交还显示所有权，消费旧/新爆炸事件。未推进战斗、未启动新档实玩、未扩武器矩阵。

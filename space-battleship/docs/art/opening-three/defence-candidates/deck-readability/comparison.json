@@ -1,0 +1,26 @@
+{
+  "source": "6b2e98da382ac3903a0474936119a2dea59d4cb6",
+  "group": 33010,
+  "count": 13,
+  "simulated_seconds": 3,
+  "frames_per_clip": 60,
+  "capture_fps": 20,
+  "exact_capture_equality": true,
+  "identical_launches": 64,
+  "alive_throughout": [
+    13
+  ],
+  "unchanged_sources": {
+    "space-battleship/scripts/simulation_geometry_authority.gd": true,
+    "space-battleship/scripts/enemy_recognition_visual.gd": true,
+    "space-battleship/scripts/weapon_visual.gd": true,
+    "space-battleship/data/ship_weapon_visuals.json": true
+  },
+  "capture_sha256": "49c765644e8f874daa861f8cedade6ae10b320215be75b7e6a238b797d7f84c0",
+  "temporary_source_overlays": [
+    "data/game_data.json",
+    "scripts/hyperspace_config.gd",
+    "scripts/hyperspace_reward_binding.gd"
+  ],
+  "native_kernel_acceptance": false
+}

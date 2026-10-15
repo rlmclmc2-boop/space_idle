@@ -136,6 +136,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.mounts.clear()
  record.fallback.visible=not record.supported
  for node in [record.hull,record.deck,record.protection,record.health,record.shield]:node.visible=record.supported
+ record.deck.visible=record.supported and paint_owner.enemy_attack_deck_visible(enemy)
  if not record.supported:return
  record.hull.data={"texture":record.texture,"rect":paint_owner.enemy_hull_rect(enemy,1.0)};record.hull.queue_redraw()
  for physical in [true,false]:
