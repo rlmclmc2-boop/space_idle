@@ -1,3 +1,5 @@
+> R01历史草案，保留供追溯；其中环门背景、原型ID与战点构图不再作为当前接入要求。当前背景见 ../continuous-v2-refinement/runtime-integration/README.md；新舰绑定协调以 [ENEMY_BINDING_INTERFACE.md](ENEMY_BINDING_INTERFACE.md) 为准。下文建议ID从未获批准绑定。
+
 # 前三关表现契约（待父与 Sol 绑定）
 
 范围仅视觉。基线 b6ab391e；不改敌人组合、数量、阵型、关卡/战点、战斗规则、奖励或解锁。`game.stage/distance` 是背景唯一进度源；暂停与交战不会自行推进长卷。沿现有 starfield 材质采样，保留 retained contacts / single kernel。草图不是最终美术验收。已读取父分支20fdcccc中的 BATTLE 性能边界与体验字典；本基线配置为5/5/5点，5/6/7待Sol提供，不在此分支补点。
