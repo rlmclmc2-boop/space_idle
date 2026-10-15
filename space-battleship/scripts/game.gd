@@ -2613,14 +2613,11 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			var factor := 1.0-resistance if type==int(enemy.get("shieldType",0)) else 1.0
 			absorbed=N.minimum(enemy.shield,N.maximum(1,N.multiply(incoming,factor)))
 			enemy.shield=N.subtract(enemy.shield,absorbed)
-			# Double subtraction can leave a positive residue at exact high-scale depletion.
-			if N.compare(enemy.shield,N.multiply(enemy.max_shield,1.0e-12))<=0:enemy.shield=0.0
 			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
 	var amount = 0.0
 	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
 		enemy.hp=N.subtract(enemy.hp,amount)
-		if N.compare(enemy.hp,N.multiply(enemy.max_hp,1.0e-12))<=0:enemy.hp=0.0
 	amount=N.add(amount,absorbed)
 	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
 	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
@@ -4179,7 +4176,6 @@ func jewel_hit_player(raw, type: int) -> void:
 	for key in ["shield","armour"]:
 		var rounded = N.minimum(player[key],payments[key] if deferred_layers[key] else N.ceiling(payments[key]))
 		player[key]=N.subtract(player[key],rounded)
-		if N.compare(player[key],N.multiply(capacities[key].total,1.0e-12))<=0:player[key]=0.0
 		loss=N.add(loss,rounded)
 	event.emit("hit",{"x":player.x,"y":player.y,"amount":loss,"absorbed":feedback.absorbed,"player":true,"type":type})
 	if N.compare(player.armour,0)<=0 and not drone_combat.try_rebuild(self):
