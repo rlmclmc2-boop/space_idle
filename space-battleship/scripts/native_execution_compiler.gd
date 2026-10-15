@@ -105,8 +105,16 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 	for enemy in g.enemies:
 		if not native_integer(enemy.get("armourType",0)) or not native_integer(enemy.get("shieldType",0)):return {"error":"unsupported_native_scalar:enemy_type"}
 		if not native_integer(enemy.get("guidance_layers",0)) or int(enemy.get("guidance_layers",0))<0:return {"error":"unsupported_native_range:guidance_layers"}
+		for reactive_key in ["reactiveReduction","reactive_stacks"]:
+			if not enemy.has(reactive_key):continue
+			var reactive_value:Variant=enemy[reactive_key]
+			var reactive_limit:=1 if reactive_key=="reactiveReduction" else 3
+			if not native_integer(reactive_value) or int(reactive_value)<0 or int(reactive_value)>reactive_limit:return {"error":"unsupported_native_range:"+reactive_key}
+		if enemy.has("reactive_volley_at") and not native_scalar(enemy.reactive_volley_at):return {"error":"unsupported_native_scalar:reactive_volley_at"}
 		var view:Dictionary=enemy.duplicate(true)
 		view.armourType=int(enemy.get("armourType",0));view.shieldType=int(enemy.get("shieldType",0))
+		for reactive_key in ["reactiveReduction","reactive_stacks"]:
+			if enemy.has(reactive_key):view[reactive_key]=int(enemy[reactive_key])
 		view.compiled_drops=[]
 		view.jewel_rolls=preload("res://scripts/candidate_rewards.gd").rolls(enemy.get("jewelDropRolls",1)) if g.jewels_unlocked() else 0
 		if (not enemy.get("drops",[]).is_empty() and not native_scalar(enemy.get("res_ratio"))) or (not enemy.get("equipment",[]).is_empty() and not native_scalar(enemy.get("dmgMultiple"))):return {"error":"unsupported_native_scalar:enemy"}
