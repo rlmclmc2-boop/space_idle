@@ -1968,6 +1968,9 @@ func change_state(next: State) -> void:
 			if key.is_empty():
 				continue
 			var cd := float(player_weapon_row(entry).cd)
+			# The quick opening salvo belongs to an encounter, not a refit or target change.
+			if key == "missile":
+				cd = minf(cd,0.4)
 			if cd > 0:
 				cooldowns[slot_id("weapons", index)] = cd
 	state = next
@@ -2574,6 +2577,19 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	if drone_combat.absorb(self,raw,false):return
 	var base_raw=raw
 	raw=guided_missile_damage(enemy,raw,context)
+	var reactive_stacks := 0
+	var reactive_multiplier := 1.0
+	if int(enemy.get("reactiveReduction",0)) == 1:
+		var volley_at := float(enemy.get("reactive_volley_at",-1.0e100))
+		if hit_time > volley_at + 0.16:
+			reactive_stacks = mini(3,int(enemy.get("reactive_stacks",0))+1) if hit_time <= volley_at + 2.2 else 0
+			enemy.reactive_volley_at = hit_time
+			enemy.reactive_stacks = reactive_stacks
+		else:
+			reactive_stacks = int(enemy.get("reactive_stacks",0))
+		reactive_multiplier = 1.0 - 0.2 * reactive_stacks
+		enemy.reactive_multiplier = reactive_multiplier
+		raw = N.multiply(raw,reactive_multiplier)
 	var chain_origin := Vector2(enemy.x,enemy.y)
 	for effect in effects:
 		var chain:Dictionary=effect.get("chain_state",{})
@@ -2601,7 +2617,11 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	amount=N.add(amount,absorbed)
 	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
 	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
-	event.emit("hit", {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical})
+	var hit_feedback := {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical}
+	if int(enemy.get("reactiveReduction",0)) == 1:
+		hit_feedback.reactive_stacks = reactive_stacks
+		hit_feedback.reactive_multiplier = reactive_multiplier
+	event.emit("hit", hit_feedback)
 	drone_combat.on_hit(self,enemy,base_raw,context)
 	if killed_by_hit:
 		enemy.erase("guidance_layers")
@@ -4090,6 +4110,10 @@ func jewel_hit_player(raw, type: int) -> void:
 	var capacities := sync_jewel_defence_damage()
 	sync_enhancement_buffers()
 	since_hit=0.0
+	# Every hit on the ship restarts every shield module's delay. Cover, neutral
+	# protection and armour can absorb damage, but do not make the hit disappear.
+	for index in capacities.shield.indices:
+		jewel_defence_hit(index)
 	var feedback := {"absorbed":0.0}
 	var after_cover = enhancement_branches.consume_cover(self,raw,feedback)
 	var rest = consume_enhancement_protection(after_cover,type,false,feedback)

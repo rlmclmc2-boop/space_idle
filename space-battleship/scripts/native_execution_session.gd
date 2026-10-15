@@ -237,7 +237,12 @@ func consume_feedback(game:RefCounted)->void:
 				game.event.emit("fire",{"x":p.x,"y":p.y,"type":row.type,"shot":row.shot,"spread":0.0,"direction":row.direction,"aim":row.target_position})
 				if row.shot.get("beam",false):game.event.emit("beam_started",{"shot":row.shot})
 			1:game.event.emit("projectile_impact",{"shot":row.shot,"pos":p})
-			2:game.event.emit("hit",{"x":p.x,"y":p.y,"amount":row.amount,"absorbed":row.absorbed,"player":row.player,"type":row.type,"uid":row.uid,"critical":row.critical})
+			2:
+				var hit_feedback := {"x":p.x,"y":p.y,"amount":row.amount,"absorbed":row.absorbed,"player":row.player,"type":row.type,"uid":row.uid,"critical":row.critical}
+				if row.has("reactive_stacks"):
+					hit_feedback.reactive_stacks = row.reactive_stacks
+					hit_feedback.reactive_multiplier = row.reactive_multiplier
+				game.event.emit("hit",hit_feedback)
 			3:game.event.emit("explode",actor_by_uid[int(row.uid)])
 			4:game.event.emit("enhancement_chain",{"source":p,"target":Vector2(row.target_position),"target_uid":row.target_uid,"weapon":row.shot.key,"shot":row.shot})
 			9:game.event.emit("critical_impact",{"pos":p,"direction":row.direction})

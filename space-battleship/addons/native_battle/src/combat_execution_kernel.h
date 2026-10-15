@@ -34,6 +34,9 @@ class SpaceCombatKernel : public RefCounted {
         std::vector<DropRule> drops;
         int jewel_rolls = 0;
         double interference = 0, explosion = 0;
+        bool reactive_reduction = false;
+        int reactive_stacks = 0;
+        double reactive_volley_at = -1e100;
     };
     struct BirthConfig {
         Dictionary weapon, entry;
@@ -156,6 +159,8 @@ class SpaceCombatKernel : public RefCounted {
         bool player = false, critical = false;
         int64_t uid = 0;
         double amount = 0, absorbed = 0, time = 0;
+        int reactive_stacks = -1;
+        double reactive_multiplier = 1;
         Vector2 point, direction, target_point;
         int64_t target_uid = -1;
         Dictionary shot;
@@ -441,12 +446,14 @@ class SpaceCombatKernel : public RefCounted {
             if (Variant(enemies[i]).get_type() != Variant::DICTIONARY) return false;
             Dictionary v = enemies[i];
             if (!schema_required(v, {"uid","hp","max_hp","x","y"}) ||
-                !schema_integers(v, {"uid"}, false) || !schema_integers(v, {"armourType","shieldType","slot","jewel_rolls"}) ||
+                !schema_integers(v, {"uid"}, false) || !schema_integers(v, {"armourType","shieldType","slot","jewel_rolls","reactiveReduction","reactive_stacks"}) ||
                 !schema_types(v, Variant::ARRAY, {"compiled_drops"}) ||
-                !numeric_fields(v, {"hp","max_hp","shield","max_shield","x","y","shield_hit_at","shield_updated_at","shieldDelay","shieldRecovery","interference","jewelExplosion"}) ||
+                !numeric_fields(v, {"hp","max_hp","shield","max_shield","x","y","shield_hit_at","shield_updated_at","shieldDelay","shieldRecovery","interference","jewelExplosion","reactive_volley_at"}) ||
                 !schema_nonnegative(v, {"max_hp","shield","max_shield","shieldDelay","shieldRecovery","interference","jewelExplosion","jewel_rolls","slot"}) ||
                 int(v.get("armourType",0)) < 0 || int(v.get("armourType",0)) > 2 ||
-                int(v.get("shieldType",0)) < 0 || int(v.get("shieldType",0)) > 2) return false;
+                int(v.get("shieldType",0)) < 0 || int(v.get("shieldType",0)) > 2 ||
+                int(v.get("reactiveReduction",0)) < 0 || int(v.get("reactiveReduction",0)) > 1 ||
+                int(v.get("reactive_stacks",0)) < 0 || int(v.get("reactive_stacks",0)) > 3) return false;
             Array drops = v.get("compiled_drops", Array());
             for (int j = 0; j < drops.size(); ++j) {
                 if (Variant(drops[j]).get_type() != Variant::DICTIONARY) return false;
@@ -1006,6 +1013,21 @@ class SpaceCombatKernel : public RefCounted {
             } else ++a->guidance_reuses;
             raw *= found->second;
         }
+        int reactive_stacks = -1;
+        double reactive_multiplier = 1;
+        if (a->reactive_reduction) {
+            if (at > a->reactive_volley_at + 0.16) {
+                a->reactive_stacks = at <= a->reactive_volley_at + 2.2
+                    ? std::min(3, a->reactive_stacks + 1) : 0;
+                a->reactive_volley_at = at;
+            }
+            reactive_stacks = a->reactive_stacks;
+            reactive_multiplier = 1.0 - 0.2 * reactive_stacks;
+            raw *= reactive_multiplier;
+            a->view["reactive_stacks"] = reactive_stacks;
+            a->view["reactive_multiplier"] = reactive_multiplier;
+            a->view["reactive_volley_at"] = a->reactive_volley_at;
+        }
         double incoming = raw * (1 + a->interference), absorbed = 0, damage = 0;
         if (a->shield > 0) {
             double factor = type == a->shield_type ? 1 - resistance : 1;
@@ -1028,6 +1050,8 @@ class SpaceCombatKernel : public RefCounted {
         e.amount = damage + absorbed;
         e.time = at;
         e.critical = inst && inst->attack->critical;
+        e.reactive_stacks = reactive_stacks;
+        e.reactive_multiplier = reactive_multiplier;
         e.point = a->point;
         feedback.push_back(e);
         if (strange_enabled && trigger && inst && wi >= 0 && !weapons[wi].hostile && weapons[wi].kind == 1) {
@@ -1343,6 +1367,10 @@ class SpaceCombatKernel : public RefCounted {
             return;
         }
         reconcile_defence();
+        // A hit restarts every shield delay, even when cover or armour pays it.
+        for (Defence &d : defences)
+            if (d.layer == 0)
+                d.last_hit = defence_time;
         double absorbed = 0, rest = protection(raw, absorbed);
         std::array<double, 2> payments{};
         std::array<bool, 2> deferred{};
@@ -2114,6 +2142,9 @@ class SpaceCombatKernel : public RefCounted {
             a.interference = v.get("interference", 0.0);
             a.explosion = v.get("jewelExplosion", 0.0);
             a.jewel_rolls = v.get("jewel_rolls", 0);
+            a.reactive_reduction = int(v.get("reactiveReduction", 0)) == 1;
+            a.reactive_stacks = v.get("reactive_stacks", 0);
+            a.reactive_volley_at = v.get("reactive_volley_at", -1e100);
             Array drops = v.get("compiled_drops", Array());
             for (int index = 0; index < drops.size(); ++index) {
                 Dictionary row = drops[index];
@@ -2755,6 +2786,10 @@ class SpaceCombatKernel : public RefCounted {
             d["direction"] = e.direction;
             d["target_position"] = e.target_point;
             d["target_uid"] = e.target_uid;
+            if (e.reactive_stacks >= 0) {
+                d["reactive_stacks"] = e.reactive_stacks;
+                d["reactive_multiplier"] = e.reactive_multiplier;
+            }
             if (e.compact_laser) {
                 Dictionary laser;
                 laser["serial"] = int64_t(e.laser_serial); laser["mount"] = e.laser_mount;

@@ -96,16 +96,16 @@
         "des": "激光武器，发射一个光束攻击锁定目标，para1是飞行速度/S",
         "level": 1,
         "dmgtype": 1,
-        "dmg": 100,
+        "dmg": 300,
         "dmgMulti": 0.2,
-        "cd": 0.5,
+        "cd": 1.5,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
         "res_2": null,
         "cost_2": null,
         "costMulti_2": null,
-        "para1": 30,
+        "para1": 10000,
         "para2": null,
         "para3": null,
         "para4": null
@@ -259905,6 +259905,215 @@
           "chance": 1.0
         }
       ]
+    },
+    "270001": {
+      "id": 270001,
+      "des": "轻侦察艇",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.015,
+      "health": 220,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270002": {
+      "id": 270002,
+      "des": "物理哨兵",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.018,
+      "health": 260,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "sentry",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270003": {
+      "id": 270003,
+      "des": "能量拦截艇",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.022,
+      "health": 300,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "interceptor",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270004": {
+      "id": 270004,
+      "des": "蜂群轻艇",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.006,
+      "health": 180,
+      "armourType": 1,
+      "res": "{1,6,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "swarm",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 6.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270005": {
+      "id": 270005,
+      "des": "装甲锚点",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.035,
+      "health": 1600,
+      "armourType": 1,
+      "res": "{1,35,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 35.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270006": {
+      "id": 270006,
+      "des": "连击削减舰",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.035,
+      "health": 850,
+      "armourType": 1,
+      "res": "{1,30,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "reactiveReduction": 1,
+      "archetype_id": "reactive",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 30.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270007": {
+      "id": 270007,
+      "des": "间歇护盾舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.03,
+      "health": 1100,
+      "armourType": 1,
+      "res": "{1,35,1}",
+      "size": 3,
+      "shield": 600,
+      "shieldType": 2,
+      "shieldRecovery": 0.08,
+      "shieldDelay": 1.8,
+      "archetype_id": "shielded",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 35.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "270008": {
+      "id": 270008,
+      "des": "指挥舰",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.055,
+      "health": 3600,
+      "armourType": 1,
+      "res": "{1,60,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "command",
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 60.0,
+          "chance": 1.0
+        }
+      ]
     }
   },
   "groups": {
@@ -306062,102 +306271,492 @@
         null
       ],
       "combatTier": "ultimate"
+    },
+    "33001": {
+      "description": "开局教学 1",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270001,
+        270001,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33002": {
+      "description": "开局教学 2",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270002,
+        270002,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33003": {
+      "description": "开局教学 3",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270001,
+        270001,
+        270003,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33004": {
+      "description": "开局教学 4",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270003,
+        270003,
+        270003,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33005": {
+      "description": "开局教学 5",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270002,
+        270002,
+        270005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "33006": {
+      "description": "开局教学 6",
+      "slots": [
+        null,
+        null,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33007": {
+      "description": "开局教学 7",
+      "slots": [
+        null,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33008": {
+      "description": "开局教学 8",
+      "slots": [
+        null,
+        null,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270003,
+        270003,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33009": {
+      "description": "开局教学 9",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        270001,
+        270001,
+        270001,
+        270001,
+        270005,
+        270005,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33010": {
+      "description": "开局教学 10",
+      "slots": [
+        null,
+        null,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270005,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33011": {
+      "description": "开局教学 11",
+      "slots": [
+        null,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270004,
+        270005,
+        270005,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "33012": {
+      "description": "开局教学 12",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33013": {
+      "description": "开局教学 13",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270005,
+        270005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33014": {
+      "description": "开局教学 14",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270006,
+        270002,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33015": {
+      "description": "开局教学 15",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270006,
+        270006,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33016": {
+      "description": "开局教学 16",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270007,
+        270005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33017": {
+      "description": "开局教学 17",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270007,
+        270007,
+        270006,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "33018": {
+      "description": "开局教学 18",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        270008,
+        270007,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
     }
   },
   "levels": [
     {
       "id": 1,
       "length": 4000,
-      "monGroup": "{30011|0.180000,30012|0.360000,30013|0.540000,30014|0.720000,30015|0.900000}",
+      "monGroup": "{33001|0.140000,33002|0.325000,33003|0.510000,33004|0.695000,33005|0.880000}",
       "atkRatio": 1,
-      "lifeRatio": 0.4,
-      "resRatio": 1,
+      "lifeRatio": 1.0,
+      "resRatio": 1.0,
       "jewelRatio": 1,
       "planetExpRatio": 0,
       "groups": [
         {
-          "id": 30011,
-          "position": 0.18
+          "id": 33001,
+          "position": 0.14
         },
         {
-          "id": 30012,
-          "position": 0.36
+          "id": 33002,
+          "position": 0.325
         },
         {
-          "id": 30013,
-          "position": 0.54
+          "id": 33003,
+          "position": 0.51
         },
         {
-          "id": 30014,
-          "position": 0.72
+          "id": 33004,
+          "position": 0.695
         },
         {
-          "id": 30015,
-          "position": 0.9
+          "id": 33005,
+          "position": 0.88
         }
       ]
     },
     {
       "id": 2,
       "length": 4000,
-      "monGroup": "{30021|0.180000,30022|0.360000,30023|0.540000,30024|0.720000,30025|0.900000}",
+      "monGroup": "{33006|0.140000,33007|0.288000,33008|0.436000,33009|0.584000,33010|0.732000,33011|0.880000}",
       "atkRatio": 1.5,
-      "lifeRatio": 3.2,
-      "resRatio": 0.7,
+      "lifeRatio": 1.6,
+      "resRatio": 1.15,
       "jewelRatio": 1.2,
       "planetExpRatio": 0,
       "groups": [
         {
-          "id": 30021,
-          "position": 0.18
+          "id": 33006,
+          "position": 0.14
         },
         {
-          "id": 30022,
-          "position": 0.36
+          "id": 33007,
+          "position": 0.288
         },
         {
-          "id": 30023,
-          "position": 0.54
+          "id": 33008,
+          "position": 0.436
         },
         {
-          "id": 30024,
-          "position": 0.72
+          "id": 33009,
+          "position": 0.584
         },
         {
-          "id": 30025,
-          "position": 0.9
+          "id": 33010,
+          "position": 0.732
+        },
+        {
+          "id": 33011,
+          "position": 0.88
         }
       ]
     },
     {
       "id": 3,
       "length": 4000,
-      "monGroup": "{30031|0.180000,30032|0.360000,30033|0.540000,30034|0.720000,30035|0.900000}",
+      "monGroup": "{33012|0.140000,33013|0.263333,33014|0.386667,33015|0.510000,33016|0.633333,33017|0.756667,33018|0.880000}",
       "atkRatio": 2,
-      "lifeRatio": 4.0,
-      "resRatio": 0.98,
+      "lifeRatio": 2.2,
+      "resRatio": 1.6,
       "jewelRatio": 1.4,
       "planetExpRatio": 0,
       "groups": [
         {
-          "id": 30031,
-          "position": 0.18
+          "id": 33012,
+          "position": 0.14
         },
         {
-          "id": 30032,
-          "position": 0.36
+          "id": 33013,
+          "position": 0.263333
         },
         {
-          "id": 30033,
-          "position": 0.54
+          "id": 33014,
+          "position": 0.386667
         },
         {
-          "id": 30034,
-          "position": 0.72
+          "id": 33015,
+          "position": 0.51
         },
         {
-          "id": 30035,
-          "position": 0.9
+          "id": 33016,
+          "position": 0.633333
+        },
+        {
+          "id": 33017,
+          "position": 0.756667
+        },
+        {
+          "id": 33018,
+          "position": 0.88
         }
       ]
     },

@@ -100,6 +100,10 @@ def convert_sheet(name, rows):
     if name=="mon":
         result={}
         for row in rows:
+            if not row.get("reactiveReduction"):
+                row.pop("reactiveReduction", None)
+            if not row.get("archetype_id"):
+                row.pop("archetype_id", None)
             for field in ('shield','shieldType','shieldRecovery','shieldDelay'):
                 row[field] = 0 if row.get(field) is None else row[field]
             mounts = []
@@ -331,6 +335,10 @@ def validate_projection(data, *, check_level_ratios=True):
                 raise ValueError(ui_text('debug.import_workbook.message_13', eid=eid, key=key))
         positive(enemy['health'],f'enemy {enemy["id"]} health')
         positive(enemy['dmgMultiple'],f'enemy {enemy["id"]} damage multiplier',True)
+        if enemy.get('reactiveReduction', 0) not in (0, 1):
+            raise ValueError(f'enemy {eid}: reactiveReduction must be 0 or 1')
+        if 'archetype_id' in enemy and (not isinstance(enemy['archetype_id'], str) or not enemy['archetype_id'].strip()):
+            raise ValueError(f'enemy {eid}: invalid archetype_id')
         for field in ('shield','shieldRecovery','shieldDelay'):
             if type(enemy.get(field,0)) not in (int,float):raise ValueError(f'enemy {eid}: invalid {field}')
             positive(enemy.get(field,0),f'enemy {eid} {field}',True)
