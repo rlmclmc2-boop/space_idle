@@ -11,6 +11,9 @@ uniform float density = 1.0;
 uniform float mid_opacity = 0.16;
 uniform float fog_opacity = 0.22;
 uniform float hyperspace = 0.0;
+uniform bool opening_enabled = false;
+uniform float opening_progress = 0.0;
+uniform sampler2D opening_texture : source_color, filter_linear, repeat_disable;
 uniform sampler2D route_atlas : source_color, filter_linear, repeat_disable;
 uniform vec2 route_origin = vec2(0.0);
 // Slow, pause-aware motion is evaluated once by the caller, not per pixel.
@@ -52,6 +55,12 @@ void fragment() {
 			// Same cubic density curve; no general-purpose fragment pow.
 			haze = haze*haze*haze;
 			fog = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
+		}
+		// 2112 logical pixels of journey + 960-pixel overlap per segment.
+		// Identical world coordinates at adjacent boundaries; no UV wrap or stretch.
+		if (opening_enabled) {
+			vec2 opening_uv = vec2(UV.x, ((1.0-opening_progress)*2112.0+UV.y*960.0)/3072.0);
+			fog = vec4(texture(opening_texture,opening_uv).rgb,1.0);
 		}
 		COLOR = fog;
 		if (hyperspace > 0.0) {

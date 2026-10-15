@@ -24,6 +24,9 @@ const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
 var scenery_material_route := ""
+const OPENING_SCENERY := [preload("res://assets/backgrounds/opening/stage_01.png"),preload("res://assets/backgrounds/opening/stage_02.png"),preload("res://assets/backgrounds/opening/stage_03.png")]
+var opening_scenery_stage := -1
+var opening_scenery_progress := -1.0
 const SOLID_BACKGROUND_SHADER := preload("res://scripts/solid_background.gdshader")
 
 @export_group("Toon ship prototype")
@@ -1036,6 +1039,17 @@ func draw_environment_event(_offset:Vector2)->void:
 
 func draw_stars()->void:
 	var mat:ShaderMaterial=stars_layer.material
+	# Read only the existing journey. No clock, encounter or distance authority here.
+	var opening_stage:int=game.stage if game.stage>=1 and game.stage<=3 else 0
+	if opening_scenery_stage!=opening_stage:
+		opening_scenery_stage=opening_stage
+		mat.set_shader_parameter("opening_enabled",opening_stage>0)
+		if opening_stage>0:mat.set_shader_parameter("opening_texture",OPENING_SCENERY[opening_stage-1])
+	if opening_stage>0:
+		var progress:float=clampf(float(game.distance)/maxf(1.0,float(db.levels[game.stage-1].length)),0.0,1.0)
+		if opening_scenery_progress!=progress:
+			opening_scenery_progress=progress
+			mat.set_shader_parameter("opening_progress",progress)
 	mat.set_shader_parameter("hyperspace",encounter_presentation.scenery_presence)
 	if scenery_material_route!=encounter_presentation.scenery_route:
 		scenery_material_route=encounter_presentation.scenery_route
