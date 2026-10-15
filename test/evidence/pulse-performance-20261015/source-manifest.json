@@ -1,0 +1,19 @@
+{
+  "source_head": "d46e93b8ec56490df2d574c748e2a2afcad3f2a7",
+  "source_session_sha256": "70dffc05283780f0ec0824b2b48c711a4350cb096801c5fd4928f9b380597ef9",
+  "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f",
+  "driver_sha256": "79eede82d2153bfc6ecea62175084f097119242586048a97fbef0a3db71a8210",
+  "qa_sources": {
+    "off": {
+      "session_sha256": "2945a279673949ffe92c4fb36e952d7043a163ab39fa9e04bcafa4a5c2c79a51",
+      "driver_sha256": "79eede82d2153bfc6ecea62175084f097119242586048a97fbef0a3db71a8210",
+      "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f"
+    },
+    "on": {
+      "session_sha256": "4b243ec1a73e9e3df0a5110d9a190fab75b2b7de8d4cd66b7140a7f505547805",
+      "driver_sha256": "79eede82d2153bfc6ecea62175084f097119242586048a97fbef0a3db71a8210",
+      "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f"
+    }
+  },
+  "screenshot_sha256": "78c9d62081a7fbbf152d57ed740e85033a97f1cab623a7ca1c853fe241008d7c"
+}

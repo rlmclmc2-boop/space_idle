@@ -1,0 +1,409 @@
+{
+  "method": "full GL postdraw wall frame, uncapped/VSync off/focused, actual 1x, 240 warm and 480 sample logical steps",
+  "source": {
+    "source_head": "d46e93b8ec56490df2d574c748e2a2afcad3f2a7",
+    "source_session_sha256": "70dffc05283780f0ec0824b2b48c711a4350cb096801c5fd4928f9b380597ef9",
+    "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f",
+    "driver_sha256": "79eede82d2153bfc6ecea62175084f097119242586048a97fbef0a3db71a8210",
+    "qa_sources": {
+      "off": {
+        "session_sha256": "2945a279673949ffe92c4fb36e952d7043a163ab39fa9e04bcafa4a5c2c79a51",
+        "driver_sha256": "79eede82d2153bfc6ecea62175084f097119242586048a97fbef0a3db71a8210",
+        "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f"
+      },
+      "on": {
+        "session_sha256": "4b243ec1a73e9e3df0a5110d9a190fab75b2b7de8d4cd66b7140a7f505547805",
+        "driver_sha256": "79eede82d2153bfc6ecea62175084f097119242586048a97fbef0a3db71a8210",
+        "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f"
+      }
+    },
+    "screenshot_sha256": "78c9d62081a7fbbf152d57ed740e85033a97f1cab623a7ca1c853fe241008d7c"
+  },
+  "cases": {
+    "laser": {
+      "order": [
+        "laser-off-a",
+        "laser-on-a",
+        "laser-on-b",
+        "laser-off-b"
+      ],
+      "runs": {
+        "laser-off-a": {
+          "all": {
+            "count": 1832,
+            "mean_ms": 4.370435043668122,
+            "p95_ms": 6.419
+          },
+          "steps_0": {
+            "count": 1354,
+            "mean_ms": 3.797322747415066,
+            "p95_ms": 4.602
+          },
+          "steps_1": {
+            "count": 476,
+            "mean_ms": 5.982004201680673,
+            "p95_ms": 7.822
+          },
+          "steps_2_plus": {
+            "count": 2,
+            "mean_ms": 8.814,
+            "p95_ms": 9.188
+          },
+          "game_wall_ratio": 0.9991710627071279,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 1832,
+          "hot_batches": 0,
+          "cold_batches": 380,
+          "hot_rows": 0,
+          "cold_rows": 2099,
+          "feedback_rows": 2099,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        },
+        "laser-on-a": {
+          "all": {
+            "count": 1610,
+            "mean_ms": 4.968650310559006,
+            "p95_ms": 8.327
+          },
+          "steps_0": {
+            "count": 1133,
+            "mean_ms": 4.141931156222419,
+            "p95_ms": 5.524
+          },
+          "steps_1": {
+            "count": 474,
+            "mean_ms": 6.900883966244725,
+            "p95_ms": 10.777
+          },
+          "steps_2_plus": {
+            "count": 3,
+            "mean_ms": 11.9,
+            "p95_ms": 16.227
+          },
+          "game_wall_ratio": 1.0000591284959985,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 1610,
+          "hot_batches": 12,
+          "cold_batches": 368,
+          "hot_rows": 41,
+          "cold_rows": 2058,
+          "feedback_rows": 2099,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        },
+        "laser-on-b": {
+          "all": {
+            "count": 1758,
+            "mean_ms": 4.547449374288965,
+            "p95_ms": 6.86
+          },
+          "steps_0": {
+            "count": 1279,
+            "mean_ms": 3.9097060203283815,
+            "p95_ms": 4.859
+          },
+          "steps_1": {
+            "count": 478,
+            "mean_ms": 6.242960251046026,
+            "p95_ms": 8.201
+          },
+          "steps_2_plus": {
+            "count": 1,
+            "mean_ms": 9.767,
+            "p95_ms": 9.767
+          },
+          "game_wall_ratio": 1.000698487544332,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 1758,
+          "hot_batches": 12,
+          "cold_batches": 368,
+          "hot_rows": 41,
+          "cold_rows": 2058,
+          "feedback_rows": 2099,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        },
+        "laser-off-b": {
+          "all": {
+            "count": 1653,
+            "mean_ms": 4.826935874168179,
+            "p95_ms": 7.239
+          },
+          "steps_0": {
+            "count": 1175,
+            "mean_ms": 4.134371914893617,
+            "p95_ms": 5.767
+          },
+          "steps_1": {
+            "count": 477,
+            "mean_ms": 6.522547169811321,
+            "p95_ms": 9.281
+          },
+          "steps_2_plus": {
+            "count": 1,
+            "mean_ms": 9.783,
+            "p95_ms": 9.783
+          },
+          "game_wall_ratio": 1.0026413332623392,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 1653,
+          "hot_batches": 0,
+          "cold_batches": 380,
+          "hot_rows": 0,
+          "cold_rows": 2099,
+          "feedback_rows": 2099,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        }
+      },
+      "paired": {
+        "all": {
+          "off_mean_ms": 4.598685458918151,
+          "on_mean_ms": 4.758049842423985,
+          "gain_ms": -0.15936438350583426,
+          "off_drift_ms": 0.4565008305000573,
+          "on_drift_ms": 0.42120093627004174
+        },
+        "steps_1": {
+          "off_mean_ms": 6.252275685745997,
+          "on_mean_ms": 6.571922108645376,
+          "gain_ms": -0.31964642289937917,
+          "off_drift_ms": 0.540542968130648,
+          "on_drift_ms": 0.6579237151986996
+        },
+        "steps_2_plus": {
+          "off_mean_ms": 9.2985,
+          "on_mean_ms": 10.8335,
+          "gain_ms": -1.5350000000000001,
+          "off_drift_ms": 0.9689999999999994,
+          "on_drift_ms": 2.133000000000001
+        }
+      },
+      "workload_equal": true,
+      "retention_gate_pass": false
+    },
+    "mixed": {
+      "order": [
+        "mixed-off-a",
+        "mixed-on-a",
+        "mixed-on-b",
+        "mixed-off-b"
+      ],
+      "runs": {
+        "mixed-off-a": {
+          "all": {
+            "count": 923,
+            "mean_ms": 8.671937161430119,
+            "p95_ms": 13.144
+          },
+          "steps_0": {
+            "count": 450,
+            "mean_ms": 6.27358,
+            "p95_ms": 7.344
+          },
+          "steps_1": {
+            "count": 466,
+            "mean_ms": 10.892049356223175,
+            "p95_ms": 14.062
+          },
+          "steps_2_plus": {
+            "count": 7,
+            "mean_ms": 15.056000000000001,
+            "p95_ms": 18.222
+          },
+          "game_wall_ratio": 0.9994755252181678,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 923,
+          "hot_batches": 0,
+          "cold_batches": 480,
+          "hot_rows": 0,
+          "cold_rows": 30362,
+          "feedback_rows": 30362,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        },
+        "mixed-on-a": {
+          "all": {
+            "count": 932,
+            "mean_ms": 8.592408798283262,
+            "p95_ms": 12.958
+          },
+          "steps_0": {
+            "count": 458,
+            "mean_ms": 6.166251091703057,
+            "p95_ms": 7.181
+          },
+          "steps_1": {
+            "count": 468,
+            "mean_ms": 10.884679487179486,
+            "p95_ms": 13.524
+          },
+          "steps_2_plus": {
+            "count": 6,
+            "mean_ms": 14.991999999999999,
+            "p95_ms": 18.51
+          },
+          "game_wall_ratio": 0.9989854054476185,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 932,
+          "hot_batches": 0,
+          "cold_batches": 480,
+          "hot_rows": 0,
+          "cold_rows": 30362,
+          "feedback_rows": 30362,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        },
+        "mixed-on-b": {
+          "all": {
+            "count": 899,
+            "mean_ms": 8.90762958843159,
+            "p95_ms": 13.404
+          },
+          "steps_0": {
+            "count": 421,
+            "mean_ms": 6.374524940617578,
+            "p95_ms": 7.292
+          },
+          "steps_1": {
+            "count": 476,
+            "mean_ms": 11.126878151260504,
+            "p95_ms": 13.902
+          },
+          "steps_2_plus": {
+            "count": 2,
+            "mean_ms": 13.945,
+            "p95_ms": 14.386
+          },
+          "game_wall_ratio": 0.9990061137925669,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 899,
+          "hot_batches": 0,
+          "cold_batches": 480,
+          "hot_rows": 0,
+          "cold_rows": 30362,
+          "feedback_rows": 30362,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        },
+        "mixed-off-b": {
+          "all": {
+            "count": 915,
+            "mean_ms": 8.734016393442623,
+            "p95_ms": 12.811
+          },
+          "steps_0": {
+            "count": 441,
+            "mean_ms": 6.33378231292517,
+            "p95_ms": 7.355
+          },
+          "steps_1": {
+            "count": 468,
+            "mean_ms": 10.894884615384614,
+            "p95_ms": 13.456
+          },
+          "steps_2_plus": {
+            "count": 6,
+            "mean_ms": 16.6035,
+            "p95_ms": 21.138
+          },
+          "game_wall_ratio": 1.001047972095814,
+          "warm_steps": 240,
+          "sample_steps": 480,
+          "valid_frames": 915,
+          "hot_batches": 0,
+          "cold_batches": 480,
+          "hot_rows": 0,
+          "cold_rows": 30362,
+          "feedback_rows": 30362,
+          "levels_gained": 96,
+          "drops_gained": 0,
+          "renderer": "gl_compatibility",
+          "adapter": "NVIDIA GeForce RTX 2060",
+          "focused": true
+        }
+      },
+      "paired": {
+        "all": {
+          "off_mean_ms": 8.70297677743637,
+          "on_mean_ms": 8.750019193357426,
+          "gain_ms": -0.04704241592105518,
+          "off_drift_ms": 0.06207923201250409,
+          "on_drift_ms": 0.31522079014832727
+        },
+        "steps_1": {
+          "off_mean_ms": 10.893466985803894,
+          "on_mean_ms": 11.005778819219994,
+          "gain_ms": -0.11231183341610063,
+          "off_drift_ms": 0.0028352591614382305,
+          "on_drift_ms": 0.24219866408101787
+        },
+        "steps_2_plus": {
+          "off_mean_ms": 15.82975,
+          "on_mean_ms": 14.468499999999999,
+          "gain_ms": 1.3612500000000018,
+          "off_drift_ms": 1.5474999999999994,
+          "on_drift_ms": 1.0469999999999988
+        }
+      },
+      "workload_equal": true,
+      "retention_gate_pass": false
+    }
+  },
+  "raw_sha256": {
+    "focus-invalid-laser-off-a.log": "cc3ca93124f2c522f56e1fa392b11203438ec4b7706d1d8cb61499d882913113",
+    "focus-only.log": "5444de53ebde76043f922f4312bf3a09a38dda506704e11b2d131b7312a7090f",
+    "import-off.log": "5eb59e03913ad5290a0943ff93d194835036e1be5f5ec46c76ab928f0afd0c9b",
+    "import-on.log": "5eb59e03913ad5290a0943ff93d194835036e1be5f5ec46c76ab928f0afd0c9b",
+    "laser-off-a.log": "3b911858b98ada400e87dd1c9619afa824f03bd6ded01fd541b8ed1b98d43dbe",
+    "laser-off-b.log": "2cfc4fdb53648288ca06f42382e99ddafd6ad3219de6cb9ab17513e287515d3e",
+    "laser-on-a.log": "5480c4ab7f9af8eb4031141b08f53f6a467c0712dd72b1f2707427b02fe9ceee",
+    "laser-on-b.log": "8b653f590d9a097fc6a3a5535e42399aacd859669427a9a5400ab62c8c32f986",
+    "mixed-off-a.log": "b023fac0e5f7c25e943eb6c483098567e4bcc053af05eafdbe81f249d1d03201",
+    "mixed-off-b.log": "d565b097fe616ec7fd405854507655d40c206c9eb19394a91c7b254fbd38b55e",
+    "mixed-on-a.log": "2f2bf9ea3ed198defb5af2dcb05b4565b546e29a1b0cd3cd551065daf670dd7d",
+    "mixed-on-b.log": "360851f0530366ab10e478d180ed39eb66ac2fdb5cca4d098d695397628e37ea",
+    "focus-invalid-laser-off-a.json": "1bbd8e292d72f8037b8421c762b70744615e94540648de2687113ca3679db711",
+    "focus-only.json": "597b5b6863b8f2fc334f89a8287a045dc0bf1132a6131762457adf7631a6a5ff",
+    "laser-off-a.json": "36f23ed2c9d4e28c70d6c01314c3fd155678882a481131c9ab9273cc870ef7bf",
+    "laser-off-b.json": "9748c53121e671dc2a07785c91657b43f6334993f2c822b8466041928a16814d",
+    "laser-on-a.json": "54bc6a3b0551d7eac4d4933214fba54d7ae4245edeb4668cc51b59183e55e9fc",
+    "laser-on-b.json": "eb498a78532afcc063dc12680c0bf4fafad7b1de59dc15a6f8039e359111f569",
+    "mixed-off-a.json": "b6ba6c248223bff08a7fc1dd19086b03f9b40dfe42c39181847b933ecc4d923a",
+    "mixed-off-b.json": "f5d498d7b290aeb573d52acaa7c1797b69222fb0798f409925260439c5e35412",
+    "mixed-on-a.json": "3787374006b4ffd66f236ee81f18c69407dbba06f7216a69a9525d2f7dd61c2b",
+    "mixed-on-b.json": "b23028148162e878ed48add3d3385d0bf564b3f036469af9c7cc4c2fdf3a282c",
+    "source-after.json": "579a89b31a48a669a74169010b220af1c939c6b8bb493e4cee69528c1c0d614a",
+    "source-manifest.json": "b48d2521ff27b9c19ed123faf2ad5104849e31702d14d875e257c3de6f54d033",
+    "full-frame.png": "78c9d62081a7fbbf152d57ed740e85033a97f1cab623a7ca1c853fe241008d7c"
+  }
+}
