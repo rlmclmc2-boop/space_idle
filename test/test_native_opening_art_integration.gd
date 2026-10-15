@@ -13,8 +13,13 @@ func case_run(stage:int,point:int,seed_value:int)->void:
 	g.speed=1.0;g.rng.seed=seed_value
 	g.profile.onboarding.completed=true;g.profile.onboarding.dismissed=true
 	g.profile.cleared=range(1,stage);g.profile.highestLevel=stage+1
-	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.rebuild_unlocks();g.pending_unlocks.clear()
-	g.profile.loadout={"weapons":[{"key":"laser","level":2},{"key":"missile","level":2},{"key":"cannon","level":1}],"defence":[{"key":"armour","level":2},{"key":"shield","level":1}]}
+	g.profile.unlocked=["armour","laser"];g.rebuild_unlocks();g.pending_unlocks.clear()
+	if stage==2:
+		g.profile.loadout={"weapons":[{"key":"laser","level":2},{"key":"missile","level":2}],"defence":[{"key":"armour","level":2}]}
+	else:
+		g.profile.loadout={"weapons":[{"key":"laser","level":2},{"key":"missile","level":2},{"key":"cannon","level":1}],"defence":[{"key":"armour","level":2},{"key":"shield","level":1}]}
+	for group in ["weapons","defence"]:
+		for entry in g.profile.loadout[group]:assert(g.profile.unlocked.has(entry.key),"stage-illegal fixture equipment")
 	g.invalidate_stat_cache();g.reset_player()
 	var level:Dictionary=scene.db.levels[stage-1]
 	var expected:int=int(level.groups[point-1].id)
@@ -22,6 +27,7 @@ func case_run(stage:int,point:int,seed_value:int)->void:
 	assert(g.start(stage,false,checkpoint),"authored checkpoint failed")
 	assert(g.stat_cache_enabled and not g.save_enabled and ClassDB.class_exists("SpaceCombatKernel"),"native/cache/save gate")
 	assert(g.native_execution!=null,"authored encounter did not admit native owner")
+	if scene.battle_slice_runtime==null:assert(scene.attach_native_display(),"native display did not attach")
 	var start_count:int=g.enemies.size();var starting_uids:Array=g.enemies.map(func(e):return int(e.uid))
 	scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(0)
 	for tick in 120:
@@ -42,4 +48,3 @@ func run()->void:
 	FileAccess.open("res://.runtime/native-opening-integration.json",FileAccess.WRITE).store_string(JSON.stringify(rows,"  ")+"\n")
 	print("NATIVE_OPENING_SUMMARY ",rows.size()," checkpoints")
 	quit()
-

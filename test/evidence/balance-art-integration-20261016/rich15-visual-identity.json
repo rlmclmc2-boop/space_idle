@@ -1,0 +1,246 @@
+{
+  "before": {
+    "archetypes": {
+      "scout": 15
+    },
+    "count": 15,
+    "group_index": 1,
+    "rows": [
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 100
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 101
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 102
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 103
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 104
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 105
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 106
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 107
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 108
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 109
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 110
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 111
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 112
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 113
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_1",
+        "texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png",
+        "uid": 114
+      }
+    ],
+    "save": false,
+    "ship_keys": {
+      "enemy_1": 15
+    },
+    "stage": 1,
+    "textures": {
+      "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png": 15
+    }
+  },
+  "after": {
+    "archetypes": {
+      "scout": 15
+    },
+    "count": 15,
+    "group_index": 1,
+    "rows": [
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 100
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 101
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 102
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 103
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 104
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 105
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 106
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 107
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 108
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 109
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 110
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 111
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 112
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 113
+      },
+      {
+        "archetype_id": "scout",
+        "id": 271001,
+        "ship_key": "enemy_opening_triangle_physical",
+        "texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png",
+        "uid": 114
+      }
+    ],
+    "save": false,
+    "ship_keys": {
+      "enemy_opening_triangle_physical": 15
+    },
+    "stage": 1,
+    "textures": {
+      "res://assets/ships/enemy/opening_v1/triangle-physical.png": 15
+    }
+  }
+}
