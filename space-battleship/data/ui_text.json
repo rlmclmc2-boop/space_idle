@@ -1198,13 +1198,13 @@
   },
   {
     "key": "onboarding.upgrade",
-    "text": "花铁升一级槽位；比较卡片升级前后的伤害或防御数值。升火力缩短交战，升防御增加承受量。",
+    "text": "花铁升一级槽位；比较卡片升级前后的伤害或防御数值。火力升级提高伤害能力，防御升级增加承受量。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.waiting",
-    "text": "首次升级要{cost}；自动拾取到1-4后，累计铁才首次够65。先补齐免费槽，再等按钮亮起。",
+    "text": "升级费用：{cost}。先补齐免费槽；铁不足时继续战斗或在当前战点驻守，够了再比较升级前后的卡片数值。",
     "params": "{cost}",
     "category": "onboarding"
   },
@@ -15397,7 +15397,7 @@
   },
   {
     "key": "battle.enemy_defence.hint",
-    "text": "指向敌舰看护盾与抗性",
+    "text": "敌舰防御可扫描",
     "params": "",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
