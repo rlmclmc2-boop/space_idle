@@ -1186,25 +1186,25 @@
   },
   {
     "key": "onboarding.intro",
-    "text": "下方是你的战舰，它会自己开火。试试右侧的装配和升级，看看战舰与装备卡片的变化。",
+    "text": "下方是你的战舰，它会自动开火。新档有空的武器和防御槽，装配免费；先补槽，再观察清敌速度和防御条。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.equip",
-    "text": "在空武器位选「免费装配」，再从选单里选一种武器；选中就装上了。看看舰上多出的炮口。",
+    "text": "这个武器槽可免费装配。选中武器后再补齐其他空武器槽；看炮口和武器卡伤害数值的变化。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.upgrade",
-    "text": "点亮框里的「升级」，升一级后看看卡片上的数值，再看看战斗。",
+    "text": "花铁升一级槽位；比较卡片升级前后的伤害或防御数值。升火力缩短交战，升防御增加承受量。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.waiting",
-    "text": "升级费用：{cost}。先让战舰继续战斗；有足够资源时，升级按钮会亮起。",
+    "text": "首次升级要{cost}；自动拾取到1-4后，累计铁才首次够65。先补齐免费槽，再等按钮亮起。",
     "params": "{cost}",
     "category": "onboarding"
   },
@@ -14929,7 +14929,7 @@
   },
   {
     "key": "onboarding.defence",
-    "text": "再给空防御位装上装甲。选中后，看看左下生命上限和防御卡的变化。",
+    "text": "空防御槽也能免费装甲。补上后看左下生命上限及防御卡；两类槽都不用花铁填满。",
     "params": "",
     "category": "onboarding",
     "note": "入门防御操作"
@@ -15397,7 +15397,7 @@
   },
   {
     "key": "battle.enemy_defence.hint",
-    "text": "指向敌舰看防御",
+    "text": "指向敌舰看护盾与抗性",
     "params": "",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",
@@ -15445,7 +15445,7 @@
   },
   {
     "key": "battle.enemy_defence.shield",
-    "text": "护盾：{resistance} · 先承受伤害",
+    "text": "护盾：{resistance} · 先承伤；有抗性则试另一类武器",
     "params": "{resistance}",
     "category": "battle",
     "note": "敌舰只读查看：从真实抗性字段读取，不依赖颜色",

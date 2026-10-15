@@ -106,7 +106,6 @@ func decide() -> Dictionary:
 	var upgrade_slot := ""
 	var waiting_slot := ""
 	var any_upgraded := false
-	var occupied_weapons := 0
 	for category in ["weapons","defence"]:
 		for index in game.active_slot_count(category):
 			var entry: Dictionary = game.slot_entry(category,index)
@@ -115,7 +114,6 @@ func decide() -> Dictionary:
 				any_upgraded = true
 				if category=="defence" and not str(entry.key).is_empty():defence_adjusted = true
 			if category=="defence" and index>0 and not str(entry.key).is_empty():defence_adjusted = true
-			if category=="weapons" and not str(entry.key).is_empty():occupied_weapons += 1
 			if str(entry.key).is_empty():
 				if has_equipment_choice(category,index):
 					if category=="weapons" and empty_slot.is_empty():empty_slot = id
@@ -123,16 +121,8 @@ func decide() -> Dictionary:
 				continue
 			if not game.slot_upgrade_cost(category,index).is_empty() and waiting_slot.is_empty():waiting_slot = id
 			if game.can_upgrade_slot(category,index) and upgrade_slot.is_empty():upgrade_slot = id
-	var starting_weapons := 0
-	for entry in game.default_loadout(str(game.profile.selectedShip),Array(str(game.db.config.startEquip).split(","))).weapons:
-		if not str(entry.key).is_empty():starting_weapons += 1
-	if occupied_weapons>starting_weapons:state.equipped = true
 	if any_upgraded:state.upgraded = true
 	if state.equipped or state.upgraded or not game.profile.cleared.is_empty():state.intro = true
-	if not equip_target.is_empty():
-		var parts := equip_target.split("_")
-		var entry := game.slot_entry(parts[0],int(parts[1]))
-		if not entry.is_empty() and not str(entry.key).is_empty():state.equipped = true
 	if empty_slot.is_empty():state.equipped = true
 	if review:return {"phase":"review"}
 	if not game.pending_unlocks.is_empty():return {"phase":"unlock","action":"continue"}
@@ -151,14 +141,14 @@ func decide() -> Dictionary:
 	if not state.equipped:
 		equip_target = empty_slot
 		return {"phase":"equip","slot":empty_slot,"action":"show_slot","anchor":"empty_module"}
+	if not defence_adjusted and not empty_defence.is_empty():
+		return {"phase":"defence","slot":empty_defence,"action":"show_defence","anchor":"empty_module"}
 	if not state.upgraded:
 		if not upgrade_slot.is_empty():return {"phase":"upgrade","slot":upgrade_slot,"action":"show_upgrade","anchor":"upgrade_action"}
 		if not waiting_slot.is_empty():
 			var parts := waiting_slot.split("_")
 			return {"phase":"waiting","slot":waiting_slot,"action":"show_upgrade","anchor":"upgrade_action","cost":host.cost_text(game.slot_upgrade_cost(parts[0],int(parts[1])))}
 		state.upgraded = true
-	if not defence_adjusted and not empty_defence.is_empty():
-		return {"phase":"defence","slot":empty_defence,"action":"show_defence","anchor":"empty_module"}
 	if not game.profile.cleared.is_empty():
 		state.completed = true
 		manually_opened = false
