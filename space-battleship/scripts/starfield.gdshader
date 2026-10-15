@@ -46,7 +46,7 @@ void vertex() {
 void fragment() {
 	if (layer < 0.0) {
 		vec4 fog = vec4(0.0);
-		if (hyperspace < 1.0) {
+		if (hyperspace < 1.0 && !opening_enabled) {
 			// Low-frequency periodic fog drifts without a wrap seam or TIME.
 			vec2 p = UV * vec2(3.0,5.0);
 			p.y -= flight_time * far_speed / 960.0;

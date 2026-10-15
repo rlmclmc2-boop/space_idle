@@ -51,14 +51,14 @@ shapes={
 }
 for name,path in shapes.items():
     body='<defs><linearGradient id="h"><stop stop-color="#303943"/><stop offset=".46" stop-color="#899195"/><stop offset=".5" stop-color="#535e66"/><stop offset="1" stop-color="#232c34"/></linearGradient></defs>'
-    body+=f'<path d="{path}" fill="url(#h)" stroke="#151e27" stroke-width="18"/>'
+    body+=f'<defs><clipPath id="hull"><path d="{path}"/></clipPath></defs><path d="{path}" fill="url(#h)" stroke="#151e27" stroke-width="18"/><g clip-path="url(#hull)">'
     body+='<path d="M 411 380 L 475 380 L 506 1220 L 443 1380 L 380 1220 Z" fill="#502c34" stroke="#a45e53" stroke-width="8"/>'
     for side in [-1,1]:
         for y in [720,870,1020,1170]:
             x=443+side*125
             body+=f'<path d="M {x} {y} l {side*65} 30 l 0 42 l {-side*65} -30 Z" fill="#202a32" stroke="#778087" stroke-width="4"/>'
         body+=f'<rect x="{443+side*85-17}" y="1360" width="34" height="80" rx="9" fill="#bf8151"/>'
-    render(PRO/f'{name}.svg',svg(887,1774,body))
+    render(PRO/f'{name}.svg',svg(887,1774,body+'</g>'))
 # Review sheet: real assets at readable and small scales, explicitly concept-only.
 from PIL import Image,ImageDraw,ImageFont
 fontpath='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
