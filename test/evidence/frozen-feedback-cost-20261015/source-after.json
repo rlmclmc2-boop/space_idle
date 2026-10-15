@@ -1,0 +1,32 @@
+{
+  "laser": {
+    "other_gd_files_identical": 154,
+    "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+    "patched": {
+      "native_execution_session.gd": {
+        "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+        "qa_sha256": "4e695490dcf4cd8255a6eff275b6479e6dce7adc3e65f8f473b2a46d2e665f88"
+      },
+      "main.gd": {
+        "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+        "qa_sha256": "83324eea2f376adb0ef508c82257743fa8fe453a2ede4eadf1a498494f571595"
+      }
+    },
+    "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe"
+  },
+  "mixed": {
+    "other_gd_files_identical": 154,
+    "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+    "patched": {
+      "native_execution_session.gd": {
+        "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+        "qa_sha256": "4e695490dcf4cd8255a6eff275b6479e6dce7adc3e65f8f473b2a46d2e665f88"
+      },
+      "main.gd": {
+        "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+        "qa_sha256": "83324eea2f376adb0ef508c82257743fa8fe453a2ede4eadf1a498494f571595"
+      }
+    },
+    "fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+  }
+}

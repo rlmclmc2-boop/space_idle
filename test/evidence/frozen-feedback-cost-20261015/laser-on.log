@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+FROZEN_COST {"case":"laser","frames":525,"run":"laser-on","sample_steps":240,"scopes":{"chain_secondary":5323,"consume_feedback":240,"fire_impact":13092,"hit":9217,"hit_label":9217,"take_feedback":240},"timer":"on","valid":525}

@@ -1,0 +1,142 @@
+{
+  "source_head": "c1413b93f8837b2898c6ac3ef64131d8305d1336",
+  "verified_production_ref": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "85ec4521b9184edb7c206b2e0538b47bcc6a079c01040a1a9cb6ebf6706d7733",
+  "counter_sha256": "3a88591c8a135770bff34690036979b09d8a7bc2733074bf286f33a7985901be",
+  "instrument_sha256": "d74c37632ed2f9a4bb3460839ed61fb85401a03aee77728a4e1ac0434450e3d5",
+  "fixture_sha256": {
+    "laser": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+    "mixed": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+  },
+  "manifest_sha256": {
+    "laser": "c700fc3484c7ad6ee3c73a905e46e24255901d6410f7697bc18916f6d697ae90",
+    "mixed": "c5ce1fdf8975f95862bdde368d179ecdadb4ac9ad36cab16a3b47f28dacfc724"
+  },
+  "runs": {
+    "laser-off-a": {
+      "raw_sha256": "6bf47475960d119b9fe3ddbdbe9681cff14547e96501bc087a5e0b9c15754bd3",
+      "log_sha256": "0ee6cee9a40b6c149a07c7abfacbb60b0b3d615f7c40baf741ed1edf20c9d0a1",
+      "frames": 545,
+      "feedback_rows": 27632,
+      "qa_calls": {
+        "chain_secondary": 5323,
+        "consume_feedback": 240,
+        "fire_impact": 13092,
+        "hit": 9217,
+        "hit_label": 9217,
+        "take_feedback": 240
+      }
+    },
+    "laser-on": {
+      "raw_sha256": "7cd38c906b53714fed475716590d103a0804e8e2ddfe8218e6024d8cc9686053",
+      "log_sha256": "1e9e657a79617b115ec510be78fa85f9e9d81970f85ec4b68c26abfe8de72206",
+      "frames": 525,
+      "feedback_rows": 27632,
+      "qa_calls": {
+        "chain_secondary": 5323,
+        "consume_feedback": 240,
+        "fire_impact": 13092,
+        "hit": 9217,
+        "hit_label": 9217,
+        "take_feedback": 240
+      }
+    },
+    "laser-off-b": {
+      "raw_sha256": "2b23f864df89fc27f0028db9c41eed425216d63fecfe440e1a6d5b8ab6792fd0",
+      "log_sha256": "752e3d95f6448b7d06e3f0932c66ce0aa9568dff11bb83f6eb32cf83a1e5a09d",
+      "frames": 549,
+      "feedback_rows": 27632,
+      "qa_calls": {
+        "chain_secondary": 5323,
+        "consume_feedback": 240,
+        "fire_impact": 13092,
+        "hit": 9217,
+        "hit_label": 9217,
+        "take_feedback": 240
+      }
+    },
+    "mixed-off-a": {
+      "raw_sha256": "6d06222215e766a1264b73616d912f748ff50c1f1155bd4c5ecb6143c43cebd5",
+      "log_sha256": "16bdd0f1b3af140bea1a2225ad96e270cd2f38062226ca818683030d41a9ac35",
+      "frames": 473,
+      "feedback_rows": 15089,
+      "qa_calls": {
+        "chain_secondary": 2532,
+        "consume_feedback": 240,
+        "fire_impact": 5953,
+        "hit": 6406,
+        "hit_label": 6406,
+        "other": 198,
+        "take_feedback": 240
+      }
+    },
+    "mixed-on": {
+      "raw_sha256": "8b41d1d273fba24c7403529c332c1173db7b954ba99656eaa39778c5f3a5ebe5",
+      "log_sha256": "02c297cd817222858a98960137a62604d126b88e4eb52f7371c520a36f1857e5",
+      "frames": 464,
+      "feedback_rows": 15089,
+      "qa_calls": {
+        "chain_secondary": 2532,
+        "consume_feedback": 240,
+        "fire_impact": 5953,
+        "hit": 6406,
+        "hit_label": 6406,
+        "other": 198,
+        "take_feedback": 240
+      }
+    },
+    "mixed-off-b": {
+      "raw_sha256": "e9fa98aa4d6259145aab8ea56e55edaa21e0f22be1dea66e4f0cd18b8d50ea62",
+      "log_sha256": "8d78f2631c1c89762cfd12dff1803ec1e2ac9a25fff698026750517bca568ccb",
+      "frames": 459,
+      "feedback_rows": 15089,
+      "qa_calls": {
+        "chain_secondary": 2532,
+        "consume_feedback": 240,
+        "fire_impact": 5953,
+        "hit": 6406,
+        "hit_label": 6406,
+        "other": 198,
+        "take_feedback": 240
+      }
+    }
+  },
+  "qa_sources": {
+    "laser": {
+      "patched": {
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "4e695490dcf4cd8255a6eff275b6479e6dce7adc3e65f8f473b2a46d2e665f88"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "83324eea2f376adb0ef508c82257743fa8fe453a2ede4eadf1a498494f571595"
+        }
+      },
+      "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+      "driver_sha256": "85ec4521b9184edb7c206b2e0538b47bcc6a079c01040a1a9cb6ebf6706d7733",
+      "counter_sha256": "3a88591c8a135770bff34690036979b09d8a7bc2733074bf286f33a7985901be",
+      "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+      "import_log_sha256": "4dc3af1fd60283e31965ad6ce0a594bf064ab8fb2762db2dd2fc7ea569c9ad53"
+    },
+    "mixed": {
+      "patched": {
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "4e695490dcf4cd8255a6eff275b6479e6dce7adc3e65f8f473b2a46d2e665f88"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "83324eea2f376adb0ef508c82257743fa8fe453a2ede4eadf1a498494f571595"
+        }
+      },
+      "fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4",
+      "driver_sha256": "85ec4521b9184edb7c206b2e0538b47bcc6a079c01040a1a9cb6ebf6706d7733",
+      "counter_sha256": "3a88591c8a135770bff34690036979b09d8a7bc2733074bf286f33a7985901be",
+      "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+      "import_log_sha256": "4dc3af1fd60283e31965ad6ce0a594bf064ab8fb2762db2dd2fc7ea569c9ad53"
+    }
+  }
+}

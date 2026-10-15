@@ -1,0 +1,175 @@
+{
+  "source_head": "c1413b93f8837b2898c6ac3ef64131d8305d1336",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "cases": {
+    "laser": {
+      "off-a": {
+        "frames": 545,
+        "one_step_frames": 230,
+        "full_mean_ms": 7.349977981651376,
+        "full_p95_ms": 14.641,
+        "one_step_mean_ms": 10.833278260869566,
+        "one_step_p95_ms": 16.628,
+        "feedback_rows": 27632,
+        "calls": {
+          "chain_secondary": 5323,
+          "consume_feedback": 240,
+          "fire_impact": 13092,
+          "hit": 9217,
+          "hit_label": 9217,
+          "take_feedback": 240
+        }
+      },
+      "on": {
+        "frames": 525,
+        "one_step_frames": 238,
+        "full_mean_ms": 7.631390476190476,
+        "full_p95_ms": 13.85,
+        "one_step_mean_ms": 11.144768907563025,
+        "one_step_p95_ms": 17.165,
+        "feedback_rows": 27632,
+        "calls": {
+          "chain_secondary": 5323,
+          "consume_feedback": 240,
+          "fire_impact": 13092,
+          "hit": 9217,
+          "hit_label": 9217,
+          "take_feedback": 240
+        },
+        "inclusive_ms_per_step": {
+          "chain_secondary": 0.33039166666666664,
+          "consume_feedback": 2.987275,
+          "fire_impact": 1.017875,
+          "hit": 0.9022083333333333,
+          "hit_label": 0.41822916666666665,
+          "take_feedback": 0.4165916666666667
+        },
+        "inclusive_ms_per_displayed_frame": {
+          "chain_secondary": 0.15103619047619046,
+          "consume_feedback": 1.3656114285714285,
+          "fire_impact": 0.46531428571428574,
+          "hit": 0.4124380952380952,
+          "hit_label": 0.1911904761904762,
+          "take_feedback": 0.19044190476190476
+        },
+        "hit_without_label_ms_per_step": 0.4839791666666667
+      },
+      "off-b": {
+        "frames": 549,
+        "one_step_frames": 236,
+        "full_mean_ms": 7.284697632058288,
+        "full_p95_ms": 14.333,
+        "one_step_mean_ms": 10.802783898305085,
+        "one_step_p95_ms": 16.494,
+        "feedback_rows": 27632,
+        "calls": {
+          "chain_secondary": 5323,
+          "consume_feedback": 240,
+          "fire_impact": 13092,
+          "hit": 9217,
+          "hit_label": 9217,
+          "take_feedback": 240
+        }
+      },
+      "full_mean_ms_on_minus_off_mid": 0.314052669335644,
+      "full_mean_ms_off_drift": 0.06528034959308826,
+      "one_step_mean_ms_on_minus_off_mid": 0.32673782797570006,
+      "one_step_mean_ms_off_drift": 0.03049436256448068
+    },
+    "mixed": {
+      "off-a": {
+        "frames": 473,
+        "one_step_frames": 238,
+        "full_mean_ms": 8.49020507399577,
+        "full_p95_ms": 12.822,
+        "one_step_mean_ms": 10.792579831932773,
+        "one_step_p95_ms": 13.448,
+        "feedback_rows": 15089,
+        "calls": {
+          "chain_secondary": 2532,
+          "consume_feedback": 240,
+          "fire_impact": 5953,
+          "hit": 6406,
+          "hit_label": 6406,
+          "other": 198,
+          "take_feedback": 240
+        }
+      },
+      "on": {
+        "frames": 464,
+        "one_step_frames": 232,
+        "full_mean_ms": 8.628618534482758,
+        "full_p95_ms": 13.097,
+        "one_step_mean_ms": 10.949219827586207,
+        "one_step_p95_ms": 13.834,
+        "feedback_rows": 15089,
+        "calls": {
+          "chain_secondary": 2532,
+          "consume_feedback": 240,
+          "fire_impact": 5953,
+          "hit": 6406,
+          "hit_label": 6406,
+          "other": 198,
+          "take_feedback": 240
+        },
+        "inclusive_ms_per_step": {
+          "chain_secondary": 0.15563333333333335,
+          "consume_feedback": 1.6977791666666666,
+          "fire_impact": 0.5149041666666667,
+          "hit": 0.6122791666666667,
+          "hit_label": 0.2829083333333333,
+          "other": 0.020991666666666665,
+          "take_feedback": 0.230025
+        },
+        "inclusive_ms_per_displayed_frame": {
+          "chain_secondary": 0.0805,
+          "consume_feedback": 0.8781616379310345,
+          "fire_impact": 0.26632974137931037,
+          "hit": 0.3166961206896552,
+          "hit_label": 0.14633189655172413,
+          "other": 0.010857758620689655,
+          "take_feedback": 0.11897844827586207
+        },
+        "hit_without_label_ms_per_step": 0.32937083333333333
+      },
+      "off-b": {
+        "frames": 459,
+        "one_step_frames": 236,
+        "full_mean_ms": 8.706812636165578,
+        "full_p95_ms": 13.142,
+        "one_step_mean_ms": 10.992360169491526,
+        "one_step_p95_ms": 14.326,
+        "feedback_rows": 15089,
+        "calls": {
+          "chain_secondary": 2532,
+          "consume_feedback": 240,
+          "fire_impact": 5953,
+          "hit": 6406,
+          "hit_label": 6406,
+          "other": 198,
+          "take_feedback": 240
+        }
+      },
+      "full_mean_ms_on_minus_off_mid": 0.03010967940208431,
+      "full_mean_ms_off_drift": 0.21660756216980737,
+      "one_step_mean_ms_on_minus_off_mid": 0.05674982687405716,
+      "one_step_mean_ms_off_drift": 0.19978033755875302
+    }
+  },
+  "raw_sha256": {
+    "laser-off-a.json": "6bf47475960d119b9fe3ddbdbe9681cff14547e96501bc087a5e0b9c15754bd3",
+    "laser-off-a.log": "0ee6cee9a40b6c149a07c7abfacbb60b0b3d615f7c40baf741ed1edf20c9d0a1",
+    "laser-on.json": "7cd38c906b53714fed475716590d103a0804e8e2ddfe8218e6024d8cc9686053",
+    "laser-on.log": "1e9e657a79617b115ec510be78fa85f9e9d81970f85ec4b68c26abfe8de72206",
+    "laser-off-b.json": "2b23f864df89fc27f0028db9c41eed425216d63fecfe440e1a6d5b8ab6792fd0",
+    "laser-off-b.log": "752e3d95f6448b7d06e3f0932c66ce0aa9568dff11bb83f6eb32cf83a1e5a09d",
+    "mixed-off-a.json": "6d06222215e766a1264b73616d912f748ff50c1f1155bd4c5ecb6143c43cebd5",
+    "mixed-off-a.log": "16bdd0f1b3af140bea1a2225ad96e270cd2f38062226ca818683030d41a9ac35",
+    "mixed-on.json": "8b41d1d273fba24c7403529c332c1173db7b954ba99656eaa39778c5f3a5ebe5",
+    "mixed-on.log": "02c297cd817222858a98960137a62604d126b88e4eb52f7371c520a36f1857e5",
+    "mixed-off-b.json": "e9fa98aa4d6259145aab8ea56e55edaa21e0f22be1dea66e4f0cd18b8d50ea62",
+    "mixed-off-b.log": "8d78f2631c1c89762cfd12dff1803ec1e2ac9a25fff698026750517bca568ccb",
+    "import-laser.log": "4dc3af1fd60283e31965ad6ce0a594bf064ab8fb2762db2dd2fc7ea569c9ad53",
+    "import-mixed.log": "4dc3af1fd60283e31965ad6ce0a594bf064ab8fb2762db2dd2fc7ea569c9ad53"
+  }
+}
