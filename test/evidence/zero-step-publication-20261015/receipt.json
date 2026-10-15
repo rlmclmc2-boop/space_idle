@@ -1,0 +1,53 @@
+{
+  "source_head": "bb5fc6ac4e6aff3e11d990a4e4b588093545434d",
+  "verified_production_ref": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "frozen_fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4",
+  "frozen_manifest_sha256": "c5ce1fdf8975f95862bdde368d179ecdadb4ac9ad36cab16a3b47f28dacfc724",
+  "driver_sha256": "f3fd330039c2fddb70d421d932ce015229ef857992bc4b0515c42802f349319f",
+  "ledger_sha256": "2cb0f08ef969b5fff1715485ad5953da98ca786f4899f6336a902bf7264ffd86",
+  "instrument_sha256": "6090e33c7e2c53399ac069c3b4b7ecfccc6e423fb96139888da86f084b999efa",
+  "runs": {
+    "mixed-off-a": {
+      "raw_sha256": "d852de405281cc635bfbd61056d5fa339e740350b43e55eae8c9d99de46230d7",
+      "log_sha256": "de17a7097b04aba60558c129625b6276301d3f7ac30dbe9b1c9f5c805a9ba40e",
+      "frames": 450,
+      "zero_step_frames": 212
+    },
+    "mixed-on": {
+      "raw_sha256": "e28e143ad805320e2a1f072d8510f4d73c1e158a2b2184e38a764d732e7abd9a",
+      "log_sha256": "bbfe4c46c9fd58a2849962b1a5f45fd685bbdaebba9b389c4fe28ad396dd6585",
+      "frames": 416,
+      "zero_step_frames": 179
+    },
+    "mixed-off-b": {
+      "raw_sha256": "d96031c8bcd97c6f56d468a5ea580f402e1b7e993fc1a4070bb2a1b390de5057",
+      "log_sha256": "593a5da4f34c4c754c3e89a3377f0587d327bb66f1930e3838c63c9c0f237e89",
+      "frames": 432,
+      "zero_step_frames": 194
+    }
+  },
+  "qa_patches": {
+    "battle_slice_runtime.gd": {
+      "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+      "qa_sha256": "bc21e56f0a07f55048788e0e7e00ac27985c8de91ea2e237a08c7efbd0232a64"
+    },
+    "main.gd": {
+      "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+      "qa_sha256": "9ed7c3ace97a6e31231c067a18bff458d1212ade7d09f3876967c66f8d6ce610"
+    },
+    "battlefield.gd": {
+      "source_sha256": "31ecb6e44c7a8aa87f38be64d1fa2b677636ba3188d7e881d91d84eaa363c95c",
+      "qa_sha256": "9e0e093629625a517717f16a767888fbcdb8eaf105baffc88cc9058bc8abd5b5"
+    },
+    "retained_enemy_contacts.gd": {
+      "source_sha256": "c26468e980d703b1fae4f211bd7082e4002ea6d885c85d1fa4054f36c65dc19e",
+      "qa_sha256": "c2c77da872051bdc87da48e46e60f31bcfa2de850e3a54fbd3574212f436e5eb"
+    }
+  },
+  "import_log_sha256": "8dca609351237522aebd872daf31182afcbce68bbee8104cceddf6e2b516c64d",
+  "failed_import_log_sha256": "6add2b8075d025617469c09530ef9b55c7f53e5a2e9b0b588305192b4f0671d4",
+  "other_gd_files_identical": 174,
+  "qa_project": "D:\\CodexBuild\\space_idle\\zero-step-publication-qa-20261015-repair\\space-battleship"
+}

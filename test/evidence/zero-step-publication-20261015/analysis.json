@@ -1,0 +1,344 @@
+{
+  "runs": {
+    "mixed-off-a": {
+      "frames": 450,
+      "steps": {
+        "0": 212,
+        "1": 236,
+        "2": 2
+      },
+      "mean_ms": 8.90384,
+      "p95_ms": 13.29,
+      "buckets": {
+        "zero": {
+          "frames": 212,
+          "mean_ms": 6.390802,
+          "p95_ms": 7.782,
+          "scope_calls": {
+            "advance_visuals": 212,
+            "apply_nodes": 212,
+            "battlefield_process": 212,
+            "draw_battle_core": 212,
+            "draw_battle_scene": 212,
+            "draw_particles": 424,
+            "dynamic_part_draw": 424,
+            "foreground_stage": 212,
+            "muzzle_draw": 212,
+            "refresh_draw_layers": 212,
+            "retained_sync": 212,
+            "snapshot": 212
+          },
+          "scope_ms_per_frame": {}
+        },
+        "one": {
+          "frames": 236,
+          "mean_ms": 11.102288,
+          "p95_ms": 14.146,
+          "scope_calls": {
+            "advance_visuals": 236,
+            "apply_nodes": 236,
+            "battlefield_process": 236,
+            "draw_battle_core": 236,
+            "draw_battle_scene": 236,
+            "draw_particles": 472,
+            "dynamic_part_draw": 472,
+            "foreground_stage": 236,
+            "muzzle_draw": 236,
+            "refresh_draw_layers": 236,
+            "retained_sync": 236,
+            "snapshot": 236
+          },
+          "scope_ms_per_frame": {}
+        },
+        "multi": {
+          "frames": 2,
+          "mean_ms": 15.869,
+          "p95_ms": 16.143,
+          "scope_calls": {
+            "advance_visuals": 2,
+            "apply_nodes": 2,
+            "battlefield_process": 2,
+            "draw_battle_core": 2,
+            "draw_battle_scene": 2,
+            "draw_particles": 4,
+            "dynamic_part_draw": 4,
+            "foreground_stage": 2,
+            "muzzle_draw": 2,
+            "refresh_draw_layers": 2,
+            "retained_sync": 2,
+            "snapshot": 2
+          },
+          "scope_ms_per_frame": {}
+        }
+      },
+      "zero_frame_wall_state_changes_vs_prior": {
+        "fx_time": 0,
+        "star_travel": 212,
+        "shake": 0,
+        "particle_count": 0,
+        "float_count": 7,
+        "scenery_time": 212
+      },
+      "zero_frames_with_prior": 212
+    },
+    "mixed-on": {
+      "frames": 416,
+      "steps": {
+        "0": 179,
+        "1": 234,
+        "2": 3
+      },
+      "mean_ms": 9.615005,
+      "p95_ms": 14.962,
+      "buckets": {
+        "zero": {
+          "frames": 179,
+          "mean_ms": 6.816704,
+          "p95_ms": 8.562,
+          "scope_calls": {
+            "advance_visuals": 179,
+            "apply_nodes": 179,
+            "battlefield_process": 179,
+            "draw_battle_core": 179,
+            "draw_battle_scene": 179,
+            "draw_particles": 358,
+            "dynamic_part_draw": 358,
+            "foreground_stage": 179,
+            "muzzle_draw": 179,
+            "refresh_draw_layers": 179,
+            "retained_sync": 179,
+            "snapshot": 179
+          },
+          "scope_ms_per_frame": {
+            "advance_visuals": 0.163603,
+            "apply_nodes": 0.06843,
+            "battlefield_process": 1.765246,
+            "draw_battle_core": 1.332,
+            "draw_battle_scene": 1.339581,
+            "draw_particles": 0.003279,
+            "dynamic_part_draw": 0.61624,
+            "foreground_stage": 0.601011,
+            "muzzle_draw": 0.087168,
+            "refresh_draw_layers": 0.31248,
+            "retained_sync": 0.611302,
+            "snapshot": 0.53
+          }
+        },
+        "one": {
+          "frames": 234,
+          "mean_ms": 11.662739,
+          "p95_ms": 15.826,
+          "scope_calls": {
+            "advance_visuals": 234,
+            "apply_nodes": 234,
+            "battlefield_process": 234,
+            "draw_battle_core": 234,
+            "draw_battle_scene": 234,
+            "draw_particles": 468,
+            "dynamic_part_draw": 468,
+            "foreground_stage": 234,
+            "muzzle_draw": 234,
+            "refresh_draw_layers": 234,
+            "retained_sync": 234,
+            "snapshot": 234
+          },
+          "scope_ms_per_frame": {
+            "advance_visuals": 0.272026,
+            "apply_nodes": 0.071568,
+            "battlefield_process": 5.971906,
+            "draw_battle_core": 1.386791,
+            "draw_battle_scene": 1.394697,
+            "draw_particles": 0.003513,
+            "dynamic_part_draw": 0.637765,
+            "foreground_stage": 0.62262,
+            "muzzle_draw": 0.105359,
+            "refresh_draw_layers": 0.374252,
+            "retained_sync": 0.630752,
+            "snapshot": 0.558756
+          }
+        },
+        "multi": {
+          "frames": 3,
+          "mean_ms": 16.857,
+          "p95_ms": 18.104,
+          "scope_calls": {
+            "advance_visuals": 3,
+            "apply_nodes": 3,
+            "battlefield_process": 3,
+            "draw_battle_core": 3,
+            "draw_battle_scene": 3,
+            "draw_particles": 6,
+            "dynamic_part_draw": 6,
+            "foreground_stage": 3,
+            "muzzle_draw": 3,
+            "refresh_draw_layers": 3,
+            "retained_sync": 3,
+            "snapshot": 3
+          },
+          "scope_ms_per_frame": {
+            "advance_visuals": 0.344,
+            "apply_nodes": 0.068667,
+            "battlefield_process": 11.767333,
+            "draw_battle_core": 1.288333,
+            "draw_battle_scene": 1.295333,
+            "draw_particles": 0.003333,
+            "dynamic_part_draw": 0.616333,
+            "foreground_stage": 0.548,
+            "muzzle_draw": 0.111,
+            "refresh_draw_layers": 0.294333,
+            "retained_sync": 0.614667,
+            "snapshot": 1.536333
+          }
+        }
+      },
+      "zero_frame_wall_state_changes_vs_prior": {
+        "fx_time": 0,
+        "star_travel": 179,
+        "shake": 0,
+        "particle_count": 0,
+        "float_count": 5,
+        "scenery_time": 179
+      },
+      "zero_frames_with_prior": 179
+    },
+    "mixed-off-b": {
+      "frames": 432,
+      "steps": {
+        "0": 194,
+        "1": 236,
+        "2": 2
+      },
+      "mean_ms": 9.21785,
+      "p95_ms": 13.62,
+      "buckets": {
+        "zero": {
+          "frames": 194,
+          "mean_ms": 6.580495,
+          "p95_ms": 7.71,
+          "scope_calls": {
+            "advance_visuals": 194,
+            "apply_nodes": 194,
+            "battlefield_process": 194,
+            "draw_battle_core": 194,
+            "draw_battle_scene": 194,
+            "draw_particles": 388,
+            "dynamic_part_draw": 388,
+            "foreground_stage": 194,
+            "muzzle_draw": 194,
+            "refresh_draw_layers": 194,
+            "retained_sync": 194,
+            "snapshot": 194
+          },
+          "scope_ms_per_frame": {}
+        },
+        "one": {
+          "frames": 236,
+          "mean_ms": 11.322597,
+          "p95_ms": 14.82,
+          "scope_calls": {
+            "advance_visuals": 236,
+            "apply_nodes": 236,
+            "battlefield_process": 236,
+            "draw_battle_core": 236,
+            "draw_battle_scene": 236,
+            "draw_particles": 472,
+            "dynamic_part_draw": 472,
+            "foreground_stage": 236,
+            "muzzle_draw": 236,
+            "refresh_draw_layers": 236,
+            "retained_sync": 236,
+            "snapshot": 236
+          },
+          "scope_ms_per_frame": {}
+        },
+        "multi": {
+          "frames": 2,
+          "mean_ms": 16.681,
+          "p95_ms": 17.299,
+          "scope_calls": {
+            "advance_visuals": 2,
+            "apply_nodes": 2,
+            "battlefield_process": 2,
+            "draw_battle_core": 2,
+            "draw_battle_scene": 2,
+            "draw_particles": 4,
+            "dynamic_part_draw": 4,
+            "foreground_stage": 2,
+            "muzzle_draw": 2,
+            "refresh_draw_layers": 2,
+            "retained_sync": 2,
+            "snapshot": 2
+          },
+          "scope_ms_per_frame": {}
+        }
+      },
+      "zero_frame_wall_state_changes_vs_prior": {
+        "fx_time": 0,
+        "star_travel": 194,
+        "shake": 0,
+        "particle_count": 0,
+        "float_count": 3,
+        "scenery_time": 194
+      },
+      "zero_frames_with_prior": 194
+    }
+  },
+  "controls": {
+    "overall": {
+      "off_a_ms": 8.90384,
+      "timer_on_ms": 9.615005,
+      "off_b_ms": 9.21785,
+      "on_minus_off_midpoint_ms": 0.55416,
+      "off_off_drift_ms": 0.31401
+    },
+    "zero": {
+      "off_a_ms": 6.390802,
+      "timer_on_ms": 6.816704,
+      "off_b_ms": 6.580495,
+      "on_minus_off_midpoint_ms": 0.331055,
+      "off_off_drift_ms": 0.189693
+    },
+    "one": {
+      "off_a_ms": 11.102288,
+      "timer_on_ms": 11.662739,
+      "off_b_ms": 11.322597,
+      "on_minus_off_midpoint_ms": 0.450297,
+      "off_off_drift_ms": 0.220309
+    }
+  },
+  "bounds": {
+    "zero_step_fraction": 0.430288,
+    "snapshot_apply_gross_ms_per_zero_frame": 0.59843,
+    "snapshot_apply_gross_ms_per_all_frame": 0.257498,
+    "generous_plus_full_retained_sync_ms_per_zero_frame": 1.209732,
+    "generous_plus_full_retained_sync_ms_per_all_frame": 0.520534,
+    "generous_margin_above_0_5_ms_per_all_frame": 0.020534,
+    "required_gross_recovery_fraction_before_guard": 0.960553,
+    "excluded_dynamic_foreground_ms_per_zero_frame": 0.601011,
+    "excluded_dynamic_part_draw_ms_per_zero_frame": 0.61624,
+    "static_part_draw_calls_all_arms": 0
+  },
+  "source_attestation": {
+    "other_gd_files_identical": 174,
+    "qa_patches": {
+      "battle_slice_runtime.gd": {
+        "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+        "qa_sha256": "bc21e56f0a07f55048788e0e7e00ac27985c8de91ea2e237a08c7efbd0232a64"
+      },
+      "main.gd": {
+        "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+        "qa_sha256": "9ed7c3ace97a6e31231c067a18bff458d1212ade7d09f3876967c66f8d6ce610"
+      },
+      "battlefield.gd": {
+        "source_sha256": "31ecb6e44c7a8aa87f38be64d1fa2b677636ba3188d7e881d91d84eaa363c95c",
+        "qa_sha256": "9e0e093629625a517717f16a767888fbcdb8eaf105baffc88cc9058bc8abd5b5"
+      },
+      "retained_enemy_contacts.gd": {
+        "source_sha256": "c26468e980d703b1fae4f211bd7082e4002ea6d885c85d1fa4054f36c65dc19e",
+        "qa_sha256": "c2c77da872051bdc87da48e46e60f31bcfa2de850e3a54fbd3574212f436e5eb"
+      }
+    },
+    "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+    "fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+  }
+}
