@@ -1,0 +1,14 @@
+{
+  "production_ref": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "precheck_head": "9f39a296df55f61aa1ed7f846470d3b31ed848e2",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "frozen_fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4",
+  "script_sha256": "6a715b88e43db3331195846bc9578ab197badb1bd454768d0cb1aaaaa39308ef",
+  "raw_sha256": "5259c9d6f530a02006f5e107c05d54d24d2fba2a3695931271b215830ae795e7",
+  "success_log_sha256": "3b65c7ed402308377935e4208ac0a39c13044bfa4da1bbc75314f4cee24e76d5",
+  "failed_log_sha256": "ba79eddcb218915bb34dce9592950ec0d3159c2c3a07a2b7d0d0640949aca70e",
+  "rendered_frames": 12,
+  "logical_steps": 22,
+  "production_files_changed": false,
+  "performance_comparison": false
+}
