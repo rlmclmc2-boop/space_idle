@@ -32,3 +32,18 @@ All values are **ms per indicated call**, arithmetic mean over 480 logical steps
 Full busy frames remain above 10 ms. The mixed control drift is 0.462 ms in mean; the pulse drift is 0.065 ms. This experiment does not establish an optimization gain. It only locates the broad cost ceiling. All six runs completed 480 sample steps at actual 1x with identical fires, hits, events, purchases, logical player/enemy/projectile state, compact membership, kernel metrics and RNG **state** within each fixture. Frame counts and purchase frame indices naturally vary under uncapped rendering. The kernel RNG object's initial `seed` field is run-specific while its state and resulting gameplay match; therefore whole `kernel_hash` differs. No scripts or DLL were changed in the branch.
 
 Priority for any later *authorized* design work is feedback retrieval/event dispatch: it is the sole isolated top-level path with a large ceiling in both fixtures (1.77 / 3.13 ms per logical step). These measurements do not divide retrieval, allocation and handlers, and do not justify suppressing events or changing cadence. Next broad ceilings are mixed remaining battle draw (0.75 ms per displayed frame), shared clock (0.59 / 0.57 ms per step), geometry preparation (0.54 / 0.53 ms per step), and snapshot (~0.5 ms per displayed frame); each needs a specific correct design and whole-frame net gain above control drift before retention. Missile-only savings cannot be inferred from this run.
+
+## Feedback boundary follow-up
+
+`feedback-boundary/` holds one additional QA-only run per existing fixture. It brackets `kernel.take_feedback()` once per logical step, inside the existing `consume_feedback` wrapper. Same accepted DLL; 480 steps, same fires/hits/events/purchases/kernel metrics/RNG state as the earlier on run. No per-hit timing. The full complement still includes all required event handling and profiler overhead.
+
+| Fixture | `take_feedback` ms/step | Remaining `consume_feedback` ms/step | Hits / step | Mean visible floats |
+|---|---:|---:|---:|---:|
+| Mixed | 0.237 | 1.566 | 27.19 | 15.98 |
+| Pulse laser | 0.430 | 2.720 | 38.41 | 15.98 |
+
+These are gross inclusive boundaries, not removable budget. The older `b8c7f3e6` feedback probe separately measured native take 0.202 ms/rendered frame, script payload 0.240, emit 2.358, and battlefield listener 1.292 on an older fixture. Its final-payload candidate gained only 0.220 ms against its faster control and was rejected. This follow-up does not reopen that route.
+
+The old `bc03d74a` damage localization measured `damage.hit_lookup` 0.198 ms/rendered frame with 6,520 hits across 240 steps, about 4.86 visible floats and an older display policy. Current fixtures have about 16 visible floats with 13,050 / 18,436 hits across 480 steps. Scaling that old lookup by hit and float counts suggests roughly 0.65 / 0.91 ms per logical step, or 0.35 / 0.44 ms per *uncapped displayed frame*. This is only a rough operation-count projection: matching often stops early, the old probe adds clock overhead, and current summary semantics differ. It cannot establish a 0.5 ms whole-frame gain or cap the current lookup cost. A semantically exact candidate must beat its own unwrapped control before retention.
+
+The earlier timer-off arms still call a wrapper, `QACost.begin()` and `QACost.finish()` on each scope; timer-on additionally reads clocks and records rows. Thus off/on/off estimates the **incremental enabled-timer** effect plus run drift. It is not an uninstrumented production baseline, and the inclusive scope means above contain fixed wrapper overhead. No claim of exact probe-free cost follows from these numbers.

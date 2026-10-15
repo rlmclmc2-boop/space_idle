@@ -1,0 +1,78 @@
+{
+  "source_head": "fa13755ae107028dfb65bc4b5978edbc0ff3376c",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "scope": "Only the native take_feedback call receives one extra timestamp pair per logical step. The outer consume_feedback wrapper from the earlier cost probe remains. No per-hit clock, behavior edit, or new project.",
+  "runs": [
+    {
+      "label": "mixed",
+      "patches": {
+        "battle_slice_runtime.gd": {
+          "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+          "qa_sha256": "44440610383f9ff943b98a2cb65a08e5846d66d47dfb677e6396c58e97d329d8"
+        },
+        "simulation_geometry_authority.gd": {
+          "source_sha256": "5f3fa7a398782a6d3d902448cc24c522003602b8feb860ce2e4fd1cd40d9fa6e",
+          "qa_sha256": "835d830814139f34dc4128931b57c21efe2be216fe0eb72b4840c6ec7e4f2ae5"
+        },
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "f9d183ae98724db6d7c0e2b60bad19680b253ae0b3edf7328cec50d6931b05fb"
+        },
+        "game.gd": {
+          "source_sha256": "f442a398135874e37beb767de43a393342d9e23c3cd1c3848de9b6d7d30273cd",
+          "qa_sha256": "03dfd4a3813312829bd2b90279ce19c9c041eee0a4ed348b0f7e7b1a8945d538"
+        },
+        "presented_battle_game.gd": {
+          "source_sha256": "5103b23ea537e30ad3cb8d55710bc0ef35c244f769e8ad2aedf821e2589356e3",
+          "qa_sha256": "c68ba67f33042844c01592630b338f381b54a5a929a7f7d456784f763b0af45e"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "948daa186806c1dcc291ab6e6d592babfca50819a4eb91981ab45fa1d39b6100"
+        }
+      },
+      "qa_session_sha256": "ab406da003c20ce727839434140d803ef86b5f6dd62cdb667932c557d3f25163",
+      "qa_driver_sha256": "4516092ef3b79052f8d1c1f0ecdc4adbadfaf1c5e3e9f4ec65d7c9e3ec100d07",
+      "raw_sha256": "1181d9b01a4b671910bfdeb0c0de8b86a756a60bf8a488549f41c400a1edb202",
+      "gzip_sha256": "96696ac2acad0c5d85a9d78f968bbb2d2333b7e42e4b38d84f53762e363e8393",
+      "import_log_sha256": "fc979a44856d2ff9eb971648218ca629a82236a21b6eb0d101067ca8775d5ed9",
+      "log_sha256": "3323969dd25690bde02d7508fe7aad14d200614ab870c734d322f4ee678f84b5"
+    },
+    {
+      "label": "laser",
+      "patches": {
+        "battle_slice_runtime.gd": {
+          "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+          "qa_sha256": "44440610383f9ff943b98a2cb65a08e5846d66d47dfb677e6396c58e97d329d8"
+        },
+        "simulation_geometry_authority.gd": {
+          "source_sha256": "5f3fa7a398782a6d3d902448cc24c522003602b8feb860ce2e4fd1cd40d9fa6e",
+          "qa_sha256": "835d830814139f34dc4128931b57c21efe2be216fe0eb72b4840c6ec7e4f2ae5"
+        },
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "f9d183ae98724db6d7c0e2b60bad19680b253ae0b3edf7328cec50d6931b05fb"
+        },
+        "game.gd": {
+          "source_sha256": "f442a398135874e37beb767de43a393342d9e23c3cd1c3848de9b6d7d30273cd",
+          "qa_sha256": "03dfd4a3813312829bd2b90279ce19c9c041eee0a4ed348b0f7e7b1a8945d538"
+        },
+        "presented_battle_game.gd": {
+          "source_sha256": "5103b23ea537e30ad3cb8d55710bc0ef35c244f769e8ad2aedf821e2589356e3",
+          "qa_sha256": "c68ba67f33042844c01592630b338f381b54a5a929a7f7d456784f763b0af45e"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "948daa186806c1dcc291ab6e6d592babfca50819a4eb91981ab45fa1d39b6100"
+        }
+      },
+      "qa_session_sha256": "ab406da003c20ce727839434140d803ef86b5f6dd62cdb667932c557d3f25163",
+      "qa_driver_sha256": "4516092ef3b79052f8d1c1f0ecdc4adbadfaf1c5e3e9f4ec65d7c9e3ec100d07",
+      "raw_sha256": "d9e63a7b9d6ea4764911b44c4af42a06bd94f03b108e33d6021274930714df2e",
+      "gzip_sha256": "237afe00c2703fb45c0872a742da207126daeb5562ba19084d98b205d5e9bf58",
+      "import_log_sha256": "fc979a44856d2ff9eb971648218ca629a82236a21b6eb0d101067ca8775d5ed9",
+      "log_sha256": "56edc8343dae2640d5c784e0f905207906f5993265306e579140b02ac4ba1fbb"
+    }
+  ]
+}
