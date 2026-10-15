@@ -24,7 +24,19 @@ const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
 var scenery_material_route := ""
-const OPENING_SCENERY := [preload("res://assets/backgrounds/opening/stage_01.png"),preload("res://assets/backgrounds/opening/stage_02.png")]
+# Immutable preload set: stage changes bind an existing texture; frames only update UV progress.
+const OPENING_SCENERY := [
+	preload("res://assets/backgrounds/opening/stage_01.png"),
+	preload("res://assets/backgrounds/opening/stage_02.png"),
+	preload("res://assets/backgrounds/opening/stage_03.png"),
+	preload("res://assets/backgrounds/opening/stage_04.png"),
+	preload("res://assets/backgrounds/opening/stage_05.png"),
+	preload("res://assets/backgrounds/opening/stage_06.png"),
+	preload("res://assets/backgrounds/opening/stage_07.png"),
+	preload("res://assets/backgrounds/opening/stage_08.png"),
+	preload("res://assets/backgrounds/opening/stage_09.png"),
+	preload("res://assets/backgrounds/opening/stage_10.png"),
+]
 const OPENING_TEXTURE_GUTTER := 2.0 # Offline tile edge padding; preserves bilinear seams.
 var opening_scenery_stage := -1
 var opening_scenery_progress := -1.0
