@@ -1,0 +1,698 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] on_pre_draw (res://render_driver.gd:34)
+SCRIPT ERROR: Invalid call. Nonexistent function 'get_viewport_rid' in base 'previously freed'.
+   at: read_render (res://render_driver.gd:40)
+   GDScript backtrace (most recent call first):
+       [0] read_render (res://render_driver.gd:40)
+       [1] run (res://render_driver.gd:125)
+RENDER_ATTRIBUTION {"frames":47,"run":"mixed-on","sample_steps":245,"timer":"on","valid":47,"viewports":21}
+
+================================================================
+CrashHandlerException: Program crashed with signal 11
+Engine version: Godot Engine v4.7.2.stable.official (ed1daf0bf001b61586d9930840f2f1394092c079)
+Dumping the backtrace. Please include this when reporting the bug on: https://github.com/godotengine/godot/issues
+Load address: 7ff58cf00000
+
+[1] 7ff6d0fd4d61 (main+40d4d61) - no debug info in PE/COFF executable
+[2] 7ffa5049c875 (ntdll.dll+8c875) - no debug info in PE/COFF executable
+[3] 7ffa504b241e (ntdll.dll+a241e) - no debug info in PE/COFF executable
+[4] 7ffa504614a3 (ntdll.dll+514a3) - no debug info in PE/COFF executable
+[5] 7ffa504b0f4d (ntdll.dll+a0f4d) - no debug info in PE/COFF executable
+[6] 7ff6d0a9c454 (main+3b9c454) - no debug info in PE/COFF executable
+[7] 7ff6cd553b25 (main+653b25) - no debug info in PE/COFF executable
+[8] 7ff6cd434797 (main+534797) - no debug info in PE/COFF executable
+[9] 7ff6d0d1803e (main+3e1803e) - no debug info in PE/COFF executable
+[10] 7ff6d0a9c471 (main+3b9c471) - no debug info in PE/COFF executable
+[11] 7ff6cd553b25 (main+653b25) - no debug info in PE/COFF executable
+[12] 7ff6cd434797 (main+534797) - no debug info in PE/COFF executable
+[13] 7ff6d0d1803e (main+3e1803e) - no debug info in PE/COFF executable
+[14] 7ff6d0a2d0dd (main+3b2d0dd) - no debug info in PE/COFF executable
+[15] 7ff6d0d2519a (main+3e2519a) - no debug info in PE/COFF executable
+[16] 7ff6d028519d (main+338519d) - no debug info in PE/COFF executable
+[17] 7ff6ccf5dba1 (main+5dba1) - no debug info in PE/COFF executable
+[18] 7ff6ccf02ef0 (main+2ef0) - no debug info in PE/COFF executable
+[19] 7ff6ccf52b41 (main+52b41) - no debug info in PE/COFF executable
+[20] 7ff6ccf52b7d (main+52b7d) - no debug info in PE/COFF executable
+[21] 7ff6ccf010c8 (main+10c8) - no debug info in PE/COFF executable
+[22] 7ff6ccf013f5 (main+13f5) - no debug info in PE/COFF executable
+[23] 7ffa4fc974b3 (kernel32.dll+174b3) - no debug info in PE/COFF executable
+[24] 7ffa504626a0 (ntdll.dll+526a0) - no debug info in PE/COFF executable
+[25] -1 (main+-7ff6ccf00001) - no debug info in PE/COFF executable
+-- END OF C++ BACKTRACE --
+================================================================
+GDScript backtrace (most recent call first):
+    [0] read_render (res://render_driver.gd:40)
+    [1] on_pre_draw (res://render_driver.gd:34)
+-- END OF GDSCRIPT BACKTRACE --
+================================================================

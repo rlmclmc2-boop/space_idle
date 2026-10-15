@@ -1,0 +1,58 @@
+{
+  "source_head": "aa0d9e34b8363517cdc71391f05abbd5a4c08361",
+  "verified_production_ref": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "frozen_fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4",
+  "frozen_manifest_sha256": "c5ce1fdf8975f95862bdde368d179ecdadb4ac9ad36cab16a3b47f28dacfc724",
+  "driver_sha256": "fb19944578a13faff8069f15ecc67ef79b6c7c3baf4822851231c6af54311212",
+  "ledger_sha256": "4cea721d2f1acc81c4837f66f0208a29949bd9c1653fc9a5eaceb68f815d7db8",
+  "instrument_sha256": "642098f15b18fe79885a7cbec55efefa68c44cc35f6d8d1c45aae07ac2898d90",
+  "runs": {
+    "mixed-off-a": {
+      "raw_sha256": "124c3a4d96f868aed17a067df0eddccb6d20fa6c9c8aa834b78a1c8b18d714b5",
+      "log_sha256": "46a36a8a567048303db551704e8e5a1f7c25a686489519f79f778f25a26deaba",
+      "frames": 460,
+      "zero_step_frames": 223
+    },
+    "mixed-on": {
+      "raw_sha256": "8656b21c6278590cde0c10bf2452ed87e2b9195005800dc68a816aab00824d89",
+      "log_sha256": "81f6636b7acd17cfe942c8faf2fe4c4e70433b5471eba488adaf91ed1557cc83",
+      "frames": 438,
+      "zero_step_frames": 202
+    },
+    "mixed-off-b": {
+      "raw_sha256": "c259247ff13834b8cfb6c4b25c4cd003750dca34e98c577f49d297cae801db0b",
+      "log_sha256": "ce03a8a550debd7ff10f3eadb7196b4813b291b001ce0037e07ef773fbc35175",
+      "frames": 457,
+      "zero_step_frames": 220
+    }
+  },
+  "qa_patches": {
+    "main.gd": {
+      "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+      "qa_sha256": "548580d02c12cf3d85836f9be8c6ac88258d66d527aa7a55be5f42e828e1d82e"
+    },
+    "battlefield.gd": {
+      "source_sha256": "31ecb6e44c7a8aa87f38be64d1fa2b677636ba3188d7e881d91d84eaa363c95c",
+      "qa_sha256": "f173f83ba390264cb9135cfa7b90739d3dce6fdbb67614910a071c8756a07475"
+    },
+    "retained_enemy_contacts.gd": {
+      "source_sha256": "c26468e980d703b1fae4f211bd7082e4002ea6d885c85d1fa4054f36c65dc19e",
+      "qa_sha256": "75a0052197486757d5b53aa39f4278e183a5ec731101e7cd5cafe9b7140376c1"
+    }
+  },
+  "import_log_sha256": "8dca609351237522aebd872daf31182afcbce68bbee8104cceddf6e2b516c64d",
+  "api_probe_sha256": "86f79d71222c7ad96b13761cf6918e010af2d0ba51c9ac4203261e5c0ea2a62d",
+  "api_probe_log_sha256": "3341457cc30d47b15bdfb46e72ed9a9d25759b2b33cb0c63534d66d83c6d4adc",
+  "other_gd_files_identical": 175,
+  "failed_logs_sha256": {
+    "failed-off-a.log": "57390f8b373d7f99bb3ab14893520bbf2eae50f3eea04a341f5e613d6f0a8480",
+    "failed-import.log": "8dca609351237522aebd872daf31182afcbce68bbee8104cceddf6e2b516c64d",
+    "failed2-off-a.log": "35fc48ab0a756620b5920b1bfb688a37979c93e1cd9946143de184da81b0df15",
+    "failed2-on.log": "695b71ce308b227580dd14c187f40cea809c05c278ffba0ba3571ae737223454",
+    "failed2-import.log": "8dca609351237522aebd872daf31182afcbce68bbee8104cceddf6e2b516c64d",
+    "failed2-off-a.json": "2ec27bd2a1474b862acd0f00a327d364a9d3e95dd0a04d43ebba9f0c15f2c398",
+    "failed2-progress.json": "b3466d32df97484b621e01921d4368a8630c4a5b52d79d0b08ea5246e72db846"
+  }
+}

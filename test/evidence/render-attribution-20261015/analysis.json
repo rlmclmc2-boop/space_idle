@@ -1,0 +1,639 @@
+{
+  "runs": {
+    "mixed-off-a": {
+      "steps": {
+        "0": 223,
+        "1": 234,
+        "2": 3
+      },
+      "buckets": {
+        "zero": {
+          "frames": 223,
+          "frame_mean_ms": 6.217345,
+          "frame_p95_ms": 7.094,
+          "phase_mean_ms": {
+            "post_to_main": 0.051278,
+            "main": 1.563919,
+            "main_to_pre": 2.038933,
+            "pre_to_post": 2.563215
+          },
+          "draw_calls": {
+            "layer_1": 223,
+            "layer_4": 223,
+            "pulse_layer": 223,
+            "retained_foreground": 223,
+            "retained_foreground_overlay": 223
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        },
+        "one": {
+          "frames": 234,
+          "frame_mean_ms": 10.914419,
+          "frame_p95_ms": 13.74,
+          "phase_mean_ms": {
+            "post_to_main": 0.056906,
+            "main": 5.558098,
+            "main_to_pre": 2.543517,
+            "pre_to_post": 2.755897
+          },
+          "draw_calls": {
+            "layer_1": 234,
+            "layer_4": 234,
+            "layer_5": 96,
+            "pulse_layer": 234,
+            "retained_foreground": 234,
+            "retained_foreground_overlay": 234
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        },
+        "multi": {
+          "frames": 3,
+          "frame_mean_ms": 16.038333,
+          "frame_p95_ms": 17.017,
+          "phase_mean_ms": {
+            "post_to_main": 0.056,
+            "main": 11.109333,
+            "main_to_pre": 2.200333,
+            "pre_to_post": 2.672667
+          },
+          "draw_calls": {
+            "layer_1": 3,
+            "layer_4": 3,
+            "pulse_layer": 3,
+            "retained_foreground": 3,
+            "retained_foreground_overlay": 3
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        },
+        "all": {
+          "frames": 460,
+          "frame_mean_ms": 8.670776,
+          "frame_p95_ms": 13.239,
+          "phase_mean_ms": {
+            "post_to_main": 0.054172,
+            "main": 3.657993,
+            "main_to_pre": 2.296665,
+            "pre_to_post": 2.661946
+          },
+          "draw_calls": {
+            "layer_1": 460,
+            "layer_4": 460,
+            "layer_5": 96,
+            "pulse_layer": 460,
+            "retained_foreground": 460,
+            "retained_foreground_overlay": 460
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        }
+      },
+      "viewport_inventory": [
+        {
+          "class": "Window",
+          "path": "/root",
+          "rid_valid": true,
+          "size": "(1373, 883)",
+          "update_mode": -1,
+          "visible": true
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "rid_valid": true,
+          "size": "(572, 960)",
+          "update_mode": 4,
+          "visible": null
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Planets/@Node@2203/@SubViewport@2204",
+          "rid_valid": true,
+          "size": "(1024, 256)",
+          "update_mode": 0,
+          "visible": null
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@PanelContainer@2275/@VBoxContainer@2276/@PanelContainer@2369/@Control@2370/@Control@2371/@SubViewport@2373",
+          "rid_valid": true,
+          "size": "(185, 203)",
+          "update_mode": 0,
+          "visible": null
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@AcceptDialog@2303",
+          "rid_valid": true,
+          "size": "(100, 100)",
+          "update_mode": -1,
+          "visible": false
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@AcceptDialog@2415",
+          "rid_valid": true,
+          "size": "(100, 100)",
+          "update_mode": -1,
+          "visible": false
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Hyperspace/@AcceptDialog@2930",
+          "rid_valid": true,
+          "size": "(860, 520)",
+          "update_mode": -1,
+          "visible": false
+        }
+      ]
+    },
+    "mixed-on": {
+      "steps": {
+        "0": 202,
+        "1": 233,
+        "2": 2,
+        "3": 1
+      },
+      "buckets": {
+        "zero": {
+          "frames": 202,
+          "frame_mean_ms": 6.580896,
+          "frame_p95_ms": 7.599,
+          "phase_mean_ms": {
+            "post_to_main": 0.083109,
+            "main": 1.653708,
+            "main_to_pre": 2.125599,
+            "pre_to_post": 2.71848
+          },
+          "draw_calls": {
+            "layer_1": 202,
+            "layer_4": 202,
+            "pulse_layer": 202,
+            "retained_foreground": 202,
+            "retained_foreground_overlay": 202
+          },
+          "draw_scope_ms_per_frame": {
+            "layer_1": 0.014574,
+            "layer_4": 1.303366,
+            "pulse_layer": 0.084099,
+            "retained_foreground": 0.504371,
+            "retained_foreground_overlay": 0.091688
+          },
+          "draw_scope_total_ms_per_frame": 1.998099,
+          "render_reported_at_post": {
+            "/root": {
+              "nonzero": 201,
+              "cpu_mean_ms": 1.652632,
+              "gpu_mean_ms": 0.408776
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 201,
+              "cpu_mean_ms": 0.744637,
+              "gpu_mean_ms": 1.684861
+            }
+          },
+          "render_if_one_frame_delayed": {
+            "/root": {
+              "nonzero": 202,
+              "cpu_mean_ms": 1.671327,
+              "gpu_mean_ms": 0.414045
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 202,
+              "cpu_mean_ms": 0.757634,
+              "gpu_mean_ms": 1.69995
+            }
+          },
+          "setup_cpu_mean_ms": 0.019752,
+          "query_pre_post_mean_ms": 0.042203
+        },
+        "one": {
+          "frames": 233,
+          "frame_mean_ms": 11.271258,
+          "frame_p95_ms": 13.911,
+          "phase_mean_ms": {
+            "post_to_main": 0.088219,
+            "main": 5.783408,
+            "main_to_pre": 2.609361,
+            "pre_to_post": 2.79027
+          },
+          "draw_calls": {
+            "layer_1": 233,
+            "layer_4": 233,
+            "layer_5": 96,
+            "pulse_layer": 233,
+            "retained_foreground": 233,
+            "retained_foreground_overlay": 233
+          },
+          "draw_scope_ms_per_frame": {
+            "layer_1": 0.016163,
+            "layer_4": 1.323382,
+            "layer_5": 0.320369,
+            "pulse_layer": 0.099648,
+            "retained_foreground": 0.510391,
+            "retained_foreground_overlay": 0.085549
+          },
+          "draw_scope_total_ms_per_frame": 2.355502,
+          "render_reported_at_post": {
+            "/root": {
+              "nonzero": 229,
+              "cpu_mean_ms": 1.672306,
+              "gpu_mean_ms": 0.413419
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 229,
+              "cpu_mean_ms": 0.761904,
+              "gpu_mean_ms": 1.701952
+            }
+          },
+          "render_if_one_frame_delayed": {
+            "/root": {
+              "nonzero": 228,
+              "cpu_mean_ms": 1.655934,
+              "gpu_mean_ms": 0.408842
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 228,
+              "cpu_mean_ms": 0.749877,
+              "gpu_mean_ms": 1.689316
+            }
+          },
+          "setup_cpu_mean_ms": 0.035395,
+          "query_pre_post_mean_ms": 0.04476
+        },
+        "multi": {
+          "frames": 3,
+          "frame_mean_ms": 17.798667,
+          "frame_p95_ms": 21.108,
+          "phase_mean_ms": {
+            "post_to_main": 0.078,
+            "main": 12.772667,
+            "main_to_pre": 2.288,
+            "pre_to_post": 2.66
+          },
+          "draw_calls": {
+            "layer_1": 3,
+            "layer_4": 3,
+            "pulse_layer": 3,
+            "retained_foreground": 3,
+            "retained_foreground_overlay": 3
+          },
+          "draw_scope_ms_per_frame": {
+            "layer_1": 0.017333,
+            "layer_4": 1.258,
+            "pulse_layer": 0.105333,
+            "retained_foreground": 0.491667,
+            "retained_foreground_overlay": 0.082333
+          },
+          "draw_scope_total_ms_per_frame": 1.954667,
+          "render_reported_at_post": {
+            "/root": {
+              "nonzero": 2,
+              "cpu_mean_ms": 1.66,
+              "gpu_mean_ms": 0.3605
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 2,
+              "cpu_mean_ms": 0.7425,
+              "gpu_mean_ms": 1.7245
+            }
+          },
+          "render_if_one_frame_delayed": {
+            "/root": {
+              "nonzero": 2,
+              "cpu_mean_ms": 1.648,
+              "gpu_mean_ms": 0.3525
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 2,
+              "cpu_mean_ms": 0.8095,
+              "gpu_mean_ms": 1.6495
+            }
+          },
+          "setup_cpu_mean_ms": 0.036667,
+          "query_pre_post_mean_ms": 0.044667
+        },
+        "all": {
+          "frames": 438,
+          "frame_mean_ms": 9.152831,
+          "frame_p95_ms": 13.237,
+          "phase_mean_ms": {
+            "post_to_main": 0.085792,
+            "main": 3.926715,
+            "main_to_pre": 2.384055,
+            "pre_to_post": 2.756269
+          },
+          "draw_calls": {
+            "layer_1": 438,
+            "layer_4": 438,
+            "layer_5": 96,
+            "pulse_layer": 438,
+            "retained_foreground": 438,
+            "retained_foreground_overlay": 438
+          },
+          "draw_scope_ms_per_frame": {
+            "layer_1": 0.015438,
+            "layer_4": 1.313703,
+            "layer_5": 0.170425,
+            "pulse_layer": 0.092516,
+            "retained_foreground": 0.507486,
+            "retained_foreground_overlay": 0.088358
+          },
+          "draw_scope_total_ms_per_frame": 2.187927,
+          "render_reported_at_post": {
+            "/root": {
+              "nonzero": 432,
+              "cpu_mean_ms": 1.663095,
+              "gpu_mean_ms": 0.411014
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 432,
+              "cpu_mean_ms": 0.75378,
+              "gpu_mean_ms": 1.694104
+            }
+          },
+          "render_if_one_frame_delayed": {
+            "/root": {
+              "nonzero": 432,
+              "cpu_mean_ms": 1.663095,
+              "gpu_mean_ms": 0.411014
+            },
+            "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport": {
+              "nonzero": 432,
+              "cpu_mean_ms": 0.75378,
+              "gpu_mean_ms": 1.694104
+            }
+          },
+          "setup_cpu_mean_ms": 0.028189,
+          "query_pre_post_mean_ms": 0.04358
+        }
+      },
+      "viewport_inventory": [
+        {
+          "class": "Window",
+          "path": "/root",
+          "rid_valid": true,
+          "size": "(1373, 883)",
+          "update_mode": -1,
+          "visible": true
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "rid_valid": true,
+          "size": "(572, 960)",
+          "update_mode": 4,
+          "visible": null
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Planets/@Node@2203/@SubViewport@2204",
+          "rid_valid": true,
+          "size": "(1024, 256)",
+          "update_mode": 0,
+          "visible": null
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@PanelContainer@2275/@VBoxContainer@2276/@PanelContainer@2369/@Control@2370/@Control@2371/@SubViewport@2373",
+          "rid_valid": true,
+          "size": "(185, 203)",
+          "update_mode": 0,
+          "visible": null
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@AcceptDialog@2303",
+          "rid_valid": true,
+          "size": "(100, 100)",
+          "update_mode": -1,
+          "visible": false
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@AcceptDialog@2415",
+          "rid_valid": true,
+          "size": "(100, 100)",
+          "update_mode": -1,
+          "visible": false
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Hyperspace/@AcceptDialog@2930",
+          "rid_valid": true,
+          "size": "(860, 520)",
+          "update_mode": -1,
+          "visible": false
+        }
+      ]
+    },
+    "mixed-off-b": {
+      "steps": {
+        "0": 220,
+        "1": 234,
+        "2": 3
+      },
+      "buckets": {
+        "zero": {
+          "frames": 220,
+          "frame_mean_ms": 6.278695,
+          "frame_p95_ms": 7.355,
+          "phase_mean_ms": {
+            "post_to_main": 0.052105,
+            "main": 1.579955,
+            "main_to_pre": 2.05555,
+            "pre_to_post": 2.591086
+          },
+          "draw_calls": {
+            "layer_1": 220,
+            "layer_4": 220,
+            "pulse_layer": 220,
+            "retained_foreground": 220,
+            "retained_foreground_overlay": 220
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        },
+        "one": {
+          "frames": 234,
+          "frame_mean_ms": 10.982436,
+          "frame_p95_ms": 13.963,
+          "phase_mean_ms": {
+            "post_to_main": 0.056902,
+            "main": 5.619017,
+            "main_to_pre": 2.56338,
+            "pre_to_post": 2.743137
+          },
+          "draw_calls": {
+            "layer_1": 234,
+            "layer_4": 234,
+            "layer_5": 96,
+            "pulse_layer": 234,
+            "retained_foreground": 234,
+            "retained_foreground_overlay": 234
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        },
+        "multi": {
+          "frames": 3,
+          "frame_mean_ms": 16.790333,
+          "frame_p95_ms": 18.175,
+          "phase_mean_ms": {
+            "post_to_main": 0.059667,
+            "main": 11.671667,
+            "main_to_pre": 2.406,
+            "pre_to_post": 2.653
+          },
+          "draw_calls": {
+            "layer_1": 3,
+            "layer_4": 3,
+            "pulse_layer": 3,
+            "retained_foreground": 3,
+            "retained_foreground_overlay": 3
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        },
+        "all": {
+          "frames": 457,
+          "frame_mean_ms": 8.756179,
+          "frame_p95_ms": 13.035,
+          "phase_mean_ms": {
+            "post_to_main": 0.054611,
+            "main": 3.714344,
+            "main_to_pre": 2.317877,
+            "pre_to_post": 2.669348
+          },
+          "draw_calls": {
+            "layer_1": 457,
+            "layer_4": 457,
+            "layer_5": 96,
+            "pulse_layer": 457,
+            "retained_foreground": 457,
+            "retained_foreground_overlay": 457
+          },
+          "draw_scope_ms_per_frame": {},
+          "draw_scope_total_ms_per_frame": 0.0
+        }
+      },
+      "viewport_inventory": [
+        {
+          "class": "Window",
+          "path": "/root",
+          "rid_valid": true,
+          "size": "(1373, 883)",
+          "update_mode": -1,
+          "visible": true
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "rid_valid": true,
+          "size": "(572, 960)",
+          "update_mode": 4,
+          "visible": null
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Planets/@Node@2203/@SubViewport@2204",
+          "rid_valid": true,
+          "size": "(1024, 256)",
+          "update_mode": 0,
+          "visible": null
+        },
+        {
+          "class": "SubViewport",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@PanelContainer@2275/@VBoxContainer@2276/@PanelContainer@2369/@Control@2370/@Control@2371/@SubViewport@2373",
+          "rid_valid": true,
+          "size": "(185, 203)",
+          "update_mode": 0,
+          "visible": null
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@AcceptDialog@2303",
+          "rid_valid": true,
+          "size": "(100, 100)",
+          "update_mode": -1,
+          "visible": false
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Galaxy/@AcceptDialog@2415",
+          "rid_valid": true,
+          "size": "(100, 100)",
+          "update_mode": -1,
+          "visible": false
+        },
+        {
+          "class": "AcceptDialog",
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1635/Hyperspace/@AcceptDialog@2930",
+          "rid_valid": true,
+          "size": "(860, 520)",
+          "update_mode": -1,
+          "visible": false
+        }
+      ]
+    }
+  },
+  "controls": {
+    "all": {
+      "on_minus_off_midpoint_frame_ms": 0.439354,
+      "off_off_frame_drift_ms": 0.085403,
+      "main_on_minus_off_midpoint_ms": 0.240547,
+      "main_off_off_drift_ms": 0.056351,
+      "main_to_pre_on_minus_off_midpoint_ms": 0.076784,
+      "main_to_pre_off_off_drift_ms": 0.021212,
+      "pre_to_post_on_minus_off_midpoint_ms": 0.090622,
+      "pre_to_post_off_off_drift_ms": 0.007402
+    },
+    "zero": {
+      "on_minus_off_midpoint_frame_ms": 0.332876,
+      "off_off_frame_drift_ms": 0.06135,
+      "main_on_minus_off_midpoint_ms": 0.081771,
+      "main_off_off_drift_ms": 0.016036,
+      "main_to_pre_on_minus_off_midpoint_ms": 0.078357,
+      "main_to_pre_off_off_drift_ms": 0.016617,
+      "pre_to_post_on_minus_off_midpoint_ms": 0.141329,
+      "pre_to_post_off_off_drift_ms": 0.027871
+    },
+    "one": {
+      "on_minus_off_midpoint_frame_ms": 0.32283,
+      "off_off_frame_drift_ms": 0.068017,
+      "main_on_minus_off_midpoint_ms": 0.19485,
+      "main_off_off_drift_ms": 0.060919,
+      "main_to_pre_on_minus_off_midpoint_ms": 0.055912,
+      "main_to_pre_off_off_drift_ms": 0.019863,
+      "pre_to_post_on_minus_off_midpoint_ms": 0.040753,
+      "pre_to_post_off_off_drift_ms": 0.01276
+    }
+  },
+  "engine_read_alignment": {
+    "viewport_pre_equals_post_same_iteration": 438,
+    "viewport_pre_equals_previous_post": 5,
+    "setup_pre_equals_previous_post": 437,
+    "first_nonzero_viewport_index": 6
+  },
+  "attestation": {
+    "other_gd_files_identical": 175,
+    "qa_patches": {
+      "main.gd": {
+        "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+        "qa_sha256": "548580d02c12cf3d85836f9be8c6ac88258d66d527aa7a55be5f42e828e1d82e"
+      },
+      "battlefield.gd": {
+        "source_sha256": "31ecb6e44c7a8aa87f38be64d1fa2b677636ba3188d7e881d91d84eaa363c95c",
+        "qa_sha256": "f173f83ba390264cb9135cfa7b90739d3dce6fdbb67614910a071c8756a07475"
+      },
+      "retained_enemy_contacts.gd": {
+        "source_sha256": "c26468e980d703b1fae4f211bd7082e4002ea6d885c85d1fa4054f36c65dc19e",
+        "qa_sha256": "75a0052197486757d5b53aa39f4278e183a5ec731101e7cd5cafe9b7140376c1"
+      }
+    },
+    "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+    "fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+  }
+}
