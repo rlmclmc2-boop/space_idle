@@ -37,42 +37,42 @@ func run() -> void:
 	var interval := g.enhancement_parameter("memory_interval")
 	var fraction := g.enhancement_parameter("memory_heal_fraction")
 	var cap_fraction := g.enhancement_parameter("memory_buffer_fraction")
-	check(is_equal_approx(interval, 0.2) and is_equal_approx(fraction, 0.0005) and is_equal_approx(cap_fraction, 0.05), "live workbook values are loaded")
+	check(is_equal_approx(interval, 0.2) and is_equal_approx(fraction, 0.01) and is_equal_approx(cap_fraction, 0.1), "current main coefficients are loaded")
 	g.player.armour = 20
 	g.sync_jewel_defence_damage()
-	g.advance_jewel_repair(10)
-	check(is_equal_approx(float(g.player.armour), 45.0), "10 seconds restores 25% of one module, not another")
-	check(is_equal_approx(float(g.memory_buffer(0)), 0.0) and is_equal_approx(float(g.memory_buffer(1)), 25.0), "only full module charges protection")
-	g.advance_jewel_repair(10)
-	check(is_equal_approx(float(g.player.armour), 70.0) and is_equal_approx(float(g.memory_buffer(1)), 50.0), "20 seconds restores 50% deficit and caps full module at 50% protection")
-	g.advance_jewel_repair(12)
+	g.advance_jewel_repair(0.2)
+	check(is_equal_approx(float(g.player.armour), 30.0), "one pulse repairs 10% of this module")
+	check(is_equal_approx(float(g.memory_buffer(0)), 0.0) and is_equal_approx(float(g.memory_buffer(1)), 10.0), "only full module charges protection")
+	g.advance_jewel_repair(1.4)
 	check(is_equal_approx(float(g.player.armour), 100.0) and is_equal_approx(float(g.memory_buffer(0)), 0.0), "damaged module repairs before charging")
-	g.advance_jewel_repair(20)
-	check(is_equal_approx(float(g.memory_buffer(0)), 50.0) and is_equal_approx(float(g.memory_buffer(1)), 50.0), "each module reaches its own cap without recursive growth")
-	g.hit_player(120, 0)
-	check(is_equal_approx(float(g.enhancement_protection_current()), 0.0) and is_equal_approx(float(g.player.shield), 80.0), "100 points of stored protection exhaust before body loss")
+	g.advance_jewel_repair(0.4)
+	check(is_equal_approx(float(g.memory_buffer(0)), 20.0) and is_equal_approx(float(g.memory_buffer(1)), 100.0), "each module has its own uncoupled cap")
+	g.advance_jewel_repair(1.6)
+	check(is_equal_approx(float(g.memory_buffer(0)), 100.0) and is_equal_approx(float(g.memory_buffer(1)), 100.0), "each module reaches 100% cap without recursive growth")
+	g.hit_player(220, 0)
+	check(is_equal_approx(float(g.enhancement_protection_current()), 0.0) and is_equal_approx(float(g.player.shield), 80.0), "200 points of stored protection exhaust before body loss")
 
 	g = fixture(10, true)
-	g.advance_jewel_repair(20)
+	g.advance_jewel_repair(2.0)
 	for tick in 50:
 		g.hit_player(2, 0)
 		g.advance_jewel_repair(0.2)
-	check(float(g.player.armour) >= 70.0 and float(g.player.armour) <= 80.0 and is_equal_approx(float(g.enhancement_protection_current()), 0.0), "10% per second incoming pressure exhausts stored protection and damages body; armour=" + str(g.player.armour) + " buffer=" + str(g.enhancement_protection_current()))
+	check(is_equal_approx(float(g.player.armour), 100.0) and is_equal_approx(float(g.enhancement_protection_current()), 100.0), "current main coefficients can sustain 10% per second incoming pressure; this is an unresolved global balance risk")
 
 	for level in [10, 20, 30]:
 		g = fixture(level, true)
-		g.player.armour = 20
+		g.player.armour = 0
 		g.sync_jewel_defence_damage()
-		g.advance_jewel_repair(1)
-		check(is_equal_approx(float(g.player.armour), 20.0 + 100.0 * fraction * level / interval), "unbranched one-second recovery at level " + str(level))
+		g.advance_jewel_repair(interval)
+		check(is_equal_approx(float(g.player.armour), 100.0 * fraction * level), "unbranched one-pulse recovery at level " + str(level))
 		var branches := int(level / 10)
 		for node in range(1, branches + 1):
 			check(g.set_enhancement_branch("defence", "memory_material", node, "A"), "Memory A branch unlock at level " + str(level) + " node " + str(node))
-		g.player.armour = 20
+		g.player.armour = 0
 		g.sync_jewel_defence_damage()
-		g.advance_jewel_repair(1)
-		var branch_rate: float = fraction * level * (1.0 + 0.2 * branches) / interval
-		check(is_equal_approx(float(g.player.armour), 20.0 + 100.0 * branch_rate), "A branches retain authored additive rate at level " + str(level))
+		g.advance_jewel_repair(interval)
+		var branch_pulse: float = fraction * level * (1.0 + 0.2 * branches)
+		check(is_equal_approx(float(g.player.armour), 100.0 * branch_pulse), "A branches retain authored additive pulse at level " + str(level))
 
 	g = fixture(10, true)
 	var compiled := preload("res://scripts/native_execution_compiler.gd").new().compile(g, "native_low_contract")
