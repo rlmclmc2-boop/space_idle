@@ -156,7 +156,7 @@ def derive_catalog(catalog, mainline):
             # Actual matching sources continue to bind their own current group.
             for source in ref['early_existing_encounters']:
                 level=next((l for l in mainline['levels'] if l['id']==source['level_id']),None)
-                if level is None or not any(g['id']==source['group_id'] for g in level['groups']):raise ValueError('Early reward source association changed')
+                if level is None or not any(g['id']==source['group_id'] for g in level['groups']+level.get('rewardReferenceGroups',[])):raise ValueError('Early reward source association changed')
                 group_blocks(mainline,source['group_id'],count)
             ref['early_drop_blocks']=group_blocks(mainline,ref['early_existing_encounters'][0]['group_id'],count)
 
@@ -166,7 +166,11 @@ def validate_sources(sources,mainline,schema):
     levels={l['id']:l for l in mainline['levels']}
     for wave in sources['waves']:
         level=levels.get(wave['stage']);node=wave['node']
-        if level is None or not 1<=node<=len(level['groups']) or level['groups'][node-1]['id']!=wave['group'] or str(wave['group']) not in mainline['groups'] or str(wave['source_group']) not in mainline['groups']:raise ValueError('Frozen1960 source mapping no longer matches mainline structure')
+        if level is None or str(wave['group']) not in mainline['groups'] or str(wave['source_group']) not in mainline['groups']:raise ValueError('Frozen1960 source mapping no longer matches mainline structure')
+        mounted=level['groups']
+        references=level.get('rewardReferenceGroups',[])
+        if not 1<=node<=len(mounted) and not 1<=node<=len(references):raise ValueError('Frozen1960 source mapping no longer matches mainline structure')
+        if not ((node<=len(mounted) and mounted[node-1]['id']==wave['group']) or (node<=len(references) and references[node-1]['id']==wave['group'])):raise ValueError('Frozen1960 source mapping no longer matches mainline structure')
 
 
 def validate_config(c):

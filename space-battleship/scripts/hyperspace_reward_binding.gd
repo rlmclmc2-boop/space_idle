@@ -48,7 +48,8 @@ func bind(base:ShipDatabase,registry:Dictionary,level:int,resource_level:int=-1)
   for wave in sources:
    if int(wave.stage)!=resource_level or int(wave.source_group)!=int(reference.source_design_group_id):continue
    var actual_id:String=str(int(wave.group))
-   if not base.groups.has(actual_id) or not resource_reference.groups.any(func(point):return int(point.id)==int(wave.group)):continue
+   var source_groups:Array=resource_reference.groups+resource_reference.get("rewardReferenceGroups",[])
+   if not base.groups.has(actual_id) or not source_groups.any(func(point):return int(point.id)==int(wave.group)):continue
    var actual:Dictionary=base.groups[actual_id]
    var actual_blocks:Array=[]
    for id in actual.slots:

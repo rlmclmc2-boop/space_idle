@@ -145,6 +145,14 @@ def convert_sheet(name, rows):
                 elif type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
                     raise ValueError(f"level {row.get('id')} {key}: expected positive finite multiplier or blank")
             row["groups"]=[{"id":int(p.split("|")[0]),"position":float(p.split("|")[1])} for p in clean(row["monGroup"]).split(",")]
+            references=row.get("rewardReferenceGroups")
+            if references in (None,""):
+                row.pop("rewardReferenceGroups",None)
+            else:
+                ids=json.loads(references)
+                if not isinstance(ids,list) or not all(type(v)==int and v>0 for v in ids) or len(ids)!=len(set(ids)):
+                    raise ValueError(f'level {row["id"]}: invalid rewardReferenceGroups')
+                row["rewardReferenceGroups"]=[{"id":v} for v in ids]
         return rows
     if name=="res":
         return {str(r["id"]):r["name"] for r in rows}
@@ -307,6 +315,10 @@ def validate_projection(data, *, check_level_ratios=True):
             raise ValueError(ui_text('debug.import_workbook.message_109', id=level["id"]))
         for g in level['groups']:
             if str(g['id']) not in groups: raise ValueError(ui_text('debug.import_workbook.message_131', id=g["id"]))
+        mounted={g['id'] for g in level['groups']}
+        for ref in level.get('rewardReferenceGroups',[]):
+            if ref['id'] in mounted or str(ref['id']) not in groups:
+                raise ValueError(f'level {level["id"]}: invalid reward reference {ref["id"]}')
     for gid,g in groups.items():
         validate_explicit_formation(g,enemies)
         if len(g['slots']) not in (10,15): raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))

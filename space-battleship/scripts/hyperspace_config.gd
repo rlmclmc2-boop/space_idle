@@ -130,14 +130,23 @@ static func pack_valid(g)->bool:
 	if not source_data is Dictionary or source_data.get("source_sha256")!=origin.sha256 or binder.sources.size()!=int(origin.verified_wave_count):return false
 	for wave in binder.sources:
 		var stage:int=int(wave.stage);var node:int=int(wave.node)
-		if stage<1 or stage>g.db.levels.size() or node<1 or node>g.db.levels[stage-1].groups.size() or int(g.db.levels[stage-1].groups[node-1].id)!=int(wave.group) or not g.db.groups.has(str(int(wave.group))) or not g.db.groups.has(str(int(wave.source_group))):return false
+		if stage<1 or stage>g.db.levels.size() or node<1 or not g.db.groups.has(str(int(wave.group))) or not g.db.groups.has(str(int(wave.source_group))):return false
+		var level_row:Dictionary=g.db.levels[stage-1]
+		var mounted:Array=level_row.groups
+		var references:Array=level_row.get("rewardReferenceGroups",[])
+		var source_mounted:=node<=mounted.size() and int(mounted[node-1].id)==int(wave.group)
+		var source_reference:=node<=references.size() and int(references[node-1].id)==int(wave.group)
+		if not source_mounted and not source_reference:return false
 	for ref in binder.catalog.values():
 		var count:int=int(ref.reference_member_count)
 		if ref.late_drop_blocks!=mainline_blocks(g.db,int(ref.late_reference_actual_group_id)):return false
 		if not ref.early_existing_encounters.is_empty():
 			for source in ref.early_existing_encounters:
 				var stage:int=int(source.level_id)
-				if stage<1 or stage>g.db.levels.size() or not g.db.levels[stage-1].groups.any(func(point):return int(point.id)==int(source.group_id)) or mainline_blocks(g.db,int(source.group_id)).size()!=count:return false
+				if stage<1 or stage>g.db.levels.size():return false
+				var level_row:Dictionary=g.db.levels[stage-1]
+				var source_groups:Array=level_row.groups+level_row.get("rewardReferenceGroups",[])
+				if not source_groups.any(func(point):return int(point.id)==int(source.group_id)) or mainline_blocks(g.db,int(source.group_id)).size()!=count:return false
 			if ref.early_drop_blocks!=mainline_blocks(g.db,int(ref.early_existing_encounters[0].group_id)):return false
 		for blocks in [ref.early_drop_blocks,ref.late_drop_blocks]:
 			if blocks.size()!=count:return false
