@@ -48,4 +48,4 @@ for i, component in enumerate(components):
                         bounds=list(canvas.getbbox()), reference_key=reference,
                         reference_texture=ships[reference]['texture'],
                         hardpoints=ships[reference]['hardpoints'], slot_map=ships[reference]['slot_map']))
-(ROOT / 'candidates.json').write_text(json.dumps(dict(enabled=False, records=records), indent=2)+'\n')
+(ROOT / 'candidates.json').write_text(json.dumps(dict(review_manifest_only=True, records=records), indent=2)+'\n')

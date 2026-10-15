@@ -934,8 +934,9 @@ func enemy_hull_light(enemy:Dictionary)->float:
 	return lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
 
 func prepare_enemy_hulls() -> void:
-	for size_class in range(1,7):
-		var path := str(ship_visual_entry("enemy_"+str(size_class)).get("texture",""))
+	for ship_key in visual_config.get("ships",{}):
+		if not str(ship_key).begins_with("enemy_"):continue
+		var path := str(ship_visual_entry(str(ship_key)).get("texture",""))
 		# Optional/unavailable hulls must not introduce an error before encounter.
 		# A later configured texture still resolves through the ordinary draw path.
 		if path.is_empty() or not ResourceLoader.exists(path):continue
@@ -966,7 +967,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
-	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
+	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
 	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
@@ -997,7 +998,7 @@ func encounter_leader_name(enemy:Dictionary)->String:
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
 	# Status placement follows the drawn hull/protection, not combat bounds.
 	var dimensions:=Vector2(width,width*2.0)
-	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+	var texture:=ship_hull_texture(enemy_ship_key(enemy))
 	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
 	var bottom:=pos.y

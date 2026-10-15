@@ -119,7 +119,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.source_id=spatial.source_id;record.appearance=spatial.appearance
  bind_pose(record,paint_owner.enemy_pose(enemy))
  record.screen_scale=paint_owner.enemy_recognition_screen_scale()
- record.texture=paint_owner.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+ record.texture=paint_owner.ship_hull_texture(str(spatial.appearance.ship_key))
  record.used=paint_owner.enemy_hull_bounds(record.texture)
  record.corners=PackedVector2Array([record.used.position,Vector2(record.used.end.x,record.used.position.y),record.used.end,Vector2(record.used.position.x,record.used.end.y)])
  record.descriptors=spatial.appearance.mounts
@@ -372,7 +372,7 @@ func display_spatial(record:DisplayRecord,enemy:Dictionary)->Dictionary:
  var signature:String=str(pose.get("components_signature",""))
  if record.legacy_appearance.is_empty() or record.legacy_signature!=signature:
   record.legacy_signature=signature;record.legacy_revision+=1
-  record.legacy_appearance={"mounts":paint_owner.enemy_recognition.descriptors(components),"components":components}
+  record.legacy_appearance={"ship_key":paint_owner.enemy_ship_key(enemy),"mounts":paint_owner.enemy_recognition.descriptors(components),"components":components}
  return {"source_id":0,"shape_revision":record.legacy_revision,"appearance":record.legacy_appearance,"components":components,"position":paint_owner.enemy_render_position(enemy),"frontline":paint_owner.enemy_frontline_y_limit(enemy)}
 
 func clear()->void:

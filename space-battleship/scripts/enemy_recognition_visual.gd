@@ -193,7 +193,27 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 				var p := center+toward*width*(0.12+0.17*pulse)
 				var cross := toward.orthogonal()*width*0.035
 				surface.draw_polyline(PackedVector2Array([p-toward*width*0.045+cross,p,p-toward*width*0.045-cross]),Color(color,1.0-pulse*0.55),maxf(1.0/packet.scale,width*0.025),true)
+	if opening_readability:draw_shield_type_markers(surface,enemy,width,packet,status)
 	return outline
+
+func draw_shield_type_markers(surface:CanvasItem,enemy:Dictionary,width:float,packet:Dictionary,status:Dictionary)->void:
+	if not status.alive or not status.active:return
+	var kind=int(enemy.get("shieldType",0))
+	if kind not in [1,2]:return
+	var hull_visible:bool=status.show_hull and int(enemy.get("armourType",0)) in [1,2]
+	var outline:PackedVector2Array=packet.outer if hull_visible else packet.inner
+	var span=maxf(2.4/packet.scale,minf(width*0.085,5.0/packet.scale))
+	var stroke=maxf(1.1/packet.scale,packet.shield_stroke)
+	var color=Color(shield_color(kind),0.9)
+	for side in [-1,1]:
+		var edge=(outline[1]+outline[2])*0.5 if side==1 else (outline[4]+outline[5])*0.5
+		var center=edge-Vector2(side*(span+stroke),0)
+		if kind==2:
+			for offset in [-0.65,0.65]:
+				surface.draw_line(center+Vector2(-span,offset*span),center+Vector2(span,offset*span),color,stroke,true)
+		else:
+			surface.draw_polyline(PackedVector2Array([center+Vector2(0,-span),center+Vector2(span,0),center+Vector2(0,span),center+Vector2(-span,0),center+Vector2(0,-span)]),color,stroke,true)
+	return
 
 func draw_attack_deck(surface:CanvasItem,width:float,damage_types:Array)->void:
 	# Persistent structure reads independently of orange/blue protection colors.

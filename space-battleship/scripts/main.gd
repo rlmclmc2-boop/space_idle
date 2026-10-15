@@ -68,6 +68,7 @@ const NUMBER_FORMAT := preload("res://scripts/number_format.gd")
 const SHIP_VISUALS := preload("res://scripts/ship_visuals.gd")
 const ENEMY_RECOGNITION := preload("res://scripts/enemy_recognition_visual.gd")
 var enemy_recognition = ENEMY_RECOGNITION.new()
+var enemy_visual_identity = preload("res://scripts/enemy_visual_identity.gd").new()
 const RAILGUN_FX := preload("res://scripts/railgun_fx.gd")
 var railgun_fx = RAILGUN_FX.new()
 var railgun_audio: Dictionary = {}
@@ -262,7 +263,11 @@ func _ready() -> void:
 	for key in visual_config.ships:
 		if not str(key).begins_with("enemy_"):continue
 		var row:Dictionary=visual_config.ships[key]
+		row.asset_ready=ResourceLoader.exists(str(row.get("texture","")))
+		if not row.asset_ready:continue
 		var texture:Texture2D=load(str(row.texture))
+		row.asset_ready=texture!=null
+		if not row.asset_ready:continue
 		var image:=texture.get_image()
 		var offset:Vector2=(preload("res://scripts/enemy_protection_geometry.gd").image_center(image)-texture.get_size()*0.5)/texture.get_size()
 		row.origin_offset=offset
@@ -770,7 +775,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 				particles.append(destroy_visual)
 			# Split the existing hull texture, using only an event-time visual snapshot.
 			if info.has("size"):
-				var texture: Texture2D = ship_hull_texture("enemy_"+str(clampi(int(info.size),1,6)))
+				var texture: Texture2D = ship_hull_texture(enemy_visual_identity.resolve(info,visual_config))
 				var dimensions := Vector2(30,60)
 				for enemy in game.enemies:
 					if enemy.get("uid",-1)==info.get("uid",-2):dimensions=Vector2(1,2)*enemy_render_width(enemy)
@@ -1206,10 +1211,14 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 			components.append(component)
 	return components
 
+func enemy_ship_key(enemy:Dictionary)->String:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return str(simulation_geometry_view.appearance(enemy).ship_key)
+	return enemy_visual_identity.resolve(enemy,visual_config)
+
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).components
 	var pose := enemy_pose(enemy)
-	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
+	var ship_key := enemy_ship_key(enemy)
 	var entries: Array = []
 	var signature := ship_key+":"+str(db.get_instance_id())
 	for equipment in enemy.equipment:
@@ -1298,7 +1307,7 @@ func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.IN
 	var component=enemy_component_for_slot(enemy,index)
 	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
 	# Unknown external configurations keep the previous logical mount fallback.
-	var point:=hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
+	var point:=hardpoint_for_slot(enemy_ship_key(enemy),index)
 	if point.is_empty():return Vector2.ZERO
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y)
@@ -1498,7 +1507,7 @@ func enemy_depth(enemy: Dictionary) -> float:
 
 func enemy_hull_rect(enemy:Dictionary,width:float)->Rect2:
 	var dimensions:=Vector2(width,width*2.0)
-	var row:Dictionary=visual_config.ships["enemy_"+str(clampi(int(enemy.size),1,6))]
+	var row:Dictionary=visual_config.ships[enemy_ship_key(enemy)]
 	return Rect2(-dimensions*0.5-Vector2(row.get("origin_offset",Vector2.ZERO))*dimensions,dimensions)
 
 func enemy_render_width(enemy: Dictionary) -> float:
@@ -1531,7 +1540,7 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	# The target and top-bound solver sample different width buckets; keep each
 	# cached separately so stationary frames never rebuild alternating envelopes.
 	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
+	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture(enemy_ship_key(enemy)),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
 	var outlines:Array=[packet.inner]
 	if float(enemy.get("max_shield",0))>0:
 		outlines.append(packet.outer)
@@ -3162,7 +3171,7 @@ func draw_enemy_hull_and_status(enemy: Dictionary, offset: Vector2, boss_battle:
 	draw_enemy_weapon_components(enemy,pos,angle,dimensions.x,true)
 	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE)
 	draw_surface.draw_circle(Vector2(-dimensions.x*0.32,0),dimensions.y*0.22,Color(0.3,0.6,0.85,lerpf(0.025,0.10,depth)))
-	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_hull_rect(enemy,dimensions.x),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
+	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,dimensions.x),false,Color(light,light,light,lerpf(0.8,1.0,depth)))
 	enemy_recognition.draw_attack_deck(draw_surface,dimensions.x,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,pose)
@@ -3305,7 +3314,7 @@ func enemy_recognition_screen_scale() -> float:
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).recognition
-	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+	var texture := ship_hull_texture(enemy_ship_key(enemy))
 	var components := enemy_weapon_components(enemy)
 	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 

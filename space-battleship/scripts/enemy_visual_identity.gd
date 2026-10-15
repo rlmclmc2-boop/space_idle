@@ -1,0 +1,31 @@
+extends RefCounted
+## Pure identity lookup. Asset availability is captured on the main thread.
+const ARCHETYPES := {
+	"scout":["enemy_opening_triangle_physical",2],
+	"sentry":["enemy_opening_triangle_physical",2],
+	"interceptor":["enemy_opening_triangle_energy",1],
+	"swarm":["enemy_opening_triangle_energy",1],
+	"anchor":["enemy_opening_slab_energy",1],
+	"reactive":["enemy_opening_slab_energy",1],
+	"shielded":["enemy_opening_u_energy",1],
+	"command":["enemy_opening_u_energy",1]
+}
+var diagnostics:Dictionary={}
+
+func resolve(enemy:Dictionary,config:Dictionary)->String:
+	var fallback="enemy_"+str(clampi(int(enemy.get("size",1)),1,6))
+	var archetype=str(enemy.get("archetype_id",""))
+	if archetype.is_empty():return fallback
+	var binding:Array=ARCHETYPES.get(archetype,[])
+	var reason="unknown_archetype"
+	if not binding.is_empty():
+		if int(enemy.get("armourType",0))!=int(binding[1]):reason="armour_type_mismatch"
+		else:
+			var row:Dictionary=config.get("ships",{}).get(binding[0],{})
+			if bool(row.get("asset_ready",false)):return str(binding[0])
+			reason="asset_unavailable"
+	var diagnostic=archetype+":"+reason
+	if not diagnostics.has(diagnostic):
+		diagnostics[diagnostic]=fallback
+		push_warning("Enemy visual fallback: "+diagnostic+" -> "+fallback)
+	return fallback

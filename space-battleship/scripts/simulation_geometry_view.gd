@@ -22,7 +22,7 @@ func descriptor(uid:int,value:Dictionary)->void:
 		var slots:Array[int]=[];slots.assign(item.slots)
 		var component=Component.new(item.hardpoint,item.profile,slots,int(item.owner_slot),"enemy")
 		component.damage_type=int(item.damage_type);components.append(component)
-	appearances[uid]={"components":components,"mounts":value.mounts,"types":value.types}
+	appearances[uid]={"ship_key":str(value.ship_key),"components":components,"mounts":value.mounts,"types":value.types}
 	spatials[uid]={"shape_revision":1,"appearance":appearances[uid],"components":components}
 var source_rows:Dictionary={}
 
