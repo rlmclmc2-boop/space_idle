@@ -22,6 +22,8 @@ The recovering enemy is a soft counter: all four weapons can clear it, beam prev
 
 At `k=1e40`, the heavy missile case needed **two extra hits** and 2.17 additional seconds. Exact-25-hit native direct damage similarly left `8e-13` normalized HP. No arbitrary residual clamp remains in the branch: the former `max_hp × 1e-12` clamp could delete representable health, as quantified in [the precision note](precision-boundary.md). The conservative result is that exact hit-count invariance at 1e40 is **contradicted here**. The `test_native_weapon_scale.gd` 59/59 test now explicitly bounds and reports this known residual; it does not call the 1e40 boundary exactly invariant. The 66/66 legacy direct test and 59/59 native direct test both preserve a representable 50-million-HP remainder. These tests cover hit, shield, defence, and repair equations, **not** a native four-weapon firing chain. See [build and DLL provenance](BUILD.md) and original outputs in `raw/`.
 
+Against the final authored data and code, focused regressions also passed: Memory repair pacing 22/22, neutral temporary protection 33/33, enemy shield timing 27/27, enemy shields 43/43, and equipment growth 94/94. The corresponding `raw/test_*.txt` files are the original isolated Godot outputs, not reconstructed summaries.
+
 The earlier `role-probe-160-rejected-clamp.jsonl`, `legacy-scale-rejected-clamp.txt`, and `native-scale-rejected-clamp.txt` are preserved only to audit why that candidate was rejected. `role-probe-before.jsonl` and `candidate-probe.jsonl` also describe earlier authored candidates. Do not combine their parameters with the final tables above.
 
 ## Remaining scope
