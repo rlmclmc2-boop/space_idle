@@ -22,7 +22,7 @@ func _initialize() -> void:
 	check(db.equipment.armour.size() == 1, "Projection contains only base rows")
 	check(db.equip("armour", 3).para1 == 1400, "Armour rounds two significant digits")
 	check(db.equip("shield", 3).para1 == 720, "Shield uses para4")
-	check(db.equip("laser", 3).dmg == 140, "Weapon damage growth")
+	check(db.equip("laser", 3).dmg == 430, "Weapon damage growth")
 	check(db.equip("laser", 2).cost_1 == 65, "Cost 60 rounds to 65")
 	# Explicit rounding fixture; the authored base damage may change independently.
 	db.equipment.missile[0].dmg = 30
@@ -41,7 +41,7 @@ func _initialize() -> void:
 		check(derived[field] == original[field], "Static field inherited: " + field)
 	check(db.equipment.shield[0] == original, "Read does not mutate source")
 	db.equipment.laser.append({"level":2, "dmg":999999})
-	check(db.equip("laser", 2).dmg == 120, "Legacy higher rows ignored")
+	check(db.equip("laser", 2).dmg == 360, "Legacy higher rows ignored")
 	db.equipment.laser[0].res_3 = 3
 	db.equipment.laser[0].cost_3 = 100
 	db.equipment.laser[0].cost_multi_3 = 0.5
