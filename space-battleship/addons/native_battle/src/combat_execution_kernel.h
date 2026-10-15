@@ -1033,11 +1033,13 @@ class SpaceCombatKernel : public RefCounted {
             double factor = type == a->shield_type ? 1 - resistance : 1;
             absorbed = std::min(a->shield, std::max(1.0, incoming * factor));
             a->shield -= absorbed;
+            if (a->shield <= a->max_shield * 1e-12) a->shield = 0;
             incoming = factor > 0 ? nonnegative(incoming - absorbed / factor) : 0;
         }
         if (absorbed <= 0 || incoming > 0) {
             damage = std::max(1.0, std::ceil(incoming * (type == a->armour_type ? 1 - resistance : 1)));
             a->hp = nonnegative(a->hp - damage);
+            if (a->hp <= a->max_hp * 1e-12) a->hp = 0;
         }
         a->view["hp"] = a->hp;
         a->view["shield"] = a->shield;
@@ -1355,14 +1357,18 @@ class SpaceCombatKernel : public RefCounted {
         last_incoming_at = at;
         if (!module_defence) {
             double factor = type == int(player_row.get("shield_type", 0)) ? 1 - resistance : 1;
+            double before_shield = player_shield;
             double absorbed = std::min(player_shield, std::max(1.0, raw * factor));
             player_shield -= absorbed;
+            if (player_shield <= before_shield * 1e-12) player_shield = 0;
             double left = factor > 0 ? nonnegative(raw - absorbed / factor) : 0;
             double damage =
                 left > 0
                     ? std::ceil(left * (type == int(player_row.get("armour_type", 0)) ? 1 - resistance : 1))
                     : 0;
+            double before_hp = player_hp;
             player_hp = nonnegative(player_hp - damage);
+            if (player_hp <= before_hp * 1e-12) player_hp = 0;
             incoming_effect(damage + absorbed, 0, type, at);
             return;
         }
@@ -1418,6 +1424,7 @@ class SpaceCombatKernel : public RefCounted {
             double &hp = layer == 0 ? player_shield : player_hp;
             double paid = std::min(hp, deferred[layer] ? payments[layer] : std::ceil(payments[layer]));
             hp = nonnegative(hp - paid);
+            if (hp <= (hp + paid) * 1e-12) hp = 0;
             loss += paid;
         }
         incoming_effect(loss, absorbed, type, at);

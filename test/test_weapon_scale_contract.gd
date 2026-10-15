@@ -1,5 +1,11 @@
 extends SceneTree
 
+class ScaledGame extends "res://scripts/game.gd":
+	var balance_scale := 1.0
+	func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
+		var derived = super.equipment_stat(key,level,galaxy_charge)
+		return GrowthNumber.multiply(derived,balance_scale) if key in ["laser","missile","cannon","longLaser","armour","shield"] else derived
+
 var checks := 0
 var failures := 0
 
@@ -12,10 +18,18 @@ func check(ok: bool, label: String) -> void:
 func close_ratio(actual: float, expected: float) -> bool:
 	return absf(actual - expected) <= 0.000001
 
-func fixture(scale: float) -> BattleGame:
+func frozen_db() -> ShipDatabase:
 	var db := ShipDatabase.new()
+	var original: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://qa/opening_frozen_contract.json"))
+	for index in 3:db.levels[index] = original.levels[index]
+	for id in original.groups:db.groups[id] = original.groups[id]
+	return db
+
+func fixture(scale: float) -> BattleGame:
+	var db := frozen_db()
 	db.config.dmgReduce = 0.0
 	var g := BattleGame.new(db, false)
+	g.save_enabled = false
 	g.start(1, false)
 	g.spawn_group()
 	var enemy: Dictionary = db.enemies["270007"].duplicate(true)
@@ -40,10 +54,28 @@ func fixture(scale: float) -> BattleGame:
 	g.enemy_shield_time = 0.0
 	return g
 
+func defence_fixture(scale: float) -> ScaledGame:
+	var db := frozen_db()
+	db.data.enhance_config.threshold_2.value = 1000
+	db.data.enhance_config.threshold_3.value = 2000
+	var g := ScaledGame.new(db,false)
+	g.balance_scale = scale
+	g.save_enabled = false
+	g.start(1,false)
+	g.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
+	g.profile.grantedUnlocks = [db.unlock_id("feature","jewels")]
+	g.profile.enhancementLevel = 10
+	g.profile.enhancementOrder.defence = ["memory_material","adaptation","delayed_damage"]
+	g.profile.loadout = {"weapons":[],"defence":[{"key":"armour","level":1},{"key":"shield","level":1}]}
+	g.reset_player()
+	g.state = BattleGame.State.COMBAT
+	return g
+
 func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	var defence_baseline := {}
 	for scale in [1.0, 100.0, 1000.0, 100000.0, 1.0e40]:
 		var g := fixture(scale)
 		var enemy: Dictionary = g.enemies[0]
@@ -63,5 +95,15 @@ func run() -> void:
 			g.hit_enemy(enemy, 100.0 * scale, 1)
 			check(int(enemy.reactive_stacks) == int(sample[1]) and close_ratio(float(enemy.reactive_multiplier), float(sample[2])), "reactive volley scale=" + str(scale) + " t=" + str(sample[0]))
 		check(close_ratio(float(enemy.hp) / scale, 540.0), "reactive normalized HP scale=" + str(scale))
+		var defence := defence_fixture(scale)
+		defence.advance_jewel_repair(20.0)
+		var buffer_before: float = float(defence.enhancement_protection_current()) / scale
+		defence.hit_player(100.0 * scale, 2)
+		var buffer_after: float = float(defence.enhancement_protection_current()) / scale
+		defence.hit_player(1000.0 * scale, 2)
+		var result := {"buffer_before":buffer_before,"buffer_after":buffer_after,"shield":float(defence.player.shield)/scale,"armour":float(defence.player.armour)/scale}
+		if defence_baseline.is_empty():defence_baseline = result
+		for key in result:
+			check(close_ratio(float(result[key]),float(defence_baseline[key])), "bilateral protection/defence scale=" + str(scale) + " field=" + key)
 	print("WEAPON SCALE CONTRACT: ", checks, " checks, ", failures, " failures")
 	quit(1 if failures else 0)

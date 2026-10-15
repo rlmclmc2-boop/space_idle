@@ -117,7 +117,7 @@
         "des": "每批发射para1枚导弹，按存活目标轮转分配，目标不足仍发满整批；para2为巡航速度（单位/秒），乘玩家弹速像素换算。",
         "level": 1,
         "dmgtype": 2,
-        "dmg": 200,
+        "dmg": 160,
         "dmgMulti": 0.2,
         "cd": 2.4,
         "res_1": 1,
@@ -260078,8 +260078,8 @@
       "size": 3,
       "shield": 600,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.35,
+      "shieldDelay": 0.8,
       "archetype_id": "shielded",
       "drops": [
         {
@@ -306655,108 +306655,96 @@
     {
       "id": 1,
       "length": 4000,
-      "monGroup": "{33001|0.140000,33002|0.325000,33003|0.510000,33004|0.695000,33005|0.880000}",
+      "monGroup": "{30011|0.180000,30012|0.360000,30013|0.540000,30014|0.720000,30015|0.900000}",
       "atkRatio": 1,
-      "lifeRatio": 1.0,
-      "resRatio": 1.0,
+      "lifeRatio": 0.4,
+      "resRatio": 1,
       "jewelRatio": 1,
       "planetExpRatio": 0,
       "groups": [
         {
-          "id": 33001,
-          "position": 0.14
+          "id": 30011,
+          "position": 0.18
         },
         {
-          "id": 33002,
-          "position": 0.325
+          "id": 30012,
+          "position": 0.36
         },
         {
-          "id": 33003,
-          "position": 0.51
+          "id": 30013,
+          "position": 0.54
         },
         {
-          "id": 33004,
-          "position": 0.695
+          "id": 30014,
+          "position": 0.72
         },
         {
-          "id": 33005,
-          "position": 0.88
+          "id": 30015,
+          "position": 0.9
         }
       ]
     },
     {
       "id": 2,
       "length": 4000,
-      "monGroup": "{33006|0.140000,33007|0.288000,33008|0.436000,33009|0.584000,33010|0.732000,33011|0.880000}",
+      "monGroup": "{30021|0.180000,30022|0.360000,30023|0.540000,30024|0.720000,30025|0.900000}",
       "atkRatio": 1.5,
-      "lifeRatio": 1.6,
-      "resRatio": 1.15,
+      "lifeRatio": 3.2,
+      "resRatio": 0.7,
       "jewelRatio": 1.2,
       "planetExpRatio": 0,
       "groups": [
         {
-          "id": 33006,
-          "position": 0.14
+          "id": 30021,
+          "position": 0.18
         },
         {
-          "id": 33007,
-          "position": 0.288
+          "id": 30022,
+          "position": 0.36
         },
         {
-          "id": 33008,
-          "position": 0.436
+          "id": 30023,
+          "position": 0.54
         },
         {
-          "id": 33009,
-          "position": 0.584
+          "id": 30024,
+          "position": 0.72
         },
         {
-          "id": 33010,
-          "position": 0.732
-        },
-        {
-          "id": 33011,
-          "position": 0.88
+          "id": 30025,
+          "position": 0.9
         }
       ]
     },
     {
       "id": 3,
       "length": 4000,
-      "monGroup": "{33012|0.140000,33013|0.263333,33014|0.386667,33015|0.510000,33016|0.633333,33017|0.756667,33018|0.880000}",
+      "monGroup": "{30031|0.180000,30032|0.360000,30033|0.540000,30034|0.720000,30035|0.900000}",
       "atkRatio": 2,
-      "lifeRatio": 2.2,
-      "resRatio": 1.6,
+      "lifeRatio": 4.0,
+      "resRatio": 0.98,
       "jewelRatio": 1.4,
       "planetExpRatio": 0,
       "groups": [
         {
-          "id": 33012,
-          "position": 0.14
+          "id": 30031,
+          "position": 0.18
         },
         {
-          "id": 33013,
-          "position": 0.263333
+          "id": 30032,
+          "position": 0.36
         },
         {
-          "id": 33014,
-          "position": 0.386667
+          "id": 30033,
+          "position": 0.54
         },
         {
-          "id": 33015,
-          "position": 0.51
+          "id": 30034,
+          "position": 0.72
         },
         {
-          "id": 33016,
-          "position": 0.633333
-        },
-        {
-          "id": 33017,
-          "position": 0.756667
-        },
-        {
-          "id": 33018,
-          "position": 0.88
+          "id": 30035,
+          "position": 0.9
         }
       ]
     },

@@ -47,6 +47,17 @@ def main():
         (game / "qa").mkdir()
         adapter=(source/"scripts/balance_game.gd").read_text().replace("extends BattleGame",'extends "res://scripts/presented_battle_game.gd"',1)
         (game/"qa/presented_balance_game.gd").write_text(adapter)
+    if args.test in {"test_weapon_scale_contract.gd", "probe_weapon_roles.gd"}:
+        (game / "qa").mkdir(exist_ok=True)
+        shutil.copy2(tests / "fixtures/opening_frozen_contract.json", game / "qa/opening_frozen_contract.json")
+    if args.test == "test_native_weapon_scale.gd":
+        native = tests / "native-build/project/bin/space_native.dll"
+        if not native.is_file():
+            raise RuntimeError("isolated native build missing: " + str(native))
+        (game / "bin").mkdir(exist_ok=True)
+        shutil.copy2(native, game / "bin/space_native.dll")
+        shutil.copy2(source / "addons/native_battle/space_native.gdextension.in",
+                     game / "addons/native_battle/space_native.gdextension")
     env = os.environ.copy()
     env["APPDATA"] = str(area / "userdata/roaming")
     env["LOCALAPPDATA"] = str(area / "userdata/local")

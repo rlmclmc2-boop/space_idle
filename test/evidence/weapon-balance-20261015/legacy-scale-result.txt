@@ -1,0 +1,1 @@
+WEAPON SCALE CONTRACT: 65 checks, 0 failures
