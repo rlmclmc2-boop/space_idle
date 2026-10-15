@@ -1,12 +1,13 @@
-"""Original vector art. Rebuild with Python + installed Inkscape; no downloaded art.
+"""Archived rejected R01 studies; never writes production scenery.
 World s increases with journey; each PNG includes the next viewport's overlap.
 """
 from pathlib import Path
 import random, math, subprocess
 ROOT=Path(__file__).resolve().parents[1]
-BG=ROOT/'assets/backgrounds/opening'
-PRO=ROOT/'assets/ships/opening-prototypes'
-DOC=ROOT/'docs/art/opening-three'
+DOC=ROOT/'docs/art/opening-three/revision-01-regenerated'
+BG=DOC/'backgrounds'
+PRO=DOC/'prototypes'
+for folder in (DOC,BG,PRO):folder.mkdir(parents=True,exist_ok=True)
 
 def svg(w,h,body):
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">{body}</svg>'
