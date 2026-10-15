@@ -55,6 +55,21 @@ func run() -> void:
 				kernel.hit_handle(handle,200.0*scale,1)
 			var residual: float = float(kernel.enemy_views()[0].hp)/scale
 			print("NATIVE_BOUNDARY ",scale," residual_normalized=",residual)
-			check(residual == 0.0,"native exact-25-hit boundary scale="+str(scale))
+			if scale <= 100000.0:
+				check(residual == 0.0,"native exact-25-hit boundary scale="+str(scale))
+			else:
+				# Double subtraction does not preserve this exact hit count at 1e40.
+				check(residual > 0.0 and residual < 1.0e-9,"native documented high-scale residual bound")
+	var real_remainder := world(1.0)
+	real_remainder.enemies[0].hp = 1.0e15
+	real_remainder.enemies[0].max_hp = 1.0e20
+	real_remainder.enemies[0].shield = 0.0
+	real_remainder.enemies[0].max_shield = 0.0
+	real_remainder.enemies[0].reactiveReduction = 0
+	var real_kernel = ClassDB.instantiate("SpaceCombatKernel")
+	check(real_kernel.configure(real_remainder),"native real-remainder admission")
+	var real_handle: PackedInt64Array = real_kernel.actor_handle(991)
+	check(real_kernel.hit_handle(real_handle,1.0e15-5.0e7,1),"native real-remainder hit")
+	check(float(real_kernel.enemy_views()[0].hp) == 5.0e7,"native preserves representable 50-million HP remainder")
 	print("NATIVE WEAPON SCALE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

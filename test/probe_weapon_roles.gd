@@ -32,9 +32,11 @@ const CASES := {
 	"heavy": {"count":2,"hp":5000.0,"shield":0.0,"delay":0.0,"rate":0.0,"reactive":false},
 	"reactive": {"count":2,"hp":5000.0,"shield":0.0,"delay":0.0,"rate":0.0,"reactive":true},
 	"recovering_plain": {"count":1,"hp":1700.0,"shield":0.0,"delay":0.0,"rate":0.0,"reactive":false},
-	"recovering": {"count":1,"hp":1100.0,"shield":600.0,"delay":0.8,"rate":0.35,"reactive":false},
+	"recovering": {"count":1,"hp":1100.0,"shield":600.0,"delay":1.0,"rate":0.25,"reactive":false},
 	"candidate_a": {"count":1,"hp":1100.0,"shield":600.0,"delay":0.8,"rate":0.35,"reactive":false},
 	"candidate_b": {"count":1,"hp":1100.0,"shield":1200.0,"delay":0.8,"rate":0.20,"reactive":false},
+	"candidate_c": {"count":1,"hp":1100.0,"shield":600.0,"delay":0.8,"rate":0.20,"reactive":false},
+	"candidate_d": {"count":1,"hp":1100.0,"shield":600.0,"delay":1.0,"rate":0.25,"reactive":false},
 }
 
 func frozen_db() -> ShipDatabase:
@@ -44,11 +46,16 @@ func frozen_db() -> ShipDatabase:
 	for id in original.groups:db.groups[id] = original.groups[id]
 	return db
 
-func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 160.0) -> Dictionary:
-	var settings: Dictionary = CASES[case_name]
+func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 3, laser_cd := 1.4) -> Dictionary:
+	var settings: Dictionary = CASES[case_name].duplicate()
+	if target_count > 0:settings.count = target_count
+	if target_hp > 0:settings.hp = target_hp
 	var db := frozen_db()
 	db.data.enhance_config.base_critical_rate.value = 0.0
-	if weapon == "missile":db.equipment.missile[0].dmg = missile_base
+	if weapon == "missile":
+		db.equipment.missile[0].dmg = missile_base
+		db.equipment.missile[0].para1 = missile_salvo
+	if weapon == "laser":db.equipment.laser[0].cd = laser_cd
 	var g: ScaledGame = ScaledGame.new(db, false)
 	g.balance_scale = scale
 	g.save_enabled = false
@@ -107,12 +114,59 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 		for actor in actors:max_reactive_stacks = maxi(max_reactive_stacks,int(actor.get("reactive_stacks",0)))
 		if actors.all(func(actor):return float(actor.hp) <= 0.0):break
 	var cleared := actors.all(func(actor):return float(actor.hp) <= 0.0)
-	return {"executor":"legacy_presented","production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss,"effective_shield_loss":g.measured.shield_loss,"shield_regen":g.measured.shield_regen,"overkill":g.measured.overkill,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
+	return {"executor":"legacy_presented","production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"laser_cd":laser_cd if weapon=="laser" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss,"effective_shield_loss":g.measured.shield_loss,"shield_regen":g.measured.shield_regen,"overkill":g.measured.overkill,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
 
 func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	if OS.get_environment("SPACE_BALANCE_INTERVAL_FINAL") == "1":
+		for n in [5,6,7,8]:
+			for hp in [220.0,260.0,300.0]:
+				for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,200.0,n,hp,3,1.4)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_FINAL") == "1":
+		var scale := float(OS.get_environment("SPACE_BALANCE_SCALE"))
+		if scale == 1.0:
+			for case_name in ["medium","swarm","heavy","reactive","recovering"]:
+				for weapon in WEAPONS:print(JSON.stringify(run_case(weapon,case_name,scale)))
+		else:
+			for pair in [["medium","laser"],["medium","missile"],["swarm","missile"],["heavy","cannon"],["heavy","missile"],["recovering","laser"],["recovering","longLaser"]]:
+				print(JSON.stringify(run_case(str(pair[1]),str(pair[0]),scale)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_REFINEMENT") == "1":
+		for hp in [210.0,220.0,260.0,300.0]:
+			for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,200.0,6,hp,3,1.4)))
+		for case_name in ["swarm","heavy","reactive","candidate_d"]:
+			for weapon in WEAPONS:print(JSON.stringify(run_case(weapon,case_name,1.0,1,1,200.0,-1,-1.0,3,1.4)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_SALVO3") == "1":
+		var n := int(OS.get_environment("SPACE_BALANCE_TARGET_COUNT"))
+		var healths := [220.0,260.0,300.0] if n in [6,7] else [120.0,180.0,200.0,220.0,240.0,260.0,280.0,300.0,320.0]
+		for hp in healths:
+			for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,200.0,n,hp,3)))
+		if n == 5:
+			for case_name in ["heavy","reactive","candidate_a","candidate_c"]:
+				for weapon in ["laser","missile","cannon","longLaser"]:print(JSON.stringify(run_case(weapon,case_name,1.0,1,1,200.0,-1,-1.0,3)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_PULSE_SWEEP") == "1":
+		var target_count := int(OS.get_environment("SPACE_BALANCE_TARGET_COUNT"))
+		var missile_base := float(OS.get_environment("SPACE_BALANCE_MISSILE_BASE"))
+		var healths := [180.0,220.0,260.0,300.0,340.0,500.0] if missile_base < 160.0 else [180.0,220.0,260.0,300.0,340.0,380.0,420.0,460.0,500.0,540.0,580.0,620.0]
+		for hp in healths:
+			for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,missile_base,target_count,hp)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_SHIELD_SWEEP") == "1":
+		for case_name in ["candidate_a","candidate_c","candidate_d"]:
+			for weapon in WEAPONS:
+				print(JSON.stringify(run_case(weapon,case_name,1.0,1,1,120.0)))
+		quit()
+		return
 	if OS.get_environment("SPACE_BALANCE_CANDIDATES") == "1":
 		for case_name in ["candidate_a","candidate_b"]:
 			for weapon in WEAPONS:print(JSON.stringify(run_case(weapon,case_name,1.0)))

@@ -105,5 +105,14 @@ func run() -> void:
 		if defence_baseline.is_empty():defence_baseline = result
 		for key in result:
 			check(close_ratio(float(result[key]),float(defence_baseline[key])), "bilateral protection/defence scale=" + str(scale) + " field=" + key)
+	var real_remainder := fixture(1.0)
+	var real_enemy: Dictionary = real_remainder.enemies[0]
+	real_enemy.hp = 1.0e15
+	real_enemy.max_hp = 1.0e20
+	real_enemy.shield = 0.0
+	real_enemy.max_shield = 0.0
+	real_enemy.reactiveReduction = 0
+	real_remainder.hit_enemy(real_enemy,1.0e15-5.0e7,1)
+	check(float(real_enemy.hp) == 5.0e7,"legacy preserves representable 50-million HP remainder")
 	print("WEAPON SCALE CONTRACT: ", checks, " checks, ", failures, " failures")
 	quit(1 if failures else 0)

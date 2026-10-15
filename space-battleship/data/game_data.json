@@ -98,7 +98,7 @@
         "dmgtype": 1,
         "dmg": 300,
         "dmgMulti": 0.2,
-        "cd": 1.5,
+        "cd": 1.4,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -117,7 +117,7 @@
         "des": "每批发射para1枚导弹，按存活目标轮转分配，目标不足仍发满整批；para2为巡航速度（单位/秒），乘玩家弹速像素换算。",
         "level": 1,
         "dmgtype": 2,
-        "dmg": 160,
+        "dmg": 200,
         "dmgMulti": 0.2,
         "cd": 2.4,
         "res_1": 1,
@@ -126,7 +126,7 @@
         "res_2": null,
         "cost_2": null,
         "costMulti_2": null,
-        "para1": 4,
+        "para1": 3,
         "para2": 30,
         "para3": null,
         "para4": null
@@ -260078,8 +260078,8 @@
       "size": 3,
       "shield": 600,
       "shieldType": 2,
-      "shieldRecovery": 0.35,
-      "shieldDelay": 0.8,
+      "shieldRecovery": 0.25,
+      "shieldDelay": 1,
       "archetype_id": "shielded",
       "drops": [
         {
