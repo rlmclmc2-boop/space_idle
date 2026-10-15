@@ -1,0 +1,48 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+SCRIPT ERROR: Invalid access to property or key 'level' on a base object of type 'Dictionary'.
+   at: decide (res://scripts/beginner_guide.gd:114)
+   GDScript backtrace (most recent call first):
+       [0] decide (res://scripts/beginner_guide.gd:114)
+       [1] refresh (res://scripts/beginner_guide.gd:207)
+       [2] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'phase' on a base object of type 'Dictionary'.
+   at: refresh (res://scripts/beginner_guide.gd:220)
+   GDScript backtrace (most recent call first):
+       [0] refresh (res://scripts/beginner_guide.gd:220)
+       [1] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'level' on a base object of type 'Dictionary'.
+   at: decide (res://scripts/beginner_guide.gd:114)
+   GDScript backtrace (most recent call first):
+       [0] decide (res://scripts/beginner_guide.gd:114)
+       [1] refresh (res://scripts/beginner_guide.gd:207)
+       [2] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'phase' on a base object of type 'Dictionary'.
+   at: refresh (res://scripts/beginner_guide.gd:220)
+   GDScript backtrace (most recent call first):
+       [0] refresh (res://scripts/beginner_guide.gd:220)
+       [1] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'level' on a base object of type 'Dictionary'.
+   at: decide (res://scripts/beginner_guide.gd:114)
+   GDScript backtrace (most recent call first):
+       [0] decide (res://scripts/beginner_guide.gd:114)
+       [1] refresh (res://scripts/beginner_guide.gd:207)
+       [2] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'phase' on a base object of type 'Dictionary'.
+   at: refresh (res://scripts/beginner_guide.gd:220)
+   GDScript backtrace (most recent call first):
+       [0] refresh (res://scripts/beginner_guide.gd:220)
+       [1] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'level' on a base object of type 'Dictionary'.
+   at: decide (res://scripts/beginner_guide.gd:114)
+   GDScript backtrace (most recent call first):
+       [0] decide (res://scripts/beginner_guide.gd:114)
+       [1] refresh (res://scripts/beginner_guide.gd:207)
+       [2] _process (res://scripts/beginner_guide.gd:79)
+SCRIPT ERROR: Invalid access to property or key 'phase' on a base object of type 'Dictionary'.
+   at: refresh (res://scripts/beginner_guide.gd:220)
+   GDScript backtrace (most recent call first):
+       [0] refresh (res://scripts/beginner_guide.gd:220)
+       [1] _process (res://scripts/beginner_guide.gd:79)
+INTEGRATION_RESULT death death_and_retreat_exit events={"encounter":1,"equipment_stats":3,"explode":1,"fire":12,"hit":2,"projectile_impact":2,"prototype_missile_reset":2,"retreat":1,"state":4} compact=2

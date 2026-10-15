@@ -1,0 +1,22 @@
+{
+  "source_head": "d241f8c66b3a4c178ad5a5f5d3aa655214202cff",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "driver_sha256": "e292d8c0ec48eaaf16680b6fc8cd5ed46beec4d5ca1fa661ecf6fcd5f57989af",
+  "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+  "production_files": {
+    "scripts/game.gd": "f442a398135874e37beb767de43a393342d9e23c3cd1c3848de9b6d7d30273cd",
+    "scripts/battlefield.gd": "31ecb6e44c7a8aa87f38be64d1fa2b677636ba3188d7e881d91d84eaa363c95c",
+    "scripts/native_execution_session.gd": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+    "scripts/battle_slice_runtime.gd": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e"
+  },
+  "runs": [
+    {
+      "mode": "waves",
+      "exit": 0,
+      "wall_seconds": 31.42622208595276,
+      "log_sha256": "9e5e43c4b3a15ea655fc7d4e706a6ce3a7a96f431ee92e37713b5bf6527a9e0d",
+      "json_sha256": "d7ba09372f97b729122025eb46083f7df4d6b71d976b146c5acc6aa755fdb813"
+    }
+  ]
+}
