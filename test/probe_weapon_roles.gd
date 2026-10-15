@@ -32,7 +32,7 @@ const CASES := {
 	"heavy": {"count":2,"hp":5000.0,"shield":0.0,"delay":0.0,"rate":0.0,"reactive":false},
 	"reactive": {"count":2,"hp":5000.0,"shield":0.0,"delay":0.0,"rate":0.0,"reactive":true},
 	"recovering_plain": {"count":1,"hp":1700.0,"shield":0.0,"delay":0.0,"rate":0.0,"reactive":false},
-	"recovering": {"count":1,"hp":1100.0,"shield":600.0,"delay":1.0,"rate":0.25,"reactive":false},
+	"recovering": {"count":1,"hp":1100.0,"shield":600.0,"delay":1.8,"rate":0.08,"reactive":false},
 	"candidate_a": {"count":1,"hp":1100.0,"shield":600.0,"delay":0.8,"rate":0.35,"reactive":false},
 	"candidate_b": {"count":1,"hp":1100.0,"shield":1200.0,"delay":0.8,"rate":0.20,"reactive":false},
 	"candidate_c": {"count":1,"hp":1100.0,"shield":600.0,"delay":0.8,"rate":0.20,"reactive":false},
@@ -46,7 +46,7 @@ func frozen_db() -> ShipDatabase:
 	for id in original.groups:db.groups[id] = original.groups[id]
 	return db
 
-func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 3, laser_cd := 1.4) -> Dictionary:
+func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5) -> Dictionary:
 	var settings: Dictionary = CASES[case_name].duplicate()
 	if target_count > 0:settings.count = target_count
 	if target_hp > 0:settings.hp = target_hp

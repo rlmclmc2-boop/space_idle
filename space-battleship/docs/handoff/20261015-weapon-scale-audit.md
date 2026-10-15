@@ -1,6 +1,6 @@
 # 四武器与同比缩放：公式审计（待定点实测）
 
-> 2026-10-15 update: focused runs and review corrections are in `test/evidence/weapon-balance-20261015/README.md`. The original sections below are pre-run hypotheses. Current authored candidate: laser 300 / 1.4 s, missile 3 × 200 / 2.4 s, draft enemy 270007 shield delay 1.0 s and recovery 25%/s. The first three level rows were restored to the frozen reward binding; the 18-point opening design is still a disconnected draft. The former fixed-relative health clamp was removed because it could kill representable residual HP.
+> 2026-10-15 update: the 3-missile/1.4 s pulse and 25%/1.0 s shield proposal was not accepted. Authoritative data now retain pulse 300 / 1.5 s, missile 4 × 200 / 2.4 s, and draft enemy 270007 shield 8%/s after 1.8 s. The original sections below are hypotheses. Candidate evidence and the extreme-scale precision limitation are in `test/evidence/weapon-balance-20261015/README.md`. The fixed-relative health clamp remains removed. The first three level rows remain restored to frozen reward bindings; the 18-point opening design is disconnected.
 
 
 这是 `df3e18cd` 后的优先级改动。前三关 18 点及敌机数值暂为草案，不应并入 main。下列数值来自当前 Excel 投影和源码；尚无本批 Godot 实测击杀时间。

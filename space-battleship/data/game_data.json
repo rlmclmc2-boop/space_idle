@@ -98,7 +98,7 @@
         "dmgtype": 1,
         "dmg": 300,
         "dmgMulti": 0.2,
-        "cd": 1.4,
+        "cd": 1.5,
         "res_1": 1,
         "cost_1": 50,
         "costMulti_1": 0.2,
@@ -126,7 +126,7 @@
         "res_2": null,
         "cost_2": null,
         "costMulti_2": null,
-        "para1": 3,
+        "para1": 4,
         "para2": 30,
         "para3": null,
         "para4": null
@@ -260078,8 +260078,8 @@
       "size": 3,
       "shield": 600,
       "shieldType": 2,
-      "shieldRecovery": 0.25,
-      "shieldDelay": 1,
+      "shieldRecovery": 0.08,
+      "shieldDelay": 1.8,
       "archetype_id": "shielded",
       "drops": [
         {
