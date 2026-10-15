@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Tab = preload("res://scripts/equipment_tab.gd")
+const FORMAT = preload("res://scripts/number_format.gd")
 
 class TrackedTab extends Tab:
 	var detail_refreshes := 0
@@ -21,6 +22,9 @@ func check(ok: bool, label: String) -> void:
 	if not ok:
 		failures += 1
 		printerr("FAIL: ",label)
+
+func memory_text(game: BattleGame, level: int) -> Array[String]:
+	return [FORMAT.percentage(game.enhancement_parameter("memory_heal_fraction") * level * 100), FORMAT.percentage(game.enhancement_parameter("memory_buffer_fraction") * level * 100)]
 
 func _initialize() -> void:call_deferred("run")
 
@@ -64,14 +68,16 @@ func run() -> void:
 	await process_frame
 	var before_text: String=panel.detail.stats.text
 	var before_projection=panel.items[panel.selected].projection.duplicate(true)
-	check(before_text.contains("30%") and before_text.contains("300%"),"Open shield detail displays level 30 memory material")
+	var expected := memory_text(game, 30)
+	check(before_text.contains(expected[0]) and before_text.contains(expected[1]),"Open shield detail displays level 30 memory material")
 	panel.detail_refreshes=0
 	check(game.upgrade_enhancement(1)==1,"Shared enhancement purchases level 31")
 	check(panel.detail_refreshes==0,"Event callbacks defer visible detail refresh")
 	panel.refresh_pending()
 	var after_text: String=panel.detail.stats.text
 	check(panel.detail_refreshes==1,"Multiple enhancement events coalesce into one detail refresh")
-	check(after_text.contains("31%") and after_text.contains("310%") and after_text!=before_text,"Open detail displays level 31 memory material")
+	expected = memory_text(game, 31)
+	check(after_text.contains(expected[0]) and after_text.contains(expected[1]) and after_text!=before_text,"Open detail displays level 31 memory material")
 	check(panel.items[panel.selected].projection==before_projection,"Text changes even when selected projection does not")
 	panel.detail_frame.hide()
 	panel.detail_refreshes=0
@@ -81,7 +87,8 @@ func run() -> void:
 	panel.refresh_pending()
 	check(panel.detail_refreshes==0,"Closed detail skips refresh work")
 	panel.show_inspector()
-	check(panel.detail.stats.text.contains("32%") and panel.detail.stats.text.contains("320%"),"Reopened detail displays latest text")
+	expected = memory_text(game, 32)
+	check(panel.detail.stats.text.contains(expected[0]) and panel.detail.stats.text.contains(expected[1]),"Reopened detail displays latest text")
 	panel.detail_refreshes=0
 	scene.select_system(4)
 	await process_frame
@@ -94,6 +101,7 @@ func run() -> void:
 	scene.select_system(0)
 	await process_frame
 	panel.refresh_pending()
-	check(panel.detail.stats.text.contains("33%") and panel.detail.stats.text.contains("330%"),"Revealed page updates real detail text")
+	expected = memory_text(game, 33)
+	check(panel.detail.stats.text.contains(expected[0]) and panel.detail.stats.text.contains(expected[1]),"Revealed page updates real detail text")
 	print("EQUIPMENT SHARED DETAIL: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

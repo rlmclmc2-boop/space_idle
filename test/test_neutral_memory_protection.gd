@@ -13,6 +13,9 @@ func fixture(deferred := false) -> BattleGame:
  db.equipment.shield[0].para2=0
  db.equipment.shield[0].dmgtype=1;db.equipment.armour[0].dmgtype=2
  db.config.dmgReduce=.5
+ # Fixed protection amounts keep this hit-order fixture independent of balance values.
+ db.data.enhance_config.memory_heal_fraction.value=0.01
+ db.data.enhance_config.memory_buffer_fraction.value=0.1
  db.data.enhance_config.deferred_clear_probability.value=0
  # Keep repair strength1 while isolating the two shared effects in this fixture.
  db.data.enhance_config.threshold_2.value=1;db.data.enhance_config.threshold_3.value=2

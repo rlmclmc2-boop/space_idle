@@ -14,6 +14,9 @@ func fixture(key := "laser") -> BattleGame:
   db.equipment[defense][0].para1=100;db.equipment[defense][0]["para2" if defense=="armour" else "para4"]=0
  db.equipment.shield[0].para2=0;db.equipment.shield[0].dmgtype=1;db.equipment.armour[0].dmgtype=2
  db.config.dmgReduce=.5;db.data.enhance_config.repeat_probability.value=0;db.data.enhance_config.deferred_clear_probability.value=0
+ # Branch mechanics below use fixed 50-point repair pulses and 500-point caps.
+ db.data.enhance_config.memory_heal_fraction.value=0.01
+ db.data.enhance_config.memory_buffer_fraction.value=0.1
  var g:=BattleGame.new(db,false)
  g.profile.cleared=range(1,41);g.rebuild_unlocks()
  g.profile.enhancementLevel=50

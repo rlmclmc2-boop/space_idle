@@ -18,6 +18,9 @@ func fixture() -> BattleGame:
   db.equipment[key][0].para1=100
   db.equipment[key][0]["para2" if key=="armour" else "para4"]=0
  db.equipment.shield[0].para2=0
+ # This contract covers existing absorption arithmetic with a fixed fixture.
+ db.data.enhance_config.memory_heal_fraction.value=0.01
+ db.data.enhance_config.memory_buffer_fraction.value=0.1
  var g:=BattleGame.new(db,false)
  g.profile.grantedUnlocks=[db.unlock_id("feature","jewels")]
  g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()

@@ -20,6 +20,8 @@ func fixture(lab := false) -> BattleGame:
   row.para1=100;row.para2=0;row.para3=0;row.para4=0
   db.equipment[key]=[row]
  db.config.dmgReduce=.5
+ # Injected 10-point buffers below require the original explicit fixture cap.
+ db.data.enhance_config.memory_buffer_fraction.value=0.1
  var g: BattleGame=load("res://scripts/balance_game.gd").new(db) if lab else BattleGame.new(db,false)
  g.rng.seed=1701;g.speed=1
  g.profile.grantedUnlocks=[db.unlock_id("feature","jewels")]
