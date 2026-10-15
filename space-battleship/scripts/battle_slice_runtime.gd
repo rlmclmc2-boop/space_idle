@@ -65,6 +65,7 @@ func sync_screen_scale(value:float)->bool:
 	return true
 func advance(seconds:float)->void:
 	if scene.battle_transition_blocked():return
+	if game.native_execution!=null and not game.native_execution.sync_pulse_labels(game):return
 	advancing=true
 	if game.native_cancelled_step>0:
 		remainder=maxf(0.0,remainder-game.native_cancelled_step);game.native_cancelled_step=0.0
@@ -76,9 +77,6 @@ func advance(seconds:float)->void:
 		if scene.battle_transition_blocked():
 			advancing=false;scene.game_time_remainder=remainder
 			return
-		# Shared clock work can emit synchronous cold events. Complete the prior
-		# substep's presentation before those callbacks observe the next step.
-		if game.native_execution!=null:game.native_execution.publish_pulse_frame(game)
 		if not game.prepare_logical_step(STEP):
 			advancing=false;scene.game_time_remainder=remainder
 			return
@@ -106,7 +104,7 @@ func advance(seconds:float)->void:
 	scene.game_time_remainder=remainder
 	advancing=false
 func snapshot()->void:
-	if game.native_execution!=null:game.native_execution.publish_pulse_frame(game)
+	if game.native_execution!=null and not game.native_execution.publish_pulse_frame(game):return
 	geometry.sync_fixed_layout()
 	var membership:Dictionary={}
 	if game.native_execution!=null and game.native_execution.kernel.has_method("presentation_membership"):
@@ -305,7 +303,7 @@ func request_legacy_display()->void:
 		scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
 func close()->bool:
 	if not started:return true
-	if game.native_execution!=null:game.native_execution.release_pulse_feedback(game)
+	if game.native_execution!=null and not game.native_execution.release_pulse_feedback(game):return false
 	if not scene.prepare_native_laser_display(true):return false
 	game.native_presentation_surface=null
 	started=false

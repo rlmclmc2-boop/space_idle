@@ -425,6 +425,10 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	# Cold callbacks can reset the scene or read labels before the next frame.
+	# Fast hot batches never emit this signal, so this is not a per-hit poll.
+	if game.native_execution!=null and game.native_execution.pulse_feedback_owned and kind not in ["fire","hit","projectile_impact","critical_impact"]:
+		if not game.native_execution.publish_pulse_frame(game):return
 	# Compact laser feedback has no shot object; its lifetime is the immutable
 	# packet, even if the kernel recycled the flight before this signal.
 	if info.has("native_laser"):
@@ -490,6 +494,7 @@ func on_event(kind:String,info:Dictionary)->void:
 
 
 func reset_battle_transients_for_scene() -> void:
+	if not discard_native_pulse_labels():return
 	if is_instance_valid(retained_contacts):retained_contacts.clear()
 	destruction_events.clear()
 	rail_events.clear()

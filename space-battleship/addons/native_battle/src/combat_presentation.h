@@ -93,9 +93,20 @@ class SpaceCombatPresentation : public RefCounted {
     // Prototype owner for the ordered compact-pulse feedback run. This state
     // belongs to presentation, never to the numeric kernel or a second Game.
     struct PulseHit { bool player, critical; int64_t uid; int type; Variant amount, absorbed; };
+    struct PulseLabel {
+        int64_t uid=0;
+        double amount=0,absorbed=0,born=0,life=0;
+        bool critical=false,dirty=false;
+        Dictionary entry; // Existing Main display row, not combat authority.
+    };
+    struct PulseCritical { Vector2 point,direction; double display_time; };
     std::deque<PulseHit> pulse_history;
-    std::vector<SpaceCombatKernel::Effect> pulse_pending;
-    std::vector<double> pulse_display_times;
+    std::map<int64_t,PulseLabel> pulse_labels;
+    bool pulse_label_dirty=false;
+    std::vector<int64_t> pulse_label_order;
+    std::vector<int64_t> pulse_fire_serials;
+    std::vector<PulseCritical> pulse_criticals;
+    int pulse_step_sound=-1;
     std::map<int, std::pair<Dictionary,double>> pulse_turret_updates;
     std::vector<std::vector<PreparedFlight>> spare_frames;
     void recycle_frame(std::vector<PreparedFlight> &flights){flights.clear();if(spare_frames.size()<4){spare_frames.emplace_back();spare_frames.back().swap(flights);}}
@@ -175,40 +186,97 @@ class SpaceCombatPresentation : public RefCounted {
 protected:
     static void _bind_methods();
 public:
-    bool pulse_feedback_eligible(Ref<SpaceCombatKernel> kernel) const {
-        if (kernel.is_null() || !kernel->admitted || kernel->stopped) return false;
+    bool import_pulse_labels(Array rows) {
+        if (pulse_frame_pending()) return false;
+        std::map<int64_t,PulseLabel> next;
+        for (int i=0;i<rows.size();++i) {
+            Dictionary item=rows[i], entry=item.get("entry",Dictionary());
+            if (entry.is_empty()) continue;
+            Variant amount=entry.get("amount",Variant()), absorbed=entry.get("absorbed",Variant());
+            if ((amount.get_type()!=Variant::INT && amount.get_type()!=Variant::FLOAT) ||
+                (absorbed.get_type()!=Variant::INT && absorbed.get_type()!=Variant::FLOAT)) return false;
+            PulseLabel label;
+            label.uid=int64_t(item["uid"]);label.amount=double(amount);label.absorbed=double(absorbed);
+            label.born=double(entry["born"]);label.life=double(entry["life"]);
+            label.critical=bool(entry["critical"]);label.entry=entry;
+            if (!std::isfinite(label.amount)||!std::isfinite(label.absorbed)||!std::isfinite(label.born)) return false;
+            next.emplace(label.uid,label);
+        }
+        pulse_labels.swap(next);
+        return true;
+    }
+    void bind_pulse_label_entries(Array rows) {
+        for(int i=0;i<rows.size();++i) {
+            Dictionary row=rows[i];auto found=pulse_labels.find(int64_t(row["uid"]));
+            if(found!=pulse_labels.end())found->second.entry=row["entry"];
+        }
+    }
+    void clear_pulse_labels() { pulse_labels.clear(); pulse_label_dirty=false; pulse_label_order.clear(); }
+    bool pulse_feedback_eligible(Ref<SpaceCombatKernel> kernel,double display_time) const {
+        if (kernel.is_null() || !kernel->admitted || kernel->stopped || !std::isfinite(display_time)) return false;
+        std::map<int64_t,PulseLabel> prospective=pulse_labels;
         for (const SpaceCombatKernel::Effect &e : kernel->feedback) {
             // A cold event or another weapon keeps the complete ordered batch
             // on the compatibility route. No native side effect has occurred.
             if ((e.kind == 0 || e.kind == 1 || e.kind == 5) && e.compact_laser) continue;
-            if (e.kind == 2 && e.pulse_laser_hit && !e.player) continue;
+            if (e.kind == 2 && e.pulse_laser_hit && !e.player) {
+                if (!std::isfinite(e.amount)||!std::isfinite(e.absorbed)) return false;
+                auto found=prospective.find(e.uid);
+                if (found!=prospective.end() && display_time-found->second.born<0.2) {
+                    PulseLabel &label=found->second;
+                    if (!std::isfinite(label.amount+e.amount)||!std::isfinite(label.absorbed+e.absorbed)) return false;
+                    label.amount+=e.amount;label.absorbed+=e.absorbed;
+                } else {
+                    PulseLabel &label=prospective[e.uid];label.uid=e.uid;
+                    label.amount=e.amount;label.absorbed=e.absorbed;label.born=display_time;
+                }
+                continue;
+            }
             if (e.kind == 9 && e.compact_laser) continue;
             return false;
         }
         return !kernel->feedback.empty();
     }
-    int64_t stage_pulse_feedback(Ref<SpaceCombatKernel> kernel, double display_time) {
-        if (!pulse_feedback_eligible(kernel)) return -1;
+    int64_t stage_pulse_feedback(Ref<SpaceCombatKernel> kernel,double display_time,double normal_life,double critical_life) {
+        if (!std::isfinite(normal_life)||!std::isfinite(critical_life)||normal_life<0||critical_life<0||
+            !pulse_feedback_eligible(kernel,display_time)) return -1;
         const int64_t count = kernel->feedback.size();
-        pulse_pending.reserve(pulse_pending.size() + count);
-        pulse_display_times.reserve(pulse_display_times.size() + count);
-        for (SpaceCombatKernel::Effect &e : kernel->feedback) {
+        pulse_step_sound=-1;
+        for (const SpaceCombatKernel::Effect &e : kernel->feedback) {
             if (e.kind == 0 || e.kind == 1) {
-                if (e.kind == 0 && !e.laser_drone && e.laser_owns_aim)
-                    pulse_turret_updates[e.laser_mount] = {e.laser_primary,display_time};
+                if (e.kind == 0) {
+                    pulse_fire_serials.push_back(int64_t(e.laser_serial));
+                    if (pulse_step_sound<0) pulse_step_sound=e.type;
+                    if (!e.laser_drone && e.laser_owns_aim)
+                        pulse_turret_updates[e.laser_mount]={e.laser_primary,display_time};
+                }
                 Vector2 point = e.point, direction = e.direction;
                 if (e.kind == 1) {
                     double distance = (point - e.laser_launch).dot(direction);
                     point = inverse_battle_point(e.laser_ray_origin + e.laser_ray_step * distance);
                     direction = e.laser_ray_step.normalized();
                 }
-                record_contact(1, point, direction, display_time, e.kind == 0, e.critical, e.type);
+                record_contact(1, point, direction, display_time, e.kind == 0, e.kind == 1 && e.critical, e.type);
             } else if (e.kind == 2) {
                 pulse_history.push_back({e.player,e.critical,e.uid,e.type,e.amount,e.absorbed});
                 if (pulse_history.size() > 40) pulse_history.pop_front();
+                auto found=pulse_labels.find(e.uid);
+                bool merge=found!=pulse_labels.end() && display_time-found->second.born<0.2;
+                PulseLabel &label=pulse_labels[e.uid];
+                if (merge) {
+                    label.amount+=e.amount;label.absorbed+=e.absorbed;label.critical=label.critical||e.critical;
+                } else {
+                    label.uid=e.uid;label.amount=e.amount;label.absorbed=e.absorbed;
+                    label.born=display_time;label.critical=e.critical;
+                }
+                // Old queue_damage_number uses the current hit's duration even
+                // when an earlier critical remains in the merged summary.
+                label.life=e.critical?critical_life:normal_life;
+                if(!label.dirty)pulse_label_order.push_back(e.uid);
+                label.dirty=true;pulse_label_dirty=true;
+            } else if (e.kind == 9) {
+                pulse_criticals.push_back({e.point,e.direction,display_time});
             }
-            pulse_pending.push_back(std::move(e));
-            pulse_display_times.push_back(display_time);
         }
         kernel->feedback.clear(); // sole owner; take_feedback cannot replay this batch
         return count;
@@ -240,30 +308,34 @@ public:
         pulse_turret_updates.clear();
         return rows;
     }
-    Array take_pulse_frame() {
-        Array rows;
-        for (size_t i = 0; i < pulse_pending.size(); ++i) {
-            const SpaceCombatKernel::Effect &e = pulse_pending[i];
-            Dictionary row;
-            if (e.kind == 0) {
-                row["kind"] = 0; row["type"] = e.type; row["mount"] = e.laser_mount;
-                row["drone"] = e.laser_drone; row["owns_aim"] = e.laser_owns_aim;
-                row["primary_target"] = e.laser_primary; row["serial"] = int64_t(e.laser_serial);
-            } else if (e.kind == 2) {
-                row["kind"] = 2; row["uid"] = e.uid; row["type"] = e.type;
-                row["amount"] = e.amount; row["absorbed"] = e.absorbed; row["critical"] = e.critical;
-            } else if (e.kind == 9) {
-                row["kind"] = 9; row["position"] = e.point; row["direction"] = e.direction;
-            } else continue; // contact already recorded; retirement has no old callback
-            row["display_time"] = pulse_display_times[i];
-            rows.push_back(row);
+    int take_pulse_step_sound() { int result=pulse_step_sound;pulse_step_sound=-1;return result; }
+    Dictionary take_pulse_frame() {
+        Dictionary frame;
+        PackedInt64Array serials;serials.resize(pulse_fire_serials.size());
+        for(size_t i=0;i<pulse_fire_serials.size();++i)serials.set(i,pulse_fire_serials[i]);
+        frame["serials"]=serials;pulse_fire_serials.clear();
+        PackedVector2Array points,directions;PackedFloat64Array times;
+        points.resize(pulse_criticals.size());directions.resize(pulse_criticals.size());times.resize(pulse_criticals.size());
+        for(size_t i=0;i<pulse_criticals.size();++i) {
+            points.set(i,pulse_criticals[i].point);directions.set(i,pulse_criticals[i].direction);
+            times.set(i,pulse_criticals[i].display_time);
         }
-        pulse_pending.clear(); pulse_display_times.clear();
-        return rows;
+        frame["critical_points"]=points;frame["critical_directions"]=directions;frame["critical_times"]=times;
+        pulse_criticals.clear();
+        Array labels;
+        if(pulse_label_dirty)for(int64_t uid:pulse_label_order) {
+            PulseLabel &label=pulse_labels.at(uid);Dictionary row;
+            row["uid"]=label.uid;row["amount"]=label.amount;row["absorbed"]=label.absorbed;
+            row["born"]=label.born;row["life"]=label.life;row["critical"]=label.critical;
+            row["entry"]=label.entry;labels.push_back(row);label.dirty=false;
+        }
+        pulse_label_dirty=false;pulse_label_order.clear();frame["labels"]=labels;
+        return frame;
     }
-    bool pulse_frame_pending() const { return !pulse_pending.empty(); }
+    bool pulse_frame_pending() const { return !pulse_fire_serials.empty()||!pulse_criticals.empty()||pulse_label_dirty; }
     void clear_pulse_feedback() {
-        pulse_pending.clear(); pulse_display_times.clear(); pulse_history.clear(); pulse_turret_updates.clear();
+        pulse_fire_serials.clear();pulse_criticals.clear();pulse_labels.clear();pulse_history.clear();
+        pulse_label_dirty=false;pulse_label_order.clear();pulse_step_sound=-1;pulse_turret_updates.clear();
     }
     void configure_retained_gpu(Ref<ShaderMaterial> material) {
         if(retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped && retained_kernel->set_compact_laser_births(false)<0)return;
@@ -792,11 +864,15 @@ void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
 }
 #include "combat_retained_presentation.h"
 void SpaceCombatPresentation::_bind_methods(){
-    ClassDB::bind_method(D_METHOD("pulse_feedback_eligible","kernel"),&SpaceCombatPresentation::pulse_feedback_eligible);
-    ClassDB::bind_method(D_METHOD("stage_pulse_feedback","kernel","display_time"),&SpaceCombatPresentation::stage_pulse_feedback);
+    ClassDB::bind_method(D_METHOD("import_pulse_labels","rows"),&SpaceCombatPresentation::import_pulse_labels);
+    ClassDB::bind_method(D_METHOD("bind_pulse_label_entries","rows"),&SpaceCombatPresentation::bind_pulse_label_entries);
+    ClassDB::bind_method(D_METHOD("clear_pulse_labels"),&SpaceCombatPresentation::clear_pulse_labels);
+    ClassDB::bind_method(D_METHOD("pulse_feedback_eligible","kernel","display_time"),&SpaceCombatPresentation::pulse_feedback_eligible);
+    ClassDB::bind_method(D_METHOD("stage_pulse_feedback","kernel","display_time","normal_life","critical_life"),&SpaceCombatPresentation::stage_pulse_feedback);
     ClassDB::bind_method(D_METHOD("import_pulse_history","rows"),&SpaceCombatPresentation::import_pulse_history);
     ClassDB::bind_method(D_METHOD("pulse_history_snapshot"),&SpaceCombatPresentation::pulse_history_snapshot);
     ClassDB::bind_method(D_METHOD("take_pulse_turret_updates"),&SpaceCombatPresentation::take_pulse_turret_updates);
+    ClassDB::bind_method(D_METHOD("take_pulse_step_sound"),&SpaceCombatPresentation::take_pulse_step_sound);
     ClassDB::bind_method(D_METHOD("take_pulse_frame"),&SpaceCombatPresentation::take_pulse_frame);
     ClassDB::bind_method(D_METHOD("pulse_frame_pending"),&SpaceCombatPresentation::pulse_frame_pending);
     ClassDB::bind_method(D_METHOD("clear_pulse_feedback"),&SpaceCombatPresentation::clear_pulse_feedback);

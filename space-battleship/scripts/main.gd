@@ -530,6 +530,7 @@ func sync_accelerated_visual_mode() -> void:
 	var enabled := fast_mode_enabled()
 	if enabled == accelerated_visual_mode:
 		return
+	if enabled and not discard_native_pulse_labels():return
 	if enabled and not prepare_native_laser_display(true):return
 	accelerated_visual_mode = enabled
 	if not enabled:
@@ -1951,6 +1952,7 @@ func beam_ring(pos: Vector2, color: Color, duration: float, radius: float) -> vo
 	particles.append({"pos":pos,"vel":Vector2.ZERO,"color":color,"life":duration,"duration":duration,"size":radius,"ring":true})
 
 func reset_battle_transients_for_scene() -> void:
+	if not discard_native_pulse_labels():return
 	# A scene boundary invalidates visual history, not authoritative projectiles.
 	# Do not expire old beams through sync_beam_visuals: that emits more particles.
 	particles.clear()
@@ -2631,11 +2633,15 @@ func sync_battle_visibility() -> void:
 		battle_layer.queue_redraw()
 
 func set_damage_mode(mode: int) -> void:
+	if not discard_native_pulse_labels():return
 	damage_mode = mode
 	show_damage_numbers = mode != 2
 	damage_pending.clear()
 	floats = floats.filter(func(f):return not f.get("damage",false))
 	battle_layer.queue_redraw()
+
+func discard_native_pulse_labels()->bool:
+	return game==null or game.native_execution==null or game.native_execution.discard_pulse_labels(game)
 
 func damage_feedback_text(amount, absorbed = 0, exact := false) -> String:
 	var damage_text := GrowthNumber.text(amount) if exact else NUMBER_FORMAT.damage(amount)
@@ -2650,18 +2656,16 @@ func incoming_damage_text(amount, absorbed, damage_type: int, exact := false) ->
 	if damage_type not in [1,2]:return value
 	return UIText.t("battle.incoming_damage",{"type":UIText.t("equipment.energy" if damage_type==1 else "equipment.physical"),"damage":value})
 
-func queue_damage_number(info: Dictionary,record_history:=true,event_time:=NAN) -> void:
+func queue_damage_number(info: Dictionary) -> void:
 	if fast_mode_enabled():return
-	var at:float=fx_time if is_nan(event_time) else event_time
 	var absorbed = info.get("absorbed",0)
 	var amount = info.amount
 	# Each hit remains a record; only owned scalar numbers enter the bounded ring.
-	if record_history:
-		var row = [bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),{"m":amount.m,"e":amount.e} if amount is Dictionary else amount,{"m":absorbed.m,"e":absorbed.e} if absorbed is Dictionary else absorbed]
-		if damage_history_records.size()<40:damage_history_records.append(row)
-		else:
-			damage_history_records[damage_history_head]=row
-			damage_history_head=(damage_history_head+1)%40
+	var row = [bool(info.player),info.get("uid",0),int(info.type),bool(info.get("critical",false)),{"m":amount.m,"e":amount.e} if amount is Dictionary else amount,{"m":absorbed.m,"e":absorbed.e} if absorbed is Dictionary else absorbed]
+	if damage_history_records.size()<40:damage_history_records.append(row)
+	else:
+		damage_history_records[damage_history_head]=row
+		damage_history_head=(damage_history_head+1)%40
 	if not show_damage_numbers:return
 	var target := "player" if info.player else "enemy:%s" % info.uid
 	var critical := bool(info.get("critical",false))
@@ -2672,8 +2676,8 @@ func queue_damage_number(info: Dictionary,record_history:=true,event_time:=NAN) 
 		for entry in entries:
 			if entry.get("target","")!=target or entry.type!=category:continue
 			if summary and entry.get("summary",false):
-				if at-entry.born>=0.2:
-					entry.amount=info.amount;entry.absorbed=absorbed;entry.born=at;entry.critical=critical
+				if fx_time-entry.born>=0.2:
+					entry.amount=info.amount;entry.absorbed=absorbed;entry.born=fx_time;entry.critical=critical
 				else:
 					entry.amount=GrowthNumber.add(entry.amount,info.amount)
 					entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
@@ -2681,17 +2685,56 @@ func queue_damage_number(info: Dictionary,record_history:=true,event_time:=NAN) 
 				entry.life=duration;entry.color=Color("ffd477") if entry.critical else Color("f1f5fa")
 				entry.display_dirty=true
 				return
-			if not summary and entry.critical==critical and at-entry.born<0.2 and not entry.get("retiring",false):
+			if not summary and entry.critical==critical and fx_time-entry.born<0.2 and not entry.get("retiring",false):
 				entry.amount=GrowthNumber.add(entry.amount,info.amount)
 				entry.absorbed=GrowthNumber.add(entry.get("absorbed",0),absorbed)
 				entry.display_dirty=true
 				return
-	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":at,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
+	var entry := {"target":target,"summary":summary,"critical":critical,"type":category,"amount":info.amount,"absorbed":absorbed,"text":"","display_dirty":true,"born":fx_time,"life":duration,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18 if summary else 23 if critical else 20,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":info.get("uid",0)}
 	# Keep a same-frame killed target alive until its final display anchor is read.
 	if not info.player:
 		for enemy in game.enemies:
 			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
+
+func native_pulse_label_seed() -> Array:
+	# The first summary row is the one queue_damage_number would update.
+	var rows:Array=[]
+	var seen:Dictionary={}
+	for entries in [floats,damage_pending]:
+		for entry in entries:
+			if not entry.get("damage",false) or not entry.get("summary",false):continue
+			var uid:int=int(entry.get("uid",-1))
+			if str(entry.get("target",""))!="enemy:%s" % uid or seen.has(uid):continue
+			seen[uid]=true;rows.append({"uid":uid,"entry":entry})
+	return rows
+
+func native_apply_pulse_labels(changes:Array)->Array:
+	var applied:Array=[]
+	for row in changes:
+		var entry:Dictionary=row.entry
+		var critical:bool=bool(row.critical)
+		if entry.is_empty():
+			var uid:int=int(row.uid)
+			entry={"target":"enemy:%s" % uid,"summary":true,"critical":critical,"type":0,"amount":row.amount,"absorbed":row.absorbed,"text":"","display_dirty":true,"born":row.born,"life":row.life,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":uid}
+			for enemy in game.enemies:
+				if int(enemy.uid)==uid:entry.target_entity=enemy;break
+			damage_pending.append(entry)
+		else:
+			entry.amount=row.amount;entry.absorbed=row.absorbed;entry.critical=critical
+			entry.born=row.born;entry.life=row.life
+			entry.color=Color("ffd477") if critical else Color("f1f5fa")
+			entry.display_dirty=true
+		applied.append({"uid":int(row.uid),"entry":entry})
+	return applied
+
+func native_critical_pulse_effect(point:Vector2,direction:Vector2,display_time:float)->void:
+	# Effects born during this display frame receive the same first frame of
+	# particle aging as the former synchronous callback.
+	assert(display_time<=fx_time+0.000001)
+	weapon_flash(point,Color.WHITE,14.0,0.08)
+	beam_ring(point,ORANGE,0.12,11)
+	weapon_sparks(point,7,140,direction)
 
 func native_damage_history_rows() -> Array:
 	var rows:Array=[]

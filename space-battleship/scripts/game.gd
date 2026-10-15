@@ -1957,7 +1957,8 @@ func reset_player() -> void:
 
 func change_state(next: State) -> void:
 	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
+		if not native_execution.cancel(self):return
+		native_execution=null
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and endless_beam_eligible(p)))
 	if next == State.TRAVEL:
@@ -2091,7 +2092,8 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 		event.emit("battle_blocked",{"reason":"zero_armour"})
 		return false
 	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
+		if not native_execution.cancel(self):return false
+		native_execution=null
 		native_execution_requested=false
 	settle_drops()
 	drone_combat.reset();invalidate_stat_cache()
@@ -2519,7 +2521,8 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 
 func begin_retreat() -> void:
 	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
+		if not native_execution.cancel(self):return
+		native_execution=null
 	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
