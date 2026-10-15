@@ -1,6 +1,6 @@
 # Four-weapon role baseline under candidate A
 
-**Decision state:** a comparable baseline for review, not a production parameter change or opening-stage approval. The only test override is missile base damage 200 -> 120; the recovering target also uses the separate unmounted 1.0 s / 25% per second shield candidate. Laser 300/1.5 s, missile four per 2.4 s with its fast 0.4 s opener, cannon 1500/3.5 s, and beam 35/0.28 s plus charge remain otherwise fixed. The installed game continues to use 4 x 200 missiles and the draft enemy's original 1.8 s / 8% recovery.
+**Decision state:** a comparable neutral-hull baseline for review, not a production parameter change, final role closure, or opening-stage approval. The subsequent [typed-defense review](TYPE-AXIS.md) gives physical/energy matchups priority over this sample's exact HP interval. The only test override is missile base damage 200 -> 120; the recovering target also uses the separate unmounted 1.0 s / 25% per second shield candidate. Laser 300/1.5 s, missile four per 2.4 s with its fast 0.4 s opener, cannon 1500/3.5 s, and beam 35/0.28 s plus charge remain otherwise fixed. The installed game continues to use 4 x 200 missiles and the draft enemy's original 1.8 s / 8% recovery.
 
 ## Comparable results
 
@@ -45,5 +45,5 @@ The focused probe now asserts native admission, work, one handoff, death count, 
 
 1. Decide whether the pulse/missile/cannon/beam soft roles and their visible cadence fit the intended opening. If yes, author the first three stages and purchase pacing **with** the candidate damage and shield changes in authoritative Excel, then regenerate JSON and perform a short, serial stage-2/3 pressure and resource check. The disconnected 18-point draft requires its frozen reward binding repaired before any integration.
 2. If event-time parity is a release requirement, define an allowed time difference or a desired shared scheduling rule before changing either executor. Structural hit-count parity in four 1x cases does not decide that standard.
-3. Keep the `1e40` exact-hit problem open for user direction. Do not install a broad residual clamp or a second shadow HP ledger on this evidence.
+3. The user accepted approximate rather than exact boundary hit counts at `1e40`. Track the observed residual and stable role rankings; do not install a broad residual clamp or a second shadow HP ledger on this evidence.
 4. Re-evaluate Memory recovery at higher enhancement levels under sustained incoming damage. The current nominal no-branch repair reaches 7.5% of maximum defence per second at effective level 30, versus 2.5% at level 10. The level-10 tests do not prove that high-level tanking is impossible. Stage-18 economy and pressure remain unverified.
