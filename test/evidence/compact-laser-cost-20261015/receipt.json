@@ -1,0 +1,147 @@
+{
+  "source_head": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "qa_cost_sha256": "81396e1002e293c5857f01f1323cb2e4d15b01a4d4a162e1667172d6b95deee7",
+  "prepare_sha256": "3f8997a96689691cdb0ede7e8a7c40bc4c18297062618854d1ee53fc38c699b8",
+  "order": [
+    "off-1",
+    "on-1",
+    "off-2"
+  ],
+  "runs": [
+    {
+      "label": "mixed",
+      "order": "off-1",
+      "timers": "off",
+      "exit": 0,
+      "wall_seconds": 20.60403323173523,
+      "log_sha256": "09a74e0b4c26fdf463c081587327c6fec24dbde0612bcd34944d952efeed1f03",
+      "raw_sha256": "2ed6907cf938d9168e5c1b61e6ce6821665e8ab940e3e63cbd76ced5d412a3e8",
+      "gzip_sha256": "a219dc5dacd7f96b39248b911d7615a11036f5b644c77f70b71eb09e0eb2c6cd"
+    },
+    {
+      "label": "mixed",
+      "order": "on-1",
+      "timers": "on",
+      "exit": 0,
+      "wall_seconds": 20.379019260406494,
+      "log_sha256": "0400ee0a3b5f8cabfe69dc1980534bea395b88ca51fba28a456aa7208ff326e6",
+      "raw_sha256": "5d7826c0f6510ceb0bd3ae3aac1be54ca75973c2f3999159cc94736ed2ff44fa",
+      "gzip_sha256": "37e6bda9b2568516144f8bc1c0f055e2ac8a797a4cce1afb8414d0ef9a4cbd15",
+      "png_sha256": "5ee9a173529fc46c7061e82d36d14e098504b822f223975d40893e2ae2507f4e"
+    },
+    {
+      "label": "mixed",
+      "order": "off-2",
+      "timers": "off",
+      "exit": 0,
+      "wall_seconds": 20.424036979675293,
+      "log_sha256": "61e42f1e42440d1deaed04c0fb3597ed7a51db489eaae1ae18776e790db9b43d",
+      "raw_sha256": "76c910eafcfcad5339d0bf2c05747696ad1e65c985bd34b07c3a2bd8cd677d0b",
+      "gzip_sha256": "45774f5f7740a46993bac27d735edbc64b68a41c05a2a9fa65d0bddc105302f9"
+    },
+    {
+      "label": "laser",
+      "order": "off-1",
+      "timers": "off",
+      "exit": 0,
+      "wall_seconds": 20.43235731124878,
+      "log_sha256": "a47c4c1fe2173f1d97d5a13c2ea4d3921bfbdb238efdacb3b1fb2714a954e1f9",
+      "raw_sha256": "6ae0f7c82de386351441f6fb67ef3599147e61565dfb465235af502cd1d139d8",
+      "gzip_sha256": "10843f43408ad067ac7362766957da504589b0cea0030a9f1825691e3bb76397"
+    },
+    {
+      "label": "laser",
+      "order": "on-1",
+      "timers": "on",
+      "exit": 0,
+      "wall_seconds": 20.549227237701416,
+      "log_sha256": "113848d41bd2b86ecba5205279a4d99d946c6e5331518e5ac989f220f0f04b57",
+      "raw_sha256": "0eb793f7e4041418531e21b37a9a30413ce239171a1aaa55929a4342fa9a7689",
+      "gzip_sha256": "d418d69fad26bf112e2ac7a1f59dcf77c98dadf08f0e912a2e40f4c117c2fa7a",
+      "png_sha256": "cb791490af5b02a0b8c0e6c5e5d9423ead7132d35ea1eb243db35a0e51f65820"
+    },
+    {
+      "label": "laser",
+      "order": "off-2",
+      "timers": "off",
+      "exit": 0,
+      "wall_seconds": 20.618658542633057,
+      "log_sha256": "b65b3fd24746efd7597b1f948252dadee023f645e7e77755f5710187825dff7f",
+      "raw_sha256": "c16c212b487f10cf1c6e52c19a7537bee41a11d97f00a256c4b5ab5f47eb568e",
+      "gzip_sha256": "8b99a5dcc9d479becf838d62b7c4d0a60df03af36d5dcaefddb3f8af9fea2b4a"
+    }
+  ],
+  "projects": {
+    "mixed": {
+      "patches": {
+        "battle_slice_runtime.gd": {
+          "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+          "qa_sha256": "44440610383f9ff943b98a2cb65a08e5846d66d47dfb677e6396c58e97d329d8"
+        },
+        "simulation_geometry_authority.gd": {
+          "source_sha256": "5f3fa7a398782a6d3d902448cc24c522003602b8feb860ce2e4fd1cd40d9fa6e",
+          "qa_sha256": "835d830814139f34dc4128931b57c21efe2be216fe0eb72b4840c6ec7e4f2ae5"
+        },
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "f9d183ae98724db6d7c0e2b60bad19680b253ae0b3edf7328cec50d6931b05fb"
+        },
+        "game.gd": {
+          "source_sha256": "f442a398135874e37beb767de43a393342d9e23c3cd1c3848de9b6d7d30273cd",
+          "qa_sha256": "03dfd4a3813312829bd2b90279ce19c9c041eee0a4ed348b0f7e7b1a8945d538"
+        },
+        "presented_battle_game.gd": {
+          "source_sha256": "5103b23ea537e30ad3cb8d55710bc0ef35c244f769e8ad2aedf821e2589356e3",
+          "qa_sha256": "c68ba67f33042844c01592630b338f381b54a5a929a7f7d456784f763b0af45e"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "948daa186806c1dcc291ab6e6d592babfca50819a4eb91981ab45fa1d39b6100"
+        }
+      },
+      "driver": {
+        "base_driver_sha256": "914f0153b35404ba46dfc03bd4096801cf641543bd507c381a8d555c0db67bd3",
+        "qa_driver_sha256": "e9087637f7bcf560810442ffc509e93f94aae31e71bde335ad689f62f9498e26"
+      },
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+    },
+    "laser": {
+      "patches": {
+        "battle_slice_runtime.gd": {
+          "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+          "qa_sha256": "44440610383f9ff943b98a2cb65a08e5846d66d47dfb677e6396c58e97d329d8"
+        },
+        "simulation_geometry_authority.gd": {
+          "source_sha256": "5f3fa7a398782a6d3d902448cc24c522003602b8feb860ce2e4fd1cd40d9fa6e",
+          "qa_sha256": "835d830814139f34dc4128931b57c21efe2be216fe0eb72b4840c6ec7e4f2ae5"
+        },
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "f9d183ae98724db6d7c0e2b60bad19680b253ae0b3edf7328cec50d6931b05fb"
+        },
+        "game.gd": {
+          "source_sha256": "f442a398135874e37beb767de43a393342d9e23c3cd1c3848de9b6d7d30273cd",
+          "qa_sha256": "03dfd4a3813312829bd2b90279ce19c9c041eee0a4ed348b0f7e7b1a8945d538"
+        },
+        "presented_battle_game.gd": {
+          "source_sha256": "5103b23ea537e30ad3cb8d55710bc0ef35c244f769e8ad2aedf821e2589356e3",
+          "qa_sha256": "c68ba67f33042844c01592630b338f381b54a5a929a7f7d456784f763b0af45e"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "948daa186806c1dcc291ab6e6d592babfca50819a4eb91981ab45fa1d39b6100"
+        }
+      },
+      "driver": {
+        "base_driver_sha256": "914f0153b35404ba46dfc03bd4096801cf641543bd507c381a8d555c0db67bd3",
+        "qa_driver_sha256": "e9087637f7bcf560810442ffc509e93f94aae31e71bde335ad689f62f9498e26"
+      },
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe"
+    }
+  },
+  "scope": "Compact-on mixed and pulse fixtures only. QA source wrappers identical across timer-off/on/off. Full GL 1x, 60Hz logic, uncapped and VSync off. No gameplay edits or prototype."
+}

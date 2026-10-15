@@ -1,0 +1,50 @@
+{
+  "source_head": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "dll_sha256": "1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "qa_cost_sha256": "81396e1002e293c5857f01f1323cb2e4d15b01a4d4a162e1667172d6b95deee7",
+  "prepare_sha256": "f4c035dd5d527c5bb938693056742d2ce044b9b7448df5b40ffbfe1b36d65f4c",
+  "order": [
+    "off-1",
+    "on-1",
+    "off-2"
+  ],
+  "runs": [],
+  "projects": {
+    "mixed": {
+      "patches": {
+        "battle_slice_runtime.gd": {
+          "source_sha256": "2b9318600a99ae27a8bb93cb89537073681f1de1abb1bae74cc73a82bc485f9e",
+          "qa_sha256": "44440610383f9ff943b98a2cb65a08e5846d66d47dfb677e6396c58e97d329d8"
+        },
+        "simulation_geometry_authority.gd": {
+          "source_sha256": "5f3fa7a398782a6d3d902448cc24c522003602b8feb860ce2e4fd1cd40d9fa6e",
+          "qa_sha256": "835d830814139f34dc4128931b57c21efe2be216fe0eb72b4840c6ec7e4f2ae5"
+        },
+        "native_execution_session.gd": {
+          "source_sha256": "719461986a0cc6cf52be580b79c7e32b21aa0caf22e97f271ce87a1b711bc516",
+          "qa_sha256": "f9d183ae98724db6d7c0e2b60bad19680b253ae0b3edf7328cec50d6931b05fb"
+        },
+        "game.gd": {
+          "source_sha256": "f442a398135874e37beb767de43a393342d9e23c3cd1c3848de9b6d7d30273cd",
+          "qa_sha256": "03dfd4a3813312829bd2b90279ce19c9c041eee0a4ed348b0f7e7b1a8945d538"
+        },
+        "presented_battle_game.gd": {
+          "source_sha256": "5103b23ea537e30ad3cb8d55710bc0ef35c244f769e8ad2aedf821e2589356e3",
+          "qa_sha256": "e9c26b6eda64e1e641ad16d0683f61f3e00175549a266b74f20dcb98087d54ce"
+        },
+        "main.gd": {
+          "source_sha256": "173443afafd58ad97b2ae3016fb341acf03bc242b6f07f53dc1f238adb73af85",
+          "qa_sha256": "948daa186806c1dcc291ab6e6d592babfca50819a4eb91981ab45fa1d39b6100"
+        }
+      },
+      "driver": {
+        "base_driver_sha256": "914f0153b35404ba46dfc03bd4096801cf641543bd507c381a8d555c0db67bd3",
+        "qa_driver_sha256": "e9087637f7bcf560810442ffc509e93f94aae31e71bde335ad689f62f9498e26"
+      },
+      "project_sha256": "47e9aa735defe2d8181a97778209ed0a262c6fea359ea36284357d4e2bfbc4f6",
+      "fixture_sha256": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4"
+    }
+  },
+  "scope": "Compact-on mixed and pulse fixtures only. QA source wrappers identical across timer-off/on/off. Full GL 1x, 60Hz logic, uncapped and VSync off. No gameplay edits or prototype."
+}
