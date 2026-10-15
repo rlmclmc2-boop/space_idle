@@ -51,6 +51,7 @@ func run() -> void:
 	guide.refresh()
 	await press(guide.action)
 	check(guide.phase=="equip","Acknowledged intro targets an open module")
+	await capture(scene,"equip-first")
 	var slot: String = guide.target_slot
 	var index := int(slot.split("_")[1])
 	guide.activate()
@@ -69,12 +70,27 @@ func run() -> void:
 	guide.refresh()
 	check(guide.phase=="equip","A real selectable weapon restores the equipment step")
 	game.equip_slot("weapons",index,"laser")
+	for card in scene.equipment_panel.cards.values():card.name_button.get_popup().hide()
+	guide.refresh()
+	var additional_weapons := 0
+	while guide.phase=="equip" and additional_weapons<game.active_slot_count("weapons"):
+		var next_index := int(guide.target_slot.split("_")[1])
+		check(game.slot_entry("weapons",next_index).key.is_empty(),"Each guide target is an empty weapon slot")
+		game.equip_slot("weapons",next_index,"laser")
+		for card in scene.equipment_panel.cards.values():card.name_button.get_popup().hide()
+		additional_weapons += 1
+		guide.refresh()
+	check(additional_weapons>0 and guide.phase=="defence","Guide fills all free weapon slots before defence")
+	await capture(scene,"defence-before-upgrade")
+	game.equip_slot("defence",1,"armour")
 	game.profile.resources = {"1":0.0,"2":0.0}
 	guide.refresh()
-	check(guide.phase=="waiting" and guide.body.text.contains(scene.cost_text(game.slot_upgrade_cost("weapons",0))),"Equip completes by actual state and insufficient resources show actual costs")
+	check(guide.phase=="waiting" and guide.body.text.contains(scene.cost_text(game.slot_upgrade_cost("weapons",0))),"Defence fills before insufficient-resource upgrade cue with actual cost")
+	await capture(scene,"waiting-cost")
 	game.profile.resources = {"1":1e12,"2":1e12}
 	guide.refresh()
 	check(guide.phase=="upgrade","Affordable upgrade appears without forced timing")
+	await capture(scene,"affordable-upgrade")
 	guide.dismiss()
 	check(not guide.panel.visible and not guide.reopen.visible,"Dismiss clears the battlefield without a persistent guide button")
 	for repeat in 3:guide.refresh()
@@ -98,13 +114,7 @@ func run() -> void:
 	guide.open_guide()
 	game.upgrade_slot("weapons",int(guide.target_slot.split("_")[1]))
 	guide.refresh()
-	check(guide.phase=="defence" and guide.target_slot=="defence_1","After upgrade the guide points to a free defensive slot")
-	await capture(scene,"defence-target")
-	guide.activate()
-	check(scene.equipment_panel.selected=="defence_1","Defence CTA selects its actual slot")
-	game.equip_slot("defence",1,"armour")
-	guide.refresh()
-	check(guide.phase=="progress","Actual defensive equip completes the survival step")
+	check(guide.phase=="progress","Upgrading after free weapon and defence fills returns to battle")
 	game.paused = true
 	guide.refresh()
 	check(guide.phase=="paused","Pause does not hide instructions or unpause battle")

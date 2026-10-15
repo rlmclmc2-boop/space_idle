@@ -18,7 +18,8 @@ REFS = (("before", "a5fa51bdae92c817caab1071a8b2a4242c0e503b"),
         ("after", "25fa50757ad4317f2d0a5c34154f11ccc26a81d7"))
 
 MIXED = os.environ.get("PERF_MIXED_OPENING") == "1"
-LABEL = "balance-art-mixed" if MIXED else "balance-art"
+UNCAPPED = os.environ.get("PERF_UNCAPPED") == "1"
+LABEL = ("balance-art-mixed" if MIXED else "balance-art") + ("-uncapped" if UNCAPPED else "")
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -57,7 +58,7 @@ def run(label, ref):
         path = area / "userdata" / folder
         path.mkdir(parents=True, exist_ok=True)
         env[key] = str(path)
-    env.update(PERF_NATIVE="1", PERF_SIDE=label, PERF_ART_PAIR="1", PERF_MIXED_OPENING="1" if MIXED else "0")
+    env.update(PERF_NATIVE="1", PERF_SIDE=label, PERF_ART_PAIR="1", PERF_MIXED_OPENING="1" if MIXED else "0", PERF_UNCAPPED="1" if UNCAPPED else "0")
     engine = str(ENGINE)
     checked([engine, "--headless", "--editor", "--import", "--quit", "--path", str(project)],
             project, env, area / "import.log", 180)
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         assert row["runtime_config_start"]["save_enabled"] is False
         assert row["native_active"] is True and row["handoffs"] == 0
         assert row["sample_steps"] == 240 and row["actual_1x_pass"]
+        assert row["engine_max_fps"] == (0 if UNCAPPED else 60) and row["vsync_mode"] == 0
     if MIXED:
         expected={"swarm":5,"anchor":5,"shielded":5}
         for row in (before,after):
