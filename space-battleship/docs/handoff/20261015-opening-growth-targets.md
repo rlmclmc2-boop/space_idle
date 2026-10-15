@@ -1,5 +1,7 @@
 # 前三关：整舰成长目标与18战点候选
 
+> Measured QA correction: the iron/time figures below are gross planning targets. Default auto pickup and actual travel were measured later; use [the measured opening QA](20261015-opening-measured-qa.md) for net income, timing and progression claims.
+
 本稿先定玩家可操作的装配、升级和能源分配，再定整舰输出/耐久目标，最后反推敌阵与每点铁收入。四武器基准候选沿用脉冲350/1.5秒、导弹4×170/2.4秒、磁轨炮1200/3.5秒、光束35/0.25秒；光束第5关后才开放，前三关不得要求它。18点已在隔离分支的权威 Excel 挂载并生成 JSON，尚未通过短QA或体验验收。
 
 ## 前稿失效项：代码路径审计

@@ -18,10 +18,10 @@ func run() -> void:
 		check(db.levels[level - 1].groups.size() == level + 4, "authored point count level " + str(level))
 	for id in range(270001, 270009):
 		check(db.enemies.has(str(id)) and str(db.enemies[str(id)].get("archetype_id", "")) != "", "stable archetype " + str(id))
-	check(is_equal_approx(float(db.equipment.laser[0].cd), 1.5) and is_equal_approx(float(db.equipment.laser[0].dmg), 300.0), "pulse timing and damage")
+	check(is_equal_approx(float(db.equipment.laser[0].cd), 1.5) and is_equal_approx(float(db.equipment.laser[0].dmg), 350.0), "pulse timing and damage")
 	var g := BattleGame.new(db, false)
 	g.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
-	g.profile.loadout = {"weapons": [{"key":"missile","level":1}], "defence": [{"key":"shield","level":1},{"key":"armour","level":1}]}
+	g.profile.loadout = {"weapons": [{"key":"missile","level":1}], "defence": [{"key":"armour","level":1},{"key":"shield","level":1}]}
 	g.reset_player()
 	g.change_state(BattleGame.State.TRAVEL)
 	check(is_equal_approx(float(g.cooldowns.get(g.slot_id("weapons",0),99)),0.4), "missile first salvo after travel")
@@ -31,6 +31,8 @@ func run() -> void:
 	# Armour receives the hit when shield is empty; the empty shield must wait.
 	g.player.shield = 0
 	g.sync_jewel_defence_damage()
+	g.since_hit = 0.0
+	g.jewel_defence_times.clear()
 	g.advance_jewel_repair(1.9)
 	g.hit_player(5, 2)
 	g.advance_jewel_repair(0.2)
