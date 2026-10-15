@@ -1,0 +1,43 @@
+{
+  "scope": "presentation only",
+  "gameplay_files_changed": false,
+  "source_native_crop": [
+    87,
+    0,
+    659,
+    2106
+  ],
+  "stage_visual_travel": [
+    720,
+    426
+  ],
+  "gpu_seams": {
+    "400": {
+      "size": [
+        400,
+        671
+      ],
+      "max_channel_error": 0,
+      "different_pixels": 0
+    },
+    "572": {
+      "size": [
+        572,
+        960
+      ],
+      "max_channel_error": 0,
+      "different_pixels": 0
+    }
+  },
+  "native_performance_acceptance": false,
+  "native_limitation": "Godot 4.6.3 Mesa llvmpipe; matching Windows 4.7 extension unavailable",
+  "main_scene": {
+    "stages": [
+      1,
+      2
+    ],
+    "render_preserved_enemy_distance_rng": true,
+    "native_extension_available": false
+  },
+  "review_fixture_fix": "Reset sampling vector when switching differently sized textures; production already does this on stage change."
+}
