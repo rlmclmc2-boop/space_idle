@@ -1,2 +1,3 @@
 # Frozen reward baseline uses a byte-exact SHA256 contract.
 space-battleship/data/space_enemy_reward_sources.json text eol=lf
+space-battleship/data/space_enemy_reward_early_frozen.json text eol=lf
