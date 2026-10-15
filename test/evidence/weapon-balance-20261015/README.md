@@ -21,6 +21,8 @@ The 67 final role probe rows include paired specialist/rival checks at `k=1,100,
 
 Native tests use the locally built copy of pinned godot-cpp and the isolated extension under `test/native-build`; no build output is committed. Both direct tests disable saves. Test fixtures and probes are in `test/`; generated local logs are excluded from Git.
 
+Focused follow-up runs after restoring the opening reward contract: Memory recovery pacing 22/22, neutral temporary protection 33/33, enemy shield timing 27/27, enemy shields 43/43, equipment growth 94/94, legacy scale 65/65, and native scale 56/56. The shield timing test needed its synthetic launch clock/ledger aligned with the existing monotonic-time contract. The balance-only simulator also needed its `jewel_equipment_stat` override updated to the parent six-argument signature; no production shot timing was changed for that test.
+
 ## Scope limits
 
 The first 18 point opening design remains a draft. The initial draft replaced frozen level 1–3 reward references and prevented normal game startup; the branch restores those three levels' original Excel and JSON entries while retaining unused draft enemy/group rows for review. Do not interpret this probe as full stage 18, economy, equipment purchase, player damage, or long play validation. The probe intentionally removes enemy attacks to isolate offensive timing. Godot reported resource leaks at probe exit; all probe runs exited successfully, but that diagnostic remains to investigate in the harness.
