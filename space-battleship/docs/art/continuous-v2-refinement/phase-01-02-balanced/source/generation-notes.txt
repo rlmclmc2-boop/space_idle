@@ -1,0 +1,3 @@
+Source: e060c439 phase-01-02-hierarchy/source/refined-master.png.
+Pass 1: locally lift diffuse slate dock and planet midtones, retain dim lamps and same composition. Output exec-ff8b3602-880f-4d86-b8b5-082f2e4ae622.png was NOT integrated because central galaxy gained excessive detail/brightness.
+Pass 2: preserve readable structural midtones; replace granular bright galaxy with broad soft subdued haze; reduce small stars and planetary edge contrast. Final original: /workspace/generated_images/exec-a40d4b1e-0207-4c10-a8a1-7ce76f428f27.png. Output 747x2104, bottom two edge rows replicated during preparation, no resizing. Original generated outputs retained.
