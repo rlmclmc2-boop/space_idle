@@ -24,6 +24,25 @@ func _initialize()->void:
    for id in row.slots:
     if id!=null:total+=int(bound.enemies[str(int(id))].jewelDropRolls)
   check(total==200,"all forty retain 200 integer trials")
+ var early_base:=ShipDatabase.new()
+ check(binder.early_sources_valid(early_base),"frozen first-five-stage source contents and node order")
+ var changed_group:=ShipDatabase.new()
+ changed_group.groups["30011"].description="changed source"
+ check(binder.bind(changed_group,candidates,1).is_empty() and binder.last_error=="space_reward_early_source_invalid","changed original source group rejected")
+ var changed_member:=ShipDatabase.new()
+ var member_id:String=str(int(changed_member.groups["30011"].slots[1]))
+ changed_member.enemies[member_id].drops[0].amount+=1.0
+ check(binder.bind(changed_member,candidates,1).is_empty() and binder.last_error=="space_reward_early_source_invalid","changed original source member rejected")
+ var wrong_order:=ShipDatabase.new()
+ wrong_order.levels[0].rewardReferenceGroups[0].id=30012
+ check(binder.bind(wrong_order,candidates,1).is_empty() and binder.last_error=="space_reward_early_source_invalid","source at wrong node rejected")
+ var wrong_level:=ShipDatabase.new()
+ wrong_level.levels[0].rewardReferenceGroups[0].id=30021
+ check(binder.bind(wrong_level,candidates,1).is_empty() and binder.last_error=="space_reward_early_source_invalid","cross-stage reference rejected")
+ var wrong_mapping:=Binder.new()
+ check(wrong_mapping.load_contract(),"load separate mapping for tamper probe")
+ wrong_mapping.sources[0].group=30012
+ check(wrong_mapping.bind(early_base,candidates,1).is_empty() and wrong_mapping.last_error=="space_reward_early_source_invalid","frozen source mapping change rejected")
  check(JSON.stringify(g.db.groups)==original_groups and JSON.stringify(g.db.enemies)==original_enemies,"mainline immutable")
  check(g.load_hyperspace_routes(),"production accepted and all-level rewards ready "+g.manual_hyperspace.last_error)
  check(g.hyperspace.snapshot(g).manual_ready,"UI readiness after binding validation")
@@ -40,15 +59,23 @@ func _initialize()->void:
  check(g.rng.state==expected_rng.state,"exactly 200 integer trials, duplicate kill guarded")
  check(g.drops.size()-before_drops==expected_success and g.drops.all(func(drop):return float(drop.amount)==1.0),"separate amount-one Bernoulli successes")
  g.profile.cleared=range(1,41);g.profile.highestLevel=40;g.rebuild_unlocks()
- check(g.start_hyperspace("alpha",1),"start bound route")
- check(g.db.levels[0].groups.size()==10 and g.db.levels[0].rewardReferenceGroups.size()==40,"references are not playable waves")
- var gid:String=str(int(g.db.levels[0].groups[0].id))
- check(Validator.binding_error(gid,g.db.groups,g.db.enemies,g.db.levels,1,g.ratio("resRatio"),g.jewel_ratio()).is_empty(),"runtime view validator")
+ g.profile.hyperspace.history["alpha"]={"6":1.0}
+ check(g.start_hyperspace("alpha",7),"start original level-7 bound route")
+ check(g.db.levels[6].groups.size()==10 and g.db.levels[6].rewardReferenceGroups.size()==40,"level-7 references are not playable waves")
+ var gid:String=str(int(g.db.levels[6].groups[0].id))
+ check(Validator.binding_error(gid,g.db.groups,g.db.enemies,g.db.levels,7,g.ratio("resRatio"),g.jewel_ratio()).is_empty(),"original level-7 runtime view validator")
  g.manual_hyperspace.finish(g,false)
  var ticket:float=float(g.profile.hyperspace.energy)
  # Resource rewards use the latest cleared mainline level, not exploration7.
  g.db.levels[Binder.latest_cleared_level(g)-1].resRatio=-1
- check(not g.start_hyperspace("alpha",1) and g.profile.hyperspace.energy==ticket,"bad changed ratio rejected before ticket")
+ check(not g.start_hyperspace("alpha",7) and g.profile.hyperspace.energy==ticket,"bad changed ratio rejected before ticket")
  check(not g.hyperspace.snapshot(g).manual_ready,"failed rebinding clears readiness")
+ var first:=BattleGame.new(ShipDatabase.new(),false)
+ check(first.load_hyperspace_routes(),"changed first-level route ready")
+ first.profile.cleared=range(1,41);first.profile.highestLevel=40;first.rebuild_unlocks()
+ check(first.start_hyperspace("alpha",1),"start changed first-level bound route")
+ check(first.db.levels[0].groups.size()==10 and first.db.levels[0].rewardReferenceGroups.size()==40,"first-level references stay off playable waves")
+ var first_gid:String=str(int(first.db.levels[0].groups[0].id))
+ check(Validator.binding_error(first_gid,first.db.groups,first.db.enemies,first.db.levels,1,first.ratio("resRatio"),first.jewel_ratio()).is_empty(),"changed first-level runtime view validator")
  print("REWARD_BINDING ",checks," checks ",failures," failures")
  quit(1 if failures else 0)

@@ -1,0 +1,4860 @@
+{
+  "schema_version": 1,
+  "baseline_commit": "b6ab391e28ca55eb39827f95821bf94d95c8c8bb",
+  "waves": [
+    {
+      "stage": 1,
+      "node": 1,
+      "group": 30011,
+      "source_group": 2001
+    },
+    {
+      "stage": 1,
+      "node": 2,
+      "group": 30012,
+      "source_group": 1001
+    },
+    {
+      "stage": 1,
+      "node": 3,
+      "group": 30013,
+      "source_group": 2001
+    },
+    {
+      "stage": 1,
+      "node": 4,
+      "group": 30014,
+      "source_group": 1001
+    },
+    {
+      "stage": 1,
+      "node": 5,
+      "group": 30015,
+      "source_group": 2009
+    },
+    {
+      "stage": 2,
+      "node": 1,
+      "group": 30021,
+      "source_group": 1002
+    },
+    {
+      "stage": 2,
+      "node": 2,
+      "group": 30022,
+      "source_group": 2002
+    },
+    {
+      "stage": 2,
+      "node": 3,
+      "group": 30023,
+      "source_group": 1002
+    },
+    {
+      "stage": 2,
+      "node": 4,
+      "group": 30024,
+      "source_group": 2002
+    },
+    {
+      "stage": 2,
+      "node": 5,
+      "group": 30025,
+      "source_group": 1010
+    },
+    {
+      "stage": 3,
+      "node": 1,
+      "group": 30031,
+      "source_group": 2003
+    },
+    {
+      "stage": 3,
+      "node": 2,
+      "group": 30032,
+      "source_group": 1003
+    },
+    {
+      "stage": 3,
+      "node": 3,
+      "group": 30033,
+      "source_group": 2003
+    },
+    {
+      "stage": 3,
+      "node": 4,
+      "group": 30034,
+      "source_group": 1003
+    },
+    {
+      "stage": 3,
+      "node": 5,
+      "group": 30035,
+      "source_group": 2011
+    },
+    {
+      "stage": 4,
+      "node": 1,
+      "group": 30041,
+      "source_group": 1005
+    },
+    {
+      "stage": 4,
+      "node": 2,
+      "group": 30042,
+      "source_group": 2005
+    },
+    {
+      "stage": 4,
+      "node": 3,
+      "group": 30043,
+      "source_group": 1005
+    },
+    {
+      "stage": 4,
+      "node": 4,
+      "group": 30044,
+      "source_group": 2005
+    },
+    {
+      "stage": 4,
+      "node": 5,
+      "group": 30045,
+      "source_group": 1013
+    },
+    {
+      "stage": 5,
+      "node": 1,
+      "group": 30051,
+      "source_group": 2006
+    },
+    {
+      "stage": 5,
+      "node": 2,
+      "group": 30052,
+      "source_group": 1006
+    },
+    {
+      "stage": 5,
+      "node": 3,
+      "group": 30053,
+      "source_group": 2006
+    },
+    {
+      "stage": 5,
+      "node": 4,
+      "group": 30054,
+      "source_group": 1006
+    },
+    {
+      "stage": 5,
+      "node": 5,
+      "group": 30055,
+      "source_group": 2014
+    }
+  ],
+  "groups": {
+    "30011": {
+      "description": "第1关第1战点",
+      "slots": [
+        null,
+        41021,
+        41022,
+        41023,
+        null,
+        null,
+        41026,
+        41027,
+        41028,
+        null,
+        null,
+        41031,
+        41032,
+        41033,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30012": {
+      "description": "第1关第2战点",
+      "slots": [
+        null,
+        41041,
+        41042,
+        41043,
+        null,
+        null,
+        41046,
+        41047,
+        41048,
+        null,
+        null,
+        41051,
+        41052,
+        41053,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30013": {
+      "description": "第1关第3战点",
+      "slots": [
+        null,
+        41061,
+        41062,
+        41063,
+        null,
+        null,
+        41066,
+        41067,
+        41068,
+        null,
+        null,
+        41071,
+        41072,
+        41073,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30014": {
+      "description": "第1关第4战点",
+      "slots": [
+        null,
+        41081,
+        41082,
+        41083,
+        null,
+        null,
+        41086,
+        41087,
+        41088,
+        null,
+        null,
+        41091,
+        41092,
+        41093,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30015": {
+      "description": "第1关第5战点",
+      "slots": [
+        41100,
+        41101,
+        41102,
+        41103,
+        41104,
+        41105,
+        41106,
+        41107,
+        41108,
+        41109,
+        41110,
+        41111,
+        41112,
+        41113,
+        41114
+      ],
+      "combatTier": "elite"
+    },
+    "30021": {
+      "description": "第2关第1战点",
+      "slots": [
+        42020,
+        42021,
+        42022,
+        42023,
+        42024,
+        42025,
+        42026,
+        42027,
+        42028,
+        42029,
+        42030,
+        42031,
+        42032,
+        42033,
+        42034
+      ],
+      "combatTier": "normal"
+    },
+    "30022": {
+      "description": "第2关第2战点",
+      "slots": [
+        42040,
+        42041,
+        42042,
+        42043,
+        42044,
+        42045,
+        42046,
+        42047,
+        42048,
+        42049,
+        42050,
+        42051,
+        42052,
+        42053,
+        42054
+      ],
+      "combatTier": "normal"
+    },
+    "30023": {
+      "description": "第2关第3战点",
+      "slots": [
+        42060,
+        42061,
+        42062,
+        42063,
+        42064,
+        42065,
+        42066,
+        42067,
+        42068,
+        42069,
+        42070,
+        42071,
+        42072,
+        42073,
+        42074
+      ],
+      "combatTier": "normal"
+    },
+    "30024": {
+      "description": "第2关第4战点",
+      "slots": [
+        42080,
+        42081,
+        42082,
+        42083,
+        42084,
+        42085,
+        42086,
+        42087,
+        42088,
+        42089,
+        42090,
+        42091,
+        42092,
+        42093,
+        42094
+      ],
+      "combatTier": "normal"
+    },
+    "30025": {
+      "description": "第2关第5战点",
+      "slots": [
+        42100,
+        42101,
+        42102,
+        42103,
+        42104,
+        42105,
+        42106,
+        42107,
+        42108,
+        42109,
+        42110,
+        42111,
+        42112,
+        42113,
+        42114
+      ],
+      "combatTier": "elite"
+    },
+    "30031": {
+      "description": "第3关第1战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        43027,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30032": {
+      "description": "第3关第2战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        43047,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30033": {
+      "description": "第3关第3战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        43067,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30034": {
+      "description": "第3关第4战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        43087,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30035": {
+      "description": "第3关第5战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        43105,
+        null,
+        43107,
+        null,
+        43109,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "30041": {
+      "description": "第4关第1战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        44026,
+        44027,
+        44028,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30042": {
+      "description": "第4关第2战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        44046,
+        44047,
+        44048,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30043": {
+      "description": "第4关第3战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        44066,
+        44067,
+        44068,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30044": {
+      "description": "第4关第4战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        44086,
+        44087,
+        44088,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30045": {
+      "description": "第4关第5战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        44105,
+        null,
+        44107,
+        null,
+        44109,
+        null,
+        44111,
+        null,
+        44113,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "30051": {
+      "description": "第5关第1战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        45026,
+        45027,
+        45028,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30052": {
+      "description": "第5关第2战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        45046,
+        45047,
+        45048,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30053": {
+      "description": "第5关第3战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        45066,
+        45067,
+        45068,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30054": {
+      "description": "第5关第4战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        45086,
+        45087,
+        45088,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "30055": {
+      "description": "第5关第5战点",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        45105,
+        null,
+        45107,
+        null,
+        45109,
+        null,
+        45111,
+        null,
+        45113,
+        null
+      ],
+      "combatTier": "elite"
+    }
+  },
+  "enemies": {
+    "41021": {
+      "id": 41021,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1001）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41022": {
+      "id": 41022,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1002）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41023": {
+      "id": 41023,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1001）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41026": {
+      "id": 41026,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1003）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41027": {
+      "id": 41027,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1004）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41028": {
+      "id": 41028,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1003）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41031": {
+      "id": 41031,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1005）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41032": {
+      "id": 41032,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1006）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41033": {
+      "id": 41033,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1005）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41041": {
+      "id": 41041,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41042": {
+      "id": 41042,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41043": {
+      "id": 41043,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41046": {
+      "id": 41046,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41047": {
+      "id": 41047,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41048": {
+      "id": 41048,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41051": {
+      "id": 41051,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41052": {
+      "id": 41052,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41053": {
+      "id": 41053,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41061": {
+      "id": 41061,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1001）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41062": {
+      "id": 41062,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1002）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41063": {
+      "id": 41063,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1001）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41066": {
+      "id": 41066,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1003）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41067": {
+      "id": 41067,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1004）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41068": {
+      "id": 41068,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1003）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41071": {
+      "id": 41071,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1005）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41072": {
+      "id": 41072,
+      "des": "编排草案-normal-laser-尺寸1 · 物理攻击变体（源模板1006）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41073": {
+      "id": 41073,
+      "des": "编排草案-normal-laser-尺寸2 · 物理攻击变体（源模板1005）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41081": {
+      "id": 41081,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41082": {
+      "id": 41082,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41083": {
+      "id": 41083,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41086": {
+      "id": 41086,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41087": {
+      "id": 41087,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41088": {
+      "id": 41088,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41091": {
+      "id": 41091,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41092": {
+      "id": 41092,
+      "des": "编排草案-normal-laser-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41093": {
+      "id": 41093,
+      "des": "编排草案-normal-laser-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 320,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41100": {
+      "id": 41100,
+      "des": "编排草案-elite-laser-尺寸2 · 物理攻击变体（源模板1043）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41101": {
+      "id": 41101,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1044）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41102": {
+      "id": 41102,
+      "des": "编排草案-elite-laser-尺寸4 · 物理攻击变体（源模板1045）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41103": {
+      "id": 41103,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1044）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41104": {
+      "id": 41104,
+      "des": "编排草案-elite-laser-尺寸2 · 物理攻击变体（源模板1043）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41105": {
+      "id": 41105,
+      "des": "编排草案-elite-laser-尺寸2 · 物理攻击变体（源模板1046）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41106": {
+      "id": 41106,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41107": {
+      "id": 41107,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41108": {
+      "id": 41108,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41109": {
+      "id": 41109,
+      "des": "编排草案-elite-laser-尺寸2 · 物理攻击变体（源模板1046）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41110": {
+      "id": 41110,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41111": {
+      "id": 41111,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41112": {
+      "id": 41112,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41113": {
+      "id": 41113,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "41114": {
+      "id": 41114,
+      "des": "编排草案-elite-laser-尺寸1 · 物理攻击变体（源模板1047）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.340236,
+      "health": 582,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42020": {
+      "id": 42020,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42021": {
+      "id": 42021,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42022": {
+      "id": 42022,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42023": {
+      "id": 42023,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42024": {
+      "id": 42024,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42025": {
+      "id": 42025,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42026": {
+      "id": 42026,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42027": {
+      "id": 42027,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42028": {
+      "id": 42028,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42029": {
+      "id": 42029,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42030": {
+      "id": 42030,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42031": {
+      "id": 42031,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42032": {
+      "id": 42032,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42033": {
+      "id": 42033,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42034": {
+      "id": 42034,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42040": {
+      "id": 42040,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1007）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42041": {
+      "id": 42041,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1008）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42042": {
+      "id": 42042,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1009）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42043": {
+      "id": 42043,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1008）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42044": {
+      "id": 42044,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1007）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42045": {
+      "id": 42045,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1010）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42046": {
+      "id": 42046,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1011）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42047": {
+      "id": 42047,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1012）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42048": {
+      "id": 42048,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1011）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42049": {
+      "id": 42049,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1010）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42050": {
+      "id": 42050,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1013）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42051": {
+      "id": 42051,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1014）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42052": {
+      "id": 42052,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1015）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42053": {
+      "id": 42053,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1014）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42054": {
+      "id": 42054,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1013）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42060": {
+      "id": 42060,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42061": {
+      "id": 42061,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42062": {
+      "id": 42062,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42063": {
+      "id": 42063,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42064": {
+      "id": 42064,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42065": {
+      "id": 42065,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42066": {
+      "id": 42066,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42067": {
+      "id": 42067,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42068": {
+      "id": 42068,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42069": {
+      "id": 42069,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42070": {
+      "id": 42070,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42071": {
+      "id": 42071,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42072": {
+      "id": 42072,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42073": {
+      "id": 42073,
+      "des": "编排草案-normal-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42074": {
+      "id": 42074,
+      "des": "编排草案-normal-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42080": {
+      "id": 42080,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1007）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42081": {
+      "id": 42081,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1008）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42082": {
+      "id": 42082,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1009）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42083": {
+      "id": 42083,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1008）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42084": {
+      "id": 42084,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1007）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42085": {
+      "id": 42085,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1010）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42086": {
+      "id": 42086,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1011）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42087": {
+      "id": 42087,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1012）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42088": {
+      "id": 42088,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1011）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42089": {
+      "id": 42089,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1010）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42090": {
+      "id": 42090,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1013）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42091": {
+      "id": 42091,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1014）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42092": {
+      "id": 42092,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1015）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42093": {
+      "id": 42093,
+      "des": "编排草案-normal-missile-尺寸2 · 物理攻击变体（源模板1014）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42094": {
+      "id": 42094,
+      "des": "编排草案-normal-missile-尺寸1 · 物理攻击变体（源模板1013）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 305,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42100": {
+      "id": 42100,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42101": {
+      "id": 42101,
+      "des": "编排草案-elite-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42102": {
+      "id": 42102,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42103": {
+      "id": 42103,
+      "des": "编排草案-elite-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42104": {
+      "id": 42104,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42105": {
+      "id": 42105,
+      "des": "编排草案-elite-missile-尺寸4",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 2181,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42106": {
+      "id": 42106,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42107": {
+      "id": 42107,
+      "des": "编排草案-elite-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42108": {
+      "id": 42108,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42109": {
+      "id": 42109,
+      "des": "编排草案-elite-missile-尺寸4",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 2181,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42110": {
+      "id": 42110,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42111": {
+      "id": 42111,
+      "des": "编排草案-elite-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42112": {
+      "id": 42112,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42113": {
+      "id": 42113,
+      "des": "编排草案-elite-missile-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "42114": {
+      "id": 42114,
+      "des": "编排草案-elite-missile-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2181,
+      "health": 727,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43027": {
+      "id": 43027,
+      "des": "编排草案-normal-cannon-尺寸3 · 物理攻击变体（源模板1016）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 11632,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43047": {
+      "id": 43047,
+      "des": "编排草案-normal-cannon-尺寸3",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 11632,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43067": {
+      "id": 43067,
+      "des": "编排草案-normal-cannon-尺寸3 · 物理攻击变体（源模板1016）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 11632,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43087": {
+      "id": 43087,
+      "des": "编排草案-normal-cannon-尺寸3",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 11632,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43105": {
+      "id": 43105,
+      "des": "编排草案-elite-cannon-尺寸2 · 物理攻击变体（源模板1057）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.42492,
+      "health": 10614,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43107": {
+      "id": 43107,
+      "des": "编排草案-elite-cannon-尺寸1 · 物理攻击变体（源模板1058）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.42492,
+      "health": 3635,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "43109": {
+      "id": 43109,
+      "des": "编排草案-elite-cannon-尺寸2 · 物理攻击变体（源模板1057）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.42492,
+      "health": 10614,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44026": {
+      "id": 44026,
+      "des": "编排草案-normal-neutral1-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44027": {
+      "id": 44027,
+      "des": "编排草案-normal-neutral1-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44028": {
+      "id": 44028,
+      "des": "编排草案-normal-neutral1-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44046": {
+      "id": 44046,
+      "des": "编排草案-normal-neutral1-尺寸2 · 物理攻击变体（源模板1019）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44047": {
+      "id": 44047,
+      "des": "编排草案-normal-neutral1-尺寸1 · 物理攻击变体（源模板1020）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44048": {
+      "id": 44048,
+      "des": "编排草案-normal-neutral1-尺寸2 · 物理攻击变体（源模板1019）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44066": {
+      "id": 44066,
+      "des": "编排草案-normal-neutral1-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44067": {
+      "id": 44067,
+      "des": "编排草案-normal-neutral1-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44068": {
+      "id": 44068,
+      "des": "编排草案-normal-neutral1-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44086": {
+      "id": 44086,
+      "des": "编排草案-normal-neutral1-尺寸2 · 物理攻击变体（源模板1019）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44087": {
+      "id": 44087,
+      "des": "编排草案-normal-neutral1-尺寸1 · 物理攻击变体（源模板1020）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44088": {
+      "id": 44088,
+      "des": "编排草案-normal-neutral1-尺寸2 · 物理攻击变体（源模板1019）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 0,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44105": {
+      "id": 44105,
+      "des": "编排草案-elite-neutral1-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2326,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44107": {
+      "id": 44107,
+      "des": "编排草案-elite-neutral1-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.7448,
+      "health": 3053,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44109": {
+      "id": 44109,
+      "des": "编排草案-elite-neutral1-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2326,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44111": {
+      "id": 44111,
+      "des": "编排草案-elite-neutral1-尺寸4",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.7997,
+      "health": 1614,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "44113": {
+      "id": 44113,
+      "des": "编排草案-elite-neutral1-尺寸4",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.7997,
+      "health": 1614,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45026": {
+      "id": 45026,
+      "des": "编排草案-normal-neutral2-尺寸2 · 物理攻击变体（源模板1025）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45027": {
+      "id": 45027,
+      "des": "编排草案-normal-neutral2-尺寸1 · 物理攻击变体（源模板1026）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45028": {
+      "id": 45028,
+      "des": "编排草案-normal-neutral2-尺寸2 · 物理攻击变体（源模板1025）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45046": {
+      "id": 45046,
+      "des": "编排草案-normal-neutral2-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45047": {
+      "id": 45047,
+      "des": "编排草案-normal-neutral2-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45048": {
+      "id": 45048,
+      "des": "编排草案-normal-neutral2-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45066": {
+      "id": 45066,
+      "des": "编排草案-normal-neutral2-尺寸2 · 物理攻击变体（源模板1025）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45067": {
+      "id": 45067,
+      "des": "编排草案-normal-neutral2-尺寸1 · 物理攻击变体（源模板1026）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45068": {
+      "id": 45068,
+      "des": "编排草案-normal-neutral2-尺寸2 · 物理攻击变体（源模板1025）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45086": {
+      "id": 45086,
+      "des": "编排草案-normal-neutral2-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45087": {
+      "id": 45087,
+      "des": "编排草案-normal-neutral2-尺寸1",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 2036,
+      "armourType": 2,
+      "res": "{1,8,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45088": {
+      "id": 45088,
+      "des": "编排草案-normal-neutral2-尺寸2",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.01454,
+      "health": 1018,
+      "armourType": 1,
+      "res": "{1,8,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 8.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45105": {
+      "id": 45105,
+      "des": "编排草案-elite-neutral2-尺寸2 · 物理攻击变体（源模板1072）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.0226824,
+      "health": 2341,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45107": {
+      "id": 45107,
+      "des": "编排草案-elite-neutral2-尺寸1 · 物理攻击变体（源模板1073）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 2.287142,
+      "health": 3068,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45109": {
+      "id": 45109,
+      "des": "编排草案-elite-neutral2-尺寸2 · 物理攻击变体（源模板1072）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.0226824,
+      "health": 2341,
+      "armourType": 2,
+      "res": "{1,20,1}",
+      "size": 4,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45111": {
+      "id": 45111,
+      "des": "编排草案-elite-neutral2-尺寸4 · 物理攻击变体（源模板1074）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.0358296,
+      "health": 1611,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "45113": {
+      "id": 45113,
+      "des": "编排草案-elite-neutral2-尺寸4 · 物理攻击变体（源模板1074）",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.0358296,
+      "health": 1611,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 1,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    }
+  }
+}

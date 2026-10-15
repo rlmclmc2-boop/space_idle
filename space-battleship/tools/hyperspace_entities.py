@@ -15,6 +15,8 @@ import openpyxl
 from explicit_formation import validate as validate_formation
 
 SCHEMA_PATH = Path(__file__).resolve().parents[1] / 'data/hyperspace_entity_schema.json'
+EARLY_FROZEN_PATH = SCHEMA_PATH.parent / 'space_enemy_reward_early_frozen.json'
+EARLY_FROZEN_SHA256 = '98cd28eff0860449fabaee6c5b8b9e705ec076da49181726e593b1cac0e2b64a'
 
 
 def load_schema():
@@ -134,7 +136,11 @@ def project_tables(tables, mainline, frozen, schema=None):
             member['enemy_id'] = candidates['groups'][gid]['slots'][member['slot']]
             member['jewelDropRolls'] = len(member['reference_member_ordinals_for_resource_blocks'])
     derive_catalog(outputs['space_enemy_reward_catalog.json'], mainline)
-    validate_sources(frozen['space_enemy_reward_sources.json'],mainline,schema)
+    early_raw=EARLY_FROZEN_PATH.read_bytes()
+    if hashlib.sha256(early_raw).hexdigest()!=EARLY_FROZEN_SHA256:
+        raise ValueError('Early frozen reward source hash mismatch')
+    validate_sources(frozen['space_enemy_reward_sources.json'],mainline,schema,
+                     json.loads(early_raw))
     validate_outputs(outputs, mainline, frozen)
     return outputs
 
@@ -161,8 +167,16 @@ def derive_catalog(catalog, mainline):
             ref['early_drop_blocks']=group_blocks(mainline,ref['early_existing_encounters'][0]['group_id'],count)
 
 
-def validate_sources(sources,mainline,schema):
+def validate_sources(sources,mainline,schema,early_frozen):
     if sources.get('source_sha256')!=schema['sources_origin']['sha256'] or len(sources.get('waves',[]))!=schema['sources_origin']['verified_wave_count']:raise ValueError('Original source plan identity mismatch')
+    if sources['waves'][:len(early_frozen['waves'])]!=early_frozen['waves']:
+        raise ValueError('Early frozen source order or association changed')
+    for gid, original in early_frozen['groups'].items():
+        if mainline['groups'].get(gid)!=original:
+            raise ValueError('Early frozen source group changed: '+gid)
+    for eid, original in early_frozen['enemies'].items():
+        if mainline['enemies'].get(eid)!=original:
+            raise ValueError('Early frozen source member changed: '+eid)
     levels={l['id']:l for l in mainline['levels']}
     for wave in sources['waves']:
         level=levels.get(wave['stage']);node=wave['node']

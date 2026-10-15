@@ -2,22 +2,42 @@ extends RefCounted
 ## Bind only the disposable registry; reference-only fleets never become playable waves.
 const Validator=preload("res://scripts/candidate_rewards.gd")
 const C=preload("res://scripts/hyperspace_config.gd")
+const EARLY_FROZEN_SHA256="98cd28eff0860449fabaee6c5b8b9e705ec076da49181726e593b1cac0e2b64a"
 var last_error:=""
 var catalog:Dictionary={}
 var recipes:Dictionary={}
 var sources:Array=[]
+var early_frozen:Dictionary={}
 func load_contract()->bool:
- for pair in [["catalog","res://data/space_enemy_reward_catalog.json"],["recipes","res://data/space_enemy_reward_recipes.json"],["sources","res://data/space_enemy_reward_sources.json"]]:
+ for pair in [["catalog","res://data/space_enemy_reward_catalog.json"],["recipes","res://data/space_enemy_reward_recipes.json"],["sources","res://data/space_enemy_reward_sources.json"],["early_frozen","res://data/space_enemy_reward_early_frozen.json"]]:
   if not FileAccess.file_exists(pair[1]):last_error="space_reward_contract_missing";return false
+  if pair[0]=="early_frozen" and FileAccess.get_sha256(pair[1])!=EARLY_FROZEN_SHA256:last_error="space_reward_early_source_digest_invalid";return false
   var data=JSON.parse_string(FileAccess.get_file_as_string(pair[1]))
   if not data is Dictionary or data.get("schema_version")!=1:last_error="space_reward_contract_invalid";return false
   match pair[0]:
    "catalog":catalog=data.get("references",{})
    "recipes":recipes=data.get("groups",{})
    "sources":sources=data.get("waves",[])
- return not catalog.is_empty() and recipes.size()==40 and not sources.is_empty()
+   "early_frozen":early_frozen=data
+ return not catalog.is_empty() and recipes.size()==40 and not sources.is_empty() and not early_frozen.is_empty()
 func fail(code:String)->Dictionary:
  last_error=code;return {}
+func early_sources_valid(base:ShipDatabase)->bool:
+ var waves:Array=early_frozen.get("waves",[])
+ if waves.size()!=25 or sources.size()<waves.size():return false
+ for index in waves.size():
+  if sources[index]!=waves[index]:return false
+  var wave:Dictionary=waves[index]
+  var stage:int=int(wave.stage);var node:int=int(wave.node)
+  if stage<1 or stage>base.levels.size() or node<1:return false
+  var row:Dictionary=base.levels[stage-1]
+  var mounted:Array=row.groups;var references:Array=row.get("rewardReferenceGroups",[])
+  if not ((node<=mounted.size() and int(mounted[node-1].id)==int(wave.group)) or (node<=references.size() and int(references[node-1].id)==int(wave.group))):return false
+ for gid in early_frozen.get("groups",{}):
+  if base.groups.get(gid,{})!=early_frozen.groups[gid]:return false
+ for eid in early_frozen.get("enemies",{}):
+  if base.enemies.get(eid,{})!=early_frozen.enemies[eid]:return false
+ return true
 static func latest_cleared_level(g)->int:
  var latest:=1
  for value in g.profile.cleared:
@@ -26,6 +46,7 @@ static func latest_cleared_level(g)->int:
 func bind(base:ShipDatabase,registry:Dictionary,level:int,resource_level:int=-1)->Dictionary:
  if resource_level<0:resource_level=level
  if level<1 or level>base.levels.size() or resource_level<1 or resource_level>base.levels.size():return fail("space_reward_level_invalid")
+ if not early_sources_valid(base):return fail("space_reward_early_source_invalid")
  var selected:Dictionary=base.levels[level-1]
  var resource_reference:Dictionary=base.levels[resource_level-1]
  for pair in [[resource_reference,"resRatio"],[resource_reference,"jewelRatio"]]:
@@ -48,8 +69,9 @@ func bind(base:ShipDatabase,registry:Dictionary,level:int,resource_level:int=-1)
   for wave in sources:
    if int(wave.stage)!=resource_level or int(wave.source_group)!=int(reference.source_design_group_id):continue
    var actual_id:String=str(int(wave.group))
-   var source_groups:Array=resource_reference.groups+resource_reference.get("rewardReferenceGroups",[])
-   if not base.groups.has(actual_id) or not source_groups.any(func(point):return int(point.id)==int(wave.group)):continue
+   var node:int=int(wave.node)
+   var mounted:Array=resource_reference.groups;var references:Array=resource_reference.get("rewardReferenceGroups",[])
+   if node<1 or not ((node<=mounted.size() and int(mounted[node-1].id)==int(wave.group)) or (node<=references.size() and int(references[node-1].id)==int(wave.group))) or not base.groups.has(actual_id):return fail("space_reward_source_node_invalid")
    var actual:Dictionary=base.groups[actual_id]
    var actual_blocks:Array=[]
    for id in actual.slots:

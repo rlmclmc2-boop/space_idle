@@ -28,3 +28,9 @@ Excel 掉落毛额分别为第 1/2/3 关 205/370/500 铁。默认自动拾取有
 - 探针没有输入停顿、手动拾取、策略切换或真实新玩家决策。无存档、无长时间试玩。第 2 关对照没有中途花已攒资源，故两次回退是静态配置下界。
 
 复核入口：`test/probe_opening_points.gd`（14 个单点）、`test/probe_opening_stages.gd`（四个连续关卡配置）、`test/test_opening_balance.gd`（基础节奏）、`test/test_hyperspace_reward_binding.gd`（冻结奖励组绑定）。
+
+原始探针记录在 `test/fixtures/20261015-opening-points.jsonl` 和 `test/fixtures/20261015-opening-stages.jsonl`。首行列出运行提交、探针与 `game_data.json`/四个 Excel 的 SHA256、Godot 版本和隔离设置；后续行直接取自原 stdout JSON，未重算。测试走 `BattleGame` 旧 GDScript 路径；隔离运行器未复制 native DLL，不能据此宣称原生集成通过。测试保存关闭，用户数据目录重定向到 `test/work`。
+
+63/73 秒属于固定配置短 QA；它只显示该配置可以连续通关和留下多少防御，无法证明每个战点都有足够学习时间或清晰反馈。邻近战点收入／时间和槽级可达预算见[净收入成长规划](20261015-opening-growth-targets.md)，不能从一次 1-5 补刷外推整体碎片、铀或旧关效率。
+
+冻结奖励来源另外锁定于 `space_enemy_reward_early_frozen.json`：从父验收的 `b6ab391e` 提取早期 25 个原组和 167 个原敌人，运行时和 Excel 导入器均核对内容、关卡及节点顺序。原 7 关与新 1 关绑定、错误组内容／成员／错序／跨关引用的定向回归为 432 项 0 失败；只读双 Excel 投影和来源篡改校验为 7 项 0 失败。这些仍是旧 GDScript 与导入契约验证，未跑原生战斗集成。
