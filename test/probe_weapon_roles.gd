@@ -46,7 +46,7 @@ func frozen_db() -> ShipDatabase:
 	for id in original.groups:db.groups[id] = original.groups[id]
 	return db
 
-func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5, missile_cd := 2.4) -> Dictionary:
+func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5, missile_cd := 2.4, native := false) -> Dictionary:
 	var settings: Dictionary = CASES[case_name].duplicate()
 	if target_count > 0:settings.count = target_count
 	if target_hp > 0:settings.hp = target_hp
@@ -68,7 +68,9 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 	g.profile.enhancementLevel = 0
 	g.profile.loadout = g.empty_loadout(g.profile.selectedShip)
 	for mount in mounts:g.profile.loadout.weapons[mount] = {"key":weapon,"level":weapon_level}
-	g.profile.loadout.defence[0] = {"key":"armour","level":1}
+	# The native compiler requires every defence mount to have a supported row.
+	# No target attacks in this probe, so these mounts cannot change weapon outcomes.
+	for index in g.profile.loadout.defence.size():g.profile.loadout.defence[index] = {"key":"armour","level":1}
 	g.reset_player()
 	var derived_normalized := float(g.equipment_stat(weapon,weapon_level)) / scale
 	var actors: Array[Dictionary] = []
@@ -107,20 +109,55 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 			observed.hit_count += 1
 			g.measured.reported += float(payload.amount) / scale
 	)
+	var scope := "native_rich15_layer2" if int(settings.count) > 2 else "native_low_contract"
+	var admission := {"requested":native,"scope":scope,"compiled_error":"","admitted":false,"owner_ticks":0,"feedback_rows":0,"handoffs":0,"kernel_metrics":{}}
+	var owner:RefCounted = null
+	if native:
+		var descriptor:Dictionary = preload("res://scripts/native_execution_compiler.gd").new().compile(g,scope)
+		admission.compiled_error = str(descriptor.get("error",""))
+		if admission.compiled_error.is_empty():
+			admission.admitted = g.admit_native_compiled_execution(scope)
+		if admission.admitted:owner = g.native_execution
+	var target_refs:Array[Dictionary] = g.enemies.duplicate() if admission.admitted else actors
 	var elapsed := 0.0
 	var max_reactive_stacks := 0
-	for step in 3600:
+	for step in (3600 if not native or admission.admitted else 0):
 		g.tick(1.0 / 60.0)
 		elapsed += 1.0 / 60.0
-		for actor in actors:max_reactive_stacks = maxi(max_reactive_stacks,int(actor.get("reactive_stacks",0)))
-		if actors.all(func(actor):return float(actor.hp) <= 0.0):break
-	var cleared := actors.all(func(actor):return float(actor.hp) <= 0.0)
-	return {"executor":"legacy_presented","production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"laser_cd":laser_cd if weapon=="laser" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"missile_cd":missile_cd if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss,"effective_shield_loss":g.measured.shield_loss,"shield_regen":g.measured.shield_regen,"overkill":g.measured.overkill,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
+		for actor in target_refs:max_reactive_stacks = maxi(max_reactive_stacks,int(actor.get("reactive_stacks",0)))
+		if target_refs.all(func(actor):return float(actor.hp) <= 0.0):break
+	if owner != null:
+		admission.owner_ticks = owner.ticks
+		admission.feedback_rows = owner.feedback_rows
+		admission.handoffs = g.native_handoff_count
+		admission.kernel_metrics = owner.kernel.metrics()
+	var cleared:bool = target_refs.all(func(actor):return float(actor.hp) <= 0.0) and (not native or bool(admission.admitted))
+	return {"executor":"native_compiled" if native else "legacy_presented","admission":admission if native else null,"production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"laser_cd":laser_cd if weapon=="laser" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"missile_cd":missile_cd if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss if not native else null,"effective_shield_loss":g.measured.shield_loss if not native else null,"shield_regen":g.measured.shield_regen if not native else null,"overkill":g.measured.overkill if not native else null,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
 
 func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	if OS.get_environment("SPACE_BALANCE_NATIVE_ROLES") == "1":
+		var failures := 0
+		for pair in [["missile","medium",10,100.0],["laser","medium",6,280.0],["cannon","reactive",-1,-1.0],["longLaser","candidate_d",-1,-1.0]]:
+			var old:Dictionary = run_case(str(pair[0]),str(pair[1]),1.0,1,1,120.0,int(pair[2]),float(pair[3]),4,1.5,2.4,false)
+			var current:Dictionary = run_case(str(pair[0]),str(pair[1]),1.0,1,1,120.0,int(pair[2]),float(pair[3]),4,1.5,2.4,true)
+			print(JSON.stringify(old))
+			print(JSON.stringify(current))
+			var admission:Dictionary = current.admission
+			var metrics:Dictionary = admission.kernel_metrics
+			if not bool(old.cleared) or not bool(current.cleared) or not bool(admission.admitted) or int(admission.owner_ticks)<=0 or int(admission.handoffs)!=1 or int(metrics.get("root_attacks",0))<=0 or int(metrics.get("deaths",0))!=int(current.target_count) or int(metrics.get("old_game_callbacks",-1))!=0 or int(old.hit_count)!=int(current.hit_count) or absf(float(old.hit_total_normalized)-float(current.hit_total_normalized))>0.001 or absf(float(old.kill_time)-float(current.kill_time))>0.2:
+				failures += 1
+				printerr("NATIVE_ROLE_MISMATCH: ",pair)
+		print("NATIVE_ROLE_CONTRACT: 4 cases, ",failures," failures")
+		quit(1 if failures else 0)
+		return
+	if OS.get_environment("SPACE_BALANCE_SHIELD120") == "1":
+		for case_name in ["recovering","candidate_d"]:
+			for weapon in WEAPONS:print(JSON.stringify(run_case(weapon,case_name,1.0,1,1,120.0)))
+		quit()
+		return
 	if OS.get_environment("SPACE_BALANCE_CADENCE_OPTION") == "1":
 		for n in [5,6,7,8]:
 			for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,160.0,n,300.0,4,1.5,4.0)))

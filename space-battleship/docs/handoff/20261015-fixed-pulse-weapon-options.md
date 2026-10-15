@@ -25,6 +25,8 @@ Keep four missiles and the 0.4 s opener; test **160 damage / 4.0 s repeat interv
 
 **Cost:** repeating salvos arrive 67% less often than the current 2.4 s rhythm, despite the quick first salvo. The longer visible gap may undermine the intended missile feel and could be worse for high-HP progression. This option changes two authored fields and was not checked against heavy or shield cases; it is a less economical candidate than Option A.
 
+The [focused follow-up](../../../test/evidence/weapon-balance-20261015/FOCUSED-ROLES.md) measured actual regeneration under a 25%/1.0 s shield, four admitted native firing chains, and the opening purchase consequence. In the restored stage-2 data, common enemies start at 976 HP, requiring at least five 200-damage missiles versus nine 120-damage missiles before other combat modifiers; level-4 candidate missiles are needed to regain current level-1 raw damage. Option A remains test-only pending a real progression and cost review.
+
 ## Evidence and limits
 
 `test/evidence/weapon-balance-20261015/damage120-fixed-baseline.jsonl`, `damage120-high-level.jsonl`, and `cadence160-4s-candidate.jsonl` retain each actual first fire/hit, kill time, hit count, applied HP/shield loss, regeneration, and overkill. Their raw Godot logs are in `raw/`. Each probe used one weapon slot, level 1 except the stated high-level bypasses, fixed RNG seed 1729, no enemy attacks, a 60 s ceiling, and the legacy presented executor. They do not demonstrate full player economy, stage pressure, or native weapon-chain equivalence. The candidate-only override lives in `test/probe_weapon_roles.gd`; authoritative game values are unchanged.

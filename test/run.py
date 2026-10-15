@@ -50,7 +50,7 @@ def main():
     if args.test in {"test_weapon_scale_contract.gd", "probe_weapon_roles.gd"}:
         (game / "qa").mkdir(exist_ok=True)
         shutil.copy2(tests / "fixtures/opening_frozen_contract.json", game / "qa/opening_frozen_contract.json")
-    if args.test == "test_native_weapon_scale.gd":
+    if args.test == "test_native_weapon_scale.gd" or (args.test == "probe_weapon_roles.gd" and os.environ.get("SPACE_BALANCE_NATIVE_ROLES") == "1"):
         native = tests / "native-build/project/bin/space_native.dll"
         if not native.is_file():
             raise RuntimeError("isolated native build missing: " + str(native))
