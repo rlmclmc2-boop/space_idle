@@ -15,8 +15,6 @@
 #include <deque>
 #include <vector>
 #include <memory>
-#include <map>
-#include <utility>
 #include <unordered_map>
 
 using namespace godot;

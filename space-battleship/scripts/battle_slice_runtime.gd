@@ -34,8 +34,6 @@ var advancing:=false
 var detach_requested:=false
 func install(root)->void:
 	scene=root;game=root.game
-	game.native_presentation_surface=weakref(root)
-	if game.native_execution!=null:game.native_execution.bind_presentation_surface(root)
 	root.fixed_enemy_layout=true
 	remainder=root.game_time_remainder
 	root.time_step_game_id=game.get_instance_id()
@@ -65,7 +63,6 @@ func sync_screen_scale(value:float)->bool:
 	return true
 func advance(seconds:float)->void:
 	if scene.battle_transition_blocked():return
-	if game.native_execution!=null and not game.native_execution.sync_pulse_labels(game):return
 	advancing=true
 	if game.native_cancelled_step>0:
 		remainder=maxf(0.0,remainder-game.native_cancelled_step);game.native_cancelled_step=0.0
@@ -83,9 +80,7 @@ func advance(seconds:float)->void:
 		geometry.before_tick(STEP)
 		scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
 		scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
-		if game.native_execution!=null:
-			game.native_execution.bind_presentation_surface(scene)
-			game.native_execution.prepare_geometry(geometry,game)
+		if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
 		scene.shield_before_hit=game.player.shield
 		game.tick(STEP)
 		if game.native_step_phase=="blocked":
@@ -104,7 +99,6 @@ func advance(seconds:float)->void:
 	scene.game_time_remainder=remainder
 	advancing=false
 func snapshot()->void:
-	if game.native_execution!=null and not game.native_execution.publish_pulse_frame(game):return
 	geometry.sync_fixed_layout()
 	var membership:Dictionary={}
 	if game.native_execution!=null and game.native_execution.kernel.has_method("presentation_membership"):
@@ -303,9 +297,7 @@ func request_legacy_display()->void:
 		scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
 func close()->bool:
 	if not started:return true
-	if game.native_execution!=null and not game.native_execution.release_pulse_feedback(game):return false
 	if not scene.prepare_native_laser_display(true):return false
-	game.native_presentation_surface=null
 	started=false
 	scene.ship_view.numeric_slice_only=false
 	scene.simulation_geometry_view=null

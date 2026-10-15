@@ -530,7 +530,6 @@ func sync_accelerated_visual_mode() -> void:
 	var enabled := fast_mode_enabled()
 	if enabled == accelerated_visual_mode:
 		return
-	if enabled and not discard_native_pulse_labels():return
 	if enabled and not prepare_native_laser_display(true):return
 	accelerated_visual_mode = enabled
 	if not enabled:
@@ -1952,7 +1951,6 @@ func beam_ring(pos: Vector2, color: Color, duration: float, radius: float) -> vo
 	particles.append({"pos":pos,"vel":Vector2.ZERO,"color":color,"life":duration,"duration":duration,"size":radius,"ring":true})
 
 func reset_battle_transients_for_scene() -> void:
-	if not discard_native_pulse_labels():return
 	# A scene boundary invalidates visual history, not authoritative projectiles.
 	# Do not expire old beams through sync_beam_visuals: that emits more particles.
 	particles.clear()
@@ -2633,15 +2631,11 @@ func sync_battle_visibility() -> void:
 		battle_layer.queue_redraw()
 
 func set_damage_mode(mode: int) -> void:
-	if not discard_native_pulse_labels():return
 	damage_mode = mode
 	show_damage_numbers = mode != 2
 	damage_pending.clear()
 	floats = floats.filter(func(f):return not f.get("damage",false))
 	battle_layer.queue_redraw()
-
-func discard_native_pulse_labels()->bool:
-	return game==null or game.native_execution==null or game.native_execution.discard_pulse_labels(game)
 
 func damage_feedback_text(amount, absorbed = 0, exact := false) -> String:
 	var damage_text := GrowthNumber.text(amount) if exact else NUMBER_FORMAT.damage(amount)
@@ -2697,54 +2691,10 @@ func queue_damage_number(info: Dictionary) -> void:
 			if enemy.uid==info.uid:entry.target_entity=enemy;break
 	damage_pending.append(entry)
 
-func native_pulse_label_seed() -> Array:
-	# The first summary row is the one queue_damage_number would update.
-	var rows:Array=[]
-	var seen:Dictionary={}
-	for entries in [floats,damage_pending]:
-		for entry in entries:
-			if not entry.get("damage",false) or not entry.get("summary",false):continue
-			var uid:int=int(entry.get("uid",-1))
-			if str(entry.get("target",""))!="enemy:%s" % uid or seen.has(uid):continue
-			seen[uid]=true;rows.append({"uid":uid,"entry":entry})
-	return rows
-
-func native_apply_pulse_labels(changes:Array)->Array:
-	var applied:Array=[]
-	for row in changes:
-		var entry:Dictionary=row.entry
-		var critical:bool=bool(row.critical)
-		if entry.is_empty():
-			var uid:int=int(row.uid)
-			entry={"target":"enemy:%s" % uid,"summary":true,"critical":critical,"type":0,"amount":row.amount,"absorbed":row.absorbed,"text":"","display_dirty":true,"born":row.born,"life":row.life,"damage":true,"color":Color("ffd477") if critical else Color("f1f5fa"),"size":18,"origin":Vector2.ZERO,"pos":Vector2.ZERO,"needs_origin":true,"uid":uid}
-			for enemy in game.enemies:
-				if int(enemy.uid)==uid:entry.target_entity=enemy;break
-			damage_pending.append(entry)
-		else:
-			entry.amount=row.amount;entry.absorbed=row.absorbed;entry.critical=critical
-			entry.born=row.born;entry.life=row.life
-			entry.color=Color("ffd477") if critical else Color("f1f5fa")
-			entry.display_dirty=true
-		applied.append({"uid":int(row.uid),"entry":entry})
-	return applied
-
-func native_critical_pulse_effect(point:Vector2,direction:Vector2,display_time:float)->void:
-	# Effects born during this display frame receive the same first frame of
-	# particle aging as the former synchronous callback.
-	assert(display_time<=fx_time+0.000001)
-	weapon_flash(point,Color.WHITE,14.0,0.08)
-	beam_ring(point,ORANGE,0.12,11)
-	weapon_sparks(point,7,140,direction)
-
-func native_damage_history_rows() -> Array:
-	var rows:Array=[]
-	for i in damage_history_records.size():rows.append(damage_history_records[(damage_history_head+i)%damage_history_records.size()])
-	return rows
-
 func read_damage_history() -> Array[String]:
 	var result: Array[String] = []
-	var rows:Array=game.combat_presentation.pulse_history_snapshot() if game!=null and game.native_execution!=null and game.native_execution.pulse_feedback_owned and game.combat_presentation!=null else native_damage_history_rows()
-	for row in rows:
+	for i in damage_history_records.size():
+		var row: Array = damage_history_records[(damage_history_head+i)%damage_history_records.size()]
 		var exact: String = incoming_damage_text(row[4],row[5],int(row[2]),true) if row[0] else damage_feedback_text(row[4],row[5],true)
 		result.append(UIText.t("battle.damage_record",{"target":UIText.t("battle.queue_damage_number.text_01") if row[0] else UIText.t("battle.queue_damage_number.text_02",{"uid":"%s" % row[1]}),"critical":UIText.t("battle.queue_damage_number.text_03") if row[3] else "","damage":exact}))
 	return result

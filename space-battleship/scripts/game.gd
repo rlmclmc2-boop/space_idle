@@ -65,7 +65,6 @@ var enemies: Array[Dictionary] = []
 # kernel.projectile_views(). Handoff replaces this with the complete collection.
 var projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
-var native_presentation_surface:WeakRef
 var native_execution_requested:=false
 var native_execution_auto:=false
 var native_numeric_update:=false
@@ -1957,8 +1956,7 @@ func reset_player() -> void:
 
 func change_state(next: State) -> void:
 	if native_execution!=null:
-		if not native_execution.cancel(self):return
-		native_execution=null
+		native_execution.cancel(self);native_execution=null
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and endless_beam_eligible(p)))
 	if next == State.TRAVEL:
@@ -2092,8 +2090,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 		event.emit("battle_blocked",{"reason":"zero_armour"})
 		return false
 	if native_execution!=null:
-		if not native_execution.cancel(self):return false
-		native_execution=null
+		native_execution.cancel(self);native_execution=null
 		native_execution_requested=false
 	settle_drops()
 	drone_combat.reset();invalidate_stat_cache()
@@ -2521,8 +2518,7 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 
 func begin_retreat() -> void:
 	if native_execution!=null:
-		if not native_execution.cancel(self):return
-		native_execution=null
+		native_execution.cancel(self);native_execution=null
 	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
@@ -4451,9 +4447,6 @@ func admit_native_execution(descriptor:Dictionary)->bool:
 	var session=preload("res://scripts/native_execution_session.gd").new()
 	if not session.admit(self,descriptor):return false
 	native_execution=session
-	if native_presentation_surface!=null:
-		var surface=native_presentation_surface.get_ref()
-		if is_instance_valid(surface):session.bind_presentation_surface(surface)
 	native_execution_requested=true;native_execution_scope=descriptor.execution_scope
 	return true
 
