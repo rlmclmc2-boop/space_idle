@@ -61,18 +61,18 @@ func run() -> void:
 
 	for level in [10, 20, 30]:
 		g = fixture(level, true)
-		g.player.armour = 0
+		g.player.armour = 20
 		g.sync_jewel_defence_damage()
 		g.advance_jewel_repair(interval)
-		check(is_equal_approx(float(g.player.armour), 100.0 * fraction * level), "unbranched one-pulse recovery at level " + str(level))
+		check(is_equal_approx(float(g.player.armour), 20.0 + 100.0 * fraction * level), "unbranched one-pulse recovery at level " + str(level))
 		var branches := int(level / 10)
 		for node in range(1, branches + 1):
 			check(g.set_enhancement_branch("defence", "memory_material", node, "A"), "Memory A branch unlock at level " + str(level) + " node " + str(node))
-		g.player.armour = 0
+		g.player.armour = 20
 		g.sync_jewel_defence_damage()
 		g.advance_jewel_repair(interval)
 		var branch_pulse: float = fraction * level * (1.0 + 0.2 * branches)
-		check(is_equal_approx(float(g.player.armour), 100.0 * branch_pulse), "A branches retain authored additive pulse at level " + str(level))
+		check(is_equal_approx(float(g.player.armour), 20.0 + 100.0 * branch_pulse), "A branches retain authored additive pulse at level " + str(level))
 
 	g = fixture(10, true)
 	var compiled := preload("res://scripts/native_execution_compiler.gd").new().compile(g, "native_low_contract")
