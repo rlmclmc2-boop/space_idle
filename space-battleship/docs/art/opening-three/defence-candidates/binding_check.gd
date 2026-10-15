@@ -8,9 +8,11 @@ var result={"fixture_only":true,"native_execution_tested":false,"mappings":[],"f
 class PaintBoard extends Node2D:
 	var owner_scene
 	var specimens:Array=[]
+	var heading="PRODUCTION DRAW PATHS / descriptor fixture, not Sol loadouts"
+	var footer="One synthetic laser slot each; no combat ticks, no roster edits. Same resolved texture, mounts and state layer."
 	func _draw():
 		draw_rect(Rect2(0,0,1200,1100),Color("101820"))
-		draw_string(ThemeDB.fallback_font,Vector2(30,35),"PRODUCTION DRAW PATHS / descriptor fixture, not Sol loadouts",HORIZONTAL_ALIGNMENT_LEFT,-1,22,Color.WHITE)
+		draw_string(ThemeDB.fallback_font,Vector2(30,35),heading,HORIZONTAL_ALIGNMENT_LEFT,-1,22,Color.WHITE)
 		draw_string(ThemeDB.fallback_font,Vector2(280,80),"Fallback painter",HORIZONTAL_ALIGNMENT_LEFT,-1,18,Color.WHITE)
 		draw_string(ThemeDB.fallback_font,Vector2(780,80),"Retained painter",HORIZONTAL_ALIGNMENT_LEFT,-1,18,Color.WHITE)
 		var previous=owner_scene.draw_surface;owner_scene.draw_surface=self
@@ -20,7 +22,7 @@ class PaintBoard extends Node2D:
 			owner_scene.draw_enemy_hull_and_status(enemy,point-owner_scene.enemy_render_position(enemy),false)
 			draw_string(ThemeDB.fallback_font,Vector2(30,point.y),str(enemy.archetype_id),HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color.WHITE)
 		owner_scene.draw_surface=previous
-		draw_string(ThemeDB.fallback_font,Vector2(30,1070),"One synthetic laser slot each; no combat ticks, no roster edits. Same resolved texture, mounts and state layer.",HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color.WHITE)
+		draw_string(ThemeDB.fallback_font,Vector2(30,1070),footer,HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color.WHITE)
 func _initialize():call_deferred("run")
 func check(ok:bool,message:String):
 	if not ok:push_error(message);quit(1);assert(ok,message)

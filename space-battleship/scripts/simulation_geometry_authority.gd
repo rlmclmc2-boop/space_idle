@@ -561,7 +561,9 @@ func prepare(owner,simulation:BattleGame)->void:
 	enemy_poses=owner.enemy_poses.duplicate(true)
 	for slot in enemy_poses:enemy_poses[slot].entity=resolve_entity(owner.enemy_poses[slot].entity)
 	for key in visual_config.get("ships",{}):
-		if str(key).begins_with("enemy_") and not bool(visual_config.ships[key].get("asset_ready",false)):continue
+		# Older/isolated owners predate asset_ready. Preserve their legacy capture;
+		# an explicit unavailable flag still wins. This remains before ownership.
+		if str(key).begins_with("enemy_") and not bool(visual_config.ships[key].get("asset_ready",true)):continue
 		var texture=owner.ship_hull_texture(key)
 		if texture!=null:
 			var identity=texture.get_instance_id()

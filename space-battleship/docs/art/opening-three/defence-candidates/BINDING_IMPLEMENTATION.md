@@ -12,6 +12,6 @@
 
 验证：隔离Godot4.6.3导入成功；binding_check.gd完成92项检查，输出[binding-check.json](binding-check.json)。检查八个映射、不同掉落ID、主线程捕获纹理身份、几何包络、出生描述往返、retained旧路径、状态条边界和三类诊断回退。两条生产绘制均实际调用；合成夹具每舰一个laser_mon、shielded额外提供有效盾状态，不加入game.enemies，不推进战斗、不写存档。图片不是Sol装备表或真实18点验收。
 
-当前风险：现有攻击甲板标记会覆盖部分新防御材质；30px四武器U的旧覆盖审查也未通过可读性验收。待Sol权威行到位，按真实装备/尺寸核查后优先调整甲面和表现分层，不删武器或改装备。Windows原生执行/性能未在本环境验收，槽位仍由父/Sol协调。
+生命周期补证及asset_ready兼容修正见[LIFECYCLE_EVIDENCE.md](LIFECYCLE_EVIDENCE.md)。已只读Sol 6b2e98da的装备/尺寸：40行归为八种单武器组合；四武器U压力稿不是该版本实际配置。默认窗口比例的单舰对照仍显示现有攻击甲板遮挡防御材质，后续优先调整甲面和表现分层，不删武器或改装备。Windows原生执行/性能未在本环境验收，槽位仍由父/Sol协调。
 
 复现：在隔离导入项目中，以Godot --path <project> --rendering-method gl_compatibility --audio-driver Dummy --script res://docs/art/opening-three/defence-candidates/binding_check.gd运行。预期三条回退warning与OPENING_BINDING_CHECK_OK 92，无SCRIPT ERROR。
