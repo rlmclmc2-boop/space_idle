@@ -46,7 +46,7 @@ func frozen_db() -> ShipDatabase:
 	for id in original.groups:db.groups[id] = original.groups[id]
 	return db
 
-func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5) -> Dictionary:
+func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5, missile_cd := 2.4) -> Dictionary:
 	var settings: Dictionary = CASES[case_name].duplicate()
 	if target_count > 0:settings.count = target_count
 	if target_hp > 0:settings.hp = target_hp
@@ -55,6 +55,7 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 	if weapon == "missile":
 		db.equipment.missile[0].dmg = missile_base
 		db.equipment.missile[0].para1 = missile_salvo
+		db.equipment.missile[0].cd = missile_cd
 	if weapon == "laser":db.equipment.laser[0].cd = laser_cd
 	var g: ScaledGame = ScaledGame.new(db, false)
 	g.balance_scale = scale
@@ -114,12 +115,34 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 		for actor in actors:max_reactive_stacks = maxi(max_reactive_stacks,int(actor.get("reactive_stacks",0)))
 		if actors.all(func(actor):return float(actor.hp) <= 0.0):break
 	var cleared := actors.all(func(actor):return float(actor.hp) <= 0.0)
-	return {"executor":"legacy_presented","production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"laser_cd":laser_cd if weapon=="laser" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss,"effective_shield_loss":g.measured.shield_loss,"shield_regen":g.measured.shield_regen,"overkill":g.measured.overkill,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
+	return {"executor":"legacy_presented","production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"laser_cd":laser_cd if weapon=="laser" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"missile_cd":missile_cd if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss,"effective_shield_loss":g.measured.shield_loss,"shield_regen":g.measured.shield_regen,"overkill":g.measured.overkill,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
 
 func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	if OS.get_environment("SPACE_BALANCE_CADENCE_OPTION") == "1":
+		for n in [5,6,7,8]:
+			for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,160.0,n,300.0,4,1.5,4.0)))
+		for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,160.0,10,100.0,4,1.5,4.0)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_SOFT_BREAKTHROUGH") == "1":
+		print(JSON.stringify(run_case("laser","reactive",1.0,6,1,120.0,-1,-1.0,4,1.5)))
+		print(JSON.stringify(run_case("missile","reactive",1.0,6,1,120.0,-1,-1.0,4,1.5)))
+		print(JSON.stringify(run_case("laser","recovering",1.0,4,1,120.0,-1,-1.0,4,1.5)))
+		quit()
+		return
+	if OS.get_environment("SPACE_BALANCE_DAMAGE_RATIO") == "1":
+		for n in [5,6,7,8]:
+			for hp in [250.0,280.0,300.0]:
+				for weapon in ["laser","missile"]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,120.0,n,hp,4,1.5)))
+		for weapon in WEAPONS:
+			print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,120.0,10,100.0,4,1.5)))
+		for case_name in ["heavy","reactive","recovering"]:
+			for weapon in ["missile","cannon","longLaser"]:print(JSON.stringify(run_case(weapon,case_name,1.0,1,1,120.0,-1,-1.0,4,1.5)))
+		quit()
+		return
 	if OS.get_environment("SPACE_BALANCE_INTERVAL_FINAL") == "1":
 		for n in [5,6,7,8]:
 			for hp in [220.0,260.0,300.0]:

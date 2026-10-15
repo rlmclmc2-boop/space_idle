@@ -2,6 +2,8 @@
 
 **Review status:** The 3-missile, 1.4-second pulse, and 25%/1.0-second draft-shield candidate was **not accepted**. Authoritative Excel and projected JSON have been restored to pulse 300 damage / **1.5 s**, missile **4 × 200** damage / 2.4 s, and unmounted draft enemy `270007` at 8%/s shield recovery after 1.8 s. No four-weapon role solution is claimed. The slow Memory repair adjustment from earlier commits remains separate.
 
+New test-only proposals under the fixed pulse and four-missile launcher are compared in [the weapon option note](../../../space-battleship/docs/handoff/20261015-fixed-pulse-weapon-options.md). Its 120-damage and slower-repeat probes do not change production data.
+
 ## What the focused probes established
 
 The probes run the `legacy_presented` executor only, with fixed seed 1729, production stat cache, one level-1 weapon, no enemy attacks, saves disabled, and a 60 s ceiling. They are mechanics evidence, not a normal playthrough or a native weapon firing-chain test. `role-probe-160-rejected-clamp.jsonl` describes an older 160-damage proposal whose fixed-relative residual clamp was rejected. `role-probe-3-missile-candidate.jsonl` and `pulse-interval-3-missile-candidate.jsonl` describe the later **unapproved** 3 × 200 / 1.4 s candidate; the `raw/` directory retains its original Godot output.
