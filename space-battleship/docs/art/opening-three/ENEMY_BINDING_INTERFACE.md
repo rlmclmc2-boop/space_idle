@@ -1,3 +1,5 @@
+> 此文为85a04e26源码基线核对。Sol在fffa4790已确认草案id/archetype_id的双执行器保留及reactive层数/倍率出口；最新映射提案与剩余几何边界见 [binding-proposal/README.md](binding-proposal/README.md)。本表现分支未因此合入机制或绑定草案ID。
+
 # 新舰绑定：最小接口与现有缺口
 
 核对基线：85a04e2633631cb84fed8018c7b29a5143759758。供父协调Sol；本文不新增机制、ID、敌种或事件实现。背景候选保持不动，Windows原生窗口仍由父安排。当前截图中的旧舰、旧战点及脉冲100/0.5秒不是新平衡接入证据。
