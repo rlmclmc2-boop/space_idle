@@ -46,7 +46,7 @@ func frozen_db() -> ShipDatabase:
 	for id in original.groups:db.groups[id] = original.groups[id]
 	return db
 
-func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5, missile_cd := 2.4, native := false, armour_type := 0, shield_type := 2) -> Dictionary:
+func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1, mounts := 1, missile_base := 200.0, target_count := -1, target_hp := -1.0, missile_salvo := 4, laser_cd := 1.5, missile_cd := 2.4, native := false, armour_type := 0, shield_type := 2, cannon_base := 1500.0, beam_cd := 0.28) -> Dictionary:
 	var settings: Dictionary = CASES[case_name].duplicate()
 	if target_count > 0:settings.count = target_count
 	if target_hp > 0:settings.hp = target_hp
@@ -57,6 +57,8 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 		db.equipment.missile[0].para1 = missile_salvo
 		db.equipment.missile[0].cd = missile_cd
 	if weapon == "laser":db.equipment.laser[0].cd = laser_cd
+	if weapon == "cannon":db.equipment.cannon[0].dmg = cannon_base
+	if weapon == "longLaser":db.equipment.longLaser[0].cd = beam_cd
 	var g: ScaledGame = ScaledGame.new(db, false)
 	g.balance_scale = scale
 	g.save_enabled = false
@@ -136,12 +138,29 @@ func run_case(weapon: String, case_name: String, scale: float, weapon_level := 1
 		admission.handoffs = g.native_handoff_count
 		admission.kernel_metrics = owner.kernel.metrics()
 	var cleared:bool = target_refs.all(func(actor):return float(actor.hp) <= 0.0) and (not native or bool(admission.admitted))
-	return {"executor":"native_compiled" if native else "legacy_presented","admission":admission if native else null,"production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"armour_type":armour_type,"shield_type":shield_type,"laser_cd":laser_cd if weapon=="laser" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"missile_cd":missile_cd if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"fire_times":observed.fire_times,"hit_times":observed.hit_times,"wave_clear_time":observed.wave_clear_time,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss if not native else null,"effective_shield_loss":g.measured.shield_loss if not native else null,"shield_regen":g.measured.shield_regen if not native else null,"overkill":g.measured.overkill if not native else null,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
+	return {"executor":"native_compiled" if native else "legacy_presented","admission":admission if native else null,"production_stat_cache":g.stat_cache_enabled,"rng_seed":1729,"weapon":weapon,"weapon_level":weapon_level,"mounts":mounts,"case":case_name,"target_count":int(settings.count),"target_hp":float(settings.hp),"armour_type":armour_type,"shield_type":shield_type,"laser_cd":laser_cd if weapon=="laser" else null,"beam_cd":beam_cd if weapon=="longLaser" else null,"cannon_base":cannon_base if weapon=="cannon" else null,"scale":scale,"authored_missile_base":missile_base if weapon=="missile" else null,"missile_salvo":missile_salvo if weapon=="missile" else null,"missile_cd":missile_cd if weapon=="missile" else null,"derived_base_normalized":derived_normalized,"first_fire":observed.first_fire,"first_hit":observed.first_hit,"fire_times":observed.fire_times,"hit_times":observed.hit_times,"wave_clear_time":observed.wave_clear_time,"kill_time":elapsed if cleared else -1.0,"hit_total_normalized":observed.hit_total,"effective_hp_loss":g.measured.hp_loss if not native else null,"effective_shield_loss":g.measured.shield_loss if not native else null,"shield_regen":g.measured.shield_regen if not native else null,"overkill":g.measured.overkill if not native else null,"max_reactive_stacks":max_reactive_stacks,"hit_count":observed.hit_count,"initial_pool_normalized":int(settings.count) * (float(settings.hp)+float(settings.shield)),"cleared":cleared}
 
 func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	if OS.get_environment("SPACE_BALANCE_FOUR_BUDGET") == "1":
+		for armour_type in [2,1]:
+			for hp in [260.0,400.0]:
+				for weapon in WEAPONS:
+					for native in [false,true]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,170.0,6,hp,4,1.5,2.4,native,armour_type,2,1000.0,0.25)))
+		for case_name in ["heavy","reactive"]:
+			for weapon in WEAPONS:
+				for native in [false,true]:print(JSON.stringify(run_case(weapon,case_name,1.0,1,1,170.0,-1,-1.0,4,1.5,2.4,native,0,2,1000.0,0.25)))
+		for weapon in WEAPONS:
+			for native in [false,true]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,170.0,10,100.0,4,1.5,2.4,native,0,2,1000.0,0.25)))
+		for weapon in WEAPONS:
+			for native in [false,true]:print(JSON.stringify(run_case(weapon,"medium",1.0,1,1,170.0,1,5000.0,4,1.5,2.4,native,1,2,1000.0,0.25)))
+		for native in [false,true]:print(JSON.stringify(run_case("missile","medium",1.0,1,1,200.0,1,5000.0,4,1.5,2.4,native,1,2,1000.0,0.25)))
+		for weapon in WEAPONS:
+			for native in [false,true]:print(JSON.stringify(run_case(weapon,"candidate_d",1.0,1,1,170.0,-1,-1.0,4,1.5,2.4,native,1,2,1000.0,0.25)))
+		quit()
+		return
 	if OS.get_environment("SPACE_BALANCE_TYPED_LEVEL_SLOTS") == "1":
 		for armour_type in [2,1]:
 			for weapon in ["laser","missile"]:
