@@ -103,6 +103,7 @@ class SpaceCombatKernel : public RefCounted {
         size_t active_index = 0, beam_index = 0, compatibility_index = SIZE_MAX;
         bool compact_laser = false, target_view_cleared = false;
         bool view_repeated = false, owns_primary_aim = false;
+        int view_trigger_depth = 0;
         // The row at actual carrier birth can differ from Attack.birth after
         // an upgrade while a repeat is queued. Retain that immutable descriptor.
         std::shared_ptr<const BirthConfig> view_birth;
@@ -810,6 +811,7 @@ class SpaceCombatKernel : public RefCounted {
         f.damage = inst->attack->damage * multiplier;
         f.repeated = repeated || inst->derived;
         f.view_repeated = repeated; f.owns_primary_aim = !w.hostile && !repeated && !chain;
+        f.view_trigger_depth = repeated || chain || (f.context && f.context->derived) ? 1 : 0;
         f.chain = chain;
         f.beam = w.kind == 3 && !chain;
         f.serial = ++flight_serial;
@@ -2505,7 +2507,7 @@ class SpaceCombatKernel : public RefCounted {
         v["ballistic_target_origin"] = f.aim; v["fixed_screen_origin"] = f.ray_origin; v["fixed_screen_step"] = f.ray_step;
         Dictionary context;
         context["source_id"] = birth.entry.has("drone_id") ? String("drone:") + String(birth.entry["drone_id"]) : String("module:") + String::num_int64(birth.slot);
-        context["trigger_depth"] = f.view_repeated ? 1 : 0; v["combat_context"] = context; v["prism_tower"] = false;
+        context["trigger_depth"] = f.view_trigger_depth; v["combat_context"] = context; v["prism_tower"] = false;
         return v;
     }
     // Cold presentation transition: prepare all missing rows first. A failure
