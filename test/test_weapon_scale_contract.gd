@@ -8,6 +8,7 @@ class ScaledGame extends "res://scripts/game.gd":
 
 var checks := 0
 var failures := 0
+var unresolved_extreme := 0
 
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -114,5 +115,18 @@ func run() -> void:
 	real_enemy.reactiveReduction = 0
 	real_remainder.hit_enemy(real_enemy,1.0e15-5.0e7,1)
 	check(float(real_enemy.hp) == 5.0e7,"legacy preserves representable 50-million HP remainder")
-	print("WEAPON SCALE CONTRACT: ", checks, " checks, ", failures, " failures")
-	quit(1 if failures else 0)
+	var boundary := fixture(1.0e40)
+	var boundary_enemy: Dictionary = boundary.enemies[0]
+	boundary_enemy.hp = 5000.0 * 1.0e40
+	boundary_enemy.max_hp = boundary_enemy.hp
+	boundary_enemy.shield = 0.0
+	boundary_enemy.max_shield = 0.0
+	boundary_enemy.reactiveReduction = 0
+	for shot in 25:boundary.hit_enemy(boundary_enemy,200.0 * 1.0e40,1)
+	var residual: float = float(boundary_enemy.hp) / 1.0e40
+	print("LEGACY_BOUNDARY 1e40 residual_normalized=",residual)
+	if residual != 0.0:
+		unresolved_extreme += 1
+		printerr("UNRESOLVED legacy exact-25-hit boundary at 1e40: ",residual)
+	print("WEAPON SCALE CONTRACT: ", checks, " checked, ", failures, " failures, ",unresolved_extreme," unresolved extreme boundary")
+	quit(1 if failures or unresolved_extreme else 0)

@@ -5,4 +5,5 @@ NATIVE_BOUNDARY 100.0 residual_normalized=0.0
 NATIVE_BOUNDARY 1000.0 residual_normalized=0.0
 NATIVE_BOUNDARY 100000.0 residual_normalized=0.0
 NATIVE_BOUNDARY 10000000000000002000000000000000000000000.0 residual_normalized=0.0000000000008
-NATIVE WEAPON SCALE: 59 checks, 0 failures
+UNRESOLVED native exact-25-hit boundary at 1e40: 0.0000000000008
+NATIVE WEAPON SCALE: 58 checked, 0 failures, 1 unresolved extreme boundary
