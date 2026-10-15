@@ -107,7 +107,17 @@ func cancel_contract():
  check(seen==["fire","projectile_impact","critical_impact"],"native laser fire, impact, pass and critical packets map once")
 func cold_handoff_contract():
  var g=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
- g.stat_cache_enabled=true;g.save_enabled=false;g.profile.loadout.weapons[0].key="laser";g.invalidate_stat_cache()
+ g.stat_cache_enabled=true;g.save_enabled=false;g.native_execution_auto=false
+ g.profile.cleared=range(1,7);g.rebuild_unlocks()
+ g.profile.loadout.weapons[0].key="laser";g.invalidate_stat_cache()
+ var routes={};var group_id=9000;var enemy_id=int(g.db.enemies.keys()[0])
+ for route in ["alpha","beta","gamma","delta"]:
+  routes[route]=[]
+  for layer in 10:
+   group_id+=1;routes[route].append(group_id)
+   g.db.groups[str(group_id)]={"slots":[enemy_id],"combatTier":"normal" if layer<4 else "elite" if layer<8 else "boss" if layer==8 else "ultimate","formation_positions":[[100.0+(group_id%4)*40,100.0+layer*10]]}
+ check(g.configure_hyperspace_routes(routes),"manual route fixture accepted")
+ check(g.start(1,false),"main journey started before manual entry")
  g.state=BattleGame.State.COMBAT
  var d=world();d.execution_scope="native_low_contract"
  d.enemies=[actor(100,300,1000,0),actor(101,550,1000,1)]
@@ -120,10 +130,29 @@ func cold_handoff_contract():
  check(snapshot.flights.size()>0 and owner.kernel.presentation_projectile_rows().is_empty(),"cold handoff begins with typed-only live flights")
  var serials=[]
  for row in snapshot.flights:serials.append(row.view.serial)
- check(owner.handoff_to_legacy(g,"compact_laser_contract"),"cold handoff commits one owner")
+ var energy=float(g.profile.hyperspace.energy);var ticket=float(g.hyperspace.config.ticket)
+ var flight_count=int(owner.kernel.metrics().active_flights);var rng_state=int(owner.kernel.rng_source().state)
+ var lease=snapshot.flights[0].view.motion_lease
+ var instance_id=int(snapshot.flights[0].instance.id)
+ var motion=snapshot.flights[0].position
+ g.profile.hyperspace.energy=ticket-1.0
+ check(not g.start_hyperspace("alpha",1) and g.native_execution==owner and float(g.profile.hyperspace.energy)==ticket-1.0 and int(owner.kernel.metrics().active_flights)==flight_count,"insufficient ticket refuses entry before cold transfer")
+ g.profile.hyperspace.energy=energy
+ owner.galaxy_refit_blocked=true
+ check(not g.start_hyperspace("alpha",1),"failed actual manual entry refuses unsafe cold transfer")
+ check(g.manual_hyperspace.last_error=="native_transfer_failed" and g.native_execution==owner and float(g.profile.hyperspace.energy)==energy and int(owner.kernel.metrics().active_flights)==flight_count and int(owner.kernel.rng_source().state)==rng_state,"failed transfer retains authority, flights, RNG and energy")
+ var failed_serials=[]
+ for row in owner.kernel.export_handoff().flights:failed_serials.append(row.view.serial)
+ check(failed_serials==serials and is_same(owner.kernel.export_handoff().flights[0].view.motion_lease,lease),"failed transfer retains flight serials and lease identity")
+ owner.galaxy_refit_blocked=false
+ check(g.start_hyperspace("alpha",1),"actual manual entry commits cold transfer")
+ check(g.native_execution==null and g.manual_hyperspace.active and float(g.profile.hyperspace.energy)==energy-ticket and float(g.profile.hyperspace.active.ticket)==ticket,"actual entry deducts authored ticket once after transfer")
+ check(not g.start_hyperspace("alpha",1) and float(g.profile.hyperspace.energy)==energy-ticket,"repeat entry cannot deduct again")
+ check(g.exit_hyperspace_challenge(),"manual exit restores frozen main encounter")
  var received=[]
  for shot in g.projectiles:received.append(shot.serial)
- check(received==serials and g.native_execution==null,"cold handoff retains all flight identities")
+ check(received==serials and g.native_execution==null and float(g.profile.hyperspace.energy)==energy,"cold handoff preserves flight serials and refunds once")
+ check(g.projectiles.size()>0 and int(g.projectiles[0].attack_instance_id)==instance_id and is_equal_approx(float(g.projectiles[0].x),float(motion.x)) and is_equal_approx(float(g.projectiles[0].y),float(motion.y)),"manual return preserves instance identity and carrier position")
  g.begin_retreat()
 class PacketKernel extends RefCounted:
  var events:Array=[]

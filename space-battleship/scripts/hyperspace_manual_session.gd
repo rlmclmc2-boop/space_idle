@@ -96,7 +96,7 @@ func reset_for_load(g)->void:
 	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={};last_result={}
 func start(g,route: String,level: int) -> bool:
 	last_error=""
-	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
+	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0 or float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
 		bound_registry=reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g))

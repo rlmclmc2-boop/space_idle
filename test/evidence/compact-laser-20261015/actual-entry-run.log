@@ -1,0 +1,9 @@
+Artifacts: D:\CodexBuild\space_idle\stable-integration\test\work\compact-laser-kbzy3tb7
+Candidate DLL SHA256: 1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5
+Staged test SHA256: 7d2de69badb9a72b012e70697b6b3d3e8888d487c60e9d8dbd6e89cb20ae35cc
+Staged hyperspace_manual_session.gd SHA256: eefa6f4d7722b73824d5a1b05372f92574e18917bc60cbbcea0b9dc5fce1f1ed
+Staged hyperspace_system.gd SHA256: 8ac88b1d9bce3616ee6a5aab99da84b0a29e9d09a0dca708b1a902596c68b6da
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+COMPACT_NATIVE_SHA256 1f7a106abab612abc90192e761c247c4443a717212e3f135d0f84a71bc997bd5
+COMPACT_LASER_RESULT {"checks":8013,"failures":0}
