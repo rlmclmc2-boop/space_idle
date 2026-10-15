@@ -67,6 +67,7 @@ const SHIP_VISUALS := preload("res://scripts/ship_visuals.gd")
 const ENEMY_RECOGNITION := preload("res://scripts/enemy_recognition_visual.gd")
 
 var enemy_recognition = ENEMY_RECOGNITION.new()
+var enemy_visual_identity = preload("res://scripts/enemy_visual_identity.gd").new()
 
 const WEAPON_VISUAL := preload("res://scripts/weapon_visual.gd")
 
@@ -182,7 +183,7 @@ func _source_enemy_appearance(enemy: Dictionary) -> Dictionary:
 	# The immutable appearance owns components, descriptors and attack types
 	# together. A spatial publication can outlive this slot's mutable pose.
 	var pose := enemy_pose(enemy)
-	var ship_key := "enemy_"+str(clampi(int(enemy.size),1,6))
+	var ship_key := enemy_visual_identity.resolve(enemy,visual_config)
 	var signature := ship_key+":"+str(db.get_instance_id())
 	for equipment in enemy.equipment:signature += "|"+str(equipment.get("name",""))
 	if not pose.has("appearance") or str(pose.appearance.signature)!=signature:
@@ -193,8 +194,11 @@ func _source_enemy_appearance(enemy: Dictionary) -> Dictionary:
 		for equipment in enemy.equipment:
 			var damage_type:=int(db.enemy_weapon(str(equipment.name)).get("dmgtype",0))
 			if damage_type in [1,2] and not types.has(damage_type):types.append(damage_type)
-		pose.appearance={"signature":signature,"components":components,"mounts":enemy_recognition.descriptors(components),"types":types}
+		pose.appearance={"ship_key":ship_key,"signature":signature,"components":components,"mounts":enemy_recognition.descriptors(components),"types":types}
 	return pose.appearance
+
+func enemy_ship_key(enemy:Dictionary)->String:
+	return str(enemy_appearance(enemy).ship_key)
 
 func enemy_recognition_mounts(enemy:Dictionary)->Array:
 	return enemy_appearance(enemy).mounts
@@ -272,7 +276,7 @@ func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.IN
 	var component=enemy_component_for_slot(enemy,index)
 	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
 	# Unknown external configurations keep the previous logical mount fallback.
-	var point:=hardpoint_for_slot("enemy_"+str(clampi(int(enemy.size),1,6)),index)
+	var point:=hardpoint_for_slot(enemy_ship_key(enemy),index)
 	if point.is_empty():return Vector2.ZERO
 	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
 	var width:=enemy_render_width_at_y(enemy,position.y)
@@ -516,7 +520,7 @@ func beam_style(shot: Dictionary) -> Dictionary:
 	return {"power":power,"width":lerpf(1.2,2.8,power)+pulse*0.6,"glow":0.05+power*0.045+pulse*0.2,"pulse":pulse}
 
 func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Dictionary:
-	var texture := ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+	var texture := ship_hull_texture(enemy_ship_key(enemy))
 	var mounts := enemy_recognition_mounts(enemy)
 	var width:=enemy_render_width(enemy) if known_width<0.0 else known_width
 	return geometry_from_descriptor(texture,width,mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
@@ -557,6 +561,9 @@ func prepare(owner,simulation:BattleGame)->void:
 	enemy_poses=owner.enemy_poses.duplicate(true)
 	for slot in enemy_poses:enemy_poses[slot].entity=resolve_entity(owner.enemy_poses[slot].entity)
 	for key in visual_config.get("ships",{}):
+		# Older/isolated owners predate asset_ready. Preserve their legacy capture;
+		# an explicit unavailable flag still wins. This remains before ownership.
+		if str(key).begins_with("enemy_") and not bool(visual_config.ships[key].get("asset_ready",true)):continue
 		var texture=owner.ship_hull_texture(key)
 		if texture!=null:
 			var identity=texture.get_instance_id()
@@ -842,7 +849,7 @@ func display_descriptor(enemy:Dictionary)->Dictionary:
 	var components:Array=[]
 	for component in appearance.components:
 		components.append({"hardpoint":component.hardpoint.duplicate(true),"profile":component.profile.duplicate(true),"slots":component.slots.duplicate(),"owner_slot":component.owner_slot,"damage_type":component.damage_type})
-	return {"components":components,"mounts":appearance.mounts.duplicate(true),"types":appearance.types.duplicate()}
+	return {"ship_key":appearance.ship_key,"components":components,"mounts":appearance.mounts.duplicate(true),"types":appearance.types.duplicate()}
 func display_enemy(enemy:Dictionary)->Dictionary:
 	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
 	if not frozen.is_empty() and is_same(frozen.entity,enemy):return frozen.value
@@ -889,7 +896,7 @@ func display_shape(enemy:Dictionary,width:float,frozen_pose:Dictionary={})->Stri
 	# Static outline packets travel only on birth/bucket/contract changes. Their
 	# stable entity+bucket ID avoids repeating every packed outline in hit events.
 	var uid:int=int(enemy.uid);var bucket:int=ceili(width*maxf(0.1,screen_scale)/2.0)
-	var packet:Dictionary=enemy_recognition_geometry(enemy,width) if frozen_pose.is_empty() else geometry_from_descriptor(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),width,frozen_pose.appearance.mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,frozen_pose,screen_scale,int(enemy.size)>=4)
+	var packet:Dictionary=enemy_recognition_geometry(enemy,width) if frozen_pose.is_empty() else geometry_from_descriptor(ship_hull_texture(str(frozen_pose.appearance.ship_key)),width,frozen_pose.appearance.mounts,float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,frozen_pose,screen_scale,int(enemy.size)>=4)
 	if not display_shapes.has(uid):display_shapes[uid]={}
 	var packets:Dictionary=display_shapes[uid];var identity:String=str(uid)+":"+str(bucket)
 	if not packets.has(bucket) or (not is_same(packets[bucket],packet) and packets[bucket]!=packet):

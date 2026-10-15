@@ -1,0 +1,405 @@
+{
+  "source_commit": "6b2e98da382ac3903a0474936119a2dea59d4cb6",
+  "rows": [
+    {
+      "id": 270001,
+      "archetype_id": "scout",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 270002,
+      "archetype_id": "sentry",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 270003,
+      "archetype_id": "interceptor",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 270004,
+      "archetype_id": "swarm",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 270005,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 270006,
+      "archetype_id": "reactive",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 270007,
+      "archetype_id": "shielded",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 270008,
+      "archetype_id": "command",
+      "size": 5,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271001,
+      "archetype_id": "scout",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271002,
+      "archetype_id": "scout",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271003,
+      "archetype_id": "sentry",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271004,
+      "archetype_id": "sentry",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271005,
+      "archetype_id": "scout",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271006,
+      "archetype_id": "interceptor",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271007,
+      "archetype_id": "interceptor",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271008,
+      "archetype_id": "interceptor",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271009,
+      "archetype_id": "interceptor",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271010,
+      "archetype_id": "sentry",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271011,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271012,
+      "archetype_id": "swarm",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271013,
+      "archetype_id": "swarm",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271014,
+      "archetype_id": "swarm",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271015,
+      "archetype_id": "interceptor",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271016,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271017,
+      "archetype_id": "scout",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271018,
+      "archetype_id": "scout",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271019,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271020,
+      "archetype_id": "swarm",
+      "size": 1,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271021,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271022,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271023,
+      "archetype_id": "anchor",
+      "size": 4,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271024,
+      "archetype_id": "reactive",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271025,
+      "archetype_id": "sentry",
+      "size": 2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271026,
+      "archetype_id": "reactive",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271027,
+      "archetype_id": "reactive",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271028,
+      "archetype_id": "shielded",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271029,
+      "archetype_id": "shielded",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    },
+    {
+      "id": 271030,
+      "archetype_id": "reactive",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271031,
+      "archetype_id": "command",
+      "size": 5,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ]
+    },
+    {
+      "id": 271032,
+      "archetype_id": "shielded",
+      "size": 3,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ]
+    }
+  ]
+}

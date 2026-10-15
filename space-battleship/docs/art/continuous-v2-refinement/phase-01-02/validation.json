@@ -1,0 +1,84 @@
+{
+  "parent_files": [
+    {
+      "file": "README.md",
+      "matches_parent_commit": true,
+      "sha256": "fd1e50eb39f0c78742f9fb02d1f08c7711477cd5bdcd0557b9e16d7ec579d011"
+    },
+    {
+      "file": "generation-prompt.txt",
+      "matches_parent_commit": true,
+      "sha256": "d6d4697f72139ae1662c6fc0b448c05a8c2a7c6ed1e02543dfae3513a103c5ba"
+    },
+    {
+      "file": "layout.json",
+      "matches_parent_commit": true,
+      "sha256": "ebc0e92e5e8682ede19906ba9ceaf1c0b3fd69e282ff3a31adfe1f3d91ac81bd"
+    },
+    {
+      "file": "source-master.png",
+      "matches_parent_commit": true,
+      "sha256": "208e13b700e66b4b4a28d477f222dd6c3419717c99da1d1553e890721aba7397"
+    }
+  ],
+  "source_cut_seams": "exact, including filter support; see source/asset-report.json",
+  "gpu_boundary_checks": [
+    {
+      "physical_width": 400,
+      "compared_rows": 671,
+      "maximum_rgb_channel_difference_255": 1,
+      "pixel_identical": false,
+      "changed_pixels": 44,
+      "interpretation": "at most 8-bit sampling rounding, not a row discontinuity"
+    },
+    {
+      "physical_width": 572,
+      "compared_rows": 960,
+      "maximum_rgb_channel_difference_255": 0,
+      "pixel_identical": true,
+      "changed_pixels": 0,
+      "interpretation": "at most 8-bit sampling rounding, not a row discontinuity"
+    }
+  ],
+  "scroll_frames": 81,
+  "scroll_video_fps": 20,
+  "scroll_video_seconds": 4.05,
+  "scroll_note": "art-only pan, not gameplay timing",
+  "import": {
+    "engine": "Godot 4.6.3",
+    "error_count": 0,
+    "compression_mode": 0,
+    "mipmaps": false,
+    "size_limit": 0,
+    "shader_filter": "linear / repeat disabled"
+  },
+  "native_extension_available": false,
+  "performance_status": "native full-frame/busy-frame/tail verification not performed; no speedup or pass claimed",
+  "runtime_rgba8_equivalent_bytes": 5486624,
+  "production_changes": [
+    "two scenery textures",
+    "once-per-stage sampling window bind",
+    "same scenery shader sampling coordinates"
+  ],
+  "unchanged": [
+    "gameplay configuration",
+    "combat kernel",
+    "enemy identities and hit geometry",
+    "weapon events and damage",
+    "rewards/unlocks",
+    "UI hierarchy and refresh owners"
+  ],
+  "real_main_scene": {
+    "stages": [
+      1,
+      2
+    ],
+    "texture_size": [
+      572,
+      1199
+    ],
+    "draw_preserved_enemies_distance_rng": true,
+    "save_enabled": false,
+    "native_extension_available": false
+  }
+}

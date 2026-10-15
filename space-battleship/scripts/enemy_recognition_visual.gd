@@ -144,14 +144,25 @@ func closed(surface: CanvasItem, outline: PackedVector2Array, color: Color, stro
 	path.append(path[0])
 	surface.draw_polyline(path,color,stroke,true)
 
-func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packet: Dictionary, status: Dictionary, shield_clock: float) -> PackedVector2Array:
+func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packet: Dictionary, status: Dictionary, shield_clock: float, opening_readability := false) -> PackedVector2Array:
 	if not status.alive:return PackedVector2Array()
 	var hull_type := int(enemy.get("armourType",0))
 	var shield_type := int(enemy.get("shieldType",0))
 	var hull_visible: bool=status.show_hull and hull_type in [1,2]
 	if not hull_visible and not status.repair and not (status.active and shield_type in [0,1,2]):return PackedVector2Array()
 	var outline: PackedVector2Array=packet.inner
-	if hull_visible:closed(surface,outline,Color(PHYSICAL if hull_type==2 else ENERGY,0.8),packet.hull_stroke)
+	if hull_visible:
+		var color := PHYSICAL if hull_type==2 else ENERGY
+		if opening_readability:
+			# Static armor uses corner plates; a continuous contour remains a shield cue.
+			# Same published envelope and one retained draw command, no geometry changes.
+			var brackets := PackedVector2Array()
+			for i in outline.size():
+				var next := outline[(i+1)%outline.size()]
+				brackets.append(outline[i]);brackets.append(outline[i].lerp(next,0.23))
+				brackets.append(outline[i].lerp(next,0.77));brackets.append(next)
+			surface.draw_multiline(brackets,Color(color,0.48),packet.hull_stroke,true)
+		else:closed(surface,outline,Color(color,0.8),packet.hull_stroke)
 	if status.active and shield_type in [0,1,2]:
 		outline=packet.outer if hull_visible else packet.inner
 		var color := shield_color(shield_type)
@@ -164,7 +175,7 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 				surface.draw_line(a.lerp(b,0.08),a.lerp(b,0.92),Color(color,0.18),packet.shield_stroke,true)
 				var fill := clampf(float(status.fraction)*6-float(i),0,1)
 				if fill>0:surface.draw_line(a.lerp(b,0.08),a.lerp(b,0.08+0.84*fill),Color(color,0.9),packet.shield_stroke,true)
-		else:closed(surface,outline,Color(color,0.65),packet.shield_stroke)
+		else:closed(surface,outline,Color(color,0.50 if opening_readability else 0.65),packet.shield_stroke)
 		if shield_type==1 and int(enemy.size)>=4:
 			var front: PackedVector2Array=packet.front if hull_visible else packet.single_front
 			surface.draw_polyline(PackedVector2Array([front[5],front[0],front[1]]),Color(ENERGY,0.85),packet.shield_stroke,true)
@@ -182,7 +193,27 @@ func draw_protection(surface: CanvasItem, enemy: Dictionary, width: float, packe
 				var p := center+toward*width*(0.12+0.17*pulse)
 				var cross := toward.orthogonal()*width*0.035
 				surface.draw_polyline(PackedVector2Array([p-toward*width*0.045+cross,p,p-toward*width*0.045-cross]),Color(color,1.0-pulse*0.55),maxf(1.0/packet.scale,width*0.025),true)
+	if opening_readability:draw_shield_type_markers(surface,enemy,width,packet,status)
 	return outline
+
+func draw_shield_type_markers(surface:CanvasItem,enemy:Dictionary,width:float,packet:Dictionary,status:Dictionary)->void:
+	if not status.alive or not status.active:return
+	var kind=int(enemy.get("shieldType",0))
+	if kind not in [1,2]:return
+	var hull_visible:bool=status.show_hull and int(enemy.get("armourType",0)) in [1,2]
+	var outline:PackedVector2Array=packet.outer if hull_visible else packet.inner
+	var span=maxf(2.4/packet.scale,minf(width*0.085,5.0/packet.scale))
+	var stroke=maxf(1.1/packet.scale,packet.shield_stroke)
+	var color=Color(shield_color(kind),0.9)
+	for side in [-1,1]:
+		var edge=(outline[1]+outline[2])*0.5 if side==1 else (outline[4]+outline[5])*0.5
+		var center=edge-Vector2(side*(span+stroke),0)
+		if kind==2:
+			for offset in [-0.65,0.65]:
+				surface.draw_line(center+Vector2(-span,offset*span),center+Vector2(span,offset*span),color,stroke,true)
+		else:
+			surface.draw_polyline(PackedVector2Array([center+Vector2(0,-span),center+Vector2(span,0),center+Vector2(0,span),center+Vector2(-span,0),center+Vector2(0,-span)]),color,stroke,true)
+	return
 
 func draw_attack_deck(surface:CanvasItem,width:float,damage_types:Array)->void:
 	# Persistent structure reads independently of orange/blue protection colors.

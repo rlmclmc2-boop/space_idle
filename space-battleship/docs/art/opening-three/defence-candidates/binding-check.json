@@ -1,0 +1,67 @@
+{
+  "checks": 92,
+  "diagnostics": {
+    "scout:armour_type_mismatch": "enemy_3",
+    "scout:asset_unavailable": "enemy_4",
+    "unknown:unknown_archetype": "enemy_3"
+  },
+  "fallbacks": [
+    {
+      "size": 3
+    },
+    {
+      "archetype_id": "unknown",
+      "armourType": 1,
+      "size": 3
+    },
+    {
+      "archetype_id": "scout",
+      "armourType": 1,
+      "size": 3
+    }
+  ],
+  "fixture_only": true,
+  "mappings": [
+    {
+      "archetype": "scout",
+      "ship_key": "enemy_opening_triangle_physical",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "sentry",
+      "ship_key": "enemy_opening_triangle_physical",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "interceptor",
+      "ship_key": "enemy_opening_triangle_energy",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "swarm",
+      "ship_key": "enemy_opening_triangle_energy",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "anchor",
+      "ship_key": "enemy_opening_slab_energy",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "reactive",
+      "ship_key": "enemy_opening_slab_energy",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "shielded",
+      "ship_key": "enemy_opening_u_energy",
+      "texture_identity_shared": true
+    },
+    {
+      "archetype": "command",
+      "ship_key": "enemy_opening_u_energy",
+      "texture_identity_shared": true
+    }
+  ],
+  "native_execution_tested": false
+}

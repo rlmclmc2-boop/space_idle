@@ -1,0 +1,55 @@
+{
+  "parent_commit": "d45d9d79ca5132619074b9eaa3a2d33b909b23d0",
+  "parent_section_crop": [
+    235,
+    1538,
+    488,
+    2172
+  ],
+  "section_note": "stages 1–2 plus upper continuation context; layout coordinates are not gameplay distances",
+  "refined_source_sha256": "7f6d06b8b25f927755c5272818e3cb8fcf1ef7513660d695c816aefc8af44c84",
+  "refined_source_size": [
+    747,
+    2104
+  ],
+  "prepared_master_size": [
+    572,
+    2106
+  ],
+  "runtime_tile_sizes": {
+    "1": [
+      572,
+      1684
+    ],
+    "2": [
+      572,
+      1390
+    ]
+  },
+  "edge_padding": 2,
+  "viewport_pixels": [
+    572,
+    960
+  ],
+  "visual_strides": {
+    "1": 720,
+    "2": 426
+  },
+  "tile_master_origins": {
+    "1": 426,
+    "2": 0
+  },
+  "seam_including_filter_support_identical": true,
+  "resampling": "native crop [87,0,659,2104] plus 2 bottom edge-replicated rows; no resampling or per-stage generation",
+  "resident_rgba8_bytes": 7033312,
+  "files": {
+    "stage_01.png": {
+      "bytes": 944497,
+      "sha256": "5a15a1df4f666a3b36cd27947baec86639475a9c2433e9cd4f77d37b8803912b"
+    },
+    "stage_02.png": {
+      "bytes": 696855,
+      "sha256": "81950e1820292b66daedc0be29a65a512c006a94093a7f628c33001b26020b10"
+    }
+  }
+}

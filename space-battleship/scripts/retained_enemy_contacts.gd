@@ -119,7 +119,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.source_id=spatial.source_id;record.appearance=spatial.appearance
  bind_pose(record,paint_owner.enemy_pose(enemy))
  record.screen_scale=paint_owner.enemy_recognition_screen_scale()
- record.texture=paint_owner.ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+ record.texture=paint_owner.ship_hull_texture(str(spatial.appearance.ship_key))
  record.used=paint_owner.enemy_hull_bounds(record.texture)
  record.corners=PackedVector2Array([record.used.position,Vector2(record.used.end.x,record.used.position.y),record.used.end,Vector2(record.used.position.x,record.used.end.y)])
  record.descriptors=spatial.appearance.mounts
@@ -136,6 +136,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.mounts.clear()
  record.fallback.visible=not record.supported
  for node in [record.hull,record.deck,record.protection,record.health,record.shield]:node.visible=record.supported
+ record.deck.visible=record.supported and paint_owner.enemy_attack_deck_visible(enemy)
  if not record.supported:return
  record.hull.data={"texture":record.texture,"rect":paint_owner.enemy_hull_rect(enemy,1.0)};record.hull.queue_redraw()
  for physical in [true,false]:
@@ -347,7 +348,7 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
   "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
   "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
   "weapon_strokes":paint_owner.enemy_recognition.draw_weapon_strokes(surface,data.width)
-  "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock)
+  "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock,paint_owner.game.stage<=3)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
   "fallback":paint_owner.draw_enemy_hull_and_status(data.enemy,data.offset,data.boss)
   "foreground":
@@ -372,7 +373,7 @@ func display_spatial(record:DisplayRecord,enemy:Dictionary)->Dictionary:
  var signature:String=str(pose.get("components_signature",""))
  if record.legacy_appearance.is_empty() or record.legacy_signature!=signature:
   record.legacy_signature=signature;record.legacy_revision+=1
-  record.legacy_appearance={"mounts":paint_owner.enemy_recognition.descriptors(components),"components":components}
+  record.legacy_appearance={"ship_key":paint_owner.enemy_ship_key(enemy),"mounts":paint_owner.enemy_recognition.descriptors(components),"components":components}
  return {"source_id":0,"shape_revision":record.legacy_revision,"appearance":record.legacy_appearance,"components":components,"position":paint_owner.enemy_render_position(enemy),"frontline":paint_owner.enemy_frontline_y_limit(enemy)}
 
 func clear()->void:

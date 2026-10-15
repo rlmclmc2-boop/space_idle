@@ -24,6 +24,22 @@ const PULSE_VFX := preload("res://dev/toon_ship/pulse_vfx.gd")
 const SHIP_VIEW := preload("res://scripts/presented_ship_view.gd")
 const ROUTE_SCENERY_ATLAS := preload("res://assets/backgrounds/hyperspace/routes_atlas.png")
 var scenery_material_route := ""
+# Immutable preload set: stage changes bind an existing texture; frames only update UV progress.
+const OPENING_SCENERY := [
+	preload("res://assets/backgrounds/opening/stage_01.png"),
+	preload("res://assets/backgrounds/opening/stage_02.png"),
+	preload("res://assets/backgrounds/opening/stage_03.png"),
+	preload("res://assets/backgrounds/opening/stage_04.png"),
+	preload("res://assets/backgrounds/opening/stage_05.png"),
+	preload("res://assets/backgrounds/opening/stage_06.png"),
+	preload("res://assets/backgrounds/opening/stage_07.png"),
+	preload("res://assets/backgrounds/opening/stage_08.png"),
+	preload("res://assets/backgrounds/opening/stage_09.png"),
+	preload("res://assets/backgrounds/opening/stage_10.png"),
+]
+const OPENING_TEXTURE_GUTTER := 2.0 # Offline tile edge padding; preserves bilinear seams.
+var opening_scenery_stage := -1
+var opening_scenery_progress := -1.0
 const SOLID_BACKGROUND_SHADER := preload("res://scripts/solid_background.gdshader")
 
 @export_group("Toon ship prototype")
@@ -918,8 +934,9 @@ func enemy_hull_light(enemy:Dictionary)->float:
 	return lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
 
 func prepare_enemy_hulls() -> void:
-	for size_class in range(1,7):
-		var path := str(ship_visual_entry("enemy_"+str(size_class)).get("texture",""))
+	for ship_key in visual_config.get("ships",{}):
+		if not str(ship_key).begins_with("enemy_"):continue
+		var path := str(ship_visual_entry(str(ship_key)).get("texture",""))
 		# Optional/unavailable hulls must not introduce an error before encounter.
 		# A later configured texture still resolves through the ordinary draw path.
 		if path.is_empty() or not ResourceLoader.exists(path):continue
@@ -950,12 +967,12 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
-	draw_surface.draw_texture_rect(ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6))),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
-	enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
+	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
+	if enemy_attack_deck_visible(enemy):enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
 	draw_surface.draw_set_transform(pos,PI+angle)
-	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time)
+	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time,game.stage<=3)
 	var outline:PackedVector2Array=protection_outline
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
@@ -981,7 +998,7 @@ func encounter_leader_name(enemy:Dictionary)->String:
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
 	# Status placement follows the drawn hull/protection, not combat bounds.
 	var dimensions:=Vector2(width,width*2.0)
-	var texture:=ship_hull_texture("enemy_"+str(clampi(int(enemy.size),1,6)))
+	var texture:=ship_hull_texture(enemy_ship_key(enemy))
 	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
 	var bottom:=pos.y
@@ -1036,6 +1053,21 @@ func draw_environment_event(_offset:Vector2)->void:
 
 func draw_stars()->void:
 	var mat:ShaderMaterial=stars_layer.material
+	# Read only the existing journey. No clock, encounter or distance authority here.
+	var opening_stage:int=game.stage if game.stage>=1 and game.stage<=OPENING_SCENERY.size() else 0
+	if opening_scenery_stage!=opening_stage:
+		opening_scenery_stage=opening_stage
+		mat.set_shader_parameter("opening_enabled",opening_stage>0)
+		if opening_stage>0:
+			var texture:Texture2D=OPENING_SCENERY[opening_stage-1]
+			var height:float=texture.get_height()
+			mat.set_shader_parameter("opening_texture",texture)
+			mat.set_shader_parameter("opening_sample",Vector3(OPENING_TEXTURE_GUTTER/height,BATTLE_VIEW_SIZE.y/height,(height-2.0*OPENING_TEXTURE_GUTTER-BATTLE_VIEW_SIZE.y)/height))
+	if opening_stage>0:
+		var progress:float=clampf(float(game.distance)/maxf(1.0,float(db.levels[game.stage-1].length)),0.0,1.0)
+		if opening_scenery_progress!=progress:
+			opening_scenery_progress=progress
+			mat.set_shader_parameter("opening_progress",progress)
 	mat.set_shader_parameter("hyperspace",encounter_presentation.scenery_presence)
 	if scenery_material_route!=encounter_presentation.scenery_route:
 		scenery_material_route=encounter_presentation.scenery_route

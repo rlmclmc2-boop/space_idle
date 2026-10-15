@@ -1,0 +1,1816 @@
+{
+  "dt": 0.0166666666666667,
+  "final_distance": 2928.0,
+  "final_enemies": [
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 1,
+      "uid": 1,
+      "x": 172.0,
+      "y": 110.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 2,
+      "uid": 2,
+      "x": 400.0,
+      "y": 110.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 3,
+      "uid": 3,
+      "x": 58.0,
+      "y": 110.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 4,
+      "uid": 4,
+      "x": 514.0,
+      "y": 110.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 5,
+      "uid": 5,
+      "x": 210.0,
+      "y": 270.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 6,
+      "uid": 6,
+      "x": 362.0,
+      "y": 270.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 7,
+      "uid": 7,
+      "x": 58.0,
+      "y": 270.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 8,
+      "uid": 8,
+      "x": 514.0,
+      "y": 270.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 63.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 9,
+      "uid": 9,
+      "x": 210.0,
+      "y": 350.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 10,
+      "uid": 10,
+      "x": 362.0,
+      "y": 350.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 11,
+      "uid": 11,
+      "x": 58.0,
+      "y": 350.0
+    },
+    {
+      "archetype_id": "swarm",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        0.0833333333333334
+      ],
+      "des": "蜂群轻艇·开场资源变体",
+      "dmgMultiple": 0.02,
+      "drops": [
+        {
+          "amount": 4.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 180.0,
+      "hp": 238.0,
+      "hull_scale": 1.0,
+      "id": 271013.0,
+      "max_hp": 238.0,
+      "max_shield": 0.0,
+      "res": "{1,4,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 1.0,
+      "size_formation": true,
+      "slot": 12,
+      "uid": 12,
+      "x": 514.0,
+      "y": 350.0
+    },
+    {
+      "archetype_id": "anchor",
+      "armourType": 1.0,
+      "boss": false,
+      "combat_tier": "normal",
+      "cooldowns": [
+        1.0
+      ],
+      "des": "装甲锚点·开场资源变体",
+      "dmgMultiple": 0.2,
+      "drops": [
+        {
+          "amount": 22.0,
+          "chance": 1.0,
+          "resourceId": 1.0
+        }
+      ],
+      "encounter_leader": false,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "explicit_formation": false,
+      "formation_columns": 5,
+      "formation_count": 13,
+      "health": 1800.0,
+      "hp": 2376.0,
+      "hull_scale": 1.0,
+      "id": 271019.0,
+      "max_hp": 2376.0,
+      "max_shield": 0.0,
+      "res": "{1,22,1}",
+      "res_ratio": 1.0,
+      "shield": 0.0,
+      "shieldDelay": 0.0,
+      "shieldRecovery": 0.0,
+      "shieldType": 0.0,
+      "shield_hit_at": 0.0,
+      "shield_updated_at": 0.0,
+      "size": 4.0,
+      "size_formation": true,
+      "slot": 13,
+      "uid": 13,
+      "x": 286.0,
+      "y": 110.0
+    }
+  ],
+  "final_projectiles": [
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(0.296792, 0.954942)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 52,
+      "source_uid": 1,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 244.021598815918,
+      "y": 384.932598114014
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(-0.296792, 0.954942)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 53,
+      "source_uid": 2,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 327.978401184082,
+      "y": 384.932598114014
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(0.527916, 0.849297)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 54,
+      "source_uid": 3,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 186.107642173767,
+      "y": 359.295964241028
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(-0.527916, 0.849297)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 55,
+      "source_uid": 4,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 385.892357826233,
+      "y": 359.295964241028
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(0.740704, 0.671831)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 58,
+      "source_uid": 7,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 237.74418926239,
+      "y": 476.231121063232
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(-0.740704, 0.671831)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 59,
+      "source_uid": 8,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 334.25581073761,
+      "y": 476.231121063232
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(0.87394, 0.486033)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 62,
+      "source_uid": 11,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 270.076162338257,
+      "y": 511.144115447998
+    },
+    {
+      "damage": 3.0,
+      "dead": false,
+      "direction": "(-0.87394, 0.486033)",
+      "hostile": true,
+      "key": "laser_mon",
+      "serial": 63,
+      "source_uid": 12,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 1,
+      "x": 301.923837661743,
+      "y": 511.144115447998
+    },
+    {
+      "damage": 48.0,
+      "dead": false,
+      "direction": "(0.0, 1.0)",
+      "hostile": true,
+      "key": "cannon-mon",
+      "serial": 64,
+      "source_uid": 13,
+      "speed": 560.0,
+      "target": {
+        "armour": 796.0,
+        "shield": 0.0,
+        "x": 286.0,
+        "y": 520.0
+      },
+      "type": 2,
+      "x": 286.0,
+      "y": 205.733335494995
+    }
+  ],
+  "final_rng": 1537665161550125159,
+  "frames": [
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 1
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 4
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 7
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 10
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 13
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 16
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 19
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 22
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 25
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 0,
+      "state": 3,
+      "tick": 28
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 12,
+      "state": 3,
+      "tick": 31
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 12,
+      "state": 3,
+      "tick": 34
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 12,
+      "state": 3,
+      "tick": 37
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 12,
+      "state": 3,
+      "tick": 40
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 12,
+      "state": 3,
+      "tick": 43
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 46
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 49
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 52
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 8,
+      "state": 3,
+      "tick": 55
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 6,
+      "state": 3,
+      "tick": 58
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 7,
+      "state": 3,
+      "tick": 61
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 17,
+      "state": 3,
+      "tick": 64
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 17,
+      "state": 3,
+      "tick": 67
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 17,
+      "state": 3,
+      "tick": 70
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 15,
+      "state": 3,
+      "tick": 73
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 15,
+      "state": 3,
+      "tick": 76
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 11,
+      "state": 3,
+      "tick": 79
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 11,
+      "state": 3,
+      "tick": 82
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 9,
+      "state": 3,
+      "tick": 85
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 9,
+      "state": 3,
+      "tick": 88
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 7,
+      "state": 3,
+      "tick": 91
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 16,
+      "state": 3,
+      "tick": 94
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 16,
+      "state": 3,
+      "tick": 97
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 16,
+      "state": 3,
+      "tick": 100
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 14,
+      "state": 3,
+      "tick": 103
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 14,
+      "state": 3,
+      "tick": 106
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 109
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 112
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 115
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 8,
+      "state": 3,
+      "tick": 118
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 7,
+      "state": 3,
+      "tick": 121
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 19,
+      "state": 3,
+      "tick": 124
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 17,
+      "state": 3,
+      "tick": 127
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 17,
+      "state": 3,
+      "tick": 130
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 17,
+      "state": 3,
+      "tick": 133
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 15,
+      "state": 3,
+      "tick": 136
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 11,
+      "state": 3,
+      "tick": 139
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 11,
+      "state": 3,
+      "tick": 142
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 11,
+      "state": 3,
+      "tick": 145
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 9,
+      "state": 3,
+      "tick": 148
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 7,
+      "state": 3,
+      "tick": 151
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 6,
+      "state": 3,
+      "tick": 154
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 16,
+      "state": 3,
+      "tick": 157
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 16,
+      "state": 3,
+      "tick": 160
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 16,
+      "state": 3,
+      "tick": 163
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 14,
+      "state": 3,
+      "tick": 166
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 14,
+      "state": 3,
+      "tick": 169
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 172
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 10,
+      "state": 3,
+      "tick": 175
+    },
+    {
+      "alive": 13,
+      "enemies": 13,
+      "projectiles": 8,
+      "state": 3,
+      "tick": 178
+    }
+  ],
+  "group": 33010,
+  "initial_count": 13,
+  "initial_equipment": [
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 1
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 2
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 3
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 4
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 5
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 6
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 7
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 8
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 9
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 10
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 11
+    },
+    {
+      "archetype_id": "swarm",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "id": 271013.0,
+      "size": 1.0,
+      "uid": 12
+    },
+    {
+      "archetype_id": "anchor",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "id": 271019.0,
+      "size": 4.0,
+      "uid": 13
+    }
+  ],
+  "launches": [
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 1,
+      "x": 172.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 2,
+      "x": 400.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 3,
+      "x": 58.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 4,
+      "x": 514.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 5,
+      "x": 210.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 6,
+      "x": 362.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 7,
+      "x": 58.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 8,
+      "x": 514.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 9,
+      "x": 210.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 10,
+      "x": 362.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 11,
+      "x": 58.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 12,
+      "x": 514.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 13,
+      "x": 286.0,
+      "y": 196.400001525879
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 14,
+      "x": 172.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 15,
+      "x": 400.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 16,
+      "x": 58.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 17,
+      "x": 514.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 18,
+      "x": 210.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 19,
+      "x": 362.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 20,
+      "x": 58.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 21,
+      "x": 514.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 22,
+      "x": 210.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 23,
+      "x": 362.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 24,
+      "x": 58.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 25,
+      "x": 514.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": false,
+      "mount": 0,
+      "serial": 26,
+      "x": 283.252960205078,
+      "y": 645.522277832031
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 27,
+      "x": 172.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 28,
+      "x": 400.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 29,
+      "x": 58.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 30,
+      "x": 514.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 31,
+      "x": 210.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 32,
+      "x": 362.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 33,
+      "x": 58.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 34,
+      "x": 514.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 35,
+      "x": 210.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 36,
+      "x": 362.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 37,
+      "x": 58.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 38,
+      "x": 514.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 39,
+      "x": 286.0,
+      "y": 196.400001525879
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 40,
+      "x": 172.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 41,
+      "x": 400.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 42,
+      "x": 58.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 43,
+      "x": 514.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 44,
+      "x": 210.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 45,
+      "x": 362.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 46,
+      "x": 58.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 47,
+      "x": 514.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 48,
+      "x": 210.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 49,
+      "x": 362.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 50,
+      "x": 58.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 51,
+      "x": 514.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 52,
+      "x": 172.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 53,
+      "x": 400.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 54,
+      "x": 58.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 55,
+      "x": 514.0,
+      "y": 153.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 56,
+      "x": 210.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 57,
+      "x": 362.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 58,
+      "x": 58.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 59,
+      "x": 514.0,
+      "y": 313.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 60,
+      "x": 210.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 61,
+      "x": 362.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 62,
+      "x": 58.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 63,
+      "x": 514.0,
+      "y": 393.200000762939
+    },
+    {
+      "hostile": true,
+      "mount": -1,
+      "serial": 64,
+      "x": 286.0,
+      "y": 196.400001525879
+    }
+  ],
+  "native_kernel": false,
+  "point": 5,
+  "render_checks": 60,
+  "source": "6b2e98da382ac3903a0474936119a2dea59d4cb6",
+  "stage": 2,
+  "ticks": 180
+}

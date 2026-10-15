@@ -1,0 +1,127 @@
+{
+	"background_rids_stable": true,
+	"combat": [
+		{
+			"checkpoint": {
+				"distance": 2880.0,
+				"groupIndex": 4,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 3
+			},
+			"dt": 0.0166666666666667,
+			"end_enemy_count": 1,
+			"end_state": 3,
+			"frames": 40,
+			"initial_enemy_count": 1,
+			"max_projectiles": 4,
+			"stage": 3
+		},
+		{
+			"checkpoint": {
+				"distance": 800.0,
+				"groupIndex": 8,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 3
+			},
+			"dt": 0.0166666666666667,
+			"end_enemy_count": 0,
+			"end_state": 7,
+			"frames": 40,
+			"initial_enemy_count": 3,
+			"max_projectiles": 5,
+			"stage": 6
+		},
+		{
+			"checkpoint": {
+				"distance": 800.0,
+				"groupIndex": 8,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 3
+			},
+			"dt": 0.0166666666666667,
+			"end_enemy_count": 15,
+			"end_state": 3,
+			"frames": 40,
+			"initial_enemy_count": 15,
+			"max_projectiles": 16,
+			"stage": 7
+		},
+		{
+			"checkpoint": {
+				"distance": 800.0,
+				"groupIndex": 8,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 3
+			},
+			"dt": 0.0166666666666667,
+			"end_enemy_count": 0,
+			"end_state": 7,
+			"frames": 40,
+			"initial_enemy_count": 5,
+			"max_projectiles": 7,
+			"stage": 10
+		}
+	],
+	"native_extension": false,
+	"render_state_checks": 287,
+	"texture_rids": [
+		352187318294,
+		356482285591,
+		360777252888,
+		365072220185,
+		369367187482,
+		373662154779,
+		377957122076,
+		382252089373,
+		386547056670,
+		390842023967
+	],
+	"transitions": [
+		{
+			"advance_tick": 181,
+			"checkpoint": {
+				"distance": 4000.0,
+				"groupIndex": 5,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 4
+			},
+			"end_distance": 116.0,
+			"end_stage": 3,
+			"from": 2,
+			"to": 3
+		},
+		{
+			"advance_tick": 181,
+			"checkpoint": {
+				"distance": 4000.0,
+				"groupIndex": 5,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 4
+			},
+			"end_distance": 24.1666666666667,
+			"end_stage": 6,
+			"from": 5,
+			"to": 6
+		},
+		{
+			"advance_tick": 181,
+			"checkpoint": {
+				"distance": 1000.0,
+				"groupIndex": 9,
+				"guardArrived": false,
+				"retreatBossPending": false,
+				"state": 4
+			},
+			"end_distance": 24.1666666666667,
+			"end_stage": 10,
+			"from": 9,
+			"to": 10
+		}
+	]
+}

@@ -11,6 +11,11 @@ uniform float density = 1.0;
 uniform float mid_opacity = 0.16;
 uniform float fog_opacity = 0.22;
 uniform float hyperspace = 0.0;
+uniform bool opening_enabled = false;
+uniform float opening_progress = 0.0;
+// Normalized padding, visible height and travel; bound only when the stage changes.
+uniform vec3 opening_sample = vec3(0.0,1.0,0.0);
+uniform sampler2D opening_texture : source_color, filter_linear, repeat_disable;
 uniform sampler2D route_atlas : source_color, filter_linear, repeat_disable;
 uniform vec2 route_origin = vec2(0.0);
 // Slow, pause-aware motion is evaluated once by the caller, not per pixel.
@@ -43,7 +48,7 @@ void vertex() {
 void fragment() {
 	if (layer < 0.0) {
 		vec4 fog = vec4(0.0);
-		if (hyperspace < 1.0) {
+		if (hyperspace < 1.0 && !opening_enabled) {
 			// Low-frequency periodic fog drifts without a wrap seam or TIME.
 			vec2 p = UV * vec2(3.0,5.0);
 			p.y -= flight_time * far_speed / 960.0;
@@ -52,6 +57,12 @@ void fragment() {
 			// Same cubic density curve; no general-purpose fragment pow.
 			haze = haze*haze*haze;
 			fog = vec4(mix(vec3(0.055,0.10,0.18),vec3(0.14,0.11,0.24),UV.y),haze*fog_opacity);
+		}
+		// Shared viewport overlap and offline edge padding preserve filtered boundaries.
+		// Journey is read from existing state; no shader clock drives this scenery.
+		if (opening_enabled) {
+			vec2 opening_uv = vec2(UV.x, opening_sample.x+(1.0-opening_progress)*opening_sample.z+UV.y*opening_sample.y);
+			fog = vec4(texture(opening_texture,opening_uv).rgb,1.0);
 		}
 		COLOR = fog;
 		if (hyperspace > 0.0) {

@@ -1,0 +1,90 @@
+{
+  "baseline": "2eba83917b09879dca76b676729f80c03eceec1d",
+  "runtime_exported": false,
+  "extensions": [
+    {
+      "pair": "03-04",
+      "join_zone": 320,
+      "blur_sigma_at_join": 2.5,
+      "reference_grain": 0.6572283287186238,
+      "source_sha256": "58ea266741128cde666435247d7d1453a31f7b1bd8220a60f830862b1b93c194"
+    },
+    {
+      "pair": "05-06",
+      "join_zone": 320,
+      "blur_sigma_at_join": 0,
+      "reference_grain": 0.4874345384918728,
+      "source_sha256": "d84b8e8e8dac5772c8efef80ff30ff4dc837fb05d7c9a0df89ec0ab036619fe8"
+    },
+    {
+      "pair": "07-08",
+      "join_zone": 320,
+      "blur_sigma_at_join": 0,
+      "reference_grain": 0.4539550969927868,
+      "source_sha256": "fa22516a74244a7482ee0b4246e9a2c94888ec9ab2b8424315a68299d652e2fa"
+    },
+    {
+      "pair": "09-10",
+      "join_zone": 320,
+      "blur_sigma_at_join": 0.35,
+      "reference_grain": 0.35779946866406687,
+      "source_sha256": "4069c74eed75f7b4b9f65b10816eca8e7fa836b1b68196168e865091cdb145ef"
+    }
+  ],
+  "old_master_pixels_preserved": true,
+  "source_master_size": [
+    572,
+    5946
+  ],
+  "visual_strides": [
+    720,
+    426,
+    480,
+    480,
+    480,
+    480,
+    480,
+    480,
+    480,
+    480
+  ],
+  "rgba8_equivalent_all_10_bytes": 33464288,
+  "pixel_overlap": [
+    {
+      "boundary": "1->2",
+      "identical": true
+    },
+    {
+      "boundary": "2->3",
+      "identical": true
+    },
+    {
+      "boundary": "3->4",
+      "identical": true
+    },
+    {
+      "boundary": "4->5",
+      "identical": true
+    },
+    {
+      "boundary": "5->6",
+      "identical": true
+    },
+    {
+      "boundary": "6->7",
+      "identical": true
+    },
+    {
+      "boundary": "7->8",
+      "identical": true
+    },
+    {
+      "boundary": "8->9",
+      "identical": true
+    },
+    {
+      "boundary": "9->10",
+      "identical": true
+    }
+  ]
+}
