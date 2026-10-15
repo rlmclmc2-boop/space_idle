@@ -1,0 +1,54 @@
+{
+  "candidate": "ddf3c5858f0b869cf22a480c878cd061e35f9189",
+  "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f",
+  "loaded_sources": {
+    "off": {
+      "manifest_sha256": "3854f7b5d1fe6576df753a6de31b62fd264e0dc022ba2c4f629488836771ff7d",
+      "key_sha256": {
+        "scripts/native_execution_session.gd": "70dffc05283780f0ec0824b2b48c711a4350cb096801c5fd4928f9b380597ef9",
+        "scripts/main.gd": "d13137f0d356013343d958cddc893e4fbaaeeee2c5b9fd34fab03954e0424a34",
+        "scripts/battlefield.gd": "c97309232fc2f4eaf112e5fba81c19aadb97aa129ee5f71f02f815447391bf95",
+        "scripts/battle_slice_runtime.gd": "41c02d257cb28365a73beeb964c613a88fdaff155377104797a72efc126b49ca",
+        "target_driver.gd": "86ddbb44d2edd26fe84b51453bf582fa0f96aed42c5b8964dfda3dc51f670bbd"
+      },
+      "script_count": 160
+    },
+    "on": {
+      "manifest_sha256": "7a7323ed4cf03132c909af9bca3ead22b76f7c3493f7468c846dd166bdb45020",
+      "key_sha256": {
+        "scripts/native_execution_session.gd": "49f27e0e91cf73f15d98d8f26d775cfb0754c7abb48eb23372b1930d8e517f4e",
+        "scripts/main.gd": "d13137f0d356013343d958cddc893e4fbaaeeee2c5b9fd34fab03954e0424a34",
+        "scripts/battlefield.gd": "c97309232fc2f4eaf112e5fba81c19aadb97aa129ee5f71f02f815447391bf95",
+        "scripts/battle_slice_runtime.gd": "41c02d257cb28365a73beeb964c613a88fdaff155377104797a72efc126b49ca",
+        "target_driver.gd": "86ddbb44d2edd26fe84b51453bf582fa0f96aed42c5b8964dfda3dc51f670bbd"
+      },
+      "script_count": 160
+    }
+  },
+  "off": {
+    "raw_sha256": "adabebe063879e2cd3546d31633c9cf58511fac5198f762bee87fb8fbd3d0810",
+    "log_sha256": "4d549bc7f606a18cc845f90ad2bef8da4254866c17215729cbca2256bd66c37a"
+  },
+  "on": {
+    "raw_sha256": "80d31d17ff8b4809f59598c2065f8f0e4581c707c99730cb555d4b09c83d798e",
+    "log_sha256": "46a561e4e95bff330d0e63889de49c0f49f340920d2a341a438e082c13057db0"
+  },
+  "compare": {
+    "anchors": [],
+    "turrets": [],
+    "contacts": [],
+    "effects": [],
+    "played_beeps": [],
+    "owned_on": [
+      24,
+      25,
+      29,
+      31,
+      32,
+      35,
+      36,
+      37,
+      38
+    ]
+  }
+}

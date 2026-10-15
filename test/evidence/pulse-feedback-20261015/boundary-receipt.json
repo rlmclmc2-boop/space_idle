@@ -1,0 +1,128 @@
+{
+  "candidate": "ddf3c5858f0b869cf22a480c878cd061e35f9189",
+  "dll_sha256": "483a7256e2d3946090515197a36fdd36122a74d4cae32acc7629f3cdaa6ce22f",
+  "boundary_driver_sha256": "3dc2ae3671eb024eefc2a41a4b1c2de277c0da08b58db1d40295d8740b12fd85",
+  "loaded_sources": {
+    "off": {
+      "manifest_sha256": "776bef31fe2c8a0525f921cb93c467875e00ff3b7205222afdd937a082412c97",
+      "script_count": 160,
+      "session_sha256": "70dffc05283780f0ec0824b2b48c711a4350cb096801c5fd4928f9b380597ef9"
+    },
+    "on": {
+      "manifest_sha256": "d44989fc76397f309f01d763163d213bf9e2ad6a5144d2c3ca8c8e3335aa4c59",
+      "script_count": 160,
+      "session_sha256": "49f27e0e91cf73f15d98d8f26d775cfb0754c7abb48eb23372b1930d8e517f4e"
+    }
+  },
+  "close-off": {
+    "raw_sha256": "c41eeb5161acaa7e383b53d5704d17b28b2c4c2718b0180e6eb2e07359be05eb",
+    "log_sha256": "efb86cc9edc27fef1541331768338daf00029e8c8edc6d1af2724b323f8ed238",
+    "fresh_fire": 60,
+    "before_owned": false,
+    "before_pending": false,
+    "after_owned": false,
+    "after_pending": false,
+    "after_total_visuals": 118
+  },
+  "handoff-off": {
+    "raw_sha256": "2bbf34f10dbe16841bf7cc73be2d393b11ce5a507fc1eda6dbe35c2dbf2f3184",
+    "log_sha256": "4baf01f8e05b560e205199ed023ec972d730d943279dd24a8c6766bae396a911",
+    "fresh_fire": 60,
+    "before_owned": false,
+    "before_pending": false,
+    "after_owned": false,
+    "after_pending": false,
+    "after_total_visuals": 118
+  },
+  "cap-off": {
+    "raw_sha256": "cb6857e1b5905e8956bc5ee653cb2c624ac73adac82f1e9f87d1e026a048dfca",
+    "log_sha256": "9bf2004442cc843b6ce6094d721f4657e1a7c1f1718e07de06e55267cc3e3470",
+    "fresh_fire": 60,
+    "before_owned": false,
+    "before_pending": false,
+    "after_owned": false,
+    "after_pending": false,
+    "after_total_visuals": 256
+  },
+  "close-on": {
+    "raw_sha256": "a01ad735b9d591160c253bd84bd73f852b71538324feaeb50559a0ab1aae8fc1",
+    "log_sha256": "560513884212bc54a34c5b1ad02d675a4651ccb9b00d19174f208144eb797df4",
+    "fresh_fire": 60,
+    "before_owned": true,
+    "before_pending": true,
+    "after_owned": false,
+    "after_pending": false,
+    "after_total_visuals": 118
+  },
+  "handoff-on": {
+    "raw_sha256": "14dce4786c856cf3b245aeb97a21599ebe93f3f863a9a8d3b56a358b55831fd4",
+    "log_sha256": "ef15e264b21d537c9b37d0c4a4145a284ee92ab1fad7cd69d985ec4d72583ca2",
+    "fresh_fire": 60,
+    "before_owned": true,
+    "before_pending": true,
+    "after_owned": false,
+    "after_pending": false,
+    "after_total_visuals": 118
+  },
+  "cap-on": {
+    "raw_sha256": "95cebd10dfe0b54e1e3e82ac0bd201b6d6cc6ec0aaec21d0ffb60c57b8701596",
+    "log_sha256": "c5cd511bb0b3f9a2e053116bd1440993e2e2769b999ce02f3a64a4fc33220616",
+    "fresh_fire": 60,
+    "before_owned": true,
+    "before_pending": true,
+    "after_owned": true,
+    "after_pending": false,
+    "after_total_visuals": 256
+  },
+  "close_comparison": {
+    "after_mismatches": [],
+    "off_after": {
+      "owned": false,
+      "pending": false
+    },
+    "on_before": {
+      "owned": true,
+      "pending": true
+    },
+    "on_after": {
+      "owned": false,
+      "pending": false
+    },
+    "fresh_fire_on": 60,
+    "played_beeps_on": 2
+  },
+  "handoff_comparison": {
+    "after_mismatches": [],
+    "off_after": {
+      "owned": false,
+      "pending": false
+    },
+    "on_before": {
+      "owned": true,
+      "pending": true
+    },
+    "on_after": {
+      "owned": false,
+      "pending": false
+    },
+    "fresh_fire_on": 60,
+    "played_beeps_on": 2
+  },
+  "cap_comparison": {
+    "after_mismatches": [],
+    "off_after": {
+      "owned": false,
+      "pending": false
+    },
+    "on_before": {
+      "owned": true,
+      "pending": true
+    },
+    "on_after": {
+      "owned": true,
+      "pending": false
+    },
+    "fresh_fire_on": 60,
+    "played_beeps_on": 2
+  }
+}

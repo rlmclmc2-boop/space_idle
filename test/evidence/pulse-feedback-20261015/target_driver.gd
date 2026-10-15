@@ -1,5 +1,10 @@
 extends SceneTree
 class UI extends "res://scripts/battlefield.gd":
+ var played_beeps:Array=[]
+ func beep(frequency:float)->void:
+  var before=last_sound
+  super.beep(frequency)
+  if last_sound!=before:played_beeps.append([clock,frequency])
  func show_qa_tools()->void:pass
  func show_chrono_login_report()->void:pass
  func create_battle_game(_persist:bool)->BattleGame:
@@ -23,13 +28,25 @@ func check_state(scene)->Dictionary:
   if e.get("damage",false):floats.append([e.uid,e.amount,e.absorbed,e.critical,e.life,e.born,e.get("retiring",false)])
  var pending=[]
  for e in scene.damage_pending:pending.append([e.uid,e.amount,e.absorbed,e.critical,e.life,e.born,e.get("retiring",false)])
- return {"clock":g.production_time(),"fx_time":scene.fx_time,"speed":g.speed,"damage_mode":scene.damage_mode,"accelerated":scene.accelerated_visual_mode,"player":g.player.duplicate(true),"enemies":enemies,"game_rng":str(g.rng.state),"kernel_rng":str(g.native_execution.kernel.rng_source().state) if g.native_execution!=null else "", "projectiles":g.native_execution.kernel.metrics().active_flights if g.native_execution!=null else g.projectiles.size(),"history":scene.damage_history.duplicate(),"floats":floats,"pending":pending,"owned":g.native_execution.pulse_feedback_owned if g.native_execution!=null else false,"feedback_rows":g.native_execution.feedback_rows if g.native_execution!=null else -1,"native":g.native_execution!=null,"paused":g.paused,"compatibility":g.native_execution.pulse_feedback_compatibility if g.native_execution!=null else false}
+ var anchors=[]
+ for e in scene.floats+scene.damage_pending:
+  if e.get("damage",false):anchors.append([e.get("uid",-1),e.get("target",""),e.get("target_entity",{}).get("uid",-1),e.get("needs_origin",false),e.get("origin",Vector2.ZERO),e.get("pos",Vector2.ZERO)])
+ var turrets=[]
+ for mount in 8:
+  var pose=scene.turret_pose(mount)
+  turrets.append([pose.get("target",{}).get("uid",-1),pose.get("fired_at",-1.0)])
+ var contacts=g.combat_presentation.contact_snapshot(1)
+ var effects={"flash":0,"ring":0,"spark":0}
+ for particle in scene.particles:
+  for key in effects:
+   if particle.has(key):effects[key]+=1
+ return {"clock":g.production_time(),"fx_time":scene.fx_time,"speed":g.speed,"damage_mode":scene.damage_mode,"accelerated":scene.accelerated_visual_mode,"player":g.player.duplicate(true),"enemies":enemies,"game_rng":str(g.rng.state),"kernel_rng":str(g.native_execution.kernel.rng_source().state) if g.native_execution!=null else "", "projectiles":g.native_execution.kernel.metrics().active_flights if g.native_execution!=null else g.projectiles.size(),"history":scene.damage_history.duplicate(),"floats":floats,"pending":pending,"anchors":anchors,"turrets":turrets,"contacts":contacts,"effects":effects,"played_beeps":scene.played_beeps.duplicate(true),"owned":g.native_execution.pulse_feedback_owned if g.native_execution!=null else false,"feedback_rows":g.native_execution.feedback_rows if g.native_execution!=null else -1,"native":g.native_execution!=null,"paused":g.paused,"compatibility":g.native_execution.pulse_feedback_compatibility if g.native_execution!=null else false}
 
 func run()->void:
  assert(ClassDB.class_exists("SpaceCombatPresentation") and ClassDB.class_exists("SpaceCombatKernel"))
  assert(GDExtensionManager.get_extension("res://space_native.gdextension").is_library_open())
  var scene=load("res://main.tscn").instantiate();scene.set_script(UI)
- scene.automation_args=["--capture"];scene.music_on=false
+ scene.automation_args=["--capture"];scene.music_on=false;scene.sound_on=true
  root.add_child(scene);current_scene=scene;scene.automation_args=[];scene.set_process(false)
  var g=scene.game;g.save_enabled=false;g.speed=1;g.rng.seed=1701
  g.profile.onboarding.completed=true;scene.beginner_guide.hide()
