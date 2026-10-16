@@ -1,5 +1,14 @@
 {
   "entries": {
+    "enemy.intel.current": {"params": []},
+    "enemy.intel.roster": {"params": []},
+    "enemy.intel.details": {"params": []},
+    "enemy.intel.stage": {"params": ["stage"]},
+    "enemy.intel.point_now": {"params": ["point"]},
+    "enemy.intel.ship_count": {"params": ["name", "count"]},
+    "enemy.intel.armour_kind": {"params": ["type"]},
+    "enemy.intel.attack_kind": {"params": ["type"]},
+
     "unlock.skip": {"params": []},
     "battle.damage_stats.title": {"params": []},
     "battle.damage_stats.enable": {"params": []},

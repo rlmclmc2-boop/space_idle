@@ -1,4 +1,12 @@
 [
+  {"key": "enemy.intel.current", "text": "当前战点", "params": "", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.roster", "text": "敌方编队", "params": "", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.details", "text": "详情", "params": "", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.stage", "text": "第 {stage} 关 · 敌情", "params": "stage", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.point_now", "text": "{point} · 当前", "params": "point", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.ship_count", "text": "{name} ×{count}", "params": "name,count", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.armour_kind", "text": "装甲 · {type}", "params": "type", "category": "battle", "note": "敌情页展示"},
+  {"key": "enemy.intel.attack_kind", "text": "攻击 · {type}", "params": "type", "category": "battle", "note": "敌情页展示"},
   {"key": "unlock.skip", "text": "跳过", "params": "", "category": "unlock", "note": "解锁界面自动跳过勾选项"},
   {
     "key": "battle.finale_cleared",
