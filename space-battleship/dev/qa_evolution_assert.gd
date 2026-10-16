@@ -65,5 +65,9 @@ func _initialize() -> void:
  var raw_39=ShipDatabase.new().equip("laser",74).dmg
  var stat_39=v.equipment_stat("laser",39)
  assert(absf(float(stat_39)-float(raw_39)*float(db.evolution_factor(39))/float(db.evolution_factor(74)))<1)
- print("QA_ASSERT_OK gates=20,40 batch_shared=10 native_batch_shared=10 weapon_switch=40 virtual=19+35,39+35")
+ assert(db.data.equipment_evolution.visual_palette.size()==10)
+ for tier in range(1,11):
+  assert(int(db.equipment_cost("laser",tier*20)[material])==10*tier)
+  assert(db.evolution_factor(tier*20)>db.evolution_factor((tier-1)*20))
+ print("QA_ASSERT_OK gates=20,40 batch_shared=10 native_batch_shared=10 weapon_switch=40 virtual=19+35,39+35 tiers=10")
  quit()
