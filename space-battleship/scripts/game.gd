@@ -185,7 +185,7 @@ func fresh_profile() -> Dictionary:
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
 	profile.loadout = default_loadout(selected, starting)
-	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false}
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false, "pickupSeen":false}
 	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
 	profile.enhancementVersion = 1
@@ -363,11 +363,12 @@ func load_progress_data(raw: Dictionary) -> void:
 	if int(raw.get("version",0))<3:
 		raw = migrate_planet_ids(raw)
 	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
-	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false, "retreatSeen":true}
+	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false, "retreatSeen":true, "pickupSeen":true}
 	if raw.get("onboarding") is Dictionary:
 		for key in ["intro", "equipped", "upgraded", "completed", "dismissed"]:
 			profile.onboarding[key] = raw.onboarding.get(key, false) == true
 		profile.onboarding.retreatSeen = raw.onboarding.get("retreatSeen",profile.onboarding.completed) == true
+		profile.onboarding.pickupSeen = raw.onboarding.get("pickupSeen",profile.onboarding.completed) == true
 	# Optional UI-only receipt metadata. Legacy/invalid markers remain quiet.
 	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	var receipt = raw.get("hyperspaceReceipt",{})
@@ -2212,9 +2213,9 @@ func spawn_group(keep_distance := false) -> void:
 		var slot_position: Vector2 = placement[slot]
 		enemy.x = slot_position.x
 		enemy.y = slot_position.y
-		enemy.hp = ceilf(float(row.health) * ratio("lifeRatio"))
+		enemy.hp = db.enemy_encounter_capacity(row,stage,group_index-1,"health")
 		enemy.max_hp = enemy.hp
-		enemy.max_shield = ceilf(float(row.get("shield",0)) * ratio("lifeRatio"))
+		enemy.max_shield = db.enemy_encounter_capacity(row,stage,group_index-1,"shield")
 		enemy.shield = enemy.max_shield
 		enemy.shield_updated_at = enemy_shield_time
 		enemy.shield_hit_at = enemy_shield_time
@@ -2449,7 +2450,7 @@ func apply_long_laser_hit(shot: Dictionary, due: float) -> void:
 	var multiplier := long_laser_multiplier(weapon, duration)
 	event.emit("beam_hit", {"shot":shot})
 	if shot.hostile:
-		var raw := ceilf(float(weapon.dmg) * float(shot.source.dmgMultiple) * ratio("atkRatio"))
+		var raw := db.enemy_attack_damage(shot.source,weapon,stage,group_index-1)
 		hit_player(raw * multiplier, int(weapon.dmgtype),{"source_uid":int(shot.source.get("uid",0)),"weapon_key":"longLaser"})
 	else:
 		enhancement_attack_contexts[int(shot.mount)]={"derived":bool(shot.repeated),"snapshot":shot.attack_snapshot,"instance":shot.attack_instance}
@@ -3099,7 +3100,7 @@ func tick(dt: float) -> void:
 			if enemy.cooldowns[i] <= 0:
 				var entry: Dictionary = enemy.equipment[i]
 				var weapon := db.enemy_weapon(entry.name)
-				var raw := ceilf(float(weapon.dmg) * float(enemy.dmgMultiple) * ratio("atkRatio"))
+				var raw := db.enemy_attack_damage(enemy,weapon,stage,group_index-1)
 				fire(enemy, player, weapon, raw, true, entry.name, enemy_weapon_offset(enemy, i))
 				enemy.cooldowns[i] = weapon_cooldown_after_shot(cooldown_before,dt,float(weapon.cd))
 	tick_projectiles(dt)

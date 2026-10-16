@@ -126,6 +126,7 @@ func decide() -> Dictionary:
 	if empty_slot.is_empty():state.equipped = true
 	if review:return {"phase":"review"}
 	if not game.pending_unlocks.is_empty():return {"phase":"unlock","action":"continue"}
+	if not state.get("pickupSeen",false) and not game.drops.is_empty():return {"phase":"pickup"}
 	if retreat_pending:
 		if not empty_defence.is_empty():return {"phase":"retreat","slot":empty_defence,"action":"show_defence","anchor":"empty_module"}
 		for index in game.active_slot_count("defence"):
@@ -184,6 +185,11 @@ func recovery_adjusted() -> bool:
 
 func refresh() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(panel):return
+	if host.equipment_tabs.current_tab==11:
+		host.set_ui_value(panel,"visible",false)
+		host.set_ui_value(outline,"visible",false)
+		host.set_ui_value(reopen,"visible",false)
+		return
 	var playing: bool = host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT]
 	var modal_blocked: bool = (is_instance_valid(host.chrono_login_dialog) and host.chrono_login_dialog.visible) or (is_instance_valid(host.balance_lab) and host.balance_lab.visible)
 	if playing and host.game.state==BattleGame.State.RETREAT and not flags().get("retreatSeen",true) and not retreat_pending:
@@ -195,7 +201,7 @@ func refresh() -> void:
 	# Reconcile completion before deciding visibility, including while dismissed.
 	var enhancement_pending := enhancement_ready()
 	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending or enhancement_pending) else {"phase":"review"}
-	var visible_now: bool = playing and not host.help_open and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
+	var visible_now: bool = playing and not host.help_open and host.equipment_tabs.current_tab!=11 and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
 	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(reopen,"visible",show_reopen)
 	if show_reopen:
@@ -211,7 +217,8 @@ func refresh() -> void:
 	action_id = str(step.get("action",""))
 	host.set_ui_value(panel,"position",host.BATTLE_ORIGIN-host.ui.position+Vector2(16,16 if phase=="unlock" else 570))
 	target_slot = step.get("slot","")
-	host.set_ui_value(body,"text",UIText.t("onboarding."+phase,{"cost":step.cost} if step.has("cost") else {}))
+	var body_key := "onboarding.unlock_auto" if phase=="unlock" and host.tutorial_auto_skip else "onboarding."+phase
+	host.set_ui_value(body,"text",UIText.t(body_key,{"cost":step.cost} if step.has("cost") else {}))
 	if phase=="retreat" and panel.is_visible_in_tree():flags().retreatSeen = true
 	host.set_ui_value(action,"visible",step.has("action"))
 	if step.has("action"):host.set_ui_value(action,"text",UIText.t("onboarding."+str(step.action)))

@@ -150,3 +150,9 @@ func ratio(level: int, battle_point_index: int, kind: String) -> float:
 	var point_count: int = levels[level - 1].groups.size()
 	var progress: float = 1.0 if point_count <= 1 else clampf(float(battle_point_index) / float(point_count - 1), 0.0, 1.0)
 	return lerpf(previous, float(levels[level - 1][kind]), progress)
+
+func enemy_encounter_capacity(row: Dictionary, level: int, battle_point_index: int, field: String) -> float:
+	return ceilf(float(row.get(field,0)) * ratio(level,battle_point_index,"lifeRatio"))
+
+func enemy_attack_damage(row: Dictionary, weapon: Dictionary, level: int, battle_point_index: int) -> float:
+	return ceilf(float(weapon.dmg) * float(row.dmgMultiple) * ratio(level,battle_point_index,"atkRatio"))

@@ -23,15 +23,16 @@ func setup(owner_ui: Node) -> void:
 	hint.add_theme_color_override("font_color",Color("bedbdc"))
 	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(hint)
+	hint.hide()
 	panel = Panel.new()
-	panel.position = Vector2(14,size.y-245)
-	panel.size = Vector2(510,148)
+	panel.position = Vector2(14,size.y-275)
+	panel.size = Vector2(510,178)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel",host.style(Color("243d50"),Color("83cfcb")))
 	add_child(panel)
 	description = Label.new()
 	description.position = Vector2(14,12)
-	description.size = Vector2(482,124)
+	description.size = Vector2(482,154)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	description.add_theme_font_override("font",host.font)
 	description.add_theme_font_size_override("font_size",20)
@@ -52,7 +53,10 @@ func defence_text(enemy: Dictionary) -> String:
 	var shield := UIText.t("battle.enemy_defence.no_shield")
 	if N.compare(enemy.get("max_shield",0),0)>0:
 		shield = UIText.t("battle.enemy_defence.shield" if N.compare(enemy.get("shield",0),0)>0 else "battle.enemy_defence.broken_shield",{"resistance":resistance_text(int(enemy.get("shieldType",0)))})
-	return UIText.t("battle.enemy_defence.title")+"\n"+armour+"\n"+shield
+	var result := UIText.t("battle.enemy_defence.title")+"\n"+armour+"\n"+shield
+	if int(enemy.get("reactiveReduction",0))==1:
+		result += "\n"+UIText.t("battle.enemy_defence.reactive_status",{"percent":str(roundi((1.0-float(enemy.get("reactive_multiplier",1.0)))*100.0))})
+	return result
 
 func enemy_at(point: Vector2) -> Dictionary:
 	for enemy in host.game.enemies:
@@ -64,7 +68,7 @@ func enemy_at(point: Vector2) -> Dictionary:
 
 func refresh_at(point: Vector2) -> void:
 	var enabled := available()
-	host.set_ui_value(hint,"visible",enabled)
+	host.set_ui_value(hint,"visible",false)
 	selected_enemy = enemy_at(point) if enabled and Rect2(Vector2.ZERO,size).has_point(point) else {}
 	host.set_ui_value(panel,"visible",not selected_enemy.is_empty())
 	if not selected_enemy.is_empty():host.set_ui_value(description,"text",defence_text(selected_enemy))

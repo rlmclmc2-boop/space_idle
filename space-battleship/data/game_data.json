@@ -260133,6 +260133,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
+      "intelTrait": "轻型侦察舰，成群接近。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260159,6 +260161,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
+      "intelTrait": "轻型侦察舰，成群接近。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260185,6 +260189,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "sentry",
+      "intelTrait": "物理装甲哨兵，舰体抗性与轻艇不同。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260211,6 +260217,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "sentry",
+      "intelTrait": "物理装甲哨兵，舰体抗性与轻艇不同。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260237,6 +260245,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
+      "intelTrait": "轻型侦察舰，成群接近。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260263,6 +260273,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "interceptor",
+      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260289,6 +260301,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "interceptor",
+      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260315,6 +260329,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "interceptor",
+      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260341,6 +260357,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "interceptor",
+      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260367,6 +260385,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "sentry",
+      "intelTrait": "物理装甲哨兵，舰体抗性与轻艇不同。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260393,6 +260413,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "anchor",
+      "intelTrait": "重装锚点舰，耐久较高。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260419,6 +260441,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "swarm",
+      "intelTrait": "蜂群轻艇，数量密集。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260445,6 +260469,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "swarm",
+      "intelTrait": "蜂群轻艇，数量密集。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260471,6 +260497,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "swarm",
+      "intelTrait": "蜂群轻艇，数量密集。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260497,6 +260525,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "interceptor",
+      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260523,6 +260553,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "anchor",
+      "intelTrait": "重装锚点舰，耐久较高。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260549,6 +260581,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
+      "intelTrait": "轻型侦察舰，成群接近。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260575,6 +260609,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
+      "intelTrait": "轻型侦察舰，成群接近。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260601,6 +260637,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "anchor",
+      "intelTrait": "重装锚点舰，耐久较高。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260627,6 +260665,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "swarm",
+      "intelTrait": "蜂群轻艇，数量密集。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260653,6 +260693,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "anchor",
+      "intelTrait": "重装锚点舰，耐久较高。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260679,6 +260721,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "anchor",
+      "intelTrait": "重装锚点舰，耐久较高。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260705,6 +260749,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "anchor",
+      "intelTrait": "重装锚点舰，耐久较高。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260732,6 +260778,8 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
+      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelMechanicRef": "reactiveReduction",
       "drops": [
         {
           "resourceId": 1,
@@ -260758,6 +260806,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "sentry",
+      "intelTrait": "物理装甲哨兵，舰体抗性与轻艇不同。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260785,6 +260835,8 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
+      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelMechanicRef": "reactiveReduction",
       "drops": [
         {
           "resourceId": 1,
@@ -260812,6 +260864,8 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
+      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelMechanicRef": "reactiveReduction",
       "drops": [
         {
           "resourceId": 1,
@@ -260838,6 +260892,8 @@
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
+      "intelTrait": "间歇护盾舰，先击穿护盾再攻击装甲。",
+      "intelMechanicRef": "shieldRecovery",
       "drops": [
         {
           "resourceId": 1,
@@ -260864,6 +260920,8 @@
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
+      "intelTrait": "间歇护盾舰，先击穿护盾再攻击装甲。",
+      "intelMechanicRef": "shieldRecovery",
       "drops": [
         {
           "resourceId": 1,
@@ -260891,6 +260949,8 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
+      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelMechanicRef": "reactiveReduction",
       "drops": [
         {
           "resourceId": 1,
@@ -260917,6 +260977,8 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "command",
+      "intelTrait": "指挥舰，旗舰级目标。",
+      "intelMechanicRef": "none",
       "drops": [
         {
           "resourceId": 1,
@@ -260943,6 +261005,8 @@
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
+      "intelTrait": "间歇护盾舰，先击穿护盾再攻击装甲。",
+      "intelMechanicRef": "shieldRecovery",
       "drops": [
         {
           "resourceId": 1,

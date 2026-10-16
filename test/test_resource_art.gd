@@ -64,8 +64,9 @@ func run() -> void:
 		click.pressed=true
 		scene._unhandled_input(click)
 		check(not scene.game.drops.has(drop),"Visible resource collects through actual mouse input")
-	check(scene.floats.filter(func(f):return f.get("resource","")=="jewel").size()==1,"Fragment collections aggregate into one pickup notice")
-	check(scene.floats.any(func(f):return f.get("resource","")=="jewel" and str(f.text).contains(UIText.t("main._ready.text_02"))),"Fragment pickup shows the actual currency name")
+	check(scene.resource_pickup_totals.has("jewel"),"Fragment collections aggregate beside the top balance")
+	check(not scene.battle_notices().any(func(entry):return entry.has("resources")),"Collection has no battlefield banner")
+	check(scene.RESOURCE_STRIP_PRESENTATION.card_rect(2,3).end.x<=485.0,"Unlocked fragment card fits the top strip")
 	await capture("pickup")
 	for effect in scene.pickup_effects:effect.life=float(effect.duration)*0.6
 	await capture("pickup-flight")
@@ -88,22 +89,25 @@ func run() -> void:
 	check(scene.enhancement_panel.balance_label.tooltip_text.contains("100"),"Large fragment balance retains exact tooltip")
 	scene.select_system(0)
 	# Density must not allocate a node for each item or replace unrelated controls.
+	scene.game.profile.resources["1"]=100.0
+	scene.game.profile.resources["2"]=100.0
+	scene.game.profile.jewelFragments=100.0
 	scene.game.drops.clear()
 	scene.floats.clear()
 	scene.pickup_effects.clear()
+	scene.resource_pickup_totals.clear()
+	var balances_before := {"1":scene.game.profile.resources["1"],"2":scene.game.profile.resources["2"],"jewel":scene.game.profile.jewelFragments}
 	for i in 160:
 		scene.game.drops.append(fixture(i,Vector2(35+(i%16)*33,340+(i/16)*42),3.0))
 	await capture("density")
 	check(scene.ui.get_child_count()==ui_before and scene.equipment_tabs==tabs,"Dense drops retain controls and their instance identities")
 	for drop in scene.game.drops.duplicate():scene.game.collect(drop,true)
 	check(scene.pickup_effects.size()<=24,"Dense collection keeps the existing bounded pickup budget")
-	check(scene.floats.size()==3,"Dense collection aggregates all amounts into three currency notices")
+	check(scene.resource_pickup_totals.size()==3,"Dense collection aggregates all amounts in three resource cards")
 	for id in ["1","2","jewel"]:
-		var expected := 0.0
-		for i in 160:
-			var drop := fixture(i,Vector2.ZERO,3.0)
-			if drop.id==id:expected+=float(drop.amount)
-		var notice: Dictionary=scene.floats.filter(func(f):return f.get("resource","")==id).front()
+		var balance = scene.game.profile.jewelFragments if id=="jewel" else scene.game.profile.resources[id]
+		var expected = GrowthNumber.subtract(balance,balances_before[id])
+		var notice: Dictionary=scene.resource_pickup_totals[id]
 		check(GrowthNumber.compare(notice.amount,expected)==0,"Pickup aggregation preserves credited amounts for "+id)
 	await capture("density-pickup")
 	scene.game.drops.clear()

@@ -100,6 +100,8 @@ def convert_sheet(name, rows):
     if name=="mon":
         result={}
         for row in rows:
+            for field in ('intelTrait','intelMechanicRef'):
+                if row.get(field) in (None, ''):row.pop(field,None)
             if not row.get("reactiveReduction"):
                 row.pop("reactiveReduction", None)
             if not row.get("archetype_id"):
@@ -324,6 +326,22 @@ def validate_projection(data, *, check_level_ratios=True):
         if len(g['slots']) not in (10,15): raise ValueError(ui_text('debug.import_workbook.message_110', gid=gid))
         for enemy_id in g['slots']:
             if enemy_id is not None and str(enemy_id) not in enemies: raise ValueError(ui_text('debug.import_workbook.message_132', enemy_id=enemy_id))
+    # The opening intelligence page is authored by stable monster ID. Later
+    # legacy rows stay usable, but every enemy mounted in the opening route
+    # needs an explicit trait and a checked mechanism binding.
+    opening_ids = {str(enemy_id) for level in levels[:3] for group in level['groups']
+                   for enemy_id in groups[str(group['id'])]['slots'] if enemy_id is not None}
+    mechanic_fields = {'none', 'reactiveReduction', 'shieldRecovery'}
+    for enemy_id, enemy in enemies.items():
+        trait, mechanic = enemy.get('intelTrait'), enemy.get('intelMechanicRef')
+        if enemy_id in opening_ids and (not isinstance(trait,str) or not trait.strip() or mechanic not in mechanic_fields):
+            raise ValueError(f'mon {enemy_id}: opening intelligence requires intelTrait and intelMechanicRef')
+        if mechanic not in (None, '') and mechanic not in mechanic_fields:
+            raise ValueError(f'mon {enemy_id}: unknown intelMechanicRef {mechanic}')
+        if mechanic == 'reactiveReduction' and enemy.get('reactiveReduction') != 1:
+            raise ValueError(f'mon {enemy_id}: reactiveReduction reference is inactive')
+        if mechanic == 'shieldRecovery' and (not enemy.get('shield') or not enemy.get('shieldRecovery')):
+            raise ValueError(f'mon {enemy_id}: shieldRecovery reference is inactive')
     for key,row in data.get('battle_design',{}).items():
         if str(row.get('group_id')) not in groups:raise ValueError(f'battle_design {key}: missing group')
         if row.get('tier') not in ('normal','elite','boss','ultimate'):raise ValueError(f'battle_design {key}: invalid tier')

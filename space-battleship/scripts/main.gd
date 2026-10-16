@@ -19,6 +19,7 @@ const RIGHT_UI_OFFSET := 608.0
 const CHROME_HEIGHT := 78.0
 const VIEW_CROP_LEFT := 20.0
 const MUSIC_SETTINGS_PATH := "user://music_settings.cfg"
+const TUTORIAL_SETTINGS_PATH := "user://tutorial_settings.cfg"
 const EQUIPMENT_DISPLAY := preload("res://scripts/equipment_display.gd")
 const BATTLE_ORIGIN := Vector2(20,160)
 const BATTLE_VIEW_SIZE := Vector2(572,960)
@@ -59,7 +60,7 @@ const WORK_CONTENT_SCALE := Vector2(0.875,0.875)
 const RESOURCE_STRIP_PRESENTATION := preload("res://scripts/resource_strip_presentation.gd")
 const SHELL_PRESENTATION := preload("res://scripts/shell_presentation.gd")
 const SYSTEM_ICONS := ["▣","⬡","◉","◇","✦","♙","◎","◷","✧"]
-const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab","hyperspace.tab","save.tab"]
+const SYSTEM_TITLES := ["equipment.tab","upgrade.research_tab","reactor.tab","ship.tab","enhance.tab","crew.tab","planet.tab","chrono.tab","galaxy.tab","hyperspace.tab","save.tab","enemy.intel.tab"]
 var NAMES: Dictionary = {}
 const PROJECTILE_SIZES := {"laser":Vector2(64,24),"cannon":Vector2(40,21),"missile":Vector2(64,26)}
 const PROJECTILE_SCALE := 0.65
@@ -121,6 +122,7 @@ var fx_time := 0.0
 var accelerated_visual_mode := false
 var floats: Array[Dictionary] = []
 var pickup_effects: Array[Dictionary] = []
+var resource_pickup_totals: Dictionary = {}
 var resource_hover_feedback: Array[Dictionary] = []
 var clock := 0.0
 var game_time_remainder := 0.0
@@ -140,6 +142,11 @@ var unlock_title: Label
 var unlock_description: Label
 var unlock_notice_id := ""
 var unlock_notice_started_ms := -1
+var tutorial_auto_skip := false
+var tutorial_settings_path := TUTORIAL_SETTINGS_PATH
+var unlock_pause_owned := false
+var unlock_previous_paused := false
+var tutorial_skip_button: CheckButton
 var unlock_tutorial: Control
 var sound_on := false
 var audio: AudioStreamPlayer
@@ -207,6 +214,7 @@ var overlay_layer: Node2D
 var enhancement_panel: Panel
 var beginner_guide: Control
 var enemy_defence_inspector: Control
+var enemy_intel_page: Control
 var chrono_login_dialog: AcceptDialog
 var save_panel: Control
 var save_confirmation_text: Label
@@ -291,6 +299,7 @@ func _ready() -> void:
 	railgun_fx.configure(db)
 	if game.save_enabled:
 		load_music_setting()
+		load_tutorial_setting()
 	game.event.connect(on_event)
 	create_draw_layers()
 	ui = Control.new()
@@ -447,6 +456,8 @@ func _process(delta: float) -> void:
 	if not prepare_native_laser_display():return
 	var dt := maxf(0,delta)
 	clock += dt
+	for id in resource_pickup_totals.keys():
+		if clock-float(resource_pickup_totals[id].last)>=1.2:resource_pickup_totals.erase(id)
 	prune_resource_samples(Time.get_unix_time_from_system())
 	if not game.paused:
 		if not uses_logical_battle_pose():
@@ -745,6 +756,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"state":
 			refresh_structure()
 			refresh_navigation()
+			if is_instance_valid(enemy_intel_page):enemy_intel_page.refresh_if_needed()
 		"beam_started":
 			if fast_mode_enabled():return
 			var shot: Dictionary = info.shot
@@ -810,6 +822,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			if info.has("shot") and weapon_key(info.shot)=="cannon":railgun_sound("release")
 			else:beep(620 if info.type == 1 else 200)
 		"collect":
+			if info.get("manual",false):game.profile.onboarding.pickupSeen = true
 			resource_pickup_feedback(info)
 		"encounter":
 			if game.enemies.any(func(enemy):return enemy.get("explicit_formation",false)):
@@ -880,7 +893,7 @@ func prune_resource_samples(now: float) -> void:
 
 func resource_display(id: String, now := -1.0) -> String:
 	if not resource_rate_mode:
-		return number(game.profile.resources[id])
+		return number(game.profile.jewelFragments if id=="jewel" else game.profile.resources[id])
 	if now < 0:
 		now = Time.get_unix_time_from_system()
 	prune_resource_samples(now)
@@ -903,6 +916,33 @@ func load_music_setting() -> void:
 	var saved: Variant = config.get_value("audio", "music_on", true)
 	if saved is bool:
 		music_on = saved
+
+func load_tutorial_setting() -> void:
+	var config := ConfigFile.new()
+	if config.load(tutorial_settings_path) != OK:return
+	var saved: Variant = config.get_value("tutorial", "auto_skip", false)
+	if saved is bool:tutorial_auto_skip = saved
+
+func set_tutorial_auto_skip(enabled: bool) -> void:
+	tutorial_auto_skip = enabled
+	if is_instance_valid(tutorial_skip_button):tutorial_skip_button.set_pressed_no_signal(enabled)
+	var config := ConfigFile.new()
+	config.set_value("tutorial", "auto_skip", enabled)
+	if game.save_enabled and config.save(tutorial_settings_path) != OK:
+		push_warning("Could not save tutorial preference")
+	sync_unlock_pause()
+	refresh_unlock_content()
+
+func sync_unlock_pause() -> void:
+	if game == null:return
+	var should_hold := not tutorial_auto_skip and not game.pending_unlocks.is_empty()
+	if should_hold and not unlock_pause_owned:
+		unlock_previous_paused = game.paused
+		unlock_pause_owned = true
+		game.paused = true
+	elif not should_hold and unlock_pause_owned:
+		game.paused = unlock_previous_paused
+		unlock_pause_owned = false
 
 func show_save_page() -> void:
 	select_system(equipment_tabs.get_tab_idx_from_control(save_panel))
@@ -1972,6 +2012,7 @@ func reset_battle_transients_for_scene() -> void:
 	damage_pending.clear()
 	floats.clear()
 	pickup_effects.clear()
+	resource_pickup_totals.clear()
 	resource_hover_feedback.clear()
 	shake=0.0
 	wave_hint=0.0
@@ -2086,13 +2127,22 @@ func build_ui() -> void:
 	build_workspace_shell()
 	fps_label = equipment_card_label(ui,"",Rect2(-373,24,250,30),13,CYAN)
 	fps_label.name = "CurrentFps"
-	refresh_fps_label(true)
+	fps_label.hide()
 	help_button = button(UIText.t("main.build_ui.text_01"),Rect2(1190,20,150,40),func():help_open=not help_open;refresh_navigation())
 	resource_mode_button = button(UIText.t("main.build_ui.text_02") if resource_rate_mode else UIText.t("main.build_ui.text_03"),Rect2(-112,20,148,40),toggle_resource_display)
 	music_button = button("",Rect2(500,20,130,40),toggle_music)
 	resource_mode_button.tooltip_text = UIText.t("main.build_ui.text_04")
 	continue_button = button(UIText.t("main.build_ui.text_05"),Rect2(600,535,240,48),func():game.acknowledge_unlocks(),true)
 	help_close_button = button(UIText.t("main.build_ui.text_06"),Rect2(600,626,240,44),func():help_open=false;refresh_navigation(),true)
+	tutorial_skip_button = CheckButton.new()
+	tutorial_skip_button.text = UIText.t("tutorial.auto_skip_option")
+	tutorial_skip_button.button_pressed = tutorial_auto_skip
+	tutorial_skip_button.z_index = 2
+	tutorial_skip_button.add_theme_color_override("font_color",SHELL_PRESENTATION.NAVY)
+	tutorial_skip_button.add_theme_color_override("font_pressed_color",SHELL_PRESENTATION.NAVY)
+	tutorial_skip_button.add_theme_color_override("font_hover_pressed_color",SHELL_PRESENTATION.NAVY)
+	tutorial_skip_button.toggled.connect(set_tutorial_auto_skip)
+	ui.add_child(tutorial_skip_button)
 	continue_button.z_index = 2
 	help_close_button.z_index = 2
 	preload("res://scripts/dialog_presentation.gd").button_skin(help_close_button,true)
@@ -2383,6 +2433,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(game.galaxy.available())
 	pages.append(game.hyperspace.is_unlocked(game))
 	pages.append(true) # Save is always the final page, independent of unlocks.
+	pages.append(true) # Current-stage enemy intelligence has no unlock gate.
 	for index in pages.size():
 		if equipment_tabs.is_tab_hidden(index) == pages[index]:
 			equipment_tabs.set_tab_hidden(index,not pages[index])
@@ -2439,6 +2490,9 @@ func layout_overlay_controls() -> void:
 	var help_scale := help_panel.size.x/820.0
 	help_close_button.position = help_panel.position-ui.position+Vector2(290,483)*help_scale
 	help_close_button.scale = Vector2.ONE*help_scale
+	if is_instance_valid(tutorial_skip_button):
+		tutorial_skip_button.position = help_panel.position-ui.position+Vector2(530,483)*help_scale
+		tutorial_skip_button.scale = Vector2.ONE*help_scale
 	var unlock_panel := unlock_panel_rect()
 	var unlock_scale := unlock_panel.size.x/640.0
 	continue_button.position = unlock_panel.position-ui.position+Vector2(200,295)*unlock_scale
@@ -2448,13 +2502,17 @@ func layout_overlay_controls() -> void:
 
 func refresh_unlock_content() -> void:
 	if not is_instance_valid(unlock_scroll):return
+	sync_unlock_pause()
 	var key := str(game.pending_unlocks[0]) if not game.pending_unlocks.is_empty() else ""
 	if key != unlock_notice_id:
 		unlock_notice_id = key
 		unlock_notice_started_ms = Time.get_ticks_msec() if not key.is_empty() else -1
 	if not key.is_empty():
-		var seconds := maxi(1,ceili((3000.0-(Time.get_ticks_msec()-unlock_notice_started_ms))/1000.0))
-		set_ui_value(continue_button,"text",UIText.t("unlock.auto_confirm",{"seconds":str(seconds)}))
+		var label := UIText.t("main.build_ui.text_05")
+		if tutorial_auto_skip:
+			var seconds := maxi(1,ceili((3000.0-(Time.get_ticks_msec()-unlock_notice_started_ms))/1000.0))
+			label = UIText.t("unlock.auto_confirm",{"seconds":str(seconds)})
+		set_ui_value(continue_button,"text",label)
 	var row: Dictionary = db.data.unlock.get(key,{})
 	if not ui_state_changed(unlock_scroll,[key,row.get("title",""),row.get("desc","")]):return
 	set_ui_value(unlock_scroll,"visible",not key.is_empty())
@@ -2464,6 +2522,7 @@ func refresh_unlock_content() -> void:
 
 func advance_unlock_notice(now_ms := -1) -> void:
 	# Monotonic UI time, independent of pause, simulation multiplier or page.
+	if not tutorial_auto_skip:return
 	if now_ms < 0:now_ms = Time.get_ticks_msec()
 	if game == null or game.pending_unlocks.is_empty() or unlock_notice_started_ms < 0:return
 	if str(game.pending_unlocks[0]) != unlock_notice_id:return
@@ -2495,6 +2554,7 @@ func refresh_navigation() -> void:
 	var help_visible := help_open and not unlocking
 	if ui_state_changed(help_close_button,[help_visible]):
 		set_ui_value(help_close_button,"visible",help_visible)
+	if is_instance_valid(tutorial_skip_button):set_ui_value(tutorial_skip_button,"visible",help_visible)
 	var navigation_visible := not help_open and not unlocking
 	if ui_state_changed(guard_settings,[navigation_visible]):
 		for control in [loop_select,loop_button,guard_settings,sound_button,music_button]:
@@ -2623,7 +2683,7 @@ func refresh_draw_layers(dt: float) -> void:
 	# or equipment. Do not deep-copy the whole enemy fleet on every frame.
 	if ui_state_changed(battle_hud_layer,[game.stage,game.state,game.distance,game.group_index,game.player.armour,game.player.shield,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.paused,game.pending_unlocks.is_empty(),game.is_boss_encounter(),enhancement_defense_hud_state()]):
 		battle_hud_layer.queue_redraw()
-	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2")]):
+	if ui_state_changed(resource_layer,[resource_display("1"),resource_display("2"),game.jewels_unlocked(),resource_display("jewel") if game.jewels_unlocked() else "",resource_pickup_totals]):
 		resource_layer.queue_redraw()
 	# Derived foreground feedback, refreshed even while the simulation is paused.
 	resource_hover_feedback = resource_hover_notices()
@@ -2631,7 +2691,7 @@ func refresh_draw_layers(dt: float) -> void:
 		overlay_layer.queue_redraw()
 
 func refresh_fps_label(force := false) -> void:
-	if not is_instance_valid(fps_label):return
+	if not is_instance_valid(fps_label) or not fps_label.visible:return
 	var current_fps := roundi(Engine.get_frames_per_second())
 	if not force and current_fps == displayed_fps:return
 	displayed_fps = current_fps
@@ -2991,39 +3051,29 @@ func draw_stars() -> void:
 	draw_surface.draw_mesh(stars_mesh,null)
 
 func draw_resources() -> void:
-	RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,0,str(UIText.data_text("resources","1")),resource_display("1"))
-	RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,1,str(UIText.data_text("resources","2")),resource_display("2"))
+	var ids := ["1","2","jewel"] if game.jewels_unlocked() else ["1","2"]
+	for index in ids.size():
+		var id: String = ids[index]
+		var caption := UIText.t("main._ready.text_02") if id=="jewel" else str(UIText.data_text("resources",id))
+		var receipt: Dictionary = resource_pickup_totals.get(id,{})
+		var increment := "+"+number(receipt.amount) if not receipt.is_empty() else ""
+		RESOURCE_STRIP_PRESENTATION.draw_resource(draw_surface,index,ids.size(),id,caption,resource_display(id),increment)
 
 func battle_notices() -> Array[Dictionary]:
 	var notices: Array[Dictionary] = []
 	if help_open or not game.pending_unlocks.is_empty():return notices
 	if message_time>0:notices.append({"text":message.replace("\n"," · "),"color":MUTED,"alpha":1.0})
-	var resource_text: PackedStringArray = []
-	var resource_ids: Array[String] = []
-	var resource_alpha := 0.0
-	var resource_color := INK
-	for entry in floats:
-		if entry.has("resource") and float(entry.life)>0:
-			resource_text.append(str(entry.text))
-			resource_ids.append(str(entry.resource))
-			resource_alpha=maxf(resource_alpha,clampf(float(entry.life)/0.2,0,1))
-			resource_color=entry.color if resource_text.size()==1 else CYAN
-	if not resource_text.is_empty():notices.append({"text":" · ".join(resource_text),"resources":resource_ids,"color":resource_color,"alpha":resource_alpha})
 	return notices
 
 func resource_pickup_feedback(info: Dictionary) -> void:
 	var id := "jewel" if info.has("jewel") else str(info.id)
-	var active: Dictionary = {}
-	for entry in floats:
-		if entry.get("resource","")==id and float(entry.life)>0 and fx_time-float(entry.born)<0.4:active = entry
-	if active.is_empty():
-		floats = floats.filter(func(f):return f.get("resource","")!=id)
-		active = {"resource":id,"amount":0.0,"born":fx_time,"color":RESOURCE_ART.accent(id),"life":0.8}
-		floats.append(active)
+	var active: Dictionary = resource_pickup_totals.get(id,{})
+	if active.is_empty() or clock-float(active.last)>0.4:active = {"amount":0.0,"last":clock}
 	active.amount = GrowthNumber.add(active.amount,info.amount)
-	var caption := UIText.t("main._ready.text_02") if id=="jewel" else UIText.data_text("resources",id)
-	active.text = UIText.t("main.on_event.text_01",{"amount":number(active.amount),"id":caption})
-	queue_pickup_effect(info,active.color)
+	active.last = clock
+	resource_pickup_totals[id] = active
+	resource_layer.queue_redraw()
+	queue_pickup_effect(info,RESOURCE_ART.accent(id))
 
 func battle_notice_rect(index: int) -> Rect2:
 	return Rect2(Vector2(40,138+index*23),Vector2(532,22))
@@ -3032,18 +3082,13 @@ func queue_pickup_effect(drop: Dictionary, color: Color) -> void:
 	if not drop.has("x") or not drop.has("y") or pickup_effects.size()>=24:return
 	var start := BATTLE_ORIGIN+drop_render_position(drop)
 	if not Rect2(BATTLE_ORIGIN,BATTLE_VIEW_SIZE).has_point(start):return
-	var destination := battle_notice_rect(0).get_center()
-	if drop.has("id"):
-		var notices := battle_notices()
-		for index in notices.size():
-			if str(drop.id) in notices[index].get("resources",[]):
-				destination=battle_notice_rect(index).get_center()
-				break
+	var id := "jewel" if drop.has("jewel") else str(drop.get("id","1"))
+	var destination := RESOURCE_STRIP_PRESENTATION.card_rect(2 if id=="jewel" else 1 if id=="2" else 0,3 if game.jewels_unlocked() else 2).get_center()+Vector2(RIGHT_UI_OFFSET,0)
 	pickup_effects.append({"start":start,"end":destination,"life":0.42,"duration":0.42,"color":color,"resource":"jewel" if drop.has("jewel") else str(drop.get("id","1"))})
 
 func draw_overlay() -> void:
 	for entry in resource_hover_feedback:
-		text_at(fit_battle_text(str(entry.text),170,17),entry.position,17,entry.color)
+		text_at(fit_battle_text(str(entry.text),260,17),entry.position,17,entry.color)
 	for effect in pickup_effects:
 		var progress := 1.0-float(effect.life)/float(effect.duration)
 		var point: Vector2 = effect.start.lerp(effect.end,1.0-pow(1.0-progress,3))
@@ -3120,10 +3165,23 @@ func resource_hover_notices() -> Array[Dictionary]:
 		var pos := drop_render_position(drop)
 		if pos.distance_to(mouse_pos)<40:
 			var id := "jewel" if drop.has("jewel") else str(drop.id)
-			var caption := UIText.t("battle.draw_battle.text_10") if drop.has("jewel") else UIText.t("battle.draw_battle.text_11", {"amount":"%s" % (number(drop.amount)), "id":"%s" % (UIText.data_text("resources",str(drop.id)))})
-			var caption_pos := Vector2(clampf(pos.x-85.0,12.0,BATTLE_VIEW_SIZE.x-182.0),clampf(pos.y+36.0,30.0,BATTLE_VIEW_SIZE.y-20.0))
+			var caption := UIText.t("battle.pickup_comparison",{"manual":number(pickup_preview_amount(drop,true)),"auto":number(pickup_preview_amount(drop,false))})
+			var caption_pos := Vector2(clampf(pos.x-130.0,12.0,BATTLE_VIEW_SIZE.x-270.0),clampf(pos.y+36.0,30.0,BATTLE_VIEW_SIZE.y-20.0))
 			notices.append({"text":caption,"position":BATTLE_ORIGIN+caption_pos,"color":RESOURCE_ART.accent(id)})
 	return notices
+
+func pickup_preview_amount(drop: Dictionary, manual: bool):
+	# Read-only projection of collect(); the event amount remains the receipt authority.
+	var loss := 1.0-float(db.config.autoCollectReduce)
+	if not drop.has("jewel"):
+		return GrowthNumber.ceiling(GrowthNumber.multiply(drop.amount,1.0 if manual else loss))
+	var core: bool = drop.get("hightech",false)
+	var amount := float(drop.get("amount",1))
+	if core and not manual:amount = ceilf(amount*loss)
+	var source := "furnace" if core else "drop"
+	var production_bonus := 1.0+float(game.hyperspace_totals().hangings.get("gem_refiner",0))
+	var effect := game.crew.system_effect(game,"gem_bonus")*game.reactor_multiplier("condensation")*game.galaxy.multiplier("gem_fragment") if source=="drop" else 1.0
+	return game.jewel_fragment_amount(amount*production_bonus*effect,1.0 if core else float(drop.get("jewelRatio",game.jewel_ratio())))
 
 func draw_battle_resources() -> void:
 	for drop in game.drops:
@@ -3521,6 +3579,10 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.add_child(save_panel)
 	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(save_panel),UIText.t("save.tab"))
 	save_panel.setup(self)
+	enemy_intel_page = preload("res://scripts/enemy_intel_page.gd").new()
+	equipment_tabs.add_child(enemy_intel_page)
+	equipment_tabs.set_tab_title(11,UIText.t("enemy.intel.tab"))
+	enemy_intel_page.setup(self)
 	refresh_tab_visibility()
 	equipment_tabs.tab_changed.connect(func(index):
 		equipment_page=index
@@ -3528,6 +3590,8 @@ func build_equipment_tabs() -> void:
 			if index==4:enhancement_panel.open()
 			else:set_ui_value(enhancement_panel,"visible",false)
 		layout_reactor_page()
+		if index==11:enemy_intel_page.refresh_if_needed()
+		if is_instance_valid(beginner_guide):beginner_guide.refresh()
 		refresh_system_nav()
 		sync_battle_visibility()
 		refresh_visible_cards())
@@ -3610,7 +3674,8 @@ func draw_unlock() -> void:
 	box(Rect2(Vector2.ZERO,Vector2(640,370)),Color("142638"),CYAN)
 	if game.pending_unlocks.size() > 1:
 		text_at(UIText.t("unlock.remaining", {"count":str(game.pending_unlocks.size())}),Vector2(57,236),18,MUTED)
-	text_at(UIText.t("unlock.next" if game.pending_unlocks.size() > 1 else "main.draw_unlock.text_03"),Vector2(57,269),15,MUTED)
+	var footer := "unlock.next" if game.pending_unlocks.size() > 1 else "main.draw_unlock.text_03" if tutorial_auto_skip else "unlock.manual_confirm"
+	text_at(UIText.t(footer),Vector2(57,269),15,MUTED)
 	draw_surface.draw_set_transform(Vector2.ZERO)
 
 var battle_slice_runtime:RefCounted

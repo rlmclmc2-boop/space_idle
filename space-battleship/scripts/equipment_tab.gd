@@ -448,6 +448,8 @@ func card_level_text(entry: Dictionary, category: String, active: bool) -> Strin
 		return UIText.t("equipment.card_defence_context",{"level":level,"type":UIText.t("equipment.energy" if int(defence.dmgtype)==1 else "equipment.physical")})
 	if category!="weapons" or str(entry.key) not in BattleGame.WEAPON_KEYS:return level
 	var row: Dictionary = host.game.player_weapon_row(entry)
+	if str(entry.key)=="missile":
+		return UIText.t("equipment.card_missile_context",{"level":level,"count":str(int(row.para1))})
 	return UIText.t("equipment.card_weapon_context",{"level":level,"type":UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical"),"seconds":host.number(float(row.cd))})
 
 func equipment_item(category: String, index: int) -> Dictionary:
@@ -464,7 +466,7 @@ func equipment_item(category: String, index: int) -> Dictionary:
 		"cardLevelText":card_level_text(entry,category,active),"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
 		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
-		"slots":[index],"mainStatLabel":UIText.t(("weapon.card_beam_expected" if key=="longLaser" else "weapon.expected_damage") if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
+		"slots":[index],"mainStatLabel":UIText.t(("weapon.card_beam_expected" if key=="longLaser" else "weapon.card_missile_expected" if key=="missile" else "weapon.expected_damage") if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
 		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
 

@@ -8657,7 +8657,35 @@
         "level",
         "type"
       ]
-    }
+    },
+    "tutorial.auto_skip_option": {
+      "params": []
+    },
+    "battle.pickup_comparison": {
+      "params": [
+        "manual",
+        "auto"
+      ]
+    },
+    "onboarding.pickup": {
+      "params": []
+    },
+    "enemy.intel.tab": {"params": []},
+    "enemy.intel.list_item": {"params": ["point", "name", "count"]},
+    "enemy.intel.empty": {"params": []},
+    "enemy.intel.identity": {"params": ["id", "point", "count"]},
+    "enemy.intel.missing": {"params": []},
+    "enemy.intel.armour": {"params": ["health", "resistance"]},
+    "enemy.intel.shield": {"params": ["capacity", "resistance"]},
+    "enemy.intel.attack": {"params": ["name", "count", "damage", "type", "cooldown"]},
+    "enemy.intel.no_mechanic": {"params": []},
+    "enemy.intel.reactive": {"params": []},
+    "enemy.intel.recovery": {"params": ["delay", "rate"]},
+    "battle.enemy_defence.reactive_status": {"params": ["percent"]},
+    "unlock.manual_confirm": {"params": []},
+    "onboarding.unlock_auto": {"params": []},
+    "equipment.card_missile_context": {"params": ["level", "count"]},
+    "weapon.card_missile_expected": {"params": []}
   },
   "bindings": {
     "hyperspace_affixes": {
