@@ -753,7 +753,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"jewel_error":
 			toast(str(info.message))
 		"battle_blocked":
-			if str(info.get("reason",""))=="zero_armour":toast(UIText.t("battle.zero_armour"))
+			if str(info.get("reason",""))=="zero_defence":toast(UIText.t("battle.zero_defence"))
 		"jewel_pickup":
 			if is_instance_valid(enhancement_panel):enhancement_panel.pickup_feedback(info)
 			resource_pickup_feedback(info)
@@ -3238,7 +3238,7 @@ func draw_battle() -> void:
 		for p in visible_projectiles:
 			var flight=_prepare_projectile_flight(p,visual_index,offset)
 			if not flight.is_empty():flights.append(flight)
-	if GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT:
+	if game.player_alive() or game.state==BattleGame.State.RETREAT:
 		draw_ship(player_render_position()+offset,0.24,false,1,not accelerated_visual_mode and GrowthNumber.compare(game.player.shield,0)>0)
 		if not accelerated_visual_mode:draw_engine_wake(player_render_position()+offset)
 	if not draw_retained_enemy_contacts(offset,boss_battle):

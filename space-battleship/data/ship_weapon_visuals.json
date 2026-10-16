@@ -3,58 +3,51 @@
     "Frigate": {
       "texture": "res://assets/ships/player/player-scout-3slot.png",
       "display_scale": 0.061,
-      "slot_map": [0, 1, 2],
+      "slot_map": [0],
       "hardpoints": [
-        {"pos": [-0.11, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0.11, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0, 0.09], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}
+        {"pos": [0, -0.11], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}
       ]
     },
     "Destroyer": {
       "texture": "res://assets/ships/player/player-interceptor-4slot.png",
       "display_scale": 0.093,
-      "slot_map": [0, 1, 2, 3],
+      "slot_map": [0, 1],
       "hardpoints": [
         {"pos": [-0.16, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0.16, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [-0.18, 0.06], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["missile", "energy", "gun"], "mode": "embedded"},
-        {"pos": [0.18, 0.06], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["missile", "energy", "gun"], "mode": "embedded"}
+        {"pos": [0.16, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}
       ]
     },
     "Cruiser": {
       "texture": "res://assets/ships/player/player-cruiser-5slot.png",
       "display_scale": 0.081,
-      "slot_map": [0, 1, 2, 3, 3],
+      "slot_map": [0, 1, 2],
       "hardpoints": [
-        {"pos": [-0.18, -0.045], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0.18, -0.045], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0, 0.025], "z": 1, "base_rotation": 0, "rotation_limit": 65, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0, 0.11], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["missile", "energy", "gun"], "mode": "embedded"}
+        {"pos": [0, -0.11], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [-0.18, 0.02], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [0.18, 0.02], "z": 1, "base_rotation": 0, "rotation_limit": 80, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}
       ]
     },
     "Battleship": {
       "texture": "res://assets/ships/player/player-battleship-6slot.png",
       "display_scale": 0.093,
-      "slot_map": [0, 1, 2, 3, 4, 2],
+      "slot_map": [0, 1, 2, 3],
       "hardpoints": [
         {"pos": [-0.16, -0.08], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
         {"pos": [0.16, -0.08], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0, 0.025], "z": 1, "base_rotation": 0, "rotation_limit": 70, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [-0.23, 0.08], "z": 1, "base_rotation": 0, "rotation_limit": 18, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "secondary"},
-        {"pos": [0.23, 0.08], "z": 1, "base_rotation": 0, "rotation_limit": 18, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "secondary"}
+        {"pos": [-0.16, 0.08], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [0.16, 0.08], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}
       ]
     },
     "Heavy_Battleship": {
       "texture": "res://assets/ships/player/player-dreadnought-8slot.png",
       "display_scale": 0.12,
-      "slot_map": [0, 1, 2, 3, 4, 5, 0, 1],
+      "slot_map": [0, 1, 2, 3, 4],
       "hardpoints": [
-        {"pos": [-0.16, -0.09], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0.16, -0.09], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [-0.16, 0.01], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [0.16, 0.01], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
-        {"pos": [-0.24, 0.10], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["missile", "energy", "gun"], "mode": "embedded"},
-        {"pos": [0.24, 0.10], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["missile", "energy", "gun"], "mode": "embedded"}
+        {"pos": [0, -0.12], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [-0.22, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [0.22, -0.035], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [-0.14, 0.09], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"},
+        {"pos": [0.14, 0.09], "z": 1, "base_rotation": 0, "rotation_limit": 75, "visual_size_class": "small", "allowed_weapon_visual_class": ["missile", "energy", "gun"], "mode": "main"}
       ]
     },
     "enemy_opening_triangle_physical": {"texture": "res://assets/ships/enemy/opening_v1/triangle-physical.png", "slot_map": [0], "hardpoints": [{"pos": [0, -0.05], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}]},

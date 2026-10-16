@@ -652,7 +652,6 @@ func ensure_loadout() -> void:
 			var level := int(entry.get("level", 1)) if entry is Dictionary and (entry.get("level", 1) is int or entry.get("level", 1) is float) else 1
 			if not equip_key.is_empty() and (not allowed.has(equip_key) or not profile.unlocked.has(equip_key)):
 				equip_key = ""
-			if slot_equipment_locked(category,i):equip_key="armour"
 			var normalized_entry := {"key":equip_key, "level":clampi(level, 1, 2147483647)}
 			normalized.append(normalized_entry)
 		profile.loadout[category] = normalized
@@ -954,7 +953,6 @@ func valid_loadout(key: String, loadout: Dictionary) -> bool:
 			if not entry is Dictionary:
 				return false
 			var equip_key := str(entry.get("key", ""))
-			if category=="defence" and is_same(entry,entries[0]) and equip_key!="armour":return false
 			if equip_key.is_empty():
 				continue
 			if not allowed.has(equip_key) or not profile.unlocked.has(equip_key):
@@ -975,11 +973,9 @@ func apply_refit_health() -> void:
 	sync_jewel_defence_damage()
 	sync_enhancement_buffers()
 	enhancement_branches.reconcile(self)
-	# Armour is the existing life pool. An allowed zero-armour refit must
-	# resolve death, rather than make hostile projectiles ignore a live ship.
-	if state in [State.TRAVEL,State.COMBAT,State.LEVEL_CLEAR] and N.compare(player.get("armour",0),0)<=0:
+	if state in [State.TRAVEL,State.COMBAT,State.LEVEL_CLEAR] and not player_alive():
 		begin_retreat()
-		event.emit("battle_blocked",{"reason":"zero_armour"})
+		event.emit("battle_blocked",{"reason":"zero_defence"})
 
 func invalidate_module_attack(index: int) -> void:
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
@@ -996,11 +992,13 @@ func invalidate_module_attack(index: int) -> void:
 			cd = minf(cd,0.4)
 		cooldowns[slot_id("weapons",index)] = cd
 
-func slot_equipment_locked(category: String, index: int) -> bool:
-	return category=="defence" and index==0
+func player_alive() -> bool:
+	return N.compare(player.get("armour",0),0)>0 or N.compare(player.get("shield",0),0)>0
+
+func slot_equipment_locked(_category: String, _index: int) -> bool:
+	return false
 
 func equip_slot(category: String, index: int, key: String) -> bool:
-	if slot_equipment_locked(category,index) and key!="armour":return false
 	if category not in ["weapons","defence"]:return false
 	var allowed: Array = WEAPON_KEYS if category=="weapons" else DEFENSE_KEYS
 	var entry := slot_entry(category,index)
@@ -1023,7 +1021,6 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	return true
 
 func unequip_slot(category: String, index: int) -> bool:
-	if slot_equipment_locked(category,index):return false
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or str(entry.key).is_empty():return false
 	if not native_before_configuration_change():return false
@@ -2101,8 +2098,8 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if manual_hyperspace.active and not manual_hyperspace.initializing:return false
 	if level < 1 or level > (db.levels.size() if manual_hyperspace.initializing else int(profile.highestLevel)):
 		return false
-	if N.compare(stat("armour"),0)<=0:
-		event.emit("battle_blocked",{"reason":"zero_armour"})
+	if N.compare(stat("armour"),0)<=0 and N.compare(stat("shield"),0)<=0:
+		event.emit("battle_blocked",{"reason":"zero_defence"})
 		return false
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
@@ -2345,7 +2342,7 @@ func beam_source_valid(shot:Dictionary) -> bool:
 	return is_same(shot.source,player) and entry.get("key","")=="longLaser" and shot.entry.get("key","")=="longLaser" and entry.get("drone_id","")==shot.entry.get("drone_id","")
 
 func endless_beam_eligible(shot:Dictionary) -> bool:
-	return shot.get("beam",false) and not shot.get("dead",false) and not shot.hostile and not shot.get("repeated",false) and N.compare(player.armour,0)>0 and beam_source_valid(shot) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and int(shot.mount)==endless_source_slot()
+	return shot.get("beam",false) and not shot.get("dead",false) and not shot.hostile and not shot.get("repeated",false) and player_alive() and beam_source_valid(shot) and not hyperspace_totals().legendary.get("endless_beam",{}).is_empty() and int(shot.mount)==endless_source_slot()
 
 func await_endless_target(shot:Dictionary) -> void:
 	shot.await_target=true
@@ -2359,13 +2356,13 @@ func long_laser_valid(shot: Dictionary) -> bool:
 		if state!=State.COMBAT or bool(shot.dead) or shot.target.is_empty():return false
 		if bool(shot.hostile):
 			var source:Dictionary=shot.get("source",{})
-			return not source.is_empty() and float(source.get("hp",0))>0 and is_same(native_execution.actor_by_uid.get(int(source.get("uid",-1)),{}),source) and N.compare(player.armour,0)>0
+			return not source.is_empty() and float(source.get("hp",0))>0 and is_same(native_execution.actor_by_uid.get(int(source.get("uid",-1)),{}),source) and player_alive()
 		return float(shot.target.hp)>0
 	if state != State.COMBAT or shot.dead or shot.target.is_empty() or not is_same(shot.target, shot.locked_target):
 		return false
 	if shot.hostile:
-		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and N.compare(player.armour,0)>0 and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
-	return is_same(shot.source, player) and N.compare(player.armour,0)>0 and enemies.has(shot.target) and shot.target.hp > 0 and beam_source_valid(shot)
+		return enemies.has(shot.source) and shot.source.hp > 0 and is_same(shot.target, player) and player_alive() and shot.mount < shot.source.equipment.size() and is_same(shot.entry, shot.source.equipment[shot.mount])
+	return is_same(shot.source, player) and player_alive() and enemies.has(shot.target) and shot.target.hp > 0 and beam_source_valid(shot)
 
 func lock_long_laser(source: Dictionary, weapon: Dictionary, hostile: bool, mount: int, entry: Dictionary, repeated := false, repeat_multiplier := 1.0, repeat_depth := 0, repeat_origin_multiplier := 1.0, inherited_snapshot: Dictionary = {}) -> void:
 	for shot in projectiles:
@@ -2537,7 +2534,7 @@ func begin_retreat() -> void:
 		native_execution.cancel(self);native_execution=null
 	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
-		manual_hyperspace.finish(self,false,"defeat" if N.compare(player.armour,0)<=0 else "user_exit");return
+		manual_hyperspace.finish(self,false,"defeat" if not player_alive() else "user_exit");return
 	guard_arrived = false
 	guard_elapsed = 0
 	guard_engaged = false
@@ -3027,9 +3024,9 @@ func tick(dt: float) -> void:
 		if retreat_elapsed >= duration:
 			distance = retreat_target
 			reset_player()
-			if N.compare(player.armour,0)<=0:
+			if not player_alive():
 				change_state(State.LEVEL_SELECT)
-				event.emit("battle_blocked",{"reason":"zero_armour"})
+				event.emit("battle_blocked",{"reason":"zero_defence"})
 				save_dirty=true
 				return
 			change_state(State.TRAVEL)
@@ -4194,7 +4191,7 @@ func jewel_hit_player(raw, type: int) -> void:
 		player[key]=N.subtract(player[key],rounded)
 		loss=N.add(loss,rounded)
 	event.emit("hit",{"x":player.x,"y":player.y,"amount":loss,"absorbed":feedback.absorbed,"player":true,"type":type})
-	if N.compare(player.armour,0)<=0 and not drone_combat.try_rebuild(self):
+	if not player_alive() and not drone_combat.try_rebuild(self):
 		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()
 
@@ -4261,7 +4258,7 @@ func apply_enhancement_deferred(_key: String, amount) -> void:
 		rest=N.subtract(rest,taken)
 	if N.compare(loss,0)>0 or N.compare(feedback.absorbed,0)>0:
 		event.emit("hit",{"x":player.x,"y":player.y,"amount":N.ceiling(loss),"absorbed":feedback.absorbed,"player":true,"type":0,"deferred":true})
-	if N.compare(player.armour,0)<=0 and not drone_combat.try_rebuild(self):
+	if not player_alive() and not drone_combat.try_rebuild(self):
 		event.emit("explode",{"x":player.x,"y":player.y,"boss":true})
 		begin_retreat()
 
@@ -4296,7 +4293,7 @@ func _legacy_end_defence_span()->void:
 func _legacy_defence_stopped()->bool:
 	if _legacy_defence_span_active and state==State.COMBAT and is_final_encounter() and not has_alive_enemy():
 		finish_combat_step(0.0)
-	return state==State.RETREAT or N.compare(player.armour,0)<=0 or (_legacy_defence_span_active and state!=State.COMBAT)
+	return state==State.RETREAT or not player_alive() or (_legacy_defence_span_active and state!=State.COMBAT)
 
 func _legacy_advance_defence_to(combat_at:float)->bool:
 	if not _legacy_defence_span_active:return true
@@ -4326,7 +4323,7 @@ func _settle_enhancement_due()->void:
 		advance_enhancement_repair_step(0.0,1)
 
 func advance_jewel_repair(dt: float) -> bool:
-	if paused or dt<0 or state==State.RETREAT or N.compare(player.armour,0)<=0:return true
+	if paused or dt<0 or state==State.RETREAT or not player_alive():return true
 	var memory_interval := enhancement_parameter("memory_interval")
 	var deferred_interval := enhancement_parameter("deferred_interval")
 	if not is_finite(dt) or memory_interval<=0.000000001 or deferred_interval<=0.000000001 or not is_finite(memory_interval) or not is_finite(deferred_interval) or enhancement_memory_elapsed<0 or enhancement_memory_elapsed>=memory_interval or enhancement_deferred_elapsed<0 or enhancement_deferred_elapsed>=deferred_interval:

@@ -12472,8 +12472,8 @@
     "params": "{rewards}"
   },
   {
-    "key": "battle.zero_armour",
-    "text": "装甲生命为0，无法战斗。请装备装甲后重试。",
+    "key": "battle.zero_defence",
+    "text": "护盾和装甲都为0，无法战斗；请装备防御模块后重试。",
     "deleted": false,
     "params": "",
     "category": "battle",

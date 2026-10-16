@@ -4,8 +4,8 @@
     "Frigate": {
       "name": "Frigate",
       "des": "游隼侦察艇",
-      "weaponSlots": 3,
-      "defenseSlots": 2,
+      "weaponSlots": 1,
+      "defenseSlots": 1,
       "movement": 50,
       "size": 1,
       "sameEquipmentLimit": 999
@@ -13,8 +13,8 @@
     "Destroyer": {
       "name": "Destroyer",
       "des": "飞燕护卫舰",
-      "weaponSlots": 4,
-      "defenseSlots": 2,
+      "weaponSlots": 2,
+      "defenseSlots": 1,
       "movement": 50,
       "size": 1,
       "sameEquipmentLimit": 999
@@ -22,8 +22,8 @@
     "Cruiser": {
       "name": "Cruiser",
       "des": "云鳐巡洋舰",
-      "weaponSlots": 5,
-      "defenseSlots": 3,
+      "weaponSlots": 3,
+      "defenseSlots": 2,
       "movement": 50,
       "size": 2,
       "sameEquipmentLimit": 999
@@ -31,8 +31,8 @@
     "Battleship": {
       "name": "Battleship",
       "des": "玄甲战列舰",
-      "weaponSlots": 6,
-      "defenseSlots": 3,
+      "weaponSlots": 4,
+      "defenseSlots": 2,
       "movement": 50,
       "size": 2,
       "sameEquipmentLimit": 999
@@ -40,8 +40,8 @@
     "Heavy_Battleship": {
       "name": "Heavy_Battleship",
       "des": "白鲸无畏舰",
-      "weaponSlots": 8,
-      "defenseSlots": 4,
+      "weaponSlots": 5,
+      "defenseSlots": 3,
       "movement": 50,
       "size": 4,
       "sameEquipmentLimit": 999

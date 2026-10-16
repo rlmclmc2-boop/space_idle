@@ -364,7 +364,7 @@ func _process_battlefield(delta: float) -> void:
 	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
 	if battle_slice_runtime==null:ship_view.set_slot_angles(angles)
 	for plume in ship_view.exhaust_nodes: plume.visible = effects_enabled
-	var alive: bool = GrowthNumber.compare(game.player.armour,0)>0 or game.state==BattleGame.State.RETREAT
+	var alive: bool = game.player_alive() or game.state==BattleGame.State.RETREAT
 	ship_view.set_rendering(prototype_enabled and alive and battle_layer.visible,game.paused)
 	pulse_layer.visible = ship_view.visible and effects_enabled
 	pulse_layer.queue_redraw()

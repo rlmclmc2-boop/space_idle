@@ -156,7 +156,7 @@ func advance(game:RefCounted,dt:float)->bool:
 	game.since_hit=float(kernel.metrics().get("since_hit",game.since_hit+dt))
 	if bool(kernel.metrics().get("final_cleared",false)):
 		if handoff_to_legacy(game,"final_complete"):game.finish_combat_step(dt)
-	elif float(game.player.armour)<=0:
+	elif not game.player_alive():
 		game.event.emit("explode",{"x":game.player.x,"y":game.player.y,"boss":true})
 		game.begin_retreat()
 	elif not game.has_alive_enemy():

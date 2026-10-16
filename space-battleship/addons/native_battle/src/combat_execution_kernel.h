@@ -1279,7 +1279,7 @@ class SpaceCombatKernel : public RefCounted {
         feedback.push_back(e);
         ++hit_count;
         publish_player();
-        if (player_hp <= 0)
+        if (player_hp <= 0 && player_shield <= 0)
             cancel();
     }
     void queue_debt(int layer, double amount) {
@@ -1565,7 +1565,8 @@ class SpaceCombatKernel : public RefCounted {
     }
     bool endless_eligible(const Flight &f) const {
         return f.live && f.beam && !f.hostile && !f.repeated && weapons[f.weapon].endless &&
-               !stopped && !final_cleared && double(player_row.get("armour",0.0)) > 0;
+               !stopped && !final_cleared &&
+               (double(player_row.get("armour",0.0)) > 0 || double(player_row.get("shield",0.0)) > 0);
     }
     // One owner keeps the existing attack, charge, tick clock and frozen link count.
     // Rebinding happens only at the next segment start, never halfway through hits.
@@ -2342,7 +2343,9 @@ class SpaceCombatKernel : public RefCounted {
     bool can_refit_configuration(Dictionary d) const {
         if (Variant(d.get("refit_token", Variant())).get_type() != Variant::DICTIONARY ||
             Dictionary(d["refit_token"]) != refit_token()) return false;
-        if (!can_update_configuration(d) || double(Dictionary(d["player"])["armour"]) <= 0) return false;
+        if (!can_update_configuration(d) ||
+            (double(Dictionary(d["player"])["armour"]) <= 0 &&
+             double(Dictionary(d["player"])["shield"]) <= 0)) return false;
         // Galaxy refits change numeric equipment/health and resource amounts only.
         Array rows = d["weapons"], defs = d["defences"], enemies = d["enemies"];
         for (int i = 0; i < rows.size(); ++i) {

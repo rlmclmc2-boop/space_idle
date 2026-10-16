@@ -125,7 +125,6 @@ func setup(owner_ui: Node) -> void:
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	preview.add_child(picture)
-	setup_drone_strip()
 	heading = label(self,"",Rect2(300,112,730,56),26)
 	preview_state = label(preview,"",Rect2(32,846,700,44),22)
 	var source_hint := label(preview,UIText.t("ship.refit.static_hint"),Rect2(32,906,700,56),19,MUTED)
@@ -215,7 +214,6 @@ func refresh() -> void:
 	host.set_ui_value(result,"visible",not locked)
 	host.set_ui_value(mount_scroll,"visible",not locked)
 	host.set_ui_value(confirm,"visible",not locked)
-	refresh_drone_strip(assignments,locked,current)
 	if locked:
 		for mount in mounts.values():host.set_ui_value(mount,"visible",false)
 		return

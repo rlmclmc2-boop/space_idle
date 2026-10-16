@@ -165,7 +165,7 @@ func process(budget_usec := -1) -> void:
 		work_usec += Time.get_ticks_usec()-started
 		elapsed += STEP
 		if not is_finite(float(game.player.armour)) or not is_finite(enemy_remaining()):finish_battle("error","nonfinite_state")
-		elif metrics.deaths>0 or game.player.armour<=0:finish_battle("loss")
+		elif metrics.deaths>0 or not game.player_alive():finish_battle("loss")
 		elif game.state==BattleGame.State.LEVEL_CLEAR:finish_battle("win")
 		elif game.state!=BattleGame.State.COMBAT:finish_battle("error","unexpected_state")
 		elif elapsed+0.000000001>=float(config.max_seconds):finish_battle("timeout")
@@ -258,7 +258,7 @@ func begin_battle() -> void:
 	for target in game.enemies:metrics.born[target.uid]=0.0
 	# Retreat clears game.enemies; keep references to retain actual enemy HP on defeat.
 	combat_enemies=game.enemies.duplicate()
-	max_hp=game.stat("armour")
+	max_hp=float(game.stat("armour"))+float(game.stat("shield"))
 	max_enemy_hp=enemy_remaining()
 	work_usec=Time.get_ticks_usec()-started
 	if max_hp<=0 or max_enemy_hp<=0:finish_battle("error","invalid_initial_hp")
@@ -274,7 +274,7 @@ func finish_battle(outcome: String, message := "") -> void:
 	current.win = outcome=="win" if outcome in ["win","loss"] else null
 	current.battle_time=elapsed
 	if game!=null:
-		current.player_hp_ratio=clampf(float(game.player.armour)/maxf(max_hp,0.000001),0,1)
+		current.player_hp_ratio=clampf((float(game.player.armour)+float(game.player.shield))/maxf(max_hp,0.000001),0,1)
 		current.enemy_hp_ratio=clampf(enemy_remaining()/maxf(max_enemy_hp,0.000001),0,1)
 		current.player_deaths=int(metrics.deaths)
 		current.damage_by_weapon=metrics.damage.duplicate(true)

@@ -34,31 +34,9 @@
           ],
           "rotation_axis": "Y",
           "forward": "-Z"
-        },
-        {
-          "node": "WeaponMount02",
-          "slot": 1,
-          "position": [
-            -1.32,
-            0.55,
-            0.95
-          ],
-          "rotation_axis": "Y",
-          "forward": "-Z"
-        },
-        {
-          "node": "WeaponMount03",
-          "slot": 2,
-          "position": [
-            1.32,
-            0.55,
-            0.95
-          ],
-          "rotation_axis": "Y",
-          "forward": "-Z"
         }
       ],
-      "hull_mount_budget": 3,
+      "hull_mount_budget": 1,
       "silhouette": "pointed dart with swept aft shoulders",
       "drone_offsets": [],
       "minimum_mount_center_distance": 2.64,
@@ -102,28 +80,11 @@
           ],
           "rotation_axis": "Y",
           "forward": "-Z"
-        },
-        {
-          "node": "WeaponMount03",
-          "slot": 2,
-          "position": [
-            0,
-            0.56,
-            1.6
-          ],
-          "rotation_axis": "Y",
-          "forward": "-Z"
         }
       ],
-      "hull_mount_budget": 3,
+      "hull_mount_budget": 2,
       "silhouette": "split prow and twin long nacelles",
-      "drone_offsets": [
-        [
-          3.95,
-          0.1,
-          1.5
-        ]
-      ],
+      "drone_offsets": [],
       "minimum_mount_center_distance": 2.64,
       "minimum_rotation_envelope_gap": 0.16
     },
@@ -176,28 +137,11 @@
           ],
           "rotation_axis": "Y",
           "forward": "-Z"
-        },
-        {
-          "node": "WeaponMount04",
-          "slot": 3,
-          "position": [
-            0,
-            0.56,
-            1.86
-          ],
-          "rotation_axis": "Y",
-          "forward": "-Z"
         }
       ],
-      "hull_mount_budget": 4,
+      "hull_mount_budget": 3,
       "silhouette": "swept diamond with four radial hardpoints",
-      "drone_offsets": [
-        [
-          4.4,
-          0.1,
-          1.35
-        ]
-      ],
+      "drone_offsets": [],
       "minimum_mount_center_distance": 2.630437,
       "minimum_rotation_envelope_gap": 0.150437
     },
@@ -265,18 +209,7 @@
       ],
       "hull_mount_budget": 4,
       "silhouette": "blunt armored bow and broad parallel shoulders",
-      "drone_offsets": [
-        [
-          -4.65,
-          0.1,
-          0.2
-        ],
-        [
-          4.65,
-          0.1,
-          0.2
-        ]
-      ],
+      "drone_offsets": [],
       "minimum_mount_center_distance": 2.66,
       "minimum_rotation_envelope_gap": 0.18
     },
@@ -355,23 +288,7 @@
       ],
       "hull_mount_budget": 5,
       "silhouette": "five-point armored crown with twin stern lobes",
-      "drone_offsets": [
-        [
-          -4.85,
-          0.1,
-          0.65
-        ],
-        [
-          4.85,
-          0.1,
-          0.65
-        ],
-        [
-          0,
-          0.15,
-          -5.25
-        ]
-      ],
+      "drone_offsets": [],
       "minimum_mount_center_distance": 2.692056,
       "minimum_rotation_envelope_gap": 0.212056
     }

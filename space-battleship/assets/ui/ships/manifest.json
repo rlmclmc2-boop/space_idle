@@ -53,10 +53,6 @@
         [
           553.593139648438,
           383.999938964844
-        ],
-        [
-          384.0,
-          553.593078613281
         ]
       ],
       "texture": "res://assets/ui/ships/Cruiser.png"
@@ -72,10 +68,6 @@
         [
           522.374450683594,
           305.378112792969
-        ],
-        [
-          384.0,
-          551.726501464844
         ]
       ],
       "texture": "res://assets/ui/ships/Destroyer.png"
@@ -87,14 +79,6 @@
         [
           384.0,
           240.076873779297
-        ],
-        [
-          244.309951782227,
-          484.534454345703
-        ],
-        [
-          523.690063476562,
-          484.534454345703
         ]
       ],
       "texture": "res://assets/ui/ships/Frigate.png"
@@ -141,15 +125,15 @@
   },
   "source_manifest": "res://dev/toon_ship/hybrid_manifest.json",
   "source_sha256": {
-    "res://addons/flexible_toon_shader/flexible_toon.gdshader": "58e2b528ed66de6c1c09f3e41b21605bd155b84d504422e5f4f671732a8dd985",
+    "res://addons/flexible_toon_shader/flexible_toon.gdshader": "c08d4059ea550fc86efb89e3e9bed2a74b2a5eb01d35bccd814858cf28fbb72b",
     "res://dev/toon_ship/hulls/battleship.glb": "609a0e151b46a13ce295c110f75508bef5ece58f692b37d01ee5be295fb84ae5",
-    "res://dev/toon_ship/hulls/cruiser.glb": "9fde8b38ea99bf4f84886afb603def670301f635242e109b7b899f78bb75d4a3",
-    "res://dev/toon_ship/hulls/destroyer.glb": "b19d55b43851aeb26efa4e4c982ba1de5dd2e694e2397e5afd0568707f816638",
-    "res://dev/toon_ship/hulls/frigate.glb": "0b73a239bc7891da538e546984d89628eced02d25da7a176b9d7704513ecf40b",
+    "res://dev/toon_ship/hulls/cruiser.glb": "8a4ce620789e1031d531e130332a03b113f657a1454b7da321d222ce6b59dc06",
+    "res://dev/toon_ship/hulls/destroyer.glb": "734bb18b6ead7bd091410ae289255c2754e82785b5da134a7da684ae8665f1cb",
+    "res://dev/toon_ship/hulls/frigate.glb": "9cc816ca1bd1b86874a268ef0dde0f7b1c5952f40d4eb6223939202f81da4ad5",
     "res://dev/toon_ship/hulls/heavy_battleship.glb": "db0fb37147f254436ff503eff83bb8e33c97d409231151c0d3b908e1d33aaab2",
     "res://dev/toon_ship/hulls/weapon_drone.glb": "e8efc40255e87e5a373d4110e2e849c82a90beab56b54dc33d3da34adc4b1d5b",
-    "res://dev/toon_ship/hybrid_manifest.json": "57ad665790cc8cfedc223d86da36b93dc52a0f3159bf2ea30e8461e8236055bf",
-    "res://scripts/battlefield.gd": "f9e16dbac39f146f60d0fd7af77f69a9f337d36bcdeca51f55c6e199875ee3c7",
-    "res://scripts/presented_ship_view.gd": "2fc30bf2a6da5d64f6a6fcdb110eb5128899f564fddcafc2a692b696c0c651f7"
+    "res://dev/toon_ship/hybrid_manifest.json": "a964d8351c8677faec08188ad1d8312c01c1415c7a6555de14e144a5501cba08",
+    "res://scripts/battlefield.gd": "0add90ae767fd82742fb5ee7fb633747e8e571c3354999f3f4f90b5f066a0ee9",
+    "res://scripts/presented_ship_view.gd": "f4ad8796a9c3c3827cba409b03da88c0102df3fa7bd9c6fba996891a020f024b"
   }
 }
