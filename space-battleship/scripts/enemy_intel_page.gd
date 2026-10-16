@@ -89,9 +89,9 @@ func show_entry(index: int) -> void:
 	image.custom_minimum_size = Vector2(300,280)
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	var visual_key := str(row.get("intelVisualRef",""))
-	if visual_key.is_empty():visual_key = host.enemy_visual_identity.resolve(row,host.visual_config)
-	image.texture = host.ship_hull_texture(visual_key)
+	var visual_ref := str(row.get("intelVisualRef",row.get("archetype_id","")))
+	var visual_source := {"archetype_id":visual_ref,"armourType":row.armourType,"size":row.size}
+	image.texture = host.ship_hull_texture(host.enemy_visual_identity.resolve(visual_source,host.visual_config))
 	detail.add_child(image)
 	add_label(detail,UIText.t("enemy.intel.identity",{"point":str(int(entry.point)+1),"count":str(entry.count)}),19)
 	var summary := str(row.get("intelTrait",""))

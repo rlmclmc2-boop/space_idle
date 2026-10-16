@@ -125,6 +125,7 @@ var pickup_effects: Array[Dictionary] = []
 var resource_pickup_totals: Dictionary = {}
 var resource_hover_feedback: Array[Dictionary] = []
 var pickup_preview_cache: Dictionary = {}
+var pickup_preview_order: Array[int] = []
 var pickup_preview_builds := 0
 var clock := 0.0
 var game_time_remainder := 0.0
@@ -2017,6 +2018,7 @@ func reset_battle_transients_for_scene() -> void:
 	resource_pickup_totals.clear()
 	resource_hover_feedback.clear()
 	pickup_preview_cache.clear()
+	pickup_preview_order.clear()
 	shake=0.0
 	wave_hint=0.0
 	for pose in turret_visuals.values():
@@ -3069,6 +3071,9 @@ func battle_notices() -> Array[Dictionary]:
 	return notices
 
 func resource_pickup_feedback(info: Dictionary) -> void:
+	var uid := int(info.get("uid",-1))
+	pickup_preview_cache.erase(uid)
+	pickup_preview_order.erase(uid)
 	var id := "jewel" if info.has("jewel") else str(info.id)
 	var active: Dictionary = resource_pickup_totals.get(id,{})
 	if active.is_empty() or clock-float(active.last)>0.4:active = {"amount":0.0,"last":clock}
@@ -3174,10 +3179,16 @@ func resource_hover_notices() -> Array[Dictionary]:
 	return notices
 
 func pickup_comparison(drop: Dictionary) -> String:
-	if pickup_preview_cache.get("uid",-1)!=drop.get("uid",-1) or pickup_preview_cache.get("amount",-1)!=drop.amount or pickup_preview_cache.get("ratio",-1)!=drop.get("jewelRatio",-1) or pickup_preview_cache.get("stage",-1)!=game.stage or pickup_preview_cache.get("revision",-1)!=game.stat_cache_revision:
+	var uid := int(drop.get("uid",-1))
+	var cached: Dictionary = pickup_preview_cache.get(uid,{})
+	if cached.is_empty() or GrowthNumber.compare(cached.amount,drop.amount)!=0 or cached.get("ratio",-1)!=drop.get("jewelRatio",-1) or cached.get("stage",-1)!=game.stage or cached.get("revision",-1)!=game.stat_cache_revision:
 		pickup_preview_builds += 1
-		pickup_preview_cache = {"uid":drop.get("uid",-1),"amount":drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.stat_cache_revision,"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
-	return UIText.t("battle.pickup_comparison",{"manual":number(pickup_preview_cache.manual),"auto":number(pickup_preview_cache.auto)})
+		cached = {"amount":drop.amount.duplicate(true) if drop.amount is Dictionary else drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.stat_cache_revision,"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
+		if not pickup_preview_cache.has(uid):
+			if pickup_preview_order.size()>=64:pickup_preview_cache.erase(pickup_preview_order.pop_front())
+			pickup_preview_order.append(uid)
+		pickup_preview_cache[uid] = cached
+	return UIText.t("battle.pickup_comparison",{"manual":number(cached.manual),"auto":number(cached.auto)})
 
 func pickup_preview_amount(drop: Dictionary, manual: bool):
 	# Read-only projection of collect(); the event amount remains the receipt authority.

@@ -1,0 +1,2980 @@
+{
+  "mixed-1-control": [
+    {
+      "unix": 1792124198.582109
+    },
+    {
+      "unix": 1792124199.0967376,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124199.6095564,
+      "system_cpu_busy_percent": 12.689393939393945
+    },
+    {
+      "unix": 1792124200.121516,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124200.6297169,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124201.139535,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124201.6503437,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124202.1597974,
+      "system_cpu_busy_percent": 13.4765625
+    },
+    {
+      "unix": 1792124202.6702056,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124203.1831427,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124203.6946611,
+      "system_cpu_busy_percent": 10.22727272727273
+    },
+    {
+      "unix": 1792124204.2047956,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124204.7179048,
+      "system_cpu_busy_percent": 16.287878787878785
+    },
+    {
+      "unix": 1792124205.2288017,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124205.738986,
+      "system_cpu_busy_percent": 16.796875
+    },
+    {
+      "unix": 1792124206.2512054,
+      "system_cpu_busy_percent": 17.992424242424242
+    },
+    {
+      "unix": 1792124206.7620335,
+      "system_cpu_busy_percent": 13.82575757575758
+    },
+    {
+      "unix": 1792124207.2742233,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124207.7833326,
+      "system_cpu_busy_percent": 13.28125
+    },
+    {
+      "unix": 1792124208.2948508,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124208.8081367,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124209.320222,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124209.8308237,
+      "system_cpu_busy_percent": 12.109375
+    },
+    {
+      "unix": 1792124210.3422961,
+      "system_cpu_busy_percent": 11.931818181818176
+    },
+    {
+      "unix": 1792124210.853518,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124211.3645244,
+      "system_cpu_busy_percent": 7.2265625
+    },
+    {
+      "unix": 1792124211.8793764,
+      "system_cpu_busy_percent": 11.553030303030297
+    },
+    {
+      "unix": 1792124212.391054,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124212.9006891,
+      "system_cpu_busy_percent": 12.310606060606055
+    },
+    {
+      "unix": 1792124213.413211,
+      "system_cpu_busy_percent": 18.37121212121212
+    },
+    {
+      "unix": 1792124213.924143,
+      "system_cpu_busy_percent": 9.375
+    },
+    {
+      "unix": 1792124214.4333668,
+      "system_cpu_busy_percent": 23.29545454545454
+    },
+    {
+      "unix": 1792124214.9448354,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124215.458729,
+      "system_cpu_busy_percent": 14.6484375
+    },
+    {
+      "unix": 1792124215.9709673,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124216.4833806,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124216.995114,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124217.506334,
+      "system_cpu_busy_percent": 7.8125
+    },
+    {
+      "unix": 1792124218.0117354,
+      "system_cpu_busy_percent": 10.606060606060607
+    },
+    {
+      "unix": 1792124218.5222967,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124219.0310252,
+      "system_cpu_busy_percent": 16.9921875
+    },
+    {
+      "unix": 1792124219.5420282,
+      "system_cpu_busy_percent": 13.257575757575758
+    }
+  ],
+  "mixed-2-candidate": [
+    {
+      "unix": 1792124229.5795372
+    },
+    {
+      "unix": 1792124230.0927641,
+      "system_cpu_busy_percent": 8.317580340264652
+    },
+    {
+      "unix": 1792124230.6077445,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124231.1186745,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124231.6317055,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124232.1429656,
+      "system_cpu_busy_percent": 9.375
+    },
+    {
+      "unix": 1792124232.6532598,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124233.163661,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124233.6738944,
+      "system_cpu_busy_percent": 9.9609375
+    },
+    {
+      "unix": 1792124234.186709,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124234.6963432,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124235.209427,
+      "system_cpu_busy_percent": 16.796875
+    },
+    {
+      "unix": 1792124235.7191632,
+      "system_cpu_busy_percent": 17.992424242424242
+    },
+    {
+      "unix": 1792124236.231488,
+      "system_cpu_busy_percent": 13.446969696969703
+    },
+    {
+      "unix": 1792124236.7403402,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124237.2509017,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124237.7649052,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124238.2770998,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124238.787264,
+      "system_cpu_busy_percent": 8.203125
+    },
+    {
+      "unix": 1792124239.3004518,
+      "system_cpu_busy_percent": 13.446969696969703
+    },
+    {
+      "unix": 1792124239.809792,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124240.320552,
+      "system_cpu_busy_percent": 6.439393939393945
+    },
+    {
+      "unix": 1792124240.831184,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124241.344776,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124241.857323,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124242.3686776,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124242.8814068,
+      "system_cpu_busy_percent": 7.2265625
+    },
+    {
+      "unix": 1792124243.393663,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124243.906721,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124244.4166138,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124244.927999,
+      "system_cpu_busy_percent": 12.109375
+    },
+    {
+      "unix": 1792124245.4415586,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124245.9522176,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124246.4629328,
+      "system_cpu_busy_percent": 13.82575757575758
+    },
+    {
+      "unix": 1792124246.971292,
+      "system_cpu_busy_percent": 19.53125
+    },
+    {
+      "unix": 1792124247.4797153,
+      "system_cpu_busy_percent": 22.537878787878785
+    },
+    {
+      "unix": 1792124247.9897118,
+      "system_cpu_busy_percent": 21.875
+    },
+    {
+      "unix": 1792124248.5008411,
+      "system_cpu_busy_percent": 18.560606060606055
+    },
+    {
+      "unix": 1792124249.0131083,
+      "system_cpu_busy_percent": 23.484848484848484
+    },
+    {
+      "unix": 1792124249.5210166,
+      "system_cpu_busy_percent": 21.875
+    },
+    {
+      "unix": 1792124250.0328238,
+      "system_cpu_busy_percent": 20.265151515151516
+    }
+  ],
+  "mixed-3-control": [
+    {
+      "unix": 1792124250.6852052
+    },
+    {
+      "unix": 1792124251.1932244,
+      "system_cpu_busy_percent": 19.53125
+    },
+    {
+      "unix": 1792124251.6981719,
+      "system_cpu_busy_percent": 17.803030303030297
+    },
+    {
+      "unix": 1792124252.2073464,
+      "system_cpu_busy_percent": 16.796875
+    },
+    {
+      "unix": 1792124252.7190175,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124253.2271233,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124253.7411008,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124254.2537136,
+      "system_cpu_busy_percent": 11.5234375
+    },
+    {
+      "unix": 1792124254.7653587,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124255.2751951,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124255.7883656,
+      "system_cpu_busy_percent": 22.916666666666664
+    },
+    {
+      "unix": 1792124256.298891,
+      "system_cpu_busy_percent": 19.3359375
+    },
+    {
+      "unix": 1792124256.8102682,
+      "system_cpu_busy_percent": 13.257575757575758
+    },
+    {
+      "unix": 1792124257.3191552,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124257.8343546,
+      "system_cpu_busy_percent": 7.8125
+    },
+    {
+      "unix": 1792124258.3470051,
+      "system_cpu_busy_percent": 22.34848484848485
+    },
+    {
+      "unix": 1792124258.8616483,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124259.3750124,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124259.8866794,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124260.39888,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124260.9109285,
+      "system_cpu_busy_percent": 11.328125
+    },
+    {
+      "unix": 1792124261.4202673,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124261.931432,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124262.4427154,
+      "system_cpu_busy_percent": 6.640625
+    },
+    {
+      "unix": 1792124262.95107,
+      "system_cpu_busy_percent": 17.234848484848484
+    },
+    {
+      "unix": 1792124263.4582877,
+      "system_cpu_busy_percent": 17.1875
+    },
+    {
+      "unix": 1792124263.9702756,
+      "system_cpu_busy_percent": 23.10606060606061
+    },
+    {
+      "unix": 1792124264.4812596,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124264.992921,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124265.5070138,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124266.0184479,
+      "system_cpu_busy_percent": 11.328125
+    },
+    {
+      "unix": 1792124266.5302653,
+      "system_cpu_busy_percent": 12.310606060606055
+    },
+    {
+      "unix": 1792124267.0412958,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124267.5524788,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124268.0635746,
+      "system_cpu_busy_percent": 10.606060606060607
+    },
+    {
+      "unix": 1792124268.575338,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124269.0884628,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124269.5973234,
+      "system_cpu_busy_percent": 6.8359375
+    },
+    {
+      "unix": 1792124270.110583,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124270.6239247,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124271.1393533,
+      "system_cpu_busy_percent": 6.818181818181824
+    }
+  ],
+  "laser-1-control": [
+    {
+      "unix": 1792124271.8525496
+    },
+    {
+      "unix": 1792124272.3637908,
+      "system_cpu_busy_percent": 11.5234375
+    },
+    {
+      "unix": 1792124272.8763356,
+      "system_cpu_busy_percent": 10.606060606060607
+    },
+    {
+      "unix": 1792124273.3903575,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124273.9012096,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124274.4115748,
+      "system_cpu_busy_percent": 17.1875
+    },
+    {
+      "unix": 1792124274.9208262,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124275.4286098,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124275.938243,
+      "system_cpu_busy_percent": 15.0390625
+    },
+    {
+      "unix": 1792124276.4471188,
+      "system_cpu_busy_percent": 14.962121212121215
+    },
+    {
+      "unix": 1792124276.9575558,
+      "system_cpu_busy_percent": 14.2578125
+    },
+    {
+      "unix": 1792124277.4696167,
+      "system_cpu_busy_percent": 10.22727272727273
+    },
+    {
+      "unix": 1792124277.9806294,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124278.48935,
+      "system_cpu_busy_percent": 9.9609375
+    },
+    {
+      "unix": 1792124278.9996767,
+      "system_cpu_busy_percent": 14.77272727272727
+    },
+    {
+      "unix": 1792124279.510483,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124280.0230832,
+      "system_cpu_busy_percent": 12.689393939393945
+    },
+    {
+      "unix": 1792124280.533363,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124281.0450213,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124281.558282,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124282.0719314,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124282.582643,
+      "system_cpu_busy_percent": 20.703125
+    },
+    {
+      "unix": 1792124283.093379,
+      "system_cpu_busy_percent": 15.909090909090907
+    },
+    {
+      "unix": 1792124283.6082637,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124284.1202514,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124284.6309493,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124285.142414,
+      "system_cpu_busy_percent": 14.393939393939393
+    },
+    {
+      "unix": 1792124285.653554,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124286.1648502,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124286.6765695,
+      "system_cpu_busy_percent": 10.546875
+    },
+    {
+      "unix": 1792124287.1891356,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124287.6997151,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124288.2100792,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124288.721394,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124289.2340984,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124289.745372,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124290.2575817,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124290.7682133,
+      "system_cpu_busy_percent": 7.421875
+    },
+    {
+      "unix": 1792124291.278956,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124291.790306,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124292.301234,
+      "system_cpu_busy_percent": 9.5703125
+    }
+  ],
+  "laser-2-candidate": [
+    {
+      "unix": 1792124293.0329862
+    },
+    {
+      "unix": 1792124293.5446217,
+      "system_cpu_busy_percent": 11.742424242424242
+    },
+    {
+      "unix": 1792124294.056987,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124294.563694,
+      "system_cpu_busy_percent": 7.2265625
+    },
+    {
+      "unix": 1792124295.0734034,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124295.584924,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124296.0942814,
+      "system_cpu_busy_percent": 18.359375
+    },
+    {
+      "unix": 1792124296.6061919,
+      "system_cpu_busy_percent": 13.82575757575758
+    },
+    {
+      "unix": 1792124297.1178555,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124297.6278772,
+      "system_cpu_busy_percent": 9.765625
+    },
+    {
+      "unix": 1792124298.1399977,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124298.6532776,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124299.163654,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124299.6775255,
+      "system_cpu_busy_percent": 6.640625
+    },
+    {
+      "unix": 1792124300.1912196,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124300.7053618,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124301.2187612,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124301.7270854,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124302.236352,
+      "system_cpu_busy_percent": 9.765625
+    },
+    {
+      "unix": 1792124302.7484658,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124303.2622602,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124303.7736819,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124304.286192,
+      "system_cpu_busy_percent": 10.3515625
+    },
+    {
+      "unix": 1792124304.7969816,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124305.3072572,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124305.8188596,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124306.3301113,
+      "system_cpu_busy_percent": 11.9140625
+    },
+    {
+      "unix": 1792124306.8436475,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124307.3580647,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124307.8692372,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124308.3814664,
+      "system_cpu_busy_percent": 6.060606060606055
+    },
+    {
+      "unix": 1792124308.8940978,
+      "system_cpu_busy_percent": 14.84375
+    },
+    {
+      "unix": 1792124309.4040709,
+      "system_cpu_busy_percent": 15.530303030303028
+    },
+    {
+      "unix": 1792124309.9110887,
+      "system_cpu_busy_percent": 11.1328125
+    },
+    {
+      "unix": 1792124310.422542,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124310.9358072,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124311.4488323,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124311.9620357,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124312.4740527,
+      "system_cpu_busy_percent": 7.6171875
+    },
+    {
+      "unix": 1792124312.9886508,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124313.4979818,
+      "system_cpu_busy_percent": 10.795454545454541
+    }
+  ],
+  "laser-3-control": [
+    {
+      "unix": 1792124314.2232697
+    },
+    {
+      "unix": 1792124314.737921,
+      "system_cpu_busy_percent": 11.931818181818176
+    },
+    {
+      "unix": 1792124315.2493098,
+      "system_cpu_busy_percent": 10.606060606060607
+    },
+    {
+      "unix": 1792124315.7609391,
+      "system_cpu_busy_percent": 13.257575757575758
+    },
+    {
+      "unix": 1792124316.2716606,
+      "system_cpu_busy_percent": 13.4765625
+    },
+    {
+      "unix": 1792124316.7803974,
+      "system_cpu_busy_percent": 17.234848484848484
+    },
+    {
+      "unix": 1792124317.2916334,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124317.8031948,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124318.311165,
+      "system_cpu_busy_percent": 11.5234375
+    },
+    {
+      "unix": 1792124318.8198695,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124319.3311644,
+      "system_cpu_busy_percent": 9.375
+    },
+    {
+      "unix": 1792124319.8417344,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124320.3517716,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124320.8617356,
+      "system_cpu_busy_percent": 8.984375
+    },
+    {
+      "unix": 1792124321.3734221,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124321.8843882,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124322.3964813,
+      "system_cpu_busy_percent": 9.9609375
+    },
+    {
+      "unix": 1792124322.9074888,
+      "system_cpu_busy_percent": 10.984848484848486
+    },
+    {
+      "unix": 1792124323.41711,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124323.9276865,
+      "system_cpu_busy_percent": 6.4453125
+    },
+    {
+      "unix": 1792124324.4408612,
+      "system_cpu_busy_percent": 11.742424242424242
+    },
+    {
+      "unix": 1792124324.9515011,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124325.4634933,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124325.9745445,
+      "system_cpu_busy_percent": 8.984375
+    },
+    {
+      "unix": 1792124326.4858296,
+      "system_cpu_busy_percent": 11.363636363636365
+    },
+    {
+      "unix": 1792124326.9979913,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124327.508818,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124328.0178154,
+      "system_cpu_busy_percent": 7.8125
+    },
+    {
+      "unix": 1792124328.5309777,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124329.0444918,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124329.5571258,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124330.0686653,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124330.5778265,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124331.0879655,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124331.600916,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124332.112282,
+      "system_cpu_busy_percent": 9.765625
+    },
+    {
+      "unix": 1792124332.6256464,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124333.1369476,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124333.650222,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124334.1626134,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124334.672917,
+      "system_cpu_busy_percent": 9.375
+    }
+  ],
+  "cannon-1-control": [
+    {
+      "unix": 1792124336.7189386
+    },
+    {
+      "unix": 1792124337.2338915,
+      "system_cpu_busy_percent": 9.073724007561434
+    },
+    {
+      "unix": 1792124337.7481978,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124338.2584305,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124338.7694092,
+      "system_cpu_busy_percent": 14.84375
+    },
+    {
+      "unix": 1792124339.2791154,
+      "system_cpu_busy_percent": 16.85606060606061
+    },
+    {
+      "unix": 1792124339.7870965,
+      "system_cpu_busy_percent": 10.7421875
+    },
+    {
+      "unix": 1792124340.299697,
+      "system_cpu_busy_percent": 13.257575757575758
+    },
+    {
+      "unix": 1792124340.810295,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124341.3218567,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124341.8344822,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124342.3466544,
+      "system_cpu_busy_percent": 11.1328125
+    },
+    {
+      "unix": 1792124342.8558643,
+      "system_cpu_busy_percent": 19.696969696969703
+    },
+    {
+      "unix": 1792124343.365678,
+      "system_cpu_busy_percent": 15.151515151515149
+    },
+    {
+      "unix": 1792124343.8782477,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124344.3912318,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124344.9038582,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124345.4152703,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124345.9271357,
+      "system_cpu_busy_percent": 14.453125
+    },
+    {
+      "unix": 1792124346.4373324,
+      "system_cpu_busy_percent": 17.42424242424242
+    },
+    {
+      "unix": 1792124346.94809,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124347.4579985,
+      "system_cpu_busy_percent": 9.375
+    },
+    {
+      "unix": 1792124347.9669788,
+      "system_cpu_busy_percent": 10.984848484848486
+    },
+    {
+      "unix": 1792124348.4765851,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124348.9906023,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124349.5049214,
+      "system_cpu_busy_percent": 6.640625
+    },
+    {
+      "unix": 1792124350.0141375,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124350.5259728,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124351.0364387,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124351.5493784,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124352.062416,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124352.5748103,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124353.0870209,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124353.600652,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124354.1108527,
+      "system_cpu_busy_percent": 8.3984375
+    },
+    {
+      "unix": 1792124354.6236196,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124355.1359081,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124355.6469548,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124356.1589704,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124356.6717768,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124357.185456,
+      "system_cpu_busy_percent": 8.143939393939393
+    }
+  ],
+  "cannon-2-candidate": [
+    {
+      "unix": 1792124357.9475849
+    },
+    {
+      "unix": 1792124358.4580517,
+      "system_cpu_busy_percent": 8.3984375
+    },
+    {
+      "unix": 1792124358.9700193,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124359.4793713,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124359.9869673,
+      "system_cpu_busy_percent": 11.5234375
+    },
+    {
+      "unix": 1792124360.4968193,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124361.0074203,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124361.522201,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124362.034133,
+      "system_cpu_busy_percent": 10.546875
+    },
+    {
+      "unix": 1792124362.5411708,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124363.050598,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124363.565657,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124364.0752056,
+      "system_cpu_busy_percent": 11.931818181818176
+    },
+    {
+      "unix": 1792124364.5859747,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124365.096475,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124365.6079879,
+      "system_cpu_busy_percent": 11.931818181818176
+    },
+    {
+      "unix": 1792124366.1154308,
+      "system_cpu_busy_percent": 13.257575757575758
+    },
+    {
+      "unix": 1792124366.6259594,
+      "system_cpu_busy_percent": 17.578125
+    },
+    {
+      "unix": 1792124367.138183,
+      "system_cpu_busy_percent": 15.151515151515149
+    },
+    {
+      "unix": 1792124367.6484032,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124368.1610034,
+      "system_cpu_busy_percent": 9.375
+    },
+    {
+      "unix": 1792124368.673416,
+      "system_cpu_busy_percent": 14.77272727272727
+    },
+    {
+      "unix": 1792124369.1875346,
+      "system_cpu_busy_percent": 15.340909090909093
+    },
+    {
+      "unix": 1792124369.697445,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124370.2073615,
+      "system_cpu_busy_percent": 8.3984375
+    },
+    {
+      "unix": 1792124370.7185643,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124371.2322814,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124371.7465138,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124372.260257,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124372.7715428,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124373.2719986,
+      "system_cpu_busy_percent": 7.03125
+    },
+    {
+      "unix": 1792124373.7842207,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124374.29426,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124374.8040967,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124375.3159487,
+      "system_cpu_busy_percent": 9.9609375
+    },
+    {
+      "unix": 1792124375.8292649,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124376.3435571,
+      "system_cpu_busy_percent": 10.984848484848486
+    },
+    {
+      "unix": 1792124376.8572288,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124377.3685846,
+      "system_cpu_busy_percent": 6.439393939393945
+    },
+    {
+      "unix": 1792124377.879628,
+      "system_cpu_busy_percent": 6.8359375
+    },
+    {
+      "unix": 1792124378.3905385,
+      "system_cpu_busy_percent": 10.037878787878785
+    }
+  ],
+  "cannon-3-control": [
+    {
+      "unix": 1792124379.2278752
+    },
+    {
+      "unix": 1792124379.7304423,
+      "system_cpu_busy_percent": 11.328125
+    },
+    {
+      "unix": 1792124380.2431972,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124380.753446,
+      "system_cpu_busy_percent": 10.15625
+    },
+    {
+      "unix": 1792124381.2632852,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124381.7741146,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124382.2842467,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124382.7944334,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124383.3042393,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124383.8154056,
+      "system_cpu_busy_percent": 11.1328125
+    },
+    {
+      "unix": 1792124384.3269324,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124384.836977,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124385.3485563,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124385.8597734,
+      "system_cpu_busy_percent": 14.015151515151514
+    },
+    {
+      "unix": 1792124386.3704858,
+      "system_cpu_busy_percent": 13.446969696969703
+    },
+    {
+      "unix": 1792124386.8811855,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124387.3929448,
+      "system_cpu_busy_percent": 11.328125
+    },
+    {
+      "unix": 1792124387.907082,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124388.4205568,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124388.932838,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124389.4476428,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124389.958761,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124390.470471,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124390.9776175,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124391.4908724,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124392.002841,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124392.5116415,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124393.0240219,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124393.534309,
+      "system_cpu_busy_percent": 6.8359375
+    },
+    {
+      "unix": 1792124394.0451226,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124394.5545273,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124395.063967,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124395.5781984,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124396.0875666,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124396.6000447,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124397.1144347,
+      "system_cpu_busy_percent": 12.3046875
+    },
+    {
+      "unix": 1792124397.6278653,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124398.1391559,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124398.6514482,
+      "system_cpu_busy_percent": 10.416666666666663
+    },
+    {
+      "unix": 1792124399.1604807,
+      "system_cpu_busy_percent": 14.453125
+    },
+    {
+      "unix": 1792124399.671419,
+      "system_cpu_busy_percent": 18.75
+    }
+  ],
+  "missile-1-control": [
+    {
+      "unix": 1792124400.542616
+    },
+    {
+      "unix": 1792124401.0508282,
+      "system_cpu_busy_percent": 11.111111111111116
+    },
+    {
+      "unix": 1792124401.5639045,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124402.0776722,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124402.5870266,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124403.095665,
+      "system_cpu_busy_percent": 18.359375
+    },
+    {
+      "unix": 1792124403.6084023,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124404.1176004,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124404.6283894,
+      "system_cpu_busy_percent": 10.546875
+    },
+    {
+      "unix": 1792124405.1383955,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124405.6488063,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124406.1580498,
+      "system_cpu_busy_percent": 17.3828125
+    },
+    {
+      "unix": 1792124406.6714082,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124407.1826696,
+      "system_cpu_busy_percent": 14.962121212121215
+    },
+    {
+      "unix": 1792124407.6927757,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124408.2057185,
+      "system_cpu_busy_percent": 10.606060606060607
+    },
+    {
+      "unix": 1792124408.7166946,
+      "system_cpu_busy_percent": 12.121212121212121
+    },
+    {
+      "unix": 1792124409.2288363,
+      "system_cpu_busy_percent": 10.416666666666663
+    },
+    {
+      "unix": 1792124409.7429957,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124410.2522643,
+      "system_cpu_busy_percent": 8.203125
+    },
+    {
+      "unix": 1792124410.7643788,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124411.274603,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124411.7854776,
+      "system_cpu_busy_percent": 7.2265625
+    },
+    {
+      "unix": 1792124412.298721,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124412.81011,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124413.319263,
+      "system_cpu_busy_percent": 10.22727272727273
+    },
+    {
+      "unix": 1792124413.832181,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124414.341776,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124414.8540146,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124415.3610423,
+      "system_cpu_busy_percent": 8.3984375
+    },
+    {
+      "unix": 1792124415.8730078,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124416.3732383,
+      "system_cpu_busy_percent": 7.421875
+    },
+    {
+      "unix": 1792124416.8839202,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124417.3956373,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124417.9077604,
+      "system_cpu_busy_percent": 11.553030303030297
+    },
+    {
+      "unix": 1792124418.4188476,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124418.930489,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124419.4429266,
+      "system_cpu_busy_percent": 6.8359375
+    },
+    {
+      "unix": 1792124419.9559073,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124420.4680755,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124420.9787066,
+      "system_cpu_busy_percent": 9.280303030303028
+    }
+  ],
+  "missile-2-candidate": [
+    {
+      "unix": 1792124421.9444683
+    },
+    {
+      "unix": 1792124422.4487374,
+      "system_cpu_busy_percent": 8.720930232558144
+    },
+    {
+      "unix": 1792124422.9607952,
+      "system_cpu_busy_percent": 6.25
+    },
+    {
+      "unix": 1792124423.4731398,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124423.9840894,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124424.492248,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124424.999135,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124425.50989,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124426.0174344,
+      "system_cpu_busy_percent": 15.625
+    },
+    {
+      "unix": 1792124426.52923,
+      "system_cpu_busy_percent": 13.257575757575758
+    },
+    {
+      "unix": 1792124427.0404577,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124427.5542533,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124428.066019,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124428.576393,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124429.0866005,
+      "system_cpu_busy_percent": 15.909090909090907
+    },
+    {
+      "unix": 1792124429.5950277,
+      "system_cpu_busy_percent": 12.890625
+    },
+    {
+      "unix": 1792124430.107082,
+      "system_cpu_busy_percent": 11.553030303030297
+    },
+    {
+      "unix": 1792124430.618388,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124431.1306617,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124431.6433418,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124432.1556234,
+      "system_cpu_busy_percent": 26.136363636363637
+    },
+    {
+      "unix": 1792124432.6631234,
+      "system_cpu_busy_percent": 23.484848484848484
+    },
+    {
+      "unix": 1792124433.1721368,
+      "system_cpu_busy_percent": 28.515625
+    },
+    {
+      "unix": 1792124433.6856117,
+      "system_cpu_busy_percent": 24.431818181818176
+    },
+    {
+      "unix": 1792124434.1935446,
+      "system_cpu_busy_percent": 26.515151515151516
+    },
+    {
+      "unix": 1792124434.7015905,
+      "system_cpu_busy_percent": 27.1484375
+    },
+    {
+      "unix": 1792124435.2106495,
+      "system_cpu_busy_percent": 24.810606060606055
+    },
+    {
+      "unix": 1792124435.720678,
+      "system_cpu_busy_percent": 27.1484375
+    },
+    {
+      "unix": 1792124436.231627,
+      "system_cpu_busy_percent": 27.27272727272727
+    },
+    {
+      "unix": 1792124436.7385137,
+      "system_cpu_busy_percent": 25.78125
+    },
+    {
+      "unix": 1792124437.248099,
+      "system_cpu_busy_percent": 27.083333333333336
+    },
+    {
+      "unix": 1792124437.7543123,
+      "system_cpu_busy_percent": 26.171875
+    },
+    {
+      "unix": 1792124438.2625904,
+      "system_cpu_busy_percent": 27.65151515151515
+    },
+    {
+      "unix": 1792124438.7707071,
+      "system_cpu_busy_percent": 25.78125
+    },
+    {
+      "unix": 1792124439.284833,
+      "system_cpu_busy_percent": 30.303030303030297
+    },
+    {
+      "unix": 1792124439.7967186,
+      "system_cpu_busy_percent": 26.70454545454546
+    },
+    {
+      "unix": 1792124440.3105664,
+      "system_cpu_busy_percent": 21.40151515151515
+    },
+    {
+      "unix": 1792124440.8137507,
+      "system_cpu_busy_percent": 32.2265625
+    },
+    {
+      "unix": 1792124441.3247242,
+      "system_cpu_busy_percent": 22.916666666666664
+    },
+    {
+      "unix": 1792124441.8361354,
+      "system_cpu_busy_percent": 23.29545454545454
+    },
+    {
+      "unix": 1792124442.3460016,
+      "system_cpu_busy_percent": 24.4140625
+    },
+    {
+      "unix": 1792124442.855415,
+      "system_cpu_busy_percent": 17.04545454545454
+    }
+  ],
+  "missile-3-control": [
+    {
+      "unix": 1792124443.5411415
+    },
+    {
+      "unix": 1792124444.047566,
+      "system_cpu_busy_percent": 16.926070038910503
+    },
+    {
+      "unix": 1792124444.5607982,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124445.0694394,
+      "system_cpu_busy_percent": 17.04545454545454
+    },
+    {
+      "unix": 1792124445.579219,
+      "system_cpu_busy_percent": 15.8203125
+    },
+    {
+      "unix": 1792124446.0870957,
+      "system_cpu_busy_percent": 21.02272727272727
+    },
+    {
+      "unix": 1792124446.5942905,
+      "system_cpu_busy_percent": 22.8515625
+    },
+    {
+      "unix": 1792124447.101156,
+      "system_cpu_busy_percent": 20.45454545454546
+    },
+    {
+      "unix": 1792124447.6100712,
+      "system_cpu_busy_percent": 18.9453125
+    },
+    {
+      "unix": 1792124448.1203113,
+      "system_cpu_busy_percent": 12.689393939393945
+    },
+    {
+      "unix": 1792124448.6277585,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124449.1364694,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124449.6462853,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124450.1544447,
+      "system_cpu_busy_percent": 12.3046875
+    },
+    {
+      "unix": 1792124450.665195,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124451.177041,
+      "system_cpu_busy_percent": 7.03125
+    },
+    {
+      "unix": 1792124451.6876202,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124452.2022436,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124452.7125812,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124453.2240973,
+      "system_cpu_busy_percent": 11.5234375
+    },
+    {
+      "unix": 1792124453.7344975,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124454.2496228,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124454.7581253,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124455.2689002,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124455.7798102,
+      "system_cpu_busy_percent": 19.12878787878788
+    },
+    {
+      "unix": 1792124456.2910976,
+      "system_cpu_busy_percent": 21.590909090909093
+    },
+    {
+      "unix": 1792124456.8033776,
+      "system_cpu_busy_percent": 14.583333333333337
+    },
+    {
+      "unix": 1792124457.3152356,
+      "system_cpu_busy_percent": 14.2578125
+    },
+    {
+      "unix": 1792124457.826247,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124458.3373747,
+      "system_cpu_busy_percent": 16.666666666666664
+    },
+    {
+      "unix": 1792124458.8468618,
+      "system_cpu_busy_percent": 26.3671875
+    },
+    {
+      "unix": 1792124459.3533611,
+      "system_cpu_busy_percent": 23.10606060606061
+    },
+    {
+      "unix": 1792124459.8674593,
+      "system_cpu_busy_percent": 15.719696969696972
+    },
+    {
+      "unix": 1792124460.3795505,
+      "system_cpu_busy_percent": 12.6953125
+    },
+    {
+      "unix": 1792124460.892834,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124461.4035177,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124461.9153223,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124462.4275837,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124462.9386094,
+      "system_cpu_busy_percent": 12.109375
+    },
+    {
+      "unix": 1792124463.4479501,
+      "system_cpu_busy_percent": 16.287878787878785
+    },
+    {
+      "unix": 1792124463.9608169,
+      "system_cpu_busy_percent": 18.37121212121212
+    }
+  ],
+  "longLaser-1-control": [
+    {
+      "unix": 1792124465.1942365
+    },
+    {
+      "unix": 1792124465.7009423,
+      "system_cpu_busy_percent": 7.37864077669903
+    },
+    {
+      "unix": 1792124466.210463,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124466.721373,
+      "system_cpu_busy_percent": 19.3359375
+    },
+    {
+      "unix": 1792124467.232922,
+      "system_cpu_busy_percent": 15.530303030303028
+    },
+    {
+      "unix": 1792124467.7414856,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124468.2540338,
+      "system_cpu_busy_percent": 15.8203125
+    },
+    {
+      "unix": 1792124468.761085,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124469.2688692,
+      "system_cpu_busy_percent": 16.2109375
+    },
+    {
+      "unix": 1792124469.7767227,
+      "system_cpu_busy_percent": 14.393939393939393
+    },
+    {
+      "unix": 1792124470.2854285,
+      "system_cpu_busy_percent": 15.234375
+    },
+    {
+      "unix": 1792124470.793039,
+      "system_cpu_busy_percent": 15.719696969696972
+    },
+    {
+      "unix": 1792124471.304315,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124471.8152335,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124472.3269541,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124472.8390498,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124473.3495076,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124473.8589833,
+      "system_cpu_busy_percent": 8.203125
+    },
+    {
+      "unix": 1792124474.3673115,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124474.8769734,
+      "system_cpu_busy_percent": 12.109375
+    },
+    {
+      "unix": 1792124475.3902528,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124475.9034216,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124476.414881,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124476.9260592,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124477.4367418,
+      "system_cpu_busy_percent": 15.719696969696972
+    },
+    {
+      "unix": 1792124477.9505715,
+      "system_cpu_busy_percent": 19.696969696969703
+    },
+    {
+      "unix": 1792124478.4612646,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124478.9732566,
+      "system_cpu_busy_percent": 8.203125
+    },
+    {
+      "unix": 1792124479.487808,
+      "system_cpu_busy_percent": 13.82575757575758
+    },
+    {
+      "unix": 1792124479.9993718,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124480.5115697,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124481.024939,
+      "system_cpu_busy_percent": 6.439393939393945
+    },
+    {
+      "unix": 1792124481.5382755,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124482.051194,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124482.5514774,
+      "system_cpu_busy_percent": 11.328125
+    },
+    {
+      "unix": 1792124483.0638204,
+      "system_cpu_busy_percent": 14.393939393939393
+    },
+    {
+      "unix": 1792124483.5725248,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124484.0842683,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124484.5968227,
+      "system_cpu_busy_percent": 9.765625
+    },
+    {
+      "unix": 1792124485.110635,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124485.623947,
+      "system_cpu_busy_percent": 7.007575757575757
+    }
+  ],
+  "longLaser-2-candidate": [
+    {
+      "unix": 1792124486.8573046
+    },
+    {
+      "unix": 1792124487.3607798,
+      "system_cpu_busy_percent": 10.9375
+    },
+    {
+      "unix": 1792124487.8713624,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124488.3839743,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124488.893049,
+      "system_cpu_busy_percent": 14.6484375
+    },
+    {
+      "unix": 1792124489.4021206,
+      "system_cpu_busy_percent": 14.77272727272727
+    },
+    {
+      "unix": 1792124489.913612,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124490.424533,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124490.932929,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124491.4451287,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124491.9595153,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124492.473395,
+      "system_cpu_busy_percent": 11.1328125
+    },
+    {
+      "unix": 1792124492.983696,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124493.4940398,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124494.00411,
+      "system_cpu_busy_percent": 8.984375
+    },
+    {
+      "unix": 1792124494.51493,
+      "system_cpu_busy_percent": 11.742424242424242
+    },
+    {
+      "unix": 1792124495.024146,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124495.5336645,
+      "system_cpu_busy_percent": 10.7421875
+    },
+    {
+      "unix": 1792124496.047213,
+      "system_cpu_busy_percent": 13.446969696969703
+    },
+    {
+      "unix": 1792124496.5594478,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124497.0710928,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124497.5845091,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124498.0967073,
+      "system_cpu_busy_percent": 10.3515625
+    },
+    {
+      "unix": 1792124498.6070457,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124499.1197042,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124499.6332896,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124500.1452787,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124500.6575472,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124501.1667955,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124501.6783602,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124502.1921237,
+      "system_cpu_busy_percent": 9.9609375
+    },
+    {
+      "unix": 1792124502.7049372,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124503.218407,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124503.7330208,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124504.2414434,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124504.7558503,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124505.267929,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124505.780513,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124506.2941308,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124506.809675,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124507.3184996,
+      "system_cpu_busy_percent": 6.818181818181824
+    }
+  ],
+  "longLaser-3-control": [
+    {
+      "unix": 1792124508.5404236
+    },
+    {
+      "unix": 1792124509.0431318,
+      "system_cpu_busy_percent": 8.155339805825246
+    },
+    {
+      "unix": 1792124509.5535204,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124510.0640194,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124510.57568,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124511.0850127,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124511.5953548,
+      "system_cpu_busy_percent": 8.0078125
+    },
+    {
+      "unix": 1792124512.1077971,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124512.6170452,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124513.1275988,
+      "system_cpu_busy_percent": 8.203125
+    },
+    {
+      "unix": 1792124513.637205,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124514.1486254,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124514.6569479,
+      "system_cpu_busy_percent": 7.6171875
+    },
+    {
+      "unix": 1792124515.1664202,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124515.6805203,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124516.1947043,
+      "system_cpu_busy_percent": 12.689393939393945
+    },
+    {
+      "unix": 1792124516.705224,
+      "system_cpu_busy_percent": 16.2109375
+    },
+    {
+      "unix": 1792124517.216437,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124517.7288103,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124518.2412853,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124518.7537158,
+      "system_cpu_busy_percent": 11.5234375
+    },
+    {
+      "unix": 1792124519.2637115,
+      "system_cpu_busy_percent": 17.42424242424242
+    },
+    {
+      "unix": 1792124519.7744412,
+      "system_cpu_busy_percent": 12.121212121212121
+    },
+    {
+      "unix": 1792124520.2861466,
+      "system_cpu_busy_percent": 9.9609375
+    },
+    {
+      "unix": 1792124520.79775,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124521.3090813,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124521.8214629,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124522.331345,
+      "system_cpu_busy_percent": 6.8359375
+    },
+    {
+      "unix": 1792124522.8417206,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124523.355765,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124523.8664584,
+      "system_cpu_busy_percent": 16.666666666666664
+    },
+    {
+      "unix": 1792124524.3749425,
+      "system_cpu_busy_percent": 18.1640625
+    },
+    {
+      "unix": 1792124524.8878999,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124525.4007707,
+      "system_cpu_busy_percent": 22.159090909090907
+    },
+    {
+      "unix": 1792124525.9143984,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124526.427501,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124526.942372,
+      "system_cpu_busy_percent": 9.375
+    },
+    {
+      "unix": 1792124527.4543557,
+      "system_cpu_busy_percent": 10.416666666666663
+    },
+    {
+      "unix": 1792124527.9561844,
+      "system_cpu_busy_percent": 7.03125
+    },
+    {
+      "unix": 1792124528.469179,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124528.98179,
+      "system_cpu_busy_percent": 7.196969696969702
+    }
+  ],
+  "missile-4-control": [
+    {
+      "unix": 1792124707.960331
+    },
+    {
+      "unix": 1792124708.464236,
+      "system_cpu_busy_percent": 15.399610136452246
+    },
+    {
+      "unix": 1792124708.9778516,
+      "system_cpu_busy_percent": 13.82575757575758
+    },
+    {
+      "unix": 1792124709.4896073,
+      "system_cpu_busy_percent": 12.878787878787879
+    },
+    {
+      "unix": 1792124709.99994,
+      "system_cpu_busy_percent": 16.40625
+    },
+    {
+      "unix": 1792124710.504214,
+      "system_cpu_busy_percent": 7.6171875
+    },
+    {
+      "unix": 1792124711.0124292,
+      "system_cpu_busy_percent": 12.121212121212121
+    },
+    {
+      "unix": 1792124711.5196424,
+      "system_cpu_busy_percent": 12.109375
+    },
+    {
+      "unix": 1792124712.0296218,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124712.5385954,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124713.0507123,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124713.5613704,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124714.073622,
+      "system_cpu_busy_percent": 12.689393939393945
+    },
+    {
+      "unix": 1792124714.5866246,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124715.0986779,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124715.6106994,
+      "system_cpu_busy_percent": 8.203125
+    },
+    {
+      "unix": 1792124716.1257586,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124716.6359026,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124717.147758,
+      "system_cpu_busy_percent": 13.068181818181824
+    },
+    {
+      "unix": 1792124717.6597002,
+      "system_cpu_busy_percent": 12.890625
+    },
+    {
+      "unix": 1792124718.168295,
+      "system_cpu_busy_percent": 16.09848484848485
+    },
+    {
+      "unix": 1792124718.680518,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124719.194762,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124719.7074726,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124720.2183645,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124720.727972,
+      "system_cpu_busy_percent": 7.954545454545459
+    },
+    {
+      "unix": 1792124721.2401514,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124721.752161,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124722.2641687,
+      "system_cpu_busy_percent": 11.742424242424242
+    },
+    {
+      "unix": 1792124722.7767954,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124723.2865796,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124723.7988005,
+      "system_cpu_busy_percent": 8.984375
+    },
+    {
+      "unix": 1792124724.308523,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124724.823634,
+      "system_cpu_busy_percent": 6.818181818181824
+    },
+    {
+      "unix": 1792124725.3338535,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124725.8441598,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124726.3566165,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124726.8688152,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124727.3798656,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124727.8925471,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124728.4024453,
+      "system_cpu_busy_percent": 9.090909090909093
+    }
+  ],
+  "missile-5-candidate": [
+    {
+      "unix": 1792124729.8495483
+    },
+    {
+      "unix": 1792124730.3566487,
+      "system_cpu_busy_percent": 7.78210116731517
+    },
+    {
+      "unix": 1792124730.8671787,
+      "system_cpu_busy_percent": 9.280303030303028
+    },
+    {
+      "unix": 1792124731.3786075,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124731.889796,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124732.3970056,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124732.907288,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124733.4184933,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124733.9282985,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124734.4376318,
+      "system_cpu_busy_percent": 8.59375
+    },
+    {
+      "unix": 1792124734.9483004,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124735.4618013,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124735.9734864,
+      "system_cpu_busy_percent": 11.553030303030297
+    },
+    {
+      "unix": 1792124736.4871795,
+      "system_cpu_busy_percent": 10.15625
+    },
+    {
+      "unix": 1792124737.0004838,
+      "system_cpu_busy_percent": 11.363636363636365
+    },
+    {
+      "unix": 1792124737.5137663,
+      "system_cpu_busy_percent": 14.015151515151514
+    },
+    {
+      "unix": 1792124738.0268157,
+      "system_cpu_busy_percent": 13.446969696969703
+    },
+    {
+      "unix": 1792124738.5339184,
+      "system_cpu_busy_percent": 13.671875
+    },
+    {
+      "unix": 1792124739.048796,
+      "system_cpu_busy_percent": 14.015151515151514
+    },
+    {
+      "unix": 1792124739.559495,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124740.0709655,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124740.5836265,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124741.0961554,
+      "system_cpu_busy_percent": 10.3515625
+    },
+    {
+      "unix": 1792124741.607905,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124742.1191192,
+      "system_cpu_busy_percent": 8.901515151515149
+    },
+    {
+      "unix": 1792124742.6310208,
+      "system_cpu_busy_percent": 6.439393939393945
+    },
+    {
+      "unix": 1792124743.1439962,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124743.6565924,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124744.1704059,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124744.6825247,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124745.1950858,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124745.709265,
+      "system_cpu_busy_percent": 6.628787878787879
+    },
+    {
+      "unix": 1792124746.2239122,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124746.735796,
+      "system_cpu_busy_percent": 9.5703125
+    },
+    {
+      "unix": 1792124747.2477314,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124747.7604861,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124748.2709744,
+      "system_cpu_busy_percent": 8.52272727272727
+    },
+    {
+      "unix": 1792124748.784226,
+      "system_cpu_busy_percent": 9.1796875
+    },
+    {
+      "unix": 1792124749.2943878,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124749.804797,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124750.3167048,
+      "system_cpu_busy_percent": 6.628787878787879
+    }
+  ],
+  "missile-6-control": [
+    {
+      "unix": 1792124751.8803587
+    },
+    {
+      "unix": 1792124752.380877,
+      "system_cpu_busy_percent": 9.055876685934495
+    },
+    {
+      "unix": 1792124752.8936894,
+      "system_cpu_busy_percent": 11.328125
+    },
+    {
+      "unix": 1792124753.4060097,
+      "system_cpu_busy_percent": 9.090909090909093
+    },
+    {
+      "unix": 1792124753.9159162,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124754.422692,
+      "system_cpu_busy_percent": 10.15625
+    },
+    {
+      "unix": 1792124754.9299242,
+      "system_cpu_busy_percent": 7.765151515151514
+    },
+    {
+      "unix": 1792124755.439264,
+      "system_cpu_busy_percent": 8.7890625
+    },
+    {
+      "unix": 1792124755.9488986,
+      "system_cpu_busy_percent": 7.57575757575758
+    },
+    {
+      "unix": 1792124756.4581046,
+      "system_cpu_busy_percent": 9.469696969696972
+    },
+    {
+      "unix": 1792124756.971324,
+      "system_cpu_busy_percent": 10.546875
+    },
+    {
+      "unix": 1792124757.4831274,
+      "system_cpu_busy_percent": 15.340909090909093
+    },
+    {
+      "unix": 1792124757.9927082,
+      "system_cpu_busy_percent": 13.636363636363635
+    },
+    {
+      "unix": 1792124758.5065649,
+      "system_cpu_busy_percent": 14.393939393939393
+    },
+    {
+      "unix": 1792124759.0207393,
+      "system_cpu_busy_percent": 15.719696969696972
+    },
+    {
+      "unix": 1792124759.532025,
+      "system_cpu_busy_percent": 19.53125
+    },
+    {
+      "unix": 1792124760.0440762,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124760.5539093,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124761.0662217,
+      "system_cpu_busy_percent": 7.2265625
+    },
+    {
+      "unix": 1792124761.5764315,
+      "system_cpu_busy_percent": 10.795454545454541
+    },
+    {
+      "unix": 1792124762.0906367,
+      "system_cpu_busy_percent": 8.143939393939393
+    },
+    {
+      "unix": 1792124762.60085,
+      "system_cpu_busy_percent": 7.779886148007586
+    },
+    {
+      "unix": 1792124763.1132135,
+      "system_cpu_busy_percent": 10.331384015594548
+    },
+    {
+      "unix": 1792124763.6249986,
+      "system_cpu_busy_percent": 9.659090909090907
+    },
+    {
+      "unix": 1792124764.1374538,
+      "system_cpu_busy_percent": 8.712121212121215
+    },
+    {
+      "unix": 1792124764.6473231,
+      "system_cpu_busy_percent": 13.82575757575758
+    },
+    {
+      "unix": 1792124765.158023,
+      "system_cpu_busy_percent": 15.625
+    },
+    {
+      "unix": 1792124765.6709743,
+      "system_cpu_busy_percent": 12.310606060606055
+    },
+    {
+      "unix": 1792124766.1843224,
+      "system_cpu_busy_percent": 7.007575757575757
+    },
+    {
+      "unix": 1792124766.6955125,
+      "system_cpu_busy_percent": 7.196969696969702
+    },
+    {
+      "unix": 1792124767.2092204,
+      "system_cpu_busy_percent": 8.333333333333337
+    },
+    {
+      "unix": 1792124767.7223194,
+      "system_cpu_busy_percent": 10.546875
+    },
+    {
+      "unix": 1792124768.2366898,
+      "system_cpu_busy_percent": 10.22727272727273
+    },
+    {
+      "unix": 1792124768.7510023,
+      "system_cpu_busy_percent": 10.606060606060607
+    },
+    {
+      "unix": 1792124769.2620804,
+      "system_cpu_busy_percent": 7.386363636363635
+    },
+    {
+      "unix": 1792124769.7738483,
+      "system_cpu_busy_percent": 9.848484848484851
+    },
+    {
+      "unix": 1792124770.2836866,
+      "system_cpu_busy_percent": 14.453125
+    },
+    {
+      "unix": 1792124770.7974095,
+      "system_cpu_busy_percent": 11.17424242424242
+    },
+    {
+      "unix": 1792124771.3077435,
+      "system_cpu_busy_percent": 12.5
+    },
+    {
+      "unix": 1792124771.8190641,
+      "system_cpu_busy_percent": 10.037878787878785
+    },
+    {
+      "unix": 1792124772.332343,
+      "system_cpu_busy_percent": 8.901515151515149
+    }
+  ]
+}

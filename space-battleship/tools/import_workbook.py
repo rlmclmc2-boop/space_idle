@@ -335,18 +335,14 @@ def validate_projection(data, *, check_level_ratios=True):
     opening_ids = {str(enemy_id) for level in levels[:3] for group in level['groups']
                    for enemy_id in groups[str(group['id'])]['slots'] if enemy_id is not None}
     mechanic_fields = {'reactiveReduction', 'shieldRecovery'}
-    visuals = {'scout':'enemy_opening_triangle_physical','sentry':'enemy_opening_triangle_physical',
-               'interceptor':'enemy_opening_triangle_energy','swarm':'enemy_opening_triangle_energy',
-               'anchor':'enemy_opening_slab_energy','reactive':'enemy_opening_slab_energy',
-               'shielded':'enemy_opening_u_energy','command':'enemy_opening_u_energy'}
     for enemy_id, enemy in enemies.items():
         if enemy_id not in opening_ids: continue
         trait, name, visual = (enemy.get(key) for key in ('intelTrait','intelName','intelVisualRef'))
         mechanics = enemy.get('intelMechanics')
         if any(not isinstance(value,str) or not value.strip() for value in (trait,name,visual)) or not isinstance(mechanics,list):
             raise ValueError(f'mon {enemy_id}: opening intelligence requires name, visual, trait and mechanic list')
-        if visual != visuals.get(enemy.get('archetype_id')):
-            raise ValueError(f'mon {enemy_id}: intelVisualRef must use the combat hull')
+        if visual != enemy.get('archetype_id'):
+            raise ValueError(f'mon {enemy_id}: intelVisualRef must reference the combat archetype_id')
         if len(set(mechanics)) != len(mechanics) or any(key not in mechanic_fields for key in mechanics):
             raise ValueError(f'mon {enemy_id}: unknown or duplicate intelMechanics')
         active = set()

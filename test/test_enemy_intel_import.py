@@ -1,5 +1,6 @@
 import copy
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -22,4 +23,23 @@ for enemy_id, replacement in (
     except ValueError:
         continue
     raise AssertionError(f'mon {enemy_id}: invalid mechanism list accepted: {replacement}')
-print('Enemy intel import: full data valid; 4 mismatched mechanisms rejected')
+altered = copy.deepcopy(data)
+altered['enemies']['271024']['intelVisualRef'] = 'shielded'
+try:
+    validate_projection(altered)
+except ValueError:
+    pass
+else:
+    raise AssertionError('Visual reference not linked to combat archetype')
+legacy = (root / 'space-battleship/scripts/game.gd').read_text(encoding='utf-8')
+native = (root / 'space-battleship/addons/native_battle/src/combat_execution_kernel.h').read_text(encoding='utf-8')
+for name, native_pattern in (
+    ('REACTIVE_STACK_LIMIT', r'std::min\((\d+), a->reactive_stacks \+ 1\)'),
+    ('REACTIVE_STACK_REDUCTION', r'reactive_multiplier = 1\.0 - ([\d.]+) \* reactive_stacks'),
+    ('REACTIVE_RESET_SECONDS', r'at <= a->reactive_volley_at \+ ([\d.]+)'),
+    ('REACTIVE_VOLLEY_GAP', r'at > a->reactive_volley_at \+ ([\d.]+)'),
+):
+    authored = re.search(rf'const {name} := ([\d.]+)', legacy)
+    compiled = re.search(native_pattern, native)
+    assert authored and compiled and float(authored.group(1)) == float(compiled.group(1)), name
+print('Enemy intel import: full data valid; 4 mechanism mismatches and visual mismatch rejected; native reactive constants match')

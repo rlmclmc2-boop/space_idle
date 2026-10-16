@@ -29,7 +29,7 @@ func run() -> void:
 	var first: Dictionary=page.entries[0]
 	var row: Dictionary=scene.db.enemies[first.id]
 	check(page.heading.text==str(row.intelName) and not page.heading.text.contains("开场资源变体"),"Displayed name comes from authored player field")
-	check(page.detail.get_children().any(func(node):return node is TextureRect and node.texture==scene.ship_hull_texture(str(row.intelVisualRef))),"Image uses authored combat visual key")
+	check(str(row.intelVisualRef)==str(row.archetype_id) and page.detail.get_children().any(func(node):return node is TextureRect and node.texture==scene.ship_hull_texture(scene.enemy_visual_identity.resolve(row,scene.visual_config))),"Image follows authored combat archetype through the battle resolver")
 	page.list.get_child(1).pressed.emit()
 	check(page.selected==1 and page.detail_builds==2,"Different enemy selection builds one detail")
 	page.list.get_child(1).pressed.emit()

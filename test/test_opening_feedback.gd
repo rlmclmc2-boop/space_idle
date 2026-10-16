@@ -61,9 +61,26 @@ func run() -> void:
 	var preview: String = scene.pickup_comparison(fragment)
 	var preview_builds: int = scene.pickup_preview_builds
 	check(scene.pickup_comparison(fragment)==preview and scene.pickup_preview_builds==preview_builds,"Repeated fragment hover reuses both previews")
+	var neighbour := fragment.duplicate()
+	neighbour.uid=8803
+	scene.pickup_comparison(neighbour)
+	scene.pickup_comparison(fragment)
+	check(scene.pickup_preview_builds==preview_builds+1 and scene.pickup_preview_cache.size()==2,"Nearby drops retain independent bounded previews")
 	scene.game.invalidate_stat_cache()
 	scene.pickup_comparison(fragment)
-	check(scene.pickup_preview_builds==preview_builds+1,"Configuration revision invalidates fragment preview")
+	check(scene.pickup_preview_builds==preview_builds+2,"Configuration revision invalidates fragment preview")
+	scene.game.drops.append(fragment)
+	scene.game.collect(fragment,true)
+	check(not scene.pickup_preview_cache.has(8802),"Collected drop removes its cached preview")
+	for index in 65:
+		neighbour.uid=9000+index
+		scene.pickup_comparison(neighbour)
+	check(scene.pickup_preview_cache.size()<=64 and scene.pickup_preview_order.size()<=64,"Preview cache stays bounded across distinct drops")
+	var large_drop := {"uid":9999,"id":"1","amount":GrowthNumber.make(1.0,80.0)}
+	scene.pickup_comparison(large_drop)
+	preview_builds=scene.pickup_preview_builds
+	scene.pickup_comparison(large_drop)
+	check(scene.pickup_preview_builds==preview_builds,"Large-number drop reuses preview without type errors")
 	scene.game.resource_samples.assign([{"time":100.0,"id":"jewel","amount":2.5}])
 	scene.resource_rate_mode=true
 	check(scene.game.resource_minute_total("jewel",100.0)==2.5 and scene.resource_display("jewel",100.0)==UIText.t("inventory.rate",{"rate":scene.NUMBER_FORMAT.rate(2.5/60.0)}),"Fragment top rate follows actual minute samples")
