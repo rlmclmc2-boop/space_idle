@@ -64,6 +64,7 @@ var prototype_enabled := true
 var close_up := false
 var demo_time := 0.0
 var pulse_layer: Node2D
+var damage_text_layer: Node2D
 var reference_height := 0.0
 var reference_offset := Vector2.ZERO
 var requested_exit := false
@@ -141,6 +142,14 @@ func _ready() -> void:
 	pulse_layer.z_index = 0
 	battle_clip.add_child(pulse_layer)
 	pulse_layer.draw.connect(_draw_muzzle_cues)
+	# Enemy damage numbers were drawn into battle_layer before this sibling's
+	# wide rail discharge. Keep the text in the clipped battlefield, but submit
+	# it after feedback and before the root HUD/tutorial canvas.
+	damage_text_layer = Node2D.new()
+	damage_text_layer.name = "BattleDamageText"
+	battle_clip.add_child(damage_text_layer)
+	damage_floats_overlay_deferred = true
+	damage_text_layer.draw.connect(func():draw_surface=damage_text_layer;draw_damage_floats())
 	# Keep original draw order: persistent GPU instances submit at the contact call site.
 	if game.combat_presentation!=null:
 		var contact_topology=preload("res://scripts/gpu_contact_mesh.gd")
@@ -281,6 +290,7 @@ func hold_departure_scene() -> void:
 	if is_instance_valid(ship_view):ship_view.set_rendering(false)
 	if is_instance_valid(retained_contacts):retained_contacts.hide()
 	if is_instance_valid(pulse_layer):pulse_layer.hide()
+	if is_instance_valid(damage_text_layer):damage_text_layer.hide()
 	if is_instance_valid(drop_layer):drop_layer.hide()
 
 func _process(delta: float) -> void:
@@ -317,6 +327,9 @@ func _process_battlefield(delta: float) -> void:
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	super._process(delta)
+	if is_instance_valid(damage_text_layer):
+		damage_text_layer.visible=battle_layer.visible and show_damage_numbers and not accelerated_visual_mode
+		damage_text_layer.queue_redraw()
 	if battle_transition_blocked():
 		hold_departure_scene();return
 	destruction_events = destruction_events.filter(func(e):return fx_time-float(e.born)<0.65)

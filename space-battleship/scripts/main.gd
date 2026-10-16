@@ -212,6 +212,7 @@ var background_layer: Node2D
 var chrome_layer: Node2D
 var stars_layer: Node2D
 var battle_layer: Node2D
+var damage_floats_overlay_deferred := false
 var drop_layer: Node2D
 var resource_layer: Node2D
 var overlay_layer: Node2D
@@ -3841,6 +3842,13 @@ func draw_foreground_beams(visible_projectiles:Array,offset:Vector2)->void:
 
 func draw_foreground_overlay(offset:Vector2)->void:
 	if not accelerated_visual_mode:draw_battle_particles(offset,true)
+	if not damage_floats_overlay_deferred:draw_damage_floats()
+	battle_draw_active=false
+	battle_draw_enemy_positions.clear()
+	enemy_entry_batch_active=false
+	enemy_entry_distance_time=-INF
+
+func draw_damage_floats()->void:
 	for f in floats:
 		if accelerated_visual_mode:continue
 		if not f.get("damage",false) or not show_damage_numbers:continue
@@ -3850,7 +3858,3 @@ func draw_foreground_overlay(offset:Vector2)->void:
 			var panel:=Rect2(point-Vector2(0,float(f.tag_ascent)),Vector2(f.tag_size)).grow(3.0)
 			draw_surface.draw_rect(panel,Color(0.025,0.06,0.085,alpha*0.88))
 		text_at(str(f.text),point,int(f.get("size",20)),Color(f.color,alpha))
-	battle_draw_active=false
-	battle_draw_enemy_positions.clear()
-	enemy_entry_batch_active=false
-	enemy_entry_distance_time=-INF
