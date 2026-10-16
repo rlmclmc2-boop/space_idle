@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path(r'D:\放置')
 BASE = 'e02501b38bff8069f2b15bd8947c54d1dc215a1a'
-DLL_SHA = '2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a'
+DLL_SHA = 'a4b646bc47690c17de732026d3a65f9936ffe4e8f06e0dff77143faea8376e7c'
 DESCRIPTOR = '''[configuration]
 entry_symbol = "space_native_init"
 compatibility_minimum = "4.7"
@@ -49,19 +49,26 @@ def validate(root):
     if engine.with_suffix('.pck').exists():
         raise RuntimeError('引擎旁存在自动加载的 PCK，请先确认其用途：' + str(engine.with_suffix('.pck')))
     dll = project / 'bin' / 'space_native.dll'
-    if not dll.is_file() or digest(dll) != DLL_SHA:
-        raise RuntimeError('原生库与已验收版本不一致：' + str(dll) + '\n需要 SHA256：' + DLL_SHA)
+    if not dll.is_file():
+        raise RuntimeError('缺少原生库：' + str(dll) + '\n请先安装与正式源码匹配的原生库。')
+    actual_dll_sha = digest(dll)
+    if actual_dll_sha != DLL_SHA:
+        raise RuntimeError('原生库与正式源码不匹配：' + str(dll) + '\n实际 SHA256：' + actual_dll_sha + '\n需要 SHA256：' + DLL_SHA)
     descriptor = project / 'space_native.gdextension'
-    if not descriptor.is_file() or descriptor.read_text(encoding='utf-8-sig').replace('\r\n','\n').strip() != DESCRIPTOR.strip():
-        raise RuntimeError('原生库入口缺失或不匹配：' + str(descriptor))
     for other in project.rglob('*.gdextension'):
         if '.godot' in other.parts or other == descriptor:
             continue
         if 'space_native_init' in other.read_text(encoding='utf-8-sig', errors='replace'):
             raise RuntimeError('发现重复原生库入口，请确认后移除：' + str(other))
+    if descriptor.exists() and not descriptor.is_file():
+        raise RuntimeError('原生库入口不是文件：' + str(descriptor))
+    if descriptor.is_file() and descriptor.read_text(encoding='utf-8-sig').replace('\r\n','\n').strip() != DESCRIPTOR.strip():
+        raise RuntimeError('原生库入口不匹配：' + str(descriptor))
     version = run([str(engine), '--version'], project)
     if not version.startswith('4.7.2.stable.'):
         raise RuntimeError('引擎版本不匹配：' + version)
+    if not descriptor.exists():
+        descriptor.write_text(DESCRIPTOR, encoding='utf-8')
     return project, engine, head, version
 
 def main():

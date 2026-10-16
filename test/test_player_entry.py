@@ -28,7 +28,22 @@ class Validation(unittest.TestCase):
   with self.assertRaises(RuntimeError):self.invoke(changed='space-battleship/data/game_data.json')
  def test_wrong_dll(self):
   (self.p/'bin/space_native.dll').write_bytes(b'old')
-  with self.assertRaises(RuntimeError):self.invoke()
+  with self.assertRaisesRegex(RuntimeError,'实际 SHA256'):
+   self.invoke()
+ def test_missing_dll(self):
+  (self.p/'bin/space_native.dll').unlink()
+  with self.assertRaisesRegex(RuntimeError,'缺少原生库'):
+   self.invoke()
+ def test_install_descriptor(self):
+  (self.p/'space_native.gdextension').unlink()
+  self.invoke()
+  self.assertEqual((self.p/'space_native.gdextension').read_text(),m.DESCRIPTOR)
+ def test_duplicate_descriptor(self):
+  (self.p/'space_native.gdextension').unlink()
+  (self.p/'other.gdextension').write_text(m.DESCRIPTOR)
+  with self.assertRaisesRegex(RuntimeError,'重复原生库入口'):
+   self.invoke()
+  self.assertFalse((self.p/'space_native.gdextension').exists())
  def test_external_descriptor(self):
   (self.p/'space_native.gdextension').write_text(m.DESCRIPTOR.replace('res://bin','D:/old'))
   with self.assertRaises(RuntimeError):self.invoke()
