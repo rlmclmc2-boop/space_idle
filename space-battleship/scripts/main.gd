@@ -891,7 +891,8 @@ func enemy_health(value: float) -> String:
 func cost_text(cost: Dictionary) -> String:
 	var result := ""
 	for id in cost:
-		result += UIText.t("main.cost_text.text_01", {"id":"%s" % (number(cost[id])), "id_2":"%s" % (UIText.data_text("resources",str(id)))})
+		var label:=UIText.t("hyperspace.degenerate_matter") if id=="degenerate_matter" else UIText.data_text("resources",str(id))
+		result += UIText.t("main.cost_text.text_01", {"id":"%s" % (number(cost[id])), "id_2":"%s" % label})
 	return result.strip_edges()
 
 func prune_resource_samples(now: float) -> void:
@@ -1150,6 +1151,18 @@ func weapon_key(shot: Dictionary) -> String:
 func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
 	return 1 if weapon_key(shot) in ["cannon","missile"] else 0
+
+# Ten visual palettes at levels 20..200. Recolors existing geometry only.
+const EVOLUTION_COLORS := [Color("53d9ff"),Color("78b7ff"),Color("a9a6ff"),Color("d9a0ff"),Color("ff9eca"),Color("ffad91"),Color("ffd278"),Color("d8ed78"),Color("94e8b4"),Color("f7e6b0")]
+func weapon_evolution_tier(shot:Dictionary)->int:
+	if bool(shot.get("hostile",false)):return 0
+	var index:=int(shot.get("mount",-1))
+	if index<0:index=game.first_weapon_index(weapon_key(shot))
+	var entry:Dictionary=game.slot_entry("weapons",index)
+	return mini(10,int(entry.get("level",1))/20)
+
+func evolution_tint(base:Color,tier:int)->Color:
+	return base if tier<=0 else base.lerp(EVOLUTION_COLORS[clampi(tier-1,0,9)],0.72)
 
 func weapon_strength(shot: Dictionary) -> float:
 	return 1.0 + clampf(GrowthNumber.logarithm(GrowthNumber.maximum(1,shot.damage))/30.0,0,0.5)
@@ -1818,10 +1831,10 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		if physical:weapon_smoke(pos,Color("8992a0"),1,0.14,3.0)
 		return
 	if key=="cannon":
-		weapon_flash(pos,Color("d8f8ff"),5.0*clampf(railgun_fx.muzzle_flash,0.0,1.5),0.035)
+		weapon_flash(pos,evolution_tint(Color("d8f8ff"),weapon_evolution_tier(shot)),5.0*clampf(railgun_fx.muzzle_flash,0.0,1.5),0.035)
 		return
 	var fire_vfx := str(weapon_visual_profile(key).get("fire_vfx","flash"))
-	var color := Color("fff0d5") if tier==2 else weapon_visual_glow(key,shot.hostile)
+	var color := evolution_tint(Color("fff0d5") if tier==2 else weapon_visual_glow(key,shot.hostile),weapon_evolution_tier(shot))
 	var muzzle_radius := 13.0 if tier==2 else 11.0 if fire_vfx=="hatch" else 10.0 if fire_vfx=="flash" else 7.0
 	weapon_flash(pos,color,muzzle_radius,0.07+float(tier)*0.015)
 	if fire_vfx in ["hatch","flash"]:
@@ -1922,12 +1935,12 @@ func weapon_impact(shot: Dictionary, pos: Vector2) -> void:
 		return
 	if key=="cannon":
 		if particles.size()<WEAPON_PARTICLE_LIMIT:
-			particles.append({"pos":pos,"vel":Vector2.ZERO,"color":Color("9eeaff"),"life":0.18,"duration":0.18,"rail_contact":true,"direction":shot.get("direction",Vector2.RIGHT)})
+			particles.append({"pos":pos,"vel":Vector2.ZERO,"color":evolution_tint(Color("9eeaff"),weapon_evolution_tier(shot)),"life":0.18,"duration":0.18,"rail_contact":true,"direction":shot.get("direction",Vector2.RIGHT)})
 		if shot.get("critical",false):beam_ring(pos,Color("9eeaff"),0.09,5.0)
 		railgun_sound("impact")
 		return
 	var tier := weapon_visual_tier(shot)
-	var color := Color("fff0d5") if tier==2 else CYAN if key=="laser" else ORANGE
+	var color := evolution_tint(Color("fff0d5") if tier==2 else CYAN if key=="laser" else ORANGE,weapon_evolution_tier(shot))
 	var radius := 20.0 if tier==2 else 18.0 if key=="missile" else 16.0 if key=="cannon" else 11.0
 	weapon_flash(pos,color,radius*IMPACT_SCALE,float(battle_visual.hit_flash_duration))
 	if shot.get("critical",false):
@@ -1950,14 +1963,15 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 	if bool(shot.hostile) and int(shot.get("type",0)) in [1,2] and key in ["laser","cannon"]:
 		enemy_recognition.draw_projectile(draw_surface,pos,angle,int(shot.type),core)
 		return angle
+	var evo_tier:=weapon_evolution_tier(shot)
 	if key=="cannon":
 		if core:
 			var distance := pos.distance_to(battle_point(visual.get("origin",game.projectile_position(shot)))+offset)
 			var render_speed := game.projectile_speed(shot)*Vector2(visual.get("fixed_step",Vector2.ONE.normalized())).length()*maxf(1.0,game.speed)
-			railgun_fx.draw_flight(draw_surface,pos,Vector2.from_angle(angle),distance,render_speed)
+			railgun_fx.draw_flight(draw_surface,pos,Vector2.from_angle(angle),distance,render_speed,evolution_tint(Color("9eeaff"),evo_tier))
 		return angle
 	if not visual.is_empty():
-		var color := Color("ffc879") if key=="missile" else ORANGE if key=="cannon" else CYAN
+		var color := evolution_tint(Color("ffc879") if key=="missile" else ORANGE if key=="cannon" else CYAN,evo_tier)
 		var trail_end := mini(int(visual.samples),14 if key=="missile" else 4)
 		if core:trail_end=mini(trail_end,4)
 		var head := int(visual.head)
@@ -1975,7 +1989,7 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 			draw_surface.draw_line(a,b,Color(color,fade*0.8),(3.5 if key=="missile" else 2.2)*fade*trail_scale,true)
 	if not core:return angle
 	if not visual.is_empty():
-		var color := CYAN if key=="laser" else ORANGE
+		var color := evolution_tint(CYAN if key=="laser" else ORANGE,evo_tier)
 		if float(visual.age)<0.06:
 			var fade := 1.0-float(visual.age)/0.06
 			var muzzle: Vector2 = battle_point(visual.origin)+offset
@@ -1985,13 +1999,14 @@ func draw_projectile_fx(shot: Dictionary, pos: Vector2, offset: Vector2, core :=
 		var flame := (28.0+5.0*sin(float(visual.get("age",0))*65))*FLAME_SCALE
 		var base := pos-heading*12
 		var side := heading.orthogonal()*4.5*FLAME_SCALE
-		draw_surface.draw_colored_polygon(PackedVector2Array([base+side,base-heading*flame,base-side]),Color(1,0.55,0.12,0.95))
+		draw_surface.draw_colored_polygon(PackedVector2Array([base+side,base-heading*flame,base-side]),evolution_tint(Color(1,0.55,0.12,0.95),evo_tier))
 		draw_surface.draw_colored_polygon(PackedVector2Array([base+side*0.5,base-heading*flame*0.75,base-side*0.5]),Color(1,0.97,0.8))
 	elif key=="laser":
 		# Round, layered halo avoids the rectangular texture/glow boundary.
+		var pulse_color:=evolution_tint(CYAN,evo_tier)
 		for i in range(-9,10,2):
-			draw_surface.draw_circle(pos+heading*float(i),2.8*float(battle_visual.laser_glow_scale),Color(CYAN,0.08))
-		draw_surface.draw_line(pos-heading*10,pos+heading*10,CYAN,2.0,true)
+			draw_surface.draw_circle(pos+heading*float(i),2.8*float(battle_visual.laser_glow_scale),Color(pulse_color,0.08))
+		draw_surface.draw_line(pos-heading*10,pos+heading*10,pulse_color,2.0,true)
 		draw_surface.draw_line(pos-heading*8,pos+heading*8,Color.WHITE,1.0,true)
 	else:
 		draw_surface.draw_line(pos-heading*15,pos,Color(ORANGE,0.75),2.0,true)
@@ -3369,6 +3384,9 @@ func draw_weapon_component(component, origin: Vector2, angle: float, width: floa
 	var tint := Color(str(skin.get("tint","ffffff")))
 	var is_rail := str(profile.get("visual_class",""))=="gun"
 	var glow := Color("9eeaff") if is_rail else Color(str(skin.get("muzzle_glow","71e5f4")))
+	if component.faction=="ally":
+		var entry:Dictionary=game.slot_entry("weapons",component.owner_slot)
+		glow=evolution_tint(glow,mini(10,int(entry.get("level",1))/20))
 	draw_surface.draw_set_transform(origin,angle,Vector2.ONE*scale_value)
 	if mode=="main" or mode=="secondary":
 		var presence := 1.0 if mode=="main" else 0.62
@@ -3761,7 +3779,7 @@ func _prepare_projectile_flight(p:Dictionary,visual_index:Dictionary,offset:Vect
 		pos=battle_point(visual_muzzle(p))+offset
 		if game.long_laser_valid(p):
 			var end:=entity_render_position(p.target)+offset
-			var color:=ORANGE if p.hostile else CYAN
+			var color:=ORANGE if p.hostile else evolution_tint(CYAN,weapon_evolution_tier(p))
 			if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
 				draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
 				return {}
@@ -3788,7 +3806,7 @@ func _draw_projectile_foreground_flight(flight:Dictionary,offset:Vector2)->void:
 	if texture==null:return
 	var size: Vector2 = PROJECTILE_SIZES.get(key,Vector2(48,24)) * PROJECTILE_SCALE * BODY_SCALE.get(key,Vector2.ONE)
 	draw_surface.draw_set_transform(pos, angle)
-	draw_surface.draw_texture_rect(texture,Rect2(-size/2,size),false)
+	draw_surface.draw_texture_rect(texture,Rect2(-size/2,size),false,evolution_tint(Color.WHITE,weapon_evolution_tier(p)))
 	draw_surface.draw_set_transform(Vector2.ZERO)
 
 
@@ -3827,7 +3845,7 @@ func draw_foreground_beams(visible_projectiles:Array,offset:Vector2)->void:
 		if draw_beam_override(shot,offset):continue
 		if float(shot.charge)>0 and float(shot.elapsed)<float(shot.charge):
 			var pos := battle_point(visual_muzzle(shot))+offset
-			var color := ORANGE if shot.hostile else CYAN
+			var color := ORANGE if shot.hostile else evolution_tint(CYAN,weapon_evolution_tier(shot))
 			var progress := clampf(float(shot.elapsed)/float(shot.charge),0,1)
 			var radius := lerpf(28.0,8.0,progress)
 			draw_surface.draw_circle(pos,4.0+progress*8.0,Color(color,0.2+progress*0.4))
@@ -3839,7 +3857,7 @@ func draw_foreground_beams(visible_projectiles:Array,offset:Vector2)->void:
 		elif int(shot.ticks)>0:
 			var beam := beam_style(shot)
 			var end := entity_render_position(shot.target)+offset
-			var color := ORANGE if shot.hostile else CYAN
+			var color := ORANGE if shot.hostile else evolution_tint(CYAN,weapon_evolution_tier(shot))
 			var pos := battle_point(visual_muzzle(shot))+offset
 			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width*float(battle_visual.laser_glow_scale),true)
 			draw_surface.draw_line(pos,end,Color(1,1,1,0.5+beam.pulse*0.4),beam.width*0.38,true)

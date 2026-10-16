@@ -261110,6 +261110,1056 @@
           "chance": 1.0
         }
       ]
+    },
+    "400001": {
+      "id": 400001,
+      "des": "第4关第1点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.7,
+      "health": 1429,
+      "armourType": 1,
+      "res": "{1,174,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第4关第1点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 174.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400002": {
+      "id": 400002,
+      "des": "第4关第2点哨卫",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.1333,
+      "health": 542,
+      "armourType": 2,
+      "res": "{1,62,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "sentry",
+      "intelTrait": "能量破甲",
+      "intelName": "第4关第2点哨卫",
+      "intelVisualRef": "sentry",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 62.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400003": {
+      "id": 400003,
+      "des": "第4关第3点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 0.9,
+      "health": 1804,
+      "armourType": 1,
+      "res": "{1,196,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第4关第3点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 196.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400004": {
+      "id": 400004,
+      "des": "第4关第4点蜂群",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.05,
+      "health": 201,
+      "armourType": 1,
+      "res": "{1,19,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "swarm",
+      "intelTrait": "密集集群",
+      "intelName": "第4关第4点蜂群",
+      "intelVisualRef": "swarm",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 19.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400005": {
+      "id": 400005,
+      "des": "第4关第5点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.1,
+      "health": 2190,
+      "armourType": 1,
+      "res": "{1,199,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第4关第5点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 199.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400006": {
+      "id": 400006,
+      "des": "第4关第6点哨卫",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2,
+      "health": 799,
+      "armourType": 2,
+      "res": "{1,69,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "sentry",
+      "intelTrait": "能量破甲",
+      "intelName": "第4关第6点哨卫",
+      "intelVisualRef": "sentry",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 69.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400007": {
+      "id": 400007,
+      "des": "第4关第7点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.3,
+      "health": 2549,
+      "armourType": 1,
+      "res": "{1,217,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第4关第7点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 217.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "400008": {
+      "id": 400008,
+      "des": "第4关第8点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.4,
+      "health": 2759,
+      "armourType": 1,
+      "res": "{1,300,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第4关第8点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 300.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500001": {
+      "id": 500001,
+      "des": "第5关第1点哨卫",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.2381,
+      "health": 635,
+      "armourType": 2,
+      "res": "{1,57,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "sentry",
+      "intelTrait": "能量破甲",
+      "intelName": "第5关第1点哨卫",
+      "intelVisualRef": "sentry",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 57.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500002": {
+      "id": 500002,
+      "des": "第5关第2点哨卫",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.25,
+      "health": 758,
+      "armourType": 2,
+      "res": "{1,56,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "sentry",
+      "intelTrait": "能量破甲",
+      "intelName": "第5关第2点哨卫",
+      "intelVisualRef": "sentry",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 56.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500003": {
+      "id": 500003,
+      "des": "第5关第3点蜂群",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.0783,
+      "health": 261,
+      "armourType": 1,
+      "res": "{1,16,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "swarm",
+      "intelTrait": "密集集群",
+      "intelName": "第5关第3点蜂群",
+      "intelVisualRef": "swarm",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 16.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500004": {
+      "id": 500004,
+      "des": "第5关第4点蜂群",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.0813,
+      "health": 292,
+      "armourType": 1,
+      "res": "{1,16,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "swarm",
+      "intelTrait": "密集集群",
+      "intelName": "第5关第4点蜂群",
+      "intelVisualRef": "swarm",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 16.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500005": {
+      "id": 500005,
+      "des": "第5关第5点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.72,
+      "health": 3200,
+      "armourType": 1,
+      "res": "{1,160,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第5关第5点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 160.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500006": {
+      "id": 500006,
+      "des": "第5关第6点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 1.8077,
+      "health": 3462,
+      "armourType": 1,
+      "res": "{1,158,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第5关第6点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 158.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500007": {
+      "id": 500007,
+      "des": "第5关第7点哨卫",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.3148,
+      "health": 1235,
+      "armourType": 2,
+      "res": "{1,58,1}",
+      "size": 3,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "sentry",
+      "intelTrait": "能量破甲",
+      "intelName": "第5关第7点哨卫",
+      "intelVisualRef": "sentry",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 58.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500008": {
+      "id": 500008,
+      "des": "第5关第8点蜂群",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 0.0982,
+      "health": 393,
+      "armourType": 1,
+      "res": "{1,20,1}",
+      "size": 2,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "swarm",
+      "intelTrait": "密集集群",
+      "intelName": "第5关第8点蜂群",
+      "intelVisualRef": "swarm",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 20.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "500009": {
+      "id": 500009,
+      "des": "第5关第9点重堡",
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "dmgMultiple": 2.069,
+      "health": 4138,
+      "armourType": 1,
+      "res": "{1,220,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "anchor",
+      "intelTrait": "重炮堡垒",
+      "intelName": "第5关第9点重堡",
+      "intelVisualRef": "anchor",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 220.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600001": {
+      "id": 600001,
+      "des": "第6关第1点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.1006,
+      "health": 1895,
+      "armourType": 2,
+      "res": "{1,190,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第1点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 190.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600002": {
+      "id": 600002,
+      "des": "第6关第2点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.1607,
+      "health": 2200,
+      "armourType": 2,
+      "res": "{1,218,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第2点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 218.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600003": {
+      "id": 600003,
+      "des": "第6关第3点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.2147,
+      "health": 2572,
+      "armourType": 2,
+      "res": "{1,239,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第3点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 239.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600004": {
+      "id": 600004,
+      "des": "第6关第4点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.2634,
+      "health": 2910,
+      "armourType": 2,
+      "res": "{1,252,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第4点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 252.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600005": {
+      "id": 600005,
+      "des": "第6关第5点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.3333,
+      "health": 3305,
+      "armourType": 2,
+      "res": "{1,278,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第5点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 278.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600006": {
+      "id": 600006,
+      "des": "第6关第6点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.3848,
+      "health": 3750,
+      "armourType": 2,
+      "res": "{1,302,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第6点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 302.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600007": {
+      "id": 600007,
+      "des": "第6关第7点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.4319,
+      "health": 4160,
+      "armourType": 2,
+      "res": "{1,325,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第7点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 325.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600008": {
+      "id": 600008,
+      "des": "第6关第8点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.4752,
+      "health": 4616,
+      "armourType": 2,
+      "res": "{1,347,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第8点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 347.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "600009": {
+      "id": 600009,
+      "des": "第6关第9点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.5152,
+      "health": 5038,
+      "armourType": 2,
+      "res": "{1,408,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第6关第9点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 408.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700001": {
+      "id": 700001,
+      "des": "第7关第1点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.1719,
+      "health": 3288,
+      "armourType": 2,
+      "res": "{1,238,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第1点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 238.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700002": {
+      "id": 700002,
+      "des": "第7关第2点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.25,
+      "health": 4079,
+      "armourType": 2,
+      "res": "{1,204,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第2点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 204.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700003": {
+      "id": 700003,
+      "des": "第7关第3点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.3194,
+      "health": 4937,
+      "armourType": 2,
+      "res": "{1,185,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第3点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 185.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700004": {
+      "id": 700004,
+      "des": "第7关第4点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.3816,
+      "health": 5854,
+      "armourType": 2,
+      "res": "{1,172,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第4点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 172.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700005": {
+      "id": 700005,
+      "des": "第7关第5点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.4531,
+      "health": 6824,
+      "armourType": 2,
+      "res": "{1,162,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第5点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 162.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700006": {
+      "id": 700006,
+      "des": "第7关第6点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.5327,
+      "health": 7841,
+      "armourType": 2,
+      "res": "{1,155,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第6点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 155.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700007": {
+      "id": 700007,
+      "des": "第7关第7点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.6051,
+      "health": 8792,
+      "armourType": 2,
+      "res": "{1,150,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第7点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 150.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700008": {
+      "id": 700008,
+      "des": "第7关第8点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.6712,
+      "health": 9575,
+      "armourType": 2,
+      "res": "{1,156,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第8点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 156.0,
+          "chance": 1.0
+        }
+      ]
+    },
+    "700009": {
+      "id": 700009,
+      "des": "第7关第9点光束靶舰",
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "dmgMultiple": 1.7578,
+      "health": 9897,
+      "armourType": 2,
+      "res": "{1,206,1}",
+      "size": 5,
+      "shield": 0,
+      "shieldType": 0,
+      "shieldRecovery": 0,
+      "shieldDelay": 0,
+      "archetype_id": "scout",
+      "intelTrait": "持续锁定",
+      "intelName": "第7关第9点光束靶舰",
+      "intelVisualRef": "scout",
+      "intelMechanics": [],
+      "drops": [
+        {
+          "resourceId": 1,
+          "amount": 206.0,
+          "chance": 1.0
+        }
+      ]
     }
   },
   "groups": {
@@ -307645,6 +308695,741 @@
         null
       ],
       "combatTier": "elite"
+    },
+    "90401": {
+      "description": "第4关第1点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400001,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90402": {
+      "description": "第4关第2点哨卫",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400002,
+        400002,
+        400002,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90403": {
+      "description": "第4关第3点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400003,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90404": {
+      "description": "第4关第4点蜂群",
+      "slots": [
+        null,
+        null,
+        400004,
+        400004,
+        400004,
+        400004,
+        400004,
+        400004,
+        400004,
+        400004,
+        400004,
+        400004,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90405": {
+      "description": "第4关第5点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90406": {
+      "description": "第4关第6点哨卫",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400006,
+        400006,
+        400006,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90407": {
+      "description": "第4关第7点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400007,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90408": {
+      "description": "第4关第8点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        400008,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "90501": {
+      "description": "第5关第1点哨卫",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        500001,
+        500001,
+        500001,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90502": {
+      "description": "第5关第2点哨卫",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        500002,
+        500002,
+        500002,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90503": {
+      "description": "第5关第3点蜂群",
+      "slots": [
+        null,
+        null,
+        500003,
+        500003,
+        500003,
+        500003,
+        500003,
+        500003,
+        500003,
+        500003,
+        500003,
+        500003,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90504": {
+      "description": "第5关第4点蜂群",
+      "slots": [
+        null,
+        null,
+        500004,
+        500004,
+        500004,
+        500004,
+        500004,
+        500004,
+        500004,
+        500004,
+        500004,
+        500004,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90505": {
+      "description": "第5关第5点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        500005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90506": {
+      "description": "第5关第6点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        500006,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90507": {
+      "description": "第5关第7点哨卫",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        500007,
+        500007,
+        500007,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "90508": {
+      "description": "第5关第8点蜂群",
+      "slots": [
+        null,
+        null,
+        500008,
+        500008,
+        500008,
+        500008,
+        500008,
+        500008,
+        500008,
+        500008,
+        500008,
+        500008,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "90509": {
+      "description": "第5关第9点重堡",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        500009,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "elite"
+    },
+    "90601": {
+      "description": "第6关第1点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600001,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90602": {
+      "description": "第6关第2点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600002,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90603": {
+      "description": "第6关第3点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600003,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90604": {
+      "description": "第6关第4点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600004,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90605": {
+      "description": "第6关第5点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90606": {
+      "description": "第6关第6点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600006,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90607": {
+      "description": "第6关第7点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600007,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90608": {
+      "description": "第6关第8点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600008,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90609": {
+      "description": "第6关第9点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        600009,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "boss"
+    },
+    "90701": {
+      "description": "第7关第1点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700001,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90702": {
+      "description": "第7关第2点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700002,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90703": {
+      "description": "第7关第3点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700003,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90704": {
+      "description": "第7关第4点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700004,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90705": {
+      "description": "第7关第5点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700005,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90706": {
+      "description": "第7关第6点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700006,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90707": {
+      "description": "第7关第7点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700007,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90708": {
+      "description": "第7关第8点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700008,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "normal"
+    },
+    "90709": {
+      "description": "第7关第9点光束靶舰",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        700009,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "combatTier": "boss"
     }
   },
   "levels": [
@@ -307810,31 +309595,60 @@
     {
       "id": 4,
       "length": 4000,
-      "monGroup": "{30041|0.180000,30042|0.360000,30043|0.540000,30044|0.720000,30045|0.900000}",
-      "atkRatio": 3,
-      "lifeRatio": 2.5,
-      "resRatio": 1.3719999999999994,
+      "monGroup": "{90401|0.100000,90402|0.214286,90403|0.328571,90404|0.442857,90405|0.557143,90406|0.671429,90407|0.785714,90408|0.900000}",
+      "atkRatio": 5,
+      "lifeRatio": 3,
+      "resRatio": 1.371999999999999,
       "jewelRatio": 1.6,
       "planetExpRatio": 0,
+      "rewardReferenceGroups": [
+        {
+          "id": 30041
+        },
+        {
+          "id": 30042
+        },
+        {
+          "id": 30043
+        },
+        {
+          "id": 30044
+        },
+        {
+          "id": 30045
+        }
+      ],
       "groups": [
         {
-          "id": 30041,
-          "position": 0.18
+          "id": 90401,
+          "position": 0.1
         },
         {
-          "id": 30042,
-          "position": 0.36
+          "id": 90402,
+          "position": 0.214286
         },
         {
-          "id": 30043,
-          "position": 0.54
+          "id": 90403,
+          "position": 0.328571
         },
         {
-          "id": 30044,
-          "position": 0.72
+          "id": 90404,
+          "position": 0.442857
         },
         {
-          "id": 30045,
+          "id": 90405,
+          "position": 0.557143
+        },
+        {
+          "id": 90406,
+          "position": 0.671429
+        },
+        {
+          "id": 90407,
+          "position": 0.785714
+        },
+        {
+          "id": 90408,
           "position": 0.9
         }
       ]
@@ -307842,31 +309656,64 @@
     {
       "id": 5,
       "length": 4000,
-      "monGroup": "{30051|0.180000,30052|0.360000,30053|0.540000,30054|0.720000,30055|0.900000}",
-      "atkRatio": 4.5,
-      "lifeRatio": 5.0,
-      "resRatio": 2.8811999999999993,
+      "monGroup": "{90501|0.100000,90502|0.200000,90503|0.300000,90504|0.400000,90505|0.500000,90506|0.600000,90507|0.700000,90508|0.800000,90509|0.900000}",
+      "atkRatio": 7.5,
+      "lifeRatio": 4.5,
+      "resRatio": 2.881199999999999,
       "jewelRatio": 1.8,
       "planetExpRatio": 0,
+      "rewardReferenceGroups": [
+        {
+          "id": 30051
+        },
+        {
+          "id": 30052
+        },
+        {
+          "id": 30053
+        },
+        {
+          "id": 30054
+        },
+        {
+          "id": 30055
+        }
+      ],
       "groups": [
         {
-          "id": 30051,
-          "position": 0.18
+          "id": 90501,
+          "position": 0.1
         },
         {
-          "id": 30052,
-          "position": 0.36
+          "id": 90502,
+          "position": 0.2
         },
         {
-          "id": 30053,
-          "position": 0.54
+          "id": 90503,
+          "position": 0.3
         },
         {
-          "id": 30054,
-          "position": 0.72
+          "id": 90504,
+          "position": 0.4
         },
         {
-          "id": 30055,
+          "id": 90505,
+          "position": 0.5
+        },
+        {
+          "id": 90506,
+          "position": 0.6
+        },
+        {
+          "id": 90507,
+          "position": 0.7
+        },
+        {
+          "id": 90508,
+          "position": 0.8
+        },
+        {
+          "id": 90509,
           "position": 0.9
         }
       ]
@@ -307874,47 +309721,76 @@
     {
       "id": 6,
       "length": 1000,
-      "monGroup": "{30061|0.100000,30062|0.200000,30063|0.300000,30064|0.400000,30065|0.500000,30066|0.600000,30067|0.700000,30068|0.800000,30069|0.900000}",
-      "atkRatio": 15.40702157458636,
-      "lifeRatio": 15.40702157458636,
+      "monGroup": "{90601|0.100000,90602|0.200000,90603|0.300000,90604|0.400000,90605|0.500000,90606|0.600000,90607|0.700000,90608|0.800000,90609|0.900000}",
+      "atkRatio": 12,
+      "lifeRatio": 7,
       "resRatio": 3.6,
       "jewelRatio": 2,
       "planetExpRatio": 0,
+      "rewardReferenceGroups": [
+        {
+          "id": 30061
+        },
+        {
+          "id": 30062
+        },
+        {
+          "id": 30063
+        },
+        {
+          "id": 30064
+        },
+        {
+          "id": 30065
+        },
+        {
+          "id": 30066
+        },
+        {
+          "id": 30067
+        },
+        {
+          "id": 30068
+        },
+        {
+          "id": 30069
+        }
+      ],
       "groups": [
         {
-          "id": 30061,
+          "id": 90601,
           "position": 0.1
         },
         {
-          "id": 30062,
+          "id": 90602,
           "position": 0.2
         },
         {
-          "id": 30063,
+          "id": 90603,
           "position": 0.3
         },
         {
-          "id": 30064,
+          "id": 90604,
           "position": 0.4
         },
         {
-          "id": 30065,
+          "id": 90605,
           "position": 0.5
         },
         {
-          "id": 30066,
+          "id": 90606,
           "position": 0.6
         },
         {
-          "id": 30067,
+          "id": 90607,
           "position": 0.7
         },
         {
-          "id": 30068,
+          "id": 90608,
           "position": 0.8
         },
         {
-          "id": 30069,
+          "id": 90609,
           "position": 0.9
         }
       ]
@@ -307922,47 +309798,76 @@
     {
       "id": 7,
       "length": 1000,
-      "monGroup": "{30071|0.100000,30072|0.200000,30073|0.300000,30074|0.400000,30075|0.500000,30076|0.600000,30077|0.700000,30078|0.800000,30079|0.900000}",
-      "atkRatio": 237.3763137997695,
-      "lifeRatio": 237.3763137997695,
-      "resRatio": 22.290251120639986,
+      "monGroup": "{90701|0.100000,90702|0.200000,90703|0.300000,90704|0.400000,90705|0.500000,90706|0.600000,90707|0.700000,90708|0.800000,90709|0.900000}",
+      "atkRatio": 20,
+      "lifeRatio": 10,
+      "resRatio": 22.29025112063999,
       "jewelRatio": 2.2,
       "planetExpRatio": 0,
+      "rewardReferenceGroups": [
+        {
+          "id": 30071
+        },
+        {
+          "id": 30072
+        },
+        {
+          "id": 30073
+        },
+        {
+          "id": 30074
+        },
+        {
+          "id": 30075
+        },
+        {
+          "id": 30076
+        },
+        {
+          "id": 30077
+        },
+        {
+          "id": 30078
+        },
+        {
+          "id": 30079
+        }
+      ],
       "groups": [
         {
-          "id": 30071,
+          "id": 90701,
           "position": 0.1
         },
         {
-          "id": 30072,
+          "id": 90702,
           "position": 0.2
         },
         {
-          "id": 30073,
+          "id": 90703,
           "position": 0.3
         },
         {
-          "id": 30074,
+          "id": 90704,
           "position": 0.4
         },
         {
-          "id": 30075,
+          "id": 90705,
           "position": 0.5
         },
         {
-          "id": 30076,
+          "id": 90706,
           "position": 0.6
         },
         {
-          "id": 30077,
+          "id": 90707,
           "position": 0.7
         },
         {
-          "id": 30078,
+          "id": 90708,
           "position": 0.8
         },
         {
-          "id": 30079,
+          "id": 90709,
           "position": 0.9
         }
       ]

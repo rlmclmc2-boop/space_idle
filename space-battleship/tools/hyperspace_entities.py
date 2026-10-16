@@ -299,7 +299,7 @@ def validate_outputs(outputs, mainline, frozen):
     for ref in refs.values():
         design=mainline['groups'].get(str(ref['source_design_group_id']))
         level=next((l for l in mainline['levels'] if l['id']==ref['late_reference_actual_level_id']),None)
-        if not design or sum(v is not None for v in design['slots'])!=ref['reference_member_count'] or level is None or not any(g['id']==ref['late_reference_actual_group_id'] for g in level['groups']):raise ValueError('Frozen reward reference does not match mainline')
+        if not design or sum(v is not None for v in design['slots'])!=ref['reference_member_count'] or level is None or not any(g['id']==ref['late_reference_actual_group_id'] for g in level['groups']+level.get('rewardReferenceGroups',[])):raise ValueError('Frozen reward reference does not match mainline')
 
 
 def read_bundle(raw_by_filename, mainline, data_directory):

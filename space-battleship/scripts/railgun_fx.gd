@@ -49,12 +49,12 @@ func draw_rails(surface: CanvasItem, width: float, progress: float, afterglow: f
 			points.append(Vector2(width*0.43+cos(angle)*width*0.027,sin(angle)*width*lerpf(0.14,0.07,focus)))
 		surface.draw_polyline(points,Color(ICE,focus*0.7),maxf(hairline,width*0.012),true)
 
-func draw_flight(surface: CanvasItem, pos: Vector2, heading: Vector2, distance: float, speed: float) -> void:
+func draw_flight(surface: CanvasItem, pos: Vector2, heading: Vector2, distance: float, speed: float, tint:Color=ICE) -> void:
 	var length := minf(distance,minf(clampf(trail_length,0.0,90.0),speed*clampf(trail_lifetime,0.01,0.12)))
 	for i in 7:
 		var a := float(i)/7.0
 		var b := float(i+1)/7.0
-		surface.draw_line(pos-heading*length*a,pos-heading*length*b,Color(ICE,pow(1.0-a,2)*0.65),1.15,true)
+		surface.draw_line(pos-heading*length*a,pos-heading*length*b,Color(tint,pow(1.0-a,2)*0.65),1.15,true)
 	# A small solid core, never a persistent muzzle-to-target beam.
 	surface.draw_line(pos-heading*3.0,pos+heading*2.0,Color("effcff"),0.85,true)
 

@@ -124,7 +124,7 @@ static func pack_valid(g)->bool:
 		var design:Dictionary=g.db.groups.get(str(int(ref.source_design_group_id)),{})
 		var level:int=int(ref.late_reference_actual_level_id)
 		if design.is_empty() or design.slots.filter(func(v):return v!=null).size()!=int(ref.reference_member_count) or level<1 or level>g.db.levels.size():return false
-		if not g.db.levels[level-1].groups.any(func(point):return int(point.id)==int(ref.late_reference_actual_group_id)):return false
+		if not (g.db.levels[level-1].groups+g.db.levels[level-1].get("rewardReferenceGroups",[])).any(func(point):return int(point.id)==int(ref.late_reference_actual_group_id)):return false
 	var origin:Dictionary=Entity.definition().sources_origin
 	var source_data=JSON.parse_string(FileAccess.get_file_as_string("res://data/space_enemy_reward_sources.json"))
 	if not source_data is Dictionary or source_data.get("source_sha256")!=origin.sha256 or binder.sources.size()!=int(origin.verified_wave_count):return false

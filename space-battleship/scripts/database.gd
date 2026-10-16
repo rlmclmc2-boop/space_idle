@@ -76,6 +76,8 @@ func equipment_cost(key: String, level: int) -> Dictionary:
 			if level>1 and suffix.is_valid_int() and multiplier!=null:
 				amount=equipment_growth(float(amount),float(multiplier),level)
 			result[str(int(row[field]))]=ceilf(float(amount))
+		if level>=20 and level%20==0:
+			result["degenerate_matter"]=10*int(level/20)
 		return result
 	return {}
 
@@ -88,14 +90,18 @@ func equipment_growth(base: float, multiplier: float, level: int) -> float:
 	var step := pow(10.0, floorf(log(value) / log(10.0) + 1e-12) - 1.0)
 	return floorf(value / step + 0.5) * step
 
+func evolution_factor(level: int) -> float:
+	var tier: int = int(level/20)
+	return 1.0 if tier==0 else 1.6*pow(1.5,tier-1)
+
 func equipment_combat_growth(base: float, multiplier: float, level: int) -> Variant:
 	# Preserve the ordinary authored rounding exactly; only overflowing combat
 	# values use the existing mantissa/exponent representation. Costs are separate.
 	var ordinary := equipment_growth(base,multiplier,level)
-	if is_finite(ordinary) or base<=0 or multiplier<=-1:return ordinary
+	if is_finite(ordinary) or base<=0 or multiplier<=-1:return N.multiply(ordinary,evolution_factor(level))
 	var large = N.multiply(base,N.power(1.0+multiplier,level-1))
 	var parts := N.parts(large)
-	return N.make(floorf(float(parts[0])*10.0+0.5)/10.0,float(parts[1]))
+	return N.multiply(N.make(floorf(float(parts[0])*10.0+0.5)/10.0,float(parts[1])),evolution_factor(level))
 
 func max_equipment_level(key: String) -> int:
 	# Integer storage boundary only; legacy row count is not a gameplay cap.
