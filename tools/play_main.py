@@ -7,8 +7,8 @@ import subprocess
 import sys
 
 ROOT = Path(r'D:\放置')
-BASE = 'e02501b38bff8069f2b15bd8947c54d1dc215a1a'
-DLL_SHA = 'a4b646bc47690c17de732026d3a65f9936ffe4e8f06e0dff77143faea8376e7c'
+BASE = 'd9750f9f46fa4e777ef38ce4b717684536ebe03a'
+DLL_SHA = '6bfa0d565eae83d96ee6e374d92b790a60a41cb52ae1d9209b23c90d1e7ef452'
 DESCRIPTOR = '''[configuration]
 entry_symbol = "space_native_init"
 compatibility_minimum = "4.7"
@@ -75,7 +75,7 @@ def main():
     project, engine, head, version = validate(ROOT)
     env = os.environ.copy()
     window_check = env.get('SPACE_BATTLESHIP_VERIFY_WINDOW') == '1'
-    runtime = (Path(r'D:\CodexBuild\space_idle\player-entry-e025\window-check')
+    runtime = (Path(r'D:\CodexBuild\space_idle\player-entry-d975\window-check')
                if window_check else project / '.runtime')
     user_data = runtime / 'userdata' if window_check else project / '.userdata'
     env['APPDATA'] = str(user_data / 'roaming')
