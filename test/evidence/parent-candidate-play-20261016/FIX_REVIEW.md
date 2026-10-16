@@ -1,0 +1,6 @@
+# 父审阻碍的本轮修正
+
+- `unlock.xlsx` 中仅改导弹、护盾两条教程；投影 `game_data.json` 已完整校验。导弹不再提示关卡答案；护盾明确会替下装甲、两种防御互斥、类型偏重与受击后 2 秒恢复。纯盾 HUD 只显示实际护盾生命栏，纯甲只显示实际装甲栏。
+- 图06红轨迹越过教程与伤害数字：`BattleFeedback` 是 `battle_clip` 子项，但原 `z_index=2` 在整个画布压过教程覆盖层 `z_index=1` 和伤害 HUD `z_index=0`。现改为正常战场顺序 `z_index=0`。对护卫舰唯一真实炮台，原炮口投影 y=860.29、舰首界 y=849.09，炮口在舰内约 11.2 像素；整座炮台前移后炮口 y=843.20，位于舰首前约 5.9 像素。展示与逻辑炮口都使用 `ship_geometry_convention.gd` 的同一偏移，投影完全一致。原始记录见 `rail-visual-order.log`。这是几何和层级定点证据，仍需父审在 UI 重看连射、受击数字和不同武器外观。
+- `simulation_geometry_authority.gd:662` 的 `uid` 错误来自原生接管复制 UI 遗留的已离场敌人姿态；`resolve_entity` 对旧身份返回空字典，边界冻结仍读取 `uid`。接管时现在只复制能解析到当前 `game.enemies` 的姿态。`stale-pose-probe.log` 记录了针对该交接路径的通过结果；它不替代完整 UI 运行日志。
+- 第三关敌表未改。建议的 Excel 行级差异及父审实际战绩写在 `STAGE3_DIFF_PROPOSAL.md`，待父审确定后实施、定点核验宽容余量。

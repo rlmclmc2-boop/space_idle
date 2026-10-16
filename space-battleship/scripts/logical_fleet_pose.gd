@@ -112,7 +112,9 @@ func configure(key: String, entries: Array, capacity: int, bag: Dictionary) -> v
 		if unchanged: existing = old_modules[modules.size()]
 		var module: Dictionary = existing if not existing.is_empty() else {"assignment":item,"pivot":Transform3D.IDENTITY}
 		module.descriptor = weapons[item.key]
-		module.mount_chain = hulls[key][item.mount] if item.carrier == "hull" else carrier_mount
+		module.mount_chain = hulls[key][item.mount].duplicate() if item.carrier == "hull" else carrier_mount.duplicate()
+		var offset:Vector3=preload("res://scripts/ship_geometry_convention.gd").weapon_mount_offset(key,int(item.slot))
+		if offset!=Vector3.ZERO:module.mount_chain.append(Transform3D(Basis.IDENTITY,offset))
 		if existing.is_empty():
 			module.pivot = module.descriptor.pivot_chain.back()
 		if item.carrier == "drone":

@@ -292,6 +292,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 		var node := resource.instantiate() as Node3D
 		mount.add_child(node)
 		node.transform = Transform3D.IDENTITY
+		node.position=preload("res://scripts/ship_geometry_convention.gd").weapon_mount_offset(hull_key,int(item.slot))
 		if item.carrier=="drone":node.scale=Vector3.ONE*CARRIER_WEAPON_SCALE
 		modules.append({"slot":item.slot,"key":item.key,"carrier":item.carrier,"mount_index":item.mount,"node":node,"mount":mount,
 			"pivot":node.find_child("TurretPivot",true,false),"muzzle":node.find_child("Muzzle",true,false),

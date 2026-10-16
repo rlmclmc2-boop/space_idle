@@ -7,3 +7,9 @@ static func body_center(row:Dictionary)->Vector3:
 
 static func centered_transform(basis:Basis,anchor:Vector3,row:Dictionary)->Transform3D:
 	return Transform3D(basis,anchor-basis*body_center(row))
+
+# The Frigate's sole authored mount sits behind its bow. Shift the entire
+# weapon assembly (mesh, pivot and real muzzle) forward together so the wide
+# cannon discharge leaves the hull instead of starting inside it.
+static func weapon_mount_offset(ship_key:String,slot:int)->Vector3:
+	return Vector3(0,0,-1.0) if ship_key=="Frigate" and slot==0 else Vector3.ZERO

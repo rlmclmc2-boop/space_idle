@@ -135,7 +135,10 @@ func _ready() -> void:
 	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	pulse_layer = Node2D.new()
 	pulse_layer.name = "BattleFeedback"
-	pulse_layer.z_index = 2
+	# Combat feedback belongs inside the battlefield's normal canvas order.
+	# A positive z index placed long rail discharges above tutorial controls
+	# and damage numbers even though the layer was parented to battle_clip.
+	pulse_layer.z_index = 0
 	battle_clip.add_child(pulse_layer)
 	pulse_layer.draw.connect(_draw_muzzle_cues)
 	# Keep original draw order: persistent GPU instances submit at the contact call site.
@@ -861,9 +864,14 @@ func draw_vertical_battle_hud()->void:
 	battle_panel(Rect2(30,1132,552,114))
 	var status := game.enhancement_protection_status()
 	var layers := defense_hud_layers(status)
-	draw_defense_hud_row("armour",layers.armour,status,1158,BATTLE_WARM)
-	if game.profile.unlocked.has("shield"):
-		draw_defense_hud_row("shield",layers.shield,status,1197,BATTLE_TEAL)
+	var has_armour:bool=GrowthNumber.compare(game.stat("armour"),0)>0
+	var has_shield:bool=game.profile.unlocked.has("shield") and GrowthNumber.compare(game.max_shield(),0)>0
+	# A single defence slot is a choice of life pool. Do not label an
+	# unequipped 0/0 pool as the player's primary life in the HUD.
+	if has_armour or not has_shield:
+		draw_defense_hud_row("armour",layers.armour,status,1158,BATTLE_WARM)
+	if has_shield:
+		draw_defense_hud_row("shield",layers.shield,status,1197 if has_armour else 1158,BATTLE_TEAL)
 	var footer := defense_hud_footer(status)
 	if not footer.is_empty():
 		draw_defense_caption(footer,Vector2(48,1238),BATTLE_WARM)

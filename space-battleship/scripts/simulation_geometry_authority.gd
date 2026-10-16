@@ -559,8 +559,16 @@ func prepare(owner,simulation:BattleGame)->void:
 		turret_visuals[index].entry=game.slot_entry("weapons",int(index))
 		var previous:Dictionary=owner.turret_visuals[index].target
 		turret_visuals[index].target=resolve_entity(previous)
-	enemy_poses=owner.enemy_poses.duplicate(true)
-	for slot in enemy_poses:enemy_poses[slot].entity=resolve_entity(owner.enemy_poses[slot].entity)
+	# Main may still hold poses for contacts removed at the preceding boundary.
+	# Those identities have no actor in this simulation; never hand an empty
+	# Dictionary to the frozen-enemy display path during native admission.
+	enemy_poses={}
+	for slot in owner.enemy_poses:
+		var resolved:Dictionary=resolve_entity(owner.enemy_poses[slot].entity)
+		if resolved.is_empty() or not game.enemies.has(resolved):continue
+		var pose:Dictionary=owner.enemy_poses[slot].duplicate(true)
+		pose.entity=resolved
+		enemy_poses[slot]=pose
 	for key in visual_config.get("ships",{}):
 		# Older/isolated owners predate asset_ready. Preserve their legacy capture;
 		# an explicit unavailable flag still wins. This remains before ownership.
