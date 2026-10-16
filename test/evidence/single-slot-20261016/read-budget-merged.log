@@ -1,0 +1,12 @@
+test_error_log_keeps_location (__main__.ReadBudgetTest.test_error_log_keeps_location) ... ok
+test_excel_target (__main__.ReadBudgetTest.test_excel_target) ... ok
+test_json_target_and_root_guard (__main__.ReadBudgetTest.test_json_target_and_root_guard) ... ok
+test_long_error_has_locator (__main__.ReadBudgetTest.test_long_error_has_locator) ... ok
+test_overflow_is_resumable (__main__.ReadBudgetTest.test_overflow_is_resumable) ... ok
+test_role_route_and_project_relative_path (__main__.ReadBudgetTest.test_role_route_and_project_relative_path) ... ok
+test_task_state_is_selected_by_id (__main__.ReadBudgetTest.test_task_state_is_selected_by_id) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.721s
+
+OK

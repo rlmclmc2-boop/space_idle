@@ -26,6 +26,12 @@ class Validation(unittest.TestCase):
   with self.assertRaises(RuntimeError):self.invoke(branch='candidate')
  def test_modified_source(self):
   with self.assertRaises(RuntimeError):self.invoke(changed='space-battleship/data/game_data.json')
+ def test_bounded_reading_files_allowed(self):
+  changed='\n'.join(sorted(m.NON_RUNTIME_CHANGES))
+  self.assertEqual(self.invoke(changed=changed)[0],self.p)
+ def test_runtime_source_still_rejected_with_reading_files(self):
+  changed='space-battleship/docs/READ_ROUTE.md\nspace-battleship/scripts/game.gd'
+  with self.assertRaises(RuntimeError):self.invoke(changed=changed)
  def test_wrong_dll(self):
   (self.p/'bin/space_native.dll').write_bytes(b'old')
   with self.assertRaisesRegex(RuntimeError,'实际 SHA256'):
