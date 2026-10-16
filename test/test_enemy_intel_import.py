@@ -10,6 +10,8 @@ from import_workbook import validate_projection
 
 data = json.loads((root / 'space-battleship/data/game_data.json').read_text(encoding='utf-8'))
 validate_projection(data)
+for first, second in (('271022','271023'),('271026','271027')):
+    assert data['enemies'][first]['intelName'] != data['enemies'][second]['intelName'], (first,second)
 for enemy_id, replacement in (
     ('271024', []),
     ('271024', ['shieldRecovery']),

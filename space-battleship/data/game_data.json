@@ -260764,7 +260764,7 @@
       "shieldDelay": 0,
       "archetype_id": "anchor",
       "intelTrait": "重装锚点舰，耐久较高。",
-      "intelName": "装甲锚点",
+      "intelName": "装甲锚点·甲型",
       "intelVisualRef": "anchor",
       "intelMechanics": [],
       "drops": [
@@ -260794,7 +260794,7 @@
       "shieldDelay": 0,
       "archetype_id": "anchor",
       "intelTrait": "重装锚点舰，耐久较高。",
-      "intelName": "装甲锚点",
+      "intelName": "装甲锚点·乙型",
       "intelVisualRef": "anchor",
       "intelMechanics": [],
       "drops": [
@@ -260888,7 +260888,7 @@
       "reactiveReduction": 1,
       "archetype_id": "reactive",
       "intelTrait": "连击削减舰，留意连续命中的效果。",
-      "intelName": "连击削减舰",
+      "intelName": "连击削减舰·甲型",
       "intelVisualRef": "reactive",
       "intelMechanics": [
         "reactiveReduction"
@@ -260921,7 +260921,7 @@
       "reactiveReduction": 1,
       "archetype_id": "reactive",
       "intelTrait": "连击削减舰，留意连续命中的效果。",
-      "intelName": "连击削减舰",
+      "intelName": "连击削减舰·乙型",
       "intelVisualRef": "reactive",
       "intelMechanics": [
         "reactiveReduction"
