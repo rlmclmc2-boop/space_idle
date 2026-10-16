@@ -44,4 +44,8 @@ for name, native_pattern in (
     authored = re.search(rf'const {name} := ([\d.]+)', legacy)
     compiled = re.search(native_pattern, native)
     assert authored and compiled and float(authored.group(1)) == float(compiled.group(1)), name
-print('Enemy intel import: full data valid; 4 mechanism mismatches and visual mismatch rejected; native reactive constants match')
+timers = [float(row.get('shieldDelay',0)) for row in data['enemies'].values()]
+timers += [float(row['cd']) for row in data['enemy_weapon_base'].values()]
+timers.append(float(re.search(r'const REACTIVE_RESET_SECONDS := ([\d.]+)', legacy).group(1)))
+assert all(abs(value*1000-round(value*1000)) < 1e-9 for value in timers), 'Enemy intel duration cannot be represented as integer milliseconds'
+print('Enemy intel import: full data valid; 4 mechanism mismatches and visual mismatch rejected; native reactive constants and integer-ms durations match')

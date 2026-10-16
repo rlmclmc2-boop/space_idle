@@ -75,8 +75,10 @@ func run() -> void:
 	check(equipment.projection_builds==projections and (scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Cross-stage tab opening avoids unrelated recompilation")
 	var reactive_index = page.entries.find_custom(func(entry):return str(entry.id)=="271024")
 	page.list.item_selected.emit(reactive_index)
-	var reactive := UIText.t("enemy.intel.reactive",{"stacks":str(scene.game.REACTIVE_STACK_LIMIT),"reduction":scene.number(scene.game.REACTIVE_STACK_REDUCTION*100.0),"window":scene.number(scene.game.REACTIVE_RESET_SECONDS)})
+	var reactive := UIText.t("enemy.intel.reactive",{"stacks":str(scene.game.REACTIVE_STACK_LIMIT),"reduction":scene.number(scene.game.REACTIVE_STACK_REDUCTION*100.0),"window":page.duration_text(scene.game.REACTIVE_RESET_SECONDS)})
 	check(page.detail.get_children().any(func(node):return node is Label and node.text==reactive),"Reactive detail binds combat parameters")
+	check(reactive.contains("2200 毫秒") and not reactive.contains("2.2 秒"),"Reactive reset is shown as exact integer milliseconds")
+	check(not reactive.contains("毫秒 秒"),"Reactive sentence has no leftover seconds suffix")
 	check(not page.detail.get_children().any(func(node):return node is Label and node.text.contains("271024")),"Player view omits internal ID")
 	var reactive_row: Dictionary=scene.db.enemies[page.entries[reactive_index].id]
 	reactive_row.intelName="表内测试名称"
@@ -93,7 +95,10 @@ func run() -> void:
 	check(recovery_line>=0 and detail_lines.find(reactive)>recovery_line,"Both active mechanisms appear in authored order")
 	var recovery_index = page.entries.find_custom(func(entry):return str(entry.id)=="271028")
 	page.list.item_selected.emit(recovery_index)
-	check(page.detail.get_children().any(func(node):return node is Label and node.text.contains("1.8")),"Recovery detail binds actual delay")
+	check(page.detail.get_children().any(func(node):return node is Label and node.text.contains("1800 毫秒")),"Recovery detail binds exact authored delay")
+	check(page.detail.get_children().any(func(node):return node is Label and node.text.contains("500 毫秒")),"Weapon cooldown uses exact millisecond text")
+	check(not page.detail.get_children().any(func(node):return node is Label and node.text.contains("毫秒 秒")),"Recovery and cooldown sentences have no leftover seconds suffix")
+	check(page.duration_text(float(scene.db.enemy_weapon("longLaser-mon").cd))=="200 毫秒","Short weapon cooldown keeps exact authored duration")
 	var recovery_row: Dictionary=scene.db.enemies[page.entries[recovery_index].id]
 	check(page.heading.text==str(recovery_row.intelName),"Different selection updates authored name")
 	print("Enemy intel tab chain: %d checks, %d failures; route=%d detail=%d compile=%d projection=%d" % [checks,failures,page.route_builds,page.detail_builds,builds,projections])

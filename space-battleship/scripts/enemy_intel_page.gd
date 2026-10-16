@@ -113,15 +113,19 @@ func show_entry(index: int) -> void:
 		var weapon: Dictionary = host.db.enemy_weapon(str(key))
 		var base_key := str(key).replace("_mon", "").replace("-mon", "")
 		var weapon_name := UIText.t("weapon."+base_key+"_name") if base_key in ["laser","cannon","missile","longLaser"] else str(key)
-		add_detail_line(UIText.t("enemy.intel.attack",{"name":weapon_name,"count":str(attacks[key]),"damage":host.number(host.db.enemy_attack_damage(row,weapon,stage,point)),"type":resistance_text(int(weapon.dmgtype)),"cooldown":host.number(float(weapon.cd))}))
+		add_detail_line(UIText.t("enemy.intel.attack",{"name":weapon_name,"count":str(attacks[key]),"damage":host.number(host.db.enemy_attack_damage(row,weapon,stage,point)),"type":resistance_text(int(weapon.dmgtype)),"cooldown":duration_text(float(weapon.cd))}))
 	var mechanics: Array = row.get("intelMechanics",[])
 	if mechanics.is_empty():add_detail_line(UIText.t("enemy.intel.no_mechanic"))
 	for mechanic in mechanics:
 		match str(mechanic):
 			"reactiveReduction":
-				add_detail_line(UIText.t("enemy.intel.reactive",{"stacks":str(host.game.REACTIVE_STACK_LIMIT),"reduction":host.number(host.game.REACTIVE_STACK_REDUCTION*100.0),"window":host.number(host.game.REACTIVE_RESET_SECONDS)}))
+				add_detail_line(UIText.t("enemy.intel.reactive",{"stacks":str(host.game.REACTIVE_STACK_LIMIT),"reduction":host.number(host.game.REACTIVE_STACK_REDUCTION*100.0),"window":duration_text(host.game.REACTIVE_RESET_SECONDS)}))
 			"shieldRecovery":
-				add_detail_line(UIText.t("enemy.intel.recovery",{"delay":host.number(float(row.shieldDelay)),"rate":host.number(float(row.shieldRecovery)*100.0)}))
+				add_detail_line(UIText.t("enemy.intel.recovery",{"delay":duration_text(float(row.shieldDelay)),"rate":host.number(float(row.shieldRecovery)*100.0)}))
+
+func duration_text(seconds: float) -> String:
+	# Every authored enemy timer and the reactive reset interval is in whole milliseconds.
+	return str(roundi(seconds*1000.0))+" 毫秒"
 
 func add_detail_line(value: String) -> void:
 	if detail_cursor == detail_lines.size():
