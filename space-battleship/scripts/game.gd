@@ -3,6 +3,10 @@ extends RefCounted
 
 const CLEAR_ADVANCE_DELAY := 3.0
 const MAX_TRAVEL_SECONDS := 3.0
+const REACTIVE_STACK_LIMIT := 3
+const REACTIVE_STACK_REDUCTION := 0.2
+const REACTIVE_RESET_SECONDS := 2.2
+const REACTIVE_VOLLEY_GAP := 0.16
 
 signal event(kind: String, payload: Dictionary)
 
@@ -94,6 +98,7 @@ var startup_error := ""
 var save_enabled := true
 var stat_cache_enabled := false
 var stat_cache: Dictionary = {}
+var stat_cache_revision := 0
 var jewel_defence_capacity_cache: Dictionary = {}
 var login_chrono_particles := 0.0
 var pending_unlocks: Array[String] = []
@@ -839,6 +844,7 @@ func enhancement_branch_active(entry:Dictionary,effect:String,node:int,choice:St
 	return not entry.is_empty() and enhancement_branch_choice(category,effect,node)==choice and enhancement_branch_unlocked(category,effect,node) and has_enhancement_effect(entry,effect)
 
 func invalidate_stat_cache() -> void:
+	stat_cache_revision += 1
 	if native_execution!=null and not native_numeric_update:native_execution.configuration_changed()
 	combat_sources_dirty=true
 	stat_cache.clear()
@@ -2586,13 +2592,13 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	var reactive_multiplier := 1.0
 	if int(enemy.get("reactiveReduction",0)) == 1:
 		var volley_at := float(enemy.get("reactive_volley_at",-1.0e100))
-		if hit_time > volley_at + 0.16:
-			reactive_stacks = mini(3,int(enemy.get("reactive_stacks",0))+1) if hit_time <= volley_at + 2.2 else 0
+		if hit_time > volley_at + REACTIVE_VOLLEY_GAP:
+			reactive_stacks = mini(REACTIVE_STACK_LIMIT,int(enemy.get("reactive_stacks",0))+1) if hit_time <= volley_at + REACTIVE_RESET_SECONDS else 0
 			enemy.reactive_volley_at = hit_time
 			enemy.reactive_stacks = reactive_stacks
 		else:
 			reactive_stacks = int(enemy.get("reactive_stacks",0))
-		reactive_multiplier = 1.0 - 0.2 * reactive_stacks
+		reactive_multiplier = 1.0 - REACTIVE_STACK_REDUCTION * reactive_stacks
 		enemy.reactive_multiplier = reactive_multiplier
 		raw = N.multiply(raw,reactive_multiplier)
 	var chain_origin := Vector2(enemy.x,enemy.y)

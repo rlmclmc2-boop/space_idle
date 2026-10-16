@@ -124,6 +124,8 @@ var floats: Array[Dictionary] = []
 var pickup_effects: Array[Dictionary] = []
 var resource_pickup_totals: Dictionary = {}
 var resource_hover_feedback: Array[Dictionary] = []
+var pickup_preview_cache: Dictionary = {}
+var pickup_preview_builds := 0
 var clock := 0.0
 var game_time_remainder := 0.0
 var time_step_game_id := 0
@@ -2014,6 +2016,7 @@ func reset_battle_transients_for_scene() -> void:
 	pickup_effects.clear()
 	resource_pickup_totals.clear()
 	resource_hover_feedback.clear()
+	pickup_preview_cache.clear()
 	shake=0.0
 	wave_hint=0.0
 	for pose in turret_visuals.values():
@@ -3165,10 +3168,16 @@ func resource_hover_notices() -> Array[Dictionary]:
 		var pos := drop_render_position(drop)
 		if pos.distance_to(mouse_pos)<40:
 			var id := "jewel" if drop.has("jewel") else str(drop.id)
-			var caption := UIText.t("battle.pickup_comparison",{"manual":number(pickup_preview_amount(drop,true)),"auto":number(pickup_preview_amount(drop,false))})
+			var caption := pickup_comparison(drop)
 			var caption_pos := Vector2(clampf(pos.x-130.0,12.0,BATTLE_VIEW_SIZE.x-270.0),clampf(pos.y+36.0,30.0,BATTLE_VIEW_SIZE.y-20.0))
 			notices.append({"text":caption,"position":BATTLE_ORIGIN+caption_pos,"color":RESOURCE_ART.accent(id)})
 	return notices
+
+func pickup_comparison(drop: Dictionary) -> String:
+	if pickup_preview_cache.get("uid",-1)!=drop.get("uid",-1) or pickup_preview_cache.get("amount",-1)!=drop.amount or pickup_preview_cache.get("ratio",-1)!=drop.get("jewelRatio",-1) or pickup_preview_cache.get("stage",-1)!=game.stage or pickup_preview_cache.get("revision",-1)!=game.stat_cache_revision:
+		pickup_preview_builds += 1
+		pickup_preview_cache = {"uid":drop.get("uid",-1),"amount":drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.stat_cache_revision,"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
+	return UIText.t("battle.pickup_comparison",{"manual":number(pickup_preview_cache.manual),"auto":number(pickup_preview_cache.auto)})
 
 func pickup_preview_amount(drop: Dictionary, manual: bool):
 	# Read-only projection of collect(); the event amount remains the receipt authority.

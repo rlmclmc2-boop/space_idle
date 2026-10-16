@@ -57,6 +57,16 @@ func run() -> void:
 	scene.game.profile.cleared=range(1,9)
 	scene.game.rebuild_unlocks()
 	check(scene.game.jewels_unlocked() and scene.RESOURCE_STRIP_PRESENTATION.card_rect(2,3).end.x<=485.0,"Third resource appears only after actual unlock and fits")
+	var fragment := {"uid":8802,"x":220.0,"y":340.0,"age":1.0,"jewel":true,"amount":5.0,"jewelRatio":scene.game.jewel_ratio()}
+	var preview: String = scene.pickup_comparison(fragment)
+	var preview_builds: int = scene.pickup_preview_builds
+	check(scene.pickup_comparison(fragment)==preview and scene.pickup_preview_builds==preview_builds,"Repeated fragment hover reuses both previews")
+	scene.game.invalidate_stat_cache()
+	scene.pickup_comparison(fragment)
+	check(scene.pickup_preview_builds==preview_builds+1,"Configuration revision invalidates fragment preview")
+	scene.game.resource_samples.assign([{"time":100.0,"id":"jewel","amount":2.5}])
+	scene.resource_rate_mode=true
+	check(scene.game.resource_minute_total("jewel",100.0)==2.5 and scene.resource_display("jewel",100.0)==UIText.t("inventory.rate",{"rate":scene.NUMBER_FORMAT.rate(2.5/60.0)}),"Fragment top rate follows actual minute samples")
 	print("Opening feedback: %d checks, %d failures" % [checks,failures])
 	scene.queue_free();fresh.queue_free()
 	quit(1 if failures else 0)

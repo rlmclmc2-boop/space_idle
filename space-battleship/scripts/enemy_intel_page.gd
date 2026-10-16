@@ -66,7 +66,7 @@ func refresh_if_needed() -> void:
 		var entry: Dictionary = entries[index]
 		var row: Dictionary = host.db.enemies[entry.id]
 		var button := Button.new()
-		button.text = UIText.t("enemy.intel.list_item",{"point":str(int(entry.point)+1),"name":str(row.des),"count":str(entry.count)})
+		button.text = UIText.t("enemy.intel.list_item",{"point":str(int(entry.point)+1),"name":str(row.get("intelName",row.des)),"count":str(entry.count)})
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.custom_minimum_size = Vector2(390,64)
 		button.pressed.connect(show_entry.bind(index))
@@ -84,14 +84,16 @@ func show_entry(index: int) -> void:
 		return
 	var entry: Dictionary = entries[index]
 	var row: Dictionary = host.db.enemies[entry.id]
-	heading.text = str(row.des)
+	heading.text = str(row.get("intelName",row.des))
 	var image := TextureRect.new()
 	image.custom_minimum_size = Vector2(300,280)
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	image.texture = host.ship_hull_texture(host.enemy_visual_identity.resolve(row,host.visual_config))
+	var visual_key := str(row.get("intelVisualRef",""))
+	if visual_key.is_empty():visual_key = host.enemy_visual_identity.resolve(row,host.visual_config)
+	image.texture = host.ship_hull_texture(visual_key)
 	detail.add_child(image)
-	add_label(detail,UIText.t("enemy.intel.identity",{"id":str(entry.id),"point":str(int(entry.point)+1),"count":str(entry.count)}),19)
+	add_label(detail,UIText.t("enemy.intel.identity",{"point":str(int(entry.point)+1),"count":str(entry.count)}),19)
 	var summary := str(row.get("intelTrait",""))
 	add_label(detail,summary if not summary.is_empty() else UIText.t("enemy.intel.missing"))
 	if summary.is_empty():push_warning("Enemy intelligence missing for mon "+str(entry.id))
@@ -109,17 +111,14 @@ func show_entry(index: int) -> void:
 		var base_key := str(key).replace("_mon", "").replace("-mon", "")
 		var weapon_name := UIText.t("weapon."+base_key+"_name") if base_key in ["laser","cannon","missile","longLaser"] else str(key)
 		add_label(detail,UIText.t("enemy.intel.attack",{"name":weapon_name,"count":str(attacks[key]),"damage":host.number(host.db.enemy_attack_damage(row,weapon,stage,point)),"type":resistance_text(int(weapon.dmgtype)),"cooldown":host.number(float(weapon.cd))}))
-	var mechanic := str(row.get("intelMechanicRef",""))
-	match mechanic:
-		"none":add_label(detail,UIText.t("enemy.intel.no_mechanic"))
-		"reactiveReduction":
-			if int(row.get("reactiveReduction",0))==1:add_label(detail,UIText.t("enemy.intel.reactive"))
-			else:add_label(detail,UIText.t("enemy.intel.missing"))
-		"shieldRecovery":
-			if float(row.get("shieldRecovery",0))>0 and shield>0:
+	var mechanics: Array = row.get("intelMechanics",[])
+	if mechanics.is_empty():add_label(detail,UIText.t("enemy.intel.no_mechanic"))
+	for mechanic in mechanics:
+		match str(mechanic):
+			"reactiveReduction":
+				add_label(detail,UIText.t("enemy.intel.reactive",{"stacks":str(host.game.REACTIVE_STACK_LIMIT),"reduction":host.number(host.game.REACTIVE_STACK_REDUCTION*100.0),"window":host.number(host.game.REACTIVE_RESET_SECONDS)}))
+			"shieldRecovery":
 				add_label(detail,UIText.t("enemy.intel.recovery",{"delay":host.number(float(row.shieldDelay)),"rate":host.number(float(row.shieldRecovery)*100.0)}))
-			else:add_label(detail,UIText.t("enemy.intel.missing"))
-		_:add_label(detail,UIText.t("enemy.intel.missing"))
 
 func resistance_text(value: int) -> String:
 	return UIText.t("battle.enemy_defence.neutral") if value==0 else UIText.t("equipment.energy" if value==1 else "equipment.physical")

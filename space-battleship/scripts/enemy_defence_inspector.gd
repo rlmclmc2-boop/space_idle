@@ -2,7 +2,6 @@ extends Control
 ## Read-only, local inspection. Colour is never used to infer combat resistance.
 const N := preload("res://scripts/growth_number.gd")
 var host: Node
-var hint: Label
 var panel: Panel
 var description: Label
 var elapsed := 0.0
@@ -15,24 +14,15 @@ func setup(owner_ui: Node) -> void:
 	size = host.BATTLE_VIEW_SIZE
 	z_index = 2
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hint = Label.new()
-	hint.text = UIText.t("battle.enemy_defence.hint")
-	hint.position = Vector2(14,size.y-32)
-	hint.add_theme_font_override("font",host.font)
-	hint.add_theme_font_size_override("font_size",17)
-	hint.add_theme_color_override("font_color",Color("bedbdc"))
-	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(hint)
-	hint.hide()
 	panel = Panel.new()
-	panel.position = Vector2(14,size.y-275)
-	panel.size = Vector2(510,178)
+	panel.position = Vector2(14,size.y-181)
+	panel.size = Vector2(510,84)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_theme_stylebox_override("panel",host.style(Color("243d50"),Color("83cfcb")))
 	add_child(panel)
 	description = Label.new()
 	description.position = Vector2(14,12)
-	description.size = Vector2(482,154)
+	description.size = Vector2(482,62)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	description.add_theme_font_override("font",host.font)
 	description.add_theme_font_size_override("font_size",20)
@@ -44,16 +34,10 @@ func setup(owner_ui: Node) -> void:
 func available() -> bool:
 	return is_instance_valid(host) and host.game.state==BattleGame.State.COMBAT and not host.help_open and host.game.pending_unlocks.is_empty()
 
-func resistance_text(value: int) -> String:
-	if value not in [1,2]:return UIText.t("battle.enemy_defence.neutral")
-	return UIText.t("battle.enemy_defence.resistance",{"type":UIText.t("equipment.energy" if value==1 else "equipment.physical")})
-
 func defence_text(enemy: Dictionary) -> String:
-	var armour := UIText.t("battle.enemy_defence.armour",{"resistance":resistance_text(int(enemy.get("armourType",0)))})
-	var shield := UIText.t("battle.enemy_defence.no_shield")
+	var result := UIText.t("battle.enemy_status.armour",{"current":host.number(enemy.hp),"maximum":host.number(enemy.max_hp)})
 	if N.compare(enemy.get("max_shield",0),0)>0:
-		shield = UIText.t("battle.enemy_defence.shield" if N.compare(enemy.get("shield",0),0)>0 else "battle.enemy_defence.broken_shield",{"resistance":resistance_text(int(enemy.get("shieldType",0)))})
-	var result := UIText.t("battle.enemy_defence.title")+"\n"+armour+"\n"+shield
+		result += " · "+UIText.t("battle.enemy_status.shield",{"current":host.number(enemy.shield),"maximum":host.number(enemy.max_shield)})
 	if int(enemy.get("reactiveReduction",0))==1:
 		result += "\n"+UIText.t("battle.enemy_defence.reactive_status",{"percent":str(roundi((1.0-float(enemy.get("reactive_multiplier",1.0)))*100.0))})
 	return result
@@ -68,7 +52,6 @@ func enemy_at(point: Vector2) -> Dictionary:
 
 func refresh_at(point: Vector2) -> void:
 	var enabled := available()
-	host.set_ui_value(hint,"visible",false)
 	selected_enemy = enemy_at(point) if enabled and Rect2(Vector2.ZERO,size).has_point(point) else {}
 	host.set_ui_value(panel,"visible",not selected_enemy.is_empty())
 	if not selected_enemy.is_empty():host.set_ui_value(description,"text",defence_text(selected_enemy))

@@ -100,8 +100,11 @@ def convert_sheet(name, rows):
     if name=="mon":
         result={}
         for row in rows:
-            for field in ('intelTrait','intelMechanicRef'):
+            for field in ('intelTrait','intelName','intelVisualRef','intelMechanics'):
                 if row.get(field) in (None, ''):row.pop(field,None)
+            if 'intelMechanics' in row:
+                row['intelMechanics']=[] if row['intelMechanics']=='none' else [part.strip() for part in str(row['intelMechanics']).split(',')]
+            row.pop('intelMechanicRef',None)
             if not row.get("reactiveReduction"):
                 row.pop("reactiveReduction", None)
             if not row.get("archetype_id"):
@@ -331,17 +334,27 @@ def validate_projection(data, *, check_level_ratios=True):
     # needs an explicit trait and a checked mechanism binding.
     opening_ids = {str(enemy_id) for level in levels[:3] for group in level['groups']
                    for enemy_id in groups[str(group['id'])]['slots'] if enemy_id is not None}
-    mechanic_fields = {'none', 'reactiveReduction', 'shieldRecovery'}
+    mechanic_fields = {'reactiveReduction', 'shieldRecovery'}
+    visuals = {'scout':'enemy_opening_triangle_physical','sentry':'enemy_opening_triangle_physical',
+               'interceptor':'enemy_opening_triangle_energy','swarm':'enemy_opening_triangle_energy',
+               'anchor':'enemy_opening_slab_energy','reactive':'enemy_opening_slab_energy',
+               'shielded':'enemy_opening_u_energy','command':'enemy_opening_u_energy'}
     for enemy_id, enemy in enemies.items():
-        trait, mechanic = enemy.get('intelTrait'), enemy.get('intelMechanicRef')
-        if enemy_id in opening_ids and (not isinstance(trait,str) or not trait.strip() or mechanic not in mechanic_fields):
-            raise ValueError(f'mon {enemy_id}: opening intelligence requires intelTrait and intelMechanicRef')
-        if mechanic not in (None, '') and mechanic not in mechanic_fields:
-            raise ValueError(f'mon {enemy_id}: unknown intelMechanicRef {mechanic}')
-        if mechanic == 'reactiveReduction' and enemy.get('reactiveReduction') != 1:
-            raise ValueError(f'mon {enemy_id}: reactiveReduction reference is inactive')
-        if mechanic == 'shieldRecovery' and (not enemy.get('shield') or not enemy.get('shieldRecovery')):
-            raise ValueError(f'mon {enemy_id}: shieldRecovery reference is inactive')
+        if enemy_id not in opening_ids: continue
+        trait, name, visual = (enemy.get(key) for key in ('intelTrait','intelName','intelVisualRef'))
+        mechanics = enemy.get('intelMechanics')
+        if any(not isinstance(value,str) or not value.strip() for value in (trait,name,visual)) or not isinstance(mechanics,list):
+            raise ValueError(f'mon {enemy_id}: opening intelligence requires name, visual, trait and mechanic list')
+        if visual != visuals.get(enemy.get('archetype_id')):
+            raise ValueError(f'mon {enemy_id}: intelVisualRef must use the combat hull')
+        if len(set(mechanics)) != len(mechanics) or any(key not in mechanic_fields for key in mechanics):
+            raise ValueError(f'mon {enemy_id}: unknown or duplicate intelMechanics')
+        active = set()
+        if enemy.get('reactiveReduction') == 1: active.add('reactiveReduction')
+        if enemy.get('shieldRecovery') and enemy.get('shield'):
+            active.add('shieldRecovery')
+        if set(mechanics) != active:
+            raise ValueError(f'mon {enemy_id}: intelMechanics must equal active combat mechanics {sorted(active)}')
     for key,row in data.get('battle_design',{}).items():
         if str(row.get('group_id')) not in groups:raise ValueError(f'battle_design {key}: missing group')
         if row.get('tier') not in ('normal','elite','boss','ultimate'):raise ValueError(f'battle_design {key}: invalid tier')

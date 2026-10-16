@@ -13,43 +13,83 @@ func run() -> void:
 	scene.set_process(false)
 	scene.game.save_enabled=false
 	var page = scene.enemy_intel_page
-	check(page.route_stage == -1,"Hidden enemy page does not prepare route data")
-	check(page.route_builds == 0 and page.detail_builds == 0,"Hidden page has no route or detail work")
+	var equipment = scene.equipment_panel
+	var builds: int = scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0
+	var projections: int = equipment.projection_builds
+	var refreshes: int = equipment.refresh_passes
 	var rng_before = scene.game.rng.state
 	var profile_before = scene.game.profile.duplicate(true)
+	var paused_before = scene.game.paused
+	check(page.route_stage==-1 and page.route_builds==0 and page.detail_builds==0,"Hidden tab performs no route or detail work")
 	scene.select_system(11)
-	check(page.route_stage == 1 and not page.entries.is_empty(),"Opening tab lists actual stage-one route")
-	check(page.route_builds == 1 and page.detail_builds == 1,"First opening builds route and detail once")
+	check(scene.equipment_tabs.current_tab==11 and page.route_builds==1 and page.detail_builds==1,"Actual tab event opens route and first detail once")
+	check(equipment.projection_builds==projections and equipment.refresh_passes==refreshes,"Enemy tab leaves equipment projections and refresh untouched")
+	check((scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Enemy tab does not recompile battle rules")
+	check(scene.game.rng.state==rng_before and scene.game.profile==profile_before and scene.game.paused==paused_before,"Opening leaves RNG, profile and pause unchanged")
+	var first: Dictionary=page.entries[0]
+	var row: Dictionary=scene.db.enemies[first.id]
+	check(page.heading.text==str(row.intelName) and not page.heading.text.contains("开场资源变体"),"Displayed name comes from authored player field")
+	check(page.detail.get_children().any(func(node):return node is TextureRect and node.texture==scene.ship_hull_texture(str(row.intelVisualRef))),"Image uses authored combat visual key")
+	page.list.get_child(1).pressed.emit()
+	check(page.selected==1 and page.detail_builds==2,"Different enemy selection builds one detail")
+	page.list.get_child(1).pressed.emit()
+	check(page.detail_builds==2,"Same enemy selection does no work")
+	check(equipment.projection_builds==projections and (scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Selections leave equipment and combat compilation untouched")
 	scene.select_system(0)
+	var hidden_builds: int = page.route_builds
 	scene.select_system(11)
-	page.show_entry(0)
-	check(page.route_builds == 1 and page.detail_builds == 1,"Reopening and same selection reuse current page")
-	check(scene.game.rng.state == rng_before and scene.game.profile == profile_before,"Enemy page leaves game state and RNG unchanged")
-	var first: Dictionary = page.entries[0]
-	var source: Dictionary = scene.db.enemies[first.id]
-	var title := str(source.des)
-	check(page.heading.text == title,"Stable enemy ID resolves the source name")
-	source.intelTrait="表格字段定点替换"
-	page.show_entry(-1)
-	page.show_entry(0)
-	check(page.detail.get_children().any(func(node):return node is Label and node.text=="表格字段定点替换"),"Changing only table data changes displayed trait")
+	check(page.route_builds==hidden_builds,"Real close and reopen reuse route")
 	scene.select_system(0)
-	scene.game.stage=3
+	scene.game.profile.highestLevel=3
+	scene.game.start(3,false)
+	scene.game.paused=false
+	var before_tick: float = scene.game.distance
+	scene.game.tick(1.0/60.0)
+	check(scene.game.distance>before_tick and page.route_builds==hidden_builds,"Combat continues while enemy page is closed")
+	scene.game.spawn_group()
+	var actual_enemy: Dictionary=scene.game.enemies[0]
+	var mounted_id := str(int(scene.db.groups[str(int(scene.db.levels[2].groups[0].id))].slots[int(actual_enemy.slot)]))
+	var actual_row: Dictionary=scene.db.enemies[mounted_id]
+	check(actual_enemy.max_hp==scene.db.enemy_encounter_capacity(actual_row,3,0,"health") and actual_enemy.max_shield==scene.db.enemy_encounter_capacity(actual_row,3,0,"shield"),"Page capacity equals actual spawned combat actor")
+	for slot in scene.game.profile.loadout.defence:
+		if str(slot.get("key",""))=="":slot.key="armour"
+	scene.game.invalidate_stat_cache()
+	var descriptor: Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(scene.game,"native_rich15_layer2")
+	check(not descriptor.has("error"),"Native descriptor accepts actual spawned encounter: "+str(descriptor.get("error","")))
+	if not descriptor.has("error"):
+		var hostile: Array=descriptor.weapons.filter(func(weapon):return weapon.hostile and int(weapon.source)==0)
+		var enemy_weapon: Dictionary=scene.db.enemy_weapon(str(actual_enemy.equipment[0].name))
+		check(not hostile.is_empty() and hostile[0].damage==scene.db.enemy_attack_damage(actual_row,enemy_weapon,3,0),"Page attack equals admitted native hostile output")
 	page.refresh_if_needed()
-	check(page.route_stage==1,"Hidden tab does not recompute after stage change")
-	check(page.route_builds == 1,"Hidden stage switch does no route work")
+	check(page.route_builds==hidden_builds,"Closed stage change does no enemy-page work")
+	builds=scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0
+	projections=equipment.projection_builds
 	scene.select_system(11)
-	check(page.route_stage==3 and page.entries.any(func(entry):return str(entry.id)=="271024"),"Reopening lists stage-three reactive enemy")
-	check(page.route_builds == 2,"Stage switch rebuilds the route once")
+	check(page.route_stage==3 and page.route_builds==hidden_builds+1,"Opening after stage change rebuilds once")
+	check(equipment.projection_builds==projections and (scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Cross-stage tab opening avoids unrelated recompilation")
 	var reactive_index = page.entries.find_custom(func(entry):return str(entry.id)=="271024")
+	page.list.get_child(reactive_index).pressed.emit()
+	var reactive := UIText.t("enemy.intel.reactive",{"stacks":str(scene.game.REACTIVE_STACK_LIMIT),"reduction":scene.number(scene.game.REACTIVE_STACK_REDUCTION*100.0),"window":scene.number(scene.game.REACTIVE_RESET_SECONDS)})
+	check(page.detail.get_children().any(func(node):return node is Label and node.text==reactive),"Reactive detail binds combat parameters")
+	check(not page.detail.get_children().any(func(node):return node is Label and node.text.contains("271024")),"Player view omits internal ID")
+	var reactive_row: Dictionary=scene.db.enemies[page.entries[reactive_index].id]
+	reactive_row.intelName="表内测试名称"
+	reactive_row.shield=100
+	reactive_row.shieldRecovery=0.08
+	reactive_row.shieldDelay=1.8
+	reactive_row.intelMechanics=["shieldRecovery","reactiveReduction"]
+	page.show_entry(-1)
 	page.show_entry(reactive_index)
-	check(page.detail.get_children().any(func(node):return node is Label and node.text==UIText.t("enemy.intel.reactive")),"Reactive text follows referenced combat field")
-	var entry: Dictionary=page.entries[reactive_index]
-	var row: Dictionary=scene.db.enemies[entry.id]
-	var expected := ceilf(float(row.health)*scene.db.ratio(3,int(entry.point),"lifeRatio"))
-	check(scene.db.enemy_encounter_capacity(row,3,int(entry.point),"health")==expected,"Displayed capacity uses battle-point interpolation and ceiling")
-	page.show_entry(page.entries.find_custom(func(item):return str(item.id)=="271028"))
-	check(page.detail.get_children().any(func(node):return node is Label and node.text.contains("1.8")),"Shield recovery details bind actual delay")
-	print("Enemy intel: %d checks, %d failures" % [checks,failures])
+	await process_frame
+	var detail_lines: Array=page.detail.get_children().filter(func(node):return node is Label).map(func(node):return node.text)
+	check(page.heading.text=="表内测试名称","Authoring field controls player name without slicing internal des")
+	var recovery_line := detail_lines.find_custom(func(value):return str(value).begins_with("护盾恢复"))
+	check(recovery_line>=0 and detail_lines.find(reactive)>recovery_line,"Both active mechanisms appear in authored order")
+	var recovery_index = page.entries.find_custom(func(entry):return str(entry.id)=="271028")
+	page.list.get_child(recovery_index).pressed.emit()
+	check(page.detail.get_children().any(func(node):return node is Label and node.text.contains("1.8")),"Recovery detail binds actual delay")
+	var recovery_row: Dictionary=scene.db.enemies[page.entries[recovery_index].id]
+	check(page.heading.text==str(recovery_row.intelName),"Different selection updates authored name")
+	print("Enemy intel tab chain: %d checks, %d failures; route=%d detail=%d compile=%d projection=%d" % [checks,failures,page.route_builds,page.detail_builds,builds,projections])
 	scene.queue_free()
 	quit(1 if failures else 0)

@@ -25,6 +25,8 @@ var sorted_ids: Array = []
 var last_sort_mode := -1
 var observed_resources: Dictionary = {}
 var stats_dirty: Dictionary = {} # true: full stats/context; false: counters only
+var projection_builds := 0
+var refresh_passes := 0
 var selected_next_stat = 0.0
 var detail_dirty := true
 var details_open := false
@@ -453,6 +455,7 @@ func card_level_text(entry: Dictionary, category: String, active: bool) -> Strin
 	return UIText.t("equipment.card_weapon_context",{"level":level,"type":UIText.t("equipment.energy" if int(row.get("dmgtype",0))==1 else "equipment.physical"),"seconds":host.number(float(row.cd))})
 
 func equipment_item(category: String, index: int) -> Dictionary:
+	projection_builds += 1
 	var entry: Dictionary = host.game.module_entry(category,index)
 	var key := str(entry.get("key",""))
 	var active: bool = index<host.game.active_slot_count(category)
@@ -474,6 +477,7 @@ func module_tooltip(entry: Dictionary, prefix: String, name: String, projection:
 	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
 
 func refresh(only_slot := "") -> void:
+	refresh_passes += 1
 	refresh_slots([] if only_slot.is_empty() else [only_slot])
 
 func refresh_slots(changed: Array) -> void:
