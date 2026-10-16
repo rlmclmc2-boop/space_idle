@@ -9,6 +9,20 @@ import sys
 ROOT = Path(r'D:\放置')
 BASE = 'd9750f9f46fa4e777ef38ce4b717684536ebe03a'
 DLL_SHA = '6bfa0d565eae83d96ee6e374d92b790a60a41cb52ae1d9209b23c90d1e7ef452'
+NON_RUNTIME_CHANGES = frozenset({
+    'space-battleship/AGENTS.md',
+    'space-battleship/docs/READ_DEMOS.md',
+    'space-battleship/docs/READ_PROTOCOL.md',
+    'space-battleship/docs/READ_ROUTE.md',
+    'space-battleship/docs/knowledge/INDEX.md',
+    'space-battleship/docs/knowledge/TASKS.md',
+    'space-battleship/docs/knowledge/archive/20261016-token-reading.md',
+    'space-battleship/docs/knowledge/tasks/.gitkeep',
+    'space-battleship/docs/roles/DOT.md',
+    'space-battleship/docs/roles/EXECUTOR.md',
+    'space-battleship/tools/read_budget.py',
+    'space-battleship/tools/test_read_budget.py',
+})
 DESCRIPTOR = '''[configuration]
 entry_symbol = "space_native_init"
 compatibility_minimum = "4.7"
@@ -40,7 +54,9 @@ def validate(root):
         raise RuntimeError('当前分支不是 main：' + branch)
     run(['git', 'merge-base', '--is-ancestor', BASE, 'HEAD'], root)
     # Compare both committed and working-tree runtime against accepted source.
-    changed = run(['git', 'diff', '--name-only', BASE, '--', 'space-battleship'], root)
+    changed = '\n'.join(path for path in run(
+        ['git', 'diff', '--name-only', BASE, '--', 'space-battleship'], root
+    ).splitlines() if path not in NON_RUNTIME_CHANGES)
     if changed:
         raise RuntimeError('运行内容偏离已验收版本，停止启动：\n' + changed)
     engine = project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
