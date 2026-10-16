@@ -256,7 +256,7 @@ func consume_feedback(game:RefCounted)->void:
 			6:game.event.emit("beam_hit",{"shot":row.shot,"pos":p})
 			5:
 				if row.shot.get("prototype_missile",false) and not bool(row.shot.hostile):
-					game.event.emit("prototype_missile_retired",{"serial":row.shot.serial,"reason":"native_retire","time":row.clock,"position":p,"direction":row.direction,"speed":game.projectile_speed(row.shot),"coast":false})
+					game.event.emit("prototype_missile_retired",{"serial":row.shot.serial,"reason":"native_retire","time":row.clock,"position":p,"direction":row.direction,"speed":game.projectile_speed(row.shot),"coast":false,"tier":game.db.evolution_visual_tier(int(row.shot.get("entry",{}).get("level",1)))})
 
 func cancel(game:RefCounted)->void:
 	if kernel==null:return

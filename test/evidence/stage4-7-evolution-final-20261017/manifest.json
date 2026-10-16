@@ -162,5 +162,9 @@
   "missile-control-v3second-system-load.json.gz": {
     "sha256": "bc9070f20f24dc7f1e4cbfc2a401ace71333aaf7028413beb84c3816ae8ac13f",
     "bytes": 1298
+  },
+  "visual-tiers-20-200.png": {
+    "sha256": "1eab1c980418ab6dab717376f9379facd1b9d1ef5e958e835266fa02684d0260",
+    "bytes": 53658
   }
 }

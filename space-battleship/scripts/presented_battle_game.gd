@@ -286,7 +286,7 @@ func advance_custom_projectile(shot:Dictionary,dt:float)->bool:
 func _retire_missile(shot:Dictionary,reason:String,coast:bool)->void:
 	if bool(shot.get("retirement_emitted",false)):return
 	shot.retirement_emitted=true;shot.dead=true
-	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":Vector2(shot.x,shot.y),"direction":Vector2(shot.direction),"speed":float(shot.speed),"coast":coast}
+	var record:={"serial":int(shot.serial),"reason":reason,"time":motion_clock,"position":Vector2(shot.x,shot.y),"direction":Vector2(shot.direction),"speed":float(shot.speed),"coast":coast,"tier":db.evolution_visual_tier(int(shot.get("entry",{}).get("level",1)))}
 	missile_retirements.append(record)
 	if missile_retirements.size()>128:missile_retirements.pop_front()
 	# Presentation-only notification, never a projectile impact or damage event.

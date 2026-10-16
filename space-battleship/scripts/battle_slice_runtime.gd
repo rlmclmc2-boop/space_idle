@@ -7,6 +7,7 @@ const HOT=["fire","hit","beam_started","beam_hit","projectile_impact","explode",
 class Effect extends RefCounted:
 	var kind:int
 	var serial:int=0
+	var tier:int=0
 	var uid:int=0
 	var style:int=0 # 0 enemy,1 pulse,2 missile,3 rail,4 beam
 	var position:=Vector2.ZERO
@@ -229,7 +230,7 @@ func on_event(kind:String,info:Dictionary)->bool:
 			scene.beep(90)
 		"prototype_missile_retired":
 			e.serial=int(info.serial);e.style=2;e.position=info.position;e.direction=info.direction
-			e.speed=float(info.speed);e.coast=bool(info.coast);consume(e)
+			e.speed=float(info.speed);e.coast=bool(info.coast);e.tier=int(info.get("tier",0));consume(e)
 		"prototype_missile_reset":scene.missile_events.clear()
 		"beam_started","beam_hit":
 			var shot:Dictionary=info.shot
@@ -284,7 +285,7 @@ func consume(e:Effect)->void:
 			scene.destruction_events.append({"position":e.position,"width":e.width,"born":geometry.fx_time,"seed":e.uid,"hyperspace":false})
 		6:
 			var coast=0.12 if e.coast else 0.0
-			scene.missile_events.append({"kind":"retired","position":e.position,"direction":e.direction,"speed":e.speed,"serial":e.serial,"born":geometry.fx_time,"coast_time":coast,"duration":coast+0.18})
+			scene.missile_events.append({"kind":"retired","position":e.position,"direction":e.direction,"speed":e.speed,"serial":e.serial,"born":geometry.fx_time,"coast_time":coast,"duration":coast+0.18,"tier":e.tier})
 		8:
 			scene.weapon_flash(e.position,Color.WHITE,14.0,0.08)
 			scene.beam_ring(e.position,scene.ORANGE,0.12,11)

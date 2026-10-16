@@ -508,10 +508,7 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="prototype_missile_retired":
 		if not missile_vfx_enabled:return
 		var coast_time:=0.12 if bool(info.coast) else 0.0
-		var tier:=0
-		for prior in missile_events:
-			if int(prior.get("serial",-1))==int(info.serial):tier=int(prior.get("tier",0));break
-		missile_events.append({"kind":"retired","position":info.position,"direction":info.direction,"speed":info.speed,"serial":info.serial,"born":fx_time,"coast_time":coast_time,"duration":coast_time+0.18,"tier":tier})
+		missile_events.append({"kind":"retired","position":info.position,"direction":info.direction,"speed":info.speed,"serial":info.serial,"born":fx_time,"coast_time":coast_time,"duration":coast_time+0.18,"tier":int(info.get("tier",0))})
 		return
 	if kind=="projectile_impact" and bool(info.shot.get("prototype_missile",false)):
 		weapon_impact(info.shot,Vector2(info.pos));return

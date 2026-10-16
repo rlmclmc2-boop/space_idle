@@ -6,7 +6,7 @@ const ENERGY := Color("8deaff")
 const CORE := Color("edfff9")
 
 static func accent(base:Color,tint:Color)->Color:
-	return base if tint.a<=0 else base.lerp(tint,0.72)
+	return base if tint.a<=0 else base.lerp(Color(tint.r,tint.g,tint.b,base.a),0.72*tint.a)
 
 static func charge(surface: CanvasItem, muzzle: Vector2, target: Vector2, amount: float, clock: float, tint:Color=Color(1,1,1,0)) -> void:
 	if not muzzle.is_finite() or not target.is_finite() or not is_finite(amount) or not is_finite(clock):

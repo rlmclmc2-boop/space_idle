@@ -268,7 +268,10 @@ func _ready() -> void:
 		font = system_font
 	db = ShipDatabase.new()
 	evolution_palette.clear()
-	for code in db.data.equipment_evolution.visual_palette:evolution_palette.append(Color(str(code)))
+	for index in db.data.equipment_evolution.visual_palette.size():
+		var color:=Color(str(db.data.equipment_evolution.visual_palette[index]))
+		color.a=clampf(float(db.data.equipment_evolution.visual_strength_start)+float(db.data.equipment_evolution.visual_strength_per_tier)*float(index+1),0.0,1.0)
+		evolution_palette.append(color)
 	var parsed_visuals = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
 	if not parsed_visuals is Dictionary:
 		push_error("Invalid ship weapon visual profiles")
@@ -1162,7 +1165,7 @@ var visual_evolution_tiers:PackedInt32Array=PackedInt32Array()
 func refresh_evolution_visuals()->void:
 	visual_evolution_tiers.resize(game.weapon_entries().size())
 	for index in visual_evolution_tiers.size():
-		visual_evolution_tiers[index]=mini(evolution_palette.size(),int(game.weapon_entries()[index].get("level",1))/int(db.data.equipment_evolution.interval))
+		visual_evolution_tiers[index]=db.evolution_visual_tier(int(game.weapon_entries()[index].get("level",1)))
 
 func weapon_evolution_tier(shot:Dictionary)->int:
 	if bool(shot.get("hostile",false)):return 0
@@ -1174,7 +1177,9 @@ func evolution_color(tier:int)->Color:
 	return Color(1,1,1,0) if tier<=0 or evolution_palette.is_empty() else evolution_palette[clampi(tier-1,0,evolution_palette.size()-1)]
 
 func evolution_tint(base:Color,tier:int)->Color:
-	return base if tier<=0 or evolution_palette.is_empty() else base.lerp(evolution_palette[clampi(tier-1,0,evolution_palette.size()-1)],0.72)
+	if tier<=0 or evolution_palette.is_empty():return base
+	var tint:Color=evolution_palette[clampi(tier-1,0,evolution_palette.size()-1)]
+	return base.lerp(Color(tint.r,tint.g,tint.b,base.a),0.72*tint.a)
 
 func weapon_strength(shot: Dictionary) -> float:
 	return 1.0 + clampf(GrowthNumber.logarithm(GrowthNumber.maximum(1,shot.damage))/30.0,0,0.5)

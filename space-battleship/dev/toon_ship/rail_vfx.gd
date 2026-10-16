@@ -26,7 +26,7 @@ func flight(_surface:CanvasItem,_point:Vector2,_direction:Vector2,_clock:float,_
 	# snapshot draws an independent discharge instead of a travelling packet.
 	pass
 func accent(base:Color,tint:Color)->Color:
-	return base if tint.a<=0 else base.lerp(tint,0.72)
+	return base if tint.a<=0 else base.lerp(Color(tint.r,tint.g,tint.b,base.a),0.72*tint.a)
 func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,budget:float,tint:Color=Color(1,1,1,0))->void:
 	var lifetime:=minf(flash_seconds,0.045)
 	if age<0 or age>=lifetime:return

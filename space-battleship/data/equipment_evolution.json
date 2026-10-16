@@ -15,5 +15,7 @@
     "d8ed78",
     "94e8b4",
     "f7e6b0"
-  ]
+  ],
+  "visual_strength_start": 0.4,
+  "visual_strength_per_tier": 0.06
 }

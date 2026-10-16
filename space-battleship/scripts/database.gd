@@ -91,6 +91,9 @@ func equipment_growth(base: float, multiplier: float, level: int) -> float:
 	var step := pow(10.0, floorf(log(value) / log(10.0) + 1e-12) - 1.0)
 	return floorf(value / step + 0.5) * step
 
+func evolution_visual_tier(level:int)->int:
+	return clampi(int(level/int(data.equipment_evolution.interval)),0,data.equipment_evolution.visual_palette.size())
+
 func evolution_material_id()->String:
 	return str(data.equipment_evolution.material_id)
 

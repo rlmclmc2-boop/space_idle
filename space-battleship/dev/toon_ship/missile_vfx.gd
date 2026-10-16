@@ -30,7 +30,7 @@ static func _axis(direction: Vector2) -> Vector2:
 
 
 static func accent(base:Color,tint:Color)->Color:
-	return base if tint.a<=0 else base.lerp(tint,0.72)
+	return base if tint.a<=0 else base.lerp(Color(tint.r,tint.g,tint.b,base.a),0.72*tint.a)
 
 static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_seed:int=0,budget:float=1.0,draw_body:bool=true,powered:bool=true,tint:Color=Color(1,1,1,0))->void:
 	var axis:=_axis(direction)
