@@ -23,3 +23,5 @@ longLaser 候选 p95 为 13.322ms，cannon 候选 p95 为 11.288ms；不能宣�
 驱动 `789154ddaba074cdcad6a75c9e721d93f5fc3bafa4ea5f2685929d3fd0ab331c`；mixed 夹具 `cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4`；四武器夹具 `227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe`；DLL `dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a`；Godot `c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643`。各次压缩原始帧、系统负载、日志、截图及哈希见 `summary-lite.json`。
 
 仅使用隔离 D 目录，未用玩家存档。
+
+补测：背景负载稳定后只补 missile 三次；候选减两端均值 +0.137ms，见 [MISSILE_CLOSURE.md](MISSILE_CLOSURE.md)。此前 +0.487ms 一组受背景负载污染。
