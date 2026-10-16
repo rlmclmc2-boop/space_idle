@@ -5,14 +5,15 @@ var failures := 0
 func _initialize() -> void:
 	call_deferred("run")
 
-func one(label: String, stage: int, point: int, weapon: String, weapon_level: int, defence: String, defence_level: int, reactor_level: int, use_native := false) -> void:
+func one(label: String, stage: int, point: int, weapon: String, weapon_level: int, defence: String, defence_level: int, reactor_level: int, use_native := false, prebattle_iron := -1.0) -> void:
 	var db := ShipDatabase.new()
 	var g = preload("res://scripts/presented_battle_game.gd").new(db, false)
 	g.native_execution_auto = use_native
 	g.rng.seed = 1729
 	g.profile.cleared = range(1, stage)
 	g.rebuild_unlocks()
-	g.profile.resources["1"] = 10000.0
+	var iron_budget:float=prebattle_iron if prebattle_iron>=0 else 10000.0
+	g.profile.resources["1"] = iron_budget
 	g.profile.resources["2"] = 10000.0
 	if not g.equip_slot("weapons", 0, weapon) or not g.equip_slot("defence", 0, defence):
 		printerr("INVALID_EQUIP ", label); failures += 1; return
@@ -22,7 +23,7 @@ func one(label: String, stage: int, point: int, weapon: String, weapon_level: in
 		printerr("INVALID_DEFENCE_UPGRADE ", label); failures += 1; return
 	if reactor_level > 1 and not g.upgrade_reactor(reactor_level - 1):
 		printerr("INVALID_REACTOR_UPGRADE ", label); failures += 1; return
-	var spent := 10000.0 - float(g.profile.resources["1"])
+	var spent := iron_budget - float(g.profile.resources["1"])
 	g.profile.resources["1"] = 0.0
 	g.profile.resources["2"] = 0.0
 	if g.reactor_unlocked():
@@ -73,11 +74,27 @@ func one(label: String, stage: int, point: int, weapon: String, weapon_level: in
 		if g.state == BattleGame.State.RETREAT or elapsed > 240.0: break
 		previous_state = g.state
 	var status := "retreat" if exit_state == BattleGame.State.RETREAT or g.state == BattleGame.State.RETREAT else "clear" if cleared >= 0 else "timeout"
-	var row := {"case":label,"stage":stage,"point":point,"status":status,"combat_s":snapped(cleared-entered,0.01) if cleared>=0 else -1,"spent_iron":spent,"reactor":reactor_level,"armour_in":armour_in,"armour_out":armour_out,"shield_in":shield_in,"shield_out":shield_out,"shield_damage_times":hit_times,"recovery_frames":recovery_frames,"native_session":native_seen}
+	var row := {"case":label,"stage":stage,"point":point,"status":status,"combat_s":snapped(cleared-entered,0.01) if cleared>=0 else -1,"prebattle_iron":iron_budget,"spent_iron":spent,"reactor":reactor_level,"armour_in":armour_in,"armour_out":armour_out,"shield_in":shield_in,"shield_out":shield_out,"shield_damage_times":hit_times,"recovery_frames":recovery_frames,"native_session":native_seen}
 	print("APPROVED_POINT ", JSON.stringify(row))
 	if status == "timeout" or entered < 0: failures += 1
 
 func run() -> void:
+	if OS.get_environment("FIRST_THREE_STAGE3_APPROVED") == "1":
+		one("3-1-low-missile1-shield1-reactor1", 3, 1, "missile", 1, "shield", 1, 1, true, 0.0)
+		one("3-1-auto-missile3-shield3-reactor1", 3, 1, "missile", 3, "shield", 3, 1, true, 280.0)
+		one("3-2-low-missile1-shield1-reactor1", 3, 2, "missile", 1, "shield", 1, 1, true, 0.0)
+		one("3-2-auto-missile3-shield3-reactor1", 3, 2, "missile", 3, "shield", 3, 1, true, 280.0)
+		one("3-4-low-missile1-shield1-reactor1", 3, 4, "missile", 1, "shield", 1, 1, true, 0.0)
+		one("3-4-low-cannon1-shield1-reactor1", 3, 4, "cannon", 1, "shield", 1, 1, true, 0.0)
+		one("3-4-auto-missile4-shield3-reactor1", 3, 4, "missile", 4, "shield", 3, 1, true, 365.0)
+		one("3-4-auto-cannon4-shield3-reactor1", 3, 4, "cannon", 4, "shield", 3, 1, true, 365.0)
+		one("3-6-low-missile1-shield1-reactor1", 3, 6, "missile", 1, "shield", 1, 1, true, 0.0)
+		one("3-6-low-cannon1-shield1-reactor1", 3, 6, "cannon", 1, "shield", 1, 1, true, 0.0)
+		one("3-6-auto-missile4-shield4-reactor1", 3, 6, "missile", 4, "shield", 4, 1, true, 450.0)
+		one("3-6-auto-cannon4-shield4-reactor1", 3, 6, "cannon", 4, "shield", 4, 1, true, 450.0)
+		print("APPROVED_STAGE3_SUMMARY 12 cases ", failures, " invalid")
+		quit(1 if failures else 0)
+		return
 	if OS.get_environment("FIRST_THREE_SAME_WEAPON") == "1":
 		one("2-6-missile1-armour1-reactor1", 2, 6, "missile", 1, "armour", 1, 1, true)
 		one("2-6-auto-missile3-armour2-reactor1", 2, 6, "missile", 3, "armour", 2, 1, true)
