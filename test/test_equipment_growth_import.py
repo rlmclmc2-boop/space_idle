@@ -12,9 +12,10 @@ import openpyxl
 book = openpyxl.load_workbook(ROOT / 'config_excel/equipment.xlsx', data_only=True)
 rows = read_rows(book['equipment'])
 equipment = convert_sheet('equipment', rows)
-assert len(equipment) == 9 and all(len(items) == 1 for items in equipment.values())
+assert len(equipment) == 10 and all(len(items) == 1 for items in equipment.values())
 assert equipment['armour'][0]['para2'] == 0.2
 assert equipment['shield'][0]['para4'] == 0.2
+assert equipment['shield'][0]['para1'] / equipment['armour'][0]['para1'] == 0.75
 assert equipment['laser'][0]['dmgMulti'] == 0.2
 assert convert_sheet('equipment', rows + [{'name': 'laser', 'level': 900, 'dmg': 'invalid'}]) == equipment
 data = json.loads((ROOT / 'data/game_data.json').read_text(encoding='utf-8'))

@@ -40,8 +40,13 @@ func equip(key: String, level: int) -> Dictionary:
 			result.level = level
 			if level == 1:
 				return result
-			if key in ["armour", "shield"]:
-				result.para1 = equipment_combat_growth(float(row.para1), float(row.get("para2" if key == "armour" else "para4", 0)), level)
+			if key == "armour":
+				result.para1 = equipment_combat_growth(float(row.para1), float(row.para2), level)
+			elif key == "shield":
+				# Keep the authored base ratio after armour's existing level rounding.
+				var armour_base: Dictionary = equipment["armour"][0]
+				var armour_capacity = equipment_combat_growth(float(armour_base.para1), float(armour_base.para2), level)
+				result.para1 = N.multiply(armour_capacity, float(row.para1) / float(armour_base.para1))
 			elif row.get("dmgMulti") != null and row.get("dmg") != null:
 				result.dmg = equipment_combat_growth(float(row.dmg), float(row.dmgMulti), level)
 			for field in row:

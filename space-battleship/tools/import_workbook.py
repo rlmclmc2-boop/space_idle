@@ -299,6 +299,8 @@ def validate_projection(data, *, check_level_ratios=True):
                 positive(r['para2'] if key=='missile' else r['para1'],f'{key} projectile speed')
             growth = 'para2' if key == 'armour' else 'para4' if key == 'shield' else 'dmgMulti'
             positive(r.get(growth), f'{key} {growth}', True)
+    if float(equipment['shield'][0]['para4']) != float(equipment['armour'][0]['para2']):
+        raise ValueError('shield growth must match armour growth')
     for key, items in equipment.items():
         for r in (r for r in items if r.get('level') == 1):
             for field, value in r.items():
