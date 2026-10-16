@@ -4,7 +4,14 @@
   "historical_five_suite_dll": {
     "sha256": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a",
     "build_manifest_source": "274e973affbcceb92974452f4f67e8f72a7f9032",
-    "reason_not_installed": "Three native headers changed after the historical build."
+    "artifact": "D:/CodexBuild/space_idle/balance-recovery-progression-20261015/test/artifacts/ordered-beam-20261015/space_native.dll",
+    "manifest": "D:/CodexBuild/space_idle/balance-recovery-progression-20261015/test/artifacts/ordered-beam-20261015/manifest.json",
+    "manifest_snapshot": "historical-ordered-beam-manifest.json",
+    "source_change": {
+      "combat_execution_kernel.h": "175 added, 14 removed; reactive armour state/schema and compact laser compatibility/feedback lifecycle",
+      "combat_presentation.h": "53 added, 2 removed; cold compatibility-array reconstruction and compact laser support",
+      "combat_retained_presentation.h": "10 added, 6 removed; compact laser switch and retained frame handoff"
+    }
   },
   "build": {
     "output": "D:/CodexBuild/space_idle/player-entry-e025/bin/space_native.dll",
@@ -33,6 +40,10 @@
     "native_execution_kernel": "485 checks, 0 failures; NATIVE_LIBRARY_PROOF path and SHA256 match installed DLL",
     "main_scene": "headless main.tscn, --quit-after 120, exit 0",
     "user_data": "APPDATA and LOCALAPPDATA isolated under D:/CodexBuild/space_idle/player-entry-e025/runtime-check; personal saves not opened",
-    "scope": "No actual interactive double click or long-play performance suite in this verification."
+    "graphical_entry": "D:/放置/玩游戏.cmd with SPACE_BATTLESHIP_VERIFY_WINDOW=1; full visible main.tscn window, 1389x922, responding; OpenGL 3.3 Compatibility on NVIDIA GeForce RTX 2060",
+    "graphical_loaded_dll": "Live Godot process module D:/放置/space-battleship/bin/space_native.dll; SHA256 a4b646bc47690c17de732026d3a65f9936ffe4e8f06e0dff77143faea8376e7c",
+    "graphical_user_data": "D:/CodexBuild/space_idle/player-entry-e025/window-check/userdata; personal saves not opened; window closed with WM_CLOSE",
+    "graphical_image": "game-window.png",
+    "scope": "No long-play performance suite in this verification."
   }
 }

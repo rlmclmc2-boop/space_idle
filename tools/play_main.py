@@ -74,9 +74,13 @@ def validate(root):
 def main():
     project, engine, head, version = validate(ROOT)
     env = os.environ.copy()
-    env['APPDATA'] = str(project / '.userdata' / 'roaming')
-    env['LOCALAPPDATA'] = str(project / '.userdata' / 'local')
-    for p in [Path(env['APPDATA']), Path(env['LOCALAPPDATA']), project / '.runtime']:
+    window_check = env.get('SPACE_BATTLESHIP_VERIFY_WINDOW') == '1'
+    runtime = (Path(r'D:\CodexBuild\space_idle\player-entry-e025\window-check')
+               if window_check else project / '.runtime')
+    user_data = runtime / 'userdata' if window_check else project / '.userdata'
+    env['APPDATA'] = str(user_data / 'roaming')
+    env['LOCALAPPDATA'] = str(user_data / 'local')
+    for p in [Path(env['APPDATA']), Path(env['LOCALAPPDATA']), runtime]:
         p.mkdir(parents=True, exist_ok=True)
     print('项目：', project, '\nGit：', head, '\n引擎：', version,
           '\n原生库 SHA256：', DLL_SHA, '\n数据 SHA256：', digest(project/'data/game_data.json'),
@@ -84,15 +88,15 @@ def main():
     receipt = {'project': str(project), 'head': head, 'accepted_runtime': BASE,
                'engine': str(engine), 'engine_version': version,
                'dll_sha256': DLL_SHA, 'game_data_sha256': digest(project/'data/game_data.json')}
-    (project/'.runtime/player-launch.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
+    (runtime/'player-launch.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
     # Import in-place, reusing Godot's cache. No project or asset copies.
     print('检查资源导入……', flush=True)
-    with (project/'.runtime/player-import.log').open('w', encoding='utf-8') as log:
+    with (runtime/'player-import.log').open('w', encoding='utf-8') as log:
         subprocess.run([str(engine), '--headless', '--editor', '--import', '--quit', '--path', str(project)],
                        cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
     print('启动正式游戏。', flush=True)
     return subprocess.call([str(engine), '--path', str(project), 'res://main.tscn',
-                            '--log-file', str(project/'.runtime/player-game.log')], cwd=project, env=env)
+                            '--log-file', str(runtime/'player-game.log')], cwd=project, env=env)
 
 if __name__ == '__main__':
     try:
