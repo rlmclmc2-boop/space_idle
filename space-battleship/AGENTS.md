@@ -1,6 +1,6 @@
-@startup docs/knowledge/CURRENT.md
-@roles executor,reviewer,maintainer
-@route docs/READ_ROUTE.md#<task-kind>; exact section only
-@read explicit-targets-only; expansion=gap+exact-scope; no recursive links
-@policy docs/READ_PROTOCOL.md#<needed-section>; on demand
-@authority user>repo; one-fact-one-owner; preserve unrelated edits
+@role dot|executor -> python tools/read_budget.py route --role <role> --task <kind> [--task-id <id>]
+@state docs/knowledge/TASKS.md -> tasks/<id>.md only; no cross-task reads
+@must user>repo; preserve unrelated edits; no inferred gameplay/number/config/save approval
+@must Git branch+commit handoff; parent reviews before main merge; exclude Library/credentials/saves/cache
+@must affected-correctness verification only; battle shared effects -> docs/BATTLE.md; docs-only -> no game test
+@read explicit targets only; expansion=gap+exact-range; no recursive links

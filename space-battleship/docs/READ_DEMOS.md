@@ -2,6 +2,8 @@
 
 基准是“把相关原件整个送入上下文”的假设读取量，不声称旧流程实际如此执行。源文件大小是磁盘字节；新流程数字是本分支工具输出的 Unicode 字符数，两者不是同一单位，也不是计费 TOKEN。工具仍可能扫描或解析整个目标文件；减少的是返回给模型的内容。均未修改游戏内容或运行游戏测试。
 
+三个流程先执行 `route --role executor --task <kind>`，实际输出分别是：`ui-text` 952 字符、`equipment-data` 1000 字符、`combat-local` 957 字符，包含执行者规则、该任务锚点和本分支任务索引；实际任务已知 ID 时只返回自身状态。以下是随后对目标原件的读取。
+
 | 任务 | 未切片原件的大小 | 实际定位命令与返回字符 | 何时扩展 |
 |---|---:|---|---|
 | 界面文案 `battle.finale_cleared` | `ui_text.json` 456960 字节 + `ui_text_contract.json` 207604 字节 | `json --path data/ui_text.json --where key=battle.finale_cleared --fields key,text,params` → 86 字符；`json --path data/ui_text_contract.json --key entries/battle.finale_cleared` → 19 字符 | 若绑定或特殊来源存疑，读 `docs/UI_TEXT.md` 命中行；只查目标 KEY |

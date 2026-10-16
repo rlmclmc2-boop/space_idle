@@ -4,12 +4,12 @@ import argparse
 from collections import deque
 import fnmatch
 import json
-import os
 from pathlib import Path
 import re
 import subprocess
 import sys
 import tempfile
+import traceback
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CHARS = 1800
@@ -34,6 +34,28 @@ def emit(rows, limit):
     print(f"Continue: python tools/read_budget.py slice --path \"{saved.name}\" --start 1 --count 20")
 
 
+def report_error(exc, limit, unexpected=False):
+    summary = f"ERROR {type(exc).__name__}: {exc}"
+    if not unexpected and len(summary) <= limit:
+        print(summary, file=sys.stderr)
+        return
+    detail = traceback.format_exc() if unexpected else summary
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n",
+                                 suffix=".txt", prefix="space-idle-error-", delete=False) as saved:
+        saved.write(detail)
+    print(f"ERROR {type(exc).__name__}; details: {saved.name}; {len(detail)} chars", file=sys.stderr)
+    print(f"Continue: python tools/read_budget.py slice --path \"{saved.name}\" --start 1 --count 20", file=sys.stderr)
+
+
+class BoundedParser(argparse.ArgumentParser):
+    def print_help(self, file=None):
+        emit(self.format_help().splitlines(), DEFAULT_CHARS)
+
+    def error(self, message):
+        report_error(ValueError(message), DEFAULT_CHARS)
+        raise SystemExit(2)
+
+
 def git(*args):
     done = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True, encoding="utf-8", errors="replace")
     if done.returncode:
@@ -49,10 +71,36 @@ def selected_paths(names):
     if not names or len(names) > 16:
         raise ValueError("give 1–16 explicit --path entries; locate filenames first")
     for name in names:
-        path = Path(name).resolve()
+        given = Path(name)
+        path = (given if given.is_absolute() else ROOT / given).resolve()
         if not path.is_file():
             raise ValueError(f"missing file: {name}")
         yield path
+
+
+def cmd_route(a):
+    if not re.fullmatch(r"[a-z][a-z0-9-]*", a.task):
+        raise ValueError("task must be an exact READ_ROUTE.md heading ID")
+    role = {"dot": "DOT.md", "executor": "EXECUTOR.md"}[a.role]
+    guide = (ROOT / "docs" / "READ_ROUTE.md").read_text(encoding="utf-8").splitlines()
+    start = next((i for i, line in enumerate(guide) if re.match(rf"^## {re.escape(a.task)}(?:\s|$)", line)), None)
+    if start is None:
+        raise ValueError(f"unknown task: {a.task}; use a ## heading ID in docs/READ_ROUTE.md")
+    end = next((i for i in range(start + 1, len(guide)) if guide[i].startswith("## ")), len(guide))
+    must = [line for line in (ROOT / "AGENTS.md").read_text(encoding="utf-8").splitlines() if line.startswith("@must")]
+    role_lines = (ROOT / "docs" / "roles" / role).read_text(encoding="utf-8").splitlines()
+    if a.task_id:
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", a.task_id):
+            raise ValueError("task ID must be 1–64 lowercase letters, digits or hyphens")
+        state = ROOT / "docs" / "knowledge" / "tasks" / (a.task_id + ".md")
+        if not state.is_file():
+            raise ValueError(f"task state missing: {state.relative_to(ROOT)}")
+        state_lines = [f"STATE {state.relative_to(ROOT)}", *state.read_text(encoding="utf-8").splitlines()]
+    else:
+        index = ROOT / "docs" / "knowledge" / "TASKS.md"
+        state_lines = [f"TASK INDEX {index.relative_to(ROOT)}", *index.read_text(encoding="utf-8").splitlines()]
+    emit([f"ROLE {a.role} | TASK {a.task}", *must, f"ROLE FILE docs/roles/{role}",
+          *role_lines, f"ROUTE docs/READ_ROUTE.md#{a.task}", *guide[start:end], *state_lines], a.chars)
 
 
 def cmd_files(a):
@@ -186,13 +234,17 @@ def cmd_log(a):
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = BoundedParser(description=__doc__)
     sub = p.add_subparsers(dest="action", required=True)
-    for name in ("files", "grep", "slice", "json", "xlsx", "diff", "log"):
+    for name in ("route", "files", "grep", "slice", "json", "xlsx", "diff", "log"):
         q = sub.add_parser(name)
         q.add_argument("--chars", type=int, default=DEFAULT_CHARS, help="max stdout chars; overflow saved with locator")
-        if name != "files":
+        if name not in ("files", "route"):
             q.add_argument("--path", action="append", required=True if name not in ("diff",) else False)
+        if name == "route":
+            q.add_argument("--role", choices=("dot", "executor"), required=True)
+            q.add_argument("--task", required=True, help="exact ## heading ID in docs/READ_ROUTE.md")
+            q.add_argument("--task-id", help="read only docs/knowledge/tasks/<id>.md; otherwise list task index")
         if name == "files": q.add_argument("--glob", required=True)
         if name == "grep":
             q.add_argument("--query", required=True)
@@ -225,7 +277,10 @@ def main():
     try:
         globals()[f"cmd_{a.action}"](a)
     except (ValueError, KeyError, ImportError, RuntimeError, OSError, subprocess.SubprocessError) as exc:
-        print(f"ERROR {type(exc).__name__}: {exc}", file=sys.stderr)
+        report_error(exc, a.chars)
+        return 2
+    except Exception as exc:
+        report_error(exc, a.chars, unexpected=True)
         return 2
     return 0
 
