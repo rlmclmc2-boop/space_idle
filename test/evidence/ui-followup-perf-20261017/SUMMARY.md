@@ -1,3 +1,7 @@
+# 已撤回：DLL 不匹配生产入口
+
+本报告使用旧 DLL 2cf90eda；f578 的 tools/play_main.py 要求 dccd40b5。以下数据仅作失败运行记录，不作为候选验收。生产 DLL 修正样本另见 test/ui-followup-production-perf-20261017 分支。
+
 # 三项 UI 候选五套完整画面回退核查
 
 基准 `f578e4a26d88709690a31cba2ef85edd9cedd670`；候选 `26b20c31efd734041bc4d5d8e50ea361fe431077`。main 精确 Git 归档，候选只应用两提交间项目 diff；5 个变更文件的 Git blob 已逐项匹配。
@@ -21,3 +25,4 @@ mixed、laser、cannon、longLaser 的差值在 ±0.060ms 内；missile 候选�
 驱动 SHA-256 `789154ddaba074cdcad6a75c9e721d93f5fc3bafa4ea5f2685929d3fd0ab331c`；mixed 夹具 `cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4`；四武器夹具 `227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe`；DLL `2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a`；Godot `c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643`。各次压缩原始帧、系统负载、日志、截图及哈希见 `summary-lite.json`。
 
 运行态仅写隔离的 D:/CodexBuild/space_idle/ui-perf-20261017；未用玩家存档。
+
