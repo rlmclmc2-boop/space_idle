@@ -100,7 +100,7 @@ var battle_read_model=preload("res://scripts/battle_read_model.gd").new()
 var battle_read_model_enabled:=true
 
 func weapon_visual_key(key:String)->String:
-	return str(ENEMY_VISUAL_ALIASES.get(key,key))
+	return str(ENEMY_VISUAL_ALIASES.get(key,key.replace("-mon", "").replace("_mon", "")))
 
 func weapon_key(shot: Dictionary) -> String:
 	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))

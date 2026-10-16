@@ -257,6 +257,27 @@
         "para3": 1,
         "para4": null
       }
+    ],
+    "laser-mon": [
+      {
+        "name": "laser-mon",
+        "des": "敌方低频单发能量激光；para1 为飞行速度，冷却用于留出玩家护盾恢复窗口。",
+        "level": 1,
+        "dmgtype": 1,
+        "dmg": 80,
+        "dmgMulti": null,
+        "cd": 3.6,
+        "res_1": null,
+        "cost_1": null,
+        "costMulti_1": null,
+        "res_2": null,
+        "cost_2": null,
+        "costMulti_2": null,
+        "para1": 20,
+        "para2": null,
+        "para3": null,
+        "para4": null
+      }
     ]
   },
   "enemies": {
@@ -260124,9 +260145,9 @@
         }
       ],
       "dmgMultiple": 0.05,
-      "health": 220,
+      "health": 650,
       "armourType": 2,
-      "res": "{1,13,1}",
+      "res": "{1,25,1}",
       "size": 1,
       "shield": 0,
       "shieldType": 0,
@@ -260140,7 +260161,7 @@
       "drops": [
         {
           "resourceId": 1,
-          "amount": 13.0,
+          "amount": 25.0,
           "chance": 1.0
         }
       ]
@@ -260807,33 +260828,30 @@
     },
     "271024": {
       "id": 271024,
-      "des": "连击削减舰·开场资源变体",
+      "des": "慢射能量单体·护盾恢复教学",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.3,
-      "health": 850,
+      "dmgMultiple": 1,
+      "health": 2500,
       "armourType": 1,
-      "res": "{1,43,1}",
+      "res": "{1,55,1}",
       "size": 3,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连击削减舰，留意连续命中的效果。",
-      "intelName": "连击削减舰",
+      "intelTrait": "慢速单发能量攻击，留意护盾受击后的恢复间隔。",
+      "intelName": "能量脉冲舰",
       "intelVisualRef": "reactive",
-      "intelMechanics": [
-        "reactiveReduction"
-      ],
+      "intelMechanics": [],
       "drops": [
         {
           "resourceId": 1,
-          "amount": 43.0,
+          "amount": 55.0,
           "chance": 1.0
         }
       ]
@@ -260939,11 +260957,11 @@
       "des": "间歇护盾舰·开场资源变体",
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.25,
-      "health": 1100,
+      "dmgMultiple": 1.25,
+      "health": 1600,
       "armourType": 1,
       "res": "{1,65,1}",
       "size": 3,
@@ -261040,7 +261058,7 @@
         }
       ],
       "dmgMultiple": 0.5,
-      "health": 3600,
+      "health": 2800,
       "armourType": 1,
       "res": "{1,63,1}",
       "size": 5,
@@ -307259,8 +307277,8 @@
         null,
         null,
         null,
+        null,
         271001,
-        271002,
         null,
         null,
         null,
@@ -307524,7 +307542,7 @@
       "combatTier": "normal"
     },
     "33014": {
-      "description": "反应机制首次单独呈现",
+      "description": "慢射能量单体，展示玩家护盾恢复",
       "slots": [
         null,
         null,
@@ -307532,8 +307550,8 @@
         null,
         null,
         null,
+        null,
         271024,
-        271025,
         null,
         null,
         null,
@@ -318197,7 +318215,7 @@
     "chronoDefaultSpeed": 1,
     "chronoSpeeds": "1|0,2|1,3|2,4|3,5|4,6|5,7|6,8|7,9|8,10|9",
     "reactorEnergyBase": 100,
-    "reactorEnergyGrowth": 1.06,
+    "reactorEnergyGrowth": 1.5,
     "reactorUpgradeBase": 10,
     "reactorUpgradeGrowth": 1.35,
     "reactorBoostExponent": 0.8,
