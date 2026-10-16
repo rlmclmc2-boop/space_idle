@@ -211,6 +211,7 @@ func shot_mount(shot:Dictionary)->int:
 	return super.shot_mount(shot)
 
 func visual_muzzle(shot:Dictionary)->Vector2:
+	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	if battle_slice_runtime!=null:return battle_slice_runtime.muzzle(shot)
 	if bool(shot.get("prototype_missile",false)) or shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var id:String=_visual_drone_id(shot)

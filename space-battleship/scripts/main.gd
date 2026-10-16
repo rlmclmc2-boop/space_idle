@@ -1434,6 +1434,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var pos := game.projectile_position(shot)
 	if shot.hostile:
@@ -1766,7 +1767,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		if owns_primary:
 			pose.target = shot.get("primary_target",shot.target)
 			pose.fired_at = fx_time
-		if key=="cannon":pose.recoil = 0.13
+		if key=="cannon" and not bool(shot.get("chain_hop",false)):pose.recoil = 0.13
 	# Mount target feeds canonical missile release geometry even in fast mode.
 	if fast_mode_enabled():return
 	if key=="cannon" and bool(shot.hostile):

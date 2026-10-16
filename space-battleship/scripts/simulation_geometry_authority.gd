@@ -362,6 +362,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	var identity=drone_identity(shot)
 	if not identity.is_empty():return drone_launch_pose(identity,Vector2.ZERO,0).position
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)

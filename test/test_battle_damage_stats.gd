@@ -2,6 +2,9 @@ extends SceneTree
 const CC=preload("res://scripts/combat_context.gd")
 const STATS=preload("res://scripts/battle_damage_stats.gd")
 const N=preload("res://scripts/growth_number.gd")
+class RefusedTransfer extends "res://scripts/native_execution_session.gd":
+	func handoff_to_legacy(_game:RefCounted,_reason:String)->bool:return false
+	func prepare_geometry(_geometry:RefCounted,_game:RefCounted)->void:pass
 var checks:=0
 var failures:=0
 
@@ -48,6 +51,10 @@ func run()->void:
 	check(N.compare(game.damage_stats.total,150)==0 and N.compare(game.damage_stats.totals.get("drone:test-drone",0),100)==0,"health overkill capped and derived drone retained")
 	game.hit_enemy(enemy,1000,2,[],false,CC.root(3,"module:0","laser"))
 	check(N.compare(game.damage_stats.total,150)==0,"dead target cannot count twice")
+	enemy.hp=1e100;enemy.max_hp=1e100;enemy.shield=0;enemy.max_shield=0
+	game.damage_stats.clear()
+	game.hit_enemy(enemy,1,2,[],false,CC.root(4,"module:0","laser"))
+	check(enemy.hp==1e100 and N.compare(game.damage_stats.total,0)==0,"legacy huge health counts only representable state loss")
 	game.paused=true;game.tick(1.0)
 	check(game.damage_stats.elapsed==0,"pause stops battle clock")
 	game.paused=false;game.tick(1.0/60.0)
@@ -72,5 +79,25 @@ func run()->void:
 			on.set_damage_stats_enabled(false)
 			check(on.take_damage_stats().is_empty(),"native close clears pending ledger")
 			off.cancel();on.cancel()
+		var huge=ClassDB.instantiate("SpaceCombatKernel")
+		var world=native_world();world.enemies[0].hp=1e100;world.enemies[0].max_hp=1e100;world.enemies[0].shield=0.0;world.enemies[0].max_shield=0.0
+		check(huge.configure(world),"native huge health admission")
+		huge.set_damage_stats_enabled(true)
+		for i in 30:huge.advance(1.0/60.0)
+		check(huge.take_damage_stats().is_empty() and float(huge.enemy_views()[0].hp)==1e100,"native huge health counts only representable state loss")
+		huge.cancel()
+		var blocked=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
+		blocked.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+		blocked.profile.loadout.defence=[{"key":"armour","level":1},{"key":"shield","level":1}]
+		blocked.stat_cache_enabled=true;blocked.save_enabled=false;blocked.reset_player();blocked.state=BattleGame.State.COMBAT
+		blocked.enemies.assign([{"uid":100,"slot":0,"x":286.0,"y":100.0,"hp":1e8,"max_hp":1e8,"armourType":2,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
+		var descriptor=preload("res://scripts/native_execution_compiler.gd").new().compile(blocked,"native_low_contract")
+		descriptor.attack_counter=9007199254740990.0
+		var owner=RefusedTransfer.new()
+		check(owner.admit(blocked,descriptor),"native blocked-step fixture admitted")
+		blocked.native_execution=owner;blocked.set_damage_stats_enabled(true)
+		blocked.tick(1.0/60.0)
+		check(blocked.paused and owner.advance_blocked and blocked.damage_stats.elapsed==0,"blocked native step does not advance damage window")
+		blocked.begin_retreat()
 	print("Damage statistics: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

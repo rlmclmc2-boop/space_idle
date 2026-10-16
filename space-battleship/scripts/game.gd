@@ -2614,6 +2614,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		if effect.has("enemy_resistance"):resistance=float(effect.enemy_resistance);break
 	var incoming = N.multiply(raw,1.0+float(enemy.get("interference",0)))
 	var absorbed = 0.0
+	var shield_before = enemy.get("shield",0) if damage_stats.enabled else 0
 	if float(enemy.get("max_shield",0))>0:
 		incoming=N.maximum(1,incoming)
 		# A periodic beam hit is a hit, even though the whole beam is one attack.
@@ -2624,13 +2625,12 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			enemy.shield=N.subtract(enemy.shield,absorbed)
 			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
 	var amount = 0.0
-	var settled_hp = 0.0
+	var hp_before = enemy.hp if damage_stats.enabled else 0
 	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
-		if damage_stats.enabled:settled_hp=N.minimum(enemy.hp,amount)
 		enemy.hp=N.subtract(enemy.hp,amount)
 	if damage_stats.enabled and state==State.COMBAT:
-		damage_stats.record(str(context.get("source_id","other")),N.add(settled_hp,absorbed))
+		damage_stats.record(str(context.get("source_id","other")),N.add(N.maximum(0,N.subtract(shield_before,enemy.shield)),N.maximum(0,N.subtract(hp_before,enemy.hp))))
 	amount=N.add(amount,absorbed)
 	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
 	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
@@ -2975,7 +2975,6 @@ func tick(dt: float) -> void:
 	# A galaxy refit must transfer before this step changes clocks, income or
 	# region work. Failed preparation leaves the complete step in the caller.
 	if not prepare_logical_step(dt):return
-	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	advance_shared_clock_and_economy(dt)
 	if native_step_phase=="blocked":return
 	if native_execution!=null and native_execution.paused_by_configuration:
@@ -2987,6 +2986,7 @@ func tick(dt: float) -> void:
 
 	if native_wave_waiting and state==State.COMBAT:
 		if not advance_jewel_repair(dt):return
+		if damage_stats.enabled:damage_stats.advance(dt)
 		finish_combat_step(dt)
 		if has_alive_enemy():native_wave_waiting=false
 		return
@@ -2996,12 +2996,14 @@ func tick(dt: float) -> void:
 			# Cold whole-encounter legacy selection. No native state was installed.
 	if native_execution!=null:
 		if native_execution.advance(self,dt):
+			if damage_stats.enabled:damage_stats.advance(dt)
 			native_step_phase="idle";native_step_remaining=0.0
 			return
 		# A failed transfer retains the owner and the unconsumed combat phase.
 		if native_execution!=null:return
 		# Successful transfer resumes only combat; shared economy already ran.
 		if "motion_clock" in self:set("motion_clock",motion_step_end)
+	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	if state == State.LEVEL_CLEAR:
 		if not advance_jewel_repair(dt):return
 		if state!=State.LEVEL_CLEAR:return

@@ -19,6 +19,9 @@ func run()->void:
 	scene.game.spawn_group()
 	scene.refresh_structure()
 	var ui=scene.damage_stats_ui
+	var chain_origin=Vector2(100,160)
+	var chain_shot={"key":"chain","chain_weapon":"cannon","chain_hop":true,"launch_point":chain_origin,"mount":0,"x":chain_origin.x,"y":chain_origin.y,"hostile":false}
+	check(scene.visual_muzzle(chain_shot)==chain_origin,"chain visual starts at hit enemy instead of player turret")
 	check(ui!=null and scene.guard_settings.get_popup().get_item_text(scene.guard_settings.get_popup().get_item_index(21))==UIText.t("battle.damage_stats.title"),"main scene exposes settings entry")
 	ui.show();await process_frame
 	check(not scene.game.damage_stats.enabled and not ui.enabled.button_pressed,"window opens stopped")

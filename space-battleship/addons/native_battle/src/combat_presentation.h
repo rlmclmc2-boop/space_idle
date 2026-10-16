@@ -534,8 +534,9 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
     for(int i=0;i<shots.size();++i) {
         Dictionary p=shots[i],v=index.get(p.get("serial",Variant()),Dictionary());
         Ref<SpaceMotionLease> m=p.get("motion_lease",Variant());Ref<SpaceVisualLease> visual=v.get("visual_lease",Variant());
-        String key=String(p.get("key","")).replace("_mon","").replace("-mon","");bool hostile=bool(p.get("hostile",false));
-        bool chain=bool(p.get("chain_hop",false)),missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&bool(p.get("prototype_missile",false));
+        bool chain=bool(p.get("chain_hop",false));
+        String key=String(p.get(chain ? "chain_weapon" : "key","")).replace("_mon","").replace("-mon","");bool hostile=bool(p.get("hostile",false));
+        bool missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&(chain||bool(p.get("prototype_missile",false)));
         bool pulse=prototype&&pulse_enabled&&!hostile&&key=="laser",enemy=prototype&&enemy_enabled&&hostile&&(key=="laser"||key=="cannon");
         // The original visual list is capped at256. Unretained ordinary flights
         // still have an authoritative native position and heading; the cap must
@@ -596,8 +597,9 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
         for(int i=0;i<input.size();++i) {
             Dictionary f=input[i],shot=f["shot"],visual=f["visual"];PreparedFlight p;
             p.shot=shot;p.visual=visual;p.motion=shot.get("motion_lease",Variant());p.visual_state=visual.get("visual_lease",Variant());
-            p.point=f["pos"];p.budget=f.get("budget",-1);p.key=String(shot.get("key","")).replace("_mon","").replace("-mon","");
-            p.hostile=shot.get("hostile",false);p.chain=shot.get("chain_hop",false);compatibility.push_back(std::move(p));
+            p.point=f["pos"];p.budget=f.get("budget",-1);p.chain=shot.get("chain_hop",false);
+            p.key=String(shot.get(p.chain ? "chain_weapon" : "key","")).replace("_mon","").replace("-mon","");
+            p.hostile=shot.get("hostile",false);compatibility.push_back(std::move(p));
         }
     }
     const std::vector<PreparedFlight> &flights=frame.is_valid()?frame->flights:compatibility;
@@ -613,18 +615,15 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
         bool is_missile=own_missiles&&!f.hostile&&f.key=="missile";
         bool is_pulse=own_pulses&&!f.hostile&&f.key=="laser"&&!bool(shot.get("beam",false));
         bool is_enemy=simple_enemies&&f.hostile&&(f.key=="laser"||f.key=="cannon")&&!bool(shot.get("beam",false));
-        if(is_chain||is_missile) {
+        if(is_missile) {
             if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
             flush_pulses(rid);
             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
-            if(is_chain){Vector2 p=lease.is_valid()?position(lease->motion()):Vector2(shot["x"],shot["y"]);chain_flight(point,battle_point(p+direction)-battle_point(p));}
-            else {
-                const Ref<SpaceVisualLease> &native_visual=f.visual_state;
-                double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",double(direction.angle())));
-                double age=lease.is_valid()?lease->motion().age:double(shot.get("motion_age",native_visual.is_valid()?native_visual->age:double(visual.get("age",0.0))));
-                Dictionary target=shot["target"];
-                flight(point,engine_from_angle(angle),age,!target.is_empty(),visual,offset,f.budget==0?0.5:1.0);
-            }
+            const Ref<SpaceVisualLease> &native_visual=f.visual_state;
+            double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",double(direction.angle())));
+            double age=lease.is_valid()?lease->motion().age:double(shot.get("motion_age",native_visual.is_valid()?native_visual->age:double(visual.get("age",0.0))));
+            Dictionary target=shot["target"];
+            flight(point,engine_from_angle(angle),age,!target.is_empty(),visual,offset,f.budget==0?0.5:1.0);
             continue;
         }
         if(is_pulse||is_enemy) {
