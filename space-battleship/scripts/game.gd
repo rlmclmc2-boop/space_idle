@@ -1154,7 +1154,7 @@ func reactor_capacity(galaxy_charge := -1.0) -> int:
 
 func reactor_upgrade_cost(level := -1) -> float:
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return float(db.config.reactorUpgradeBase) * pow(float(db.config.reactorUpgradeGrowth), actual - 1)
+	return ceilf(float(db.config.reactorUpgradeBase) * pow(float(db.config.reactorUpgradeGrowth), actual - 1))
 
 func reactor_allocated() -> int:
 	var total := 0

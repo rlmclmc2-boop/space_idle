@@ -1,4 +1,5 @@
 [
+  {"key": "unlock.skip", "text": "跳过", "params": "", "category": "unlock", "note": "解锁界面自动跳过勾选项"},
   {
     "key": "battle.finale_cleared",
     "text": "终局已肃清",
@@ -16193,7 +16194,7 @@
   {"key":"battle.enemy_defence.reactive_status","text":"上次命中：反应减伤 {percent}%","params":"percent","category":"battle","note":"鼠标悬停即时状态，来自敌人当前记录的命中倍率"},
   {"key":"battle.enemy_status.armour","text":"装甲 {current}/{maximum}","params":"current,maximum","category":"battle","note":"战场悬停即时生命状态"},
   {"key":"battle.enemy_status.shield","text":"护盾 {current}/{maximum}","params":"current,maximum","category":"battle","note":"战场悬停即时护盾状态"},
-  {"key":"unlock.manual_confirm","text":"读完后按继续；自动跳过可在操作指南中开启。","params":"","category":"tutorial","note":"默认解锁说明不自动消失"},
+  {"key":"unlock.manual_confirm","text":"读完后按继续。","params":"","category":"tutorial","note":"默认解锁说明不自动消失"},
   {"key":"onboarding.unlock_auto","text":"新内容来了。开启自动跳过后，倒计时结束会继续；也可随时点「确认解锁」。","params":"","category":"tutorial","note":"玩家开启自动跳过后的解锁提示"},
   {"key":"equipment.card_missile_context","text":"{level} · {count} 枚/轮","params":"level,count","category":"equipment","note":"导弹简略卡使用实际发射枚数"},
   {"key":"weapon.card_missile_expected","text":"单枚期望伤害","params":"","category":"weapon","note":"投影数值按单枚命中，不误称整轮伤害"},

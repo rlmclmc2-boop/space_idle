@@ -151,6 +151,7 @@ var tutorial_settings_path := TUTORIAL_SETTINGS_PATH
 var unlock_pause_owned := false
 var unlock_previous_paused := false
 var tutorial_skip_button: CheckButton
+var unlock_skip_checkbox: CheckBox
 var unlock_tutorial: Control
 var sound_on := false
 var audio: AudioStreamPlayer
@@ -929,7 +930,10 @@ func load_tutorial_setting() -> void:
 	if saved is bool:tutorial_auto_skip = saved
 
 func set_tutorial_auto_skip(enabled: bool) -> void:
+	if enabled and not tutorial_auto_skip and not unlock_notice_id.is_empty():
+		unlock_notice_started_ms = Time.get_ticks_msec()
 	tutorial_auto_skip = enabled
+	if is_instance_valid(unlock_skip_checkbox):unlock_skip_checkbox.set_pressed_no_signal(enabled)
 	if is_instance_valid(tutorial_skip_button):tutorial_skip_button.set_pressed_no_signal(enabled)
 	var config := ConfigFile.new()
 	config.set_value("tutorial", "auto_skip", enabled)
@@ -2152,6 +2156,13 @@ func build_ui() -> void:
 	tutorial_skip_button.add_theme_color_override("font_hover_pressed_color",SHELL_PRESENTATION.NAVY)
 	tutorial_skip_button.toggled.connect(set_tutorial_auto_skip)
 	ui.add_child(tutorial_skip_button)
+	unlock_skip_checkbox = CheckBox.new()
+	unlock_skip_checkbox.text = UIText.t("unlock.skip")
+	unlock_skip_checkbox.button_pressed = tutorial_auto_skip
+	unlock_skip_checkbox.z_index = 2
+	unlock_skip_checkbox.add_theme_font_size_override("font_size",24)
+	unlock_skip_checkbox.toggled.connect(set_tutorial_auto_skip)
+	ui.add_child(unlock_skip_checkbox)
 	continue_button.z_index = 2
 	help_close_button.z_index = 2
 	preload("res://scripts/dialog_presentation.gd").button_skin(help_close_button,true)
@@ -2513,6 +2524,9 @@ func layout_overlay_controls() -> void:
 	var unlock_scale := unlock_panel.size.x/640.0
 	continue_button.position = unlock_panel.position-ui.position+Vector2(200,295)*unlock_scale
 	continue_button.scale = Vector2.ONE*unlock_scale
+	if is_instance_valid(unlock_skip_checkbox):
+		unlock_skip_checkbox.position = unlock_panel.position-ui.position+Vector2(470,295)*unlock_scale
+		unlock_skip_checkbox.scale = Vector2.ONE*unlock_scale
 	unlock_scroll.position = unlock_panel.position-ui.position+Vector2(57,28)*unlock_scale
 	unlock_scroll.scale = Vector2.ONE*unlock_scale
 
@@ -2571,6 +2585,7 @@ func refresh_navigation() -> void:
 	if ui_state_changed(help_close_button,[help_visible]):
 		set_ui_value(help_close_button,"visible",help_visible)
 	if is_instance_valid(tutorial_skip_button):set_ui_value(tutorial_skip_button,"visible",help_visible)
+	if is_instance_valid(unlock_skip_checkbox):set_ui_value(unlock_skip_checkbox,"visible",unlocking)
 	var navigation_visible := not help_open and not unlocking
 	if ui_state_changed(guard_settings,[navigation_visible]):
 		for control in [loop_select,loop_button,guard_settings,sound_button,music_button]:

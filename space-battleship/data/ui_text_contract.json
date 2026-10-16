@@ -1,5 +1,6 @@
 {
   "entries": {
+    "unlock.skip": {"params": []},
     "battle.damage_stats.title": {"params": []},
     "battle.damage_stats.enable": {"params": []},
     "battle.damage_stats.scope": {"params": []},
