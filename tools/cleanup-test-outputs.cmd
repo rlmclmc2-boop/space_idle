@@ -171,9 +171,100 @@ def run():
     after=shutil.disk_usage('D:/').free
     note('Done. Removed directories: %d; skipped/problem entries: %d'%(removed,skipped))
     note('Observed D: free-space change: %.2f GiB. Hardlinks and other disk activity affect this value.'%((after-before)/2**30))
+    clean_verified_copies()
     note('Log: '+str(log_path))
+
+
+def clean_verified_copies():
+    """Remove only historical Git-identical files in verified run.py sandboxes."""
+    import hashlib
+    allowed = ('space-battleship/scripts/', 'space-battleship/shaders/',
+               'space-battleship/tools/', 'space-battleship/data/',
+               'space-battleship/config_excel/', 'space-battleship/assets/',
+               'space-battleship/addons/', 'space-battleship/dev/')
+    single = {'space-battleship/project.godot', 'space-battleship/main.tscn',
+              'space-battleship/level_editor.tscn', '\u592a\u7a7a\u6218\u8230.xlsx'}
+    paths = list(allowed) + list(single) + ['test/']
+    note('Checking historical Git-identical test copies; modified/unknown files and saves stay.')
+    historical = {}
+    for line in git('rev-list', '--objects', '--all', '--', *paths).splitlines():
+        oid, sep, rel = line.partition(' ')
+        if sep: historical.setdefault(rel, set()).add(oid)
+    names = {Path(p).stem for p in git('ls-files','-z','--','test').split('\0')
+             if p and Path(p).parent.as_posix() == 'test' and Path(p).suffix in ('.py','.gd')}
+    trees = [Path(x[9:]) for x in git('worktree','list','--porcelain').splitlines() if x.startswith('worktree ')]
+    owners = [MAIN] + [x for x in trees if inside(x, ROOTS[1]) and key(x)!=key(MAIN)]
+    removed = 0; kept = 0; logical = 0
+    before = shutil.disk_usage('D:/').free
+    def digest(p):
+        s = p.stat(); h = hashlib.sha1(('blob '+str(s.st_size)+'\0').encode())
+        with open(p,'rb') as f:
+            for chunk in iter(lambda:f.read(1024*1024), b''): h.update(chunk)
+        return h.hexdigest(), s.st_size, s.st_mtime_ns
+    for owner in owners:
+        work = owner/'test/work'
+        if not work.is_dir(): continue
+        safe_ancestors(work)
+        # Read each real worktree's own index, including uncommitted staged files.
+        r = subprocess.run(['git','-c','safe.directory='+str(owner),'-C',str(owner),'ls-files','-z'],capture_output=True)
+        if r.returncode: note('KEEP cannot read worktree index: '+str(owner)); continue
+        tracked = {key(owner/Path(x)) for x in r.stdout.decode('utf-8','strict').split('\0') if x}
+        for area in work.iterdir():
+            if link(area) or not area.is_dir(): continue
+            stem, sep, suffix = area.name.rpartition('-')
+            if stem not in names or not re.fullmatch('[a-z0-9_]{8}',suffix): continue
+            # Require the copied test and project structure produced by test/run.py.
+            if not (area/'space-battleship/project.godot').is_file(): continue
+            if not any((area/'test'/(stem+ext)).is_file() for ext in ('.gd','.py')): continue
+            if not (area/'import.log').is_file() and not (area/'test.log').is_file(): continue
+            if any(inside(w,area) for w in trees): note('KEEP worktree: '+str(area)); continue
+            busy(); safe_ancestors(area)
+            if time.time()-area.stat().st_mtime < CUTOFF:
+                note('KEEP recent test copy: '+str(area)); continue
+            note('Checking test copy: '+str(area))
+            stack=[area]; candidates=[]; blocked=False
+            try:
+                while stack:
+                    d=stack.pop()
+                    for e in os.scandir(d):
+                        p=Path(e.path)
+                        if link(p): blocked=True; break
+                        if e.name.lower()=='.git': blocked=True; break
+                        if e.is_dir(follow_symlinks=False):
+                            if e.name.lower() not in PRIVATE and e.name.lower() not in ('userdata','user','roaming','local','pycache','.runtime','.godot'):
+                                stack.append(p)
+                            continue
+                        rel=p.relative_to(area).as_posix()
+                        selected=rel in single or rel.startswith(allowed) or (p.parent==area/'test' and p.suffix in ('.py','.gd','.uid'))
+                        if not selected: continue
+                        if key(p) in tracked: blocked=True; break
+                        if time.time()-p.stat().st_mtime<CUTOFF: kept+=1; continue
+                        known=historical.get(rel,set())
+                        if not known: kept+=1; continue
+                        facts=digest(p)
+                        if facts[0] in known: candidates.append((p,facts))
+                        else: kept+=1
+                    if blocked: break
+                if blocked:
+                    note('KEEP protected/link/tracked test copy: '+str(area)); continue
+                if not candidates: continue
+                note('Verified duplicate files %d (%.1f MiB): %s'%(len(candidates),sum(f[1] for _,f in candidates)/2**20,area))
+                busy()
+                # Fail closed if Git index changed after inspection.
+                rr=subprocess.run(['git','-c','safe.directory='+str(owner),'-C',str(owner),'ls-files','-z'],capture_output=True)
+                if rr.returncode or rr.stdout!=r.stdout: raise RuntimeError('Git index changed; stopped')
+                for p,facts in candidates:
+                    safe_ancestors(p)
+                    if digest(p)!=facts: raise RuntimeError('File changed; stopped: '+str(p))
+                    os.unlink(p); removed+=1; logical+=facts[1]
+                note('Removed verified duplicates; logs/saves/unknown files retained: '+str(area))
+            except OSError as ex:
+                note('KEEP/ERROR '+str(area)+' | '+str(ex)); kept+=1
+    note('Duplicate pass: removed %d Git-identical files; retained unmatched/recent entries %d.'%(removed,kept))
+    note('Duplicate logical size %.2f GiB; observed additional D: free space %.2f GiB.'%(logical/2**30,(shutil.disk_usage('D:/').free-before)/2**30))
 
 if __name__=='__main__':
     try: run()
     except Exception as ex:
         note('STOPPED: '+str(ex)); sys.exit(1)
+
