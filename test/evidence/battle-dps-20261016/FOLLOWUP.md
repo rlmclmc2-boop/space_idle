@@ -25,3 +25,5 @@ The largest enabled minus closed full-frame mean is 0.704 ms (mixed); all other 
 The prominent refresh peaks line up with the fixture's 12-slot purchase every 60 logic steps. For example, mixed at battle clocks 5.12, 6.12, 7.12, 8.12 seconds has main/off/on/main frames of 41.4/42.1/41.0/43.4, 40.7/41.1/47.6/44.2, 43.7/45.2/42.7/41.9 and 43.9/43.9/43.6/46.7 ms. The other refreshes do not coincide with these purchases. Their actual paired values are recorded in the analysis JSON. No low-load or headless timing is used as performance acceptance.
 
 `followup-*` traces are the preceding visual/clock candidate `7882538b` and remain as raw history. `review-*` traces are the final candidate `ae6f5d15`. The source, raw traces and screenshots are for parent review; main remains untouched.
+
+After the evidence push, remote `main` advanced to `029d27c0` through one player-entry tools commit. The candidate's merge base remains `e02501b3`; that new main commit does not edit battle scripts, the native add-on, or UI text. Parent review and integration should use the current remote main.
