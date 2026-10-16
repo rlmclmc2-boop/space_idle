@@ -28,6 +28,8 @@ func _initialize() -> void:
 	check(game.player_alive() and game.state!=BattleGame.State.RETREAT,"shield damage does not kill pure shield")
 	game.hit_player(1.0e9,1)
 	check(not game.player_alive() and game.state==BattleGame.State.RETREAT,"both depleted triggers retreat")
+	game.tick(1.3)
+	check(game.player_alive() and game.player.armour==0 and game.state==BattleGame.State.TRAVEL,"pure shield restores after retreat")
 	game=fresh()
 	game.equip_slot("defence",0,"shield")
 	var before:float=float(game.player.shield)
