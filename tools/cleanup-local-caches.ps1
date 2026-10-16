@@ -5,13 +5,26 @@ param([switch]$Recycle)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 $Root='D:\CodexBuild\space_idle'
+Write-Host 'Starting read-only scan. Nothing is deleted until you select entries and type RECYCLE.'
+Write-Host "Scan root: $Root"
+Write-Host 'Press Ctrl+C to cancel. Large QA trees can take several minutes.'
+$script:ScanClock=[Diagnostics.Stopwatch]::StartNew()
+$script:LastProgress=-3.0
+function Scan-Progress([string]$Path) {
+    if($script:ScanClock.Elapsed.TotalSeconds-$script:LastProgress -ge 2){
+        $script:LastProgress=$script:ScanClock.Elapsed.TotalSeconds
+        Write-Host ("[{0:N0}s] Scanning: {1}" -f $script:LastProgress,$Path)
+    }
+}
 function Is-Link($Item) { return (($Item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) }
 function Inspect-Cache([string]$Path,[string]$Kind) {
     if(Is-Link (Get-Item -LiteralPath $Path -Force)){throw "Link: $Path"}
     $q=New-Object 'System.Collections.Generic.Queue[string]'
     $q.Enqueue($Path); [long]$bytes=0; [long]$count=0
     while($q.Count -gt 0){
-        foreach($e in Get-ChildItem -LiteralPath $q.Dequeue() -Force){
+        $scanDir=$q.Dequeue()
+        Scan-Progress $scanDir
+        foreach($e in Get-ChildItem -LiteralPath $scanDir -Force){
             if(Is-Link $e){throw "Link inside cache: $($e.FullName)"}
             if($e.PSIsContainer){$q.Enqueue($e.FullName)}
             else {
@@ -47,6 +60,7 @@ $q=New-Object 'System.Collections.Generic.Queue[string]'
 $q.Enqueue($Root)
 while($q.Count -gt 0){
     $dir=$q.Dequeue()
+    Scan-Progress $dir
     try {
         foreach($e in Get-ChildItem -LiteralPath $dir -Directory -Force){
             if(Is-Link $e){$skipped.Add("Link: $($e.FullName)");continue}
@@ -55,7 +69,10 @@ while($q.Count -gt 0){
             if($e.Name -eq '.godot' -and (Test-Path -LiteralPath (Join-Path $dir 'project.godot') -PathType Leaf)){$kind='Godot'}
             if($e.Name -eq '__pycache__'){$kind='Python'}
             if($kind){
-                try {$candidates.Add((Inspect-Cache $e.FullName $kind))}
+                try {
+                    Write-Host "Measuring cache: $($e.FullName)"
+                    $candidates.Add((Inspect-Cache $e.FullName $kind))
+                }
                 catch {$skipped.Add($_.Exception.Message)}
             } else {$q.Enqueue($e.FullName)}
         }
