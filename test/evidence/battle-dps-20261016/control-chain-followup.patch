@@ -1,0 +1,98 @@
+diff --git a/space-battleship/addons/native_battle/src/combat_presentation.h b/space-battleship/addons/native_battle/src/combat_presentation.h
+index 7313dbab..37cd1f7e 100644
+--- a/space-battleship/addons/native_battle/src/combat_presentation.h
++++ b/space-battleship/addons/native_battle/src/combat_presentation.h
+@@ -534,8 +534,9 @@ Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *sur
+     for(int i=0;i<shots.size();++i) {
+         Dictionary p=shots[i],v=index.get(p.get("serial",Variant()),Dictionary());
+         Ref<SpaceMotionLease> m=p.get("motion_lease",Variant());Ref<SpaceVisualLease> visual=v.get("visual_lease",Variant());
+-        String key=String(p.get("key","")).replace("_mon","").replace("-mon","");bool hostile=bool(p.get("hostile",false));
+-        bool chain=bool(p.get("chain_hop",false)),missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&bool(p.get("prototype_missile",false));
++        bool chain=bool(p.get("chain_hop",false));
++        String key=String(p.get(chain ? "chain_weapon" : "key","")).replace("_mon","").replace("-mon","");bool hostile=bool(p.get("hostile",false));
++        bool missile=prototype&&missile_enabled&&!hostile&&key=="missile"&&(chain||bool(p.get("prototype_missile",false)));
+         bool pulse=prototype&&pulse_enabled&&!hostile&&key=="laser",enemy=prototype&&enemy_enabled&&hostile&&(key=="laser"||key=="cannon");
+         // The original visual list is capped at256. Unretained ordinary flights
+         // still have an authoritative native position and heading; the cap must
+@@ -596,8 +597,9 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
+         for(int i=0;i<input.size();++i) {
+             Dictionary f=input[i],shot=f["shot"],visual=f["visual"];PreparedFlight p;
+             p.shot=shot;p.visual=visual;p.motion=shot.get("motion_lease",Variant());p.visual_state=visual.get("visual_lease",Variant());
+-            p.point=f["pos"];p.budget=f.get("budget",-1);p.key=String(shot.get("key","")).replace("_mon","").replace("-mon","");
+-            p.hostile=shot.get("hostile",false);p.chain=shot.get("chain_hop",false);compatibility.push_back(std::move(p));
++            p.point=f["pos"];p.budget=f.get("budget",-1);p.chain=shot.get("chain_hop",false);
++            p.key=String(shot.get(p.chain ? "chain_weapon" : "key","")).replace("_mon","").replace("-mon","");
++            p.hostile=shot.get("hostile",false);compatibility.push_back(std::move(p));
+         }
+     }
+     const std::vector<PreparedFlight> &flights=frame.is_valid()?frame->flights:compatibility;
+@@ -613,18 +615,15 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
+         bool is_missile=own_missiles&&!f.hostile&&f.key=="missile";
+         bool is_pulse=own_pulses&&!f.hostile&&f.key=="laser"&&!bool(shot.get("beam",false));
+         bool is_enemy=simple_enemies&&f.hostile&&(f.key=="laser"||f.key=="cannon")&&!bool(shot.get("beam",false));
+-        if(is_chain||is_missile) {
++        if(is_missile) {
+             if(script_run){surface->call("flush_projectile_packet_batch");script_run=false;}
+             flush_pulses(rid);
+             Vector2 direction=lease.is_valid()?lease->motion().direction:Vector2(shot["direction"]);
+-            if(is_chain){Vector2 p=lease.is_valid()?position(lease->motion()):Vector2(shot["x"],shot["y"]);chain_flight(point,battle_point(p+direction)-battle_point(p));}
+-            else {
+-                const Ref<SpaceVisualLease> &native_visual=f.visual_state;
+-                double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",double(direction.angle())));
+-                double age=lease.is_valid()?lease->motion().age:double(shot.get("motion_age",native_visual.is_valid()?native_visual->age:double(visual.get("age",0.0))));
+-                Dictionary target=shot["target"];
+-                flight(point,engine_from_angle(angle),age,!target.is_empty(),visual,offset,f.budget==0?0.5:1.0);
+-            }
++            const Ref<SpaceVisualLease> &native_visual=f.visual_state;
++            double angle=native_visual.is_valid()?native_visual->angle:double(visual.get("angle",double(direction.angle())));
++            double age=lease.is_valid()?lease->motion().age:double(shot.get("motion_age",native_visual.is_valid()?native_visual->age:double(visual.get("age",0.0))));
++            Dictionary target=shot["target"];
++            flight(point,engine_from_angle(angle),age,!target.is_empty(),visual,offset,f.budget==0?0.5:1.0);
+             continue;
+         }
+         if(is_pulse||is_enemy) {
+diff --git a/space-battleship/scripts/battlefield.gd b/space-battleship/scripts/battlefield.gd
+index b3f836a9..0b6cb528 100644
+--- a/space-battleship/scripts/battlefield.gd
++++ b/space-battleship/scripts/battlefield.gd
+@@ -211,6 +211,7 @@ func shot_mount(shot:Dictionary)->int:
+ 	return super.shot_mount(shot)
+ 
+ func visual_muzzle(shot:Dictionary)->Vector2:
++	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
+ 	if battle_slice_runtime!=null:return battle_slice_runtime.muzzle(shot)
+ 	if bool(shot.get("prototype_missile",false)) or shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
+ 	var id:String=_visual_drone_id(shot)
+diff --git a/space-battleship/scripts/main.gd b/space-battleship/scripts/main.gd
+index 334a2285..cb5c1261 100644
+--- a/space-battleship/scripts/main.gd
++++ b/space-battleship/scripts/main.gd
+@@ -1434,6 +1434,7 @@ func advance_turrets(dt: float) -> void:
+ 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
+ 
+ func visual_muzzle(shot: Dictionary) -> Vector2:
++	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
+ 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
+ 	var pos := game.projectile_position(shot)
+ 	if shot.hostile:
+@@ -1766,7 +1767,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
+ 		if owns_primary:
+ 			pose.target = shot.get("primary_target",shot.target)
+ 			pose.fired_at = fx_time
+-		if key=="cannon":pose.recoil = 0.13
++		if key=="cannon" and not bool(shot.get("chain_hop",false)):pose.recoil = 0.13
+ 	# Mount target feeds canonical missile release geometry even in fast mode.
+ 	if fast_mode_enabled():return
+ 	if key=="cannon" and bool(shot.hostile):
+diff --git a/space-battleship/scripts/simulation_geometry_authority.gd b/space-battleship/scripts/simulation_geometry_authority.gd
+index a773224c..3466052e 100644
+--- a/space-battleship/scripts/simulation_geometry_authority.gd
++++ b/space-battleship/scripts/simulation_geometry_authority.gd
+@@ -362,6 +362,7 @@ func advance_turrets(dt: float) -> void:
+ 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
+ 
+ func visual_muzzle(shot: Dictionary) -> Vector2:
++	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
+ 	var identity=drone_identity(shot)
+ 	if not identity.is_empty():return drone_launch_pose(identity,Vector2.ZERO,0).position
+ 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)

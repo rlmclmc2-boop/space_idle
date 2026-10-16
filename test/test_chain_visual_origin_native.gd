@@ -9,8 +9,14 @@ func run()->void:
 	var native=ClassDB.instantiate("SpaceCombatKernel")
 	assert(native.configure(world),"chain origin fixture admission")
 	var hop:Dictionary={}
+	var chain_impact_origin:=Vector2.INF
+	var chain_fire:=false
 	for i in 45:
 		assert(native.advance(1.0/60.0),"native combat step")
+		for event in native.take_feedback():
+			if not bool(event.get("shot",{}).get("chain_hop",false)):continue
+			if int(event.kind)==4:chain_impact_origin=Vector2(event.position)
+			if int(event.kind)==0:chain_fire=true
 		for row in native.presentation_projectile_rows():
 			if bool(row.get("chain_hop",false)):
 				hop=row
@@ -20,8 +26,9 @@ func run()->void:
 	assert(hop.get("chain_weapon","")=="cannon","chain retains cannon source")
 	assert(Vector2(hop.launch_point).distance_to(source)<0.001,"carrier launches at hit enemy")
 	assert(Vector2(hop.launch_point).distance_to(Vector2(weapon.muzzle))>100,"carrier does not launch at player turret")
+	assert(chain_impact_origin.distance_to(source)<0.001 and not chain_fire,"chain creates an origin impact, not a muzzle rail fire")
 	var slice=preload("res://scripts/battle_slice_runtime.gd").new()
 	assert(slice.style(hop)==3,"chain impact keeps cannon style")
 	native.cancel()
-	print("NATIVE CHAIN VISUAL ORIGIN: 5 checks, 0 failures")
+	print("NATIVE CHAIN VISUAL ORIGIN: 7 checks, 0 failures")
 	quit(0)
