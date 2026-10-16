@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+APPROVED_POINT {"armour_in":1229.0,"armour_out":0.0,"case":"2-6-missile1-armour1-reactor1","combat_s":19.58,"native_session":true,"point":6,"reactor":1,"recovery_frames":0,"shield_damage_times":[],"shield_in":0.0,"shield_out":0.0,"spent_iron":0.0,"stage":2,"status":"retreat"}
+APPROVED_POINT {"armour_in":1475.0,"armour_out":845.0,"case":"2-6-auto-missile3-armour2-reactor1","combat_s":13.55,"native_session":true,"point":6,"reactor":1,"recovery_frames":0,"shield_damage_times":[],"shield_in":0.0,"shield_out":0.0,"spent_iron":205.0,"stage":2,"status":"clear"}
+APPROVED_POINT {"armour_in":1229.0,"armour_out":0.0,"case":"3-7-missile1-armour1-reactor1","combat_s":13.53,"native_session":true,"point":7,"reactor":1,"recovery_frames":0,"shield_damage_times":[],"shield_in":0.0,"shield_out":0.0,"spent_iron":0.0,"stage":3,"status":"retreat"}
+APPROVED_POINT {"armour_in":2089.0,"armour_out":364.0,"case":"3-7-auto-missile4-armour4-reactor1","combat_s":18.2,"native_session":true,"point":7,"reactor":1,"recovery_frames":0,"shield_damage_times":[],"shield_in":0.0,"shield_out":0.0,"spent_iron":450.0,"stage":3,"status":"clear"}
+APPROVED_SAME_WEAPON_SUMMARY 4 cases 0 invalid

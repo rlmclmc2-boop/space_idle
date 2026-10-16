@@ -78,6 +78,14 @@ func one(label: String, stage: int, point: int, weapon: String, weapon_level: in
 	if status == "timeout" or entered < 0: failures += 1
 
 func run() -> void:
+	if OS.get_environment("FIRST_THREE_SAME_WEAPON") == "1":
+		one("2-6-missile1-armour1-reactor1", 2, 6, "missile", 1, "armour", 1, 1, true)
+		one("2-6-auto-missile3-armour2-reactor1", 2, 6, "missile", 3, "armour", 2, 1, true)
+		one("3-7-missile1-armour1-reactor1", 3, 7, "missile", 1, "armour", 1, 1, true)
+		one("3-7-auto-missile4-armour4-reactor1", 3, 7, "missile", 4, "armour", 4, 1, true)
+		print("APPROVED_SAME_WEAPON_SUMMARY 4 cases ", failures, " invalid")
+		quit(1 if failures else 0)
+		return
 	one("1-5-base", 1, 5, "laser", 1, "armour", 1, 1)
 	one("1-5-grown", 1, 5, "laser", 2, "armour", 2, 1)
 	one("2-1-laser-base", 2, 1, "laser", 1, "armour", 1, 1)
