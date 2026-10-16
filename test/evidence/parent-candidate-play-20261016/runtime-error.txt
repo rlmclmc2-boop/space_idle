@@ -1,0 +1,13 @@
+SCRIPT ERROR: Invalid access to property or key 'uid' on a base object of type 'Dictionary'.
+          at: freeze_display_entity (res://scripts/simulation_geometry_authority.gd:662)
+          GDScript backtrace (most recent call first):
+              [0] freeze_display_entity (res://scripts/simulation_geometry_authority.gd:662)
+              [1] finish_display_boundary (res://scripts/simulation_geometry_authority.gd:752)
+              [2] snapshot (res://scripts/battle_slice_runtime.gd:139)
+              [3] install (res://scripts/battle_slice_runtime.gd:51)
+              [4] attach_native_display (res://scripts/battlefield.gd:1122)
+              [5] advance_game_time (res://scripts/main.gd:532)
+              [6] _process (res://scripts/main.gd:472)
+              [7] _process_battlefield (res://scripts/battlefield.gd:316)
+              [8] _process (res://scripts/battlefield.gd:293)
+SCRIPT ERROR: Invalid access to property or key 'uid' on a base object of type 'Dictionary'.
