@@ -7,8 +7,8 @@ import subprocess
 import sys
 
 ROOT = Path(r'D:\放置')
-BASE = 'd9750f9f46fa4e777ef38ce4b717684536ebe03a'
-DLL_SHA = '6bfa0d565eae83d96ee6e374d92b790a60a41cb52ae1d9209b23c90d1e7ef452'
+BASE = '60af4b0989c1e239788f35a38cf4877720bdccdc'
+DLL_SHA = 'dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a'
 DESCRIPTOR = '''[configuration]
 entry_symbol = "space_native_init"
 compatibility_minimum = "4.7"

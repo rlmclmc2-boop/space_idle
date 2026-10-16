@@ -1,0 +1,14 @@
+test_autoload_pack (__main__.Validation.test_autoload_pack) ... ok
+test_duplicate_descriptor (__main__.Validation.test_duplicate_descriptor) ... ok
+test_external_descriptor (__main__.Validation.test_external_descriptor) ... ok
+test_install_descriptor (__main__.Validation.test_install_descriptor) ... ok
+test_missing_dll (__main__.Validation.test_missing_dll) ... ok
+test_modified_source (__main__.Validation.test_modified_source) ... ok
+test_valid (__main__.Validation.test_valid) ... ok
+test_wrong_branch (__main__.Validation.test_wrong_branch) ... ok
+test_wrong_dll (__main__.Validation.test_wrong_dll) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.079s
+
+OK
