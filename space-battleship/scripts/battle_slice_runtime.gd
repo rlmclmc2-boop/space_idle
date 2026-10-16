@@ -153,7 +153,8 @@ func muzzle(shot:Dictionary)->Vector2:
 	return muzzle_values[int(shot.serial)]
 func style(shot:Dictionary)->int:
 	if bool(shot.get("hostile",false)):return 0
-	match geometry.weapon_key(shot):
+	var key:String=str(shot.get("chain_weapon","")) if bool(shot.get("chain_hop",false)) else geometry.weapon_key(shot)
+	match key:
 		"laser":return 1
 		"missile":return 2
 		"cannon":return 3
