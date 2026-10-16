@@ -21,13 +21,13 @@ function Inspect-Cache([string]$Path,[string]$Kind) {
         }
     }
     $parent=Split-Path -Parent $Path; $leaf=Split-Path -Leaf $Path
-    # Native stderr is captured without treating ordinary 'not a repo' as fatal.
+    # Fail closed when Git cannot verify that the cache contains no tracked files.
     $old=$ErrorActionPreference
     $ErrorActionPreference='Continue'
     $tracked=@(& git -c "safe.directory=$parent" -C $parent ls-files -- "$leaf/" 2>$null)
     $code=$LASTEXITCODE; $ErrorActionPreference=$old
     if($code -eq 0 -and $tracked.Count -gt 0){throw "Git-tracked cache files: $Path"}
-    if($code -notin @(0,128)){throw "Git check failed: $Path"}
+    if($code -ne 0){throw "Git could not verify this cache; skipped: $Path"}
     return [pscustomobject]@{Path=$Path;Kind=$Kind;Bytes=$bytes;Files=$count}
 }
 function Check-Idle {
