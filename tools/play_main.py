@@ -1,0 +1,97 @@
+"""Verified player entry. Never selects a test copy or changes player saves."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(r'D:\放置')
+BASE = 'e02501b38bff8069f2b15bd8947c54d1dc215a1a'
+DLL_SHA = '2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a'
+DESCRIPTOR = '''[configuration]
+entry_symbol = "space_native_init"
+compatibility_minimum = "4.7"
+
+[libraries]
+windows.debug.x86_64 = "res://bin/space_native.dll"
+windows.release.x86_64 = "res://bin/space_native.dll"
+'''
+
+def run(args, cwd, env=None):
+    return subprocess.run(args, cwd=cwd, env=env, check=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                          text=True, encoding='utf-8', errors='replace').stdout.strip()
+
+def digest(path):
+    h = hashlib.sha256()
+    with path.open('rb') as f:
+        for part in iter(lambda: f.read(1024 * 1024), b''):
+            h.update(part)
+    return h.hexdigest()
+
+def validate(root):
+    if root.resolve() != ROOT.resolve():
+        raise RuntimeError('请从 D:\\放置\\玩游戏.cmd 启动。不会运行其他副本。')
+    project = root / 'space-battleship'
+    head = run(['git', 'rev-parse', 'HEAD'], root)
+    branch = run(['git', 'branch', '--show-current'], root)
+    if branch != 'main':
+        raise RuntimeError('当前分支不是 main：' + branch)
+    run(['git', 'merge-base', '--is-ancestor', BASE, 'HEAD'], root)
+    # Compare both committed and working-tree runtime against accepted source.
+    changed = run(['git', 'diff', '--name-only', BASE, '--', 'space-battleship'], root)
+    if changed:
+        raise RuntimeError('运行内容偏离已验收版本，停止启动：\n' + changed)
+    engine = project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
+    if not engine.is_file():
+        raise RuntimeError('缺少引擎：' + str(engine))
+    if engine.with_suffix('.pck').exists():
+        raise RuntimeError('引擎旁存在自动加载的 PCK，请先确认其用途：' + str(engine.with_suffix('.pck')))
+    dll = project / 'bin' / 'space_native.dll'
+    if not dll.is_file() or digest(dll) != DLL_SHA:
+        raise RuntimeError('原生库与已验收版本不一致：' + str(dll) + '\n需要 SHA256：' + DLL_SHA)
+    descriptor = project / 'space_native.gdextension'
+    if not descriptor.is_file() or descriptor.read_text(encoding='utf-8-sig').replace('\r\n','\n').strip() != DESCRIPTOR.strip():
+        raise RuntimeError('原生库入口缺失或不匹配：' + str(descriptor))
+    for other in project.rglob('*.gdextension'):
+        if '.godot' in other.parts or other == descriptor:
+            continue
+        if 'space_native_init' in other.read_text(encoding='utf-8-sig', errors='replace'):
+            raise RuntimeError('发现重复原生库入口，请确认后移除：' + str(other))
+    version = run([str(engine), '--version'], project)
+    if not version.startswith('4.7.2.stable.'):
+        raise RuntimeError('引擎版本不匹配：' + version)
+    return project, engine, head, version
+
+def main():
+    project, engine, head, version = validate(ROOT)
+    env = os.environ.copy()
+    env['APPDATA'] = str(project / '.userdata' / 'roaming')
+    env['LOCALAPPDATA'] = str(project / '.userdata' / 'local')
+    for p in [Path(env['APPDATA']), Path(env['LOCALAPPDATA']), project / '.runtime']:
+        p.mkdir(parents=True, exist_ok=True)
+    print('项目：', project, '\nGit：', head, '\n引擎：', version,
+          '\n原生库 SHA256：', DLL_SHA, '\n数据 SHA256：', digest(project/'data/game_data.json'),
+          '\n存档：', env['APPDATA'], flush=True)
+    receipt = {'project': str(project), 'head': head, 'accepted_runtime': BASE,
+               'engine': str(engine), 'engine_version': version,
+               'dll_sha256': DLL_SHA, 'game_data_sha256': digest(project/'data/game_data.json')}
+    (project/'.runtime/player-launch.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
+    # Import in-place, reusing Godot's cache. No project or asset copies.
+    print('检查资源导入……', flush=True)
+    with (project/'.runtime/player-import.log').open('w', encoding='utf-8') as log:
+        subprocess.run([str(engine), '--headless', '--editor', '--import', '--quit', '--path', str(project)],
+                       cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
+    print('启动正式游戏。', flush=True)
+    return subprocess.call([str(engine), '--path', str(project), 'res://main.tscn',
+                            '--log-file', str(project/'.runtime/player-game.log')], cwd=project, env=env)
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except (OSError, RuntimeError, subprocess.CalledProcessError) as exc:
+        print('启动已停止：', exc, file=sys.stderr)
+        if isinstance(exc, subprocess.CalledProcessError) and exc.stderr:
+            print(exc.stderr, file=sys.stderr)
+        sys.exit(1)
