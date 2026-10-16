@@ -1,0 +1,142 @@
+{
+  "source": {
+    "main": "e02501b38bff8069f2b15bd8947c54d1dc215a1a",
+    "candidate": "222d0760f0c3a4cd823727ffbd347e087fa032c5",
+    "main_pulse_repair": "c2dbeba7",
+    "candidate_pulse_repair": "c2dbeba7"
+  },
+  "case_order": [
+    "mixed",
+    "laser",
+    "cannon",
+    "missile",
+    "longLaser"
+  ],
+  "run_order": [
+    "main",
+    "off",
+    "on",
+    "main"
+  ],
+  "baseline_driver_sha256": "789154ddaba074cdcad6a75c9e721d93f5fc3bafa4ea5f2685929d3fd0ab331c",
+  "final_driver_sha256": "9ad11d6d15e85d181d086ba3bb6b997481692e53f8a4058b3e26baecceecaf8e",
+  "game_data_sha256": "0457f8abe6d1be84ca79d06e99ecafa7d3144beec33f0135fec6bbac086abf14",
+  "new_dll_sha256": "5f8f555c7083612e0a3673be5d47ae7b4171bf1404090610f050733a0f591ac6",
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "pulse": {
+    "para1": 30,
+    "dmg": 350,
+    "cd": 1.5
+  },
+  "health_override": {
+    "from": "1e100",
+    "to": "1e32"
+  },
+  "runs": [
+    {
+      "case": "missile",
+      "position": 1,
+      "mode": "main",
+      "exit": 0,
+      "focus_requested": true,
+      "started_unix": 1792143779.4629195,
+      "completed_unix": 1792143800.6011639,
+      "dll_sha256": "5f8f555c7083612e0a3673be5d47ae7b4171bf1404090610f050733a0f591ac6",
+      "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+      "json_sha256": "f3e899304033f12274a4a8b02186aa779fd0ee84a04349ec58425736292bcfbe",
+      "image_sha256": "936e4492553a36b2dbb9a9af4bae526278ac39039de9b661be79abc34e4ac39d",
+      "frames": 1076,
+      "fires": 932,
+      "hits": 2802,
+      "events": {
+        "enemy_hits": 2576,
+        "enhancement_chain": 1621,
+        "enhancement_currency": 2,
+        "enhancement_secondary": 16,
+        "equipment_stats": 194,
+        "explode": 4,
+        "fire": 932,
+        "galaxy_unlocked": 1,
+        "hit": 2802,
+        "jewel_pickup": 2,
+        "jewels_changed": 2,
+        "player_hits": 226,
+        "projectile_impact": 2457,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "refreshes": 0
+    },
+    {
+      "case": "missile",
+      "position": 2,
+      "mode": "off",
+      "exit": 0,
+      "focus_requested": true,
+      "started_unix": 1792143800.7783062,
+      "completed_unix": 1792143822.0532858,
+      "dll_sha256": "5f8f555c7083612e0a3673be5d47ae7b4171bf1404090610f050733a0f591ac6",
+      "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+      "json_sha256": "475fcc494323135719eb7504d42d82e25776838aaf4bb2704a24db483a68931a",
+      "image_sha256": "e0db431f4858fc3b21bddb06fe85c5151ac81e007d13a765f8cb313d12736581",
+      "frames": 1033,
+      "fires": 932,
+      "hits": 2802,
+      "events": {
+        "enemy_hits": 2576,
+        "enhancement_chain": 1621,
+        "enhancement_currency": 2,
+        "enhancement_secondary": 16,
+        "equipment_stats": 194,
+        "explode": 4,
+        "fire": 932,
+        "galaxy_unlocked": 1,
+        "hit": 2802,
+        "jewel_pickup": 2,
+        "jewels_changed": 2,
+        "player_hits": 226,
+        "projectile_impact": 2457,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "refreshes": 0
+    },
+    {
+      "case": "missile",
+      "position": 3,
+      "mode": "on",
+      "exit": 0,
+      "focus_requested": true,
+      "started_unix": 1792143822.2163548,
+      "completed_unix": 1792143843.512686,
+      "dll_sha256": "5f8f555c7083612e0a3673be5d47ae7b4171bf1404090610f050733a0f591ac6",
+      "fixture_sha256": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe",
+      "json_sha256": "63fa93b0a741e29ce9064166681d84bc164b1a86e9246b84a3abea8b43cddf62",
+      "image_sha256": "ec34f4de091720693acb1240d0cb320574bef7589d5d6909dacd393d38d6e4e9",
+      "frames": 982,
+      "fires": 932,
+      "hits": 2802,
+      "events": {
+        "enemy_hits": 2576,
+        "enhancement_chain": 1621,
+        "enhancement_currency": 2,
+        "enhancement_secondary": 16,
+        "equipment_stats": 194,
+        "explode": 4,
+        "fire": 932,
+        "galaxy_unlocked": 1,
+        "hit": 2802,
+        "jewel_pickup": 2,
+        "jewels_changed": 2,
+        "player_hits": 226,
+        "projectile_impact": 2457,
+        "resources_changed": 96,
+        "upgrade": 96,
+        "upgrades_completed": 8
+      },
+      "refreshes": 16
+    }
+  ]
+}

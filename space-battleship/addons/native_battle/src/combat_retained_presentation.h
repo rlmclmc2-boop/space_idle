@@ -52,19 +52,19 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
         if(f.generation!=source.generation||f.motion!=source.lease||(f.shot.is_empty()&&!source.view.is_empty())) {
             ++retained_births;f=PreparedFlight();f.generation=source.generation;f.serial=source.serial;
             f.shot=source.view;f.motion=source.lease;f.hostile=source.hostile;f.chain=source.chain;f.beam=source.beam;f.damage_type=source.type;
-            f.key=source.compact_laser ? String("laser") : String(source.view.get("key","")).replace("_mon","").replace("-mon","");
+            f.key=source.compact_laser ? String("laser") : String(source.view.get(source.chain ? "chain_weapon" : "key","")).replace("_mon","").replace("-mon","");
             f.visual=visual_by_serial.get(int64_t(source.serial),Dictionary());
             if(!f.visual.is_empty()&&!same(f.visual["shot"],source.view))f.visual=Dictionary();
             f.visual_state=f.visual.get("visual_lease",Variant());
             f.fixed=source.fixed_ray;
             if(f.fixed){f.launch=source.launch_point;f.ray_origin=source.ray_origin;f.ray_step=source.ray_step;f.ray_direction=f.motion->motion().direction;}
             else if(f.visual.has("fixed_step")){f.fixed=true;f.launch=f.visual["logical_origin"];f.ray_origin=f.visual["fixed_origin"];f.ray_step=f.visual["fixed_step"];f.ray_direction=f.visual["fixed_direction"];}
-            f.render_kind=f.beam?-1:f.chain?1:(!f.hostile&&f.key=="laser")?0:(f.hostile&&(f.key=="laser"||f.key=="cannon"))?(source.type==2?3:2):-1;
+            f.render_kind=f.beam?-1:(!f.hostile&&f.key=="laser")?0:(f.hostile&&(f.key=="laser"||f.key=="cannon"))?(source.type==2?3:2):-1;
             f.anchor_speed=-1;
         }
         frame.order.push_back(id);f.draw=true;
         const Motion &m=f.motion->motion();Vector2 logical=position(m);
-        const bool missile=!f.hostile&&!f.chain&&f.key=="missile";
+        const bool missile=!f.hostile&&f.key=="missile";
         if(missile)++density;
         if(f.render_kind==0&&f.fixed) {
             // Straight motion has fixed birth velocity. Re-anchor only on actual

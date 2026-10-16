@@ -128,6 +128,7 @@ var last_save_error: Error = OK
 var progress_writer := preload("res://scripts/progress_writer.gd").new()
 var jewel_repeats: Array[Dictionary] = []
 var main_attack_serial := 0
+var damage_stats=preload("res://scripts/battle_damage_stats.gd").new()
 var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
@@ -2179,6 +2180,7 @@ func publish_encounter_geometry() -> void:
 		enemy.hull_scale=(1.65 if encounter_tier()=="ultimate" else 1.35) if enemy.encounter_leader else 1.0
 
 func spawn_group(keep_distance := false) -> void:
+	if damage_stats.enabled:damage_stats.clear()
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
 	if manual_hyperspace.active and manual_hyperspace.reward_binder!=null:
@@ -2612,6 +2614,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		if effect.has("enemy_resistance"):resistance=float(effect.enemy_resistance);break
 	var incoming = N.multiply(raw,1.0+float(enemy.get("interference",0)))
 	var absorbed = 0.0
+	var shield_before = enemy.get("shield",0) if damage_stats.enabled else 0
 	if float(enemy.get("max_shield",0))>0:
 		incoming=N.maximum(1,incoming)
 		# A periodic beam hit is a hit, even though the whole beam is one attack.
@@ -2622,9 +2625,12 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			enemy.shield=N.subtract(enemy.shield,absorbed)
 			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
 	var amount = 0.0
+	var hp_before = enemy.hp if damage_stats.enabled else 0
 	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
 		enemy.hp=N.subtract(enemy.hp,amount)
+	if damage_stats.enabled and state==State.COMBAT:
+		damage_stats.record(str(context.get("source_id","other")),N.add(N.maximum(0,N.subtract(shield_before,enemy.shield)),N.maximum(0,N.subtract(hp_before,enemy.hp))))
 	amount=N.add(amount,absorbed)
 	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
 	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
@@ -2980,6 +2986,7 @@ func tick(dt: float) -> void:
 
 	if native_wave_waiting and state==State.COMBAT:
 		if not advance_jewel_repair(dt):return
+		if damage_stats.enabled:damage_stats.advance(dt)
 		finish_combat_step(dt)
 		if has_alive_enemy():native_wave_waiting=false
 		return
@@ -2989,12 +2996,14 @@ func tick(dt: float) -> void:
 			# Cold whole-encounter legacy selection. No native state was installed.
 	if native_execution!=null:
 		if native_execution.advance(self,dt):
+			if damage_stats.enabled:damage_stats.advance(dt)
 			native_step_phase="idle";native_step_remaining=0.0
 			return
 		# A failed transfer retains the owner and the unconsumed combat phase.
 		if native_execution!=null:return
 		# Successful transfer resumes only combat; shared economy already ran.
 		if "motion_clock" in self:set("motion_clock",motion_step_end)
+	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	if state == State.LEVEL_CLEAR:
 		if not advance_jewel_repair(dt):return
 		if state!=State.LEVEL_CLEAR:return
@@ -3911,7 +3920,7 @@ func launch_enhancement_chain(enemy: Dictionary, raw, type: int, effects: Array,
 		var direction:Vector2=(chain_target_point(target)-origin).normalized()
 		if direction.is_zero_approx():direction=Vector2.UP
 		# A visible damage carrier starts at the hit, never at a weapon mount.
-		var hop:Dictionary={"x":origin.x,"y":origin.y,"target":target,"damage":raw,"type":type,"speed":db.weapon_motion_value("chain_carrier_speed",720.0),"hostile":false,"key":"chain","dead":false,"serial":projectile_serial,"direction":direction,"chain_hop":true,"attack_instance_id":chain.instance_id,"main_attack_id":effect.get("main_attack_id",0),"jewelEffects":continued,"critical":critical,"chain_weapon":effect.get("weapon_key",""),"combat_context":CombatContext.derive(context,"chain")}
+		var hop:Dictionary={"x":origin.x,"y":origin.y,"launch_point":origin,"target":target,"damage":raw,"type":type,"speed":db.weapon_motion_value("chain_carrier_speed",720.0),"hostile":false,"key":"chain","dead":false,"serial":projectile_serial,"direction":direction,"chain_hop":true,"attack_instance_id":chain.instance_id,"main_attack_id":effect.get("main_attack_id",0),"jewelEffects":continued,"critical":critical,"chain_weapon":effect.get("weapon_key",""),"combat_context":CombatContext.derive(context,"chain")}
 		projectiles.append(hop)
 		event.emit("enhancement_chain",{"source":origin,"target":chain_target_point(target),"weapon":str(effect.get("weapon_key","")),"shot":hop})
 
@@ -4572,6 +4581,14 @@ func finish_combat_step(dt:float)->void:
 
 func projectile_clear()->void:
 	projectiles.clear()
+
+func set_damage_stats_enabled(value:bool)->bool:
+	if value and native_execution!=null and native_execution.kernel!=null and not native_execution.kernel.has_method("set_damage_stats_enabled"):
+		return false
+	damage_stats.set_enabled(value)
+	if native_execution!=null and native_execution.kernel!=null and native_execution.kernel.has_method("set_damage_stats_enabled"):
+		native_execution.kernel.set_damage_stats_enabled(value)
+	return true
 
 var combat_presentation:RefCounted
 

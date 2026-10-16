@@ -111,6 +111,7 @@ const FLAME_SCALE := 0.65
 const TRAIL_SCALE := 0.55
 const IMPACT_SCALE := 0.65
 var show_damage_numbers := true
+var damage_stats_ui
 var damage_mode := 0 # 0 simplified, 1 all (damage types), 2 off
 var damage_pending: Array[Dictionary] = []
 var damage_history: Array[String]:
@@ -1139,7 +1140,7 @@ func weapon_visual_key(key:String)->String:
 	return str(ENEMY_VISUAL_ALIASES.get(key,key))
 
 func weapon_key(shot: Dictionary) -> String:
-	return weapon_visual_key(str(shot.key))
+	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))
 
 func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
@@ -1433,6 +1434,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var pos := game.projectile_position(shot)
 	if shot.hostile:
@@ -1765,7 +1767,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 		if owns_primary:
 			pose.target = shot.get("primary_target",shot.target)
 			pose.fired_at = fx_time
-		if key=="cannon":pose.recoil = 0.13
+		if key=="cannon" and not bool(shot.get("chain_hop",false)):pose.recoil = 0.13
 	# Mount target feeds canonical missile release geometry even in fast mode.
 	if fast_mode_enabled():return
 	if key=="cannon" and bool(shot.hostile):
@@ -2109,6 +2111,7 @@ func build_ui() -> void:
 		ui_rebuild_pending = true
 		return
 	ui_rebuild_pending = false
+	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	system_nav_buttons.clear()
 	system_nav = null
 	workspace_frame = null
@@ -2200,6 +2203,9 @@ func build_ui() -> void:
 		death_menu.set_item_checked(mode, mode == int(game.profile.get("guardDeath", 0)))
 	death_menu.add_separator(UIText.t("main.build_ui.text_17"))
 	death_menu.add_item(UIText.t("main.build_ui.text_18"),20)
+	death_menu.add_item(UIText.t("battle.damage_stats.title"),21)
+	damage_stats_ui=preload("res://scripts/battle_damage_stats_ui.gd").new()
+	damage_stats_ui.setup(self)
 	for mode in 3:
 		death_menu.add_radio_check_item([UIText.t("main.build_ui.text_19"), UIText.t("main.build_ui.text_20"), UIText.t("gem.setup.text_03")][mode],10+mode)
 		death_menu.set_item_checked(death_menu.get_item_index(10+mode),damage_mode==mode)
@@ -2219,6 +2225,8 @@ func build_ui() -> void:
 			details.canceled.connect(details.queue_free)
 			ui.add_child(details)
 			details.popup_centered(Vector2i(560,600))
+		elif mode==21:
+			damage_stats_ui.show()
 		elif mode>=10:
 			set_damage_mode(mode-10)
 			for option in 3:death_menu.set_item_checked(death_menu.get_item_index(10+option),damage_mode==option)
@@ -3708,6 +3716,7 @@ func attach_native_display()->bool:
 	return false
 
 func _exit_tree()->void:
+	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	if battle_slice_runtime!=null:
 		if battle_slice_runtime.close():battle_slice_runtime=null
 

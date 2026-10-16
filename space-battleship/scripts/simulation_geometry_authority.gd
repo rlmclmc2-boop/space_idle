@@ -103,7 +103,7 @@ func weapon_visual_key(key:String)->String:
 	return str(ENEMY_VISUAL_ALIASES.get(key,key))
 
 func weapon_key(shot: Dictionary) -> String:
-	return weapon_visual_key(str(shot.key))
+	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))
 
 func turret_angle(index: int) -> float:
 	if turret_ship!=str(game.profile.selectedShip) or not turret_visuals.has(index):return 0.0
@@ -362,6 +362,7 @@ func advance_turrets(dt: float) -> void:
 		pose.angle = rotate_toward(float(pose.angle),desired,maxf(0,speed)*dt)
 
 func visual_muzzle(shot: Dictionary) -> Vector2:
+	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	var identity=drone_identity(shot)
 	if not identity.is_empty():return drone_launch_pose(identity,Vector2.ZERO,0).position
 	if shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)

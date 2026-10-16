@@ -1,5 +1,16 @@
 {
   "entries": {
+    "battle.damage_stats.title": {"params": []},
+    "battle.damage_stats.enable": {"params": []},
+    "battle.damage_stats.scope": {"params": []},
+    "battle.damage_stats.stopped": {"params": []},
+    "battle.damage_stats.unavailable": {"params": []},
+    "battle.damage_stats.total": {"params": ["dps", "damage", "seconds"]},
+    "battle.damage_stats.row": {"params": ["source", "dps", "damage"]},
+    "battle.damage_stats.module": {"params": ["slot"]},
+    "battle.damage_stats.drone": {"params": ["slot"]},
+    "battle.damage_stats.unknown_slot": {"params": []},
+    "battle.damage_stats.other": {"params": []},
     "hyperspace.visual_tier": {
       "params": [
         "tier"

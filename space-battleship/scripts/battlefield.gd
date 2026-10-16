@@ -211,6 +211,7 @@ func shot_mount(shot:Dictionary)->int:
 	return super.shot_mount(shot)
 
 func visual_muzzle(shot:Dictionary)->Vector2:
+	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	if battle_slice_runtime!=null:return battle_slice_runtime.muzzle(shot)
 	if bool(shot.get("prototype_missile",false)) or shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
 	var id:String=_visual_drone_id(shot)
@@ -470,7 +471,6 @@ func on_event(kind:String,info:Dictionary)->void:
 		if is_instance_valid(battle_hud_layer):battle_hud_layer.queue_redraw()
 	if kind=="explode" and int(info.get("uid",-2))==encounter_presentation.leader_uid:
 		encounter_presentation.leader_fall=0.0
-	if kind=="projectile_impact" and info.shot.get("chain_hop",false):return
 	if kind=="hit" and bool(info.get("player",false)):
 		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=fx_time
 		shield_before_hit=game.player.shield
@@ -532,10 +532,6 @@ func sync_beam_visuals()->void:
 
 
 func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float,known_visual:Variant=null)->bool:
-	if shot.get("chain_hop",false):
-		var logical:=game.projectile_position(shot)
-		CHAIN_VFX.flight(draw_surface,pos,battle_point(logical+Vector2(game.projectile_direction(shot)))-battle_point(logical))
-		return true
 	if not _is_own_missile(shot):return false
 	var visual:Dictionary=projectile_visual(shot) if known_visual==null else known_visual
 	# Every real missile, including an orphan, retains one physical body.
@@ -729,7 +725,6 @@ func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 
 
 func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,visual:Dictionary={},trail_budget:=-1)->float:
-	if shot.get("chain_hop",false):return game.projectile_direction(shot).angle()
 	if _is_simple_enemy(shot):
 		var angle:float=projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle())
 		enemy_recognition.draw_projectile(draw_surface,pos,angle,int(shot.get("type",0)),core)
@@ -741,7 +736,7 @@ func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,vi
 		return angle
 	if _is_own_rail(shot):
 		var angle:=float(projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle()))
-		if core:rail_vfx.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",game.projectile_position(shot)))))
+		if core:rail_vfx.flight(draw_surface,pos,Vector2.from_angle(angle),fx_time,battle_point(Vector2(visual.get("origin",shot.get("launch_point",game.projectile_position(shot))))))
 		return angle
 	if not _is_own_pulse(shot):return super.draw_projectile_fx(shot,pos,offset,core,visual,trail_budget)
 	var angle:=float(projectile_visual_value(visual,"angle",game.projectile_direction(shot).angle()))

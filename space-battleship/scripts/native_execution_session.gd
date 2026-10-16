@@ -36,8 +36,10 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	if descriptor.get("requires_drop_rules",false) and not descriptor.get("drop_rules_compiled",false):return false
 	if descriptor.get("enemies",[]).size()>(15 if descriptor.execution_scope=="native_rich15_layer2" else 2):return false
 	var candidate:RefCounted=ClassDB.instantiate("SpaceCombatKernel")
+	if game.damage_stats.enabled and (not candidate.has_method("set_damage_stats_enabled") or not candidate.has_method("take_damage_stats")):return false
 	if not supports_configuration(candidate,descriptor):return false
 	if not candidate.configure(descriptor):return false
+	if game.damage_stats.enabled:candidate.set_damage_stats_enabled(true)
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
 	weapons=descriptor.weapons
@@ -146,6 +148,9 @@ func advance(game:RefCounted,dt:float)->bool:
 	game.enhancement_deferred_elapsed=float(values.deferred_elapsed);game.enhancement_deferred_tick=int(values.deferred_tick)
 	if "motion_clock" in game:game.motion_clock=float(values.clock)
 	ticks+=1
+	if game.damage_stats.enabled:
+		for row in kernel.take_damage_stats():
+			game.damage_stats.record(str(row.source),game.N.add(row.shield,row.health))
 	consume_feedback(game)
 	if handed_off:return true
 	game.since_hit=float(kernel.metrics().get("since_hit",game.since_hit+dt))
@@ -255,6 +260,9 @@ func consume_feedback(game:RefCounted)->void:
 
 func cancel(game:RefCounted)->void:
 	if kernel==null:return
+	if game.damage_stats.enabled:
+		for row in kernel.take_damage_stats():
+			game.damage_stats.record(str(row.source),game.N.add(row.shield,row.health))
 	if galaxy_refit_blocked:
 		game.native_cancelled_step+=blocked_shared_step;blocked_shared_step=0.0
 		game.native_step_phase="idle";game.native_step_remaining=0.0
