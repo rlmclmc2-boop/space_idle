@@ -123,7 +123,7 @@ func tick_projectiles(dt: float) -> void:
 		# Their remaining visual flight has no gameplay consumer in the Lab.
 		if shot.target.is_empty():continue
 		if shot.hostile:
-			if shot.target.armour <= 0:continue
+			if not player_alive():continue
 		elif shot.target.hp <= 0 or not enemies.has(shot.target):continue
 		shot.x = item.destination.x
 		shot.y = item.destination.y

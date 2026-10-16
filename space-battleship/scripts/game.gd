@@ -2148,7 +2148,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	return true
 
 func is_active() -> bool:
-	return state in [State.TRAVEL, State.COMBAT] and N.compare(player.get("armour",0),0)>0
+	return state in [State.TRAVEL, State.COMBAT] and player_alive()
 
 func ratio(kind: String) -> float:
 	return db.ratio(stage, maxi(0, group_index - 1), kind)
@@ -3153,7 +3153,7 @@ func _tick_legacy_projectiles(dt: float) -> void:
 		if advance_custom_projectile(shot,dt):continue
 		if shot.get("beam", false):continue
 		if not shot.target.is_empty():
-			var target_dead: bool = N.compare(shot.target.armour,0)<=0 if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
+			var target_dead: bool = not player_alive() if shot.hostile else shot.target.hp <= 0 or not enemies.has(shot.target)
 			if target_dead:
 				# Keep the last heading; a missile never acquires a replacement target.
 				shot.target = {}
