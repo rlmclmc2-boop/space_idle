@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 ROOT = Path(r'D:\放置')
-BASE = '67a3b18d669bf57cc2a3fa28aa2099a883b5ff8b'
+BASE = 'f310da4d96bb88e776ff7f659ea882a80cbf9c6a'
 DLL_SHA = 'dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a'
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',
