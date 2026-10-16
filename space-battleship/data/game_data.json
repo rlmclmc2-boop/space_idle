@@ -260741,10 +260741,10 @@
       "des": "装甲锚点·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.2,
+      "dmgMultiple": 0.4,
       "health": 1800,
       "armourType": 1,
       "res": "{1,55,1}",
@@ -260771,10 +260771,10 @@
       "des": "装甲锚点·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.2,
+      "dmgMultiple": 0.6,
       "health": 1800,
       "armourType": 1,
       "res": "{1,38,1}",
@@ -260801,10 +260801,10 @@
       "des": "装甲锚点·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.2,
+      "dmgMultiple": 0.6,
       "health": 1800,
       "armourType": 1,
       "res": "{1,37,1}",
@@ -260891,13 +260891,13 @@
       "des": "连击削减舰·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.3,
+      "dmgMultiple": 0.45,
       "health": 850,
       "armourType": 1,
-      "res": "{1,33,1}",
+      "res": "{1,21,1}",
       "size": 3,
       "shield": 0,
       "shieldType": 0,
@@ -260914,7 +260914,7 @@
       "drops": [
         {
           "resourceId": 1,
-          "amount": 33.0,
+          "amount": 21.0,
           "chance": 1.0
         }
       ]
@@ -260930,7 +260930,7 @@
       "dmgMultiple": 0.3,
       "health": 850,
       "armourType": 1,
-      "res": "{1,32,1}",
+      "res": "{1,20,1}",
       "size": 3,
       "shield": 0,
       "shieldType": 0,
@@ -260947,7 +260947,7 @@
       "drops": [
         {
           "resourceId": 1,
-          "amount": 32.0,
+          "amount": 20.0,
           "chance": 1.0
         }
       ]
@@ -260989,10 +260989,10 @@
       "des": "间歇护盾舰·开场资源变体",
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "laser-mon"
         }
       ],
-      "dmgMultiple": 0.25,
+      "dmgMultiple": 0.6,
       "health": 1100,
       "armourType": 1,
       "res": "{1,46,1}",
@@ -307570,10 +307570,10 @@
         null,
         null,
         null,
-        null,
+        271008,
         271026,
         271027,
-        null,
+        271008,
         null,
         null,
         null,
