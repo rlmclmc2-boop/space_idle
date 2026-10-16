@@ -111,6 +111,7 @@ const FLAME_SCALE := 0.65
 const TRAIL_SCALE := 0.55
 const IMPACT_SCALE := 0.65
 var show_damage_numbers := true
+var damage_stats_ui
 var damage_mode := 0 # 0 simplified, 1 all (damage types), 2 off
 var damage_pending: Array[Dictionary] = []
 var damage_history: Array[String]:
@@ -2109,6 +2110,7 @@ func build_ui() -> void:
 		ui_rebuild_pending = true
 		return
 	ui_rebuild_pending = false
+	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	system_nav_buttons.clear()
 	system_nav = null
 	workspace_frame = null
@@ -2200,6 +2202,9 @@ func build_ui() -> void:
 		death_menu.set_item_checked(mode, mode == int(game.profile.get("guardDeath", 0)))
 	death_menu.add_separator(UIText.t("main.build_ui.text_17"))
 	death_menu.add_item(UIText.t("main.build_ui.text_18"),20)
+	death_menu.add_item(UIText.t("battle.damage_stats.title"),21)
+	damage_stats_ui=preload("res://scripts/battle_damage_stats_ui.gd").new()
+	damage_stats_ui.setup(self)
 	for mode in 3:
 		death_menu.add_radio_check_item([UIText.t("main.build_ui.text_19"), UIText.t("main.build_ui.text_20"), UIText.t("gem.setup.text_03")][mode],10+mode)
 		death_menu.set_item_checked(death_menu.get_item_index(10+mode),damage_mode==mode)
@@ -2219,6 +2224,8 @@ func build_ui() -> void:
 			details.canceled.connect(details.queue_free)
 			ui.add_child(details)
 			details.popup_centered(Vector2i(560,600))
+		elif mode==21:
+			damage_stats_ui.show()
 		elif mode>=10:
 			set_damage_mode(mode-10)
 			for option in 3:death_menu.set_item_checked(death_menu.get_item_index(10+option),damage_mode==option)
@@ -3708,6 +3715,7 @@ func attach_native_display()->bool:
 	return false
 
 func _exit_tree()->void:
+	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	if battle_slice_runtime!=null:
 		if battle_slice_runtime.close():battle_slice_runtime=null
 

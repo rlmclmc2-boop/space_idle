@@ -128,6 +128,7 @@ var last_save_error: Error = OK
 var progress_writer := preload("res://scripts/progress_writer.gd").new()
 var jewel_repeats: Array[Dictionary] = []
 var main_attack_serial := 0
+var damage_stats=preload("res://scripts/battle_damage_stats.gd").new()
 var attack_instance_serial := 0
 var jewel_defence_times: Dictionary = {}
 var jewel_defence_damage: Dictionary = {}
@@ -2179,6 +2180,7 @@ func publish_encounter_geometry() -> void:
 		enemy.hull_scale=(1.65 if encounter_tier()=="ultimate" else 1.35) if enemy.encounter_leader else 1.0
 
 func spawn_group(keep_distance := false) -> void:
+	if damage_stats.enabled:damage_stats.clear()
 	guard_engaged = true
 	var encounter: Dictionary = db.levels[stage - 1].groups[group_index]
 	if manual_hyperspace.active and manual_hyperspace.reward_binder!=null:
@@ -2622,9 +2624,13 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			enemy.shield=N.subtract(enemy.shield,absorbed)
 			incoming=N.maximum(0,N.subtract(incoming,N.divide(absorbed,factor))) if factor>0 else 0.0
 	var amount = 0.0
+	var settled_hp = 0.0
 	if N.compare(absorbed,0)<=0 or N.compare(incoming,0)>0:
 		amount=N.maximum(1,N.ceiling(N.multiply(incoming,1.0-resistance if type==int(enemy.armourType) else 1.0)))
+		if damage_stats.enabled:settled_hp=N.minimum(enemy.hp,amount)
 		enemy.hp=N.subtract(enemy.hp,amount)
+	if damage_stats.enabled and state==State.COMBAT:
+		damage_stats.record(str(context.get("source_id","other")),N.add(settled_hp,absorbed))
 	amount=N.add(amount,absorbed)
 	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
 	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
@@ -2969,6 +2975,7 @@ func tick(dt: float) -> void:
 	# A galaxy refit must transfer before this step changes clocks, income or
 	# region work. Failed preparation leaves the complete step in the caller.
 	if not prepare_logical_step(dt):return
+	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	advance_shared_clock_and_economy(dt)
 	if native_step_phase=="blocked":return
 	if native_execution!=null and native_execution.paused_by_configuration:
@@ -4572,6 +4579,14 @@ func finish_combat_step(dt:float)->void:
 
 func projectile_clear()->void:
 	projectiles.clear()
+
+func set_damage_stats_enabled(value:bool)->bool:
+	if value and native_execution!=null and native_execution.kernel!=null and not native_execution.kernel.has_method("set_damage_stats_enabled"):
+		return false
+	damage_stats.set_enabled(value)
+	if native_execution!=null and native_execution.kernel!=null and native_execution.kernel.has_method("set_damage_stats_enabled"):
+		native_execution.kernel.set_damage_stats_enabled(value)
+	return true
 
 var combat_presentation:RefCounted
 

@@ -172,6 +172,9 @@ class SpaceCombatKernel : public RefCounted {
         Vector2 laser_launch, laser_ray_origin, laser_ray_step;
         Dictionary laser_primary;
     };
+    // Optional observation. Combat never reads this ledger.
+    bool damage_stats_enabled = false;
+    std::map<String, std::array<double, 2>> damage_stats;
     std::vector<Actor> actors;
     std::vector<Weapon> weapons;
     std::vector<Defence> defences;
@@ -264,6 +267,7 @@ class SpaceCombatKernel : public RefCounted {
         double damage = 0;
         int type = 0;
         String source;
+        String stats_source;
     };
     // Deadlines select due work; insertion order controls settlement and cold export.
     std::multimap<double, StrangePacket> strange_pending;
@@ -307,7 +311,8 @@ class SpaceCombatKernel : public RefCounted {
         for (const auto &item : due) {
             const StrangePacket &p = item.second;
             for (size_t i = 0; i < actors.size(); ++i)
-                if (actors[i].live) hit_enemy(handle(i), p.damage, p.type, {}, false, clock, -1, false);
+                if (actors[i].live) hit_enemy(handle(i), p.damage, p.type, {}, false, clock, -1, false, {},
+                                               p.stats_source.is_empty() ? p.source : p.stats_source);
         }
         if (strange_pending.empty()) retained_strange_damage = 0;
     }
@@ -979,7 +984,8 @@ class SpaceCombatKernel : public RefCounted {
         return id;
     }
     void hit_enemy(Handle h, double raw, int type, const std::shared_ptr<Instance> &inst, bool trigger,
-                   double at, int wi, bool chain_trigger = false, const std::shared_ptr<MissileContext> &context = {}) {
+                   double at, int wi, bool chain_trigger = false, const std::shared_ptr<MissileContext> &context = {},
+                   const String &damage_source = String()) {
         Actor *a = resolve(h);
         if (!a) {
             ++stale_rejections;
@@ -1029,6 +1035,8 @@ class SpaceCombatKernel : public RefCounted {
             a->view["reactive_volley_at"] = a->reactive_volley_at;
         }
         double incoming = raw * (1 + a->interference), absorbed = 0, damage = 0;
+        const double hp_before = damage_stats_enabled ? a->hp : 0;
+        const double shield_before = damage_stats_enabled ? a->shield : 0;
         if (a->shield > 0) {
             double factor = type == a->shield_type ? 1 - resistance : 1;
             absorbed = std::min(a->shield, std::max(1.0, incoming * factor));
@@ -1038,6 +1046,24 @@ class SpaceCombatKernel : public RefCounted {
         if (absorbed <= 0 || incoming > 0) {
             damage = std::max(1.0, std::ceil(incoming * (type == a->armour_type ? 1 - resistance : 1)));
             a->hp = nonnegative(a->hp - damage);
+        }
+        String source;
+        if (damage_stats_enabled) {
+            source = damage_source;
+            if (source.is_empty() && context) source = context->source;
+            if (source.is_empty() && inst && inst->attack && inst->attack->birth) {
+                const BirthConfig &birth = *inst->attack->birth;
+                source = birth.entry.has("drone_id") ? String("drone:") + String(birth.entry["drone_id"])
+                    : String("module:") + String::num_int64(birth.slot);
+            }
+            if (source.is_empty()) source = "other";
+            const double shield_loss = nonnegative(shield_before - a->shield);
+            const double hp_loss = nonnegative(hp_before - a->hp);
+            if (shield_loss > 0 || hp_loss > 0) {
+                auto &sum = damage_stats[source];
+                sum[0] += shield_loss;
+                sum[1] += hp_loss;
+            }
         }
         a->view["hp"] = a->hp;
         a->view["shield"] = a->shield;
@@ -1062,6 +1088,7 @@ class SpaceCombatKernel : public RefCounted {
                 p.order = ++strange_serial; p.root = inst->attack->id;
                 p.damage = raw * strange_multiplier; p.type = strange_type;
                 p.source = w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"]) : String("module:") + String::num_int64(w.slot);
+                if (damage_stats_enabled) p.stats_source = source;
                 strange_pending.emplace(strange_boundary_end + strange_delay, p);
                 retained_strange_damage = std::max(retained_strange_damage, p.damage);
             }
@@ -1072,7 +1099,7 @@ class SpaceCombatKernel : public RefCounted {
             context->wild_used = true; // Shared context is marked before recursive AoE.
             for (size_t i = 0; i < actors.size(); ++i)
                 if (actors[i].live && actors[i].hp > 0)
-                    hit_enemy(handle(i),base_raw*context->blast,wild_damage_type,{},false,at,wi,false,context);
+                    hit_enemy(handle(i),base_raw*context->blast,wild_damage_type,{},false,at,wi,false,context,damage_source);
         }
         Vector2 origin = a->point;
         if (a->hp <= 0 && a->live) {
@@ -1123,7 +1150,7 @@ class SpaceCombatKernel : public RefCounted {
                 for (size_t index = 0; index < actors.size(); ++index)
                     if (actors[index].live && (std::abs(actors[index].slot - a->slot) == 1 ||
                                                std::abs(actors[index].slot - a->slot) == 2))
-                        hit_enemy(handle(index), a->max_hp * a->explosion, type, {}, false, at, wi);
+                        hit_enemy(handle(index), a->max_hp * a->explosion, type, {}, false, at, wi, false, {}, source);
             for (size_t id : active) {
                 Flight &f = flights[id];
                 if (endless_eligible(f) && f.target.index == h.index && !f.await_target) {
@@ -1857,6 +1884,8 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("presentation_beams"), &SpaceCombatKernel::presentation_beams);
         ClassDB::bind_method(D_METHOD("player_view"), &SpaceCombatKernel::player_view);
         ClassDB::bind_method(D_METHOD("take_feedback"), &SpaceCombatKernel::take_feedback);
+        ClassDB::bind_method(D_METHOD("set_damage_stats_enabled", "enabled"), &SpaceCombatKernel::set_damage_stats_enabled);
+        ClassDB::bind_method(D_METHOD("take_damage_stats"), &SpaceCombatKernel::take_damage_stats);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
         ClassDB::bind_method(D_METHOD("hit_handle", "handle", "raw", "type"), &SpaceCombatKernel::hit_handle);
         ClassDB::bind_method(D_METHOD("receive_player_hit", "raw", "type"),
@@ -2802,6 +2831,23 @@ class SpaceCombatKernel : public RefCounted {
         }
         feedback.clear();
         return values;
+    }
+    void set_damage_stats_enabled(bool enabled) {
+        damage_stats_enabled = enabled;
+        damage_stats.clear();
+    }
+    Array take_damage_stats() {
+        Array rows;
+        if (!damage_stats_enabled) return rows;
+        for (const auto &item : damage_stats) {
+            Dictionary row;
+            row["source"] = item.first;
+            row["shield"] = item.second[0];
+            row["health"] = item.second[1];
+            rows.append(row);
+        }
+        damage_stats.clear();
+        return rows;
     }
     PackedInt64Array actor_handle(int64_t uid) const {
         PackedInt64Array h;

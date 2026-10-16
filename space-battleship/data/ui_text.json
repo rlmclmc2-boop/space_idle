@@ -16196,5 +16196,16 @@
   {"key":"unlock.manual_confirm","text":"读完后按继续；自动跳过可在操作指南中开启。","params":"","category":"tutorial","note":"默认解锁说明不自动消失"},
   {"key":"onboarding.unlock_auto","text":"新内容来了。开启自动跳过后，倒计时结束会继续；也可随时点「确认解锁」。","params":"","category":"tutorial","note":"玩家开启自动跳过后的解锁提示"},
   {"key":"equipment.card_missile_context","text":"{level} · {count} 枚/轮","params":"level,count","category":"equipment","note":"导弹简略卡使用实际发射枚数"},
-  {"key":"weapon.card_missile_expected","text":"单枚期望伤害","params":"","category":"weapon","note":"投影数值按单枚命中，不误称整轮伤害"}
+  {"key":"weapon.card_missile_expected","text":"单枚期望伤害","params":"","category":"weapon","note":"投影数值按单枚命中，不误称整轮伤害"},
+  {"key":"battle.damage_stats.title","text":"战斗伤害统计","params":"","category":"battle","note":"战斗设置菜单入口与窗口标题"},
+  {"key":"battle.damage_stats.enable","text":"开始统计","params":"","category":"battle","note":"可选实时统计开关"},
+  {"key":"battle.damage_stats.scope","text":"开启后统计最近约8战斗秒的实际护盾与生命损失。暂停停表，换波清零，关窗停止。","params":"","category":"battle","note":"统计窗口及生命周期"},
+  {"key":"battle.damage_stats.stopped","text":"统计未开启","params":"","category":"battle","note":"关闭状态"},
+  {"key":"battle.damage_stats.unavailable","text":"当前战斗版本不支持伤害统计","params":"","category":"battle","note":"运行中的旧原生模块缺少统计协议"},
+  {"key":"battle.damage_stats.total","text":"总 DPS {dps} · 实际伤害 {damage} · {seconds} 战斗秒","params":"dps,damage,seconds","category":"battle","note":"统计总量"},
+  {"key":"battle.damage_stats.row","text":"{source}：DPS {dps} · 实际伤害 {damage}","params":"source,dps,damage","category":"battle","note":"来源分项"},
+  {"key":"battle.damage_stats.module","text":"武器槽 {slot}","params":"slot","category":"battle","note":"玩家武器槽"},
+  {"key":"battle.damage_stats.drone","text":"无人机槽 {slot}","params":"slot","category":"battle","note":"玩家无人机槽"},
+  {"key":"battle.damage_stats.unknown_slot","text":"已卸下","params":"","category":"battle","note":"统计窗口内已卸下的无人机"},
+  {"key":"battle.damage_stats.other","text":"其他伤害","params":"","category":"battle","note":"无法可靠归属的伤害"}
 ]

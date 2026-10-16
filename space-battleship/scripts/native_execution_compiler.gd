@@ -28,7 +28,7 @@ func external_factor(g,entry:Dictionary,totals:Dictionary,galaxy_values:Dictiona
 	return result if is_finite(drone) and is_finite(result) else null
 func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->Dictionary:
 	if scope not in ["native_low_contract","native_rich15_layer2"]:return {"error":"unsupported_scope"}
-	if (("damage_stats" in g) and g.damage_stats.enabled) or g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}
+	if g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}
 	for category in ["weapons","defence"]:
 		for effect in g.profile.enhancementBranches[category]:
 			for node in g.profile.enhancementBranches[category][effect]:
