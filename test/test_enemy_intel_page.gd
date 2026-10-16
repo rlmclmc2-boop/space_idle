@@ -68,6 +68,10 @@ func run() -> void:
 	scene.select_system(11)
 	check(page.route_stage==3 and page.route_builds==hidden_builds+1,"Opening after stage change rebuilds once")
 	check(page.list is ItemList and page.detail.get_child_count()==reusable_detail_nodes,"Stage change reuses the route control and detail nodes")
+	for pair in [["271022","271023"],["271026","271027"]]:
+		var first_entry = page.entries.find_custom(func(entry):return str(entry.id)==pair[0])
+		var second_entry = page.entries.find_custom(func(entry):return str(entry.id)==pair[1])
+		check(first_entry>=0 and second_entry>=0 and page.list.get_item_text(first_entry)!=page.list.get_item_text(second_entry),"Different same-point enemy IDs retain distinct authored names")
 	check(equipment.projection_builds==projections and (scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Cross-stage tab opening avoids unrelated recompilation")
 	var reactive_index = page.entries.find_custom(func(entry):return str(entry.id)=="271024")
 	page.list.item_selected.emit(reactive_index)
