@@ -5,7 +5,10 @@ extends RefCounted
 const ENERGY := Color("8deaff")
 const CORE := Color("edfff9")
 
-static func charge(surface: CanvasItem, muzzle: Vector2, target: Vector2, amount: float, clock: float) -> void:
+static func accent(base:Color,tint:Color)->Color:
+	return base if tint.a<=0 else base.lerp(tint,0.72)
+
+static func charge(surface: CanvasItem, muzzle: Vector2, target: Vector2, amount: float, clock: float, tint:Color=Color(1,1,1,0)) -> void:
 	if not muzzle.is_finite() or not target.is_finite() or not is_finite(amount) or not is_finite(clock):
 		return
 	var progress := clampf(amount, 0.0, 1.0)
@@ -15,26 +18,26 @@ static func charge(surface: CanvasItem, muzzle: Vector2, target: Vector2, amount
 	var across := direction.orthogonal()
 	var radius := lerpf(14.0, 6.0, progress)
 	# Energy converges at the actual emitter. No target contact before first hit.
-	surface.draw_circle(muzzle, 4.0 + progress * 3.0, Color(ENERGY, 0.12 + progress * 0.16))
+	surface.draw_circle(muzzle, 4.0 + progress * 3.0, Color(accent(ENERGY,tint), 0.12 + progress * 0.16))
 	surface.draw_circle(muzzle, 1.3 + progress * 1.3, Color(CORE, 0.45 + progress * 0.5))
 	for side in [-1.0, 1.0]:
 		var start: Vector2 = muzzle + across * side * radius - direction * 4.0
 		var bend: Vector2 = muzzle + across * side * radius * 0.5 + direction * 2.0
-		surface.draw_polyline(PackedVector2Array([start, bend, muzzle]), Color(ENERGY, 0.3 + progress * 0.5), 1.3, true)
+		surface.draw_polyline(PackedVector2Array([start, bend, muzzle]), Color(accent(ENERGY,tint), 0.3 + progress * 0.5), 1.3, true)
 	var angle := clock * 1.2
-	surface.draw_arc(muzzle, radius, angle, angle + PI * (0.3 + progress * 0.6), 16, Color(ENERGY, 0.45), 1.2, true)
+	surface.draw_arc(muzzle, radius, angle, angle + PI * (0.3 + progress * 0.6), 16, Color(accent(ENERGY,tint), 0.45), 1.2, true)
 
 static func ramp_color(power:float)->Color:
 	if power>=0.999999:return Color("f04aff")
 	if power<0.5:return Color("8deaff").lerp(Color("2688ff"),power*2.0)
 	return Color("2688ff").lerp(Color("925bff"),(power-0.5)*2.0)
 
-static func full_cue(surface:CanvasItem,point:Vector2,age:float)->void:
+static func full_cue(surface:CanvasItem,point:Vector2,age:float,tint:Color=Color(1,1,1,0))->void:
 	if age<0.0 or age>0.18:return
 	var t:=age/0.18
-	surface.draw_arc(point,8.0+10.0*t,0,TAU,32,Color(Color("f5adff"),(1.0-t)*0.65),1.8,true)
+	surface.draw_arc(point,8.0+10.0*t,0,TAU,32,Color(accent(Color("f5adff"),tint),(1.0-t)*0.65),1.8,true)
 
-static func active(surface: CanvasItem, muzzle: Vector2, target: Vector2, clock: float, width: float, power: float, pulse: float = 0.0) -> void:
+static func active(surface: CanvasItem, muzzle: Vector2, target: Vector2, clock: float, width: float, power: float, pulse: float = 0.0, tint:Color=Color(1,1,1,0)) -> void:
 	if not muzzle.is_finite() or not target.is_finite() or not is_finite(clock):
 		return
 	if not is_finite(width) or not is_finite(power) or not is_finite(pulse) or width <= 0.0:
@@ -46,7 +49,7 @@ static func active(surface: CanvasItem, muzzle: Vector2, target: Vector2, clock:
 	var direction := delta / distance
 	var across := direction.orthogonal()
 	var intensity := clampf(power, 0.0, 1.0)
-	var energy:=ramp_color(intensity)
+	var energy:=accent(ramp_color(intensity),tint)
 	var full:=intensity>=0.999999
 	var hit_pulse := clampf(pulse, 0.0, 1.0)
 	# Width is derived by the existing renderer from actual ramp state.
@@ -67,11 +70,11 @@ static func active(surface: CanvasItem, muzzle: Vector2, target: Vector2, clock:
 		surface.draw_line(start, start + direction * segment_length, Color(CORE, 0.06+intensity*0.16), maxf(0.7, core_width * 0.55), true)
 	surface.draw_circle(muzzle, body_width * 0.63, Color(energy, 0.27))
 	surface.draw_circle(muzzle, core_width * 0.75, Color(CORE,0.25+intensity*0.65))
-	_contact(surface, target, direction, body_width, intensity, hit_pulse, clock)
+	_contact(surface, target, direction, body_width, intensity, hit_pulse, clock,tint)
 
-static func _contact(surface: CanvasItem, point: Vector2, direction: Vector2, width: float, power: float, pulse: float, clock: float) -> void:
+static func _contact(surface: CanvasItem, point: Vector2, direction: Vector2, width: float, power: float, pulse: float, clock: float,tint:Color=Color(1,1,1,0)) -> void:
 	var across := direction.orthogonal()
-	var energy:=ramp_color(power)
+	var energy:=accent(ramp_color(power),tint)
 	# This is sustained contact energy, not a synthetic per-frame hit event.
 	# Only the supplied real hit pulse changes its emphasis.
 	var radius := 1.8 + width * 0.40 + power * 3.0 + pulse * 0.35

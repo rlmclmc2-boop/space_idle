@@ -25,19 +25,21 @@ func flight(_surface:CanvasItem,_point:Vector2,_direction:Vector2,_clock:float,_
 	# The authoritative projectile still travels and hits normally. A launch
 	# snapshot draws an independent discharge instead of a travelling packet.
 	pass
-func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,budget:float)->void:
+func accent(base:Color,tint:Color)->Color:
+	return base if tint.a<=0 else base.lerp(tint,0.72)
+func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,budget:float,tint:Color=Color(1,1,1,0))->void:
 	var lifetime:=minf(flash_seconds,0.045)
 	if age<0 or age>=lifetime:return
 	var fade:=1.0-age/lifetime
-	surface.draw_line(point-direction*4.0,point+direction*14.0,Color(HOT,fade*budget),maxf(1.0,trail_width*0.065),true)
-func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critical:bool,budget:float)->void:
+	surface.draw_line(point-direction*4.0,point+direction*14.0,Color(accent(HOT,tint),fade*budget),maxf(1.0,trail_width*0.065),true)
+func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critical:bool,budget:float,tint:Color=Color(1,1,1,0))->void:
 	var lifetime:=minf(impact_seconds,0.05)
 	if age<0 or age>=lifetime:return
 	var fade:=1.0-age/lifetime
 	var side:=direction.orthogonal()
 	for sign in [-1.0,1.0]:
 		var tip:Vector2=point+direction*impact_radius*0.2+side*sign*impact_radius*0.22
-		surface.draw_line(point,tip,Color(ELECTRIC,fade*budget),maxf(0.8,trail_width*0.035),true)
+		surface.draw_line(point,tip,Color(accent(ELECTRIC,tint),fade*budget),maxf(0.8,trail_width*0.035),true)
 func afterglow_seconds() -> float:
 	return maxf(flash_seconds,impact_seconds*3.5)
 
@@ -46,7 +48,7 @@ func discharge_width(multiplier:float=1.0)->float:
 func exit_point(origin:Vector2,direction:Vector2,bounds:Vector2,full_width:float=-1.0)->Vector2:
 	return Geometry.exit_point(origin,direction,bounds,discharge_width() if full_width<0 else full_width)
 
-func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Vector2,age:float,budget:float,bounds:Vector2,full_width:float=-1.0)->void:
+func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Vector2,age:float,budget:float,bounds:Vector2,full_width:float=-1.0,tint:Color=Color(1,1,1,0))->void:
 	var lifetime := afterglow_seconds()
 	if age<0 or age>=lifetime:return
 	var direction := (contact-origin).normalized()
@@ -59,8 +61,8 @@ func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Ve
 		var fade := pow(1.0-age/main_lifetime,0.65)
 		# A wide straight discharge crosses the hull and leaves the clipping area.
 		# Its lifetime is independent of the authoritative travelling projectile.
-		surface.draw_line(origin,end,Color(ELECTRIC,fade*budget),full_width,true)
-		surface.draw_line(origin,end,Color(HOT,fade*budget*0.85),maxf(4.0,decoration_width*0.32),true)
+		surface.draw_line(origin,end,Color(accent(ELECTRIC,tint),fade*budget),full_width,true)
+		surface.draw_line(origin,end,Color(accent(HOT,tint),fade*budget*0.85),maxf(4.0,decoration_width*0.32),true)
 	var kink := minf(decoration_width*0.25,origin.distance_to(end)*0.015)
 	var points := PackedVector2Array([origin,
 		origin.lerp(end,0.25)+side*kink*0.35,
@@ -70,5 +72,5 @@ func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Ve
 		origin.lerp(end,0.67)+side*kink*0.8,
 		origin.lerp(end,0.69)-side*kink*0.5,end])
 	var fade := pow(1.0-age/lifetime,1.4)
-	surface.draw_line(origin,end,Color(ELECTRIC,fade*budget*0.38),maxf(2.0,decoration_width*0.22),true)
-	surface.draw_polyline(points,Color(HOT,fade*budget*0.85),maxf(1.5,decoration_width*0.09),true)
+	surface.draw_line(origin,end,Color(accent(ELECTRIC,tint),fade*budget*0.38),maxf(2.0,decoration_width*0.22),true)
+	surface.draw_polyline(points,Color(accent(HOT,tint),fade*budget*0.85),maxf(1.5,decoration_width*0.09),true)

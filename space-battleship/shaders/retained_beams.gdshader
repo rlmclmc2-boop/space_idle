@@ -1,6 +1,7 @@
 shader_type canvas_item;
 render_mode unshaded;
 uniform float clock=0.0;
+uniform vec4 evolution_color=vec4(1.0,1.0,1.0,0.0);
 varying float beam_length;
 varying vec4 state; // width, power, actual hit pulse, charge (-1 active)
 varying vec4 timing; // presentation clock, full cue age, orientation, link mode
@@ -70,5 +71,7 @@ void fragment(){
   }
   if(timing.y>=0.0 && timing.y<=0.18){float t=timing.y/0.18;c=over(c,vec3(0.9607843,0.6784314,1.0),(1.0-t)*0.65*ring(q,8.0+10.0*t,1.8,aa));}
  }
- COLOR*=vec4(c.rgb/max(c.a,0.00001),c.a);
+ vec3 rgb=c.rgb/max(c.a,0.00001);
+ rgb=mix(rgb,evolution_color.rgb,0.72*evolution_color.a);
+ COLOR*=vec4(rgb,c.a);
 }

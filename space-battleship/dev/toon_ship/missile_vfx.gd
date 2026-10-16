@@ -29,17 +29,20 @@ static func _axis(direction: Vector2) -> Vector2:
 	return direction.normalized() if direction.length_squared() > 0.0001 else Vector2.UP
 
 
-static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_seed:int=0,budget:float=1.0,draw_body:bool=true,powered:bool=true)->void:
+static func accent(base:Color,tint:Color)->Color:
+	return base if tint.a<=0 else base.lerp(tint,0.72)
+
+static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_seed:int=0,budget:float=1.0,draw_body:bool=true,powered:bool=true,tint:Color=Color(1,1,1,0))->void:
 	var axis:=_axis(direction)
 	var side:=axis.orthogonal()
 	var nozzle:=point-axis*23.0
 	var thrust:=smoothstep(0.22,0.65,age) if powered else 0.0
 	if powered and age>=0.22:
 		var length:=lerpf(5.0,18.0,thrust)
-		surface.draw_colored_polygon(PackedVector2Array([nozzle-side*2.4,nozzle-axis*length,nozzle+side*2.4]),Color(AMBER,0.82))
-		surface.draw_colored_polygon(PackedVector2Array([nozzle-side*1.1,nozzle-axis*length*0.55,nozzle+side*1.1]),HOT)
+		surface.draw_colored_polygon(PackedVector2Array([nozzle-side*2.4,nozzle-axis*length,nozzle+side*2.4]),Color(accent(AMBER,tint),0.82))
+		surface.draw_colored_polygon(PackedVector2Array([nozzle-side*1.1,nozzle-axis*length*0.55,nozzle+side*1.1]),accent(HOT,tint))
 		var ignition:=clampf(1.0-(age-0.22)/0.07,0.0,1.0)
-		if ignition>0:surface.draw_circle(nozzle,3.5*ignition,Color(HOT,ignition))
+		if ignition>0:surface.draw_circle(nozzle,3.5*ignition,Color(accent(HOT,tint),ignition))
 	elif age<0.22:
 		surface.draw_circle(nozzle-axis*3.0,2.5,Color(SMOKE,(1.0-age/0.22)*0.30))
 	if not draw_body:return
@@ -47,17 +50,17 @@ static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,
 	for sign_value in [-1.0,1.0]:
 		var fin:=PackedVector2Array([point-axis*16.0+side*sign_value*2.8,point-axis*24.0+side*sign_value*6.2,point-axis*22.0+side*sign_value*2.8])
 		surface.draw_colored_polygon(fin,OUTLINE)
-		surface.draw_line(point-axis*19.0+side*sign_value*3.4,point-axis*23.0+side*sign_value*5.0,RED,1.5,true)
+		surface.draw_line(point-axis*19.0+side*sign_value*3.4,point-axis*23.0+side*sign_value*5.0,accent(RED,tint),1.5,true)
 	var body:=PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*23.0-side*3.1,point-axis*25.0,point-axis*23.0+side*3.1,point-axis*7.0+side*3.1])
 	surface.draw_colored_polygon(body,ARMOR)
 	var edge:=PackedVector2Array(body);edge.append(body[0])
 	surface.draw_polyline(edge,OUTLINE,1.0,true)
-	surface.draw_colored_polygon(PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*7.0+side*3.1]),RED)
+	surface.draw_colored_polygon(PackedVector2Array([point+axis,point-axis*7.0-side*3.1,point-axis*7.0+side*3.1]),accent(RED,tint))
 	surface.draw_line(point-axis*9.0+side*1.5,point-axis*21.0+side*1.5,SHADOW,1.5,true)
 	surface.draw_line(point-axis*9.0-side*1.7,point-axis*20.0-side*1.7,Color.WHITE,0.9,true)
 
 
-static func trail(surface: CanvasItem, visual: Dictionary, project: Callable, offset: Vector2, core: bool, _seed: int = 0, budget: float = 1.0) -> void:
+static func trail(surface: CanvasItem, visual: Dictionary, project: Callable, offset: Vector2, core: bool, _seed: int = 0, budget: float = 1.0, tint:Color=Color(1,1,1,0)) -> void:
 	if not core or visual.is_empty():return
 	var points:PackedVector2Array=visual.get("trail",PackedVector2Array())
 	var head:=int(visual.get("head",0))
@@ -72,7 +75,7 @@ static func trail(surface: CanvasItem, visual: Dictionary, project: Callable, of
 		if displacement.length()>28.0:
 			ribbon.append(newest+displacement.normalized()*28.0+offset);break
 		ribbon.append(point+offset)
-	if ribbon.size()>1:surface.draw_polyline(ribbon,Color(AMBER,0.22+clampf(budget,0.0,1.0)*0.16),1.4,true)
+	if ribbon.size()>1:surface.draw_polyline(ribbon,Color(accent(AMBER,tint),0.22+clampf(budget,0.0,1.0)*0.16),1.4,true)
 
 
 static func flash(surface: CanvasItem, point: Vector2, direction: Vector2, age: float, budget: float = 1.0) -> void:

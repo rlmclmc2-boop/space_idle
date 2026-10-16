@@ -72,7 +72,12 @@ func sync(owner,shots:Array,offset:Vector2)->void:
   if row.is_empty():
    var root:=Node2D.new();add_child(root)
    var body=BeamBatch.new() if gpu else Fallback.new();root.add_child(body)
-   row={"root":root,"body":body,"shot":shot,"gpu":gpu,"links":[]};records[serial]=row
+   row={"root":root,"body":body,"shot":shot,"gpu":gpu,"links":[],"evolution_tier":-1};records[serial]=row
+  if gpu:
+   var tier:int=owner.weapon_evolution_tier(shot)
+   if int(row.evolution_tier)!=tier:
+    row.evolution_tier=tier
+    row.body.material.set_shader_parameter("evolution_color",owner.evolution_color(tier))
   if row.root.get_index()!=order:move_child(row.root,order)
   order+=1
   if not gpu:

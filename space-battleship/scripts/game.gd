@@ -909,13 +909,13 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	return can_afford_upgrade_costs(costs)
 
 func upgrade_currency(id: String) -> Variant:
-	return profile.hyperspace.materials.get(id,0) if id=="degenerate_matter" else profile.resources.get(id,0)
+	return profile.hyperspace.materials.get(id,0) if id==db.evolution_material_id() else profile.resources.get(id,0)
 
 func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	if costs.is_empty():
 		return false
 	for id in costs:
-		if id=="degenerate_matter" and not hyperspace.is_unlocked(self):return false
+		if id==db.evolution_material_id() and not hyperspace.is_unlocked(self):return false
 		if not is_finite(float(costs[id])) or N.compare(upgrade_currency(id),costs[id])<0:
 			return false
 	return true
@@ -928,12 +928,12 @@ func refund_equipment(key: String, level: int) -> void:
 	for target_level in range(2, level + 1):
 		for id in upgrade_cost_for_level(key, target_level):
 			var amount=upgrade_cost_for_level(key,target_level)[id]
-			if id=="degenerate_matter":profile.hyperspace.materials[id]=N.add(upgrade_currency(id),amount)
+			if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.add(upgrade_currency(id),amount)
 			else:profile.resources[id]=N.add(upgrade_currency(id),amount)
 			refunded[id]=true
 	if not refunded.is_empty():
-		resources_changed(refunded.keys().filter(func(id):return id!="degenerate_matter"))
-		if refunded.has("degenerate_matter"):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
+		resources_changed(refunded.keys().filter(func(id):return id!=db.evolution_material_id()))
+		if refunded.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -1123,8 +1123,12 @@ func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
 	var levels: Dictionary = bases.get(key,{})
 	if levels.has(level):return levels[level]
 	# Only the ordinary damage/capacity projection reads the effective level.
-	var row := combat_equipment_row(key, effective_equipment_level(level))
+	var effective_level:=effective_equipment_level(level)
+	var row := combat_equipment_row(key, effective_level)
 	var value = row.para1 if key in ["armour", "shield"] else row.dmg
+	# Virtual level bonuses keep ordinary growth, but only paid slot levels grant evolution.
+	if effective_level!=level:
+		value=N.multiply(value,N.divide(db.evolution_factor(level),db.evolution_factor(effective_level)))
 	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
 	if effective_hightech_level(tech) > 0:
 		value = N.ceiling(N.multiply(value,N.power(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech))))
@@ -2829,7 +2833,7 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 	var cached:Dictionary=max_upgrade_quote_cache.get(cache_key,{})
 	if budget.is_empty() and not cached.is_empty() and cached.signature==signature:return int(cached.amount)
 	var available: Dictionary = (profile.resources if budget.is_empty() else budget).duplicate()
-	if not available.has("degenerate_matter"):available["degenerate_matter"]=upgrade_currency("degenerate_matter")
+	if not available.has(db.evolution_material_id()):available[db.evolution_material_id()]=upgrade_currency(db.evolution_material_id())
 	var total:Dictionary={}
 	var amount := 0
 	var level := current + 1
@@ -2837,7 +2841,7 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 		var costs := upgrade_cost_for_level(key, level)
 		var affordable := true
 		for id in costs:
-			if (id=="degenerate_matter" and not hyperspace.is_unlocked(self)) or not is_finite(float(costs[id])) or N.compare(available.get(id,0),costs[id])<0:
+			if (id==db.evolution_material_id() and not hyperspace.is_unlocked(self)) or not is_finite(float(costs[id])) or N.compare(available.get(id,0),costs[id])<0:
 				affordable = false
 				break
 		if not affordable:
@@ -2880,12 +2884,12 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 		if not native_updated and not native_before_configuration_change():return false
 	native_numeric_update=native_updated
 	for id in costs:
-		if id=="degenerate_matter":profile.hyperspace.materials[id]=N.subtract(upgrade_currency(id),costs[id])
+		if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.subtract(upgrade_currency(id),costs[id])
 		else:profile.resources[id]=N.subtract(upgrade_currency(id),costs[id])
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
-	resources_changed(costs.keys().filter(func(id):return id!="degenerate_matter"))
-	if costs.has("degenerate_matter"):event.emit("hyperspace_changed",{"reason":"equipment_evolution"})
+	resources_changed(costs.keys().filter(func(id):return id!=db.evolution_material_id()))
+	if costs.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_evolution"})
 	invalidate_stat_cache()
 	var after = jewel_equipment_stat(entry)
 	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.

@@ -3,19 +3,21 @@ extends RefCounted
 const CYAN := Color("42edee")
 const BLUE := Color("398bdf")
 const WHITE := Color("f1ffff")
-static func flight(surface:CanvasItem,point:Vector2,direction:Vector2)->void:
+static func accent(base:Color,tint:Color)->Color:
+	return base if tint.a<=0 else base.lerp(tint,0.72)
+static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,tint:Color=Color(1,1,1,0))->void:
 	var across:=direction.orthogonal()
 	# Fixed geometry never links successive frames into a beam.
 	var nose:=point+direction*9.0
 	var back:=point-direction*11.0
 	var shell:=PackedVector2Array([nose,point+across*4.5,back,point-across*4.5])
-	surface.draw_line(back,nose,Color(BLUE,0.20),12.0,true)
-	surface.draw_colored_polygon(shell,CYAN)
+	surface.draw_line(back,nose,Color(accent(BLUE,tint),0.20),12.0,true)
+	surface.draw_colored_polygon(shell,accent(CYAN,tint))
 	surface.draw_colored_polygon(PackedVector2Array([nose,point+direction*1.0+across*2.2,back+direction*5.0,point+direction*1.0-across*2.2]),WHITE)
 	for side in [-1.0,1.0]:
-		surface.draw_line(back+across*side*2.0,point-direction*25.0+across*side*3.0,Color(BLUE,0.7),1.8,true)
+		surface.draw_line(back+across*side*2.0,point-direction*25.0+across*side*3.0,Color(accent(BLUE,tint),0.7),1.8,true)
 	# A short transverse energy ridge distinguishes the packet from a tracer.
-	surface.draw_line(point+direction*2.0-across*5.0,point+direction*2.0+across*5.0,Color(CYAN,0.8),1.2,true)
+	surface.draw_line(point+direction*2.0-across*5.0,point+direction*2.0+across*5.0,Color(accent(CYAN,tint),0.8),1.2,true)
 static func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float)->void:
 	# Fire events live for 0.14 s, but this flash is already transparent at 0.075 s.
 	if not is_finite(age) or age>=0.075 or not point.is_finite() or not direction.is_finite() or direction.is_zero_approx():return

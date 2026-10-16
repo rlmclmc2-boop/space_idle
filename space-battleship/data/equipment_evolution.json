@@ -1,0 +1,19 @@
+{
+  "interval": 20,
+  "first_stat_multiplier": 1.6,
+  "later_stat_multiplier": 1.5,
+  "material_id": "degenerate_matter",
+  "material_cost_per_tier": 10,
+  "visual_palette": [
+    "53d9ff",
+    "78b7ff",
+    "a9a6ff",
+    "d9a0ff",
+    "ff9eca",
+    "ffad91",
+    "ffd278",
+    "d8ed78",
+    "94e8b4",
+    "f7e6b0"
+  ]
+}

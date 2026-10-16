@@ -283,7 +283,7 @@ func configuration_changed()->void:
 
 func prepare_numeric_batch(game,mode:String)->Dictionary:
 	var wallet:Dictionary=game.profile.resources.duplicate()
-	wallet["degenerate_matter"]=game.upgrade_currency("degenerate_matter")
+	wallet[game.db.evolution_material_id()]=game.upgrade_currency(game.db.evolution_material_id())
 	var weapon_levels:Dictionary={};var defence_levels:Dictionary={};var planned:Dictionary={}
 	var player:Dictionary=game.player.duplicate(true)
 	for category in ["weapons","defence"]:
@@ -292,7 +292,7 @@ func prepare_numeric_batch(game,mode:String)->Dictionary:
 			if levels<=0:continue
 			var costs:Dictionary=game.slot_upgrade_cost(category,index,levels)
 			if costs.is_empty():continue
-			if not costs.keys().all(func(id):return (id!="degenerate_matter" or game.hyperspace.is_unlocked(game)) and is_finite(float(costs[id])) and game.N.compare(wallet.get(id,0),costs[id])>=0):continue
+			if not costs.keys().all(func(id):return (id!=game.db.evolution_material_id() or game.hyperspace.is_unlocked(game)) and is_finite(float(costs[id])) and game.N.compare(wallet.get(id,0),costs[id])>=0):continue
 			for id in costs:wallet[id]=game.N.subtract(wallet.get(id,0),costs[id])
 			var entry:Dictionary=game.slot_entry(category,index)
 			var projected=entry.duplicate();projected.level=int(entry.level)+levels

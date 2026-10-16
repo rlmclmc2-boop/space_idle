@@ -16,6 +16,7 @@ var unlock_lookup: Dictionary = {}
 
 func _init() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
+	data.equipment_evolution = JSON.parse_string(FileAccess.get_file_as_string("res://data/equipment_evolution.json"))
 	if FileAccess.file_exists("res://analyzer-package.json"):
 		var mon_table: Dictionary=MonGroupXlsx.read_mon_enemies()
 		if mon_table.has("error"):
@@ -76,8 +77,8 @@ func equipment_cost(key: String, level: int) -> Dictionary:
 			if level>1 and suffix.is_valid_int() and multiplier!=null:
 				amount=equipment_growth(float(amount),float(multiplier),level)
 			result[str(int(row[field]))]=ceilf(float(amount))
-		if level>=20 and level%20==0:
-			result["degenerate_matter"]=10*int(level/20)
+		if level>=int(data.equipment_evolution.interval) and level%int(data.equipment_evolution.interval)==0:
+			result[evolution_material_id()]=int(data.equipment_evolution.material_cost_per_tier)*int(level/int(data.equipment_evolution.interval))
 		return result
 	return {}
 
@@ -90,9 +91,12 @@ func equipment_growth(base: float, multiplier: float, level: int) -> float:
 	var step := pow(10.0, floorf(log(value) / log(10.0) + 1e-12) - 1.0)
 	return floorf(value / step + 0.5) * step
 
-func evolution_factor(level: int) -> float:
-	var tier: int = int(level/20)
-	return 1.0 if tier==0 else 1.6*pow(1.5,tier-1)
+func evolution_material_id()->String:
+	return str(data.equipment_evolution.material_id)
+
+func evolution_factor(level: int) -> Variant:
+	var tier: int = int(level/int(data.equipment_evolution.interval))
+	return 1.0 if tier==0 else N.multiply(float(data.equipment_evolution.first_stat_multiplier),N.power(float(data.equipment_evolution.later_stat_multiplier),tier-1))
 
 func equipment_combat_growth(base: float, multiplier: float, level: int) -> Variant:
 	# Preserve the ordinary authored rounding exactly; only overflowing combat

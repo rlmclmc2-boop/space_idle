@@ -267,6 +267,8 @@ func _ready() -> void:
 		system_font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "sans-serif"])
 		font = system_font
 	db = ShipDatabase.new()
+	evolution_palette.clear()
+	for code in db.data.equipment_evolution.visual_palette:evolution_palette.append(Color(str(code)))
 	var parsed_visuals = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
 	if not parsed_visuals is Dictionary:
 		push_error("Invalid ship weapon visual profiles")
@@ -307,6 +309,7 @@ func _ready() -> void:
 		load_music_setting()
 		load_tutorial_setting()
 	game.event.connect(on_event)
+	refresh_evolution_visuals()
 	create_draw_layers()
 	ui = Control.new()
 	if OS.has_feature("release"):
@@ -689,6 +692,7 @@ func invalidate_equipment_projections() -> void:
 		equipment_panel.invalidate_stats({"category":category,"detail":true})
 
 func on_event(kind: String, info: Dictionary) -> void:
+	if kind in ["upgrade","upgrades_completed","module_changed","ship_changed","progress_loaded","configuration_changed"]:refresh_evolution_visuals()
 	if fixed_enemy_layout and battle_slice_runtime==null and kind in ["state","encounter","ship_changed","configuration_changed","progress_loaded"]:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
@@ -891,7 +895,7 @@ func enemy_health(value: float) -> String:
 func cost_text(cost: Dictionary) -> String:
 	var result := ""
 	for id in cost:
-		var label:=UIText.t("hyperspace.degenerate_matter") if id=="degenerate_matter" else UIText.data_text("resources",str(id))
+		var label:=UIText.t("hyperspace.degenerate_matter") if id==db.evolution_material_id() else UIText.data_text("resources",str(id))
 		result += UIText.t("main.cost_text.text_01", {"id":"%s" % (number(cost[id])), "id_2":"%s" % label})
 	return result.strip_edges()
 
@@ -1152,17 +1156,25 @@ func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
 	return 1 if weapon_key(shot) in ["cannon","missile"] else 0
 
-# Ten visual palettes at levels 20..200. Recolors existing geometry only.
-const EVOLUTION_COLORS := [Color("53d9ff"),Color("78b7ff"),Color("a9a6ff"),Color("d9a0ff"),Color("ff9eca"),Color("ffad91"),Color("ffd278"),Color("d8ed78"),Color("94e8b4"),Color("f7e6b0")]
+# Presentation cache is rebuilt only when a finite loadout/configuration changes.
+var evolution_palette:Array[Color]=[]
+var visual_evolution_tiers:PackedInt32Array=PackedInt32Array()
+func refresh_evolution_visuals()->void:
+	visual_evolution_tiers.resize(game.weapon_entries().size())
+	for index in visual_evolution_tiers.size():
+		visual_evolution_tiers[index]=mini(evolution_palette.size(),int(game.weapon_entries()[index].get("level",1))/int(db.data.equipment_evolution.interval))
+
 func weapon_evolution_tier(shot:Dictionary)->int:
 	if bool(shot.get("hostile",false)):return 0
+	if shot.has("visual_evolution_tier"):return int(shot.visual_evolution_tier)
 	var index:=int(shot.get("mount",-1))
-	if index<0:index=game.first_weapon_index(weapon_key(shot))
-	var entry:Dictionary=game.slot_entry("weapons",index)
-	return mini(10,int(entry.get("level",1))/20)
+	return int(visual_evolution_tiers[index]) if index>=0 and index<visual_evolution_tiers.size() else 0
+
+func evolution_color(tier:int)->Color:
+	return Color(1,1,1,0) if tier<=0 or evolution_palette.is_empty() else evolution_palette[clampi(tier-1,0,evolution_palette.size()-1)]
 
 func evolution_tint(base:Color,tier:int)->Color:
-	return base if tier<=0 else base.lerp(EVOLUTION_COLORS[clampi(tier-1,0,9)],0.72)
+	return base if tier<=0 or evolution_palette.is_empty() else base.lerp(evolution_palette[clampi(tier-1,0,evolution_palette.size()-1)],0.72)
 
 func weapon_strength(shot: Dictionary) -> float:
 	return 1.0 + clampf(GrowthNumber.logarithm(GrowthNumber.maximum(1,shot.damage))/30.0,0,0.5)
@@ -3385,8 +3397,8 @@ func draw_weapon_component(component, origin: Vector2, angle: float, width: floa
 	var is_rail := str(profile.get("visual_class",""))=="gun"
 	var glow := Color("9eeaff") if is_rail else Color(str(skin.get("muzzle_glow","71e5f4")))
 	if component.faction=="ally":
-		var entry:Dictionary=game.slot_entry("weapons",component.owner_slot)
-		glow=evolution_tint(glow,mini(10,int(entry.get("level",1))/20))
+		var tier:=int(visual_evolution_tiers[component.owner_slot]) if component.owner_slot>=0 and component.owner_slot<visual_evolution_tiers.size() else 0
+		glow=evolution_tint(glow,tier)
 	draw_surface.draw_set_transform(origin,angle,Vector2.ONE*scale_value)
 	if mode=="main" or mode=="secondary":
 		var presence := 1.0 if mode=="main" else 0.62

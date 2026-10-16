@@ -2,10 +2,11 @@ shader_type canvas_item;
 render_mode unshaded;
 varying vec2 point;
 varying vec4 event;
+varying vec4 evolution_color;
 const vec3 SMOKE=vec3(0.666666667,0.643137255,0.631372549);
 const vec3 AMBER=vec3(1.0,0.678431373,0.298039216);
 const vec3 HOT=vec3(1.0,0.941176471,0.745098039);
-void vertex(){event=INSTANCE_CUSTOM;point=(UV-vec2(0.5))*48.0;VERTEX=point;}
+void vertex(){event=INSTANCE_CUSTOM;evolution_color=COLOR;COLOR=vec4(1.0);point=(UV-vec2(0.5))*48.0;VERTEX=point;}
 float line_mask(vec2 p,vec2 a,vec2 b,float width){
  vec2 delta=b-a;float len=length(delta);vec2 axis=delta/max(0.0001,len);vec2 q=p-a;
  float across=abs(dot(q,vec2(-axis.y,axis.x)))-width*0.5;
@@ -30,5 +31,7 @@ void fragment(){
   }
   c=over(c,HOT,clamp(1.0-age/0.065,0.0,1.0)*decoration*disc(point,(4.0+t)*size));
  }
- COLOR*=vec4(c.rgb/max(c.a,0.00001),c.a);
+ vec3 rgb=c.rgb/max(c.a,0.00001);
+ rgb=mix(rgb,evolution_color.rgb,0.72*evolution_color.a);
+ COLOR*=vec4(rgb,c.a);
 }
