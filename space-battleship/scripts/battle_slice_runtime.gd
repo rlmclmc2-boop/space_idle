@@ -184,8 +184,6 @@ func on_event(kind:String,info:Dictionary)->bool:
 			if GrowthNumber.compare(scene.shield_before_hit,0)>0:scene.player_hit_at=geometry.fx_time
 			scene.shield_before_hit=game.player.shield
 		return true
-	# Chain carriers own their flight visual, but never emit an impact flash.
-	if kind=="projectile_impact" and bool(info.shot.get("chain_hop",false)):return true
 	geometry.on_simulation_event(kind,info)
 	if not kind in HOT:
 		if kind=="encounter":snapshot()
@@ -215,7 +213,7 @@ func on_event(kind:String,info:Dictionary)->bool:
 				e.position=geometry.battle_logical_point(Vector2(shot.fixed_screen_origin)+Vector2(shot.fixed_screen_step)*distance)
 				e.direction=Vector2(shot.fixed_screen_step).normalized()
 			elif visual.has("fixed_step"):e.position=scene.straight_projectile_point(e.position,visual)
-			if not bool(shot.get("chain_hop",false)):consume(e)
+			consume(e)
 		"explode":
 			e.uid=int(info.get("uid",0));e.position=Vector2(info.x,info.y);e.width=34.0
 			for enemy in game.enemies:

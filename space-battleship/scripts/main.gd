@@ -1140,7 +1140,7 @@ func weapon_visual_key(key:String)->String:
 	return str(ENEMY_VISUAL_ALIASES.get(key,key))
 
 func weapon_key(shot: Dictionary) -> String:
-	return weapon_visual_key(str(shot.key))
+	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))
 
 func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2

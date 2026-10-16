@@ -894,6 +894,9 @@ class SpaceCombatKernel : public RefCounted {
         f.view["damage"] = f.damage;
         f.view["dead"] = false;
         f.view["entry"] = w.entry;
+        if (chain) f.view["chain_weapon"] = w.kind == 0 ? String("laser")
+                                             : w.kind == 1 ? String("cannon")
+                                             : w.kind == 2 ? String("missile") : String("longLaser");
         f.view["mount"] = w.slot;
         f.view["motion_lease"] = lease;
         f.view["direction"] = m.direction;
