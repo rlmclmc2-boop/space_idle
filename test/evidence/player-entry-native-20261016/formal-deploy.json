@@ -1,0 +1,45 @@
+{
+  "official_project": "D:/放置/space-battleship",
+  "entry": "D:/放置/玩游戏.cmd",
+  "published_main": "d2f5db1aa4b8b10e563456bde03eaf337635ccf3",
+  "accepted_runtime_source": "d9750f9f46fa4e777ef38ce4b717684536ebe03a",
+  "project_diff_from_accepted_runtime": "none",
+  "installation": {
+    "previous_main": "029d27c0e85f067bc13e2358e19d5b7b8dccecc1",
+    "previous_dll_sha256": "a4b646bc47690c17de732026d3a65f9936ffe4e8f06e0dff77143faea8376e7c",
+    "known_local_launcher_sha256": "1320a0b0525682708f7cb6cb506fdafbb976618501d9fcb35eefa3133de27826",
+    "backup": "D:/CodexBuild/space_idle/player-entry-d975/formal-deploy-before",
+    "git_action": "Restored only the verified local launcher edit, then fast-forwarded main to published_main.",
+    "installed_dll": "D:/放置/space-battleship/bin/space_native.dll",
+    "installed_dll_sha256": "6bfa0d565eae83d96ee6e374d92b790a60a41cb52ae1d9209b23c90d1e7ef452",
+    "descriptor": "D:/放置/space-battleship/space_native.gdextension; only loading descriptor outside .godot"
+  },
+  "data": {
+    "official_file": "D:/放置/space-battleship/data/game_data.json",
+    "official_file_sha256": "7a006f6942cce01c54dcbf6c08ce9a3663e41252fba5be179e795751ab392ea4",
+    "git_blob": "43f8d83e78d345b02edc7bd9783fcc3122feb49b",
+    "note": "The accepted d975 Git blob matches the installed main blob. The official Windows working file uses CRLF, so its byte SHA256 differs from the controlled candidate copy; Git project diff is empty."
+  },
+  "graphical_verification": {
+    "method": "Ran the official 玩游戏.cmd with SPACE_BATTLESHIP_VERIFY_WINDOW=1 in that process only.",
+    "process_chain": "cmd 44208 -> py 50084 -> python 46592 -> Godot 20900",
+    "game_command": "D:/放置/space-battleship/engine/Godot_v4.7.2-stable_win64.exe --path D:/放置/space-battleship res://main.tscn",
+    "engine_version": "4.7.2.stable.official.ed1daf0bf",
+    "renderer": "OpenGL 3.3 Compatibility on NVIDIA GeForce RTX 2060",
+    "window": "Full visible 1389x922 window, responsive and visually inspected; closed normally with WM_CLOSE.",
+    "loaded_module": "D:/放置/space-battleship/bin/space_native.dll",
+    "loaded_module_sha256": "6bfa0d565eae83d96ee6e374d92b790a60a41cb52ae1d9209b23c90d1e7ef452",
+    "isolated_user_data": "D:/CodexBuild/space_idle/player-entry-d975/window-check/userdata",
+    "screenshot": "formal-game.png",
+    "screenshot_sha256": "b81c291f5ad5c53dcea368baa49b9655cf4bcf50fac3d0682cdbe2249c89f9e9",
+    "log": "formal-game.log",
+    "launch_receipt": "formal-player-launch.json"
+  },
+  "postcheck": {
+    "preexisting_import_descriptors": 490,
+    "restored_after_import": 153,
+    "preexisting_import_hashes": "all unchanged after restoration; new unknown files were not removed",
+    "tracked_git_status": "clean",
+    "normal_mode": "Verification environment variable is process-local; ordinary double-click uses original .userdata. Personal saves were not opened by this check."
+  }
+}
