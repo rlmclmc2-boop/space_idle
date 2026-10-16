@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+HYPER_SETUP {"ai":{"姝ｇ數瀛愯仛鐒﹁缃?:1,"绠€骞舵€佽鐢?:1},"defence":[{"key":"armour","level":19}],"reactor_before":1,"ship":"Frigate","uranium_before":600,"weapon":[{"key":"laser","level":19}]}
+HYPER_INVEST {"allocation_ok":[true,true],"bought":true,"capacity":3844,"defence":1922,"reactor_after":10,"uranium_after":199.0,"weapons":1922}
+HYPER_GATE {"layer5_initial":false,"material_start":5.0,"minimum":1}
+HYPER_ENTER 1 true current=0 reason=
+HYPER_RESULT {"frames":7880,"layer":1,"material_before_claim":0,"pending_reward":{"degenerate_matter":10},"result":{"elapsed":131.33333333333,"end_point":10,"level":1,"reason":"success","refund":0.0,"return_point":0,"return_stage":1,"route":"alpha"}}
+HYPER_CLAIM {"claimed":true,"current":1,"degenerate_matter":10,"layer":1}

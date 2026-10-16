@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+HYPER_SHIP_SWITCH true
+HYPER_SETUP {"ai":{"姝ｇ數瀛愯仛鐒﹁缃?:1,"绠€骞舵€佽鐢?:1},"defence":[{"key":"armour","level":19}],"reactor_before":1,"ship":"Destroyer","uranium_before":300,"weapon":[{"key":"laser","level":19},{"key":"laser","level":19}]}
+HYPER_INVEST {"allocation_ok":[true,true],"bought":true,"capacity":1708,"defence":854,"reactor_after":8,"uranium_after":92.0,"weapons":854}
+HYPER_GATE {"layer5_initial":false,"material_start":5.0,"minimum":1}
+HYPER_ENTER 1 true current=0 reason=
+HYPER_RESULT {"frames":7611,"layer":1,"material_before_claim":0,"pending_reward":{"degenerate_matter":10},"result":{"elapsed":126.849999999994,"end_point":10,"level":1,"reason":"success","refund":0.0,"return_point":0,"return_stage":1,"route":"alpha"}}
+HYPER_CLAIM {"claimed":true,"current":1,"degenerate_matter":10,"layer":1}
+HYPER_ENTER 2 true current=1 reason=
+HYPER_RESULT {"frames":8114,"layer":2,"material_before_claim":10,"pending_reward":{},"result":{"elapsed":135.233333333333,"end_point":10,"level":2,"reason":"defeat","refund":0.0,"return_point":0,"return_stage":1,"route":"alpha"}}
