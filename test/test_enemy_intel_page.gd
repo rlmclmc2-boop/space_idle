@@ -13,6 +13,7 @@ func run() -> void:
 	scene.set_process(false)
 	scene.game.save_enabled=false
 	var page = scene.enemy_intel_page
+	var reusable_detail_nodes: int = page.detail.get_child_count()
 	var equipment = scene.equipment_panel
 	var builds: int = scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0
 	var projections: int = equipment.projection_builds
@@ -30,9 +31,9 @@ func run() -> void:
 	var row: Dictionary=scene.db.enemies[first.id]
 	check(page.heading.text==str(row.intelName) and not page.heading.text.contains("开场资源变体"),"Displayed name comes from authored player field")
 	check(str(row.intelVisualRef)==str(row.archetype_id) and page.detail.get_children().any(func(node):return node is TextureRect and node.texture==scene.ship_hull_texture(scene.enemy_visual_identity.resolve(row,scene.visual_config))),"Image follows authored combat archetype through the battle resolver")
-	page.list.get_child(1).pressed.emit()
+	page.list.item_selected.emit(1)
 	check(page.selected==1 and page.detail_builds==2,"Different enemy selection builds one detail")
-	page.list.get_child(1).pressed.emit()
+	page.list.item_selected.emit(1)
 	check(page.detail_builds==2,"Same enemy selection does no work")
 	check(equipment.projection_builds==projections and (scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Selections leave equipment and combat compilation untouched")
 	scene.select_system(0)
@@ -66,9 +67,10 @@ func run() -> void:
 	projections=equipment.projection_builds
 	scene.select_system(11)
 	check(page.route_stage==3 and page.route_builds==hidden_builds+1,"Opening after stage change rebuilds once")
+	check(page.list is ItemList and page.detail.get_child_count()==reusable_detail_nodes,"Stage change reuses the route control and detail nodes")
 	check(equipment.projection_builds==projections and (scene.game.compiled_combat_rules.builds if scene.game.compiled_combat_rules else 0)==builds,"Cross-stage tab opening avoids unrelated recompilation")
 	var reactive_index = page.entries.find_custom(func(entry):return str(entry.id)=="271024")
-	page.list.get_child(reactive_index).pressed.emit()
+	page.list.item_selected.emit(reactive_index)
 	var reactive := UIText.t("enemy.intel.reactive",{"stacks":str(scene.game.REACTIVE_STACK_LIMIT),"reduction":scene.number(scene.game.REACTIVE_STACK_REDUCTION*100.0),"window":scene.number(scene.game.REACTIVE_RESET_SECONDS)})
 	check(page.detail.get_children().any(func(node):return node is Label and node.text==reactive),"Reactive detail binds combat parameters")
 	check(not page.detail.get_children().any(func(node):return node is Label and node.text.contains("271024")),"Player view omits internal ID")
@@ -86,7 +88,7 @@ func run() -> void:
 	var recovery_line := detail_lines.find_custom(func(value):return str(value).begins_with("护盾恢复"))
 	check(recovery_line>=0 and detail_lines.find(reactive)>recovery_line,"Both active mechanisms appear in authored order")
 	var recovery_index = page.entries.find_custom(func(entry):return str(entry.id)=="271028")
-	page.list.get_child(recovery_index).pressed.emit()
+	page.list.item_selected.emit(recovery_index)
 	check(page.detail.get_children().any(func(node):return node is Label and node.text.contains("1.8")),"Recovery detail binds actual delay")
 	var recovery_row: Dictionary=scene.db.enemies[page.entries[recovery_index].id]
 	check(page.heading.text==str(recovery_row.intelName),"Different selection updates authored name")

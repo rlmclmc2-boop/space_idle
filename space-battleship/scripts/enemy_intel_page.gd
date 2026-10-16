@@ -6,9 +6,12 @@ var route_builds := 0
 var detail_builds := 0
 var entries: Array[Dictionary] = []
 var selected := -1
-var list: VBoxContainer
+var list: ItemList
 var detail: VBoxContainer
 var heading: Label
+var image: TextureRect
+var detail_lines: Array[Label] = []
+var detail_cursor := 0
 
 func setup(owner: Node) -> void:
 	host = owner
@@ -17,15 +20,13 @@ func setup(owner: Node) -> void:
 	layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layout.add_theme_constant_override("separation",20)
 	add_child(layout)
-	var route_scroll := ScrollContainer.new()
-	route_scroll.custom_minimum_size.x = 420
-	route_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	route_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	layout.add_child(route_scroll)
-	list = VBoxContainer.new()
-	list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	list.add_theme_constant_override("separation",9)
-	route_scroll.add_child(list)
+	list = ItemList.new()
+	list.custom_minimum_size.x = 420
+	list.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	list.add_theme_font_size_override("font_size",22)
+	list.add_theme_constant_override("v_separation",16)
+	list.item_selected.connect(show_entry)
+	layout.add_child(list)
 	var detail_scroll := ScrollContainer.new()
 	detail_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -35,6 +36,15 @@ func setup(owner: Node) -> void:
 	detail.add_theme_constant_override("separation",14)
 	detail_scroll.add_child(detail)
 	heading = add_label(detail,"",30)
+	image = TextureRect.new()
+	image.custom_minimum_size = Vector2(300,280)
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	detail.add_child(image)
+	for index in 10:
+		var line := add_label(detail,"",19 if index==0 else 22)
+		line.visible = false
+		detail_lines.append(line)
 	visibility_changed.connect(refresh_if_needed)
 
 func add_label(parent: Node, value: String, size: int = 22) -> Label:
@@ -61,48 +71,41 @@ func refresh_if_needed() -> void:
 			if id != null:counts[str(int(id))] = int(counts.get(str(int(id)),0))+1
 		for id in counts:
 			entries.append({"id":id,"point":point,"count":counts[id]})
-	for child in list.get_children():child.queue_free()
+	list.clear()
 	for index in entries.size():
 		var entry: Dictionary = entries[index]
 		var row: Dictionary = host.db.enemies[entry.id]
-		var button := Button.new()
-		button.text = UIText.t("enemy.intel.list_item",{"point":str(int(entry.point)+1),"name":str(row.get("intelName",row.des)),"count":str(entry.count)})
-		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.custom_minimum_size = Vector2(390,64)
-		button.pressed.connect(show_entry.bind(index))
-		list.add_child(button)
+		list.add_item(UIText.t("enemy.intel.list_item",{"point":str(int(entry.point)+1),"name":str(row.get("intelName",row.des)),"count":str(entry.count)}))
+	if not entries.is_empty():list.select(0)
 	show_entry(0 if not entries.is_empty() else -1)
 
 func show_entry(index: int) -> void:
 	if index==selected:return
 	detail_builds += 1
 	selected = index
-	for child in detail.get_children():
-		if child != heading:child.queue_free()
+	detail_cursor = 0
+	for line in detail_lines:line.visible = false
 	if index<0:
 		heading.text = UIText.t("enemy.intel.empty")
+		image.visible = false
 		return
 	var entry: Dictionary = entries[index]
 	var row: Dictionary = host.db.enemies[entry.id]
 	heading.text = str(row.get("intelName",row.des))
-	var image := TextureRect.new()
-	image.custom_minimum_size = Vector2(300,280)
-	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	image.visible = true
 	var visual_ref := str(row.get("intelVisualRef",row.get("archetype_id","")))
 	var visual_source := {"archetype_id":visual_ref,"armourType":row.armourType,"size":row.size}
 	image.texture = host.ship_hull_texture(host.enemy_visual_identity.resolve(visual_source,host.visual_config))
-	detail.add_child(image)
-	add_label(detail,UIText.t("enemy.intel.identity",{"point":str(int(entry.point)+1),"count":str(entry.count)}),19)
+	add_detail_line(UIText.t("enemy.intel.identity",{"point":str(int(entry.point)+1),"count":str(entry.count)}))
 	var summary := str(row.get("intelTrait",""))
-	add_label(detail,summary if not summary.is_empty() else UIText.t("enemy.intel.missing"))
+	add_detail_line(summary if not summary.is_empty() else UIText.t("enemy.intel.missing"))
 	if summary.is_empty():push_warning("Enemy intelligence missing for mon "+str(entry.id))
 	var stage := route_stage
 	var point := int(entry.point)
 	var health = host.db.enemy_encounter_capacity(row,stage,point,"health")
-	add_label(detail,UIText.t("enemy.intel.armour",{"health":host.number(health),"resistance":resistance_text(int(row.armourType))}))
+	add_detail_line(UIText.t("enemy.intel.armour",{"health":host.number(health),"resistance":resistance_text(int(row.armourType))}))
 	var shield = host.db.enemy_encounter_capacity(row,stage,point,"shield")
-	add_label(detail,UIText.t("enemy.intel.shield",{"capacity":host.number(shield),"resistance":resistance_text(int(row.get("shieldType",0)))}))
+	add_detail_line(UIText.t("enemy.intel.shield",{"capacity":host.number(shield),"resistance":resistance_text(int(row.get("shieldType",0)))}))
 	var attacks: Dictionary = {}
 	for mount in row.equipment:
 		attacks[str(mount.name)] = int(attacks.get(str(mount.name),0))+1
@@ -110,15 +113,25 @@ func show_entry(index: int) -> void:
 		var weapon: Dictionary = host.db.enemy_weapon(str(key))
 		var base_key := str(key).replace("_mon", "").replace("-mon", "")
 		var weapon_name := UIText.t("weapon."+base_key+"_name") if base_key in ["laser","cannon","missile","longLaser"] else str(key)
-		add_label(detail,UIText.t("enemy.intel.attack",{"name":weapon_name,"count":str(attacks[key]),"damage":host.number(host.db.enemy_attack_damage(row,weapon,stage,point)),"type":resistance_text(int(weapon.dmgtype)),"cooldown":host.number(float(weapon.cd))}))
+		add_detail_line(UIText.t("enemy.intel.attack",{"name":weapon_name,"count":str(attacks[key]),"damage":host.number(host.db.enemy_attack_damage(row,weapon,stage,point)),"type":resistance_text(int(weapon.dmgtype)),"cooldown":host.number(float(weapon.cd))}))
 	var mechanics: Array = row.get("intelMechanics",[])
-	if mechanics.is_empty():add_label(detail,UIText.t("enemy.intel.no_mechanic"))
+	if mechanics.is_empty():add_detail_line(UIText.t("enemy.intel.no_mechanic"))
 	for mechanic in mechanics:
 		match str(mechanic):
 			"reactiveReduction":
-				add_label(detail,UIText.t("enemy.intel.reactive",{"stacks":str(host.game.REACTIVE_STACK_LIMIT),"reduction":host.number(host.game.REACTIVE_STACK_REDUCTION*100.0),"window":host.number(host.game.REACTIVE_RESET_SECONDS)}))
+				add_detail_line(UIText.t("enemy.intel.reactive",{"stacks":str(host.game.REACTIVE_STACK_LIMIT),"reduction":host.number(host.game.REACTIVE_STACK_REDUCTION*100.0),"window":host.number(host.game.REACTIVE_RESET_SECONDS)}))
 			"shieldRecovery":
-				add_label(detail,UIText.t("enemy.intel.recovery",{"delay":host.number(float(row.shieldDelay)),"rate":host.number(float(row.shieldRecovery)*100.0)}))
+				add_detail_line(UIText.t("enemy.intel.recovery",{"delay":host.number(float(row.shieldDelay)),"rate":host.number(float(row.shieldRecovery)*100.0)}))
+
+func add_detail_line(value: String) -> void:
+	if detail_cursor == detail_lines.size():
+		var line := add_label(detail,"",22)
+		line.visible = false
+		detail_lines.append(line)
+	var line := detail_lines[detail_cursor]
+	line.text = value
+	line.visible = true
+	detail_cursor += 1
 
 func resistance_text(value: int) -> String:
 	return UIText.t("battle.enemy_defence.neutral") if value==0 else UIText.t("equipment.energy" if value==1 else "equipment.physical")

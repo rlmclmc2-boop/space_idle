@@ -1,0 +1,8 @@
+{
+  "scripts/main.gd": "8ed278b4b7953ad069a6935abb2279d3898d40ebf7eaf4f3e0f9b3cc0bd4c910",
+  "scripts/enemy_intel_page.gd": "0e5258cd4833e787c5ef6e6402092c3a6d71aaaf99d052a08638e0615b4b85e1",
+  "data/game_data.json": "7b7557dc032b474c55aa2a3d19027b0144cee99a966255079c896b6cfd5eedcd",
+  "port_perf.gd": "05f478164682bb673afc5f773a990b6084f47589f1b69c163b2d1d71edc6fde0",
+  "combat_stress_fixture.gd": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4",
+  "bin/space_native.dll": "2cf90edabbb55576b1e99027889c708007e51df87861caf3c03bbdddcecae96a"
+}

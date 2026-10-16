@@ -2332,9 +2332,11 @@ func build_workspace_shell() -> void:
 
 func select_system(index: int) -> void:
 	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
+	var previous := equipment_tabs.current_tab
 	set_ui_value(equipment_tabs,"current_tab",index)
 	if index==9 and unread_hyperspace_reward():hyperspace_panel.select_section(0)
-	refresh_system_nav()
+	# A changed tab refreshes navigation in tab_changed. Keep same-tab requests current.
+	if previous==index:refresh_system_nav()
 
 func refresh_planet_activation_badge() -> void:
 	if system_nav_buttons.size() <= 6:return
