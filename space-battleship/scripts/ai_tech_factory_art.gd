@@ -99,7 +99,7 @@ func _draw_machine() -> void:
 	for x in [-130.0, 130.0]:
 		_plate(Rect2(x - 12, 118, 24, 31), COPPER)
 	# Refit marks persist through ten levels without swapping the generation model.
-	var fittings := mini(level % 10, 4)
+	var fittings := mini(level, 4)
 	for i in fittings:
 		_plate(Rect2(-137 + i * 23, 87, 16, 13), CYAN, EDGE, 2.0)
 	match technology_id:
