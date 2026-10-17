@@ -25,6 +25,7 @@ const TARGET_REACTOR := [1,1,2,3,4,5,8]
 var pulse_control := false
 var reactor_control := false
 var ai_invest := false
+var ai_late := false
 var route_frames := 0
 
 func invest(game, stage:int, point:int) -> void:
@@ -49,14 +50,15 @@ func invest(game, stage:int, point:int) -> void:
 	if not reactor_control and game.reactor_unlocked():game.equalize_reactor_allocation()
 	var tech:String = "weapon_accuracy" if game.hightech_level("weapon_accuracy")<=game.hightech_level("equipment_reinforcement") else "equipment_reinforcement"
 	if game.hightech_unlocked(tech):game.select_tech(tech)
-	if ai_invest and stage>=6:game.set_tech_input("1",10)
+	if (ai_invest or ai_late) and stage>=6 and (not ai_late or stage>=7 or point>=4):game.set_tech_input("1",10)
 
 func _initialize() -> void:
 	var flags:=OS.get_cmdline_user_args()
 	pulse_control=flags.has("--pulse-control")
 	reactor_control=flags.has("--reactor-control")
 	ai_invest=flags.has("--ai-invest")
-	print("QA_ROUTE_SCENARIO ",JSON.stringify({"pulse_control":pulse_control,"reactor_control":reactor_control,"ai_invest":ai_invest}))
+	ai_late=flags.has("--ai-late")
+	print("QA_ROUTE_SCENARIO ",JSON.stringify({"pulse_control":pulse_control,"reactor_control":reactor_control,"ai_invest":ai_invest,"ai_late":ai_late}))
 	var game:=BattleGame.new(ShipDatabase.new(),false)
 	for stage in range(1,8):
 		if not game.start(stage,false):
