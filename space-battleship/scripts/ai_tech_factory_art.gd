@@ -18,7 +18,7 @@ const MACHINE_PATHS := {
 # Placement is in the 1284 x 701 art panel, not in the 2048 x 1280 game viewport.
 const BASE_SIZE := Vector2(1284, 701)
 const MACHINE_BOUNDS := {
-	"ai_singularity": Rect2(430, 132, 424, 397),
+	"ai_singularity": Rect2(430, 92, 424, 397),
 	"weapon_accuracy": Rect2(382, 90, 520, 520),
 	"equipment_reinforcement": Rect2(344, 92, 596, 491),
 	"resource_refining": Rect2(374, 89, 536, 530),
@@ -127,8 +127,8 @@ func _layout_layers() -> void:
 	backdrop.size = size
 	contact_shadow.visible = true
 	if technology_id == "ai_singularity":
-		contact_shadow.position = Vector2(390, 465) * scale
-		contact_shadow.size = Vector2(504, 100) * scale
+		contact_shadow.position = Vector2(390, 435) * scale
+		contact_shadow.size = Vector2(504, 80) * scale
 	else:
 		contact_shadow.position = Vector2(330, 494) * scale
 		contact_shadow.size = Vector2(624, 142) * scale

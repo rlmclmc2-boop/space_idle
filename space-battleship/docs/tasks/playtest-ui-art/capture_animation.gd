@@ -10,10 +10,15 @@ func record() -> void:
 	var scene:Node=load("res://main.tscn").instantiate()
 	root.add_child(scene)
 	for i in 80:await process_frame
+	if not scene.game.profile.cleared.has(3):scene.game.profile.cleared.append(3)
+	scene.game.profile.highestLevel=maxi(4,int(scene.game.profile.highestLevel))
+	scene.refresh_tab_visibility()
+	assert(scene.game.ai_tech_factory_unlocked())
 	scene.select_system(1)
 	scene.game.profile.aiTechActive=""
 	scene.game.paused=false
 	var started:bool=scene.game.select_tech("singularity")
+	assert(started)
 	scene.hightech_page.invalidate(true)
 	for i in 8:await process_frame
 	scene.hightech_page.art.phase=0.0
