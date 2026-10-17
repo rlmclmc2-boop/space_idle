@@ -62,6 +62,7 @@ func setup(owner: Node) -> void:
  var margin := MarginContainer.new()
  margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,20)
+ margin.add_theme_constant_override("margin_right",44)
  add_child(margin)
  var layout := VBoxContainer.new()
  layout.add_theme_constant_override("separation",14)
@@ -121,8 +122,8 @@ func setup(owner: Node) -> void:
  heading.add_theme_font_override("font",IntelSkin.face(700))
  rule(sheet,IntelSkin.TEAL.darkened(0.55))
  var portrait := PanelContainer.new()
- portrait.custom_minimum_size.y=300
- portrait.size_flags_vertical=Control.SIZE_EXPAND_FILL
+ portrait.custom_minimum_size.y=350
+ portrait.size_flags_vertical=Control.SIZE_FILL
  portrait.add_theme_stylebox_override("panel",surface(Color("102637"),IntelSkin.SLATE,8))
  sheet.add_child(portrait)
  portrait_frame=Control.new()

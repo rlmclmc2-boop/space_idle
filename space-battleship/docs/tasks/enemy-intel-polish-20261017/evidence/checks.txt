@@ -1,0 +1,9 @@
+stage=2
+points=6
+entries=15
+route_builds=2
+detail_builds=5
+manual_browse_preserved=true
+hidden_skipped=true
+page_rect=[P: (756.875, 150.875), S: (1191.75, 1048.25)]
+follow_rect=[P: (1829.625, 168.375), S: (80.5, 38.5)]
