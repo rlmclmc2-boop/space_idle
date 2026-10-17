@@ -106,3 +106,14 @@ All hidden runs had node delta +3 from ordinary combat; all visible runs had nod
 The GUI smoke AVI contains 90 MJPEG frames. `docs/knowledge/tasks/ai-tech-gui-smoke-frame-0.jpg` is the original first frame extracted byte-for-byte from its `00db` video chunk. Visual inspection confirms the new opening copy, equipment cards, and intact main scene at 1373x883. This short fresh-save capture has no enemy attack and cannot verify projectile occlusion.
 
 Battle-point cooldown review: the shared `finish_combat_step()` now clears all per-slot switch deadlines as soon as an encounter has no surviving enemies, including normal travel transition, guarded repeats, final clear, and the native completion handoff that calls this method. `clear_level()` still covers direct and immediate stage completion, and death still clears deadlines in `begin_retreat()`. The load path restores the saved `productionElapsed` before filtering deadlines; `load_hightech()` subsequently reads the same value. `test/test_equipment_switch_cooldown.gd` includes a portable import into an already-running clock, nonfinal completion, and native waiting branch; raw run: `docs/knowledge/tasks/equipment-switch-cooldown-20261017.log.txt`, `checks=24 failures=0`.
+
+## Prepared serial GUI runs
+
+After the art owner releases the graphical window, from this worktree root:
+
+```powershell
+python space-battleship/test/perf_ai_tech_investment.py
+& 'D:/放置/space-battleship/engine/Godot_v4.7.2-stable_win64.exe' --path space-battleship --audio-driver Dummy --disable-vsync --script res://test/capture_enemy_projectile_hull.gd
+```
+
+The first command runs five identical 480-frame rich-combat scenarios (`zero`, `iron`, `uranium`, `both`, `both_1000`) on hidden and visible factory pages, captures PNGs and raw JSON/logs in its printed `test/work/ai-tech-perf-*` directory, and checks the native DLL SHA before launching. The second command captures 12 frames and a position/damage trace under ignored `.runtime/enemy-projectile-hull`; it fires the authored `laser_mon` projectile from 90 logical pixels above the player. Its headless compile/logic smoke passed with 12 trace frames and 10 armour damage at frame 8; graphical pixels remain pending. Both commands use this isolated checkout; `D:/放置` is read only for the engine executable.
