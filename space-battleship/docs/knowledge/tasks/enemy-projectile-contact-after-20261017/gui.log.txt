@@ -1,0 +1,11 @@
+ERROR: Failed to open 'user://logs/godot2026-10-18T00.11.34.log'.
+   at: copy (core/io/dir_access.cpp:429)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+HOSTILE_PROJECTILE_AIM (286.0, 520.0) direction=(0.0, 1.0) render_center=(286.0, 897.5425) nose_offset=-48.194575 contact_screen=(286.0, 849.348)
+HOSTILE_PROJECTILE_CAPTURE C:/Users/Administrator/Documents/Codex/2026-10-17/task-2/space-battleship/.runtime/enemy-projectile-hull frames=20 final_loss=10.0

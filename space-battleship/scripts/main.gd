@@ -80,6 +80,7 @@ var visual_config: Dictionary = {}
 var visual_textures: Dictionary = {}
 var visual_regions: Dictionary = {}
 var hull_visible_bottoms: Dictionary = {}
+var hull_visible_tops: Dictionary = {}
 var player_components: Array = []
 var player_components_signature := ""
 # Shared fleet limit is scoped to one process/draw batch and logical pose time.
@@ -781,13 +782,13 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"beam_started":
 			if fast_mode_enabled():return
 			var shot: Dictionary = info.shot
-			beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":battle_logical_point(entity_render_position(shot.target)),"full":false})
+			beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":battle_logical_point(shot_target_screen_position(shot)),"full":false})
 			if not shot.hostile and int(shot.mount)>=0:turret_pose(int(shot.mount)).fired_at=fx_time
 			weapon_flash(visual_muzzle(shot),weapon_visual_glow(weapon_key(shot),shot.hostile),7.0,0.07)
 		"beam_hit":
 			if fast_mode_enabled():return
 			var shot: Dictionary = info.shot
-			weapon_flash(battle_logical_point(entity_render_position(shot.target)),ORANGE if shot.hostile else CYAN,7.0,0.08)
+			weapon_flash(battle_logical_point(shot_target_screen_position(shot)),ORANGE if shot.hostile else CYAN,7.0,0.08)
 		"critical_impact":
 			if fast_mode_enabled():return
 			weapon_flash(info.pos,Color.WHITE,14.0,0.08)
@@ -829,7 +830,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"projectile_impact":
 			if fast_mode_enabled():return
 			var visual := projectile_visual(info.shot)
-			var impact: Vector2 = Vector2(info.pos) if info.shot.has("ballistic_target_origin") else visual_effect_point(info.pos)
+			var impact: Vector2 = battle_logical_point(player_contact_screen_position()) if bool(info.shot.hostile) and is_same(info.shot.target,game.player) else Vector2(info.pos) if info.shot.has("ballistic_target_origin") else visual_effect_point(info.pos)
 			if info.shot.has("fixed_screen_step"):
 				var distance:float=(Vector2(info.pos)-Vector2(info.shot.launch_point)).dot(game.projectile_direction(info.shot))
 				impact=battle_logical_point(Vector2(info.shot.fixed_screen_origin)+Vector2(info.shot.fixed_screen_step)*distance)
@@ -1552,6 +1553,25 @@ func player_visible_tail() -> float:
 		hull_visible_bottoms[texture_path]=bottom
 	return (float(hull_visible_bottoms[texture_path])-SHIP_ART_CANVAS.y*0.5)*float(battle_visual.player_core_scale)*player_art_scale()
 
+func player_visible_nose() -> float:
+	var texture_path := str(ship_visual_entry(str(game.profile.selectedShip)).get("texture",""))
+	if texture_path.is_empty():return -SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
+	if not hull_visible_tops.has(texture_path):
+		var image := visual_texture(texture_path).get_image()
+		image.convert(Image.FORMAT_RGBA8)
+		var pixels := image.get_data()
+		var width := image.get_width()
+		var top := image.get_used_rect().position.y
+		for y in image.get_height():
+			if pixels[(y*width+int(width/2))*4+3]>8:
+				top=y
+				break
+		hull_visible_tops[texture_path]=top
+	return (float(hull_visible_tops[texture_path])-SHIP_ART_CANVAS.y*0.5)*float(battle_visual.player_core_scale)*player_art_scale()
+
+func player_contact_screen_position() -> Vector2:
+	return player_render_position()+Vector2(0,player_visible_nose()).rotated(player_idle_angle())
+
 func player_render_position() -> Vector2:
 	if battle_draw_active:return battle_draw_player_position
 	var half_height := SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
@@ -1731,6 +1751,9 @@ func entity_render_position(entity: Dictionary) -> Vector2:
 	if entity.has("slot"):return enemy_render_position(entity)
 	return battle_point(Vector2(entity.x,entity.y))
 
+func shot_target_screen_position(shot: Dictionary) -> Vector2:
+	return player_contact_screen_position() if bool(shot.hostile) and is_same(shot.target,game.player) else entity_render_position(shot.target)
+
 func validate_explicit_formation() -> Array[String]:
 	var geometry=preload("res://scripts/explicit_formation_geometry.gd")
 	var errors:Array[String]=[]
@@ -1858,7 +1881,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 			# committed segment once, rather than scaling it by the old logical target.
 			var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else Vector2(shot.target.x,shot.target.y)
 			var distance := game.projectile_position(shot).distance_to(aim)
-			var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else entity_render_position(shot.target)
+			var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else shot_target_screen_position(shot)
 			visual.fixed_origin=battle_point(pos)
 			visual.fixed_step=(rendered_aim-visual.fixed_origin)/maxf(distance,0.001)
 			visual.fixed_direction=game.projectile_direction(shot)
@@ -1939,16 +1962,18 @@ func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, v
 	if visual.is_empty():visual = projectile_visual(shot)
 	if visual.has("fixed_step"):return straight_projectile_point(pos,visual)
 	var converge := 1.0
+	var target_logical := Vector2(shot.target.x,shot.target.y) if not shot.target.is_empty() else Vector2.ZERO
 	if not shot.target.is_empty():
-		converge = clampf(pos.distance_to(Vector2(shot.target.x,shot.target.y))/160.0,0,1)
+		converge = clampf(pos.distance_to(target_logical)/160.0,0,1)
 	var logical_origin: Vector2 = visual.get("logical_origin",origin)
 	var distance := pos.distance_to(logical_origin)
 	var unfold := smoothstep(0.0,100.0,distance)
-	var blend_distance := minf(160.0,logical_origin.distance_to(Vector2(shot.target.x,shot.target.y))) if not shot.target.is_empty() else 160.0
+	var blend_distance := minf(160.0,logical_origin.distance_to(target_logical)) if not shot.target.is_empty() else 160.0
 	var muzzle_shift := (origin-logical_origin)*(1.0-smoothstep(0.0,maxf(1,blend_distance),distance))
 	var target_shift := Vector2.ZERO
 	if not shot.target.is_empty():
-		target_shift = (battle_logical_point(entity_render_position(shot.target))-Vector2(shot.target.x,shot.target.y))*(1.0-converge)
+		var target_screen := player_contact_screen_position() if shot.hostile else entity_render_position(shot.target)
+		target_shift = (battle_logical_point(target_screen)-target_logical)*(1.0-converge)
 	return pos+muzzle_shift+target_shift+Vector2(spread*unfold*converge,0)
 
 func projectile_visual(shot: Dictionary, index: Dictionary = {}) -> Dictionary:
@@ -2097,7 +2122,7 @@ func reset_battle_transients_for_scene() -> void:
 	if not fast_mode_enabled():
 		for shot in game.projectiles:
 			if shot.get("beam",false) and game.long_laser_valid(shot):
-				beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":battle_logical_point(entity_render_position(shot.target)),"full":float(beam_style(shot).power)>=1.0})
+				beam_visuals.append({"shot":shot,"start":visual_muzzle(shot),"end":battle_logical_point(shot_target_screen_position(shot)),"full":float(beam_style(shot).power)>=1.0})
 	for layer in [battle_layer,overlay_layer,drop_layer]:
 		if is_instance_valid(layer):layer.queue_redraw()
 
@@ -2114,7 +2139,7 @@ func sync_beam_visuals() -> void:
 			weapon_flash(visual.end,color,3,0.06)
 			continue
 		visual.start = visual_muzzle(shot)
-		visual.end = battle_logical_point(entity_render_position(shot.target))
+		visual.end = battle_logical_point(shot_target_screen_position(shot))
 		if int(shot.ticks)>0 and not visual.full and float(beam_style(shot).power)>=1.0:
 			visual.full = true
 			weapon_flash(visual.end,color,4,0.06)
@@ -3852,7 +3877,7 @@ func _prepare_projectile_flight(p:Dictionary,visual_index:Dictionary,offset:Vect
 		if game.long_laser_valid(p) and draw_beam_override(p,offset,false):return {}
 		pos=battle_point(visual_muzzle(p))+offset
 		if game.long_laser_valid(p):
-			var end:=entity_render_position(p.target)+offset
+			var end:=shot_target_screen_position(p)+offset
 			var color:=ORANGE if p.hostile else evolution_tint(CYAN,weapon_evolution_tier(p))
 			if float(p.charge)>0 and float(p.elapsed)<float(p.charge):
 				draw_surface.draw_line(pos,end,Color(color,0.12),1.0,true)
@@ -3930,7 +3955,7 @@ func draw_foreground_beams(visible_projectiles:Array,offset:Vector2)->void:
 				draw_surface.draw_line(pos+direction*radius,pos+direction*(radius+7.0),Color(color,0.35+progress*0.5),1.5,true)
 		elif int(shot.ticks)>0:
 			var beam := beam_style(shot)
-			var end := entity_render_position(shot.target)+offset
+			var end := shot_target_screen_position(shot)+offset
 			var color := ORANGE if shot.hostile else evolution_tint(CYAN,weapon_evolution_tier(shot))
 			var pos := battle_point(visual_muzzle(shot))+offset
 			draw_surface.draw_line(pos,end,Color(color,0.28+beam.power*0.12+beam.pulse*0.5),beam.width*float(battle_visual.laser_glow_scale),true)
