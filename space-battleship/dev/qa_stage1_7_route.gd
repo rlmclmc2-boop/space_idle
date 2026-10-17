@@ -20,11 +20,14 @@ const DEFENCES := [
 	["shield","shield","shield","shield","shield","shield","shield","shield","shield"],
 ]
 const TARGET_WEAPON := [3,5,7,9,12,16,19]
-const TARGET_DEFENCE := [3,5,7,9,11,14,17]
+const TARGET_DEFENCE := [3,7,7,9,11,14,17]
 const TARGET_REACTOR := [1,1,2,3,4,5,8]
+var pulse_control := false
+var reactor_control := false
+var ai_invest := false
 
 func invest(game, stage:int, point:int) -> void:
-	var weapon:String = WEAPONS[stage-1][point-1]
+	var weapon:String = "laser" if pulse_control and stage>=6 else WEAPONS[stage-1][point-1]
 	var defence:String = DEFENCES[stage-1][point-1]
 	for desired in [["weapons",weapon],["defence",defence]]:
 		var category:String = desired[0]
@@ -35,22 +38,31 @@ func invest(game, stage:int, point:int) -> void:
 		if str(game.profile.loadout[category][0].key) != key:
 			var changed:bool = game.equip_slot(category,0,key)
 			print("QA_ROUTE_SWITCH ",JSON.stringify({"stage":stage,"point":point,"category":category,"key":key,"ok":changed}))
-	for category in ["defence","weapons"]:
+	for category in ["weapons","defence"]:
 		var target:int = TARGET_DEFENCE[stage-1] if category=="defence" else TARGET_WEAPON[stage-1]
 		while int(game.profile.loadout[category][0].level)<target and game.can_upgrade_slot(category,0):
 			if not game.upgrade_slot(category,0):break
-	while int(game.profile.reactorLevel)<TARGET_REACTOR[stage-1]:
+	var reactor_target:int = 1 if reactor_control else TARGET_REACTOR[stage-1]
+	while int(game.profile.reactorLevel)<reactor_target:
 		if not game.upgrade_reactor(1):break
-	if game.reactor_unlocked():game.equalize_reactor_allocation()
+	if not reactor_control and game.reactor_unlocked():game.equalize_reactor_allocation()
 	var tech:String = "weapon_accuracy" if game.hightech_level("weapon_accuracy")<=game.hightech_level("equipment_reinforcement") else "equipment_reinforcement"
 	if game.hightech_unlocked(tech):game.select_tech(tech)
+	if ai_invest and stage>=6:game.set_tech_input("1",10)
 
 func _initialize() -> void:
+	var flags:=OS.get_cmdline_user_args()
+	pulse_control=flags.has("--pulse-control")
+	reactor_control=flags.has("--reactor-control")
+	ai_invest=flags.has("--ai-invest")
+	print("QA_ROUTE_SCENARIO ",JSON.stringify({"pulse_control":pulse_control,"reactor_control":reactor_control,"ai_invest":ai_invest}))
 	var game:=BattleGame.new(ShipDatabase.new(),false)
 	for stage in range(1,8):
 		if not game.start(stage,false):
 			print("QA_ROUTE_FAIL start=",stage);quit(2);return
 		var frames:=0
+		var total_frames:=0
+		var attempt:=1
 		var active_point:=0
 		var battle_start:=0
 		var previous_point:=0
@@ -62,15 +74,21 @@ func _initialize() -> void:
 			var before=game.state
 			game.tick(1.0/60.0)
 			frames+=1
+			total_frames+=1
 			if before!=BattleGame.State.COMBAT and game.state==BattleGame.State.COMBAT:
 				battle_start=frames
 				active_point=game.group_index
 			if before==BattleGame.State.COMBAT and game.state!=BattleGame.State.COMBAT:
 				print("QA_ROUTE_POINT ",JSON.stringify({"stage":stage,"point":active_point,"combat_seconds":snappedf((frames-battle_start)/60.0,.01),"next_state":game.state,"armour":float(game.player.armour),"shield":float(game.player.shield),"iron":float(game.profile.resources.get("1",0)),"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0]}))
 			if game.state==BattleGame.State.RETREAT:
-				print("QA_ROUTE_FAIL retreat stage=",stage," point=",active_point);quit(3);return
+				print("QA_ROUTE_RETRY ",JSON.stringify({"stage":stage,"attempt":attempt,"point":active_point,"iron":float(game.profile.resources.get("1",0)),"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0]}))
+				if attempt>=8 or not game.start(stage,false):
+					print("QA_ROUTE_FAIL retreat stage=",stage," point=",active_point);quit(3);return
+				attempt+=1
+				frames=0
+				previous_point=0
 		game.settle_drops()
-		print("QA_ROUTE_STAGE ",JSON.stringify({"stage":stage,"seconds":snappedf(frames/60.0,.01),"state":game.state,"highest":game.profile.highestLevel,"iron":float(game.profile.resources.get("1",0)),"uranium":float(game.profile.resources.get("2",0)),"reactor":game.profile.reactorLevel,"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0],"hyperspace":game.hyperspace.is_unlocked(game)}))
+		print("QA_ROUTE_STAGE ",JSON.stringify({"stage":stage,"seconds":snappedf(frames/60.0,.01),"total_seconds":snappedf(total_frames/60.0,.01),"attempts":attempt,"state":game.state,"highest":game.profile.highestLevel,"iron":float(game.profile.resources.get("1",0)),"uranium":float(game.profile.resources.get("2",0)),"reactor":game.profile.reactorLevel,"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0],"ai_tech_levels":game.profile.aiTechLevels,"ai_tech_progress":game.profile.aiTechProgress,"ai_input":game.profile.aiTechInput,"hyperspace":game.hyperspace.is_unlocked(game)}))
 		if game.state!=BattleGame.State.LEVEL_CLEAR:
 			print("QA_ROUTE_FAIL stage=",stage);quit(4);return
 	quit()
