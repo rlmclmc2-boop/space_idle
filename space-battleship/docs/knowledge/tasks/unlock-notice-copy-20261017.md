@@ -102,3 +102,5 @@ Five-mode rich headless comparison (same fixture/seed, 480 realtime frames on ea
 | 1000 / 1000 | 13 / 0 / 0 | 13 / 13 / 0 | 4342 | 3339 | 6927 / 6928 |
 
 All hidden runs had node delta +3 from ordinary combat; all visible runs had node delta 0. These are CPU and headless frame timings, not graphical FPS. The graphical run and screenshots remain pending the serial window.
+
+The GUI smoke AVI contains 90 MJPEG frames. `docs/knowledge/tasks/ai-tech-gui-smoke-frame-0.jpg` is the original first frame extracted byte-for-byte from its `00db` video chunk. Visual inspection confirms the new opening copy, equipment cards, and intact main scene at 1373x883. This short fresh-save capture has no enemy attack and cannot verify projectile occlusion.
