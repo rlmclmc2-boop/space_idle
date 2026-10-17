@@ -1,12 +1,8 @@
 # AI 科技树功能实现
 
-- 基准：`52a87c0e8db7e0fd5a9e4c01882a60515411bdca`；独立分支 `feat/ai-tech-tree-20261017`。
-- 规格：仅 `docs/ai-tech-tree-20261017` 的 `5e4fa8a5a9a7051799594d52eec85bece0bc1b4b` 所含 `docs/tasks/AI_TECH_TREE_20261017.md`。
-- 范围：科技数据表、单项研发与资源投入、状态存储、铁/铀/碎片与装备收益、接线和最小受影响测试。
-- 禁止：改关卡/其他系统平衡、碰个人存档或 D:/放置、与美术方同时编辑新页面、并入 main。
-- 精确定位：`scripts/game.gd` 的 `fresh_profile/load_hightech/advance_hightech/equipment_stat/collect/settle_jewel_fragments`，`scripts/database.gd:_init`，`scripts/main.gd:build_hightech_tab/on_game_event`。
-- 已知边界：收入平均值可能 `0<R<1`；公式原样保留。实际 GUI 验证需父线程分配串行窗口。
-- 已接线：合入美术提交 `9c70b76`，只合并索引冲突；页面源码不由功能方修改。`ai_tech_view_model.gd` 映射三处展示 ID 和终极 tier。
-- 配置源：`config_excel/ai_tech_tree.xlsx` 的 `ai_tech_tree` sheet，经 `tools/import_ai_tech_tree.py --write` 投影到 `data/ai_tech_tree.json`；`--check` 检查同步。运行时只读投影。
-- 证据：`python test/test_ai_tech_tree_config.py` 输出 `AI_TECH_CONFIG=PASS rows=8`；`python space-battleship/tools/import_ai_tech_tree.py --check` 输出 `AI_TECH_PROJECTION=PASS rows=8`；临时副本改 T0 后投影变化已测。Godot 可执行文件在本工作区、PATH 和标准程序目录均未找到，`test/test_ai_tech_tree.gd` 尚未实际运行。
-- 下一步：父线程提供可用 Godot 路径并分配 GUI 串行窗口后，运行规则断言与实际页面检查；再由父线程审查后决定 main 合并。
+- 基线：`feat/ai-tech-tree-20261017@81968778c275798529770fcb0fec1eaa23866b66`。本线程独立检出，只负责逻辑、表、测试及 main 接线；页面与资产归美术线程。不得修改 D:/放置或合并 main。
+- 规格：`docs/ai-tech-tree-20261017@8c09669b` 的 `docs/tasks/AI_TECH_TREE_20261017.md`；页面契约：`docs/tasks/AI_TECH_PAGE_CONTRACT_20261017.md`。
+- 范围定位：`scripts/ai_tech_tree.gd`、`scripts/ai_tech_view_model.gd`、`scripts/game.gd` 的科技状态与收益、`scripts/main.gd:build_hightech_tab`、`config_excel/ai_tech_tree.xlsx`、`test/test_ai_tech_tree.gd`。
+- 已验证：Godot `D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe`；科技规则 33/33 通过；配置与投影各 8 行通过。原始日志位于本工作区 `test/work/test_ai_tech_tree-w632mpbh/`。
+- 当前阻塞：美术方 `scripts/ai_tech_factory_page.gd:138` 定义 `_input(parent, rect, resource_id)`，与 Godot `Control._input(InputEvent) -> void` 签名冲突。新增测试断言使 headless 结果为 `34 checks, 1 failure, exit 1`。页面源码由美术方修复后重跑。
+- 待办：父线程分配 GUI 串行窗口后验收实际页面；父审后决定 main 合并。`0<R<1` 的联合因子仍按 `1+log10(R)/5`，不钳制。

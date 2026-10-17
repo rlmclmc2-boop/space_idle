@@ -18,6 +18,8 @@ func _initialize() -> void:
 	call_deferred("run")
 
 func run() -> void:
+	var page_script = load("res://scripts/ai_tech_factory_page.gd")
+	check(page_script != null and page_script.can_instantiate(), "AI technology page compiles")
 	var db := ShipDatabase.new()
 	check(db.data.unlock.values().all(func(row):return str(row.type)!="hightech"), "retired scientist tutorial unlocks are absent")
 	var g := BattleGame.new(db,false)
