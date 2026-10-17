@@ -64,7 +64,7 @@ static func peak_product(game) -> Variant:
 	var value: Variant = 1.0
 	for id in ["1", "2", "jewel"]:
 		var peak = game.profile.aiIncomePeak.get(id, 0.0)
-		if N.compare(peak,0) > 0:value = N.multiply(value,1.0 + N.logarithm(peak) / 5.0)
+		if N.compare(peak,0) > 0:value = N.multiply(value,N.maximum(1.0,1.0 + N.logarithm(peak) / 5.0))
 	return value
 
 static func peak_factor(game) -> Variant:

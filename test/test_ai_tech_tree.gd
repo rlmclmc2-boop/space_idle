@@ -68,10 +68,22 @@ func run() -> void:
 	check(not bool(AITech.eligibility(gate,"fragment_condensation").ok), "fragments require enhancement unlock")
 	check(near(AITech.peak_factor(gate),1.0), "ultimate zero has no effect")
 	gate.profile.aiTechLevels.unification = 2
+	gate.profile.aiIncomePeak = {}
+	check(near(AITech.peak_factor(gate),2.0), "unavailable income uses factor one")
+	gate.profile.aiIncomePeak = {"1":0.0,"2":0.0,"jewel":0.0}
+	check(near(AITech.peak_factor(gate),2.0), "zero income uses factor floor")
+	gate.profile.aiIncomePeak["1"] = 1e-30
+	check(near(AITech.peak_factor(gate),2.0), "tiny positive income uses factor floor")
+	gate.profile.aiIncomePeak["1"] = 0.5
+	check(near(AITech.peak_factor(gate),2.0), "subunit income uses factor floor")
+	gate.profile.aiIncomePeak["1"] = 1.0
+	check(near(AITech.peak_factor(gate),2.0), "unit income keeps factor one")
+	gate.profile.aiIncomePeak["1"] = 1000.0
+	check(near(AITech.peak_factor(gate),3.2), "income above one follows logarithmic factor")
 	gate.profile.aiIncomePeak = {"1":1000.0,"2":100.0,"jewel":10.0}
 	check(near(AITech.peak_factor(gate),5.376), "historical peak formula")
 	gate.profile.aiIncomePeak = {"1":0.1,"2":0.0,"jewel":0.0}
-	check(near(AITech.peak_factor(gate),1.6), "subunit income follows the unmodified formula")
+	check(near(AITech.peak_factor(gate),2.0), "subunit income does not reduce the combined multiplier")
 	var combat := BattleGame.new(db,false)
 	var base_stats := {}
 	for key in BattleGame.WEAPON_KEYS + BattleGame.DEFENSE_KEYS:base_stats[key] = float(combat.equipment_stat(key,1))
