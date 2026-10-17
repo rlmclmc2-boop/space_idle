@@ -36,6 +36,33 @@ level_book = load_workbook(config / 'level.xlsx', read_only=True, data_only=True
 assert level_book['level']['D64'].value is not None, 'level formula cache lost'
 group_book = load_workbook(config / 'monGroup.xlsx', read_only=True)
 assert group_book['monGroup']['C2295'].value.count('271017') == 2
+used_groups = {group['id'] for level in levels[:7] for group in level['groups']}
+group_rows = {}
+for row in group_book['monGroup'].iter_rows(min_row=4, values_only=True):
+    if row[0] in used_groups:
+        group_rows[row[0]] = [None if x == 'null' else int(x) for x in row[2].strip('{}').split(',')]
+assert used_groups == set(group_rows)
+for gid, slots in group_rows.items():
+    assert slots == groups[str(gid)]['slots'], ('group workbook/JSON mismatch', gid)
+
+mon_book = load_workbook(config / 'mon.xlsx', read_only=True)
+mon_sheet = mon_book['mon']
+headers = {cell.value: cell.column - 1 for cell in next(mon_sheet.iter_rows(max_row=1))}
+used_enemies = {i for slots in group_rows.values() for i in slots if i is not None}
+checked = set()
+fields = ('armourType', 'shield', 'shieldType', 'shieldRecovery', 'shieldDelay', 'dmgMultiple', 'reactiveReduction', 'intelVisualRef')
+for row in mon_sheet.iter_rows(min_row=4, values_only=True):
+    if row[headers['id']] not in used_enemies:
+        continue
+    eid = int(row[headers['id']])
+    checked.add(eid)
+    for field in fields:
+        source = row[headers[field]] if field in headers else None
+        projected = enemies[str(eid)].get(field)
+        if source in (None, 0) and projected in (None, 0):
+            continue
+        assert source == projected, ('enemy workbook/JSON mismatch', eid, field, source, projected)
+assert used_enemies == checked
 hyperspace = json.loads((root / 'space-battleship/data/hyperspace_config.json').read_text(encoding='utf-8'))
 assert hyperspace['unlock_stage'] == 8, 'highestLevel becomes 8 after stage 7 clear'
-print('SOURCE PASS: level formula cache, stage3 group workbook, stage7 hyperspace gate semantics')
+print('SOURCE PASS: level formula cache, all 1–7 group/enemy workbook projections, stage7 hyperspace gate semantics')
