@@ -27,100 +27,150 @@ var armour_badge: Label
 var attack_badge: Label
 var detail_scroll: ScrollContainer
 var details_button: Button
+var follow_button: Button
+var portrait_backdrop: TextureRect
+var portrait_frame: Control
+var portrait_panel: PanelContainer
 
-func surface(fill: Color, border: Color = IntelSkin.SLATE) -> StyleBoxFlat:
+func surface(fill: Color, border: Color = IntelSkin.SLATE, radius: int = 12) -> StyleBoxFlat:
  var box := StyleBoxFlat.new()
  box.bg_color=fill
  box.border_color=border
  box.set_border_width_all(1)
- box.set_corner_radius_all(12)
+ box.set_corner_radius_all(radius)
  box.content_margin_left=20
  box.content_margin_right=20
- box.content_margin_top=16
- box.content_margin_bottom=16
+ box.content_margin_top=14
+ box.content_margin_bottom=14
  return box
+
+func rule(parent: Node, tint: Color = IntelSkin.SLATE) -> void:
+ var line:=ColorRect.new()
+ line.color=tint
+ line.custom_minimum_size.y=2
+ line.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ parent.add_child(line)
 
 func setup(owner: Node) -> void:
  host=owner
  name="EnemyIntel"
+ add_theme_color_override("font_color",IntelSkin.PAPER)
+ var background:=ColorRect.new()
+ background.color=Color("0c1a27")
+ background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ background.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ add_child(background)
  var margin := MarginContainer.new()
  margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
- for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,16)
+ for side in ["left","right","top","bottom"]:margin.add_theme_constant_override("margin_"+side,20)
+ margin.add_theme_constant_override("margin_right",44)
  add_child(margin)
  var layout := VBoxContainer.new()
- layout.add_theme_constant_override("separation",18)
+ layout.add_theme_constant_override("separation",14)
  margin.add_child(layout)
  var header := HBoxContainer.new()
  layout.add_child(header)
- stage_label=add_label(header,"",28)
+ stage_label=add_label(header,"",30)
+ stage_label.add_theme_font_override("font",IntelSkin.face(700))
  stage_label.size_flags_horizontal=Control.SIZE_EXPAND_FILL
- var follow := Button.new()
- follow.text=UIText.t("enemy.intel.current")
- follow.pressed.connect(func():follow_current=true;show_point(current_point))
- skin_button(follow)
- header.add_child(follow)
+ follow_button=Button.new()
+ follow_button.text=UIText.t("enemy.intel.current")
+ follow_button.pressed.connect(func():follow_current=true;show_point(current_point);update_point_buttons())
+ skin_button(follow_button)
+ header.add_child(follow_button)
+ rule(layout,IntelSkin.TEAL.darkened(0.48))
  point_bar=HBoxContainer.new()
- point_bar.add_theme_constant_override("separation",8)
+ point_bar.add_theme_constant_override("separation",5)
  layout.add_child(point_bar)
  var body := HBoxContainer.new()
  body.size_flags_vertical=Control.SIZE_EXPAND_FILL
- body.add_theme_constant_override("separation",18)
+ body.add_theme_constant_override("separation",14)
  layout.add_child(body)
  var roster := PanelContainer.new()
- roster.custom_minimum_size.x=270
- roster.add_theme_stylebox_override("panel",surface(IntelSkin.STRUCTURE))
+ roster.custom_minimum_size.x=290
+ roster.add_theme_stylebox_override("panel",surface(Color("152b3a"),IntelSkin.SLATE))
  body.add_child(roster)
  var roster_layout := VBoxContainer.new()
- roster_layout.add_theme_constant_override("separation",16)
+ roster_layout.add_theme_constant_override("separation",14)
  roster.add_child(roster_layout)
- add_label(roster_layout,UIText.t("enemy.intel.roster"),18).modulate=IntelSkin.TEAL
+ var roster_title:=add_label(roster_layout,UIText.t("enemy.intel.roster"),20)
+ roster_title.modulate=IntelSkin.TEAL
+ roster_title.add_theme_font_override("font",IntelSkin.face(700))
+ rule(roster_layout)
  list=ItemList.new()
  list.size_flags_vertical=Control.SIZE_EXPAND_FILL
  list.add_theme_stylebox_override("panel",StyleBoxEmpty.new())
- list.add_theme_stylebox_override("selected",surface(IntelSkin.SLATE,IntelSkin.TEAL))
- list.add_theme_stylebox_override("selected_focus",surface(IntelSkin.SLATE,IntelSkin.TEAL))
- list.add_theme_font_size_override("font_size",20)
- list.add_theme_constant_override("v_separation",22)
- list.fixed_icon_size=Vector2i(44,56)
+ list.add_theme_stylebox_override("selected",surface(Color("285066"),IntelSkin.TEAL,8))
+ list.add_theme_stylebox_override("selected_focus",surface(Color("285066"),IntelSkin.TEAL,8))
+ list.add_theme_stylebox_override("hovered",surface(IntelSkin.SLATE,IntelSkin.SLATE,8))
+ list.add_theme_font_override("font",IntelSkin.face(600))
+ list.add_theme_font_size_override("font_size",17)
+ list.add_theme_constant_override("v_separation",14)
+ list.add_theme_constant_override("h_separation",12)
+ list.fixed_icon_size=Vector2i(68,68)
  list.item_selected.connect(func(i:int):show_entry(visible_entry_indices[i]))
  roster_layout.add_child(list)
  var dossier := PanelContainer.new()
  dossier.size_flags_horizontal=Control.SIZE_EXPAND_FILL
- dossier.add_theme_stylebox_override("panel",surface(IntelSkin.NAVY,IntelSkin.SLATE))
+ dossier.add_theme_stylebox_override("panel",surface(Color("1c3546"),IntelSkin.SLATE))
  body.add_child(dossier)
  var sheet := VBoxContainer.new()
- sheet.add_theme_constant_override("separation",14)
+ sheet.add_theme_constant_override("separation",10)
  dossier.add_child(sheet)
- identity=add_label(sheet,"",18)
+ identity=add_label(sheet,"",16)
  identity.modulate=IntelSkin.TEAL
- heading=add_label(sheet,"",34)
+ heading=add_label(sheet,"",32)
+ heading.add_theme_font_override("font",IntelSkin.face(700))
+ rule(sheet,IntelSkin.TEAL.darkened(0.55))
  var portrait := PanelContainer.new()
- portrait.custom_minimum_size.y=340
- portrait.size_flags_vertical=Control.SIZE_EXPAND_FILL
- portrait.add_theme_stylebox_override("panel",surface(IntelSkin.STRUCTURE))
+ portrait_panel=portrait
+ portrait.custom_minimum_size.y=350
+ portrait.size_flags_vertical=Control.SIZE_FILL
+ portrait.add_theme_stylebox_override("panel",surface(Color("102637"),IntelSkin.SLATE,8))
  sheet.add_child(portrait)
+ portrait_frame=Control.new()
+ portrait_frame.clip_contents=true
+ portrait.add_child(portrait_frame)
+ portrait_backdrop=TextureRect.new()
+ portrait_backdrop.texture=preload("res://assets/backgrounds/opening/stage_01.png")
+ portrait_backdrop.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+ portrait_backdrop.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_COVERED
+ portrait_backdrop.modulate=Color(0.52,0.77,0.85,0.32)
+ portrait_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ portrait_backdrop.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ portrait_frame.add_child(portrait_backdrop)
+ var scan:=Control.new()
+ scan.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ scan.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ scan.draw.connect(draw_scan_overlay.bind(scan))
+ scan.resized.connect(scan.queue_redraw)
+ portrait_frame.add_child(scan)
  image=TextureRect.new()
- image.custom_minimum_size=Vector2(220,220)
+ image.custom_minimum_size=Vector2.ZERO
+ image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
  image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
- portrait.add_child(image)
- trait_label=add_label(sheet,"",22)
+ image.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ portrait_frame.add_child(image)
+ trait_label=add_label(sheet,"",20)
+ trait_label.modulate=Color("c5d9d8")
  var badges := HBoxContainer.new()
- badges.add_theme_constant_override("separation",22)
+ badges.add_theme_constant_override("separation",12)
  sheet.add_child(badges)
- armour_badge=add_label(badges,"",19)
- attack_badge=add_label(badges,"",19)
+ armour_badge=add_label(badges,"",16)
+ attack_badge=add_label(badges,"",16)
  armour_badge.modulate=IntelSkin.TEAL
  attack_badge.modulate=Color("e9c48b")
  details_button=Button.new()
  details_button.text=UIText.t("enemy.intel.details")
  details_button.toggle_mode=true
  skin_button(details_button)
- details_button.toggled.connect(func(on:bool):detail_scroll.visible=on)
+ details_button.alignment=HORIZONTAL_ALIGNMENT_LEFT
+ details_button.toggled.connect(func(on:bool):detail_scroll.visible=on;update_portrait_height())
  sheet.add_child(details_button)
  detail_scroll=ScrollContainer.new()
  detail_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
- detail_scroll.custom_minimum_size.y=120
+ detail_scroll.custom_minimum_size.y=130
  detail_scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED
  detail_scroll.visible=false
  sheet.add_child(detail_scroll)
@@ -129,10 +179,30 @@ func setup(owner: Node) -> void:
  detail.add_theme_constant_override("separation",10)
  detail_scroll.add_child(detail)
  for index in 10:
-  var line:=add_label(detail,"",18)
+  var line:=add_label(detail,"",16)
   line.visible=false
   detail_lines.append(line)
+ resized.connect(update_portrait_height)
  visibility_changed.connect(refresh_if_needed)
+
+func update_portrait_height() -> void:
+ if not is_instance_valid(portrait_panel) or not is_instance_valid(details_button):return
+ portrait_panel.custom_minimum_size.y=220 if size.y<950 and details_button.button_pressed else 350
+
+func draw_scan_overlay(layer: Control) -> void:
+ var bounds:=layer.size
+ if bounds.x<80 or bounds.y<80:return
+ var accent:=Color(0.52,0.82,0.79,0.30)
+ var center:=bounds*0.5
+ var radius:=minf(bounds.x,bounds.y)*0.38
+ layer.draw_arc(center,radius,0,TAU,72,Color(0.52,0.82,0.79,0.12),1.0,true)
+ layer.draw_arc(center,radius*0.68,0,TAU,72,Color(0.52,0.82,0.79,0.09),1.0,true)
+ for x in [20.0,bounds.x-20.0]:
+  var direction:float=1.0 if x<bounds.x*0.5 else -1.0
+  for y in [20.0,bounds.y-20.0]:
+   var vertical:float=1.0 if y<bounds.y*0.5 else -1.0
+   layer.draw_line(Vector2(x,y),Vector2(x+direction*36.0,y),accent,2.0,true)
+   layer.draw_line(Vector2(x,y),Vector2(x,y+vertical*36.0),accent,2.0,true)
 
 func preview_texture(texture: Texture2D) -> Texture2D:
  if texture==null:return null
@@ -151,8 +221,13 @@ func preview_texture(texture: Texture2D) -> Texture2D:
 func skin_button(button: Button) -> void:
  button.add_theme_stylebox_override("normal",surface(IntelSkin.STRUCTURE))
  button.add_theme_stylebox_override("hover",surface(IntelSkin.SLATE,IntelSkin.TEAL))
- button.add_theme_stylebox_override("pressed",surface(IntelSkin.SLATE,IntelSkin.TEAL))
- button.add_theme_font_size_override("font_size",18)
+ button.add_theme_stylebox_override("pressed",surface(Color("285066"),IntelSkin.TEAL))
+ button.add_theme_stylebox_override("focus",surface(Color.TRANSPARENT,IntelSkin.TEAL))
+ button.add_theme_font_override("font",IntelSkin.face(600))
+ button.add_theme_font_size_override("font_size",16)
+ button.add_theme_color_override("font_color",IntelSkin.PAPER)
+ button.add_theme_color_override("font_hover_color",IntelSkin.PAPER)
+ button.add_theme_color_override("font_pressed_color",IntelSkin.TEAL)
 
 func add_label(parent: Node, value: String, size: int = 22) -> Label:
  var label:=Label.new()
@@ -196,14 +271,21 @@ func refresh_if_needed() -> void:
   button.size_flags_horizontal=Control.SIZE_EXPAND_FILL
   button.pressed.connect(func():follow_current=false;show_point(p))
   skin_button(button)
+  button.custom_minimum_size.y=42
   point_bar.add_child(button)
   point_buttons.append(button)
  show_point(current_point)
 
 func update_point_buttons() -> void:
+ follow_button.disabled=follow_current
  for i in point_buttons.size():
-  point_buttons[i].set_pressed_no_signal(i==selected_point)
-  point_buttons[i].text=UIText.t("enemy.intel.point_now",{"point":str(i+1)}) if i==current_point else str(i+1)
+  var button:=point_buttons[i]
+  button.set_pressed_no_signal(i==selected_point)
+  button.text=UIText.t("enemy.intel.point_now",{"point":str(i+1)}) if i==current_point else str(i+1)
+  var edge:=IntelSkin.TEAL if i==selected_point else IntelSkin.SLATE
+  var fill:=Color("285066") if i==selected_point else IntelSkin.STRUCTURE
+  button.add_theme_stylebox_override("normal",surface(fill,edge,6))
+  button.add_theme_color_override("font_color",IntelSkin.TEAL if i==selected_point else IntelSkin.PAPER)
 
 func show_point(point: int) -> void:
  if point<0 or selected_point==point:return
@@ -219,6 +301,7 @@ func show_point(point: int) -> void:
   var source:Dictionary={"archetype_id":str(row.get("intelVisualRef",row.get("archetype_id",""))),"armourType":row.armourType,"size":row.size}
   var texture:Texture2D=host.ship_hull_texture(host.enemy_visual_identity.resolve(source,host.visual_config))
   list.add_item(UIText.t("enemy.intel.ship_count",{"name":str(row.get("intelName",row.des)),"count":str(entry.count)}),preview_texture(texture))
+  list.set_item_tooltip(list.item_count-1,str(row.get("intelTrait","")))
  update_point_buttons()
  if not visible_entry_indices.is_empty():list.select(0)
  show_entry(visible_entry_indices[0] if not visible_entry_indices.is_empty() else -1)

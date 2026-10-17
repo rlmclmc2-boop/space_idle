@@ -3615,6 +3615,7 @@ func build_equipment_tabs() -> void:
 	equipment_tabs.position = WORK_CONTENT_RECT.position
 	equipment_tabs.size = WORK_CONTENT_RECT.size
 	equipment_tabs.scale = WORK_CONTENT_SCALE
+	if not get_viewport().size_changed.is_connected(layout_reactor_page):get_viewport().size_changed.connect(layout_reactor_page)
 	equipment_tabs.tabs_visible = false
 	equipment_tabs.add_theme_font_override("font",font)
 	equipment_tabs.add_theme_font_size_override("font_size",16)
@@ -3730,7 +3731,13 @@ func build_reactor_tab() -> void:
 
 func layout_reactor_page() -> void:
 	set_ui_value(equipment_tabs,"position",WORK_CONTENT_RECT.position)
-	set_ui_value(equipment_tabs,"size",WORK_CONTENT_RECT.size)
+	if equipment_tabs.current_tab == 11:
+		var origin := equipment_tabs.get_global_transform_with_canvas().origin
+		var viewport_size := get_viewport_rect().size
+		var available := (viewport_size-origin-Vector2(12,12))/WORK_CONTENT_SCALE
+		set_ui_value(equipment_tabs,"size",Vector2(minf(WORK_CONTENT_RECT.size.x,maxf(640,available.x)),minf(WORK_CONTENT_RECT.size.y,maxf(680,available.y))))
+	else:
+		set_ui_value(equipment_tabs,"size",WORK_CONTENT_RECT.size)
 
 func confirm_unequip(category: String, index: int) -> void:
 	if game.slot_equipment_locked(category,index):return
