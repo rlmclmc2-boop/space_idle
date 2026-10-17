@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+Movie Maker mode enabled, recording movie in 1373脳883 @ 60 FPS...
+QA_VISUAL_CAPTURE {"frames":486,"level":12,"native":false,"point":4,"render":"(1952.0, 1256.0)","save":false,"stage":6,"state":2,"weapon":"laser","window":"(1373, 883)"}
+--------------------------------------------------------------------------------
+Done recording movie at path: D:\CodexBuild\space_idle\stage1-7-experience-20261017\test\evidence\stage1-7-experience-20261017\stage6-point4-laser-fixed.avi
+487 frames at 60 FPS (movie length: 00:00:08:07), recorded in 00:00:29 (27% of real-time speed).
+CPU render time: 0.30 seconds (average: 0.62 ms/frame)
+GPU render time: 0.12 seconds (average: 0.25 ms/frame)
+Encoding time: 5.70 seconds (average: 11.71 ms/frame)
+--------------------------------------------------------------------------------
