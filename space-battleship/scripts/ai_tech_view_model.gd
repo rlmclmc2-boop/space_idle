@@ -25,12 +25,12 @@ static func duration(seconds: float) -> String:
 static func requirement(game, id: String, level: int) -> String:
 	var row: Dictionary = game.db.data.ai_tech_tree[id]
 	var parts := PackedStringArray()
-	if str(row.get("unlock","")) == "enhancement":parts.append("强化碎片已解锁")
+	if str(row.get("unlock","")) == "enhancement":parts.append("强化系统")
 	for predecessor in row.get("requirements",{}):
 		var condition = row.requirements[predecessor]
 		var target := 10*(level+1)+1 if condition is String else int(condition)
 		parts.append("%s ≥ %d 级" % [game.db.data.ai_tech_tree[predecessor].name,target])
-	return "无额外前置" if parts.is_empty() else "、".join(parts)
+	return "无额外前置" if parts.is_empty() else "解锁条件：" + "、".join(parts)
 
 static func snapshot(game) -> Dictionary:
 	var source: Dictionary = game.tech_tree_snapshot()
@@ -40,13 +40,16 @@ static func snapshot(game) -> Dictionary:
 	for node in source.nodes:
 		var id := str(node.id)
 		var can_start := bool(node.eligibility.ok)
+		# Hide undiscovered choices; keep earned levels visible when the next
+		# level has a new prerequisite. Progress and effects stay in BattleGame.
+		if not can_start and int(node.level) == 0:continue
 		var is_active := id == active_id
 		if is_active:active = node
 		var effect := "%s 当前 ×%s；下一级 ×%s" % [node.description,N.text(node.current_multiplier),N.text(node.next_multiplier)]
 		if id == "singularity":effect = "%s 当前 %d AI；下一级 %d AI" % [node.description,int(node.current_multiplier),int(node.next_multiplier)]
 		var generation_text := "Lv.%d · %s ×%s" % [int(node.level),str(BENEFIT_LABELS.get(id,"当前效果")),N.text(node.current_multiplier)]
 		if id == "singularity":generation_text = "Lv.%d · 当前 %d AI" % [int(node.level),int(node.current_multiplier)]
-		var state_text := "前置未满足"
+		var state_text := "强化系统未解锁" if str(node.eligibility.get("reason", "")) == "enhancement_locked" else "前置科技等级未满足"
 		if can_start:
 			var seconds_left := maxf(0.0, float(node.required_seconds) - float(node.progress_seconds)) / maxf(0.001, float(source.speed))
 			state_text = UIText.t("ai_tech.research.active_estimate" if is_active else "ai_tech.research.estimate", {"time":duration(seconds_left)})

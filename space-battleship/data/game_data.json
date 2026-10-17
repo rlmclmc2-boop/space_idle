@@ -320382,7 +320382,7 @@
       "level": 0,
       "mode": "cleared",
       "title": "复合装甲",
-      "desc": "左下生命条来自装甲。试着升一级装甲，再看看防御卡和生命上限的变化。"
+      "desc": "复合装甲已解锁。"
     },
     "shield": {
       "name": "shield",
@@ -320391,7 +320391,7 @@
       "level": 2,
       "mode": "cleared",
       "title": "偏转护盾",
-      "desc": "防御位只能装一件：换入偏转护盾会替下复合装甲。护盾偏重抵御能量攻击；受击后等待2秒才恢复。装甲偏重抵御物理攻击。"
+      "desc": "偏转护盾已解锁。"
     },
     "laser": {
       "name": "laser",
@@ -320400,7 +320400,7 @@
       "level": 0,
       "mode": "cleared",
       "title": "脉冲激光",
-      "desc": "战舰已装好一门脉冲激光。给空武器位再装一门，看看舰上多出的炮口；装配免费。"
+      "desc": "脉冲激光已解锁。"
     },
     "missile": {
       "name": "missile",
@@ -320409,7 +320409,7 @@
       "level": 1,
       "mode": "cleared",
       "title": "追踪导弹",
-      "desc": "追踪导弹一次发射多枚物理弹，可同时追踪多个目标。选武器位免费换入；槽位等级保留。"
+      "desc": "追踪导弹已解锁。"
     },
     "cannon": {
       "name": "cannon",
@@ -320418,7 +320418,7 @@
       "level": 2,
       "mode": "cleared",
       "title": "磁轨火炮",
-      "desc": "磁轨火炮是物理大击，适合单个厚敌，也可试打抗能量护盾；比较单发伤害与下次开火间隔。换装免费，等级保留。"
+      "desc": "磁轨火炮已解锁。"
     },
     "longLaser": {
       "name": "longLaser",
@@ -320427,7 +320427,7 @@
       "level": 5,
       "mode": "cleared",
       "title": "持续锁定光束",
-      "desc": "先把一门武器换成光束，看看同一艘敌舰的血条是否降得越来越快。光束持续照射才会增伤；若打不动，指向敌舰查看防御，再试另一类伤害。"
+      "desc": "持续锁定光束已解锁。"
     },
     "ship/Frigate": {
       "name": "ship/Frigate",
@@ -320436,7 +320436,7 @@
       "level": 0,
       "mode": "cleared",
       "title": "游隼侦察艇",
-      "desc": "可在战舰页面启用游隼侦察艇。"
+      "desc": "游隼侦察艇已解锁。"
     },
     "ship/Destroyer": {
       "name": "ship/Destroyer",
@@ -320445,7 +320445,7 @@
       "level": 10,
       "mode": "cleared",
       "title": "飞燕护卫舰",
-      "desc": "到「战舰」启用飞燕护卫舰，再点新增W04空槽免费装武器，看它随舰开火。"
+      "desc": "飞燕护卫舰已解锁。"
     },
     "ship/Cruiser": {
       "name": "ship/Cruiser",
@@ -320454,7 +320454,7 @@
       "level": 20,
       "mode": "cleared",
       "title": "云鳐巡洋舰",
-      "desc": "这艘船,很大,很强,很暴力,他有更多的武器,来帮助你干掉所有对手"
+      "desc": "云鳐巡洋舰已解锁。"
     },
     "ship/Battleship": {
       "name": "ship/Battleship",
@@ -320463,7 +320463,7 @@
       "level": 30,
       "mode": "cleared",
       "title": "玄甲战列舰",
-      "desc": "这是我们能提供的最强的战舰了,相信我,它能陪你走到最后"
+      "desc": "玄甲战列舰已解锁。"
     },
     "ship/Heavy_Battleship": {
       "name": "ship/Heavy_Battleship",
@@ -320472,7 +320472,7 @@
       "level": 50,
       "mode": "cleared",
       "title": "白鲸无畏舰",
-      "desc": "我之前说过那是我们能提供的最强战舰了吗?有了新船坞,那已经是过去式了,这艘新船将更有力的摧毁你的敌人."
+      "desc": "白鲸无畏舰已解锁。"
     },
     "reactor": {
       "name": "reactor",
@@ -320481,7 +320481,7 @@
       "level": 1,
       "mode": "cleared",
       "title": "反应炉",
-      "desc": "反应炉已接通。去「反应炉」点「均分」先看加成，再将能源偏向武器或防御，比较清敌速度与承伤。分配不花铁。"
+      "desc": "反应炉已解锁。"
     },
     "hightech/超时空炼铁炉": {
       "name": "hightech/超时空炼铁炉",
@@ -320490,7 +320490,7 @@
       "level": 3,
       "mode": "cleared",
       "title": "超时空炼铁炉",
-      "desc": "打开「AI工厂」，先「生成×1」，再给炼铁炉分配「+1 AI」。看看施工开始；建好后，它会定时产出铁。"
+      "desc": "超时空炼铁炉已解锁。"
     },
     "hightech/正电子聚焦装置": {
       "name": "hightech/正电子聚焦装置",
@@ -320499,7 +320499,7 @@
       "level": 4,
       "mode": "cleared",
       "title": "正电子聚焦装置",
-      "desc": "通过这个全新的工厂产物,我们让武器的效率有了进一步提升,感谢AI吧,它们什么都不需要,只要..你给一些能源"
+      "desc": "正电子聚焦装置已解锁。"
     },
     "hightech/简并态装甲": {
       "name": "hightech/简并态装甲",
@@ -320508,7 +320508,7 @@
       "level": 4,
       "mode": "cleared",
       "title": "简并态装甲",
-      "desc": "这是调查致密恒星的构造后得出的结论,而我们的无休劳动者正在不断的生产这种全宇宙最硬的物质.它将提升我们的所有防御能力..船体,护盾,当然,你变得更耐打了!"
+      "desc": "简并态装甲已解锁。"
     },
     "hightech/宝石熔炼炉": {
       "name": "hightech/宝石熔炼炉",
@@ -320517,7 +320517,7 @@
       "level": 12,
       "mode": "cleared",
       "title": "强化碎片熔炼炉",
-      "desc": "这下我们终于有办法进一步从无用的残骸里回收更多的强化碎片了,真是非常感谢!"
+      "desc": "强化碎片熔炼炉已解锁。"
     },
     "feature/jewels": {
       "name": "feature/jewels",
@@ -320526,7 +320526,7 @@
       "level": 7,
       "mode": "reached",
       "title": "装备强化",
-      "desc": "敌舰残骸中可回收强化碎片，用于提升全局装备强化等级。"
+      "desc": "装备强化已解锁。"
     },
     "crew/navigator": {
       "name": "crew/navigator",
@@ -320535,7 +320535,7 @@
       "level": 10,
       "mode": "cleared",
       "title": "船员01",
-      "desc": "去「船员」看看岗位会做什么、会花什么，再决定分配；随时可解除分配。"
+      "desc": "船员01已解锁。"
     },
     "crew/engineer": {
       "name": "crew/engineer",
@@ -320544,7 +320544,7 @@
       "level": 20,
       "mode": "cleared",
       "title": "船员02",
-      "desc": "已解锁船员02，可在船员页分配到游戏系统。"
+      "desc": "船员02已解锁。"
     },
     "crew/researcher": {
       "name": "crew/researcher",
@@ -320553,7 +320553,7 @@
       "level": 25,
       "mode": "cleared",
       "title": "船员03",
-      "desc": "已解锁船员03，可在船员页分配到游戏系统。"
+      "desc": "船员03已解锁。"
     },
     "crew/crew_04": {
       "name": "crew/crew_04",
@@ -320562,7 +320562,7 @@
       "level": 30,
       "mode": "cleared",
       "title": "船员04",
-      "desc": "已解锁船员04，可在船员页分配到游戏系统。"
+      "desc": "船员04已解锁。"
     },
     "crew/crew_05": {
       "name": "crew/crew_05",
@@ -320571,7 +320571,7 @@
       "level": 35,
       "mode": "cleared",
       "title": "船员05",
-      "desc": "已解锁船员05，可在船员页分配到游戏系统。"
+      "desc": "船员05已解锁。"
     },
     "crew/crew_06": {
       "name": "crew/crew_06",
@@ -320580,7 +320580,7 @@
       "level": 40,
       "mode": "cleared",
       "title": "船员06",
-      "desc": "已解锁船员06，可在船员页分配到游戏系统。"
+      "desc": "船员06已解锁。"
     },
     "planet/1": {
       "name": "planet/1",
@@ -320589,7 +320589,7 @@
       "level": 30,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "去「星球探索」，派一名空闲船员出发。完成一次探索后，看看探索度和星球加成的变化；设施可用时，点设施继续建设。"
+      "desc": "星球探索已解锁。"
     },
     "feature/crew_level": {
       "name": "feature/crew_level",
@@ -320598,7 +320598,7 @@
       "level": 30,
       "mode": "cleared",
       "title": "船员等级",
-      "desc": "船员可以获得经验并提升等级。"
+      "desc": "船员等级已解锁。"
     },
     "reactor_module/condensation": {
       "name": "reactor_module/condensation",
@@ -320607,7 +320607,7 @@
       "level": 15,
       "mode": "cleared",
       "title": "强化凝聚",
-      "desc": "反应炉充能可以提升强化碎片产出，让装备强化继续成长。"
+      "desc": "强化凝聚已解锁。"
     },
     "planet/2": {
       "name": "planet/2",
@@ -320616,7 +320616,7 @@
       "level": 35,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "已发现该星系的气态行星,可以进一步探索该行星系"
+      "desc": "新行星已发现。"
     },
     "planet/3": {
       "name": "planet/3",
@@ -320625,7 +320625,7 @@
       "level": 40,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "已准备好探索该星系"
+      "desc": "新行星已发现。"
     },
     "planet/4": {
       "name": "planet/4",
@@ -320634,7 +320634,7 @@
       "level": 45,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "哦,一个生命末期的恒星,它能给我们什么?"
+      "desc": "新行星已发现。"
     },
     "planet/5": {
       "name": "planet/5",
@@ -320643,7 +320643,7 @@
       "level": 50,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "恒星的残骸...但仍旧蕴含让我们需要的资源.."
+      "desc": "新行星已发现。"
     },
     "planet/6": {
       "name": "planet/6",
@@ -320652,7 +320652,7 @@
       "level": 55,
       "mode": "cleared",
       "title": "星球探索",
-      "desc": "这颗死亡的恒星释放出强大的能量,我们需要控制它"
+      "desc": "新行星已发现。"
     },
     "feature/galaxy": {
       "name": "feature/galaxy",
@@ -320661,7 +320661,7 @@
       "level": 60,
       "mode": "cleared",
       "title": "星系殖民",
-      "desc": "现在我们可以殖民星系了,快派遣船员出发吧"
+      "desc": "星系殖民已解锁。"
     },
     "crew/crew_07": {
       "name": "crew/crew_07",
@@ -320670,7 +320670,7 @@
       "level": 45,
       "mode": "cleared",
       "title": "船员07",
-      "desc": "已解锁船员07，可在船员页分配到游戏系统。"
+      "desc": "船员07已解锁。"
     },
     "crew/crew_08": {
       "name": "crew/crew_08",
@@ -320679,7 +320679,7 @@
       "level": 50,
       "mode": "cleared",
       "title": "船员08",
-      "desc": "已解锁船员08，可在船员页分配到游戏系统。"
+      "desc": "船员08已解锁。"
     },
     "crew/crew_09": {
       "name": "crew/crew_09",
@@ -320688,7 +320688,7 @@
       "level": 55,
       "mode": "cleared",
       "title": "船员09",
-      "desc": "已解锁船员09，可在船员页分配到游戏系统。"
+      "desc": "船员09已解锁。"
     },
     "crew/crew_10": {
       "name": "crew/crew_10",
@@ -320697,7 +320697,7 @@
       "level": 60,
       "mode": "cleared",
       "title": "船员10",
-      "desc": "已解锁船员10，可在船员页分配到游戏系统。"
+      "desc": "船员10已解锁。"
     },
     "crew/crew_11": {
       "name": "crew/crew_11",
@@ -320706,7 +320706,7 @@
       "level": 70,
       "mode": "cleared",
       "title": "船员11",
-      "desc": "已解锁船员11，可在船员页分配到游戏系统。"
+      "desc": "船员11已解锁。"
     },
     "crew/crew_12": {
       "name": "crew/crew_12",
@@ -320715,7 +320715,7 @@
       "level": 80,
       "mode": "cleared",
       "title": "船员12",
-      "desc": "已解锁船员12，可在船员页分配到游戏系统。"
+      "desc": "船员12已解锁。"
     },
     "crew/crew_13": {
       "name": "crew/crew_13",
@@ -320724,7 +320724,7 @@
       "level": 90,
       "mode": "cleared",
       "title": "船员13",
-      "desc": "已解锁船员13，可在船员页分配到游戏系统。"
+      "desc": "船员13已解锁。"
     },
     "crew/crew_14": {
       "name": "crew/crew_14",
@@ -320733,7 +320733,7 @@
       "level": 100,
       "mode": "cleared",
       "title": "船员14",
-      "desc": "已解锁船员14，可在船员页分配到游戏系统。"
+      "desc": "船员14已解锁。"
     },
     "crew/crew_15": {
       "name": "crew/crew_15",
@@ -320742,7 +320742,7 @@
       "level": 110,
       "mode": "cleared",
       "title": "船员15",
-      "desc": "已解锁船员15，可在船员页分配到游戏系统。"
+      "desc": "船员15已解锁。"
     },
     "crew/crew_16": {
       "name": "crew/crew_16",
@@ -320751,7 +320751,7 @@
       "level": 120,
       "mode": "cleared",
       "title": "船员16",
-      "desc": "已解锁船员16，可在船员页分配到游戏系统。"
+      "desc": "船员16已解锁。"
     },
     "crew/crew_17": {
       "name": "crew/crew_17",
@@ -320760,7 +320760,7 @@
       "level": 130,
       "mode": "cleared",
       "title": "船员17",
-      "desc": "已解锁船员17，可在船员页分配到游戏系统。"
+      "desc": "船员17已解锁。"
     },
     "crew/crew_18": {
       "name": "crew/crew_18",
@@ -320769,7 +320769,7 @@
       "level": 140,
       "mode": "cleared",
       "title": "船员18",
-      "desc": "已解锁船员18，可在船员页分配到游戏系统。"
+      "desc": "船员18已解锁。"
     },
     "crew/crew_19": {
       "name": "crew/crew_19",
@@ -320778,7 +320778,7 @@
       "level": 150,
       "mode": "cleared",
       "title": "船员19",
-      "desc": "已解锁船员19，可在船员页分配到游戏系统。"
+      "desc": "船员19已解锁。"
     },
     "crew/crew_20": {
       "name": "crew/crew_20",
@@ -320787,7 +320787,7 @@
       "level": 160,
       "mode": "cleared",
       "title": "船员20",
-      "desc": "已解锁船员20，可在船员页分配到游戏系统。"
+      "desc": "船员20已解锁。"
     }
   },
   "crew": {

@@ -189,6 +189,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
 	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "aiTechLevels":{}, "aiTechProgress":{}, "aiTechActive":"", "aiTechInput":{"1":0,"2":0}, "aiIncomePeak":{"1":0.0,"2":0.0,"jewel":0.0}, "hightechSavedAt":Time.get_unix_time_from_system()}
+	profile.aiTechCompletionUnread = false
 	# The retired page still reads these inert values until the new art page lands.
 	profile.scientists = 0
 	profile.scientistAssignments = {}
@@ -570,6 +571,7 @@ func nonnegative_number(value) -> bool:
 
 func load_hightech(raw: Dictionary) -> void:
 	invalidate_stat_cache()
+	profile.aiTechCompletionUnread = raw.get("aiTechCompletionUnread",false) == true
 	for field in ["productionElapsed", "hightechSavedAt"]:
 		if nonnegative_number(raw.get(field)):
 			profile[field] = float(raw[field])
@@ -599,6 +601,12 @@ func load_hightech(raw: Dictionary) -> void:
 				var restored := {"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))}
 				if nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time():restored.production_time=float(sample.production_time)
 				resource_samples.append(restored)
+
+func read_ai_tech_completion() -> bool:
+	if not bool(profile.aiTechCompletionUnread):return false
+	profile.aiTechCompletionUnread = false
+	save_dirty = true
+	return true
 
 func rebuild_unlocks() -> void:
 	invalidate_tutorial_unlocks()
@@ -2539,14 +2547,14 @@ func guided_missile_damage(enemy: Dictionary,raw,context: Dictionary) -> Variant
 	context.guidance_factors=factors
 	return N.multiply(raw,factors[key])
 
-func collect(drop: Dictionary, manual: bool) -> void:
+func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	if not drops.has(drop):
 		return
 	if drop.has("jewel"):
 		if not jewels_unlocked():
 			return
 		var core: bool = drop.get("hightech",false)
-		if core and not manual and float(drop.get("age",0)) < 10.0:
+		if core and not manual and not force and float(drop.get("age",0)) < 10.0:
 			return
 		drops.erase(drop)
 		var amount := float(drop.get("amount",1))
@@ -2556,7 +2564,7 @@ func collect(drop: Dictionary, manual: bool) -> void:
 		enhancement_currency_changed()
 		event.emit("jewel_pickup", drop)
 		return
-	if drop.get("hightech", false) and not manual and float(drop.get("age",0)) < 10.0:
+	if drop.get("hightech", false) and not manual and not force and float(drop.get("age",0)) < 10.0:
 		return
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
@@ -2573,9 +2581,9 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	event.emit("collect", info)
 	save_dirty = true
 
-func settle_drops() -> void:
+func settle_drops(force := false) -> void:
 	for drop in drops.duplicate():
-		collect(drop, false)
+		collect(drop, false, force)
 
 func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionary = {}, path_start: Variant = null) -> void:
 	if paused:
@@ -2598,6 +2606,8 @@ func clear_level() -> void:
 	for key in available_unlocks():
 		if not previous.has(key) and not profile.get("seenUnlocks",[]).has(key) and not pending_unlocks.has(key):
 			pending_unlocks.append(key)
+	# A cleared stage settles every remaining drop before its unlock pause.
+	settle_drops(true)
 	clear_timer = CLEAR_ADVANCE_DELAY
 	change_state(State.LEVEL_CLEAR)
 	save_dirty = true

@@ -1165,7 +1165,7 @@
   },
   {
     "key": "onboarding.next",
-    "text": "试试装备",
+    "text": "查看装备",
     "params": "",
     "category": "onboarding"
   },
@@ -1195,49 +1195,49 @@
   },
   {
     "key": "onboarding.intro",
-    "text": "下方是你的战舰，它会自动开火。新档有空的武器和防御槽，装配免费；先补槽，再观察清敌速度和防御条。",
+    "text": "战舰会自动交战。装备页可查看武器槽与防御槽。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.equip",
-    "text": "这个武器槽可免费装配。选中武器后再补齐其他空武器槽；看炮口和武器卡伤害数值的变化。",
+    "text": "装备页可为武器槽装配武器。空槽装配免费。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.upgrade",
-    "text": "花铁升一级槽位；比较卡片升级前后的伤害或防御数值。火力升级提高伤害能力，防御升级增加承受量。",
+    "text": "装备页可升级已装配槽位，所需资源显示在槽位卡片。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.waiting",
-    "text": "升级费用：{cost}。先补齐免费槽；铁不足时继续战斗或在当前战点驻守，够了再比较升级前后的卡片数值。",
+    "text": "槽位升级需要{cost}。资源数量显示在顶部资源栏。",
     "params": "{cost}",
     "category": "onboarding"
   },
   {
     "key": "onboarding.progress",
-    "text": "现在看看战斗：武器负责清敌，装甲撑住生命。打完本关最后一队敌舰，就会自动驶向下一关。",
+    "text": "战舰正在自动交战。战点进度显示在战斗界面。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.clear",
-    "text": "首关已通过！继续试试装配和升级；「操作指南」里能回看入门与已解锁内容。",
+    "text": "首关已通过。已解锁内容可在「操作指南」查看。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.retreat",
-    "text": "刚才生命归零，战舰会修复后重试。装备和资源都还在；补上空防御位或升一级装甲，再看看能否撑住。",
+    "text": "战舰生命归零后将修复并重试。装备、等级与资源保留。",
     "params": "",
     "category": "onboarding"
   },
   {
     "key": "onboarding.unlock",
-    "text": "新内容来了。读完后点「确认解锁」继续；可在操作指南中选择自动跳过。",
+    "text": "新内容已解锁。点击「确认解锁」继续。",
     "params": "",
     "category": "onboarding"
   },
@@ -1249,7 +1249,7 @@
   },
   {
     "key": "onboarding.review",
-    "text": "先补齐免费装备，再花铁升级。武器卡看伤害，防御卡看装甲或护盾。失败会撤退修复；装备、等级和资源都保留。",
+    "text": "装备页可装配和升级槽位；战斗界面可查看战舰状态。",
     "params": "",
     "category": "onboarding"
   },
@@ -1261,7 +1261,7 @@
   },
   {
     "key": "onboarding.no_upgrade",
-    "text": "当前已装配模块已达可升级上限。继续战斗推进，后续可检查新模块与解锁内容。",
+    "text": "当前已装配模块达到升级上限。",
     "params": "",
     "category": "onboarding"
   },
@@ -5534,7 +5534,7 @@
   },
   {
     "key": "main.draw_unlock.text_02",
-    "text": "装备已自动装载，可在下方直接升级。",
+    "text": "装备已自动装载。可在装备页升级。",
     "params": "",
     "category": "main",
     "note": "固定文字",
@@ -12497,7 +12497,7 @@
   },
   {
     "note": "解锁教程与自动确认",
-    "text": "选择条目查看解锁说明。红点表示尚未阅读；自动确认不会标为已读。",
+    "text": "选择条目查看解锁内容。",
     "key": "tutorial.select_entry",
     "category": "tutorial",
     "params": ""
@@ -14938,14 +14938,14 @@
   },
   {
     "key": "onboarding.defence",
-    "text": "空防御槽也能免费装甲。补上后看左下生命上限及防御卡；两类槽都不用花铁填满。",
+    "text": "装备页可在防御槽装配装甲。空槽装配免费。",
     "params": "",
     "category": "onboarding",
     "note": "入门防御操作"
   },
   {
     "key": "onboarding.show_defence",
-    "text": "补上防御",
+    "text": "查看防御槽",
     "params": "",
     "category": "onboarding",
     "note": "入门防御操作"
@@ -14958,7 +14958,7 @@
   },
   {
     "key": "tutorial.hyperspace.description",
-    "text": "选一条路线，点「挑战第1层」。通关后，点「后台探索」重复获取这一层的奖励；也可以挑战下一层。收到无人机后，点「查看无人机」试着装到战舰上。",
+    "text": "异空间探索已解锁。可在异空间页面查看路线、层级与无人机。",
     "params": "",
     "category": "tutorial"
   },
@@ -15344,14 +15344,14 @@
   },
   {
     "key": "onboarding.enhancement",
-    "text": "强化碎片够了。试着升1级，再看武器和防御旁的生效数量、数值变化。",
+    "text": "装备强化已开放。可在装备页使用强化碎片。",
     "params": "",
     "category": "onboarding",
     "note": "第8–10关已解锁且可首次购买时，提示一次真实操作；升过级后自动收起"
   },
   {
     "key": "onboarding.show_enhancement",
-    "text": "去装备强化",
+    "text": "查看装备强化",
     "params": "",
     "category": "onboarding",
     "note": "导航到已解锁的现有界面，不代替玩家购买"
@@ -16183,7 +16183,7 @@
   },
   {
     "key": "onboarding.pickup",
-    "text": "鼠标划过战场掉落可完整回收。靠近掉落可比较自动回收与划过回收的收益；到账增量显示在顶部资源栏。",
+    "text": "战场掉落可通过鼠标划过回收；资源增量显示在顶部资源栏。",
     "params": "",
     "category": "tutorial",
     "note": "首次掉落阶段的操作提示；首次主动回收后结束"
@@ -16203,7 +16203,7 @@
   {"key":"battle.enemy_status.armour","text":"装甲 {current}/{maximum}","params":"current,maximum","category":"battle","note":"战场悬停即时生命状态"},
   {"key":"battle.enemy_status.shield","text":"护盾 {current}/{maximum}","params":"current,maximum","category":"battle","note":"战场悬停即时护盾状态"},
   {"key":"unlock.manual_confirm","text":"读完后按继续。","params":"","category":"tutorial","note":"默认解锁说明不自动消失"},
-  {"key":"onboarding.unlock_auto","text":"新内容来了。开启自动跳过后，倒计时结束会继续；也可随时点「确认解锁」。","params":"","category":"tutorial","note":"玩家开启自动跳过后的解锁提示"},
+  {"key":"onboarding.unlock_auto","text":"新内容已解锁。自动跳过倒计时结束后继续，也可点击「确认解锁」。","params":"","category":"tutorial","note":"玩家开启自动跳过后的解锁提示"},
   {"key":"equipment.card_missile_context","text":"{level} · {count} 枚/轮","params":"level,count","category":"equipment","note":"导弹简略卡使用实际发射枚数"},
   {"key":"weapon.card_missile_expected","text":"单枚期望伤害","params":"","category":"weapon","note":"投影数值按单枚命中，不误称整轮伤害"},
   {"key":"battle.damage_stats.title","text":"战斗伤害统计","params":"","category":"battle","note":"战斗设置菜单入口与窗口标题"},
@@ -16217,7 +16217,7 @@
   {"key":"battle.damage_stats.drone","text":"无人机槽 {slot}","params":"slot","category":"battle","note":"玩家无人机槽"},
   {"key":"battle.damage_stats.unknown_slot","text":"已卸下","params":"","category":"battle","note":"统计窗口内已卸下的无人机"},
   {"key":"battle.damage_stats.other","text":"其他伤害","params":"","category":"battle","note":"无法可靠归属的伤害"},
-  {"key":"ai_tech.tutorial.research","text":"基础研究免费；满足下一等级前置条件时自动续研，切换科技会保留各自进度。","params":"","category":"tutorial","note":"首次选择科技时的研究说明"},
+  {"key":"ai_tech.tutorial.research","text":"在科技页选择并启动研究。每完成一级即停止；未完成进度保留。","params":"","category":"tutorial","note":"首次选择科技时的研究说明"},
   {"key":"ai_tech.tutorial.investment","text":"铁和铀投入仅用于可选加速，按每秒持续消耗；余额不足时仅暂停该资源加速。","params":"","category":"tutorial","note":"科技投入说明"},
   {"key":"ai_tech.investment.iron_per_second","text":"铁投入/秒","params":"","category":"research","note":"投入框旁直接标明持续扣费单位"},
   {"key":"ai_tech.investment.uranium_per_second","text":"铀投入/秒","params":"","category":"research","note":"投入框旁直接标明持续扣费单位"},

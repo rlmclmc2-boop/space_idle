@@ -146,14 +146,12 @@ static func advance(game, dt: float) -> void:
 			if not game.native_before_configuration_change():break
 			game.profile.aiTechProgress[id] = 0.0
 			game.profile.aiTechLevels[id] = level(game,id) + 1
+			game.profile.aiTechActive = ""
+			game.profile.aiTechCompletionUnread = true
 			game.invalidate_stat_cache()
 			game.event.emit("hightech_complete", {"key":id})
 			changed = true
-			if not bool(eligibility(game,id).ok):
-				game.profile.aiTechActive = ""
-				game.event.emit("tech_tree_changed", {"reason":"prerequisite_stopped","id":id})
-				break
-			continue
+			break
 		step = minf(step, maxf(0.0, cost-progress)/speed)
 		if progress + step*speed + maxf(1.0,cost)*1e-12 >= cost:
 			if not game.native_before_configuration_change():break
@@ -173,12 +171,11 @@ static func advance(game, dt: float) -> void:
 		if float(game.profile.aiTechProgress[id]) + maxf(1.0,cost)*1e-12 >= cost:
 			game.profile.aiTechProgress[id] = 0.0
 			game.profile.aiTechLevels[id] = level(game,id) + 1
+			game.profile.aiTechActive = ""
+			game.profile.aiTechCompletionUnread = true
 			game.invalidate_stat_cache()
 			game.event.emit("hightech_complete", {"key":id})
-			if not bool(eligibility(game,id).ok):
-				game.profile.aiTechActive = ""
-				game.event.emit("tech_tree_changed", {"reason":"prerequisite_stopped","id":id})
-				break
+			break
 		id = str(game.profile.aiTechActive)
 	if changed:
 		game.save_dirty = true
