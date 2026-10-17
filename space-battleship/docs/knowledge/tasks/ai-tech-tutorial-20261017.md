@@ -7,5 +7,5 @@
 - Locate: `docs/UI_TEXT.md` AI factory keys, `data/ui_text.json`, `data/ui_text_contract.json`, `scripts/ai_tech_factory_page.gd`, and the main tutorial entry.
 - Known risk: an input labeled only with a resource name reads like a one-time purchase. Place `/秒` directly next to each input and make estimated time visible at selection.
 - Result: in-page research guidance and `/秒` input labels use six new UI text keys; each selectable technology shows the next-level estimate at current speed. The removed drawer sentence exposed implementation detail.
-- Evidence: `test/evidence/ai-tech-tutorial-20261017/`; UI catalog valid, focused headless 6/6, actual main-scene GUI 28/28. The main baseline's older technology suite retains three pre-existing singularity-duration failures because the configured first level is now 20 seconds while those assertions expect 60.
-- Next: commit this candidate and hand it to the parent for acceptance. No main merge.
+- Evidence: `test/evidence/ai-tech-tutorial-20261017/`; UI catalog valid, focused headless 6/6, actual main-scene GUI 28/28. The original three stale singularity-duration failures are retained, and the corrected current-table tree suite passes 41/41. Updated drawer and shortage PNGs plus lightweight JPG previews are included.
+- Next: hand the candidate to the parent for acceptance. No main merge.

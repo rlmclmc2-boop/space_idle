@@ -23,7 +23,7 @@ func run() -> void:
 	var idle: Dictionary = VIEW.snapshot(game)
 	var first: Dictionary = idle.technologies.filter(func(item): return item.id == "ai_singularity")[0]
 	check(first.state_text == UIText.t("ai_tech.research.estimate", {"time":VIEW.duration(AITech.required(game,"singularity"))}), "choice estimates the next level at current speed")
-	check(UIText.t("ai_tech.tutorial.research").contains("免费") and UIText.t("ai_tech.tutorial.research").contains("保留"), "first selection explains free research and preserved progress")
+	check(UIText.t("ai_tech.tutorial.research").contains("免费") and UIText.t("ai_tech.tutorial.research").contains("前置条件") and UIText.t("ai_tech.tutorial.research").contains("保留"), "first selection explains conditional continuation and preserved progress")
 	check(UIText.t("ai_tech.tutorial.investment").contains("每秒") and UIText.t("ai_tech.tutorial.investment").contains("余额不足"), "optional investment explains continuous cost and shortage")
 	check(UIText.t("ai_tech.investment.iron_per_second").contains("/秒") and UIText.t("ai_tech.investment.uranium_per_second").contains("/秒"), "both inputs carry per-second units")
 	game.select_tech("weapon_accuracy")

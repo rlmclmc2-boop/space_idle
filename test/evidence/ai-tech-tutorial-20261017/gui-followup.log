@@ -1,0 +1,34 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PASS real game starts
+PASS real main builds technology page
+PASS technology tab opens
+PASS idle prompt uses game snapshot
+PASS drawer explains free research and optional per-second investment
+PASS both investment inputs show per-second units
+PASS research choice shows current estimated time
+PASS drawer uses live effects and prerequisites without placeholders
+PASS capture 00-choose-research
+PASS drawer action selects real research
+PASS header shows real level and current benefit
+PASS real progress reaches page
+PASS capture 01-research-progress
+PASS both page investments reach model
+PASS uranium shortage leaves iron acceleration
+PASS only affordable investment is paid
+PASS capture 02-uranium-shortage
+PASS uranium investment resumes after recovery
+PASS capture 03-investment-recovered
+PASS returning to tab retains real research
+PASS returning to tab refreshes progress
+PASS capture 04-tab-return
+PASS manual save writes isolated progress
+PASS real game reload restores selection
+PASS real game reload restores investments
+PASS real game reload restores progress without offline research
+PASS reloaded page shows saved progress
+PASS capture 05-save-reload
+AI_TECH_GUI_CHECKS=28 FAILURES=0
