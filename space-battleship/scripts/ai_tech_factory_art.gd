@@ -19,10 +19,15 @@ var icon_mode := false
 var phase := 0.0
 
 func set_display(id: String, current_level: int, is_researching: bool, fraction: float, as_icon := false) -> void:
+	var next_level := maxi(0, current_level)
+	var next_progress := clampf(fraction, 0.0, 1.0)
+	if technology_id == id and level == next_level and researching == is_researching \
+		and is_equal_approx(progress, next_progress) and icon_mode == as_icon:
+		return
 	technology_id = id
-	level = max(0, current_level)
+	level = next_level
 	researching = is_researching
-	progress = clampf(fraction, 0.0, 1.0)
+	progress = next_progress
 	icon_mode = as_icon
 	set_process(is_visible_in_tree() and researching and not icon_mode)
 	queue_redraw()
@@ -48,6 +53,15 @@ func _disk(center: Vector2, radius: float, fill: Color, border := EDGE) -> void:
 	draw_circle(center, radius, fill)
 	draw_arc(center, radius, 0, TAU, 32, border, 3.0, true)
 
+func _ellipse(center: Vector2, radius_x: float, radius_y: float, fill: Color, border := EDGE) -> void:
+	var points := PackedVector2Array()
+	for i in 40:
+		var angle := TAU * float(i) / 40.0
+		points.append(center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y))
+	_poly(points, fill)
+	for i in 40:
+		draw_line(points[i], points[(i + 1) % 40], border, 3.0, true)
+
 func _beam(a: Vector2, b: Vector2, color := STEEL, width := 9.0) -> void:
 	draw_line(a, b, EDGE, width + 4.0, true)
 	draw_line(a, b, color, width, true)
@@ -55,7 +69,7 @@ func _beam(a: Vector2, b: Vector2, color := STEEL, width := 9.0) -> void:
 func _draw() -> void:
 	if not icon_mode:
 		_draw_room()
-	var unit := minf(size.x / (90.0 if icon_mode else 560.0), size.y / (88.0 if icon_mode else 425.0))
+	var unit := minf(size.x / (460.0 if icon_mode else 560.0), size.y / (440.0 if icon_mode else 425.0))
 	var center := size * (Vector2(0.5, 0.5) if icon_mode else Vector2(0.5, 0.52))
 	draw_set_transform(center, 0.0, Vector2.ONE * unit)
 	_draw_machine()
@@ -72,6 +86,12 @@ func _draw_room() -> void:
 		var x := (float(i) + 0.5) * size.x / 7.0
 		draw_line(Vector2(x, horizon), Vector2(x + (x - size.x * 0.5) * 0.3, size.y), STEEL.darkened(0.4), 2.0)
 	draw_line(Vector2(0, horizon), Vector2(size.x, horizon), CYAN.darkened(0.43), 3.0)
+	for side in [-1.0, 1.0]:
+		var x := size.x * (0.14 if side < 0.0 else 0.86)
+		_plate(Rect2(x - 64, horizon - 118, 128, 103), Color("27475a"), STEEL)
+		_plate(Rect2(x - 49, horizon - 102, 98, 64), Color("102b3a"), CYAN.darkened(0.55), 2.0)
+		_beam(Vector2(x - 37, horizon - 70), Vector2(x + 38, horizon - 70), CYAN.darkened(0.18), 4.0)
+		_plate(Rect2(x - 82, horizon - 15, 164, 30), FACE)
 	for i in 4:
 		var x := (float(i) + 0.5) * size.x / 4.0
 		_plate(Rect2(x - 37, 28, 74, 124), Color("233f50"), STEEL)
@@ -87,9 +107,31 @@ func _draw_room() -> void:
 		Vector2(size.x * 0.5 + 19 + motion, 143),
 		Vector2(size.x * 0.5 - 19 + motion, 143)
 	]), COPPER)
+	# Robot arms and supply trays make this a small assembly bay, not an icon on a plain wall.
+	var arm_origin := Vector2(size.x * 0.18, size.y * 0.25)
+	var elbow := Vector2(size.x * 0.25, size.y * 0.36)
+	var wrist := Vector2(size.x * 0.32, size.y * 0.47)
+	_beam(arm_origin, elbow, FACE, 28.0)
+	_beam(elbow, wrist, FACE, 24.0)
+	_disk(arm_origin, 22.0, STEEL)
+	_disk(elbow, 19.0, COPPER)
+	_poly(PackedVector2Array([wrist + Vector2(-13, -3), wrist + Vector2(13, -3),
+		wrist + Vector2(21, 21), wrist + Vector2(3, 15), wrist + Vector2(-3, 15), wrist + Vector2(-21, 21)]), STEEL)
+	var robot := Vector2(size.x * 0.83, size.y * 0.41)
+	_disk(robot, 43.0, WHITE)
+	_plate(Rect2(robot.x - 30, robot.y - 13, 60, 27), STEEL)
+	_disk(robot + Vector2(-13, 0), 5.0, GLOW)
+	_disk(robot + Vector2(13, 0), 5.0, GLOW)
+	_beam(robot + Vector2(-26, 37), robot + Vector2(-38, 68), FACE, 12.0)
+	_beam(robot + Vector2(26, 37), robot + Vector2(38, 68), FACE, 12.0)
+	_beam(robot + Vector2(0, 43), robot + Vector2(0, 73), CYAN, 9.0)
 
 func _draw_machine() -> void:
 	# Every technology uses the same oblique front view, shell material, edge and light.
+	_ellipse(Vector2(0, 142), 233, 72, SHADOW)
+	_ellipse(Vector2(0, 122), 221, 63, STEEL)
+	_ellipse(Vector2(0, 117), 186, 46, CYAN.darkened(0.2))
+	_ellipse(Vector2(0, 112), 163, 37, NAVY)
 	_poly(PackedVector2Array([
 		Vector2(-205, 135), Vector2(150, 135), Vector2(205, 179),
 		Vector2(-145, 179)
@@ -129,7 +171,7 @@ func _draw_armor() -> void:
 	_plate(Rect2(-113, -28, 226, 99), STEEL)
 	_poly(PackedVector2Array([Vector2(-68, -3), Vector2(71, -3), Vector2(92, 20), Vector2(66, 60), Vector2(-67, 60), Vector2(-91, 20)]), WHITE)
 	for side in [-1.0, 1.0]:
-		var x := side * 128
+		var x: float = side * 128.0
 		_plate(Rect2(x - 22, -81, 44, 120), FACE)
 		_beam(Vector2(x, -77), Vector2(x, -8), COPPER, 13)
 		var press := (6.0 + 4.0 * sin(phase * 2.0)) if researching else 4.0

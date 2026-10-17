@@ -126,16 +126,16 @@ func setup(source: Variant = null) -> void:
 	ai_text = _label(foot, "AI —", Rect2(25, 183, 160, 36), 24, CYAN)
 	speed_text = _label(foot, "", Rect2(188, 186, 545, 35), 21, INK)
 	_label(foot, "铁投入", Rect2(25, 230, 83, 34), 20, MUTED)
-	iron_edit = _input(foot, Rect2(111, 225, 130, 42), "iron")
+	iron_edit = _investment_input(foot, Rect2(111, 225, 130, 42), "iron")
 	iron_state = _label(foot, "", Rect2(325, 231, 209, 33), 18, CYAN)
 	_label(foot, "铀投入", Rect2(552, 230, 83, 34), 20, MUTED)
-	uranium_edit = _input(foot, Rect2(638, 225, 130, 42), "uranium")
+	uranium_edit = _investment_input(foot, Rect2(638, 225, 130, 42), "uranium")
 	uranium_state = _label(foot, "", Rect2(850, 231, 396, 33), 18, CYAN)
 	_build_drawer()
 	set_drawer_open(false)
 	if source_provider.is_valid(): refresh_snapshot()
 
-func _input(parent: Control, rect: Rect2, resource_id: String) -> LineEdit:
+func _investment_input(parent: Control, rect: Rect2, resource_id: String) -> LineEdit:
 	var e := LineEdit.new()
 	e.position = rect.position
 	e.size = rect.size
@@ -175,7 +175,7 @@ func _build_drawer() -> void:
 	_panel(body, Rect2(47, 159, 1094, 11), DEEP)
 	drawer_fill = ColorRect.new()
 	drawer_fill.position = Vector2(49, 161)
-	drawer_fill.size = Vector2.ZERO
+	drawer_fill.size = Vector2(0, 7)
 	drawer_fill.color = CYAN
 	body.add_child(drawer_fill)
 	_label(body, "前置条件和效果由科技数据决定", Rect2(47, 179, 1080, 23), 17, MUTED)
@@ -193,7 +193,7 @@ func set_drawer_open(value: bool) -> void:
 	drawer_open = value
 	if drawer == null: return
 	drawer.visible = value
-	if scene != null: scene.visible = not value
+	if art != null: art.set_process(not value and art.researching and art.is_visible_in_tree())
 	if value and source_provider.is_valid(): refresh_snapshot()
 
 func set_snapshot_provider(provider: Callable) -> void:
@@ -231,6 +231,7 @@ func set_snapshot(data: Dictionary) -> void:
 	var working := bool(data.get("researching", false))
 	art.visible = not selected_id.is_empty()
 	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), working and selected_id == active_id, percent)
+	if drawer_open: art.set_process(false)
 	active_name.text = str(shown.get("name", "等待科技数据"))
 	active_meta.text = str(shown.get("generation_text", "")) # Caller supplies generation labels.
 	status_text.text = str(data.get("status_text", "暂无研究"))
