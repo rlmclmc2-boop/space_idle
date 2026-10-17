@@ -1,5 +1,5 @@
 # AI科技树重做｜线程交接
-状态：设计已确认；仅文档，尚未授权创建实现线程。
+状态：候选已实现，待父线程验收。
 基准：main 52a87c0e8db7e0fd5a9e4c01882a60515411bdca。
 来源：用户《AI科技研发机制说明.xlsx》及2026-10-17口头修正；本文修正优先于原表。
 
@@ -36,11 +36,7 @@ F(0)=1；投入c为整数且c≥1时，F(c)=1+log10(c)/4。铁铀独立设置、
 倍率依据：1.4^10≈28.93，对应核心×30；30^2=900，对应终极×900。不是将两个前置耗时相乘。
 
 ## 联合一体化
-L=0：总倍率1，不施加效果。
-L≥1：装备伤害与耐久乘 M=L×H(铁)×H(铀)×H(强化碎片)。
-每种资源分别记录历史最大的平均每秒获取R，平均口径沿用资源界面；历史峰值有意包含加速、临时奖励。
-L=0: total multiplier M=1. At L>=1, equipment damage and durability use M=L*H(iron)*H(uranium)*H(fragments). Each resource retains its historical peak average gain per second R using the resource UI accounting, including temporary bonuses. For an unavailable resource or R=0, H=1; for R>0, H=max(1,1+log10(R)/5). Thus 0<R<=1 also gives H=1. Example: R=1000/100/10 and L=2 gives M=2*1.6*1.4*1.2=5.376.
-示例：R=1000/100/10，L=2，M=2×1.6×1.4×1.2=5.376。
+L=0时总倍率为1，不施加效果；L≥1时装备伤害与耐久乘M=L×H(铁)×H(铀)×H(强化碎片)。每种资源分别记录历史最大的平均每秒获取R，平均口径沿用资源界面，包含加速与临时奖励；未解锁或R=0时H=1，R>0时H=max(1,1+log10(R)/5)，因此0<R≤1时H仍为1。示例：R=1000/100/10、L=2时，M=2×1.6×1.4×1.2=5.376。
 
 ## UI与验收
 科技树表达基础→核心→终极前置；AI奇点独立呈现研发加速。展示等级、效果、下一等级条件、研究进度/预计剩余时间、铁铀投入与实际加速/余额不足状态。不要保留旧分配购买操作，不堆开发说明。
