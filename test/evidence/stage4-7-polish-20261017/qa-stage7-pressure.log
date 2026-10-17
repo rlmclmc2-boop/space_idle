@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+QA_STAGE7_PRESSURE {"began":true,"point":4,"reactor":5,"retreat_frames":576,"seconds":300.0,"shield_end":8281.0,"shield_level":12,"shield_max":11215.0,"state":3,"tech_each":1,"weapon_level":12}
+QA_STAGE7_PRESSURE {"began":true,"point":9,"reactor":7,"retreat_frames":0,"seconds":67.25,"shield_end":25773.0,"shield_level":15,"shield_max":30701.0,"state":4,"tech_each":2,"weapon_level":15}
+QA_STAGE7_PRESSURE {"began":true,"point":9,"reactor":8,"retreat_frames":0,"seconds":51.25,"shield_end":54936.0,"shield_level":17,"shield_max":57752.0,"state":4,"tech_each":3,"weapon_level":17}

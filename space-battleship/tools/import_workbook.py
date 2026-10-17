@@ -118,10 +118,14 @@ def convert_sheet(name, rows):
                     raise ValueError(ui_text('debug.import_workbook.message_16', id=row["id"]))
                 mounts.extend({"name": fields[0].strip()} for _ in range(int(fields[1])))
             row["equipment"] = mounts
-            drop=clean(row["res"]).split(",")
-            if len(drop)==4:
-                drop=[drop[0],drop[1],drop[2]+"."+drop[3]]
-            row["drops"]=[{"resourceId":int(drop[0]),"amount":float(drop[1]),"chance":float(drop[2])}]
+            drops=[]
+            for block in clean(row["res"]).split(";"):
+                drop=block.split(",")
+                if len(drop)==4:
+                    drop=[drop[0],drop[1],drop[2]+"."+drop[3]]
+                if len(drop)!=3:raise ValueError(f'mon {row["id"]}: invalid resource drop')
+                drops.append({"resourceId":int(drop[0]),"amount":float(drop[1]),"chance":float(drop[2])})
+            row["drops"]=drops
             result[str(row["id"])]=row
         return result
     if name=="monGroup":

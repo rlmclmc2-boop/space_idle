@@ -1,0 +1,658 @@
+{
+  "4": {
+    "main": [
+      {
+        "point": 1,
+        "ratio": 1.0,
+        "iron_manual": 174,
+        "iron_auto": 87,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 1.0531,
+        "iron_manual": 198,
+        "iron_auto": 99,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 1.1063,
+        "iron_manual": 217,
+        "iron_auto": 109,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 1.1594,
+        "iron_manual": 230,
+        "iron_auto": 120,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 1.2126,
+        "iron_manual": 242,
+        "iron_auto": 121,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 1.2657,
+        "iron_manual": 264,
+        "iron_auto": 132,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 1.3189,
+        "iron_manual": 287,
+        "iron_auto": 144,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 1.372,
+        "iron_manual": 412,
+        "iron_auto": 206,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "candidate": [
+      {
+        "point": 1,
+        "ratio": 1.0,
+        "iron_manual": 174,
+        "iron_auto": 87,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 1.0531,
+        "iron_manual": 198,
+        "iron_auto": 99,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 1.1063,
+        "iron_manual": 217,
+        "iron_auto": 109,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 1.1594,
+        "iron_manual": 230,
+        "iron_auto": 120,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 1.2126,
+        "iron_manual": 242,
+        "iron_auto": 121,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 1.2657,
+        "iron_manual": 264,
+        "iron_auto": 132,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 1.3189,
+        "iron_manual": 287,
+        "iron_auto": 144,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 1.372,
+        "iron_manual": 412,
+        "iron_auto": 206,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "totals": {
+      "iron_manual": {
+        "main": 2024,
+        "candidate": 2024
+      },
+      "iron_auto": {
+        "main": 1018,
+        "candidate": 1018
+      },
+      "uranium_manual": {
+        "main": 0,
+        "candidate": 0
+      },
+      "uranium_auto": {
+        "main": 0,
+        "candidate": 0
+      }
+    }
+  },
+  "5": {
+    "main": [
+      {
+        "point": 1,
+        "ratio": 1.372,
+        "iron_manual": 237,
+        "iron_auto": 120,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 1.5606,
+        "iron_manual": 264,
+        "iron_auto": 132,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 1.7493,
+        "iron_manual": 280,
+        "iron_auto": 140,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 1.9379,
+        "iron_manual": 320,
+        "iron_auto": 160,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 2.1266,
+        "iron_manual": 341,
+        "iron_auto": 171,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 2.3152,
+        "iron_manual": 366,
+        "iron_auto": 183,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 2.5039,
+        "iron_manual": 438,
+        "iron_auto": 219,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 2.6925,
+        "iron_manual": 540,
+        "iron_auto": 270,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 9,
+        "ratio": 2.8812,
+        "iron_manual": 634,
+        "iron_auto": 317,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "candidate": [
+      {
+        "point": 1,
+        "ratio": 1.372,
+        "iron_manual": 237,
+        "iron_auto": 120,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 1.5606,
+        "iron_manual": 264,
+        "iron_auto": 132,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 1.7493,
+        "iron_manual": 280,
+        "iron_auto": 140,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 1.9379,
+        "iron_manual": 320,
+        "iron_auto": 160,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 2.1266,
+        "iron_manual": 341,
+        "iron_auto": 171,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 2.3152,
+        "iron_manual": 366,
+        "iron_auto": 183,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 2.5039,
+        "iron_manual": 438,
+        "iron_auto": 219,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 2.6925,
+        "iron_manual": 540,
+        "iron_auto": 270,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 9,
+        "ratio": 2.8812,
+        "iron_manual": 634,
+        "iron_auto": 317,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "totals": {
+      "iron_manual": {
+        "main": 3420,
+        "candidate": 3420
+      },
+      "iron_auto": {
+        "main": 1712,
+        "candidate": 1712
+      },
+      "uranium_manual": {
+        "main": 0,
+        "candidate": 0
+      },
+      "uranium_auto": {
+        "main": 0,
+        "candidate": 0
+      }
+    }
+  },
+  "6": {
+    "main": [
+      {
+        "point": 1,
+        "ratio": 2.8812,
+        "iron_manual": 548,
+        "iron_auto": 274,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 2.971,
+        "iron_manual": 648,
+        "iron_auto": 324,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 3.0609,
+        "iron_manual": 732,
+        "iron_auto": 366,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 3.1507,
+        "iron_manual": 794,
+        "iron_auto": 397,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 3.2406,
+        "iron_manual": 901,
+        "iron_auto": 451,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 3.3304,
+        "iron_manual": 1006,
+        "iron_auto": 503,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 3.4203,
+        "iron_manual": 1112,
+        "iron_auto": 556,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 3.5101,
+        "iron_manual": 1219,
+        "iron_auto": 610,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 9,
+        "ratio": 3.6,
+        "iron_manual": 1469,
+        "iron_auto": 735,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "candidate": [
+      {
+        "point": 1,
+        "ratio": 2.8812,
+        "iron_manual": 548,
+        "iron_auto": 274,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 2.971,
+        "iron_manual": 648,
+        "iron_auto": 324,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 3.0609,
+        "iron_manual": 732,
+        "iron_auto": 366,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 3.1507,
+        "iron_manual": 794,
+        "iron_auto": 397,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 3.2406,
+        "iron_manual": 901,
+        "iron_auto": 451,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 3.3304,
+        "iron_manual": 1006,
+        "iron_auto": 503,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 3.4203,
+        "iron_manual": 1112,
+        "iron_auto": 556,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 3.5101,
+        "iron_manual": 1219,
+        "iron_auto": 610,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 9,
+        "ratio": 3.6,
+        "iron_manual": 1469,
+        "iron_auto": 735,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "totals": {
+      "iron_manual": {
+        "main": 8429,
+        "candidate": 8429
+      },
+      "iron_auto": {
+        "main": 4216,
+        "candidate": 4216
+      },
+      "uranium_manual": {
+        "main": 0,
+        "candidate": 0
+      },
+      "uranium_auto": {
+        "main": 0,
+        "candidate": 0
+      }
+    }
+  },
+  "7": {
+    "main": [
+      {
+        "point": 1,
+        "ratio": 3.6,
+        "iron_manual": 857,
+        "iron_auto": 429,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 5.9363,
+        "iron_manual": 1212,
+        "iron_auto": 606,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 3,
+        "ratio": 8.2726,
+        "iron_manual": 1531,
+        "iron_auto": 766,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 10.6088,
+        "iron_manual": 1825,
+        "iron_auto": 913,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 5,
+        "ratio": 12.9451,
+        "iron_manual": 2098,
+        "iron_auto": 1049,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 15.2814,
+        "iron_manual": 2369,
+        "iron_auto": 1185,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 7,
+        "ratio": 17.6177,
+        "iron_manual": 2643,
+        "iron_auto": 1322,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 19.954,
+        "iron_manual": 3113,
+        "iron_auto": 1557,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 9,
+        "ratio": 22.2903,
+        "iron_manual": 4592,
+        "iron_auto": 2296,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "candidate": [
+      {
+        "point": 1,
+        "ratio": 3.6,
+        "iron_manual": 537,
+        "iron_auto": 269,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 2,
+        "ratio": 5.9363,
+        "iron_manual": 760,
+        "iron_auto": 380,
+        "uranium_manual": 24,
+        "uranium_auto": 12
+      },
+      {
+        "point": 3,
+        "ratio": 8.2726,
+        "iron_manual": 960,
+        "iron_auto": 480,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 4,
+        "ratio": 10.6088,
+        "iron_manual": 1146,
+        "iron_auto": 573,
+        "uranium_manual": 43,
+        "uranium_auto": 22
+      },
+      {
+        "point": 5,
+        "ratio": 12.9451,
+        "iron_manual": 1321,
+        "iron_auto": 661,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 6,
+        "ratio": 15.2814,
+        "iron_manual": 1483,
+        "iron_auto": 742,
+        "uranium_manual": 62,
+        "uranium_auto": 31
+      },
+      {
+        "point": 7,
+        "ratio": 17.6177,
+        "iron_manual": 1657,
+        "iron_auto": 829,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      },
+      {
+        "point": 8,
+        "ratio": 19.954,
+        "iron_manual": 1956,
+        "iron_auto": 978,
+        "uranium_manual": 80,
+        "uranium_auto": 40
+      },
+      {
+        "point": 9,
+        "ratio": 22.2903,
+        "iron_manual": 2876,
+        "iron_auto": 1438,
+        "uranium_manual": 0,
+        "uranium_auto": 0
+      }
+    ],
+    "totals": {
+      "iron_manual": {
+        "main": 20240,
+        "candidate": 12696
+      },
+      "iron_auto": {
+        "main": 10123,
+        "candidate": 6350
+      },
+      "uranium_manual": {
+        "main": 0,
+        "candidate": 209
+      },
+      "uranium_auto": {
+        "main": 0,
+        "candidate": 105
+      }
+    }
+  }
+}
