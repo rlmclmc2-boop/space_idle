@@ -66,3 +66,9 @@ The existing rich whole-game fixture (heavy battleship, eight level-150 weapons,
 | Visible | 100/100 | 13 | 13 | 0 | 0 | 3158 | 6920 |
 
 The resource event path is `AITech.advance` (250 ms limit) → `resources_changed` → existing UI refresh. The visible page's separate 250 ms provider refresh ran 13 times in either mode. `_sync_rows` kept its ID/tier fingerprint and rebuilt no rows. The headless high-load CPU sample showed no investment-related rise in snapshot count, node growth, or measured p95 cost. Headless rendering reported zero draw calls, so this does not establish graphical FPS; GUI review remains in the parent's serial window.
+
+## Player entry handoff
+
+`玩游戏.cmd` now changes to its own directory and calls `tools/play_main.py` there. The Python entry resolves its checkout from `__file__`; the isolated window check stays under that checkout's `test/work`, without a fixed D: path. Source baseline, main-branch, 4.7.2 engine, GDExtension descriptor, and native DLL SHA-256 checks remain. The entry also rejects uncommitted or untracked runtime files other than generated `.uid`/`.import` metadata. Current `BASE` is provisional at `2fec0f04f19d85b11fe21a5931b63c5d4bb713e8`; the integration owner must replace it with the final reviewed main commit after all art and logic merges, then recheck with the packaged engine and matching DLL. No native source or DLL was changed in this task. Local path/guard smoke test: `PLAYER_ENTRY_PATH_OK`; actual packaged engine and DLL are absent from this isolated checkout, and GUI launch awaits the parent's serial window.
+
+Test cleanup: removed two reproducible high-load project copies (`test/work/ai-tech-perf-2o8p1qvj`, `test/work/ai-tech-perf-rfrpd15z`, 1,289,900,440 bytes total) and 467 Godot-generated untracked `.uid`/`.import` metadata files. Retained the committed raw performance JSON/logs and the preexisting `test/work/ai-tech-perf-20261017` directory, which was not created by this run.

@@ -6,8 +6,9 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(r'D:\放置')
-BASE = 'affa83c77cf8de55de4504c475f4b3d8db901cb4'
+ROOT = Path(__file__).resolve().parent.parent
+# Integration owner must advance this to the reviewed main commit after merging.
+BASE = '2fec0f04f19d85b11fe21a5931b63c5d4bb713e8'
 DLL_SHA = 'dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a'
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',
@@ -46,7 +47,7 @@ def digest(path):
 
 def validate(root):
     if root.resolve() != ROOT.resolve():
-        raise RuntimeError('请从 D:\\放置\\玩游戏.cmd 启动。不会运行其他副本。')
+        raise RuntimeError('Player entry must run from its own checkout')
     project = root / 'space-battleship'
     head = run(['git', 'rev-parse', 'HEAD'], root)
     branch = run(['git', 'branch', '--show-current'], root)
@@ -59,6 +60,18 @@ def validate(root):
     ).splitlines() if path not in NON_RUNTIME_CHANGES)
     if changed:
         raise RuntimeError('运行内容偏离已验收版本，停止启动：\n' + changed)
+    # A reviewed commit does not authorize later uncommitted runtime edits.
+    local_changes = '\n'.join(path for path in run(
+        ['git', 'status', '--porcelain', '--untracked-files=no', '--', 'space-battleship'], root
+    ).splitlines() if path[3:] not in NON_RUNTIME_CHANGES and not path[3:].endswith(('.uid', '.import')))
+    untracked_runtime = '\n'.join(path for path in run(
+        ['git', 'ls-files', '--others', '--exclude-standard', '--', 'space-battleship'], root
+    ).splitlines() if not path.endswith(('.uid', '.import')))
+    if untracked_runtime:
+        local_changes += '\n' + untracked_runtime
+    if local_changes:
+        raise RuntimeError('Unreviewed local runtime changes:\n' + local_changes)
+
     engine = project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
     if not engine.is_file():
         raise RuntimeError('缺少引擎：' + str(engine))
@@ -91,7 +104,7 @@ def main():
     project, engine, head, version = validate(ROOT)
     env = os.environ.copy()
     window_check = env.get('SPACE_BATTLESHIP_VERIFY_WINDOW') == '1'
-    runtime = (Path(r'D:\CodexBuild\space_idle\player-entry-d975\window-check')
+    runtime = (ROOT / 'test' / 'work' / 'player-window-check'
                if window_check else project / '.runtime')
     user_data = runtime / 'userdata' if window_check else project / '.userdata'
     env['APPDATA'] = str(user_data / 'roaming')
