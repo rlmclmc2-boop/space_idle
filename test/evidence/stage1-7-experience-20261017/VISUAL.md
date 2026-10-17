@@ -1,6 +1,6 @@
 # 第6/7关同投入节奏与连续画面
 
-范围：关卡分支 `3d3cb1e` 数据同步到本线程隔离运行副本；功能与美术分支尚未合并，因此这是关卡机制预验，不冒充完整候选最终验收。Godot `4.7.2.stable.ed1daf0bf`，Windows RTX 2060 OpenGL 3.3 兼容渲染，`main.tscn` 实际画面，`save=false`，Godot `--write-movie` 固定60 FPS。三段录像均连续到战点结束，完整引擎日志无 `SCRIPT ERROR`/`ERROR:`。
+范围：关卡分支 `3d3cb1e` 数据同步到本线程隔离运行副本；功能与美术分支尚未合并，因此这是关卡机制预验，不冒充完整候选最终验收。Godot `4.7.2.stable.ed1daf0bf`，Windows RTX 2060 OpenGL 3.3 兼容渲染，`main.tscn` 实际画面，`save=false`，Godot `--write-movie` 固定60 FPS。三段录像均连续到战点结束，完整引擎日志无 `SCRIPT ERROR`/`ERROR:`。录像对应攻击压力修订**之前**的数值；修订后生存余量另见 `PRESSURE.md`，这些录像只证明持续命中与画面节奏。
 
 | 同一战点与投入 | 脉冲激光 | 长激光 | 护盾恢复对比 |
 | --- | ---: | ---: | --- |
