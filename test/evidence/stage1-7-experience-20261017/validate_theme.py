@@ -50,7 +50,7 @@ mon_sheet = mon_book['mon']
 headers = {cell.value: cell.column - 1 for cell in next(mon_sheet.iter_rows(max_row=1))}
 used_enemies = {i for slots in group_rows.values() for i in slots if i is not None}
 checked = set()
-fields = ('armourType', 'shield', 'shieldType', 'shieldRecovery', 'shieldDelay', 'dmgMultiple', 'reactiveReduction', 'intelVisualRef')
+fields = ('armourType', 'shield', 'shieldType', 'shieldRecovery', 'shieldDelay', 'dmgMultiple', 'reactiveReduction', 'archetype_id', 'intelVisualRef')
 for row in mon_sheet.iter_rows(min_row=4, values_only=True):
     if row[headers['id']] not in used_enemies:
         continue
@@ -63,6 +63,12 @@ for row in mon_sheet.iter_rows(min_row=4, values_only=True):
             continue
         assert source == projected, ('enemy workbook/JSON mismatch', eid, field, source, projected)
 assert used_enemies == checked
+visual_resistance = {'scout': 2, 'sentry': 2, 'interceptor': 1, 'swarm': 1, 'anchor': 1, 'reactive': 1, 'shielded': 1, 'command': 1}
+for eid in used_enemies:
+    enemy = enemies[str(eid)]
+    archetype = enemy.get('archetype_id')
+    if archetype in visual_resistance:
+        assert visual_resistance[archetype] == enemy['armourType'], ('visual identity resistance mismatch', eid)
 hyperspace = json.loads((root / 'space-battleship/data/hyperspace_config.json').read_text(encoding='utf-8'))
 assert hyperspace['unlock_stage'] == 8, 'highestLevel becomes 8 after stage 7 clear'
 print('SOURCE PASS: level formula cache, all 1–7 group/enemy workbook projections, stage7 hyperspace gate semantics')

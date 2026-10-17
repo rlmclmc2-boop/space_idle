@@ -261218,10 +261218,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "interceptor",
       "intelTrait": "密集集群",
       "intelName": "磁轨拦截组",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "interceptor",
       "intelMechanics": [],
       "drops": [
         {
@@ -261489,10 +261489,10 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "reactiveReduction": 1,
-      "archetype_id": "anchor",
+      "archetype_id": "reactive",
       "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
       "intelName": "重甲堡垒",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "reactive",
       "intelMechanics": [
         "reactiveReduction"
       ],
@@ -261522,10 +261522,10 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "reactiveReduction": 1,
-      "archetype_id": "anchor",
+      "archetype_id": "reactive",
       "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
       "intelName": "重炮堡垒",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "reactive",
       "intelMechanics": [
         "reactiveReduction"
       ],
@@ -261615,10 +261615,10 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "reactiveReduction": 1,
-      "archetype_id": "anchor",
+      "archetype_id": "reactive",
       "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
       "intelName": "深空重堡",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "reactive",
       "intelMechanics": [
         "reactiveReduction"
       ],
