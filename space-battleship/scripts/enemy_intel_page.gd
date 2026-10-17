@@ -30,6 +30,7 @@ var details_button: Button
 var follow_button: Button
 var portrait_backdrop: TextureRect
 var portrait_frame: Control
+var portrait_panel: PanelContainer
 
 func surface(fill: Color, border: Color = IntelSkin.SLATE, radius: int = 12) -> StyleBoxFlat:
  var box := StyleBoxFlat.new()
@@ -122,6 +123,7 @@ func setup(owner: Node) -> void:
  heading.add_theme_font_override("font",IntelSkin.face(700))
  rule(sheet,IntelSkin.TEAL.darkened(0.55))
  var portrait := PanelContainer.new()
+ portrait_panel=portrait
  portrait.custom_minimum_size.y=350
  portrait.size_flags_vertical=Control.SIZE_FILL
  portrait.add_theme_stylebox_override("panel",surface(Color("102637"),IntelSkin.SLATE,8))
@@ -137,8 +139,14 @@ func setup(owner: Node) -> void:
  portrait_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  portrait_backdrop.mouse_filter=Control.MOUSE_FILTER_IGNORE
  portrait_frame.add_child(portrait_backdrop)
+ var scan:=Control.new()
+ scan.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+ scan.mouse_filter=Control.MOUSE_FILTER_IGNORE
+ scan.draw.connect(draw_scan_overlay.bind(scan))
+ scan.resized.connect(scan.queue_redraw)
+ portrait_frame.add_child(scan)
  image=TextureRect.new()
- image.custom_minimum_size=Vector2(220,260)
+ image.custom_minimum_size=Vector2.ZERO
  image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
  image.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
  image.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -158,7 +166,7 @@ func setup(owner: Node) -> void:
  details_button.toggle_mode=true
  skin_button(details_button)
  details_button.alignment=HORIZONTAL_ALIGNMENT_LEFT
- details_button.toggled.connect(func(on:bool):detail_scroll.visible=on)
+ details_button.toggled.connect(func(on:bool):detail_scroll.visible=on;update_portrait_height())
  sheet.add_child(details_button)
  detail_scroll=ScrollContainer.new()
  detail_scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL
@@ -174,7 +182,27 @@ func setup(owner: Node) -> void:
   var line:=add_label(detail,"",16)
   line.visible=false
   detail_lines.append(line)
+ resized.connect(update_portrait_height)
  visibility_changed.connect(refresh_if_needed)
+
+func update_portrait_height() -> void:
+ if not is_instance_valid(portrait_panel) or not is_instance_valid(details_button):return
+ portrait_panel.custom_minimum_size.y=220 if size.y<950 and details_button.button_pressed else 350
+
+func draw_scan_overlay(layer: Control) -> void:
+ var bounds:=layer.size
+ if bounds.x<80 or bounds.y<80:return
+ var accent:=Color(0.52,0.82,0.79,0.30)
+ var center:=bounds*0.5
+ var radius:=minf(bounds.x,bounds.y)*0.38
+ layer.draw_arc(center,radius,0,TAU,72,Color(0.52,0.82,0.79,0.12),1.0,true)
+ layer.draw_arc(center,radius*0.68,0,TAU,72,Color(0.52,0.82,0.79,0.09),1.0,true)
+ for x in [20.0,bounds.x-20.0]:
+  var direction:float=1.0 if x<bounds.x*0.5 else -1.0
+  for y in [20.0,bounds.y-20.0]:
+   var vertical:float=1.0 if y<bounds.y*0.5 else -1.0
+   layer.draw_line(Vector2(x,y),Vector2(x+direction*36.0,y),accent,2.0,true)
+   layer.draw_line(Vector2(x,y),Vector2(x,y+vertical*36.0),accent,2.0,true)
 
 func preview_texture(texture: Texture2D) -> Texture2D:
  if texture==null:return null
