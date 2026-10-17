@@ -1,5 +1,11 @@
 {
   "entries": {
+    "ai_tech.tutorial.research": {"params": []},
+    "ai_tech.tutorial.investment": {"params": []},
+    "ai_tech.investment.iron_per_second": {"params": []},
+    "ai_tech.investment.uranium_per_second": {"params": []},
+    "ai_tech.research.estimate": {"params": ["time"]},
+    "ai_tech.research.active_estimate": {"params": ["time"]},
     "enemy.intel.current": {"params": []},
     "enemy.intel.roster": {"params": []},
     "enemy.intel.details": {"params": []},

@@ -5,4 +5,5 @@
 | ID | 状态文件 |
 |---|---|
 | ai-tech-tree-20261017 | tasks/ai-tech-tree-20261017.md |
+| ai-tech-tutorial-20261017 | tasks/ai-tech-tutorial-20261017.md |
 | ai-tech-art-20261017 | tasks/ai-tech-art-20261017.md |

@@ -46,8 +46,10 @@ static func snapshot(game) -> Dictionary:
 		if id == "singularity":effect = "%s 当前 %d AI；下一级 %d AI" % [node.description,int(node.current_multiplier),int(node.next_multiplier)]
 		var generation_text := "Lv.%d · %s ×%s" % [int(node.level),str(BENEFIT_LABELS.get(id,"当前效果")),N.text(node.current_multiplier)]
 		if id == "singularity":generation_text = "Lv.%d · 当前 %d AI" % [int(node.level),int(node.current_multiplier)]
-		var state_text := "研发中" if is_active else "可研发"
-		if not can_start:state_text = "前置未满足"
+		var state_text := "前置未满足"
+		if can_start:
+			var seconds_left := maxf(0.0, float(node.required_seconds) - float(node.progress_seconds)) / maxf(0.001, float(source.speed))
+			state_text = UIText.t("ai_tech.research.active_estimate" if is_active else "ai_tech.research.estimate", {"time":duration(seconds_left)})
 		technologies.append({"id":display_id(id),"tier":"final" if node.tier=="ultimate" else node.tier,"name":node.name,"level":node.level,"generation_text":generation_text,"effect_text":effect,"requirement_text":requirement(game,id,int(node.level)),"state_text":state_text,"can_research":can_start,"action_text":"暂停研发" if is_active else "开始研发"})
 	var iron: Dictionary = source.inputs["1"]
 	var uranium: Dictionary = source.inputs["2"]
