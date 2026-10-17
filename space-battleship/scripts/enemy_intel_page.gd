@@ -264,7 +264,19 @@ func refresh_if_needed() -> void:
   var counts:Dictionary={}
   for id in group.slots:
    if id!=null:counts[str(int(id))]=int(counts.get(str(int(id)),0))+1
-  for id in counts:entries.append({"id":id,"point":p,"count":counts[id]})
+  var name_totals:Dictionary={}
+  for id in counts:
+   var row:Dictionary=host.db.enemies[id]
+   var base_name:=str(row.get("intelName",row.des))
+   name_totals[base_name]=int(name_totals.get(base_name,0))+1
+  var name_seen:Dictionary={}
+  for id in counts:
+   var row:Dictionary=host.db.enemies[id]
+   var base_name:=str(row.get("intelName",row.des))
+   name_seen[base_name]=int(name_seen.get(base_name,0))+1
+   var display_name:=base_name
+   if int(name_totals[base_name])>1:display_name+=" · "+str(int(name_seen[base_name])).pad_zeros(2)
+   entries.append({"id":id,"point":p,"count":counts[id],"display_name":display_name})
   var button:=Button.new()
   button.text=str(p+1)
   button.toggle_mode=true
@@ -300,7 +312,7 @@ func show_point(point: int) -> void:
   var row:Dictionary=host.db.enemies[entry.id]
   var source:Dictionary={"archetype_id":str(row.get("intelVisualRef",row.get("archetype_id",""))),"armourType":row.armourType,"size":row.size}
   var texture:Texture2D=host.ship_hull_texture(host.enemy_visual_identity.resolve(source,host.visual_config))
-  list.add_item(UIText.t("enemy.intel.ship_count",{"name":str(row.get("intelName",row.des)),"count":str(entry.count)}),preview_texture(texture))
+  list.add_item(UIText.t("enemy.intel.ship_count",{"name":str(entry.display_name),"count":str(entry.count)}),preview_texture(texture))
   list.set_item_tooltip(list.item_count-1,str(row.get("intelTrait","")))
  update_point_buttons()
  if not visible_entry_indices.is_empty():list.select(0)
@@ -318,7 +330,7 @@ func show_entry(index: int) -> void:
   return
  var entry: Dictionary = entries[index]
  var row: Dictionary = host.db.enemies[entry.id]
- heading.text = str(row.get("intelName",row.des))
+ heading.text = str(entry.display_name)
  identity.text = UIText.t("enemy.intel.identity",{"point":str(int(entry.point)+1),"count":str(entry.count)})
  trait_label.text = str(row.get("intelTrait",""))
  var attack_types: Array[String] = []
