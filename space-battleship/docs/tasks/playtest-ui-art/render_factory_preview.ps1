@@ -1,6 +1,6 @@
 Add-Type -AssemblyName System.Drawing
 $devices = @(
-  @('ai-singularity-v2.png','AI singularity',402,159,480,450),
+  @('ai-singularity-v2.png','AI singularity',430,92,424,397),
   @('weapon-accuracy-v2.png','Weapon accuracy',382,90,520,520),
   @('equipment-reinforcement-v2.png','Reinforcement',344,92,596,491),
   @('resource-refining-v2.png','Resource refining',374,89,536,530),

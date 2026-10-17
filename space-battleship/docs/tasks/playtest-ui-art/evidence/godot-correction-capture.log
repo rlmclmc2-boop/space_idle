@@ -1,0 +1,30 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+ART_CAPTURE main-live.png result=0
+ART_CAPTURE factory-idle.png result=0
+ART_CAPTURE factory-drawer.png result=0
+ART_CAPTURE research_started=true paused=false
+ART_CAPTURE factory-active-00.png result=0
+ART_CAPTURE sample=0 progress=0.4 phase=0.09529607843137
+ART_CAPTURE factory-active-01.png result=0
+ART_CAPTURE sample=1 progress=0.81666666666667 phase=0.18856382352941
+ART_CAPTURE factory-active-02.png result=0
+ART_CAPTURE sample=2 progress=1.33333333333333 phase=0.28964705882353
+ART_CAPTURE factory-active-03.png result=0
+ART_CAPTURE sample=3 progress=1.86666666666666 phase=0.39040205882353
+ART_CAPTURE factory-active-04.png result=0
+ART_CAPTURE sample=4 progress=2.28333333333333 phase=0.48394215686274
+ART_CAPTURE factory-active-05.png result=0
+ART_CAPTURE sample=5 progress=2.7 phase=0.57711745098039
+ART_CAPTURE factory-paused.png result=0
+ART_CAPTURE pause_phase_before=0.57711745098039 after=0.57711745098039
+ART_CAPTURE factory-active-drawer.png result=0
+ART_CAPTURE drawer_phase_before=0.57711745098039 after=0.57711745098039
+ART_CAPTURE equipment-fee.png result=0
+ART_CAPTURE enemy-intel-point3.png result=0
+ART_CAPTURE point3 id=271005 count=2 label=杞讳睛瀵熻墖
+ART_CAPTURE point3 id=271006 count=1 label=鑳介噺鎷︽埅鑹?路 01
+ART_CAPTURE point3 id=271007 count=1 label=鑳介噺鎷︽埅鑹?路 02

@@ -1,13 +1,13 @@
 Add-Type -AssemblyName System.Drawing
 $names = @('scout','sentry','interceptor','swarm','anchor','reactive','shielded','command')
 $paths = @(
-  'assets/ships/enemy/opening_v1/triangle-physical.png',
+  'assets/ships/enemy/opening_v2/scout-hull.png',
   'assets/ships/enemy/opening_v2/sentry-hull.png',
-  'assets/ships/enemy/opening_v1/triangle-energy.png',
+  'assets/ships/enemy/opening_v2/interceptor-hull.png',
   'assets/ships/enemy/opening_v2/swarm-hull.png',
-  'assets/ships/enemy/opening_v1/slab-energy.png',
+  'assets/ships/enemy/opening_v2/anchor-hull.png',
   'assets/ships/enemy/opening_v2/reactive-hull.png',
-  'assets/ships/enemy/opening_v1/u-energy.png',
+  'assets/ships/enemy/opening_v2/shielded-hull.png',
   'assets/ships/enemy/opening_v2/command-hull.png'
 )
 $output = 'docs/tasks/playtest-ui-art/evidence/enemy-native-scale.png'
