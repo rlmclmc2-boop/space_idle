@@ -64,9 +64,11 @@ def validate(root):
     local_changes = '\n'.join(path for path in run(
         ['git', 'status', '--porcelain', '--untracked-files=no', '--', 'space-battleship'], root
     ).splitlines() if path[3:] not in NON_RUNTIME_CHANGES and not path[3:].endswith(('.uid', '.import')))
+    # The entry itself writes this descriptor on first run; its exact bytes
+    # are checked below before the engine starts.
     untracked_runtime = '\n'.join(path for path in run(
         ['git', 'ls-files', '--others', '--exclude-standard', '--', 'space-battleship'], root
-    ).splitlines() if not path.endswith(('.uid', '.import')))
+    ).splitlines() if not path.endswith(('.uid', '.import')) and path != 'space-battleship/space_native.gdextension')
     if untracked_runtime:
         local_changes += '\n' + untracked_runtime
     if local_changes:
