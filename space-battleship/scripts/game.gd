@@ -17,6 +17,7 @@ const SAVE_VERSION := 5
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
+const AITech = preload("res://scripts/ai_tech_tree.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
 const RailGeometry=preload("res://scripts/rail_geometry.gd")
@@ -186,7 +187,12 @@ func _init(database: ShipDatabase, persist := true) -> void:
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechLevels":{}, "hightechVersion":2, "scientists":0, "scientistAssignments":{}, "techPoints":{}, "hightechSavedAt":Time.get_unix_time_from_system(), "furnaceElapsed":0.0, "furnaceIncomePeak":0.0}
+	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "aiTechLevels":{}, "aiTechProgress":{}, "aiTechActive":"", "aiTechInput":{"1":0,"2":0}, "aiIncomePeak":{"1":0.0,"2":0.0,"jewel":0.0}, "hightechSavedAt":Time.get_unix_time_from_system()}
+	# The retired page still reads these inert values until the new art page lands.
+	profile.scientists = 0
+	profile.scientistAssignments = {}
+	profile.techPoints = {}
+	profile.hightechLevels = {}
 	# Initial availability also belongs to unlock; startEquip only selects loadout.
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
@@ -563,31 +569,27 @@ func nonnegative_number(value) -> bool:
 
 func load_hightech(raw: Dictionary) -> void:
 	invalidate_stat_cache()
-	raw = raw.duplicate(true)
-	if int(raw.get("hightechVersion",0)) != 2:
-		for field in ["hightechLevels","hightechResearch","scientists","scientistAssignments","techPoints","furnaceElapsed","jewelFurnaceElapsed","hightechDrops"]:
-			raw.erase(field)
-	if raw.get("hightechOrder") is Array:
-		profile.hightechOrder = raw.hightechOrder.filter(func(key):return key is String)
-	for field in ["productionElapsed", "hightechSavedAt", "furnaceElapsed", "jewelFurnaceElapsed", "furnaceIncomePeak", "jewelFurnaceIncomePeak"]:
+	for field in ["productionElapsed", "hightechSavedAt"]:
 		if nonnegative_number(raw.get(field)):
 			profile[field] = float(raw[field])
-	if raw.get("hightechLevels") is Dictionary:
-		for key in db.data.get("hightech", {}):
-			var value = raw.hightechLevels.get(key, 0)
-			if nonnegative_number(value) and float(value) == floorf(float(value)):
-				profile.hightechLevels[key] = int(value)
-	if nonnegative_number(raw.get("scientists")):
-		profile.scientists = int(raw.scientists)
-	var available := int(profile.scientists)
-	for key in db.data.get("hightech", {}):
-		var count = raw.get("scientistAssignments", {}).get(key,0) if raw.get("scientistAssignments") is Dictionary else 0
-		if nonnegative_number(count) and hightech_unlocked(key):
-			profile.scientistAssignments[key] = mini(int(count),available)
-			available -= int(profile.scientistAssignments[key])
-		var points = raw.get("techPoints", {}).get(key,0) if raw.get("techPoints") is Dictionary else 0
-		if nonnegative_number(points):
-			profile.techPoints[key] = float(points)
+	if raw.get("aiTechLevels") is Dictionary:
+		for key in db.data.ai_tech_tree:
+			var value = raw.aiTechLevels.get(key, 0)
+			if nonnegative_number(value) and float(value) == floorf(float(value)) and float(value) <= 9007199254740991.0:
+				profile.aiTechLevels[key] = int(value)
+	if raw.get("aiTechProgress") is Dictionary:
+		for key in db.data.ai_tech_tree:
+			var value = raw.aiTechProgress.get(key, 0)
+			if nonnegative_number(value) and float(value) < AITech.required(self,key):profile.aiTechProgress[key] = float(value)
+	if raw.get("aiTechInput") is Dictionary:
+		for id in ["1", "2"]:
+			var value = raw.aiTechInput.get(id, 0)
+			if nonnegative_number(value) and float(value) == floorf(float(value)) and float(value) <= 9007199254740991.0:profile.aiTechInput[id] = int(value)
+	if raw.get("aiIncomePeak") is Dictionary:
+		for id in ["1", "2", "jewel"]:
+			if N.valid(raw.aiIncomePeak.get(id)):profile.aiIncomePeak[id] = raw.aiIncomePeak[id]
+	var selected := str(raw.get("aiTechActive", ""))
+	if selected.is_empty() or bool(AITech.eligibility(self,selected).ok):profile.aiTechActive = selected
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
 			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and (float(sample.time) > float(profile.hightechSavedAt) - 60.0 or (nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time() and float(sample.production_time)>production_time()-60.0)):
@@ -596,26 +598,6 @@ func load_hightech(raw: Dictionary) -> void:
 				var restored := {"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))}
 				if nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time():restored.production_time=float(sample.production_time)
 				resource_samples.append(restored)
-	profile.furnaceIncomePeak = furnace_income_peak()
-	profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
-	if raw.get("hightechDrops") is Array:
-		for drop in raw.hightechDrops:
-			if drop is Dictionary and nonnegative_number(drop.get("age")) and float(drop.age) < 10 and nonnegative_number(drop.get("amount")) and nonnegative_number(drop.get("x")) and nonnegative_number(drop.get("y")):
-				var id := str(drop.get("id","1"))
-				if id not in ["1","jewel"]:
-					continue
-				uid += 1
-				var drop_x := float(drop.x)
-				var drop_y := float(drop.y)
-				if drop_x>BATTLE_SIZE.x:
-					var old_x := drop_x
-					drop_x=lerpf(70,BATTLE_SIZE.x-70,clampf((drop_y-300.0)/205.0,0,1))
-					drop_y=lerpf(250,480,clampf((old_x-440.0)/780.0,0,1))
-				var restored := {"uid":uid,"x":clampf(drop_x,30,BATTLE_SIZE.x-30),"y":clampf(drop_y,80,BATTLE_SIZE.y-80),"age":float(drop.age),"id":id,"amount":ceilf(float(drop.amount)),"hightech":true}
-				if id == "jewel":
-					restored.jewel = true
-					restored.jewelRatio = 1.0
-				drops.append(restored)
 
 func rebuild_unlocks() -> void:
 	invalidate_tutorial_unlocks()
@@ -721,6 +703,7 @@ func portable_save_data() -> Dictionary:
 	return _compose_save_data(saved)
 
 func _compose_save_data(saved: Dictionary) -> Dictionary:
+	for retired in ["scientists","scientistAssignments","techPoints","hightechLevels","hightechOrder","hightechDrops"]:saved.erase(retired)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -1129,9 +1112,7 @@ func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
 	# Virtual level bonuses keep ordinary growth, but only paid slot levels grant evolution.
 	if effective_level!=level:
 		value=N.multiply(value,N.divide(db.evolution_factor(level),db.evolution_factor(effective_level)))
-	var tech := DENSE_ARMOUR if key in ["armour", "shield"] else ENERGY_FOCUS
-	if effective_hightech_level(tech) > 0:
-		value = N.ceiling(N.multiply(value,N.power(1.0 + float(db.data.hightech[tech].para1),effective_hightech_level(tech))))
+	value = N.ceiling(N.multiply(value,AITech.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")))
 	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
 	if reactor_bonus != 1.0:
 		value = N.ceiling(N.multiply(value,reactor_bonus))
@@ -1261,12 +1242,19 @@ func load_reactor(raw: Dictionary) -> void:
 		if reactor_module_unlocked(key) and nonnegative_number(value):profile.reactorAllocation[key] = mini(int(floor(float(value))),maxi(0,reactor_capacity()-reactor_allocated()))
 
 func hightech_level(key: String) -> int:
-	return int(profile.get("hightechLevels", {}).get(key, 0))
+	return AITech.level(self,key)
 
 func hightech_unlocked(key: String) -> bool:
-	if not db.data.get("hightech", {}).has(key):
-		return false
-	return content_unlocked("hightech", key)
+	return bool(AITech.eligibility(self,key).ok)
+
+func tech_tree_snapshot() -> Dictionary:
+	return AITech.snapshot(self)
+
+func select_tech(id: String) -> bool:
+	return AITech.select(self,id)
+
+func set_tech_input(resource_id: String, amount: int) -> bool:
+	return AITech.set_input(self,resource_id,amount)
 
 func hightech_slots() -> Array:
 	var unlocked: Array = db.data.get("hightech", {}).keys().filter(func(key):return hightech_unlocked(key))
@@ -1389,88 +1377,32 @@ func format_description(row: Dictionary, template: String, level: int, minute_in
 		result = result.substr(0,token.get_start()) + token_replacement + result.substr(token.get_end())
 	return result
 
-func scientist_cost(offset := 0) -> Dictionary:
-	var parts := str(db.config.scientistCost).split(",")
-	var multiplier := pow(float(parts[0]),int(profile.scientists)+offset)
-	var costs := {}
-	for entry in Array(parts).slice(1):
-		var pair := str(entry).split("|")
-		costs[pair[0]] = roundf(float(pair[1])*multiplier)
-	return costs
+func scientist_cost(_offset := 0) -> Dictionary:
+	return {}
 
-func scientist_purchase(amount := 1) -> Dictionary:
-	var total := {}
-	var count := 0
-	if not db.data.hightech.keys().any(func(key):return hightech_unlocked(key)):
-		return {"count":0,"costs":total}
-	while amount < 0 or count < amount:
-		var costs := scientist_cost(count)
-		var paid := false
-		for id in costs:
-			paid = paid or float(costs[id]) > 0
-			if not is_finite(float(costs[id])) or N.compare(N.add(total.get(id,0),costs[id]),profile.resources.get(id,0))>0:
-				return {"count":count if amount < 0 else 0,"costs":total}
-		# An unbounded free tail has no finite MAX purchase.
-		if amount < 0 and not paid:
-			return {"count":count,"costs":total}
-		for id in costs:
-			total[id] = float(total.get(id,0))+float(costs[id])
-		count += 1
-	return {"count":count,"costs":total}
+func scientist_purchase(_amount := 1) -> Dictionary:
+	return {"count":0,"costs":{}}
 
-func can_generate_scientist(amount := 1) -> bool:
-	if amount < 0:
-		# MAX is available only if its first purchase is affordable and not free.
-		var first := scientist_purchase(1)
-		return int(first.count)>0 and first.costs.values().any(func(cost):return float(cost)>0)
-	return int(scientist_purchase(amount).count)>0
+func can_generate_scientist(_amount := 1) -> bool:
+	return false
 
-func generate_scientist(amount := 1) -> bool:
-	var purchase := scientist_purchase(amount)
-	if int(purchase.count)<=0:
-		return false
-	for id in purchase.costs:
-		profile.resources[id] = N.subtract(profile.resources[id],purchase.costs[id])
-	profile.scientists += int(purchase.count)
-	resources_changed(purchase.costs.keys())
-	save_dirty = true
-	event.emit("scientists_changed", {"purchased":int(purchase.count)})
-	return true
+func generate_scientist(_amount := 1) -> bool:
+	return false
 
 func distribute_scientists() -> bool:
-	var keys := hightech_slots().filter(func(key):return not str(key).is_empty())
-	if keys.is_empty() or int(profile.scientists)<=0:
-		return false
-	var next := {}
-	var total := int(profile.scientists)
-	for i in range(keys.size()):
-		next[keys[i]] = total/keys.size() + (1 if i < total%keys.size() else 0)
-	if next==profile.scientistAssignments:return false
-	profile.scientistAssignments=next
-	save_dirty = true
-	event.emit("scientists_changed", {})
-	return true
+	return false
 
-func assigned_scientists(key: String) -> int:
-	return int(profile.scientistAssignments.get(key,0))
+func assigned_scientists(_key: String) -> int:
+	return 0
 
 func idle_scientists() -> int:
-	var count := int(profile.scientists)
-	for key in profile.scientistAssignments:
-		count -= assigned_scientists(key)
-	return count
+	return 0
 
 func can_research(key: String) -> bool:
-	return hightech_unlocked(key) and idle_scientists() > 0
+	return bool(AITech.eligibility(self,key).ok)
 
-func assign_scientist(key: String, delta: int) -> bool:
-	if not hightech_unlocked(key) or delta == 0 or (delta > 0 and idle_scientists() <= 0) or (delta < 0 and assigned_scientists(key) <= 0):
-		return false
-	profile.scientistAssignments[key] = assigned_scientists(key)+clampi(delta,-assigned_scientists(key),idle_scientists())
-	save_dirty = true
-	event.emit("scientists_changed", {})
-	return true
-
+func assign_scientist(_key: String, _delta: int) -> bool:
+	return false
 func add_crew_exp(crew_id: String, amount: float) -> bool:
 	return crew.gain_exp(self,crew_id,amount)
 
@@ -1713,133 +1645,17 @@ func assign_crew(crew_id: String, assignment_type: String, target_id: String) ->
 func get_crew_modifier(target_type: String, target_id: String, effect_type: String) -> float:
 	return crew.get_modifier(self,target_type,target_id,effect_type)
 
-func dedicated_scientists(key: String) -> int:
-	return int(crew.system_effect(self,"tech_ai_per_level")) if hightech_unlocked(key) else 0
+func dedicated_scientists(_key: String) -> int:
+	return 0
 
-func research_rate(key: String, crew_effects: Dictionary = {}) -> float:
-	if not hightech_unlocked(key):return 0.0
-	# The caller may share these two read-only crew projections while collecting
-	# rates. The dictionary never crosses a research event or a simulation step.
-	if not crew_effects.has("tech_ai_per_level"):crew_effects.tech_ai_per_level=crew.system_effect(self,"tech_ai_per_level")
-	var count := assigned_scientists(key)+int(crew_effects.tech_ai_per_level)
-	if count <= 0:return 0.0
-	var base := float(db.config.techPointGet)*count
-	if not crew_effects.has("tech_speed"):crew_effects.tech_speed=crew.system_effect(self,"tech_speed")
-	return (roundf(pow(base,float(db.config.hightechLimit))) if count > 1 else base) * float(crew_effects.tech_speed) * (1.0+float(hyperspace_totals().hangings.get("distributed_algorithm",0)))
+func research_rate(_key: String, _crew_effects: Dictionary = {}) -> float:
+	return 0.0
 
-func active_research(rates: Dictionary = {}) -> Array:
-	var active: Array = []
-	var crew_effects: Dictionary = {}
-	for key in db.data.hightech:
-		var rate := research_rate(key,crew_effects)
-		if not rate > 0:continue
-		active.append(key)
-		rates[key]=rate
-	return active
+func active_research(_rates: Dictionary = {}) -> Array:
+	return []
 
-func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
-	if real_dt < 0:
-		real_dt = dt
-	if end_time < 0:
-		end_time = production_time()
-	# All furnace production boundaries use game time; no wall-window speed amplification.
-	var wall_per_step := 1.0
-	var rates := {}
-	var active := active_research(rates)
-	# Huge point budgets cannot be settled one level/event at a time.
-	# Ignore per-level rounding and use the configured cost series in this regime.
-	var bulk := active.any(func(key):return float(profile.techPoints.get(key,0))+float(rates[key])*dt >= 1e20)
-	if bulk:
-		for key in active:
-			advance_hightech_bulk(key,dt)
-		# At this scale furnace output uses the end-of-step level (approximate).
-		advance_furnace(dt,end_time,wall_per_step)
-		return
-	# Keep furnace activation at the exact research completion boundary.
-	var remaining := maxf(dt,0)
-	while remaining > 0:
-		var step := remaining
-		for key in active:
-			step = minf(step,maxf(0,hightech_required(key)-float(profile.techPoints.get(key,0)))/float(rates[key]))
-		advance_furnace(step,end_time-(remaining-step)*wall_per_step,wall_per_step)
-		remaining -= step
-		for key in active:
-			profile.techPoints[key] = float(profile.techPoints.get(key,0))+float(rates[key])*step
-			var required := hightech_required(key)
-			if float(profile.techPoints[key])+0.00000001 >= required:
-				if key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
-				profile.techPoints[key] = maxf(0,float(profile.techPoints[key])-required)
-				profile.hightechLevels[key] = hightech_level(key)+1
-				if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
-				event.emit("hightech_complete", {"key":key})
-
-func advance_hightech_bulk(key: String, dt: float) -> void:
-	var points := minf(float(profile.techPoints.get(key,0))+research_rate(key)*dt,1e308)
-	var row: Dictionary = db.data.hightech[key]
-	var level := hightech_level(key)
-	var growth := float(row.tpCostBase)*float(row.tpCostMutiple)
-	var first := float(row.tpCostBase)+growth*level
-	var linear := first-growth*0.5
-	# Stable quadratic root; sqrt factors avoid overflowing growth * points.
-	var root := absf(linear)
-	root = sqrt(pow(root/sqrt(maxf(points,1.0)),2)+2.0*growth)*sqrt(maxf(points,1.0))
-	var count := floorf(points/(linear*0.5+root*0.5)) if growth > 0 else floorf(points/maxf(1,roundf(first)))
-	# Leave headroom for integer conversion and subsequent level increments.
-	count = clampf(count,0,maxf(0,9e18-float(level)))
-	var spent := count*(first+growth*(count-1)*0.5) if growth > 0 else count*maxf(1,roundf(first))
-	if float(row.tpCostMutiple2) > 0:
-		# Binary search the monotone series, including ranges crossing the threshold.
-		var low := 0
-		var high := int(count)
-		while low < high:
-			var mid := low + ((high-low+1) >> 1)
-			if hightech_bulk_cost(key,level,mid) <= points:
-				low = mid
-			else:
-				high = mid-1
-		count = float(low)
-		spent = hightech_bulk_cost(key,level,low)
-	if count > 0 and key in [DENSE_ARMOUR, ENERGY_FOCUS] and not native_before_configuration_change():return
-	profile.techPoints[key] = maxf(0,points-spent)
-	if count > 0:
-		profile.hightechLevels[key] = level+int(count)
-		if key in [DENSE_ARMOUR, ENERGY_FOCUS]:invalidate_stat_cache()
-		event.emit("hightech_complete", {"key":key})
-
-func hightech_bulk_cost(key: String, level: int, count: int) -> float:
-	# Bulk settlement retains the existing unrounded approximation at huge budgets.
-	if count <= 0:return 0.0
-	var row: Dictionary = db.data.hightech[key]
-	var growth := float(row.tpCostBase)*float(row.tpCostMutiple)
-	var threshold := int(db.config.hightechCostGrowthLevel)
-	var linear_count := mini(count,maxi(0,threshold-level+1))
-	var total := float(linear_count)*(float(row.tpCostBase)+growth*level+growth*(linear_count-1)*0.5)
-	count -= linear_count
-	level += linear_count
-	if count == 0:return total
-	var ratio := 1.0+float(row.tpCostMutiple2)
-	var multiplier := pow(ratio,level-threshold)
-	var block_cost := float(row.tpCostBase)+growth*level
-	var block_growth := growth
-	var block_length := 1.0
-	var factor := ratio
-	var offset := 0.0
-	# Sum arithmetic-geometric blocks in O(log count), without cancellation near ratio=1.
-	while count > 0:
-		if not is_finite(multiplier) or not is_finite(block_cost):return INF
-		if count & 1:
-			total += multiplier*(block_cost+offset*block_growth)
-			if not is_finite(total):return INF
-			multiplier *= factor
-			offset += block_length
-		count >>= 1
-		if count == 0:break
-		block_cost = (1.0+factor)*block_cost+factor*block_length*block_growth
-		block_growth *= 1.0+factor
-		block_length *= 2.0
-		factor *= factor
-	return total
-
+func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
+	AITech.advance(self,dt)
 func production_time() -> float:
 	return float(profile.get("productionElapsed",0.0))
 
@@ -2742,8 +2558,10 @@ func collect(drop: Dictionary, manual: bool) -> void:
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
+	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
 	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
 	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
+	AITech.record_income(self,str(drop.id))
 	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
@@ -3268,15 +3086,15 @@ func jewel_fragment_amount(amount: float, ratio := -1.0) -> float:
 	var result := amount * (jewel_ratio() if ratio < 0 else ratio)
 	return snappedf(result,0.01) if nonnegative_number(result) else 0.0
 
-func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> float:
+func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
 	var production_bonus: float=1.0+float(hyperspace_totals().hangings.get("gem_refiner",0)) if source in ["drop","furnace"] else 1.0
-	var earned := jewel_fragment_amount(amount * production_bonus * (crew.system_effect(self,"gem_bonus") * reactor_multiplier("condensation") * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0),ratio)
+	var earned = N.multiply(jewel_fragment_amount(amount * production_bonus * (crew.system_effect(self,"gem_bonus") * reactor_multiplier("condensation") * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0),ratio),AITech.income_factor(self,"fragment_income"))
 	profile.jewelFragments = N.add(profile.jewelFragments,earned)
 	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
 	# Production only: refunds must not inflate future income.
-	if source in ["drop","furnace"] and earned > 0:
+	if source in ["drop","furnace"] and N.compare(earned,0) > 0:
 		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
-		profile.jewelFurnaceIncomePeak = furnace_income_peak(-1,true)
+		AITech.record_income(self,"jewel")
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
 

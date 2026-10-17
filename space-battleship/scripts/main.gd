@@ -871,9 +871,10 @@ func on_event(kind: String, info: Dictionary) -> void:
 			refresh_structure()
 			if is_instance_valid(enhancement_panel) and enhancement_panel.visible:enhancement_panel.refresh()
 		"hightech_complete":
-			if game.hightech_level(str(info.key))==1 and is_instance_valid(crew_panel):crew_panel.invalidate()
-			toast(UIText.t("upgrade.research_complete", {"name":UIText.data_text("hightech",str(info.key))}))
+			toast(UIText.t("upgrade.research_complete", {"name":str(db.data.ai_tech_tree.get(str(info.key),{}).get("name",info.key))}))
 			refresh_equipment_effects(str(info.key))
+		"tech_tree_changed":
+			if str(info.get("reason", "")) == "income_peak":refresh_equipment_effects("unification")
 		"unlock":
 			help_open = false
 			refresh_structure()
@@ -2463,12 +2464,12 @@ func refresh_visible_cards(delta := 0.0) -> void:
 			galaxy_panel.refresh_sample(delta)
 
 func refresh_equipment_effects(tech: String) -> void:
-	if tech not in [BattleGame.ENERGY_FOCUS,BattleGame.DENSE_ARMOUR]:
+	if tech not in ["weapon_accuracy","equipment_reinforcement","equipment_finishing","unification"]:
 		return
-	var category := "weapons" if tech == BattleGame.ENERGY_FOCUS else "defence"
 	var slots: Array = []
-	for index in game.profile.loadout[category].size():
-		slots.append(game.slot_id(category,index))
+	for category in (["weapons"] if tech == "weapon_accuracy" else ["defence"] if tech == "equipment_reinforcement" else ["weapons","defence"]):
+		for index in game.profile.loadout[category].size():
+			slots.append(game.slot_id(category,index))
 	if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(slots)
 
 func refresh_crew_tab_badge(index: int) -> void:

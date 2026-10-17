@@ -1,0 +1,10 @@
+{
+  "singularity": {"name":"AI奇点","description":"每级增加 1 个 AI，提高所有研究速度。","tier":"independent","base_seconds":60,"growth":1.8,"effect":"ai_count","factor":1},
+  "weapon_accuracy": {"name":"武器精度","description":"每级使所有武器伤害乘以 1.1。","tier":"basic","base_seconds":60,"growth":1.4,"effect":"weapon_damage","factor":1.1},
+  "equipment_reinforcement": {"name":"装备强化","description":"每级使装备耐久乘以 1.1。","tier":"basic","base_seconds":60,"growth":1.4,"effect":"equipment_durability","factor":1.1},
+  "resource_refining": {"name":"资源精炼","description":"每级使铁获取量乘以 1.1。","tier":"basic","base_seconds":60,"growth":1.4,"effect":"iron_income","factor":1.1},
+  "fragment_condensation": {"name":"强化碎片凝聚","description":"每级使强化碎片获取量乘以 1.1。","tier":"basic","base_seconds":60,"growth":1.4,"effect":"fragment_income","factor":1.1,"unlock":"enhancement"},
+  "equipment_finishing": {"name":"装备精制","description":"每级使武器伤害和装备耐久各乘以 1.25。","tier":"core","base_seconds":1800,"growth":30,"effect":"weapon_damage,equipment_durability","factor":1.25,"requirements":{"weapon_accuracy":"10*k+1","equipment_reinforcement":"10*k+1"}},
+  "uranium_extraction": {"name":"铀提炼","description":"每级使铀获取量乘以 1.1。","tier":"core","base_seconds":1800,"growth":30,"effect":"uranium_income","factor":1.1,"requirements":{"resource_refining":"10*k+1"}},
+  "unification": {"name":"联合一体化","description":"装备伤害与耐久按等级和三种资源的历史最高平均每秒收入共同增长。","tier":"ultimate","base_seconds":1620000,"growth":900,"effect":"weapon_damage,equipment_durability","factor":1,"requirements":{"equipment_finishing":10,"uranium_extraction":10}}
+}
