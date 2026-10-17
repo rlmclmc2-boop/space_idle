@@ -212,7 +212,10 @@ func set_snapshot(data: Dictionary) -> void:
 	snapshot = data
 	if scene == null: setup()
 	var items: Array = data.get("technologies", [])
-	var selected_id := str(data.get("display_id", data.get("active_id", "")))
+	var selected_id := str(data.get("display_id", ""))
+	if selected_id.is_empty(): selected_id = str(data.get("active_id", ""))
+	if selected_id.is_empty() and not items.is_empty() and items[0] is Dictionary:
+		selected_id = str(items[0].get("id", ""))
 	var shown: Dictionary = {}
 	for item in items:
 		if item is Dictionary and str(item.get("id", "")) == selected_id:
@@ -226,7 +229,8 @@ func set_snapshot(data: Dictionary) -> void:
 			break
 	var percent := clampf(float(data.get("progress", 0.0)), 0.0, 1.0)
 	var working := bool(data.get("researching", false))
-	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), working, percent)
+	art.visible = not selected_id.is_empty()
+	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), working and selected_id == active_id, percent)
 	active_name.text = str(shown.get("name", "等待科技数据"))
 	active_meta.text = str(shown.get("generation_text", "")) # Caller supplies generation labels.
 	status_text.text = str(data.get("status_text", "暂无研究"))

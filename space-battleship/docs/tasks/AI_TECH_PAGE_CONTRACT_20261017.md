@@ -5,7 +5,7 @@
 快照字段：
 
 - `technologies`：按所需展示顺序的数组，每项含 `id`、`tier`（`independent/basic/core/final`）、`name`、`level`、`effect_text`、`requirement_text`、`state_text`、`can_research`、`action_text`。页面只显示传入文字，不推断前置或科技数值。
-- `active_id`：真实正在研发的科技；`display_id` 可选，主场景装置要展示的科技，缺省使用 `active_id`；`researching`、`progress`（0–1 实数）、`remaining_text`、`status_text` 描述唯一真实研究。
+- `active_id`：真实正在研发的科技；`display_id` 可选，主场景装置要展示的科技，缺省使用 `active_id`，空闲时退到目录首项；`researching`、`progress`（0–1 实数）、`remaining_text`、`status_text` 描述唯一真实研究。
 - `ai_text`、`speed_text`、`iron_investment`、`uranium_investment`、`iron_state`、`uranium_state`：底部投入与加速读数，全部由功能方根据真实模型格式化。
 - 可选 `generation_text` 放在当前科技项上；页面以 `shown.generation_text` 读取，用于真实代际显示。首代无需编造多代素材。
 
