@@ -80,3 +80,7 @@
 集成敌情分支`3c7ecb9f`（含其前置两次提交）后，在既定隔离工程只检查受影响区域。`qa-integrated-import.log`的Godot导入无脚本错误；`qa-integrated-smoke.log`核对4/5/6/7为8/9/9/9点及7关异空间包可装载；`qa-integrated-enemy-intel.log`在1440×900真实`SubViewport`实例中逐点打开4–7关敌情，页右下角`(1427.125,887.125)`均未越界，逐关显示敌舰条目8/9/11/11，且无`WARNING`/`ERROR`。
 
 首次集成检查发现6/7关15个物理护甲敌舰误引能量舰型，视觉解析器发出两类fallback警告。已在`mon.xlsx`和生成的`game_data.json`中仅将这15行的`archetype_id`与`intelVisualRef`改为现有物理舰型`sentry`；JSON语义对比仅`enemies`这15行两字段变化，伤害、耐久、护甲、掉落和关卡编排不变。修正后的同一敌情检查无fallback。美术分支原有窗口截图与宽性能测试未重复；集成后正常新档视觉和节奏仍由父线程及独立评测验收。
+
+## AI工厂正式新档解锁口径
+
+父审复核后用`qa_ai_factory_unlock.gd`只查正式入口：第1关新档`highestLevel=1`、通关列表为空；真实`Main`的AI工厂标签可见，`BattleGame.hightech_unlocked("singularity")=true`，`select_tech("singularity")=true`，研究快照选中奇点，8条科技配置已载入。原始结果见`qa-ai-factory-unlock.log`。代码条件为`main.gd::refresh_tab_visibility`中AI标签取决于科技配置非空；`ai_tech_tree.gd::eligibility`对奇点没有额外阶段前置。因此前述两条路线从第1关研究符合当前正式新档规则，无需改起点或重跑对照；教程仍按用户要求留待三方试玩之后。
