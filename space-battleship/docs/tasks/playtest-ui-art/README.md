@@ -22,4 +22,4 @@
 
 换装倒计时消费功能方的 `game.equipment_switch_remaining(category,index)` 和 `slot_equipment_locked()`；页面自身只对显示轮询节流，不持有倒计时。截图使用的起点 main 尚无该游戏接口，故冷却显示需在功能分支合并后联测。功能分支 `feat/unlock-notice-copy-20261017@a6bb9325` 已提供接口。
 
-远端推送未完成：自动审批认为用户尚未明确授权此任务分支向 GitHub 外部远端推送。此交付为本地提交，供父线程读取与审查。GUI 窗口已释放给功能方。运行缓存、导入元数据及临时复制的 native 二进制已清理，原始证据保留。
+用户明确许可后，任务分支已推送至 `origin/art/playtest-ui-fixes-20261017`。父线程仍需审查并决定合并；本任务未合 main。GUI 窗口已释放给功能方。运行缓存、导入元数据及临时复制的 native 二进制已清理，原始证据保留。
