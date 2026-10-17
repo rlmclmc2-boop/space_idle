@@ -7,5 +7,6 @@
 - 精确定位：`scripts/game.gd` 的 `fresh_profile/load_hightech/advance_hightech/equipment_stat/collect/settle_jewel_fragments`，`scripts/database.gd:_init`，`scripts/main.gd:build_hightech_tab/on_game_event`。
 - 已知边界：收入平均值可能 `0<R<1`；公式原样保留。实际 GUI 验证需父线程分配串行窗口。
 - 已接线：合入美术提交 `9c70b76`，只合并索引冲突；页面源码不由功能方修改。`ai_tech_view_model.gd` 映射三处展示 ID 和终极 tier。
-- 证据：`python test/test_ai_tech_tree_config.py` 输出 `AI_TECH_CONFIG=PASS rows=8`；`git diff --cached --check` 无空白错误。Godot 可执行文件在本工作区、PATH 和标准程序目录均未找到，`test/test_ai_tech_tree.gd` 尚未实际运行。
+- 配置源：`config_excel/ai_tech_tree.xlsx` 的 `ai_tech_tree` sheet，经 `tools/import_ai_tech_tree.py --write` 投影到 `data/ai_tech_tree.json`；`--check` 检查同步。运行时只读投影。
+- 证据：`python test/test_ai_tech_tree_config.py` 输出 `AI_TECH_CONFIG=PASS rows=8`；`python space-battleship/tools/import_ai_tech_tree.py --check` 输出 `AI_TECH_PROJECTION=PASS rows=8`；临时副本改 T0 后投影变化已测。Godot 可执行文件在本工作区、PATH 和标准程序目录均未找到，`test/test_ai_tech_tree.gd` 尚未实际运行。
 - 下一步：父线程提供可用 Godot 路径并分配 GUI 串行窗口后，运行规则断言与实际页面检查；再由父线程审查后决定 main 合并。

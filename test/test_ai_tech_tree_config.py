@@ -2,10 +2,24 @@
 import json
 import math
 from pathlib import Path
+import sys
+import tempfile
+import openpyxl
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "space-battleship/tools"))
+from import_ai_tech_tree import project  # noqa: E402
+
 rows = json.loads((ROOT / "space-battleship/data/ai_tech_tree.json").read_text(encoding="utf-8"))
+assert rows == project(), "runtime projection differs from the editable workbook"
+with tempfile.TemporaryDirectory(prefix="ai-tech-table-") as temporary:
+    book = openpyxl.load_workbook(ROOT / "space-battleship/config_excel/ai_tech_tree.xlsx")
+    book["ai_tech_tree"]["E4"] = 61
+    changed = Path(temporary) / "changed.xlsx"
+    book.save(changed)
+    book.close()
+    assert project(changed)["singularity"]["base_seconds"] == 61
 assert len(rows) == 8
 assert len({row["name"] for row in rows.values()}) == len(rows)
 for key, row in rows.items():
