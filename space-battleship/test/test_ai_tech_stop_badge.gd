@@ -14,6 +14,8 @@ class ResearchGame:
 	var stat_cache := {}
 	var ai_tech_last_resource_notice_ms := 0
 	var save_dirty := false
+	func ai_tech_factory_unlocked() -> bool: return true
+	func content_unlocked(_kind:String,_key:String) -> bool: return true
 	func enhancement_unlocked() -> bool: return false
 	func native_before_configuration_change() -> bool: return true
 	func invalidate_stat_cache() -> void: pass

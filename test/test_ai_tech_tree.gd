@@ -14,6 +14,10 @@ func check(ok: bool, label: String) -> void:
 func near(a: float, b: float) -> bool:
 	return absf(a-b) <= maxf(1.0,absf(b))*0.000001
 
+func unlock_factory(game: BattleGame) -> void:
+	game.profile.cleared = [3,4]
+	game.rebuild_unlocks()
+
 func _initialize() -> void:
 	call_deferred("run")
 
@@ -21,12 +25,25 @@ func run() -> void:
 	var page_script = load("res://scripts/ai_tech_factory_page.gd")
 	check(page_script != null and page_script.can_instantiate(), "AI technology page compiles")
 	var db := ShipDatabase.new()
-	check(db.data.unlock.values().all(func(row):return str(row.type)!="hightech"), "retired scientist tutorial unlocks are absent")
+	check(db.data.unlock.values().filter(func(row):return str(row.type)=="hightech").size()==4, "original hightech gate rows remain")
 	var g := BattleGame.new(db,false)
+	check(not g.ai_tech_factory_unlocked() and not g.select_tech("singularity") and not g.set_tech_input("1",10), "new save cannot open, research, or invest in factory")
+	check(not g.available_unlocks().any(func(id):return str(id).begins_with("hightech/")), "obsolete scientist notices stay hidden")
+	g.profile.cleared = [3]
+	g.rebuild_unlocks()
+	check(g.ai_tech_factory_unlocked(), "cleared stage 3 opens replacement factory")
+	check(not bool(AITech.eligibility(g,"weapon_accuracy").ok) and bool(AITech.eligibility(g,"resource_refining").ok),"original stage-four weapon gate remains")
+	check(VIEW.snapshot(g).technologies.size()==2,"stage three exposes only AI and iron research")
+	g.profile.cleared.append(4)
+	g.rebuild_unlocks()
+	check(not bool(AITech.eligibility(g,"fragment_condensation").ok),"fragment research retains original stage-twelve gate")
 	check(g.tech_tree_snapshot().ai_count == 1 and g.tech_tree_snapshot().status == "idle", "initial AI and idle state")
 	var view: Dictionary = VIEW.snapshot(g)
 	check(str(view.technologies[0].generation_text).contains("Lv.0") and str(view.technologies[0].generation_text).contains("AI"), "page header shows initial level and actual AI count")
-	check(view.technologies.size() == 8 and view.status_text == "暂无研究，请选择科技", "page has eight configured technologies and idle prompt")
+	check(view.technologies.size() == 4 and view.status_text == "暂无研究，请选择科技", "page has eight configured technologies and idle prompt")
+	g.profile.cleared.append(12)
+	g.rebuild_unlocks()
+	check(bool(AITech.eligibility(g,"fragment_condensation").ok) and VIEW.snapshot(g).technologies.size()==5,"stage twelve exposes fragment research")
 	check(VIEW.model_id("equipment_precision") == "equipment_finishing" and VIEW.model_id("joint_integration") == "unification", "art IDs map to configured IDs")
 	var singularity_row: Dictionary = db.data.ai_tech_tree["singularity"]
 	var first_seconds := float(singularity_row.base_seconds) * pow(float(singularity_row.growth), 0.0)
@@ -41,6 +58,7 @@ func run() -> void:
 	var saved_singularity := float(g.profile.aiTechProgress.singularity)
 	check(g.select_tech("weapon_accuracy") and g.select_tech("singularity") and near(float(g.profile.aiTechProgress.singularity),saved_singularity), "switch preserves independent progress")
 	var paid := BattleGame.new(db,false)
+	unlock_factory(paid)
 	paid.profile.resources = {"1":100.0,"2":10.0}
 	paid.set_tech_input("1",100)
 	paid.set_tech_input("2",10)
@@ -55,6 +73,7 @@ func run() -> void:
 	paid.advance_hightech(1.0)
 	check(near(float(paid.profile.aiTechProgress.weapon_accuracy),1.5*1.25+1.25+1.5*1.25), "configured input resumes after balance recovers")
 	var gate := BattleGame.new(db,false)
+	unlock_factory(gate)
 	check(not bool(AITech.eligibility(gate,"equipment_finishing").ok), "core starts locked")
 	gate.profile.aiTechLevels = {"weapon_accuracy":11,"equipment_reinforcement":11}
 	check(bool(AITech.eligibility(gate,"equipment_finishing").ok), "first core threshold is 11")
@@ -104,6 +123,7 @@ func run() -> void:
 	combat.profile.aiTechLevels.weapon_accuracy = 10000
 	check(is_inf(AITech.required(combat,"weapon_accuracy")), "large levels do not overflow time")
 	var restored := BattleGame.new(db,false)
+	unlock_factory(restored)
 	paid.profile.hightechSavedAt = Time.get_unix_time_from_system()-3600.0
 	restored.load_hightech(paid.profile.duplicate(true))
 	check(restored.profile.aiTechActive == paid.profile.aiTechActive and near(float(restored.profile.aiTechProgress.weapon_accuracy),float(paid.profile.aiTechProgress.weapon_accuracy)), "research restores without offline settlement")

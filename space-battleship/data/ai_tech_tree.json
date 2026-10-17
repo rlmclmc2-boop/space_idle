@@ -6,7 +6,8 @@
     "base_seconds": 20,
     "growth": 1.8,
     "effect": "ai_count",
-    "factor": 1
+    "factor": 1,
+    "legacy_unlock": "超时空炼铁炉"
   },
   "weapon_accuracy": {
     "name": "武器精度",
@@ -15,7 +16,8 @@
     "base_seconds": 60,
     "growth": 1.4,
     "effect": "weapon_damage",
-    "factor": 1.1
+    "factor": 1.1,
+    "legacy_unlock": "正电子聚焦装置"
   },
   "equipment_reinforcement": {
     "name": "装备强化",
@@ -24,7 +26,8 @@
     "base_seconds": 60,
     "growth": 1.4,
     "effect": "equipment_durability",
-    "factor": 1.1
+    "factor": 1.1,
+    "legacy_unlock": "简并态装甲"
   },
   "resource_refining": {
     "name": "资源精炼",
@@ -33,7 +36,8 @@
     "base_seconds": 60,
     "growth": 1.4,
     "effect": "iron_income",
-    "factor": 1.1
+    "factor": 1.1,
+    "legacy_unlock": "超时空炼铁炉"
   },
   "fragment_condensation": {
     "name": "强化碎片凝聚",
@@ -43,7 +47,8 @@
     "growth": 1.4,
     "effect": "fragment_income",
     "factor": 1.1,
-    "unlock": "enhancement"
+    "unlock": "enhancement",
+    "legacy_unlock": "宝石熔炼炉"
   },
   "equipment_finishing": {
     "name": "装备精制",

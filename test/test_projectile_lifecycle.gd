@@ -35,15 +35,20 @@ func _initialize() -> void:
 				moving.tick_projectiles(4.0)
 				check((target.armour if hostile else target.hp)==health,key+" misses a target that left the straight segment")
 				check(is_equal_approx(float(shot.x),200.0),key+" retains launch ray through the complete flight")
-	# Only missiles retarget after their original target dies.
+	# A launched projectile keeps its ray after target loss; later shots may
+	# choose another living target.
 	for key in ["laser", "cannon", "missile"]:
 		var tracking := BattleGame.new(db,false)
 		tracking.start(1,false)
 		tracking.spawn_group()
-		# Exactly two targets are required by the no-survivor boundary below.
-		tracking.enemies.resize(2)
-		tracking.profile.unlocked = [key]
-		tracking.profile.loadout = tracking.empty_loadout(tracking.profile.selectedShip)
+		# A stage-one encounter has one enemy. Supply a second live target
+		# explicitly; resize() would append an empty dictionary, not an enemy.
+		var survivor_fixture: Dictionary = tracking.enemies[0].duplicate(true)
+		survivor_fixture.uid = int(survivor_fixture.uid)+1000
+		survivor_fixture.x = float(survivor_fixture.x)+80.0
+		tracking.enemies.append(survivor_fixture)
+		tracking.profile.unlocked = [key,"armour"]
+		tracking.profile.loadout = tracking.default_loadout(tracking.profile.selectedShip,["armour"])
 		check(tracking.equip_slot("weapons",0,key),key+" fixture installs its weapon")
 		tracking.cooldowns.weapons_0 = 10
 		for enemy in tracking.enemies:
@@ -56,16 +61,11 @@ func _initialize() -> void:
 		var initial_direction: Vector2 = shot.direction
 		original.hp = 0
 		tracking.tick(0.001)
-		if key == "missile":
-			check(tracking.projectiles.size()==1 and shot.target.uid==survivor.uid,"Missile retargets living enemy")
-			survivor.hp = 0
-			tracking.tick(0.001)
-			check(tracking.projectiles.has(shot) and shot.target.is_empty(),"Missile flies on when no living target remains")
-		else:
-			check(tracking.projectiles.has(shot) and shot.target.is_empty() and shot.direction==initial_direction and survivor.hp==hp_before,key+" keeps its trajectory without retargeting")
-			tracking.profile.unlocked = [key]
-			tracking.cooldowns.weapons_0 = 0
-			tracking.tick(0.001)
+		check(tracking.projectiles.has(shot) and shot.target.is_empty() and shot.direction==initial_direction and survivor.hp==hp_before,key+" keeps its trajectory without retargeting")
+		tracking.profile.unlocked = [key,"armour"]
+		tracking.cooldowns.weapons_0 = 0
+		tracking.tick(0.001)
+		if key!="missile":
 			check(tracking.projectiles.size()==2 and tracking.projectiles[1].target.uid==survivor.uid,key+" selects living enemy on next fire")
 		var last_position := Vector2(shot.x,shot.y)
 		var last_direction: Vector2 = shot.direction

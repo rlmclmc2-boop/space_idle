@@ -2514,7 +2514,7 @@ func refresh_crew_tab_badge(index: int) -> void:
 func refresh_tab_visibility() -> void:
 	var pages: Array[bool] = []
 	pages.append(not game.profile.unlocked.is_empty())
-	pages.append(not db.data.ai_tech_tree.is_empty())
+	pages.append(game.ai_tech_factory_unlocked() and not db.data.ai_tech_tree.is_empty())
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.enhancement_unlocked())

@@ -20,6 +20,9 @@ static func required(game, id: String) -> float:
 static func eligibility(game, id: String) -> Dictionary:
 	var row: Dictionary = game.db.data.ai_tech_tree.get(id, {})
 	if row.is_empty():return {"ok":false,"reason":"unknown"}
+	if not game.ai_tech_factory_unlocked():return {"ok":false,"reason":"factory_locked"}
+	if row.has("legacy_unlock") and not game.content_unlocked("hightech",str(row.legacy_unlock)):
+		return {"ok":false,"reason":"legacy_locked"}
 	if str(row.get("unlock", "")) == "enhancement" and not game.enhancement_unlocked():
 		return {"ok":false,"reason":"enhancement_locked"}
 	var target := level(game, id) + 1
@@ -39,6 +42,7 @@ static func select(game, id: String) -> bool:
 	return true
 
 static func set_input(game, resource_id: String, amount: int) -> bool:
+	if not game.ai_tech_factory_unlocked():return false
 	if resource_id not in ["1", "2"] or amount < 0 or amount > 9007199254740991:return false
 	if int(game.profile.aiTechInput.get(resource_id, 0)) == amount:return false
 	game.profile.aiTechInput[resource_id] = amount

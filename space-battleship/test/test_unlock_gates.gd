@@ -12,6 +12,8 @@ class FakeGame:
 	var db := {"data": {"ai_tech_tree": {}}}
 	var profile := {"aiTechLevels": {}, "aiTechActive": "", "aiTechInput": {"1": 0, "2": 0}, "resources": {"1": 0.0, "2": 0.0}, "aiTechProgress": {}, "aiIncomePeak": {}}
 	var enhancement := false
+	func ai_tech_factory_unlocked() -> bool: return true
+	func content_unlocked(_kind:String,_key:String) -> bool: return true
 	func enhancement_unlocked() -> bool: return enhancement
 	func tech_tree_snapshot() -> Dictionary: return MODEL.snapshot(self)
 

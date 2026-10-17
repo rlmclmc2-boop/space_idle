@@ -17,9 +17,8 @@ var unlock_lookup: Dictionary = {}
 func _init() -> void:
 	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
 	data.ai_tech_tree = JSON.parse_string(FileAccess.get_file_as_string("res://data/ai_tech_tree.json"))
-	# Retired factory unlock notices describe scientist purchases and assignment.
-	for id in data.unlock.keys():
-		if str(data.unlock[id].get("type","")) == "hightech":data.unlock.erase(id)
+	# Keep the original hightech gates for the replacement research system.
+	# The obsolete scientist notices are filtered by BattleGame instead.
 	data.equipment_evolution = JSON.parse_string(FileAccess.get_file_as_string("res://data/equipment_evolution.json"))
 	if FileAccess.file_exists("res://analyzer-package.json"):
 		var mon_table: Dictionary=MonGroupXlsx.read_mon_enemies()

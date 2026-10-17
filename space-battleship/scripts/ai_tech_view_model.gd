@@ -50,6 +50,7 @@ static func snapshot(game) -> Dictionary:
 		var generation_text := "Lv.%d · %s ×%s" % [int(node.level),str(BENEFIT_LABELS.get(id,"当前效果")),N.text(node.current_multiplier)]
 		if id == "singularity":generation_text = "Lv.%d · 当前 %d AI" % [int(node.level),int(node.current_multiplier)]
 		var state_text := "强化系统未解锁" if str(node.eligibility.get("reason", "")) == "enhancement_locked" else "前置科技等级未满足"
+		if str(node.eligibility.get("reason", "")) in ["factory_locked","legacy_locked"]:state_text = "原有科技尚未解锁"
 		if can_start:
 			var seconds_left := maxf(0.0, float(node.required_seconds) - float(node.progress_seconds)) / maxf(0.001, float(source.speed))
 			state_text = UIText.t("ai_tech.research.active_estimate" if is_active else "ai_tech.research.estimate", {"time":duration(seconds_left)})

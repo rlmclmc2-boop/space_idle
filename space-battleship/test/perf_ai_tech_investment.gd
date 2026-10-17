@@ -53,7 +53,7 @@ func run():
  for key in g.db.data.hightech:
   g.profile.scientistAssignments[key]=11
   g.profile.techPoints[key]=g.hightech_required(key)*0.45
- var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://galaxy_fixture.json"))
+ var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://../test/fixtures/galaxy_1_complete.json"))
  g.galaxy.load_state(g,{"galaxy_1":fixture.save})
  if OS.get_environment("PERF_RICH")=="1":
   g.profile.selectedShip="Heavy_Battleship"
@@ -76,10 +76,12 @@ func run():
  g.invalidate_stat_cache()
  scene.refresh_structure();scene.refresh_tab_visibility()
  # Use the same rich combat fixture for both investment modes.
- var input_amount := 100 if OS.get_environment("PERF_AI_INPUTS")=="both" else 0
+ var mode:=OS.get_environment("PERF_AI_INPUTS")
+ var iron_amount:=1000 if mode=="both_1000" else 100 if mode in ["iron","both"] else 0
+ var uranium_amount:=1000 if mode=="both_1000" else 100 if mode in ["uranium","both"] else 0
  g.profile.aiTechActive="weapon_accuracy"
  g.profile.aiTechProgress.weapon_accuracy=0.0
- g.profile.aiTechInput={"1":input_amount,"2":input_amount}
+ g.profile.aiTechInput={"1":iron_amount,"2":uranium_amount}
  g.profile.aiTechCompletionUnread=false
  g.pending_unlocks.clear()
  scene.sync_unlock_pause()

@@ -190,6 +190,7 @@ func fresh_profile() -> Dictionary:
 	var selected := first_ship()
 	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "aiTechLevels":{}, "aiTechProgress":{}, "aiTechActive":"", "aiTechInput":{"1":0,"2":0}, "aiIncomePeak":{"1":0.0,"2":0.0,"jewel":0.0}, "hightechSavedAt":Time.get_unix_time_from_system()}
 	profile.aiTechCompletionUnread = false
+	profile.equipmentSwitchUntil = {}
 	# The retired page still reads these inert values until the new art page lands.
 	profile.scientists = 0
 	profile.scientistAssignments = {}
@@ -259,6 +260,8 @@ func granted_unlocks() -> Array[String]:
 func available_unlocks() -> Array[String]:
 	var result: Array[String] = []
 	for id in db.data.get("unlock", {}):
+		# The old scientist/assignment notices do not describe the new factory.
+		if str(db.data.unlock[id].get("type", "")) == "hightech":continue
 		if unlock_available(str(id)):result.append(str(id))
 	return result
 
@@ -292,6 +295,7 @@ func _compute_tutorial_unlocks() -> Array[String]:
 	# Seen notices also retain earned knowledge through a reforge's new run.
 	var result: Array[String] = []
 	for id in db.data.get("unlock", {}):
+		if str(db.data.unlock[id].get("type", "")) == "hightech":continue
 		if unlock_available(str(id)) or profile.get("seenUnlocks", []).has(id):result.append(str(id))
 	if hyperspace.is_unlocked(self) or profile.get("seenUnlocks", []).has("hyperspace"):
 		if not result.has("hyperspace"):result.append("hyperspace")
@@ -450,6 +454,14 @@ func load_progress_data(raw: Dictionary) -> void:
 	if raw.get("loadout") is Dictionary:
 		profile.loadout = raw.loadout.duplicate(true)
 	ensure_loadout()
+	profile.equipmentSwitchUntil = {}
+	if raw.get("equipmentSwitchUntil") is Dictionary:
+		for category in ["weapons", "defence"]:
+			for index in active_slot_count(category):
+				var id := slot_id(category,index)
+				var deadline = raw.equipmentSwitchUntil.get(id)
+				if nonnegative_number(deadline) and float(deadline)>production_time():
+					profile.equipmentSwitchUntil[id] = float(deadline)
 	# Legacy name levels migrate once. Module saves use their own slot levels exclusively.
 	if int(raw.get("moduleVersion",0)) < 1:
 		for key in EQUIPMENT:
@@ -995,8 +1007,15 @@ func invalidate_module_attack(index: int) -> void:
 func player_alive() -> bool:
 	return N.compare(player.get("armour",0),0)>0 or N.compare(player.get("shield",0),0)>0
 
-func slot_equipment_locked(_category: String, _index: int) -> bool:
-	return false
+func equipment_switch_remaining(category: String, index: int) -> float:
+	if category not in ["weapons", "defence"] or slot_entry(category,index).is_empty():return 0.0
+	return maxf(0.0,float(profile.equipmentSwitchUntil.get(slot_id(category,index),0.0))-production_time())
+
+func slot_equipment_locked(category: String, index: int) -> bool:
+	return equipment_switch_remaining(category,index)>0.0
+
+func mark_equipment_switch(category: String, index: int) -> void:
+	profile.equipmentSwitchUntil[slot_id(category,index)] = production_time()+maxf(0.0,float(db.config.equipmentSwitchCooldownSeconds))
 
 func equip_slot(category: String, index: int, key: String) -> bool:
 	if category not in ["weapons","defence"]:return false
@@ -1004,6 +1023,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or not allowed.has(key) or not profile.unlocked.has(key):return false
 	if str(entry.key)==key:return true
+	if slot_equipment_locked(category,index):return false
 	if category=="weapons":
 		var requested:=weapon_entries().duplicate(true);requested[index].key=key
 		if not hyperspace.equipment_constraints(self,profile.hyperspace.inventory.equipped,{},requested):return false
@@ -1013,6 +1033,7 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 	var module := entry.duplicate(true)
 	module.key = key
 	profile.loadout[category][index] = module
+	mark_equipment_switch(category,index)
 	invalidate_stat_cache()
 	if category=="weapons":invalidate_module_attack(index)
 	apply_refit_health()
@@ -1023,11 +1044,13 @@ func equip_slot(category: String, index: int, key: String) -> bool:
 func unequip_slot(category: String, index: int) -> bool:
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or str(entry.key).is_empty():return false
+	if slot_equipment_locked(category,index):return false
 	if not native_before_configuration_change():return false
 	capture_refit_health()
 	var module := entry.duplicate(true)
 	module.key = ""
 	profile.loadout[category][index] = module
+	mark_equipment_switch(category,index)
 	invalidate_stat_cache()
 	if category=="weapons":invalidate_module_attack(index)
 	apply_refit_health()
@@ -1044,6 +1067,10 @@ func refund_all_equipment() -> void:
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
 	if not selected_loadout.is_empty() and not valid_loadout(key,selected_loadout):return false
+	if not selected_loadout.is_empty():
+		for category in ["weapons", "defence"]:
+			for index in selected_loadout[category].size():
+				if str(slot_entry(category,index).get("key",""))!=str(selected_loadout[category][index].key) and slot_equipment_locked(category,index):return false
 	var requested_modules: Array=module_entries("weapons").slice(0,int(db.ship(key).weaponSlots)) if selected_loadout.is_empty() else selected_loadout.weapons
 	var ids: Array=profile.hyperspace.inventory.equipped.slice(0,int(hyperspace.config.hull_capacities[key]))
 	if not hyperspace.equipment_constraints(self,ids,{},requested_modules):return false
@@ -1062,6 +1089,7 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 				if str(entries[index].key)!=requested:
 					entries[index] = entries[index].duplicate(true)
 					entries[index].key = requested
+					mark_equipment_switch(category,index)
 					if category=="weapons":invalidate_module_attack(index)
 	for index in range(mini(old_weapon_count,active_slot_count("weapons")),maxi(old_weapon_count,active_slot_count("weapons"))):invalidate_module_attack(index)
 	apply_refit_health()
@@ -1256,7 +1284,11 @@ func hightech_level(key: String) -> int:
 	return AITech.level(self,key)
 
 func hightech_unlocked(key: String) -> bool:
+	if db.data.get("hightech", {}).has(key):return content_unlocked("hightech",key)
 	return bool(AITech.eligibility(self,key).ok)
+
+func ai_tech_factory_unlocked() -> bool:
+	return content_unlocked("hightech",FURNACE)
 
 func tech_tree_snapshot() -> Dictionary:
 	return AITech.snapshot(self)
@@ -2369,6 +2401,7 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
+	if not player_alive():profile.equipmentSwitchUntil.clear()
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
 	drone_combat.restore_rebuild(self)
@@ -2595,6 +2628,7 @@ func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionar
 			collect(drop, true)
 
 func clear_level() -> void:
+	profile.equipmentSwitchUntil.clear()
 	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,true);return

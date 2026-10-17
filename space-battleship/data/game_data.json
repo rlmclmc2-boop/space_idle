@@ -320294,7 +320294,8 @@
     "enemyVisualScaleSize4": 1.5,
     "enemyVisualScaleSize5": 1.5,
     "enemyVisualScaleSize6": 1.7,
-    "explicitEnemyPlayerMinGap": 0.12
+    "explicitEnemyPlayerMinGap": 0.12,
+    "equipmentSwitchCooldownSeconds": 10
   },
   "defaults": {
     "autoCollectDelay": 5.0,

@@ -14,7 +14,7 @@ func _initialize() -> void:
 func run() -> void:
 	var db := ShipDatabase.new()
 	db.config.offlineMax = 0
-	check(db.data.unlock.size()==24,"All 24 unique entities including reactor, six crew and one planet registered")
+	check(db.data.unlock.size()>=28 and db.data.unlock.values().filter(func(row):return str(row.type)=="hightech").size()==4,"Original four hightech gates remain in the unlock table")
 	db.unlock_row("equipment","laser").level=1
 	var initial := BattleGame.new(db,false)
 	check(not initial.profile.unlocked.has("laser"),"startEquip cannot bypass an authored stage gate")
@@ -27,10 +27,11 @@ func run() -> void:
 		game.rebuild_unlocks()
 		game.start(stage,false)
 		game.group_index = db.levels[stage-1].groups.size()
+		var before_clear := game.available_unlocks()
 		game.clear_level()
 		var expected: Array[String] = []
-		for id in db.data.unlock:
-			if int(db.data.unlock[id].level)==stage:expected.append(id)
+		for id in game.available_unlocks():
+			if not before_clear.has(id):expected.append(id)
 		check(game.pending_unlocks==expected,"Every unlock fires at stage "+str(stage))
 		var original := game.pending_unlocks.duplicate()
 		game.clear_level()
@@ -64,15 +65,19 @@ func run() -> void:
 	loaded.start(2,false)
 	loaded.group_index=db.levels[1].groups.size()
 	loaded.state=BattleGame.State.LEVEL_CLEAR
-	loaded.pending_unlocks.assign(["shield","cannon",db.unlock_id("hightech",BattleGame.FURNACE)])
-	loaded.save_progress()
-	var resumed := BattleGame.new(db,true)
+	loaded.pending_unlocks.assign(loaded.available_unlocks().slice(0,2))
+	for id in loaded.pending_unlocks:loaded.profile.seenUnlocks.erase(id)
+	var saved_queue: Dictionary = JSON.parse_string(JSON.stringify(loaded.portable_save_data()))
+	var resumed := BattleGame.new(db,false)
+	resumed.load_progress_data(saved_queue)
 	resumed.resume_progress()
 	check(resumed.pending_unlocks==loaded.pending_unlocks,"Mixed queue survives restart in full")
 	resumed.acknowledge_unlocks()
-	var again := BattleGame.new(db,true)
+	var saved_partial: Dictionary = JSON.parse_string(JSON.stringify(resumed.portable_save_data()))
+	var again := BattleGame.new(db,false)
+	again.load_progress_data(saved_partial)
 	again.resume_progress()
-	check(again.pending_unlocks==resumed.pending_unlocks and again.pending_unlocks.size()==2,"Partial acknowledgment persists")
+	check(again.pending_unlocks==resumed.pending_unlocks and again.pending_unlocks.size()==1,"Partial acknowledgment persists")
 	check(again.profile.unlocked.has("longLaser"),"Ownership retained across second load")
 	print("Unlock table: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)
