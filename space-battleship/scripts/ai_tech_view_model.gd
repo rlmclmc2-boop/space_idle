@@ -14,6 +14,7 @@ static func display_id(model_id: String) -> String:
 
 static func duration(seconds: float) -> String:
 	if not is_finite(seconds):return "耗时超出可计算范围"
+	if seconds >= 9.0e18:return "%.2e 秒" % seconds
 	if seconds < 1.0:return "不足 1 秒"
 	if seconds < 60.0:return "%d 秒" % int(ceilf(seconds))
 	if seconds < 3600.0:return "%d 分 %d 秒" % [int(seconds/60.0),int(ceilf(fmod(seconds,60.0)))]
