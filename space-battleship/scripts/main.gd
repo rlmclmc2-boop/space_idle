@@ -2467,7 +2467,10 @@ func refresh_equipment_effects(tech: String) -> void:
 	if tech not in ["weapon_accuracy","equipment_reinforcement","equipment_finishing","unification"]:
 		return
 	var slots: Array = []
-	for category in (["weapons"] if tech == "weapon_accuracy" else ["defence"] if tech == "equipment_reinforcement" else ["weapons","defence"]):
+	var categories := ["weapons","defence"]
+	if tech == "weapon_accuracy":categories = ["weapons"]
+	elif tech == "equipment_reinforcement":categories = ["defence"]
+	for category in categories:
 		for index in game.profile.loadout[category].size():
 			slots.append(game.slot_id(category,index))
 	if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(slots)

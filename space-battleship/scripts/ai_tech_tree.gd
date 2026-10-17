@@ -50,11 +50,14 @@ static func input_factor(amount: int) -> float:
 	return 1.0 if amount <= 0 else 1.0 + log(float(amount)) / log(10.0) / 4.0
 
 static func income_factor(game, id: String) -> Variant:
+	var cache_key := "ai_tech_factor_" + id
+	if game.stat_cache_enabled and game.stat_cache.has(cache_key):return game.stat_cache[cache_key]
 	var result: Variant = 1.0
 	for tech in game.db.data.ai_tech_tree:
 		var row: Dictionary = game.db.data.ai_tech_tree[tech]
 		if id in str(row.effect).split(",") and tech != "unification" and tech != "singularity":
 			result = N.multiply(result, N.power(float(row.factor), level(game, tech)))
+	if game.stat_cache_enabled:game.stat_cache[cache_key] = result
 	return result
 
 static func peak_product(game) -> Variant:

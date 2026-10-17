@@ -65,13 +65,17 @@ func run() -> void:
 	gate.profile.aiIncomePeak = {"1":0.1,"2":0.0,"jewel":0.0}
 	check(near(AITech.peak_factor(gate),1.6), "subunit income follows the unmodified formula")
 	var combat := BattleGame.new(db,false)
-	var base_damage := float(combat.equipment_stat("laser",1))
+	var base_stats := {}
+	for key in BattleGame.WEAPON_KEYS + BattleGame.DEFENSE_KEYS:base_stats[key] = float(combat.equipment_stat(key,1))
 	combat.profile.aiTechLevels = {"weapon_accuracy":2,"equipment_finishing":1}
 	combat.invalidate_stat_cache()
-	check(near(float(combat.equipment_stat("laser",1)),ceilf(base_damage*1.1*1.1*1.25)), "combat uses only new compound effects")
+	for key in BattleGame.WEAPON_KEYS:
+		check(near(float(combat.equipment_stat(key,1)),ceilf(float(base_stats[key])*1.1*1.1*1.25)), "shared weapon effect: "+key)
+	for key in BattleGame.DEFENSE_KEYS:
+		check(near(float(combat.equipment_stat(key,1)),ceilf(float(base_stats[key])*1.25)), "shared durability effect: "+key)
 	combat.profile.hightechLevels = {BattleGame.ENERGY_FOCUS:100}
 	combat.invalidate_stat_cache()
-	check(near(float(combat.equipment_stat("laser",1)),ceilf(base_damage*1.1*1.1*1.25)), "retired technology does not stack")
+	check(near(float(combat.equipment_stat("laser",1)),ceilf(float(base_stats.laser)*1.1*1.1*1.25)), "retired technology does not stack")
 	check(not combat.generate_scientist(), "retired AI purchase is disabled")
 	combat.profile.aiTechLevels.weapon_accuracy = 10000
 	check(is_inf(AITech.required(combat,"weapon_accuracy")), "large levels do not overflow time")

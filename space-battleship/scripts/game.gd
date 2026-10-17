@@ -1112,7 +1112,9 @@ func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
 	# Virtual level bonuses keep ordinary growth, but only paid slot levels grant evolution.
 	if effective_level!=level:
 		value=N.multiply(value,N.divide(db.evolution_factor(level),db.evolution_factor(effective_level)))
-	value = N.ceiling(N.multiply(value,AITech.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")))
+	var tech_factor = AITech.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")
+	if N.compare(tech_factor,1.0) != 0:
+		value = N.ceiling(N.multiply(value,tech_factor))
 	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
 	if reactor_bonus != 1.0:
 		value = N.ceiling(N.multiply(value,reactor_bonus))
