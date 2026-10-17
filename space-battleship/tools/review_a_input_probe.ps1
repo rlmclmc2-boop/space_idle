@@ -2,6 +2,7 @@ param(
     [Parameter(Mandatory=$true)][int]$GamePid,
     [Parameter(Mandatory=$true)][int]$X,
     [Parameter(Mandatory=$true)][int]$Y,
+    [ValidateSet('Click','Move')][string]$Action = 'Click',
     [string]$CaptureDir = 'evidence\review-a\input-probe'
 )
 $ErrorActionPreference = 'Stop'
@@ -51,11 +52,17 @@ if (-not $target) { Write-Output 'failure=no_fresh_valid_godot_window'; exit 2 }
 # Coordinates must come from the captured game UI; this sends only ordinary mouse messages.
 $lparam = [IntPtr](($Y -shl 16) -bor $X)
 $validImmediatelyBefore = [ReviewWindow]::IsWindow($target.Hwnd)
-$down = [ReviewWindow]::PostMessage($target.Hwnd, 0x0201, [IntPtr]1, $lparam)
-$downError = [Runtime.InteropServices.Marshal]::GetLastWin32Error()
-$up = [ReviewWindow]::PostMessage($target.Hwnd, 0x0202, [IntPtr]::Zero, $lparam)
-$upError = [Runtime.InteropServices.Marshal]::GetLastWin32Error()
-Write-Output "click_valid=$validImmediatelyBefore down=$down down_error=$downError up=$up up_error=$upError x=$X y=$Y"
+if ($Action -eq 'Move') {
+    $move = [ReviewWindow]::PostMessage($target.Hwnd, 0x0200, [IntPtr]::Zero, $lparam)
+    $moveError = [Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    Write-Output "move_valid=$validImmediatelyBefore move=$move move_error=$moveError x=$X y=$Y"
+} else {
+    $down = [ReviewWindow]::PostMessage($target.Hwnd, 0x0201, [IntPtr]1, $lparam)
+    $downError = [Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    $up = [ReviewWindow]::PostMessage($target.Hwnd, 0x0202, [IntPtr]::Zero, $lparam)
+    $upError = [Runtime.InteropServices.Marshal]::GetLastWin32Error()
+    Write-Output "click_valid=$validImmediatelyBefore down=$down down_error=$downError up=$up up_error=$upError x=$X y=$Y"
+}
 Start-Sleep -Seconds 2
 $after = Get-ChildItem -LiteralPath $capture -Filter 'frame-*.jpg' | Sort-Object Name | Select-Object -Last 1
 Write-Output "after=$($after.FullName)"
