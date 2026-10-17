@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 # Integration owner must advance this to the reviewed main commit after merging.
-BASE = '2fec0f04f19d85b11fe21a5931b63c5d4bb713e8'
+BASE = 'da95e636c1ad2a5c6b8ce5d5c081fca2bc1fd5b2'
 DLL_SHA = 'dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a'
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',
@@ -68,7 +68,10 @@ def validate(root):
     # are checked below before the engine starts.
     untracked_runtime = '\n'.join(path for path in run(
         ['git', 'ls-files', '--others', '--exclude-standard', '--', 'space-battleship'], root
-    ).splitlines() if not path.endswith(('.uid', '.import')) and path != 'space-battleship/space_native.gdextension')
+    ).splitlines() if not path.endswith(('.uid', '.import'))
+    and not (path.startswith('space-battleship/docs/tasks/playtest-ui-art/evidence/')
+             and path.endswith('.translation'))
+    and path != 'space-battleship/space_native.gdextension')
     if untracked_runtime:
         local_changes += '\n' + untracked_runtime
     if local_changes:
