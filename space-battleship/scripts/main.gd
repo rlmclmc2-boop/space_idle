@@ -3773,7 +3773,8 @@ func on_ai_tech_research_requested(display_id: String) -> void:
 	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
 func on_ai_tech_investment_requested(resource_id: String, amount: int) -> void:
-	game.set_tech_input(resource_id,amount)
+	var model_id := str({"iron":"1","uranium":"2"}.get(resource_id,resource_id))
+	game.set_tech_input(model_id,amount)
 	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
 func draw_unlock() -> void:
