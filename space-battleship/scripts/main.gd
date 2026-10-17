@@ -11,6 +11,7 @@ const CYAN := Color("71e5f4")
 const ORANGE := Color("ffbc73")
 const PURPLE := Color("b3a0ff")
 const RESOURCE_ART := preload("res://scripts/resource_art.gd")
+const AI_TECH_VIEW := preload("res://scripts/ai_tech_view_model.gd")
 const CREW_TAB_TYPES := {0:["equipment"],1:["hightech","production","smelting"],2:["reactor"],4:["jewel"],8:["galaxy"]}
 const CREW_TAB_TITLES := {0:"equipment.tab",1:"upgrade.research_tab",2:"reactor.tab",4:"enhance.tab",8:"galaxy.tab"}
 const BATTLE_INVERSE_STEPS := 20
@@ -192,6 +193,7 @@ var equipment_cooldowns: Dictionary = {}
 var equipment_card_controls: Dictionary = {}
 var reactor_panel: Control
 var hightech_page: Control
+var tech_ui_last_refresh_ms := 0
 var ui_rebuild_pending := false
 var ui_rebuild_scheduled := false
 var automation_args := OS.get_cmdline_user_args() if OS.has_feature("debug") else PackedStringArray()
@@ -453,6 +455,10 @@ func _process(delta: float) -> void:
 	if fixed_enemy_layout and battle_slice_runtime==null:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	advance_unlock_notice()
 	game.check_timed_save()
+	var tech_now_ms := Time.get_ticks_msec()
+	if tech_now_ms-tech_ui_last_refresh_ms >= 250 and is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree():
+		tech_ui_last_refresh_ms = tech_now_ms
+		hightech_page.invalidate()
 	if fast_mode_enabled():
 		for voice in railgun_audio.values():
 			if is_instance_valid(voice) and voice.playing:voice.stop()
@@ -873,8 +879,10 @@ func on_event(kind: String, info: Dictionary) -> void:
 		"hightech_complete":
 			toast(UIText.t("upgrade.research_complete", {"name":str(db.data.ai_tech_tree.get(str(info.key),{}).get("name",info.key))}))
 			refresh_equipment_effects(str(info.key))
+			if is_instance_valid(hightech_page):hightech_page.invalidate()
 		"tech_tree_changed":
 			if str(info.get("reason", "")) == "income_peak":refresh_equipment_effects("unification")
+			if is_instance_valid(hightech_page):hightech_page.invalidate()
 		"unlock":
 			help_open = false
 			refresh_structure()
@@ -2478,7 +2486,7 @@ func refresh_equipment_effects(tech: String) -> void:
 func refresh_crew_tab_badge(index: int) -> void:
 	if not is_instance_valid(equipment_tabs) or index>=equipment_tabs.get_tab_count():return
 	var badge: Dictionary=game.crew.tab_badge(game,CREW_TAB_TYPES[index])
-	var title: String=UIText.t(str(CREW_TAB_TITLES[index]))+("  "+str(badge.text) if not str(badge.text).is_empty() else "")
+	var title: String=("科技研发" if index==1 else UIText.t(str(CREW_TAB_TITLES[index])))+("  "+str(badge.text) if not str(badge.text).is_empty() else "")
 	if equipment_tabs.get_tab_title(index)!=title:equipment_tabs.set_tab_title(index,title)
 	var bar: TabBar=equipment_tabs.get_tab_bar()
 	if bar.get_tab_tooltip(index)!=badge.tooltip:bar.set_tab_tooltip(index,badge.tooltip)
@@ -2486,7 +2494,7 @@ func refresh_crew_tab_badge(index: int) -> void:
 func refresh_tab_visibility() -> void:
 	var pages: Array[bool] = []
 	pages.append(not game.profile.unlocked.is_empty())
-	pages.append(db.data.get("hightech",{}).keys().any(func(key):return game.hightech_unlocked(str(key))))
+	pages.append(not db.data.ai_tech_tree.is_empty())
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.enhancement_unlocked())
@@ -3746,11 +3754,27 @@ func confirm_unequip(category: String, index: int) -> void:
 	dialog.popup_centered()
 
 func build_hightech_tab() -> void:
-	hightech_page = preload("res://scripts/hightech_workshop.gd").new()
+	hightech_page = preload("res://scripts/ai_tech_factory_page.gd").new()
 	hightech_page.name = "Hightech"
 	equipment_tabs.add_child(hightech_page)
-	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(hightech_page),UIText.t("upgrade.research_tab"))
-	hightech_page.setup(game)
+	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(hightech_page),"科技研发")
+	hightech_page.setup()
+	hightech_page.set_snapshot_provider(Callable(self,"ai_tech_page_snapshot"))
+	hightech_page.research_requested.connect(on_ai_tech_research_requested)
+	hightech_page.investment_requested.connect(on_ai_tech_investment_requested)
+	hightech_page.set_snapshot(ai_tech_page_snapshot())
+
+func ai_tech_page_snapshot() -> Dictionary:
+	return AI_TECH_VIEW.snapshot(game)
+
+func on_ai_tech_research_requested(display_id: String) -> void:
+	var model_id := AI_TECH_VIEW.model_id(display_id)
+	game.select_tech("" if str(game.profile.aiTechActive)==model_id else model_id)
+	if is_instance_valid(hightech_page):hightech_page.invalidate()
+
+func on_ai_tech_investment_requested(resource_id: String, amount: int) -> void:
+	game.set_tech_input(resource_id,amount)
+	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
 func draw_unlock() -> void:
 	var panel := unlock_panel_rect()

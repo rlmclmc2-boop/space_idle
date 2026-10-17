@@ -99,6 +99,7 @@ var startup_error := ""
 var save_enabled := true
 var stat_cache_enabled := false
 var stat_cache: Dictionary = {}
+var ai_tech_last_resource_notice_ms := 0
 var stat_cache_revision := 0
 var jewel_defence_capacity_cache: Dictionary = {}
 var login_chrono_particles := 0.0

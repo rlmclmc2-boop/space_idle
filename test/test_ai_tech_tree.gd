@@ -1,5 +1,6 @@
 extends SceneTree
 const AITech = preload("res://scripts/ai_tech_tree.gd")
+const VIEW = preload("res://scripts/ai_tech_view_model.gd")
 
 var checks := 0
 var failures := 0
@@ -18,8 +19,12 @@ func _initialize() -> void:
 
 func run() -> void:
 	var db := ShipDatabase.new()
+	check(db.data.unlock.values().all(func(row):return str(row.type)!="hightech"), "retired scientist tutorial unlocks are absent")
 	var g := BattleGame.new(db,false)
 	check(g.tech_tree_snapshot().ai_count == 1 and g.tech_tree_snapshot().status == "idle", "initial AI and idle state")
+	var view: Dictionary = VIEW.snapshot(g)
+	check(view.technologies.size() == 8 and view.status_text == "暂无研究，请选择科技", "page has eight configured technologies and idle prompt")
+	check(VIEW.model_id("equipment_precision") == "equipment_finishing" and VIEW.model_id("joint_integration") == "unification", "art IDs map to configured IDs")
 	check(near(AITech.required(g,"singularity"),60.0), "first level time")
 	check(g.select_tech("singularity"), "select singularity")
 	g.advance_hightech(60.0)
@@ -80,7 +85,8 @@ func run() -> void:
 	combat.profile.aiTechLevels.weapon_accuracy = 10000
 	check(is_inf(AITech.required(combat,"weapon_accuracy")), "large levels do not overflow time")
 	var restored := BattleGame.new(db,false)
+	paid.profile.hightechSavedAt = Time.get_unix_time_from_system()-3600.0
 	restored.load_hightech(paid.profile.duplicate(true))
-	check(restored.profile.aiTechActive == paid.profile.aiTechActive and near(float(restored.profile.aiTechProgress.weapon_accuracy),float(paid.profile.aiTechProgress.weapon_accuracy)), "research and input state restore")
+	check(restored.profile.aiTechActive == paid.profile.aiTechActive and near(float(restored.profile.aiTechProgress.weapon_accuracy),float(paid.profile.aiTechProgress.weapon_accuracy)), "research restores without offline settlement")
 	print("AI_TECH_TREE_CHECKS=",checks," FAILURES=",failures)
 	quit(1 if failures else 0)

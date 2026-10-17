@@ -177,5 +177,7 @@ static func advance(game, dt: float) -> void:
 		id = str(game.profile.aiTechActive)
 	if changed:
 		game.save_dirty = true
-		if not paid.is_empty():game.resources_changed(paid.keys())
-		game.event.emit("tech_tree_progress", {"id":id})
+		var now_ms := Time.get_ticks_msec()
+		if not paid.is_empty() and now_ms-game.ai_tech_last_resource_notice_ms >= 250:
+			game.ai_tech_last_resource_notice_ms = now_ms
+			game.resources_changed(paid.keys())
