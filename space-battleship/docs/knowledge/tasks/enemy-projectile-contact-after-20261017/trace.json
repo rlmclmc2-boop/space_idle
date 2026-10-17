@@ -1,0 +1,227 @@
+{
+  "display": "Windows",
+  "engine": "4.7.2-stable (official)",
+  "rows": [
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 0,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 650.000122070313,
+      "shot_count": 1,
+      "shot_y": 430.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 1,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 676.579833984375,
+      "shot_count": 1,
+      "shot_y": 442.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 2,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 703.159545898438,
+      "shot_count": 1,
+      "shot_y": 454.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 3,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 729.7392578125,
+      "shot_count": 1,
+      "shot_y": 466.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 4,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 756.319030761719,
+      "shot_count": 1,
+      "shot_y": 478.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 5,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 782.898742675781,
+      "shot_count": 1,
+      "shot_y": 490.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 6,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 809.478515625,
+      "shot_count": 1,
+      "shot_y": 502.0
+    },
+    {
+      "armour_loss": 0.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 7,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": 836.058227539063,
+      "shot_count": 1,
+      "shot_y": 514.0
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 8,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 9,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 10,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 11,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 12,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 13,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 14,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 15,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 16,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 17,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 18,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "contact_screen_y": 849.347961425781,
+      "contact_y": 629.348083496094,
+      "frame": 19,
+      "logical_hit_y": 520.0,
+      "player_y": 520.0,
+      "screen_y": null,
+      "shot_count": 0,
+      "shot_y": null
+    }
+  ],
+  "step_seconds": 0.0214285714285714
+}
