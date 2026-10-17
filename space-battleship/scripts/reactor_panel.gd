@@ -18,6 +18,7 @@ var network: Control
 var footer_flow: Control
 var module_scroll: ScrollContainer
 var module_content: Control
+var allocation_content: Control
 var allocation_scroll: ScrollContainer
 var level_label: Label
 var energy_label: Label
@@ -32,6 +33,7 @@ var total_track: Control
 var upgrade_buttons: Dictionary = {}
 var equalize_button: Button
 var module_controls: Dictionary = {}
+var visible_module_ids := PackedStringArray()
 var refreshing := false
 var dirty := true
 var refresh_elapsed := 0.0
@@ -143,7 +145,7 @@ func readout_plate(parent: Control, at: Vector2, dimensions: Vector2) -> Panel:
 
 func update_scroll_hint() -> void:
 	if not is_instance_valid(scroll_hint):return
-	var count := module_controls.size()
+	var count: int = module_scroll.module_count
 	var first: int = module_scroll.current_slot()+1
 	var last := mini(count,first+2)
 	var direction := UIText.t("reactor.scroll_more") if last<count else UIText.t("reactor.scroll_back") if first>1 else ""
@@ -257,7 +259,7 @@ func setup(owner_ui: Node) -> void:
 	allocation_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_ALWAYS
 	allocation_scroll.theme = SKIN.theme()
 	add_child(allocation_scroll)
-	var allocation_content := Control.new()
+	allocation_content = Control.new()
 	allocation_content.custom_minimum_size = Vector2(524,maxi(3,count)*110)
 	allocation_scroll.add_child(allocation_content)
 	module_scroll.get_v_scroll_bar().value_changed.connect(func(_value):
@@ -355,7 +357,7 @@ func setup(owner_ui: Node) -> void:
 			step_button.pressed.connect(step_allocation.bind(key,direction))
 			allocation_row.add_child(step_button)
 			steps.append(step_button)
-		module_controls[key] = {"index":index,"row":row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps,"manual_segment":manual_segment,"free_segment":free_segment}
+		module_controls[key] = {"index":index,"row":row,"allocation_row":allocation_row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps,"manual_segment":manual_segment,"free_segment":free_segment}
 		index += 1
 	move_child(readout_plate(self,Vector2(48,1080),Vector2(546,62)),allocation_label.get_parent().get_index())
 	total_track = visual(self,"segments",Vector2(63,1088),Vector2(510,40))
@@ -370,6 +372,30 @@ func setup(owner_ui: Node) -> void:
 	host.equipment_tabs.tab_changed.connect(func(_index: int):refresh())
 	refresh()
 
+func sync_module_visibility(game) -> void:
+	var available: PackedStringArray = game.reactor_available_modules()
+	if available == visible_module_ids:return
+	visible_module_ids = available
+	var index := 0
+	for key in game.reactor_modules():
+		var controls: Dictionary = module_controls[key]
+		var shown := available.has(key)
+		controls.row.visible = shown
+		controls.allocation_row.visible = shown
+		if not shown:continue
+		controls.index = index
+		controls.row.position.y = index * BAY_HEIGHT
+		controls.allocation_row.position.y = index * 110
+		index += 1
+	module_scroll.module_count = index
+	allocation_scroll.module_count = index
+	module_content.custom_minimum_size.y = maxi(3,index) * BAY_HEIGHT
+	allocation_content.custom_minimum_size.y = maxi(3,index) * 110
+	module_scroll.go_to_slot(module_scroll.current_slot())
+	allocation_scroll.go_to_slot(module_scroll.current_slot())
+	update_scroll_hint()
+	update_flow_offsets()
+
 func _exit_tree() -> void:
 	if is_instance_valid(host) and host.game.event.is_connected(on_game_event):host.game.event.disconnect(on_game_event)
 
@@ -383,7 +409,7 @@ func on_game_event(kind: String, payload: Dictionary) -> void:
 			if str(payload.id)==str(int(host.db.config.reactorUraniumId)):invalidate()
 		"resources_changed":
 			if payload.ids.has(str(int(host.db.config.reactorUraniumId))):invalidate()
-		"reactor_changed","unlocks_changed","planet_reforged":invalidate()
+		"reactor_changed","unlocks_changed","unlock","planet_reforged":invalidate()
 		"planet_changed":
 			if payload.has("reward") or payload.has("activated"):invalidate()
 
@@ -419,7 +445,7 @@ func update_module_animation_visibility() -> void:
 	var animate: bool = page_active() and not host.game.paused
 	var first: int = module_scroll.current_slot()
 	for controls in module_controls.values():
-		var in_view: bool = animate and controls.index >= first and controls.index < first+3
+		var in_view: bool = animate and controls.row.visible and controls.index >= first and controls.index < first+3
 		for key in ["branch","track","scene_fx"]:
 			var layer: Control = controls[key]
 			var powered: bool = layer.ratio > 0.0 or (key == "branch" and layer.trunk_ratio > 0.0)
@@ -451,6 +477,7 @@ func refresh() -> void:
 	refreshing = true
 	var animate: bool = not host.game.paused
 	var game = host.game
+	sync_module_visibility(game)
 	var capacity: int = game.reactor_capacity()
 	var allocated: int = game.reactor_allocated()
 	var available = game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)

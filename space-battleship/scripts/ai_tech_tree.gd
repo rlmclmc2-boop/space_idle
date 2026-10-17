@@ -20,6 +20,9 @@ static func required(game, id: String) -> float:
 static func eligibility(game, id: String) -> Dictionary:
 	var row: Dictionary = game.db.data.ai_tech_tree.get(id, {})
 	if row.is_empty():return {"ok":false,"reason":"unknown"}
+	if not game.ai_tech_factory_unlocked():return {"ok":false,"reason":"factory_locked"}
+	if row.has("legacy_unlock") and not game.content_unlocked("hightech",str(row.legacy_unlock)):
+		return {"ok":false,"reason":"legacy_locked"}
 	if str(row.get("unlock", "")) == "enhancement" and not game.enhancement_unlocked():
 		return {"ok":false,"reason":"enhancement_locked"}
 	var target := level(game, id) + 1
@@ -39,6 +42,7 @@ static func select(game, id: String) -> bool:
 	return true
 
 static func set_input(game, resource_id: String, amount: int) -> bool:
+	if not game.ai_tech_factory_unlocked():return false
 	if resource_id not in ["1", "2"] or amount < 0 or amount > 9007199254740991:return false
 	if int(game.profile.aiTechInput.get(resource_id, 0)) == amount:return false
 	game.profile.aiTechInput[resource_id] = amount
@@ -146,14 +150,12 @@ static func advance(game, dt: float) -> void:
 			if not game.native_before_configuration_change():break
 			game.profile.aiTechProgress[id] = 0.0
 			game.profile.aiTechLevels[id] = level(game,id) + 1
+			game.profile.aiTechActive = ""
+			game.profile.aiTechCompletionUnread = true
 			game.invalidate_stat_cache()
 			game.event.emit("hightech_complete", {"key":id})
 			changed = true
-			if not bool(eligibility(game,id).ok):
-				game.profile.aiTechActive = ""
-				game.event.emit("tech_tree_changed", {"reason":"prerequisite_stopped","id":id})
-				break
-			continue
+			break
 		step = minf(step, maxf(0.0, cost-progress)/speed)
 		if progress + step*speed + maxf(1.0,cost)*1e-12 >= cost:
 			if not game.native_before_configuration_change():break
@@ -173,12 +175,11 @@ static func advance(game, dt: float) -> void:
 		if float(game.profile.aiTechProgress[id]) + maxf(1.0,cost)*1e-12 >= cost:
 			game.profile.aiTechProgress[id] = 0.0
 			game.profile.aiTechLevels[id] = level(game,id) + 1
+			game.profile.aiTechActive = ""
+			game.profile.aiTechCompletionUnread = true
 			game.invalidate_stat_cache()
 			game.event.emit("hightech_complete", {"key":id})
-			if not bool(eligibility(game,id).ok):
-				game.profile.aiTechActive = ""
-				game.event.emit("tech_tree_changed", {"reason":"prerequisite_stopped","id":id})
-				break
+			break
 		id = str(game.profile.aiTechActive)
 	if changed:
 		game.save_dirty = true

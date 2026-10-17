@@ -150,7 +150,9 @@ var unlock_notice_started_ms := -1
 var tutorial_auto_skip := false
 var tutorial_settings_path := TUTORIAL_SETTINGS_PATH
 var unlock_pause_owned := false
-var unlock_previous_paused := false
+var intro_pause_owned := false
+var guidance_pause_owned := false
+var guidance_previous_paused := false
 var tutorial_skip_button: CheckButton
 var unlock_skip_checkbox: CheckBox
 var unlock_tutorial: Control
@@ -608,7 +610,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif help_open:
 				help_open = false
 				refresh_navigation()
-			else:
+			elif not guidance_pause_owned:
 				game.paused = not game.paused
 
 func _input(event: InputEvent) -> void:
@@ -880,6 +882,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			toast(UIText.t("upgrade.research_complete", {"name":str(db.data.ai_tech_tree.get(str(info.key),{}).get("name",info.key))}))
 			refresh_equipment_effects(str(info.key))
 			if is_instance_valid(hightech_page):hightech_page.invalidate()
+			refresh_ai_tech_completion_badge()
 		"tech_tree_changed":
 			if str(info.get("reason", "")) == "income_peak":refresh_equipment_effects("unification")
 			if is_instance_valid(hightech_page):hightech_page.invalidate()
@@ -961,14 +964,24 @@ func set_tutorial_auto_skip(enabled: bool) -> void:
 
 func sync_unlock_pause() -> void:
 	if game == null:return
-	var should_hold := not tutorial_auto_skip and not game.pending_unlocks.is_empty()
-	if should_hold and not unlock_pause_owned:
-		unlock_previous_paused = game.paused
-		unlock_pause_owned = true
+	unlock_pause_owned = not tutorial_auto_skip and not game.pending_unlocks.is_empty()
+	sync_guidance_pause()
+
+func set_intro_pause(hold: bool) -> void:
+	if intro_pause_owned == hold:return
+	intro_pause_owned = hold
+	sync_guidance_pause()
+
+func sync_guidance_pause() -> void:
+	if game == null:return
+	var should_hold := unlock_pause_owned or intro_pause_owned
+	if should_hold and not guidance_pause_owned:
+		guidance_previous_paused = game.paused
+		guidance_pause_owned = true
 		game.paused = true
-	elif not should_hold and unlock_pause_owned:
-		game.paused = unlock_previous_paused
-		unlock_pause_owned = false
+	elif not should_hold and guidance_pause_owned:
+		game.paused = guidance_previous_paused
+		guidance_pause_owned = false
 
 func show_save_page() -> void:
 	select_system(equipment_tabs.get_tab_idx_from_control(save_panel))
@@ -2378,7 +2391,7 @@ func build_workspace_shell() -> void:
 		navigation.pressed.connect(select_system.bind(index))
 		navigation_list.add_child(navigation)
 		system_nav_buttons.append(navigation)
-		if index in [6,9]:
+		if index in [1,6,9]:
 			var dot := Control.new()
 			dot.name = "ActivationBadge"
 			dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2395,6 +2408,7 @@ func select_system(index: int) -> void:
 	if index<0 or index>=equipment_tabs.get_tab_count() or equipment_tabs.is_tab_hidden(index):return
 	var previous := equipment_tabs.current_tab
 	set_ui_value(equipment_tabs,"current_tab",index)
+	if index==1 and previous==index and game.read_ai_tech_completion():refresh_ai_tech_completion_badge()
 	if index==9 and unread_hyperspace_reward():hyperspace_panel.select_section(0)
 	# A changed tab refreshes navigation in tab_changed. Keep same-tab requests current.
 	if previous==index:refresh_system_nav()
@@ -2403,6 +2417,11 @@ func refresh_planet_activation_badge() -> void:
 	if system_nav_buttons.size() <= 6:return
 	var dot := system_nav_buttons[6].get_node_or_null("ActivationBadge")
 	if is_instance_valid(dot):set_ui_value(dot, "visible", game.planet_buildings.has_ready(game))
+
+func refresh_ai_tech_completion_badge() -> void:
+	if system_nav_buttons.size() <= 1:return
+	var dot := system_nav_buttons[1].get_node_or_null("ActivationBadge")
+	if is_instance_valid(dot):set_ui_value(dot,"visible",bool(game.profile.aiTechCompletionUnread))
 
 func unread_hyperspace_reward() -> bool:
 	return is_instance_valid(hyperspace_panel) and bool(hyperspace_panel.reward_feedback.unread)
@@ -2418,6 +2437,7 @@ func refresh_hyperspace_badge() -> void:
 
 func refresh_system_nav() -> void:
 	if not is_instance_valid(equipment_tabs) or not is_instance_valid(workspace_title):return
+	refresh_ai_tech_completion_badge()
 	refresh_planet_activation_badge()
 	refresh_hyperspace_badge()
 	var selected := equipment_tabs.current_tab
@@ -2494,7 +2514,7 @@ func refresh_crew_tab_badge(index: int) -> void:
 func refresh_tab_visibility() -> void:
 	var pages: Array[bool] = []
 	pages.append(not game.profile.unlocked.is_empty())
-	pages.append(not db.data.ai_tech_tree.is_empty())
+	pages.append(game.ai_tech_factory_unlocked() and not db.data.ai_tech_tree.is_empty())
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.enhancement_unlocked())
@@ -3680,6 +3700,7 @@ func build_equipment_tabs() -> void:
 	refresh_tab_visibility()
 	equipment_tabs.tab_changed.connect(func(index):
 		equipment_page=index
+		if index==1:game.read_ai_tech_completion()
 		if is_instance_valid(enhancement_panel):
 			if index==4:enhancement_panel.open()
 			else:set_ui_value(enhancement_panel,"visible",false)

@@ -359,8 +359,8 @@ func show_entry(index: int) -> void:
     add_detail_line(UIText.t("enemy.intel.recovery",{"delay":duration_text(float(row.shieldDelay)),"rate":host.number(float(row.shieldRecovery)*100.0)}))
 
 func duration_text(seconds: float) -> String:
- # Every authored enemy timer and the reactive reset interval is in whole milliseconds.
- return str(roundi(seconds*1000.0))+" 毫秒"
+ # Authored timers have millisecond precision; present their value in seconds.
+ return str(snappedf(seconds,0.001))+" 秒"
 
 func add_detail_line(value: String) -> void:
  if detail_cursor == detail_lines.size():

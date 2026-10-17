@@ -1,0 +1,158 @@
+[
+  {
+    "calls": {
+      "max": 373.0,
+      "mean": 366.15625,
+      "p50": 367.0,
+      "p95": 371.0,
+      "p99": 372.0
+    },
+    "frames_us": {
+      "max": 89837,
+      "mean": 4705.52083333333,
+      "p50": 3754,
+      "p95": 6470,
+      "p99": 14592
+    },
+    "inputs": "zero",
+    "main_us": {
+      "max": 11996,
+      "mean": 2055.98125,
+      "p50": 1535,
+      "p95": 3583,
+      "p99": 5653
+    },
+    "memory": 264219662,
+    "memory_delta": 594201,
+    "missile_queue": {
+      "max": 3,
+      "mean": 0.114583333333333,
+      "p50": 0,
+      "p95": 2,
+      "p99": 3
+    },
+    "node_delta": 3,
+    "page": 0,
+    "primitives": {
+      "max": 32414.0,
+      "mean": 31184.5645833333,
+      "p50": 30996.0,
+      "p95": 32196.0,
+      "p99": 32360.0
+    },
+    "projectiles": {
+      "max": 7,
+      "mean": 4.57916666666667,
+      "p50": 4,
+      "p95": 7,
+      "p99": 7
+    },
+    "resource_events": 0,
+    "resources_delta": 0.0,
+    "row_count": 5,
+    "row_rebuilds": 0,
+    "scenario": 0,
+    "snapshot_calls": 0,
+    "switch_cpu_us": 584,
+    "switch_frame_us": 201460,
+    "timings": {},
+    "views": [
+      {
+        "calls": 95,
+        "mode": 4,
+        "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+        "size": "(572, 960)"
+      },
+      {
+        "calls": 0,
+        "mode": 0,
+        "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1577/Planets/@Node@2038/@SubViewport@2039",
+        "size": "(1024, 256)"
+      },
+      {
+        "calls": 0,
+        "mode": 0,
+        "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1577/Galaxy/@PanelContainer@2110/@VBoxContainer@2111/@PanelContainer@2204/@Control@2205/@Control@2206/@SubViewport@2208",
+        "size": "(185, 203)"
+      }
+    ]
+  },
+  {
+    "calls": {
+      "max": 394.0,
+      "mean": 386.547916666667,
+      "p50": 387.0,
+      "p95": 393.0,
+      "p99": 393.0
+    },
+    "frames_us": {
+      "max": 29866,
+      "mean": 3491.22291666667,
+      "p50": 2963,
+      "p95": 5681,
+      "p99": 6914
+    },
+    "inputs": "zero",
+    "main_us": {
+      "max": 4211,
+      "mean": 1096.16458333333,
+      "p50": 680,
+      "p95": 2791,
+      "p99": 3596
+    },
+    "memory": 266702440,
+    "memory_delta": 69060,
+    "missile_queue": {
+      "max": 0,
+      "mean": 0.0,
+      "p50": 0,
+      "p95": 0,
+      "p99": 0
+    },
+    "node_delta": 0,
+    "page": 1,
+    "primitives": {
+      "max": 40494.0,
+      "mean": 39025.15,
+      "p50": 38952.0,
+      "p95": 39928.0,
+      "p99": 40482.0
+    },
+    "projectiles": {
+      "max": 11,
+      "mean": 6.38958333333333,
+      "p50": 6,
+      "p95": 10,
+      "p99": 11
+    },
+    "resource_events": 0,
+    "resources_delta": 0.0,
+    "row_count": 5,
+    "row_rebuilds": 0,
+    "scenario": 1,
+    "snapshot_calls": 6,
+    "switch_cpu_us": 13274,
+    "switch_frame_us": 30990,
+    "timings": {},
+    "views": [
+      {
+        "calls": 95,
+        "mode": 4,
+        "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+        "size": "(572, 960)"
+      },
+      {
+        "calls": 0,
+        "mode": 0,
+        "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1577/Planets/@Node@2038/@SubViewport@2039",
+        "size": "(1024, 256)"
+      },
+      {
+        "calls": 0,
+        "mode": 0,
+        "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1577/Galaxy/@PanelContainer@2110/@VBoxContainer@2111/@PanelContainer@2204/@Control@2205/@Control@2206/@SubViewport@2208",
+        "size": "(185, 203)"
+      }
+    ]
+  }
+]

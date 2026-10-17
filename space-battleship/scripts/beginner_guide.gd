@@ -81,6 +81,9 @@ func _process(delta: float) -> void:
 func flags() -> Dictionary:
 	return host.game.profile.onboarding
 
+func intro_pending() -> bool:
+	return host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT] and not flags().intro and not flags().completed and (manually_opened or not flags().dismissed)
+
 func dismiss() -> void:
 	retreat_pending = false
 	retreat_defence.clear()
@@ -186,6 +189,7 @@ func recovery_adjusted() -> bool:
 func refresh() -> void:
 	if not is_instance_valid(host) or not is_instance_valid(panel):return
 	if host.equipment_tabs.current_tab==11:
+		host.set_intro_pause(intro_pending())
 		host.set_ui_value(panel,"visible",false)
 		host.set_ui_value(outline,"visible",false)
 		host.set_ui_value(reopen,"visible",false)
@@ -201,6 +205,7 @@ func refresh() -> void:
 	# Reconcile completion before deciding visibility, including while dismissed.
 	var enhancement_pending := enhancement_ready()
 	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending or enhancement_pending) else {"phase":"review"}
+	host.set_intro_pause(intro_pending())
 	var visible_now: bool = playing and not host.help_open and host.equipment_tabs.current_tab!=11 and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
 	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(reopen,"visible",show_reopen)
