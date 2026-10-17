@@ -1,0 +1,91 @@
+{
+  "display": "Windows",
+  "engine": "4.7.2-stable (official)",
+  "rows": [
+    {
+      "armour_loss": 0.0,
+      "frame": 0,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 430.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 1,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 442.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 2,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 454.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 3,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 466.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 4,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 478.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 5,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 490.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 6,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 502.0
+    },
+    {
+      "armour_loss": 0.0,
+      "frame": 7,
+      "player_y": 520.0,
+      "shot_count": 1,
+      "shot_y": 514.0
+    },
+    {
+      "armour_loss": 10.0,
+      "frame": 8,
+      "player_y": 520.0,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "frame": 9,
+      "player_y": 520.0,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "frame": 10,
+      "player_y": 520.0,
+      "shot_count": 0,
+      "shot_y": null
+    },
+    {
+      "armour_loss": 10.0,
+      "frame": 11,
+      "player_y": 520.0,
+      "shot_count": 0,
+      "shot_y": null
+    }
+  ],
+  "step_seconds": 0.0214285714285714
+}

@@ -117,3 +117,23 @@ python space-battleship/test/perf_ai_tech_investment.py
 ```
 
 The first command runs five identical 480-frame rich-combat scenarios (`zero`, `iron`, `uranium`, `both`, `both_1000`) on hidden and visible factory pages, captures PNGs and raw JSON/logs in its printed `test/work/ai-tech-perf-*` directory, and checks the native DLL SHA before launching. The second command captures 12 frames and a position/damage trace under ignored `.runtime/enemy-projectile-hull`; it fires the authored `laser_mon` projectile from 90 logical pixels above the player. Its headless compile/logic smoke passed with 12 trace frames and 10 armour damage at frame 8; graphical pixels remain pending. Both commands use this isolated checkout; `D:/放置` is read only for the engine executable.
+
+## Graphical five-mode acceptance run and hostile projectile trace
+
+GUI window was serially assigned by the integration owner, used for these two runs, then released for the level owner. Functional candidate: `feat/unlock-notice-copy-20261017@ff146621193cb9d9dd8f4401f00f3ae62de5bff0`; local main baseline: `main@d2f5db1aa4b8b10e563456bde03eaf337635ccf3`; original AI task base: `feat/ai-tech-tree-20261017@81968778c275798529770fcb0fec1eaa23866b66`. This candidate contains the first art wiring inherited from the base, not the concurrent art owner's later changes. No main merge was performed.
+
+Graphical engine read-only from `D:/放置/space-battleship/engine/Godot_v4.7.2-stable_win64.exe` (SHA256 `AB1824F85BFD8E0E4128182C000C4003A3E042245B2967848D089B2A04B22424`), Godot 4.7.2 OpenGL compatibility renderer, RTX 2060, 1373x883, vsync disabled and FPS uncapped. Native DLL in this isolated checkout came from `D:/CodexBuild/space_idle/stage4-7-main-perf-20261017/candidate/space-battleship/bin/space_native.dll`, SHA256 `DCCD40B52E086444EDD7291D2BEAD736B96F7876A53F989DF5549A1D4F99B30A`. Native ownership remains with `addons/native_battle/src` (execution kernel, combat presentation, retained presentation, space_native.cpp); all four source byte hashes match that build candidate and this task changed no native source or DLL. The rich whole-game data fixture is `test/fixtures/galaxy_1_complete.json`, SHA256 `72148C9DE7E70D783D45ADDC2B16CB9D601180371F361D9747DF6321232FDBAF`; AI technology data SHA256 `75BF5D5A90A7232B77CFA2D3DAB115B13BE2EB2BC5E5CC24FD0751C923C92029`; config workbook SHA256 `B7EF041DB8912C64F9C52A7FB0698DD63AC0E5DBC89AB31F0D552FAFD6E9B192`.
+
+All five modes used the same seed 1701, 480 measured frames after 15 warmup frames per page, rich combat fixture, and both hidden (`page=0`) and visible (`page=1`) factory views. Frame p95 is end-to-end measured microseconds, main p95 is script microseconds; draw calls are rendered p95 counts.
+
+| Investment (iron/uranium) | Hidden frame p95 µs | Visible frame p95 µs | Hidden main p95 µs | Visible main p95 µs | Hidden/visible draw calls p95 | Hidden/visible row rebuilds |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| zero (0/0) | 6470 | 5681 | 3583 | 2791 | 371/393 | 0/0 |
+| iron (100/0) | 6731 | 5266 | 3732 | 2732 | 370/385 | 0/0 |
+| uranium (0/100) | 6549 | 5581 | 3768 | 2943 | 370/385 | 0/0 |
+| both (100/100) | 6894 | 5981 | 4010 | 3074 | 371/385 | 0/0 |
+| both_1000 (1000/1000) | 6990 | 5797 | 3989 | 2850 | 371/385 | 0/0 |
+
+Raw per-mode JSON, engine logs, `summary.json`, and ten original full-screen PNGs are in `docs/knowledge/tasks/ai-tech-gui-five-20261017/`. The 1000/1000 mode's p95 frame time changed from zero by +520 µs on the hidden page and +116 µs on the visible page; this single uncapped sequential run is evidence for the tested fixture, not a hardware-independent FPS guarantee. Resource events were 0 in zero mode and 6–8 in invested modes; visible snapshots were 6–7, hidden snapshots 0; all modes had five retained rows and zero row rebuilds.
+
+The hostile projectile capture used authored `laser_mon` speed/damage against a live player model, then rendered each 12-logical-pixel step on the actual main scene. `docs/knowledge/tasks/enemy-projectile-hull-20261017/` contains original PNG frames 04–08 and `trace.json`. Frames 05–07 visibly place the hostile bolt over the front/player hull while `armour_loss=0`; at frame 08 the bolt is removed and armour loss becomes 10. This reproduces the visual penetration/late-hit complaint; it does not yet change native or legacy presentation. The issue is a rendering/collision alignment question for review before a native source change.
