@@ -29,6 +29,12 @@ for stage in range(1, 8):
 stage5 = [groups[str(group['id'])]['slots'] for group in levels[4]['groups']]
 assert [sum(i is not None for i in slots) for slots in stage5] == [3,3,10,10,1,1,3,10,1]
 assert [enemies[str(next(i for i in slots if i is not None))]['armourType'] for slots in stage5] == [2,2,1,1,1,1,2,1,1]
+for point, expected_visual in enumerate(('sentry','sentry','swarm','swarm','reactive','reactive','sentry','swarm','reactive'), 1):
+    units = [enemies[str(i)] for i in stage5[point-1] if i is not None]
+    assert all(unit.get('archetype_id') == expected_visual for unit in units)
+    if expected_visual == 'reactive':
+        assert all(unit.get('reactiveReduction') == 1 for unit in units)
+assert enemies['400004']['archetype_id'] == 'interceptor'
 print('STATIC PASS: point counts, single-resistance and attack family, stage5 composition, stage6/7 recharge')
 
 config = root / 'space-battleship/config_excel'
