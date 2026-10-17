@@ -2539,7 +2539,7 @@ func refresh_crew_tab_badge(index: int) -> void:
 func refresh_tab_visibility() -> void:
 	var pages: Array[bool] = []
 	pages.append(not game.profile.unlocked.is_empty())
-	pages.append(game.ai_tech_factory_unlocked() and not db.data.ai_tech_tree.is_empty())
+	pages.append(not tech_page_suppressed_for_perf() and game.ai_tech_factory_unlocked() and not db.data.ai_tech_tree.is_empty())
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.enhancement_unlocked())
@@ -3807,6 +3807,13 @@ func confirm_unequip(category: String, index: int) -> void:
 	dialog.popup_centered()
 
 func build_hightech_tab() -> void:
+	if tech_page_suppressed_for_perf():
+		# Preserve the fixed tab indices for the other pages, without creating
+		# the technology page, its signals, snapshots, or draw tree.
+		var absent_slot := Control.new()
+		absent_slot.name = "HightechAbsent"
+		equipment_tabs.add_child(absent_slot)
+		return
 	hightech_page = preload("res://scripts/ai_tech_factory_page.gd").new()
 	hightech_page.name = "Hightech"
 	equipment_tabs.add_child(hightech_page)
@@ -3816,6 +3823,9 @@ func build_hightech_tab() -> void:
 	hightech_page.research_requested.connect(on_ai_tech_research_requested)
 	hightech_page.investment_requested.connect(on_ai_tech_investment_requested)
 	hightech_page.set_snapshot(ai_tech_page_snapshot())
+
+func tech_page_suppressed_for_perf() -> bool:
+	return OS.has_feature("debug") and OS.get_environment("AI_TECH_PERF_PAGE_ABSENT") == "1"
 
 func ai_tech_page_snapshot() -> Dictionary:
 	return AI_TECH_VIEW.snapshot(game)
