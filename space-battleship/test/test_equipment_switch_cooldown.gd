@@ -29,9 +29,10 @@ func _initialize() -> void:
 	game.tick(5.0)
 	check(is_equal_approx(game.equipment_switch_remaining("weapons",0),10.0),"pause does not spend cooldown")
 	game.paused=false
-	game.tick(5.0)
-	check(is_equal_approx(game.equipment_switch_remaining("weapons",0),5.0),"game clock spends cooldown")
-	game.tick(5.0)
+	game.speed=3.0
+	game.tick(3.0) # main passes one real second multiplied by speed.
+	check(is_equal_approx(game.equipment_switch_remaining("weapons",0),7.0),"boosted game seconds spend cooldown")
+	game.tick(7.0)
 	check(game.equipment_switch_remaining("weapons",0)==0.0 and game.equip_slot("weapons",0,"laser"),"boundary permits switch")
 	game.db.config.equipmentSwitchCooldownSeconds=2.0
 	game.tick(10.0)
