@@ -78,6 +78,8 @@ static func record_income(game, id: String) -> void:
 	# The resource strip reports the rolling minute as an average per second.
 	var rate = N.divide(game.resource_minute_total(id),60.0)
 	if N.compare(rate,game.profile.aiIncomePeak.get(id, 0.0)) > 0:
+		# The resident kernel still owns combat stats until its state is exported.
+		if level(game, "unification") > 0 and not game.native_before_configuration_change():return
 		game.profile.aiIncomePeak[id] = rate
 		if level(game, "unification") > 0:
 			game.invalidate_stat_cache()
@@ -141,6 +143,7 @@ static func advance(game, dt: float) -> void:
 		if not is_finite(cost):break
 		var progress := float(game.profile.aiTechProgress.get(id,0.0))
 		if cost-progress <= maxf(1.0,cost)*1e-12:
+			if not game.native_before_configuration_change():break
 			game.profile.aiTechProgress[id] = 0.0
 			game.profile.aiTechLevels[id] = level(game,id) + 1
 			game.invalidate_stat_cache()
@@ -152,6 +155,8 @@ static func advance(game, dt: float) -> void:
 				break
 			continue
 		step = minf(step, maxf(0.0, cost-progress)/speed)
+		if progress + step*speed + maxf(1.0,cost)*1e-12 >= cost:
+			if not game.native_before_configuration_change():break
 		if step <= 0.0000000001:
 			for resource_id in factors:
 				if N.compare(game.profile.resources.get(resource_id,0),float(factors[resource_id])*0.0000000001) < 0:
