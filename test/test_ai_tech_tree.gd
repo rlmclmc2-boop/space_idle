@@ -25,6 +25,7 @@ func run() -> void:
 	var g := BattleGame.new(db,false)
 	check(g.tech_tree_snapshot().ai_count == 1 and g.tech_tree_snapshot().status == "idle", "initial AI and idle state")
 	var view: Dictionary = VIEW.snapshot(g)
+	check(str(view.technologies[0].generation_text).contains("Lv.0") and str(view.technologies[0].generation_text).contains("AI"), "page header shows initial level and actual AI count")
 	check(view.technologies.size() == 8 and view.status_text == "暂无研究，请选择科技", "page has eight configured technologies and idle prompt")
 	check(VIEW.model_id("equipment_precision") == "equipment_finishing" and VIEW.model_id("joint_integration") == "unification", "art IDs map to configured IDs")
 	check(near(AITech.required(g,"singularity"),60.0), "first level time")

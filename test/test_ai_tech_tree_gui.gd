@@ -53,6 +53,7 @@ func run() -> void:
 	check(page.status_text.text == str(VIEW.snapshot(main.game).status_text), "idle prompt uses game snapshot")
 	page.set_drawer_open(true)
 	await frame()
+	check(page.row_nodes.values().all(func(row): return not str(row.effect.text).contains("由游戏") and not str(row.condition.text).contains("由游戏")), "drawer uses live effects and prerequisites without placeholders")
 	capture("00-choose-research")
 	page.row_nodes["weapon_accuracy"].action.pressed.emit()
 	await frame()
@@ -61,6 +62,8 @@ func run() -> void:
 	main.game.advance_hightech(10.0)
 	page.invalidate()
 	await frame()
+	var selected: Dictionary = VIEW.snapshot(main.game).technologies.filter(func(item): return item.id == "weapon_accuracy")[0]
+	check(page.active_meta.text == str(selected.generation_text) and page.active_meta.text.contains("Lv.0"), "header shows real level and current benefit")
 	var progress := float(main.game.profile.aiTechProgress.weapon_accuracy)
 	check(progress > 0.0 and page.progress_text.text != "0%", "real progress reaches page")
 	capture("01-research-progress")
