@@ -454,6 +454,9 @@ func load_progress_data(raw: Dictionary) -> void:
 	if raw.get("loadout") is Dictionary:
 		profile.loadout = raw.loadout.duplicate(true)
 	ensure_loadout()
+	# Deadlines and the production clock are stored in the same time domain.
+	if nonnegative_number(raw.get("productionElapsed")):
+		profile.productionElapsed = float(raw.productionElapsed)
 	profile.equipmentSwitchUntil = {}
 	if raw.get("equipmentSwitchUntil") is Dictionary:
 		for category in ["weapons", "defence"]:
@@ -4435,6 +4438,8 @@ func advance_shared_clock_and_economy(dt:float)->void:
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():
 		drone_combat.restore_rebuild(self)
+		profile.equipmentSwitchUntil.clear()
+		save_dirty = true
 		if guarding_here():
 			if guard_engaged and is_final_encounter():
 				guard_engaged = false
