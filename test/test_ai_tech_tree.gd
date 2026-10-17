@@ -46,6 +46,7 @@ func run() -> void:
 	check(bool(AITech.eligibility(g,"fragment_condensation").ok) and VIEW.snapshot(g).technologies.size()==5,"stage twelve exposes fragment research")
 	check(VIEW.model_id("equipment_precision") == "equipment_finishing" and VIEW.model_id("joint_integration") == "unification", "art IDs map to configured IDs")
 	var singularity_row: Dictionary = db.data.ai_tech_tree["singularity"]
+	check(float(singularity_row.base_seconds)==60.0,"AI singularity first level follows the 60-second specification")
 	var first_seconds := float(singularity_row.base_seconds) * pow(float(singularity_row.growth), 0.0)
 	var next_seconds := float(singularity_row.base_seconds) * pow(float(singularity_row.growth), 1.0)
 	check(near(AITech.required(g,"singularity"),first_seconds), "first level time follows the current table")

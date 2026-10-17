@@ -86,3 +86,19 @@ Graphical main-scene smoke used Godot 4.7.2 with OpenGL on an RTX 2060, 90 rende
 External branch push remains blocked by auto-review: it judged task-branch GitHub push insufficiently authorized and the remote not verified. No indirect push was attempted. The branch is local pending direct user authorization or another approved Git handoff.
 
 Affected headless checks after these changes: `AI_TECH_TREE_CHECKS=48 FAILURES=0`; `AI_TECH_TUTORIAL_CHECKS=6 FAILURES=0`; `GATE_CHECK_OK`; `TECH_STOP_BADGE_OK`; `EQUIPMENT_SWITCH_COOLDOWN checks=15 failures=0`; `Projectile lifecycle: 32 checks, 0 failures`; and `Unlock table: 707 checks, 0 failures` with isolated user data. `res://main.tscn --headless --quit-after 2` also exited 0. The five-mode graphical performance runner has a two-frame headless compile/smoke pass; its full graphical measurements are pending the next shared GUI window. The legacy jewel-furnace test remains an outdated scientist-flow fixture and currently raises an array bounds script error; it is not counted as passed.
+
+A specification comparison found the singularity row's first-level time still at 20 seconds, while `docs/tasks/AI_TECH_TREE_20261017.md` specifies 60. It is corrected to 60 in `data/ai_tech_tree.json`; the newly added assertion yields `AI_TECH_TREE_CHECKS=49 FAILURES=0`. No other technology time or factor was changed. The unified `0<R<1` income factor still uses `max(1,1+log10(R)/5)` and therefore remains exactly 1 for that interval.
+
+Workbook cell audit against pre-change `97007e78`: `CONFIG_XLSX_AUDIT_OK 47 existing rows unchanged; appended row 48`. The projected game config equals the workbook across all 38 config entries.
+
+Five-mode rich headless comparison (same fixture/seed, 480 realtime frames on each of hidden page 0 and open factory page 1; raw JSON and per-mode logs named `ai-tech-investment-five-headless-*`):
+
+| Iron / uranium per game second | Hidden events / snapshots / rebuilds | Visible events / snapshots / rebuilds | Hidden main p95 µs | Visible main p95 µs | Hidden / visible frame p95 µs |
+|---|---|---|---:|---:|---:|
+| 0 / 0 | 0 / 0 / 0 | 0 / 13 / 0 | 4408 | 3161 | 6927 / 6923 |
+| 100 / 0 | 13 / 0 / 0 | 13 / 13 / 0 | 4409 | 3301 | 6920 / 6924 |
+| 0 / 100 | 13 / 0 / 0 | 13 / 13 / 0 | 4028 | 3264 | 6919 / 6926 |
+| 100 / 100 | 13 / 0 / 0 | 13 / 13 / 0 | 4286 | 3300 | 6924 / 6930 |
+| 1000 / 1000 | 13 / 0 / 0 | 13 / 13 / 0 | 4342 | 3339 | 6927 / 6928 |
+
+All hidden runs had node delta +3 from ordinary combat; all visible runs had node delta 0. These are CPU and headless frame timings, not graphical FPS. The graphical run and screenshots remain pending the serial window.

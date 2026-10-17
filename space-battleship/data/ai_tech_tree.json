@@ -3,7 +3,7 @@
     "name": "AI奇点",
     "description": "每级增加 1 个 AI，提高所有研究速度。",
     "tier": "independent",
-    "base_seconds": 20,
+    "base_seconds": 60,
     "growth": 1.8,
     "effect": "ai_count",
     "factor": 1,

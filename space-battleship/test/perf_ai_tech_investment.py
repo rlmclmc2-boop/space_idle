@@ -40,7 +40,8 @@ def main() -> int:
         location = area / "userdata" / folder
         location.mkdir(parents=True, exist_ok=True)
         env[key] = str(location)
-    env.update(PERF_RICH="1", PERF_REALTIME="1", PERF_PAGES="0,1", PERF_FRAMES="480", PERF_BALANCE="1e80", PERF_CAPTURE="1")
+    headless = os.environ.get("PERF_HEADLESS") == "1"
+    env.update(PERF_RICH="1", PERF_REALTIME="1", PERF_PAGES="0,1", PERF_FRAMES="480", PERF_BALANCE="1e80", PERF_CAPTURE="0" if headless else "1")
     engine = [str(GODOT), "--path", str(project)]
     print(f"Evidence: {area}", flush=True)
     with (area / "import.log").open("w", encoding="utf-8") as output:
@@ -49,7 +50,7 @@ def main() -> int:
     for mode in ("zero", "iron", "uranium", "both", "both_1000"):
         env["PERF_AI_INPUTS"] = mode
         with (area / f"{mode}.log").open("w", encoding="utf-8") as output:
-            subprocess.run([*engine, "--audio-driver", "Dummy", "--disable-vsync", "--script", "res://test/perf_ai_tech_investment.gd"], env=env, stdout=output, stderr=subprocess.STDOUT, timeout=240, check=True)
+            subprocess.run([*engine, *(["--headless"] if headless else []), "--audio-driver", "Dummy", "--disable-vsync", "--script", "res://test/perf_ai_tech_investment.gd"], env=env, stdout=output, stderr=subprocess.STDOUT, timeout=240, check=True)
         rows = json.loads((project / ".runtime/ai-tech-investment-perf.json").read_text(encoding="utf-8"))
         results[mode] = rows
         (area / f"{mode}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")

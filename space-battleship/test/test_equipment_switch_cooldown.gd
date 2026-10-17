@@ -42,6 +42,14 @@ func _initialize() -> void:
 	check(restored.equipment_switch_remaining("weapons",0)>0.0,"cooldown survives save and load")
 	game.clear_level()
 	check(game.equipment_switch_remaining("weapons",0)==0.0 and game.equipment_switch_remaining("defence",0)==0.0,"stage clear clears every slot")
+	var multi := fixture()
+	multi.profile.selectedShip="Destroyer"
+	multi.profile.loadout=multi.default_loadout("Destroyer",multi.profile.unlocked)
+	multi.reset_player()
+	check(multi.equip_slot("weapons",0,"cannon"),"two-slot fixture switches first weapon")
+	multi.tick(5.0)
+	check(multi.equipment_switch_remaining("weapons",1)==0.0 and multi.equip_slot("weapons",1,"laser"),"second weapon slot switches independently")
+	check(is_equal_approx(multi.equipment_switch_remaining("weapons",0),5.0) and is_equal_approx(multi.equipment_switch_remaining("weapons",1),10.0),"same-category slots have separate deadlines")
 	var fallen := fixture()
 	check(fallen.equip_slot("weapons",0,"cannon"),"death fixture switches")
 	fallen.player.armour=0.0
