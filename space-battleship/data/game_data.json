@@ -261668,10 +261668,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "重脉冲哨卫",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -261728,10 +261728,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "回充护卫舰",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -261760,10 +261760,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "重击炮艇",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -261820,10 +261820,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "再生护卫舰",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -261852,10 +261852,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "远程炮台",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -261882,10 +261882,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "束流壁垒",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -261914,10 +261914,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "深空屏障舰",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -261946,10 +261946,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "重击哨卫",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -261981,10 +261981,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "回充堡垒",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -262048,10 +262048,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "长距炮艇",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -262078,10 +262078,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "持续压制舰",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -262145,10 +262145,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "高压突击舰",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -262180,10 +262180,10 @@
       "shieldType": 2,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
-      "archetype_id": "shielded",
+      "archetype_id": "sentry",
       "intelTrait": "回充屏障",
       "intelName": "异空间门卫",
-      "intelVisualRef": "shielded",
+      "intelVisualRef": "sentry",
       "intelMechanics": [
         "shieldRecovery"
       ],
@@ -262212,10 +262212,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "压制炮艇",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
@@ -262272,10 +262272,10 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "sentry",
       "intelTrait": "间歇重炮",
       "intelName": "截击炮艇",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "sentry",
       "intelMechanics": [],
       "drops": [
         {
