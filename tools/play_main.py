@@ -8,7 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 # Integration owner must advance this to the reviewed main commit after merging.
-BASE = 'da95e636c1ad2a5c6b8ce5d5c081fca2bc1fd5b2'
+BASE = '679712193b55394096c33f3825228064e5b93268'
 DLL_SHA = 'dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a'
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',

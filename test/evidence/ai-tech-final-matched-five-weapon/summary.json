@@ -1,0 +1,782 @@
+{
+  "candidate_commit": "679712193b55394096c33f3825228064e5b93268",
+  "baseline": "same candidate with debug-only technology page construction suppressed",
+  "cases": {
+    "mixed": {
+      "runs": [
+        {
+          "name": "mixed-absent-A",
+          "valid": true,
+          "frames": 1047,
+          "frame_mean_ms": 7.594425978987584,
+          "frame_p95_ms": 11.086,
+          "events": {
+            "beam_hit": 157,
+            "enemy_hits": 4904,
+            "enhancement_chain": 2145,
+            "enhancement_secondary": 23,
+            "equipment_stats": 260,
+            "fire": 1584,
+            "friendly_periods": 157,
+            "galaxy_unlocked": 1,
+            "hit": 5144,
+            "player_hits": 240,
+            "projectile_impact": 3728,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 202,
+            "beam_started": 2,
+            "drone_fire": 198,
+            "enhancement_chain": 2926,
+            "enhancement_secondary": 36,
+            "fire": 2287,
+            "hit": 6781
+          }
+        },
+        {
+          "name": "mixed-closed-B",
+          "valid": true,
+          "frames": 1063,
+          "frame_mean_ms": 7.47466698024459,
+          "frame_p95_ms": 10.796,
+          "events": {
+            "beam_hit": 157,
+            "enemy_hits": 4904,
+            "enhancement_chain": 2145,
+            "enhancement_secondary": 23,
+            "equipment_stats": 260,
+            "fire": 1584,
+            "friendly_periods": 157,
+            "galaxy_unlocked": 1,
+            "hit": 5144,
+            "player_hits": 240,
+            "projectile_impact": 3728,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 202,
+            "beam_started": 2,
+            "drone_fire": 198,
+            "enhancement_chain": 2926,
+            "enhancement_secondary": 36,
+            "fire": 2287,
+            "hit": 6781
+          }
+        },
+        {
+          "name": "mixed-open-C",
+          "valid": true,
+          "frames": 1098,
+          "frame_mean_ms": 7.230750455373406,
+          "frame_p95_ms": 10.39,
+          "events": {
+            "beam_hit": 157,
+            "enemy_hits": 4904,
+            "enhancement_chain": 2145,
+            "enhancement_secondary": 23,
+            "equipment_stats": 260,
+            "fire": 1584,
+            "friendly_periods": 157,
+            "galaxy_unlocked": 1,
+            "hit": 5144,
+            "player_hits": 240,
+            "projectile_impact": 3728,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 202,
+            "beam_started": 2,
+            "drone_fire": 198,
+            "enhancement_chain": 2926,
+            "enhancement_secondary": 36,
+            "fire": 2287,
+            "hit": 6781
+          }
+        },
+        {
+          "name": "mixed-closed-D",
+          "valid": true,
+          "frames": 1001,
+          "frame_mean_ms": 7.934344655344655,
+          "frame_p95_ms": 11.94,
+          "events": {
+            "beam_hit": 157,
+            "enemy_hits": 4904,
+            "enhancement_chain": 2145,
+            "enhancement_secondary": 23,
+            "equipment_stats": 260,
+            "fire": 1584,
+            "friendly_periods": 157,
+            "galaxy_unlocked": 1,
+            "hit": 5144,
+            "player_hits": 240,
+            "projectile_impact": 3728,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 202,
+            "beam_started": 2,
+            "drone_fire": 198,
+            "enhancement_chain": 2926,
+            "enhancement_secondary": 36,
+            "fire": 2287,
+            "hit": 6781
+          }
+        },
+        {
+          "name": "mixed-absent-E",
+          "valid": true,
+          "frames": 971,
+          "frame_mean_ms": 8.175228630278063,
+          "frame_p95_ms": 12.311,
+          "events": {
+            "beam_hit": 157,
+            "enemy_hits": 4904,
+            "enhancement_chain": 2145,
+            "enhancement_secondary": 23,
+            "equipment_stats": 260,
+            "fire": 1584,
+            "friendly_periods": 157,
+            "galaxy_unlocked": 1,
+            "hit": 5144,
+            "player_hits": 240,
+            "projectile_impact": 3728,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 202,
+            "beam_started": 2,
+            "drone_fire": 198,
+            "enhancement_chain": 2926,
+            "enhancement_secondary": 36,
+            "fire": 2287,
+            "hit": 6781
+          }
+        }
+      ],
+      "events_equal": true,
+      "stress_equal": true,
+      "integrated_events_equal": true,
+      "integrated_stress_equal": true
+    },
+    "laser": {
+      "runs": [
+        {
+          "name": "laser-absent-A",
+          "valid": true,
+          "frames": 1334,
+          "frame_mean_ms": 5.952312593703148,
+          "frame_p95_ms": 9.649,
+          "events": {
+            "enemy_hits": 4884,
+            "enhancement_chain": 2783,
+            "enhancement_secondary": 26,
+            "equipment_stats": 242,
+            "fire": 2210,
+            "galaxy_unlocked": 1,
+            "hit": 5124,
+            "player_hits": 240,
+            "projectile_impact": 5124,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "enhancement_chain": 3828,
+            "enhancement_secondary": 41,
+            "fire": 3264,
+            "hit": 6992
+          }
+        },
+        {
+          "name": "laser-closed-B",
+          "valid": true,
+          "frames": 1447,
+          "frame_mean_ms": 5.49986800276434,
+          "frame_p95_ms": 8.821,
+          "events": {
+            "enemy_hits": 4884,
+            "enhancement_chain": 2783,
+            "enhancement_secondary": 26,
+            "equipment_stats": 242,
+            "fire": 2210,
+            "galaxy_unlocked": 1,
+            "hit": 5124,
+            "player_hits": 240,
+            "projectile_impact": 5124,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "enhancement_chain": 3828,
+            "enhancement_secondary": 41,
+            "fire": 3264,
+            "hit": 6992
+          }
+        },
+        {
+          "name": "laser-open-C",
+          "valid": true,
+          "frames": 1577,
+          "frame_mean_ms": 5.036284717818643,
+          "frame_p95_ms": 7.837,
+          "events": {
+            "enemy_hits": 4884,
+            "enhancement_chain": 2783,
+            "enhancement_secondary": 26,
+            "equipment_stats": 242,
+            "fire": 2210,
+            "galaxy_unlocked": 1,
+            "hit": 5124,
+            "player_hits": 240,
+            "projectile_impact": 5124,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "enhancement_chain": 3828,
+            "enhancement_secondary": 41,
+            "fire": 3264,
+            "hit": 6992
+          }
+        },
+        {
+          "name": "laser-closed-D",
+          "valid": true,
+          "frames": 1401,
+          "frame_mean_ms": 5.67578301213419,
+          "frame_p95_ms": 9.304,
+          "events": {
+            "enemy_hits": 4884,
+            "enhancement_chain": 2783,
+            "enhancement_secondary": 26,
+            "equipment_stats": 242,
+            "fire": 2210,
+            "galaxy_unlocked": 1,
+            "hit": 5124,
+            "player_hits": 240,
+            "projectile_impact": 5124,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "enhancement_chain": 3828,
+            "enhancement_secondary": 41,
+            "fire": 3264,
+            "hit": 6992
+          }
+        },
+        {
+          "name": "laser-absent-E",
+          "valid": true,
+          "frames": 1398,
+          "frame_mean_ms": 5.694499284692418,
+          "frame_p95_ms": 9.063,
+          "events": {
+            "enemy_hits": 4884,
+            "enhancement_chain": 2783,
+            "enhancement_secondary": 26,
+            "equipment_stats": 242,
+            "fire": 2210,
+            "galaxy_unlocked": 1,
+            "hit": 5124,
+            "player_hits": 240,
+            "projectile_impact": 5124,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "enhancement_chain": 3828,
+            "enhancement_secondary": 41,
+            "fire": 3264,
+            "hit": 6992
+          }
+        }
+      ],
+      "events_equal": true,
+      "stress_equal": true,
+      "integrated_events_equal": true,
+      "integrated_stress_equal": true
+    },
+    "cannon": {
+      "runs": [
+        {
+          "name": "cannon-absent-A",
+          "valid": true,
+          "frames": 966,
+          "frame_mean_ms": 8.292434782608696,
+          "frame_p95_ms": 12.96,
+          "events": {
+            "enemy_hits": 1650,
+            "enhancement_chain": 1309,
+            "enhancement_secondary": 7,
+            "equipment_stats": 215,
+            "fire": 366,
+            "galaxy_unlocked": 1,
+            "hit": 1890,
+            "player_hits": 240,
+            "projectile_impact": 1575,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 85,
+            "enhancement_chain": 1749,
+            "enhancement_secondary": 12,
+            "fire": 531,
+            "hit": 2540
+          }
+        },
+        {
+          "name": "cannon-closed-B",
+          "valid": true,
+          "frames": 1064,
+          "frame_mean_ms": 7.531836466165413,
+          "frame_p95_ms": 11.322,
+          "events": {
+            "enemy_hits": 1650,
+            "enhancement_chain": 1309,
+            "enhancement_secondary": 7,
+            "equipment_stats": 215,
+            "fire": 366,
+            "galaxy_unlocked": 1,
+            "hit": 1890,
+            "player_hits": 240,
+            "projectile_impact": 1575,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 85,
+            "enhancement_chain": 1749,
+            "enhancement_secondary": 12,
+            "fire": 531,
+            "hit": 2540
+          }
+        },
+        {
+          "name": "cannon-open-C",
+          "valid": true,
+          "frames": 1154,
+          "frame_mean_ms": 6.943854419410745,
+          "frame_p95_ms": 10.487,
+          "events": {
+            "enemy_hits": 1650,
+            "enhancement_chain": 1309,
+            "enhancement_secondary": 7,
+            "equipment_stats": 215,
+            "fire": 366,
+            "galaxy_unlocked": 1,
+            "hit": 1890,
+            "player_hits": 240,
+            "projectile_impact": 1575,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 85,
+            "enhancement_chain": 1749,
+            "enhancement_secondary": 12,
+            "fire": 531,
+            "hit": 2540
+          }
+        },
+        {
+          "name": "cannon-closed-D",
+          "valid": true,
+          "frames": 1077,
+          "frame_mean_ms": 7.430733519034355,
+          "frame_p95_ms": 11.244,
+          "events": {
+            "enemy_hits": 1650,
+            "enhancement_chain": 1309,
+            "enhancement_secondary": 7,
+            "equipment_stats": 215,
+            "fire": 366,
+            "galaxy_unlocked": 1,
+            "hit": 1890,
+            "player_hits": 240,
+            "projectile_impact": 1575,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 85,
+            "enhancement_chain": 1749,
+            "enhancement_secondary": 12,
+            "fire": 531,
+            "hit": 2540
+          }
+        },
+        {
+          "name": "cannon-absent-E",
+          "valid": true,
+          "frames": 1057,
+          "frame_mean_ms": 7.58356669820246,
+          "frame_p95_ms": 11.4,
+          "events": {
+            "enemy_hits": 1650,
+            "enhancement_chain": 1309,
+            "enhancement_secondary": 7,
+            "equipment_stats": 215,
+            "fire": 366,
+            "galaxy_unlocked": 1,
+            "hit": 1890,
+            "player_hits": 240,
+            "projectile_impact": 1575,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 85,
+            "enhancement_chain": 1749,
+            "enhancement_secondary": 12,
+            "fire": 531,
+            "hit": 2540
+          }
+        }
+      ],
+      "events_equal": true,
+      "stress_equal": true,
+      "integrated_events_equal": true,
+      "integrated_stress_equal": true
+    },
+    "missile": {
+      "runs": [
+        {
+          "name": "missile-absent-A",
+          "valid": true,
+          "frames": 1119,
+          "frame_mean_ms": 7.118380697050939,
+          "frame_p95_ms": 9.925,
+          "events": {
+            "enemy_hits": 2176,
+            "enhancement_chain": 1320,
+            "enhancement_secondary": 12,
+            "equipment_stats": 208,
+            "fire": 791,
+            "galaxy_unlocked": 1,
+            "hit": 2416,
+            "player_hits": 240,
+            "projectile_impact": 2116,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 410,
+            "enhancement_chain": 1727,
+            "enhancement_secondary": 16,
+            "fire": 1115,
+            "hit": 3137
+          }
+        },
+        {
+          "name": "missile-closed-B",
+          "valid": true,
+          "frames": 1139,
+          "frame_mean_ms": 6.990388937664618,
+          "frame_p95_ms": 9.788,
+          "events": {
+            "enemy_hits": 2176,
+            "enhancement_chain": 1320,
+            "enhancement_secondary": 12,
+            "equipment_stats": 208,
+            "fire": 791,
+            "galaxy_unlocked": 1,
+            "hit": 2416,
+            "player_hits": 240,
+            "projectile_impact": 2116,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 410,
+            "enhancement_chain": 1727,
+            "enhancement_secondary": 16,
+            "fire": 1115,
+            "hit": 3137
+          }
+        },
+        {
+          "name": "missile-open-C",
+          "valid": true,
+          "frames": 1195,
+          "frame_mean_ms": 6.677189121338912,
+          "frame_p95_ms": 9.226,
+          "events": {
+            "enemy_hits": 2176,
+            "enhancement_chain": 1320,
+            "enhancement_secondary": 12,
+            "equipment_stats": 208,
+            "fire": 791,
+            "galaxy_unlocked": 1,
+            "hit": 2416,
+            "player_hits": 240,
+            "projectile_impact": 2116,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 410,
+            "enhancement_chain": 1727,
+            "enhancement_secondary": 16,
+            "fire": 1115,
+            "hit": 3137
+          }
+        },
+        {
+          "name": "missile-closed-D",
+          "valid": true,
+          "frames": 1138,
+          "frame_mean_ms": 7.004806678383128,
+          "frame_p95_ms": 9.796,
+          "events": {
+            "enemy_hits": 2176,
+            "enhancement_chain": 1320,
+            "enhancement_secondary": 12,
+            "equipment_stats": 208,
+            "fire": 791,
+            "galaxy_unlocked": 1,
+            "hit": 2416,
+            "player_hits": 240,
+            "projectile_impact": 2116,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 410,
+            "enhancement_chain": 1727,
+            "enhancement_secondary": 16,
+            "fire": 1115,
+            "hit": 3137
+          }
+        },
+        {
+          "name": "missile-absent-E",
+          "valid": true,
+          "frames": 1119,
+          "frame_mean_ms": 7.117452189454871,
+          "frame_p95_ms": 9.797,
+          "events": {
+            "enemy_hits": 2176,
+            "enhancement_chain": 1320,
+            "enhancement_secondary": 12,
+            "equipment_stats": 208,
+            "fire": 791,
+            "galaxy_unlocked": 1,
+            "hit": 2416,
+            "player_hits": 240,
+            "projectile_impact": 2116,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "drone_fire": 410,
+            "enhancement_chain": 1727,
+            "enhancement_secondary": 16,
+            "fire": 1115,
+            "hit": 3137
+          }
+        }
+      ],
+      "events_equal": true,
+      "stress_equal": true,
+      "integrated_events_equal": true,
+      "integrated_stress_equal": true
+    },
+    "longLaser": {
+      "runs": [
+        {
+          "name": "longLaser-absent-A",
+          "valid": true,
+          "frames": 921,
+          "frame_mean_ms": 8.653631921824104,
+          "frame_p95_ms": 13.225,
+          "events": {
+            "beam_hit": 1560,
+            "critical_impact": 156,
+            "enemy_hits": 18252,
+            "equipment_stats": 192,
+            "fire": 240,
+            "friendly_periods": 1560,
+            "galaxy_unlocked": 1,
+            "hit": 18492,
+            "player_hits": 240,
+            "projectile_impact": 240,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 2000,
+            "beam_started": 20,
+            "drone_fire": 10,
+            "enhancement_secondary": 1,
+            "fire": 380,
+            "hit": 23689
+          }
+        },
+        {
+          "name": "longLaser-closed-B",
+          "valid": true,
+          "frames": 919,
+          "frame_mean_ms": 8.66785092491839,
+          "frame_p95_ms": 13.251,
+          "events": {
+            "beam_hit": 1560,
+            "critical_impact": 156,
+            "enemy_hits": 18252,
+            "equipment_stats": 192,
+            "fire": 240,
+            "friendly_periods": 1560,
+            "galaxy_unlocked": 1,
+            "hit": 18492,
+            "player_hits": 240,
+            "projectile_impact": 240,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 2000,
+            "beam_started": 20,
+            "drone_fire": 10,
+            "enhancement_secondary": 1,
+            "fire": 380,
+            "hit": 23689
+          }
+        },
+        {
+          "name": "longLaser-open-C",
+          "valid": true,
+          "frames": 949,
+          "frame_mean_ms": 8.398583772391992,
+          "frame_p95_ms": 12.884,
+          "events": {
+            "beam_hit": 1560,
+            "critical_impact": 156,
+            "enemy_hits": 18252,
+            "equipment_stats": 192,
+            "fire": 240,
+            "friendly_periods": 1560,
+            "galaxy_unlocked": 1,
+            "hit": 18492,
+            "player_hits": 240,
+            "projectile_impact": 240,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 2000,
+            "beam_started": 20,
+            "drone_fire": 10,
+            "enhancement_secondary": 1,
+            "fire": 380,
+            "hit": 23689
+          }
+        },
+        {
+          "name": "longLaser-closed-D",
+          "valid": true,
+          "frames": 897,
+          "frame_mean_ms": 8.887595317725753,
+          "frame_p95_ms": 13.378,
+          "events": {
+            "beam_hit": 1560,
+            "critical_impact": 156,
+            "enemy_hits": 18252,
+            "equipment_stats": 192,
+            "fire": 240,
+            "friendly_periods": 1560,
+            "galaxy_unlocked": 1,
+            "hit": 18492,
+            "player_hits": 240,
+            "projectile_impact": 240,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 2000,
+            "beam_started": 20,
+            "drone_fire": 10,
+            "enhancement_secondary": 1,
+            "fire": 380,
+            "hit": 23689
+          }
+        },
+        {
+          "name": "longLaser-absent-E",
+          "valid": true,
+          "frames": 903,
+          "frame_mean_ms": 8.82860908084164,
+          "frame_p95_ms": 13.274,
+          "events": {
+            "beam_hit": 1560,
+            "critical_impact": 156,
+            "enemy_hits": 18252,
+            "equipment_stats": 192,
+            "fire": 240,
+            "friendly_periods": 1560,
+            "galaxy_unlocked": 1,
+            "hit": 18492,
+            "player_hits": 240,
+            "projectile_impact": 240,
+            "resources_changed": 64,
+            "upgrade": 64,
+            "upgrades_completed": 8
+          },
+          "stress_counts": {
+            "beam_hit": 2000,
+            "beam_started": 20,
+            "drone_fire": 10,
+            "enhancement_secondary": 1,
+            "fire": 380,
+            "hit": 23689
+          }
+        }
+      ],
+      "events_equal": true,
+      "stress_equal": true,
+      "integrated_events_equal": true,
+      "integrated_stress_equal": true
+    }
+  },
+  "all_valid": true,
+  "all_events_equal": true,
+  "all_stress_equal": true,
+  "integrated_events_equal": true,
+  "integrated_stress_equal": true,
+  "native_sha256": "dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a",
+  "fixture_sha256": {
+    "mixed": "cc310aec9fddeb6b2199c811e47ff2eb4ddd82c108c381407d3c91dd13194db4",
+    "combat_stress": "227f9cc6bba709ba29a41041c01eab3d4064e58cdc1fc23b0f4fb92e31cb9dfe"
+  },
+  "engine_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643"
+}
