@@ -1,249 +1,129 @@
 extends Control
-## Bounded, code-drawn first-generation factory art. No imported image or render target.
+## First-generation factory art. Static layers stay cached by Godot; only the probe moves.
 
-const NAVY := Color("122737")
-const STEEL := Color("426477")
-const FACE := Color("a8bdc5")
-const WHITE := Color("d9e5e3")
-const EDGE := Color("102634")
-const CYAN := Color("80d9d0")
-const GLOW := Color("9af2df")
-const COPPER := Color("dfa96b")
-const SHADOW := Color("0b1a28")
+const BACKDROP_PATH := "res://assets/ai_tech_factory/workshop-background-v2.png"
+const PROBE_PATH := "res://assets/ai_tech_factory/inspection-probe-v2.png"
+const MACHINE_PATHS := {
+	"ai_singularity": "res://assets/ai_tech_factory/ai-singularity-v2.png",
+	"weapon_accuracy": "res://assets/ai_tech_factory/weapon-accuracy-v2.png",
+	"equipment_reinforcement": "res://assets/ai_tech_factory/equipment-reinforcement-v2.png",
+	"resource_refining": "res://assets/ai_tech_factory/resource-refining-v2.png",
+	"fragment_condensation": "res://assets/ai_tech_factory/fragment-condensation-v2.png",
+	"equipment_precision": "res://assets/ai_tech_factory/equipment-precision-v2.png",
+	"uranium_extraction": "res://assets/ai_tech_factory/uranium-extraction-v2.png",
+	"joint_integration": "res://assets/ai_tech_factory/joint-integration-v2.png",
+}
+
+# Placement is in the 1284 x 701 art panel, not in the 2048 x 1280 game viewport.
+const BASE_SIZE := Vector2(1284, 701)
+const MACHINE_BOUNDS := {
+	"ai_singularity": Rect2(402, 145, 480, 450),
+	"weapon_accuracy": Rect2(382, 90, 520, 520),
+	"equipment_reinforcement": Rect2(344, 116, 596, 491),
+	"resource_refining": Rect2(374, 83, 536, 530),
+	"fragment_condensation": Rect2(345, 141, 594, 474),
+	"equipment_precision": Rect2(335, 101, 614, 515),
+	"uranium_extraction": Rect2(350, 127, 584, 484),
+	"joint_integration": Rect2(315, 142, 654, 460),
+}
 
 var technology_id := "weapon_accuracy"
 var level := 0
 var researching := false
 var progress := 0.0
 var icon_mode := false
+var obscured := false
 var phase := 0.0
 
-func set_display(id: String, current_level: int, is_researching: bool, fraction: float, as_icon := false) -> void:
-	var next_level := maxi(0, current_level)
-	var next_progress := clampf(fraction, 0.0, 1.0)
-	if technology_id == id and level == next_level and researching == is_researching \
-		and is_equal_approx(progress, next_progress) and icon_mode == as_icon:
+var backdrop: TextureRect
+var machine: TextureRect
+var probe: TextureRect
+var probe_home := Vector2.ZERO
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	clip_contents = true
+	_make_layers()
+	_layout_layers()
+	_update_process()
+
+func _make_layers() -> void:
+	if machine != null:
 		return
-	technology_id = id
-	level = next_level
+	if icon_mode:
+		machine = _texture_layer(load(MACHINE_PATHS[technology_id]) as Texture2D)
+		machine.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		return
+	backdrop = _texture_layer(load(BACKDROP_PATH) as Texture2D)
+	machine = _texture_layer(load(MACHINE_PATHS[technology_id]) as Texture2D)
+	machine.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	probe = _texture_layer(load(PROBE_PATH) as Texture2D)
+	probe.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+func _texture_layer(texture: Texture2D) -> TextureRect:
+	var layer := TextureRect.new()
+	layer.texture = texture
+	layer.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	layer.stretch_mode = TextureRect.STRETCH_SCALE
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(layer)
+	return layer
+
+func set_display(id: String, current_level: int, is_researching: bool, fraction: float, as_icon := false) -> void:
+	var next_id := id if MACHINE_PATHS.has(id) else "ai_singularity"
+	var next_level := maxi(0, current_level)
+	progress = clampf(fraction, 0.0, 1.0)
+	if technology_id == next_id and level == next_level and researching == is_researching and icon_mode == as_icon:
+		return
+	technology_id = next_id
+	level = next_level # Generation and refit artwork can be selected here in later passes.
 	researching = is_researching
-	progress = next_progress
 	icon_mode = as_icon
-	set_process(is_visible_in_tree() and researching and not icon_mode)
-	queue_redraw()
+	if machine != null:
+		machine.texture = load(MACHINE_PATHS[technology_id]) as Texture2D
+		_layout_layers()
+	_update_process()
 
 func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED and machine != null:
+		_layout_layers()
 	if what == NOTIFICATION_VISIBILITY_CHANGED:
-		set_process(is_visible_in_tree() and researching and not icon_mode)
+		_update_process()
+
+func _layout_layers() -> void:
+	if machine == null:
+		return
+	var scale := Vector2(size.x / BASE_SIZE.x, size.y / BASE_SIZE.y)
+	if icon_mode:
+		if backdrop != null: backdrop.visible = false
+		if probe != null: probe.visible = false
+		machine.position = Vector2.ZERO
+		machine.size = size
+		return
+	backdrop.visible = true
+	backdrop.position = Vector2.ZERO
+	backdrop.size = size
+	var bounds: Rect2 = MACHINE_BOUNDS[technology_id]
+	machine.position = bounds.position * scale
+	machine.size = bounds.size * scale
+	probe.visible = researching
+	probe.size = Vector2(105, 105) * scale
+	probe_home = Vector2(645, 194) * scale - probe.size * 0.5
+	probe.position = probe_home
+
+func _update_process() -> void:
+	var animate := is_visible_in_tree() and researching and not icon_mode and not obscured
+	set_process(animate)
+	if probe != null:
+		probe.visible = animate
+
+func set_obscured(value: bool) -> void:
+	if obscured == value:
+		return
+	obscured = value
+	_update_process()
 
 func _process(delta: float) -> void:
 	phase = fmod(phase + minf(delta, 0.05) * 1.9, TAU)
-	queue_redraw()
-
-func _plate(rect: Rect2, fill: Color, border := EDGE, width := 3.0) -> void:
-	draw_rect(rect, fill)
-	draw_rect(rect, border, false, width)
-
-func _poly(points: PackedVector2Array, fill: Color) -> void:
-	draw_colored_polygon(points, fill)
-	for i in points.size():
-		draw_line(points[i], points[(i + 1) % points.size()], EDGE, 3.0, true)
-
-func _disk(center: Vector2, radius: float, fill: Color, border := EDGE) -> void:
-	draw_circle(center, radius, fill)
-	draw_arc(center, radius, 0, TAU, 32, border, 3.0, true)
-
-func _ellipse(center: Vector2, radius_x: float, radius_y: float, fill: Color, border := EDGE) -> void:
-	var points := PackedVector2Array()
-	for i in 40:
-		var angle := TAU * float(i) / 40.0
-		points.append(center + Vector2(cos(angle) * radius_x, sin(angle) * radius_y))
-	_poly(points, fill)
-	for i in 40:
-		draw_line(points[i], points[(i + 1) % 40], border, 3.0, true)
-
-func _beam(a: Vector2, b: Vector2, color := STEEL, width := 9.0) -> void:
-	draw_line(a, b, EDGE, width + 4.0, true)
-	draw_line(a, b, color, width, true)
-
-func _draw() -> void:
-	if not icon_mode:
-		_draw_room()
-	var unit := minf(size.x / (460.0 if icon_mode else 560.0), size.y / (440.0 if icon_mode else 425.0))
-	var center := size * (Vector2(0.5, 0.5) if icon_mode else Vector2(0.5, 0.52))
-	draw_set_transform(center, 0.0, Vector2.ONE * unit)
-	_draw_machine()
-	draw_set_transform(Vector2.ZERO)
-
-func _draw_room() -> void:
-	_plate(Rect2(Vector2.ZERO, size), NAVY, STEEL, 2.0)
-	var horizon := size.y * 0.69
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(3, horizon), Vector2(size.x - 3, horizon),
-		Vector2(size.x - 3, size.y - 3), Vector2(3, size.y - 3)
-	]), Color("193343"))
-	for i in 7:
-		var x := (float(i) + 0.5) * size.x / 7.0
-		draw_line(Vector2(x, horizon), Vector2(x + (x - size.x * 0.5) * 0.3, size.y), STEEL.darkened(0.4), 2.0)
-	draw_line(Vector2(0, horizon), Vector2(size.x, horizon), CYAN.darkened(0.43), 3.0)
-	for side in [-1.0, 1.0]:
-		var x := size.x * (0.14 if side < 0.0 else 0.86)
-		_plate(Rect2(x - 64, horizon - 118, 128, 103), Color("27475a"), STEEL)
-		_plate(Rect2(x - 49, horizon - 102, 98, 64), Color("102b3a"), CYAN.darkened(0.55), 2.0)
-		_beam(Vector2(x - 37, horizon - 70), Vector2(x + 38, horizon - 70), CYAN.darkened(0.18), 4.0)
-		_plate(Rect2(x - 82, horizon - 15, 164, 30), FACE)
-	for i in 4:
-		var x := (float(i) + 0.5) * size.x / 4.0
-		_plate(Rect2(x - 37, 28, 74, 124), Color("233f50"), STEEL)
-		_plate(Rect2(x - 24, 49, 48, 47), CYAN.darkened(0.65), CYAN.darkened(0.4), 2.0)
-	# The assembly gantry is one bounded moving object.
-	var motion := sin(phase) * 20.0 if researching else 0.0
-	_beam(Vector2(size.x * 0.25, 43), Vector2(size.x * 0.75, 43), FACE, 15)
-	_plate(Rect2(size.x * 0.5 - 42 + motion, 24, 84, 38), WHITE)
-	_beam(Vector2(size.x * 0.5 + motion, 62), Vector2(size.x * 0.5 + motion, 122), FACE, 13)
-	_poly(PackedVector2Array([
-		Vector2(size.x * 0.5 - 30 + motion, 121),
-		Vector2(size.x * 0.5 + 30 + motion, 121),
-		Vector2(size.x * 0.5 + 19 + motion, 143),
-		Vector2(size.x * 0.5 - 19 + motion, 143)
-	]), COPPER)
-	# Robot arms and supply trays make this a small assembly bay, not an icon on a plain wall.
-	var arm_origin := Vector2(size.x * 0.18, size.y * 0.25)
-	var elbow := Vector2(size.x * 0.25, size.y * 0.36)
-	var wrist := Vector2(size.x * 0.32, size.y * 0.47)
-	_beam(arm_origin, elbow, FACE, 28.0)
-	_beam(elbow, wrist, FACE, 24.0)
-	_disk(arm_origin, 22.0, STEEL)
-	_disk(elbow, 19.0, COPPER)
-	_poly(PackedVector2Array([wrist + Vector2(-13, -3), wrist + Vector2(13, -3),
-		wrist + Vector2(21, 21), wrist + Vector2(3, 15), wrist + Vector2(-3, 15), wrist + Vector2(-21, 21)]), STEEL)
-	var robot := Vector2(size.x * 0.83, size.y * 0.41)
-	_disk(robot, 43.0, WHITE)
-	_plate(Rect2(robot.x - 30, robot.y - 13, 60, 27), STEEL)
-	_disk(robot + Vector2(-13, 0), 5.0, GLOW)
-	_disk(robot + Vector2(13, 0), 5.0, GLOW)
-	_beam(robot + Vector2(-26, 37), robot + Vector2(-38, 68), FACE, 12.0)
-	_beam(robot + Vector2(26, 37), robot + Vector2(38, 68), FACE, 12.0)
-	_beam(robot + Vector2(0, 43), robot + Vector2(0, 73), CYAN, 9.0)
-
-func _draw_machine() -> void:
-	# Every technology uses the same oblique front view, shell material, edge and light.
-	_ellipse(Vector2(0, 142), 233, 72, SHADOW)
-	_ellipse(Vector2(0, 122), 221, 63, STEEL)
-	_ellipse(Vector2(0, 117), 186, 46, CYAN.darkened(0.2))
-	_ellipse(Vector2(0, 112), 163, 37, NAVY)
-	_poly(PackedVector2Array([
-		Vector2(-205, 135), Vector2(150, 135), Vector2(205, 179),
-		Vector2(-145, 179)
-	]), SHADOW)
-	_plate(Rect2(-188, 114, 375, 33), STEEL)
-	_plate(Rect2(-165, 75, 330, 43), FACE)
-	for x in [-130.0, 130.0]:
-		_plate(Rect2(x - 12, 118, 24, 31), COPPER)
-	# Refit marks persist through ten levels without swapping the generation model.
-	var fittings := mini(level, 4)
-	for i in fittings:
-		_plate(Rect2(-137 + i * 23, 87, 16, 13), CYAN, EDGE, 2.0)
-	match technology_id:
-		"weapon_accuracy": _draw_weapon()
-		"equipment_reinforcement": _draw_armor()
-		"resource_refining": _draw_refinery()
-		"fragment_condensation": _draw_condenser()
-		"equipment_precision": _draw_precision()
-		"uranium_extraction": _draw_uranium()
-		"joint_integration": _draw_integration()
-		"ai_singularity": _draw_ai()
-		_: _draw_ai()
-
-func _draw_weapon() -> void:
-	_plate(Rect2(-93, 15, 186, 68), WHITE)
-	_poly(PackedVector2Array([Vector2(-154, -13), Vector2(125, -13), Vector2(150, 4), Vector2(-132, 4)]), FACE)
-	_plate(Rect2(-155, -8, 309, 34), STEEL)
-	_plate(Rect2(-43, -41, 85, 31), FACE)
-	_disk(Vector2(1, -43), 15, CYAN)
-	_disk(Vector2(126, 8), 16, COPPER)
-	var target := Vector2(-144 + (sin(phase * 1.4) * 29 if researching else 0.0), -28)
-	draw_arc(target, 26, 0, TAU, 32, CYAN, 3.0)
-	_beam(target + Vector2(-34, 0), target + Vector2(34, 0), CYAN, 2.0)
-	_beam(target + Vector2(0, -34), target + Vector2(0, 34), CYAN, 2.0)
-
-func _draw_armor() -> void:
-	_plate(Rect2(-113, -28, 226, 99), STEEL)
-	_poly(PackedVector2Array([Vector2(-68, -3), Vector2(71, -3), Vector2(92, 20), Vector2(66, 60), Vector2(-67, 60), Vector2(-91, 20)]), WHITE)
-	for side in [-1.0, 1.0]:
-		var x: float = side * 128.0
-		_plate(Rect2(x - 22, -81, 44, 120), FACE)
-		_beam(Vector2(x, -77), Vector2(x, -8), COPPER, 13)
-		var press := (6.0 + 4.0 * sin(phase * 2.0)) if researching else 4.0
-		_plate(Rect2(x - 38, -10 + press, 76, 23), COPPER)
-	_beam(Vector2(-148, -84), Vector2(148, -84), FACE, 13)
-
-func _draw_refinery() -> void:
-	_plate(Rect2(-97, -67, 194, 138), WHITE)
-	_plate(Rect2(-75, -42, 150, 73), STEEL)
-	_poly(PackedVector2Array([Vector2(-42, 10), Vector2(39, 10), Vector2(23, 47), Vector2(-25, 47)]), COPPER)
-	for side in [-1.0, 1.0]:
-		_beam(Vector2(side * 102, -40), Vector2(side * 155, 43), FACE, 14)
-		_plate(Rect2(side * 128 - 23, 42, 46, 26), CYAN.darkened(0.33))
-	var pour := 23 + (12.0 * (sin(phase) + 1.0) if researching else 0.0)
-	_beam(Vector2(0, -30), Vector2(0, -30 + pour), CYAN, 8)
-
-func _draw_condenser() -> void:
-	_plate(Rect2(-110, -63, 220, 130), FACE)
-	_plate(Rect2(-92, -47, 184, 92), STEEL)
-	# The crystal is a contained product, not the machine silhouette.
-	draw_arc(Vector2(0, -1), 63, 0, TAU, 48, COPPER, 15.0)
-	draw_arc(Vector2(0, -1), 64, 0, TAU, 48, EDGE, 3.0)
-	for side in [-1.0, 1.0]:
-		_plate(Rect2(side * 125 - 18, -47, 36, 94), WHITE)
-		_beam(Vector2(side * 113, -16), Vector2(side * 68, -1), CYAN, 9)
-	var pulse := 1.0 + (0.08 * sin(phase * 2.0) if researching else 0.0)
-	_poly(PackedVector2Array([Vector2(0, -37) * pulse, Vector2(27, -2) * pulse,
-		Vector2(0, 36) * pulse, Vector2(-27, -2) * pulse]), GLOW)
-
-func _draw_precision() -> void:
-	_plate(Rect2(-113, -52, 226, 116), FACE)
-	_plate(Rect2(-88, -33, 176, 75), STEEL)
-	_plate(Rect2(-58, 12, 116, 25), WHITE)
-	for side in [-1.0, 1.0]:
-		_beam(Vector2(side * 133, -72), Vector2(side * 97, -18), FACE, 18)
-		_beam(Vector2(side * 97, -18), Vector2(side * 51, 1), COPPER, 15)
-	var tool_y := 14.0 + (sin(phase * 2.0) * 7.0 if researching else 0.0)
-	_poly(PackedVector2Array([Vector2(-17, tool_y), Vector2(17, tool_y),
-		Vector2(8, tool_y + 23), Vector2(-8, tool_y + 23)]), CYAN)
-
-func _draw_uranium() -> void:
-	_plate(Rect2(-132, -59, 264, 125), FACE)
-	_disk(Vector2(0, -2), 78, STEEL)
-	_disk(Vector2(0, -2), 57, SHADOW)
-	for i in 3:
-		var a := TAU * float(i) / 3.0 + (phase if researching else 0.0)
-		var center := Vector2(cos(a), sin(a)) * 39
-		_poly(PackedVector2Array([center + Vector2(-15, -11), center + Vector2(16, -11),
-			center + Vector2(12, 13), center + Vector2(-12, 13)]), COPPER)
-	_disk(Vector2(0, -2), 18, CYAN)
-	_plate(Rect2(-128, 44, 45, 23), WHITE)
-	_plate(Rect2(83, 44, 45, 23), WHITE)
-
-func _draw_integration() -> void:
-	_plate(Rect2(-135, -60, 270, 125), WHITE)
-	_plate(Rect2(-112, -41, 224, 84), STEEL)
-	for side in [-1.0, 1.0]:
-		_disk(Vector2(side * 62, 0), 39, FACE)
-		_disk(Vector2(side * 62, 0), 25, CYAN.darkened(0.32))
-		_beam(Vector2(side * 62, -42), Vector2(side * 62, -86), COPPER, 12)
-	var bridge := 8.0 + (sin(phase) * 3.0 if researching else 0.0)
-	_beam(Vector2(-32, bridge), Vector2(32, bridge), GLOW, 12)
-	_disk(Vector2(0, bridge), 18, COPPER)
-
-func _draw_ai() -> void:
-	_plate(Rect2(-106, -70, 212, 140), WHITE)
-	_plate(Rect2(-80, -47, 160, 95), STEEL)
-	for side in [-1.0, 1.0]:
-		for y in [-47.0, -14.0, 19.0]:
-			_plate(Rect2(side * 116 - 10, y, 20, 22), COPPER, EDGE, 2.0)
-	_disk(Vector2.ZERO, 38, SHADOW)
-	_disk(Vector2.ZERO, 23, CYAN)
-	var orbit := Vector2(cos(phase), sin(phase)) * 53.0 if researching else Vector2(0, -53)
-	draw_arc(Vector2.ZERO, 54, 0, TAU, 48, COPPER, 4.0)
-	_disk(orbit, 9, GLOW)
+	var scale := Vector2(size.x / BASE_SIZE.x, size.y / BASE_SIZE.y)
+	probe.position = probe_home + Vector2(sin(phase) * 28.0, cos(phase * 1.2) * 9.0) * scale

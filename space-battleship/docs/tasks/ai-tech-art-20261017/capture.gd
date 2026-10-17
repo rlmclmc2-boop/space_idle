@@ -31,6 +31,7 @@ func _run() -> void:
 	page.research_requested.connect(func(id: String): events.append("research:" + id))
 	page.investment_requested.connect(func(resource: String, amount: int): events.append("invest:" + resource + ":" + str(amount)))
 	page.set_snapshot(_snapshot("weapon_accuracy", false))
+	assert(page.row_nodes.is_empty())
 	await _frame()
 	_capture(out + "/main-idle.png")
 	for id in IDS:
@@ -40,6 +41,18 @@ func _run() -> void:
 	page.set_snapshot(_snapshot("weapon_accuracy", true))
 	for i in 10:
 		await _frame()
+	var machine_instance: int = page.art.machine.get_instance_id()
+	page.set_art_enabled(false)
+	assert(not page.art.is_processing())
+	page.set_art_enabled(true)
+	assert(page.art.machine.get_instance_id() == machine_instance)
+	assert(page.art.is_processing())
+	page.visible = false
+	await _frame()
+	assert(not page.art.is_processing())
+	page.visible = true
+	await _frame()
+	assert(page.art.is_processing())
 	_capture(out + "/main-active.png")
 	for i in 12:
 		for skipped in 4:
@@ -48,6 +61,9 @@ func _run() -> void:
 	_click(Vector2(1185, 55))
 	await _frame()
 	assert(page.drawer_open)
+	assert(not page.art.is_processing())
+	assert(page.row_nodes.size() == IDS.size())
+	assert(page.row_nodes["weapon_accuracy"].art.get_child_count() == 1)
 	_capture(out + "/drawer.png")
 	_click(Vector2(1067, 768))
 	await _frame()

@@ -16,6 +16,8 @@ const CARD := Color("1c394a")
 var snapshot: Dictionary = {}
 var source_provider: Callable
 var drawer_open := false
+var art_enabled := true
+var art_has_selection := false
 var scene: Control
 var drawer: Control
 var art: Control
@@ -193,8 +195,16 @@ func set_drawer_open(value: bool) -> void:
 	drawer_open = value
 	if drawer == null: return
 	drawer.visible = value
-	if art != null: art.set_process(not value and art.researching and art.is_visible_in_tree())
+	if art != null: art.set_obscured(value or not art_enabled)
 	if value and source_provider.is_valid(): refresh_snapshot()
+	if value: _sync_rows(snapshot.get("technologies", []))
+
+func set_art_enabled(value: bool) -> void:
+	art_enabled = value
+	if art == null:
+		return
+	art.visible = value and art_has_selection
+	art.set_obscured(drawer_open or not value)
 
 func set_snapshot_provider(provider: Callable) -> void:
 	source_provider = provider
@@ -229,9 +239,10 @@ func set_snapshot(data: Dictionary) -> void:
 			break
 	var percent := clampf(float(data.get("progress", 0.0)), 0.0, 1.0)
 	var working := bool(data.get("researching", false))
-	art.visible = not selected_id.is_empty()
+	art_has_selection = not selected_id.is_empty()
+	art.visible = art_enabled and art_has_selection
 	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), working and selected_id == active_id, percent)
-	if drawer_open: art.set_process(false)
+	if drawer_open or not art_enabled: art.set_obscured(true)
 	active_name.text = str(shown.get("name", "等待科技数据"))
 	active_meta.text = str(shown.get("generation_text", "")) # Caller supplies generation labels.
 	status_text.text = str(data.get("status_text", "暂无研究"))
@@ -248,7 +259,7 @@ func set_snapshot(data: Dictionary) -> void:
 	drawer_active.text = "当前研发：" + str(active.get("name", "暂无"))
 	drawer_progress.text = progress_text.text
 	drawer_fill.size.x = 1090.0 * percent if working else 0.0
-	_sync_rows(items)
+	if drawer_open: _sync_rows(items)
 
 func _sync_input(e: LineEdit, value: String) -> void:
 	if not e.has_focus() and e.text != value: e.text = value
@@ -305,6 +316,7 @@ func _create_row(id: String) -> void:
 	card.add_theme_stylebox_override("panel", _skin(CARD))
 	worklist.add_child(card)
 	var icon := ART.new()
+	icon.icon_mode = true
 	icon.position = Vector2(17, 19)
 	icon.size = Vector2(99, 99)
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
