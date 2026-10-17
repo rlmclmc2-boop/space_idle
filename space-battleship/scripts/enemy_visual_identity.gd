@@ -2,13 +2,13 @@ extends RefCounted
 ## Pure identity lookup. Asset availability is captured on the main thread.
 const ARCHETYPES := {
 	"scout":["enemy_opening_triangle_physical",2],
-	"sentry":["enemy_opening_triangle_physical",2],
+	"sentry":["enemy_opening_sentry",2],
 	"interceptor":["enemy_opening_triangle_energy",1],
-	"swarm":["enemy_opening_triangle_energy",1],
+	"swarm":["enemy_opening_swarm",1],
 	"anchor":["enemy_opening_slab_energy",1],
-	"reactive":["enemy_opening_slab_energy",1],
+	"reactive":["enemy_opening_reactive",1],
 	"shielded":["enemy_opening_u_energy",1],
-	"command":["enemy_opening_u_energy",1]
+	"command":["enemy_opening_command",1]
 }
 var diagnostics:Dictionary={}
 

@@ -24,6 +24,7 @@ var sort_dirty := true
 var sorted_ids: Array = []
 var last_sort_mode := -1
 var observed_resources: Dictionary = {}
+var last_refit_refresh_ms := 0
 var stats_dirty: Dictionary = {} # true: full stats/context; false: counters only
 var projection_builds := 0
 var refresh_passes := 0
@@ -68,7 +69,7 @@ func module_card_id(category: String, index: int) -> String:
 	return "%s_%d" % [category,index]
 
 func equipment_choices(category: String,index: int = -1) -> Array:
-	if host.game.slot_equipment_locked(category,index):return ["armour"]
+	if host.game.slot_equipment_locked(category,index) and _refit_seconds(category,index)<=0:return ["armour"]
 	var options: Array = [""]
 	for key in BattleGame.WEAPON_KEYS if category=="weapons" else BattleGame.DEFENSE_KEYS:
 		if host.game.content_unlocked("equipment",key):options.append(key)
@@ -296,6 +297,7 @@ func set_upgrade_amount(amount: int) -> void:
 func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	if item.locked:
 		item.cost = "—"
+		item.costs = {}
 		item.direct_upgradeable = false
 		return
 	# Module prices depend on category and level, not installed weapon type.
@@ -305,13 +307,15 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	var quote_key := str([item.category,entry.get("level",0),upgrade_amount])
 	if quotes.has(quote_key):
 		item.cost = quotes[quote_key].cost
+		item.costs = quotes[quote_key].costs
 		item.direct_upgradeable = quotes[quote_key].available
 		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
 	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
 	item.cost = host.cost_text(costs)
+	item.costs = costs
 	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
-	quotes[quote_key] = {"cost":item.cost,"available":item.direct_upgradeable}
+	quotes[quote_key] = {"cost":item.cost,"costs":costs,"available":item.direct_upgradeable}
 
 func upgrade_card(id: String) -> void:
 	if not items.has(id):return
@@ -465,13 +469,20 @@ func equipment_item(category: String, index: int) -> Dictionary:
 	var name: String = host.NAMES.get(key,UIText.t("equipment.vacant"))
 	var prefix := ("W" if category=="weapons" else "D")+str(index+1).pad_zeros(2)
 	var description := equipment_text("description."+key.to_lower()) if equipped else UIText.t("module.empty_hint")
+	var refit_seconds := _refit_seconds(category,index)
+	var refit_locked:bool=host.game.slot_equipment_locked(category,index)
+	var refit_fixed:bool=refit_locked and refit_seconds<=0
 	return {"id":module_card_id(category,index),"key":key,"index":index,"name":prefix+" "+name,"category":category,
 		"cardLevelText":card_level_text(entry,category,active),"subType":"laser" if key=="longLaser" else key,"level":int(entry.level),"levelText":host.game.permanent_level_text(int(entry.level),"equipment"),
 		"status":"locked" if not active else ("equipped" if equipped else "unequipped"),
-		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":host.game.slot_equipment_locked(category,index),
+		"equipped":equipped and active,"upgradeable":active and host.game.can_upgrade_slot(category,index),"locked":not active,"refit_locked":refit_locked or refit_seconds>0,"refit_fixed":refit_fixed,"refit_remaining":refit_seconds,
 		"slots":[index],"mainStatLabel":UIText.t(("weapon.card_beam_expected" if key=="longLaser" else "weapon.card_missile_expected" if key=="missile" else "weapon.expected_damage") if category=="weapons" else ("defense.shield" if key=="shield" else "defense.armour")),
 		"mainStatValue":host.number(value) if equipped else "—","mainStatNumber":value,"icon":icon_for(key) if equipped else null,
 		"projection":projection,"description":description,"tooltip":module_tooltip(entry,prefix,name,projection)}
+
+func _refit_seconds(category: String, index: int) -> int:
+	if not host.game.has_method("equipment_switch_remaining"):return 0
+	return maxi(0,ceili(float(host.game.equipment_switch_remaining(category,index))))
 
 func module_tooltip(entry: Dictionary, prefix: String, name: String, projection: Dictionary) -> String:
 	return prefix+" · "+name+" · "+UIText.t("equipment.level",{"level":host.game.permanent_level_text(int(entry.level),"equipment")})+"\n"+host.game.permanent_level_tooltip(int(entry.level),"equipment")+("\n"+host.equipment_expected_details(entry,projection,true) if BattleGame.WEAPON_KEYS.has(str(entry.key)) else "")
@@ -537,7 +548,27 @@ func refresh_pending() -> void:
 	elif observed_resources!=host.game.profile.resources:
 		refresh_affordability()
 	refresh_stats()
+	refresh_refit_cooldowns()
 	if detail_dirty and detail_frame.is_visible_in_tree():refresh_detail()
+
+func refresh_refit_cooldowns() -> void:
+	if not host.game.has_method("equipment_switch_remaining"):return
+	var now_ms:=Time.get_ticks_msec()
+	if now_ms-last_refit_refresh_ms<200:return
+	last_refit_refresh_ms=now_ms
+	var selected_changed:=false
+	for id in items:
+		var item:Dictionary=items[id]
+		var remaining:=_refit_seconds(str(item.category),int(item.index))
+		var locked:bool=host.game.slot_equipment_locked(str(item.category),int(item.index))
+		var fixed:bool=locked and remaining<=0
+		if int(item.get("refit_remaining",0))==remaining and bool(item.get("refit_locked",false))==(locked or remaining>0):continue
+		item.refit_remaining=remaining
+		item.refit_locked=locked or remaining>0
+		item.refit_fixed=fixed
+		if cards.has(id):cards[id].refresh(item,selected==id)
+		if selected==id:selected_changed=true
+	if selected_changed and detail_frame.is_visible_in_tree():refresh_detail()
 func invalidate_stats(info: Dictionary) -> void:
 	# Shared modifiers also change inspector text when the numeric projection is unchanged.
 	if info.get("detail",false):detail_dirty=true
@@ -708,7 +739,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
-	host.set_ui_value(detail.status,"text",UIText.t("equipment.fixed_armour") if item.get("refit_locked",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
+	host.set_ui_value(detail.status,"text",("换装冷却 %ds" % int(item.get("refit_remaining",0))) if int(item.get("refit_remaining",0))>0 else UIText.t("equipment.fixed_armour") if item.get("refit_fixed",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)

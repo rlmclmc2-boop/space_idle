@@ -108,9 +108,9 @@ func setup(source: Variant = null) -> void:
 	art.size = Vector2(1284, 701)
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scene.add_child(art)
-	var caption := _panel(scene, Rect2(52, 143, 600, 123), Color("102637dd"))
-	active_name = _label(caption, "等待科技数据", Rect2(22, 15, 540, 49), 31)
-	active_meta = _label(caption, "", Rect2(22, 68, 550, 36), 20, CYAN)
+	var caption := _panel(scene, Rect2(52, 143, 420, 86), Color("102637cc"))
+	active_name = _label(caption, "等待科技数据", Rect2(20, 8, 380, 40), 29)
+	active_meta = _label(caption, "", Rect2(20, 49, 380, 29), 18, CYAN)
 	var foot := _panel(scene, Rect2(24, 850, 1296, 285), PANEL)
 	_label(foot, "当前研发", Rect2(24, 16, 270, 34), 23, MUTED)
 	status_text = _label(foot, "暂无研究", Rect2(24, 53, 760, 39), 27)
@@ -242,7 +242,7 @@ func set_snapshot(data: Dictionary) -> void:
 	var working := bool(data.get("researching", false))
 	art_has_selection = not selected_id.is_empty()
 	art.visible = art_enabled and art_has_selection
-	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), working and selected_id == active_id, percent)
+	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), bool(data.get("advancing",working)) and selected_id == active_id, percent)
 	if drawer_open or not art_enabled: art.set_obscured(true)
 	active_name.text = str(shown.get("name", "等待科技数据"))
 	active_meta.text = str(shown.get("generation_text", "")) # Caller supplies generation labels.

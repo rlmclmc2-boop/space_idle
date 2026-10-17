@@ -8,6 +8,8 @@ const ACTION_SIZE := Vector2(246,56)
 const INK := Color("243d50")
 const MUTED := Color("546c74")
 const Chrome := preload("res://scripts/dialog_presentation.gd")
+const ResourceArt := preload("res://scripts/resource_art.gd")
+const DEGENERATE_ICON := preload("res://assets/resources/degenerate.svg")
 static var fonts: Dictionary = {}
 var host: Node
 var panel: Control
@@ -15,6 +17,8 @@ var fields: Dictionary = {}
 var picture: TextureRect
 var last_state: Array = []
 var upgrade_button: Button
+var cost_flow: HFlowContainer
+var cooldown_label: Label
 var equip_button: Button
 var name_button: OptionButton
 var equipment_options: Array = []
@@ -52,6 +56,11 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(picture)
+	cooldown_label = text_field(self,Rect2(13,59,70,25),19,650,Color("efb964"))
+	cooldown_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	cooldown_label.add_theme_color_override("font_outline_color",Color("102637"))
+	cooldown_label.add_theme_constant_override("outline_size",4)
+	cooldown_label.hide()
 	fields.title = text_field(self,Rect2(88,8,208,34),23,650,INK)
 	fields.title.hide()
 	name_button = OptionButton.new()
@@ -95,6 +104,11 @@ func setup(owner_ui: Node, equipment_panel: Control) -> void:
 	fields.cost = text_field(upgrade_button,Rect2(66,0,164,56),24,650,INK)
 	fields.cost.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	fields.cost.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	cost_flow = HFlowContainer.new()
+	cost_flow.add_theme_constant_override("h_separation",9)
+	cost_flow.add_theme_constant_override("v_separation",0)
+	cost_flow.mouse_filter = Control.MOUSE_FILTER_PASS
+	upgrade_button.add_child(cost_flow)
 	equip_button = panel.action_button(self,"equipment.free_equip","empty_module",func():equip_requested.emit(),true)
 	equip_button.add_theme_font_override("font",face(500))
 	equip_button.add_theme_font_size_override("font_size",21)
@@ -127,13 +141,16 @@ func layout_contents() -> void:
 	host.set_ui_value(fields.stat,"position",Vector2(126 if is_weapon else 92,74))
 	host.set_ui_value(fields.stat,"size",Vector2(size.x-(140 if is_weapon else 106),44))
 	fields.status.size.x = size.x-28
-	upgrade_button.position = Vector2((size.x-ACTION_SIZE.x)/2,118)
-	upgrade_button.size = ACTION_SIZE
+	upgrade_button.position = Vector2(14,118)
+	upgrade_button.size = Vector2(size.x-28,ACTION_SIZE.y)
+	cost_flow.position = Vector2(66,4)
+	cost_flow.size = Vector2(upgrade_button.size.x-78,48)
+	fields.cost.size.x = upgrade_button.size.x-82
 	equip_button.position = Vector2((size.x-246)/2,76)
 	equip_button.size = Vector2(246,36)
 
 func refresh(item: Dictionary, chosen: bool) -> void:
-	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false)]
+	var state := [item.name,item.level,item.get("levelText",str(item.level)),item.get("cardLevelText",""),item.category,item.mainStatLabel,item.mainStatValue,item.status,item.upgradeable,item.locked,chosen,item.tooltip,item.icon,item.get("cost",""),item.get("direct_upgradeable",false),item.get("refit_locked",false),item.get("refit_remaining",0)]
 	refresh_options(item)
 	if last_state == state:return
 	last_state = state
@@ -149,6 +166,10 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	equip_button.set_meta("slot_id",slot_id)
 	name_button.set_meta("slot_id",slot_id)
 	host.set_ui_value(name_button,"disabled",item.locked or item.get("refit_locked",false))
+	var remaining:=int(item.get("refit_remaining",0))
+	host.set_ui_value(cooldown_label,"text",str(remaining)+"s" if remaining>0 else "")
+	host.set_ui_value(cooldown_label,"visible",remaining>0)
+	host.set_ui_value(name_button,"tooltip_text",("换装冷却 %ds" % remaining) if remaining>0 else UIText.t("equipment.swap"))
 	host.set_ui_value(fields.title,"text",item.name)
 	host.set_ui_value(fields.level,"text",item.get("cardLevelText",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))})))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))
@@ -165,11 +186,43 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	host.set_ui_value(upgrade_button,"disabled",not item.get("direct_upgradeable",false))
 	host.set_ui_value(upgrade_button,"text",UIText.t("equipment.upgrade_cost",{"cost":item.get("cost","—")}))
 	host.set_ui_value(upgrade_button,"tooltip_text",upgrade_button.text)
-	host.set_ui_value(fields.cost,"text",item.get("cost","—"))
+	var costs:Dictionary=item.get("costs",{})
+	host.set_ui_value(fields.cost,"text",item.get("cost","—") if costs.is_empty() else "")
+	_sync_cost_chips(costs)
 	add_theme_stylebox_override("normal",panel.textured_panel_style(Color("acbabd") if item.locked else Color("d2ece5") if chosen else panel.PAPER,Color("64babd") if chosen else panel.NAVY))
 
+func _sync_cost_chips(costs: Dictionary) -> void:
+	for chip in cost_flow.get_children():
+		cost_flow.remove_child(chip)
+		chip.queue_free()
+	for raw_id in costs:
+		var id:=str(raw_id)
+		var amount:String=str(host.number(costs[raw_id]))
+		var title:=UIText.t("hyperspace.degenerate_matter") if id==host.db.evolution_material_id() else UIText.data_text("resources",id)
+		var chip:=HBoxContainer.new()
+		chip.add_theme_constant_override("separation",2)
+		chip.mouse_filter=Control.MOUSE_FILTER_PASS
+		chip.tooltip_text=title+" "+amount
+		cost_flow.add_child(chip)
+		var icon:=TextureRect.new()
+		icon.texture=DEGENERATE_ICON if id==host.db.evolution_material_id() else ResourceArt.texture(id)
+		icon.custom_minimum_size=Vector2(23,23)
+		icon.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode=TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter=Control.MOUSE_FILTER_PASS
+		icon.tooltip_text=title
+		chip.add_child(icon)
+		var value:=Label.new()
+		value.text=amount
+		value.add_theme_font_override("font",face(650))
+		value.add_theme_font_size_override("font_size",20)
+		value.add_theme_color_override("font_color",INK)
+		value.mouse_filter=Control.MOUSE_FILTER_PASS
+		value.tooltip_text=title+" "+amount
+		chip.add_child(value)
+
 func refresh_counter_values(item: Dictionary, chosen: bool) -> void:
-	if last_state.size()!=16 or last_state[10]!=chosen:
+	if last_state.size()!=17 or last_state[10]!=chosen:
 		refresh(item,chosen)
 		return
 	last_state[6]=item.mainStatValue;last_state[11]=item.tooltip

@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+ART_ANIMATION started=true game_paused=false
+ART_ANIMATION frame=0 progress=0.25 phase=0.03431254901961
+ART_ANIMATION frame=6 progress=1.55 phase=0.24856676470588
+ART_ANIMATION frame=12 progress=2.96666666666666 phase=0.47492696078431
+ART_ANIMATION frame=18 progress=4.26666666666666 phase=0.68575
+ART_ANIMATION frame=24 progress=5.56666666666665 phase=0.89886735294117
+ART_ANIMATION frame=30 progress=6.86666666666665 phase=0.11424921568627
