@@ -260296,17 +260296,17 @@
       ],
       "dmgMultiple": 0.12,
       "health": 300,
-      "armourType": 1,
+      "armourType": 2,
       "res": "{1,9,1}",
       "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "interceptor",
+      "archetype_id": "scout",
       "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
       "intelName": "能量拦截艇",
-      "intelVisualRef": "interceptor",
+      "intelVisualRef": "scout",
       "intelMechanics": [],
       "drops": [
         {
@@ -260326,17 +260326,17 @@
       ],
       "dmgMultiple": 0.12,
       "health": 300,
-      "armourType": 1,
+      "armourType": 2,
       "res": "{1,8,1}",
       "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "interceptor",
+      "archetype_id": "scout",
       "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
       "intelName": "能量拦截艇",
-      "intelVisualRef": "interceptor",
+      "intelVisualRef": "scout",
       "intelMechanics": [],
       "drops": [
         {
@@ -260356,17 +260356,17 @@
       ],
       "dmgMultiple": 0.12,
       "health": 300,
-      "armourType": 1,
+      "armourType": 2,
       "res": "{1,12,1}",
       "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "interceptor",
+      "archetype_id": "scout",
       "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
       "intelName": "能量拦截艇",
-      "intelVisualRef": "interceptor",
+      "intelVisualRef": "scout",
       "intelMechanics": [],
       "drops": [
         {
@@ -260386,17 +260386,17 @@
       ],
       "dmgMultiple": 0.12,
       "health": 300,
-      "armourType": 1,
+      "armourType": 2,
       "res": "{1,11,1}",
       "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "interceptor",
+      "archetype_id": "scout",
       "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
       "intelName": "能量拦截艇",
-      "intelVisualRef": "interceptor",
+      "intelVisualRef": "scout",
       "intelMechanics": [],
       "drops": [
         {
@@ -260446,17 +260446,17 @@
       ],
       "dmgMultiple": 0.2,
       "health": 1800,
-      "armourType": 1,
+      "armourType": 2,
       "res": "{1,48,1}",
       "size": 4,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "anchor",
+      "archetype_id": "scout",
       "intelTrait": "重装锚点舰，耐久较高。",
       "intelName": "装甲锚点",
-      "intelVisualRef": "anchor",
+      "intelVisualRef": "scout",
       "intelMechanics": [],
       "drops": [
         {
@@ -260591,7 +260591,7 @@
       "des": "装甲锚点·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.2,
@@ -260626,17 +260626,17 @@
       ],
       "dmgMultiple": 0.05,
       "health": 220,
-      "armourType": 2,
+      "armourType": 1,
       "res": "{1,8,1}",
       "size": 1,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "scout",
+      "archetype_id": "swarm",
       "intelTrait": "轻型侦察舰，成群接近。",
       "intelName": "轻侦察艇",
-      "intelVisualRef": "scout",
+      "intelVisualRef": "swarm",
       "intelMechanics": [],
       "drops": [
         {
@@ -260656,17 +260656,17 @@
       ],
       "dmgMultiple": 0.05,
       "health": 220,
-      "armourType": 2,
+      "armourType": 1,
       "res": "{1,7,1}",
       "size": 1,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "scout",
+      "archetype_id": "swarm",
       "intelTrait": "轻型侦察舰，成群接近。",
       "intelName": "轻侦察艇",
-      "intelVisualRef": "scout",
+      "intelVisualRef": "swarm",
       "intelMechanics": [],
       "drops": [
         {
@@ -260681,7 +260681,7 @@
       "des": "装甲锚点·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.2,
@@ -260924,7 +260924,7 @@
       "des": "连击削减舰·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.3,
@@ -260966,7 +260966,7 @@
       "res": "{1,65,1}",
       "size": 3,
       "shield": 600,
-      "shieldType": 2,
+      "shieldType": 1,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
@@ -260998,7 +260998,7 @@
       "res": "{1,46,1}",
       "size": 3,
       "shield": 600,
-      "shieldType": 2,
+      "shieldType": 1,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
@@ -261021,7 +261021,7 @@
       "des": "连击削减舰·开场资源变体",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.3,
@@ -261084,7 +261084,7 @@
       "des": "间歇护盾舰·开场资源变体",
       "equipment": [
         {
-          "name": "laser_mon"
+          "name": "cannon-mon"
         }
       ],
       "dmgMultiple": 0.25,
@@ -261093,7 +261093,7 @@
       "res": "{1,37,1}",
       "size": 3,
       "shield": 600,
-      "shieldType": 2,
+      "shieldType": 1,
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
@@ -261151,17 +261151,17 @@
       ],
       "dmgMultiple": 0.1333,
       "health": 542,
-      "armourType": 2,
+      "armourType": 1,
       "res": "{1,62,1}",
       "size": 3,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "sentry",
+      "archetype_id": "anchor",
       "intelTrait": "能量破甲",
       "intelName": "能量哨卫",
-      "intelVisualRef": "sentry",
+      "intelVisualRef": "anchor",
       "intelMechanics": [],
       "drops": [
         {
@@ -261209,24 +261209,24 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.05,
-      "health": 201,
+      "dmgMultiple": 0.12,
+      "health": 650,
       "armourType": 1,
-      "res": "{1,19,1}",
+      "res": "{1,63,1}",
       "size": 2,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "swarm",
+      "archetype_id": "anchor",
       "intelTrait": "密集集群",
-      "intelName": "蜂群巡防群",
-      "intelVisualRef": "swarm",
+      "intelName": "磁轨拦截组",
+      "intelVisualRef": "anchor",
       "intelMechanics": [],
       "drops": [
         {
           "resourceId": 1,
-          "amount": 19.0,
+          "amount": 63.0,
           "chance": 1.0
         }
       ]
@@ -261239,7 +261239,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.1,
+      "dmgMultiple": 1.45,
       "health": 2190,
       "armourType": 1,
       "res": "{1,199,1}",
@@ -261271,17 +261271,17 @@
       ],
       "dmgMultiple": 0.2,
       "health": 799,
-      "armourType": 2,
+      "armourType": 1,
       "res": "{1,69,1}",
       "size": 3,
       "shield": 0,
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
-      "archetype_id": "sentry",
+      "archetype_id": "anchor",
       "intelTrait": "能量破甲",
       "intelName": "脉冲哨卫",
-      "intelVisualRef": "sentry",
+      "intelVisualRef": "anchor",
       "intelMechanics": [],
       "drops": [
         {
@@ -261299,7 +261299,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.3,
+      "dmgMultiple": 1.65,
       "health": 2549,
       "armourType": 1,
       "res": "{1,217,1}",
@@ -261329,7 +261329,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 1.4,
+      "dmgMultiple": 1.75,
       "health": 2759,
       "armourType": 1,
       "res": "{1,300,1}",
@@ -261488,11 +261488,14 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
+      "reactiveReduction": 1,
       "archetype_id": "anchor",
-      "intelTrait": "重炮堡垒",
+      "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
       "intelName": "重甲堡垒",
       "intelVisualRef": "anchor",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "reactiveReduction"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261518,11 +261521,14 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
+      "reactiveReduction": 1,
       "archetype_id": "anchor",
-      "intelTrait": "重炮堡垒",
+      "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
       "intelName": "重炮堡垒",
       "intelVisualRef": "anchor",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "reactiveReduction"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261539,7 +261545,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.3148,
+      "dmgMultiple": 0.43,
       "health": 1235,
       "armourType": 2,
       "res": "{1,58,1}",
@@ -261599,7 +261605,7 @@
           "name": "cannon-mon"
         }
       ],
-      "dmgMultiple": 2.069,
+      "dmgMultiple": 2.4,
       "health": 4138,
       "armourType": 1,
       "res": "{1,220,1}",
@@ -261608,11 +261614,14 @@
       "shieldType": 0,
       "shieldRecovery": 0,
       "shieldDelay": 0,
+      "reactiveReduction": 1,
       "archetype_id": "anchor",
-      "intelTrait": "重炮堡垒",
+      "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
       "intelName": "深空重堡",
       "intelVisualRef": "anchor",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "reactiveReduction"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261656,23 +261665,25 @@
       "des": "重脉冲哨卫",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.1607,
+      "dmgMultiple": 1.4,
       "health": 1980,
       "armourType": 2,
       "res": "{1,218,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 550,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "间歇重炮",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "重脉冲哨卫",
       "intelVisualRef": "sentry",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261694,15 +261705,17 @@
       "armourType": 2,
       "res": "{1,239,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 650,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "持续锁定",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "束流哨卫",
       "intelVisualRef": "scout",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261719,17 +261732,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.2634,
+      "dmgMultiple": 1.5,
       "health": 2328,
       "armourType": 2,
       "res": "{1,252,1}",
       "size": 5,
       "shield": 728,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "回充护卫舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261748,23 +261761,25 @@
       "des": "重击炮艇",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.3333,
+      "dmgMultiple": 1.6,
       "health": 2974,
       "armourType": 2,
       "res": "{1,278,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 900,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "间歇重炮",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "重击炮艇",
       "intelVisualRef": "sentry",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261786,15 +261801,17 @@
       "armourType": 2,
       "res": "{1,302,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 950,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "持续锁定",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "巡防主舰",
       "intelVisualRef": "scout",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261811,17 +261828,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.4319,
+      "dmgMultiple": 1.7,
       "health": 3328,
       "armourType": 2,
       "res": "{1,325,1}",
       "size": 5,
       "shield": 1040,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "再生护卫舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261840,23 +261857,25 @@
       "des": "远程炮台",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.4752,
+      "dmgMultiple": 1.8,
       "health": 4154,
       "armourType": 2,
       "res": "{1,347,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1120,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "间歇重炮",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "远程炮台",
       "intelVisualRef": "sentry",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261873,17 +261892,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5152,
+      "dmgMultiple": 1.8,
       "health": 4030,
       "armourType": 2,
       "res": "{1,408,1}",
       "size": 5,
       "shield": 1260,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "束流壁垒",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261905,17 +261924,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.1719,
+      "dmgMultiple": 1.3,
       "health": 2630,
       "armourType": 2,
       "res": "{1,149,1}",
       "size": 5,
       "shield": 822,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "深空屏障舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261934,7 +261953,7 @@
       "des": "重击哨卫",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 1.25,
@@ -261942,15 +261961,17 @@
       "armourType": 2,
       "res": "{1,128,1;2,4,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1020,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "间歇重炮",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "重击哨卫",
       "intelVisualRef": "sentry",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -261972,17 +261993,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.3194,
+      "dmgMultiple": 1.5,
       "health": 3950,
       "armourType": 2,
       "res": "{1,116,1}",
       "size": 5,
       "shield": 1234,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "回充堡垒",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -262009,15 +262030,17 @@
       "armourType": 2,
       "res": "{1,108,1;2,4,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1400,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "持续锁定",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "截击主舰",
       "intelVisualRef": "scout",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -262036,23 +262059,25 @@
       "des": "长距炮艇",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.4531,
+      "dmgMultiple": 1.7,
       "health": 6142,
       "armourType": 2,
       "res": "{1,102,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1550,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "间歇重炮",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "长距炮艇",
       "intelVisualRef": "sentry",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -262069,17 +262094,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.5327,
+      "dmgMultiple": 1.8,
       "health": 6273,
       "armourType": 2,
       "res": "{1,97,1;2,4,1}",
       "size": 5,
       "shield": 1960,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "持续压制舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -262111,15 +262136,17 @@
       "armourType": 2,
       "res": "{1,94,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 1830,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "持续锁定",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "护航主舰",
       "intelVisualRef": "scout",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -262133,23 +262160,25 @@
       "des": "高压突击舰",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.6712,
+      "dmgMultiple": 1.9,
       "health": 8618,
       "armourType": 2,
       "res": "{1,98,1;2,4,1}",
       "size": 5,
-      "shield": 0,
-      "shieldType": 0,
-      "shieldRecovery": 0,
-      "shieldDelay": 0,
+      "shield": 2200,
+      "shieldType": 2,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "间歇重炮",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "高压突击舰",
       "intelVisualRef": "sentry",
-      "intelMechanics": [],
+      "intelMechanics": [
+        "shieldRecovery"
+      ],
       "drops": [
         {
           "resourceId": 1,
@@ -262171,17 +262200,17 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 1.7578,
+      "dmgMultiple": 2,
       "health": 7918,
       "armourType": 2,
       "res": "{1,129,1}",
       "size": 5,
       "shield": 2474,
       "shieldType": 2,
-      "shieldRecovery": 0.08,
-      "shieldDelay": 1.8,
+      "shieldRecovery": 0.4,
+      "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "回充屏障",
+      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
       "intelName": "异空间门卫",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -262200,7 +262229,7 @@
       "des": "压制炮艇",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.4859,
@@ -262260,7 +262289,7 @@
       "des": "截击炮艇",
       "equipment": [
         {
-          "name": "cannon-mon"
+          "name": "laser_mon"
         }
       ],
       "dmgMultiple": 0.5526,
@@ -308546,7 +308575,7 @@
         271008,
         271009,
         271009,
-        271010,
+        271005,
         null,
         null,
         null,
@@ -308774,10 +308803,10 @@
         null,
         null,
         null,
-        271008,
+        271017,
         271026,
         271027,
-        271008,
+        271017,
         null,
         null,
         null,
@@ -308918,16 +308947,16 @@
       "slots": [
         null,
         null,
+        null,
+        null,
+        null,
         400004,
         400004,
         400004,
-        400004,
-        400004,
-        400004,
-        400004,
-        400004,
-        400004,
-        400004,
+        null,
+        null,
+        null,
+        null,
         null,
         null,
         null
@@ -309874,7 +309903,7 @@
     },
     {
       "id": 6,
-      "length": 1000,
+      "length": 2200,
       "monGroup": "{90601|0.100000,90602|0.200000,90603|0.300000,90604|0.400000,90605|0.500000,90606|0.600000,90607|0.700000,90608|0.800000,90609|0.900000}",
       "atkRatio": 12,
       "lifeRatio": 7,
@@ -309951,7 +309980,7 @@
     },
     {
       "id": 7,
-      "length": 1000,
+      "length": 2200,
       "monGroup": "{90701|0.100000,90702|0.200000,90703|0.300000,90704|0.400000,90705|0.500000,90706|0.600000,90707|0.700000,90708|0.800000,90709|0.900000}",
       "atkRatio": 20,
       "lifeRatio": 10,

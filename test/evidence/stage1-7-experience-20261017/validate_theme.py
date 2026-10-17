@@ -1,0 +1,41 @@
+import json
+from collections import Counter
+from pathlib import Path
+from openpyxl import load_workbook
+
+root = Path(__file__).resolve().parents[3]
+data = json.loads((root / 'space-battleship/data/game_data.json').read_text(encoding='utf-8'))
+levels, groups, enemies = data['levels'], data['groups'], data['enemies']
+expected = [5, 6, 7, 8, 9, 9, 9]
+assert [len(levels[i]['groups']) for i in range(7)] == expected
+
+for stage in range(1, 8):
+    print(f'STAGE {stage}: {expected[stage-1]} points, length={levels[stage-1]["length"]}')
+    for point, group in enumerate(levels[stage-1]['groups'], 1):
+        units = [enemies[str(i)] for i in groups[str(group['id'])]['slots'] if i is not None]
+        hull = {unit['armourType'] for unit in units}
+        shield = {unit['shieldType'] for unit in units if unit['shield'] > 0}
+        attacks = {item['name'].replace('-', '_') for unit in units for item in unit['equipment']}
+        recharge = sum(unit['shield'] > 0 and unit['shieldRecovery'] > 0 for unit in units)
+        assert len(hull) == 1, (stage, point, 'mixed hull', hull)
+        assert len(attacks) == 1, (stage, point, 'mixed attack', attacks)
+        if stage in (3, 4):
+            assert not shield or shield == hull, (stage, point, 'mixed resistance')
+        if stage in (6, 7):
+            assert hull == {2} and attacks == {'laser_mon'}
+            assert recharge >= (0 if stage == 6 and point == 1 else 1)
+        print(f'  P{point}: n={len(units)}, hull={next(iter(hull))}, shield={next(iter(shield)) if shield else 0}, attack={next(iter(attacks))}, recharge={recharge}')
+
+stage5 = [groups[str(group['id'])]['slots'] for group in levels[4]['groups']]
+assert [sum(i is not None for i in slots) for slots in stage5] == [3,3,10,10,1,1,3,10,1]
+assert [enemies[str(next(i for i in slots if i is not None))]['armourType'] for slots in stage5] == [2,2,1,1,1,1,2,1,1]
+print('STATIC PASS: point counts, single-resistance and attack family, stage5 composition, stage6/7 recharge')
+
+config = root / 'space-battleship/config_excel'
+level_book = load_workbook(config / 'level.xlsx', read_only=True, data_only=True)
+assert level_book['level']['D64'].value is not None, 'level formula cache lost'
+group_book = load_workbook(config / 'monGroup.xlsx', read_only=True)
+assert group_book['monGroup']['C2295'].value.count('271017') == 2
+hyperspace = json.loads((root / 'space-battleship/data/hyperspace_config.json').read_text(encoding='utf-8'))
+assert hyperspace['unlock_stage'] == 8, 'highestLevel becomes 8 after stage 7 clear'
+print('SOURCE PASS: level formula cache, stage3 group workbook, stage7 hyperspace gate semantics')
