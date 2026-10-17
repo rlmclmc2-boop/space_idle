@@ -14,7 +14,7 @@ import openpyxl
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "config_excel" / "ai_tech_tree.xlsx"
 TARGET = ROOT / "data" / "ai_tech_tree.json"
-FIELDS = ("id", "name", "description", "tier", "base_seconds", "growth", "effect", "factor", "unlock", "requirements")
+FIELDS = ("id", "name", "description", "tier", "base_seconds", "growth", "effect", "factor", "unlock", "requirements", "legacy_unlock")
 
 
 def positive(value, field, key):
@@ -51,6 +51,11 @@ def project(source=SOURCE):
             cells["unlock"] = cells["unlock"] or ""
             if cells["unlock"] not in ("", "enhancement"):
                 raise ValueError(f"{key}: unsupported unlock")
+            legacy_unlock = cells.pop("legacy_unlock")
+            if legacy_unlock is not None:
+                if not isinstance(legacy_unlock, str) or not legacy_unlock.strip():
+                    raise ValueError(f"{key}: invalid legacy_unlock")
+                cells["legacy_unlock"] = legacy_unlock
             requirements = {}
             for term in str(cells.pop("requirements") or "").split(";"):
                 if not term.strip():

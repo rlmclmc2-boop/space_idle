@@ -25,6 +25,7 @@ const TARGET_REACTOR := [1,1,2,3,4,5,8]
 var pulse_control := false
 var reactor_control := false
 var ai_invest := false
+var route_frames := 0
 
 func invest(game, stage:int, point:int) -> void:
 	var weapon:String = "laser" if pulse_control and stage>=6 else WEAPONS[stage-1][point-1]
@@ -63,6 +64,7 @@ func _initialize() -> void:
 		var frames:=0
 		var total_frames:=0
 		var attempt:=1
+		var tech_seen:Dictionary=game.profile.aiTechLevels.duplicate(true)
 		var active_point:=0
 		var battle_start:=0
 		var previous_point:=0
@@ -75,11 +77,15 @@ func _initialize() -> void:
 			game.tick(1.0/60.0)
 			frames+=1
 			total_frames+=1
+			route_frames+=1
+			if tech_seen!=game.profile.aiTechLevels:
+				print("QA_ROUTE_TECH ",JSON.stringify({"stage":stage,"point":planned_point,"attempt":attempt,"route_seconds":snappedf(route_frames/60.0,.01),"stage_seconds":snappedf(frames/60.0,.01),"before":tech_seen,"after":game.profile.aiTechLevels,"iron":float(game.profile.resources.get("1",0)),"shield_max":float(game.max_shield()),"armour_max":float(game.stat("armour"))}))
+				tech_seen=game.profile.aiTechLevels.duplicate(true)
 			if before!=BattleGame.State.COMBAT and game.state==BattleGame.State.COMBAT:
 				battle_start=frames
 				active_point=game.group_index
 			if before==BattleGame.State.COMBAT and game.state!=BattleGame.State.COMBAT:
-				print("QA_ROUTE_POINT ",JSON.stringify({"stage":stage,"point":active_point,"combat_seconds":snappedf((frames-battle_start)/60.0,.01),"next_state":game.state,"armour":float(game.player.armour),"shield":float(game.player.shield),"iron":float(game.profile.resources.get("1",0)),"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0]}))
+				print("QA_ROUTE_POINT ",JSON.stringify({"stage":stage,"point":active_point,"combat_seconds":snappedf((frames-battle_start)/60.0,.01),"next_state":game.state,"armour":float(game.player.armour),"shield":float(game.player.shield),"shield_max":float(game.max_shield()),"iron":float(game.profile.resources.get("1",0)),"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0]}))
 			if game.state==BattleGame.State.RETREAT:
 				print("QA_ROUTE_RETRY ",JSON.stringify({"stage":stage,"attempt":attempt,"point":active_point,"iron":float(game.profile.resources.get("1",0)),"weapon":game.profile.loadout.weapons[0],"defence":game.profile.loadout.defence[0]}))
 				if attempt>=8 or not game.start(stage,false):

@@ -23,7 +23,7 @@
     "name": "装备强化",
     "description": "每级使装备耐久乘以 1.1。",
     "tier": "basic",
-    "base_seconds": 60,
+    "base_seconds": 40,
     "growth": 1.4,
     "effect": "equipment_durability",
     "factor": 1.1,
