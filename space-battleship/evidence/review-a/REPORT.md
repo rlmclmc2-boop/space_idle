@@ -1,4 +1,6 @@
-# 太空战舰 1–7 关独立 GUI 实玩评分（评测 A）
+# 太空战舰 1–7 关独立 GUI 实玩评分（评测 A，原冻结版）
+
+> 此版的自动战斗和教程判据已勘误。当前有效评分见 [REPORT_CORRECTED.md](REPORT_CORRECTED.md)；原冻结内容保留在本文件及 Git 提交 `11f5d008c2b712f87ed2bc1eb6d4a23fcede4da5`。
 
 ## 范围、方法与证据
 
