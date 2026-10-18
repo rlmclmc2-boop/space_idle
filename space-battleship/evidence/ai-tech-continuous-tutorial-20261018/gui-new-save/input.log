@@ -1,0 +1,6 @@
+before=frame-000191.jpg
+godot_pid=49188
+enum_ok=True windows=5
+window_pid=49188 hwnd=1510076 valid=True
+click_valid=True down=True down_error=0 up=True up_error=0 x=78 y=592
+after=frame-000193.jpg

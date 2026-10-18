@@ -16217,7 +16217,7 @@
   {"key":"battle.damage_stats.drone","text":"无人机槽 {slot}","params":"slot","category":"battle","note":"玩家无人机槽"},
   {"key":"battle.damage_stats.unknown_slot","text":"已卸下","params":"","category":"battle","note":"统计窗口内已卸下的无人机"},
   {"key":"battle.damage_stats.other","text":"其他伤害","params":"","category":"battle","note":"无法可靠归属的伤害"},
-  {"key":"ai_tech.tutorial.research","text":"在科技页选择并启动研究。每完成一级即停止；未完成进度保留。","params":"","category":"tutorial","note":"首次选择科技时的研究说明"},
+  {"key":"ai_tech.tutorial.research","text":"在科技页选择一项研究；每完成一级会继续研究该科技的下一级。切换或停止后，未完成进度保留。","params":"","category":"tutorial","note":"首次选择科技时的研究说明"},
   {"key":"ai_tech.tutorial.investment","text":"铁和铀投入仅用于可选加速，按每秒持续消耗；余额不足时仅暂停该资源加速。","params":"","category":"tutorial","note":"科技投入说明"},
   {"key":"ai_tech.investment.iron_per_second","text":"铁投入/秒","params":"","category":"research","note":"投入框旁直接标明持续扣费单位"},
   {"key":"ai_tech.investment.uranium_per_second","text":"铀投入/秒","params":"","category":"research","note":"投入框旁直接标明持续扣费单位"},

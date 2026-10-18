@@ -118,6 +118,16 @@ static func snapshot(game) -> Dictionary:
 		remaining = maxf(0.0, required(game, selected)-float(game.profile.aiTechProgress.get(selected,0.0)))/acceleration
 	return {"nodes":nodes,"selected":selected,"inputs":inputs,"ai_count":ai_count(game),"speed":acceleration,"remaining_seconds":remaining,"status":"idle" if selected.is_empty() else "researching"}
 
+static func complete_level(game, id: String) -> void:
+	game.profile.aiTechProgress[id] = 0.0
+	game.profile.aiTechLevels[id] = level(game,id) + 1
+	# Keep the player's selection while the next level remains legal.
+	if not bool(eligibility(game,id).ok) or not is_finite(required(game,id)):
+		game.profile.aiTechActive = ""
+	game.profile.aiTechCompletionUnread = true
+	game.invalidate_stat_cache()
+	game.event.emit("hightech_complete", {"key":id})
+
 static func advance(game, dt: float) -> void:
 	if dt <= 0.0 or not is_finite(dt):return
 	var id := str(game.profile.aiTechActive)
@@ -148,14 +158,10 @@ static func advance(game, dt: float) -> void:
 		var progress := float(game.profile.aiTechProgress.get(id,0.0))
 		if cost-progress <= maxf(1.0,cost)*1e-12:
 			if not game.native_before_configuration_change():break
-			game.profile.aiTechProgress[id] = 0.0
-			game.profile.aiTechLevels[id] = level(game,id) + 1
-			game.profile.aiTechActive = ""
-			game.profile.aiTechCompletionUnread = true
-			game.invalidate_stat_cache()
-			game.event.emit("hightech_complete", {"key":id})
+			complete_level(game,id)
 			changed = true
-			break
+			id = str(game.profile.aiTechActive)
+			continue
 		step = minf(step, maxf(0.0, cost-progress)/speed)
 		if progress + step*speed + maxf(1.0,cost)*1e-12 >= cost:
 			if not game.native_before_configuration_change():break
@@ -173,13 +179,7 @@ static func advance(game, dt: float) -> void:
 		remaining -= step
 		changed = true
 		if float(game.profile.aiTechProgress[id]) + maxf(1.0,cost)*1e-12 >= cost:
-			game.profile.aiTechProgress[id] = 0.0
-			game.profile.aiTechLevels[id] = level(game,id) + 1
-			game.profile.aiTechActive = ""
-			game.profile.aiTechCompletionUnread = true
-			game.invalidate_stat_cache()
-			game.event.emit("hightech_complete", {"key":id})
-			break
+			complete_level(game,id)
 		id = str(game.profile.aiTechActive)
 	if changed:
 		game.save_dirty = true

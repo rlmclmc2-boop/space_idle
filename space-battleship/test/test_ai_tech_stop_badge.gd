@@ -24,17 +24,19 @@ class ResearchGame:
 func _initialize() -> void:
 	var research := ResearchGame.new()
 	research.db.data.ai_tech_tree = JSON.parse_string(FileAccess.get_file_as_string("res://data/ai_tech_tree.json"))
-	var duration: float = TECH.required(research,"weapon_accuracy")
-	var expected_cost: float = 10.0 * duration / TECH.input_factor(10)
-	TECH.advance(research,duration * 3.0)
+	var speed := TECH.input_factor(10)
+	var first_duration: float = TECH.required(research,"weapon_accuracy")
+	TECH.advance(research,first_duration/speed)
 	var ok := int(research.profile.aiTechLevels.get("weapon_accuracy",0)) == 1
-	ok = ok and research.profile.aiTechActive == "" and float(research.profile.aiTechProgress.get("weapon_accuracy",0.0)) == 0.0
+	ok = ok and research.profile.aiTechActive == "weapon_accuracy" and float(research.profile.aiTechProgress.get("weapon_accuracy",0.0)) == 0.0
 	ok = ok and bool(research.profile.aiTechCompletionUnread) and research.save_dirty
+	research.profile.aiTechCompletionUnread = false
+	var second_duration: float = TECH.required(research,"weapon_accuracy")
+	TECH.advance(research,second_duration/speed)
+	ok = ok and research.profile.aiTechLevels.weapon_accuracy == 2 and research.profile.aiTechActive == "weapon_accuracy"
+	ok = ok and bool(research.profile.aiTechCompletionUnread)
+	var expected_cost: float = 10.0 * (first_duration+second_duration)/speed
 	ok = ok and absf(float(research.profile.resources["1"]) - (10000.0 - expected_cost)) < 0.01
-	var balance_after_completion: float = research.profile.resources["1"]
-	TECH.advance(research,duration * 3.0)
-	ok = ok and research.profile.resources["1"] == balance_after_completion and research.profile.aiTechLevels.weapon_accuracy == 1
-	ok = ok and TECH.select(research,"weapon_accuracy")
 	TECH.advance(research,1.0)
 	ok = ok and float(research.profile.aiTechProgress.weapon_accuracy) > 0.0
 	var saved_game = GAME.new(DB.new(),false)
@@ -63,8 +65,8 @@ func _initialize() -> void:
 	tech_nav.free()
 	host.free()
 	if not ok:
-		printerr("TECH_STOP_BADGE_FAIL ", research.profile, " saved=", saved.get("aiTechCompletionUnread"), " restored=", restored.profile.aiTechCompletionUnread)
+		printerr("TECH_CONTINUOUS_BADGE_FAIL ", research.profile, " saved=", saved.get("aiTechCompletionUnread"), " restored=", restored.profile.aiTechCompletionUnread)
 		quit(1)
 		return
-	print("TECH_STOP_BADGE_OK level=1 active=none balance=", balance_after_completion, " saved_unread=", saved.aiTechCompletionUnread, " restored_clear=true")
+	print("TECH_CONTINUOUS_BADGE_OK level=2 active=weapon_accuracy balance=", research.profile.resources["1"], " saved_unread=", saved.aiTechCompletionUnread, " restored_clear=true")
 	quit()

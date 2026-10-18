@@ -125,7 +125,6 @@ func decide() -> Dictionary:
 			if not game.slot_upgrade_cost(category,index).is_empty() and waiting_slot.is_empty():waiting_slot = id
 			if game.can_upgrade_slot(category,index) and upgrade_slot.is_empty():upgrade_slot = id
 	if any_upgraded:state.upgraded = true
-	if state.equipped or state.upgraded or not game.profile.cleared.is_empty():state.intro = true
 	if empty_slot.is_empty():state.equipped = true
 	if review:return {"phase":"review"}
 	if not game.pending_unlocks.is_empty():return {"phase":"unlock","action":"continue"}

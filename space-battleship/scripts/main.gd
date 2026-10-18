@@ -351,6 +351,8 @@ func _ready() -> void:
 	if music_on:
 		music.play()
 	game.resume_progress()
+	var onboarding: Dictionary = game.profile.onboarding
+	set_intro_pause(not bool(onboarding.intro) and not bool(onboarding.completed) and not bool(onboarding.dismissed))
 	build_ui()
 	enemy_defence_inspector = preload("res://scripts/enemy_defence_inspector.gd").new()
 	add_child(enemy_defence_inspector)
@@ -883,6 +885,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 			toast(UIText.t("upgrade.research_complete", {"name":str(db.data.ai_tech_tree.get(str(info.key),{}).get("name",info.key))}))
 			refresh_equipment_effects(str(info.key))
 			if is_instance_valid(hightech_page):hightech_page.invalidate()
+			if is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree():game.read_ai_tech_completion()
 			refresh_ai_tech_completion_badge()
 		"tech_tree_changed":
 			if str(info.get("reason", "")) == "income_peak":refresh_equipment_effects("unification")
