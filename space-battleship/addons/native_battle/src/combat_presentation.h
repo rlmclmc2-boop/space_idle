@@ -637,12 +637,14 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
             // with missiles/chains. MultiMesh and script draws remain barriers.
             Color color=Color::html(int64_t(shot.get("type",0))==2?"ffaf61":"64b5ff");
             if(int64_t(shot.get("type",0))==2) {
-                Color glow=color;glow.a=0.5;line(point-axis*9,point-axis,glow,1.5);
-                line(point,point+axis*8,color,3.5);
-                line(point+axis*5,point+axis*8,Color::html("ffe5bf"),2.0);
+                Color glow=color;glow.a=0.45;line(point-axis*13,point-axis*4,glow,1.5);
+                Vector2 side=axis.orthogonal();
+                tri(point+axis*8,point+side*3,point-axis*4,color);
+                tri(point+axis*8,point-axis*4,point-side*3,color);
+                line(point+axis*2,point+axis*8,Color::html("ffe5bf"),1.5);
             } else {
-                line(point-axis*9,point+axis*9,color,2.0);
-                line(point-axis*7,point+axis*7,Color::html("d8f3ff"),1.0);
+                line(point-axis*11,point+axis*10,color,2.5);
+                line(point-axis*6,point+axis*10,Color::html("e4f7ff"),1.0);
             }
             continue;
         }
