@@ -261057,7 +261057,7 @@
           "name": "laser_mon"
         }
       ],
-      "dmgMultiple": 0.5,
+      "dmgMultiple": 0.43,
       "health": 2800,
       "armourType": 1,
       "res": "{1,63,1}",
