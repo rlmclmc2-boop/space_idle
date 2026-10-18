@@ -27,14 +27,18 @@ func record() -> void:
 			for enemy in scene.game.enemies:
 				var key:String=scene.enemy_ship_key(enemy)
 				keys[key]=int(keys.get(key,0))+1
-			print("BATTLE_KEYS ",keys," native=",scene.game.native_execution!=null," combat_presentation=",scene.game.combat_presentation!=null," speed=",scene.game.speed)
+			var metrics:Dictionary=scene.game.combat_presentation.retained_metrics() if scene.game.combat_presentation!=null else {}
+			print("BATTLE_KEYS ",keys," native=",scene.game.native_execution!=null," combat_presentation=",scene.game.combat_presentation!=null," speed=",scene.game.speed," presentation_metrics=",metrics)
 		if frame in [20,60,100]:
+			var hostile_count:=0
+			for shot in scene.game.projectiles:
+				if bool(shot.get("hostile",false)):hostile_count+=1
 			if DisplayServer.get_name()=="headless":
-				print("BATTLE_CAPTURE frame=",frame," no_framebuffer enemy_count=",scene.game.enemies.size())
+				print("BATTLE_CAPTURE frame=",frame," no_framebuffer enemy_count=",scene.game.enemies.size()," hostile_shots=",hostile_count)
 			else:
 				await RenderingServer.frame_post_draw
 				var texture:=root.get_texture()
 				var path:=out.path_join("stage2-%03d.png" % frame)
 				var error:=texture.get_image().save_png(path)
-				print("BATTLE_CAPTURE frame=",frame," enemy_count=",scene.game.enemies.size()," draw_calls=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)," result=",error)
+				print("BATTLE_CAPTURE frame=",frame," enemy_count=",scene.game.enemies.size()," hostile_shots=",hostile_count," draw_calls=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)," result=",error)
 	quit()
