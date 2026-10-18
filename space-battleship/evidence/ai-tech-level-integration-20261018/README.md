@@ -3,6 +3,7 @@
 Parents: `2150e041e34966bcdb2c228ff8caac777a5c1194` and `6d52620dfbf122af3f87201d8282e39918ebfa27`. Common base: `main@51a7e1b9bc5784927e7d5b232a112194d990a41c`. The merge had no conflicts. Only the four reviewed level commits were merged; no main update or art candidate was included.
 
 Projection check: `import_workbook.read_rows` + `convert_sheet` compared `mon.xlsx` (10461 rows), `monGroup.xlsx` (2330), `level.xlsx` (220) and `hightech.xlsx` (4) to their complete `game_data.json` sections; zero mismatches. `validate_projection` passed. Thus `mon.xlsx` remains authoritative for the neutral enemy intel text.
+Separately, `python tools/import_ai_tech_tree.py --check` returned `AI_TECH_PROJECTION=PASS rows=8` against `ai_tech_tree.xlsx` and `data/ai_tech_tree.json`.
 
 Headless Godot 4.7.2, isolated app data; every listed script exited 0:
 
