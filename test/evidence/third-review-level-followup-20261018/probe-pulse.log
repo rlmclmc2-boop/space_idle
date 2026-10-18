@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+APPROVED_POINT {"armour_in":0.0,"armour_out":0.0,"case":"6-8-laser14-shield14","combat_s":31.0,"native_session":true,"point":8,"prebattle_iron":100000.0,"reactor":7,"recovery_frames":0,"shield_hit_frames":60,"shield_in":21450.0,"shield_out":0.0,"spent_iron":5810.0,"stage":6,"status":"retreat"}
+APPROVED_POINT {"armour_in":0.0,"armour_out":0.0,"case":"7-8-laser17-shield17","combat_s":49.5,"native_session":true,"point":8,"prebattle_iron":100000.0,"reactor":11,"recovery_frames":0,"shield_hit_frames":97,"shield_in":92607.0,"shield_out":0.0,"spent_iron":10470.0,"stage":7,"status":"retreat"}
+THIRD_FOLLOWUP_PULSE_CHECK 0

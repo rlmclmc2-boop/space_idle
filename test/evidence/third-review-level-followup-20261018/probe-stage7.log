@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+APPROVED_POINT {"armour_in":9360.0,"armour_out":6149.0,"case":"5-4-cannon8-armour8","combat_s":28.0,"native_session":true,"point":4,"prebattle_iron":10000.0,"reactor":7,"recovery_frames":0,"shield_hit_frames":0,"shield_in":0.0,"shield_out":0.0,"spent_iron":1550.0,"stage":5,"status":"clear"}
+APPROVED_POINT {"armour_in":0.0,"armour_out":0.0,"case":"7-3-beam17-shield17","combat_s":4.02,"native_session":true,"point":3,"prebattle_iron":100000.0,"reactor":11,"recovery_frames":0,"shield_hit_frames":7,"shield_in":92607.0,"shield_out":88785.0,"spent_iron":10470.0,"stage":7,"status":"clear"}
+APPROVED_POINT {"armour_in":0.0,"armour_out":0.0,"case":"7-6-beam17-shield17","combat_s":6.02,"native_session":true,"point":6,"prebattle_iron":100000.0,"reactor":11,"recovery_frames":0,"shield_hit_frames":11,"shield_in":92607.0,"shield_out":83070.0,"spent_iron":10470.0,"stage":7,"status":"clear"}
+APPROVED_POINT {"armour_in":0.0,"armour_out":0.0,"case":"7-8-beam17-shield17","combat_s":9.02,"native_session":true,"point":8,"prebattle_iron":100000.0,"reactor":11,"recovery_frames":0,"shield_hit_frames":17,"shield_in":92607.0,"shield_out":76457.0,"spent_iron":10470.0,"stage":7,"status":"clear"}
+THIRD_FOLLOWUP_PROBE 0
