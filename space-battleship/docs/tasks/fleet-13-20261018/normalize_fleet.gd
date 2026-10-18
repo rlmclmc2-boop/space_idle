@@ -55,9 +55,7 @@ func _initialize()->void:
 		input.convert(Image.FORMAT_RGBA8)
 		var body:=solid_bounds(input)
 		var cropped:=crop_with_margin(input,body)
-		# Enemy actors use the full 1:2 canvas at battle scale. Reduce transparent
-		# margins without changing the approved silhouette's aspect ratio.
-		var hull:=place(cropped,HULL_SIZE,0.83 if i<5 else 0.93,0.74 if i<5 else 0.92)
+		var hull:=place(cropped,HULL_SIZE,0.83,0.74)
 		var hull_path:=hull_base+("/player/" if i<5 else "/enemy/")+key+".png"
 		assert(hull.save_png(hull_path)==OK)
 		var hull_body:=solid_bounds(hull)

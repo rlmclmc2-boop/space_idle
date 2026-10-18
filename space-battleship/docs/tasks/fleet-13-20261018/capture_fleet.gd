@@ -42,11 +42,42 @@ func capture()->void:
 			var key:String=scene.enemy_ship_key(enemy)
 			keys[key]=int(keys.get(key,0))+1
 		for frame in 30:await process_frame
+		var verified_mounts:=0
+		for record in scene.retained_contacts.records.values():
+			if not record.supported:continue
+			for mount in record.mounts:
+				var component=scene.enemy_component_for_slot(record.entity,mount.owner_slot)
+				var pose:Dictionary=scene.enemy_component_pose(record.entity,component)
+				var width:float=mount.node.pieces.body.scale.x
+				var face:=0.64 if mount.physical else 0.45
+				var mouth:Vector2=mount.node.position+Vector2(face*width,0).rotated(float(pose.angle))
+				assert(mouth.distance_to(Vector2(pose.muzzle))<0.1,"Retained weapon mouth drift")
+				verified_mounts+=1
 		RenderingServer.force_draw()
 		var png:=out.path_join(str(scenario.label)+".png")
 		var status:=root.get_texture().get_image().save_png(png)
-		print("FLEET_CAPTURE ",scenario.label," keys=",keys," remaining=",game.enemies.size()," speed=",game.speed," native=",game.combat_presentation!=null," draws=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)," texture_bytes=",RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TEXTURE_MEM_USED)," result=",status)
+		print("FLEET_CAPTURE ",scenario.label," keys=",keys," remaining=",game.enemies.size()," speed=",game.speed," native=",game.combat_presentation!=null," retained_mounts=",verified_mounts," draws=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)," texture_bytes=",RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TEXTURE_MEM_USED)," result=",status)
 		assert(status==OK)
+	for key in ["Frigate","Destroyer","Cruiser","Battleship","Heavy_Battleship"]:
+		game.profile.selectedShip=key
+		assert(scene.ship_view.set_hull(key),key)
+		scene.current_hull=key
+		scene._set_reference_dimensions()
+		assert(scene.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons")))
+		assert(game.start(1,false),key)
+		game.group_index=4
+		game.spawn_group()
+		for frame in 12:await process_frame
+		var body:=scene.ship_view.ship.find_child("ApprovedHullArt",true,false) as MeshInstance3D
+		assert(body!=null and body.visible,key)
+		var texture:Texture2D=(body.material_override as StandardMaterial3D).albedo_texture
+		assert(texture.resource_path.ends_with("/player/"+["01-frigate.png","02-destroyer.png","03-cruiser.png","04-battleship.png","05-heavy-battleship.png"][["Frigate","Destroyer","Cruiser","Battleship","Heavy_Battleship"].find(key)]),key)
+		var body_id:=body.get_instance_id()
+		assert(scene.ship_view.set_hull(key) and body_id==body.get_instance_id(),"Same hull reloaded")
+		RenderingServer.force_draw()
+		var player_status:=root.get_texture().get_image().save_png(out.path_join("player-"+key.to_lower()+".png"))
+		assert(player_status==OK)
+		print("FLEET_PLAYER_CAPTURE ",key," texture=",texture.resource_path," same_hull_cached=true result=",player_status)
 	game.profile.cleared=range(1,101)
 	game.profile.highestLevel=101
 	game.rebuild_unlocks()
@@ -61,5 +92,5 @@ func capture()->void:
 	var ui_status:=root.get_texture().get_image().save_png(out.path_join("ship-ui-five.png"))
 	print("FLEET_UI_CAPTURE candidate=",page.candidate," unlocked=",game.ship_unlocked("Heavy_Battleship")," result=",ui_status)
 	assert(ui_status==OK)
-	print("FLEET_CAPTURE_DONE ",SCENARIOS.size()+1)
+	print("FLEET_CAPTURE_DONE ",SCENARIOS.size()+6)
 	quit()
