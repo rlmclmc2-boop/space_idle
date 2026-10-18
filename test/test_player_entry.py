@@ -1,4 +1,4 @@
-import importlib.util, tempfile, unittest
+import hashlib, importlib.util, tempfile, unittest
 from pathlib import Path
 from unittest.mock import patch
 spec=importlib.util.spec_from_file_location('launch',Path(__file__).resolve().parents[1]/'tools'/'play_main.py')
@@ -10,6 +10,8 @@ class Validation(unittest.TestCase):
   (self.p/'engine').mkdir(parents=True);(self.p/'bin').mkdir()
   (self.p/'engine/Godot_v4.7.2-stable_win64.exe').write_bytes(b'engine')
   (self.p/'bin/space_native.dll').write_bytes(b'accepted')
+  (self.root/'tools/player_runtime').mkdir(parents=True)
+  (self.root/'tools/player_runtime/space_native.dll').write_bytes(b'accepted')
   (self.p/'space_native.gdextension').write_text(m.DESCRIPTOR)
   self.addCleanup(patch.stopall);patch.object(m,'ROOT',self.root).start()
   patch.object(m,'DLL_SHA',m.digest(self.p/'bin/space_native.dll')).start()
@@ -45,6 +47,26 @@ class Validation(unittest.TestCase):
   (self.p/'bin/space_native.dll').unlink()
   with self.assertRaisesRegex(RuntimeError,'缺少原生库'):
    self.invoke()
+ def test_explicit_install_preserves_previous_dll(self):
+  dll=self.p/'bin/space_native.dll'
+  dll.write_bytes(b'old')
+  with patch.object(m,'checked_source',return_value=(self.p,'head')):
+   self.assertEqual(m.install_native(self.root),dll)
+  self.assertEqual(dll.read_bytes(),b'accepted')
+  backup=self.p/'.runtime/native-backup'/('space_native-'+hashlib.sha256(b'old').hexdigest()+'.dll')
+  self.assertEqual(backup.read_bytes(),b'old')
+ def test_explicit_install_supplies_missing_dll(self):
+  dll=self.p/'bin/space_native.dll'
+  dll.unlink()
+  with patch.object(m,'checked_source',return_value=(self.p,'head')):
+   self.assertEqual(m.install_native(self.root),dll)
+  self.assertEqual(dll.read_bytes(),b'accepted')
+ def test_explicit_install_rejects_bad_bundle(self):
+  (self.root/'tools/player_runtime/space_native.dll').write_bytes(b'bad')
+  with patch.object(m,'checked_source',return_value=(self.p,'head')):
+   with self.assertRaisesRegex(RuntimeError,'Bundled native DLL'):
+    m.install_native(self.root)
+  self.assertEqual((self.p/'bin/space_native.dll').read_bytes(),b'accepted')
  def test_install_descriptor(self):
   (self.p/'space_native.gdextension').unlink()
   self.invoke()

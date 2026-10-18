@@ -3,13 +3,15 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 # Integration owner must advance this to the reviewed main commit after merging.
-BASE = '679712193b55394096c33f3825228064e5b93268'
-DLL_SHA = 'dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a'
+BASE = '69ef148cd76151abab7851973a31c51483605498'
+DLL_SHA = '04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f'
+BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',
     'space-battleship/docs/READ_DEMOS.md',
@@ -45,7 +47,7 @@ def digest(path):
             h.update(part)
     return h.hexdigest()
 
-def validate(root):
+def checked_source(root):
     if root.resolve() != ROOT.resolve():
         raise RuntimeError('Player entry must run from its own checkout')
     project = root / 'space-battleship'
@@ -77,6 +79,41 @@ def validate(root):
     if local_changes:
         raise RuntimeError('Unreviewed local runtime changes:\n' + local_changes)
 
+    return project, head
+
+def verified_bundle(root):
+    bundle = root / BUNDLED_DLL
+    if not bundle.is_file() or digest(bundle) != DLL_SHA:
+        raise RuntimeError('Bundled native DLL is missing or has the wrong SHA256: ' + str(bundle))
+    return bundle
+
+def install_native(root):
+    project, _ = checked_source(root)
+    bundle = verified_bundle(root)
+    dll = project / 'bin' / 'space_native.dll'
+    if dll.is_file():
+        previous = digest(dll)
+        if previous == DLL_SHA:
+            return dll
+        backup = project / '.runtime' / 'native-backup' / ('space_native-' + previous + '.dll')
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        if backup.exists() and digest(backup) != previous:
+            raise RuntimeError('Native DLL backup path is occupied: ' + str(backup))
+        if not backup.exists():
+            shutil.copy2(dll, backup)
+    dll.parent.mkdir(parents=True, exist_ok=True)
+    temporary = dll.with_name('space_native.dll.tmp')
+    shutil.copyfile(bundle, temporary)
+    if digest(temporary) != DLL_SHA:
+        temporary.unlink()
+        raise RuntimeError('Native DLL copy failed SHA256 verification')
+    temporary.replace(dll)
+    return dll
+
+def validate(root):
+    project, head = checked_source(root)
+    verified_bundle(root)
+
     engine = project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
     if not engine.is_file():
         raise RuntimeError('缺少引擎：' + str(engine))
@@ -106,6 +143,12 @@ def validate(root):
     return project, engine, head, version
 
 def main():
+    if sys.argv[1:] == ['--install-native']:
+        dll = install_native(ROOT)
+        print('Installed matching native DLL:', dll, 'SHA256:', DLL_SHA)
+        return 0
+    if len(sys.argv) != 1:
+        raise RuntimeError('Unknown player-entry argument')
     project, engine, head, version = validate(ROOT)
     env = os.environ.copy()
     window_check = env.get('SPACE_BATTLESHIP_VERIFY_WINDOW') == '1'
@@ -129,8 +172,17 @@ def main():
         subprocess.run([str(engine), '--headless', '--editor', '--import', '--quit', '--path', str(project)],
                        cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
     print('启动正式游戏。', flush=True)
-    return subprocess.call([str(engine), '--path', str(project), 'res://main.tscn',
-                            '--log-file', str(runtime/'player-game.log')], cwd=project, env=env)
+    game_args = [str(engine), '--path', str(project), 'res://main.tscn',
+                 '--log-file', str(runtime/'player-game.log')]
+    if window_check and env.get('SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES'):
+        try:
+            frames = int(env['SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES'])
+        except ValueError as exc:
+            raise RuntimeError('Verification frame count must be an integer') from exc
+        if not 1 <= frames <= 3600:
+            raise RuntimeError('Verification frame count must be between 1 and 3600')
+        game_args += ['--quit-after', str(frames)]
+    return subprocess.call(game_args, cwd=project, env=env)
 
 if __name__ == '__main__':
     try:
