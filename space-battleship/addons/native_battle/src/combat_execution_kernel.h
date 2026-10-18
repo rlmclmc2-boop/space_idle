@@ -55,7 +55,7 @@ class SpaceCombatKernel : public RefCounted {
         double crit_rate = 0, crit_multiplier = 2, repeat_probability = 0, repeat_multiplier = 1,
                secondary_probability = 0;
         int chain_count = 0;
-        Vector2 muzzle, screen_muzzle;
+        Vector2 muzzle, screen_muzzle, screen_axis;
         Dictionary entry, row;
         int64_t beam = -1;
         std::shared_ptr<const BirthConfig> birth;
@@ -1722,6 +1722,23 @@ class SpaceCombatKernel : public RefCounted {
         while (!roots.empty() && !final_cleared && roots.top().at <= clock + 1e-9) {
             Timed q = roots.top();
             roots.pop();
+            const Weapon &ready_weapon = weapons[q.weapon];
+            if (!ready_weapon.hostile && ready_weapon.kind != 2 && !ready_weapon.entry.has("drone_id") &&
+                !(scatter && ready_weapon.kind == 0) && ready_weapon.screen_axis.length_squared() > 0.5) {
+                auto choices = targets(ready_weapon.type, clock);
+                if (!choices.empty()) {
+                    Vector2 ray = actors[choices.front().index].screen_point - ready_weapon.screen_muzzle;
+                    // A target may die earlier in this same native step. Wait
+                    // for the visual turret to follow the replacement before
+                    // consuming a shot; missiles retain their launch fan.
+                    if (ray.y < 0 && ray.length_squared() > 1 &&
+                        ready_weapon.screen_axis.dot(ray.normalized()) < 0.985) {
+                        q.at = clock + 1.0 / 60.0;
+                        reschedule.push_back(q);
+                        continue;
+                    }
+                }
+            }
             primary(q.weapon);
             q.at = clock + weapons[q.weapon].interval;
             if (!final_cleared && weapons[q.weapon].kind != 3)
@@ -1872,6 +1889,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("refit_configuration", "descriptor"), &SpaceCombatKernel::refit_configuration);
         ClassDB::bind_method(D_METHOD("target_views", "type"), &SpaceCombatKernel::target_views);
         ClassDB::bind_method(D_METHOD("input_player_point", "point"), &SpaceCombatKernel::input_player_point);
+        ClassDB::bind_method(D_METHOD("input_weapon_axes", "axes"), &SpaceCombatKernel::input_weapon_axes);
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
         ClassDB::bind_method(D_METHOD("buffer_view"), &SpaceCombatKernel::buffer_view);
         ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total);
@@ -2524,6 +2542,10 @@ class SpaceCombatKernel : public RefCounted {
     }
     void input_player_point(Vector2 point) {
         player_point = point;
+    }
+    void input_weapon_axes(PackedVector2Array axes) {
+        for (int i = 0; i < axes.size() && i < int(weapons.size()); ++i)
+            weapons[i].screen_axis = axes[i];
     }
     void input_geometry(PackedVector2Array points, PackedVector2Array muzzles) {
         for (int i = 0; i < points.size() && i < int(actors.size()); ++i)

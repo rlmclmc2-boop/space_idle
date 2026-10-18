@@ -33,6 +33,9 @@ func verify() -> void:
 			for slot in index+1:
 				var base:Vector2=view.camera.unproject_position(view.modules[slot].node.global_position)
 				var base_error:float=base.distance_to(logical.screen_mount_for_slot(slot))
+				var ahead:Vector2=view.camera.unproject_position(view.modules[slot].muzzle.to_global(Vector3(0,0,-0.5)))
+				var barrel_axis:Vector2=(ahead-view.screen_muzzle_for_slot(slot)).normalized()
+				assert(barrel_axis.dot(logical.screen_axis_for_slot(slot))>0.9999,key+" slot="+str(slot)+" logical barrel axis drift")
 				for ordinal in 2:
 					var muzzle_error:float=view.screen_muzzle_for_slot(slot,ordinal).distance_to(logical.screen_muzzle_for_slot(slot,ordinal))
 					maximum=maxf(maximum,maxf(base_error,muzzle_error))

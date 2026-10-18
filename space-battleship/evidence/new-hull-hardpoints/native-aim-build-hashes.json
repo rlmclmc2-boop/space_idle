@@ -1,0 +1,40 @@
+{
+  "algorithm": "SHA-256",
+  "build": "llvm-mingw x86_64-w64-mingw32-clang++ -std=c++17 -O2 -fPIC -fno-fast-math -ffp-contract=off -DWIN32 -shared -static, linked against godot-cpp 4.7 template_release x86_64",
+  "dll": {
+    "runtime_path": "space-battleship/bin/space_native.dll",
+    "runtime_sha256": "739033eec60f889dee38785d1bf2318e6a7acfb38ebba6ffd2f3a4c59cc67fd3",
+    "build_sha256": "739033eec60f889dee38785d1bf2318e6a7acfb38ebba6ffd2f3a4c59cc67fd3",
+    "match": true
+  },
+  "sources": [
+    {
+      "name": "space_native.cpp",
+      "repository_path": "space-battleship/addons/native_battle/src/space_native.cpp",
+      "repository_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+      "build_copy_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+      "match": true
+    },
+    {
+      "name": "combat_execution_kernel.h",
+      "repository_path": "space-battleship/addons/native_battle/src/combat_execution_kernel.h",
+      "repository_sha256": "e413fb9145c19c9a733d4c917f7abefbb260a424d5b22cf6d1a2afdae4ca19a8",
+      "build_copy_sha256": "e413fb9145c19c9a733d4c917f7abefbb260a424d5b22cf6d1a2afdae4ca19a8",
+      "match": true
+    },
+    {
+      "name": "combat_presentation.h",
+      "repository_path": "space-battleship/addons/native_battle/src/combat_presentation.h",
+      "repository_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
+      "build_copy_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
+      "match": true
+    },
+    {
+      "name": "combat_retained_presentation.h",
+      "repository_path": "space-battleship/addons/native_battle/src/combat_retained_presentation.h",
+      "repository_sha256": "c8d3d6b335b7f566ca3c1ecb6f77a6455708bdfe6f94bfd211a66942ce840dd0",
+      "build_copy_sha256": "c8d3d6b335b7f566ca3c1ecb6f77a6455708bdfe6f94bfd211a66942ce840dd0",
+      "match": true
+    }
+  ]
+}

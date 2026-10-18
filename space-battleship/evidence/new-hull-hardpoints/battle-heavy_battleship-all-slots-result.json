@@ -1,5 +1,5 @@
 {
-  "all_fired_at": 200,
+  "all_fired_at": 206,
   "events": {
     "beam_hit": 7,
     "beam_started": 3,
@@ -12,7 +12,7 @@
     "state": 1,
     "wave_clear": 1
   },
-  "frames": 320,
+  "frames": 326,
   "hull": "Heavy_Battleship",
   "metrics": {
     "beams": 3,
@@ -21,7 +21,7 @@
     "hull_bottom": 907.999938964844,
     "max_logical_error": 0.0001220703125,
     "max_origin_error": 0.000183740150532685,
-    "min_direct_aim_dot": 0.751303791999817,
+    "min_direct_aim_dot": 0.988680362701416,
     "native_fires": 2,
     "turn": 0.283833384513855
   },
@@ -34,8 +34,8 @@
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.82417368888855,
-      "min_trajectory_target_dot": 0.983609914779663,
+      "min_direct_aim_dot": 0.990887403488159,
+      "min_trajectory_target_dot": 0.984015345573425,
       "native_laser_fires": 0,
       "slot": 0,
       "weapon": "longLaser"
@@ -47,7 +47,7 @@
       "impact_events": 1,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.000183740150532685,
-      "min_direct_aim_dot": 0.994413554668427,
+      "min_direct_aim_dot": 0.99999988079071,
       "min_trajectory_target_dot": 0.994413554668427,
       "native_laser_fires": 2,
       "slot": 1,
@@ -73,7 +73,7 @@
       "impact_events": 1,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.00018310546875,
-      "min_direct_aim_dot": 0.974252641201019,
+      "min_direct_aim_dot": 0.995753407478333,
       "min_trajectory_target_dot": 0.990871369838715,
       "native_laser_fires": 0,
       "slot": 3,
@@ -86,8 +86,8 @@
       "impact_events": 1,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.00018310546875,
-      "min_direct_aim_dot": 0.751303791999817,
-      "min_trajectory_target_dot": 0.990395426750183,
+      "min_direct_aim_dot": 0.988680362701416,
+      "min_trajectory_target_dot": 0.990974247455597,
       "native_laser_fires": 0,
       "slot": 4,
       "weapon": "cannon"
