@@ -972,16 +972,19 @@ func sync_unlock_pause() -> void:
 	sync_guidance_pause()
 
 func set_intro_pause(hold: bool) -> void:
-	if intro_pause_owned == hold:return
+	if intro_pause_owned == hold:
+		if hold:sync_guidance_pause()
+		return
 	intro_pause_owned = hold
 	sync_guidance_pause()
 
 func sync_guidance_pause() -> void:
 	if game == null:return
 	var should_hold := unlock_pause_owned or intro_pause_owned
-	if should_hold and not guidance_pause_owned:
-		guidance_previous_paused = game.paused
-		guidance_pause_owned = true
+	if should_hold:
+		if not guidance_pause_owned:
+			guidance_previous_paused = game.paused
+			guidance_pause_owned = true
 		game.paused = true
 	elif not should_hold and guidance_pause_owned:
 		game.paused = guidance_previous_paused

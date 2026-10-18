@@ -1165,7 +1165,7 @@
   },
   {
     "key": "onboarding.next",
-    "text": "查看装备",
+    "text": "下一步",
     "params": "",
     "category": "onboarding"
   },
@@ -1219,7 +1219,7 @@
   },
   {
     "key": "onboarding.progress",
-    "text": "战舰正在自动交战。战点进度显示在战斗界面。",
+    "text": "完成指引后战舰会自动交战；战点进度显示在战斗界面。",
     "params": "",
     "category": "onboarding"
   },

@@ -18,6 +18,9 @@ var equip_target := ""
 var retreat_pending := false
 var retreat_defence: Array = []
 var action_id := ""
+const OPENING_PHASES := ["intro", "equip", "defence", "upgrade", "progress"]
+var opening_step := 0
+var dismiss_button: Button
 
 func setup(owner: Node) -> void:
 	host = owner
@@ -52,7 +55,7 @@ func setup(owner: Node) -> void:
 	row.add_theme_constant_override("separation",12)
 	column.add_child(row)
 	action = make_button(row,"next",activate)
-	make_button(row,"dismiss",dismiss)
+	dismiss_button = make_button(row,"dismiss",dismiss)
 	reopen = make_button(self,"reopen",open_guide)
 	preload("res://scripts/dialog_presentation.gd").button_skin(reopen)
 	outline = Panel.new()
@@ -85,6 +88,7 @@ func intro_pending() -> bool:
 	return host.game.state not in [BattleGame.State.MAIN_MENU,BattleGame.State.LEVEL_SELECT] and not flags().intro and not flags().completed and (manually_opened or not flags().dismissed)
 
 func dismiss() -> void:
+	if intro_pending():return
 	retreat_pending = false
 	retreat_defence.clear()
 	flags().dismissed = true
@@ -203,8 +207,15 @@ func refresh() -> void:
 		retreat_defence.clear()
 	# Reconcile completion before deciding visibility, including while dismissed.
 	var enhancement_pending := enhancement_ready()
-	var step := decide() if playing and (not flags().completed or manually_opened or retreat_pending or enhancement_pending) else {"phase":"review"}
-	host.set_intro_pause(intro_pending())
+	var opening := intro_pending()
+	var step: Dictionary
+	if opening:
+		step = {"phase":OPENING_PHASES[opening_step],"action":"finish" if opening_step==OPENING_PHASES.size()-1 else "next"}
+	elif playing and (not flags().completed or manually_opened or retreat_pending or enhancement_pending):
+		step = decide()
+	else:
+		step = {"phase":"review"}
+	host.set_intro_pause(opening)
 	var visible_now: bool = playing and not host.help_open and host.equipment_tabs.current_tab!=11 and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
 	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(reopen,"visible",show_reopen)
@@ -214,6 +225,7 @@ func refresh() -> void:
 		host.set_ui_value(reopen,"position",help_panel.position-host.ui.position+Vector2(50,483)*help_scale)
 		host.set_ui_value(reopen,"scale",Vector2.ONE*help_scale)
 	host.set_ui_value(panel,"visible",visible_now)
+	host.set_ui_value(dismiss_button,"visible",not opening)
 	if not visible_now:
 		host.set_ui_value(outline,"visible",false)
 		return
@@ -261,6 +273,13 @@ func resolve_anchor(id: String, slot: String) -> Control:
 	return equipment.cards.get(slot)
 
 func activate() -> void:
+	if intro_pending():
+		if opening_step < OPENING_PHASES.size()-1:
+			opening_step += 1
+		else:
+			flags().intro = true
+		refresh()
+		return
 	match phase:
 		"intro":flags().intro = true
 		"enhancement":host.select_system(4)

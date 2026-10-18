@@ -1,0 +1,6 @@
+Ordinary WM_LBUTTONDOWN/UP on actual Godot window, x=78 y=592; every click_valid/down/up=True.
+before=frame-000026.jpg after=frame-000028.jpg transition=intro->equip
+before=frame-000052.jpg after=frame-000054.jpg transition=equip->defence
+before=frame-000079.jpg after=frame-000081.jpg transition=defence->upgrade
+before=frame-000105.jpg after=frame-000107.jpg transition=upgrade->progress
+before=frame-000146.jpg after=frame-000148.jpg transition=progress->travel
