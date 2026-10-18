@@ -2506,7 +2506,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 	amount=N.add(amount,absorbed)
 	# Only the hit that crosses zero owns death; recursive wild damage settles its own kill.
 	var killed_by_hit: bool=N.compare(enemy.hp,0)<=0
-	var hit_feedback := {"x":enemy.x,"y":enemy.y,"amount":amount,"player":false,"type":type,"uid":enemy.uid,"critical":critical}
+	var hit_feedback := {"x":enemy.x,"y":enemy.y,"amount":amount,"absorbed":absorbed,"player":false,"type":type,"uid":enemy.uid,"critical":critical}
 	if int(enemy.get("reactiveReduction",0)) == 1:
 		hit_feedback.reactive_stacks = reactive_stacks
 		hit_feedback.reactive_multiplier = reactive_multiplier

@@ -112,6 +112,8 @@ var hull_opaque_bounds: Dictionary = {}
 var player_hit_at := -100.0
 var shield_before_hit: Variant = 0.0
 var enemy_meter_hits:Dictionary = {}
+var enemy_meter_hit_slots:Array[int] = []
+var enemy_meter_hit_next:=0
 var destruction_events: Array[Dictionary] = []
 var stable_center := Vector2.ZERO
 var stable_center_ready := false
@@ -458,16 +460,22 @@ func _draw_muzzle_cues() -> void:
 
 
 
+static func enemy_hit_struck_shield(info:Dictionary)->bool:
+	# The paid shield amount identifies the layer even when this hit breaks it.
+	return GrowthNumber.compare(info.get("absorbed",0),0)>0
+
 func on_event(kind:String,info:Dictionary)->void:
 	if kind=="hit" and not bool(info.get("player",false)) and not fast_mode_enabled():
-		for enemy in game.enemies:
-			if int(enemy.uid)!=int(info.get("uid",-1)):continue
-			var shield_hit:bool=GrowthNumber.compare(info.get("absorbed",0),0)>0 or GrowthNumber.compare(enemy.get("shield",0),0)>0
-			enemy_meter_hits[int(enemy.uid)]={"born":fx_time,"shield":shield_hit,"type":int(info.get("type",0))}
-			break
-		if enemy_meter_hits.size()>32:
-			for uid in enemy_meter_hits.keys():
-				if fx_time-float(enemy_meter_hits[uid].born)>0.2:enemy_meter_hits.erase(uid)
+		var enemy_uid:=int(info.get("uid",-1))
+		if enemy_uid>=0:
+			if not enemy_meter_hits.has(enemy_uid):
+				if enemy_meter_hit_slots.size()<64:
+					enemy_meter_hit_slots.append(enemy_uid)
+				else:
+					enemy_meter_hits.erase(enemy_meter_hit_slots[enemy_meter_hit_next])
+					enemy_meter_hit_slots[enemy_meter_hit_next]=enemy_uid
+					enemy_meter_hit_next=(enemy_meter_hit_next+1)%64
+			enemy_meter_hits[enemy_uid]={"born":fx_time,"shield":enemy_hit_struck_shield(info),"type":int(info.get("type",0))}
 	# Compact laser feedback has no shot object; its lifetime is the immutable
 	# packet, even if the kernel recycled the flight before this signal.
 	if info.has("native_laser"):
@@ -539,6 +547,8 @@ func reset_battle_transients_for_scene() -> void:
 	_pulse_events.clear()
 	_enemy_impacts.clear()
 	enemy_meter_hits.clear()
+	enemy_meter_hit_slots.clear()
+	enemy_meter_hit_next=0
 	if game.combat_presentation!=null:game.combat_presentation.clear_contacts()
 	beam_full_started.clear()
 	player_hit_at=-100.0

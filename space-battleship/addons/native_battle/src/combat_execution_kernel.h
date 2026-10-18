@@ -1077,6 +1077,7 @@ class SpaceCombatKernel : public RefCounted {
         e.uid = a->uid;
         e.type = type;
         e.amount = damage + absorbed;
+        e.absorbed = absorbed;
         e.time = at;
         e.critical = inst && inst->attack->critical;
         e.reactive_stacks = reactive_stacks;
