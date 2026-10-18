@@ -22,6 +22,11 @@ func capture()->void:
 	root.size=Vector2i(1440,900)
 	root.add_child(scene)
 	scene.automation_args=[]
+	var approved_body := scene.ship_view.ship.find_child("ApprovedHullArt",true,false) as MeshInstance3D
+	assert(approved_body!=null and approved_body.visible,"Approved player PNG is not in the live battle ship")
+	var approved_material := approved_body.material_override as StandardMaterial3D
+	assert(approved_material!=null and approved_material.albedo_texture!=null)
+	print("FLEET_PLAYER_LIVE_ART hull=",scene.ship_view.hull_key," texture=",approved_material.albedo_texture.resource_path)
 	var game=scene.game
 	game.save_enabled=false
 	game.profile.onboarding.completed=true

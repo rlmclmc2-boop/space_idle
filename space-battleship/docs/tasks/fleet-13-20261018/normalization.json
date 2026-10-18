@@ -137,10 +137,10 @@
     },
     {
       "hull_body": [
-        88,
-        579,
-        710,
-        616
+        45,
+        542,
+        796,
+        689
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/06-scout.png",
       "name": "06-scout",
@@ -157,10 +157,10 @@
     },
     {
       "hull_body": [
-        88,
-        599,
-        710,
-        571
+        45,
+        564,
+        797,
+        640
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/07-sentry.png",
       "name": "07-sentry",
@@ -177,10 +177,10 @@
     },
     {
       "hull_body": [
-        92,
-        413,
-        701,
-        947
+        50,
+        356,
+        786,
+        1061
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/08-interceptor.png",
       "name": "08-interceptor",
@@ -197,10 +197,10 @@
     },
     {
       "hull_body": [
-        91,
-        518,
-        704,
-        737
+        49,
+        474,
+        789,
+        826
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/09-swarm.png",
       "name": "09-swarm",
@@ -217,10 +217,10 @@
     },
     {
       "hull_body": [
-        88,
-        629,
-        710,
-        515
+        46,
+        599,
+        796,
+        577
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/10-anchor.png",
       "name": "10-anchor",
@@ -237,10 +237,10 @@
     },
     {
       "hull_body": [
-        92,
-        478,
-        702,
-        817
+        50,
+        430,
+        787,
+        914
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/11-reactive.png",
       "name": "11-reactive",
@@ -257,10 +257,10 @@
     },
     {
       "hull_body": [
-        88,
-        641,
-        710,
-        491
+        45,
+        611,
+        797,
+        552
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/12-shielded.png",
       "name": "12-shielded",
@@ -277,10 +277,10 @@
     },
     {
       "hull_body": [
-        224,
-        252,
-        438,
-        1269
+        170,
+        98,
+        546,
+        1578
       ],
       "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/13-command.png",
       "name": "13-command",

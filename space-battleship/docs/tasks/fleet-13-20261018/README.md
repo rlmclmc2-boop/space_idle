@@ -1,5 +1,11 @@
 # Approved fleet 13 integration
 
+## Battle display correction (2026-10-18)
+
+The first capture exposed a separate live 3D player hull path. `presented_ship_view.gd` now keeps its imported assembly and weapon sockets, hides only the old hull meshes, and displays the approved player PNG on a textured plane in the existing ship viewport. The capture harness asserts that the live plane loads `01-frigate.png`; the corrected capture log records this path. Enemy procedural weapon drawing no longer forces a 15-screen-pixel body minimum, while muzzle coordinates still come from the existing component pose. Enemy PNGs were regenerated from the same approved isolated sources with less transparent canvas padding and unchanged aspect ratios; encounter width, collision and combat code were not changed.
+
+`evidence/corrected/` and `evidence/corrected-capture.log` contain one automatic live pass over the same five encounters and ship UI. Godot reported `FLEET_CAPTURE_DONE 6`; `validate_fleet.gd` reported 18 assets and zero hardpoint failures. These screenshots are for parent visual review, not approval. The supplied enemy sources contain opaque dark rectangular backgrounds around some hulls (visible on shielded); changing transparent canvas margins cannot remove that source content. They need corrected source art or a separately approved background-removal pass.
+
 Base: main `51a7e1b9bc5784927e7d5b232a112194d990a41c`. Reference: `art/approved-fleet-reference-20261018@96332dd117c7661a6439fb546af35b5d8dd668fe`. Only the thirteen source-file blobs were read from that commit. The transferred Base64 is absent from this production branch.
 
 The production change is 13 new 887x1774 true-alpha battle hull PNGs, five new 768x768 UI preview PNGs, 13 `texture` path changes in `data/ship_weapon_visuals.json`, and five `texture` path changes in `assets/ui/ships/manifest.json`. The only coordinate changes are two **preview-only** `Heavy_Battleship` mount centers, from approximately `(192,322)` and `(576,322)` to `(300,280)` and `(468,280)`. This preserves the five existing slot IDs and puts both markers on the approved narrow hull. No gameplay configuration, battle logic, native source, DLL, UI layout, or size fallback art changed.

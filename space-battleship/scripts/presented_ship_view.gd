@@ -20,6 +20,7 @@ var loadout_signature := ""
 var hull_key := ""
 var hull_config: Dictionary = {}
 var manifest: Dictionary = {}
+var approved_hull_art: Dictionary = {}
 var carriers: Array[Node3D] = []
 var carrier_states: Array[Dictionary] = []
 var pose_initialized := false
@@ -58,6 +59,8 @@ var render_scale_sync_pending := false
 
 func _ready() -> void:
 	manifest = JSON.parse_string(FileAccess.get_file_as_string("res://dev/toon_ship/hybrid_manifest.json"))
+	var visual_rows: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
+	if visual_rows is Dictionary: approved_hull_art = visual_rows.get("ships",{})
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	viewport = SubViewport.new()
 	viewport.name = "ShipViewport"
@@ -195,7 +198,8 @@ func set_hull(key: String) -> bool:
 	world.add_child(ship)
 	weapon_mount = ship.find_child("WeaponMount01",true,false)
 	_install_materials(ship)
-	body_baker.attach(ship,"hull:"+key)
+	if not _install_approved_hull_art(key):
+		body_baker.attach(ship,"hull:"+key)
 	_add_exhausts()
 	shield = MeshInstance3D.new()
 	shield.name = "PrototypeShield"
@@ -217,6 +221,44 @@ func set_hull(key: String) -> bool:
 	if not last_settings.is_empty(): apply_parameters(last_settings,last_toon_enabled,last_rim_enabled)
 	return true
 
+
+
+func _install_approved_hull_art(key: String) -> bool:
+	var row: Dictionary = approved_hull_art.get(key,{})
+	var path := str(row.get("texture",""))
+	if not path.begins_with("res://assets/ships/approved_fleet_20261018/player/"):
+		return false
+	var texture := load(path) as Texture2D
+	if texture == null:return false
+	var image := texture.get_image()
+	var opaque := image.get_used_rect()
+	if opaque.size.x<=0 or opaque.size.y<=0:return false
+	# Preserve the imported assembly, sockets, turrets, exhausts and shield.
+	_hide_imported_hull_meshes(ship)
+	var plane := MeshInstance3D.new()
+	plane.name = "ApprovedHullArt"
+	var mesh := PlaneMesh.new()
+	var pixels_per_model := model_span/float(opaque.size.y)
+	mesh.size = Vector2(texture.get_width(),texture.get_height())*pixels_per_model
+	plane.mesh = mesh
+	var body_center := preload("res://scripts/ship_geometry_convention.gd").body_center(hull_config)
+	var offset := Vector2(opaque.get_center())-Vector2(texture.get_size())*0.5
+	plane.position = body_center+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model)
+	plane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var material := StandardMaterial3D.new()
+	material.albedo_texture = texture
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	material.alpha_scissor_threshold = 0.05
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	plane.material_override = material
+	ship.add_child(plane)
+	return true
+
+
+func _hide_imported_hull_meshes(node: Node) -> void:
+	if node is MeshInstance3D:(node as MeshInstance3D).visible = false
+	for child in node.get_children():_hide_imported_hull_meshes(child)
 
 
 func _install_materials(node: Node, owner := "hull") -> void:
