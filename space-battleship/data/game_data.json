@@ -260304,7 +260304,7 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
-      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelTrait": "能量装甲拦截舰，配备能量装甲。",
       "intelName": "能量拦截艇",
       "intelVisualRef": "scout",
       "intelMechanics": [],
@@ -260334,7 +260334,7 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
-      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelTrait": "能量装甲拦截舰，配备能量装甲。",
       "intelName": "能量拦截艇",
       "intelVisualRef": "scout",
       "intelMechanics": [],
@@ -260364,7 +260364,7 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
-      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelTrait": "能量装甲拦截舰，配备能量装甲。",
       "intelName": "能量拦截艇",
       "intelVisualRef": "scout",
       "intelMechanics": [],
@@ -260394,7 +260394,7 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "scout",
-      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelTrait": "能量装甲拦截舰，配备能量装甲。",
       "intelName": "能量拦截艇",
       "intelVisualRef": "scout",
       "intelMechanics": [],
@@ -260574,7 +260574,7 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "interceptor",
-      "intelTrait": "能量装甲拦截舰，优先辨认其装甲类型。",
+      "intelTrait": "能量装甲拦截舰，配备能量装甲。",
       "intelName": "能量拦截艇",
       "intelVisualRef": "interceptor",
       "intelMechanics": [],
@@ -260844,7 +260844,7 @@
       "shieldRecovery": 0,
       "shieldDelay": 0,
       "archetype_id": "reactive",
-      "intelTrait": "慢速单发能量攻击，留意护盾受击后的恢复间隔。",
+      "intelTrait": "慢速单发能量攻击。",
       "intelName": "能量脉冲舰",
       "intelVisualRef": "reactive",
       "intelMechanics": [],
@@ -260905,7 +260905,7 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelTrait": "连续命中会累积反应减伤，命中间隔较长后层数重置。",
       "intelName": "连击削减舰·甲型",
       "intelVisualRef": "reactive",
       "intelMechanics": [
@@ -260938,7 +260938,7 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelTrait": "连续命中会累积反应减伤，命中间隔较长后层数重置。",
       "intelName": "连击削减舰·乙型",
       "intelVisualRef": "reactive",
       "intelMechanics": [
@@ -260970,7 +260970,7 @@
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
-      "intelTrait": "间歇护盾舰，先击穿护盾再攻击装甲。",
+      "intelTrait": "护盾受击后延时回灌，护盾耗尽后舰体承伤。",
       "intelName": "间歇护盾舰",
       "intelVisualRef": "shielded",
       "intelMechanics": [
@@ -261002,7 +261002,7 @@
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
-      "intelTrait": "间歇护盾舰，先击穿护盾再攻击装甲。",
+      "intelTrait": "护盾受击后延时回灌，护盾耗尽后舰体承伤。",
       "intelName": "间歇护盾舰",
       "intelVisualRef": "shielded",
       "intelMechanics": [
@@ -261035,7 +261035,7 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连击削减舰，留意连续命中的效果。",
+      "intelTrait": "连续命中会累积反应减伤，命中间隔较长后层数重置。",
       "intelName": "连击削减舰",
       "intelVisualRef": "reactive",
       "intelMechanics": [
@@ -261097,7 +261097,7 @@
       "shieldRecovery": 0.08,
       "shieldDelay": 1.8,
       "archetype_id": "shielded",
-      "intelTrait": "间歇护盾舰，先击穿护盾再攻击装甲。",
+      "intelTrait": "护盾受击后延时回灌，护盾耗尽后舰体承伤。",
       "intelName": "间歇护盾舰",
       "intelVisualRef": "shielded",
       "intelMechanics": [
@@ -261490,7 +261490,7 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
+      "intelTrait": "连续命中会累积反应减伤，命中间隔较长后层数重置。",
       "intelName": "重甲堡垒",
       "intelVisualRef": "reactive",
       "intelMechanics": [
@@ -261523,7 +261523,7 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
+      "intelTrait": "连续命中会累积反应减伤，命中间隔较长后层数重置。",
       "intelName": "重炮堡垒",
       "intelVisualRef": "reactive",
       "intelMechanics": [
@@ -261616,7 +261616,7 @@
       "shieldDelay": 0,
       "reactiveReduction": 1,
       "archetype_id": "reactive",
-      "intelTrait": "连续小额命中会叠加减伤；重击或调整节奏能打破僵持。",
+      "intelTrait": "连续命中会累积反应减伤，命中间隔较长后层数重置。",
       "intelName": "深空重堡",
       "intelVisualRef": "reactive",
       "intelMechanics": [
@@ -261678,7 +261678,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "重脉冲哨卫",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261710,7 +261710,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "束流哨卫",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -261742,7 +261742,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "回充护卫舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261774,7 +261774,7 @@
       "shieldRecovery": 0.5,
       "shieldDelay": 0.4,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "重击炮艇",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -261806,7 +261806,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "巡防主舰",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -261838,7 +261838,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "再生护卫舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261870,7 +261870,7 @@
       "shieldRecovery": 0.55,
       "shieldDelay": 0.4,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "远程炮台",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -261902,7 +261902,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "束流壁垒",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261934,7 +261934,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "深空屏障舰",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -261966,7 +261966,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "重击哨卫",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -262003,7 +262003,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "回充堡垒",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -262035,7 +262035,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "截击主舰",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -262072,7 +262072,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "长距炮艇",
       "intelVisualRef": "sentry",
       "intelMechanics": [
@@ -262104,7 +262104,7 @@
       "shieldRecovery": 0.52,
       "shieldDelay": 0.4,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "持续压制舰",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -262141,7 +262141,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "护航主舰",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -262173,7 +262173,7 @@
       "shieldRecovery": 0.55,
       "shieldDelay": 0.4,
       "archetype_id": "scout",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "高压突击舰",
       "intelVisualRef": "scout",
       "intelMechanics": [
@@ -262210,7 +262210,7 @@
       "shieldRecovery": 0.4,
       "shieldDelay": 0.55,
       "archetype_id": "sentry",
-      "intelTrait": "短暂停火便迅速回灌护盾；连续命中可阻止回灌。",
+      "intelTrait": "护盾受击后短暂延迟再回灌，受击会重置恢复计时。",
       "intelName": "异空间门卫",
       "intelVisualRef": "sentry",
       "intelMechanics": [
