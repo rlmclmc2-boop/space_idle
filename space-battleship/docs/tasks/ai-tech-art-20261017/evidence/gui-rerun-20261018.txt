@@ -1,0 +1,8 @@
+Godot 4.7.2 GUI rerun, art/ai-tech-factory-v2 at 5fe05007, 2026-10-18 UTC
+Command: Godot_v4.7.2-stable_win64_console.exe --path . --rendering-method gl_compatibility --script res://docs/tasks/ai-tech-art-20261017/capture.gd
+Exit code: 0
+Renderer: OpenGL 3.3, NVIDIA GeForce RTX 2060
+Capture script assertions passed: eight device views, no drawer rows while closed, same machine instance across art disable/enable, processing off while hidden or covered and restored when shown, eight rows after opening, selected row art, research click, drawer close.
+Events: research:equipment_reinforcement; invest:iron:12
+Output: main-idle.png, main-active.png, drawer.png, condenser.png and device-*.png at 1344x1160. Rebuilt motion.png from motion-00.png through motion-11.png; APNG has 12 frames at 1344x1160.
+The snapshot in capture.gd is a contract sample, not a live save or measured gameplay research state. Godot printed user log path and system certificate store warnings; capture and assertions completed.
