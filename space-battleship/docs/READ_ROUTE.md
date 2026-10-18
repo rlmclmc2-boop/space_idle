@@ -12,7 +12,7 @@
 
 ## combat-local 局部战斗修复
 
-首读：`scripts/game.gd` 目标 `func` 与直接调用者；`docs/BATTLE.md` 相关条目。必要时：`docs/ARCHITECTURE.md: LOCATE`；既有行为按目标关键词定位 `docs/PROJECT.md` 段；测试选择看 `docs/TEST.md`。
+首读：`scripts/game.gd` 目标 `func` 与直接调用者；`docs/BATTLE.md` 相关条目。必要时：`docs/ARCHITECTURE.md: LOCATE`；既有行为先按 `docs/PROJECT.md` 索引定位 `docs/project/` 单一主题；测试选择看 `docs/TEST.md`。
 
 ## equipment-slot 装备槽状态
 
@@ -40,8 +40,9 @@
 
 ## test 测试选择
 
-首读：`docs/TEST.md` 相关条目。必要时：`../test/README.md` 的精确命令；不默认读测试目录。
+首读：`docs/TEST.md` 相关条目。必要时：`../test/README.md` 索引对应的 `../test/guides/` 单一主题与精确命令；不默认读测试目录。
 
 ## collaboration 协作规范维护
 
 首读：`docs/READ_PROTOCOL.md` 命中节；`.agents/skills/token-opt/SKILL.md`、`ctx-compress/SKILL.md`、`doc-compact/SKILL.md` 中相关一项。核对路由、链接、重复及入口增长。文档改动不跑游戏测试。
+

@@ -1,0 +1,5 @@
+# 装备属性、槽位与升级
+
+- Equipment cards, current/next-level projections and details exclude game-time-settled buffs (same-target dwell growth and timed critical stacks); those changes do not invalidate the equipment UI. Combat retains them. Persistent/event-based modifiers and static attack/recovery rates keep their existing display rules.
+- Module owns its actual equipment level; shared enhancement/history lives in profile. Every defence slot may freely switch between armour and shield or be empty; upgrades remain available. Equipment swaps inherit module growth, identical items unlimited. Unequip: no refund/reset. Only enabled+equipped modules fight; ship controls enabled range. Swapping ship keeps combat and disabled tail modules. Preserve armour/shield remaining ratios on gear changes.
+- Level-1 equipment row is base; target-level stats/cost use base × target multipliers, never iterate rounded previous level. x10 requires all 10 costs; MAX stops at affordable level. Entering cruise resets player weapon CD to full; countdown begins at encounter.
