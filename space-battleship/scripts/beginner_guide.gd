@@ -216,7 +216,10 @@ func refresh() -> void:
 	else:
 		step = {"phase":"review"}
 	host.set_intro_pause(opening)
-	var visible_now: bool = playing and not host.help_open and host.equipment_tabs.current_tab!=11 and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending)))
+	# The opening pages already explain waiting and travel. Keep those passive
+	# states quiet until an actionable event occurs or the player opens Help.
+	var passive_step: bool = not opening and step.phase in ["waiting","paused","progress"]
+	var visible_now: bool = playing and not host.help_open and host.equipment_tabs.current_tab!=11 and not modal_blocked and (manually_opened or (not flags().dismissed and (not flags().completed or retreat_pending or enhancement_pending) and not passive_step))
 	var show_reopen: bool = playing and host.help_open and not modal_blocked and host.game.pending_unlocks.is_empty()
 	host.set_ui_value(reopen,"visible",show_reopen)
 	if show_reopen:

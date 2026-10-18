@@ -43,11 +43,34 @@ func run() -> void:
 		quit(1)
 		return
 	host.beginner_guide.action.pressed.emit()
+	var guide = host.beginner_guide
+	if not game.profile.onboarding.intro or game.profile.onboarding.upgraded or guide.panel.visible or guide.decide().phase != "waiting":
+		printerr("INTRO_PAUSE_FAIL opening immediately repeated passive hint")
+		quit(1)
+		return
+	game.profile.resources = {"1":1e12,"2":1e12}
+	guide.refresh()
+	if guide.decide().phase != "upgrade" or not guide.panel.visible or game.profile.onboarding.upgraded:
+		printerr("INTRO_PAUSE_FAIL affordable upgrade hint missing")
+		quit(1)
+		return
+	game.profile.resources = {"1":0.0,"2":0.0}
+	guide.refresh()
+	if guide.panel.visible:
+		printerr("INTRO_PAUSE_FAIL passive hint reopened")
+		quit(1)
+		return
+	guide.open_guide()
+	if not guide.panel.visible or guide.phase != "waiting" or game.profile.onboarding.upgraded:
+		printerr("INTRO_PAUSE_FAIL manual review unavailable")
+		quit(1)
+		return
+	guide.dismiss()
 	await create_timer(4.0).timeout
 	var released: bool = game.profile.onboarding.intro and not game.paused and game.distance > initial_distance
 	if not released:
 		printerr("INTRO_PAUSE_FAIL released stage=",game.stage," distance=",game.distance," paused=",game.paused," intro=",game.profile.onboarding.intro)
 		quit(1)
 		return
-	print("INTRO_PAUSE_OK five_confirmations held=6s stage=1 group=",initial_group," distance=",initial_distance," released_distance=",game.distance)
+	print("INTRO_PAUSE_OK five_confirmations held=6s passive_hidden=1 affordable_hint=1 manual_review=1 upgraded=",game.profile.onboarding.upgraded," released_distance=",game.distance)
 	quit()

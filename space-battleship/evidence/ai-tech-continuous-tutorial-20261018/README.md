@@ -37,3 +37,7 @@
 | [000222](gui-new-save/frames/frame-000222.jpg) | 第 1 关 4/5 战斗中、出现掉落与资源增长。 |
 
 截图为真实 GUI 过程原帧；第 193 帧后的战斗只是确认解锁后正常启动，不构成进一步试玩或评分。
+
+## Passive tutorial cue correction (2026-10-18)
+
+The earlier GUI frame 000148 predates this correction and shows the repeated waiting cue. After the fifth opening confirmation, passive waiting/travel states now leave the guide hidden. A future affordable slot upgrade remains actionable, and Help can reopen the waiting explanation without recording a purchase. The real-main-scene headless assertion is [test_intro_passive_v6.log](test_intro_passive_v6.log), exit 0. No new GUI playback was made for this correction; visual acceptance is pending the parent's serial GUI window.
