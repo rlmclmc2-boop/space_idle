@@ -4,7 +4,15 @@ setlocal
 cd /d "%~dp0"
 if errorlevel 1 goto fail
 if not exist "tools\play_main.py" goto fail
+python --version >nul 2>nul
+if not errorlevel 1 goto python_entry
+py -3 --version >nul 2>nul
+if errorlevel 1 goto fail
 py -3 "tools\play_main.py"
+goto check
+:python_entry
+python "tools\play_main.py"
+:check
 if errorlevel 1 goto fail
 exit /b 0
 :fail

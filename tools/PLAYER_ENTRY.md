@@ -7,8 +7,10 @@
 首次运行，或本机旧 DLL 哈希不符时，在仓库根目录执行：
 
 ```powershell
-py -3 tools/play_main.py --install-native
+python tools/play_main.py --install-native
 ```
+
+若本机只提供 `py` 启动器，可改用 `py -3 tools/play_main.py --install-native`。
 
 安装命令先校验 `main` 分支、已验收源码和仓库内 DLL 哈希，再将 DLL 安装到 `space-battleship/bin/space_native.dll`。如已有不同 DLL，会先按其 SHA-256 备份到 `space-battleship/.runtime/native-backup/`。正常的 `玩游戏.cmd` 仍严格拒绝缺失或不匹配的 DLL；不会自动覆盖未知文件。
 
