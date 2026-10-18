@@ -1,0 +1,14 @@
+ERROR: Failed to open 'user://logs/godot2026-10-18T17.21.30.log'.
+   at: copy (core/io/dir_access.cpp:429)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+VISUAL_FIT Frigate rect=[P: (262.0038, 854.5853), S: (47.99237, 77.44836)] plane_scale=1.0 socket_unchanged=true
+VISUAL_FIT Destroyer rect=[P: (248.9018, 834.1163), S: (74.29909, 97.935)] plane_scale=1.0 socket_unchanged=true
+VISUAL_FIT Cruiser rect=[P: (243.1447, 879.8816), S: (85.80002, 52.02887)] plane_scale=1.3332484960556 socket_unchanged=true
+VISUAL_FIT Battleship rect=[P: (254.4666, 863.6921), S: (63.06688, 68.30792)] plane_scale=1.0 socket_unchanged=true
+VISUAL_FIT Heavy_Battleship rect=[P: (253.1285, 804.635), S: (65.8412, 127.3649)] plane_scale=1.0 socket_unchanged=true
+VISUAL_FIT_DONE hulls=5 muzzle_anchor=unchanged

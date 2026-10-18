@@ -1,8 +1,32 @@
 # Approved fleet 13 integration
 
+## Current display/geometry split (2026-10-18)
+
+The 13 approved PNGs are display textures. Each ship mapping now explicitly retains its main51 PNG as `geometry_texture`; those old assets are active battle inputs and must stay packaged. `main.gd` and `battlefield.gd` use that source for player height, nose/tail and enemy alpha envelopes, while `simulation_geometry_authority.gd` captures old enemy profiles and player reference height before native handoff. Hardpoint tables, weapon pose rules, battle values and the DLL are unchanged. The player PNG plane is fitted into the battle safe area without moving the ship root or sockets; retained and fallback enemy turret bodies use 0.45 visual width while preserving their muzzle anchor.
+
+[Geometry source check](evidence/geometry-source-check.log) compared all 13 mapping entries with main51: source PNG bytes and hardpoints match; the eight enemy profiles passed nine width/shape packet comparisons each. [Visual fit check](evidence/visual-fit-check.log) covered both player pose paths and unchanged sockets. One [GUI capture](evidence/main51-split-capture.log) produced [five player and five enemy encounter screenshots](REVIEW_INDEX.md) covering all eight opening enemy archetypes, with live PNG paths, retained muzzle assertions and `FLEET_CAPTURE_DONE 11`.
+
+The five full-picture high-load fixtures used **main51** as before and this candidate as after, with the same existing DLL. [Raw logs, frame traces, screenshots and summary](evidence/main51-performance/summary.json) remain separate from the older 292c diagnostic. All five pairs have equal gameplay event counts and stress counts. The full event dictionaries are **not equal**: `equipment_stats` notifications are 32 fewer in the candidate in every pair. These counter notifications and the first two failed mixed diagnostics remain in the raw evidence; they are not described as complete event parity.
+
+| Fixture | Main51 mean / P95 ms | Candidate mean / P95 ms | Mean delta ms |
+| --- | ---: | ---: | ---: |
+| mixed | 7.594 / 10.914 | 7.423 / 10.451 | -0.171 |
+| laser | 6.039 / 9.889 | 5.566 / 8.951 | -0.473 |
+| cannon | 8.265 / 12.455 | 7.477 / 11.149 | -0.788 |
+| missile | 7.013 / 9.799 | 7.180 / 10.052 | +0.168 |
+| longLaser | 8.712 / 13.010 | 8.676 / 13.125 | -0.036 |
+
+This is one alternating pass per fixture. The missile mean and P95 increased by 0.168 and 0.253 ms; the remaining means decreased. Parent visual review and assessment of the `equipment_stats` count are open. No main merge was made.
+
+## Pending unified review
+
+Historical note after `92331ab8`: the approved player plane gained a display-only aspect/safe-area fit and retained enemy turret bodies gained a 0.45 display multiplier. [Headless verification](evidence/visual-fit-check.log) checked all five player hulls against the battle-safe rectangle through both pose paths, unchanged weapon sockets, and unchanged turret port algebra. The older GUI captures and five-case performance replay below **predate these two display adjustments**; neither is acceptance of the current visual candidate.
+
+The initial `main51 → 292c095a` enemy texture replacement changed the alpha-derived polygon consumed by ballistic contact, even though no combat source or DLL was edited. The earlier `292c095a → 92331ab8` same-event replay could not establish parity with main51. The current split above restores main51 as the geometry source.
+
 ## Final battle display correction (2026-10-18)
 
-The first capture exposed a separate live 3D player hull path. `presented_ship_view.gd` now keeps its imported assembly and weapon sockets, hides only the old hull meshes, and displays the approved player PNG on a textured plane in the existing ship viewport. A later inspection found that the retained enemy contact renderer has its own weapon-size floor, so the earlier change to the fallback weapon painter alone did not fix the visible turrets. The retained renderer now uses a one-screen-pixel floor while retaining the same muzzle anchor. The eight enemy PNGs and their normalization recipe were restored byte-for-byte to the approved `292c095a` batch: enlarging their alpha footprint also changed the texture-derived recognition geometry and failed the same-event performance gate. No combat, collision, native source or DLL change was made.
+The first capture exposed a separate live 3D player hull path. `presented_ship_view.gd` now keeps its imported assembly and weapon sockets, hides only the old hull meshes, and displays the approved player PNG on a textured plane in the existing ship viewport. A later inspection found that the retained enemy contact renderer has its own weapon-size floor, so the earlier change to the fallback weapon painter alone did not fix the visible turrets. The retained renderer now uses a one-screen-pixel floor while retaining the same muzzle anchor. The eight enemy PNGs and their normalization recipe were restored byte-for-byte to the approved `292c095a` batch: enlarging their alpha footprint also changed the texture-derived recognition geometry and failed the same-event performance gate. No combat, collision or native source was edited, and the DLL was not rebuilt.
 
 The final [review index](REVIEW_INDEX.md) links ten live battle screenshots: all five player hulls plus five enemy combinations. `evidence/final-review-capture.log` records `FLEET_CAPTURE_DONE 11`, five approved player texture paths, no same-hull rebuild, and retained weapon mouth agreement at every sampled mount. `validate_fleet.gd` reported 18 assets and zero hardpoint failures. `evidence/corrected/` is an earlier, superseded capture. The earlier description of opaque rectangular backgrounds in source art was mistaken: sampled corner and top-edge alpha is zero, and a single black pixel near the hull bow does not establish a background rectangle. No source-art background removal was done.
 

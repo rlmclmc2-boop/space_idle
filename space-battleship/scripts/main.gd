@@ -1261,6 +1261,10 @@ func visual_region(path: String) -> Rect2:
 func ship_hull_texture(ship_key: String) -> Texture2D:
 	return visual_texture(str(ship_visual_entry(ship_key).get("texture","")))
 
+func ship_geometry_texture(ship_key: String) -> Texture2D:
+	var entry := ship_visual_entry(ship_key)
+	return visual_texture(str(entry.get("geometry_texture",entry.get("texture",""))))
+
 func slot_hardpoint_index(ship_key: String, index: int) -> int:
 	var ship := ship_visual_entry(ship_key)
 	var mapping: Array = ship.get("slot_map",[])
@@ -1534,7 +1538,7 @@ func player_idle_angle() -> float:
 
 func player_visible_tail() -> float:
 	var ship_key := str(game.profile.selectedShip)
-	var texture_path := str(ship_visual_entry(ship_key).get("texture",""))
+	var texture_path := str(ship_visual_entry(ship_key).get("geometry_texture",ship_visual_entry(ship_key).get("texture","")))
 	if texture_path.is_empty():return SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
 	if not hull_visible_bottoms.has(texture_path):
 		var image := visual_texture(texture_path).get_image()
@@ -1554,7 +1558,8 @@ func player_visible_tail() -> float:
 	return (float(hull_visible_bottoms[texture_path])-SHIP_ART_CANVAS.y*0.5)*float(battle_visual.player_core_scale)*player_art_scale()
 
 func player_visible_nose() -> float:
-	var texture_path := str(ship_visual_entry(str(game.profile.selectedShip)).get("texture",""))
+	var ship_entry := ship_visual_entry(str(game.profile.selectedShip))
+	var texture_path := str(ship_entry.get("geometry_texture",ship_entry.get("texture","")))
 	if texture_path.is_empty():return -SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
 	if not hull_visible_tops.has(texture_path):
 		var image := visual_texture(texture_path).get_image()
@@ -1666,7 +1671,7 @@ func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
 	# The target and top-bound solver sample different width buckets; keep each
 	# cached separately so stationary frames never rebuild alternating envelopes.
 	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_hull_texture(enemy_ship_key(enemy)),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
+	var packet:Dictionary=enemy_recognition.geometry(ship_geometry_texture(enemy_ship_key(enemy)),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
 	var outlines:Array=[packet.inner]
 	if float(enemy.get("max_shield",0))>0:
 		outlines.append(packet.outer)
@@ -3514,7 +3519,7 @@ func enemy_recognition_screen_scale() -> float:
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).recognition
-	var texture := ship_hull_texture(enemy_ship_key(enemy))
+	var texture := ship_geometry_texture(enemy_ship_key(enemy))
 	var components := enemy_weapon_components(enemy)
 	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
 
