@@ -1,0 +1,411 @@
+{
+  "baseline": "51a7e1b9bc5784927e7d5b232a112194d990a41c",
+  "candidate": "68246c4926a176316f7843c3ae5574a9d98bb86b",
+  "cases": {
+    "mixed": {
+      "before": {
+        "frames": 1023,
+        "mean_ms": 7.778041055718475,
+        "p95_ms": 11.402,
+        "main_mean_ms": 2.8050058651026393,
+        "draw_mean": 769.5816226783969,
+        "events": {
+          "beam_hit": 157,
+          "enemy_hits": 4904,
+          "enhancement_chain": 2145,
+          "enhancement_secondary": 23,
+          "equipment_stats": 260,
+          "fire": 1584,
+          "friendly_periods": 157,
+          "galaxy_unlocked": 1,
+          "hit": 5144,
+          "player_hits": 240,
+          "projectile_impact": 3728,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "beam_hit": 202,
+          "beam_started": 2,
+          "drone_fire": 198,
+          "enhancement_chain": 2926,
+          "enhancement_secondary": 36,
+          "fire": 2287,
+          "hit": 6781
+        }
+      },
+      "after": {
+        "frames": 927,
+        "mean_ms": 8.566646170442286,
+        "p95_ms": 13.438,
+        "main_mean_ms": 3.232430420711974,
+        "draw_mean": 734.6073354908307,
+        "events": {
+          "beam_hit": 157,
+          "enemy_hits": 4904,
+          "enhancement_chain": 2145,
+          "enhancement_secondary": 23,
+          "equipment_stats": 260,
+          "fire": 1584,
+          "friendly_periods": 157,
+          "galaxy_unlocked": 1,
+          "hit": 5144,
+          "player_hits": 240,
+          "projectile_impact": 3728,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "beam_hit": 202,
+          "beam_started": 2,
+          "drone_fire": 198,
+          "enhancement_chain": 2926,
+          "enhancement_secondary": 36,
+          "fire": 2287,
+          "hit": 6781
+        }
+      },
+      "state_before_equal": true,
+      "state_before_differences": [],
+      "state_before_historical_rng_seed": [
+        "-2182563523326249058",
+        "932138425618663157"
+      ],
+      "state_after_equal": true,
+      "state_after_differences": [],
+      "state_after_historical_rng_seed": [
+        "-2182563523326249058",
+        "932138425618663157"
+      ],
+      "stress_counts_equal": true,
+      "legendary_counts_equal": true,
+      "delta_p95_ms": 2.0360000000000014,
+      "delta_mean_ms": 0.7886051147238113,
+      "all_events_equal": true,
+      "gameplay_events_equal": true,
+      "equipment_stats_delta": 0,
+      "correctness_pass": true
+    },
+    "laser": {
+      "before": {
+        "frames": 1350,
+        "mean_ms": 5.887451851851852,
+        "p95_ms": 9.234,
+        "main_mean_ms": 2.3803992592592595,
+        "draw_mean": 697.2133333333334,
+        "events": {
+          "enemy_hits": 4884,
+          "enhancement_chain": 2783,
+          "enhancement_secondary": 26,
+          "equipment_stats": 242,
+          "fire": 2210,
+          "galaxy_unlocked": 1,
+          "hit": 5124,
+          "player_hits": 240,
+          "projectile_impact": 5124,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "enhancement_chain": 3828,
+          "enhancement_secondary": 41,
+          "fire": 3264,
+          "hit": 6992
+        }
+      },
+      "after": {
+        "frames": 1327,
+        "mean_ms": 5.980532780708365,
+        "p95_ms": 9.322,
+        "main_mean_ms": 2.472079125847777,
+        "draw_mean": 662.2260738507913,
+        "events": {
+          "enemy_hits": 4884,
+          "enhancement_chain": 2783,
+          "enhancement_secondary": 26,
+          "equipment_stats": 242,
+          "fire": 2210,
+          "galaxy_unlocked": 1,
+          "hit": 5124,
+          "player_hits": 240,
+          "projectile_impact": 5124,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "enhancement_chain": 3828,
+          "enhancement_secondary": 41,
+          "fire": 3264,
+          "hit": 6992
+        }
+      },
+      "state_before_equal": true,
+      "state_before_differences": [],
+      "state_before_historical_rng_seed": [
+        "-2278078038894898416",
+        "-5954835082713332117"
+      ],
+      "state_after_equal": true,
+      "state_after_differences": [],
+      "state_after_historical_rng_seed": [
+        "-2278078038894898416",
+        "-5954835082713332117"
+      ],
+      "stress_counts_equal": true,
+      "legendary_counts_equal": true,
+      "delta_p95_ms": 0.08799999999999919,
+      "delta_mean_ms": 0.09308092885651309,
+      "all_events_equal": true,
+      "gameplay_events_equal": true,
+      "equipment_stats_delta": 0,
+      "correctness_pass": true
+    },
+    "cannon": {
+      "before": {
+        "frames": 1029,
+        "mean_ms": 7.782182701652089,
+        "p95_ms": 11.711,
+        "main_mean_ms": 2.273152575315841,
+        "draw_mean": 776.1554907677356,
+        "events": {
+          "enemy_hits": 1650,
+          "enhancement_chain": 1309,
+          "enhancement_secondary": 7,
+          "equipment_stats": 215,
+          "fire": 366,
+          "galaxy_unlocked": 1,
+          "hit": 1890,
+          "player_hits": 240,
+          "projectile_impact": 1575,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "drone_fire": 85,
+          "enhancement_chain": 1749,
+          "enhancement_secondary": 12,
+          "fire": 531,
+          "hit": 2540
+        }
+      },
+      "after": {
+        "frames": 1039,
+        "mean_ms": 7.724033686236766,
+        "p95_ms": 11.704,
+        "main_mean_ms": 2.254958614051973,
+        "draw_mean": 741.3387872954764,
+        "events": {
+          "enemy_hits": 1650,
+          "enhancement_chain": 1309,
+          "enhancement_secondary": 7,
+          "equipment_stats": 215,
+          "fire": 366,
+          "galaxy_unlocked": 1,
+          "hit": 1890,
+          "player_hits": 240,
+          "projectile_impact": 1575,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "drone_fire": 85,
+          "enhancement_chain": 1749,
+          "enhancement_secondary": 12,
+          "fire": 531,
+          "hit": 2540
+        }
+      },
+      "state_before_equal": true,
+      "state_before_differences": [],
+      "state_before_historical_rng_seed": [
+        "-6608397908798037836",
+        "-2449793892698667722"
+      ],
+      "state_after_equal": true,
+      "state_after_differences": [],
+      "state_after_historical_rng_seed": [
+        "-6608397908798037836",
+        "-2449793892698667722"
+      ],
+      "stress_counts_equal": true,
+      "legendary_counts_equal": true,
+      "delta_p95_ms": -0.006999999999999673,
+      "delta_mean_ms": -0.05814901541532347,
+      "all_events_equal": true,
+      "gameplay_events_equal": true,
+      "equipment_stats_delta": 0,
+      "correctness_pass": true
+    },
+    "missile": {
+      "before": {
+        "frames": 1057,
+        "mean_ms": 7.540719016083254,
+        "p95_ms": 10.649,
+        "main_mean_ms": 2.5055411542100283,
+        "draw_mean": 757.1769157994323,
+        "events": {
+          "enemy_hits": 2176,
+          "enhancement_chain": 1320,
+          "enhancement_secondary": 12,
+          "equipment_stats": 208,
+          "fire": 791,
+          "galaxy_unlocked": 1,
+          "hit": 2416,
+          "player_hits": 240,
+          "projectile_impact": 2116,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "drone_fire": 410,
+          "enhancement_chain": 1727,
+          "enhancement_secondary": 16,
+          "fire": 1115,
+          "hit": 3137
+        }
+      },
+      "after": {
+        "frames": 1079,
+        "mean_ms": 7.382370713623725,
+        "p95_ms": 10.375,
+        "main_mean_ms": 2.4505347544022245,
+        "draw_mean": 722.1890639481,
+        "events": {
+          "enemy_hits": 2176,
+          "enhancement_chain": 1320,
+          "enhancement_secondary": 12,
+          "equipment_stats": 208,
+          "fire": 791,
+          "galaxy_unlocked": 1,
+          "hit": 2416,
+          "player_hits": 240,
+          "projectile_impact": 2116,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "drone_fire": 410,
+          "enhancement_chain": 1727,
+          "enhancement_secondary": 16,
+          "fire": 1115,
+          "hit": 3137
+        }
+      },
+      "state_before_equal": true,
+      "state_before_differences": [],
+      "state_before_historical_rng_seed": [
+        "-3543762142452518228",
+        "1241837415243917540"
+      ],
+      "state_after_equal": true,
+      "state_after_differences": [],
+      "state_after_historical_rng_seed": [
+        "-3543762142452518228",
+        "1241837415243917540"
+      ],
+      "stress_counts_equal": true,
+      "legendary_counts_equal": true,
+      "delta_p95_ms": -0.27399999999999913,
+      "delta_mean_ms": -0.1583483024595287,
+      "all_events_equal": true,
+      "gameplay_events_equal": true,
+      "equipment_stats_delta": 0,
+      "correctness_pass": true
+    },
+    "longLaser": {
+      "before": {
+        "frames": 857,
+        "mean_ms": 9.302759626604434,
+        "p95_ms": 13.937,
+        "main_mean_ms": 3.0812882147024503,
+        "draw_mean": 707.1516919486581,
+        "events": {
+          "beam_hit": 1560,
+          "critical_impact": 156,
+          "enemy_hits": 18252,
+          "equipment_stats": 192,
+          "fire": 240,
+          "friendly_periods": 1560,
+          "galaxy_unlocked": 1,
+          "hit": 18492,
+          "player_hits": 240,
+          "projectile_impact": 240,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "beam_hit": 2000,
+          "beam_started": 20,
+          "drone_fire": 10,
+          "enhancement_secondary": 1,
+          "fire": 380,
+          "hit": 23689
+        }
+      },
+      "after": {
+        "frames": 877,
+        "mean_ms": 9.096256556442416,
+        "p95_ms": 13.707,
+        "main_mean_ms": 2.9955712656784494,
+        "draw_mean": 672.2451539338655,
+        "events": {
+          "beam_hit": 1560,
+          "critical_impact": 156,
+          "enemy_hits": 18252,
+          "equipment_stats": 192,
+          "fire": 240,
+          "friendly_periods": 1560,
+          "galaxy_unlocked": 1,
+          "hit": 18492,
+          "player_hits": 240,
+          "projectile_impact": 240,
+          "resources_changed": 64,
+          "upgrade": 64,
+          "upgrades_completed": 8
+        },
+        "stress_counts": {
+          "beam_hit": 2000,
+          "beam_started": 20,
+          "drone_fire": 10,
+          "enhancement_secondary": 1,
+          "fire": 380,
+          "hit": 23689
+        }
+      },
+      "state_before_equal": true,
+      "state_before_differences": [],
+      "state_before_historical_rng_seed": [
+        "-1022211748839436929",
+        "5622687841565441015"
+      ],
+      "state_after_equal": true,
+      "state_after_differences": [],
+      "state_after_historical_rng_seed": [
+        "-1022211748839436929",
+        "5622687841565441015"
+      ],
+      "stress_counts_equal": true,
+      "legendary_counts_equal": true,
+      "delta_p95_ms": -0.22999999999999865,
+      "delta_mean_ms": -0.20650307016201808,
+      "all_events_equal": true,
+      "gameplay_events_equal": true,
+      "equipment_stats_delta": 0,
+      "correctness_pass": true
+    }
+  },
+  "pass_rule": "all events including equipment_stats, stress counters, full final public/native state; historical RNG seed and derived kernel_hash explicitly excluded from state equality",
+  "run_order": "serial pairs; before/after order alternates by fixture",
+  "all_requested_correctness_pass": true,
+  "all_five_correctness_pass": true,
+  "first_pair_reversed": false
+}
