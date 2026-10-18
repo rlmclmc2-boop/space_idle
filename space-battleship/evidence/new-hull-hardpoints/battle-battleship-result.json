@@ -1,0 +1,31 @@
+{
+  "events": {
+    "beam_hit": 6,
+    "beam_started": 2,
+    "equipment_stats": 10,
+    "explode": 1,
+    "fire": 22,
+    "hit": 17,
+    "projectile_impact": 11
+  },
+  "hull": "Battleship",
+  "metrics": {
+    "beams": 2,
+    "fires": 12,
+    "hits": 10,
+    "hull_bottom": 907.999938964844,
+    "max_logical_error": 0.0001220703125,
+    "max_origin_error": 0.0001220703125,
+    "min_direct_aim_dot": 0.970969498157501,
+    "native_fires": 2,
+    "turn": 0.159176632761955
+  },
+  "native": true,
+  "slots": 4,
+  "weapons": [
+    "longLaser",
+    "laser",
+    "missile",
+    "cannon"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "events": {
+    "beam_hit": 6,
+    "beam_started": 2,
+    "equipment_stats": 6,
+    "explode": 1,
+    "fire": 13,
+    "hit": 14,
+    "projectile_impact": 8
+  },
+  "hull": "Frigate",
+  "metrics": {
+    "beams": 2,
+    "fires": 2,
+    "hits": 6,
+    "hull_bottom": 908.042175292969,
+    "max_logical_error": 0.0001220703125,
+    "max_origin_error": 0.0001220703125,
+    "min_direct_aim_dot": 0.980607926845551,
+    "native_fires": 0,
+    "turn": 0.108698055148125
+  },
+  "native": true,
+  "slots": 1,
+  "weapons": [
+    "longLaser"
+  ]
+}
