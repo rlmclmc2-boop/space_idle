@@ -1,0 +1,279 @@
+{
+  "fixture": "laser",
+  "source": "native_execution_session.gd advance emits counter_only equipment_stats when attack/incoming counters change",
+  "main51_events": 242,
+  "candidate_events": 210,
+  "all_payloads_counter_only": true,
+  "weapon_notifications_identical": true,
+  "defence_notifications_main51": 192,
+  "defence_notifications_candidate": 160,
+  "defence_coalesced_pairs": [
+    {
+      "step": 249,
+      "main51_values": [
+        96,
+        97
+      ],
+      "candidate_value": 97
+    },
+    {
+      "step": 259,
+      "main51_values": [
+        103,
+        104
+      ],
+      "candidate_value": 104
+    },
+    {
+      "step": 279,
+      "main51_values": [
+        111,
+        112
+      ],
+      "candidate_value": 112
+    },
+    {
+      "step": 289,
+      "main51_values": [
+        118,
+        119
+      ],
+      "candidate_value": 119
+    },
+    {
+      "step": 309,
+      "main51_values": [
+        126,
+        127
+      ],
+      "candidate_value": 127
+    },
+    {
+      "step": 319,
+      "main51_values": [
+        133,
+        134
+      ],
+      "candidate_value": 134
+    },
+    {
+      "step": 339,
+      "main51_values": [
+        141,
+        142
+      ],
+      "candidate_value": 142
+    },
+    {
+      "step": 349,
+      "main51_values": [
+        148,
+        149
+      ],
+      "candidate_value": 149
+    },
+    {
+      "step": 369,
+      "main51_values": [
+        156,
+        157
+      ],
+      "candidate_value": 157
+    },
+    {
+      "step": 379,
+      "main51_values": [
+        163,
+        164
+      ],
+      "candidate_value": 164
+    },
+    {
+      "step": 399,
+      "main51_values": [
+        171,
+        172
+      ],
+      "candidate_value": 172
+    },
+    {
+      "step": 409,
+      "main51_values": [
+        178,
+        179
+      ],
+      "candidate_value": 179
+    },
+    {
+      "step": 429,
+      "main51_values": [
+        186,
+        187
+      ],
+      "candidate_value": 187
+    },
+    {
+      "step": 439,
+      "main51_values": [
+        193,
+        194
+      ],
+      "candidate_value": 194
+    },
+    {
+      "step": 459,
+      "main51_values": [
+        201,
+        202
+      ],
+      "candidate_value": 202
+    },
+    {
+      "step": 469,
+      "main51_values": [
+        208,
+        209
+      ],
+      "candidate_value": 209
+    },
+    {
+      "step": 489,
+      "main51_values": [
+        216,
+        217
+      ],
+      "candidate_value": 217
+    },
+    {
+      "step": 499,
+      "main51_values": [
+        223,
+        224
+      ],
+      "candidate_value": 224
+    },
+    {
+      "step": 519,
+      "main51_values": [
+        231,
+        232
+      ],
+      "candidate_value": 232
+    },
+    {
+      "step": 529,
+      "main51_values": [
+        238,
+        239
+      ],
+      "candidate_value": 239
+    },
+    {
+      "step": 549,
+      "main51_values": [
+        246,
+        247
+      ],
+      "candidate_value": 247
+    },
+    {
+      "step": 559,
+      "main51_values": [
+        253,
+        254
+      ],
+      "candidate_value": 254
+    },
+    {
+      "step": 579,
+      "main51_values": [
+        261,
+        262
+      ],
+      "candidate_value": 262
+    },
+    {
+      "step": 589,
+      "main51_values": [
+        268,
+        269
+      ],
+      "candidate_value": 269
+    },
+    {
+      "step": 609,
+      "main51_values": [
+        276,
+        277
+      ],
+      "candidate_value": 277
+    },
+    {
+      "step": 619,
+      "main51_values": [
+        283,
+        284
+      ],
+      "candidate_value": 284
+    },
+    {
+      "step": 639,
+      "main51_values": [
+        291,
+        292
+      ],
+      "candidate_value": 292
+    },
+    {
+      "step": 649,
+      "main51_values": [
+        298,
+        299
+      ],
+      "candidate_value": 299
+    },
+    {
+      "step": 669,
+      "main51_values": [
+        306,
+        307
+      ],
+      "candidate_value": 307
+    },
+    {
+      "step": 679,
+      "main51_values": [
+        313,
+        314
+      ],
+      "candidate_value": 314
+    },
+    {
+      "step": 699,
+      "main51_values": [
+        321,
+        322
+      ],
+      "candidate_value": 322
+    },
+    {
+      "step": 709,
+      "main51_values": [
+        328,
+        329
+      ],
+      "candidate_value": 329
+    }
+  ],
+  "final_incoming_counters": [
+    330.0,
+    330.0
+  ],
+  "final_attack_counters": [
+    357.0,
+    357.0
+  ],
+  "final_player_equal": true,
+  "final_loadout_equal": true,
+  "other_events_equal": true
+}
