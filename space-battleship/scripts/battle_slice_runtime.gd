@@ -167,6 +167,7 @@ func on_event(kind:String,info:Dictionary)->bool:
 		if kind=="fire":
 			if not bool(laser.drone) and bool(laser.owns_primary_aim) and int(laser.mount)>=0 and int(laser.mount)<game.weapon_entries().size():
 				var pose=geometry.turret_pose(int(laser.mount))
+				geometry.record_direct_fire_alignment(int(laser.mount),info)
 				pose.target=laser.primary_target;pose.fired_at=geometry.fx_time
 			# Reserve only the old decorative cap slot, not a shot/visual object.
 			if scene.projectile_visuals.size()+scene.native_laser_visuals.size()<256:scene.native_laser_visuals[int(laser.serial)]=true

@@ -1,0 +1,44 @@
+{
+  "algorithm": "SHA-256",
+  "dll": {
+    "runtime_path": "space-battleship/bin/space_native.dll",
+    "runtime_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+    "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\bin\\space_native.dll",
+    "validation_build_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+    "match": true
+  },
+  "sources": [
+    {
+      "name": "space_native.cpp",
+      "repository_path": "space-battleship/addons/native_battle/src/space_native.cpp",
+      "repository_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\space_native.cpp",
+      "validation_build_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+      "match": true
+    },
+    {
+      "name": "combat_execution_kernel.h",
+      "repository_path": "space-battleship/addons/native_battle/src/combat_execution_kernel.h",
+      "repository_sha256": "09001858c7bc51c835a23a97084044a9161472ba506bd55330f08c2e710a0c59",
+      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\combat_execution_kernel.h",
+      "validation_build_sha256": "09001858c7bc51c835a23a97084044a9161472ba506bd55330f08c2e710a0c59",
+      "match": true
+    },
+    {
+      "name": "combat_presentation.h",
+      "repository_path": "space-battleship/addons/native_battle/src/combat_presentation.h",
+      "repository_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
+      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\combat_presentation.h",
+      "validation_build_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
+      "match": true
+    },
+    {
+      "name": "combat_retained_presentation.h",
+      "repository_path": "space-battleship/addons/native_battle/src/combat_retained_presentation.h",
+      "repository_sha256": "c8d3d6b335b7f566ca3c1ecb6f77a6455708bdfe6f94bfd211a66942ce840dd0",
+      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\combat_retained_presentation.h",
+      "validation_build_sha256": "c8d3d6b335b7f566ca3c1ecb6f77a6455708bdfe6f94bfd211a66942ce840dd0",
+      "match": true
+    }
+  ]
+}

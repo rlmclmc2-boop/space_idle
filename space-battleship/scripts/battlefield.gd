@@ -379,6 +379,7 @@ func _process_battlefield(delta: float) -> void:
 	var angles: Array = []
 	for index in game.weapon_entries().size(): angles.append(turret_angle(index))
 	if battle_slice_runtime==null:ship_view.set_slot_angles(angles)
+	ship_view.apply_direct_fire_alignment(turret_visuals,fx_time)
 	for plume in ship_view.exhaust_nodes: plume.visible = effects_enabled
 	var alive: bool = game.player_alive() or game.state==BattleGame.State.RETREAT
 	ship_view.set_rendering(prototype_enabled and alive and battle_layer.visible,game.paused)

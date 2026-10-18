@@ -267,20 +267,23 @@ func _fit_approved_hull_art() -> void:
 	if not is_instance_valid(approved_body_plane) or rendered_height<=0.0:return
 	# Only the art plane moves. The ship root, sockets, weapon aim and published
 	# battle geometry keep their existing transforms and reference height.
-	var ratio := approved_body_bounds.size.x/approved_body_bounds.size.y
-	var art_scale := 1.0
-	if ratio>1.3:
-		art_scale=clampf(size.x*0.15/(rendered_height*ratio),1.0,1.35)
-	var safe := Rect2(Vector2(12,12),size-Vector2(24,40))
-	var body := Vector2(ratio,1.0)*rendered_height*art_scale
-	art_scale*=minf(1.0,minf(safe.size.x/body.x,safe.size.y/body.y))
-	body=Vector2(ratio,1.0)*rendered_height*art_scale
-	var center := Vector2(
-		clampf(rendered_position.x,safe.position.x+body.x*0.5,safe.end.x-body.x*0.5),
-		clampf(rendered_position.y,safe.position.y+body.y*0.5,safe.end.y-body.y*0.5))
-	var local_per_pixel := model_span/rendered_height
-	approved_body_plane.scale=Vector3.ONE*art_scale
-	approved_body_plane.position=approved_body_position+Vector3(center.x-rendered_position.x,0,center.y-rendered_position.y)*local_per_pixel
+	var fit:Dictionary=preload("res://scripts/ship_geometry_convention.gd").approved_body_fit(approved_body_bounds,(approved_body_plane.mesh as PlaneMesh).size,approved_body_position,size,rendered_height,rendered_position,model_span)
+	approved_body_plane.scale=Vector3.ONE*float(fit.scale)
+	approved_body_plane.position=fit.position
+	_fit_approved_weapon_mounts()
+
+
+func _fit_approved_weapon_mounts() -> void:
+	if not is_instance_valid(approved_body_plane):return
+	var hardpoints: Array = approved_hull_art.get(hull_key,{}).get("hardpoints",[])
+	var body_size: Vector2 = (approved_body_plane.mesh as PlaneMesh).size
+	for module in modules:
+		if module.carrier!="hull" or int(module.mount_index)>=hardpoints.size():continue
+		var point: Array = hardpoints[int(module.mount_index)].pos
+		# The authored point is in the visible PNG's local frame. Following the
+		# fitted plane keeps the whole turret and its real muzzle on the new hull.
+		var art_point := Vector3(float(point[0])*body_size.x,0.08,float(point[1])*body_size.y)
+		module.node.position=module.mount.to_local(approved_body_plane.to_global(art_point))
 
 
 func _hide_imported_hull_meshes(node: Node) -> void:
@@ -363,6 +366,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 		node.transform = Transform3D.IDENTITY
 		node.position=preload("res://scripts/ship_geometry_convention.gd").weapon_mount_offset(hull_key,int(item.slot))
 		if item.carrier=="drone":node.scale=Vector3.ONE*CARRIER_WEAPON_SCALE
+		elif is_instance_valid(approved_body_plane):node.scale=Vector3.ONE*float(approved_hull_art[hull_key].get("weapon_scale",1.0))
 		modules.append({"slot":item.slot,"key":item.key,"carrier":item.carrier,"mount_index":item.mount,"node":node,"mount":mount,
 			"pivot":node.find_child("TurretPivot",true,false),"muzzle":node.find_child("Muzzle",true,false),
 			"muzzle2":node.find_child("Muzzle02",true,false)})
@@ -371,6 +375,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			for socket in [modules.back().muzzle,modules.back().muzzle2]:
 				if socket!=null:socket.position.z=-0.495
 		_install_materials(node,"weapon")
+	_fit_approved_weapon_mounts()
 	loadout_signature = signature
 	weapon = modules[0].node if not modules.is_empty() else null
 	turret = modules[0].pivot if not modules.is_empty() else null
@@ -383,7 +388,7 @@ func aim_at(target: Vector2) -> void:
 	# Invert the hull transform, then rotate around the socket's local Y axis.
 	var world_target := Vector3((target.x-size.x*0.5)*WORLD_PER_PIXEL,0,(target.y-size.y*0.5)*WORLD_PER_PIXEL)
 	for module in modules:
-		var local: Vector3 = module.mount.to_local(world_target)
+		var local: Vector3 = module.node.to_local(world_target)
 		module.pivot.rotation.y = atan2(-local.x,-local.z)
 
 
@@ -575,3 +580,16 @@ func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
 	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(elapsed,3.8)/0.6))
 	for index in exhaust_nodes.size():exhaust_nodes[index].scale.z=1.0+sin(elapsed*9+float(index))*0.06
 	if viewport.render_target_update_mode!=SubViewport.UPDATE_ALWAYS:viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
+
+func apply_direct_fire_alignment(poses:Dictionary,now:float)->void:
+	# A committed shot can select a target after the simulation turret pose was
+	# sampled. Rotate only the rendered turret, then hold its real muzzle at the
+	# committed launch pixel so neither the projectile nor the mount is moved.
+	for module in modules:
+		var pose:Dictionary=poses.get(int(module.slot),{})
+		if not pose.has("fire_until") or now>float(pose.fire_until):continue
+		var pivot:Node3D=module.pivot
+		pivot.rotation.y=-float(pose.fire_angle)-module.mount.global_rotation.y
+		var current:Vector2=screen_muzzle_for_slot(int(module.slot),int(pose.fire_ordinal))
+		var desired:Vector2=Vector2(pose.fire_origin)
+		pivot.global_position+=camera.project_ray_origin(desired)-camera.project_ray_origin(current)

@@ -1,0 +1,29 @@
+{
+  "events": {
+    "beam_hit": 6,
+    "beam_started": 2,
+    "equipment_stats": 8,
+    "explode": 1,
+    "fire": 15,
+    "hit": 14,
+    "projectile_impact": 8
+  },
+  "hull": "Destroyer",
+  "metrics": {
+    "beams": 2,
+    "fires": 4,
+    "hits": 6,
+    "hull_bottom": 908.051879882813,
+    "max_logical_error": 0.0001220703125,
+    "max_origin_error": 0.0001220703125,
+    "min_direct_aim_dot": 0.978441119194031,
+    "native_fires": 2,
+    "turn": 0.141514614224434
+  },
+  "native": true,
+  "slots": 2,
+  "weapons": [
+    "longLaser",
+    "laser"
+  ]
+}
