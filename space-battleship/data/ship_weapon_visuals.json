@@ -1,7 +1,7 @@
 {
   "ships": {
     "Frigate": {
-      "texture": "res://assets/ships/player/player-scout-3slot.png",
+      "texture": "res://assets/ships/approved_fleet_20261018/player/01-frigate.png",
       "display_scale": 0.061,
       "slot_map": [0],
       "hardpoints": [
@@ -9,7 +9,7 @@
       ]
     },
     "Destroyer": {
-      "texture": "res://assets/ships/player/player-interceptor-4slot.png",
+      "texture": "res://assets/ships/approved_fleet_20261018/player/02-destroyer.png",
       "display_scale": 0.093,
       "slot_map": [0, 1],
       "hardpoints": [
@@ -18,7 +18,7 @@
       ]
     },
     "Cruiser": {
-      "texture": "res://assets/ships/player/player-cruiser-5slot.png",
+      "texture": "res://assets/ships/approved_fleet_20261018/player/03-cruiser.png",
       "display_scale": 0.081,
       "slot_map": [0, 1, 2],
       "hardpoints": [
@@ -28,7 +28,7 @@
       ]
     },
     "Battleship": {
-      "texture": "res://assets/ships/player/player-battleship-6slot.png",
+      "texture": "res://assets/ships/approved_fleet_20261018/player/04-battleship.png",
       "display_scale": 0.093,
       "slot_map": [0, 1, 2, 3],
       "hardpoints": [
@@ -39,7 +39,7 @@
       ]
     },
     "Heavy_Battleship": {
-      "texture": "res://assets/ships/player/player-dreadnought-8slot.png",
+      "texture": "res://assets/ships/approved_fleet_20261018/player/05-heavy-battleship.png",
       "display_scale": 0.12,
       "slot_map": [0, 1, 2, 3, 4],
       "hardpoints": [
@@ -54,14 +54,14 @@
     "enemy_opening_triangle_energy": {"texture": "res://assets/ships/enemy/opening_v1/triangle-energy.png", "slot_map": [0], "hardpoints": [{"pos": [0, -0.05], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}]},
     "enemy_opening_slab_energy": {"texture": "res://assets/ships/enemy/opening_v1/slab-energy.png", "slot_map": [0, 1, 2, 2], "hardpoints": [{"pos": [-0.16, -0.06], "z": 1, "base_rotation": 0, "rotation_limit": 55, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}, {"pos": [0.16, -0.06], "z": 1, "base_rotation": 0, "rotation_limit": 55, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}, {"pos": [0, 0.08], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}]},
     "enemy_opening_u_energy": {"texture": "res://assets/ships/enemy/opening_v1/u-energy.png", "slot_map": [0, 1, 2, 3, 0, 1, 2, 3], "hardpoints": [{"pos": [-0.18, -0.08], "z": 1, "base_rotation": 0, "rotation_limit": 60, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}, {"pos": [0.18, -0.08], "z": 1, "base_rotation": 0, "rotation_limit": 60, "visual_size_class": "large", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}, {"pos": [-0.18, 0.07], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}, {"pos": [0.18, 0.07], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "medium", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}]},
-    "enemy_opening_sentry": {"texture":"res://assets/ships/enemy/opening_v2/sentry-hull.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_swarm": {"texture":"res://assets/ships/enemy/opening_v2/swarm-hull.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_reactive": {"texture":"res://assets/ships/enemy/opening_v2/reactive-hull.png","slot_map":[0,1,2,2],"hardpoints":[{"pos":[-0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0,0.08],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_command": {"texture":"res://assets/ships/enemy/opening_v2/command-hull.png","slot_map":[0,1,2,3,0,1,2,3],"hardpoints":[{"pos":[-0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[-0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"},{"pos":[0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_scout": {"texture":"res://assets/ships/enemy/opening_v2/scout-hull.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_interceptor": {"texture":"res://assets/ships/enemy/opening_v2/interceptor-hull.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_anchor": {"texture":"res://assets/ships/enemy/opening_v2/anchor-hull.png","slot_map":[0,1,2,2],"hardpoints":[{"pos":[-0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0,0.08],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
-    "enemy_opening_shielded": {"texture":"res://assets/ships/enemy/opening_v2/shielded-hull.png","slot_map":[0,1,2,3,0,1,2,3],"hardpoints":[{"pos":[-0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[-0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"},{"pos":[0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_sentry": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/07-sentry.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_swarm": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/09-swarm.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_reactive": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/11-reactive.png","slot_map":[0,1,2,2],"hardpoints":[{"pos":[-0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0,0.08],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_command": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/13-command.png","slot_map":[0,1,2,3,0,1,2,3],"hardpoints":[{"pos":[-0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[-0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"},{"pos":[0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_scout": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/06-scout.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_interceptor": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/08-interceptor.png","slot_map":[0],"hardpoints":[{"pos":[0,-0.05],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_anchor": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/10-anchor.png","slot_map":[0,1,2,2],"hardpoints":[{"pos":[-0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.16,-0.06],"z":1,"base_rotation":0,"rotation_limit":55,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0,0.08],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"small","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
+    "enemy_opening_shielded": {"texture":"res://assets/ships/approved_fleet_20261018/enemy/12-shielded.png","slot_map":[0,1,2,3,0,1,2,3],"hardpoints":[{"pos":[-0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[0.18,-0.08],"z":1,"base_rotation":0,"rotation_limit":60,"visual_size_class":"large","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"main"},{"pos":[-0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"},{"pos":[0.18,0.07],"z":1,"base_rotation":0,"rotation_limit":0,"visual_size_class":"medium","allowed_weapon_visual_class":["gun","energy","missile"],"mode":"embedded"}]},
     "enemy_1": {"texture": "res://assets/ships/enemy/toon_v1/enemy-scout-1slot.png", "slot_map": [0], "hardpoints": [{"pos": [0, -0.05], "z": 1, "base_rotation": 0, "rotation_limit": 0, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "embedded"}]},
     "enemy_2": {"texture": "res://assets/ships/enemy/toon_v1/enemy-medium-1slot.png", "slot_map": [0, 1], "hardpoints": [{"pos": [-0.11, -0.04], "z": 1, "base_rotation": 0, "rotation_limit": 45, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}, {"pos": [0.11, -0.04], "z": 1, "base_rotation": 0, "rotation_limit": 45, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}]},
     "enemy_3": {"texture": "res://assets/ships/enemy/toon_v1/enemy-medium-2slot.png", "slot_map": [0, 1, 0], "hardpoints": [{"pos": [-0.14, -0.03], "z": 1, "base_rotation": 0, "rotation_limit": 50, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}, {"pos": [0.14, -0.03], "z": 1, "base_rotation": 0, "rotation_limit": 50, "visual_size_class": "small", "allowed_weapon_visual_class": ["gun", "energy", "missile"], "mode": "main"}]},

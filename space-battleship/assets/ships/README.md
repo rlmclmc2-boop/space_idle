@@ -21,3 +21,7 @@
 | 敌方 | `size = 4` | [enemy-large-4slot.png](enemy/enemy-large-4slot.png) |
 | 敌方 | `size = 5` | [enemy-large-6slot.png](enemy/enemy-large-6slot.png) |
 | 敌方 | `size = 6` | [enemy-super-8slot.png](enemy/enemy-super-8slot.png) |
+
+## Approved fleet 13 (2026-10-18)
+
+The live first-generation player and opening enemy hull textures are in `approved_fleet_20261018/player/` and `approved_fleet_20261018/enemy/`. The authority is the approved fleet source commit `art/approved-fleet-reference-20261018@96332dd117c7661a6439fb546af35b5d8dd668fe` (`test/evidence/fleet-reference-20261018/`). Thirteen separately generated true-alpha source PNGs were transferred there as Base64; no sheet crop is used. `docs/tasks/fleet-13-20261018/normalize_fleet.gd` centers each source hull without changing aspect ratio on the existing 887x1774 canvas. The same sources make five square UI previews. That task records source/output bounds and the asset prompt. `data/ship_weapon_visuals.json` is the battle consumer; weapon slot and hardpoint identities remain intact.

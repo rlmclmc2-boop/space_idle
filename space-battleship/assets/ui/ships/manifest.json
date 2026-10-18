@@ -36,7 +36,7 @@
           509.986694335938
         ]
       ],
-      "texture": "res://assets/ui/ships/Battleship.png"
+      "texture": "res://assets/ui/ships/approved_fleet_20261018/04-battleship.png"
     },
     "Cruiser": {
       "height": 574.835361037259,
@@ -55,7 +55,7 @@
           383.999938964844
         ]
       ],
-      "texture": "res://assets/ui/ships/Cruiser.png"
+      "texture": "res://assets/ui/ships/approved_fleet_20261018/03-cruiser.png"
     },
     "Destroyer": {
       "height": 600.0,
@@ -70,7 +70,7 @@
           305.378112792969
         ]
       ],
-      "texture": "res://assets/ui/ships/Destroyer.png"
+      "texture": "res://assets/ui/ships/approved_fleet_20261018/02-destroyer.png"
     },
     "Frigate": {
       "height": 600.0,
@@ -81,7 +81,7 @@
           240.076873779297
         ]
       ],
-      "texture": "res://assets/ui/ships/Frigate.png"
+      "texture": "res://assets/ui/ships/approved_fleet_20261018/01-frigate.png"
     },
     "Heavy_Battleship": {
       "height": 600.0,
@@ -92,12 +92,12 @@
           182.360916137695
         ],
         [
-          192.229949951172,
-          321.690063476562
+          300.0,
+          280.0
         ],
         [
-          575.770080566406,
-          321.690063476562
+          468.0,
+          280.0
         ],
         [
           265.479583740234,
@@ -108,7 +108,7 @@
           547.129333496094
         ]
       ],
-      "texture": "res://assets/ui/ships/Heavy_Battleship.png"
+      "texture": "res://assets/ui/ships/approved_fleet_20261018/05-heavy-battleship.png"
     }
   },
   "renderer": "res://scripts/presented_ship_view.gd",
