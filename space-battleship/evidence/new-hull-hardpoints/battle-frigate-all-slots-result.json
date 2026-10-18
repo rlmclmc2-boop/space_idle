@@ -18,7 +18,7 @@
     "hull_bottom": 908.042175292969,
     "max_logical_error": 0.0001220703125,
     "max_origin_error": 0.0001220703125,
-    "min_direct_aim_dot": 0.989139914512634,
+    "min_direct_aim_dot": 0.980607926845551,
     "native_fires": 0,
     "turn": 0.108698055148125
   },
@@ -31,7 +31,7 @@
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.989139914512634,
+      "min_direct_aim_dot": 0.980607926845551,
       "min_trajectory_target_dot": 0.998762965202332,
       "native_laser_fires": 0,
       "slot": 0,

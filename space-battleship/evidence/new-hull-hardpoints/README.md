@@ -30,7 +30,7 @@ The following full 1440×900 `main.tscn` captures show the complete battle and e
 
 All five 180-frame capture runs passed: 2–12 player shots and 6–10 enemy hits per hull. Across those observed shots, the visible barrel muzzle, logical fleet muzzle, and actual launch origin differed by at most `0.000184` screen pixels. Direct-fire aim alignment stayed above `0.967` dot product during this initial window, and turrets turned `0.109`–`0.187` radians. Missile launch fans intentionally spread away from the barrel axis and are excluded from the direct-fire dot threshold. All muzzle positions remained inside the battle view throughout the run. Final opaque hull bounds stayed inside the battle view; the lowest hull point was at most `908.1` of `960` view pixels, leaving at least `51.9` pixels at the bottom.
 
-The native DLL used for these original 180-frame captures was a local validation build whose four native source files matched commit `ab333cff` by SHA-256. The DLL and generated Godot import files are not committed. To regenerate, provide a matching native extension and set `HARDPOINT_CAPTURE_DIR` and `HARDPOINT_ONLY` as above, then run Godot with `--path space-battleship --script res://test/capture_battle_hardpoints.gd`.
+The native DLL used for these runs was a local validation build whose four native source files matched this checkout by SHA-256. The DLL and generated Godot import files are not part of this evidence commit. To regenerate, provide a matching native extension and set `HARDPOINT_CAPTURE_DIR` and `HARDPOINT_ONLY` as above, then run Godot with `--path space-battleship --script res://test/capture_battle_hardpoints.gd`.
 
 ### Extended per-slot native validation
 
@@ -40,14 +40,10 @@ Run the same capture script with `HARDPOINT_EXTENDED=1` and one `HARDPOINT_ONLY`
 | --- | ---: | --- | --- | --- |
 | Frigate | 122 | `0:2` | — | [JSON](battle-frigate-all-slots-result.json) |
 | Destroyer | 204 | `0:2, 1:2` | — | [JSON](battle-destroyer-all-slots-result.json) |
-| Cruiser | 199 | `0:2, 1:2, 2:8` | — | [JSON](battle-cruiser-all-slots-result.json) |
-| Battleship | 323 | `0:3, 1:3, 2:8, 3:1` | `3: 1 / 1 / 175` | [JSON](battle-battleship-all-slots-result.json) |
-| Heavy Battleship | 326 | `0:3, 1:2, 2:8, 3:1, 4:1` | `3: 1 / 1 / 175; 4: 1 / 1 / 175` | [JSON](battle-heavy_battleship-all-slots-result.json) |
+| Cruiser | 200 | `0:2, 1:2, 2:8` | — | [JSON](battle-cruiser-all-slots-result.json) |
+| Battleship | 320 | `0:4, 1:3, 2:8, 3:1` | `3: 1 / 1 / 175` | [JSON](battle-battleship-all-slots-result.json) |
+| Heavy Battleship | 320 | `0:3, 1:2, 2:8, 3:1, 4:1` | `3: 1 / 1 / 175; 4: 1 / 1 / 175` | [JSON](battle-heavy_battleship-all-slots-result.json) |
 
-The original heavy slot 4 failure occurred when native combat selected a new target during the same step that the turret was turning toward the previous target. The native kernel now defers a direct-weapon root shot until the published barrel axis is within a `0.985` dot product of the selected screen ray. The visual turret and logical muzzle therefore continue to agree at launch. Missile shots and their launch fan bypass this check.
+All three cannon launches came from their corresponding visible muzzles within `0.000184` screen pixels, and all three registered an impact and positive damage. Their trajectories pointed toward the recorded target with dot product above `0.990`. The extended samples also exposed a separate tracking discrepancy: the visible cannon barrel axis and fired direction reached a minimum dot product of `0.751` on heavy slot 4 (`0.883` on battleship slot 3). The launch point is continuous, but barrel direction is not consistently aligned during these later shots. The long-laser axis likewise reached `0.824` on the heavy hull. This validation does not claim full axis alignment for the extended run.
 
-After this correction, all five extended runs passed. Across every direct-weapon shot the barrel/screen-ray dot product stayed at or above `0.98523`, and the visible muzzle/actual launch origin differed by at most `0.000184` screen pixels. All three cannon launches had one impact and positive damage (`175` each). Cruiser and Destroyer laser slots fired twice but had no confirmed damage in the observed windows; their raw rows retain zero. No screenshot was replaced in this follow-up.
-
-`test/verify_player_hardpoint_geometry.gd` also passed for all 15 mount assignments at two positions after adding a comparison between the rendered barrel axis and the logical axis supplied to native combat; maximum mount/muzzle drift remained `0.000061` screen pixels.
-
-[Original native DLL and four-source SHA-256 record](native-validation-hashes.json) belongs to commit `ab333cff`. [Corrected native build SHA-256 record](native-aim-build-hashes.json) lists the runtime DLL and all four current source/build-copy pairs. Both DLL hashes and all four source pairs match. The corrected DLL was built locally with static llvm-mingw linking against godot-cpp 4.7; only its source changes are committed.
+[Native DLL and four-source SHA-256 record](native-validation-hashes.json) lists both the local runtime copy and validation-build DLL, and each repository source beside the corresponding validation-build source. All five pairs match byte for byte by hash. The build itself is local and is not committed.

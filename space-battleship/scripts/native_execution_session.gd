@@ -219,14 +219,6 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	if targets_changed or muzzles_changed:
 		kernel.input_ballistic_geometry(hulls,screen_points,screen_muzzles,stationary)
 		kernel.input_geometry(points,muzzles)
-	if fleet_changed:
-		var axes:=PackedVector2Array()
-		axes.resize(weapons.size())
-		for index in friendly_weapon_indices:
-			var weapon:Dictionary=weapons[index]
-			if not weapon.entry.has("drone_id"):
-				axes[index]=geometry.fleet_pose.screen_axis_for_slot(int(weapon.slot))
-		kernel.input_weapon_axes(axes)
 	target_geometry_revision=geometry.target_geometry_revision;fleet_geometry_revision=geometry.fleet_geometry_revision
 	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)
 

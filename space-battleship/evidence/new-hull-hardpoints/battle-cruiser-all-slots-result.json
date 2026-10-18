@@ -1,5 +1,5 @@
 {
-  "all_fired_at": 79,
+  "all_fired_at": 80,
   "events": {
     "beam_hit": 7,
     "beam_started": 2,
@@ -9,7 +9,7 @@
     "hit": 18,
     "projectile_impact": 11
   },
-  "frames": 199,
+  "frames": 200,
   "hull": "Cruiser",
   "metrics": {
     "beams": 2,
@@ -18,7 +18,7 @@
     "hull_bottom": 908.0,
     "max_logical_error": 0.0001220703125,
     "max_origin_error": 0.0001220703125,
-    "min_direct_aim_dot": 0.98523074388504,
+    "min_direct_aim_dot": 0.971880435943604,
     "native_fires": 2,
     "turn": 0.179214879870415
   },
@@ -31,7 +31,7 @@
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.98523074388504,
+      "min_direct_aim_dot": 0.971880435943604,
       "min_trajectory_target_dot": 0.997847259044647,
       "native_laser_fires": 0,
       "slot": 0,
@@ -44,7 +44,7 @@
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
       "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.99999988079071,
+      "min_direct_aim_dot": 0.996848106384277,
       "min_trajectory_target_dot": 0.996847987174988,
       "native_laser_fires": 2,
       "slot": 1,

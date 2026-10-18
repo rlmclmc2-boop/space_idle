@@ -269,17 +269,6 @@ func screen_muzzle_for_slot(slot: int, ordinal := 0) -> Vector2:
 	module.socket_points[socket_index] = point
 	return point
 
-func screen_axis_for_slot(slot:int)->Vector2:
-	var module:Dictionary=module_by_slot.get(slot,{})
-	if module.is_empty():return Vector2.ZERO
-	var transform:Transform3D=_mount(module)
-	var root_scale:float=VIEW.CARRIER_WEAPON_SCALE if module.assignment.carrier=="drone" else 1.0
-	transform=transform*Transform3D(Basis.from_scale(Vector3.ONE*root_scale),Vector3.ZERO)
-	var chain:Array=module.descriptor.pivot_chain
-	for index in chain.size():transform=transform*(module.pivot if index==chain.size()-1 else chain[index])
-	var muzzle:Transform3D=_global(transform,module.descriptor.sockets[0])
-	return (project(muzzle*Vector3(0,0,-0.5))-project(muzzle.origin)).normalized()
-
 func screen_mount_for_slot(slot:int) -> Vector2:
 	var module: Dictionary = module_by_slot.get(slot,{})
 	if module.is_empty(): return Vector2.ZERO

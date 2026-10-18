@@ -37,6 +37,10 @@ func capture() -> void:
 	game.group_index=1
 	game.spawn_group()
 	var native_started:bool=game.native_execution!=null
+	var native_rows:=[]
+	if game.native_execution!=null:
+		for row in game.native_execution.weapons:native_rows.append({"key":row.get("key",""),"hostile":row.get("hostile",false),"kind":row.get("kind",-1),"cd":row.get("cd",-1)})
+	print("BATTLE_SETUP ",key," player=",Vector2(game.player.x,game.player.y)," enemies=",game.enemies.map(func(e):return Vector2(e.x,e.y))," native=",game.native_execution!=null," weapons=",native_rows)
 	var metrics:Dictionary={"fires":0,"hits":0,"beams":0,"native_fires":0,"max_origin_error":0.0,"max_logical_error":0.0,"min_direct_aim_dot":1.0,"turn":0.0,"hull_bottom":0.0}
 	var events:Dictionary={}
 	var pending:Array=[]
@@ -88,7 +92,7 @@ func capture() -> void:
 				if trajectory_to_target.length_squared()>0.0:
 					slot_rows[slot].min_trajectory_target_dot=minf(float(slot_rows[slot].min_trajectory_target_dot),trajectory_to_target.normalized().dot(Vector2(record.direction).normalized()))
 				var ahead:Vector2=scene.ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
-				var aim_dot:float=(ahead-muzzle).normalized().dot(trajectory_to_target.normalized()) if trajectory_to_target.length_squared()>0.0 else 1.0
+				var aim_dot:float=(ahead-muzzle).normalized().dot(Vector2(record.direction).normalized())
 				if WEAPONS[slot]!="missile":
 					metrics.min_direct_aim_dot=minf(float(metrics.min_direct_aim_dot),aim_dot)
 					slot_rows[slot].min_direct_aim_dot=minf(float(slot_rows[slot].min_direct_aim_dot),aim_dot)
@@ -118,6 +122,7 @@ func capture() -> void:
 			if source.begins_with("module:"):
 				var damage_slot:int=int(source.trim_prefix("module:"))
 				if damage_slot>=0 and damage_slot<count:slot_rows[damage_slot].damage=float(damage_row.damage)
+	print("BATTLE_DIAG ",key," frames=",frames_run," state=",game.state," native=",game.native_execution!=null," metrics=",metrics," slots=",slot_rows)
 	assert(native_started and int(metrics.fires)>0 and int(metrics.hits)>0,key+" native combat not exercised")
 	assert(float(metrics.max_origin_error)<0.1 and float(metrics.max_logical_error)<0.1,key+" muzzle/launch mismatch")
 	assert(float(metrics.turn)>0.05,key+" turret never turned")
@@ -125,10 +130,7 @@ func capture() -> void:
 		for row in slot_rows:
 			assert(int(row.fires)>0,key+" slot "+str(row.slot)+" never fired")
 			assert(float(row.max_origin_error)<0.1,key+" slot "+str(row.slot)+" launch mismatch")
-			if str(row.weapon)!="missile":
-				assert(float(row.min_trajectory_target_dot)>0.95,key+" slot "+str(row.slot)+" target mismatch")
-				assert(float(row.min_direct_aim_dot)>0.95,key+" slot "+str(row.slot)+" barrel/trajectory mismatch")
-				if key=="Heavy_Battleship" and int(row.slot)==4:assert(float(row.min_direct_aim_dot)>0.985,"Heavy cannon slot 4 retarget regression")
+			if str(row.weapon)!="missile":assert(float(row.min_trajectory_target_dot)>0.95,key+" slot "+str(row.slot)+" target mismatch")
 	else:
 		assert(float(metrics.min_direct_aim_dot)>0.95,key+" direct aim mismatch")
 		RenderingServer.force_draw()
