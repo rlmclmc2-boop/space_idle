@@ -7,8 +7,10 @@ const VIEW = preload("res://scripts/presented_ship_view.gd")
 const LAYOUT = preload("res://dev/toon_ship/hybrid_layout.gd")
 const DRONES = preload("res://scripts/hyperspace_drone_visual.gd")
 const APPEARANCE = preload("res://scripts/hyperspace_appearance.gd")
+const GEOMETRY = preload("res://scripts/ship_geometry_convention.gd")
 var manifest: Dictionary
 var hulls: Dictionary = {}
+var approved: Dictionary = {}
 var weapons: Dictionary = {}
 var drone_sockets: Dictionary = {}
 var carrier_mount: Array = []
@@ -47,6 +49,20 @@ func prepare(view) -> void:
 			mounts.append(_chain(root.find_child("WeaponMount%02d" % (index+1),true,false),root))
 		hulls[key] = mounts
 		root.free()
+	for key in view.approved_hull_art:
+		if not manifest.hulls.has(key):continue
+		var row:Dictionary=view.approved_hull_art[key]
+		var texture:=load(str(row.get("texture",""))) as Texture2D
+		if texture==null:continue
+		var opaque_pixels:=texture.get_image().get_used_rect()
+		var opaque:=Rect2(opaque_pixels)
+		if opaque.size.y<=0:continue
+		var texture_size:=texture.get_size()
+		var pixels_per_model:float=float(manifest.hulls[key].model_span)/opaque.size.y
+		var offset:=Vector2(opaque_pixels.get_center())-texture_size*0.5
+		approved[key]={"opaque":opaque,"mesh_size":texture_size*pixels_per_model,
+			"base_position":GEOMETRY.body_center(manifest.hulls[key])+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model),
+			"hardpoints":row.hardpoints,"weapon_scale":float(row.get("weapon_scale",1.0))}
 	var carrier = (load(str(manifest.drone.path)) as PackedScene).instantiate()
 	carrier_mount = _chain(carrier.find_child("WeaponMount01",true,false),carrier)
 	carrier.free()
@@ -202,7 +218,14 @@ func _mount(module: Dictionary) -> Transform3D:
 	var root: Transform3D = ship_transform if module.assignment.carrier == "hull" else carriers[module.carrier_index].transform
 	if not module.has("mount_root") or module.mount_root != root:
 		module.mount_root = root
-		module.mount_transform = _global(root,module.mount_chain)
+		if module.assignment.carrier=="hull" and approved.has(hull_key) and rendered_height>0.0:
+			var art:Dictionary=approved[hull_key]
+			var fit:Dictionary=GEOMETRY.approved_body_fit(art.opaque,art.mesh_size,art.base_position,size,rendered_height,rendered_position,float(manifest.hulls[hull_key].model_span))
+			var position:Vector3=GEOMETRY.approved_mount_position(fit,art.hardpoints[int(module.assignment.mount)].pos)
+			var mount_basis:Basis=_global(Transform3D.IDENTITY,module.mount_chain).basis.scaled_local(Vector3.ONE*float(art.weapon_scale))
+			module.mount_transform=root*Transform3D(mount_basis,position)
+		else:
+			module.mount_transform = _global(root,module.mount_chain)
 		module.mount_position = project(module.mount_transform.origin)
 		module.mount_yaw = module.mount_transform.basis.orthonormalized().get_euler().y
 		module.socket_points = {}
