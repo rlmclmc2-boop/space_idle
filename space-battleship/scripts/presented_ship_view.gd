@@ -580,3 +580,16 @@ func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
 	shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-fposmod(elapsed,3.8)/0.6))
 	for index in exhaust_nodes.size():exhaust_nodes[index].scale.z=1.0+sin(elapsed*9+float(index))*0.06
 	if viewport.render_target_update_mode!=SubViewport.UPDATE_ALWAYS:viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
+
+func apply_direct_fire_alignment(poses:Dictionary,now:float)->void:
+	# A committed shot can select a target after the simulation turret pose was
+	# sampled. Rotate only the rendered turret, then hold its real muzzle at the
+	# committed launch pixel so neither the projectile nor the mount is moved.
+	for module in modules:
+		var pose:Dictionary=poses.get(int(module.slot),{})
+		if not pose.has("fire_until") or now>float(pose.fire_until):continue
+		var pivot:Node3D=module.pivot
+		pivot.rotation.y=-float(pose.fire_angle)-module.mount.global_rotation.y
+		var current:Vector2=screen_muzzle_for_slot(int(module.slot),int(pose.fire_ordinal))
+		var desired:Vector2=Vector2(pose.fire_origin)
+		pivot.global_position+=camera.project_ray_origin(desired)-camera.project_ray_origin(current)

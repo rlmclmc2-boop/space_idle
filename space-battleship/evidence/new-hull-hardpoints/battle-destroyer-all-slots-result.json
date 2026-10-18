@@ -1,5 +1,5 @@
 {
-  "all_fired_at": 84,
+  "all_fired_at": 83,
   "events": {
     "beam_hit": 7,
     "beam_started": 2,
@@ -9,7 +9,7 @@
     "hit": 15,
     "projectile_impact": 8
   },
-  "frames": 204,
+  "frames": 203,
   "hull": "Destroyer",
   "metrics": {
     "beams": 2,
@@ -17,10 +17,10 @@
     "hits": 7,
     "hull_bottom": 908.051879882813,
     "max_logical_error": 0.0001220703125,
-    "max_origin_error": 0.0001220703125,
-    "min_direct_aim_dot": 0.978441119194031,
+    "max_origin_error": 0.00006103515625,
+    "min_direct_aim_dot": 0.999999940395355,
     "native_fires": 2,
-    "turn": 0.141514614224434
+    "turn": 0.143302649259567
   },
   "native": true,
   "slot_results": [
@@ -30,8 +30,8 @@
       "fires": 2,
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
-      "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.978441119194031,
+      "max_origin_error": 0.0,
+      "min_direct_aim_dot": 1.0,
       "min_trajectory_target_dot": 0.997973263263702,
       "native_laser_fires": 0,
       "slot": 0,
@@ -43,8 +43,8 @@
       "fires": 2,
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
-      "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.998057961463928,
+      "max_origin_error": 0.00006103515625,
+      "min_direct_aim_dot": 0.999999940395355,
       "min_trajectory_target_dot": 0.998058021068573,
       "native_laser_fires": 2,
       "slot": 1,

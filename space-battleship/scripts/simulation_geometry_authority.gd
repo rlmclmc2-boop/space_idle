@@ -798,6 +798,20 @@ func drone_launch_pose(identity:String,aim:Vector2,ordinal:int)->Dictionary:
 func rail_geometry(shot:Dictionary)->Dictionary:
 	return {"origin":battle_point(visual_muzzle(shot)),"aim":entity_render_position(shot.target),"bounds":BATTLE_VIEW_SIZE,"full_width":maxf(12.0,float(db.weapon_motion_value("rail_trail_width",28.0)))*maxf(1.0,float(shot.get("rail_width_multiplier",1.0)))}
 
+func record_direct_fire_alignment(slot:int,info:Dictionary,ordinal:int=0)->void:
+	# Feedback arrives after combat has committed its target and launch origin.
+	# Keep that simulation pose intact; only the rendered turret follows this ray.
+	if not info.has("aim"):return
+	var origin:Vector2=battle_point(Vector2(info.x,info.y))
+	var ray:Vector2=battle_point(Vector2(info.aim))-origin
+	if ray.length_squared()<0.0001:return
+	var pose:Dictionary=turret_pose(slot)
+	var limit:float=deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
+	pose.fire_angle=clampf(wrapf(ray.angle()+PI/2-player_idle_angle(),-PI,PI),-limit,limit)
+	pose.fire_origin=origin
+	pose.fire_ordinal=ordinal
+	pose.fire_until=fx_time+0.12
+
 func on_simulation_event(kind:String,info:Dictionary)->void:
 	if kind=="explode":
 		for enemy in game.enemies:
@@ -818,9 +832,12 @@ func on_simulation_event(kind:String,info:Dictionary)->void:
 		var pose=turret_pose(mount)
 		if kind=="beam_started":pose.fired_at=fx_time;return
 		var key=weapon_key(shot)
+		var owns_primary:bool=bool(shot.get("owns_primary_aim",not bool(shot.get("repeated",false)) and not bool(shot.get("chain_hop",false))))
+		if key!="missile" and not bool(shot.get("hostile",false)) and owns_primary:
+			record_direct_fire_alignment(mount,info,int(shot.get("salvo_ordinal",0)))
 		if key=="longLaser":return
 		if key=="cannon":pose.recoil=0.13
-		if not bool(shot.get("owns_primary_aim",not bool(shot.get("repeated",false)) and not bool(shot.get("chain_hop",false)))):return
+		if not owns_primary:return
 		# Follow the kernel's main selection. Distributed tubes/scatter births carry
 		# that same owner target; repeats and secondary/chain carriers cannot write it.
 		pose.target=shot.get("primary_target",shot.target)

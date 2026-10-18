@@ -78,8 +78,10 @@ func capture() -> void:
 	)
 	var frames_run:int=0
 	var all_fired_at:int=-1
+	var heavy_fire_captured:bool=false
 	for frame in (900 if extended else 180):
 		await process_frame
+		await RenderingServer.frame_post_draw
 		frames_run=frame+1
 		for record in pending:
 			var slot:int=record.slot
@@ -92,11 +94,15 @@ func capture() -> void:
 				if trajectory_to_target.length_squared()>0.0:
 					slot_rows[slot].min_trajectory_target_dot=minf(float(slot_rows[slot].min_trajectory_target_dot),trajectory_to_target.normalized().dot(Vector2(record.direction).normalized()))
 				var ahead:Vector2=scene.ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
-				var aim_dot:float=(ahead-muzzle).normalized().dot(Vector2(record.direction).normalized())
+				var aim_dot:float=(ahead-muzzle).normalized().dot(trajectory_to_target.normalized()) if trajectory_to_target.length_squared()>0.0 else 1.0
 				if WEAPONS[slot]!="missile":
 					metrics.min_direct_aim_dot=minf(float(metrics.min_direct_aim_dot),aim_dot)
 					slot_rows[slot].min_direct_aim_dot=minf(float(slot_rows[slot].min_direct_aim_dot),aim_dot)
 		pending.clear()
+		if extended and key=="Heavy_Battleship" and not heavy_fire_captured and int(slot_rows[4].fires)>0:
+			var fire_image:String=output.path_join("battle-heavy-slot4-fire.png")
+			assert(root.get_texture().get_image().save_png(fire_image)==OK,fire_image)
+			heavy_fire_captured=true
 		for module in scene.ship_view.modules:
 			metrics.turn=maxf(float(metrics.turn),absf(module.pivot.rotation.y))
 			var muzzle:Vector2=scene.ship_view.screen_muzzle_for_slot(int(module.slot))
@@ -131,6 +137,8 @@ func capture() -> void:
 			assert(int(row.fires)>0,key+" slot "+str(row.slot)+" never fired")
 			assert(float(row.max_origin_error)<0.1,key+" slot "+str(row.slot)+" launch mismatch")
 			if str(row.weapon)!="missile":assert(float(row.min_trajectory_target_dot)>0.95,key+" slot "+str(row.slot)+" target mismatch")
+			if str(row.weapon)!="missile":assert(float(row.min_direct_aim_dot)>0.95,key+" slot "+str(row.slot)+" barrel/ray mismatch")
+			if key=="Heavy_Battleship" and int(row.slot)==4:assert(float(row.min_direct_aim_dot)>0.985,"Heavy cannon slot 4 retarget regression")
 	else:
 		assert(float(metrics.min_direct_aim_dot)>0.95,key+" direct aim mismatch")
 		RenderingServer.force_draw()

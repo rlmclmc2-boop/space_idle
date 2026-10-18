@@ -1,5 +1,5 @@
 {
-  "all_fired_at": 200,
+  "all_fired_at": 199,
   "events": {
     "beam_hit": 10,
     "beam_started": 4,
@@ -12,7 +12,7 @@
     "state": 1,
     "wave_clear": 1
   },
-  "frames": 320,
+  "frames": 319,
   "hull": "Battleship",
   "metrics": {
     "beams": 4,
@@ -21,9 +21,9 @@
     "hull_bottom": 907.999938964844,
     "max_logical_error": 0.0001220703125,
     "max_origin_error": 0.0001220703125,
-    "min_direct_aim_dot": 0.864458203315735,
+    "min_direct_aim_dot": 0.999999940395355,
     "native_fires": 3,
-    "turn": 0.369818896055222
+    "turn": 0.373591899871826
   },
   "native": true,
   "slot_results": [
@@ -33,9 +33,9 @@
       "fires": 4,
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
-      "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.864458203315735,
-      "min_trajectory_target_dot": 0.986858367919922,
+      "max_origin_error": 0.00006103515625,
+      "min_direct_aim_dot": 0.999999940395355,
+      "min_trajectory_target_dot": 0.986858308315277,
       "native_laser_fires": 0,
       "slot": 0,
       "weapon": "longLaser"
@@ -46,8 +46,8 @@
       "fires": 3,
       "impact_events": 1,
       "max_logical_error": 0.0001220703125,
-      "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.990841567516327,
+      "max_origin_error": 0.00006103515625,
+      "min_direct_aim_dot": 0.999999940395355,
       "min_trajectory_target_dot": 0.990841567516327,
       "native_laser_fires": 3,
       "slot": 1,
@@ -72,9 +72,9 @@
       "fires": 1,
       "impact_events": 1,
       "max_logical_error": 0.0001220703125,
-      "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.883164465427399,
-      "min_trajectory_target_dot": 0.990154922008514,
+      "max_origin_error": 0.000030517578125,
+      "min_direct_aim_dot": 1.0,
+      "min_trajectory_target_dot": 0.990154802799225,
       "native_laser_fires": 0,
       "slot": 3,
       "weapon": "cannon"

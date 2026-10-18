@@ -1,5 +1,5 @@
 {
-  "all_fired_at": 2,
+  "all_fired_at": 1,
   "events": {
     "beam_hit": 5,
     "beam_started": 2,
@@ -9,7 +9,7 @@
     "hit": 9,
     "projectile_impact": 4
   },
-  "frames": 122,
+  "frames": 121,
   "hull": "Frigate",
   "metrics": {
     "beams": 2,
@@ -17,8 +17,8 @@
     "hits": 5,
     "hull_bottom": 908.042175292969,
     "max_logical_error": 0.0001220703125,
-    "max_origin_error": 0.0001220703125,
-    "min_direct_aim_dot": 0.980607926845551,
+    "max_origin_error": 0.000030517578125,
+    "min_direct_aim_dot": 1.0,
     "native_fires": 0,
     "turn": 0.108698055148125
   },
@@ -30,8 +30,8 @@
       "fires": 2,
       "impact_events": 0,
       "max_logical_error": 0.0001220703125,
-      "max_origin_error": 0.0001220703125,
-      "min_direct_aim_dot": 0.980607926845551,
+      "max_origin_error": 0.000030517578125,
+      "min_direct_aim_dot": 1.0,
       "min_trajectory_target_dot": 0.998762965202332,
       "native_laser_fires": 0,
       "slot": 0,
