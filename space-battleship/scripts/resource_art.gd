@@ -34,6 +34,9 @@ static func draw_drop(canvas: CanvasItem, drop: Dictionary, center: Vector2, tim
 	var reveal := clampf((age-(0.0 if furnace or generated else 0.5))/0.18,0.0,1.0)
 	var point := center+Vector2(0,bob-(1.0-reveal)*5.0)
 	var extent := (42.0 if furnace else (38.0 if generated else 32.0))*lerpf(0.75,1.0,reveal)
+	# A still pickup frame separates rewards from moving fire.
+	var half := extent*0.57
+	canvas.draw_rect(Rect2(point-Vector2.ONE*half,Vector2.ONE*half*2.0),Color(color,0.64*reveal),false,1.5,true)
 	if furnace:
 		# Retain the ten-second source timer, without a large opaque backplate.
 		canvas.draw_arc(point,24.0,-PI/2,-PI/2+TAU*clampf(1.0-age/10.0,0,1),24,Color(color,0.6),1.5,true)

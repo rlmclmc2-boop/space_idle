@@ -262,12 +262,13 @@ func draw_projectile(surface: CanvasItem, pos: Vector2, angle: float, damage_typ
 	if not core:
 		surface.draw_line(pos-heading*15,pos,Color(PHYSICAL if damage_type==2 else ENERGY,0.16),1.0,true)
 	elif damage_type==2:
-		surface.draw_line(pos-heading*9,pos-heading*1,Color(PHYSICAL,0.5),1.5,true)
-		surface.draw_line(pos,pos+heading*8,PHYSICAL,3.5,true)
-		surface.draw_line(pos+heading*5,pos+heading*8,Color("ffe5bf"),2.0,true)
+		var side := heading.orthogonal()
+		surface.draw_line(pos-heading*13,pos-heading*4,Color(PHYSICAL,0.45),1.5,true)
+		surface.draw_colored_polygon(PackedVector2Array([pos+heading*8,pos+side*3,pos-heading*4,pos-side*3]),PHYSICAL)
+		surface.draw_line(pos+heading*2,pos+heading*8,Color("ffe5bf"),1.5,true)
 	else:
-		surface.draw_line(pos-heading*9,pos+heading*9,ENERGY,2.0,true)
-		surface.draw_line(pos-heading*7,pos+heading*7,Color("d8f3ff"),1.0,true)
+		surface.draw_line(pos-heading*11,pos+heading*10,ENERGY,2.5,true)
+		surface.draw_line(pos-heading*6,pos+heading*10,Color("e4f7ff"),1.0,true)
 
 func draw_contact(surface: CanvasItem, pos: Vector2, axis: Vector2, age: float, damage_type: int, launch: bool) -> void:
 	var fade := clampf(1.0-age/0.12,0,1)
@@ -279,11 +280,13 @@ func draw_contact(surface: CanvasItem, pos: Vector2, axis: Vector2, age: float, 
 		else:
 			for sign_value in [-1,1]:surface.draw_line(pos+side*sign_value*2,pos+axis*4,color,1.0,true)
 		return
-	var radius := 3.0+4.0*(1.0-fade)
-	if physical:surface.draw_arc(pos,radius,0,TAU,12,color,1.2,true)
+	var radius := 4.0+6.0*(1.0-fade)
+	if physical:
+		surface.draw_arc(pos,radius,-PI*0.72,PI*0.72,10,color,1.8,true)
+		surface.draw_line(pos-axis*radius*0.45,pos+axis*radius*0.45,Color("ffe5bf",fade),1.5,true)
 	else:
-		surface.draw_line(pos-side*radius,pos+side*radius,color,1.2,true)
-		surface.draw_line(pos-axis*radius*0.6,pos+axis*radius*0.6,color,1.0,true)
+		surface.draw_line(pos-side*radius,pos+side*radius,color,1.8,true)
+		surface.draw_line(pos-axis*radius*0.6,pos+axis*radius*0.6,color,1.3,true)
 
 func draw_deck_body(surface:CanvasItem,width:float,physical:bool)->void:
 	var y=width*0.23

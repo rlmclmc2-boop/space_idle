@@ -110,6 +110,7 @@ var beam_full_cue_count:=0
 var hull_opaque_bounds: Dictionary = {}
 var player_hit_at := -100.0
 var shield_before_hit: Variant = 0.0
+var enemy_meter_hits:Dictionary = {}
 var destruction_events: Array[Dictionary] = []
 var stable_center := Vector2.ZERO
 var stable_center_ready := false
@@ -442,6 +443,15 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind=="hit" and not bool(info.get("player",false)) and not fast_mode_enabled():
+		for enemy in game.enemies:
+			if int(enemy.uid)!=int(info.get("uid",-1)):continue
+			var shield_hit:bool=GrowthNumber.compare(info.get("absorbed",0),0)>0 or GrowthNumber.compare(enemy.get("shield",0),0)>0
+			enemy_meter_hits[int(enemy.uid)]={"born":fx_time,"shield":shield_hit,"type":int(info.get("type",0))}
+			break
+		if enemy_meter_hits.size()>32:
+			for uid in enemy_meter_hits.keys():
+				if fx_time-float(enemy_meter_hits[uid].born)>0.2:enemy_meter_hits.erase(uid)
 	# Compact laser feedback has no shot object; its lifetime is the immutable
 	# packet, even if the kernel recycled the flight before this signal.
 	if info.has("native_laser"):
@@ -512,6 +522,7 @@ func reset_battle_transients_for_scene() -> void:
 	missile_events.clear()
 	_pulse_events.clear()
 	_enemy_impacts.clear()
+	enemy_meter_hits.clear()
 	if game.combat_presentation!=null:game.combat_presentation.clear_contacts()
 	beam_full_started.clear()
 	player_hit_at=-100.0
@@ -962,7 +973,9 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
-	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
+	# Warm enemy plating keeps the eight small silhouettes distinct from the
+	# player's white/cyan hull without changing their published footprint.
+	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,hull_width),false,Color(light,light*0.88,light*0.76,1.0))
 	if enemy_attack_deck_visible(enemy):enemy_recognition.draw_attack_deck(draw_surface,width,enemy_attack_types(enemy))
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
@@ -975,6 +988,13 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:
 		battle_meter(layout.shield,float(enemy.shield)/float(enemy.max_shield),ENEMY_RECOGNITION.shield_color(int(enemy.get("shieldType",0))))
+	var hit:Dictionary=enemy_meter_hits.get(int(enemy.uid),{})
+	if not hit.is_empty():
+		var age:=fx_time-float(hit.born)
+		if age>=0.0 and age<0.18:
+			var target:Rect2=layout.shield if bool(hit.shield) and float(enemy.get("max_shield",0))>0 else layout.health
+			var marker:=Color("eeb476") if int(hit.type)==2 else Color("8ee6ef")
+			draw_surface.draw_rect(target.grow(2),Color(marker,1.0-age/0.18),false,1.5,true)
 	if boss_battle and leader:text_at(layout.caption,layout.caption_position,17,BATTLE_CREAM)
 
 func encounter_leader_name(enemy:Dictionary)->String:
@@ -1019,7 +1039,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		var descent:float=font.get_descent(17)
 		var name_height:float=ascent+descent
 		var has_shield:bool=float(enemy.get("max_shield",0))>0.0
-		var block_height:float=name_height+6.0+(11.0 if has_shield else 4.0)
+		var block_height:float=name_height+6.0+(15.0 if has_shield else 6.0)
 		var block_top:float=top+4.0-block_height
 		# An enlarged ultimate can reach the header. Move the whole block
 		# below its visible outline instead of laying text across hull/meters.
@@ -1028,7 +1048,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		var name_left:float=clampf(pos.x-name_size.x*0.5,12.0,BATTLE_VIEW_SIZE.x-name_size.x-12.0)
 		var baseline:=Vector2(name_left,block_top+ascent)
 		var first_meter_y:float=block_top+name_height+6.0
-		return {"health":Rect2(left,first_meter_y+(7.0 if has_shield else 0.0),bar_width,4),"shield":Rect2(left,first_meter_y,bar_width,4),"caption":name,"caption_position":baseline,"caption_bounds":Rect2(Vector2(name_left,block_top),Vector2(name_size.x,name_height))}
+		return {"health":Rect2(left,first_meter_y+(9.0 if has_shield else 0.0),bar_width,6),"shield":Rect2(left,first_meter_y,bar_width,6),"caption":name,"caption_position":baseline,"caption_bounds":Rect2(Vector2(name_left,block_top),Vector2(name_size.x,name_height))}
 	var outer_wing:bool=enemy.get("explicit_formation",false) and absf(float(enemy.x)-BATTLE_VIEW_SIZE.x*0.5)>150.0
 	if outer_wing:
 		# Meters use the same free outer-wing space as their captions.
@@ -1041,7 +1061,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		# Outer wing labels use the space away from the neighbouring centre fleet.
 		caption_left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-caption_size.x,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
 	var caption_position:=Vector2(caption_left,maxf(20,top-5))
-	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(caption_font_size)),Vector2(caption_size.x,font.get_ascent(caption_font_size)+font.get_descent(caption_font_size)))}
+	return {"health":Rect2(left,maxf(6,top),bar_width,6),"shield":Rect2(left,maxf(6,top-9),bar_width,6),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,font.get_ascent(caption_font_size)),Vector2(caption_size.x,font.get_ascent(caption_font_size)+font.get_descent(caption_font_size)))}
 
 func draw_environment_event(_offset:Vector2)->void:
 	encounter_presentation.draw_fall(draw_surface)
