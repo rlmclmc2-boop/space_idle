@@ -11,6 +11,11 @@ func verify() -> void:
 	assert(not baseline.is_empty() and DirAccess.dir_exists_absolute(baseline))
 	var previous: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(baseline.path_join("data/ship_weapon_visuals.json")))
 	var current: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
+	# Exercise Main._ready's actual image-center rebase, not only JSON authoring.
+	var scene=load("res://main.tscn").instantiate()
+	scene.automation_args=["--capture"];scene.music_on=false
+	root.add_child(scene);scene.set_process(false)
+	assert(not scene.game.save_enabled)
 	var recognition = RECOGNITION.new()
 	for suffix in KEYS:
 		var key: String = "enemy_opening_" + suffix
@@ -22,6 +27,17 @@ func verify() -> void:
 		var source_bytes := FileAccess.get_file_as_bytes(baseline.path_join(str(original.texture).trim_prefix("res://")))
 		var geometry_bytes := FileAccess.get_file_as_bytes(ProjectSettings.globalize_path(str(candidate.geometry_texture)))
 		assert(source_bytes == geometry_bytes, key + " source pixels")
+		var old_texture=load(str(original.texture)) as Texture2D
+		var center=preload("res://scripts/enemy_protection_geometry.gd").image_center(old_texture.get_image())
+		var old_offset:Vector2=(center-old_texture.get_size()*0.5)/old_texture.get_size()
+		original=original.duplicate(true)
+		for point in original.hardpoints:
+			point.pos=[float(point.pos[0])-old_offset.x,float(point.pos[1])-old_offset.y]
+		candidate=scene.visual_config.ships[key]
+		assert(candidate.hardpoints==original.hardpoints,key+" runtime rebased mounts")
+		var display_texture=scene.ship_hull_texture(key)
+		var display_center=preload("res://scripts/enemy_protection_geometry.gd").image_center(display_texture.get_image())
+		assert(candidate.origin_offset==(display_center-display_texture.get_size()*0.5)/display_texture.get_size(),key+" display center")
 		var old_profile: PackedVector2Array = recognition.hull_profile(load(str(original.texture)) as Texture2D)
 		var new_profile: PackedVector2Array = recognition.hull_profile(load(str(candidate.geometry_texture)) as Texture2D)
 		assert(old_profile == new_profile, key + " alpha boundary")
@@ -55,4 +71,6 @@ func verify() -> void:
 		var image := (load(str(candidate.geometry_texture)) as Texture2D).get_image()
 		print("PLAYER_GEOMETRY_MATCH ", key, " opaque_rect=", image.get_used_rect(), " mounts=", candidate.hardpoints.size())
 	print("GEOMETRY_SOURCE_DONE enemy_keys=8 player_keys=5")
+	scene.queue_free()
+	await process_frame
 	quit()

@@ -295,8 +295,11 @@ func _ready() -> void:
 		var image:=texture.get_image()
 		var offset:Vector2=(preload("res://scripts/enemy_protection_geometry.gd").image_center(image)-texture.get_size()*0.5)/texture.get_size()
 		row.origin_offset=offset
+		# Sprite centering uses display art; battle mounts retain the geometry source.
+		var geometry_texture:=ship_geometry_texture(str(key))
+		var geometry_offset:Vector2=(preload("res://scripts/enemy_protection_geometry.gd").image_center(geometry_texture.get_image())-geometry_texture.get_size()*0.5)/geometry_texture.get_size()
 		for point in row.hardpoints:
-			point.pos=[float(point.pos[0])-offset.x,float(point.pos[1])-offset.y]
+			point.pos=[float(point.pos[0])-geometry_offset.x,float(point.pos[1])-geometry_offset.y]
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
 	game = create_battle_game(not automation_args.has("--capture"))

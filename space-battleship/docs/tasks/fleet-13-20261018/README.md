@@ -1,6 +1,14 @@
 # Approved fleet 13 integration
 
-## Current display/geometry split (2026-10-18)
+## Closeout: display and battle inputs separated (2026-10-18)
+
+The parent has accepted all 5 player and 8 enemy visuals. A final runtime audit found that Main._ready still rebased enemy battle hardpoints from the new display PNG center. The minimal fix keeps sprite centering on the new PNG and rebases battle hardpoints from the main51 geometry PNG instead. Cached authority bounds were traced to display-only consumers and were not the cause.
+
+[Bounds, root cause and acceptance limits](BOUNDS_AND_TIMING_AUDIT.md) records the full call chain. The enhanced runtime check passes all eight enemy mappings and five player geometry sources. The reused laser fixture matches main51 at all 721 recorded boundaries over 720 fixed logic steps: player anchor, enemy layout, ballistic hulls and native muzzles. Actual equipment_stats callbacks also match in step, payload and counter: **242 versus 242 (192 defence + 50 weapon)**, eliminating the prior 32-step-pair timing shifts. All full-run event counts and final gameplay state match; native exports differ only in the historical RNG seed while the transferred RNG state matches. [Raw traces, event payloads, logs and offline audit](evidence/geometry-timing/audit.json) are retained.
+
+No new art, DLL build, values or technology changes were made. No GUI pass or five-case performance replay was repeated. The performance numbers and original counter trace below describe the **unfixed 9cbd3d86 candidate**, not post-fix acceptance. The other four fixtures have not been rerun after this fix; no universal timing/performance parity is claimed. Main remains unmerged.
+
+## Prior candidate evidence (9cbd3d86, superseded timing result)
 
 The 13 approved PNGs are display textures. Each ship mapping now explicitly retains its main51 PNG as `geometry_texture`; those old assets are active battle inputs and must stay packaged. `main.gd` and `battlefield.gd` use that source for player height, nose/tail and enemy alpha envelopes, while `simulation_geometry_authority.gd` captures old enemy profiles and player reference height before native handoff. Hardpoint tables, weapon pose rules, battle values and the DLL are unchanged. The player PNG plane is fitted into the battle safe area without moving the ship root or sockets; retained and fallback enemy turret bodies use 0.45 visual width while preserving their muzzle anchor.
 
