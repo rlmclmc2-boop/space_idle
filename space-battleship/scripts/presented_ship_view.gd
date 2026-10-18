@@ -20,6 +20,10 @@ var loadout_signature := ""
 var hull_key := ""
 var hull_config: Dictionary = {}
 var manifest: Dictionary = {}
+var approved_hull_art: Dictionary = {}
+var approved_body_plane: MeshInstance3D
+var approved_body_bounds := Rect2()
+var approved_body_position := Vector3.ZERO
 var carriers: Array[Node3D] = []
 var carrier_states: Array[Dictionary] = []
 var pose_initialized := false
@@ -58,6 +62,8 @@ var render_scale_sync_pending := false
 
 func _ready() -> void:
 	manifest = JSON.parse_string(FileAccess.get_file_as_string("res://dev/toon_ship/hybrid_manifest.json"))
+	var visual_rows: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
+	if visual_rows is Dictionary: approved_hull_art = visual_rows.get("ships",{})
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	viewport = SubViewport.new()
 	viewport.name = "ShipViewport"
@@ -170,6 +176,7 @@ func set_hull(key: String) -> bool:
 	pose_initialized = false
 	orbit_elapsed = 0.0
 	if is_instance_valid(ship): ship.free()
+	approved_body_plane = null
 	modules.clear()
 	carriers.clear()
 	material_entries.clear()
@@ -195,7 +202,8 @@ func set_hull(key: String) -> bool:
 	world.add_child(ship)
 	weapon_mount = ship.find_child("WeaponMount01",true,false)
 	_install_materials(ship)
-	body_baker.attach(ship,"hull:"+key)
+	if not _install_approved_hull_art(key):
+		body_baker.attach(ship,"hull:"+key)
 	_add_exhausts()
 	shield = MeshInstance3D.new()
 	shield.name = "PrototypeShield"
@@ -217,6 +225,67 @@ func set_hull(key: String) -> bool:
 	if not last_settings.is_empty(): apply_parameters(last_settings,last_toon_enabled,last_rim_enabled)
 	return true
 
+
+
+func _install_approved_hull_art(key: String) -> bool:
+	var row: Dictionary = approved_hull_art.get(key,{})
+	var path := str(row.get("texture",""))
+	if not path.begins_with("res://assets/ships/approved_fleet_20261018/player/"):
+		return false
+	var texture := load(path) as Texture2D
+	if texture == null:return false
+	var image := texture.get_image()
+	var opaque := image.get_used_rect()
+	if opaque.size.x<=0 or opaque.size.y<=0:return false
+	# Preserve the imported assembly, sockets, turrets, exhausts and shield.
+	_hide_imported_hull_meshes(ship)
+	var plane := MeshInstance3D.new()
+	plane.name = "ApprovedHullArt"
+	var mesh := PlaneMesh.new()
+	var pixels_per_model := model_span/float(opaque.size.y)
+	mesh.size = Vector2(texture.get_width(),texture.get_height())*pixels_per_model
+	plane.mesh = mesh
+	var body_center := preload("res://scripts/ship_geometry_convention.gd").body_center(hull_config)
+	var offset := Vector2(opaque.get_center())-Vector2(texture.get_size())*0.5
+	plane.position = body_center+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model)
+	plane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var material := StandardMaterial3D.new()
+	material.albedo_texture = texture
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	material.alpha_scissor_threshold = 0.05
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	plane.material_override = material
+	ship.add_child(plane)
+	approved_body_plane = plane
+	approved_body_bounds = Rect2(opaque)
+	approved_body_position = plane.position
+	return true
+
+
+func _fit_approved_hull_art() -> void:
+	if not is_instance_valid(approved_body_plane) or rendered_height<=0.0:return
+	# Only the art plane moves. The ship root, sockets, weapon aim and published
+	# battle geometry keep their existing transforms and reference height.
+	var ratio := approved_body_bounds.size.x/approved_body_bounds.size.y
+	var art_scale := 1.0
+	if ratio>1.3:
+		art_scale=clampf(size.x*0.15/(rendered_height*ratio),1.0,1.35)
+	var safe := Rect2(Vector2(12,12),size-Vector2(24,40))
+	var body := Vector2(ratio,1.0)*rendered_height*art_scale
+	art_scale*=minf(1.0,minf(safe.size.x/body.x,safe.size.y/body.y))
+	body=Vector2(ratio,1.0)*rendered_height*art_scale
+	var center := Vector2(
+		clampf(rendered_position.x,safe.position.x+body.x*0.5,safe.end.x-body.x*0.5),
+		clampf(rendered_position.y,safe.position.y+body.y*0.5,safe.end.y-body.y*0.5))
+	var local_per_pixel := model_span/rendered_height
+	approved_body_plane.scale=Vector3.ONE*art_scale
+	approved_body_plane.position=approved_body_position+Vector3(center.x-rendered_position.x,0,center.y-rendered_position.y)*local_per_pixel
+
+
+func _hide_imported_hull_meshes(node: Node) -> void:
+	if node is MeshInstance3D:(node as MeshInstance3D).visible = false
+	for child in node.get_children():_hide_imported_hull_meshes(child)
 
 
 func _install_materials(node: Node, owner := "hull") -> void:
@@ -406,6 +475,7 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	orbit_elapsed += clampf(visual_delta,0.0,0.10)
 	# Centre the full imported assembly, preserving every socket/body relation.
 	ship.transform = preload("res://scripts/ship_geometry_convention.gd").centered_transform(Basis.from_euler(Vector3(0,-angle,0)).scaled_local(Vector3.ONE*scale_value),orbit_center,hull_config)
+	_fit_approved_hull_art()
 	_update_carriers(scale_value,visual_delta)
 	body_baker.guard_resolution(float(int(viewport.size.x*viewport.scaling_3d_scale))/camera.size)
 	aim_at(target)
@@ -495,6 +565,7 @@ func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
 	elapsed=frame.elapsed;rendered_height=frame.rendered_height;rendered_position=frame.rendered_position
 	orbit_center=frame.orbit_center;orbit_elapsed=frame.orbit_elapsed
 	if ship.transform!=frame.ship:ship.transform=frame.ship
+	_fit_approved_hull_art()
 	assert(carriers.size()==frame.carriers.size() and modules.size()==frame.pivots.size(),"Fleet descriptor membership mismatch")
 	for index in carriers.size():carriers[index].transform=frame.carriers[index];carriers[index].visible=true
 	for index in modules.size():

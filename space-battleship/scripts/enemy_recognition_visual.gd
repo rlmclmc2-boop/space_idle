@@ -240,7 +240,8 @@ func draw_attack_deck(surface:CanvasItem,width:float,damage_types:Array)->void:
 
 func draw_weapon(surface: CanvasItem, pos: Vector2, pose: Dictionary, damage_type: int, scale_value: float) -> void:
 	var physical := damage_type==2
-	var w := maxf(15.0/maxf(0.1,scale_value),float(pose.width))
+	# Weapon footprint follows the hull width; keep only a one-pixel antialias floor.
+	var w := maxf(1.0/maxf(0.1,scale_value),float(pose.width)*0.45)
 	var face := 0.64 if physical else 0.45
 	var shift := Vector2(pose.port)-Vector2(face*w,0)
 	surface.draw_set_transform(pos+Vector2(pose.origin)+shift.rotated(pose.angle),float(pose.angle)-PI/2)

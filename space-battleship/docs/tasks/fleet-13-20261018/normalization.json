@@ -1,0 +1,308 @@
+{
+  "assets": [
+    {
+      "hull_body": [
+        96,
+        317,
+        694,
+        1139
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/player/01-frigate.png",
+      "name": "01-frigate",
+      "source_body": [
+        76,
+        47,
+        869,
+        1425
+      ],
+      "source_size": [
+        1024,
+        1536
+      ],
+      "ui_body": [
+        198,
+        80,
+        371,
+        608
+      ],
+      "ui_path": "res://assets/ui/ships/approved_fleet_20261018/01-frigate.png"
+    },
+    {
+      "hull_body": [
+        91,
+        422,
+        704,
+        928
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/player/02-destroyer.png",
+      "name": "02-destroyer",
+      "source_body": [
+        87,
+        206,
+        849,
+        1121
+      ],
+      "source_size": [
+        1024,
+        1536
+      ],
+      "ui_body": [
+        153,
+        80,
+        461,
+        608
+      ],
+      "ui_path": "res://assets/ui/ships/approved_fleet_20261018/02-destroyer.png"
+    },
+    {
+      "hull_body": [
+        88,
+        673,
+        710,
+        427
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/player/03-cruiser.png",
+      "name": "03-cruiser",
+      "source_body": [
+        107,
+        120,
+        1322,
+        795
+      ],
+      "source_size": [
+        1536,
+        1024
+      ],
+      "ui_body": [
+        80,
+        201,
+        608,
+        366
+      ],
+      "ui_path": "res://assets/ui/ships/approved_fleet_20261018/03-cruiser.png"
+    },
+    {
+      "hull_body": [
+        89,
+        506,
+        708,
+        761
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/player/04-battleship.png",
+      "name": "04-battleship",
+      "source_body": [
+        113,
+        105,
+        1000,
+        1075
+      ],
+      "source_size": [
+        1225,
+        1284
+      ],
+      "ui_body": [
+        101,
+        80,
+        565,
+        608
+      ],
+      "ui_path": "res://assets/ui/ships/approved_fleet_20261018/04-battleship.png"
+    },
+    {
+      "hull_body": [
+        122,
+        248,
+        642,
+        1272
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/player/05-heavy-battleship.png",
+      "name": "05-heavy-battleship",
+      "source_body": [
+        146,
+        20,
+        732,
+        1451
+      ],
+      "source_size": [
+        1024,
+        1536
+      ],
+      "ui_body": [
+        230,
+        77,
+        308,
+        611
+      ],
+      "ui_path": "res://assets/ui/ships/approved_fleet_20261018/05-heavy-battleship.png"
+    },
+    {
+      "hull_body": [
+        88,
+        579,
+        710,
+        616
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/06-scout.png",
+      "name": "06-scout",
+      "source_body": [
+        106,
+        107,
+        1100,
+        954
+      ],
+      "source_size": [
+        1312,
+        1199
+      ]
+    },
+    {
+      "hull_body": [
+        88,
+        599,
+        710,
+        571
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/07-sentry.png",
+      "name": "07-sentry",
+      "source_body": [
+        163,
+        14,
+        1210,
+        972
+      ],
+      "source_size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "hull_body": [
+        92,
+        413,
+        701,
+        947
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/08-interceptor.png",
+      "name": "08-interceptor",
+      "source_body": [
+        104,
+        173,
+        812,
+        1095
+      ],
+      "source_size": [
+        1024,
+        1536
+      ]
+    },
+    {
+      "hull_body": [
+        91,
+        518,
+        704,
+        737
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/09-swarm.png",
+      "name": "09-swarm",
+      "source_body": [
+        327,
+        54,
+        882,
+        923
+      ],
+      "source_size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "hull_body": [
+        88,
+        629,
+        710,
+        515
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/10-anchor.png",
+      "name": "10-anchor",
+      "source_body": [
+        143,
+        48,
+        1250,
+        906
+      ],
+      "source_size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "hull_body": [
+        92,
+        478,
+        702,
+        817
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/11-reactive.png",
+      "name": "11-reactive",
+      "source_body": [
+        199,
+        153,
+        823,
+        957
+      ],
+      "source_size": [
+        1223,
+        1286
+      ]
+    },
+    {
+      "hull_body": [
+        88,
+        641,
+        710,
+        491
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/12-shielded.png",
+      "name": "12-shielded",
+      "source_body": [
+        133,
+        63,
+        1270,
+        879
+      ],
+      "source_size": [
+        1536,
+        1024
+      ]
+    },
+    {
+      "hull_body": [
+        224,
+        252,
+        438,
+        1269
+      ],
+      "hull_path": "res://assets/ships/approved_fleet_20261018/enemy/13-command.png",
+      "name": "13-command",
+      "source_body": [
+        269,
+        47,
+        487,
+        1409
+      ],
+      "source_size": [
+        1024,
+        1536
+      ]
+    }
+  ],
+  "canvas": [
+    887,
+    1774
+  ],
+  "reference_commit": "96332dd117c7661a6439fb546af35b5d8dd668fe",
+  "ui_canvas": [
+    768,
+    768
+  ]
+}

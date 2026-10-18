@@ -7,3 +7,5 @@ The five transparent hull PNGs are static snapshots of the friendly GLBs in `dev
 Regenerate in an isolated, imported runtime project that includes `dev` and `addons` but excludes Blender authoring files (or has Blender configured): set `SHIP_PREVIEW_OUTPUT` to the intended asset directory and run Godot with `--path <isolated-project> --script res://dev/toon_ship/bake_panel_previews.gd`. Use the normal graphical renderer; headless rendering does not produce these images. The producer reads the current normal scene's presentation defaults without entering it in the tree.
 
 Focused regression: run `test/test_single_slot_visual.gd` with an isolated user directory. It captures all five equipped hulls and reports physical mount, module and carrier counts. The fixture reads no player save.
+
+The five 2026-10-18 preview textures in `approved_fleet_20261018/` are static, true-alpha 768x768 views of the approved single-hull source images. Their `manifest.json` texture paths match the five live battle hulls. Two `Heavy_Battleship` preview marker coordinates were moved from empty alpha to visible hull plating; slot identities and UI layout are unchanged.

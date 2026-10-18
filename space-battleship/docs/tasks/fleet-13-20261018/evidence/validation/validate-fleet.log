@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+FLEET_HULL Frigate hardpoint_near_alpha=["0.99"]
+FLEET_HULL Destroyer hardpoint_near_alpha=["0.99", "0.99"]
+FLEET_HULL Cruiser hardpoint_near_alpha=["1.00", "0.99", "0.99"]
+FLEET_HULL Battleship hardpoint_near_alpha=["0.99", "0.99", "1.00", "0.99"]
+FLEET_HULL Heavy_Battleship hardpoint_near_alpha=["0.99", "1.00", "1.00", "1.00", "1.00"]
+FLEET_HULL enemy_opening_scout hardpoint_near_alpha=["0.99"]
+FLEET_HULL enemy_opening_sentry hardpoint_near_alpha=["0.99"]
+FLEET_HULL enemy_opening_interceptor hardpoint_near_alpha=["0.99"]
+FLEET_HULL enemy_opening_swarm hardpoint_near_alpha=["1.00"]
+FLEET_HULL enemy_opening_anchor hardpoint_near_alpha=["0.99", "0.99", "0.99"]
+FLEET_HULL enemy_opening_reactive hardpoint_near_alpha=["0.99", "1.00", "1.00"]
+FLEET_HULL enemy_opening_shielded hardpoint_near_alpha=["1.00", "1.00", "0.99", "0.99"]
+FLEET_HULL enemy_opening_command hardpoint_near_alpha=["0.99", "0.99", "0.99", "0.99"]
+FLEET_UI Frigate mount_near_alpha=["1.00"]
+FLEET_UI Destroyer mount_near_alpha=["0.99", "0.99"]
+FLEET_UI Cruiser mount_near_alpha=["1.00", "1.00", "0.99"]
+FLEET_UI Battleship mount_near_alpha=["0.99", "0.99", "0.99", "0.99"]
+FLEET_UI Heavy_Battleship mount_near_alpha=["1.00", "1.00", "1.00", "1.00", "1.00"]
+FLEET_VALIDATE_DONE assets=18 failed_mounts=0

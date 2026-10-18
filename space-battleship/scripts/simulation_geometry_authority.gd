@@ -575,9 +575,10 @@ func prepare(owner,simulation:BattleGame)->void:
 		if str(key).begins_with("enemy_") and not bool(visual_config.ships[key].get("asset_ready",true)):continue
 		var texture=owner.ship_hull_texture(key)
 		if texture!=null:
-			var identity=texture.get_instance_id()
+			var geometry_texture=owner.ship_geometry_texture(key)
+			var identity=geometry_texture.get_instance_id()
 			var bounds=owner.enemy_hull_bounds(texture)
-			var profile=owner.enemy_recognition.hull_profile(texture).duplicate()
+			var profile=owner.enemy_recognition.hull_profile(geometry_texture).duplicate()
 			captured_visuals[str(visual_config.ships[key].get("texture",""))]={"identity":identity,"bounds":bounds,"profile":profile}
 			captured_bounds[identity]=bounds
 	fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
@@ -587,7 +588,7 @@ func prepare(owner,simulation:BattleGame)->void:
 	# Capture every authored hull's footprint before worker admission. Runtime
 	# ship commands choose immutable descriptors; they never instantiate/read Nodes.
 	for key in fleet_pose.manifest.hulls:
-		var texture=owner.ship_hull_texture(key);var image=texture.get_image()
+		var texture=owner.ship_geometry_texture(key);var image=texture.get_image()
 		var factor=float(battle_visual.player_core_scale)*player_art_scale_for(key)
 		var hull:Dictionary=fleet_pose.manifest.hulls[key]
 		var radius=float(fleet_pose.manifest.weapon_contract.conservative_xz_rotation_radius)

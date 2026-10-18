@@ -1,0 +1,16 @@
+mixed-before: exit=0 done=True errors=0
+mixed-after: exit=0 done=True errors=0
+CASE_OK mixed mean_ms 7.859 -> 7.693 events_equal=true
+laser-before: exit=0 done=True errors=0
+laser-after: exit=0 done=True errors=0
+CASE_OK laser mean_ms 5.707 -> 5.720 events_equal=true
+cannon-before: exit=0 done=True errors=0
+cannon-after: exit=0 done=True errors=0
+CASE_OK cannon mean_ms 7.686 -> 7.571 events_equal=true
+missile-before: exit=0 done=True errors=0
+missile-after: exit=0 done=True errors=0
+CASE_OK missile mean_ms 7.332 -> 7.192 events_equal=true
+longLaser-before: exit=0 done=True errors=0
+longLaser-after: exit=0 done=True errors=0
+CASE_OK longLaser mean_ms 9.978 -> 9.380 events_equal=true
+FLEET_PERF_DONE five cases

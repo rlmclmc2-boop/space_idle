@@ -1,0 +1,18 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+GEOMETRY_MATCH enemy_opening_scout profile_points=16 mounts=1 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_sentry profile_points=19 mounts=1 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_interceptor profile_points=22 mounts=1 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_swarm profile_points=16 mounts=1 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_anchor profile_points=21 mounts=3 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_reactive profile_points=18 mounts=3 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_shielded profile_points=28 mounts=4 width_shape_cases=9
+GEOMETRY_MATCH enemy_opening_command profile_points=15 mounts=4 width_shape_cases=9
+PLAYER_GEOMETRY_MATCH Frigate opaque_rect=[P: (25, 335), S: (830, 1106)] mounts=1
+PLAYER_GEOMETRY_MATCH Destroyer opaque_rect=[P: (30, 456), S: (827, 876)] mounts=2
+PLAYER_GEOMETRY_MATCH Cruiser opaque_rect=[P: (0, 196), S: (887, 1330)] mounts=3
+PLAYER_GEOMETRY_MATCH Battleship opaque_rect=[P: (17, 176), S: (854, 1395)] mounts=4
+PLAYER_GEOMETRY_MATCH Heavy_Battleship opaque_rect=[P: (0, 19), S: (887, 1715)] mounts=5
+GEOMETRY_SOURCE_DONE enemy_keys=8 player_keys=5

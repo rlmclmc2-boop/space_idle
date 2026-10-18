@@ -1,0 +1,70 @@
+{
+  "baseline": "51a7e1b9bc5784927e7d5b232a112194d990a41c",
+  "unfixed_candidate": "9cbd3d86453e25db9f73609c704d5ae6f57b00de",
+  "dll_sha256": "B89310037FB78690470FFE8D47E37C264B15FF9B1828BA345A6F323D159068DA",
+  "mode": "headless fixed-step diagnostic; not a performance measurement",
+  "logical_steps": 720,
+  "state_snapshots": 721,
+  "actors_per_snapshot": 15,
+  "compared_global_fields": [
+    "step",
+    "clock",
+    "player",
+    "height",
+    "aim",
+    "muzzles",
+    "incoming",
+    "attacks"
+  ],
+  "compared_actor_fields": [
+    "uid",
+    "position",
+    "width",
+    "angle",
+    "hull",
+    "center",
+    "port"
+  ],
+  "fixed_all_compared_values_equal": true,
+  "unfixed_first_muzzle_difference": 0,
+  "unfixed_first_incoming_difference": 72,
+  "sample_defence_notifications": {
+    "main51": 192,
+    "unfixed": 160,
+    "fixed": 192
+  },
+  "sample_weapon_notifications": {
+    "main51": 50,
+    "fixed": 50
+  },
+  "fixed_notification_steps_and_values_equal": true,
+  "actual_equipment_stats_payload_step_counter_trace_equal": true,
+  "actual_sample_equipment_stats": [
+    242,
+    242
+  ],
+  "all_720_step_event_counts_equal": true,
+  "final_public_state_equal": true,
+  "final_kernel_equal_except_historical_rng_seed": true,
+  "historical_rng_seeds": [
+    "4754381021805727676",
+    "-4955394583095935281"
+  ],
+  "transferred_rng_state": "-777003585966282483",
+  "final_incoming": [
+    330,
+    330
+  ],
+  "final_attacks": [
+    357,
+    357
+  ],
+  "trace_sha256": {
+    "candidate-fixed-events.json.gz": "21153236d652df0e06a93ec17df0eed1947336e3e0a89db7bb3b28c23d8077c8",
+    "candidate-fixed.json.gz": "52ae56cc3db1bfbdc280378ef875302376161d92438380310358ffba17b1f16d",
+    "candidate-unfixed.json.gz": "106193ed8f32f0dcb262d52f098009b5f03556150cf4e76d1dd0473e03e27aeb",
+    "main51-events.json.gz": "f1b0b7159a139ab4374b065adf15d91b390ba594294b03e0552072f32b5dd8eb",
+    "main51.json.gz": "68852bef67520cd2f9c66e474aa63e840e4ef166240e0bc372f65546b52e028f"
+  },
+  "scope": "laser fixture reused; other four fixtures not rerun; all eight runtime enemy mappings independently checked"
+}

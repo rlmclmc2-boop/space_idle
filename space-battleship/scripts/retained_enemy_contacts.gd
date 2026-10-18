@@ -286,10 +286,12 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  record.mount_signature=mount_key
  var desired:float=0.0
  if paint_owner.simulation_geometry_view==null:desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-angle,-PI,PI)
- var min_width=15.0/maxf(0.1,record.screen_scale)
+ # A one-screen-pixel floor avoids vanishing antialiased strokes; the weapon
+ # body otherwise follows the authored hull-relative module size.
+ var min_width=1.0/maxf(0.1,record.screen_scale)
  for mount in record.mounts:
   var module_width=width*mount.module_factor
-  var w=maxf(min_width,module_width)
+  var w=maxf(min_width,module_width*0.45)
   var mount_angle:float
   var origin:Vector2
   if paint_owner.simulation_geometry_view!=null:

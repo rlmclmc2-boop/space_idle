@@ -233,7 +233,7 @@ func visual_muzzle(shot:Dictionary)->Vector2:
 
 func _set_reference_dimensions() -> void:
 	# Match the existing hull's opaque footprint, not its transparent source canvas.
-	var image := ship_hull_texture(str(game.profile.selectedShip)).get_image()
+	var image := ship_geometry_texture(str(game.profile.selectedShip)).get_image()
 	var rect := image.get_used_rect()
 	var factor: float = float(battle_visual.player_core_scale)*player_art_scale()
 	reference_height = float(rect.size.y)*factor
