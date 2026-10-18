@@ -9,6 +9,9 @@ func record() -> void:
 	scene.automation_args=["--capture"]
 	root.size=Vector2i(1373,883)
 	root.add_child(scene)
+	# The stock capture hook quits at frame 45. This harness samples later live
+	# frames, so release that hook after its isolated startup has completed.
+	scene.automation_args=[]
 	scene.game.save_enabled=false
 	scene.game.profile.onboarding.completed=true
 	scene.game.profile.onboarding.dismissed=true
@@ -36,9 +39,10 @@ func record() -> void:
 			if DisplayServer.get_name()=="headless":
 				print("BATTLE_CAPTURE frame=",frame," no_framebuffer enemy_count=",scene.game.enemies.size()," hostile_shots=",hostile_count)
 			else:
-				await RenderingServer.frame_post_draw
+				RenderingServer.force_draw()
 				var texture:=root.get_texture()
 				var path:=out.path_join("stage2-%03d.png" % frame)
 				var error:=texture.get_image().save_png(path)
 				print("BATTLE_CAPTURE frame=",frame," enemy_count=",scene.game.enemies.size()," hostile_shots=",hostile_count," draw_calls=",Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)," result=",error)
+	print("BATTLE_DONE")
 	quit()

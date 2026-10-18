@@ -24,3 +24,9 @@ hostile projectiles at frame 60 and 12 at frame 100. The native execution
 kernel was not admitted in this fixture (`native=false`); the native
 presentation object was active. The dummy headless renderer cannot provide
 pixels or GPU draw-call counts.
+
+Visible OpenGL compatibility captures with matching before/after DLLs did
+exercise the native presentation. The recorded GPU draw calls matched at
+frames 20, 60, and 100: 261, 268, and 270 respectively. The projectile
+geometry stays in the existing native triangle batch; no new per-frame node
+or draw submission was introduced.

@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+BATTLE_KEYS { "enemy_opening_swarm": 10, "enemy_opening_interceptor": 1 } native=false combat_presentation=true speed=1.0 presentation_metrics={ "old_advance": 20, "old_prepare": 21, "old_draw": 21, "advances": 0, "births": 0, "draws": 0, "upload_bytes": 0, "live": 0 }
+BATTLE_CAPTURE frame=20 enemy_count=11 hostile_shots=0 draw_calls=261.0 result=0
+BATTLE_CAPTURE frame=60 enemy_count=11 hostile_shots=10 draw_calls=268.0 result=0
+BATTLE_CAPTURE frame=100 enemy_count=11 hostile_shots=15 draw_calls=270.0 result=0
+BATTLE_DONE

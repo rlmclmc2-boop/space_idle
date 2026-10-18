@@ -39,8 +39,25 @@ The raw headless runs are in `evidence/before-headless.log` and
 each sample. The base resolved all 11 as `enemy_opening_triangle_energy`;
 the candidate resolved 10 as `enemy_opening_swarm` and one as
 `enemy_opening_interceptor`. Headless uses Godot's dummy renderer, so it
-cannot supply pixels or draw-call counts. Both logged `native=false`; a
-matching native DLL must be tested separately.
+cannot supply pixels or draw-call counts. Both logged `native=false`; the
+matching native presentation path was checked in the visible runs below.
+
+Visible Godot 4.7.2 runs used a matching DLL compiled from each side's source.
+Original 1372 × 883 output images are `evidence/before-stage2-020.png` through
+`before-stage2-100.png` and the corresponding `after-stage2-*.png` files;
+`before-gui.log` and `after-gui.log` are the raw runs. Both logs report
+`combat_presentation=true`, speed 1.0, 11 enemies, and these matched samples:
+
+| Frame | Hostile projectiles, each side | GPU draw calls, each side |
+| --- | ---: | ---: |
+| 20 | 0 | 261 |
+| 60 | 10 | 268 |
+| 100 | 15 | 270 |
+
+The capture script started the real third encounter and let it advance
+normally. It did not modify hit points, damage, delays, frame delta, or pause
+state. The candidate images are retained for parent visual review; this
+thread did not use them for repeated visual revision.
 
 ## Encounter key audit
 
