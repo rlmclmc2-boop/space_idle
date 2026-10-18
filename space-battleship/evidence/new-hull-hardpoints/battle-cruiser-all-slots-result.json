@@ -1,0 +1,73 @@
+{
+  "all_fired_at": 80,
+  "events": {
+    "beam_hit": 7,
+    "beam_started": 2,
+    "equipment_stats": 10,
+    "explode": 1,
+    "fire": 22,
+    "hit": 18,
+    "projectile_impact": 11
+  },
+  "frames": 200,
+  "hull": "Cruiser",
+  "metrics": {
+    "beams": 2,
+    "fires": 12,
+    "hits": 11,
+    "hull_bottom": 908.0,
+    "max_logical_error": 0.0001220703125,
+    "max_origin_error": 0.0001220703125,
+    "min_direct_aim_dot": 0.971880435943604,
+    "native_fires": 2,
+    "turn": 0.179214879870415
+  },
+  "native": true,
+  "slot_results": [
+    {
+      "beam_hit_events": 7,
+      "damage": 307.0,
+      "fires": 2,
+      "impact_events": 0,
+      "max_logical_error": 0.0001220703125,
+      "max_origin_error": 0.0001220703125,
+      "min_direct_aim_dot": 0.971880435943604,
+      "min_trajectory_target_dot": 0.997847259044647,
+      "native_laser_fires": 0,
+      "slot": 0,
+      "weapon": "longLaser"
+    },
+    {
+      "beam_hit_events": 0,
+      "damage": 0.0,
+      "fires": 2,
+      "impact_events": 0,
+      "max_logical_error": 0.0001220703125,
+      "max_origin_error": 0.0001220703125,
+      "min_direct_aim_dot": 0.996848106384277,
+      "min_trajectory_target_dot": 0.996847987174988,
+      "native_laser_fires": 2,
+      "slot": 1,
+      "weapon": "laser"
+    },
+    {
+      "beam_hit_events": 0,
+      "damage": 340.0,
+      "fires": 8,
+      "impact_events": 4,
+      "max_logical_error": 0.0001220703125,
+      "max_origin_error": 0.0001220703125,
+      "min_direct_aim_dot": 1.0,
+      "min_trajectory_target_dot": 0.937658607959747,
+      "native_laser_fires": 0,
+      "slot": 2,
+      "weapon": "missile"
+    }
+  ],
+  "slots": 3,
+  "weapons": [
+    "longLaser",
+    "laser",
+    "missile"
+  ]
+}

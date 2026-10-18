@@ -28,6 +28,22 @@ The following full 1440×900 `main.tscn` captures show the complete battle and e
 | Battleship | 4 | [battle-battleship-full.png](battle-battleship-full.png) | [JSON](battle-battleship-result.json) |
 | Heavy Battleship | 5 | [battle-heavy_battleship-full.png](battle-heavy_battleship-full.png) | [JSON](battle-heavy_battleship-result.json) |
 
-All five native runs passed: 2–12 player shots and 6–10 enemy hits per hull. Across the observed shots, the visible barrel muzzle, logical fleet muzzle, and actual launch origin differed by at most `0.000184` screen pixels. Direct-fire aim alignment stayed above `0.967` dot product, and turrets turned `0.109`–`0.187` radians. Missile launch fans intentionally spread away from the barrel axis and are excluded from the direct-fire dot threshold. All muzzle positions remained inside the battle view throughout the run. Final opaque hull bounds stayed inside the battle view; the lowest hull point was at most `908.1` of `960` view pixels, leaving at least `51.9` pixels at the bottom.
+All five 180-frame capture runs passed: 2–12 player shots and 6–10 enemy hits per hull. Across those observed shots, the visible barrel muzzle, logical fleet muzzle, and actual launch origin differed by at most `0.000184` screen pixels. Direct-fire aim alignment stayed above `0.967` dot product during this initial window, and turrets turned `0.109`–`0.187` radians. Missile launch fans intentionally spread away from the barrel axis and are excluded from the direct-fire dot threshold. All muzzle positions remained inside the battle view throughout the run. Final opaque hull bounds stayed inside the battle view; the lowest hull point was at most `908.1` of `960` view pixels, leaving at least `51.9` pixels at the bottom.
 
 The native DLL used for these runs was a local validation build whose four native source files matched this checkout by SHA-256. The DLL and generated Godot import files are not part of this evidence commit. To regenerate, provide a matching native extension and set `HARDPOINT_CAPTURE_DIR` and `HARDPOINT_ONLY` as above, then run Godot with `--path space-battleship --script res://test/capture_battle_hardpoints.gd`.
+
+### Extended per-slot native validation
+
+Run the same capture script with `HARDPOINT_EXTENDED=1` and one `HARDPOINT_ONLY` key per process. This writes a result without replacing any PNG or the original 180-frame result. Each run waits until **every equipped slot fires**, then observes 120 more frames. The `slot_results` below record fire and impact/beam feedback counts, plus native damage accounting by `module:<slot>` (enemy shield and health reduction). An impact event alone does not prove damage; a zero damage value means no confirmed hit in that observation window.
+
+| Hull | Frames | Slot fire counts | Cannon slot: shots / impacts / damage | Result |
+| --- | ---: | --- | --- | --- |
+| Frigate | 122 | `0:2` | — | [JSON](battle-frigate-all-slots-result.json) |
+| Destroyer | 204 | `0:2, 1:2` | — | [JSON](battle-destroyer-all-slots-result.json) |
+| Cruiser | 200 | `0:2, 1:2, 2:8` | — | [JSON](battle-cruiser-all-slots-result.json) |
+| Battleship | 320 | `0:4, 1:3, 2:8, 3:1` | `3: 1 / 1 / 175` | [JSON](battle-battleship-all-slots-result.json) |
+| Heavy Battleship | 320 | `0:3, 1:2, 2:8, 3:1, 4:1` | `3: 1 / 1 / 175; 4: 1 / 1 / 175` | [JSON](battle-heavy_battleship-all-slots-result.json) |
+
+All three cannon launches came from their corresponding visible muzzles within `0.000184` screen pixels, and all three registered an impact and positive damage. Their trajectories pointed toward the recorded target with dot product above `0.990`. The extended samples also exposed a separate tracking discrepancy: the visible cannon barrel axis and fired direction reached a minimum dot product of `0.751` on heavy slot 4 (`0.883` on battleship slot 3). The launch point is continuous, but barrel direction is not consistently aligned during these later shots. The long-laser axis likewise reached `0.824` on the heavy hull. This validation does not claim full axis alignment for the extended run.
+
+[Native DLL and four-source SHA-256 record](native-validation-hashes.json) lists both the local runtime copy and validation-build DLL, and each repository source beside the corresponding validation-build source. All five pairs match byte for byte by hash. The build itself is local and is not committed.
