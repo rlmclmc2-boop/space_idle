@@ -27,7 +27,7 @@ func record() -> void:
 			for enemy in scene.game.enemies:
 				var key:String=scene.enemy_ship_key(enemy)
 				keys[key]=int(keys.get(key,0))+1
-			print("BATTLE_KEYS ",keys)
+			print("BATTLE_KEYS ",keys," native=",scene.game.native_execution!=null," combat_presentation=",scene.game.combat_presentation!=null," speed=",scene.game.speed)
 		if frame in [20,60,100]:
 			if DisplayServer.get_name()=="headless":
 				print("BATTLE_CAPTURE frame=",frame," no_framebuffer enemy_count=",scene.game.enemies.size())

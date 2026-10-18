@@ -23,10 +23,24 @@ Changes:
   narrow cyan streaks. Add a static square outline to resource drops so
   rewards do not read as traveling shots.
 
+The hull draw count remains one texture per enemy. The drop frame adds one
+rectangle per visible drop. The hit cue adds one rectangle only during its
+0.18-second event window. Script projectile cores retain the same two or
+three drawing operations as before. No battlefield root redraw request was
+added.
+
 `capture_live.gd` samples stage 2 point 3 at frames 20, 60,
 and 100. It does not change battle damage, enemy health, frame delta, timing,
 or pause state. Use the same script and seed on base and candidate for
 before/after evidence.
+
+The raw headless runs are in `evidence/before-headless.log` and
+`evidence/after-headless.log`. Both ran at speed 1.0 and had 11 enemies at
+each sample. The base resolved all 11 as `enemy_opening_triangle_energy`;
+the candidate resolved 10 as `enemy_opening_swarm` and one as
+`enemy_opening_interceptor`. Headless uses Godot's dummy renderer, so it
+cannot supply pixels or draw-call counts. Both logged `native=false`; a
+matching native DLL must be tested separately.
 
 ## Encounter key audit
 
