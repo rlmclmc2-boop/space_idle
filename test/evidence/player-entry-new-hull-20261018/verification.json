@@ -1,0 +1,35 @@
+{
+  "candidate_commit": "ebcc817d3022679c129c80e08327950ceb408138",
+  "accepted_runtime_commit": "69ef148cd76151abab7851973a31c51483605498",
+  "verification_checkout_branch": "main",
+  "verification_checkout_origin": "release/new-hull-player-entry",
+  "entry_command": "玩游戏.cmd",
+  "environment": {
+    "SPACE_BATTLESHIP_VERIFY_WINDOW": "1",
+    "SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES": "120"
+  },
+  "install_command": "python tools/play_main.py --install-native",
+  "install_exit_code": 0,
+  "entry_exit_code": 0,
+  "engine_version": "4.7.2.stable.official.ed1daf0bf",
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "bundled_dll_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+  "installed_dll_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+  "game_data_sha256": "6e824478461d81f4e5679899d18aed892b5b2bf91e332c6b4522a902caa7bd0f",
+  "import_log": {
+    "path": "test/work/player-window-check/player-import.log",
+    "bytes": 212577,
+    "sha256": "df066abeca543107f6c182378b9d024495855ca78f4e15d275040b616626fb5e"
+  },
+  "game_log": {
+    "path": "test/work/player-window-check/player-game.log",
+    "bytes": 292,
+    "sha256": "4075b7e878d2d7113cc2e60697daf1dd0ef84c8b82327ecb50a6c9d8d7a66892"
+  },
+  "log_observations": [
+    "Import completed and the main scene launched through the official entry.",
+    "Godot reported failure to read the Windows root certificate store during import and game startup.",
+    "The editor skipped nested res://tools/result_analyzer/project.godot during import."
+  ],
+  "unit_tests": "python test/test_player_entry.py: 15 passed"
+}
