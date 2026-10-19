@@ -1,0 +1,7 @@
+# Approved base enemy fleet — 2026-10-19
+
+Eight display-only hulls: scout, sentry, interceptor, swarm, anchor, reactive, shielded, command. Source: `art_sources/enemy-fleet-20261019/base-eight-transparent.png`, parent-approved commit `f9af84734145a6df6bcc1998fff15730936aa78a`. Source brief: transparent top-down base enemy hulls, bow up, white armour/dark red internal frame/orange engine; no added elite/BOSS parts.
+
+`prepare_assets.py` crops actual gaps, including the anchor's wing across the nominal grid boundary and all four swarm craft. It preserves source aspect and RGBA, removes disconnected near-transparent residue, retains the soft edge, and centres each sprite on the required887×1774 transparent canvas with720px body width. No Godot drawing or repainting replaces the hulls. The consumer rotates enemies180°.
+
+Consumer: only the eight `enemy_opening_*` display `texture` paths in `data/ship_weapon_visuals.json`. `geometry_texture`, mount mappings, actor sizes and combat centre logic stay as on main. `manifest.json` records exact source crop bounds and hashes. Regenerate with `python art_sources/enemy-fleet-20261019/prepare_assets.py` (Pillow/numpy/scipy).
