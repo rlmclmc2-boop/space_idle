@@ -182,25 +182,19 @@ func display_contact(enemy:Dictionary,offset:Vector2,boss:bool)->Dictionary:
 	return result
 
 func ballistic_shape(enemy:Dictionary)->Dictionary:
-	# Publish one exact-clock hull per live entity to both execution owners.
+	# Gameplay contact is a fixed numerical tolerance at the ship centre.
+	# Art outlines remain display-only; a texture swap must not change hits.
 	var uid:int=int(enemy.get("uid",-1))
-	var cached:Dictionary=ballistic_shapes.get(uid,{})
-	var revision:int=-1
-	if host.has_method("refresh_target_geometry"):
-		ensure_clock();revision=host.target_geometry_revision
-
 	var center:Vector2=host.enemy_render_position(enemy)
-	var packet:Dictionary=host.enemy_recognition_geometry(enemy)
-	var angle:float=PI+host.enemy_render_angle(enemy)
-	if not cached.is_empty() and is_same(cached.entity,enemy) and cached.center==center and cached.angle==angle and is_same(cached.packet,packet):return cached
-	var hull=PackedVector2Array()
-	for vertex in packet.inner:hull.append(center+Vector2(vertex).rotated(angle))
-	var result={"entity":enemy,"center":center,"hull":hull,"angle":angle,"packet":packet,"revision":revision}
+	var cached:Dictionary=ballistic_shapes.get(uid,{})
+	if not cached.is_empty() and is_same(cached.entity,enemy) and cached.center==center:return cached
+	var hull:=PackedVector2Array([center+Vector2(-0.5,-0.5),center+Vector2(0.5,-0.5),center+Vector2(0.5,0.5),center+Vector2(-0.5,0.5)])
+	var result={"entity":enemy,"center":center,"hull":hull,"angle":0.0,"revision":host.target_geometry_revision if host.has_method("refresh_target_geometry") else -1}
 	ballistic_shapes[uid]=result
 	return result
 
 func ballistic_contact(shot:Dictionary,dt:float)->float:
-	# Handoff retains the fixed screen ray and shares the current hull publication.
+	# Both owners use the same fixed centre tolerance, independent of artwork.
 	var hull:PackedVector2Array=ballistic_shape(shot.target).hull
 	var direction:Vector2=shot.direction;var step:Vector2=shot.fixed_screen_step
 	var start:Vector2=shot.fixed_screen_origin+step*(Vector2(shot.x,shot.y)-Vector2(shot.launch_point)).dot(direction)
