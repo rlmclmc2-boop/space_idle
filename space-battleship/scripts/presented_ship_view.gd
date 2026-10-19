@@ -370,6 +370,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 		modules.append({"slot":item.slot,"key":item.key,"carrier":item.carrier,"mount_index":item.mount,"node":node,"mount":mount,
 			"pivot":node.find_child("TurretPivot",true,false),"muzzle":node.find_child("Muzzle",true,false),
 			"muzzle2":node.find_child("Muzzle02",true,false)})
+		modules.back().pivot_rest_position=modules.back().pivot.position
 		if item.key=="missile":
 			# Visible LaunchOpening front face in polish_weapons.py, Blender Y -> -Z.
 			for socket in [modules.back().muzzle,modules.back().muzzle2]:
@@ -582,14 +583,12 @@ func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
 	if viewport.render_target_update_mode!=SubViewport.UPDATE_ALWAYS:viewport.render_target_update_mode=SubViewport.UPDATE_ONCE
 
 func apply_direct_fire_alignment(poses:Dictionary,now:float)->void:
-	# A committed shot can select a target after the simulation turret pose was
-	# sampled. Rotate only the rendered turret, then hold its real muzzle at the
-	# committed launch pixel so neither the projectile nor the mount is moved.
+	# A shot can select a target after the sampled pose. Aim around the authored
+	# bearing, never translate the rotating assembly to pin an older muzzle pixel:
+	# that detaches the visible gun from its fixed base and the image's seat.
 	for module in modules:
+		var pivot:Node3D=module.pivot
+		pivot.position=module.pivot_rest_position
 		var pose:Dictionary=poses.get(int(module.slot),{})
 		if not pose.has("fire_until") or now>float(pose.fire_until):continue
-		var pivot:Node3D=module.pivot
 		pivot.rotation.y=-float(pose.fire_angle)-module.mount.global_rotation.y
-		var current:Vector2=screen_muzzle_for_slot(int(module.slot),int(pose.fire_ordinal))
-		var desired:Vector2=Vector2(pose.fire_origin)
-		pivot.global_position+=camera.project_ray_origin(desired)-camera.project_ray_origin(current)

@@ -1,0 +1,139 @@
+{
+  "failures": 0,
+  "max_error": 0.000338800105964765,
+  "rows": [
+    {
+      "bearing": "(172.3903, 195.2917)",
+      "bearing_error": 0.000248395081143826,
+      "hull": "Battleship",
+      "pivot": "(172.3903, 195.2917)",
+      "pivot_error": 0.000248395081143826,
+      "seat": "(172.3905, 195.2919)",
+      "slot": 0,
+      "state": "rest",
+      "weapon": "cannon"
+    },
+    {
+      "bearing": "(433.5221, 195.2917)",
+      "bearing_error": 0.00030517578125,
+      "hull": "Battleship",
+      "pivot": "(433.5221, 195.2917)",
+      "pivot_error": 0.00030517578125,
+      "seat": "(433.5219, 195.2919)",
+      "slot": 1,
+      "state": "rest",
+      "weapon": "laser"
+    },
+    {
+      "bearing": "(176.3323, 482.0435)",
+      "bearing_error": 0.000338800105964765,
+      "hull": "Battleship",
+      "pivot": "(176.3323, 482.0435)",
+      "pivot_error": 0.000338800105964765,
+      "seat": "(176.3321, 482.0437)",
+      "slot": 2,
+      "state": "rest",
+      "weapon": "missile"
+    },
+    {
+      "bearing": "(432.5364, 482.0435)",
+      "bearing_error": 0.000300563289783895,
+      "hull": "Battleship",
+      "pivot": "(432.5364, 482.0435)",
+      "pivot_error": 0.000300563289783895,
+      "seat": "(432.5365, 482.0437)",
+      "slot": 3,
+      "state": "rest",
+      "weapon": "longLaser"
+    },
+    {
+      "bearing": "(172.3903, 195.2917)",
+      "bearing_error": 0.000248395081143826,
+      "hull": "Battleship",
+      "pivot": "(172.3903, 195.2917)",
+      "pivot_error": 0.000248395081143826,
+      "seat": "(172.3905, 195.2919)",
+      "slot": 0,
+      "state": "fire-left",
+      "weapon": "cannon"
+    },
+    {
+      "bearing": "(433.5221, 195.2917)",
+      "bearing_error": 0.00030517578125,
+      "hull": "Battleship",
+      "pivot": "(433.5221, 195.2917)",
+      "pivot_error": 0.00030517578125,
+      "seat": "(433.5219, 195.2919)",
+      "slot": 1,
+      "state": "fire-left",
+      "weapon": "laser"
+    },
+    {
+      "bearing": "(176.3323, 482.0435)",
+      "bearing_error": 0.000338800105964765,
+      "hull": "Battleship",
+      "pivot": "(176.3323, 482.0435)",
+      "pivot_error": 0.000338800105964765,
+      "seat": "(176.3321, 482.0437)",
+      "slot": 2,
+      "state": "fire-left",
+      "weapon": "missile"
+    },
+    {
+      "bearing": "(432.5364, 482.0435)",
+      "bearing_error": 0.000300563289783895,
+      "hull": "Battleship",
+      "pivot": "(432.5364, 482.0435)",
+      "pivot_error": 0.000300563289783895,
+      "seat": "(432.5365, 482.0437)",
+      "slot": 3,
+      "state": "fire-left",
+      "weapon": "longLaser"
+    },
+    {
+      "bearing": "(172.3903, 195.2917)",
+      "bearing_error": 0.000248395081143826,
+      "hull": "Battleship",
+      "pivot": "(172.3903, 195.2917)",
+      "pivot_error": 0.000248395081143826,
+      "seat": "(172.3905, 195.2919)",
+      "slot": 0,
+      "state": "fire-right",
+      "weapon": "cannon"
+    },
+    {
+      "bearing": "(433.5221, 195.2917)",
+      "bearing_error": 0.00030517578125,
+      "hull": "Battleship",
+      "pivot": "(433.5221, 195.2917)",
+      "pivot_error": 0.00030517578125,
+      "seat": "(433.5219, 195.2919)",
+      "slot": 1,
+      "state": "fire-right",
+      "weapon": "laser"
+    },
+    {
+      "bearing": "(176.3323, 482.0435)",
+      "bearing_error": 0.000338800105964765,
+      "hull": "Battleship",
+      "pivot": "(176.3323, 482.0435)",
+      "pivot_error": 0.000338800105964765,
+      "seat": "(176.3321, 482.0437)",
+      "slot": 2,
+      "state": "fire-right",
+      "weapon": "missile"
+    },
+    {
+      "bearing": "(432.5364, 482.0435)",
+      "bearing_error": 0.000300563289783895,
+      "hull": "Battleship",
+      "pivot": "(432.5364, 482.0435)",
+      "pivot_error": 0.000300563289783895,
+      "seat": "(432.5365, 482.0437)",
+      "slot": 3,
+      "state": "fire-right",
+      "weapon": "longLaser"
+    }
+  ],
+  "samples": 12
+}

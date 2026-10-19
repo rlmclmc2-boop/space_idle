@@ -60,5 +60,8 @@
   "limitations": [
     "Official Windows/Godot 4.7 bundle was not executed; local native source built against available Godot 4.6.3 API in isolated test project only.",
     "Complete legacy test_ship_preview.gd stops at stale weapons_7 access; affected first section through locked preview passes 153 checks."
-  ]
+  ],
+  "superseded": true,
+  "superseded_reason": "Rejected on visual review: direct-fire alignment translated the rotating assembly away from its stationary bearing. Muzzle agreement alone did not establish seating.",
+  "replacement": "../fleet-mount-alignment-20261019/README.md"
 }
