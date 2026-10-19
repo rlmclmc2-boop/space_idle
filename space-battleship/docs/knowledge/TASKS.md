@@ -9,3 +9,4 @@
 | ai-tech-art-20261017 | tasks/ai-tech-art-20261017.md |
 | unlock-notice-copy-20261017 | tasks/unlock-notice-copy-20261017.md |
 | fleet-13-20261018 | tasks/fleet-13-20261018.md |
+| enemy-formation-design-20261019 | tasks/enemy-formation-design-20261019.md |
