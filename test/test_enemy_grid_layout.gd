@@ -89,9 +89,9 @@ func capture(case:String,output:String)->void:
  scene.current_hull="Heavy_Battleship";scene.ship_view.set_hull(scene.current_hull);scene._set_reference_dimensions();scene.ship_view.set_loadout(g.weapon_entries(),g.active_slot_count("weapons"))
  check(g.active_slot_count("weapons")==5,"fifth hull five active weapons")
  var template:Dictionary=g.enemies[0].duplicate(true);g.enemies.clear()
- var count:int=15 if case=="ordinary" else 8 if case=="ordinary-eight" else 5
+ var count:int=15 if case=="ordinary" else 8 if case=="ordinary-eight" else 2 if case=="reactive-compare" else 5
  for i in count:
-  var e=template.duplicate(true);e.uid=91000+i;e.slot=i;e.archetype_id=KEYS[i%8];e.size=1+(i%3);e.encounter_leader=false
+  var e=template.duplicate(true);e.uid=91000+i;e.slot=i;e.archetype_id=["sentry","reactive"][i] if case=="reactive-compare" else KEYS[i%8];e.size=1+(i%3);e.encounter_leader=false
   if case=="elite" and i<2:e.size=4;e.archetype_id="sentry" if i==0 else "anchor"
   if case.begins_with("boss") and i==0:e.size=6;e.encounter_leader=true;e.archetype_id="command"
   e.armourType=2 if e.archetype_id in ["scout","sentry"] else 1;e.shieldType=1
@@ -104,13 +104,15 @@ func capture(case:String,output:String)->void:
   if kind=="fire":fires+=1
   if kind=="hit":hits+=1)
  scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(0)
+ if case=="reactive-compare":
+  for e in g.enemies:scene.enemy_pose(e).rotation=0.0
  for frame in 140:
   await process_frame
   if frame>=100 and fires>0 and hits>0:break
  check(fires>0 and hits>0,"actual battle fired and settled")
  check(scene.ship_view.hull_key=="Heavy_Battleship" and scene.ship_view.modules.size()==5,"actual rendered fifth hull full loadout")
  g.paused=true
- if case=="ordinary-eight":
+ if case in ["ordinary-eight","reactive-compare"]:
   # Isolated pause-only size comparison, after real fire/hit verification.
   g.projectile_clear();scene.projectile_visuals.clear();scene.floats.clear();scene.damage_pending.clear()
   scene.rail_events.clear();scene.missile_events.clear();scene._pulse_events.clear()
@@ -176,7 +178,7 @@ func capture(case:String,output:String)->void:
  scene.simulation_geometry_view=null;scene.enemy_grid_plan=old_plan
  geometry.close({"providers":{},"spatial":g.target_spatial_source});geometry=null
  var ruler=Ruler.new();ruler.plan=scene.enemy_grid_plan;ruler.player_front=own.position.y;ruler.enemy_front=enemy_actual_front;scene.battle_clip.add_child(ruler);ruler.z_index=100
- if case=="ordinary-eight":
+ if case in ["ordinary-eight","reactive-compare"]:
   ruler.player_front=0.0;ruler.enemy_front=0.0
   for e in g.enemies:ruler.names[int(e.uid)]=str(e.archetype_id)
  await process_frame;await RenderingServer.frame_post_draw
@@ -188,7 +190,7 @@ func _initialize()->void:call_deferred("run")
 func run()->void:
  var selected:=OS.get_environment("GRID_CASE")
  if selected=="unit":units();quit(1 if failures else 0);return
- root.size=Vector2i(1373,883) if selected=="ordinary-eight" else Vector2i(1952,1256)
+ root.size=Vector2i(1373,883) if selected in ["ordinary-eight","reactive-compare"] else Vector2i(1952,1256)
  var output:=OS.get_environment("GRID_OUTPUT");DirAccess.make_dir_recursive_absolute(output)
  await capture(selected,output)
  quit(1 if failures else 0)

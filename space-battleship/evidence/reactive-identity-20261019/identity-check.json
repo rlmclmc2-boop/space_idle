@@ -1,0 +1,34 @@
+{
+  "baseline": "3b853209",
+  "generator": "imagegen",
+  "other_seven_sprites_byte_identical": true,
+  "sentry_sha256": "611f42c213a38dae52dbf56387367cb8deec4384e32c4edbc34d10a9efcd44cc",
+  "only_runtime_hull_changed": "reactive.png",
+  "production_scripts_data_config_kernel_unchanged": true,
+  "single_cell_logical": [
+    114.4,
+    133.33333333333334
+  ],
+  "hull_fit_box_logical": [
+    90.4,
+    79.33333333333334
+  ],
+  "sentry_comparison_aabb": [
+    12.0,
+    42.06165,
+    90.40001,
+    79.21002
+  ],
+  "reactive_comparison_aabb": [
+    128.1957,
+    42.0,
+    86.80852,
+    79.33333
+  ],
+  "same_display_height_difference_logical": 0.12331000000000358,
+  "centre_alpha": 253,
+  "actual_scene_checks": 331,
+  "failures": 0,
+  "defense_effects_changed": false,
+  "formation_redesign_paused": true
+}

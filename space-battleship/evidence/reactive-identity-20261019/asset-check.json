@@ -1,0 +1,96 @@
+{
+  "baseline": "5b3eb6b",
+  "display_only_rows": 8,
+  "all_other_config_unchanged": true,
+  "all_geometry_bytes_unchanged": true,
+  "sprites": [
+    {
+      "key": "scout",
+      "alpha_bounds": [
+        83,
+        324,
+        803,
+        1450
+      ],
+      "components": 1,
+      "geometry_sha256": "f2e5e9e2b43229c11996d8eb292f5f78b8b6f02c4d34aae05cf20095f653c8d6"
+    },
+    {
+      "key": "sentry",
+      "alpha_bounds": [
+        83,
+        572,
+        802,
+        1202
+      ],
+      "components": 1,
+      "geometry_sha256": "f5366265721fa365c15929be0d68d260fa9d5dd4d9675e6fe0ad75e462d910f6"
+    },
+    {
+      "key": "interceptor",
+      "alpha_bounds": [
+        83,
+        513,
+        803,
+        1260
+      ],
+      "components": 1,
+      "geometry_sha256": "de5f6b47fbf9e29027abe88ad27d5ca0e82e8da666f7d185d2228171bb5697d3"
+    },
+    {
+      "key": "swarm",
+      "alpha_bounds": [
+        83,
+        588,
+        802,
+        1185
+      ],
+      "components": 4,
+      "geometry_sha256": "be37935a73e23a9f3f4de6673f8c460270b87241d57fca7c11da6fe0d47d0dc4"
+    },
+    {
+      "key": "anchor",
+      "alpha_bounds": [
+        83,
+        649,
+        803,
+        1124
+      ],
+      "components": 1,
+      "geometry_sha256": "88b12b481bb2ec9c5ccc385caa845d1fd57630115f4605ba402a6a055dbf6b18"
+    },
+    {
+      "key": "reactive",
+      "alpha_bounds": [
+        83,
+        558,
+        803,
+        1216
+      ],
+      "components": 1,
+      "geometry_sha256": "870a355a7db4ee5a01cbd70f1eecc77410f2cb95121969974e952e3e72c3cc52"
+    },
+    {
+      "key": "shielded",
+      "alpha_bounds": [
+        83,
+        601,
+        803,
+        1172
+      ],
+      "components": 1,
+      "geometry_sha256": "e157999bd1b36ccececba6615a3ba86cb4d97544bff24b7357a78c8f5714de90"
+    },
+    {
+      "key": "command",
+      "alpha_bounds": [
+        83,
+        620,
+        803,
+        1153
+      ],
+      "components": 1,
+      "geometry_sha256": "971e4f8560f30634575740f4bf4eb486491436e80b0e00b949bba840e1235b8c"
+    }
+  ]
+}

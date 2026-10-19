@@ -1,0 +1,14 @@
+{
+  "referenced_image_paths": [
+    "/workspace/space_idle/space-battleship/assets/ships/enemy/fleet_20261019/reactive.png",
+    "/workspace/space_idle/space-battleship/assets/ships/enemy/fleet_20261019/sentry.png"
+  ],
+  "transparent_background": true,
+  "prompt": "Create ONE replacement REACTIVE enemy spaceship static sprite, using the two references ONLY for the established rendering style, colors and faction. Do NOT reproduce either rounded ship silhouette. Keep the sentry reference completely unchanged: generate only the new reactive ship. Strict orthographic TOP DOWN, bow at top, no perspective. Single ship on true transparent background. Centered portrait source canvas ideally 887x1774 with transparent margins; the actual ship silhouette should be roughly 1.15 times as wide as tall, the same broad overall footprint as the old reactive. New silhouette: exactly THREE chunky, visually separate large white/light-gray armor masses around a very SMALL dark burgundy central core (core about 12% of hull width). One BROAD FLAT-BROW armor pad sits at 12 o'clock, NOT an elongated central nose; two large armor pods splay to 7 and 5 o'clock. Thin dark-red structural struts mechanically connect the three armor masses to the small core, but leave WIDE OPEN TRANSPARENT radial channels and deep exterior notches between the armor masses. The whole outline reads as an unmistakable THREE-LOBED / Y-shaped assembly at a 60-pixel icon size. A deep open transparent notch must remain between the two rear pods; there is NO long central fuselage, NO central spear/nose, NO continuous rounded ring/disc, NO extra small armor masses. The top pad is short, wide and blunt, not pointed. Simplify panel detail into a few large readable planes and thick clean dark outlines. Match reference warm off-white/light-gray armor, deep maroon/purple-red chassis, dark graphite recesses, small orange-amber core light and two compact orange rear exhausts at the bottoms of the two rear pods. Preserve the same hand-painted comic/toon game-sprite shading and outline weight. No blue energy circle, no orange defense ring, no shields, no installed guns/turrets, no projectiles, no stars, no ground shadow, no background, no text/logo/UI, no multi-ship sheet. Use negative space and the three large masses, not tiny details, as the identifying feature.",
+  "baseline_commit": "3b853209",
+  "output_source": "reactive-three-plates.png",
+  "reference_sha256": {
+    "reactive.png": "29323ccbee7a2497bc897b5e1f9fdf77b0ad126fb6a8d27256eb28f928a141aa",
+    "sentry.png": "611f42c213a38dae52dbf56387367cb8deec4384e32c4edbc34d10a9efcd44cc"
+  }
+}

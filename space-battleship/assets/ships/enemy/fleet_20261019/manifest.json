@@ -114,23 +114,23 @@
     },
     "reactive": {
       "region": [
-        495,
-        440,
-        896,
-        887
+        0,
+        0,
+        1234,
+        1275
       ],
       "source_bounds": [
-        516,
-        498,
-        880,
-        813
+        156,
+        221,
+        1079,
+        1064
       ],
       "body_size": [
         720,
-        623
+        658
       ],
       "texture": "res://assets/ships/enemy/fleet_20261019/reactive.png",
-      "sha256": "29323ccbee7a2497bc897b5e1f9fdf77b0ad126fb6a8d27256eb28f928a141aa"
+      "sha256": "e38ce62575d89c2be5d8e903eaf9d113a452c243c7cb7668374452eccc4d45fd"
     },
     "shielded": {
       "region": [
@@ -171,6 +171,14 @@
       ],
       "texture": "res://assets/ships/enemy/fleet_20261019/command.png",
       "sha256": "63b017e18d47169b899052513584da66fd7d73b3fd28e876b3fce5795dffe460"
+    }
+  },
+  "overrides": {
+    "reactive": {
+      "source": "res://art_sources/enemy-fleet-20261019/reactive-three-plates.png",
+      "source_sha256": "cadbf2d02cbda7087e821d47af04359a6b80176deed307258ee0da8556dff151",
+      "generator": "imagegen",
+      "request": "res://art_sources/enemy-fleet-20261019/reactive-three-plates-request.json"
     }
   }
 }
