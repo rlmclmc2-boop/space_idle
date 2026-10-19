@@ -59,7 +59,7 @@ func prepare(view) -> void:
 		if opaque.size.y<=0:continue
 		var texture_size:=texture.get_size()
 		var pixels_per_model:float=float(manifest.hulls[key].model_span)/opaque.size.y
-		var offset:=Vector2(opaque_pixels.get_center())-texture_size*0.5
+		var offset:=(Vector2(opaque_pixels.position)+Vector2(opaque_pixels.size)*0.5)-texture_size*0.5
 		approved[key]={"opaque":opaque,"mesh_size":texture_size*pixels_per_model,
 			"base_position":GEOMETRY.body_center(manifest.hulls[key])+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model),
 			"hardpoints":row.hardpoints,"weapon_scale":float(row.get("weapon_scale",1.0))}
