@@ -610,7 +610,7 @@ func prepare(owner,simulation:BattleGame)->void:
 		var reference_half=SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*0.18*1.15*0.5
 		var anchor_y=BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)+maxf(0,reference_half-SHIP_ART_CANVAS.y*factor*0.5)
 		anchor_y=minf(anchor_y,1132.0-owner.BATTLE_ORIGIN.y-float(battle_visual.player_hud_gap)-tail-absf(float(battle_visual.player_idle_y)))
-		anchor_y=minf(anchor_y,BATTLE_VIEW_SIZE.y-float(battle_visual.player_hud_gap)-height*0.5)
+		anchor_y=minf(anchor_y,BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
 		prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
 	current_hull=str(game.profile.selectedShip)
 	# Ownership handoff begins at the exact existing logical pose, including
