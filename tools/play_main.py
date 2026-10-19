@@ -9,7 +9,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 # Integration owner must advance this to the reviewed main commit after merging.
-BASE = '69ef148cd76151abab7851973a31c51483605498'
+BASE = 'd3812007438652f4e184bece6d21f6e7ce8c8420'
 DLL_SHA = '04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f'
 BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
 NON_RUNTIME_CHANGES = frozenset({
