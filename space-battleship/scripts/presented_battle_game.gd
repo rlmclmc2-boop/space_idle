@@ -154,7 +154,6 @@ func chain_target_point(target:Dictionary)->Vector2:
 	return target_point(target)
 
 func projectile_target_point(shot:Dictionary)->Vector2:
-	if bool(shot.hostile):return super.projectile_target_point(shot)
 	return target_point(shot.target)
 
 func target_point(target:Dictionary)->Vector2:
@@ -183,7 +182,9 @@ func tick_projectiles(dt:float)->void:
 	super.tick_projectiles(dt)
 
 func prepare_projectile(shot:Dictionary,_source:Dictionary,_weapon:Dictionary,_spread:float)->void:
-	if bool(shot.hostile):return
+	if bool(shot.hostile):
+		shot.direction=(target_point(shot.target)-Vector2(shot.x,shot.y)).normalized()
+		return
 	if str(shot.key)!="missile":
 		var aim:Vector2=target_point(shot.target)
 		var entry:Dictionary=shot.get("entry",{})
