@@ -246,7 +246,7 @@ func _install_approved_hull_art(key: String) -> bool:
 	mesh.size = Vector2(texture.get_width(),texture.get_height())*pixels_per_model
 	plane.mesh = mesh
 	var body_center := preload("res://scripts/ship_geometry_convention.gd").body_center(hull_config)
-	var offset := Vector2(opaque.get_center())-Vector2(texture.get_size())*0.5
+	var offset := (Vector2(opaque.position)+Vector2(opaque.size)*0.5)-Vector2(texture.get_size())*0.5
 	plane.position = body_center+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model)
 	plane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var material := StandardMaterial3D.new()
