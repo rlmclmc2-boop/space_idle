@@ -1,0 +1,16 @@
+{
+  "accepted_runtime": "d3812007438652f4e184bece6d21f6e7ce8c8420",
+  "launcher_tests": {
+    "command": "python -m unittest discover -s test -p test_player_entry.py -q",
+    "passed": 15,
+    "failures": 0
+  },
+  "native_source_changed": false,
+  "native_bundle_changed": false,
+  "dll_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+  "location": "launcher resolves its own repository root; no fixed drive",
+  "limitations": [
+    "Windows graphical launch not repeated in this round",
+    "No new performance benchmark"
+  ]
+}
