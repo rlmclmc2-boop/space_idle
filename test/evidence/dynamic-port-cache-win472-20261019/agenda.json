@@ -1,0 +1,140 @@
+{
+  "schedule": [
+    [
+      "laser",
+      "AB"
+    ],
+    [
+      "missile",
+      "BA"
+    ],
+    [
+      "laser",
+      "BA"
+    ],
+    [
+      "missile",
+      "AB"
+    ]
+  ],
+  "declared_utc": "2026-10-19T12:14:13.333228+00:00",
+  "results": [
+    {
+      "index": 1,
+      "case": "laser",
+      "order": "AB",
+      "output": "perf/01-laser-AB",
+      "started_utc": "2026-10-19T12:14:13.336220+00:00",
+      "ended_utc": "2026-10-19T12:15:00.967717+00:00",
+      "exit": 0,
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\run_cache_pair.py",
+        "--repo",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472",
+        "--project",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\project",
+        "--before-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--after-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--godot",
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+        "--output",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\perf\\01-laser-AB",
+        "--cases",
+        "laser",
+        "--order",
+        "AB"
+      ]
+    },
+    {
+      "index": 2,
+      "case": "missile",
+      "order": "BA",
+      "output": "perf/02-missile-BA",
+      "started_utc": "2026-10-19T12:15:00.970264+00:00",
+      "ended_utc": "2026-10-19T12:15:48.510056+00:00",
+      "exit": 0,
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\run_cache_pair.py",
+        "--repo",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472",
+        "--project",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\project",
+        "--before-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--after-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--godot",
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+        "--output",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\perf\\02-missile-BA",
+        "--cases",
+        "missile",
+        "--order",
+        "BA"
+      ]
+    },
+    {
+      "index": 3,
+      "case": "laser",
+      "order": "BA",
+      "output": "perf/03-laser-BA",
+      "started_utc": "2026-10-19T12:15:48.513049+00:00",
+      "ended_utc": "2026-10-19T12:16:35.425192+00:00",
+      "exit": 0,
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\run_cache_pair.py",
+        "--repo",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472",
+        "--project",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\project",
+        "--before-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--after-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--godot",
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+        "--output",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\perf\\03-laser-BA",
+        "--cases",
+        "laser",
+        "--order",
+        "BA"
+      ]
+    },
+    {
+      "index": 4,
+      "case": "missile",
+      "order": "AB",
+      "output": "perf/04-missile-AB",
+      "started_utc": "2026-10-19T12:16:35.427186+00:00",
+      "ended_utc": "2026-10-19T12:17:22.104294+00:00",
+      "exit": 0,
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\run_cache_pair.py",
+        "--repo",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472",
+        "--project",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\project",
+        "--before-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--after-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-cache.dll",
+        "--godot",
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+        "--output",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\perf\\04-missile-AB",
+        "--cases",
+        "missile",
+        "--order",
+        "AB"
+      ]
+    }
+  ],
+  "scope": "Uninstrumented cache-only GDS comparison, same DLL and frozen fixtures"
+}

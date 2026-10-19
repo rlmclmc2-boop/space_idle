@@ -1,0 +1,16 @@
+--- scripts/native_execution_session.gd
++++ isolated-QA:scripts/native_execution_session.gd
+@@ -1,4 +1,5 @@
+ extends RefCounted
++var qa_port_rows_rebuilt:=0
+ ## Explicit low-load execution boundary. Rich content stays refused until its
+ ## rule compiler is complete; this session never runs a shadow Game battle.
+ var kernel:RefCounted
+@@ -182,6 +183,7 @@
+ 	if kernel.has_method("input_presentation_muzzles"):
+ 		var ports_changed:bool=presentation_muzzles.size()!=weapons.size()
+ 		if ports_changed:
++			if preload("res://probe.gd").active:qa_port_rows_rebuilt+=1
+ 			presentation_muzzles.resize(weapons.size())
+ 			for index in weapons.size():presentation_muzzles[index]=PackedVector2Array()
+ 		for index in friendly_weapon_indices:

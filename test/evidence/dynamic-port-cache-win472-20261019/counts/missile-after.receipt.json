@@ -1,0 +1,40 @@
+{
+  "case": "missile",
+  "label": "after",
+  "qa_count_only": true,
+  "source_commit": "90b4c02862ad21a6e5d15ad3a9522b02395e30d2",
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\project",
+    "--rendering-method",
+    "gl_compatibility",
+    "--audio-driver",
+    "Dummy",
+    "--max-fps",
+    "0",
+    "--disable-vsync",
+    "--log-file",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-port-cache-win472-20261019\\counts\\missile-after.engine.log",
+    "--script",
+    "res://port_perf.gd"
+  ],
+  "driver_sha256": "c69248b3850bdf3d59ed23f1610c9815db3bd9fb101f714afec0988d43767ad2",
+  "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+  "library_sha256": "137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78",
+  "script_sha256": {
+    "scripts/native_execution_session.gd": "61349f8851e28cd66244e7c8b7bbc266f4e431634658481ac1f59015dfce3eb0",
+    "scripts/battle_slice_runtime.gd": "2a21c61b2583abbb37318dad99a9cf0b072143c26a9447916cafd13b1dbcd599",
+    "scripts/logical_fleet_pose.gd": "54c06a4efe6ddabc500c3d5b7fa933e4394864da96eae669fc19c1a20be83c0a"
+  },
+  "environment": {
+    "PERF_NATIVE": "1",
+    "AI_TECH_PERF_STATE": "closed",
+    "MISSILE_CONTROL": "legend",
+    "WEAPON_CASE": "missile",
+    "APPDATA": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\user\\roaming",
+    "LOCALAPPDATA": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\user\\local",
+    "TEMP": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-port-cache-20261019\\user\\temp"
+  },
+  "exit_code": 0
+}
