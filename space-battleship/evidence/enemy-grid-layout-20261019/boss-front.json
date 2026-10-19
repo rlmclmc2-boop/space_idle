@@ -1,16 +1,18 @@
 {
+  "actual_enemy_visual_front": 388.0,
   "alpha_centre_max_error": 0.000003814697265625,
   "case": "boss-front",
-  "checks": 72,
+  "checks": 162,
   "enemy_area_clear_gap": 205.436462402344,
   "engine": "4.6.3-stable (official)",
   "failures": 0,
-  "fires": 95,
+  "fires": 86,
   "fixture": "actual main.tscn, save disabled, held-health QA actors; no stage/count/damage table edits",
   "grid": "[P: (0.0, 0.0), S: (572.0, 400.0)]",
-  "hits": 113,
+  "hits": 104,
   "insets_ltrb": "(12.0, 42.0, 12.0, 12.0)",
   "native": false,
+  "nearest_fleet_envelope_gap": 217.436462402344,
   "placements": [
     {
       "body": "[P: (155.8025, 193.3333), S: (260.3949, 194.6667)]",

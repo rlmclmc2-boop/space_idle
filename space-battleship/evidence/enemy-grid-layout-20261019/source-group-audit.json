@@ -1,0 +1,1143 @@
+{
+  "counts": {
+    "boss/fit": 273,
+    "elite/fit": 538,
+    "elite/overflow": 187,
+    "normal/fit": 1024,
+    "normal/overflow": 1,
+    "ultimate/fit": 30,
+    "unspecified/fit": 277
+  },
+  "overflow": [
+    {
+      "actors": 15,
+      "group": "1009",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "1010",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "2009",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "2010",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30015",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30025",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30076",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30077",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30078",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30086",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30087",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30088",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30126",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30127",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30128",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30146",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30147",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30148",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30196",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30197",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30198",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30201",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30202",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30203",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30204",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30205",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30246",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30247",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30248",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30251",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30252",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30253",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30254",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30255",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30316",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30317",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30318",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30336",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30337",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30338",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30401",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30402",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30403",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30404",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30405",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30416",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30417",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30418",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30476",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30477",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30478",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30496",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30497",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30498",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30566",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30567",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30568",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30576",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30577",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30578",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30636",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30637",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30638",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30651",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30652",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30653",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30654",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30655",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30726",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30727",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30728",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30736",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30737",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30738",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30796",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30797",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30798",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30816",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30817",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30818",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30886",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30887",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30888",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30896",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30897",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30898",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30956",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30957",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30958",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30976",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30977",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "30978",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31046",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31047",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31048",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31056",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31057",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31058",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31116",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31117",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31118",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31136",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31137",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31138",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31201",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31202",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31203",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31204",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31205",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31216",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31217",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31218",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31276",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31277",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31278",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31296",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31297",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31298",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31366",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31367",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31368",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31376",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31377",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31378",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31436",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31437",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31438",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31456",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31457",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31458",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31526",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31527",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31528",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31536",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31537",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31538",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31596",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31597",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31598",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31616",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31617",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31618",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31686",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31687",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31688",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31696",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31697",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31698",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31756",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31757",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31758",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31776",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31777",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31778",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31846",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31847",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31848",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31856",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31857",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31858",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31916",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31917",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31918",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31936",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31937",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "31938",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32001",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32002",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32003",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32004",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32005",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32016",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32017",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32018",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32076",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32077",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32078",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32096",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32097",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32098",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32166",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32167",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32168",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32176",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32177",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 15,
+      "group": "32178",
+      "required_cells": 21,
+      "tier": "elite"
+    },
+    {
+      "actors": 13,
+      "group": "33010",
+      "required_cells": 16,
+      "tier": "normal"
+    },
+    {
+      "actors": 15,
+      "group": "33011",
+      "required_cells": 18,
+      "tier": "elite"
+    }
+  ],
+  "policy": "No actor/count/stat changes. An overloaded encounter retains the complete original display layout atomically. Multi-cell ranks use size>=4 as elite and the existing persisted encounter_leader as boss.",
+  "unspecified_tier_note": "Legacy groups without combatTier are audited without final-checkpoint promotion; actual game encounter_leader remains authoritative."
+}

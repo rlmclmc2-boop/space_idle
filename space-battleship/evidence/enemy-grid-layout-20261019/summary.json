@@ -1,0 +1,65 @@
+{
+  "pure_checks": 1330,
+  "pure_failures": 0,
+  "captures": [
+    {
+      "case": "ordinary",
+      "checks": 276,
+      "failures": 0,
+      "fires": 293,
+      "hits": 302,
+      "enemy_area_clear_gap": 205.436462402344,
+      "nearest_fleet_envelope_gap": null,
+      "alpha_centre_max_error": 8.52992252475815e-06,
+      "player_hull": "Heavy_Battleship",
+      "player_slots": 5
+    },
+    {
+      "case": "elite",
+      "checks": 71,
+      "failures": 0,
+      "fires": 94,
+      "hits": 111,
+      "enemy_area_clear_gap": 205.436462402344,
+      "nearest_fleet_envelope_gap": null,
+      "alpha_centre_max_error": 1.70598450495163e-05,
+      "player_hull": "Heavy_Battleship",
+      "player_slots": 5
+    },
+    {
+      "case": "boss-top",
+      "checks": 72,
+      "failures": 0,
+      "fires": 87,
+      "hits": 106,
+      "enemy_area_clear_gap": 205.436462402344,
+      "nearest_fleet_envelope_gap": null,
+      "alpha_centre_max_error": 3.814697265625e-06,
+      "player_hull": "Heavy_Battleship",
+      "player_slots": 5
+    },
+    {
+      "case": "boss-front",
+      "checks": 162,
+      "failures": 0,
+      "fires": 86,
+      "hits": 104,
+      "enemy_area_clear_gap": 205.436462402344,
+      "nearest_fleet_envelope_gap": 217.436462402344,
+      "alpha_centre_max_error": 3.814697265625e-06,
+      "player_hull": "Heavy_Battleship",
+      "player_slots": 5
+    }
+  ],
+  "source_audit": {
+    "boss/fit": 273,
+    "elite/fit": 538,
+    "elite/overflow": 187,
+    "normal/fit": 1024,
+    "normal/overflow": 1,
+    "ultimate/fit": 30,
+    "unspecified/fit": 277
+  },
+  "remaining_policy": "188 source groups require more than15cells; complete legacy display fallback preserves every actor until overflow policy is decided.",
+  "actual_capture_checks": 581
+}

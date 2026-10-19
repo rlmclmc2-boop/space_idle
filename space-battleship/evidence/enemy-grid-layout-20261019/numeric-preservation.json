@@ -1,0 +1,136 @@
+{
+  "baseline": "ca239dd3",
+  "files": [
+    {
+      "file": "data/game_data.json",
+      "sha256": "9c66c7cdebd043b68bc08244e5cb0defe625cafa5fe1979b4a9fdaf9481c6943",
+      "unchanged": true
+    },
+    {
+      "file": "data/ship_weapon_visuals.json",
+      "sha256": "c7d61248a4b9bbc413a155e8e95a7eaca8e32765a911b8a2686ad4b0823b8ebb",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/game.gd",
+      "sha256": "88bf70ad4699b71c2a4edc26bbcfde63f3efe2be81b795038ba9979317866633",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/enemy_protection_geometry.gd",
+      "sha256": "c5942ec2c20653938b6c630085773a907b7821d12f22a31b7360276eacd93144",
+      "unchanged": true
+    },
+    {
+      "file": "addons/native_battle/src/space_native.cpp",
+      "sha256": "2319782039fee0099d871dcfc2b252069c421f09599080bdd9262da4cb99af36",
+      "unchanged": true
+    },
+    {
+      "file": "addons/native_battle/src/combat_execution_kernel.h",
+      "sha256": "be1a1b745fe8cf8d7abcc9772e808a75a92bb0697514bdd15a54c46f459c5823",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/scout.png",
+      "sha256": "acb4f1bbe3011a38c323444ac0d2141d9c35b615a830137a51d2602aa136eaea",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/scout-hull.png",
+      "sha256": "f2e5e9e2b43229c11996d8eb292f5f78b8b6f02c4d34aae05cf20095f653c8d6",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/sentry.png",
+      "sha256": "611f42c213a38dae52dbf56387367cb8deec4384e32c4edbc34d10a9efcd44cc",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/sentry-hull.png",
+      "sha256": "f5366265721fa365c15929be0d68d260fa9d5dd4d9675e6fe0ad75e462d910f6",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/interceptor.png",
+      "sha256": "ba5f29ebeeb548046e7e1b489f86ab2e20b8ccfbe4e433114cec2b1ecbf0d0a0",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/interceptor-hull.png",
+      "sha256": "de5f6b47fbf9e29027abe88ad27d5ca0e82e8da666f7d185d2228171bb5697d3",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/swarm.png",
+      "sha256": "2318ec1f7632b0d62c4a3fbbd183ee4915560691225a8316b960d4f154b8bdd8",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/swarm-hull.png",
+      "sha256": "be37935a73e23a9f3f4de6673f8c460270b87241d57fca7c11da6fe0d47d0dc4",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/anchor.png",
+      "sha256": "c0537907af243c46c6d342530b869f069d4f653c93b2c77255d4079cb592a8fb",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/anchor-hull.png",
+      "sha256": "88b12b481bb2ec9c5ccc385caa845d1fd57630115f4605ba402a6a055dbf6b18",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/reactive.png",
+      "sha256": "29323ccbee7a2497bc897b5e1f9fdf77b0ad126fb6a8d27256eb28f928a141aa",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/reactive-hull.png",
+      "sha256": "870a355a7db4ee5a01cbd70f1eecc77410f2cb95121969974e952e3e72c3cc52",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/shielded.png",
+      "sha256": "0f6fbd6516ca6a0e7f3d51956db1697b396463b8999f42c8670942fca23f4dae",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/shielded-hull.png",
+      "sha256": "e157999bd1b36ccececba6615a3ba86cb4d97544bff24b7357a78c8f5714de90",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/fleet_20261019/command.png",
+      "sha256": "63b017e18d47169b899052513584da66fd7d73b3fd28e876b3fce5795dffe460",
+      "unchanged": true
+    },
+    {
+      "file": "assets/ships/enemy/opening_v2/command-hull.png",
+      "sha256": "971e4f8560f30634575740f4bf4eb486491436e80b0e00b949bba840e1235b8c",
+      "unchanged": true
+    }
+  ],
+  "numeric_width_functions": [
+    {
+      "file": "scripts/enemy_fixed_layout.gd",
+      "function": "width",
+      "unchanged": true,
+      "sha256": "66f839812947258dc18dc638dc5f421e2e5b064fb42c3cd545764e50795cfb12"
+    },
+    {
+      "file": "scripts/main.gd",
+      "function": "enemy_render_width_at_y",
+      "unchanged": true,
+      "sha256": "f74a3ead2fde909e6cffcbcedfa6958301267645e2ad07710000109b5af24f0b"
+    },
+    {
+      "file": "scripts/simulation_geometry_authority.gd",
+      "function": "_source_enemy_render_width_at_y",
+      "unchanged": true,
+      "sha256": "c93988c34de206e4262e834876d2b392dd466f927bcba76903e59f1fce44b1e4"
+    }
+  ],
+  "note": "Display positions/rectangles change as authorized. Actor data/counts, tables, geometry textures, numerical width functions and combat kernel are unchanged."
+}

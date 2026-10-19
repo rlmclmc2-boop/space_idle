@@ -56,6 +56,7 @@ class Ruler extends Node2D:
  var plan:Dictionary
  var hulls:Array=[]
  var player_front:=0.0
+ var enemy_front:=0.0
  func _draw()->void:
   var font:=ThemeDB.fallback_font
   for c in 6:draw_line(Vector2(c*114.4,0),Vector2(c*114.4,GRID.AREA.end.y),Color(0.2,.9,1,.4),1,true)
@@ -64,7 +65,10 @@ class Ruler extends Node2D:
    var cell=GRID.cell_rect(plan,{"uid":id});draw_rect(cell.grow(-2),Color(1,.8,.25,.8),false,1.5)
   if player_front>0:
    draw_line(Vector2(5,GRID.AREA.end.y),Vector2(5,player_front),Color("fbdd8c"),2,true)
-   draw_string(font,Vector2(13,(GRID.AREA.end.y+player_front)*.5),"gap %.1f"%(player_front-GRID.AREA.end.y),HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("fbdd8c"))
+   draw_string(font,Vector2(13,(GRID.AREA.end.y+player_front)*.5),"reserved %.1f"%(player_front-GRID.AREA.end.y),HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("fbdd8c"))
+   if enemy_front>0:
+    draw_line(Vector2(560,enemy_front),Vector2(560,player_front),Color("8cfbb2"),2,true)
+    draw_string(font,Vector2(330,(enemy_front+player_front)*.5),"nearest %.1f"%(player_front-enemy_front),HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("8cfbb2"))
 func capture(case:String,output:String)->void:
  var scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"];scene.music_on=false;root.add_child(scene);scene.automation_args=[]
  var g=scene.game;g.save_enabled=false;g.native_execution_auto=false;g.rng.seed=102019
@@ -102,7 +106,7 @@ func capture(case:String,output:String)->void:
  check(scene.ship_view.hull_key=="Heavy_Battleship" and scene.ship_view.modules.size()==5,"actual rendered fifth hull full loadout")
  g.paused=true
  await process_frame;await RenderingServer.frame_post_draw
- var placements:Array=[];var display_boxes:Array=[];var maximum_error:=0.0;var expected_rects:Dictionary={}
+ var placements:Array=[];var display_boxes:Array=[];var maximum_error:=0.0;var expected_rects:Dictionary={};var enemy_actual_front:=0.0
  for e in g.enemies:
   var model_width:float=scene.enemy_render_width(e);var point:Vector2=scene.enemy_render_position(e);var angle:float=scene.enemy_render_angle(e)
   var texture=scene.ship_hull_texture(scene.enemy_ship_key(e));var used:Rect2i=texture.get_image().get_used_rect();var rect:Rect2=scene.enemy_hull_rect(e,model_width)
@@ -117,12 +121,16 @@ func capture(case:String,output:String)->void:
   var cell:Rect2=GRID.cell_rect(scene.enemy_grid_plan,e)
   check(cell.encloses(box),"entire rotated body inside footprint")
   for other in display_boxes:check(not box.intersects(other),"actual hull AABBs separated")
-  display_boxes.append(box)
+  display_boxes.append(box);enemy_actual_front=maxf(enemy_actual_front,box.end.y)
   var recognition=scene.enemy_recognition_geometry(e)
   var envelope:PackedVector2Array=recognition.inner.duplicate()
   var protection_scale:float=scene.enemy_display_protection_scale(e,recognition,angle)
   for index in envelope.size():envelope[index]*=protection_scale
-  for vertex in envelope:check(cell.has_point(point+vertex.rotated(PI+angle)),"drawn protection inside footprint")
+  for key in ["inner","outer","front","single_front"]:
+   for vertex in recognition.get(key,PackedVector2Array()):
+    var rendered:Vector2=point+(Vector2(vertex)*protection_scale).rotated(PI+angle)
+    check(cell.has_point(rendered),"drawn protection inside footprint")
+    enemy_actual_front=maxf(enemy_actual_front,rendered.y)
   var meters=scene.enemy_status_layout(e,point,model_width,angle,envelope)
   check(cell.encloses(meters.health) and cell.encloses(meters.shield),"health and shield bars inside footprint")
   if scene.encounter_presentation.is_leader(e):check(cell.encloses(meters.caption_bounds),"boss name and top safety inside footprint")
@@ -157,10 +165,10 @@ func capture(case:String,output:String)->void:
   var rect:Rect2=scene.enemy_hull_rect(e,scene.enemy_render_width(e));check(rect.size.is_equal_approx(expected_rects[int(e.uid)]) and scene.enemy_display_grid_plan().placements.has(int(e.uid)),"native view uses published plan even when Main is stale")
  scene.simulation_geometry_view=null;scene.enemy_grid_plan=old_plan
  geometry.close({"providers":{},"spatial":g.target_spatial_source});geometry=null
- var ruler=Ruler.new();ruler.plan=scene.enemy_grid_plan;ruler.player_front=own.position.y;scene.battle_clip.add_child(ruler);ruler.z_index=100
+ var ruler=Ruler.new();ruler.plan=scene.enemy_grid_plan;ruler.player_front=own.position.y;ruler.enemy_front=enemy_actual_front;scene.battle_clip.add_child(ruler);ruler.z_index=100
  await process_frame;await RenderingServer.frame_post_draw
  var image:=root.get_texture().get_image();image.save_png(output.path_join(case+".png"))
- var result={"case":case,"checks":checks,"failures":failures,"fires":fires,"hits":hits,"grid":GRID.AREA,"single_cell":GRID.AREA.size/Vector2(5,3),"insets_ltrb":GRID.INSET,"player_hull":"Heavy_Battleship","player_slots":scene.ship_view.modules.size(),"player_snapshot_bounds":snapshot_own,"player_bounds_with_weapons_and_shield":own,"enemy_area_clear_gap":gap,"alpha_centre_max_error":maximum_error,"placements":placements,"engine":Engine.get_version_info().string,"native":false,"fixture":"actual main.tscn, save disabled, held-health QA actors; no stage/count/damage table edits"}
+ var result={"case":case,"checks":checks,"failures":failures,"fires":fires,"hits":hits,"grid":GRID.AREA,"single_cell":GRID.AREA.size/Vector2(5,3),"insets_ltrb":GRID.INSET,"player_hull":"Heavy_Battleship","player_slots":scene.ship_view.modules.size(),"player_snapshot_bounds":snapshot_own,"player_bounds_with_weapons_and_shield":own,"enemy_area_clear_gap":gap,"actual_enemy_visual_front":enemy_actual_front,"nearest_fleet_envelope_gap":own.position.y-enemy_actual_front,"alpha_centre_max_error":maximum_error,"placements":placements,"engine":Engine.get_version_info().string,"native":false,"fixture":"actual main.tscn, save disabled, held-health QA actors; no stage/count/damage table edits"}
  FileAccess.open(output.path_join(case+".json"),FileAccess.WRITE).store_string(JSON.stringify(result,"  "));print("GRID_CAPTURE ",JSON.stringify(result))
  scene.queue_free();await process_frame;await process_frame
 func _initialize()->void:call_deferred("run")
