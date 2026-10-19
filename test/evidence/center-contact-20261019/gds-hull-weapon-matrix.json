@@ -1,0 +1,206 @@
+{
+	"cases": [
+		{
+			"enemy_size": 1,
+			"entry_displacement": 50.0189208984375,
+			"hits": 1,
+			"player": "Frigate",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "laser",
+			"width": 41.55057693629
+		},
+		{
+			"enemy_size": 2,
+			"entry_displacement": 50.000675201416,
+			"hits": 1,
+			"player": "Destroyer",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "laser",
+			"width": 70.8121012431684
+		},
+		{
+			"enemy_size": 3,
+			"entry_displacement": 50.0387535095215,
+			"hits": 1,
+			"player": "Cruiser",
+			"scale": 1.65,
+			"tier": "ultimate",
+			"weapon": "laser",
+			"width": 95.4728410825991
+		},
+		{
+			"enemy_size": 4,
+			"entry_displacement": 50.0105133056641,
+			"hits": 1,
+			"player": "Battleship",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "laser",
+			"width": 79.1344786814772
+		},
+		{
+			"enemy_size": 5,
+			"entry_displacement": 50.0218391418457,
+			"hits": 1,
+			"player": "Heavy_Battleship",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "laser",
+			"width": 105.039970168054
+		},
+		{
+			"enemy_size": 1,
+			"entry_displacement": 50.0189208984375,
+			"hits": 1,
+			"player": "Frigate",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "longLaser",
+			"width": 41.55057693629
+		},
+		{
+			"enemy_size": 2,
+			"entry_displacement": 50.000675201416,
+			"hits": 1,
+			"player": "Destroyer",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "longLaser",
+			"width": 70.8121012431684
+		},
+		{
+			"enemy_size": 3,
+			"entry_displacement": 49.9511909484863,
+			"hits": 1,
+			"player": "Cruiser",
+			"scale": 1.65,
+			"tier": "ultimate",
+			"weapon": "longLaser",
+			"width": 95.4728410825991
+		},
+		{
+			"enemy_size": 4,
+			"entry_displacement": 50.0105133056641,
+			"hits": 1,
+			"player": "Battleship",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "longLaser",
+			"width": 79.1344786814772
+		},
+		{
+			"enemy_size": 5,
+			"entry_displacement": 50.0218391418457,
+			"hits": 1,
+			"player": "Heavy_Battleship",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "longLaser",
+			"width": 105.039970168054
+		},
+		{
+			"enemy_size": 1,
+			"entry_displacement": 50.0189208984375,
+			"hits": 1,
+			"player": "Frigate",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "missile",
+			"width": 41.55057693629
+		},
+		{
+			"enemy_size": 2,
+			"entry_displacement": 50.000675201416,
+			"hits": 1,
+			"player": "Destroyer",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "missile",
+			"width": 70.8121012431684
+		},
+		{
+			"enemy_size": 3,
+			"entry_displacement": 50.0387535095215,
+			"hits": 1,
+			"player": "Cruiser",
+			"scale": 1.65,
+			"tier": "ultimate",
+			"weapon": "missile",
+			"width": 95.4728410825991
+		},
+		{
+			"enemy_size": 4,
+			"entry_displacement": 50.0105133056641,
+			"hits": 1,
+			"player": "Battleship",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "missile",
+			"width": 79.1344786814772
+		},
+		{
+			"enemy_size": 5,
+			"entry_displacement": 50.0218391418457,
+			"hits": 1,
+			"player": "Heavy_Battleship",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "missile",
+			"width": 105.039970168054
+		},
+		{
+			"enemy_size": 1,
+			"entry_displacement": 50.0189208984375,
+			"hits": 1,
+			"player": "Frigate",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "cannon",
+			"width": 41.55057693629
+		},
+		{
+			"enemy_size": 2,
+			"entry_displacement": 50.000675201416,
+			"hits": 1,
+			"player": "Destroyer",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "cannon",
+			"width": 70.8121012431684
+		},
+		{
+			"enemy_size": 3,
+			"entry_displacement": 50.0387535095215,
+			"hits": 1,
+			"player": "Cruiser",
+			"scale": 1.65,
+			"tier": "ultimate",
+			"weapon": "cannon",
+			"width": 95.4728410825991
+		},
+		{
+			"enemy_size": 4,
+			"entry_displacement": 50.0105133056641,
+			"hits": 1,
+			"player": "Battleship",
+			"scale": 1.0,
+			"tier": "normal",
+			"weapon": "cannon",
+			"width": 79.1344786814772
+		},
+		{
+			"enemy_size": 5,
+			"entry_displacement": 50.0218391418457,
+			"hits": 1,
+			"player": "Heavy_Battleship",
+			"scale": 1.35,
+			"tier": "boss",
+			"weapon": "cannon",
+			"width": 105.039970168054
+		}
+	],
+	"checks": 230,
+	"failures": 0
+}
