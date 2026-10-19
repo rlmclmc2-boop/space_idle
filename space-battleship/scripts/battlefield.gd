@@ -1010,7 +1010,10 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var packet := enemy_recognition_geometry(enemy)
 	var status := enemy_recognition.state(enemy,game.enemy_shield_time,game.paused,enemy_pose(enemy))
 	draw_surface.draw_set_transform(pos,PI+angle)
-	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time,game.stage<=3)
+	var protection_scale:float=enemy_display_protection_scale(enemy,packet,angle)
+	draw_surface.draw_set_transform(pos,PI+angle,Vector2.ONE*protection_scale)
+	var protection_outline:PackedVector2Array=enemy_recognition.draw_protection(draw_surface,enemy,width,packet,status,game.enemy_shield_time,game.stage<=3).duplicate()
+	for index in protection_outline.size():protection_outline[index]*=protection_scale
 	var outline:PackedVector2Array=protection_outline
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
@@ -1035,7 +1038,7 @@ func encounter_leader_name(enemy:Dictionary)->String:
 
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
 	# Status placement follows the drawn hull/protection, not combat bounds.
-	var dimensions:=Vector2(width,width*2.0)
+	var dimensions:=enemy_hull_rect(enemy,width).size
 	var texture:=ship_hull_texture(enemy_ship_key(enemy))
 	var used:=enemy_hull_bounds(texture)
 	var top:=pos.y
@@ -1049,7 +1052,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		top=minf(top,point_y)
 		bottom=maxf(bottom,point_y)
 	top-=9.0
-	var bar_width:=clampf(width*used.size.x,28,100)
+	var bar_width:=clampf(dimensions.x*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	if encounter_presentation.is_leader(enemy):
 		# text_at renders at least 17 px: measure the same font size. Place the

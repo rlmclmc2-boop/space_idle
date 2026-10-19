@@ -1,4 +1,5 @@
 extends RefCounted
+const GRID=preload("res://scripts/enemy_grid_layout.gd")
 ## Fixed model dimensions and authored formation bounds. Owned by the existing
 ## mutable pose; shared by native geometry and a legacy owner after handoff.
 static func sync(host)->bool:
@@ -6,12 +7,13 @@ static func sync(host)->bool:
 	# build the old full parameter key for each position query.
 	var members:Array=[]
 	for enemy in host.game.enemies:
-		members.append([int(enemy.uid),int(enemy.slot),int(enemy.size),enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),enemy.get("hull_scale",1.0)])
+		members.append([int(enemy.uid),int(enemy.slot),int(enemy.size),enemy.get("explicit_formation",false),enemy.get("size_formation",false),enemy.get("formation_columns",10),enemy.get("formation_count",0),enemy.get("hull_scale",1.0),enemy.get("encounter_leader",false)])
 	var scales:Array=[]
 	for size_class in range(1,7):scales.append(host.enemy_config_visual_scale(size_class))
 	var signature:Array=[host.battle_visual.hash(),host.player_base_art_scale(),host.player_art_scale(),host.enemy_recognition_screen_scale(),host.game.is_final_encounter(),host.db.config.get("explicitEnemyPlayerMinGap",host.battle_visual.enemy_player_min_gap),scales,members]
 	if signature==host.fixed_layout_signature:return false
 	host.fixed_layout_signature=signature;host.fixed_layout_revision+=1
+	if not GRID.valid_for(host.enemy_grid_plan,host.game.enemies):host.enemy_grid_plan=GRID.pack(host.game.enemies)
 	return true
 
 static func width(host,enemy:Dictionary,variance:float)->float:
@@ -44,6 +46,12 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 	var fixed_rows:bool=not explicit and enemy.get("size_formation",false) and int(enemy.get("formation_count",0))>5
 	if fixed_rows:front=host.BATTLE_VIEW_SIZE.y*0.52
 	layout={"revision":host.fixed_layout_revision,"width":model_width,"top":top,"frontline":front,"scale":scale_value,"variance":pose.variance,"size":enemy.size}
+	var grid_body:Rect2=GRID.body_rect(host.enemy_grid_plan,enemy)
+	if grid_body.size!=Vector2.ZERO:
+		layout.frontline=GRID.AREA.end.y
+		layout.top=0.0
+		pose.target=grid_body.get_center()
+		pose.fixed_target_initialized=true
 	pose.fixed_layout=layout
 	if not pose.get("fixed_target_initialized",false):
 		# Keep row membership, but author equal display spacing independently of
@@ -70,6 +78,7 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 	# Entry travels the authored distance; the resident top limit is not an
 	# animation clamp. The former clamp collapsed front-row entry to ~8 px.
 	layout.entry_distance=maxf(0.0,float(visual.enemy_entry_distance))
+	if grid_body.size!=Vector2.ZERO:layout.entry_distance=minf(layout.entry_distance,maxf(0.0,grid_body.position.y-GRID.insets(enemy).y))
 	return layout
 
 static func position(host,enemy:Dictionary,pose:Dictionary)->Vector2:

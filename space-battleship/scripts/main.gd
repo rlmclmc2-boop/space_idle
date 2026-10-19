@@ -46,6 +46,7 @@ const BATTLE_VISUAL_DEFAULTS := {
 var fixed_enemy_layout:=true # Shared residence/entry policy, including GDScript-only execution.
 var fixed_layout_revision:=0
 var fixed_layout_signature:Array=[]
+var enemy_grid_plan:Dictionary={}
 var battle_visual: Dictionary = BATTLE_VISUAL_DEFAULTS.duplicate()
 # At most one pose per occupied logical slot, replaced on entity identity change.
 var enemy_poses: Dictionary = {}
@@ -1639,10 +1640,31 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
+func enemy_display_grid_plan()->Dictionary:
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.grid_plan
+	return enemy_grid_plan
+
 func enemy_hull_rect(enemy:Dictionary,width:float)->Rect2:
 	var dimensions:=Vector2(width,width*2.0)
 	var row:Dictionary=visual_config.ships[enemy_ship_key(enemy)]
+	var body:Rect2=preload("res://scripts/enemy_grid_layout.gd").body_rect(enemy_display_grid_plan(),enemy)
+	if body.size!=Vector2.ZERO:
+		var actual_width:float=enemy_render_width(enemy)
+		var texture:Texture2D=ship_hull_texture(enemy_ship_key(enemy))
+		var used:Rect2=visual_region(str(row.texture))
+		var angle:float=enemy_render_angle(enemy)
+		dimensions*=preload("res://scripts/enemy_grid_layout.gd").fit_scale(used.size/texture.get_size()*Vector2(actual_width,actual_width*2.0),body.size,angle)
 	return Rect2(-dimensions*0.5-Vector2(row.get("origin_offset",Vector2.ZERO))*dimensions,dimensions)
+
+# Presentation outline only: the original packet stays intact for centre-hit
+# geometry. Fit its drawn envelope into the same reserved cell interior.
+func enemy_display_protection_scale(enemy:Dictionary,packet:Dictionary,angle:float)->float:
+	var body:Rect2=preload("res://scripts/enemy_grid_layout.gd").body_rect(enemy_display_grid_plan(),enemy)
+	if body.size==Vector2.ZERO:return 1.0
+	var half:=Vector2.ZERO
+	for key in ["inner","outer","front","single_front"]:
+		for point in packet.get(key,PackedVector2Array()):half=half.max(Vector2(point).abs())
+	return minf(1.0,preload("res://scripts/enemy_grid_layout.gd").fit_scale(half*2.0,body.size,angle))
 
 func enemy_render_width(enemy: Dictionary) -> float:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)

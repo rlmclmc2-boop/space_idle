@@ -1,0 +1,17 @@
+# Fifteen-cell display layout
+
+Ordinary1×1, elite(size≥4)2×2, persisted encounter leader/BOSS3×2. Existing eight static hulls retain their source aspect. Display-only packing is shared by Main and the simulation geometry owner; game actor coordinates, source tables and numeric widths remain intact. Cell assignments survive actor death and ownership handoff. No new elite/BOSS artwork is added.
+
+The measured maximum own hull `Heavy_Battleship` has all five weapons; its actual opaque hull/weapon planes and complete visible shield envelope begin atY605.436. Testing every turret at−85/0/+85° does not bring the envelope farther forward. The old enemy band ending499.2 left106.236units; the new band ends400, retaining205.436units, above the existing192-unit configured gap. The key image is `boss-front.png`: BOSS occupies the frontmost two rows, with escorts outside its3×2 reservation, and both fleets' full hulls/health/shield displays remain visible.
+
+| Footprint | Allocated size (logical) | Hull/protection interior maximum |
+|---|---:|---:|
+| Ordinary1×1 |114.4×133.333|90.4×79.333|
+| Elite2×2 |228.8×266.667|204.8×212.667|
+| BOSS3×2 |343.2×266.667|319.2×194.667|
+
+Side/bottom insets are12. Ordinary/elite top inset42 reserves meters/status/gap; BOSS top inset60 also reserves its title. Bodies fit by a single uniform factor including actual idle rotation; protection is scaled only in drawing, without changing its numerical packet. First-row entry travel is capped so meters/title cannot slide outside the top edge. Yellow rectangles in QA captures mark actual assigned cells; the grid/ruler is test-only.
+
+Important source-data limit: some existing groups require more than15cells (e.g. group1009 has15actors including two2×2 elites, requiring21cells). Such groups retain their entire previous layout atomically. No actors are hidden/dropped and approved footprints are not silently shrunk. The source audit lists these encounters; additional-row/other overflow policy remains unresolved. This candidate is not merged into main.
+
+Captures run actual `main.tscn` with save-disabled held-health QA actors and in-memory tier flags. They demonstrate real attacks/hits and rendering, not natural encounter balance. Local Godot4.6.3 Linux/OpenGL llvmpipe/GDS path; no physical-GPU or shipping Windows/native performance acceptance is claimed. The boundary checks additionally publish/consume the simulation geometry frame to verify both display paths use the same allocation and sizing.

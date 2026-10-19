@@ -14,6 +14,7 @@ var fleet_configuration_version:int=0
 var shapes:Dictionary={}
 var shape_members:Dictionary={}
 var player_position:=Vector2.ZERO
+var grid_plan:Dictionary={}
 var ready:=false
 var applied_rows:=0
 func descriptor(uid:int,value:Dictionary)->void:
@@ -27,6 +28,7 @@ func descriptor(uid:int,value:Dictionary)->void:
 var source_rows:Dictionary={}
 
 func apply(value:Dictionary)->void:
+	grid_plan=value.get("grid_plan",{})
 	for shape in value.get("shapes",[]):
 		shapes[str(shape.id)]=shape.value
 		if not shape_members.has(int(shape.uid)):shape_members[int(shape.uid)]={}

@@ -13,6 +13,7 @@ var fleet_display_revision:int=-1
 var fleet_display_arrays:Dictionary={}
 var fixed_layout_revision:=0
 var fixed_layout_signature:Array=[]
+var enemy_grid_plan:Dictionary={}
 var game:BattleGame
 var db:ShipDatabase
 var fleet_angles_dirty := true
@@ -549,6 +550,7 @@ func prepare(owner,simulation:BattleGame)->void:
 	battle_visual=owner.battle_visual.duplicate(true)
 	visual_config=owner.visual_config.duplicate(true)
 	player_anchor=owner.player_render_position()
+	enemy_grid_plan=owner.enemy_grid_plan.duplicate(true)
 	screen_scale=owner.enemy_recognition_screen_scale()
 	reference_height=owner.reference_height
 	demo_time=owner.demo_time;fx_time=owner.fx_time
@@ -904,7 +906,7 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 		if enemy.has("uid"):
 			var uid:int=int(enemy.uid)
 			values[uid]=boundary_dead_geometry[uid].value if with_fleet and boundary_dead_geometry.has(uid) else display_enemy(enemy)
-	var result={"player_position":player_render_position(),"enemies":values,"shapes":pending_display_shapes}
+	var result={"player_position":player_render_position(),"enemies":values,"shapes":pending_display_shapes,"grid_plan":enemy_grid_plan}
 	pending_display_shapes=[]
 	if with_fleet:
 		ensure_fleet_geometry()

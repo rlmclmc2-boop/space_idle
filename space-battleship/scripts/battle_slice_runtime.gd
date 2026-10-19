@@ -310,6 +310,7 @@ func close()->bool:
 	scene.ship_view.numeric_slice_only=false
 	scene.simulation_geometry_view=null
 	scene.enemy_poses=geometry.enemy_poses
+	scene.enemy_grid_plan=geometry.enemy_grid_plan
 	for record in geometry.boundary_dead_geometry.values():
 		var slot:int=int(record.entity.slot)
 		if not scene.enemy_poses.has(slot) or is_same(scene.enemy_poses[slot].entity,record.entity):scene.enemy_poses[slot]=record.pose
