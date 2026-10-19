@@ -1,0 +1,106 @@
+{
+	"cases": [
+		{
+			"hull": "Frigate",
+			"native": true,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Destroyer",
+			"native": true,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Cruiser",
+			"native": true,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Battleship",
+			"native": true,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Heavy_Battleship",
+			"native": true,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Frigate",
+			"native": false,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Destroyer",
+			"native": false,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Cruiser",
+			"native": false,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Battleship",
+			"native": false,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		},
+		{
+			"hull": "Heavy_Battleship",
+			"native": false,
+			"weapons": [
+				"laser_mon",
+				"missile-mon",
+				"cannon-mon",
+				"longLaser-mon"
+			]
+		}
+	],
+	"checks": 55,
+	"failures": 0
+}
