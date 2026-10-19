@@ -57,12 +57,17 @@ class Ruler extends Node2D:
  var hulls:Array=[]
  var player_front:=0.0
  var enemy_front:=0.0
+ var names:Dictionary={}
  func _draw()->void:
   var font:=ThemeDB.fallback_font
   for c in 6:draw_line(Vector2(c*114.4,0),Vector2(c*114.4,GRID.AREA.end.y),Color(0.2,.9,1,.4),1,true)
   for r in 4:draw_line(Vector2(0,r*GRID.AREA.size.y/3.0),Vector2(572,r*GRID.AREA.size.y/3.0),Color(0.2,.9,1,.4),1,true)
   for id in plan.placements:
    var cell=GRID.cell_rect(plan,{"uid":id});draw_rect(cell.grow(-2),Color(1,.8,.25,.8),false,1.5)
+   if names.has(id):
+    var label_position:Vector2=cell.position+Vector2(7,18)
+    draw_string_outline(font,label_position,str(names[id]),HORIZONTAL_ALIGNMENT_LEFT,-1,14,4,Color("10202d"))
+    draw_string(font,label_position,str(names[id]),HORIZONTAL_ALIGNMENT_LEFT,-1,14,Color("d4faff"))
   if player_front>0:
    draw_line(Vector2(5,GRID.AREA.end.y),Vector2(5,player_front),Color("fbdd8c"),2,true)
    draw_string(font,Vector2(13,(GRID.AREA.end.y+player_front)*.5),"reserved %.1f"%(player_front-GRID.AREA.end.y),HORIZONTAL_ALIGNMENT_LEFT,-1,17,Color("fbdd8c"))
@@ -75,7 +80,7 @@ func capture(case:String,output:String)->void:
  g.profile.onboarding.completed=true;g.profile.onboarding.dismissed=true;scene.beginner_guide.hide()
  g.profile.cleared=range(1,101);g.profile.highestLevel=101;g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.rebuild_unlocks();g.pending_unlocks.clear()
  check(g.start(1,false),"real battle starts");g.group_index=1;g.spawn_group()
- if case!="ordinary":
+ if case in ["elite","boss-top","boss-front"]:
   var encounter:Dictionary=g.db.levels[g.stage-1].groups[g.group_index-1]
   g.db.groups[str(int(encounter.id))].combatTier="boss" if case.begins_with("boss") else "elite"
  g.profile.selectedShip="Heavy_Battleship";g.profile.loadout={"weapons":[],"defence":[{"key":"armour","level":1},{"key":"shield","level":1}]}
@@ -84,7 +89,7 @@ func capture(case:String,output:String)->void:
  scene.current_hull="Heavy_Battleship";scene.ship_view.set_hull(scene.current_hull);scene._set_reference_dimensions();scene.ship_view.set_loadout(g.weapon_entries(),g.active_slot_count("weapons"))
  check(g.active_slot_count("weapons")==5,"fifth hull five active weapons")
  var template:Dictionary=g.enemies[0].duplicate(true);g.enemies.clear()
- var count:int=15 if case=="ordinary" else 5
+ var count:int=15 if case=="ordinary" else 8 if case=="ordinary-eight" else 5
  for i in count:
   var e=template.duplicate(true);e.uid=91000+i;e.slot=i;e.archetype_id=KEYS[i%8];e.size=1+(i%3);e.encounter_leader=false
   if case=="elite" and i<2:e.size=4;e.archetype_id="sentry" if i==0 else "anchor"
@@ -105,6 +110,11 @@ func capture(case:String,output:String)->void:
  check(fires>0 and hits>0,"actual battle fired and settled")
  check(scene.ship_view.hull_key=="Heavy_Battleship" and scene.ship_view.modules.size()==5,"actual rendered fifth hull full loadout")
  g.paused=true
+ if case=="ordinary-eight":
+  # Isolated pause-only size comparison, after real fire/hit verification.
+  g.projectile_clear();scene.projectile_visuals.clear();scene.floats.clear();scene.damage_pending.clear()
+  scene.rail_events.clear();scene.missile_events.clear();scene._pulse_events.clear()
+  scene.battle_layer.queue_redraw();scene.pulse_layer.queue_redraw()
  await process_frame;await RenderingServer.frame_post_draw
  var placements:Array=[];var display_boxes:Array=[];var maximum_error:=0.0;var expected_rects:Dictionary={};var enemy_actual_front:=0.0
  for e in g.enemies:
@@ -166,16 +176,19 @@ func capture(case:String,output:String)->void:
  scene.simulation_geometry_view=null;scene.enemy_grid_plan=old_plan
  geometry.close({"providers":{},"spatial":g.target_spatial_source});geometry=null
  var ruler=Ruler.new();ruler.plan=scene.enemy_grid_plan;ruler.player_front=own.position.y;ruler.enemy_front=enemy_actual_front;scene.battle_clip.add_child(ruler);ruler.z_index=100
+ if case=="ordinary-eight":
+  ruler.player_front=0.0;ruler.enemy_front=0.0
+  for e in g.enemies:ruler.names[int(e.uid)]=str(e.archetype_id)
  await process_frame;await RenderingServer.frame_post_draw
  var image:=root.get_texture().get_image();image.save_png(output.path_join(case+".png"))
- var result={"case":case,"checks":checks,"failures":failures,"fires":fires,"hits":hits,"grid":GRID.AREA,"single_cell":GRID.AREA.size/Vector2(5,3),"insets_ltrb":GRID.INSET,"player_hull":"Heavy_Battleship","player_slots":scene.ship_view.modules.size(),"player_snapshot_bounds":snapshot_own,"player_bounds_with_weapons_and_shield":own,"enemy_area_clear_gap":gap,"actual_enemy_visual_front":enemy_actual_front,"nearest_fleet_envelope_gap":own.position.y-enemy_actual_front,"alpha_centre_max_error":maximum_error,"placements":placements,"engine":Engine.get_version_info().string,"native":false,"fixture":"actual main.tscn, save disabled, held-health QA actors; no stage/count/damage table edits"}
+ var result={"case":case,"window_png":[image.get_width(),image.get_height()],"checks":checks,"failures":failures,"fires":fires,"hits":hits,"grid":GRID.AREA,"single_cell":GRID.AREA.size/Vector2(5,3),"insets_ltrb":GRID.INSET,"player_hull":"Heavy_Battleship","player_slots":scene.ship_view.modules.size(),"player_snapshot_bounds":snapshot_own,"player_bounds_with_weapons_and_shield":own,"enemy_area_clear_gap":gap,"actual_enemy_visual_front":enemy_actual_front,"nearest_fleet_envelope_gap":own.position.y-enemy_actual_front,"alpha_centre_max_error":maximum_error,"placements":placements,"engine":Engine.get_version_info().string,"native":false,"fixture":"actual main.tscn, save disabled, held-health QA actors; no stage/count/damage table edits"}
  FileAccess.open(output.path_join(case+".json"),FileAccess.WRITE).store_string(JSON.stringify(result,"  "));print("GRID_CAPTURE ",JSON.stringify(result))
  scene.queue_free();await process_frame;await process_frame
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var selected:=OS.get_environment("GRID_CASE")
  if selected=="unit":units();quit(1 if failures else 0);return
- root.size=Vector2i(1952,1256)
+ root.size=Vector2i(1373,883) if selected=="ordinary-eight" else Vector2i(1952,1256)
  var output:=OS.get_environment("GRID_OUTPUT");DirAccess.make_dir_recursive_absolute(output)
  await capture(selected,output)
  quit(1 if failures else 0)

@@ -1,0 +1,30 @@
+{
+  "baseline": "ad325818",
+  "production_files_unchanged": true,
+  "eight_unique_base_hulls": [
+    "scout",
+    "sentry",
+    "interceptor",
+    "swarm",
+    "anchor",
+    "reactive",
+    "shielded",
+    "command"
+  ],
+  "all_footprints": "1x1",
+  "checks": 266,
+  "failures": 0,
+  "window_png": [
+    1372,
+    883
+  ],
+  "single_cell_logical": [
+    114.4,
+    133.33333333333334
+  ],
+  "approximate_cell_pixels": [
+    80,
+    94
+  ],
+  "redesign_paused_record": "wip/enemy-formation-design-paused@36c828f2 (docs only; no uncommitted redesign code/config existed)"
+}
