@@ -1,44 +1,69 @@
 {
   "algorithm": "SHA-256",
+  "purpose": "Current player runtime acceptance inventory; historical versions remain in Git",
+  "reviewed_cache_delivery": "d07f0b9eade96671e6553eee8b593b18d2e1167f",
+  "native_source_commit": "6e8d2ed992f4239219a1348a7929ee04c59abf6a",
+  "cache_source_commit": "90b4c02862ad21a6e5d15ad3a9522b02395e30d2",
+  "integrated_source_commit": "712d03b1375b98d0670c2e785d4886b0ec6390eb",
   "dll": {
     "runtime_path": "space-battleship/bin/space_native.dll",
-    "runtime_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
-    "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\bin\\space_native.dll",
-    "validation_build_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+    "runtime_sha256": "137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78",
+    "bundled_path": "tools/player_runtime/space_native.dll",
+    "bundled_sha256": "137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78",
+    "validation_bundle_path": "test/evidence/dynamic-port-cache-win472-20261019/builds/windows-native.zip",
+    "validation_build_sha256": "137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78",
     "match": true
   },
   "sources": [
     {
       "name": "space_native.cpp",
       "repository_path": "space-battleship/addons/native_battle/src/space_native.cpp",
-      "repository_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
-      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\space_native.cpp",
-      "validation_build_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
-      "match": true
+      "repository_sha256": "2319782039fee0099d871dcfc2b252069c421f09599080bdd9262da4cb99af36",
+      "repository_git_blob": "b52a3ae91bf7c7204096401612b7cd0bc7f13aac",
+      "validation_build_input_sha256": "041e61cee4e8e0417a0952694385d56ffe2ba88838e46af600dd04f5ce939118",
+      "match": true,
+      "comparison": "Build input normalized by Git text attributes matches this Git blob"
     },
     {
       "name": "combat_execution_kernel.h",
       "repository_path": "space-battleship/addons/native_battle/src/combat_execution_kernel.h",
-      "repository_sha256": "09001858c7bc51c835a23a97084044a9161472ba506bd55330f08c2e710a0c59",
-      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\combat_execution_kernel.h",
-      "validation_build_sha256": "09001858c7bc51c835a23a97084044a9161472ba506bd55330f08c2e710a0c59",
-      "match": true
+      "repository_sha256": "be1a1b745fe8cf8d7abcc9772e808a75a92bb0697514bdd15a54c46f459c5823",
+      "repository_git_blob": "8143f6f5f8e45a5fbce9b1240c22fa56bca7ec82",
+      "validation_build_input_sha256": "22443b632c0f15ffa81ea7e8d087aa02bd23a1dad52b7ee6768f48032fe57bb4",
+      "match": true,
+      "comparison": "Build input normalized by Git text attributes matches this Git blob"
     },
     {
       "name": "combat_presentation.h",
       "repository_path": "space-battleship/addons/native_battle/src/combat_presentation.h",
-      "repository_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
-      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\combat_presentation.h",
-      "validation_build_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
-      "match": true
+      "repository_sha256": "c67fd06b7f0d0333596903d866015e44762ecd115f64323759ee6932355178b2",
+      "repository_git_blob": "37cd1f7e273e74f261bcc3caf049a594fc91a0e1",
+      "validation_build_input_sha256": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
+      "match": true,
+      "comparison": "Build input normalized by Git text attributes matches this Git blob"
     },
     {
       "name": "combat_retained_presentation.h",
       "repository_path": "space-battleship/addons/native_battle/src/combat_retained_presentation.h",
-      "repository_sha256": "c8d3d6b335b7f566ca3c1ecb6f77a6455708bdfe6f94bfd211a66942ce840dd0",
-      "validation_build_path": "D:\\CodexBuild\\space_idle\\native-stable\\src\\combat_retained_presentation.h",
-      "validation_build_sha256": "c8d3d6b335b7f566ca3c1ecb6f77a6455708bdfe6f94bfd211a66942ce840dd0",
-      "match": true
+      "repository_sha256": "3a823d67d916a3e066fc14db4e1823f3e7e386e0de6c109b70100b39cd5d1b76",
+      "repository_git_blob": "7841bc4ac3f1ac3b1c19deba4b4d253d46d7766c",
+      "validation_build_input_sha256": "5341a9f9045d101e76977df2a7c2c31bbeae2fb887b312278b6a5fb714da3aa9",
+      "match": true,
+      "comparison": "Build input normalized by Git text attributes matches this Git blob"
     }
-  ]
+  ],
+  "source_hash_representation": "repository_sha256 uses canonical Git blob bytes; build input hashes retain actual compiler input bytes",
+  "acceptance": {
+    "engine": "4.7.2.stable.official.ed1daf0bf",
+    "correctness_checks": 5717,
+    "failures": 0,
+    "valid_high_load_runs": 8,
+    "cache_count_runs": 2,
+    "evidence": "test/evidence/dynamic-port-cache-win472-20261019/README.md"
+  },
+  "supersedes": {
+    "dll_sha256": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+    "historical_record": "test/evidence/center-contact-20261019/release.json"
+  },
+  "location": "All deployable paths are relative to the launcher repository root; no alternate checkout search"
 }
