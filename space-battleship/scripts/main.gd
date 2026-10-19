@@ -1578,7 +1578,7 @@ func player_visible_nose() -> float:
 	return (float(hull_visible_tops[texture_path])-SHIP_ART_CANVAS.y*0.5)*float(battle_visual.player_core_scale)*player_art_scale()
 
 func player_contact_screen_position() -> Vector2:
-	return player_render_position()+Vector2(0,player_visible_nose()).rotated(player_idle_angle())
+	return player_render_position()
 
 func player_render_position() -> Vector2:
 	if battle_draw_active:return battle_draw_player_position
@@ -1887,7 +1887,7 @@ func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 			var visual: Dictionary=projectile_visuals.back()
 			# Presented pulses already launch toward a projected aim. Map their
 			# committed segment once, rather than scaling it by the old logical target.
-			var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else Vector2(shot.target.x,shot.target.y)
+			var aim:Vector2=Vector2(shot.ballistic_target_origin) if shot.has("ballistic_target_origin") else game.projectile_target_point(shot)
 			var distance := game.projectile_position(shot).distance_to(aim)
 			var rendered_aim:Vector2=battle_point(aim) if shot.has("ballistic_target_origin") else shot_target_screen_position(shot)
 			visual.fixed_origin=battle_point(pos)
@@ -1970,7 +1970,7 @@ func missile_visual_position(shot: Dictionary, spread: float, origin: Vector2, v
 	if visual.is_empty():visual = projectile_visual(shot)
 	if visual.has("fixed_step"):return straight_projectile_point(pos,visual)
 	var converge := 1.0
-	var target_logical := Vector2(shot.target.x,shot.target.y) if not shot.target.is_empty() else Vector2.ZERO
+	var target_logical:Vector2 = game.projectile_target_point(shot) if not shot.target.is_empty() else Vector2.ZERO
 	if not shot.target.is_empty():
 		converge = clampf(pos.distance_to(target_logical)/160.0,0,1)
 	var logical_origin: Vector2 = visual.get("logical_origin",origin)
