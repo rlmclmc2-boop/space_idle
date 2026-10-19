@@ -1,0 +1,10 @@
+# Dynamic native visual ports — 2026-10-19
+
+Base: `c4a5e259`. This delivery changes presentation inputs and birth snapshots, with no numeric data/config changes and no new art assets. The shipping Windows extension configuration remains unchanged.
+
+- `test/test_dynamic_native_ports.gd`: runtime scale, emission pixel and hardpoint edits against actual visual nodes; four weapon families in compact/noncompact mode; paired exact-step numeric motion/RNG/damage; birth freeze before first display and after display; input validation and empty-row fallback. Run in an imported isolated project with the candidate native extension.
+- `correctness.json` and logs record the actual local run. `builds/` contains local Linux validation binaries and a source/API/library hash manifest. They target Godot4.6.3 Linux, not the shipping Windows4.7.2 runtime.
+- `run_perf_linux.py` replays the frozen `ai-tech-final-matched-five-weapon` mixed/laser/cannon/missile/longLaser high-load fixtures, retaining the original 15 held-health enemies, enhancement40, five drones, level140 ordinary entries, 240-step warm target, 480-step steady target, actual1x/focus/uncapped gates and four full wall-frame spans. Only two cold observations were added: retained-flight metrics and display-port feedback counts. No low-load substitute is used. All raw JSON is preserved, including failed validity gates.
+- `linux/summary.json` and `PERFORMANCE.md` distinguish local diagnostics from formal acceptance. No new screenshot matrix is delivered; the original full-window samples from the static-art delivery remain the visual review assets.
+
+Environment gaps: shipping Windows4.7.2/API export and matching Windows compiler/runtime are unavailable here; Windows process/GPU measurements cannot be taken. Local Xorg uses llvmpipe software rendering, and the frozen driver's exact warm/sample and actual1x gates can fail. These runs cannot establish shipping GPU/FPS parity. Re-run the existing Windows build and unified performance sample in the supported environment before formal performance acceptance.

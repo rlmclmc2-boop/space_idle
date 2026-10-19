@@ -1,0 +1,11 @@
+# Dynamic presentation muzzles
+
+`SpaceCombatKernel.input_presentation_muzzles(Array[PackedVector2Array])` takes one row per compiled weapon, in the same order as numeric geometry. Each row contains screen-space visual ports; an empty row preserves the existing display fallback. Wrong row counts/types and non-finite points are rejected atomically. Numeric muzzle, ray, collision, damage and RNG fields remain separate.
+
+`logical_fleet_pose.screen_presentation_muzzles_for_slot` projects the current hull hardpoint, mount/pivot transforms, hull weapon scale, and weapon art `anchor`, `emission_pixels`, `pixels_per_model`, `visual_scale`. These remain data in `data/ship_weapon_visuals.json` and `assets/weapons/fleet_20261019/manifest.json`. Normal asset/configuration recapture after editing those files needs no native rebuild. The test also mutates these pure descriptors between births in the same process and binary; this does not add a live editor UI.
+
+The session publishes changed ports before each logical advance, independently of numeric geometry revisions. Work is proportional to weapon slots, with no GDS loop over live shots. Delayed/repeated births read the current ports at actual birth. Straight retained shots copy the resulting visual ray into their native birth record; subsequent rotation/config changes never update that ray. Launch feedback carries the same optional value-owned display origin, including shots retired before first display. Hostile/drone/chain paths retain their existing providers. Sustained beams keep their existing current visual muzzle provider. Homing missile motion remains on its existing flight presentation path; its launch flash uses the selected visual port.
+
+The GPU batch's existing 12-float instance format, shader clock and persistent mesh are unchanged. Only the retained birth descriptor's display ray differs. Numeric rays remain available for collision and compatibility consumers.
+
+Build the shipping Windows4.7.2 DLL with the existing `build_native.ps1`. `build_native_linux.py --bindings <pinned-checkout> --build-root <outside-source>` builds a local validation `.so` and records API/source/library hashes. The Linux validation binary is not a shipping Windows DLL.

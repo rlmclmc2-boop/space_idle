@@ -12,6 +12,7 @@ var manifest: Dictionary
 var hulls: Dictionary = {}
 var approved: Dictionary = {}
 var weapons: Dictionary = {}
+var presentation_art: Dictionary = {}
 var drone_sockets: Dictionary = {}
 var carrier_mount: Array = []
 var hull_key := ""
@@ -37,6 +38,7 @@ var configured_bag:Dictionary={}
 
 func prepare(view) -> void:
 	manifest = view.manifest
+	presentation_art = view.static_weapon_art
 	size = view.size
 	camera_transform = view.camera.get_camera_transform()
 	projection = view.camera.get_camera_projection()
@@ -268,6 +270,26 @@ func screen_muzzle_for_slot(slot: int, ordinal := 0) -> Vector2:
 	var point := project(_global(transform,sockets[socket_index]).origin)
 	module.socket_points[socket_index] = point
 	return point
+
+# Same authored anchor, emission pixels and scale as StaticWeaponArt. Pure
+# data projection: no live Node lookup and no per-projectile work.
+func screen_presentation_muzzles_for_slot(slot:int)->PackedVector2Array:
+	var ports:=PackedVector2Array()
+	var module:Dictionary=module_by_slot.get(slot,{})
+	if module.is_empty():return ports
+	var key:String=str(module.assignment.key)
+	if not presentation_art.has(key):return ports
+	var art:Dictionary=presentation_art[key]
+	var transform:=_mount(module)
+	var root_scale:float=VIEW.CARRIER_WEAPON_SCALE if module.assignment.carrier=="drone" else 1.0
+	transform=transform*Transform3D(Basis.from_scale(Vector3.ONE*root_scale),Vector3.ZERO)
+	var chain:Array=module.descriptor.pivot_chain
+	for index in chain.size():transform=transform*(module.pivot if index==chain.size()-1 else chain[index])
+	var scale:float=float(art.get("visual_scale",1.0))
+	for pixel in art.emission_pixels:
+		var local:=Vector3((float(pixel[0])-float(art.anchor[0]))/float(art.pixels_per_model[0])*scale,0.12,(float(pixel[1])-float(art.anchor[1]))/float(art.pixels_per_model[1])*scale)
+		ports.append(project(transform*local))
+	return ports
 
 func screen_mount_for_slot(slot:int) -> Vector2:
 	var module: Dictionary = module_by_slot.get(slot,{})

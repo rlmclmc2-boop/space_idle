@@ -1,0 +1,672 @@
+{
+  "baseline": "c4a5e259",
+  "environment": "Godot4.6.3 Linux x86_64 / Xorg dummy / llvmpipe; diagnostic only",
+  "rows": [
+    {
+      "warm_steps": 241,
+      "sample_steps": 481,
+      "actual_1x_pass": false,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 54.7140972293395,
+      "render_hz": 9.32755919502254,
+      "game_wall_ratio": 0.911901620489015,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 119,
+        "births": 7158,
+        "draws": 119,
+        "live": 215,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 2595072
+      },
+      "visual_port_feedback": 0,
+      "events": {
+        "enemy_hits": 4896,
+        "enhancement_chain": 2761,
+        "enhancement_secondary": 27,
+        "equipment_stats": 243,
+        "fire": 2346,
+        "galaxy_unlocked": 1,
+        "hit": 5136,
+        "player_hits": 240,
+        "projectile_impact": 5136,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "laser",
+      "label": "before",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "194e85c5ce08bf97c332ae2e88850cf6333902d6b6bec84cd230e63f5157053f",
+      "spans_ms": {
+        "wall": {
+          "mean": 107.20767073170731,
+          "p95": 195.974
+        },
+        "before_main": {
+          "mean": 0.464890243902439,
+          "p95": 1.379
+        },
+        "main": {
+          "mean": 15.993975609756097,
+          "p95": 36.676
+        },
+        "submit": {
+          "mean": 2.4166463414634145,
+          "p95": 3.954
+        },
+        "render_wait": {
+          "mean": 88.33215853658537,
+          "p95": 172.298
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 243,
+      "sample_steps": 485,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 59.3015524290527,
+      "render_hz": 13.2052941491499,
+      "game_wall_ratio": 0.988359207150903,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 158,
+        "births": 7230,
+        "draws": 158,
+        "live": 212,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 3565056
+      },
+      "visual_port_feedback": 1503,
+      "events": {
+        "enemy_hits": 4901,
+        "enhancement_chain": 2761,
+        "enhancement_secondary": 27,
+        "equipment_stats": 246,
+        "fire": 2332,
+        "galaxy_unlocked": 1,
+        "hit": 5145,
+        "player_hits": 244,
+        "projectile_impact": 5145,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "laser",
+      "label": "after",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "b97f74aaffbbf2d3b7420a97cb4f3b1d053f46943cae6fb00f6410ba93adc14f",
+      "spans_ms": {
+        "wall": {
+          "mean": 75.72669444444443,
+          "p95": 137.791
+        },
+        "before_main": {
+          "mean": 0.5476944444444445,
+          "p95": 2.231
+        },
+        "main": {
+          "mean": 13.312861111111111,
+          "p95": 29.979
+        },
+        "submit": {
+          "mean": 2.4000370370370367,
+          "p95": 4.645
+        },
+        "render_wait": {
+          "mean": 59.46610185185185,
+          "p95": 119.857
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 240,
+      "sample_steps": 481,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 59.864939220907,
+      "render_hz": 22.9005172903262,
+      "game_wall_ratio": 0.99774898701514,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 267,
+        "births": 2109,
+        "draws": 267,
+        "live": 126,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 1143936
+      },
+      "visual_port_feedback": 0,
+      "events": {
+        "enemy_hits": 1650,
+        "enhancement_chain": 1309,
+        "enhancement_secondary": 7,
+        "equipment_stats": 215,
+        "fire": 366,
+        "galaxy_unlocked": 1,
+        "hit": 1890,
+        "player_hits": 240,
+        "projectile_impact": 1575,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "cannon",
+      "label": "before",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "194e85c5ce08bf97c332ae2e88850cf6333902d6b6bec84cd230e63f5157053f",
+      "spans_ms": {
+        "wall": {
+          "mean": 43.66680434782609,
+          "p95": 57.809
+        },
+        "before_main": {
+          "mean": 0.26873913043478265,
+          "p95": 0.326
+        },
+        "main": {
+          "mean": 6.768505434782609,
+          "p95": 12.057
+        },
+        "submit": {
+          "mean": 3.5850978260869564,
+          "p95": 5.286
+        },
+        "render_wait": {
+          "mean": 33.04446195652174,
+          "p95": 39.939
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 241,
+      "sample_steps": 480,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 59.8903781490954,
+      "render_hz": 21.959805321335,
+      "game_wall_ratio": 0.998172969151613,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 253,
+        "births": 2109,
+        "draws": 253,
+        "live": 126,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 1089024
+      },
+      "visual_port_feedback": 86,
+      "events": {
+        "enemy_hits": 1650,
+        "enhancement_chain": 1309,
+        "enhancement_secondary": 7,
+        "equipment_stats": 215,
+        "fire": 366,
+        "galaxy_unlocked": 1,
+        "hit": 1890,
+        "player_hits": 240,
+        "projectile_impact": 1575,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "cannon",
+      "label": "after",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "b97f74aaffbbf2d3b7420a97cb4f3b1d053f46943cae6fb00f6410ba93adc14f",
+      "spans_ms": {
+        "wall": {
+          "mean": 45.53740909090909,
+          "p95": 57.864
+        },
+        "before_main": {
+          "mean": 0.3076647727272728,
+          "p95": 0.411
+        },
+        "main": {
+          "mean": 7.269869318181818,
+          "p95": 13.225
+        },
+        "submit": {
+          "mean": 3.6039204545454546,
+          "p95": 5.253
+        },
+        "render_wait": {
+          "mean": 34.355954545454544,
+          "p95": 39.947
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 240,
+      "sample_steps": 480,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 60.3502805722263,
+      "render_hz": 20.1167601907421,
+      "game_wall_ratio": 1.00583800953713,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 226,
+        "births": 2842,
+        "draws": 226,
+        "live": 96,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 1356672
+      },
+      "visual_port_feedback": 0,
+      "events": {
+        "enemy_hits": 2174,
+        "enhancement_chain": 1320,
+        "enhancement_secondary": 12,
+        "equipment_stats": 208,
+        "fire": 791,
+        "galaxy_unlocked": 1,
+        "hit": 2414,
+        "player_hits": 240,
+        "projectile_impact": 2114,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "missile",
+      "label": "before",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "194e85c5ce08bf97c332ae2e88850cf6333902d6b6bec84cd230e63f5157053f",
+      "spans_ms": {
+        "wall": {
+          "mean": 49.7094375,
+          "p95": 79.724
+        },
+        "before_main": {
+          "mean": 0.2508625,
+          "p95": 0.333
+        },
+        "main": {
+          "mean": 8.1542875,
+          "p95": 12.265
+        },
+        "submit": {
+          "mean": 3.1365625,
+          "p95": 4.414
+        },
+        "render_wait": {
+          "mean": 38.167725,
+          "p95": 67.696
+        }
+      },
+      "formal_valid": true
+    },
+    {
+      "warm_steps": 241,
+      "sample_steps": 482,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 60.3919210143838,
+      "render_hz": 21.8012328973087,
+      "game_wall_ratio": 1.00653201690642,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 255,
+        "births": 2842,
+        "draws": 255,
+        "live": 82,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 1381632
+      },
+      "visual_port_feedback": 345,
+      "events": {
+        "enemy_hits": 2184,
+        "enhancement_chain": 1320,
+        "enhancement_secondary": 12,
+        "equipment_stats": 209,
+        "fire": 791,
+        "galaxy_unlocked": 1,
+        "hit": 2425,
+        "player_hits": 241,
+        "projectile_impact": 2125,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "missile",
+      "label": "after",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "b97f74aaffbbf2d3b7420a97cb4f3b1d053f46943cae6fb00f6410ba93adc14f",
+      "spans_ms": {
+        "wall": {
+          "mean": 45.86863218390805,
+          "p95": 64.844
+        },
+        "before_main": {
+          "mean": 0.3164942528735632,
+          "p95": 0.371
+        },
+        "main": {
+          "mean": 7.859879310344828,
+          "p95": 12.081
+        },
+        "submit": {
+          "mean": 3.010695402298851,
+          "p95": 4.127
+        },
+        "render_wait": {
+          "mean": 34.6815632183908,
+          "p95": 40.822
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 242,
+      "sample_steps": 480,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 60.2856560454644,
+      "render_hz": 17.5833163465938,
+      "game_wall_ratio": 1.0047609340911,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 208,
+        "births": 380,
+        "draws": 208,
+        "live": 46,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 299520
+      },
+      "visual_port_feedback": 0,
+      "events": {
+        "beam_hit": 1560,
+        "critical_impact": 156,
+        "enemy_hits": 18252,
+        "equipment_stats": 192,
+        "fire": 240,
+        "friendly_periods": 1560,
+        "galaxy_unlocked": 1,
+        "hit": 18492,
+        "player_hits": 240,
+        "projectile_impact": 240,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "longLaser",
+      "label": "before",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "194e85c5ce08bf97c332ae2e88850cf6333902d6b6bec84cd230e63f5157053f",
+      "spans_ms": {
+        "wall": {
+          "mean": 56.87165714285714,
+          "p95": 73.909
+        },
+        "before_main": {
+          "mean": 0.5901071428571429,
+          "p95": 4.274
+        },
+        "main": {
+          "mean": 10.726635714285715,
+          "p95": 28.349
+        },
+        "submit": {
+          "mean": 4.562464285714285,
+          "p95": 6.248
+        },
+        "render_wait": {
+          "mean": 40.99245,
+          "p95": 47.855
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 242,
+      "sample_steps": 480,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 59.9782728706526,
+      "render_hz": 17.9934818611958,
+      "game_wall_ratio": 0.999637881177568,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 218,
+        "births": 380,
+        "draws": 218,
+        "live": 46,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 317952
+      },
+      "visual_port_feedback": 10,
+      "events": {
+        "beam_hit": 1560,
+        "critical_impact": 156,
+        "enemy_hits": 18252,
+        "equipment_stats": 192,
+        "fire": 240,
+        "friendly_periods": 1560,
+        "galaxy_unlocked": 1,
+        "hit": 18492,
+        "player_hits": 240,
+        "projectile_impact": 240,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "longLaser",
+      "label": "after",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+      "library_sha256": "b97f74aaffbbf2d3b7420a97cb4f3b1d053f46943cae6fb00f6410ba93adc14f",
+      "spans_ms": {
+        "wall": {
+          "mean": 55.57526388888889,
+          "p95": 72.208
+        },
+        "before_main": {
+          "mean": 0.6261527777777778,
+          "p95": 3.159
+        },
+        "main": {
+          "mean": 10.468895833333335,
+          "p95": 18.592
+        },
+        "submit": {
+          "mean": 4.519,
+          "p95": 6.478
+        },
+        "render_wait": {
+          "mean": 39.96121527777778,
+          "p95": 44.766
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 241,
+      "sample_steps": 482,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 60.015683766654,
+      "render_hz": 17.8054829432189,
+      "game_wall_ratio": 1.00026139611092,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 207,
+        "births": 5230,
+        "draws": 207,
+        "live": 200,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 10649856
+      },
+      "visual_port_feedback": 0,
+      "events": {
+        "beam_hit": 158,
+        "enemy_hits": 4920,
+        "enhancement_chain": 2156,
+        "enhancement_secondary": 23,
+        "equipment_stats": 261,
+        "fire": 1588,
+        "friendly_periods": 158,
+        "galaxy_unlocked": 1,
+        "hit": 5161,
+        "player_hits": 241,
+        "projectile_impact": 3739,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "mixed",
+      "label": "before",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "2582ec8b7902bfe35e2c58b6a0f68a2df9715dd47c3ee78620c57c4262ae02ac",
+      "library_sha256": "194e85c5ce08bf97c332ae2e88850cf6333902d6b6bec84cd230e63f5157053f",
+      "spans_ms": {
+        "wall": {
+          "mean": 56.16204895104895,
+          "p95": 74.444
+        },
+        "before_main": {
+          "mean": 0.28997902097902095,
+          "p95": 0.37
+        },
+        "main": {
+          "mean": 11.24165034965035,
+          "p95": 23.025
+        },
+        "submit": {
+          "mean": 3.2355804195804194,
+          "p95": 4.492
+        },
+        "render_wait": {
+          "mean": 41.39483916083916,
+          "p95": 46.876
+        }
+      },
+      "formal_valid": false
+    },
+    {
+      "warm_steps": 240,
+      "sample_steps": 482,
+      "actual_1x_pass": true,
+      "performance_sample_valid": true,
+      "native_admitted": true,
+      "logic_hz": 60.6534897589351,
+      "render_hz": 18.4980560053184,
+      "game_wall_ratio": 1.01089149598228,
+      "enemies_alive": 15,
+      "video_adapter": "llvmpipe (LLVM 19.1.7, 256 bits)",
+      "flight_metrics": {
+        "advances": 215,
+        "births": 5235,
+        "draws": 215,
+        "live": 207,
+        "old_advance": 0,
+        "old_draw": 1,
+        "old_prepare": 1,
+        "upload_bytes": 11552640
+      },
+      "visual_port_feedback": 1115,
+      "events": {
+        "beam_hit": 158,
+        "enemy_hits": 4915,
+        "enhancement_chain": 2156,
+        "enhancement_secondary": 23,
+        "equipment_stats": 260,
+        "fire": 1584,
+        "friendly_periods": 158,
+        "galaxy_unlocked": 1,
+        "hit": 5155,
+        "player_hits": 240,
+        "projectile_impact": 3733,
+        "resources_changed": 64,
+        "upgrade": 64,
+        "upgrades_completed": 8
+      },
+      "case": "mixed",
+      "label": "after",
+      "exit": 0,
+      "script_errors": 0,
+      "fixture_sha256": "2582ec8b7902bfe35e2c58b6a0f68a2df9715dd47c3ee78620c57c4262ae02ac",
+      "library_sha256": "b97f74aaffbbf2d3b7420a97cb4f3b1d053f46943cae6fb00f6410ba93adc14f",
+      "spans_ms": {
+        "wall": {
+          "mean": 54.059170068027214,
+          "p95": 71.151
+        },
+        "before_main": {
+          "mean": 0.5188979591836735,
+          "p95": 2.882
+        },
+        "main": {
+          "mean": 11.480034013605442,
+          "p95": 29.228
+        },
+        "submit": {
+          "mean": 3.3461156462585038,
+          "p95": 4.931
+        },
+        "render_wait": {
+          "mean": 38.714122448979595,
+          "p95": 43.926
+        }
+      },
+      "formal_valid": false
+    }
+  ]
+}

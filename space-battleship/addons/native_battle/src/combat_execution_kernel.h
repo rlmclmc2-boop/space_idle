@@ -56,6 +56,7 @@ class SpaceCombatKernel : public RefCounted {
                secondary_probability = 0;
         int chain_count = 0;
         Vector2 muzzle, screen_muzzle;
+        PackedVector2Array presentation_muzzles; // Display inputs only; never used by combat.
         Dictionary entry, row;
         int64_t beam = -1;
         std::shared_ptr<const BirthConfig> birth;
@@ -122,6 +123,8 @@ class SpaceCombatKernel : public RefCounted {
         bool await_target = false;
         bool fixed_ray = false;
         Vector2 ray_origin, ray_step, launch_point;
+        bool presentation_ray = false;
+        Vector2 presentation_origin, presentation_step; // Frozen at actual birth, before first display.
         uint64_t contact_revision = 0;
         double contact_distance = -1;
         Ref<SpaceMotionLease> lease;
@@ -162,6 +165,8 @@ class SpaceCombatKernel : public RefCounted {
         int reactive_stacks = -1;
         double reactive_multiplier = 1;
         Vector2 point, direction, target_point;
+        bool presentation_ray = false;
+        Vector2 presentation_origin, presentation_step;
         int64_t target_uid = -1;
         Dictionary shot;
         // Value-owned feedback survives compact()/slot reuse. No flight lookup
@@ -719,6 +724,8 @@ class SpaceCombatKernel : public RefCounted {
             e.laser_primary = f.instance->view.get("primary_target", target_view(f.target));
             e.laser_launch = f.launch_point; e.laser_ray_origin = f.ray_origin; e.laser_ray_step = f.ray_step;
         } else e.shot = f.view;
+        e.presentation_ray = f.presentation_ray;
+        e.presentation_origin = f.presentation_origin; e.presentation_step = f.presentation_step;
         e.target_point = f.aim;
         Actor *target = resolve(f.target);
         e.target_uid = target ? target->uid : -1;
@@ -868,6 +875,15 @@ class SpaceCombatKernel : public RefCounted {
             m.direction = axis(angle(m.direction) + departure);
             m.last_aim = aim;
         }
+        // Parallel presentation geometry. Numerical origins, collision rays and RNG
+        // remain untouched. Only the immutable birth snapshot reaches rendering.
+        if (!w.hostile && !chain && !w.entry.has("drone_id") && !w.presentation_muzzles.is_empty()) {
+            f.presentation_ray = true;
+            const int ordinal = w.kind == 2 ? int(event_serial % w.presentation_muzzles.size()) : 0;
+            f.presentation_origin = w.presentation_muzzles[ordinal];
+            const Vector2 screen_aim = t ? t->screen_point : w.screen_muzzle + m.direction * 100;
+            f.presentation_step = (screen_aim - f.presentation_origin) / std::max(0.001, distance(from, aim));
+        }
         if (compact_laser_births && !w.hostile && w.kind == 0 && !chain && t && t->collision_hull.size() >= 3) {
             f.compact_laser = true; ++compact_laser_count; f.fixed_ray = true;
             f.view_birth = weapons[wi].birth;
@@ -877,6 +893,10 @@ class SpaceCombatKernel : public RefCounted {
             retained_damage_bound = std::max(retained_damage_bound, f.damage);
             effect(0, f, from, clock);
             return id;
+        }
+        if (f.presentation_ray) {
+            f.view["presentation_origin"] = f.presentation_origin;
+            f.view["presentation_step"] = f.presentation_step;
         }
         f.view["serial"] = int64_t(f.serial);
         f.view["x"] = from.x;
@@ -1860,6 +1880,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("supports_strange_matter"), &SpaceCombatKernel::supports_strange_matter);
         ClassDB::bind_method(D_METHOD("supports_laser_charge"), &SpaceCombatKernel::supports_laser_charge);
         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
+        ClassDB::bind_method(D_METHOD("input_presentation_muzzles", "rows"), &SpaceCombatKernel::input_presentation_muzzles);
         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
                              &SpaceCombatKernel::input_geometry);
         ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles", "stationary"), &SpaceCombatKernel::input_ballistic_geometry, DEFVAL(PackedByteArray()));
@@ -2473,6 +2494,19 @@ class SpaceCombatKernel : public RefCounted {
             values.push_back(actors[h.index].view);
         return values;
     }
+    // Atomic, O(weapon slots), reusable across arbitrary art/configuration edits.
+    // Empty rows select the existing numerical display fallback.
+    bool input_presentation_muzzles(Array rows) {
+        if (rows.size() != int(weapons.size())) return false;
+        for (int i = 0; i < rows.size(); ++i) {
+            if (rows[i].get_type() != Variant::PACKED_VECTOR2_ARRAY) return false;
+            PackedVector2Array ports = rows[i];
+            for (int j = 0; j < ports.size(); ++j)
+                if (!std::isfinite(ports[j].x) || !std::isfinite(ports[j].y)) return false;
+        }
+        for (int i = 0; i < rows.size(); ++i) weapons[i].presentation_muzzles = rows[i];
+        return true;
+    }
     void input_ballistic_geometry(Array hulls, PackedVector2Array points, PackedVector2Array muzzles, PackedByteArray stationary = PackedByteArray()) {
         for (int i = 0; i < int(actors.size()) && i < hulls.size() && i < points.size(); ++i) {
             const PackedVector2Array hull = hulls[i];
@@ -2560,6 +2594,7 @@ class SpaceCombatKernel : public RefCounted {
         const auto &birth = *f.view_birth;
         const Motion &m = f.lease->motion();
         Dictionary v;
+        if (f.presentation_ray) { v["presentation_origin"] = f.presentation_origin; v["presentation_step"] = f.presentation_step; }
         v["serial"] = int64_t(f.serial); v["x"] = f.launch_point.x; v["y"] = f.launch_point.y;
         v["launch_point"] = f.launch_point;
         const bool target_live = !f.target_view_cleared && f.target.index < actors.size() && actors[f.target.index].generation == f.target.generation;
@@ -2825,6 +2860,7 @@ class SpaceCombatKernel : public RefCounted {
                 d["reactive_stacks"] = e.reactive_stacks;
                 d["reactive_multiplier"] = e.reactive_multiplier;
             }
+            if (e.presentation_ray) { d["presentation_origin"] = e.presentation_origin; d["presentation_step"] = e.presentation_step; }
             if (e.compact_laser) {
                 Dictionary laser;
                 laser["serial"] = int64_t(e.laser_serial); laser["mount"] = e.laser_mount;

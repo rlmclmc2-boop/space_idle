@@ -21,6 +21,7 @@ var hostile_weapon_indices:Array[int]=[]
 var friendly_weapon_indices:Array[int]=[]
 var weapon_geometry_keys:Dictionary={}
 var geometry_muzzles:=PackedVector2Array()
+var presentation_muzzles:Array=[]
 var geometry_player:=Vector2.INF
 
 # Check only at configuration boundaries, including an already-running old DLL.
@@ -43,7 +44,7 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	kernel=candidate
 	execution_scope=descriptor.execution_scope
 	weapons=descriptor.weapons
-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	actor_rows=kernel.enemy_views()
 	for row in actor_rows:actor_by_uid[int(row.uid)]=row
 	# Retire old queues and bodies before publishing the new owner. These are
@@ -77,7 +78,7 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true
 
 func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
@@ -104,7 +105,7 @@ func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	if not supports_configuration(kernel,plan.descriptor):return false
 	if not kernel.refit_configuration(plan.descriptor):return false
 	weapons=plan.descriptor.weapons
-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	game.refit_health_ratios=plan.ratios
 	return true
 
@@ -169,6 +170,16 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	geometry.battle_read_model.ensure_clock()
 	geometry.refresh_target_geometry()
 	geometry.refresh_fleet_geometry()
+	# Publish display-only ports even when numeric geometry revisions are stable
+	# (e.g. art scale/anchor changed). Cost follows mounts, never active shots.
+	if kernel.has_method("input_presentation_muzzles"):
+		var ports:Array=[]
+		for weapon in weapons:
+			ports.append(geometry.fleet_pose.screen_presentation_muzzles_for_slot(int(weapon.slot)) if not bool(weapon.hostile) and not weapon.entry.has("drone_id") else PackedVector2Array())
+		if ports!=presentation_muzzles:
+			var accepted:bool=kernel.input_presentation_muzzles(ports)
+			assert(accepted,"Presentation ports rejected")
+			presentation_muzzles=ports
 	var topology_changed:bool=geometry_muzzles.size()!=weapons.size()
 	if topology_changed:
 		hostile_weapon_indices.clear();friendly_weapon_indices.clear();weapon_geometry_keys.clear()
@@ -230,6 +241,8 @@ func consume_feedback(game:RefCounted)->void:
 			# Frozen value feedback, including same-step retired births. No shot
 			# lookup or complete compatibility Dictionary is created here.
 			var info={"native_laser":row.native_laser,"x":p.x,"y":p.y,"pos":p,"type":row.type,"direction":row.direction,"aim":row.target_position,"critical":row.critical}
+			if row.has("presentation_origin"):
+				info.presentation_origin=row.presentation_origin;info.presentation_step=row.presentation_step
 			match int(row.kind):
 				0:game.event.emit("fire",info)
 				1:game.event.emit("projectile_impact",info)
@@ -317,5 +330,5 @@ func commit_numeric_batch(game,batch:Dictionary)->bool:
 	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
 	return true

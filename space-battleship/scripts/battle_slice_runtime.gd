@@ -10,6 +10,8 @@ class Effect extends RefCounted:
 	var tier:int=0
 	var uid:int=0
 	var style:int=0 # 0 enemy,1 pulse,2 missile,3 rail,4 beam
+	var display_origin:=Vector2.ZERO
+	var has_display_origin:=false
 	var position:=Vector2.ZERO
 	var aim:=Vector2.ZERO
 	var direction:=Vector2.UP
@@ -173,10 +175,12 @@ func on_event(kind:String,info:Dictionary)->bool:
 			if scene.projectile_visuals.size()+scene.native_laser_visuals.size()<256:scene.native_laser_visuals[int(laser.serial)]=true
 		var e=Effect.new();e.kind=0 if kind=="fire" else 4;e.style=1
 		e.serial=int(laser.serial);e.position=Vector2(info.x,info.y);e.direction=info.direction;e.damage_type=int(info.type);e.critical=bool(info.critical)
+		if info.has("presentation_origin"):
+			e.has_display_origin=true;e.display_origin=geometry.battle_logical_point(info.presentation_origin)
 		if kind!="fire":
 			var distance:float=(e.position-Vector2(laser.launch)).dot(e.direction)
-			e.position=geometry.battle_logical_point(Vector2(laser.ray_origin)+Vector2(laser.ray_step)*distance)
-			e.direction=Vector2(laser.ray_step).normalized()
+			e.position=geometry.battle_logical_point(Vector2(info.get("presentation_origin",laser.ray_origin))+Vector2(info.get("presentation_step",laser.ray_step))*distance)
+			e.direction=Vector2(info.get("presentation_step",laser.ray_step)).normalized()
 		consume(e)
 		return true
 	# These feedback events never mutate geometry. Preserve every damage record
@@ -197,6 +201,8 @@ func on_event(kind:String,info:Dictionary)->bool:
 			var shot:Dictionary=info.shot
 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.spread=float(info.get("spread",0.0))
 			if e.style!=4:
+				if shot.has("presentation_origin"):
+					e.has_display_origin=true;e.display_origin=geometry.battle_logical_point(shot.presentation_origin)
 				e.position=Vector2(info.x,info.y);e.direction=Vector2(info.direction) if info.has("direction") else game.projectile_direction(shot)
 				e.aim=Vector2(info.aim) if info.has("aim") else geometry.target_point(shot.target) if not shot.target.is_empty() else e.position+e.direction*100.0
 				if e.style==3:
@@ -213,8 +219,8 @@ func on_event(kind:String,info:Dictionary)->bool:
 			if shot.has("fixed_screen_step"):
 				# Feedback may arrive after this step moved the body. Use its committed birth ray.
 				var distance:float=(e.position-Vector2(shot.launch_point)).dot(game.projectile_direction(shot))
-				e.position=geometry.battle_logical_point(Vector2(shot.fixed_screen_origin)+Vector2(shot.fixed_screen_step)*distance)
-				e.direction=Vector2(shot.fixed_screen_step).normalized()
+				e.position=geometry.battle_logical_point(Vector2(shot.get("presentation_origin",shot.fixed_screen_origin))+Vector2(shot.get("presentation_step",shot.fixed_screen_step))*distance)
+				e.direction=Vector2(shot.get("presentation_step",shot.fixed_screen_step)).normalized()
 			elif visual.has("fixed_step"):e.position=scene.straight_projectile_point(e.position,visual)
 			consume(e)
 		"explode":
@@ -256,7 +262,7 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
 	if game.combat_presentation!=null:game.combat_presentation.register_visual(shot,visual,scene.projectile_visuals.size()-1)
 	if shot.has("fixed_screen_step"):
 		visual.logical_origin=shot.launch_point
-		visual.fixed_origin=shot.fixed_screen_origin;visual.fixed_step=shot.fixed_screen_step
+		visual.fixed_origin=shot.get("presentation_origin",shot.fixed_screen_origin);visual.fixed_step=shot.get("presentation_step",shot.fixed_screen_step)
 		visual.fixed_direction=game.projectile_direction(shot);visual.angle=Vector2(visual.fixed_step).angle()
 	elif geometry.weapon_key(shot) in ["laser","cannon"] and not shot.target.is_empty():
 		var aim:Vector2=shot.get("ballistic_target_origin",Vector2(shot.target.x,shot.target.y))
@@ -267,12 +273,13 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
 	if game.combat_presentation!=null:game.combat_presentation.bind_visual(visual)
 
 func consume(e:Effect)->void:
+	var launch_origin:Vector2=e.display_origin if e.has_display_origin else e.position
 	match e.kind:
 		0: # all original launches retain a body and an emitter effect
 			match e.style:
 				0,1:record_contact(e,true,false)
-				2:scene.missile_events.append({"kind":"fire","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":false})
-				3:scene.rail_events.append({"kind":"fire","origin":e.position,"position":e.position,"direction":e.direction,"aim":e.aim,"full_width":e.width,"born":geometry.fx_time})
+				2:scene.missile_events.append({"kind":"fire","position":launch_origin,"direction":e.direction,"born":geometry.fx_time,"critical":false})
+				3:scene.rail_events.append({"kind":"fire","origin":launch_origin,"position":launch_origin,"direction":e.direction,"aim":e.aim,"full_width":e.width,"born":geometry.fx_time})
 			if e.style==3:scene.railgun_sound("release")
 			else:scene.beep(620 if e.damage_type==1 else 200)
 		4:
@@ -319,11 +326,12 @@ func close()->bool:
 	return true
 
 func record_contact(e:Effect,launch:bool,critical:bool)->void:
+	var point:Vector2=e.display_origin if launch and e.has_display_origin else e.position
 	if game.combat_presentation!=null:
-		game.combat_presentation.record_contact(e.style,e.position,e.direction,geometry.fx_time,launch,critical,e.damage_type)
+		game.combat_presentation.record_contact(e.style,point,e.direction,geometry.fx_time,launch,critical,e.damage_type)
 		return
 	if e.style==0:
-		var event={"position":e.position,"direction":e.direction,"born":geometry.fx_time,"damage_type":e.damage_type}
+		var event={"position":point,"direction":e.direction,"born":geometry.fx_time,"damage_type":e.damage_type}
 		if launch:event.kind="fire"
 		scene._enemy_impacts.append(event)
-	else:scene._pulse_events.append({"kind":"fire" if launch else "hit","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":critical})
+	else:scene._pulse_events.append({"kind":"fire" if launch else "hit","position":point,"direction":e.direction,"born":geometry.fx_time,"critical":critical})

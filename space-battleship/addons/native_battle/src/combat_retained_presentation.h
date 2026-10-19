@@ -57,7 +57,7 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
             if(!f.visual.is_empty()&&!same(f.visual["shot"],source.view))f.visual=Dictionary();
             f.visual_state=f.visual.get("visual_lease",Variant());
             f.fixed=source.fixed_ray;
-            if(f.fixed){f.launch=source.launch_point;f.ray_origin=source.ray_origin;f.ray_step=source.ray_step;f.ray_direction=f.motion->motion().direction;}
+            if(f.fixed){f.launch=source.launch_point;f.ray_origin=source.presentation_ray?source.presentation_origin:source.ray_origin;f.ray_step=source.presentation_ray?source.presentation_step:source.ray_step;f.ray_direction=f.motion->motion().direction;}
             else if(f.visual.has("fixed_step")){f.fixed=true;f.launch=f.visual["logical_origin"];f.ray_origin=f.visual["fixed_origin"];f.ray_step=f.visual["fixed_step"];f.ray_direction=f.visual["fixed_direction"];}
             f.render_kind=f.beam?-1:(!f.hostile&&f.key=="laser")?0:(f.hostile&&(f.key=="laser"||f.key=="cannon"))?(source.type==2?3:2):-1;
             f.anchor_speed=-1;

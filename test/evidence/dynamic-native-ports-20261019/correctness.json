@@ -1,0 +1,137 @@
+{
+  "checks": 5571,
+  "engine": {
+    "build": "official",
+    "hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+    "hex": 263683,
+    "major": 4,
+    "minor": 6,
+    "patch": 3,
+    "status": "stable",
+    "string": "4.6.3-stable (official)",
+    "timestamp": 0
+  },
+  "evidence": [
+    {
+      "compact": false,
+      "hits": 34,
+      "kind": 0,
+      "numeric_equal": true,
+      "rng": "-732993629261362181",
+      "root_attacks": 50,
+      "steps": 300
+    },
+    {
+      "compact": true,
+      "hits": 34,
+      "kind": 0,
+      "numeric_equal": true,
+      "rng": "-732993629261362181",
+      "root_attacks": 50,
+      "steps": 300
+    },
+    {
+      "compact": false,
+      "hits": 50,
+      "kind": 1,
+      "numeric_equal": true,
+      "rng": "-732993629261362181",
+      "root_attacks": 50,
+      "steps": 300
+    },
+    {
+      "compact": true,
+      "hits": 50,
+      "kind": 1,
+      "numeric_equal": true,
+      "rng": "-732993629261362181",
+      "root_attacks": 50,
+      "steps": 300
+    },
+    {
+      "compact": false,
+      "hits": 37,
+      "kind": 2,
+      "numeric_equal": true,
+      "rng": "-732993629261362181",
+      "root_attacks": 50,
+      "steps": 300
+    },
+    {
+      "compact": true,
+      "hits": 37,
+      "kind": 2,
+      "numeric_equal": true,
+      "rng": "-732993629261362181",
+      "root_attacks": 50,
+      "steps": 300
+    },
+    {
+      "compact": false,
+      "hits": 50,
+      "kind": 3,
+      "numeric_equal": true,
+      "rng": "-5788214726632709347",
+      "root_attacks": 1,
+      "steps": 300
+    },
+    {
+      "compact": true,
+      "hits": 50,
+      "kind": 3,
+      "numeric_equal": true,
+      "rng": "-5788214726632709347",
+      "root_attacks": 1,
+      "steps": 300
+    },
+    {
+      "frozen_after_display": true,
+      "frozen_before_first_display": true,
+      "origins": [
+        "(30.0, 70.0)",
+        "(-55.0, 80.0)"
+      ],
+      "retained_after_cold_export": {
+        "advances": 3,
+        "births": 4,
+        "draws": 0,
+        "live": 2,
+        "old_advance": 0,
+        "old_draw": 0,
+        "old_prepare": 0,
+        "upload_bytes": 0
+      },
+      "retained_before_cold_export": {
+        "advances": 2,
+        "births": 2,
+        "draws": 0,
+        "live": 2,
+        "old_advance": 0,
+        "old_draw": 0,
+        "old_prepare": 0,
+        "upload_bytes": 0
+      }
+    },
+    {
+      "births": 50,
+      "hits": 34,
+      "retired_before_first_display": true
+    },
+    {
+      "hulls": 5,
+      "maximum_error_px": 0.0000682393801980652,
+      "projection_points": 675,
+      "runtime_emission_pixel_offset": true,
+      "runtime_hardpoint_offset": true,
+      "runtime_mount_scale": true,
+      "runtime_scales": [
+        0.7,
+        1.0,
+        1.35
+      ],
+      "weapon_families": 4
+    }
+  ],
+  "failures": 0,
+  "native_sha256": "b97f74aaffbbf2d3b7420a97cb4f3b1d053f46943cae6fb00f6410ba93adc14f"
+}
