@@ -8,9 +8,9 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-# Integration owner must advance this to the reviewed main commit after merging.
-BASE = 'd3812007438652f4e184bece6d21f6e7ce8c8420'
-DLL_SHA = '04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f'
+# Reviewed source-tree anchor. The parent merge must retain its ancestry.
+BASE = 'fda7be2c217a208067f97266f85497b83cbdd840'
+DLL_SHA = '137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78'
 BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',
@@ -58,7 +58,7 @@ def checked_source(root):
     run(['git', 'merge-base', '--is-ancestor', BASE, 'HEAD'], root)
     # Compare both committed and working-tree runtime against accepted source.
     changed = '\n'.join(path for path in run(
-        ['git', 'diff', '--name-only', BASE, '--', 'space-battleship'], root
+        ['git', 'diff', '--no-renames', '--name-only', BASE, '--', 'space-battleship'], root
     ).splitlines() if path not in NON_RUNTIME_CHANGES)
     if changed:
         raise RuntimeError('运行内容偏离已验收版本，停止启动：\n' + changed)
@@ -66,14 +66,15 @@ def checked_source(root):
     local_changes = '\n'.join(path for path in run(
         ['git', 'status', '--porcelain', '--untracked-files=no', '--', 'space-battleship'], root
     ).splitlines() if path[3:] not in NON_RUNTIME_CHANGES and not path[3:].endswith(('.uid', '.import')))
-    # The entry itself writes this descriptor on first run; its exact bytes
-    # are checked below before the engine starts.
+    # These are entry-managed files, not additional trusted source. The DLL
+    # and descriptor are both checked separately before the engine starts.
     untracked_runtime = '\n'.join(path for path in run(
         ['git', 'ls-files', '--others', '--exclude-standard', '--', 'space-battleship'], root
     ).splitlines() if not path.endswith(('.uid', '.import'))
     and not (path.startswith('space-battleship/docs/tasks/playtest-ui-art/evidence/')
              and path.endswith('.translation'))
-    and path != 'space-battleship/space_native.gdextension')
+    and path not in {'space-battleship/space_native.gdextension',
+                     'space-battleship/bin/space_native.dll'})
     if untracked_runtime:
         local_changes += '\n' + untracked_runtime
     if local_changes:

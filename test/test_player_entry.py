@@ -43,6 +43,14 @@ class Validation(unittest.TestCase):
   (self.p/'bin/space_native.dll').write_bytes(b'old')
   with self.assertRaisesRegex(RuntimeError,'实际 SHA256'):
    self.invoke()
+ def test_entry_managed_dll_still_requires_exact_hash(self):
+  generated='space-battleship/bin/space_native.dll'
+  self.assertEqual(self.invoke(untracked=generated)[0],self.p)
+  (self.p/'bin/space_native.dll').write_bytes(b'old')
+  with self.assertRaisesRegex(RuntimeError,'实际 SHA256'):
+   self.invoke(untracked=generated)
+  with self.assertRaisesRegex(RuntimeError,'Unreviewed local runtime'):
+   self.invoke(untracked='space-battleship/bin/unknown.dll')
  def test_missing_dll(self):
   (self.p/'bin/space_native.dll').unlink()
   with self.assertRaisesRegex(RuntimeError,'缺少原生库'):
@@ -83,4 +91,13 @@ class Validation(unittest.TestCase):
  def test_autoload_pack(self):
   (self.p/'engine/Godot_v4.7.2-stable_win64.pck').touch()
   with self.assertRaises(RuntimeError):self.invoke()
+class ReleaseInventory(unittest.TestCase):
+ def test_actual_player_bundle_and_inventory_are_coherent(self):
+  root=Path(__file__).resolve().parents[1]
+  import json
+  inventory=json.loads((root/'space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json').read_text(encoding='utf-8'))
+  self.assertEqual(m.digest(root/m.BUNDLED_DLL),m.DLL_SHA)
+  self.assertEqual(inventory['dll']['runtime_sha256'],m.DLL_SHA)
+  self.assertEqual(inventory['dll']['bundled_sha256'],m.DLL_SHA)
+  self.assertEqual(inventory['dll']['bundled_path'],m.BUNDLED_DLL.as_posix())
 if __name__=='__main__':unittest.main()
