@@ -1,0 +1,116 @@
+{
+  "area_logical": {
+    "end_y": 499.2,
+    "height": 499.2,
+    "width": 572,
+    "x": 0,
+    "y": 0
+  },
+  "area_png": {
+    "height": 350.950317382812,
+    "width": 402.040985107422,
+    "x": 1.0,
+    "y": 112.484069824219
+  },
+  "baseline": "02725575",
+  "battle_logical": [
+    572,
+    960
+  ],
+  "boundary_basis": "Existing enemy band: battle clip top0 to fifteen-contact fixed_rows frontline=BATTLE_VIEW_SIZE.y*0.52=499.2. Layout top100 is a centre inset within this band, retained for meters/status; x uses full battle clip width. Preview ruler only, not new ship footprint/capacity rules.",
+  "cell_logical": [
+    114.4,
+    166.4
+  ],
+  "cell_png": [
+    80.4081954956055,
+    116.983436584473
+  ],
+  "engine": "4.6.3-stable (official)",
+  "fixture": "same eight actors and sizes as previous actual main-scene QA preview; ruler only",
+  "friendly_fires": 3,
+  "grid_only_preview": true,
+  "hits": 70,
+  "hostile_fires": 80,
+  "hull_size_changes": false,
+  "native": false,
+  "production_changes": false,
+  "rows": [
+    {
+      "archetype": "scout",
+      "centre_error": 0.0,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/scout-hull.png",
+      "position": "(90.0, 130.0)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/scout.png",
+      "visual_key": "enemy_opening_scout",
+      "width": 43.6811700294232
+    },
+    {
+      "archetype": "sentry",
+      "centre_error": 0.0,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/sentry-hull.png",
+      "position": "(220.0, 130.0)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/sentry.png",
+      "visual_key": "enemy_opening_sentry",
+      "width": 47.3138726310173
+    },
+    {
+      "archetype": "interceptor",
+      "centre_error": 0.0000019073486328125,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/interceptor-hull.png",
+      "position": "(350.0, 130.0)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/interceptor.png",
+      "visual_key": "enemy_opening_interceptor",
+      "width": 44.7329795330568
+    },
+    {
+      "archetype": "swarm",
+      "centre_error": 0.0,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/swarm-hull.png",
+      "position": "(480.0, 130.0)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/swarm.png",
+      "visual_key": "enemy_opening_swarm",
+      "width": 42.7608112133142
+    },
+    {
+      "archetype": "anchor",
+      "centre_error": 0.0,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/anchor-hull.png",
+      "position": "(90.0, 282.88)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/anchor.png",
+      "visual_key": "enemy_opening_anchor",
+      "width": 51.3837856254098
+    },
+    {
+      "archetype": "reactive",
+      "centre_error": 0.0,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/reactive-hull.png",
+      "position": "(220.0, 282.88)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/reactive.png",
+      "visual_key": "enemy_opening_reactive",
+      "width": 52.2906612102289
+    },
+    {
+      "archetype": "shielded",
+      "centre_error": 0.0000019073486328125,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/shielded-hull.png",
+      "position": "(350.0, 282.88)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/shielded.png",
+      "visual_key": "enemy_opening_shielded",
+      "width": 63.585520659051
+    },
+    {
+      "archetype": "command",
+      "centre_error": 0.0,
+      "geometry_texture": "res://assets/ships/enemy/opening_v2/command-hull.png",
+      "position": "(480.0, 282.88)",
+      "texture": "res://assets/ships/enemy/fleet_20261019/command.png",
+      "visual_key": "enemy_opening_command",
+      "width": 65.2752168383515
+    }
+  ],
+  "window_png": [
+    1372,
+    883
+  ]
+}

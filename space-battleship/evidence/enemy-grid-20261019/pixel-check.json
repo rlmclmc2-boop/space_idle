@@ -1,0 +1,40 @@
+{
+  "png_size": [
+    1372,
+    883
+  ],
+  "vertical_grid_lines_x": [
+    0,
+    80,
+    160,
+    241,
+    321,
+    401
+  ],
+  "horizontal_grid_lines_y": [
+    112,
+    229,
+    346,
+    463
+  ],
+  "raster_column_pitch_px": [
+    80,
+    80,
+    81,
+    80,
+    80
+  ],
+  "raster_row_pitch_px": [
+    117,
+    117,
+    117
+  ],
+  "projected_cell_px": [
+    80.4081954956055,
+    116.983436584473
+  ],
+  "line_position_tolerance_px": 3,
+  "note": "PNG raster lines include viewport clipping and subpixel/AA rounding; physical pixel sizes are approximate.",
+  "production_files_unchanged": true,
+  "passed": true
+}
