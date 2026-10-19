@@ -799,7 +799,7 @@ func _stable_player_anchor() -> Vector2:
 	# renderer; real game.player.x movement, if any, remains the input.
 	point-=Vector2(sin(fx_time*TAU/5.7)*float(battle_visual.player_idle_x),sin(fx_time*TAU/4.3)*float(battle_visual.player_idle_y))
 	if reference_height>0:
-		point.y=minf(point.y,BATTLE_VIEW_SIZE.y-float(battle_visual.player_hud_gap)-reference_height*0.5)
+		point.y=minf(point.y,BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-reference_height*0.5)
 	return point
 
 
