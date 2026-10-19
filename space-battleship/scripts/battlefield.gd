@@ -179,7 +179,7 @@ func create_battle_game(persist:bool)->BattleGame:
 	return prototype
 
 func _rail_geometry(shot: Dictionary) -> Dictionary:
-	return {"origin":battle_point(visual_muzzle(shot)),"aim":entity_render_position(shot.target),"bounds":battle_clip.size,"full_width":rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0))),"tier":weapon_evolution_tier(shot)}
+	return {"origin":battle_point(_numeric_launch_origin(shot)),"aim":entity_render_position(shot.target),"bounds":battle_clip.size,"full_width":rail_vfx.discharge_width(float(shot.get("rail_width_multiplier",1.0))),"tier":weapon_evolution_tier(shot)}
 
 
 func _prototype_target_point(target:Dictionary)->Vector2:
@@ -224,6 +224,16 @@ func shot_mount(shot:Dictionary)->int:
 	return super.shot_mount(shot)
 
 func visual_muzzle(shot:Dictionary)->Vector2:
+	# Render emitters follow the artwork; numeric launch and rail providers
+	# retain the original Muzzle nodes and committed combat coordinates.
+	if not bool(shot.get("hostile",false)) and not bool(shot.get("chain_hop",false)) and _visual_drone_id(shot).is_empty() and is_instance_valid(ship_view):
+		var slot:int=shot_mount(shot)
+		if slot>=0:
+			var point:Vector2=ship_view.screen_visual_muzzle_for_slot(slot,int(shot.get("salvo_ordinal",0)))
+			if point!=Vector2.ZERO:return battle_logical_point(point)
+	return _numeric_launch_origin(shot)
+
+func _numeric_launch_origin(shot:Dictionary)->Vector2:
 	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
 	if battle_slice_runtime!=null:return battle_slice_runtime.muzzle(shot)
 	if bool(shot.get("prototype_missile",false)) or shot.has("ballistic_target_origin"):return Vector2(shot.launch_point)
@@ -411,8 +421,8 @@ func _draw_muzzle_cues() -> void:
 		var age := fx_time-float(pose.get("fired_at",-100.0))
 		if age<0.0 or age>0.12: continue
 		var fade := 1.0-age/0.12
-		var point: Vector2 = ship_view.screen_muzzle_for_slot(int(module.slot))
-		var ahead: Vector2 = ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
+		var point: Vector2 = ship_view.screen_visual_muzzle_for_slot(int(module.slot))
+		var ahead: Vector2 = ship_view.camera.unproject_position(ship_view.visual_port_for_slot(int(module.slot)).to_global(Vector3(0,0,-0.5)))
 		var direction := (ahead-point).normalized()
 		var across := Vector2(-direction.y,direction.x)
 		var color := Color("ffbf75") if str(module.key) in ["missile","cannon"] else Color("96f6ff")
@@ -638,8 +648,8 @@ func _draw_rail_charge(module:Dictionary)->void:
 	var slot:=int(module.slot)
 	var amount:float=player_railgun_charge(slot)
 	if amount<=0.0:return
-	var point:Vector2=ship_view.screen_muzzle_for_slot(slot)
-	var ahead:Vector2=ship_view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-0.5)))
+	var point:Vector2=ship_view.screen_visual_muzzle_for_slot(slot)
+	var ahead:Vector2=ship_view.camera.unproject_position(ship_view.visual_port_for_slot(slot).to_global(Vector3(0,0,-0.5)))
 	rail_vfx.charge(pulse_layer,point,(ahead-point).normalized(),amount,fx_time)
 
 

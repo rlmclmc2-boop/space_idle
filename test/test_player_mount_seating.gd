@@ -77,11 +77,19 @@ func pose(view,index:int,state:String)->Array:
 		var bearing:MeshInstance3D=module.node.find_child("RotationBearing",true,false)
 		var base:Vector2=view.camera.unproject_position(bearing.to_global(bearing.get_aabb().get_center()))
 		var pivot:Vector2=view.camera.unproject_position(module.pivot.global_position)
-		var error:float=maxf(base.distance_to(expected),pivot.distance_to(expected))
+		var art_error:=0.0
+		var weapon_plane:=module.node.find_child("StaticWeaponArt",true,false) as MeshInstance3D
+		if weapon_plane!=null:
+			var weapon_row:Dictionary=view.static_weapon_art[str(module.key)]
+			var weapon_texture:Texture2D=(weapon_plane.material_override as StandardMaterial3D).albedo_texture
+			var art_uv:=Vector2(float(weapon_row.anchor[0]),float(weapon_row.anchor[1]))/Vector2(weapon_texture.get_size())
+			var painted_base:Vector2=view.camera.unproject_position(image_point(weapon_plane,art_uv))
+			art_error=painted_base.distance_to(expected)
+		var error:float=maxf(art_error,maxf(base.distance_to(expected),pivot.distance_to(expected)))
 		maximum=maxf(maximum,error)
 		if error>0.05:failures+=1
 		var row:Dictionary={"hull":KEYS[index],"slot":slot,"weapon":str(module.key),"state":state,
-			"seat":expected,"bearing":base,"pivot":pivot,"bearing_error":base.distance_to(expected),"pivot_error":pivot.distance_to(expected)}
+			"seat":expected,"bearing":base,"pivot":pivot,"bearing_error":base.distance_to(expected),"pivot_error":pivot.distance_to(expected),"painted_base_error":art_error}
 		results.append(row);measured.append(row)
 		print("SEAT ",KEYS[index]," slot=",slot," state=",state," bearing=",row.bearing_error," pivot=",row.pivot_error)
 	return measured

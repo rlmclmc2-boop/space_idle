@@ -378,7 +378,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			for socket in [modules.back().muzzle,modules.back().muzzle2]:
 				if socket!=null:socket.position.z=-0.495
 		_install_materials(node,"weapon")
-		_install_static_weapon_art(node,str(item.key))
+		modules.back().visual_ports=_install_static_weapon_art(node,str(item.key))
 	_fit_approved_weapon_mounts()
 	loadout_signature = signature
 	weapon = modules[0].node if not modules.is_empty() else null
@@ -388,8 +388,8 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 	return true
 
 
-func _install_static_weapon_art(node:Node3D,key:String)->void:
-	if not static_weapon_art.has(key):return
+func _install_static_weapon_art(node:Node3D,key:String)->Array:
+	if not static_weapon_art.has(key):return []
 	var row:Dictionary=static_weapon_art[key]
 	var texture:=load(str(row.texture)) as Texture2D
 	var anchor:=Vector2(float(row.anchor[0]),float(row.anchor[1]))
@@ -398,7 +398,9 @@ func _install_static_weapon_art(node:Node3D,key:String)->void:
 	var plane:=MeshInstance3D.new();plane.name="StaticWeaponArt"
 	var mesh:=PlaneMesh.new();mesh.size=Vector2(texture.get_size())/ppm;plane.mesh=mesh
 	var offset:Vector2=(Vector2(texture.get_size())*0.5-anchor)/ppm
-	plane.position=Vector3(offset.x,0.12,offset.y)
+	var display_scale:=float(row.get("visual_scale",1.0))
+	plane.scale=Vector3.ONE*display_scale
+	plane.position=Vector3(offset.x*display_scale,0.12,offset.y*display_scale)
 	plane.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var material:=StandardMaterial3D.new();material.albedo_texture=texture
 	material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -406,6 +408,25 @@ func _install_static_weapon_art(node:Node3D,key:String)->void:
 	material.alpha_scissor_threshold=0.35;material.cull_mode=BaseMaterial3D.CULL_DISABLED
 	plane.material_override=material
 	node.find_child("TurretPivot",true,false).add_child(plane)
+	var ports:Array=[]
+	for pixel in row.emission_pixels:
+		var port:=Node3D.new();port.name="VisualPort%02d"%(ports.size()+1)
+		port.position=Vector3((float(pixel[0])/texture.get_width()-.5)*mesh.size.x,0,(float(pixel[1])/texture.get_height()-.5)*mesh.size.y)
+		plane.add_child(port);ports.append(port)
+	return ports
+
+func visual_port_for_slot(slot:int,ordinal:int=0)->Node3D:
+	for module in modules:
+		if int(module.slot)!=slot:continue
+		var ports:Array=module.get("visual_ports",[])
+		if not ports.is_empty():return ports[posmod(ordinal,ports.size())]
+		return module.muzzle2 if ordinal%2==1 and module.muzzle2!=null else module.muzzle
+	return null
+
+func screen_visual_muzzle_for_slot(slot:int,ordinal:int=0)->Vector2:
+	var port:=visual_port_for_slot(slot,ordinal)
+	return camera.unproject_position(port.global_position) if port!=null else Vector2.ZERO
+
 
 
 func aim_at(target: Vector2) -> void:

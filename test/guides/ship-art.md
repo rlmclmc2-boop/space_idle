@@ -12,3 +12,5 @@
 Static carrier pagination: `python test/run.py test_drone_preview_pages.gd --headless` for logic; graphical run with `DRONE_PREVIEW_EVIDENCE` captures default, last-page and empty states.
 
 静态新炮台与脉冲贴图：`test_static_weapon_preview.gd` 需图形环境；设 `STATIC_WEAPON_EVIDENCE` 为隔离证据目录。检查四炮台三种姿态的贴图锚点、CPU/retained GPU 光弹轮廓，以及原时钟/速度位移。调用真实舰体/武器/VFX 实例生成预览，不代替原生整场回归。安装座仍运行 `test_player_mount_seating.gd --headless`。
+
+完整战场炮台尺度：图形运行 `test_turret_full_battle.gd`，设 `FULL_HULL` 为五档舰名之一、`FULL_WEAPON` 为 cannon/missile/laser/longLaser、`FULL_OUTPUT` 为本次隔离目录。实例化实际 main.tscn，实际开火/命中后保存原窗口PNG；另保存暂停后的左右60度无遮挡检查，不修改正式数值或存档。记录实际截图尺寸与炮台可见矩形的屏幕像素，禁止用局部放大图替代。

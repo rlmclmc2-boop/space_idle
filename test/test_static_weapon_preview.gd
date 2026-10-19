@@ -8,8 +8,8 @@ class FX extends Node2D:
 	var view
 	func _draw()->void:
 		for module in view.modules:
-			var point:Vector2=view.screen_muzzle_for_slot(int(module.slot))
-			var ahead:Vector2=view.camera.unproject_position(module.muzzle.to_global(Vector3(0,0,-1)))
+			var point:Vector2=view.screen_visual_muzzle_for_slot(int(module.slot))
+			var ahead:Vector2=view.camera.unproject_position(view.visual_port_for_slot(int(module.slot)).to_global(Vector3(0,0,-1)))
 			var axis:Vector2=(ahead-point).normalized()
 			match str(module.key):
 				"cannon":
@@ -69,7 +69,7 @@ func run()->void:
 				var pixel:Array=row.emission_pixels[ordinal]
 				var port:=Vector3((float(pixel[0])/texture.get_width()-.5)*size.x,0,(float(pixel[1])/texture.get_height()-.5)*size.y)
 				var visible_port:Vector2=view.camera.unproject_position(plane.to_global(port))
-				var actual_port:Vector2=view.screen_muzzle_for_slot(int(module.slot),ordinal)
+				var actual_port:Vector2=view.screen_visual_muzzle_for_slot(int(module.slot),ordinal)
 				max_art_muzzle_error=maxf(max_art_muzzle_error,visible_port.distance_to(actual_port))
 				assert(visible_port.distance_to(actual_port)<0.1,"Static visible port differs from retained muzzle node")
 		if column==2:

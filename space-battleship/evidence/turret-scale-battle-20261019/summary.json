@@ -1,0 +1,242 @@
+{
+  "base": "97990c6e",
+  "full_scene": "res://main.tscn",
+  "runtime": "Godot 4.6.3 GDS fallback, llvmpipe",
+  "native_loaded_or_built": false,
+  "capture_pixels": [
+    1372,
+    883
+  ],
+  "battle_cases": 20,
+  "battle_frames": 20,
+  "paused_turn_frames": 40,
+  "all_cases_fired_and_hit": true,
+  "clearance_pairs": 480,
+  "covered_neighbor_bearings": 0,
+  "fixed_and_painted_base_samples": 90,
+  "max_seating_error_px": 0.000338800105964765,
+  "canonical_muzzle_geometry_error_px": 6.82393802e-05,
+  "cases": [
+    {
+      "hull": "Frigate",
+      "weapon": "cannon",
+      "slots": 1,
+      "fires": 1,
+      "hits": 1,
+      "width_px_min": 38.539488353175216,
+      "width_px_max": 38.539488353175216,
+      "height_px_min": 50.00758706369707,
+      "height_px_max": 50.00758706369707
+    },
+    {
+      "hull": "Frigate",
+      "weapon": "missile",
+      "slots": 1,
+      "fires": 6,
+      "hits": 4,
+      "width_px_min": 34.46768460728818,
+      "width_px_max": 34.46768460728818,
+      "height_px_min": 36.96983573667472,
+      "height_px_max": 36.96983573667472
+    },
+    {
+      "hull": "Frigate",
+      "weapon": "laser",
+      "slots": 1,
+      "fires": 2,
+      "hits": 1,
+      "width_px_min": 39.80710180765373,
+      "width_px_max": 39.80710180765373,
+      "height_px_min": 44.70119697816903,
+      "height_px_max": 44.70119697816903
+    },
+    {
+      "hull": "Frigate",
+      "weapon": "longLaser",
+      "slots": 1,
+      "fires": 2,
+      "hits": 6,
+      "width_px_min": 35.256549756061986,
+      "width_px_max": 35.256549756061986,
+      "height_px_min": 44.53134381694185,
+      "height_px_max": 44.53134381694185
+    },
+    {
+      "hull": "Destroyer",
+      "weapon": "cannon",
+      "slots": 2,
+      "fires": 2,
+      "hits": 2,
+      "width_px_min": 41.90547224495923,
+      "width_px_max": 46.243959102393205,
+      "height_px_min": 53.8279793031754,
+      "height_px_max": 56.5183351578251
+    },
+    {
+      "hull": "Destroyer",
+      "weapon": "missile",
+      "slots": 2,
+      "fires": 16,
+      "hits": 8,
+      "width_px_min": 39.83068632387023,
+      "width_px_max": 42.82828702174782,
+      "height_px_min": 42.24588869156383,
+      "height_px_max": 44.95615057176159
+    },
+    {
+      "hull": "Destroyer",
+      "weapon": "laser",
+      "slots": 2,
+      "fires": 4,
+      "hits": 1,
+      "width_px_min": 40.360860167697204,
+      "width_px_max": 44.378436899778734,
+      "height_px_min": 45.89408077116935,
+      "height_px_max": 49.24872416834677
+    },
+    {
+      "hull": "Destroyer",
+      "weapon": "longLaser",
+      "slots": 2,
+      "fires": 6,
+      "hits": 12,
+      "width_px_min": 43.73592170936935,
+      "width_px_max": 46.63931464357495,
+      "height_px_min": 51.41291769704504,
+      "height_px_max": 52.99818489320816
+    },
+    {
+      "hull": "Cruiser",
+      "weapon": "cannon",
+      "slots": 3,
+      "fires": 3,
+      "hits": 3,
+      "width_px_min": 48.93873982409715,
+      "width_px_max": 54.00126698600799,
+      "height_px_min": 65.76055504583536,
+      "height_px_max": 69.17274337276342
+    },
+    {
+      "hull": "Cruiser",
+      "weapon": "missile",
+      "slots": 3,
+      "fires": 24,
+      "hits": 13,
+      "width_px_min": 56.1876993139749,
+      "width_px_max": 61.57589259484004,
+      "height_px_min": 58.77110615391884,
+      "height_px_max": 63.41903273059475
+    },
+    {
+      "hull": "Cruiser",
+      "weapon": "laser",
+      "slots": 3,
+      "fires": 9,
+      "hits": 3,
+      "width_px_min": 60.42407346860006,
+      "width_px_max": 66.74513643510114,
+      "height_px_min": 65.96543933499244,
+      "height_px_max": 70.6777779856035
+    },
+    {
+      "hull": "Cruiser",
+      "weapon": "longLaser",
+      "slots": 3,
+      "fires": 9,
+      "hits": 14,
+      "width_px_min": 54.420315627735164,
+      "width_px_max": 61.16101359133901,
+      "height_px_min": 64.90868146342608,
+      "height_px_max": 68.58416826801914
+    },
+    {
+      "hull": "Battleship",
+      "weapon": "cannon",
+      "slots": 4,
+      "fires": 4,
+      "hits": 4,
+      "width_px_min": 49.36879891676525,
+      "width_px_max": 49.36884235049674,
+      "height_px_min": 68.48289962276343,
+      "height_px_max": 68.48289962276343
+    },
+    {
+      "hull": "Battleship",
+      "weapon": "missile",
+      "slots": 4,
+      "fires": 16,
+      "hits": 16,
+      "width_px_min": 49.25871612422199,
+      "width_px_max": 49.258759557953475,
+      "height_px_min": 53.04364712622851,
+      "height_px_max": 53.043734052104334
+    },
+    {
+      "hull": "Battleship",
+      "weapon": "laser",
+      "slots": 4,
+      "fires": 8,
+      "hits": 1,
+      "width_px_min": 54.26401934485218,
+      "width_px_max": 63.57938204563501,
+      "height_px_min": 62.123837181829636,
+      "height_px_max": 69.87206204322077
+    },
+    {
+      "hull": "Battleship",
+      "weapon": "longLaser",
+      "slots": 4,
+      "fires": 12,
+      "hits": 18,
+      "width_px_min": 58.887974402716544,
+      "width_px_max": 66.84468654775026,
+      "height_px_min": 70.10502339024697,
+      "height_px_max": 74.33605346679687
+    },
+    {
+      "hull": "Heavy_Battleship",
+      "weapon": "cannon",
+      "slots": 5,
+      "fires": 4,
+      "hits": 4,
+      "width_px_min": 51.0928357389458,
+      "width_px_max": 66.1535255780359,
+      "height_px_min": 69.69003925938759,
+      "height_px_max": 79.32568566106987
+    },
+    {
+      "hull": "Heavy_Battleship",
+      "weapon": "missile",
+      "slots": 5,
+      "fires": 20,
+      "hits": 16,
+      "width_px_min": 49.2184747719666,
+      "width_px_max": 49.21849648883227,
+      "height_px_min": 53.000358040102135,
+      "height_px_max": 53.00044496597782
+    },
+    {
+      "hull": "Heavy_Battleship",
+      "weapon": "laser",
+      "slots": 5,
+      "fires": 10,
+      "hits": 2,
+      "width_px_min": 53.43151415433133,
+      "width_px_max": 64.86636694437242,
+      "height_px_min": 61.39600682412431,
+      "height_px_max": 70.87961986910919
+    },
+    {
+      "hull": "Heavy_Battleship",
+      "weapon": "longLaser",
+      "slots": 5,
+      "fires": 15,
+      "hits": 19,
+      "width_px_min": 57.62378135459549,
+      "width_px_max": 68.73852754331728,
+      "height_px_min": 69.29635196808839,
+      "height_px_max": 75.03502443375133
+    }
+  ],
+  "remaining_gap": "Godot 4.7 native/GPU full-battle visual emitter mapping is not verified; native event positions remain numeric. No native acceptance is claimed."
+}

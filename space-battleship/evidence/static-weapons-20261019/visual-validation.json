@@ -19,5 +19,7 @@
   "pulse_cpu_gpu_rgba_max_error": 0,
   "runtime": "Godot 4.6.3 / Mesa llvmpipe / Xorg dummy",
   "scope": "Rendered presentation preview using live PresentedShipView, real VFX functions and retained GPU shader fixture; no native battle extension loaded.",
-  "gameplay_config_or_native_changes": false
+  "gameplay_config_or_native_changes": false,
+  "size_review": "rejected: local previews do not establish full-battle readability",
+  "replacement": "../turret-scale-battle-20261019/README.md"
 }

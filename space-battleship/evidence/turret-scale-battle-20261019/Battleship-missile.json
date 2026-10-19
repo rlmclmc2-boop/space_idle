@@ -1,0 +1,67 @@
+{
+  "fires": 16,
+  "frames": 90,
+  "hits": 16,
+  "hull": "Battleship",
+  "native": false,
+  "slots": 4,
+  "turn_inspection": "paused +/-60 degrees; flights cleared only in isolated fixture",
+  "weapon": "missile",
+  "weapon_bounds": [
+    {
+      "opaque_aabb_height_px": 53.043734052104334,
+      "opaque_aabb_width_px": 49.25871612422199,
+      "slot": 1
+    },
+    {
+      "opaque_aabb_height_px": 53.043734052104334,
+      "opaque_aabb_width_px": 49.25871612422199,
+      "slot": 2
+    },
+    {
+      "opaque_aabb_height_px": 53.04364712622851,
+      "opaque_aabb_width_px": 49.25871612422199,
+      "slot": 3
+    },
+    {
+      "opaque_aabb_height_px": 53.04364712622851,
+      "opaque_aabb_width_px": 49.258759557953475,
+      "slot": 4
+    }
+  ],
+  "window": [
+    1372,
+    883
+  ],
+  "texture_reported_size": [
+    964,
+    620
+  ],
+  "projection_raster_factor": [
+    1.4232365145228216,
+    1.4241935483870967
+  ],
+  "logical_weapon_bounds": [
+    {
+      "opaque_aabb_height_px": 37.2447509765625,
+      "opaque_aabb_width_px": 34.6103515625,
+      "slot": 1
+    },
+    {
+      "opaque_aabb_height_px": 37.2447509765625,
+      "opaque_aabb_width_px": 34.6103515625,
+      "slot": 2
+    },
+    {
+      "opaque_aabb_height_px": 37.2446899414062,
+      "opaque_aabb_width_px": 34.6103515625,
+      "slot": 3
+    },
+    {
+      "opaque_aabb_height_px": 37.2446899414062,
+      "opaque_aabb_width_px": 34.6103820800781,
+      "slot": 4
+    }
+  ],
+  "measurement_note": "Original viewport projection measurements converted from reported texture logical size to actual PNG raster size; original values retained as logical_weapon_bounds."
+}

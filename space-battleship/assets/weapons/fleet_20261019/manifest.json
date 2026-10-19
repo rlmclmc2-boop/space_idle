@@ -21,6 +21,7 @@
         437,
         437
       ],
+      "visual_scale": 1.85,
       "source_emission_pixels": [
         [
           298,
@@ -52,9 +53,10 @@
         411
       ],
       "pixels_per_model": [
-        415,
-        648
+        480,
+        480
       ],
+      "visual_scale": 1.85,
       "source_emission_pixels": [
         [
           694,
@@ -97,6 +99,7 @@
         461,
         461
       ],
+      "visual_scale": 1.9,
       "source_emission_pixels": [
         [
           1371,
@@ -131,6 +134,7 @@
         586,
         586
       ],
+      "visual_scale": 2.2,
       "source_emission_pixels": [
         [
           1900,
