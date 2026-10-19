@@ -1,0 +1,331 @@
+diff --git a/space-battleship/addons/native_battle/src/combat_execution_kernel.h b/space-battleship/addons/native_battle/src/combat_execution_kernel.h
+index 17282f2..8143f6f 100644
+--- a/space-battleship/addons/native_battle/src/combat_execution_kernel.h
++++ b/space-battleship/addons/native_battle/src/combat_execution_kernel.h
+@@ -56,6 +56,7 @@ class SpaceCombatKernel : public RefCounted {
+                secondary_probability = 0;
+         int chain_count = 0;
+         Vector2 muzzle, screen_muzzle;
++        PackedVector2Array presentation_muzzles; // Display inputs only; never used by combat.
+         Dictionary entry, row;
+         int64_t beam = -1;
+         std::shared_ptr<const BirthConfig> birth;
+@@ -122,6 +123,8 @@ class SpaceCombatKernel : public RefCounted {
+         bool await_target = false;
+         bool fixed_ray = false;
+         Vector2 ray_origin, ray_step, launch_point;
++        bool presentation_ray = false;
++        Vector2 presentation_origin, presentation_step; // Frozen at actual birth, before first display.
+         uint64_t contact_revision = 0;
+         double contact_distance = -1;
+         Ref<SpaceMotionLease> lease;
+@@ -162,6 +165,8 @@ class SpaceCombatKernel : public RefCounted {
+         int reactive_stacks = -1;
+         double reactive_multiplier = 1;
+         Vector2 point, direction, target_point;
++        bool presentation_ray = false;
++        Vector2 presentation_origin, presentation_step;
+         int64_t target_uid = -1;
+         Dictionary shot;
+         // Value-owned feedback survives compact()/slot reuse. No flight lookup
+@@ -719,6 +724,8 @@ class SpaceCombatKernel : public RefCounted {
+             e.laser_primary = f.instance->view.get("primary_target", target_view(f.target));
+             e.laser_launch = f.launch_point; e.laser_ray_origin = f.ray_origin; e.laser_ray_step = f.ray_step;
+         } else e.shot = f.view;
++        e.presentation_ray = f.presentation_ray;
++        e.presentation_origin = f.presentation_origin; e.presentation_step = f.presentation_step;
+         e.target_point = f.aim;
+         Actor *target = resolve(f.target);
+         e.target_uid = target ? target->uid : -1;
+@@ -868,6 +875,15 @@ class SpaceCombatKernel : public RefCounted {
+             m.direction = axis(angle(m.direction) + departure);
+             m.last_aim = aim;
+         }
++        // Parallel presentation geometry. Numerical origins, collision rays and RNG
++        // remain untouched. Only the immutable birth snapshot reaches rendering.
++        if (!w.hostile && !chain && !w.entry.has("drone_id") && !w.presentation_muzzles.is_empty()) {
++            f.presentation_ray = true;
++            const int ordinal = w.kind == 2 ? int(event_serial % w.presentation_muzzles.size()) : 0;
++            f.presentation_origin = w.presentation_muzzles[ordinal];
++            const Vector2 screen_aim = t ? t->screen_point : w.screen_muzzle + m.direction * 100;
++            f.presentation_step = (screen_aim - f.presentation_origin) / std::max(0.001, distance(from, aim));
++        }
+         if (compact_laser_births && !w.hostile && w.kind == 0 && !chain && t && t->collision_hull.size() >= 3) {
+             f.compact_laser = true; ++compact_laser_count; f.fixed_ray = true;
+             f.view_birth = weapons[wi].birth;
+@@ -878,6 +894,10 @@ class SpaceCombatKernel : public RefCounted {
+             effect(0, f, from, clock);
+             return id;
+         }
++        if (f.presentation_ray) {
++            f.view["presentation_origin"] = f.presentation_origin;
++            f.view["presentation_step"] = f.presentation_step;
++        }
+         f.view["serial"] = int64_t(f.serial);
+         f.view["x"] = from.x;
+         f.view["y"] = from.y;
+@@ -1860,6 +1880,7 @@ class SpaceCombatKernel : public RefCounted {
+         ClassDB::bind_method(D_METHOD("supports_strange_matter"), &SpaceCombatKernel::supports_strange_matter);
+         ClassDB::bind_method(D_METHOD("supports_laser_charge"), &SpaceCombatKernel::supports_laser_charge);
+         ClassDB::bind_method(D_METHOD("configure", "descriptor"), &SpaceCombatKernel::configure);
++        ClassDB::bind_method(D_METHOD("input_presentation_muzzles", "rows"), &SpaceCombatKernel::input_presentation_muzzles);
+         ClassDB::bind_method(D_METHOD("input_geometry", "points", "muzzles"),
+                              &SpaceCombatKernel::input_geometry);
+         ClassDB::bind_method(D_METHOD("input_ballistic_geometry", "hulls", "points", "muzzles", "stationary"), &SpaceCombatKernel::input_ballistic_geometry, DEFVAL(PackedByteArray()));
+@@ -2473,6 +2494,19 @@ class SpaceCombatKernel : public RefCounted {
+             values.push_back(actors[h.index].view);
+         return values;
+     }
++    // Atomic, O(weapon slots), reusable across arbitrary art/configuration edits.
++    // Empty rows select the existing numerical display fallback.
++    bool input_presentation_muzzles(Array rows) {
++        if (rows.size() != int(weapons.size())) return false;
++        for (int i = 0; i < rows.size(); ++i) {
++            if (rows[i].get_type() != Variant::PACKED_VECTOR2_ARRAY) return false;
++            PackedVector2Array ports = rows[i];
++            for (int j = 0; j < ports.size(); ++j)
++                if (!std::isfinite(ports[j].x) || !std::isfinite(ports[j].y)) return false;
++        }
++        for (int i = 0; i < rows.size(); ++i) weapons[i].presentation_muzzles = rows[i];
++        return true;
++    }
+     void input_ballistic_geometry(Array hulls, PackedVector2Array points, PackedVector2Array muzzles, PackedByteArray stationary = PackedByteArray()) {
+         for (int i = 0; i < int(actors.size()) && i < hulls.size() && i < points.size(); ++i) {
+             const PackedVector2Array hull = hulls[i];
+@@ -2560,6 +2594,7 @@ class SpaceCombatKernel : public RefCounted {
+         const auto &birth = *f.view_birth;
+         const Motion &m = f.lease->motion();
+         Dictionary v;
++        if (f.presentation_ray) { v["presentation_origin"] = f.presentation_origin; v["presentation_step"] = f.presentation_step; }
+         v["serial"] = int64_t(f.serial); v["x"] = f.launch_point.x; v["y"] = f.launch_point.y;
+         v["launch_point"] = f.launch_point;
+         const bool target_live = !f.target_view_cleared && f.target.index < actors.size() && actors[f.target.index].generation == f.target.generation;
+@@ -2825,6 +2860,7 @@ class SpaceCombatKernel : public RefCounted {
+                 d["reactive_stacks"] = e.reactive_stacks;
+                 d["reactive_multiplier"] = e.reactive_multiplier;
+             }
++            if (e.presentation_ray) { d["presentation_origin"] = e.presentation_origin; d["presentation_step"] = e.presentation_step; }
+             if (e.compact_laser) {
+                 Dictionary laser;
+                 laser["serial"] = int64_t(e.laser_serial); laser["mount"] = e.laser_mount;
+diff --git a/space-battleship/addons/native_battle/src/combat_retained_presentation.h b/space-battleship/addons/native_battle/src/combat_retained_presentation.h
+index fb57597..7841bc4 100644
+--- a/space-battleship/addons/native_battle/src/combat_retained_presentation.h
++++ b/space-battleship/addons/native_battle/src/combat_retained_presentation.h
+@@ -57,7 +57,7 @@ bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
+             if(!f.visual.is_empty()&&!same(f.visual["shot"],source.view))f.visual=Dictionary();
+             f.visual_state=f.visual.get("visual_lease",Variant());
+             f.fixed=source.fixed_ray;
+-            if(f.fixed){f.launch=source.launch_point;f.ray_origin=source.ray_origin;f.ray_step=source.ray_step;f.ray_direction=f.motion->motion().direction;}
++            if(f.fixed){f.launch=source.launch_point;f.ray_origin=source.presentation_ray?source.presentation_origin:source.ray_origin;f.ray_step=source.presentation_ray?source.presentation_step:source.ray_step;f.ray_direction=f.motion->motion().direction;}
+             else if(f.visual.has("fixed_step")){f.fixed=true;f.launch=f.visual["logical_origin"];f.ray_origin=f.visual["fixed_origin"];f.ray_step=f.visual["fixed_step"];f.ray_direction=f.visual["fixed_direction"];}
+             f.render_kind=f.beam?-1:(!f.hostile&&f.key=="laser")?0:(f.hostile&&(f.key=="laser"||f.key=="cannon"))?(source.type==2?3:2):-1;
+             f.anchor_speed=-1;
+diff --git a/space-battleship/scripts/battle_slice_runtime.gd b/space-battleship/scripts/battle_slice_runtime.gd
+index a092ec7..52296a0 100644
+--- a/space-battleship/scripts/battle_slice_runtime.gd
++++ b/space-battleship/scripts/battle_slice_runtime.gd
+@@ -10,6 +10,8 @@ class Effect extends RefCounted:
+ 	var tier:int=0
+ 	var uid:int=0
+ 	var style:int=0 # 0 enemy,1 pulse,2 missile,3 rail,4 beam
++	var display_origin:=Vector2.ZERO
++	var has_display_origin:=false
+ 	var position:=Vector2.ZERO
+ 	var aim:=Vector2.ZERO
+ 	var direction:=Vector2.UP
+@@ -173,10 +175,12 @@ func on_event(kind:String,info:Dictionary)->bool:
+ 			if scene.projectile_visuals.size()+scene.native_laser_visuals.size()<256:scene.native_laser_visuals[int(laser.serial)]=true
+ 		var e=Effect.new();e.kind=0 if kind=="fire" else 4;e.style=1
+ 		e.serial=int(laser.serial);e.position=Vector2(info.x,info.y);e.direction=info.direction;e.damage_type=int(info.type);e.critical=bool(info.critical)
++		if info.has("presentation_origin"):
++			e.has_display_origin=true;e.display_origin=geometry.battle_logical_point(info.presentation_origin)
+ 		if kind!="fire":
+ 			var distance:float=(e.position-Vector2(laser.launch)).dot(e.direction)
+-			e.position=geometry.battle_logical_point(Vector2(laser.ray_origin)+Vector2(laser.ray_step)*distance)
+-			e.direction=Vector2(laser.ray_step).normalized()
++			e.position=geometry.battle_logical_point(Vector2(info.get("presentation_origin",laser.ray_origin))+Vector2(info.get("presentation_step",laser.ray_step))*distance)
++			e.direction=Vector2(info.get("presentation_step",laser.ray_step)).normalized()
+ 		consume(e)
+ 		return true
+ 	# These feedback events never mutate geometry. Preserve every damage record
+@@ -197,6 +201,8 @@ func on_event(kind:String,info:Dictionary)->bool:
+ 			var shot:Dictionary=info.shot
+ 			e.serial=int(shot.serial);e.style=style(shot);e.damage_type=int(shot.get("type",0));e.spread=float(info.get("spread",0.0))
+ 			if e.style!=4:
++				if shot.has("presentation_origin"):
++					e.has_display_origin=true;e.display_origin=geometry.battle_logical_point(shot.presentation_origin)
+ 				e.position=Vector2(info.x,info.y);e.direction=Vector2(info.direction) if info.has("direction") else game.projectile_direction(shot)
+ 				e.aim=Vector2(info.aim) if info.has("aim") else geometry.target_point(shot.target) if not shot.target.is_empty() else e.position+e.direction*100.0
+ 				if e.style==3:
+@@ -213,8 +219,8 @@ func on_event(kind:String,info:Dictionary)->bool:
+ 			if shot.has("fixed_screen_step"):
+ 				# Feedback may arrive after this step moved the body. Use its committed birth ray.
+ 				var distance:float=(e.position-Vector2(shot.launch_point)).dot(game.projectile_direction(shot))
+-				e.position=geometry.battle_logical_point(Vector2(shot.fixed_screen_origin)+Vector2(shot.fixed_screen_step)*distance)
+-				e.direction=Vector2(shot.fixed_screen_step).normalized()
++				e.position=geometry.battle_logical_point(Vector2(shot.get("presentation_origin",shot.fixed_screen_origin))+Vector2(shot.get("presentation_step",shot.fixed_screen_step))*distance)
++				e.direction=Vector2(shot.get("presentation_step",shot.fixed_screen_step)).normalized()
+ 			elif visual.has("fixed_step"):e.position=scene.straight_projectile_point(e.position,visual)
+ 			consume(e)
+ 		"explode":
+@@ -256,7 +262,7 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
+ 	if game.combat_presentation!=null:game.combat_presentation.register_visual(shot,visual,scene.projectile_visuals.size()-1)
+ 	if shot.has("fixed_screen_step"):
+ 		visual.logical_origin=shot.launch_point
+-		visual.fixed_origin=shot.fixed_screen_origin;visual.fixed_step=shot.fixed_screen_step
++		visual.fixed_origin=shot.get("presentation_origin",shot.fixed_screen_origin);visual.fixed_step=shot.get("presentation_step",shot.fixed_screen_step)
+ 		visual.fixed_direction=game.projectile_direction(shot);visual.angle=Vector2(visual.fixed_step).angle()
+ 	elif geometry.weapon_key(shot) in ["laser","cannon"] and not shot.target.is_empty():
+ 		var aim:Vector2=shot.get("ballistic_target_origin",Vector2(shot.target.x,shot.target.y))
+@@ -267,12 +273,13 @@ func spawn_visual(shot:Dictionary,e:Effect)->void:
+ 	if game.combat_presentation!=null:game.combat_presentation.bind_visual(visual)
+ 
+ func consume(e:Effect)->void:
++	var launch_origin:Vector2=e.display_origin if e.has_display_origin else e.position
+ 	match e.kind:
+ 		0: # all original launches retain a body and an emitter effect
+ 			match e.style:
+ 				0,1:record_contact(e,true,false)
+-				2:scene.missile_events.append({"kind":"fire","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":false})
+-				3:scene.rail_events.append({"kind":"fire","origin":e.position,"position":e.position,"direction":e.direction,"aim":e.aim,"full_width":e.width,"born":geometry.fx_time})
++				2:scene.missile_events.append({"kind":"fire","position":launch_origin,"direction":e.direction,"born":geometry.fx_time,"critical":false})
++				3:scene.rail_events.append({"kind":"fire","origin":launch_origin,"position":launch_origin,"direction":e.direction,"aim":e.aim,"full_width":e.width,"born":geometry.fx_time})
+ 			if e.style==3:scene.railgun_sound("release")
+ 			else:scene.beep(620 if e.damage_type==1 else 200)
+ 		4:
+@@ -319,11 +326,12 @@ func close()->bool:
+ 	return true
+ 
+ func record_contact(e:Effect,launch:bool,critical:bool)->void:
++	var point:Vector2=e.display_origin if launch and e.has_display_origin else e.position
+ 	if game.combat_presentation!=null:
+-		game.combat_presentation.record_contact(e.style,e.position,e.direction,geometry.fx_time,launch,critical,e.damage_type)
++		game.combat_presentation.record_contact(e.style,point,e.direction,geometry.fx_time,launch,critical,e.damage_type)
+ 		return
+ 	if e.style==0:
+-		var event={"position":e.position,"direction":e.direction,"born":geometry.fx_time,"damage_type":e.damage_type}
++		var event={"position":point,"direction":e.direction,"born":geometry.fx_time,"damage_type":e.damage_type}
+ 		if launch:event.kind="fire"
+ 		scene._enemy_impacts.append(event)
+-	else:scene._pulse_events.append({"kind":"fire" if launch else "hit","position":e.position,"direction":e.direction,"born":geometry.fx_time,"critical":critical})
++	else:scene._pulse_events.append({"kind":"fire" if launch else "hit","position":point,"direction":e.direction,"born":geometry.fx_time,"critical":critical})
+diff --git a/space-battleship/scripts/logical_fleet_pose.gd b/space-battleship/scripts/logical_fleet_pose.gd
+index eac6a11..a94f93c 100644
+--- a/space-battleship/scripts/logical_fleet_pose.gd
++++ b/space-battleship/scripts/logical_fleet_pose.gd
+@@ -12,6 +12,7 @@ var manifest: Dictionary
+ var hulls: Dictionary = {}
+ var approved: Dictionary = {}
+ var weapons: Dictionary = {}
++var presentation_art: Dictionary = {}
+ var drone_sockets: Dictionary = {}
+ var carrier_mount: Array = []
+ var hull_key := ""
+@@ -37,6 +38,7 @@ var configured_bag:Dictionary={}
+ 
+ func prepare(view) -> void:
+ 	manifest = view.manifest
++	presentation_art = view.static_weapon_art
+ 	size = view.size
+ 	camera_transform = view.camera.get_camera_transform()
+ 	projection = view.camera.get_camera_projection()
+@@ -269,6 +271,26 @@ func screen_muzzle_for_slot(slot: int, ordinal := 0) -> Vector2:
+ 	module.socket_points[socket_index] = point
+ 	return point
+ 
++# Same authored anchor, emission pixels and scale as StaticWeaponArt. Pure
++# data projection: no live Node lookup and no per-projectile work.
++func screen_presentation_muzzles_for_slot(slot:int)->PackedVector2Array:
++	var ports:=PackedVector2Array()
++	var module:Dictionary=module_by_slot.get(slot,{})
++	if module.is_empty():return ports
++	var key:String=str(module.assignment.key)
++	if not presentation_art.has(key):return ports
++	var art:Dictionary=presentation_art[key]
++	var transform:=_mount(module)
++	var root_scale:float=VIEW.CARRIER_WEAPON_SCALE if module.assignment.carrier=="drone" else 1.0
++	transform=transform*Transform3D(Basis.from_scale(Vector3.ONE*root_scale),Vector3.ZERO)
++	var chain:Array=module.descriptor.pivot_chain
++	for index in chain.size():transform=transform*(module.pivot if index==chain.size()-1 else chain[index])
++	var scale:float=float(art.get("visual_scale",1.0))
++	for pixel in art.emission_pixels:
++		var local:=Vector3((float(pixel[0])-float(art.anchor[0]))/float(art.pixels_per_model[0])*scale,0.12,(float(pixel[1])-float(art.anchor[1]))/float(art.pixels_per_model[1])*scale)
++		ports.append(project(transform*local))
++	return ports
++
+ func screen_mount_for_slot(slot:int) -> Vector2:
+ 	var module: Dictionary = module_by_slot.get(slot,{})
+ 	if module.is_empty(): return Vector2.ZERO
+diff --git a/space-battleship/scripts/native_execution_session.gd b/space-battleship/scripts/native_execution_session.gd
+index 4b3d884..db6b71c 100644
+--- a/space-battleship/scripts/native_execution_session.gd
++++ b/space-battleship/scripts/native_execution_session.gd
+@@ -21,6 +21,7 @@ var hostile_weapon_indices:Array[int]=[]
+ var friendly_weapon_indices:Array[int]=[]
+ var weapon_geometry_keys:Dictionary={}
+ var geometry_muzzles:=PackedVector2Array()
++var presentation_muzzles:Array=[]
+ var geometry_player:=Vector2.INF
+ 
+ # Check only at configuration boundaries, including an already-running old DLL.
+@@ -43,7 +44,7 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
+ 	kernel=candidate
+ 	execution_scope=descriptor.execution_scope
+ 	weapons=descriptor.weapons
+-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
++	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+ 	actor_rows=kernel.enemy_views()
+ 	for row in actor_rows:actor_by_uid[int(row.uid)]=row
+ 	# Retire old queues and bodies before publishing the new owner. These are
+@@ -77,7 +78,7 @@ func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->b
+ 		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
+ 	if not kernel.update_configuration(descriptor):return false
+ 	weapons=descriptor.weapons
+-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
++	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+ 	return true
+ 
+ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
+@@ -104,7 +105,7 @@ func commit_galaxy_refit(game,plan:Dictionary)->bool:
+ 	if not supports_configuration(kernel,plan.descriptor):return false
+ 	if not kernel.refit_configuration(plan.descriptor):return false
+ 	weapons=plan.descriptor.weapons
+-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
++	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+ 	game.refit_health_ratios=plan.ratios
+ 	return true
+ 
+@@ -169,6 +170,16 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
+ 	geometry.battle_read_model.ensure_clock()
+ 	geometry.refresh_target_geometry()
+ 	geometry.refresh_fleet_geometry()
++	# Publish display-only ports even when numeric geometry revisions are stable
++	# (e.g. art scale/anchor changed). Cost follows mounts, never active shots.
++	if kernel.has_method("input_presentation_muzzles"):
++		var ports:Array=[]
++		for weapon in weapons:
++			ports.append(geometry.fleet_pose.screen_presentation_muzzles_for_slot(int(weapon.slot)) if not bool(weapon.hostile) and not weapon.entry.has("drone_id") else PackedVector2Array())
++		if ports!=presentation_muzzles:
++			var accepted:bool=kernel.input_presentation_muzzles(ports)
++			assert(accepted,"Presentation ports rejected")
++			presentation_muzzles=ports
+ 	var topology_changed:bool=geometry_muzzles.size()!=weapons.size()
+ 	if topology_changed:
+ 		hostile_weapon_indices.clear();friendly_weapon_indices.clear();weapon_geometry_keys.clear()
+@@ -230,6 +241,8 @@ func consume_feedback(game:RefCounted)->void:
+ 			# Frozen value feedback, including same-step retired births. No shot
+ 			# lookup or complete compatibility Dictionary is created here.
+ 			var info={"native_laser":row.native_laser,"x":p.x,"y":p.y,"pos":p,"type":row.type,"direction":row.direction,"aim":row.target_position,"critical":row.critical}
++			if row.has("presentation_origin"):
++				info.presentation_origin=row.presentation_origin;info.presentation_step=row.presentation_step
+ 			match int(row.kind):
+ 				0:game.event.emit("fire",info)
+ 				1:game.event.emit("projectile_impact",info)
+@@ -317,5 +330,5 @@ func commit_numeric_batch(game,batch:Dictionary)->bool:
+ 	descriptor.player=game.player.duplicate(true)
+ 	if not kernel.update_configuration(descriptor):return false
+ 	weapons=descriptor.weapons
+-	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
++	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+ 	return true

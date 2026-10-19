@@ -1,0 +1,82 @@
+--- c4a5e25968e757adc3a0ceb5bc741a615600f5bd:native_execution_session.gd
++++ isolated-QA:native_execution_session.gd
+@@ -1,4 +1,14 @@
+ extends RefCounted
++const QA_PORTS_PROBE=preload("res://probe.gd")
++var qa_profile:Dictionary={
++	"prepare_total":{"calls":0,"us":0,"max_us":0},
++	"advance_total":{"calls":0,"us":0,"max_us":0},
++	"kernel_advance":{"calls":0,"us":0,"max_us":0},
++	"feedback_total":{"calls":0,"us":0,"max_us":0},
++	"ports_total":{"calls":0,"us":0,"max_us":0},
++	"ports_compute":{"calls":0,"us":0,"max_us":0},
++	"ports_native_input":{"calls":0,"us":0,"max_us":0}
++}
+ ## Explicit low-load execution boundary. Rich content stays refused until its
+ ## rule compiler is complete; this session never runs a shadow Game battle.
+ var kernel:RefCounted
+@@ -123,9 +133,13 @@
+ 	game.event.emit("native_execution_handoff",{"reason":reason,"clock":exported.clock})
+ 	return true
+ 
+-func advance(game:RefCounted,dt:float)->bool:
++func _qa_original_advance(game:RefCounted,dt:float)->bool:
+ 	if kernel==null:return false
+-	if not kernel.advance(dt):
++	var _qa_kernel_active:bool=QA_PORTS_PROBE.active
++	var _qa_kernel_start:int=Time.get_ticks_usec() if _qa_kernel_active else 0
++	var _qa_kernel_ok:bool=kernel.advance(dt)
++	if _qa_kernel_active:_qa_profile_add("kernel_advance",Time.get_ticks_usec()-_qa_kernel_start)
++	if not _qa_kernel_ok:
+ 		if not handoff_to_legacy(game,"numeric_range"):
+ 			advance_blocked=true;game.paused=true;game.native_step_phase="blocked"
+ 			push_error("Native numeric boundary could not transfer its untouched combat step")
+@@ -165,7 +179,7 @@
+ 		if handoff_to_legacy(game,"wave_complete"):game.finish_combat_step(dt)
+ 	return true
+ 
+-func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
++func _qa_original_prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
+ 	geometry.battle_read_model.ensure_clock()
+ 	geometry.refresh_target_geometry()
+ 	geometry.refresh_fleet_geometry()
+@@ -222,7 +236,7 @@
+ 	target_geometry_revision=geometry.target_geometry_revision;fleet_geometry_revision=geometry.fleet_geometry_revision
+ 	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)
+ 
+-func consume_feedback(game:RefCounted)->void:
++func _qa_original_consume_feedback(game:RefCounted)->void:
+ 	for row in kernel.take_feedback():
+ 		feedback_rows+=1
+ 		var p:Vector2=row.position
+@@ -319,3 +333,30 @@
+ 	weapons=descriptor.weapons
+ 	geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+ 	return true
++
++func _qa_profile_add(name:String,elapsed:int)->void:
++	var row:Dictionary=qa_profile[name]
++	row.calls+=1;row.us+=elapsed;row.max_us=maxi(int(row.max_us),elapsed)
++
++func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
++	if not QA_PORTS_PROBE.active:
++		_qa_original_prepare_geometry(geometry,game)
++		return
++	var start:int=Time.get_ticks_usec()
++	_qa_original_prepare_geometry(geometry,game)
++	_qa_profile_add("prepare_total",Time.get_ticks_usec()-start)
++
++func advance(game:RefCounted,dt:float)->bool:
++	if not QA_PORTS_PROBE.active:return _qa_original_advance(game,dt)
++	var start:int=Time.get_ticks_usec()
++	var result:bool=_qa_original_advance(game,dt)
++	_qa_profile_add("advance_total",Time.get_ticks_usec()-start)
++	return result
++
++func consume_feedback(game:RefCounted)->void:
++	if not QA_PORTS_PROBE.active:
++		_qa_original_consume_feedback(game)
++		return
++	var start:int=Time.get_ticks_usec()
++	_qa_original_consume_feedback(game)
++	_qa_profile_add("feedback_total",Time.get_ticks_usec()-start)

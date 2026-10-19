@@ -1,0 +1,41 @@
+{
+  "case": "laser",
+  "label": "after",
+  "order": "AB",
+  "diagnostic_profile": true,
+  "source_commit": "6e8d2ed992f4239219a1348a7929ee04c59abf6a",
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\pulse-missile-attribution-20261019\\project",
+    "--rendering-method",
+    "gl_compatibility",
+    "--audio-driver",
+    "Dummy",
+    "--max-fps",
+    "0",
+    "--disable-vsync",
+    "--log-file",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-native-ports-win472-repeat-20261019\\profile\\01-b1-laser-AB\\laser-after.engine.log",
+    "--script",
+    "res://port_perf.gd"
+  ],
+  "driver_sha256": "19be0c36b7c512a48fb49d93ec73386415ddd1acd26e0cdfce0b911e3c3fc592",
+  "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+  "library_sha256": "5aa87366512b36bcc1734c3827ad4607fe0ba5d7ee2ae2f402897d8d362abec6",
+  "script_sha256": {
+    "scripts/native_execution_session.gd": "23f96a346712a1828b8488881848008bc9e7c095b4847df3b0fcd0fe63217819",
+    "scripts/battle_slice_runtime.gd": "2a21c61b2583abbb37318dad99a9cf0b072143c26a9447916cafd13b1dbcd599",
+    "scripts/logical_fleet_pose.gd": "e4d216765b4d3f0567bd185a1dce9044a1ea5aebf6ece8f84286ed65e248c7b2"
+  },
+  "environment": {
+    "PERF_NATIVE": "1",
+    "AI_TECH_PERF_STATE": "closed",
+    "MISSILE_CONTROL": "legend",
+    "WEAPON_CASE": "laser",
+    "APPDATA": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\pulse-missile-attribution-20261019\\user\\roaming",
+    "LOCALAPPDATA": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\pulse-missile-attribution-20261019\\user\\local",
+    "TEMP": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\pulse-missile-attribution-20261019\\user\\temp"
+  },
+  "exit_code": 0
+}

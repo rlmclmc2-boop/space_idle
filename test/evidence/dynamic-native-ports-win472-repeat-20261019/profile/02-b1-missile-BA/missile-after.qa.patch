@@ -1,0 +1,102 @@
+--- 6e8d2ed992f4239219a1348a7929ee04c59abf6a:native_execution_session.gd
++++ isolated-QA:native_execution_session.gd
+@@ -1,4 +1,14 @@
+ extends RefCounted
++const QA_PORTS_PROBE=preload("res://probe.gd")
++var qa_profile:Dictionary={
++	"prepare_total":{"calls":0,"us":0,"max_us":0},
++	"advance_total":{"calls":0,"us":0,"max_us":0},
++	"kernel_advance":{"calls":0,"us":0,"max_us":0},
++	"feedback_total":{"calls":0,"us":0,"max_us":0},
++	"ports_total":{"calls":0,"us":0,"max_us":0},
++	"ports_compute":{"calls":0,"us":0,"max_us":0},
++	"ports_native_input":{"calls":0,"us":0,"max_us":0}
++}
+ ## Explicit low-load execution boundary. Rich content stays refused until its
+ ## rule compiler is complete; this session never runs a shadow Game battle.
+ var kernel:RefCounted
+@@ -124,9 +134,13 @@
+ 	game.event.emit("native_execution_handoff",{"reason":reason,"clock":exported.clock})
+ 	return true
+ 
+-func advance(game:RefCounted,dt:float)->bool:
++func _qa_original_advance(game:RefCounted,dt:float)->bool:
+ 	if kernel==null:return false
+-	if not kernel.advance(dt):
++	var _qa_kernel_active:bool=QA_PORTS_PROBE.active
++	var _qa_kernel_start:int=Time.get_ticks_usec() if _qa_kernel_active else 0
++	var _qa_kernel_ok:bool=kernel.advance(dt)
++	if _qa_kernel_active:_qa_profile_add("kernel_advance",Time.get_ticks_usec()-_qa_kernel_start)
++	if not _qa_kernel_ok:
+ 		if not handoff_to_legacy(game,"numeric_range"):
+ 			advance_blocked=true;game.paused=true;game.native_step_phase="blocked"
+ 			push_error("Native numeric boundary could not transfer its untouched combat step")
+@@ -166,20 +180,27 @@
+ 		if handoff_to_legacy(game,"wave_complete"):game.finish_combat_step(dt)
+ 	return true
+ 
+-func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
++func _qa_original_prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
+ 	geometry.battle_read_model.ensure_clock()
+ 	geometry.refresh_target_geometry()
+ 	geometry.refresh_fleet_geometry()
+ 	# Publish display-only ports even when numeric geometry revisions are stable
+ 	# (e.g. art scale/anchor changed). Cost follows mounts, never active shots.
++	var _qa_ports_active:bool=QA_PORTS_PROBE.active
++	var _qa_ports_start:int=Time.get_ticks_usec() if _qa_ports_active else 0
+ 	if kernel.has_method("input_presentation_muzzles"):
+ 		var ports:Array=[]
++		var _qa_build_start:int=Time.get_ticks_usec() if _qa_ports_active else 0
+ 		for weapon in weapons:
+ 			ports.append(geometry.fleet_pose.screen_presentation_muzzles_for_slot(int(weapon.slot)) if not bool(weapon.hostile) and not weapon.entry.has("drone_id") else PackedVector2Array())
++		if _qa_ports_active:_qa_profile_add("ports_compute",Time.get_ticks_usec()-_qa_build_start)
+ 		if ports!=presentation_muzzles:
++			var _qa_input_start:int=Time.get_ticks_usec() if _qa_ports_active else 0
+ 			var accepted:bool=kernel.input_presentation_muzzles(ports)
++			if _qa_ports_active:_qa_profile_add("ports_native_input",Time.get_ticks_usec()-_qa_input_start)
+ 			assert(accepted,"Presentation ports rejected")
+ 			presentation_muzzles=ports
++	if _qa_ports_active:_qa_profile_add("ports_total",Time.get_ticks_usec()-_qa_ports_start)
+ 	var topology_changed:bool=geometry_muzzles.size()!=weapons.size()
+ 	if topology_changed:
+ 		hostile_weapon_indices.clear();friendly_weapon_indices.clear();weapon_geometry_keys.clear()
+@@ -233,7 +254,7 @@
+ 	target_geometry_revision=geometry.target_geometry_revision;fleet_geometry_revision=geometry.fleet_geometry_revision
+ 	if geometry_player!=aim:geometry_player=aim;kernel.input_player_point(aim)
+ 
+-func consume_feedback(game:RefCounted)->void:
++func _qa_original_consume_feedback(game:RefCounted)->void:
+ 	for row in kernel.take_feedback():
+ 		feedback_rows+=1
+ 		var p:Vector2=row.position
+@@ -332,3 +353,30 @@
+ 	weapons=descriptor.weapons
+ 	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
+ 	return true
++
++func _qa_profile_add(name:String,elapsed:int)->void:
++	var row:Dictionary=qa_profile[name]
++	row.calls+=1;row.us+=elapsed;row.max_us=maxi(int(row.max_us),elapsed)
++
++func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
++	if not QA_PORTS_PROBE.active:
++		_qa_original_prepare_geometry(geometry,game)
++		return
++	var start:int=Time.get_ticks_usec()
++	_qa_original_prepare_geometry(geometry,game)
++	_qa_profile_add("prepare_total",Time.get_ticks_usec()-start)
++
++func advance(game:RefCounted,dt:float)->bool:
++	if not QA_PORTS_PROBE.active:return _qa_original_advance(game,dt)
++	var start:int=Time.get_ticks_usec()
++	var result:bool=_qa_original_advance(game,dt)
++	_qa_profile_add("advance_total",Time.get_ticks_usec()-start)
++	return result
++
++func consume_feedback(game:RefCounted)->void:
++	if not QA_PORTS_PROBE.active:
++		_qa_original_consume_feedback(game)
++		return
++	var start:int=Time.get_ticks_usec()
++	_qa_original_consume_feedback(game)
++	_qa_profile_add("feedback_total",Time.get_ticks_usec()-start)

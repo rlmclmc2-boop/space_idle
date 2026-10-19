@@ -1,0 +1,32 @@
+{
+  "baseline": "c4a5e25968e757adc3a0ceb5bc741a615600f5bd",
+  "candidate": "6e8d2ed992f4239219a1348a7929ee04c59abf6a",
+  "previous_evidence_commit": "5aaaf75a33fd25fc0c23116570e3399b2f7d50ee",
+  "reused_shipping_build_manifest": "../dynamic-native-ports-win472-20261019/builds/manifest.json",
+  "dll_sha256": {
+    "before": "535c33b2b1a6db6e14228267d5ddeb5067ae2d01a19d8f693cdeb2d7080a6f7a",
+    "after": "5aa87366512b36bcc1734c3827ad4607fe0ba5d7ee2ae2f402897d8d362abec6"
+  },
+  "godot_exe_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "common_source_objects": {
+    "space-battleship/assets/weapons/fleet_20261019/manifest.json": {
+      "before": "6f08b3acdf5479507baca8dfdd196eb2d24c4fcd",
+      "after": "6f08b3acdf5479507baca8dfdd196eb2d24c4fcd"
+    },
+    "space-battleship/addons/native_battle/src/space_native.cpp": {
+      "before": "b52a3ae91bf7c7204096401612b7cd0bc7f13aac",
+      "after": "b52a3ae91bf7c7204096401612b7cd0bc7f13aac"
+    },
+    "space-battleship/addons/native_battle/src/combat_presentation.h": {
+      "before": "37cd1f7e273e74f261bcc3caf049a594fc91a0e1",
+      "after": "37cd1f7e273e74f261bcc3caf049a594fc91a0e1"
+    }
+  },
+  "no_asset_or_shader_diff": true,
+  "new_projectile_pipeline_present_in_both": true,
+  "projectile_old_new_single_variable_test_performed": false,
+  "diagnostic_scope": "Only RAM wall timers in isolated native_execution_session.gd and one cold driver export. No function removed, no projectile/ray/output replacement, no shipping changes.",
+  "profile_injection_sha256": "b046f68ee2f652c074981edb99e8a37ab19053827e66ff88f3411d0381207d04",
+  "repeat_runner_sha256": "7f6e843d8ba988e5ccd5b95f9c958a7ad7812702574465ae361f53c08d1573f2",
+  "generated_utc": "2026-10-19T11:43:55.433483+00:00"
+}

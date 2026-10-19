@@ -1,0 +1,13 @@
+{
+  "runs_checked": 20,
+  "formal_repeats": 16,
+  "valid_formal_runs": 15,
+  "qa_runs": 4,
+  "qa_scope_reconstructed_and_hash_verified": true,
+  "invalid_formal_run_retained": [
+    "repeats/01-b1-laser-AB/laser-after"
+  ],
+  "raw_seed_only_mismatches_preserved": true,
+  "new_projectile_pipeline_in_both": true,
+  "formal_function_or_art_changes": false
+}

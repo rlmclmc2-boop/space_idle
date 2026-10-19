@@ -1,0 +1,81 @@
+{
+  "phase": "profile",
+  "schedule": [
+    {
+      "index": 1,
+      "block": 1,
+      "case": "laser",
+      "order": "AB"
+    },
+    {
+      "index": 2,
+      "block": 1,
+      "case": "missile",
+      "order": "BA"
+    }
+  ],
+  "declared_utc": "2026-10-19T11:37:41.093923+00:00",
+  "purpose": "QA-only bounded RAM timers, not acceptance samples",
+  "results": [
+    {
+      "index": 1,
+      "case": "laser",
+      "order": "AB",
+      "started_utc": "2026-10-19T11:37:41.096915+00:00",
+      "ended_utc": "2026-10-19T11:38:28.062590+00:00",
+      "exit_code": 0,
+      "output": "profile\\01-b1-laser-AB",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-native-ports-win472-repeat-20261019\\run_repeat.py",
+        "--repo",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472",
+        "--project",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\pulse-missile-attribution-20261019\\project",
+        "--before-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-before.dll",
+        "--after-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-after.dll",
+        "--godot",
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+        "--output",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-native-ports-win472-repeat-20261019\\profile\\01-b1-laser-AB",
+        "--cases",
+        "laser",
+        "--order",
+        "AB",
+        "--profile"
+      ]
+    },
+    {
+      "index": 2,
+      "case": "missile",
+      "order": "BA",
+      "started_utc": "2026-10-19T11:38:28.064585+00:00",
+      "ended_utc": "2026-10-19T11:39:15.099144+00:00",
+      "exit_code": 0,
+      "output": "profile\\02-b1-missile-BA",
+      "command": [
+        "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-native-ports-win472-repeat-20261019\\run_repeat.py",
+        "--repo",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472",
+        "--project",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\pulse-missile-attribution-20261019\\project",
+        "--before-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-before.dll",
+        "--after-lib",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\toolchain-audit\\builds\\space_native-after.dll",
+        "--godot",
+        "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+        "--output",
+        "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-native-ports-win472-repeat-20261019\\profile\\02-b1-missile-BA",
+        "--cases",
+        "missile",
+        "--order",
+        "BA",
+        "--profile"
+      ]
+    }
+  ]
+}
