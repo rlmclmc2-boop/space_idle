@@ -1,0 +1,163 @@
+{
+  "source_sha256": "4e38e4d172433d07dd247935ba0408a72f9a6ee0fd038e1c55cdcca6a803a3eb",
+  "weapons": {
+    "cannon": {
+      "texture": "res://assets/weapons/fleet_20261019/cannon.png",
+      "source_bounds": [
+        62,
+        17,
+        531,
+        667
+      ],
+      "source_anchor": [
+        298,
+        505
+      ],
+      "anchor": [
+        252,
+        504
+      ],
+      "pixels_per_model": [
+        437,
+        437
+      ],
+      "source_emission_pixels": [
+        [
+          298,
+          20
+        ]
+      ],
+      "emission_pixels": [
+        [
+          252,
+          19
+        ]
+      ],
+      "sha256": "5b094ab5bc1bf71233ebbfccf3c7829ef259c6aac820d0f8eed286ba96a7117a"
+    },
+    "missile": {
+      "texture": "res://assets/weapons/fleet_20261019/missile.png",
+      "source_bounds": [
+        578,
+        115,
+        1092,
+        668
+      ],
+      "source_anchor": [
+        835,
+        510
+      ],
+      "anchor": [
+        273,
+        411
+      ],
+      "pixels_per_model": [
+        415,
+        648
+      ],
+      "source_emission_pixels": [
+        [
+          694,
+          189
+        ],
+        [
+          976,
+          189
+        ]
+      ],
+      "emission_pixels": [
+        [
+          132,
+          90
+        ],
+        [
+          414,
+          90
+        ]
+      ],
+      "sha256": "44c701c4ee54a22d39155a226d760ad72909bba0eb496430ccbeeede760aab72"
+    },
+    "laser": {
+      "texture": "res://assets/weapons/fleet_20261019/laser.png",
+      "source_bounds": [
+        1116,
+        79,
+        1625,
+        667
+      ],
+      "source_anchor": [
+        1371,
+        517
+      ],
+      "anchor": [
+        271,
+        454
+      ],
+      "pixels_per_model": [
+        461,
+        461
+      ],
+      "source_emission_pixels": [
+        [
+          1371,
+          139
+        ]
+      ],
+      "emission_pixels": [
+        [
+          271,
+          76
+        ]
+      ],
+      "sha256": "cde581dd753bb9e4c75fe67ba2ff4a0ecc7ce60efa44bdb4095e9155ff706936"
+    },
+    "longLaser": {
+      "texture": "res://assets/weapons/fleet_20261019/longLaser.png",
+      "source_bounds": [
+        1655,
+        17,
+        2141,
+        668
+      ],
+      "source_anchor": [
+        1900,
+        510
+      ],
+      "anchor": [
+        261,
+        509
+      ],
+      "pixels_per_model": [
+        586,
+        586
+      ],
+      "source_emission_pixels": [
+        [
+          1900,
+          65
+        ]
+      ],
+      "emission_pixels": [
+        [
+          261,
+          64
+        ]
+      ],
+      "sha256": "bbbccc7ecefe7d71ab86fa56a823cc140a6b8b2b5da4c9951a2e73b413d955a3"
+    }
+  },
+  "pulse": {
+    "texture": "res://assets/weapons/fleet_20261019/pulse-bolt.png",
+    "source_bounds": [
+      421,
+      421,
+      603,
+      1152
+    ],
+    "size": [
+      14,
+      34
+    ],
+    "orientation": "up"
+  }
+}

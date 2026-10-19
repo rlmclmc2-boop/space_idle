@@ -157,6 +157,7 @@ func _ready() -> void:
 		pulse_layer.material=contact_material
 		game.combat_presentation.configure_contact_gpu([contact_topology.build(0),contact_topology.build(1)],pulse_layer.get_canvas_item(),contact_material)
 		var flight_material:=ShaderMaterial.new();flight_material.shader=preload("res://shaders/retained_flights.gdshader")
+		flight_material.set_shader_parameter("pulse_texture",PULSE_VFX.BOLT)
 		game.combat_presentation.configure_retained_gpu(flight_material)
 	_set_reference_dimensions()
 	_sync_parameters()

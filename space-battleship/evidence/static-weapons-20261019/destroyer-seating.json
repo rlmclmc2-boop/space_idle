@@ -1,0 +1,73 @@
+{
+  "failures": 0,
+  "max_error": 0.000140679083415307,
+  "rows": [
+    {
+      "bearing": "(207.3335, 273.3333)",
+      "bearing_error": 0.000140679083415307,
+      "hull": "Destroyer",
+      "pivot": "(207.3335, 273.3333)",
+      "pivot_error": 0.000140679083415307,
+      "seat": "(207.3333, 273.3333)",
+      "slot": 0,
+      "state": "rest",
+      "weapon": "cannon"
+    },
+    {
+      "bearing": "(392.6665, 273.3333)",
+      "bearing_error": 0.000125827195006423,
+      "hull": "Destroyer",
+      "pivot": "(392.6665, 273.3333)",
+      "pivot_error": 0.000125827195006423,
+      "seat": "(392.6667, 273.3333)",
+      "slot": 1,
+      "state": "rest",
+      "weapon": "laser"
+    },
+    {
+      "bearing": "(207.3335, 273.3333)",
+      "bearing_error": 0.000140679083415307,
+      "hull": "Destroyer",
+      "pivot": "(207.3335, 273.3333)",
+      "pivot_error": 0.000140679083415307,
+      "seat": "(207.3333, 273.3333)",
+      "slot": 0,
+      "state": "fire-left",
+      "weapon": "cannon"
+    },
+    {
+      "bearing": "(392.6665, 273.3333)",
+      "bearing_error": 0.000125827195006423,
+      "hull": "Destroyer",
+      "pivot": "(392.6665, 273.3333)",
+      "pivot_error": 0.000125827195006423,
+      "seat": "(392.6667, 273.3333)",
+      "slot": 1,
+      "state": "fire-left",
+      "weapon": "laser"
+    },
+    {
+      "bearing": "(207.3335, 273.3333)",
+      "bearing_error": 0.000140679083415307,
+      "hull": "Destroyer",
+      "pivot": "(207.3335, 273.3333)",
+      "pivot_error": 0.000140679083415307,
+      "seat": "(207.3333, 273.3333)",
+      "slot": 0,
+      "state": "fire-right",
+      "weapon": "cannon"
+    },
+    {
+      "bearing": "(392.6665, 273.3333)",
+      "bearing_error": 0.000125827195006423,
+      "hull": "Destroyer",
+      "pivot": "(392.6665, 273.3333)",
+      "pivot_error": 0.000125827195006423,
+      "seat": "(392.6667, 273.3333)",
+      "slot": 1,
+      "state": "fire-right",
+      "weapon": "laser"
+    }
+  ],
+  "samples": 6
+}

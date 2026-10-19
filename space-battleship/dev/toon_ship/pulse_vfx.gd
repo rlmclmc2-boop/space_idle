@@ -1,23 +1,17 @@
 extends RefCounted
 ## Presentation only: compact faceted packets, directional kick and crisp contact.
+const BOLT := preload("res://assets/weapons/fleet_20261019/pulse-bolt.png")
 const CYAN := Color("42edee")
 const BLUE := Color("398bdf")
 const WHITE := Color("f1ffff")
 static func accent(base:Color,tint:Color)->Color:
 	return base if tint.a<=0 else base.lerp(Color(tint.r,tint.g,tint.b,base.a),0.72*tint.a)
 static func flight(surface:CanvasItem,point:Vector2,direction:Vector2,tint:Color=Color(1,1,1,0))->void:
-	var across:=direction.orthogonal()
-	# Fixed geometry never links successive frames into a beam.
-	var nose:=point+direction*9.0
-	var back:=point-direction*11.0
-	var shell:=PackedVector2Array([nose,point+across*4.5,back,point-across*4.5])
-	surface.draw_line(back,nose,Color(accent(BLUE,tint),0.20),12.0,true)
-	surface.draw_colored_polygon(shell,accent(CYAN,tint))
-	surface.draw_colored_polygon(PackedVector2Array([nose,point+direction*1.0+across*2.2,back+direction*5.0,point+direction*1.0-across*2.2]),WHITE)
-	for side in [-1.0,1.0]:
-		surface.draw_line(back+across*side*2.0,point-direction*25.0+across*side*3.0,Color(accent(BLUE,tint),0.7),1.8,true)
-	# A short transverse energy ridge distinguishes the packet from a tracer.
-	surface.draw_line(point+direction*2.0-across*5.0,point+direction*2.0+across*5.0,Color(accent(CYAN,tint),0.8),1.2,true)
+	var color:=Color.WHITE if tint.a<=0 else Color.WHITE.lerp(Color(tint.r,tint.g,tint.b,1),0.35*tint.a)
+	surface.draw_set_transform(point,direction.angle()+PI*0.5)
+	surface.draw_texture_rect(BOLT,Rect2(Vector2(-7,-17),Vector2(14,34)),false,color)
+	surface.draw_set_transform(Vector2.ZERO)
+
 static func flash(surface:CanvasItem,point:Vector2,direction:Vector2,age:float)->void:
 	# Fire events live for 0.14 s, but this flash is already transparent at 0.075 s.
 	if not is_finite(age) or age>=0.075 or not point.is_finite() or not direction.is_finite() or direction.is_zero_approx():return

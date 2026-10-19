@@ -10,3 +10,5 @@
 磁轨主炮表现：`test_railgun_presentation.gd` 使用合成配装检查实际基础/强化发射节奏、主命中、激光共存、炮口、暂停与表参数读取；需图形环境。`RAILGUN_RECORD=1` 留存原尺寸 PNG 帧，按每帧 0.1 游戏秒回放；不是实时性能测量。`test_weapon_config_validation.py` 检查八项表现参数的正式 Excel 导出路径。
 
 Static carrier pagination: `python test/run.py test_drone_preview_pages.gd --headless` for logic; graphical run with `DRONE_PREVIEW_EVIDENCE` captures default, last-page and empty states.
+
+静态新炮台与脉冲贴图：`test_static_weapon_preview.gd` 需图形环境；设 `STATIC_WEAPON_EVIDENCE` 为隔离证据目录。检查四炮台三种姿态的贴图锚点、CPU/retained GPU 光弹轮廓，以及原时钟/速度位移。调用真实舰体/武器/VFX 实例生成预览，不代替原生整场回归。安装座仍运行 `test_player_mount_seating.gd --headless`。

@@ -21,6 +21,7 @@ var hull_key := ""
 var hull_config: Dictionary = {}
 var manifest: Dictionary = {}
 var approved_hull_art: Dictionary = {}
+var static_weapon_art: Dictionary = {}
 var approved_body_plane: MeshInstance3D
 var approved_body_bounds := Rect2()
 var approved_body_position := Vector3.ZERO
@@ -62,6 +63,7 @@ var render_scale_sync_pending := false
 
 func _ready() -> void:
 	manifest = JSON.parse_string(FileAccess.get_file_as_string("res://dev/toon_ship/hybrid_manifest.json"))
+	static_weapon_art = JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
 	var visual_rows: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
 	if visual_rows is Dictionary: approved_hull_art = visual_rows.get("ships",{})
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -376,6 +378,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			for socket in [modules.back().muzzle,modules.back().muzzle2]:
 				if socket!=null:socket.position.z=-0.495
 		_install_materials(node,"weapon")
+		_install_static_weapon_art(node,str(item.key))
 	_fit_approved_weapon_mounts()
 	loadout_signature = signature
 	weapon = modules[0].node if not modules.is_empty() else null
@@ -383,6 +386,26 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 	muzzle = modules[0].muzzle if not modules.is_empty() else null
 	if not last_settings.is_empty(): apply_parameters(last_settings,last_toon_enabled,last_rim_enabled)
 	return true
+
+
+func _install_static_weapon_art(node:Node3D,key:String)->void:
+	if not static_weapon_art.has(key):return
+	var row:Dictionary=static_weapon_art[key]
+	var texture:=load(str(row.texture)) as Texture2D
+	var anchor:=Vector2(float(row.anchor[0]),float(row.anchor[1]))
+	var ppm:=Vector2(float(row.pixels_per_model[0]),float(row.pixels_per_model[1]))
+	_hide_imported_hull_meshes(node)
+	var plane:=MeshInstance3D.new();plane.name="StaticWeaponArt"
+	var mesh:=PlaneMesh.new();mesh.size=Vector2(texture.get_size())/ppm;plane.mesh=mesh
+	var offset:Vector2=(Vector2(texture.get_size())*0.5-anchor)/ppm
+	plane.position=Vector3(offset.x,0.12,offset.y)
+	plane.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var material:=StandardMaterial3D.new();material.albedo_texture=texture
+	material.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency=BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+	material.alpha_scissor_threshold=0.35;material.cull_mode=BaseMaterial3D.CULL_DISABLED
+	plane.material_override=material
+	node.find_child("TurretPivot",true,false).add_child(plane)
 
 
 func aim_at(target: Vector2) -> void:
