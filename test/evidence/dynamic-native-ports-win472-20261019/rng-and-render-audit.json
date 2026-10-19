@@ -1,0 +1,317 @@
+[
+  {
+    "case": "mixed",
+    "endpoints": {
+      "before": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "2432002207913190239",
+          "state": "4991377674476084807",
+          "game_rng": "4991377674476084807",
+          "kernel_rng": "4991377674476084807",
+          "raw_hash": "891cccf5060eb9200bfc57db024a9624179d75b819f4eed438379aeaad25b0d5"
+        },
+        "state_after": {
+          "seed": "2432002207913190239",
+          "state": "-7436041879885973003",
+          "game_rng": "-7436041879885973003",
+          "kernel_rng": "-7436041879885973003",
+          "raw_hash": "0e6da57af98e186b5623425e9028ca4984115092942c26a772150dfd60e12ae2"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          62,
+          169
+        ],
+        "drawcalls_mean": 685.1420400381315,
+        "primitives_mean": 77866.18303145854
+      },
+      "after": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "2519230661648565218",
+          "state": "4991377674476084807",
+          "game_rng": "4991377674476084807",
+          "kernel_rng": "4991377674476084807",
+          "raw_hash": "2f8a39fe14e61f369239229781ac09a6d5a5fa231f1941bb4f7c367e916cec6b"
+        },
+        "state_after": {
+          "seed": "2519230661648565218",
+          "state": "-7436041879885973003",
+          "game_rng": "-7436041879885973003",
+          "kernel_rng": "-7436041879885973003",
+          "raw_hash": "b08cabaa72dd07e3539a7d26735cf30516be8b37e30b55f27ab62dbf498c9cc7"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          62,
+          169
+        ],
+        "drawcalls_mean": 685.2168905950095,
+        "primitives_mean": 78026.97120921305
+      }
+    }
+  },
+  {
+    "case": "laser",
+    "endpoints": {
+      "before": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "3035155396206057118",
+          "state": "-4651471121468503921",
+          "game_rng": "-4651471121468503921",
+          "kernel_rng": "-4651471121468503921",
+          "raw_hash": "7f9e96148c35adc98e51dd618a332d98c58185471fa70eaea3038da20a40f22a"
+        },
+        "state_after": {
+          "seed": "3035155396206057118",
+          "state": "-777003585966282483",
+          "game_rng": "-777003585966282483",
+          "kernel_rng": "-777003585966282483",
+          "raw_hash": "6b5caa5a6678121571ea2072c9ba3944587869012f6b945794ec60269a1ff769"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          46,
+          187
+        ],
+        "drawcalls_mean": 617.1706979958535,
+        "primitives_mean": 101245.80373185902
+      },
+      "after": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "-8659433183715860606",
+          "state": "-4651471121468503921",
+          "game_rng": "-4651471121468503921",
+          "kernel_rng": "-4651471121468503921",
+          "raw_hash": "1354ed52bf2d060f2bc908fddea0f5931d1a5e2b731b47667391863be15d413f"
+        },
+        "state_after": {
+          "seed": "-8659433183715860606",
+          "state": "-777003585966282483",
+          "game_rng": "-777003585966282483",
+          "kernel_rng": "-777003585966282483",
+          "raw_hash": "7e83ff473b21a94b13db06376eb793f4c78f366bb7b8ea113ca72c70b3e5d760"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          46,
+          187
+        ],
+        "drawcalls_mean": 617.217042971595,
+        "primitives_mean": 101430.92935178442
+      }
+    }
+  },
+  {
+    "case": "cannon",
+    "endpoints": {
+      "before": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "913986182832612367",
+          "state": "2497315021371380787",
+          "game_rng": "2497315021371380787",
+          "kernel_rng": "2497315021371380787",
+          "raw_hash": "6866208397786ecf9acd1f0a7b1597bc94277ddba0baa01de30a9c1ab983945b"
+        },
+        "state_after": {
+          "seed": "913986182832612367",
+          "state": "7888947535575749139",
+          "game_rng": "7888947535575749139",
+          "kernel_rng": "7888947535575749139",
+          "raw_hash": "b96cb6da8785b0375739cc047eaccc3bfefedfaf2a1125825365353e3feeaab5"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          11,
+          136
+        ],
+        "drawcalls_mean": 686.064899451554,
+        "primitives_mean": 37489.1718464351
+      },
+      "after": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "139197753153672992",
+          "state": "2497315021371380787",
+          "game_rng": "2497315021371380787",
+          "kernel_rng": "2497315021371380787",
+          "raw_hash": "5993f18437d7da54ee6f978992067e8c47509e0dd95e52dff664efd4c75b0d39"
+        },
+        "state_after": {
+          "seed": "139197753153672992",
+          "state": "7888947535575749139",
+          "game_rng": "7888947535575749139",
+          "kernel_rng": "7888947535575749139",
+          "raw_hash": "de10e2531c16a6d5005696be76b6e518915137b43eaece4f4b292020cd2fa3c6"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          11,
+          136
+        ],
+        "drawcalls_mean": 686.1598173515981,
+        "primitives_mean": 37490.50410958904
+      }
+    }
+  },
+  {
+    "case": "missile",
+    "endpoints": {
+      "before": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "8464291963300853599",
+          "state": "1044211653381731681",
+          "game_rng": "1044211653381731681",
+          "kernel_rng": "1044211653381731681",
+          "raw_hash": "543decf23f78523833c15687e265b4209f21fb7b9bfae7e8eedc9cdfcbb902b5"
+        },
+        "state_after": {
+          "seed": "8464291963300853599",
+          "state": "7609896795398619761",
+          "game_rng": "7609896795398619761",
+          "kernel_rng": "7609896795398619761",
+          "raw_hash": "15779f8c3ee4c50ee314665fcb26c4c83b9a75a21c279096bf586eb64ae500a5"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          71,
+          150
+        ],
+        "drawcalls_mean": 661.0519591141397,
+        "primitives_mean": 53059.27086882453
+      },
+      "after": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "-3627135386322226996",
+          "state": "1044211653381731681",
+          "game_rng": "1044211653381731681",
+          "kernel_rng": "1044211653381731681",
+          "raw_hash": "c4d6d8378773189a2c5a39d1c810d835224ca111348b295f41750bbdd15ed124"
+        },
+        "state_after": {
+          "seed": "-3627135386322226996",
+          "state": "7609896795398619761",
+          "game_rng": "7609896795398619761",
+          "kernel_rng": "7609896795398619761",
+          "raw_hash": "420e04f8d15cc49716576eba0ce7f70ea0bb606dd1975a842b5b9232f84b9c0a"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          71,
+          150
+        ],
+        "drawcalls_mean": 661.0946065428824,
+        "primitives_mean": 53114.572944297084
+      }
+    }
+  },
+  {
+    "case": "longLaser",
+    "endpoints": {
+      "before": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "179141384165484421",
+          "state": "-1588165530160220817",
+          "game_rng": "-1588165530160220817",
+          "kernel_rng": "-1588165530160220817",
+          "raw_hash": "dba6761bbb203710153540295b15bf11f6c616cdc3f23f79845dc304e6903d68"
+        },
+        "state_after": {
+          "seed": "179141384165484421",
+          "state": "-1588165530160220817",
+          "game_rng": "-1588165530160220817",
+          "kernel_rng": "-1588165530160220817",
+          "raw_hash": "67763fe607ffc46a15fd119573db1b04b83c4a968092af378f75080da4c7d79b"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          31,
+          46
+        ],
+        "drawcalls_mean": 627.2002301495972,
+        "primitives_mean": 35706.112773302644
+      },
+      "after": {
+        "png_size": [
+          1372,
+          883
+        ],
+        "window": "(1373, 883)",
+        "gpu_beams_enabled": true,
+        "state_before": {
+          "seed": "8522724820151217395",
+          "state": "-1588165530160220817",
+          "game_rng": "-1588165530160220817",
+          "kernel_rng": "-1588165530160220817",
+          "raw_hash": "864f23421ab21384712e1817472bfbdb83a36a0dc0f862a52989c26f524cf57c"
+        },
+        "state_after": {
+          "seed": "8522724820151217395",
+          "state": "-1588165530160220817",
+          "game_rng": "-1588165530160220817",
+          "kernel_rng": "-1588165530160220817",
+          "raw_hash": "74802e395e13a74cffa07ec9af87dcf3d009ef9315289a54a54558d31ac01cb7"
+        },
+        "active_ordinary_count": 5,
+        "projectiles_min_max": [
+          31,
+          46
+        ],
+        "drawcalls_mean": 627.2105263157895,
+        "primitives_mean": 35741.33258678611
+      }
+    }
+  }
+]

@@ -1,0 +1,132 @@
+{
+  "mixed": {
+    "state_before": [
+      {
+        "path": "state_before/canonical_kernel/rng/seed",
+        "before": "2432002207913190239",
+        "after": "2519230661648565218"
+      },
+      {
+        "path": "state_before/kernel_hash",
+        "before": "891cccf5060eb9200bfc57db024a9624179d75b819f4eed438379aeaad25b0d5",
+        "after": "2f8a39fe14e61f369239229781ac09a6d5a5fa231f1941bb4f7c367e916cec6b"
+      }
+    ],
+    "state_after": [
+      {
+        "path": "state_after/canonical_kernel/rng/seed",
+        "before": "2432002207913190239",
+        "after": "2519230661648565218"
+      },
+      {
+        "path": "state_after/kernel_hash",
+        "before": "0e6da57af98e186b5623425e9028ca4984115092942c26a772150dfd60e12ae2",
+        "after": "b08cabaa72dd07e3539a7d26735cf30516be8b37e30b55f27ab62dbf498c9cc7"
+      }
+    ]
+  },
+  "laser": {
+    "state_before": [
+      {
+        "path": "state_before/canonical_kernel/rng/seed",
+        "before": "3035155396206057118",
+        "after": "-8659433183715860606"
+      },
+      {
+        "path": "state_before/kernel_hash",
+        "before": "7f9e96148c35adc98e51dd618a332d98c58185471fa70eaea3038da20a40f22a",
+        "after": "1354ed52bf2d060f2bc908fddea0f5931d1a5e2b731b47667391863be15d413f"
+      }
+    ],
+    "state_after": [
+      {
+        "path": "state_after/canonical_kernel/rng/seed",
+        "before": "3035155396206057118",
+        "after": "-8659433183715860606"
+      },
+      {
+        "path": "state_after/kernel_hash",
+        "before": "6b5caa5a6678121571ea2072c9ba3944587869012f6b945794ec60269a1ff769",
+        "after": "7e83ff473b21a94b13db06376eb793f4c78f366bb7b8ea113ca72c70b3e5d760"
+      }
+    ]
+  },
+  "cannon": {
+    "state_before": [
+      {
+        "path": "state_before/canonical_kernel/rng/seed",
+        "before": "913986182832612367",
+        "after": "139197753153672992"
+      },
+      {
+        "path": "state_before/kernel_hash",
+        "before": "6866208397786ecf9acd1f0a7b1597bc94277ddba0baa01de30a9c1ab983945b",
+        "after": "5993f18437d7da54ee6f978992067e8c47509e0dd95e52dff664efd4c75b0d39"
+      }
+    ],
+    "state_after": [
+      {
+        "path": "state_after/canonical_kernel/rng/seed",
+        "before": "913986182832612367",
+        "after": "139197753153672992"
+      },
+      {
+        "path": "state_after/kernel_hash",
+        "before": "b96cb6da8785b0375739cc047eaccc3bfefedfaf2a1125825365353e3feeaab5",
+        "after": "de10e2531c16a6d5005696be76b6e518915137b43eaece4f4b292020cd2fa3c6"
+      }
+    ]
+  },
+  "missile": {
+    "state_before": [
+      {
+        "path": "state_before/canonical_kernel/rng/seed",
+        "before": "8464291963300853599",
+        "after": "-3627135386322226996"
+      },
+      {
+        "path": "state_before/kernel_hash",
+        "before": "543decf23f78523833c15687e265b4209f21fb7b9bfae7e8eedc9cdfcbb902b5",
+        "after": "c4d6d8378773189a2c5a39d1c810d835224ca111348b295f41750bbdd15ed124"
+      }
+    ],
+    "state_after": [
+      {
+        "path": "state_after/canonical_kernel/rng/seed",
+        "before": "8464291963300853599",
+        "after": "-3627135386322226996"
+      },
+      {
+        "path": "state_after/kernel_hash",
+        "before": "15779f8c3ee4c50ee314665fcb26c4c83b9a75a21c279096bf586eb64ae500a5",
+        "after": "420e04f8d15cc49716576eba0ce7f70ea0bb606dd1975a842b5b9232f84b9c0a"
+      }
+    ]
+  },
+  "longLaser": {
+    "state_before": [
+      {
+        "path": "state_before/canonical_kernel/rng/seed",
+        "before": "179141384165484421",
+        "after": "8522724820151217395"
+      },
+      {
+        "path": "state_before/kernel_hash",
+        "before": "dba6761bbb203710153540295b15bf11f6c616cdc3f23f79845dc304e6903d68",
+        "after": "864f23421ab21384712e1817472bfbdb83a36a0dc0f862a52989c26f524cf57c"
+      }
+    ],
+    "state_after": [
+      {
+        "path": "state_after/canonical_kernel/rng/seed",
+        "before": "179141384165484421",
+        "after": "8522724820151217395"
+      },
+      {
+        "path": "state_after/kernel_hash",
+        "before": "67763fe607ffc46a15fd119573db1b04b83c4a968092af378f75080da4c7d79b",
+        "after": "74802e395e13a74cffa07ec9af87dcf3d009ef9315289a54a54558d31ac01cb7"
+      }
+    ]
+  }
+}

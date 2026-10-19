@@ -1,0 +1,30 @@
+{
+  "scope": "Evidence consistency only; no game execution",
+  "runs_checked": [
+    "mixed-before",
+    "mixed-after",
+    "laser-before",
+    "laser-after",
+    "cannon-before",
+    "cannon-after",
+    "missile-before",
+    "missile-after",
+    "longLaser-before",
+    "longLaser-after"
+  ],
+  "frozen_driver_and_fixtures_verified": true,
+  "exact_commit_scripts_and_built_DLL_hashes_verified": true,
+  "DLL_archive_matches_manifest": true,
+  "ten_runtime_gates_pass": true,
+  "five_sampling_event_pairs_pass": true,
+  "five_raw_full_state_pairs_pass": false,
+  "raw_seed_and_derived_hash_mismatches_preserved": true,
+  "ten_complete_root_images_same_dimensions": [
+    1372,
+    883
+  ],
+  "source_window_dimensions": [
+    1373,
+    883
+  ]
+}

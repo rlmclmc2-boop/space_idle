@@ -1,0 +1,39 @@
+{
+  "case": "cannon",
+  "label": "before",
+  "source_commit": "c4a5e25968e757adc3a0ceb5bc741a615600f5bd",
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-native-ports-win472-20261019\\project",
+    "--rendering-method",
+    "gl_compatibility",
+    "--audio-driver",
+    "Dummy",
+    "--max-fps",
+    "0",
+    "--disable-vsync",
+    "--log-file",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\evidence\\dynamic-native-ports-win472-20261019\\cannon-before.engine.log",
+    "--script",
+    "res://port_perf.gd"
+  ],
+  "driver_sha256": "a8f1236076ccbef34f5eb93e3476a4f74223f977cebd58bade7d8c7c4680f6a7",
+  "fixture_sha256": "678852e63f2296691af36a044d84c33b76dd166238c99be13c199760d1a528be",
+  "library_sha256": "535c33b2b1a6db6e14228267d5ddeb5067ae2d01a19d8f693cdeb2d7080a6f7a",
+  "script_sha256": {
+    "scripts/native_execution_session.gd": "8b04babc9397c575aaa9ac2734c77b3e0cb48c3fda120fd3c2ea3517a603216c",
+    "scripts/battle_slice_runtime.gd": "4991e8935e2b59542cc5b2b271def27ed180828a18f301071b9cd7d40a131833",
+    "scripts/logical_fleet_pose.gd": "fc20ca3f43380fcf47de3dd7d65549a9135afc788bf427c1edc43739aef046fb"
+  },
+  "environment": {
+    "PERF_NATIVE": "1",
+    "AI_TECH_PERF_STATE": "closed",
+    "MISSILE_CONTROL": "legend",
+    "WEAPON_CASE": "cannon",
+    "APPDATA": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-native-ports-win472-20261019\\user\\roaming",
+    "LOCALAPPDATA": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-native-ports-win472-20261019\\user\\local",
+    "TEMP": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-19\\task\\space_idle_win472\\test\\work\\dynamic-native-ports-win472-20261019\\user\\temp"
+  },
+  "exit_code": 0
+}

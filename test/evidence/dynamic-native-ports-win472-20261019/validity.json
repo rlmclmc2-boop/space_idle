@@ -1,0 +1,1048 @@
+{
+  "baseline": "c4a5e25968e757adc3a0ceb5bc741a615600f5bd",
+  "candidate": "6e8d2ed992f4239219a1348a7929ee04c59abf6a",
+  "pairs": [
+    {
+      "case": "mixed",
+      "runs": {
+        "before": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1049,
+              "frames_us_raw": 1049,
+              "projectiles_raw": 1049,
+              "floats_raw": 1049,
+              "pending_raw": 1049,
+              "primitives_raw": 1049,
+              "drawcalls_raw": 1049,
+              "frame_trace": 1049
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 9.513513513513514,
+                "max": 10.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2424.0,
+                "max": 2424.0
+              },
+              "power_W": {
+                "mean": 36.23554054054054,
+                "max": 37.13
+              }
+            }
+          },
+          "valid": true
+        },
+        "after": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1042,
+              "frames_us_raw": 1042,
+              "projectiles_raw": 1042,
+              "floats_raw": 1042,
+              "pending_raw": 1042,
+              "primitives_raw": 1042,
+              "drawcalls_raw": 1042,
+              "frame_trace": 1042
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 9.513513513513514,
+                "max": 10.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2424.0,
+                "max": 2424.0
+              },
+              "power_W": {
+                "mean": 36.14108108108108,
+                "max": 36.6
+              }
+            }
+          },
+          "valid": true
+        }
+      },
+      "matching": {
+        "warm_steps": true,
+        "sample_steps": true,
+        "warm_fires": true,
+        "fires": true,
+        "warm_hits": true,
+        "hits": true,
+        "warm_purchases": true,
+        "purchases": true,
+        "handoffs": true,
+        "events": true,
+        "rng_state": true,
+        "fixture_config": true,
+        "stress_events": true,
+        "driver": true,
+        "fixture_file": true,
+        "runtime_config": true,
+        "state_before": false,
+        "state_after": false
+      },
+      "paired_valid": false,
+      "sampling_event_pair_valid": true,
+      "seed_only_projection_diagnostic": {
+        "endpoint_equal": {
+          "state_before": true,
+          "state_after": true
+        },
+        "omitted_paths": [
+          "canonical_kernel/rng/seed",
+          "kernel_hash"
+        ],
+        "scope": "Additional diagnostic only; raw full-state hash mismatch remains failed"
+      },
+      "differences": {
+        "wall": {
+          "mean": {
+            "before": 7.581115347950429,
+            "after": 7.630902111324376,
+            "percent": 0.6567208265391589
+          },
+          "p95": {
+            "before": 10.992,
+            "after": 11.071,
+            "percent": 0.7187045123726143
+          }
+        },
+        "before_main": {
+          "mean": {
+            "before": 0.04242230695900858,
+            "after": 0.04230614203454894,
+            "percent": -0.2738298145169016
+          },
+          "p95": {
+            "before": 0.067,
+            "after": 0.066,
+            "percent": -1.4925373134328401
+          }
+        },
+        "main": {
+          "mean": {
+            "before": 2.79430409914204,
+            "after": 2.859278310940499,
+            "percent": 2.325237679693082
+          },
+          "p95": {
+            "before": 5.33,
+            "after": 5.26,
+            "percent": -1.3133208255159512
+          }
+        },
+        "submit": {
+          "mean": {
+            "before": 2.0843708293612964,
+            "after": 2.110415547024952,
+            "percent": 1.2495241871925744
+          },
+          "p95": {
+            "before": 2.982,
+            "after": 2.983,
+            "percent": 0.03353454057679617
+          }
+        },
+        "render_wait": {
+          "mean": {
+            "before": 2.6600181124880837,
+            "after": 2.6189021113243762,
+            "percent": -1.5457038044469962
+          },
+          "p95": {
+            "before": 3.601,
+            "after": 3.594,
+            "percent": -0.1943904470980362
+          }
+        }
+      }
+    },
+    {
+      "case": "laser",
+      "runs": {
+        "before": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1447,
+              "frames_us_raw": 1447,
+              "projectiles_raw": 1447,
+              "floats_raw": 1447,
+              "pending_raw": 1447,
+              "primitives_raw": 1447,
+              "drawcalls_raw": 1447,
+              "frame_trace": 1447
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 73,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 11.493150684931507,
+                "max": 12.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.6164383561643836,
+                "max": 2.0
+              },
+              "memory_MiB": {
+                "mean": 2420.0,
+                "max": 2420.0
+              },
+              "power_W": {
+                "mean": 36.636575342465754,
+                "max": 37.11
+              }
+            }
+          },
+          "valid": true
+        },
+        "after": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1373,
+              "frames_us_raw": 1373,
+              "projectiles_raw": 1373,
+              "floats_raw": 1373,
+              "pending_raw": 1373,
+              "primitives_raw": 1373,
+              "drawcalls_raw": 1373,
+              "frame_trace": 1373
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 73,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 10.986301369863014,
+                "max": 12.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.36986301369863,
+                "max": 2.0
+              },
+              "memory_MiB": {
+                "mean": 2420.0,
+                "max": 2420.0
+              },
+              "power_W": {
+                "mean": 36.45342465753425,
+                "max": 36.97
+              }
+            }
+          },
+          "valid": true
+        }
+      },
+      "matching": {
+        "warm_steps": true,
+        "sample_steps": true,
+        "warm_fires": true,
+        "fires": true,
+        "warm_hits": true,
+        "hits": true,
+        "warm_purchases": true,
+        "purchases": true,
+        "handoffs": true,
+        "events": true,
+        "rng_state": true,
+        "fixture_config": true,
+        "stress_events": true,
+        "driver": true,
+        "fixture_file": true,
+        "runtime_config": true,
+        "state_before": false,
+        "state_after": false
+      },
+      "paired_valid": false,
+      "sampling_event_pair_valid": true,
+      "seed_only_projection_diagnostic": {
+        "endpoint_equal": {
+          "state_before": true,
+          "state_after": true
+        },
+        "omitted_paths": [
+          "canonical_kernel/rng/seed",
+          "kernel_hash"
+        ],
+        "scope": "Additional diagnostic only; raw full-state hash mismatch remains failed"
+      },
+      "differences": {
+        "wall": {
+          "mean": {
+            "before": 5.470923289564617,
+            "after": 5.783740713765477,
+            "percent": 5.717817773053713
+          },
+          "p95": {
+            "before": 8.529,
+            "after": 9.36,
+            "percent": 9.743228983468155
+          }
+        },
+        "before_main": {
+          "mean": {
+            "before": 0.03352798894263995,
+            "after": 0.03836416605972323,
+            "percent": 14.424298234400723
+          },
+          "p95": {
+            "before": 0.055,
+            "after": 0.068,
+            "percent": 23.636363636363654
+          }
+        },
+        "main": {
+          "mean": {
+            "before": 2.258790601243953,
+            "after": 2.421169701383831,
+            "percent": 7.1887628738340315
+          },
+          "p95": {
+            "before": 4.573,
+            "after": 4.983,
+            "percent": 8.965668051607235
+          }
+        },
+        "submit": {
+          "mean": {
+            "before": 0.9483863165169316,
+            "after": 0.987101238164603,
+            "percent": 4.082188974410439
+          },
+          "p95": {
+            "before": 1.702,
+            "after": 1.77,
+            "percent": 3.9952996474735603
+          }
+        },
+        "render_wait": {
+          "mean": {
+            "before": 2.230218382861092,
+            "after": 2.33710560815732,
+            "percent": 4.792679771525554
+          },
+          "p95": {
+            "before": 3.052,
+            "after": 3.445,
+            "percent": 12.876802096985585
+          }
+        }
+      }
+    },
+    {
+      "case": "cannon",
+      "runs": {
+        "before": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1094,
+              "frames_us_raw": 1094,
+              "projectiles_raw": 1094,
+              "floats_raw": 1094,
+              "pending_raw": 1094,
+              "primitives_raw": 1094,
+              "drawcalls_raw": 1094,
+              "frame_trace": 1094
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 8.445945945945946,
+                "max": 9.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2420.0,
+                "max": 2420.0
+              },
+              "power_W": {
+                "mean": 35.976351351351354,
+                "max": 36.81
+              }
+            }
+          },
+          "valid": true
+        },
+        "after": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1095,
+              "frames_us_raw": 1095,
+              "projectiles_raw": 1095,
+              "floats_raw": 1095,
+              "pending_raw": 1095,
+              "primitives_raw": 1095,
+              "drawcalls_raw": 1095,
+              "frame_trace": 1095
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 8.31081081081081,
+                "max": 9.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2420.0,
+                "max": 2420.0
+              },
+              "power_W": {
+                "mean": 35.92864864864865,
+                "max": 36.73
+              }
+            }
+          },
+          "valid": true
+        }
+      },
+      "matching": {
+        "warm_steps": true,
+        "sample_steps": true,
+        "warm_fires": true,
+        "fires": true,
+        "warm_hits": true,
+        "hits": true,
+        "warm_purchases": true,
+        "purchases": true,
+        "handoffs": true,
+        "events": true,
+        "rng_state": true,
+        "fixture_config": true,
+        "stress_events": true,
+        "driver": true,
+        "fixture_file": true,
+        "runtime_config": true,
+        "state_before": false,
+        "state_after": false
+      },
+      "paired_valid": false,
+      "sampling_event_pair_valid": true,
+      "seed_only_projection_diagnostic": {
+        "endpoint_equal": {
+          "state_before": true,
+          "state_after": true
+        },
+        "omitted_paths": [
+          "canonical_kernel/rng/seed",
+          "kernel_hash"
+        ],
+        "scope": "Additional diagnostic only; raw full-state hash mismatch remains failed"
+      },
+      "differences": {
+        "wall": {
+          "mean": {
+            "before": 7.317329067641682,
+            "after": 7.317306849315068,
+            "percent": -0.00030363984464543137
+          },
+          "p95": {
+            "before": 10.875,
+            "after": 10.891,
+            "percent": 0.1471264367816083
+          }
+        },
+        "before_main": {
+          "mean": {
+            "before": 0.0376800731261426,
+            "after": 0.03685296803652968,
+            "percent": -2.1950729417217207
+          },
+          "p95": {
+            "before": 0.06,
+            "after": 0.059,
+            "percent": -1.6666666666666718
+          }
+        },
+        "main": {
+          "mean": {
+            "before": 2.1570685557586837,
+            "after": 2.1729616438356167,
+            "percent": 0.7367910507296349
+          },
+          "p95": {
+            "before": 3.759,
+            "after": 3.907,
+            "percent": 3.9372173450385795
+          }
+        },
+        "submit": {
+          "mean": {
+            "before": 2.6864533820840952,
+            "after": 2.69421095890411,
+            "percent": 0.2887664782031951
+          },
+          "p95": {
+            "before": 4.703,
+            "after": 4.747,
+            "percent": 0.9355730384860594
+          }
+        },
+        "render_wait": {
+          "mean": {
+            "before": 2.43612705667276,
+            "after": 2.413281278538813,
+            "percent": -0.9377909116591754
+          },
+          "p95": {
+            "before": 3.326,
+            "after": 3.288,
+            "percent": -1.1425135297654876
+          }
+        }
+      }
+    },
+    {
+      "case": "missile",
+      "runs": {
+        "before": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1174,
+              "frames_us_raw": 1174,
+              "projectiles_raw": 1174,
+              "floats_raw": 1174,
+              "pending_raw": 1174,
+              "primitives_raw": 1174,
+              "drawcalls_raw": 1174,
+              "frame_trace": 1174
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 10.621621621621621,
+                "max": 11.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2425.972972972973,
+                "max": 2426.0
+              },
+              "power_W": {
+                "mean": 36.1554054054054,
+                "max": 36.55
+              }
+            }
+          },
+          "valid": true
+        },
+        "after": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 1131,
+              "frames_us_raw": 1131,
+              "projectiles_raw": 1131,
+              "floats_raw": 1131,
+              "pending_raw": 1131,
+              "primitives_raw": 1131,
+              "drawcalls_raw": 1131,
+              "frame_trace": 1131
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 10.08108108108108,
+                "max": 11.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2425.972972972973,
+                "max": 2426.0
+              },
+              "power_W": {
+                "mean": 36.222027027027025,
+                "max": 36.71
+              }
+            }
+          },
+          "valid": true
+        }
+      },
+      "matching": {
+        "warm_steps": true,
+        "sample_steps": true,
+        "warm_fires": true,
+        "fires": true,
+        "warm_hits": true,
+        "hits": true,
+        "warm_purchases": true,
+        "purchases": true,
+        "handoffs": true,
+        "events": true,
+        "rng_state": true,
+        "fixture_config": true,
+        "stress_events": true,
+        "driver": true,
+        "fixture_file": true,
+        "runtime_config": true,
+        "state_before": false,
+        "state_after": false
+      },
+      "paired_valid": false,
+      "sampling_event_pair_valid": true,
+      "seed_only_projection_diagnostic": {
+        "endpoint_equal": {
+          "state_before": true,
+          "state_after": true
+        },
+        "omitted_paths": [
+          "canonical_kernel/rng/seed",
+          "kernel_hash"
+        ],
+        "scope": "Additional diagnostic only; raw full-state hash mismatch remains failed"
+      },
+      "differences": {
+        "wall": {
+          "mean": {
+            "before": 6.7877495741056215,
+            "after": 7.043183023872679,
+            "percent": 3.763153707695732
+          },
+          "p95": {
+            "before": 9.398,
+            "after": 9.782,
+            "percent": 4.085975739519054
+          }
+        },
+        "before_main": {
+          "mean": {
+            "before": 0.0393603066439523,
+            "after": 0.042603890362511054,
+            "percent": 8.240748091471307
+          },
+          "p95": {
+            "before": 0.059,
+            "after": 0.062,
+            "percent": 5.084745762711873
+          }
+        },
+        "main": {
+          "mean": {
+            "before": 2.252420783645656,
+            "after": 2.380345711759505,
+            "percent": 5.679441827330156
+          },
+          "p95": {
+            "before": 4.004,
+            "after": 4.213,
+            "percent": 5.219780219780223
+          }
+        },
+        "submit": {
+          "mean": {
+            "before": 2.112736797274276,
+            "after": 2.169085764809903,
+            "percent": 2.6671077821111
+          },
+          "p95": {
+            "before": 2.928,
+            "after": 3.005,
+            "percent": 2.6297814207650205
+          }
+        },
+        "render_wait": {
+          "mean": {
+            "before": 2.383231686541738,
+            "after": 2.4511476569407606,
+            "percent": 2.849742674308531
+          },
+          "p95": {
+            "before": 3.292,
+            "after": 3.483,
+            "percent": 5.801944106925894
+          }
+        }
+      }
+    },
+    {
+      "case": "longLaser",
+      "runs": {
+        "before": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 869,
+              "frames_us_raw": 869,
+              "projectiles_raw": 869,
+              "floats_raw": 869,
+              "pending_raw": 869,
+              "primitives_raw": 869,
+              "drawcalls_raw": 869,
+              "frame_trace": 869
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 8.0,
+                "max": 8.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2420.0,
+                "max": 2420.0
+              },
+              "power_W": {
+                "mean": 36.09148648648649,
+                "max": 36.77
+              }
+            }
+          },
+          "valid": true
+        },
+        "after": {
+          "frozen_run_gate": true,
+          "phase_gates": {
+            "array_lengths": {
+              "phases": 893,
+              "frames_us_raw": 893,
+              "projectiles_raw": 893,
+              "floats_raw": 893,
+              "pending_raw": 893,
+              "primitives_raw": 893,
+              "drawcalls_raw": 893,
+              "frame_trace": 893
+            },
+            "lengths_equal": true,
+            "negative_phase_frames": [],
+            "partition_fail_frames": [],
+            "phase_steps_sum": 480,
+            "pass": true
+          },
+          "fixture_gates": {
+            "layer2": true,
+            "enemies15": true,
+            "enhancement40": true,
+            "five_drones": true,
+            "ordinary140": true
+          },
+          "runtime_config_pass": true,
+          "engine472": true,
+          "errors": [],
+          "ordinary_active_entries": 5,
+          "gpu": {
+            "samples": 74,
+            "scope": "whole NVIDIA device; 100ms polling; sensor update rate may be slower; not GPU frame time",
+            "metrics": {
+              "gpu_percent": {
+                "mean": 8.0,
+                "max": 8.0
+              },
+              "memory_controller_percent": {
+                "mean": 1.0,
+                "max": 1.0
+              },
+              "memory_MiB": {
+                "mean": 2420.0,
+                "max": 2420.0
+              },
+              "power_W": {
+                "mean": 36.03945945945946,
+                "max": 36.53
+              }
+            }
+          },
+          "valid": true
+        }
+      },
+      "matching": {
+        "warm_steps": true,
+        "sample_steps": true,
+        "warm_fires": true,
+        "fires": true,
+        "warm_hits": true,
+        "hits": true,
+        "warm_purchases": true,
+        "purchases": true,
+        "handoffs": true,
+        "events": true,
+        "rng_state": true,
+        "fixture_config": true,
+        "stress_events": true,
+        "driver": true,
+        "fixture_file": true,
+        "runtime_config": true,
+        "state_before": false,
+        "state_after": false
+      },
+      "paired_valid": false,
+      "sampling_event_pair_valid": true,
+      "seed_only_projection_diagnostic": {
+        "endpoint_equal": {
+          "state_before": true,
+          "state_after": true
+        },
+        "omitted_paths": [
+          "canonical_kernel/rng/seed",
+          "kernel_hash"
+        ],
+        "scope": "Additional diagnostic only; raw full-state hash mismatch remains failed"
+      },
+      "differences": {
+        "wall": {
+          "mean": {
+            "before": 9.200878020713464,
+            "after": 8.93677379619261,
+            "percent": -2.870424147850792
+          },
+          "p95": {
+            "before": 13.843,
+            "after": 13.398,
+            "percent": -3.2146211081413023
+          }
+        },
+        "before_main": {
+          "mean": {
+            "before": 0.04524971231300345,
+            "after": 0.04053751399776036,
+            "percent": -10.413764142073767
+          },
+          "p95": {
+            "before": 0.072,
+            "after": 0.061,
+            "percent": -15.277777777777768
+          }
+        },
+        "main": {
+          "mean": {
+            "before": 3.0412830840046032,
+            "after": 2.932860022396417,
+            "percent": -3.5650433916668
+          },
+          "p95": {
+            "before": 6.677,
+            "after": 6.605,
+            "percent": -1.0783285906844298
+          }
+        },
+        "submit": {
+          "mean": {
+            "before": 3.5862266973532795,
+            "after": 3.4872967525195966,
+            "percent": -2.758608230391446
+          },
+          "p95": {
+            "before": 4.481,
+            "after": 4.34,
+            "percent": -3.1466190582459252
+          }
+        },
+        "render_wait": {
+          "mean": {
+            "before": 2.5281185270425777,
+            "after": 2.4760795072788357,
+            "percent": -2.058409018687024
+          },
+          "p95": {
+            "before": 3.523,
+            "after": 3.301,
+            "percent": -6.301447629860912
+          }
+        }
+      }
+    }
+  ],
+  "all_five_pairs_valid": false,
+  "all_five_sampling_event_pairs_valid": true
+}

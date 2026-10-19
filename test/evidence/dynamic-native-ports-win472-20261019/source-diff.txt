@@ -1,0 +1,8 @@
+ .../addons/native_battle/README.dynamic-ports.md   | 11 +++++++
+ .../addons/native_battle/build_native_linux.py     | 30 ++++++++++++++++++
+ .../native_battle/src/combat_execution_kernel.h    | 36 ++++++++++++++++++++++
+ .../src/combat_retained_presentation.h             |  2 +-
+ space-battleship/scripts/battle_slice_runtime.gd   | 28 +++++++++++------
+ space-battleship/scripts/logical_fleet_pose.gd     | 22 +++++++++++++
+ .../scripts/native_execution_session.gd            | 21 ++++++++++---
+ 7 files changed, 135 insertions(+), 15 deletions(-)

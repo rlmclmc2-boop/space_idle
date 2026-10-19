@@ -1,0 +1,31 @@
+{
+  "captured_utc": "2026-10-19T10:25:24.0909721Z",
+  "gpu": [
+    {
+      "Name": "OrayIddDriver Device",
+      "DriverVersion": "17.50.19.949",
+      "AdapterRAM": null
+    },
+    {
+      "Name": "NVIDIA GeForce RTX 2060",
+      "DriverVersion": "32.0.16.1088",
+      "AdapterRAM": 4293918720
+    }
+  ],
+  "cpu": [
+    {
+      "Name": "Intel(R) Core(TM) i7-10700K CPU @ 3.80GHz",
+      "NumberOfCores": 8,
+      "NumberOfLogicalProcessors": 16
+    }
+  ],
+  "os": [
+    {
+      "Caption": "Microsoft Windows 10 专业版",
+      "Version": "10.0.19044",
+      "BuildNumber": "19044",
+      "TotalVisibleMemorySize": 33469080
+    }
+  ],
+  "godot_processes": []
+}
