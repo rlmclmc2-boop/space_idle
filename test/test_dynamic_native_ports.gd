@@ -1,6 +1,16 @@
 extends SceneTree
 const VIEW=preload("res://scripts/presented_ship_view.gd")
 const POSE=preload("res://scripts/logical_fleet_pose.gd")
+class CountedPose extends "res://scripts/logical_fleet_pose.gd":
+ var builds:=0
+ func _project_presentation_muzzles(module:Dictionary,art:Dictionary,root_transform:Transform3D)->PackedVector2Array:
+  builds+=1
+  return super._project_presentation_muzzles(module,art,root_transform)
+ func fresh(slot:int)->PackedVector2Array:
+  var module:Dictionary=module_by_slot.get(slot,{})
+  if module.is_empty() or not presentation_art.has(str(module.assignment.key)):return PackedVector2Array()
+  var root_transform:Transform3D=ship_transform if module.assignment.carrier=="hull" else carriers[module.carrier_index].transform
+  return super._project_presentation_muzzles(module,presentation_art[str(module.assignment.key)],root_transform)
 var checks:=0
 var failures:=0
 var evidence:Array=[]
@@ -147,11 +157,69 @@ func projection_test()->void:
     pose.approved[hull].weapon_scale=mount_scale
  evidence.append({"projection_points":count,"maximum_error_px":maximum,"runtime_scales":[0.7,1.0,1.35],"runtime_emission_pixel_offset":true,"runtime_hardpoint_offset":true,"runtime_mount_scale":true,"hulls":5,"weapon_families":4})
  view.free()
+func cache_probe(pose,label:String)->void:
+ var before:int=pose.builds
+ # Compare memoized output with a fresh projection; the separate renderer
+ # matrix above checks that projection against actual visual Node3D ports.
+ var expected:PackedVector2Array=pose.fresh(0)
+ check(pose.screen_presentation_muzzles_for_slot(0)==expected,label+" fresh value")
+ check(pose.builds==before+1,label+" invalidates once")
+ check(pose.screen_presentation_muzzles_for_slot(0)==expected and pose.builds==before+1,label+" stable hit")
+func cache_test()->void:
+ var view=VIEW.new();view.size=Vector2(600,700);root.add_child(view)
+ var pose=CountedPose.new();pose.prepare(view)
+ var entries:Array=[{"key":"laser"}]
+ view.set_hull("Frigate");view.set_loadout(entries,1)
+ pose.configure("Frigate",entries,1,{})
+ view.set_pose(Vector2(300,350),540,0,Vector2(300,-200),0,false,false);view.set_slot_angles([0.1])
+ pose.pose_base(Vector2(300,350),540,0,0,false,0);pose.set_slot_angles([0.1])
+ var first:PackedVector2Array=pose.screen_presentation_muzzles_for_slot(0)
+ var frozen:=first.duplicate();var builds:int=pose.builds
+ check(first[0].distance_to(view.screen_visual_muzzle_for_slot(0,0))<0.05,"cache initial actual visual port")
+ for i in 64:check(pose.screen_presentation_muzzles_for_slot(0)==first,"unchanged cache output")
+ check(pose.builds==builds,"unchanged inputs do not repeat projection")
+ var k=core();k.input_presentation_muzzles([first]);k.advance(1.0/60.0);k.take_feedback()
+ pose.set_slot_angles([0.7]);cache_probe(pose,"turret turn")
+ pose.approved.Frigate.hardpoints[0].pos[0]+=0.035;cache_probe(pose,"in-place hardpoint")
+ pose.approved.Frigate.weapon_scale*=1.1;cache_probe(pose,"hull weapon scale")
+ pose.presentation_art.laser.visual_scale*=0.8;cache_probe(pose,"art scale")
+ pose.presentation_art.laser.anchor[0]+=5.0;cache_probe(pose,"in-place anchor")
+ pose.presentation_art.laser.pixels_per_model[0]*=1.1;cache_probe(pose,"in-place pixels per model")
+ pose.presentation_art.laser.emission_pixels[0][1]-=7.0;cache_probe(pose,"nested emission pixel")
+ pose.presentation_art.laser.emission_pixels.append([30,12]);cache_probe(pose,"port count")
+ var module:Dictionary=pose.module_by_slot[0]
+ module.mount_chain[0]=module.mount_chain[0].scaled_local(Vector3(1.1,1.0,0.9));cache_probe(pose,"mount chain")
+ module.descriptor.pivot_chain.insert(0,Transform3D(Basis.IDENTITY,Vector3(0.03,0,0.04)));cache_probe(pose,"pivot chain")
+ pose.ship_transform=pose.ship_transform.translated(Vector3(0.1,0,0.1));cache_probe(pose,"ship transform")
+ pose.rendered_position+=Vector2(3,4);cache_probe(pose,"rendered position")
+ pose.rendered_height*=1.01;cache_probe(pose,"rendered height")
+ pose.approved.Frigate.opaque=Rect2(pose.approved.Frigate.opaque.position,pose.approved.Frigate.opaque.size+Vector2(2,1));cache_probe(pose,"opaque fit")
+ pose.approved.Frigate.mesh_size+=Vector2(0.1,0.1);cache_probe(pose,"mesh fit")
+ pose.approved.Frigate.base_position+=Vector3(0.02,0,0.01);cache_probe(pose,"base fit")
+ pose.manifest.hulls.Frigate.model_span*=1.02;cache_probe(pose,"model span")
+ pose.camera_transform=pose.camera_transform.translated(Vector3(0.2,0.1,0.1));cache_probe(pose,"camera transform")
+ var next_projection:Projection=pose.projection;next_projection.x*=1.03;pose.projection=next_projection;cache_probe(pose,"projection")
+ pose.size+=Vector2(2,3);cache_probe(pose,"viewport size")
+ var test_carriers:Array[Dictionary]=[{"transform":Transform3D.IDENTITY}]
+ module.assignment.carrier="drone";module.carrier_index=0;pose.carriers=test_carriers;cache_probe(pose,"carrier assignment")
+ pose.carriers[0].transform=pose.carriers[0].transform.translated(Vector3(0.2,0,0.2));cache_probe(pose,"carrier transform")
+ module.assignment.key="missile";module.descriptor=pose.weapons.missile;cache_probe(pose,"weapon configuration")
+ k.input_presentation_muzzles([pose.screen_presentation_muzzles_for_slot(0)])
+ check(first==frozen,"cache replacement does not mutate prior returned value")
+ check(k.projectile_views()[0].presentation_origin==frozen[0],"cached provider preserves existing birth snapshot")
+ pose.module_by_slot.erase(0);check(pose.screen_presentation_muzzles_for_slot(0).is_empty(),"removed slot cannot leak cached ports")
+ pose.configuration_dirty=true;pose.configure("Frigate",entries,1,{})
+ cache_probe(pose,"configuration recapture")
+ pose.invalidate_pose();cache_probe(pose,"explicit ownership invalidation")
+ evidence.append({"cache_unchanged_queries":64,"cache_rebuilds":pose.builds,"in_place_descriptor_edits":true,"camera_and_projection":true,"birth_value_preserved":true})
+ k.cancel();view.free()
 func _initialize()->void:call_deferred("run")
 func run()->void:
- var library_before:=FileAccess.get_sha256("res://bin/libspace_native.so")
- paired();snapshot_test();retired_feedback_test();projection_test()
- check(FileAccess.get_sha256("res://bin/libspace_native.so")==library_before,"all runtime edits reuse the same native binary")
+ var library_path:="res://bin/space_native.dll" if OS.has_feature("windows") else "res://bin/libspace_native.so"
+ var library_before:=FileAccess.get_sha256(library_path)
+ check(library_before.length()==64,"matching native binary exists")
+ paired();snapshot_test();retired_feedback_test();projection_test();cache_test()
+ check(FileAccess.get_sha256(library_path)==library_before,"all runtime edits reuse the same native binary")
  var result={"checks":checks,"failures":failures,"evidence":evidence,"engine":Engine.get_version_info(),"native_sha256":library_before}
  FileAccess.open("res://.runtime/dynamic-ports.json",FileAccess.WRITE).store_string(JSON.stringify(result,"  "))
  print("DYNAMIC_PORTS ",JSON.stringify(result));quit(1 if failures else 0)

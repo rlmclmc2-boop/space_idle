@@ -170,16 +170,6 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 	geometry.battle_read_model.ensure_clock()
 	geometry.refresh_target_geometry()
 	geometry.refresh_fleet_geometry()
-	# Publish display-only ports even when numeric geometry revisions are stable
-	# (e.g. art scale/anchor changed). Cost follows mounts, never active shots.
-	if kernel.has_method("input_presentation_muzzles"):
-		var ports:Array=[]
-		for weapon in weapons:
-			ports.append(geometry.fleet_pose.screen_presentation_muzzles_for_slot(int(weapon.slot)) if not bool(weapon.hostile) and not weapon.entry.has("drone_id") else PackedVector2Array())
-		if ports!=presentation_muzzles:
-			var accepted:bool=kernel.input_presentation_muzzles(ports)
-			assert(accepted,"Presentation ports rejected")
-			presentation_muzzles=ports
 	var topology_changed:bool=geometry_muzzles.size()!=weapons.size()
 	if topology_changed:
 		hostile_weapon_indices.clear();friendly_weapon_indices.clear();weapon_geometry_keys.clear()
@@ -187,6 +177,22 @@ func prepare_geometry(geometry:RefCounted,game:RefCounted)->void:
 		for index in weapons.size():
 			if bool(weapons[index].hostile):hostile_weapon_indices.append(index)
 			else:friendly_weapon_indices.append(index)
+	# Keep row storage; the pose cache checks display dependencies independently
+	# of numerical revisions. No fresh full array or repeated pixel projection.
+	if kernel.has_method("input_presentation_muzzles"):
+		var ports_changed:bool=presentation_muzzles.size()!=weapons.size()
+		if ports_changed:
+			presentation_muzzles.resize(weapons.size())
+			for index in weapons.size():presentation_muzzles[index]=PackedVector2Array()
+		for index in friendly_weapon_indices:
+			var weapon:Dictionary=weapons[index]
+			if weapon.entry.has("drone_id"):continue
+			var ports:PackedVector2Array=geometry.fleet_pose.screen_presentation_muzzles_for_slot(int(weapon.slot))
+			if presentation_muzzles[index]!=ports:
+				presentation_muzzles[index]=ports;ports_changed=true
+		if ports_changed:
+			var accepted:bool=kernel.input_presentation_muzzles(presentation_muzzles)
+			assert(accepted,"Presentation ports rejected")
 	var targets_changed:bool=topology_changed or target_geometry_revision!=geometry.target_geometry_revision
 	var fleet_changed:bool=topology_changed or fleet_geometry_revision!=geometry.fleet_geometry_revision
 	var aim:Vector2=geometry.target_point(game.player)

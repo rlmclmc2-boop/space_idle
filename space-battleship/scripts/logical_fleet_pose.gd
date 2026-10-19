@@ -13,6 +13,7 @@ var hulls: Dictionary = {}
 var approved: Dictionary = {}
 var weapons: Dictionary = {}
 var presentation_art: Dictionary = {}
+var presentation_muzzle_cache: Dictionary = {}
 var drone_sockets: Dictionary = {}
 var carrier_mount: Array = []
 var hull_key := ""
@@ -39,6 +40,7 @@ var configured_bag:Dictionary={}
 func prepare(view) -> void:
 	manifest = view.manifest
 	presentation_art = view.static_weapon_art
+	presentation_muzzle_cache.clear()
 	size = view.size
 	camera_transform = view.camera.get_camera_transform()
 	projection = view.camera.get_camera_projection()
@@ -206,6 +208,7 @@ func _pose_carriers(scale_value: float) -> void:
 
 func invalidate_pose() -> void:
 	base_signature.clear()
+	presentation_muzzle_cache.clear()
 	# Configuration and ownership capture can replace transforms without a step.
 	# Projection descriptors are immutable after prepare; invalidate here if changed.
 	for module in modules:
@@ -220,18 +223,20 @@ func _mount(module: Dictionary) -> Transform3D:
 	var root: Transform3D = ship_transform if module.assignment.carrier == "hull" else carriers[module.carrier_index].transform
 	if not module.has("mount_root") or module.mount_root != root:
 		module.mount_root = root
-		if module.assignment.carrier=="hull" and approved.has(hull_key) and rendered_height>0.0:
-			var art:Dictionary=approved[hull_key]
-			var fit:Dictionary=GEOMETRY.approved_body_fit(art.opaque,art.mesh_size,art.base_position,size,rendered_height,rendered_position,float(manifest.hulls[hull_key].model_span))
-			var position:Vector3=GEOMETRY.approved_mount_position(fit,art.hardpoints[int(module.assignment.mount)].pos)
-			var mount_basis:Basis=_global(Transform3D.IDENTITY,module.mount_chain).basis.scaled_local(Vector3.ONE*float(art.weapon_scale))
-			module.mount_transform=root*Transform3D(mount_basis,position)
-		else:
-			module.mount_transform = _global(root,module.mount_chain)
+		module.mount_transform = _mount_transform(module,root)
 		module.mount_position = project(module.mount_transform.origin)
 		module.mount_yaw = module.mount_transform.basis.orthonormalized().get_euler().y
 		module.socket_points = {}
 	return module.mount_transform
+
+func _mount_transform(module:Dictionary,root:Transform3D)->Transform3D:
+	if module.assignment.carrier=="hull" and approved.has(hull_key) and rendered_height>0.0:
+		var art:Dictionary=approved[hull_key]
+		var fit:Dictionary=GEOMETRY.approved_body_fit(art.opaque,art.mesh_size,art.base_position,size,rendered_height,rendered_position,float(manifest.hulls[hull_key].model_span))
+		var position:Vector3=GEOMETRY.approved_mount_position(fit,art.hardpoints[int(module.assignment.mount)].pos)
+		var mount_basis:Basis=_global(Transform3D.IDENTITY,module.mount_chain).basis.scaled_local(Vector3.ONE*float(art.weapon_scale))
+		return root*Transform3D(mount_basis,position)
+	return _global(root,module.mount_chain)
 
 func _set_pivot(module: Dictionary, yaw: float) -> void:
 	if module.has("pivot_yaw") and float(module.pivot_yaw) == yaw: return
@@ -274,13 +279,32 @@ func screen_muzzle_for_slot(slot: int, ordinal := 0) -> Vector2:
 # Same authored anchor, emission pixels and scale as StaticWeaponArt. Pure
 # data projection: no live Node lookup and no per-projectile work.
 func screen_presentation_muzzles_for_slot(slot:int)->PackedVector2Array:
-	var ports:=PackedVector2Array()
 	var module:Dictionary=module_by_slot.get(slot,{})
-	if module.is_empty():return ports
+	if module.is_empty():return PackedVector2Array()
 	var key:String=str(module.assignment.key)
-	if not presentation_art.has(key):return ports
+	if not presentation_art.has(key):return PackedVector2Array()
 	var art:Dictionary=presentation_art[key]
-	var transform:=_mount(module)
+	var root:Transform3D=ship_transform if module.assignment.carrier=="hull" else carriers[module.carrier_index].transform
+	# Exact value snapshots also detect in-place edits of public descriptors.
+	# Do not rely only on pose revisions or retain aliased mutable key arrays.
+	var state:Array=[key,module.assignment.carrier,root,module.mount_chain,module.pivot,module.descriptor.pivot_chain,
+		size,camera_transform,projection,float(art.get("visual_scale",1.0)),art.anchor,art.pixels_per_model,art.emission_pixels]
+	if module.assignment.carrier=="hull" and approved.has(hull_key) and rendered_height>0.0:
+		var hull_art:Dictionary=approved[hull_key]
+		state.append_array([hull_key,hull_art.opaque,hull_art.mesh_size,hull_art.base_position,
+			rendered_height,rendered_position,float(manifest.hulls[hull_key].model_span),
+			hull_art.hardpoints[int(module.assignment.mount)].pos,float(hull_art.weapon_scale)])
+	var cached:Dictionary=presentation_muzzle_cache.get(slot,{})
+	if not cached.is_empty() and cached.state==state:return cached.ports
+	var ports:=_project_presentation_muzzles(module,art,root)
+	# Replace the value rather than modifying an array already used by a birth.
+	presentation_muzzle_cache[slot]={"state":state.duplicate(true),"ports":ports}
+	return ports
+
+func _project_presentation_muzzles(module:Dictionary,art:Dictionary,root:Transform3D)->PackedVector2Array:
+	var ports:=PackedVector2Array()
+	# A display descriptor edit must not invalidate the separate numerical cache.
+	var transform:=_mount_transform(module,root)
 	var root_scale:float=VIEW.CARRIER_WEAPON_SCALE if module.assignment.carrier=="drone" else 1.0
 	transform=transform*Transform3D(Basis.from_scale(Vector3.ONE*root_scale),Vector3.ZERO)
 	var chain:Array=module.descriptor.pivot_chain
