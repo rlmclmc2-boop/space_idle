@@ -230,7 +230,7 @@ func set_hull(key: String) -> bool:
 func _install_approved_hull_art(key: String) -> bool:
 	var row: Dictionary = approved_hull_art.get(key,{})
 	var path := str(row.get("texture",""))
-	if not path.begins_with("res://assets/ships/approved_fleet_20261018/player/"):
+	if not path.begins_with("res://assets/ships/approved_fleet_20261018/player/") and not path.begins_with("res://assets/ships/fleet_20261019/player/"):
 		return false
 	var texture := load(path) as Texture2D
 	if texture == null:return false

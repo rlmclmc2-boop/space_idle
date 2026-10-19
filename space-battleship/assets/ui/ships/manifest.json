@@ -16,99 +16,99 @@
   },
   "hulls": {
     "Battleship": {
-      "height": 600.0,
+      "height": 520.6,
       "model": "res://dev/toon_ship/hulls/battleship.glb",
       "mounts": [
         [
-          257.066009521484,
-          258.013214111328
+          260.5632,
+          234.3498
         ],
         [
-          510.933990478516,
-          258.013214111328
+          512.1328,
+          234.3498
         ],
         [
-          257.066009521484,
-          509.986694335938
+          264.3608,
+          510.7997
         ],
         [
-          510.933990478516,
-          509.986694335938
+          511.1831,
+          510.7997
         ]
       ],
-      "texture": "res://assets/ui/ships/approved_fleet_20261018/04-battleship.png"
+      "texture": "res://assets/ui/ships/fleet_20261019/04-battleship.png"
     },
     "Cruiser": {
-      "height": 574.835361037259,
+      "height": 497.6115,
       "model": "res://dev/toon_ship/hulls/cruiser.glb",
       "mounts": [
         [
-          384.0,
-          214.406799316406
+          382.0767,
+          225.4099
         ],
         [
-          214.406860351562,
-          383.999938964844
+          274.8447,
+          452.3739
         ],
         [
-          553.593139648438,
-          383.999938964844
+          493.1042,
+          452.3739
         ]
       ],
-      "texture": "res://assets/ui/ships/approved_fleet_20261018/03-cruiser.png"
+      "texture": "res://assets/ui/ships/fleet_20261019/03-cruiser.png"
     },
     "Destroyer": {
-      "height": 600.0,
+      "height": 384.611,
       "model": "res://dev/toon_ship/hulls/destroyer.glb",
       "mounts": [
         [
-          245.625579833984,
-          305.378112792969
+          317.486,
+          328.8947
         ],
         [
-          522.374450683594,
-          305.378112792969
+          449.514,
+          328.8947
         ]
       ],
-      "texture": "res://assets/ui/ships/approved_fleet_20261018/02-destroyer.png"
+      "texture": "res://assets/ui/ships/fleet_20261019/02-destroyer.png"
     },
     "Frigate": {
-      "height": 600.0,
+      "height": 285.6336,
       "model": "res://dev/toon_ship/hulls/frigate.glb",
       "mounts": [
         [
-          384.0,
-          240.076873779297
+          382.5512,
+          388.2704
         ]
       ],
-      "texture": "res://assets/ui/ships/approved_fleet_20261018/01-frigate.png"
+      "texture": "res://assets/ui/ships/fleet_20261019/01-frigate.png"
     },
     "Heavy_Battleship": {
-      "height": 600.0,
+      "height": 582.5876,
       "model": "res://dev/toon_ship/hulls/heavy_battleship.glb",
       "mounts": [
         [
-          384.0,
-          182.360916137695
+          383.0254,
+          212.9052
         ],
         [
-          300.0,
-          280.0
+          221.6331,
+          333.6049
         ],
         [
-          468.0,
-          280.0
+          544.4178,
+          333.6049
         ],
         [
-          265.479583740234,
-          547.129333496094
+          221.6331,
+          484.7161
         ],
         [
-          502.520416259766,
-          547.129333496094
+          544.4178,
+          484.7161
         ]
       ],
-      "texture": "res://assets/ui/ships/approved_fleet_20261018/05-heavy-battleship.png"
+      "texture": "res://assets/ui/ships/fleet_20261019/05-heavy-battleship.png"
     }
   },
   "renderer": "res://scripts/presented_ship_view.gd",
@@ -135,5 +135,6 @@
     "res://dev/toon_ship/hybrid_manifest.json": "a964d8351c8677faec08188ad1d8312c01c1415c7a6555de14e144a5501cba08",
     "res://scripts/battlefield.gd": "0add90ae767fd82742fb5ee7fb633747e8e571c3354999f3f4f90b5f066a0ee9",
     "res://scripts/presented_ship_view.gd": "f4ad8796a9c3c3827cba409b03da88c0102df3fa7bd9c6fba996891a020f024b"
-  }
+  },
+  "static_hull_source": "res://art_sources/fleet-20261019/hulls-transparent.png"
 }

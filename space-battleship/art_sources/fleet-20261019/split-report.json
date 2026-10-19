@@ -1,0 +1,252 @@
+{
+  "source_sha256": "17ee0ed1c3fb8a3416edc259ceca6e032462a069caf24c755cc81cd7afdc3a66",
+  "alpha_floor": 16,
+  "fringe_radius": 2,
+  "hulls": {
+    "Frigate": {
+      "texture": "res://assets/ships/fleet_20261019/player/01-frigate.png",
+      "source_bounds": [
+        8,
+        325,
+        230,
+        626
+      ],
+      "canvas": [
+        254,
+        333
+      ],
+      "opaque_size": [
+        222,
+        301
+      ],
+      "hardpoints": [
+        [
+          -0.003937,
+          0.013514
+        ]
+      ],
+      "static_height": 60.2,
+      "sha256": "0aac6f2efd909f273551d37ae40d5e03e4611c1bedc1659aee9ed411a339d61a",
+      "ui_texture": "res://assets/ui/ships/fleet_20261019/01-frigate.png",
+      "ui_mounts": [
+        [
+          382.5512,
+          388.2704
+        ]
+      ],
+      "ui_height": 285.6336
+    },
+    "Destroyer": {
+      "texture": "res://assets/ships/fleet_20261019/player/02-destroyer.png",
+      "source_bounds": [
+        253,
+        229,
+        540,
+        634
+      ],
+      "canvas": [
+        319,
+        437
+      ],
+      "opaque_size": [
+        287,
+        405
+      ],
+      "hardpoints": [
+        [
+          -0.217868,
+          -0.131579
+        ],
+        [
+          0.217868,
+          -0.131579
+        ]
+      ],
+      "static_height": 81.0,
+      "sha256": "760297cb7a2fdc3e4dcfb18dbfc7e4d527789797180d55e493786bd0e59a44ba",
+      "ui_texture": "res://assets/ui/ships/fleet_20261019/02-destroyer.png",
+      "ui_mounts": [
+        [
+          317.486,
+          328.8947
+        ],
+        [
+          449.514,
+          328.8947
+        ]
+      ],
+      "ui_height": 384.611
+    },
+    "Cruiser": {
+      "texture": "res://assets/ships/fleet_20261019/player/03-cruiser.png",
+      "source_bounds": [
+        572,
+        121,
+        971,
+        645
+      ],
+      "canvas": [
+        431,
+        556
+      ],
+      "opaque_size": [
+        399,
+        524
+      ],
+      "hardpoints": [
+        [
+          -0.00348,
+          -0.30036
+        ],
+        [
+          -0.265661,
+          0.129496
+        ],
+        [
+          0.267981,
+          0.129496
+        ]
+      ],
+      "static_height": 104.8,
+      "sha256": "1b1bddf839c762a3234dbd61da26d490f50396405bf2b07e409877c66242f363",
+      "ui_texture": "res://assets/ui/ships/fleet_20261019/03-cruiser.png",
+      "ui_mounts": [
+        [
+          382.0767,
+          225.4099
+        ],
+        [
+          274.8447,
+          452.3739
+        ],
+        [
+          493.1042,
+          452.3739
+        ]
+      ],
+      "ui_height": 497.6115
+    },
+    "Battleship": {
+      "texture": "res://assets/ships/fleet_20261019/player/04-battleship.png",
+      "source_bounds": [
+        953,
+        101,
+        1434,
+        649
+      ],
+      "canvas": [
+        513,
+        580
+      ],
+      "opaque_size": [
+        481,
+        548
+      ],
+      "hardpoints": [
+        [
+          -0.252437,
+          -0.27069
+        ],
+        [
+          0.264133,
+          -0.27069
+        ],
+        [
+          -0.244639,
+          0.231034
+        ],
+        [
+          0.262183,
+          0.231034
+        ]
+      ],
+      "static_height": 109.6,
+      "sha256": "f1bbf09e0ac1ccac6b9a43f63e25875fbb01a4ab6933c442074eb2b048c2f7c8",
+      "ui_texture": "res://assets/ui/ships/fleet_20261019/04-battleship.png",
+      "ui_mounts": [
+        [
+          260.5632,
+          234.3498
+        ],
+        [
+          512.1328,
+          234.3498
+        ],
+        [
+          264.3608,
+          510.7997
+        ],
+        [
+          511.1831,
+          510.7997
+        ]
+      ],
+      "ui_height": 520.6
+    },
+    "Heavy_Battleship": {
+      "texture": "res://assets/ships/fleet_20261019/player/05-heavy-battleship.png",
+      "source_bounds": [
+        1434,
+        44,
+        1955,
+        657
+      ],
+      "canvas": [
+        553,
+        645
+      ],
+      "opaque_size": [
+        521,
+        613
+      ],
+      "hardpoints": [
+        [
+          -0.000904,
+          -0.278295
+        ],
+        [
+          -0.308318,
+          -0.081395
+        ],
+        [
+          0.30651,
+          -0.081395
+        ],
+        [
+          -0.308318,
+          0.165116
+        ],
+        [
+          0.30651,
+          0.165116
+        ]
+      ],
+      "static_height": 122.6,
+      "sha256": "4dc7511feba6dd6912215039a6112aefd0b2236898103b638b799677e49160ee",
+      "ui_texture": "res://assets/ui/ships/fleet_20261019/05-heavy-battleship.png",
+      "ui_mounts": [
+        [
+          383.0254,
+          212.9052
+        ],
+        [
+          221.6331,
+          333.6049
+        ],
+        [
+          544.4178,
+          333.6049
+        ],
+        [
+          221.6331,
+          484.7161
+        ],
+        [
+          544.4178,
+          484.7161
+        ]
+      ],
+      "ui_height": 582.5876
+    }
+  }
+}

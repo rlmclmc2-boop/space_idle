@@ -232,6 +232,15 @@ func visual_muzzle(shot:Dictionary)->Vector2:
 
 
 func _set_reference_dimensions() -> void:
+	var key := str(game.profile.selectedShip)
+	var art := ship_visual_entry(key)
+	if float(art.get("static_height",0.0))>0.0:
+		# The approved lineup authors relative hull size independently of the
+		# retained combat geometry. Keep the existing ship-centre authority.
+		reference_height = float(art.static_height)*SHIP_VISUALS.player_display_multiplier()*float(db.config.get("playerVisualScale"+key,1.0))
+		stable_center_ready=false
+		reference_offset=Vector2.ZERO
+		return
 	# Match the existing hull's opaque footprint, not its transparent source canvas.
 	var image := ship_geometry_texture(str(game.profile.selectedShip)).get_image()
 	var rect := image.get_used_rect()

@@ -1,0 +1,46 @@
+{
+  "all_fired_at": -1,
+  "events": {
+    "beam_hit": 19,
+    "beam_started": 4,
+    "collect": 1,
+    "equipment_stats": 14,
+    "explode": 3,
+    "fire": 23,
+    "hit": 37,
+    "projectile_impact": 18
+  },
+  "frames": 180,
+  "hull": "Frigate",
+  "metrics": {
+    "beams": 4,
+    "fires": 4,
+    "hits": 19,
+    "hull_bottom": 907.999938964844,
+    "max_logical_error": 0.0001220703125,
+    "max_origin_error": 0.00006103515625,
+    "min_direct_aim_dot": 0.99999988079071,
+    "native_fires": 0,
+    "turn": 0.323308795690536
+  },
+  "native": true,
+  "slot_results": [
+    {
+      "beam_hit_events": 19,
+      "damage": 0.0,
+      "fires": 4,
+      "impact_events": 0,
+      "max_logical_error": 0.0001220703125,
+      "max_origin_error": 0.00006103515625,
+      "min_direct_aim_dot": 0.99999988079071,
+      "min_trajectory_target_dot": 0.991092383861542,
+      "native_laser_fires": 0,
+      "slot": 0,
+      "weapon": "longLaser"
+    }
+  ],
+  "slots": 1,
+  "weapons": [
+    "longLaser"
+  ]
+}
