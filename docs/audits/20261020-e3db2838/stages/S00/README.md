@@ -36,6 +36,37 @@
 
 三个 Godot 探针都输出 `ERROR: Failed to read the root certificate store`，但版本、native 类加载和 GPU 探针的相应退出码如上；该错误需在真实入口检查时单独归因，不当作功能通过或产品故障已定论。GPU 小工程通过不代表游戏 UI、原生战斗或发布包通过。
 
+本机能力核查的可复核命令与输入（仓库根目录；`$probe` 指向新建的、位于可写目录中的空项目）：
+
+```powershell
+$godot = 'D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe'
+& $godot --version
+git -c safe.directory='D:/CodexBuild/space_idle/godot-cpp' -C 'D:\CodexBuild\space_idle\godot-cpp' rev-parse HEAD
+Get-FileHash 'D:\CodexBuild\space_idle\api\extension_api.json', 'tools/player_runtime/space_native.dll' -Algorithm SHA256
+& 'C:\Windows\System32\nvidia-smi.exe' -L
+```
+
+合成项目只含 `project.godot`（`config_version=5`）、`bin/space_native.dll`（复制自 `tools/player_runtime/`）、根目录 `space_native.gdextension`（复制自 `space-battleship/addons/native_battle/space_native.gdextension.in`）及如下两个 `SceneTree` 脚本。以进程级 `APPDATA=$probe/userdata/roaming`、`LOCALAPPDATA=$probe/userdata/local` 运行。编辑器首次扫描生成 `.godot/extension_list.cfg` 后，执行 `& $godot --headless --path $probe --script "$probe/probe.gd"`；输出 `S00_NATIVE_CLASS=true`、退出 0。`gpu_probe.gd` 用 `& $godot --path $probe --rendering-method gl_compatibility --script "$probe/gpu_probe.gd"`；输出 Windows/NVIDIA RTX 2060、退出 0。
+
+```gdscript
+# probe.gd
+extends SceneTree
+func _initialize() -> void:
+    print("S00_NATIVE_CLASS=", ClassDB.class_exists("SpaceCombatKernel"))
+    quit(0 if ClassDB.class_exists("SpaceCombatKernel") else 2)
+
+# gpu_probe.gd（独立文件）
+extends SceneTree
+func _initialize() -> void:
+    call_deferred("run_probe")
+func run_probe() -> void:
+    for i in range(5):
+        await process_frame
+    print("S00_DISPLAY=", DisplayServer.get_name())
+    print("S00_RENDERER=", RenderingServer.get_video_adapter_name())
+    quit(0)
+```
+
 ## 既有失败、夹具与门禁问题（未在 S00 重跑）
 
 | 项目 | 已有证据 / 解释 | S00 归类与后续 |
