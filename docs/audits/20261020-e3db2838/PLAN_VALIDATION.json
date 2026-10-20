@@ -1,5 +1,5 @@
 {
-  "scope": "S00 closed; S01 dual PASS, awaiting thread archival; no product change",
+  "scope": "S00 and S01 closed; S02 not started; no product change",
   "checks": {
     "main_equals_audit_baseline": true,
     "single_stage_open": true,
@@ -13,18 +13,19 @@
     "unchanged:SUPPLEMENT_SHA256SUMS.json": true,
     "s00_dual_pass_same_sha": true,
     "s00_thread_archived": true,
-    "s01_only_open_stage": true,
     "s01_gate_six_cases_pass": true,
     "main_runner_unchanged": true,
-    "s01_dual_pass_same_sha": true
+    "s01_dual_pass_same_sha": true,
+    "s01_thread_archived": true
   },
   "stages": 26,
-  "active_stage": "S01",
-  "active_stage_status": "approved",
+  "active_stage": null,
+  "active_stage_status": "none",
   "other_stage_status": "not_started",
   "product_code_changed": false,
   "main_integrated": false,
   "closed_stages": [
-    "S00"
+    "S00",
+    "S01"
   ]
 }
