@@ -1,5 +1,7 @@
 # Main player entry startup verification (2026-10-20)
 
+This documents the earlier one-time acceptance-anchor change. Its limitations were found during review; the current candidate and its repeated-launch verification are in [robust-entry.md](robust-entry.md).
+
 Source tested: `main` at `24f0751d5acd698eeb06d8ec7f0eb02e34a09e94`, with the `tools/play_main.py` change from `c4c0d7516b8271bddfec7cbab24a76a71dd717ae` applied in the isolated checkout before that change was committed on `fix/main-startup`. No other tracked runtime source changed for this test.
 
 The unmodified entry first stopped before Godot started because its acceptance anchor was `fda7be2c217a208067f97266f85497b83cbdd840`, and the already committed runtime files between that anchor and `24f0751d` appeared in the rejection list. Advancing the anchor to the current main commit resolved this rejection while retaining the source and DLL checks.
