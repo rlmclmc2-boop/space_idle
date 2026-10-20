@@ -1,21 +1,17 @@
-# 正式玩家入口
+# Player entry
 
-从仓库根目录双击 `玩游戏.cmd`。入口按脚本所在目录定位当前仓库，不依赖工作目录或固定盘符。
+Launch the game from the repository root with `玩游戏.cmd`. The script resolves its own checkout; it does not select a test copy, fetch Git changes, or change player saves.
 
-当前已审源码基点：`24f0751d5acd698eeb06d8ec7f0eb02e34a09e94`。父线程合入 main 时须保留该提交祖先关系；若改用 squash 或再修改游戏源码，需重新审定源码基点。入口只在 main 上运行，并拒绝相对基点的游戏源码变化和未审本地运行文件。
+The player entry requires the local `main` commit to equal the locally fetched `origin/main` ref from `rlmclmc2-boop/space_idle` on GitHub. A normal `git pull` advances both refs, so new accepted game commits require no launcher edit. If the refs differ, inspect local changes and update or review the branch manually; the launcher does not pull, reset, or overwrite it. Tracked runtime and launcher edits, plus unexpected untracked runtime files, remain blocked. Generated Godot `.import` and `.uid` files are allowed.
 
-正式配套 DLL：[player_runtime/space_native.dll](player_runtime/space_native.dll)，SHA-256 为 `137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78`。来源与验收清单：[native-validation-hashes.json](../space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json)。这是 d07f0b9 缓存交付的 Windows 4.7.2 实际构建；既有 5717 项正确性和 8 次有效高负载记录沿用，不重复扩测。
-
-首次安装或升级旧 DLL：
+The native runtime inventory is [`native-validation-hashes.json`](../space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json). The launcher verifies that the accepted main commit still contains the inventoried native source blobs and that the bundled and installed DLL hashes match the inventory. A native source or DLL change therefore requires an updated, reviewed inventory in the same accepted main history. Install the matching DLL explicitly when needed:
 
 ```powershell
 python tools/play_main.py --install-native
 ```
 
-也可使用 `py -3`。显式安装先验证 main、源码和仓库 DLL，再写入 `space-battleship/bin/space_native.dll`。不同旧 DLL 按其 SHA-256 备份到 `.runtime/native-backup/`。正常启动严格拒绝缺失或旧 DLL。入口生成的固定 DLL 路径不被当成未审源码，但其完整哈希仍独立验证；其他未审 DLL 继续拒绝。
+This command keeps a hash-named backup of an older installed DLL in `space-battleship/.runtime/native-backup/` before replacing it. It does not alter player progress. The Godot executable must be at `space-battleship/engine/Godot_v4.7.2-stable_win64.exe`, match the inventory's engine version, and have no adjacent `.pck`. The native extension descriptor must resolve to the installed DLL.
 
-引擎必须位于 `space-battleship/engine/Godot_v4.7.2-stable_win64.exe`。入口验证版本 4.7.2、无旁置 PCK、唯一且匹配的扩展描述，增量导入后启动 `res://main.tscn`。存档使用当前工程 `.userdata`，日志和启动收据写入 `.runtime/`。
+For an isolated launch check, set `SPACE_BATTLESHIP_VERIFY_WINDOW=1`. This puts saves, logs, and the launch receipt under `test/work/player-window-check/`. Set `SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES=120` in that mode to exit after 120 frames. Ordinary launches use this checkout's `.userdata` and `.runtime` directories.
 
-验收使用 `SPACE_BATTLESHIP_VERIFY_WINDOW=1` 将存档、日志和收据隔离到 `test/work/player-window-check/`；仅在此模式下可用 `SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES=120` 短启动后退出。入口始终启动自身仓库的正式工程。
-
-本次发布专项结果：[release.json](../test/evidence/dynamic-port-cache-player-release-20261019/release.json)。历史 center-contact 记录保持原样。
+Historical native validation: [`native-validation-hashes.json`](../space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json). The previous one-time main startup check is in [`main-startup-20261020`](../test/evidence/main-startup-20261020/README.md).

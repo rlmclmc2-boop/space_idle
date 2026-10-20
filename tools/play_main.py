@@ -8,10 +8,14 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-# Reviewed source-tree anchor. The parent merge must retain its ancestry.
-BASE = '24f0751d5acd698eeb06d8ec7f0eb02e34a09e94'
-DLL_SHA = '137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78'
 BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
+NATIVE_INVENTORY = Path('space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json')
+APPROVED_ORIGIN_URLS = frozenset({
+    'https://github.com/rlmclmc2-boop/space_idle.git',
+    'https://github.com/rlmclmc2-boop/space_idle',
+    'git@github.com:rlmclmc2-boop/space_idle.git',
+    'ssh://git@github.com/rlmclmc2-boop/space_idle.git',
+})
 NON_RUNTIME_CHANGES = frozenset({
     'space-battleship/AGENTS.md',
     'space-battleship/docs/READ_DEMOS.md',
@@ -54,17 +58,21 @@ def checked_source(root):
     head = run(['git', 'rev-parse', 'HEAD'], root)
     branch = run(['git', 'branch', '--show-current'], root)
     if branch != 'main':
-        raise RuntimeError('当前分支不是 main：' + branch)
-    run(['git', 'merge-base', '--is-ancestor', BASE, 'HEAD'], root)
-    # Compare both committed and working-tree runtime against accepted source.
-    changed = '\n'.join(path for path in run(
-        ['git', 'diff', '--no-renames', '--name-only', BASE, '--', 'space-battleship'], root
-    ).splitlines() if path not in NON_RUNTIME_CHANGES)
-    if changed:
-        raise RuntimeError('运行内容偏离已验收版本，停止启动：\n' + changed)
-    # A reviewed commit does not authorize later uncommitted runtime edits.
+        raise RuntimeError('Player entry requires main; current branch: ' + branch)
+    origin = run(['git', 'remote', 'get-url', 'origin'], root)
+    if origin not in APPROVED_ORIGIN_URLS:
+        raise RuntimeError('The origin remote is not rlmclmc2-boop/space_idle on GitHub: ' + origin)
+    try:
+        accepted = run(['git', 'rev-parse', '--verify', 'refs/remotes/origin/main^{commit}'], root)
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError('Missing origin/main; fetch it manually before starting the player') from exc
+    if head != accepted:
+        raise RuntimeError('Local main differs from fetched origin/main; update or review it manually. '
+                           'HEAD=' + head + ' origin/main=' + accepted)
+    # Local edits to accepted runtime and entry files are never silently launched.
     local_changes = '\n'.join(path for path in run(
-        ['git', 'status', '--porcelain', '--untracked-files=no', '--', 'space-battleship'], root
+        ['git', 'status', '--porcelain', '--untracked-files=no', '--',
+         'space-battleship', 'tools/play_main.py', BUNDLED_DLL.as_posix()], root
     ).splitlines() if path[3:] not in NON_RUNTIME_CHANGES and not path[3:].endswith(('.uid', '.import')))
     # These are entry-managed files, not additional trusted source. The DLL
     # and descriptor are both checked separately before the engine starts.
@@ -79,22 +87,39 @@ def checked_source(root):
         local_changes += '\n' + untracked_runtime
     if local_changes:
         raise RuntimeError('Unreviewed local runtime changes:\n' + local_changes)
-
     return project, head
 
 def verified_bundle(root):
+    inventory = json.loads((root / NATIVE_INVENTORY).read_text(encoding='utf-8'))
+    native = inventory['dll']
+    if (native['bundled_path'] != BUNDLED_DLL.as_posix()
+            or native['runtime_path'] != 'space-battleship/bin/space_native.dll'
+            or native['bundled_sha256'] != native['runtime_sha256']):
+        raise RuntimeError('Native acceptance inventory has inconsistent runtime paths or hashes')
+    tracked_sources = set(run(
+        ['git', 'ls-files', '--', 'space-battleship/addons/native_battle/src'], root
+    ).splitlines())
+    inventoried_sources = {source['repository_path'] for source in inventory['sources']}
+    if tracked_sources != inventoried_sources:
+        raise RuntimeError('Native source inventory does not cover the accepted main source set')
+    for source in inventory['sources']:
+        actual_blob = run(['git', 'rev-parse', 'HEAD:' + source['repository_path']], root)
+        if actual_blob != source['repository_git_blob']:
+            raise RuntimeError('Native source changed without an accepted DLL rebuild: '
+                               + source['repository_path'])
     bundle = root / BUNDLED_DLL
-    if not bundle.is_file() or digest(bundle) != DLL_SHA:
+    expected_sha = native['bundled_sha256']
+    if not bundle.is_file() or digest(bundle) != expected_sha:
         raise RuntimeError('Bundled native DLL is missing or has the wrong SHA256: ' + str(bundle))
-    return bundle
+    return bundle, expected_sha, inventory['acceptance']['engine']
 
 def install_native(root):
     project, _ = checked_source(root)
-    bundle = verified_bundle(root)
+    bundle, dll_sha, _ = verified_bundle(root)
     dll = project / 'bin' / 'space_native.dll'
     if dll.is_file():
         previous = digest(dll)
-        if previous == DLL_SHA:
+        if previous == dll_sha:
             return dll
         backup = project / '.runtime' / 'native-backup' / ('space_native-' + previous + '.dll')
         backup.parent.mkdir(parents=True, exist_ok=True)
@@ -105,7 +130,7 @@ def install_native(root):
     dll.parent.mkdir(parents=True, exist_ok=True)
     temporary = dll.with_name('space_native.dll.tmp')
     shutil.copyfile(bundle, temporary)
-    if digest(temporary) != DLL_SHA:
+    if digest(temporary) != dll_sha:
         temporary.unlink()
         raise RuntimeError('Native DLL copy failed SHA256 verification')
     temporary.replace(dll)
@@ -113,7 +138,7 @@ def install_native(root):
 
 def validate(root):
     project, head = checked_source(root)
-    verified_bundle(root)
+    _, dll_sha, accepted_engine = verified_bundle(root)
 
     engine = project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
     if not engine.is_file():
@@ -124,8 +149,8 @@ def validate(root):
     if not dll.is_file():
         raise RuntimeError('缺少原生库：' + str(dll) + '\n请先安装与正式源码匹配的原生库。')
     actual_dll_sha = digest(dll)
-    if actual_dll_sha != DLL_SHA:
-        raise RuntimeError('原生库与正式源码不匹配：' + str(dll) + '\n实际 SHA256：' + actual_dll_sha + '\n需要 SHA256：' + DLL_SHA)
+    if actual_dll_sha != dll_sha:
+        raise RuntimeError('原生库与正式源码不匹配：' + str(dll) + '\n实际 SHA256：' + actual_dll_sha + '\n需要 SHA256：' + dll_sha)
     descriptor = project / 'space_native.gdextension'
     for other in project.rglob('*.gdextension'):
         if '.godot' in other.parts or other == descriptor:
@@ -137,7 +162,7 @@ def validate(root):
     if descriptor.is_file() and descriptor.read_text(encoding='utf-8-sig').replace('\r\n','\n').strip() != DESCRIPTOR.strip():
         raise RuntimeError('原生库入口不匹配：' + str(descriptor))
     version = run([str(engine), '--version'], project)
-    if not version.startswith('4.7.2.stable.'):
+    if version != accepted_engine:
         raise RuntimeError('引擎版本不匹配：' + version)
     if not descriptor.exists():
         descriptor.write_text(DESCRIPTOR, encoding='utf-8')
@@ -146,11 +171,12 @@ def validate(root):
 def main():
     if sys.argv[1:] == ['--install-native']:
         dll = install_native(ROOT)
-        print('Installed matching native DLL:', dll, 'SHA256:', DLL_SHA)
+        print('Installed matching native DLL:', dll, 'SHA256:', digest(dll))
         return 0
     if len(sys.argv) != 1:
         raise RuntimeError('Unknown player-entry argument')
     project, engine, head, version = validate(ROOT)
+    dll_sha = digest(project / 'bin' / 'space_native.dll')
     env = os.environ.copy()
     window_check = env.get('SPACE_BATTLESHIP_VERIFY_WINDOW') == '1'
     runtime = (ROOT / 'test' / 'work' / 'player-window-check'
@@ -161,11 +187,11 @@ def main():
     for p in [Path(env['APPDATA']), Path(env['LOCALAPPDATA']), runtime]:
         p.mkdir(parents=True, exist_ok=True)
     print('项目：', project, '\nGit：', head, '\n引擎：', version,
-          '\n原生库 SHA256：', DLL_SHA, '\n数据 SHA256：', digest(project/'data/game_data.json'),
+          '\n原生库 SHA256：', dll_sha, '\n数据 SHA256：', digest(project/'data/game_data.json'),
           '\n存档：', env['APPDATA'], flush=True)
-    receipt = {'project': str(project), 'head': head, 'accepted_runtime': BASE,
+    receipt = {'project': str(project), 'head': head, 'accepted_runtime': head,
                'engine': str(engine), 'engine_version': version,
-               'dll_sha256': DLL_SHA, 'game_data_sha256': digest(project/'data/game_data.json')}
+               'dll_sha256': dll_sha, 'game_data_sha256': digest(project/'data/game_data.json')}
     (runtime/'player-launch.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
     # Import in-place, reusing Godot's cache. No project or asset copies.
     print('检查资源导入……', flush=True)
