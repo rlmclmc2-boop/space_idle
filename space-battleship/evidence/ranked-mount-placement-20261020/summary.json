@@ -1,0 +1,23 @@
+{
+  "baseline": "3198fb54",
+  "checks": 940,
+  "failures": 0,
+  "mounts": 24,
+  "actual_aim_probes": 72,
+  "yaw_degrees": [
+    -55,
+    0,
+    55
+  ],
+  "all_sampled_base_housing_footprints_inside_main_carriers": true,
+  "max_yaw_error_degrees": 6.04746580279425e-06,
+  "max_base_centre_error": 3.84438408218557e-06,
+  "original_png_dimensions": [
+    1372,
+    883
+  ],
+  "before_pngs_exact_git_bytes": true,
+  "body_frame_position_model_width_readable_style_and_size_unchanged": true,
+  "production_scripts_active_hardpoints_loadouts_stats_and_formation_unchanged": true,
+  "only_interface_edit": "four archetypes elite/boss point.pos plus carrier_group/carrier_region; normal/default/slot_counts unchanged"
+}

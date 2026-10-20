@@ -39,6 +39,45 @@ func install_preview_mounts(scene,enemy:Dictionary)->void:
   enemy.equipment.append({"name":"cannon-mon"});enemy.cooldowns.append(0.0)
  scene.enemy_pose(enemy).erase("components_signature")
 
+# Probe the actual aim getter at both clamp limits, then map the painted footprint
+# back onto the unrotated PNG and its authored main-armor carrier region.
+func carrier_rotation_checks(scene,hero:Dictionary,component,rect:Rect2,texture:Texture2D)->Array:
+ var image:=texture.get_image()
+ var bounds:Array=component.hardpoint.carrier_region
+ var region:=Rect2(float(bounds[0]),float(bounds[1]),float(bounds[2])-float(bounds[0]),float(bounds[3])-float(bounds[1]))
+ var point:Vector2=scene.enemy_render_position(hero);var hull_angle:float=scene.enemy_render_angle(hero)
+ var active:bool=scene.battle_draw_active;var target:Vector2=scene.battle_draw_player_position;var cached:Dictionary=scene.battle_draw_enemy_positions.duplicate()
+ scene.battle_draw_active=true;scene.battle_draw_enemy_positions[int(hero.uid)]=point
+ var rows:Array=[]
+ for yaw in [-55.0,0.0,55.0]:
+  scene.battle_draw_player_position=point+Vector2.from_angle(PI/2+hull_angle+deg_to_rad(yaw))*900.0
+  var pose:Dictionary=scene.enemy_component_pose(hero,component)
+  var actual_yaw:float=rad_to_deg(wrapf(float(pose.angle)-PI/2-hull_angle,-PI,PI))
+  check(absf(actual_yaw-yaw)<.001,"actual weapon aim reaches requested rotation clamp")
+  var w:float=float(pose.width)*.45
+  var base:=Vector2(0,(.64-scene.enemy_recognition.muzzle_factor/.45)*w)
+  var origin:Vector2=Vector2(pose.origin)+(Vector2(pose.port)-Vector2(.64*w,0)).rotated(pose.angle)
+  var rotation:float=float(pose.angle)-PI/2
+  var base_centre:Vector2=origin+base.rotated(rotation)
+  check(base_centre.distance_to(pose.origin)<.001,"rotated readable base remains on actual mount pivot")
+  var footprint:PackedVector2Array=[]
+  for radius in [0.0,.33,.66,1.0]:
+   for step in 32:footprint.append(base+Vector2.from_angle(TAU*step/32.0)*w*1.03*radius)
+  footprint.append_array(PackedVector2Array([base+Vector2(-.40,-.42)*w,base+Vector2(.40,-.42)*w,Vector2(.35*w,.64*w),Vector2(-.35*w,.64*w)]))
+  var safe:=true
+  for local in footprint:
+   var hull_local:Vector2=(origin+local.rotated(rotation)).rotated(-(PI+hull_angle))
+   var uv:Vector2=hull_local/rect.size
+   if not region.has_point(uv):safe=false;break
+   var pixel:Vector2=(hull_local-rect.position)/rect.size*texture.get_size()
+   var color:=image.get_pixelv(Vector2i(pixel))
+   var glowing:bool=color.r>.49 and color.g>.137 and color.r>color.g*1.45 and color.r>color.b*1.7
+   if color.a<.9 or glowing:safe=false;break
+  check(safe,"rotated base and barrel remain on main carrier, off edges/core/engines/attachments")
+  rows.append({"yaw":yaw,"actual_yaw":actual_yaw,"safe":safe,"base_centre_error":base_centre.distance_to(pose.origin)})
+ scene.battle_draw_active=active;scene.battle_draw_player_position=target;scene.battle_draw_enemy_positions=cached
+ return rows
+
 class Frame extends Node2D:
  var box:Rect2
  var label:String
@@ -134,7 +173,10 @@ func run()->void:
     check(texture.get_image().get_pixelv(Vector2i(pixel)).a>.3,"turret axis lies on opaque armor, not between accessories")
     for other in mount_centres:check(Vector2(mount_pose.origin).distance_to(other)>base_diameter+2.0,"independent turret bases do not overlap")
     mount_centres.append(mount_pose.origin)
-    mounts.append({"slot":component.owner_slot,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"base_diameter_pixels":base_diameter*canvas_scale})
+    var source_color:=texture.get_image().get_pixelv(Vector2i(pixel))
+    check(minf(source_color.r,minf(source_color.g,source_color.b))>.27 and maxf(source_color.r,maxf(source_color.g,source_color.b))-minf(source_color.r,minf(source_color.g,source_color.b))<.235,"axis sits on main gray armor, not a glow or burgundy connector")
+    var rotation_checks:=carrier_rotation_checks(scene,hero,component,rect,texture)
+    mounts.append({"carrier_group":component.hardpoint.carrier_group,"carrier_region":component.hardpoint.carrier_region,"rotation_checks":rotation_checks,"slot":component.owner_slot,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"base_diameter_pixels":base_diameter*canvas_scale})
    for i in [1,2]:check(g.enemies[i].equipment.size()==1 and scene.enemy_weapon_components(g.enemies[i]).size()==1,"ordinary escorts retain one weapon in QA")
    check(scene.enemy_render_position(hero)==point and is_equal_approx(scene.enemy_render_width(hero),width),"ranked skin does not move or resize model geometry")
    var outline:PackedVector2Array=packet.inner.duplicate();var protection_scale:float=scene.enemy_display_protection_scale(hero,packet,angle)
