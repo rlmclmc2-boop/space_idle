@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00 已完成双审并关闭，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00 已完成双审并关闭，S01 待双审，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00 为 `closed`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭，允许启动唯一下一阶段 S01。
+**S00 为 `closed`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01 为 `review`，实施线程 `01a15a61-fd87-7064-a145-397991b320e8`；S02—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。当前唯一打开阶段是 S01，尚待对新的最终审计交付 SHA 双审；S02 不得启动。
 
 ### S00 关闭记录
 
@@ -175,6 +175,74 @@ closure:
   implementation_thread_closed: true
   closed_at: 2026-10-20T17:33:23Z
   next_stage_allowed: true
+branch_cleanup:
+  candidate: null
+  unique_work_checked: false
+  evidence_preserved: true
+  deletion_executed: false
+```
+
+### S01 待双审记录
+
+```yaml
+stage: S01
+status: review
+implementation_thread_id: 01a15a61-fd87-7064-a145-397991b320e8
+model: sol
+reasoning_effort: medium
+base_main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+scope_and_allowed_files:
+  - docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md
+  - docs/audits/20261020-e3db2838/PLAN_VALIDATION.json
+  - docs/audits/20261020-e3db2838/PLAN_SHA256SUMS.json
+  - docs/audits/20261020-e3db2838/stages/S01/README.md
+  - docs/audits/20261020-e3db2838/stages/S01/gate.py
+  - docs/audits/20261020-e3db2838/stages/S01/test_gate.py
+  - test/test_save_policy.gd
+  - test/test_config_workbooks.py
+decisions_required: []
+decisions_received: [P04]
+runtime_final_sha: N/A
+runtime_tree: N/A
+main_file_justifications: []
+implementation_candidate_sha: 044c3c19f8fa8f788d5d7328005ac42d46b33d03
+evidence_snapshot_sha: null # 待本次状态记录提交后由父级核对完整 SHA
+verification:
+  commands_and_environment:
+    - "Windows / Python 3.12: python docs/audits/20261020-e3db2838/stages/S01/test_gate.py"
+    - "Windows / Godot 4.7.2: 隔离目录运行 evidence/probe_test_gate.gd；详见 stages/S01/README.md"
+  results:
+    - "六类合成进程门禁样例均按预期通过"
+    - "真实 Godot SCRIPT ERROR + exit 0 被门禁拒绝"
+  unverified:
+    - "S02 两个既有专项尚有已登记夹具失败，留 S02 处理后在本门禁下运行"
+prior_review_of_044c3c19:
+  parent: "PENDING；行为核查通过，唯一阻断是入口仍标 S01 not_started"
+  astra: "FAIL；唯一阻断同为入口状态与双审记录缺失"
+parent_review:
+  verdict: PENDING
+  reviewed_runtime_sha: N/A
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+astra_review:
+  verdict: PENDING
+  reviewed_runtime_sha: N/A
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+integration:
+  state: N/A
+  main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+  approved_sha_matches: false
+  local_entry_command: null
+  local_entry_result: not_run
+closure:
+  evidence_persisted_and_read_back: false
+  parent_closed_stage: false
+  implementation_thread_closed: false
+  closed_at: null
+  next_stage_allowed: false
 branch_cleanup:
   candidate: null
   unique_work_checked: false

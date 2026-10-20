@@ -1,5 +1,5 @@
 {
-  "scope": "S00 基线与执行准备；仅审计材料和隔离能力探针，未执行游戏专项或产品修复",
+  "scope": "S00 closed; S01 audit-only acceptance gate in review; no S02 or product change",
   "checks": {
     "main_equals_audit_baseline": true,
     "single_stage_open": true,
@@ -12,11 +12,15 @@
     "unchanged:SHA256SUMS.json": true,
     "unchanged:SUPPLEMENT_SHA256SUMS.json": true,
     "s00_dual_pass_same_sha": true,
-    "s00_thread_archived": true
+    "s00_thread_archived": true,
+    "s01_only_open_stage": true,
+    "s01_gate_six_cases_pass": true,
+    "s01_review_pending_new_sha": true,
+    "main_runner_unchanged": true
   },
   "stages": 26,
-  "active_stage": null,
-  "active_stage_status": "none",
+  "active_stage": "S01",
+  "active_stage_status": "review",
   "other_stage_status": "not_started",
   "product_code_changed": false,
   "main_integrated": false,

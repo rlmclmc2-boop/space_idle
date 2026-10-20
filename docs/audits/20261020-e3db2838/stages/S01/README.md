@@ -1,6 +1,6 @@
 # S01 可靠验收门禁：审计侧交付
 
-基线 `main=e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`；审计入口父提交 `19b231ea05daf8018977fc87269c5b10c0f4c3e2`。S00 已双 PASS 并关闭。运行 SHA=`N/A`，integration=`N/A`。本阶段仅在审计分支提交门禁、六类合成样例及两个后续 S02 测试的完成标志。父级与原 astra 的审查结论待填；本记录不宣称 S01 closed。
+基线 `main=e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`；审计入口父提交 `19b231ea05daf8018977fc87269c5b10c0f4c3e2`。S00 已双 PASS 并关闭。S01 实施线程为 `01a15a61-fd87-7064-a145-397991b320e8`，当前状态为 `review`。运行 SHA=`N/A`，integration=`N/A`。本阶段仅在审计分支提交门禁、六类合成样例及两个后续 S02 测试的完成标志；本记录不宣称 S01 closed。
 
 ## 接口与判定
 
@@ -42,4 +42,6 @@ python docs/audits/20261020-e3db2838/stages/S01/test_gate.py
 
 ## 待双审
 
-复核文件：`stages/S01/gate.py`、`stages/S01/test_gate.py`、`test/test_save_policy.gd`、`test/test_config_workbooks.py` 和本记录。六类样例通过，但最终审计交付 SHA 仍需父级与原 astra 对同一 SHA 分别 PASS，未解决项归零后才可关闭。若需返工，继续在本 S01 线程。
+原交付 `044c3c19f8fa8f788d5d7328005ac42d46b33d03` 的双审反馈：父级为 PENDING，astra 为 FAIL；两者指出的唯一阻断均为唯一实施计划尚将 S01 写作 `not_started` 且缺阶段待审记录。父级另已核查门禁行为并重跑六项子进程测试和八项边界断言，行为符合预期。本次只修订计划状态、待审记录与摘要，不变更门禁实现。该原交付的审查结论不延用为新 SHA 的 PASS。
+
+复核文件：`stages/S01/gate.py`、`stages/S01/test_gate.py`、`test/test_save_policy.gd`、`test/test_config_workbooks.py`、本记录和唯一实施计划。最终审计交付 SHA 仍需父级与原 astra 对同一 SHA 分别 PASS，未解决项归零后才可关闭。若需返工，继续在本 S01 线程。
