@@ -35,7 +35,8 @@ for mode, phase in scenarios:
     if phase == "first-save":
         primary.unlink()
         (user / "progress.json.bak").unlink()
-    cmd = [args.godot, "--headless", "--path", str(project), "--script", "../test/test_save_import_recovery.gd", "--"]
+    worker = Path(__file__).resolve().parent / 'fixtures/save_import_recovery_worker.gd'
+    cmd = [args.godot, "--headless", "--path", str(project), "--script", str(worker), "--"]
     if mode == "interrupt":
         stopped = subprocess.run(cmd + [mode, phase], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)
         (output / f"{mode}-{phase}-interrupted.log").write_bytes(stopped.stdout)

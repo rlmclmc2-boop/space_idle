@@ -147,7 +147,7 @@ test/test_hot_paths.gd,not revalidated on current branch,not in initial executio
 test/test_hull_weapon_matrix.gd,not revalidated on current branch,not in initial execution matrix,
 test/test_hyperspace_appearance.gd,not revalidated on current branch,exit 3 (gd-logic-results.json),
 test/test_hyperspace_balance_context.gd,not revalidated on current branch,not in initial execution matrix,
-test/test_hyperspace_catalog_consumers.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
+test/test_hyperspace_catalog_consumers.gd,passed on current branch,exit 1 (gd-logic-results.json),/workspace/space_idle/test/evidence/repository-audit-20261020/test_hyperspace_catalog_consumers.gd.continuation.log
 test/test_hyperspace_combat.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_compact_geometry.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_hyperspace_consumers.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
@@ -289,8 +289,7 @@ test/test_reward_source_integrity.py,not revalidated on current branch,exit 0 (p
 test/test_rich15_identity.gd,not revalidated on current branch,exit 0 (gd-gui-results.json),
 test/test_rule_rounding.gd,not revalidated on current branch,exit 124 (gd-logic-results.json),
 test/test_save_boundaries.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
-test/test_save_import_recovery.gd,not revalidated on current branch,exit 124 (gd-logic-results.json),
-test/test_save_import_recovery.py,not revalidated on current branch,not in initial execution matrix,
+test/test_save_import_recovery.py,passed on current branch,not in initial execution matrix,/workspace/space_idle/test/evidence/repository-audit-20261020/test_save_import_recovery.py.continuation.log
 test/test_save_policy.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
 test/test_save_startup_rejection.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_save_transfer.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
@@ -342,5 +341,5 @@ test/test_weapon_config.gd,not revalidated on current branch,exit 1 (gd-logic-re
 test/test_weapon_config.py,not revalidated on current branch,exit 1 (python-results.json),
 test/test_weapon_config_validation.py,not revalidated on current branch,exit 1 (python-results.json),
 test/test_weapon_fx.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
-test/test_weapon_scale_contract.gd,not revalidated on current branch,exit 124 (gd-logic-results.json),
+test/test_weapon_scale_contract.gd,passed on current branch,exit 124 (gd-logic-results.json),/workspace/space_idle/test/evidence/repository-audit-20261020/test_weapon_scale_contract.gd.continuation.log
 test/test_workspace_shell.gd,not revalidated on current branch,exit 124 (gd-gui-results.json),

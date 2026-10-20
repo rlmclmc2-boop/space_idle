@@ -1,0 +1,9 @@
+COMMAND=python test/run.py test_weapon_scale_contract.gd --headless --godot /usr/local/bin/godot --timeout 180
+FRESH_ISOLATED_PROJECT=true
+IMPORT_EXIT_CODE=0
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+LEGACY_BOUNDARY 1e40 residual_normalized=0.0000000000008
+OBSERVED legacy boundary residual at 1e40: 0.0000000000008
+WEAPON SCALE CONTRACT: 66 checked, 0 failures, 1 nonzero boundary observation
+EXIT_CODE=0
