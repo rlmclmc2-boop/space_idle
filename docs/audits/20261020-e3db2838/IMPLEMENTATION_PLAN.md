@@ -349,7 +349,7 @@ verification:
     - "最终候选：SAVE TRANSFER 154 checks, 0 failures；S01_GATE_PASS"
     - "远端运行 SHA 与已测试本地 SHA 的 tree 同为 10bf32ba2e060cde7269b6f54459a989e5b5538b；运行差异仅 save_transfer.gd"
     - "main 和 D:\\放置 本地 HEAD 均为批准 SHA；实际玩游戏.cmd 入口隔离 user data 运行 120 帧退出 0；入口、导入与游戏日志错误模式匹配数均为 0；详见 stages/S03/LOCAL_INTEGRATION.md"
-    - "s03/durable-portable 与 main 同 SHA，无独有未合入运行成果；暂未删除分支"
+    - "s03/durable-portable 删除前与 main 同 SHA，无独有未合入运行成果；远端分支删除后 GitHub 回读为 404 Branch not found"
   unverified: []
 parent_review:
   verdict: PASS
@@ -369,6 +369,12 @@ integration:
   approved_sha_matches: true
   local_entry_command: "SPACE_BATTLESHIP_VERIFY_WINDOW=1 SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES=120 SPACE_BATTLESHIP_ENGINE_PATH=D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe; & D:\\放置\\玩游戏.cmd"
   local_entry_result: "PASS; exit 0; 120 frames; isolated user data; 0 entry/import/game error-pattern lines"
+integration_review:
+  reviewed_evidence_sha: 4b125cb6cbafb883d8dd641eee714fe0ea3ac133
+  parent_verdict: PASS
+  astra_verdict: PASS
+  unresolved: []
+  scope: "仅真实入口 120 帧启动验收；不扩大为存档重开或完整产品验收"
 closure:
   evidence_persisted_and_read_back: true
   parent_closed_stage: false
@@ -379,7 +385,9 @@ branch_cleanup:
   candidate: s03/durable-portable
   unique_work_checked: true
   evidence_preserved: true
-  deletion_executed: false
+  deletion_executed: true
+  deletion_command: "git push origin --delete s03/durable-portable"
+  deletion_result: "exit 0; GitHub branch read-back 404 Branch not found"
 ```
 
 ```yaml

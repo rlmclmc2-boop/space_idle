@@ -32,7 +32,10 @@
     "s03_local_main_matches_approved": true,
     "s03_player_entry_exit_zero": true,
     "s03_isolated_user_data": true,
-    "s03_branch_no_unique_work": true
+    "s03_branch_no_unique_work": true,
+    "s03_integration_dual_pass": true,
+    "s03_branch_deleted_remote": true,
+    "s03_stage_closure_pending": true
   },
   "stages": 26,
   "active_stage": "S03",
