@@ -7,7 +7,8 @@
     "s00_review_pending": true,
     "next_stage_blocked_until_dual_pass": true,
     "p04_audit_only": true,
-    "p05_local_and_target_distinguished": true,
+    "p05_hostname_alias_reconciled": true,
+    "native_existing_dll_load_separate_from_rebuild": true,
     "known_test_failures_separate_from_fixture_causes": true,
     "unchanged:SHA256SUMS.json": true,
     "unchanged:SUPPLEMENT_SHA256SUMS.json": true
