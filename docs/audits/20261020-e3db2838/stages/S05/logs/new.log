@@ -1,0 +1,8 @@
+Command: APPDATA=C:\Users\Administrator\AppData\Local\Temp\space-idle-s05\test\work\release-20261021-063126-adaaf85e\s05-final-user\roaming LOCALAPPDATA=C:\Users\Administrator\AppData\Local\Temp\space-idle-s05\test\work\release-20261021-063126-adaaf85e\s05-final-user\local USERPROFILE=C:\Users\Administrator\AppData\Local\Temp\space-idle-s05\test\work\release-20261021-063126-adaaf85e\s05-final-user TEMP=C:\Users\Administrator\AppData\Local\Temp\space-idle-s05\test\work\release-20261021-063126-adaaf85e\s05-final-user\temp D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe --headless --path C:\Users\Administrator\AppData\Local\Temp\space-idle-s05\test\work\release-20261021-063126-adaaf85e\project --script res://s05_probe.gd -- new
+Exit code: 0
+Raw output follows:
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+S05_NEW_SAVE_OK data=15 resources.1=4321
