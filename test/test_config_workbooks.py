@@ -231,4 +231,7 @@ class IncrementalTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    result = unittest.main(verbosity=2, exit=False).result
+    if result.wasSuccessful():
+        print("S01_COMPLETE:test_config_workbooks.py")
+    raise SystemExit(0 if result.wasSuccessful() else 1)

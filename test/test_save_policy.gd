@@ -257,4 +257,6 @@ func run() -> void:
 	g.progress_writer.clear_files()
 	check(not FileAccess.file_exists(BattleGame.SAVE_PATH) and not FileAccess.file_exists(BattleGame.SAVE_PATH+".bak") and not FileAccess.file_exists(BattleGame.SAVE_PATH+".tmp"),"Clear removes main, temporary and recovery files")
 	print("Save policy: %d checks, %d failures" % [checks,failures])
+	if failures == 0:
+		print("S01_COMPLETE:test_save_policy.gd")
 	quit(1 if failures else 0)
