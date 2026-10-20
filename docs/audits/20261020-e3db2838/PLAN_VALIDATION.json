@@ -1,0 +1,17 @@
+{
+  "scope": "规划文档一致性检查；未执行游戏测试、未启动实施线程",
+  "checks": {
+    "25_table_stages_unique_and_ordered": true,
+    "single_writer_stage_active": true,
+    "all_issue_ids_mapped": true,
+    "same_final_sha_dual_review_record": true,
+    "approved_decisions_recorded": true,
+    "deadline_and_environment_recorded": true,
+    "links_resolve": true,
+    "unchanged:SHA256SUMS.json": true,
+    "unchanged:SUPPLEMENT_SHA256SUMS.json": true
+  },
+  "stages": 26,
+  "all_stage_status": "not_started",
+  "product_code_changed": false
+}
