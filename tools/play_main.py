@@ -184,10 +184,11 @@ def prepare_engine(root):
 
 
 def prepare_clean_mirror(root, head):
-    mirror = root / 'space-battleship' / '.runtime' / 'player-main' / head
+    mirror = root / 'space-battleship' / '.runtime' / 'player-main' / 'checkout'
+    marker = mirror / '.player-managed.json'
     if not mirror.exists():
         mirror.parent.mkdir(parents=True, exist_ok=True)
-        temporary = mirror.with_name(head + '.' + str(os.getpid()) + '.partial')
+        temporary = mirror.with_name('checkout.' + str(os.getpid()) + '.partial')
         try:
             subprocess.run(['git', '-c', 'core.longpaths=true', '-c', 'safe.directory=' + str(root),
                             'clone', '--shared', '--branch', 'main', '--single-branch',
@@ -201,9 +202,19 @@ def prepare_clean_mirror(root, head):
         if run(['git', 'rev-parse', 'HEAD'], temporary) != head:
             raise RuntimeError('Player mirror did not checkout the accepted main commit')
         run(['git', 'update-ref', 'refs/remotes/origin/main', head], temporary)
+        (temporary / '.player-managed.json').write_text(
+            json.dumps({'source': str(root.resolve())}), encoding='utf-8')
         temporary.rename(mirror)
+    if not marker.is_file() or json.loads(marker.read_text(encoding='utf-8')).get('source') != str(root.resolve()):
+        raise RuntimeError('Existing player mirror is not owned by this checkout: ' + str(mirror))
+    if run(['git', 'remote', 'get-url', 'origin'], mirror) != run(['git', 'remote', 'get-url', 'origin'], root):
+        raise RuntimeError('Existing player mirror has a different GitHub origin: ' + str(mirror))
     if run(['git', 'rev-parse', 'HEAD'], mirror) != head:
-        raise RuntimeError('Existing player mirror points at a different commit: ' + str(mirror))
+        tracked = run(['git', 'status', '--porcelain', '--untracked-files=no'], mirror).splitlines()
+        if any(not item[3:].endswith(('.uid', '.import')) for item in tracked):
+            raise RuntimeError('Managed player mirror has non-generated local edits; update stopped: ' + str(mirror))
+        run(['git', 'reset', '--hard', head], mirror)
+        run(['git', 'update-ref', 'refs/remotes/origin/main', head], mirror)
     return mirror
 
 

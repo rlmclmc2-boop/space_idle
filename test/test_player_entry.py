@@ -197,6 +197,24 @@ class PlayerEntry(unittest.TestCase):
         self.assertEqual(entry.run(['git', 'branch', '--show-current'], mirror), 'main')
         self.assertEqual(entry.run(['git', 'rev-parse', 'refs/remotes/origin/main'], mirror), head)
 
+        launcher = self.root / 'tools' / 'play_main.py'
+        launcher.write_text('accepted launcher v2', encoding='utf-8')
+        self.git('add', '--', 'tools/play_main.py')
+        self.git('commit', '-qm', 'next accepted main')
+        self.accept_main()
+        updated = entry.prepare_clean_mirror(self.root, self.git('rev-parse', 'HEAD'))
+        self.assertEqual(updated, mirror)
+        self.assertEqual((mirror / 'tools/play_main.py').read_text(encoding='utf-8'), 'accepted launcher v2')
+        self.assertEqual(game.read_text(encoding='utf-8'), 'personal work')
+
+        (mirror / 'tools/play_main.py').write_text('unexpected mirror edit', encoding='utf-8')
+        launcher.write_text('accepted launcher v3', encoding='utf-8')
+        self.git('add', '--', 'tools/play_main.py')
+        self.git('commit', '-qm', 'another accepted main')
+        self.accept_main()
+        with self.assertRaisesRegex(RuntimeError, 'non-generated local edits'):
+            entry.prepare_clean_mirror(self.root, self.git('rev-parse', 'HEAD'))
+
     def test_missing_engine_downloads_verified_official_archive(self):
         self.engine.unlink()
         source_zip = self.root / 'official-fixture.zip'
