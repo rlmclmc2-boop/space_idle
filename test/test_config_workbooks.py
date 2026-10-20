@@ -41,6 +41,15 @@ def edit_cell(path, sheet_name, coordinate, value=None, remove_cache=False):
     path.write_bytes(output.getvalue())
 
 
+def formula_and_cache(path, sheet_name, coordinate):
+    with zipfile.ZipFile(path) as archive:
+        tree = cw.ET.fromstring(archive.read(dict(cw.sheet_parts(archive))[sheet_name]))
+    cell = next(c for c in tree.iter(cw.Q + "c") if c.get("r") == coordinate)
+    formula, cache = cell.find(cw.Q + "f"), cell.find(cw.Q + "v")
+    return (formula.text if formula is not None else None,
+            cache.text if cache is not None else None)
+
+
 class IncrementalTests(unittest.TestCase):
     def setUp(self):
         area = Path(__file__).resolve().parent / "work"
@@ -72,6 +81,13 @@ class IncrementalTests(unittest.TestCase):
                     self.assertEqual(master.read(dict(cw.sheet_parts(master))[name]), output.read(dict(cw.sheet_parts(output))[name]))
                     self.assertEqual(master.read("xl/styles.xml"), output.read("xl/styles.xml"))
                     self.assertNotIn("xl/calcChain.xml", output.namelist())
+        # This authored formula has a nonempty cached result in the current
+        # split source. The disposable master and re-split file must retain it.
+        authored = formula_and_cache(ROOT / "config_excel/level.xlsx", "level", "D64")
+        self.assertEqual("ROUND(D63*10,0)", authored[0])
+        self.assertIsNotNone(authored[1])
+        self.assertEqual(authored, formula_and_cache(self.source, "level", "D64"))
+        self.assertEqual(authored, formula_and_cache(self.folder / "level.xlsx", "level", "D64"))
         projected = full.full_import(self.source, self.root / "baseline.json")
         prior_entities = {p.stem: p.read_bytes() for p in self.target.parent.glob("*.json") if p.name != "game_data.json"}
         result = self.first_import()
@@ -121,7 +137,9 @@ class IncrementalTests(unittest.TestCase):
         self.first_import()
         before = self.target.read_bytes()
         edit_cell(self.folder / "config.xlsx", "config", "C6", 39)
-        edit_cell(self.folder / "equipment.xlsx", "equipment", "E4", remove_cache=True)
+        edit_cell(self.folder / "level.xlsx", "level", "D64", remove_cache=True)
+        self.assertEqual(("ROUND(D63*10,0)", None),
+                         formula_and_cache(self.folder / "level.xlsx", "level", "D64"))
         with self.assertRaisesRegex(ValueError, "公式缺少计算缓存"):
             self.first_import()
         self.assertEqual(before, self.target.read_bytes())

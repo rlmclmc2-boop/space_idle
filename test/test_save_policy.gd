@@ -123,12 +123,15 @@ func run() -> void:
 	business.profile.grantedUnlocks = business.granted_unlocks()
 	business.profile.grantedUnlocks.append(db.unlock_id("feature","jewels"))
 	business.profile.enhancementLevel = 30
-	business.profile.jewelFragments = 1.0e9
 	var fragment_cost = business.enhancement_cost()
-	check(business.upgrade_enhancement(1)==1 and business.enhancement_level()==31 and business.profile.jewelFragments==1.0e9-fragment_cost,"Enhancement upgrade commits one debit without consulting disk")
+	var fragments_before: float = fragment_cost + 1.0e9
+	business.profile.jewelFragments = fragments_before
+	check(business.upgrade_enhancement(1)==1 and business.enhancement_level()==31 and business.profile.jewelFragments==fragments_before-fragment_cost,"Enhancement upgrade commits one configured debit without consulting disk")
 	check(business.attempts==0 and business.builds==0,"Enhancement purchase is dirty-only")
-	check(business.set_enhancement_branch("weapons","critical",3,"B") and business.attempts==0,"Free branch selection is dirty-only")
+	# Critical starts in position three (node-three threshold 50). Moving it
+	# first makes its configured node-three threshold 30 at level 31.
 	check(business.set_enhancement_order("weapons",["critical","repeat","proficiency"]) and business.attempts==0,"Effect reorder is dirty-only")
+	check(business.enhancement_branch_unlocked("weapons","critical",3) and business.set_enhancement_branch("weapons","critical",3,"B") and business.attempts==0,"Unlocked free branch selection is dirty-only")
 	business.enhancement_currency_changed()
 	check(business.attempts==0 and business.builds==0 and business.save_dirty,"Currency notification is dirty-only")
 	business.clear_level()
@@ -224,9 +227,16 @@ func run() -> void:
 	await activate(apply)
 	check(scene.game.save_interval_minutes==3 and scene.game.next_timed_save_at==180 and scene.game.attempts==0,"Settings button accepts whole minutes without writing")
 	scene.save_interval_input.text = "unfinished"
+	var before_manual_save := Time.get_unix_time_from_system()
+	var before_local := Time.get_datetime_dict_from_system()
 	await activate(manual)
+	var after_manual_save := Time.get_unix_time_from_system()
+	var after_local := Time.get_datetime_dict_from_system()
 	check(scene.game.attempts==1 and scene.game.builds==1 and scene.save_interval_input.text=="unfinished","Manual button saves once without replacing unrelated edit draft")
-	check(scene.last_save_label.text.contains(Time.get_datetime_string_from_unix_time(int(scene.game.last_successful_save_at)+int(Time.get_time_zone_from_system().bias)*60,true)),"UI shows last successful local save time")
+	check(scene.game.last_successful_save_at>=before_manual_save and scene.game.last_successful_save_at<=after_manual_save,"Manual save records a timestamp within the observed wall-clock interval")
+	var before_local_text := "%04d-%02d-%02d %02d:%02d:%02d" % [before_local.year,before_local.month,before_local.day,before_local.hour,before_local.minute,before_local.second]
+	var after_local_text := "%04d-%02d-%02d %02d:%02d:%02d" % [after_local.year,after_local.month,after_local.day,after_local.hour,after_local.minute,after_local.second]
+	check(scene.last_save_label.text.contains(before_local_text) or scene.last_save_label.text.contains(after_local_text),"UI shows the observed local save time")
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH+".tmp")
 	await activate(manual)
 	check(scene.game.last_save_error!=OK and not scene.save_status_label.text.is_empty() and scene.message==scene.save_status_label.text,"Manual failure stays visible in settings and toast")
