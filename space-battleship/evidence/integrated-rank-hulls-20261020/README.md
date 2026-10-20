@@ -27,6 +27,6 @@
 
 资产检查通过：8图true-alpha/比例/连通组件/核心/来源hash，24底座数量与像素/UV/接口一致；独立枪体RGBA/方向/机械轴心/炮口与hash；新源图逐字节等于父交接15a102ac。旧普通图/原几何、生产挂点/slot_map及所有数值/编队文件冻结检查通过。
 
-主场景908检查0失败（含438身份/只读接口检查）：精英2/BOSS4独立组件；枪身pivot精确重合静态底座中心；默认贴图枪口精确匹配隔离live muzzle；炮身约11.6–14.1屏幕像素宽，住房不互叠；0/±55°纹理包围框在展示框内、转动住房有底座肩承载；血盾/名称与源alpha中心保持。首次实际45次开火/55次命中。负向armour mismatch warning是预期，无SCRIPT ERROR/FAIL。native authority/view选图与尺寸为函数级桥接验证，Linux Godot4.6.3 llvmpipe/GDS；不声称native整场或性能验收。
+主场景908检查0失败（含438身份/只读接口检查）：精英2/BOSS4独立组件；枪身pivot精确重合静态底座中心；默认贴图枪口精确匹配隔离live muzzle；炮身约11.6–14.1屏幕像素宽，炮身壳体不互叠；0/±55°纹理包围框在展示框内、旋转炮身壳体有底座肩承载；血盾/名称与源alpha中心保持。首次实际45次开火/55次命中。负向armour mismatch warning是预期，无SCRIPT ERROR/FAIL。native authority/view选图与尺寸为函数级桥接验证，Linux Godot4.6.3 llvmpipe/GDS；不声称native整场或性能验收。
 
 复现：python art_sources/enemy-fleet-20261019/prepare_ranked_assets.py；python test/check_enemy_ranked_assets.py；python test/check_enemy_base_eight_assets.py。隔离工程复制test_enemy_ranked_art.gd到res://，图形运行RANKED_OUTPUT指定test/work本次目录；RANKED_UNIT=1可headless单测。只改美术及接口/隔离展示，不扩展共享伤害组合或编队密度验收。无执行阻塞。
