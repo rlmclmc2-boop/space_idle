@@ -38,12 +38,16 @@ for key in ['anchor','reactive','shielded','command']:
   for point in points:
    x=round(cx+point['pos'][0]*im.width);y=round(cy+point['pos'][1]*im.height)
    assert im.getpixel((x,y))[3]>80,(key,rank,point['pos'],'mount lies outside hull')
-assert 0<float(interface['movable_gun']['housing_to_well_ratio'])<=1
+assert 0<float(interface['movable_gun']['housing_to_well_ratio'])<=1.1
 gun=manifest['gun'];assert interface['movable_gun']['texture']==gun['texture'];gun_path=P/gun['texture'].removeprefix('res://');gun_image=Image.open(gun_path)
 assert gun_image.mode=='RGBA' and gun_image.size==(320,640) and sha(gun_path)==gun['sha256']
 assert not gun['stationary_base_in_sprite'] and gun['runtime_forward']=='down'
 assert abs(gun['pivot_px'][0]-gun['muzzle_px'][0])<.001 and gun['muzzle_px'][1]>gun['pivot_px'][1]
 assert gun_image.getpixel(tuple(round(x) for x in gun['pivot_px']))[3]>230
+source=Image.open(P/'art_sources/enemy-fleet-20261019/bold-cannon-source.png')
+scan=gun['source_barrel_scanline'];xs=np.where(np.asarray(source)[scan['y'],:,3]>230)[0]
+assert [int(xs.min()),int(xs.max()+1)]==scan['opaque_span']
+assert abs(gun['barrel_width_px']-(xs.max()-xs.min()+1)*256/(gun['source_bounds'][2]-gun['source_bounds'][0]))<.001
 for key in ['anchor','reactive','shielded','command']:
  for rank in ['elite','boss']:
   pts=interface['archetypes'][key][rank];sockets=manifest['sprites'][key+'_'+rank]['sockets']

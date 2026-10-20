@@ -651,37 +651,45 @@
     }
   },
   "gun": {
-    "source_sha256": "d284d0613961168ea96040106cabe0296da74c256d189c05e5ecf1c1929b2e11",
+    "source_sha256": "c466f055499a757d479e7ca5167017a2b3a8574103831a92a36dcc3ca9706d29",
     "source_bounds": [
-      203,
-      241,
-      729,
-      1374
+      205,
+      152,
+      819,
+      1281
     ],
     "source_pivot": [
-      466,
-      1045
+      512,
+      1000
     ],
     "source_muzzle": [
-      466,
-      246
+      512,
+      158
     ],
     "pivot_px": [
       159.0,
-      203.99911738746692
+      201.22852081488043
     ],
     "muzzle_px": [
       159.0,
-      592.568402471315
+      552.496899911426
     ],
     "canvas": [
       320,
       640
     ],
     "housing_width_px": 256,
+    "barrel_width_px": 96.31270358306189,
+    "source_barrel_scanline": {
+      "y": 500,
+      "opaque_span": [
+        397,
+        628
+      ]
+    },
     "runtime_forward": "down",
     "stationary_base_in_sprite": false,
     "texture": "res://assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
-    "sha256": "279617ac4647eb639bc5cbf86cebba96b25f6758e960c78b13a8e1255f4aff07"
+    "sha256": "a4ba8f5907b696331220fd4167e7f82d39d6c826782a52202474ac436443cf55"
   }
 }

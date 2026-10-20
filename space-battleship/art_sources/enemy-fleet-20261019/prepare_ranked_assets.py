@@ -6,7 +6,7 @@ from PIL import Image
 from scipy import ndimage
 ROOT=Path(__file__).resolve().parents[2]
 SOURCE=Path(__file__).with_name('integrated-empty-bases-atlas.png')
-GUN_SOURCE=SOURCE.with_name('compact-gun-source.png')
+GUN_SOURCE=SOURCE.with_name('bold-cannon-source.png')
 OUTPUT=ROOT/'assets/ships/enemy/elite_boss_20261020'
 GUN_OUTPUT=ROOT/'assets/weapons/integrated_ranked_20261020'
 KEYS=['anchor','reactive','shielded','command']
@@ -45,13 +45,13 @@ def main():
  assert min(offset)>=24
  runtime=Image.new('RGBA',(320,640));runtime.alpha_composite(crop.resize(size,Image.Resampling.LANCZOS),offset);runtime=runtime.transpose(Image.Transpose.ROTATE_180);GUN_OUTPUT.mkdir(parents=True,exist_ok=True);target=GUN_OUTPUT/'cannon-rotating.png';runtime.save(target)
  def convert(p):return [319-(offset[0]+(p[0]-box[0])*size[0]/crop.width),639-(offset[1]+(p[1]-box[1])*size[1]/crop.height)]
- gun_meta={'source_sha256':sha(GUN_SOURCE),'source_bounds':list(box),'source_pivot':[466,1045],'source_muzzle':[466,246],'pivot_px':convert([466,1045]),'muzzle_px':convert([466,246]),'canvas':[320,640],'housing_width_px':256,'runtime_forward':'down','stationary_base_in_sprite':False,'texture':'res://'+str(target.relative_to(ROOT)),'sha256':sha(target)}
+ gun_meta={'source_sha256':sha(GUN_SOURCE),'source_bounds':list(box),'source_pivot':[512,1000],'source_muzzle':[512,158],'pivot_px':convert([512,1000]),'muzzle_px':convert([512,158]),'canvas':[320,640],'housing_width_px':256,'barrel_width_px':231*size[0]/crop.width,'source_barrel_scanline':{'y':500,'opaque_span':[397,628]},'runtime_forward':'down','stationary_base_in_sprite':False,'texture':'res://'+str(target.relative_to(ROOT)),'sha256':sha(target)}
  (GUN_OUTPUT/'manifest.json').write_text(json.dumps(gun_meta,indent=2)+'\n');report['gun']=gun_meta
  (OUTPUT/'manifest.json').write_text(json.dumps(report,indent=2)+'\n')
  sync_visual_contract(report)
 def sync_visual_contract(report):
  path=ROOT/'data/ship_weapon_visuals.json';text=path.read_text();data=json.loads(text);contract=data['enemy_weapon_interface']
- contract['movable_gun']={'texture':report['gun']['texture'],'manifest':'res://assets/weapons/integrated_ranked_20261020/manifest.json','housing_to_well_ratio':.90,'stationary_foundation':'baked into hull; do not draw or rotate another base'}
+ contract['movable_gun']={'texture':report['gun']['texture'],'manifest':'res://assets/weapons/integrated_ranked_20261020/manifest.json','housing_to_well_ratio':1.10,'stationary_foundation':'baked into hull; do not draw or rotate another base'}
  names=[]
  for key in KEYS:
   for rank in ['elite','boss']:

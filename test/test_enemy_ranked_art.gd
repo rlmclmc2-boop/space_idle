@@ -150,7 +150,9 @@ func run()->void:
     check(painted_muzzle.distance_to(mount_pose.muzzle)<.001,"separate gun image tip matches isolated live muzzle")
     var pixels_per_logical:float=(root.get_final_transform()*scene.battle_clip.get_global_transform_with_canvas()).get_scale().x
     var housing_world:float=skin.housing_width_px*scale
-    check(housing_world*pixels_per_logical>=7.0,"independent white gun housing is legible in original window")
+    check(housing_world*pixels_per_logical>=13.0,"gun housing occupies at least thirteen original-window pixels")
+    var barrel_pixels:float=float(gun_meta.barrel_width_px)*scale*pixels_per_logical
+    check(barrel_pixels>=5.0,"barrel silhouette remains at least five original-window pixels wide")
     for previous in housing_centres:check(Vector2(mount_pose.origin).distance_to(previous)>housing_world+2.0,"separate rotating housings do not overlap")
     housing_centres.append(mount_pose.origin)
     var probes:Array=[]
@@ -166,7 +168,7 @@ func run()->void:
       else:gun_box=gun_box.expand(vertex)
      probes.append({"yaw":yaw,"axis":mount_pose.origin,"opaque_gun_aabb":gun_box,"housing_supported":true})
     rotation_probes.append_array(probes)
-    mounts.append({"slot":component.owner_slot,"socket_centre_px":socket_px,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"housing_pixels":housing_world*pixels_per_logical,"rotation_probes":probes})
+    mounts.append({"slot":component.owner_slot,"socket_centre_px":socket_px,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"housing_pixels":housing_world*pixels_per_logical,"barrel_pixels":barrel_pixels,"rotation_probes":probes})
    for i in [1,2]:check(g.enemies[i].equipment.size()==1 and scene.enemy_weapon_components(g.enemies[i]).size()==1,"ordinary escorts retain one weapon in QA")
    check(scene.enemy_render_position(hero)==point and is_equal_approx(scene.enemy_render_width(hero),width),"ranked skin does not move or resize model geometry")
    var outline:PackedVector2Array=packet.inner.duplicate();var protection_scale:float=scene.enemy_display_protection_scale(hero,packet,angle)

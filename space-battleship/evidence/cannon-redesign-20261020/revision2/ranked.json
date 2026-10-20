@@ -1,0 +1,895 @@
+{
+  "approved_source": "15a102ac",
+  "checks": 932,
+  "engine": "4.6.3-stable (official)",
+  "failures": 0,
+  "fires": 41,
+  "fixture": "actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged",
+  "hits": 53,
+  "movable_gun_independent": true,
+  "native_full_run": false,
+  "snapshots": [
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (186.1182, 132.6325), S: (199.7636, 154.735)]",
+      "caption": "[P: (236.0, 104.6325), S: (20.0, 18.0)]",
+      "case": "anchor_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "anchor-elite.png",
+      "health": "[P: (236.0, 123.6325), S: (100.0, 4.0)]",
+      "model_width": 50.5631247932464,
+      "mounts": [
+        {
+          "barrel_pixels": 6.46431050859433,
+          "housing_pixels": 17.1821932999001,
+          "muzzle": "(57.53302, 55.40687)",
+          "origin": "(57.53302, 21.86376)",
+          "rotation_probes": [
+            {
+              "axis": "(57.53302, 21.86376)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (327.4854, 215.4071), S: (50.86407, 45.82228)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(57.53302, 21.86376)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (331.4056, 220.7649), S: (24.4458, 44.97647)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(57.53302, 21.86376)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (308.8261, 215.5635), S: (50.86411, 45.82227)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            234.407933546018,
+            803.355624642139
+          ]
+        },
+        {
+          "barrel_pixels": 6.46431050859433,
+          "housing_pixels": 17.1821932999001,
+          "muzzle": "(-57.46675, 56.45841)",
+          "origin": "(-57.46675, 22.9153)",
+          "rotation_probes": [
+            {
+              "axis": "(-57.46675, 22.9153)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (212.4856, 216.4586), S: (50.86411, 45.82228)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-57.46675, 22.9153)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (216.4058, 221.8165), S: (24.4458, 44.97647)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-57.46675, 22.9153)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (193.8263, 216.6151), S: (50.86409, 45.82227)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            653.985727300334,
+            806.287759069492
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 116.6325), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_anchor_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (196.7872, 126.9938), S: (178.4255, 166.0125)]",
+      "caption": "[P: (236.0, 98.99377), S: (20.0, 18.0)]",
+      "case": "reactive_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "reactive-elite.png",
+      "health": "[P: (236.0, 117.9938), S: (100.0, 4.0)]",
+      "model_width": 55.4176930136689,
+      "mounts": [
+        {
+          "barrel_pixels": 5.76102120222251,
+          "housing_pixels": 15.3128442344789,
+          "muzzle": "(46.40816, 11.49489)",
+          "origin": "(46.40816, -18.39887)",
+          "rotation_probes": [
+            {
+              "axis": "(46.40816, -18.39887)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (318.1064, 176.9349), S: (45.33029, 40.83701)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(46.40816, -18.39887)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (321.6001, 181.7098), S: (21.78622, 40.08322)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(46.40816, -18.39887)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (301.4772, 177.0743), S: (45.33029, 40.83699)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            253.424618320611,
+            959.620325342466
+          ]
+        },
+        {
+          "barrel_pixels": 5.76102120222251,
+          "housing_pixels": 15.3128442344789,
+          "muzzle": "(-47.26722, 12.2324)",
+          "origin": "(-47.26722, -17.66137)",
+          "rotation_probes": [
+            {
+              "axis": "(-47.26722, -17.66137)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (224.4311, 177.6724), S: (45.33029, 40.83699)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-47.26722, -17.66137)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (227.9248, 182.4473), S: (21.78621, 40.08322)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-47.26722, -17.66137)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (207.8018, 177.8118), S: (45.33029, 40.83701)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            634.703028810638,
+            960.174253203712
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 110.9938), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_reactive_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.00000762939453125,
+      "body": "[P: (193.494, 133.292), S: (185.0119, 153.4159)]",
+      "caption": "[P: (236.0, 105.2921), S: (20.0, 18.0)]",
+      "case": "shielded_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "shielded-elite.png",
+      "health": "[P: (236.0, 124.2921), S: (100.0, 4.0)]",
+      "model_width": 56.746791389854,
+      "mounts": [
+        {
+          "barrel_pixels": 5.76329931934888,
+          "housing_pixels": 15.3188994895247,
+          "muzzle": "(60.63638, 47.98932)",
+          "origin": "(60.63638, 18.08373)",
+          "rotation_probes": [
+            {
+              "axis": "(60.63638, 18.08373)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (332.329, 213.4117), S: (45.34824, 40.85315)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(60.63638, 18.08373)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (335.8241, 218.1885), S: (21.79483, 40.09908)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(60.63638, 18.08373)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (315.6932, 213.5512), S: (45.34824, 40.85313)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            206.455825242718,
+            815.267190723413
+          ]
+        },
+        {
+          "barrel_pixels": 5.76329931934888,
+          "housing_pixels": 15.3188994895247,
+          "muzzle": "(-59.27617, 48.46421)",
+          "origin": "(-59.27617, 18.55863)",
+          "rotation_probes": [
+            {
+              "axis": "(-59.27617, 18.55863)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (212.4165, 213.8866), S: (45.34821, 40.85315)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-59.27617, 18.55863)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (215.9116, 218.6634), S: (21.79482, 40.09906)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-59.27617, 18.55863)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (195.7806, 214.0261), S: (45.34822, 40.85315)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            674.889763779528,
+            815.568943232549
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 117.2921), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_shielded_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.00000762939453125,
+      "body": "[P: (209.7178, 135.3362), S: (152.5644, 149.3277)]",
+      "caption": "[P: (236.0, 107.3362), S: (20.0, 18.0)]",
+      "case": "command_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "command-elite.png",
+      "health": "[P: (236.0, 126.3362), S: (100.0, 4.0)]",
+      "model_width": 56.3288266073988,
+      "mounts": [
+        {
+          "barrel_pixels": 5.79397561127584,
+          "housing_pixels": 15.4004373390622,
+          "muzzle": "(46.10892, 46.26791)",
+          "origin": "(46.10892, 16.20315)",
+          "rotation_probes": [
+            {
+              "axis": "(46.10892, 16.20315)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (317.7254, 211.453), S: (45.5896, 41.07059)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(46.10892, 16.20315)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (321.2391, 216.2552), S: (21.91083, 40.3125)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(46.10892, 16.20315)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (301.001, 211.5932), S: (45.58957, 41.0706)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            218.703194248383,
+            814.0353391281
+          ]
+        },
+        {
+          "barrel_pixels": 5.79397561127584,
+          "housing_pixels": 15.4004373390622,
+          "muzzle": "(-46.48275, 44.10407)",
+          "origin": "(-46.48275, 14.0393)",
+          "rotation_probes": [
+            {
+              "axis": "(-46.48275, 14.0393)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (225.1337, 209.2892), S: (45.5896, 41.07059)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-46.48275, 14.0393)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (228.6474, 214.0914), S: (21.91083, 40.3125)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-46.48275, 14.0393)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (208.4093, 209.4294), S: (45.5896, 41.0706)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            665.68200354772,
+            814.009312054572
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 119.3362), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_command_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.00000762939453125,
+      "body": "[P: (182.2772, 112.6667), S: (207.4456, 194.6667)]",
+      "caption": "[P: (226.0, 65.66666), S: (120.0, 25.0)]",
+      "case": "anchor_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "anchor-boss.png",
+      "health": "[P: (236.0, 103.6667), S: (100.0, 4.0)]",
+      "model_width": 71.6574496720396,
+      "mounts": [
+        {
+          "barrel_pixels": 5.6403395369874,
+          "housing_pixels": 14.9920713234211,
+          "muzzle": "(53.10489, 74.57526)",
+          "origin": "(53.10489, 45.30771)",
+          "rotation_probes": [
+            {
+              "axis": "(53.10489, 45.30771)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (325.1028, 240.9487), S: (44.38071, 39.98155)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(53.10489, 45.30771)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (328.5233, 245.6236), S: (21.32983, 39.24353)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(53.10489, 45.30771)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (308.8219, 241.0852), S: (44.38071, 39.98155)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            241.901621223287,
+            732.052603940316
+          ]
+        },
+        {
+          "barrel_pixels": 5.6403395369874,
+          "housing_pixels": 14.9920713234211,
+          "muzzle": "(-57.48947, 69.11136)",
+          "origin": "(-57.48947, 39.84381)",
+          "rotation_probes": [
+            {
+              "axis": "(-57.48947, 39.84381)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (214.5084, 235.4848), S: (44.38072, 39.98155)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-57.48947, 39.84381)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (217.9289, 240.1597), S: (21.32982, 39.24353)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-57.48947, 39.84381)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (198.2275, 235.6213), S: (44.38072, 39.98155)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            644.112684894666,
+            731.234064675302
+          ]
+        },
+        {
+          "barrel_pixels": 5.6403395369874,
+          "housing_pixels": 14.9920713234211,
+          "muzzle": "(58.993, 7.594761)",
+          "origin": "(58.993, -21.67279)",
+          "rotation_probes": [
+            {
+              "axis": "(58.993, -21.67279)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (330.9909, 173.9682), S: (44.38071, 39.98155)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(58.993, -21.67279)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (334.4114, 178.6431), S: (21.32983, 39.24355)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(58.993, -21.67279)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (314.71, 174.1047), S: (44.38071, 39.98155)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2,
+          "socket_centre_px": [
+            233.041989930017,
+            976.129456365436
+          ]
+        },
+        {
+          "barrel_pixels": 5.6403395369874,
+          "housing_pixels": 14.9920713234211,
+          "muzzle": "(-55.8244, 1.736643)",
+          "origin": "(-55.8244, -27.53091)",
+          "rotation_probes": [
+            {
+              "axis": "(-55.8244, -27.53091)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (216.1735, 168.1101), S: (44.38072, 39.98155)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-55.8244, -27.53091)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (219.594, 172.785), S: (21.32982, 39.24355)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-55.8244, -27.53091)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (199.8926, 168.2466), S: (44.38072, 39.98155)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3,
+          "socket_centre_px": [
+            650.646093923177,
+            975.952882514427
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 96.66666), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_anchor_boss",
+      "weapon_slots": 4
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (197.7632, 113.8444), S: (176.4736, 192.3112)]",
+      "caption": "[P: (226.0, 66.84437), S: (120.0, 25.0)]",
+      "case": "reactive_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "reactive-boss.png",
+      "health": "[P: (236.0, 104.8444), S: (100.0, 4.0)]",
+      "model_width": 69.7324063061144,
+      "mounts": [
+        {
+          "barrel_pixels": 5.07412961952069,
+          "housing_pixels": 13.4870804605442,
+          "muzzle": "(40.56189, 67.99454)",
+          "origin": "(40.56189, 41.66503)",
+          "rotation_probes": [
+            {
+              "axis": "(40.56189, 41.66503)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (313.9654, 238.7475), S: (39.92551, 35.96797)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(40.56189, 41.66503)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (317.0425, 242.953), S: (19.1886, 35.30406)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(40.56189, 41.66503)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (299.3188, 238.8702), S: (39.92554, 35.96799)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            254.744030767587,
+            717.060828369893
+          ]
+        },
+        {
+          "barrel_pixels": 5.07412961952069,
+          "housing_pixels": 13.4870804605442,
+          "muzzle": "(-44.98673, 62.54934)",
+          "origin": "(-44.98673, 36.21984)",
+          "rotation_probes": [
+            {
+              "axis": "(-44.98673, 36.21984)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (228.4168, 233.3023), S: (39.92551, 35.96797)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-44.98673, 36.21984)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (231.4939, 237.5079), S: (19.18861, 35.30406)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-44.98673, 36.21984)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (213.7702, 233.425), S: (39.92554, 35.96799)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            628.61733906973,
+            716.708518327732
+          ]
+        },
+        {
+          "barrel_pixels": 5.07412961952069,
+          "housing_pixels": 13.4870804605442,
+          "muzzle": "(46.22062, 3.248127)",
+          "origin": "(46.22062, -23.08138)",
+          "rotation_probes": [
+            {
+              "axis": "(46.22062, -23.08138)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (319.6241, 174.0011), S: (39.92551, 35.96797)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(46.22062, -23.08138)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (322.7013, 178.2066), S: (19.1886, 35.30406)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(46.22062, -23.08138)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (304.9776, 174.1238), S: (39.92554, 35.96797)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2,
+          "socket_centre_px": [
+            248.318411825225,
+            1000.45447970002
+          ]
+        },
+        {
+          "barrel_pixels": 5.07412961952069,
+          "housing_pixels": 13.4870804605442,
+          "muzzle": "(-42.56752, -2.842806)",
+          "origin": "(-42.56752, -29.17231)",
+          "rotation_probes": [
+            {
+              "axis": "(-42.56752, -29.17231)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (230.836, 167.9101), S: (39.92554, 35.96797)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-42.56752, -29.17231)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (233.9131, 172.1157), S: (19.18861, 35.30406)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-42.56752, -29.17231)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (216.1894, 168.0329), S: (39.92552, 35.96797)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3,
+          "socket_centre_px": [
+            636.472991988054,
+            1002.0018971442
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 97.84437), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_reactive_boss",
+      "weapon_slots": 4
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (185.8571, 112.6666), S: (200.2858, 194.6667)]",
+      "caption": "[P: (226.0, 65.66666), S: (120.0, 25.0)]",
+      "case": "shielded_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "shielded-boss.png",
+      "health": "[P: (236.0, 103.6667), S: (100.0, 4.0)]",
+      "model_width": 74.5747455697785,
+      "mounts": [
+        {
+          "barrel_pixels": 5.94416106638821,
+          "housing_pixels": 15.7996315790578,
+          "muzzle": "(59.94732, 65.71805)",
+          "origin": "(59.94732, 34.87398)",
+          "rotation_probes": [
+            {
+              "axis": "(59.94732, 34.87398)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (331.191, 229.7415), S: (46.7713, 42.13518)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(59.94732, 34.87398)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (334.7957, 234.6682), S: (22.47879, 41.35745)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(59.94732, 34.87398)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (314.0331, 229.8854), S: (46.77133, 42.13518)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            223.495743662421,
+            738.705490899686
+          ]
+        },
+        {
+          "barrel_pixels": 5.94416106638821,
+          "housing_pixels": 15.7996315790578,
+          "muzzle": "(-54.5207, 73.62576)",
+          "origin": "(-54.5207, 42.78168)",
+          "rotation_probes": [
+            {
+              "axis": "(-54.5207, 42.78168)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (216.7229, 237.6492), S: (46.77132, 42.13519)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-54.5207, 42.78168)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (220.3277, 242.5759), S: (22.47878, 41.35744)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-54.5207, 42.78168)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (199.565, 237.7931), S: (46.77133, 42.13516)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            661.296363506125,
+            737.272910498396
+          ]
+        },
+        {
+          "barrel_pixels": 5.94416106638821,
+          "housing_pixels": 15.7996315790578,
+          "muzzle": "(53.06001, 2.450233)",
+          "origin": "(53.06001, -28.39384)",
+          "rotation_probes": [
+            {
+              "axis": "(53.06001, -28.39384)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (324.3036, 166.4737), S: (46.7713, 42.13518)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(53.06001, -28.39384)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (327.9084, 171.4004), S: (22.47879, 41.35744)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(53.06001, -28.39384)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (307.1458, 166.6175), S: (46.77133, 42.13518)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2,
+          "socket_centre_px": [
+            233.869232634937,
+            981.313455112139
+          ]
+        },
+        {
+          "barrel_pixels": 5.94416106638821,
+          "housing_pixels": 15.7996315790578,
+          "muzzle": "(-56.08501, 8.977938)",
+          "origin": "(-56.08501, -21.86614)",
+          "rotation_probes": [
+            {
+              "axis": "(-56.08501, -21.86614)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (215.1586, 173.0014), S: (46.77132, 42.13518)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-56.08501, -21.86614)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (218.7634, 177.9281), S: (22.47878, 41.35744)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-56.08501, -21.86614)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (198.0007, 173.1452), S: (46.77133, 42.13518)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3,
+          "socket_centre_px": [
+            651.057603686636,
+            983.801593045113
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 96.66666), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_shielded_boss",
+      "weapon_slots": 4
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (200.9373, 114.1836), S: (170.1254, 191.6328)]",
+      "caption": "[P: (226.0, 67.18362), S: (120.0, 25.0)]",
+      "case": "command_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "command-boss.png",
+      "health": "[P: (236.0, 105.1836), S: (100.0, 4.0)]",
+      "model_width": 70.3208417495325,
+      "mounts": [
+        {
+          "barrel_pixels": 5.31824238139178,
+          "housing_pixels": 14.1359342951279,
+          "muzzle": "(44.53628, 58.0656)",
+          "origin": "(44.53628, 30.4694)",
+          "rotation_probes": [
+            {
+              "axis": "(44.53628, 30.4694)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (317.3338, 226.9304), S: (41.84631, 37.69836)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(44.53628, 30.4694)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (320.559, 231.3383), S: (20.11176, 37.0025)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(44.53628, 30.4694)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (301.9826, 227.0591), S: (41.84631, 37.69835)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0,
+          "socket_centre_px": [
+            233.270696252722,
+            761.922592803914
+          ]
+        },
+        {
+          "barrel_pixels": 5.31824238139178,
+          "housing_pixels": 14.1359342951279,
+          "muzzle": "(-47.47351, 52.46985)",
+          "origin": "(-47.47351, 24.87365)",
+          "rotation_probes": [
+            {
+              "axis": "(-47.47351, 24.87365)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (225.324, 221.3346), S: (41.84631, 37.69836)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-47.47351, 24.87365)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (228.5492, 225.7426), S: (20.11177, 37.0025)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-47.47351, 24.87365)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (209.9728, 221.4633), S: (41.84631, 37.69835)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1,
+          "socket_centre_px": [
+            650.413491350774,
+            761.290483719438
+          ]
+        },
+        {
+          "barrel_pixels": 5.31824238139178,
+          "housing_pixels": 14.1359342951279,
+          "muzzle": "(47.96051, 5.831823)",
+          "origin": "(47.96051, -21.76438)",
+          "rotation_probes": [
+            {
+              "axis": "(47.96051, -21.76438)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (320.758, 174.6966), S: (41.84631, 37.69836)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(47.96051, -21.76438)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (323.9832, 179.1045), S: (20.11176, 37.00252)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(47.96051, -21.76438)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (305.4068, 174.8253), S: (41.84631, 37.69835)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2,
+          "socket_centre_px": [
+            232.511522655153,
+            998.803418803419
+          ]
+        },
+        {
+          "barrel_pixels": 5.31824238139178,
+          "housing_pixels": 14.1359342951279,
+          "muzzle": "(-44.34337, 0.288937)",
+          "origin": "(-44.34337, -27.30726)",
+          "rotation_probes": [
+            {
+              "axis": "(-44.34337, -27.30726)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (228.4541, 169.1537), S: (41.8463, 37.69836)]",
+              "yaw": -55.0
+            },
+            {
+              "axis": "(-44.34337, -27.30726)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (231.6793, 173.5616), S: (20.11177, 37.0025)]",
+              "yaw": 0.0
+            },
+            {
+              "axis": "(-44.34337, -27.30726)",
+              "housing_supported": true,
+              "opaque_gun_aabb": "[P: (213.103, 169.2824), S: (41.84631, 37.69836)]",
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3,
+          "socket_centre_px": [
+            650.967729246527,
+            997.849761384777
+          ]
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 98.18362), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_command_boss",
+      "weapon_slots": 4
+    }
+  ],
+  "stationary_foundations_in_hull": true,
+  "window_png": "(1372, 883)"
+}

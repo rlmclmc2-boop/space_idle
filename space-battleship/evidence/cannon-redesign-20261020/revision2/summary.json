@@ -1,0 +1,48 @@
+{
+  "baseline": "7b081cee",
+  "checks": 932,
+  "failures": 0,
+  "fires": 41,
+  "hits": 53,
+  "eight_hull_pngs_byte_identical": true,
+  "all_24_fixed_socket_metadata_unchanged": true,
+  "production_scripts_equipment_stats_formation_unchanged": true,
+  "visual_contract_only_change": {
+    "housing_to_well_ratio": [
+      0.9,
+      1.1
+    ]
+  },
+  "housing_pixels_min_max": [
+    13.4870804605442,
+    17.1821932999001
+  ],
+  "barrel_pixels_min_max": [
+    5.07412961952069,
+    6.46431050859433
+  ],
+  "rotation_pixel_diff": [
+    {
+      "degrees": -35,
+      "different_pixels": 1314,
+      "bounds": [
+        160,
+        233,
+        248,
+        301
+      ]
+    },
+    {
+      "degrees": 35,
+      "different_pixels": 1317,
+      "bounds": [
+        154,
+        233,
+        243,
+        301
+      ]
+    }
+  ],
+  "source": "bold-cannon-source.png",
+  "not_merged_to_main": true
+}
