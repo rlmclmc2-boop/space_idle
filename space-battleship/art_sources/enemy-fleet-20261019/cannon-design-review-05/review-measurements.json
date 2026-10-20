@@ -1,0 +1,39 @@
+{
+  "design_only": true,
+  "screen_scale": 0.7,
+  "housing_to_well_ratio": 1.2,
+  "cases": [
+    {
+      "case": "anchor_elite",
+      "housing_screen_pixels": 18.896556756756755
+    },
+    {
+      "case": "reactive_elite",
+      "housing_screen_pixels": 16.78016916030534
+    },
+    {
+      "case": "shielded_elite",
+      "housing_screen_pixels": 16.70657457
+    },
+    {
+      "case": "command_elite",
+      "housing_screen_pixels": 17.11049238147139
+    },
+    {
+      "case": "anchor_boss",
+      "housing_screen_pixels": 17.046616695652173
+    },
+    {
+      "case": "reactive_boss",
+      "housing_screen_pixels": 15.664306144329895
+    },
+    {
+      "case": "shielded_boss",
+      "housing_screen_pixels": 18.219546967741934
+    },
+    {
+      "case": "command_boss",
+      "housing_screen_pixels": 16.421884577017114
+    }
+  ]
+}

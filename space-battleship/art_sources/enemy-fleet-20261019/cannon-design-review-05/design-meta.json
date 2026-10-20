@@ -1,0 +1,28 @@
+{
+  "design_only": true,
+  "approved_style_reference": "15a102ac",
+  "source_canvas": [
+    1265,
+    1243
+  ],
+  "housing_width_source_px": 800,
+  "housing_bounds_source_px": [
+    231,
+    306,
+    1031,
+    1100
+  ],
+  "pivot_source_px": [
+    631,
+    710
+  ],
+  "muzzle_source_px": [
+    631,
+    94
+  ],
+  "exposed_barrel_length_source_px": 212,
+  "barrel_width_source_px": 88,
+  "screen_scale": 0.7,
+  "housing_to_well_ratio": 1.2,
+  "not_a_runtime_config": true
+}

@@ -1,12 +1,13 @@
-# 当前：宽扁装甲炮塔设计 04，等待外观确认
+# 当前：方向性装甲炮塔设计 05，待父审
 
-03941bf5的细长尖状设计已被否决。本轮先按正常整舰比例自查，旋转主体改为宽扁厚实的装甲炮塔，短细炮管只小幅突出。
+04在父审中被否决，未交用户验收。本轮采用收束浅色前甲、宽厚深色后舱和可辨短炮口，内部先检查同尺寸正向/转向，再整理交付。
 
-1. [先看正常尺寸前后对比](../../art_sources/enemy-fleet-20261019/cannon-design-review-04/normal-comparison.png)
-2. [八版整舰、转向与细节板](../../art_sources/enemy-fleet-20261019/cannon-design-review-04/design-board.png)
-3. [设计说明与HTML入口](../../art_sources/enemy-fleet-20261019/cannon-design-review-04/README.md)
+1. [先看正常尺寸 -35/0/+35 度方向对照](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/direction-check.png)
+2. [与04正常尺寸对比](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/normal-comparison.png)
+3. [八版整舰、转向与细节](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/design-board.png)
+4. [设计说明和HTML](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/README.md)
 
-以上均是静态设计示意，未接入游戏。舰体和固定底座原PNG、生产资源、挂点和数值配置均未改。不合main，等外观确认。下方仅保留已否决的旧实机候选，不是当前送审图。
+仅静态设计稿，未接入游戏，未合main。舰体和底座原PNG、生产资源、挂点和数值配置均未改。下方为已否决旧实机候选的历史证据，不代表当前设计。
 
 ---
 

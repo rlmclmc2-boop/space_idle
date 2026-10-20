@@ -1,0 +1,50 @@
+{
+  "design_only": true,
+  "baseline": "c58921f0",
+  "all_eight_hull_pngs_byte_identical": true,
+  "runtime_assets_data_scripts_config_qa_importer_tests_unchanged": true,
+  "game_not_launched": true,
+  "main_not_merged": true,
+  "native_width_min_max": [
+    15.664306144329895,
+    18.896556756756755
+  ],
+  "native_exposed_barrel_length_min_max": [
+    4.151041128247423,
+    5.00758754054054
+  ],
+  "native_barrel_width_min_max": [
+    1.7230736758762886,
+    2.078621243243243
+  ],
+  "fore_armor_sample_median_rgb": [
+    230.0,
+    226.0,
+    221.0
+  ],
+  "rear_bustle_sample_median_rgb": [
+    36.0,
+    24.0,
+    28.0
+  ],
+  "source_sha256": "09918d139cbf4a887f6b7d709752879ccdaa4a22213cdf292b6ba9293505bd07",
+  "direction_panel": {
+    "cases": [
+      "command_boss",
+      "reactive_elite"
+    ],
+    "angles": [
+      -35,
+      0,
+      35
+    ],
+    "image_size": [
+      900,
+      737
+    ],
+    "same_scale": true,
+    "device_scale": 1
+  },
+  "visual_internal_review": "direction panel inspected before submission; tapered light front and broad dark rear rotate with short muzzle, instead of a near-circular cover",
+  "pending_parent_visual_review": true
+}
