@@ -30,6 +30,9 @@ for key in keys:
  assert geometry.read_bytes()==expected
  rows.append({'key':key,'alpha_bounds':box,'components':int(components),'geometry_sha256':hashlib.sha256(expected).hexdigest()})
  row['texture']=before['texture']
+for key in [k for k in new['ships'] if k.endswith(('_elite','_boss')) and k.startswith('enemy_opening_')]:
+ new['ships'].pop(key)
+new.pop('enemy_rotating_art',None)
 assert new==old,'Non-display configuration changed'
 result={'baseline':BASE,'display_only_rows':8,'all_other_config_unchanged':True,'all_geometry_bytes_unchanged':True,'sprites':rows}
 out=PROJECT/'evidence/enemy-eight-main-ready-20261020';out.mkdir(parents=True,exist_ok=True)

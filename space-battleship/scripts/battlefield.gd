@@ -226,6 +226,13 @@ func shot_mount(shot:Dictionary)->int:
 func visual_muzzle(shot:Dictionary)->Vector2:
 	# Render emitters follow the artwork; numeric launch and rail providers
 	# retain the original Muzzle nodes and committed combat coordinates.
+	if bool(shot.get("hostile",false)) and not bool(shot.get("chain_hop",false)):
+		var enemy:Dictionary=shot.get("source",{})
+		if not enemy.is_empty() and game.enemies.has(enemy):
+			var component=enemy_component_for_slot(enemy,enemy_shot_mount(enemy,shot))
+			if component!=null:
+				var art:=enemy_weapon_art_pose(enemy,component)
+				if not art.is_empty():return battle_logical_point(enemy_render_position(enemy)+Vector2(art.muzzle))
 	if not bool(shot.get("hostile",false)) and not bool(shot.get("chain_hop",false)) and _visual_drone_id(shot).is_empty() and is_instance_valid(ship_view):
 		var slot:int=shot_mount(shot)
 		if slot>=0:
