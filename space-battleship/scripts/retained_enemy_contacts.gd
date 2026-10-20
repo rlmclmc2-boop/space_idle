@@ -326,7 +326,10 @@ func update_meters(record:DisplayRecord,pos:Vector2,width:float,angle:float,outl
  var bar_width=clampf(dimensions.x*record.used.size.x,28,100)
  var left=clampf(pos.x-bar_width*0.5,6,paint_owner.BATTLE_VIEW_SIZE.x-bar_width-6)
  var enemy=record.entity
- if enemy.get("explicit_formation",false) and absf(float(enemy.x)-paint_owner.BATTLE_VIEW_SIZE.x*0.5)>150.0:
+ if paint_owner.enemy_ship_key(enemy).begins_with("enemy_opening_"):
+  var span:Vector2=paint_owner.enemy_base_meter_span(pos,bar_width)
+  left=span.x;bar_width=span.y
+ elif enemy.get("explicit_formation",false) and absf(float(enemy.x)-paint_owner.BATTLE_VIEW_SIZE.x*0.5)>150.0:
   left=clampf(pos.x if pos.x>=paint_owner.BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,paint_owner.BATTLE_VIEW_SIZE.x-bar_width-6)
  meter(record.health,Vector2(left,maxf(6,top))-pos,Vector2(bar_width,4),float(enemy.hp)/maxf(1,float(enemy.max_hp)),paint_owner.BATTLE_WARM)
  record.shield.visible=float(enemy.get("max_shield",0))>0

@@ -1036,6 +1036,12 @@ func encounter_leader_name(enemy:Dictionary)->String:
 		return str(group_row.get("description","")).strip_edges()
 	return ""
 
+# Keep base-hull meters centred even near the clip edge. Shorten both ends
+# symmetrically instead of pushing a full-width bar away from its ship.
+func enemy_base_meter_span(pos:Vector2,bar_width:float)->Vector2:
+	var half:=minf(bar_width*0.5,maxf(0.0,minf(pos.x-6.0,BATTLE_VIEW_SIZE.x-6.0-pos.x)))
+	return Vector2(pos.x-half,half*2.0)
+
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
 	# Status placement follows the drawn hull/protection, not combat bounds.
 	var dimensions:=enemy_hull_rect(enemy,width).size
@@ -1054,6 +1060,10 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 	top-=9.0
 	var bar_width:=clampf(dimensions.x*used.size.x,28,100)
 	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
+	var base_hull:=enemy_ship_key(enemy).begins_with("enemy_opening_")
+	if base_hull:
+		var span:=enemy_base_meter_span(pos,bar_width)
+		left=span.x;bar_width=span.y
 	if encounter_presentation.is_leader(enemy):
 		# text_at renders at least 17 px: measure the same font size. Place the
 		# name and meters as one block, never clamp three rows independently.
@@ -1076,7 +1086,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		var first_meter_y:float=block_top+name_height+6.0
 		return {"health":Rect2(left,first_meter_y+(7.0 if has_shield else 0.0),bar_width,4),"shield":Rect2(left,first_meter_y,bar_width,4),"caption":name,"caption_position":baseline,"caption_bounds":Rect2(Vector2(name_left,block_top),Vector2(name_size.x,name_height))}
 	var outer_wing:bool=enemy.get("explicit_formation",false) and absf(float(enemy.x)-BATTLE_VIEW_SIZE.x*0.5)>150.0
-	if outer_wing:
+	if outer_wing and not base_hull:
 		# Meters use the same free outer-wing space as their captions.
 		left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
