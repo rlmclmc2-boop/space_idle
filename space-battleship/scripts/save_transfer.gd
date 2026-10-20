@@ -4,6 +4,7 @@ const Writer := preload("res://scripts/progress_writer.gd")
 const Layout := preload("res://scripts/galaxy_layout.gd")
 const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
+const SUPPORTED_VERSIONS := [2,3,4,BattleGame.SAVE_VERSION]
 
 static func schema() -> Dictionary:
  var building := {"status":"s","build_progress":"g","crew":["s"]}
@@ -18,10 +19,20 @@ static func schema() -> Dictionary:
  for key in ["cleared","bossSeen"]:result[key]=["n"]
  for key in ["grantedUnlocks","seenUnlocks","readUnlocks","hightechOrder"]:result[key]=["s"]
  for key in ["hightechLevels","scientistAssignments","reactorAllocation"]:result[key]={"*":"i"}
+ # The portable projection includes every live durable field used by the
+ # ordinary save. Legacy versions may omit these fields during migration.
+ result.aiTechLevels={"*":"i"}
+ result.aiTechProgress={"*":"n"}
+ result.aiTechActive="s"
+ result.aiTechInput={"*":"i"}
+ result.aiIncomePeak={"*":"g"}
+ result.aiTechCompletionUnread="b"
+ result.productionElapsed="n"
+ result.equipmentSwitchUntil={"*":"n"}
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
  result.loop="b"
- result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s"}]
+ result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s","production_time":"n"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
  result.hyperspace=preload("res://scripts/hyperspace_state.gd").schema()
  result.hyperspaceReceipt={"round":"i","run":"i","drone_id":"s","unread":"b"}
@@ -119,7 +130,7 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
  return prepare_data(parser.data,db)
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
- if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in [2,3,4,BattleGame.SAVE_VERSION]:return {"error":"version"}
+ if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
