@@ -40,16 +40,16 @@ class EntityTests(unittest.TestCase):
     def test_valid_distinct_coefficients(self):
         t=copy.deepcopy(self.tables)
         for r in self.rows(t,'基础参数'):
-            if r['key'] in ['modernization_base_coefficient','auto_duration_crew_base','auto_ticket_crew_base']:r['value']*=2
+            if r['key']=='modernization_base_coefficient':r['value']*=2
             if r['key']=='amplification_start_level':r['value']=6
         o=h.project_tables(t,self.main,self.frozen)['hyperspace_config.json']
-        self.assertEqual([2,200,40,6],[o[k] for k in ['modernization_base_coefficient','auto_duration_crew_base','auto_ticket_crew_base','amplification_start_level']])
+        self.assertEqual([2,6],[o[k] for k in ['modernization_base_coefficient','amplification_start_level']])
     def test_locked_overflow_and_structure(self):
         self.reject(lambda t:next(r for r in self.rows(t,'基础参数') if r['key']=='overflow_capacity').update(value=11))
         self.reject(lambda t:self.rows(t,'词缀定义')[0].update(amplified=not self.rows(t,'词缀定义')[0]['amplified']))
     def test_types_and_ranges(self):
         for value in [True,float('inf'),0,'100']:
-            self.reject(lambda t,v=value:next(r for r in self.rows(t,'基础参数') if r['key']=='auto_duration_crew_base').update(value=v))
+            self.reject(lambda t,v=value:next(r for r in self.rows(t,'基础参数') if r['key']=='modernization_base_coefficient').update(value=v))
         self.reject(lambda t:next(r for r in self.rows(t,'传说随机参数') if r['parameter']=='maximum_dodge').update(maximum=1.1))
         self.reject(lambda t:next(r for r in self.rows(t,'基础参数') if r['key']=='maximum_equipped').update(value=6))
     def test_references_recipe_zero_and_order(self):

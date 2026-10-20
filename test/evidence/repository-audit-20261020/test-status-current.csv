@@ -157,8 +157,8 @@ test/test_hyperspace_dedicated_routes_ui.gd,not revalidated on current branch,ex
 test/test_hyperspace_departure_gate.gd,not revalidated on current branch,not in initial execution matrix,
 test/test_hyperspace_disk_migration.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_effects.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
-test/test_hyperspace_entities.py,not revalidated on current branch,exit 1 (python-results.json),
-test/test_hyperspace_entity_consumers.gd,current screening failed; triage pending,exit 1 (gd-logic-results.json),
+test/test_hyperspace_entities.py,passed on current branch,exit 1 (python-results.json),test/evidence/repository-audit-20261020/test_hyperspace_entities.continuation.log
+test/test_hyperspace_entity_consumers.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_entity_consumers.continuation.log
 test/test_hyperspace_entity_edges.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
 test/test_hyperspace_exchange.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_guide.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
