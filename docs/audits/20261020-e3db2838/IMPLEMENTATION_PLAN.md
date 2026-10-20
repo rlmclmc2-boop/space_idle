@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04a 均为 `closed`；S05 为 `review`；S06—S24 均为 `not_started`。** main 仍为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段 S05 在线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9`；纯运行候选 `b32e1640248b25ee524645888979afd654edfcf5`，树 `482d183d4fac7b5680c92bddc63dc28ac65ed316`，冻结证据 `bbe8199cceaba7a75c85d509f773b090f0639043`。父级和原 astra 尚未双审；不得合 main、关闭线程或启动 S06。S05 只解决玩家发布依赖，完整 Windows 构建和产物验收尚未通过；详见 `stages/S05/README.md`。
+**S00—S04a 均为 `closed`；S05 为 `review`；S06—S24 均为 `not_started`。** main 仍为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段 S05 在线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9`；纯运行候选 `5a4d52957f68b22ef47e0ad91cbe787292872d83`，树 `2f161d9aac91d8d615770d9480d7dd6d9247b00d`，冻结证据 `0003f5e6d0b013d7ede4702f618e99ee666e59a0`。父级和原 astra 尚未双审；不得合 main、关闭线程或启动 S06。S05 只解决玩家发布依赖，完整 Windows 构建和产物验收尚未通过；详见 `stages/S05/README.md`。
 
 ### S00 关闭记录
 
@@ -462,19 +462,19 @@ model: sol
 base_main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301
 predecessor: S04a closed at audit 0a9f769b20853157a7d7535aa59161dac84adad0
 runtime_branch: s05/player-release-deps
-runtime_final_sha: b32e1640248b25ee524645888979afd654edfcf5
-runtime_tree: 482d183d4fac7b5680c92bddc63dc28ac65ed316
+runtime_final_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83
+runtime_tree: 2f161d9aac91d8d615770d9480d7dd6d9247b00d
 runtime_files:
   - space-battleship/tools/build_release.ps1
   - space-battleship/tools/player_required_data.json
 main_file_justifications:
   - "build_release.ps1: 玩家发布构建必要工具；复制与前后检查共用配置清单，缺项明确失败"
-  - "player_required_data.json: 玩家产品所需 15 个配置与 scripts/assets/shaders 直接运行目录清单"
-evidence_snapshot_sha: bbe8199cceaba7a75c85d509f773b090f0639043
+  - "player_required_data.json: 玩家产品所需 15 个配置、26 个逐项文件与 scripts/assets/shaders 直接运行目录清单"
+evidence_snapshot_sha: 0003f5e6d0b013d7ede4702f618e99ee666e59a0
 evidence_entry: stages/S05/README.md
 verification:
   results:
-    - "空 staging 含 15/15 必需 JSON，同源 SHA256；玩家直接 JSON 引用 15/15 全在清单"
+    - "空 staging 含 15/15 必需 JSON、26/26 逐项运行文件和三个目录；文件同源 SHA256；玩家直接 JSON 引用 15/15 全在清单"
     - "三个缺失 JSON 各自注入均 exit 1，指出缺失源路径"
     - "Godot 4.7.2 隔离 staging 数据库、奖励契约、新档真实保存、重开保留值，探针两次 exit 0"
   unverified:
