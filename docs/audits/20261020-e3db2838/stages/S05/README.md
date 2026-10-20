@@ -5,7 +5,7 @@
 - 运行树：`2f161d9aac91d8d615770d9480d7dd6d9247b00d`
 - 运行分支：`s05/player-release-deps`
 - 平台：Windows，Godot 4.7.2 stable official，Python 3.12，PowerShell 5.1；测试使用临时独立克隆和隔离 `APPDATA`。
-- 可核查的原始输出与退出码：`logs/missing-*.log`、`logs/new.log`、`logs/reopen.log`、`logs/import-diagnostic.log`；机器可读检查摘要：`checks.json`；运行 Git blob 清单：`RUNTIME_BLOBS.json`。各日志开头记录实际命令、隔离路径和退出码；导入日志仅摘录原始诊断行，省略进度动画。
+- 可核查的原始输出与退出码：`logs/missing-*.log`、`logs/new.log`、`logs/reopen.log`、`logs/import-diagnostic.log`；机器可读检查摘要：`checks.json`；运行 Git blob 清单：`RUNTIME_BLOBS.json`；证据 Git blob 清单：`EVIDENCE_BLOBS.json`。各日志开头记录实际命令、隔离路径和退出码；导入日志仅摘录原始诊断行，省略进度动画。
 
 ## 范围和 main 文件理由
 
