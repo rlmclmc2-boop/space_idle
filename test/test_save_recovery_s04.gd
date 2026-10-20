@@ -1,6 +1,7 @@
 extends SceneTree
 
 const Writer := preload("res://scripts/progress_writer.gd")
+const Transfer := preload("res://scripts/save_transfer.gd")
 class FailedInstall extends "res://scripts/progress_writer.gd":
 	func _rename(from: String, to: String) -> Error:
 		if from.ends_with(".tmp"):return ERR_FILE_CANT_WRITE
@@ -38,6 +39,7 @@ func _initialize() -> void:
 	source.profile.resources["1"] = 4321.0
 	source.profile.aiTechLevels["singularity"] = 3
 	var valid := source.portable_save_data()
+	check(valid.keys().size()==47 and Transfer.CURRENT_V5_FIELDS.size()==47 and Transfer.structure_quality(valid).quality=="complete", "current v5 writer emits the exact complete field contract")
 	var bak_bytes := put(path+".bak", valid)
 	var broken_bytes := put(path, {"version":5})
 	var result := Writer.read_progress_result(path,db)
@@ -65,6 +67,28 @@ func _initialize() -> void:
 	check(recovered_progress.startup_error.is_empty() and recovered_progress.profile.resources["1"]==4321.0 and recovered_progress.profile.aiTechLevels.singularity==3, "startup retains backup balance and research")
 	recovered_progress.save_progress()
 	check(recovered_progress.last_save_error==OK and FileAccess.get_file_as_bytes(path+".bak")==complete_backup_bytes and FileAccess.get_file_as_bytes(path+".rejected")==sparse_bytes, "later save cannot rotate sparse primary over complete backup")
+	clear(path)
+	for field in valid.keys():
+		var diminished := valid.duplicate(true)
+		diminished.erase(field)
+		var diminished_bytes := put(path,diminished)
+		var full_bytes := put(path+".bak",valid)
+		var chosen := Writer.read_progress_result(path,db)
+		check(chosen.status=="loaded" and chosen.source==".bak" and chosen.quality=="complete", "full v5 field deletion selects backup: "+str(field))
+		check(writer.write_progress(JSON.stringify(valid).to_utf8_buffer())==OK and FileAccess.get_file_as_bytes(path+".bak")==full_bytes and FileAccess.get_file_as_bytes(path+".rejected")==diminished_bytes, "full v5 field deletion cannot replace backup: "+str(field))
+		clear(path)
+	var portable_negative := sparse.duplicate(true)
+	portable_negative.resources["1"]=-1
+	var transfer:=Transfer.new()
+	check(not transfer.prepare_data(portable_negative,db).error.is_empty(), "portable import still rejects a negative sparse balance")
+	var portable_missing_hint := sparse.duplicate(true)
+	portable_missing_hint.erase("highestLevel")
+	check(not transfer.prepare_data(portable_missing_hint,db).error.is_empty(), "portable import still requires its original highestLevel hint")
+	put(path,portable_negative)
+	check(Writer.read_progress_result(path,db).status=="loaded", "historical disk-only negative balance still migrates")
+	clear(path)
+	put(path,portable_missing_hint)
+	check(Writer.read_progress_result(path,db).status=="loaded", "historical disk-only missing hint still migrates")
 	clear(path)
 	put(path,{"version":5,"resources":{"1":73,"2":19}})
 	var sparse_only := BattleGame.new(db,true)

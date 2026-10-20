@@ -36,7 +36,9 @@
     "s03_integration_dual_pass": true,
     "s03_branch_deleted_remote": true,
     "s03_thread_archived": true,
-    "s04_recovery_matrix_27_checks_s01_gate_pass": true,
+    "s04_recovery_matrix_126_checks_s01_gate_pass": true,
+    "s04_current_v5_47_fields_exact": true,
+    "s04_portable_import_strict_boundary": true,
     "s04_review_counterexamples_reproduced_and_fixed": true,
     "s04_sparse_v5_boundary_21_checks_pass": true,
     "s04_hyperspace_reader_284_checks_pass": true,
@@ -55,8 +57,8 @@
     "S02",
     "S03"
   ],
-  "runtime_final_sha": "3d24f84a10d6aa415f73008b2059356eb9e749b9",
-  "runtime_tree": "b5a8788dd3b7cc190152e07fa8c19619de5cd774",
+  "runtime_final_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
+  "runtime_tree": "a1107e72f18d011cd693ef5e9b2447ac14abf940",
   "evidence_snapshot_sha": null,
   "implementation_thread_id": null
 }
