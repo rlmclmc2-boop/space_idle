@@ -37,6 +37,22 @@ func check(value: bool, message: String) -> void:
 		failures += 1
 		printerr("FAIL: ",message)
 
+func independent_local_time(unix_seconds: float) -> String:
+	# Python's localtime is independent of the game's timezone-bias expression.
+	var script := "from datetime import datetime; import sys; print(datetime.fromtimestamp(float(sys.argv[1])).strftime('%Y-%m-%d %H:%M:%S'))"
+	var output := []
+	var python := OS.get_environment("SPACE_BATTLESHIP_PYTHON")
+	if python.is_empty() or OS.execute(python,PackedStringArray(["-c",script,str(unix_seconds)]),output,true)!=0:return ""
+	return str(output[0]).strip_edges() if output.size()==1 else ""
+
+func displayed_local_time_matches_save(label: String, unix_seconds: float) -> bool:
+	var expected := independent_local_time(unix_seconds)
+	if expected.is_empty():return false
+	var pattern := RegEx.new()
+	pattern.compile("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}")
+	var matches := pattern.search_all(label)
+	return matches.size()==1 and (matches[0] as RegExMatch).get_string()==expected
+
 func _initialize() -> void:call_deferred("run")
 
 func activate(control: BaseButton) -> void:
@@ -228,15 +244,16 @@ func run() -> void:
 	check(scene.game.save_interval_minutes==3 and scene.game.next_timed_save_at==180 and scene.game.attempts==0,"Settings button accepts whole minutes without writing")
 	scene.save_interval_input.text = "unfinished"
 	var before_manual_save := Time.get_unix_time_from_system()
-	var before_local := Time.get_datetime_dict_from_system()
 	await activate(manual)
 	var after_manual_save := Time.get_unix_time_from_system()
-	var after_local := Time.get_datetime_dict_from_system()
 	check(scene.game.attempts==1 and scene.game.builds==1 and scene.save_interval_input.text=="unfinished","Manual button saves once without replacing unrelated edit draft")
 	check(scene.game.last_successful_save_at>=before_manual_save and scene.game.last_successful_save_at<=after_manual_save,"Manual save records a timestamp within the observed wall-clock interval")
-	var before_local_text := "%04d-%02d-%02d %02d:%02d:%02d" % [before_local.year,before_local.month,before_local.day,before_local.hour,before_local.minute,before_local.second]
-	var after_local_text := "%04d-%02d-%02d %02d:%02d:%02d" % [after_local.year,after_local.month,after_local.day,after_local.hour,after_local.minute,after_local.second]
-	check(scene.last_save_label.text.contains(before_local_text) or scene.last_save_label.text.contains(after_local_text),"UI shows the observed local save time")
+	var middle_second := float(int(before_manual_save)+1)
+	var middle_text := independent_local_time(middle_second)
+	var stale_text := independent_local_time(middle_second-1.0)
+	check(not middle_text.is_empty() and displayed_local_time_matches_save("Last: "+middle_text,middle_second) and middle_second>float(int(before_manual_save)) and middle_second<float(int(before_manual_save)+3),"Local time oracle accepts the actual middle second of a multi-second interval")
+	check(not stale_text.is_empty() and not displayed_local_time_matches_save("Last: "+stale_text,middle_second),"Local time oracle rejects an old display inside the same multi-second interval")
+	check(displayed_local_time_matches_save(scene.last_save_label.text,scene.game.last_successful_save_at),"UI shows the actual successful save timestamp in local time")
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH+".tmp")
 	await activate(manual)
 	check(scene.game.last_save_error!=OK and not scene.save_status_label.text.is_empty() and scene.message==scene.save_status_label.text,"Manual failure stays visible in settings and toast")
