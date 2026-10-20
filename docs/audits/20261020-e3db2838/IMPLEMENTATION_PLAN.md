@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；没有阶段已启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；当前仅 S00 已启动并处于 `review`，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00 为 `review`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已分项记录本机实测与指定目标机待核查；父级和原 astra 尚未双审，S00 不可关闭，S01 不可启动。
+**S00 为 `review`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级和原 astra 尚未双审，S00 不可关闭，S01 不可启动。
 
 ### S00 当前记录（待双审）
 
@@ -148,9 +148,9 @@ runtime_tree: N/A
 main_file_justifications: []
 evidence_snapshot_sha: null # 最终审计交付提交由双审者引用；不自引用
 verification:
-  commands_and_environment: ["详见 stages/S00/README.md；本机 DESKTOP-I3QUONB"]
-  results: ["main 与基线相同", "本机 Godot 4.7.2/native DLL 加载/GPU 最小入口/隔离目录可用", "目标 BJNLPC-0459 待实测"]
-  unverified: ["目标机 native 构建与匹配 DLL", "目标机 GPU 与隔离入口", "真实产品入口"]
+  commands_and_environment: ["详见 stages/S00/README.md；当前会话 hostname.exe/DNS=BJNLPC-0459，COMPUTERNAME/.NET MachineName=DESKTOP-I3QUONB"]
+  results: ["main 与基线相同", "当前环境 Godot 4.7.2/匹配 DLL 加载/GPU 最小入口/隔离目录可用", "hostname.exe 与 DNS 主机名均为 BJNLPC-0459"]
+  unverified: ["native 源码重新构建及新产物", "真实玩家产品入口与发布包"]
 parent_review:
   verdict: PENDING
   reviewed_runtime_sha: null
