@@ -1,0 +1,77 @@
+[
+  {
+    "test": "/tmp/space-audit-evidence/probe_integrity.gd",
+    "code": 0,
+    "seconds": 2.02,
+    "script_errors": 0,
+    "fail_lines": []
+  },
+  {
+    "test": "test_save_transfer.gd",
+    "code": 0,
+    "seconds": 5.13,
+    "script_errors": 0,
+    "fail_lines": [
+      "SAVE TRANSFER: 58 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_save_policy.gd",
+    "code": 1,
+    "seconds": 8.29,
+    "script_errors": 0,
+    "fail_lines": [
+      "FAIL: Player data stays inside isolated test directory",
+      "FAIL: Interval and last success reload without startup write",
+      "FAIL: Enhancement upgrade commits one debit without consulting disk",
+      "FAIL: Free branch selection is dirty-only",
+      "FAIL: Timed save reloads purchased level, branch and order together",
+      "Save policy: 48 checks, 5 failures"
+    ]
+  },
+  {
+    "test": "test_large_numbers.gd",
+    "code": 0,
+    "seconds": 1.27,
+    "script_errors": 0,
+    "fail_lines": [
+      "Large-number checks: 14; failures: 0"
+    ]
+  },
+  {
+    "test": "test_state_ownership.gd",
+    "code": 0,
+    "seconds": 3.37,
+    "script_errors": 0,
+    "fail_lines": [
+      "State ownership baseline: 1282 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_stat_cache.gd",
+    "code": 0,
+    "seconds": 6.89,
+    "script_errors": 0,
+    "fail_lines": [
+      "STAT CACHE: 9177 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_ai_tech_tree.gd",
+    "code": 0,
+    "seconds": 1.97,
+    "script_errors": 0,
+    "fail_lines": [
+      "AI_TECH_TREE_CHECKS=49 FAILURES=0"
+    ]
+  },
+  {
+    "test": "test_hyperspace_state.gd",
+    "code": 0,
+    "seconds": 3.07,
+    "script_errors": 0,
+    "fail_lines": [
+      "HYPERSPACE_CURRENT 284 checks 0 failures"
+    ]
+  }
+]

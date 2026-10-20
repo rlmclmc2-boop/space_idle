@@ -1,0 +1,42 @@
+test_atomic_commit_rolls_back_on_replace_failure (__main__.IncrementalTests.test_atomic_commit_rolls_back_on_replace_failure) ... ok
+test_description_expression_validation (__main__.IncrementalTests.test_description_expression_validation) ... ok
+test_hightech_duplicate_name_rejected (__main__.IncrementalTests.test_hightech_duplicate_name_rejected) ... ok
+test_hightech_invalid_interval_preserves_projection (__main__.IncrementalTests.test_hightech_invalid_interval_preserves_projection) ... ok
+test_hightech_limit_and_offline_max_validation (__main__.IncrementalTests.test_hightech_limit_and_offline_max_validation) ... ERROR
+test_hightech_only_change_preserves_other_sections (__main__.IncrementalTests.test_hightech_only_change_preserves_other_sections) ... ok
+test_invalid_data_preserves_json_and_dirty_state (__main__.IncrementalTests.test_invalid_data_preserves_json_and_dirty_state) ... ok
+test_invalid_description_keeps_existing_projection (__main__.IncrementalTests.test_invalid_description_keeps_existing_projection) ... ok
+test_missing_formula_cache_rejects_entire_batch (__main__.IncrementalTests.test_missing_formula_cache_rejects_entire_batch) ... ok
+test_missing_required_file_is_not_silently_ignored (__main__.IncrementalTests.test_missing_required_file_is_not_silently_ignored) ... ok
+test_no_change_reads_no_workbook_and_writes_nothing (__main__.IncrementalTests.test_no_change_reads_no_workbook_and_writes_nothing) ... ok
+test_only_changed_configuration_is_parsed (__main__.IncrementalTests.test_only_changed_configuration_is_parsed) ... ok
+test_split_preserves_formulas_caches_styles_and_values (__main__.IncrementalTests.test_split_preserves_formulas_caches_styles_and_values) ... ok
+test_sync_updates_existing_and_keeps_unchanged_files (__main__.IncrementalTests.test_sync_updates_existing_and_keeps_unchanged_files) ... ok
+
+======================================================================
+ERROR: test_hightech_limit_and_offline_max_validation (__main__.IncrementalTests.test_hightech_limit_and_offline_max_validation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/space-idle-audit/space-battleship/tools/config_workbooks.py", line 277, in incremental_import
+    data[SECTIONS[name]] = read_changed_file(paths[name], name, raw)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/space-idle-audit/space-battleship/tools/config_workbooks.py", line 203, in read_changed_file
+    raise ValueError(ui_text('debug.config_workbooks.message_12', name=path.name, value_2=name, r=cell.get('r')))
+ValueError: level.xlsx / level!D4 公式缺少计算缓存，请在 Excel 中计算并保存
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/space-idle-audit/test/test_config_workbooks.py", line 178, in test_hightech_limit_and_offline_max_validation
+    self.first_import()
+  File "/tmp/space-idle-audit/test/test_config_workbooks.py", line 62, in first_import
+    return cw.incremental_import(self.folder, self.target)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/space-idle-audit/space-battleship/tools/config_workbooks.py", line 279, in incremental_import
+    raise ValueError(ui_text('debug.config_workbooks.message_101', name=paths[name].name, error=error)) from error
+ValueError: level.xlsx：level.xlsx / level!D4 公式缺少计算缓存，请在 Excel 中计算并保存
+
+----------------------------------------------------------------------
+Ran 14 tests in 232.321s
+
+FAILED (errors=1)

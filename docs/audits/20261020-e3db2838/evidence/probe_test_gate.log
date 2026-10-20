@@ -1,0 +1,8 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+SCRIPT ERROR: Invalid access to property or key 'required_field' on a base object of type 'Dictionary'.
+          at: broken (/tmp/space-audit-evidence/probe_test_gate.gd:7)
+          GDScript backtrace (most recent call first):
+              [0] broken (/tmp/space-audit-evidence/probe_test_gate.gd:7)
+AUDIT_PROCESS_CONTINUED_AFTER_SCRIPT_ERROR
+EXIT_CODE=0

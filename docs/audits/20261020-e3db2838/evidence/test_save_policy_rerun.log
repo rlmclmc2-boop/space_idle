@@ -1,0 +1,7 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+FAIL: Interval and last success reload without startup write
+FAIL: Enhancement upgrade commits one debit without consulting disk
+FAIL: Free branch selection is dirty-only
+FAIL: Timed save reloads purchased level, branch and order together
+Save policy: 48 checks, 4 failures

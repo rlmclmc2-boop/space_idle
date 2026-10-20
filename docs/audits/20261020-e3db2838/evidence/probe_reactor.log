@@ -1,0 +1,10 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+REACTOR_UPGRADE ok=true free_ratio=0.1 before_capacity=100 after_capacity=150 before=223251.0 cached=223251.0 fresh=228328.0 rev_before=4 rev_after=4
+ACTUAL_97_TO_98 ok=true level=98 capacity=0
+REACTOR_RANGE level=96 energy=5353892049846456320.0 capacity=5353892049846456320 cost=24082857006395.0
+REACTOR_RANGE level=97 energy=8030838074769683456.0 capacity=8030838074769683456 cost=32511856958632.0
+REACTOR_RANGE level=98 energy=12046257112154525696.0 capacity=0 cost=43891006894154.0
+REACTOR_RANGE level=99 energy=18069385668231788544.0 capacity=0 cost=59252859307107.0
+REACTOR_RANGE level=100 energy=27104078502347681792.0 capacity=0 cost=79991360064594.0
+REACTOR_RANGE level=101 energy=40656117753521520640.0 capacity=0 cost=107988336087202.0

@@ -1,0 +1,17 @@
+.....Godot import exited with a Windows access violation; retrying once.
+...........E
+======================================================================
+ERROR: test_committed_bundle_and_native_sources_match_inventory (__main__.RepositoryInventory.test_committed_bundle_and_native_sources_match_inventory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/space-idle-audit/test/test_player_entry.py", line 254, in test_committed_bundle_and_native_sources_match_inventory
+    actual = subprocess.run(['git', 'rev-parse', 'HEAD:' + source['repository_path']],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'rev-parse', 'HEAD:space-battleship/addons/native_battle/src/space_native.cpp']' returned non-zero exit status 128.
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.791s
+
+FAILED (errors=1)

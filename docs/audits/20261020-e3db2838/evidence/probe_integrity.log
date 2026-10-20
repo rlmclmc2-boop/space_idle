@@ -1,0 +1,11 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+MISSING_PORTABLE_FIELDS=["productionElapsed", "aiTechLevels", "aiTechProgress", "aiTechActive", "aiTechInput", "aiIncomePeak", &"aiTechCompletionUnread", &"equipmentSwitchUntil"]
+EXPORT_ROUNDTRIP tech=singularity before={ "singularity": 3 } after={  } error=
+TRUNCATED_SEMANTIC_SAVE_ACCEPTED={ "version": 5.0 } BACKUP_IGNORED=true
+CORRUPT_START save_enabled=true startup_error=
+AFTER_SAVE backup={"version":5}
+TRUNCATED_LOAD startup_error= highest=1 resources={ "1": 0.0, "2": 0.0 }
+COST_OVERFLOW key=laser level=3873 costs={ "1": inf }
+COST_OVERFLOW key=armour level=3873 costs={ "1": inf }
+TINY valid=true ratio=0.0 mul_zero=0.0

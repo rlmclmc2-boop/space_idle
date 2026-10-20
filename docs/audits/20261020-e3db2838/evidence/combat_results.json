@@ -1,0 +1,54 @@
+[
+  {
+    "test": "test_time_steps.gd",
+    "code": 0,
+    "seconds": 14.11,
+    "script_errors": 0,
+    "fail_lines": [
+      "Time steps: 151 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_module_refit.gd",
+    "code": 0,
+    "seconds": 1.92,
+    "script_errors": 0,
+    "fail_lines": [
+      "Module refit: 48 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_reactor.gd",
+    "code": 0,
+    "seconds": 1.67,
+    "script_errors": 0,
+    "fail_lines": []
+  },
+  {
+    "test": "test_projectile_iteration.gd",
+    "code": 0,
+    "seconds": 1.87,
+    "script_errors": 0,
+    "fail_lines": [
+      "Projectile iteration: 8 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_rule_rounding.gd",
+    "code": 0,
+    "seconds": 1.42,
+    "script_errors": 0,
+    "fail_lines": [
+      "Rule rounding: 19 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "test_missile_retarget.gd",
+    "code": 0,
+    "seconds": 11.21,
+    "script_errors": 0,
+    "fail_lines": [
+      "MISSILE RETARGET: 71 checks, 0 failures"
+    ]
+  }
+]
