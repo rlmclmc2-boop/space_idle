@@ -1,6 +1,6 @@
 # Player entry validation after main updates
 
-Candidate commits: `c352047e51675694dd6cce109d00eca884dd5caf` (main and native inventory validation) and `0fa0a35479f0228d817cae1101e3f9d1d9bf6e0d` (generated translation handling). These commits remain on `fix/main-startup` pending review. The earlier fixed-anchor change in `c4c0d751` is superseded by this candidate.
+Candidate commits: `c352047e51675694dd6cce109d00eca884dd5caf` (main and native inventory validation), `0fa0a35479f0228d817cae1101e3f9d1d9bf6e0d` (generated translation handling), and `3238c77cd27f04d2963b65c7202615c860c6fbe8` (uncommitted player command guard). These commits remain on `fix/main-startup` pending review. The earlier fixed-anchor change in `c4c0d751` is superseded by this candidate.
 
 The entry now compares local `main` with its locally fetched `origin/main` for the approved GitHub repository. When a normal pull advances both, committed gameplay changes need no new anchor value. It rejects a different branch, an unexpected origin, a missing or different tracking ref, uncommitted runtime or entry edits, and unexpected untracked runtime files. The native inventory must cover every tracked native source file; each source blob, bundled DLL hash, installed DLL hash, and Godot version must match it. Updating native code or the bundle therefore requires an accepted inventory update.
 
