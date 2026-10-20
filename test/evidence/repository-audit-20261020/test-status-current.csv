@@ -237,14 +237,14 @@ test/test_performance_projection.gd,not revalidated on current branch,exit 0 (gd
 test/test_performance_ui.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_planet.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
 test/test_planet_bonus_dialog.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
-test/test_planet_buff_ui.gd,fixture edited; GUI acceptance pending,exit 125 (gd-gui-results.json),
+test/test_planet_buff_ui.gd,headless checks passed; GUI acceptance pending,exit 125 (gd-gui-results.json),test/evidence/repository-audit-20261020/test_planet_buff_ui.headless-continuation.log
 test/test_planet_buffs.gd,passed on current branch,exit 124 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_planet_buffs.gd.continuation.log
 test/test_planet_build_config.py,passed on current branch,exit 1 (python-results.json),test/evidence/repository-audit-20261020/test_planet_build_config.continuation.log
 test/test_planet_buildings.gd,not revalidated on current branch,exit 19 (gd-logic-results.json),
 test/test_planet_celestials.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_planet_conquest_gates.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_planet_conquest_progress.gd,not revalidated on current branch,exit 124 (gd-logic-results.json),
-test/test_planet_dialog_layout.gd,fixture edited; GUI acceptance pending,exit 0 (gd-gui-results.json),
+test/test_planet_dialog_layout.gd,passed on current branch,exit 0 (gd-gui-results.json),test/evidence/repository-audit-20261020/parent-gui/planet-dialog-pass.log
 test/test_planet_orbit_acceptance.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_planet_polish.gd,not revalidated on current branch,exit 0 (gd-gui-results.json),
 test/test_planet_rotation.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
