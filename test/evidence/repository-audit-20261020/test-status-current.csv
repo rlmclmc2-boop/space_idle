@@ -1,6 +1,6 @@
 path,current_status,initial_matrix_result,current_evidence
 test/test_accelerated_ship_quality.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
-test/test_ai_tech_tree.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
+test/test_ai_tech_tree.gd,passed on current branch,exit 0 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_ai_tech_tree.continuation.log
 test/test_ai_tech_tree_config.py,not revalidated on current branch,exit 0 (python-results.json),
 test/test_ai_tech_tree_gui.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
 test/test_ai_tech_tutorial.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),

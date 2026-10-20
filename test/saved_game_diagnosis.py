@@ -42,7 +42,6 @@ FUNCTIONS = {
     "planet_panel": {"ui": ["refresh", "refresh_sample", "refresh_card"]},
     "reactor_panel": {"ui": ["refresh"]},
     "galaxy_panel": {"ui": ["refresh", "refresh_sample", "refresh_detail"]},
-    "hightech_construction": {"animation": ["_process", "_draw"]},
     "reactor_visual": {"animation": ["_process", "_draw"]},
     "galaxy_map": {"animation": ["_process"]},
     "ui_text": {"text": ["t", "data_text"]},
