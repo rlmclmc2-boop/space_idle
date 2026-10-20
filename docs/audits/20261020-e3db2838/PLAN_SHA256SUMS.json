@@ -1,6 +1,6 @@
 {
-  "IMPLEMENTATION_PLAN.md": "55d4bff739135333aee12bfddb643349a6e98a05ccc007b79d378b1d5a25a690",
-  "PLAN_VALIDATION.json": "7a058a6f67e37d7908d480d95be3913dd43226ccaf9649c8f276ce376f3f68c1",
+  "IMPLEMENTATION_PLAN.md": "08c4c9c93cef39285ae2ade681849fcf77bdcaa429396b4d5cee2cde95b8133a",
+  "PLAN_VALIDATION.json": "4e532ee212a52af0eeca3a4af44b184668fe076d81bc2b4c67c539af63449751",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S01/README.md": "8233617a6a0b49e011fc585e3bdb3a8bcd145bf050c055dee65057e60ee913c5",
@@ -53,5 +53,15 @@
   "stages/S04a/local-integration-logs/player-launch.json": "285ee594180dd801aef70b6bdb1466a2342385d476d38c6db263a89a39314b75",
   "stages/S04a/local-integration-logs/save-worker.log": "cfb5d24907e931fa945ba1b6de9c18a1a9a433fa80d4ebe5d1591b903b621bf1",
   "stages/S04a/local-integration-logs/d-entry-player-launch.json": "79e8c7e7adbd0987c25a2dd93ec9d38d6723fcc64f81ba32286e6326c0146b4a",
-  "stages/S04a/local-integration-logs/d-entry-player-game.log": "5444de53ebde76043f922f4312bf3a09a38dda506704e11b2d131b7312a7090f"
+  "stages/S04a/local-integration-logs/d-entry-player-game.log": "5444de53ebde76043f922f4312bf3a09a38dda506704e11b2d131b7312a7090f",
+  "stages/S05/README.md": "85cfe872e80285dfc4d3bade198636ecbd2100a384dd8911acea466732cd8c31",
+  "stages/S05/s05_probe.gd": "fa4ffa6717dfa9f475b49db6ceebd567cbec0cc97bc9fb8e552802b20d7a852a",
+  "stages/S05/checks.json": "aec9ebfa54b17dd4170c7d4f2d0993aabd690a41df7dd4d5fa0cb3566022a8b3",
+  "stages/S05/RUNTIME_BLOBS.json": "ecc9183c187e13122154470abf60f5a9441788a28189b816507d9edd2ff005e5",
+  "stages/S05/logs/missing-ai_tech_tree.json.log": "fb7afa65c7baca67ccb3ce1c61e24092283d303b8147fb034760d9b7c0436f16",
+  "stages/S05/logs/missing-equipment_evolution.json.log": "7abb0e4f03dcf6379f27accf65a2eaa43740ad3e16f23ace1edbf2ae2fca1edd",
+  "stages/S05/logs/missing-space_enemy_reward_early_frozen.json.log": "bc2b115a9b026c10b7c8ab47eb8826dc25c72fa9babedd65b44a5fe79d6a79cf",
+  "stages/S05/logs/new.log": "c1d0addb2affa03caa90af958043874768b6a91029644758c7e81b61a65c40c8",
+  "stages/S05/logs/reopen.log": "4287f4ad8e7196fcd9a54c1b5a0d7fe1bd3e38c181fdb0dc220073e04ef2f91e",
+  "stages/S05/logs/import-diagnostic.log": "b894c9d1f6d9f30d59ab213e21db5b009f5d48ebe50c32d0fe8b47d0d4c9922c"
 }
