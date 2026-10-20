@@ -9,6 +9,7 @@ func check(ok:bool,label:String)->void:
 func _initialize()->void:call_deferred("run")
 func fixture(count:=2,launchers:=1):
 	var g=Presented.new(ShipDatabase.new(),false)
+	g.db.ships[str(g.profile.selectedShip)].weaponSlots=maxi(int(g.db.ships[str(g.profile.selectedShip)].weaponSlots),launchers)
 	g.stat_cache_enabled=true
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	g.profile.loadout={"weapons":[],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
@@ -155,6 +156,8 @@ func run()->void:
 	check(int(projected.db.equipment.missile[0].para1)==5 and legacy.equipment.missile[0]==legacy_row and projected.db.enemy_weapon("missile-mon")==legacy_hostile,"Legacy player-only five-shot projection leaves source/enemy equipment untouched")
 	var hostile:Dictionary={"x":200.0,"y":100.0,"uid":77}
 	g.fire(hostile,g.player,g.db.enemy_weapon("missile-mon"),10,true,"missile-mon")
-	check(not g.projectiles.back().get("prototype_missile",false) and g.projectiles.back().direction==Vector2.DOWN,"Hostile missile retains its independent simplified path")
+	var hostile_shot: Dictionary=g.projectiles.back()
+	var hostile_aim := (Vector2(hostile_shot.target.x,hostile_shot.target.y)-Vector2(hostile_shot.x,hostile_shot.y)).normalized()
+	check(not hostile_shot.get("prototype_missile",false) and hostile_shot.direction.is_equal_approx(hostile_aim),"Hostile missile retains its independent direct aim")
 	print("MISSILE RETARGET: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)
