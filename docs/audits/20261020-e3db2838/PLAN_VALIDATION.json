@@ -57,7 +57,8 @@
     "s04a_dual_review_pending": false,
     "s04a_dual_pass_same_objects": true,
     "s04a_main_fast_forwarded_to_approved_runtime": true,
-    "s04a_actual_entry_restart_and_two_instance_pass": true
+    "s04a_actual_entry_restart_and_two_instance_pass": true,
+    "s04a_direct_d_entry_managed_mirror_restart_pass": true
   },
   "stages": 26,
   "active_stage": "S04a",

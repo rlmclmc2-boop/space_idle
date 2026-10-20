@@ -1,6 +1,6 @@
 {
   "IMPLEMENTATION_PLAN.md": "a996fd2b9c59f1013c826a119e0884ce6833f3c942923f0a14e572a72a5f9179",
-  "PLAN_VALIDATION.json": "03f7d76c9096e83b6290474d6d5015f49983d2cc78243405df5528640679d6b3",
+  "PLAN_VALIDATION.json": "c42a307cbac415c66a873f553777a7453e0bd9dcf589e5effefb2d70773a8ef0",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S01/README.md": "8233617a6a0b49e011fc585e3bdb3a8bcd145bf050c055dee65057e60ee913c5",
@@ -46,10 +46,12 @@
   "../../../test/s04a_scene_reload_worker.gd": "584882dd4d2a65d495acd3c76d389074b6380bd87d628513af177033b9cf9bb6",
   "stages/S04a/worker-logs/10-s04a_scene_reload_worker.gd.log": "019a0a2bcb0385d3ae3940015efca4049acb3459f653325a3a60b4769fff8f85",
   "stages/S04a/FINAL_REVIEW.md": "2d75fa49fb8554eb4cee8143817958a60b467d6c66be58eefb2fc972b7e9950b",
-  "stages/S04a/LOCAL_INTEGRATION.md": "483f5a50d98943843a1f79f42c74e3fbb946ce5e8b4a9f2deb5e02c3ab60a216",
+  "stages/S04a/LOCAL_INTEGRATION.md": "e2aba6b010cc8fe3d2f8e6221011c89936ae0c44890bcfa245fb659434668231",
   "stages/S04a/local-integration-logs/after-release-game-worker.log": "cfb5d24907e931fa945ba1b6de9c18a1a9a433fa80d4ebe5d1591b903b621bf1",
   "stages/S04a/local-integration-logs/dual-game-worker.log": "977eee76dbfb153810c8c3a579ebae6151d677aa2a4db78340a6817cb9e0f941",
   "stages/S04a/local-integration-logs/dual-ui-worker.log": "075b626a386974ccf76c13614005c824018b5a2103ec8432fb666a5afdb3d73d",
   "stages/S04a/local-integration-logs/player-launch.json": "285ee594180dd801aef70b6bdb1466a2342385d476d38c6db263a89a39314b75",
-  "stages/S04a/local-integration-logs/save-worker.log": "cfb5d24907e931fa945ba1b6de9c18a1a9a433fa80d4ebe5d1591b903b621bf1"
+  "stages/S04a/local-integration-logs/save-worker.log": "cfb5d24907e931fa945ba1b6de9c18a1a9a433fa80d4ebe5d1591b903b621bf1",
+  "stages/S04a/local-integration-logs/d-entry-player-launch.json": "79e8c7e7adbd0987c25a2dd93ec9d38d6723fcc64f81ba32286e6326c0146b4a",
+  "stages/S04a/local-integration-logs/d-entry-player-game.log": "5444de53ebde76043f922f4312bf3a09a38dda506704e11b2d131b7312a7090f"
 }
