@@ -65,6 +65,7 @@ func carrier_rotation_checks(scene,hero:Dictionary,component,rect:Rect2,texture:
    for step in 32:footprint.append(base+Vector2.from_angle(TAU*step/32.0)*w*1.03*radius)
   footprint.append_array(PackedVector2Array([base+Vector2(-.40,-.42)*w,base+Vector2(.40,-.42)*w,Vector2(.35*w,.64*w),Vector2(-.35*w,.64*w)]))
   var safe:=true
+  var decorative_glow_samples:=0
   for local in footprint:
    var hull_local:Vector2=(origin+local.rotated(rotation)).rotated(-(PI+hull_angle))
    var uv:Vector2=hull_local/rect.size
@@ -72,9 +73,10 @@ func carrier_rotation_checks(scene,hero:Dictionary,component,rect:Rect2,texture:
    var pixel:Vector2=(hull_local-rect.position)/rect.size*texture.get_size()
    var color:=image.get_pixelv(Vector2i(pixel))
    var glowing:bool=color.r>.49 and color.g>.137 and color.r>color.g*1.45 and color.r>color.b*1.7
-   if color.a<.9 or glowing:safe=false;break
-  check(safe,"rotated base and barrel remain on main carrier, off edges/core/engines/attachments")
-  rows.append({"yaw":yaw,"actual_yaw":actual_yaw,"safe":safe,"base_centre_error":base_centre.distance_to(pose.origin)})
+   if glowing:decorative_glow_samples+=1
+   if color.a<.9:safe=false;break
+  check(safe,"rotated base and barrel remain on main carrier; decorative glow may be covered")
+  rows.append({"yaw":yaw,"actual_yaw":actual_yaw,"decorative_glow_samples":decorative_glow_samples,"safe":safe,"base_centre_error":base_centre.distance_to(pose.origin)})
  scene.battle_draw_active=active;scene.battle_draw_player_position=target;scene.battle_draw_enemy_positions=cached
  return rows
 
@@ -131,6 +133,17 @@ func run()->void:
    var production_base:Dictionary=scene.enemy_recognition_geometry(production_hero)
    production_hero.combat_tier=rank
    for field in ["inner","outer","front","single_front"]:check(production_packet[field]==production_base[field],"production original geometry and equipment retained")
+   var planned:Array=MOUNTS.describe(production_hero,scene.visual_config).hardpoints
+   var col:float=absf(float(planned[0].pos[0]))
+   var pitch:float=absf(float(planned[0].pos[1]))
+   var sum:=Vector2.ZERO
+   for planned_point in planned:
+    sum+=Vector2(float(planned_point.pos[0]),float(planned_point.pos[1]))
+    check(is_equal_approx(absf(float(planned_point.pos[0])),col),"turret columns align with one mirrored width")
+    if rank=="boss":check(is_equal_approx(absf(float(planned_point.pos[1])),pitch),"BOSS rows align above and below hull centre")
+   check(absf(sum.x)<.000001,"turret layout has zero left/right mass offset")
+   if rank=="boss":check(sum.length()<.000001 and planned.size()==4,"BOSS 2x2 array is centred on hull mass")
+   else:check(is_equal_approx(float(planned[0].pos[1]),float(planned[1].pos[1])),"elite pair uses one shared row")
    install_preview_mounts(scene,production_hero)
    if case_index==0:
     g.paused=false
@@ -174,7 +187,7 @@ func run()->void:
     for other in mount_centres:check(Vector2(mount_pose.origin).distance_to(other)>base_diameter+2.0,"independent turret bases do not overlap")
     mount_centres.append(mount_pose.origin)
     var source_color:=texture.get_image().get_pixelv(Vector2i(pixel))
-    check(minf(source_color.r,minf(source_color.g,source_color.b))>.27 and maxf(source_color.r,maxf(source_color.g,source_color.b))-minf(source_color.r,minf(source_color.g,source_color.b))<.235,"axis sits on main gray armor, not a glow or burgundy connector")
+    check(source_color.a>.9,"axis is seated on the main hull; decoration brightness does not choose placement")
     var rotation_checks:=carrier_rotation_checks(scene,hero,component,rect,texture)
     mounts.append({"carrier_group":component.hardpoint.carrier_group,"carrier_region":component.hardpoint.carrier_region,"rotation_checks":rotation_checks,"slot":component.owner_slot,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"base_diameter_pixels":base_diameter*canvas_scale})
    for i in [1,2]:check(g.enemies[i].equipment.size()==1 and scene.enemy_weapon_components(g.enemies[i]).size()==1,"ordinary escorts retain one weapon in QA")

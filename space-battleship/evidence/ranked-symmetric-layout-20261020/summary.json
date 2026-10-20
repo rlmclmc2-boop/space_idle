@@ -1,0 +1,199 @@
+{
+  "baseline": "169890d1",
+  "checks": 996,
+  "failures": 0,
+  "actual_rotation_probes": 72,
+  "yaw_degrees": [
+    -55,
+    0,
+    55
+  ],
+  "all_carrier_checks_pass": true,
+  "decorative_glow_overlap_allowed_by_user": true,
+  "decorative_glow_sample_count": 83,
+  "original_png_dimensions": [
+    1372,
+    883
+  ],
+  "before_pngs_exact_git_bytes": true,
+  "readability_skin_and_base_pixel_sizes_unchanged": true,
+  "production_stats_active_hardpoints_loadouts_formation_unchanged": true,
+  "layout_and_full_base_clearance": [
+    {
+      "case": "anchor_elite",
+      "positions_uv": [
+        [
+          -0.225,
+          0.0
+        ],
+        [
+          0.225,
+          0.0
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 87.27431095266866
+    },
+    {
+      "case": "reactive_elite",
+      "positions_uv": [
+        [
+          -0.17,
+          0.06
+        ],
+        [
+          0.17,
+          0.06
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.06
+      ],
+      "min_full_base_edge_clearance_source_pixels": 54.67926801247835
+    },
+    {
+      "case": "shielded_elite",
+      "positions_uv": [
+        [
+          -0.24,
+          0.0
+        ],
+        [
+          0.24,
+          0.0
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 34.053845547129825
+    },
+    {
+      "case": "command_elite",
+      "positions_uv": [
+        [
+          -0.215,
+          0.0
+        ],
+        [
+          0.215,
+          0.0
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 75.79241925800466
+    },
+    {
+      "case": "anchor_boss",
+      "positions_uv": [
+        [
+          -0.225,
+          -0.027
+        ],
+        [
+          0.225,
+          -0.027
+        ],
+        [
+          -0.225,
+          0.027
+        ],
+        [
+          0.225,
+          0.027
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 50.13245814699818
+    },
+    {
+      "case": "reactive_boss",
+      "positions_uv": [
+        [
+          -0.11,
+          -0.085
+        ],
+        [
+          0.11,
+          -0.085
+        ],
+        [
+          -0.11,
+          0.085
+        ],
+        [
+          0.11,
+          0.085
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 11.205776725105785
+    },
+    {
+      "case": "shielded_boss",
+      "positions_uv": [
+        [
+          -0.2,
+          -0.06
+        ],
+        [
+          0.2,
+          -0.06
+        ],
+        [
+          -0.2,
+          0.06
+        ],
+        [
+          0.2,
+          0.06
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 24.65201417452186
+    },
+    {
+      "case": "command_boss",
+      "positions_uv": [
+        [
+          -0.2,
+          -0.055
+        ],
+        [
+          0.2,
+          -0.055
+        ],
+        [
+          -0.2,
+          0.055
+        ],
+        [
+          0.2,
+          0.055
+        ]
+      ],
+      "centroid_uv": [
+        0.0,
+        0.0
+      ],
+      "min_full_base_edge_clearance_source_pixels": 5.249217813977253
+    }
+  ]
+}

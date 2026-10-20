@@ -1,0 +1,941 @@
+{
+  "checks": 940,
+  "engine": "4.6.3-stable (official)",
+  "failures": 0,
+  "fires": 40,
+  "fixture": "actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged",
+  "hits": 49,
+  "native_full_run": false,
+  "snapshots": [
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (183.6, 141.7081), S: (204.8, 136.5838)]",
+      "caption": "[P: (236.0, 91.87567), S: (20.0, 18.0)]",
+      "case": "anchor_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "anchor-elite.png",
+      "health": "[P: (236.0, 110.8757), S: (100.0, 4.0)]",
+      "model_width": 50.5631247932464,
+      "mounts": [
+        {
+          "base_diameter_pixels": 12.4531653261661,
+          "carrier_group": "left-main-wing",
+          "carrier_region": [
+            -0.34,
+            -0.03,
+            -0.1,
+            0.042
+          ],
+          "muzzle": "(56.22575, 5.811041)",
+          "origin": "(56.22575, -2.40749)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 2.38418579101562e-07,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -6.02929921433336e-07,
+              "base_centre_error": 2.38418579101562e-07,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999952357602,
+              "base_centre_error": 2.38418579101562e-07,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 12.4531653261661,
+          "carrier_group": "right-main-wing",
+          "carrier_region": [
+            0.1,
+            -0.03,
+            0.34,
+            0.042
+          ],
+          "muzzle": "(-56.27415, 7.626023)",
+          "origin": "(-56.27415, -0.592508)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 1.19209289550781e-07,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -6.02929921433336e-07,
+              "base_centre_error": 2.98023223876953e-07,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999952357602,
+              "base_centre_error": 1.19209289550781e-07,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 103.8757), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_anchor_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (183.6, 120.4578), S: (204.8, 179.0844)]",
+      "caption": "[P: (236.0, 92.45782), S: (20.0, 18.0)]",
+      "case": "reactive_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "reactive-elite.png",
+      "health": "[P: (236.0, 111.4578), S: (100.0, 4.0)]",
+      "model_width": 55.4176930136689,
+      "mounts": [
+        {
+          "base_diameter_pixels": 13.6487943717062,
+          "carrier_group": "left-rear-main-plate",
+          "carrier_region": [
+            -0.3,
+            0.015,
+            -0.08,
+            0.12
+          ],
+          "muzzle": "(43.22895, -25.43476)",
+          "origin": "(43.22895, -34.44235)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -1.88615594389732e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999939525342,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 13.6487943717062,
+          "carrier_group": "right-rear-main-plate",
+          "carrier_region": [
+            0.08,
+            0.015,
+            0.3,
+            0.12
+          ],
+          "muzzle": "(-43.86379, -24.62254)",
+          "origin": "(-43.86379, -33.63013)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -1.88615594389732e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999939525342,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 104.4578), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_reactive_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 1.70598450495163e-05,
+      "body": "[P: (183.6, 140.2001), S: (204.8, 139.5998)]",
+      "caption": "[P: (236.0, 92.07734), S: (20.0, 18.0)]",
+      "case": "shielded_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "shielded-elite.png",
+      "health": "[P: (236.0, 111.0773), S: (100.0, 4.0)]",
+      "model_width": 56.746791389854,
+      "mounts": [
+        {
+          "base_diameter_pixels": 13.9761373094904,
+          "carrier_group": "left-lower-main-arc",
+          "carrier_region": [
+            -0.3,
+            -0.005,
+            -0.1,
+            0.088
+          ],
+          "muzzle": "(51.47965, -8.619888)",
+          "origin": "(51.47965, -17.84351)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -2.83365091419133e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 1.9073486328125e-06,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 13.9761373094904,
+          "carrier_group": "right-lower-main-arc",
+          "carrier_region": [
+            0.1,
+            -0.005,
+            0.3,
+            0.088
+          ],
+          "muzzle": "(-51.64178, -8.145061)",
+          "origin": "(-51.64178, -17.36868)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -2.83365091419133e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 104.0773), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_shielded_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (183.6, 140.6967), S: (204.8, 138.6067)]",
+      "caption": "[P: (236.0, 92.68357), S: (20.0, 18.0)]",
+      "case": "command_elite",
+      "display_frame": "[P: (171.6, 61.66666), S: (228.8, 266.6667)]",
+      "file": "command-elite.png",
+      "health": "[P: (236.0, 111.6836), S: (100.0, 4.0)]",
+      "model_width": 56.3288266073988,
+      "mounts": [
+        {
+          "base_diameter_pixels": 13.8731969837547,
+          "carrier_group": "left-fore-main-pod",
+          "carrier_region": [
+            -0.3,
+            -0.095,
+            -0.1,
+            -0.028
+          ],
+          "muzzle": "(52.65755, 42.70404)",
+          "origin": "(52.65755, 33.54835)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.77962328927052e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999986183134,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 13.8731969837547,
+          "carrier_group": "right-fore-main-pod",
+          "carrier_region": [
+            0.1,
+            -0.095,
+            0.3,
+            -0.028
+          ],
+          "muzzle": "(-54.17085, 40.20126)",
+          "origin": "(-54.17085, 31.04557)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 1.9073486328125e-06,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.77962328927052e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999986183134,
+              "base_centre_error": 1.9073486328125e-06,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 104.6836), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_command_elite",
+      "weapon_slots": 2
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (150.3586, 112.6667), S: (271.2828, 194.6667)]",
+      "caption": "[P: (226.0, 65.66666), S: (120.0, 25.0)]",
+      "case": "anchor_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "anchor-boss.png",
+      "health": "[P: (236.0, 103.6667), S: (100.0, 4.0)]",
+      "model_width": 71.6574496720396,
+      "mounts": [
+        {
+          "base_diameter_pixels": 17.6484754703397,
+          "carrier_group": "left-main-wing",
+          "carrier_region": [
+            -0.34,
+            -0.03,
+            -0.1,
+            0.042
+          ],
+          "muzzle": "(53.44836, 10.51394)",
+          "origin": "(53.44836, -1.133257)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 3.84438408218557e-06,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.16353891312161e-06,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 17.6484754703397,
+          "carrier_group": "left-main-wing",
+          "carrier_region": [
+            -0.34,
+            -0.03,
+            -0.1,
+            0.042
+          ],
+          "muzzle": "(87.33417, 12.2572)",
+          "origin": "(87.33417, 0.610003)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.16353891312161e-06,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        },
+        {
+          "base_diameter_pixels": 17.6484754703397,
+          "carrier_group": "right-main-wing",
+          "carrier_region": [
+            0.1,
+            -0.03,
+            0.34,
+            0.042
+          ],
+          "muzzle": "(-53.0499, 5.035131)",
+          "origin": "(-53.0499, -6.612071)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 3.84438408218557e-06,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.16353891312161e-06,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 4.76837158203125e-07,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2
+        },
+        {
+          "base_diameter_pixels": 17.6484754703397,
+          "carrier_group": "right-main-wing",
+          "carrier_region": [
+            0.1,
+            -0.03,
+            0.34,
+            0.042
+          ],
+          "muzzle": "(-86.93571, 3.291871)",
+          "origin": "(-86.93571, -8.35533)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 9.5367431640625e-07,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.16353891312161e-06,
+              "base_centre_error": 9.5367431640625e-07,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 9.5367431640625e-07,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 96.66666), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_anchor_boss",
+      "weapon_slots": 4
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 3.0517578125e-05,
+      "body": "[P: (172.5959, 112.6667), S: (226.8083, 194.6667)]",
+      "caption": "[P: (226.0, 65.66666), S: (120.0, 25.0)]",
+      "case": "reactive_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "reactive-boss.png",
+      "health": "[P: (236.0, 103.6667), S: (100.0, 4.0)]",
+      "model_width": 69.7324063061144,
+      "mounts": [
+        {
+          "base_diameter_pixels": 17.1743575554772,
+          "carrier_group": "fore-main-armor",
+          "carrier_region": [
+            -0.165,
+            -0.17,
+            0.165,
+            -0.07
+          ],
+          "muzzle": "(10.01515, 70.53107)",
+          "origin": "(10.01515, 59.19677)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.36162706905554e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999982003172,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 17.1743575554772,
+          "carrier_group": "fore-main-armor",
+          "carrier_region": [
+            -0.165,
+            -0.17,
+            0.165,
+            -0.07
+          ],
+          "muzzle": "(-17.54794, 68.7506)",
+          "origin": "(-17.54794, 57.41629)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.36162706905554e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999982003172,
+              "base_centre_error": 1.9073486328125e-06,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        },
+        {
+          "base_diameter_pixels": 17.1743575554772,
+          "carrier_group": "left-rear-main-plate",
+          "carrier_region": [
+            -0.3,
+            0.015,
+            -0.08,
+            0.12
+          ],
+          "muzzle": "(45.1604, -20.34612)",
+          "origin": "(45.1604, -31.68042)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.36162706905554e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999982003172,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2
+        },
+        {
+          "base_diameter_pixels": 17.1743575554772,
+          "carrier_group": "right-rear-main-plate",
+          "carrier_region": [
+            0.08,
+            0.015,
+            0.3,
+            0.12
+          ],
+          "muzzle": "(-40.70921, -25.89299)",
+          "origin": "(-40.70921, -37.22729)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 2.36162706905554e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999982003172,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 96.66666), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_reactive_boss",
+      "weapon_slots": 4
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (158.9529, 112.6667), S: (254.0943, 194.6667)]",
+      "caption": "[P: (226.0, 65.66666), S: (120.0, 25.0)]",
+      "case": "shielded_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "shielded-boss.png",
+      "health": "[P: (236.0, 103.6667), S: (100.0, 4.0)]",
+      "model_width": 74.5747455697785,
+      "mounts": [
+        {
+          "base_diameter_pixels": 18.3669747377098,
+          "carrier_group": "left-upper-main-arc",
+          "carrier_region": [
+            -0.29,
+            -0.14,
+            -0.08,
+            -0.035
+          ],
+          "muzzle": "(59.82682, 55.55914)",
+          "origin": "(59.82682, 43.43776)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -54.9999985901296,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 6.63655157656924e-07,
+              "base_centre_error": 3.814697265625e-06,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 18.3669747377098,
+          "carrier_group": "right-upper-main-arc",
+          "carrier_region": [
+            0.08,
+            -0.14,
+            0.29,
+            -0.035
+          ],
+          "muzzle": "(-53.61972, 63.02337)",
+          "origin": "(-53.61972, 50.90199)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -54.9999985901296,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 6.63655157656924e-07,
+              "base_centre_error": 3.814697265625e-06,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        },
+        {
+          "base_diameter_pixels": 18.3669747377098,
+          "carrier_group": "left-lower-main-arc",
+          "carrier_region": [
+            -0.3,
+            -0.005,
+            -0.1,
+            0.088
+          ],
+          "muzzle": "(53.54128, -17.18727)",
+          "origin": "(53.54128, -29.30865)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -54.9999985901296,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 6.63655157656924e-07,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2
+        },
+        {
+          "base_diameter_pixels": 18.3669747377098,
+          "carrier_group": "right-lower-main-arc",
+          "carrier_region": [
+            0.1,
+            -0.005,
+            0.3,
+            0.088
+          ],
+          "muzzle": "(-56.91982, -9.919462)",
+          "origin": "(-56.91982, -22.04084)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -54.9999985901296,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": 6.63655157656924e-07,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 96.66666), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_shielded_boss",
+      "weapon_slots": 4
+    },
+    {
+      "actor_size": 2,
+      "alpha_centre_error": 0.0,
+      "body": "[P: (168.2193, 112.6667), S: (235.5614, 194.6666)]",
+      "caption": "[P: (226.0, 65.66667), S: (120.0, 25.0)]",
+      "case": "command_boss",
+      "display_frame": "[P: (114.4, 52.66666), S: (343.2, 266.6667)]",
+      "file": "command-boss.png",
+      "health": "[P: (236.0, 103.6667), S: (100.0, 4.0)]",
+      "model_width": 70.3208417495325,
+      "mounts": [
+        {
+          "base_diameter_pixels": 17.3192830103542,
+          "carrier_group": "left-fore-main-pod",
+          "carrier_region": [
+            -0.3,
+            -0.095,
+            -0.1,
+            -0.028
+          ],
+          "muzzle": "(50.43423, 47.86148)",
+          "origin": "(50.43423, 36.43153)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -1.85354329853279e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999939851468,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 0
+        },
+        {
+          "base_diameter_pixels": 17.3192830103542,
+          "carrier_group": "right-fore-main-pod",
+          "carrier_region": [
+            0.1,
+            -0.095,
+            0.3,
+            -0.028
+          ],
+          "muzzle": "(-54.56832, 41.31583)",
+          "origin": "(-54.56832, 29.88588)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 1.9073486328125e-06,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -1.85354329853279e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999939851468,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 1
+        },
+        {
+          "base_diameter_pixels": 17.3192830103542,
+          "carrier_group": "left-aft-main-pod",
+          "carrier_region": [
+            -0.3,
+            0.03,
+            -0.1,
+            0.094
+          ],
+          "muzzle": "(54.39606, -15.6927)",
+          "origin": "(54.39606, -27.12265)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -1.85354329853279e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999939851468,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 2
+        },
+        {
+          "base_diameter_pixels": 17.3192830103542,
+          "carrier_group": "right-aft-main-pod",
+          "carrier_region": [
+            0.1,
+            0.03,
+            0.3,
+            0.094
+          ],
+          "muzzle": "(-50.60648, -22.23835)",
+          "origin": "(-50.60648, -33.6683)",
+          "rotation_checks": [
+            {
+              "actual_yaw": -55.0,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": -55.0
+            },
+            {
+              "actual_yaw": -1.85354329853279e-06,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 0.0
+            },
+            {
+              "actual_yaw": 54.9999939851468,
+              "base_centre_error": 0.0,
+              "safe": true,
+              "yaw": 55.0
+            }
+          ],
+          "slot": 3
+        }
+      ],
+      "position": "(286.0, 210.0)",
+      "shield": "[P: (236.0, 96.66667), S: (100.0, 4.0)]",
+      "visual_key": "enemy_opening_command_boss",
+      "weapon_slots": 4
+    }
+  ],
+  "viewport_final_scale": "(0.702869, 0.703025)",
+  "window_png": "(1372, 883)"
+}
