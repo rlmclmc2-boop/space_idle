@@ -1,5 +1,5 @@
 {
-  "scope": "S00 closed; S01 audit-only acceptance gate in review; no S02 or product change",
+  "scope": "S00 closed; S01 dual PASS, awaiting thread archival; no product change",
   "checks": {
     "main_equals_audit_baseline": true,
     "single_stage_open": true,
@@ -15,12 +15,12 @@
     "s00_thread_archived": true,
     "s01_only_open_stage": true,
     "s01_gate_six_cases_pass": true,
-    "s01_review_pending_new_sha": true,
-    "main_runner_unchanged": true
+    "main_runner_unchanged": true,
+    "s01_dual_pass_same_sha": true
   },
   "stages": 26,
   "active_stage": "S01",
-  "active_stage_status": "review",
+  "active_stage_status": "approved",
   "other_stage_status": "not_started",
   "product_code_changed": false,
   "main_integrated": false,
