@@ -1,0 +1,10 @@
+{
+  "base_main_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
+  "runtime_branch": "s05/player-release-deps",
+  "runtime_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+  "runtime_tree": "2f161d9aac91d8d615770d9480d7dd6d9247b00d",
+  "files": {
+    "space-battleship/tools/build_release.ps1": "6c337fea7a31b1de5e118c6a147611072843d10c",
+    "space-battleship/tools/player_required_data.json": "f172c0c76d947fecef119ea7d4c31c7c6c9cfcd5"
+  }
+}
