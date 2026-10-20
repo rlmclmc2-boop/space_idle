@@ -162,7 +162,8 @@ def main():
         "save_artifacts_during_denial": before,
         "denied_writes_left_artifacts_identical": True,
         "directory_alias_denied": True,
-        "native_dll_sha256": digest(args.project / "bin" / "space_native.dll"),
+        "native_dll_sha256": digest(next(path for path in (args.project / "bin" / "space_native.dll",
+                                                         args.project / "bin" / "space_native.so") if path.is_file())),
         "worker_logs": LOGS,
     }
     (args.output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

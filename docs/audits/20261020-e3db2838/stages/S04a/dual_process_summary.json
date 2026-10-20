@@ -47,7 +47,7 @@
     "startup": ""
   },
   "save_artifacts_during_denial": {
-    "progress.json": "d3ac331a0a76ab2f3553b5a3ff78b1a0cd68f3dea60b3422f6037903cfd68e11",
+    "progress.json": "c03a30ba6e09b5adbee29e38b745c81e1c42abd1df2dc512d09761cf4afa47e5",
     "progress.json.writer-lock": "locked-sidecar"
   },
   "denied_writes_left_artifacts_identical": true,
@@ -80,7 +80,7 @@
     },
     {
       "file": "06-s04a_game_worker.gd.log",
-      "sha256": "9bd2c966376b52555afb729cdb4033eab37c4fe0b2bf88e968a73675fdddc8d3"
+      "sha256": "8006c0286c443dfc5f0ddb1eda1781a683e6a8a025a8046892f5a7577a1d4131"
     },
     {
       "file": "07-s04a_ui_worker.gd.log",
@@ -88,11 +88,11 @@
     },
     {
       "file": "08-s04a_game_worker.gd.log",
-      "sha256": "260c8195d760a241bc718c7183aa9a838402fc8ade52d8880450522576d42771"
+      "sha256": "b9a91d844e439c555ee223ad1837419299cb6ec0f0e22e81ac024852bcca716e"
     },
     {
       "file": "09-s04a_game_worker.gd.log",
-      "sha256": "260c8195d760a241bc718c7183aa9a838402fc8ade52d8880450522576d42771"
+      "sha256": "b9a91d844e439c555ee223ad1837419299cb6ec0f0e22e81ac024852bcca716e"
     }
   ]
 }

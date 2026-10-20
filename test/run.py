@@ -58,10 +58,15 @@ def main():
         native = args.native_dll or tests / "native-build/project/bin/space_native.dll"
         if not native.is_file():
             raise RuntimeError("isolated native build missing: " + str(native))
+        if native.suffix not in {".dll", ".so"}:
+            raise RuntimeError("isolated native build must be a Windows DLL or Linux shared object")
         (game / "bin").mkdir(exist_ok=True)
-        shutil.copy2(native, game / "bin/space_native.dll")
-        shutil.copy2(source / "addons/native_battle/space_native.gdextension.in",
-                     game / "addons/native_battle/space_native.gdextension")
+        shutil.copy2(native, game / "bin" / ("space_native" + native.suffix))
+        descriptor = (source / "addons/native_battle/space_native.gdextension.in").read_text(encoding="utf-8")
+        if native.suffix == ".so":
+            descriptor += ('linux.debug.x86_64 = "res://bin/space_native.so"\n'
+                           'linux.release.x86_64 = "res://bin/space_native.so"\n')
+        (game / "addons/native_battle/space_native.gdextension").write_text(descriptor, encoding="utf-8")
     env = os.environ.copy()
     env["APPDATA"] = str(area / "userdata/roaming")
     env["LOCALAPPDATA"] = str(area / "userdata/local")
