@@ -49,7 +49,7 @@ windows.release.x86_64 = "res://bin/space_native.dll"
 
 def run(args, cwd, env=None):
     if args[0] == 'git':
-        args = ['git', '-c', 'safe.directory=' + str(cwd), *args[1:]]
+        args = ['git', '-c', 'core.longpaths=true', '-c', 'safe.directory=' + str(cwd), *args[1:]]
     return subprocess.run(args, cwd=cwd, env=env, check=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                           text=True, encoding='utf-8', errors='replace').stdout.strip()
@@ -188,9 +188,14 @@ def prepare_clean_mirror(root, head):
     if not mirror.exists():
         mirror.parent.mkdir(parents=True, exist_ok=True)
         temporary = mirror.with_name(head + '.' + str(os.getpid()) + '.partial')
-        subprocess.run(['git', '-c', 'safe.directory=' + str(root), 'clone', '--shared',
-                        '--branch', 'main', '--single-branch', str(root), str(temporary)],
-                       cwd=root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            subprocess.run(['git', '-c', 'core.longpaths=true', '-c', 'safe.directory=' + str(root),
+                            'clone', '--shared', '--branch', 'main', '--single-branch',
+                            str(root), str(temporary)], cwd=root, check=True,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except subprocess.CalledProcessError as exc:
+            detail = exc.stderr.decode('utf-8', errors='replace').splitlines()[-5:]
+            raise RuntimeError('Unable to create clean player mirror:\n' + '\n'.join(detail)) from exc
         origin = run(['git', 'remote', 'get-url', 'origin'], root)
         run(['git', 'remote', 'set-url', 'origin', origin], temporary)
         if run(['git', 'rev-parse', 'HEAD'], temporary) != head:
