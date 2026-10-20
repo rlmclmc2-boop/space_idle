@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00—S04 均已双审、完成适用的运行集成及本地验收并关闭；S04a 已获同对象双审 PASS，状态 `approved`，待运行集成与关闭；S05 与后续阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04 均为 `closed`；S04a 为 `integration_approved`；S05—S24 均为 `not_started`。** 远端及 D:\放置 的 main 已快进至获批运行 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，冻结证据在 `s04a/audit-evidence`，正式审计分支 `audit/code-review-e3db2838-20261020` 保存双审及集成记录。父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 和冻结证据 36e4412197be2b66948cd17f5f1d1a8327ed8c73 明确双 PASS；main 集成与隔离本地入口验收已完成，详见 `stages/S04a/LOCAL_INTEGRATION.md`；父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 及集成证据 1a07dadd02cf126519628e46f74c0e1b12c7d2d0 同对象双 PASS；两条 S04a 临时远端分支已核对无独有成果并删除，详见 `stages/S04a/LOCAL_INTEGRATION.md`；未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
+**S00—S04a 均为 `closed`；S05—S24 均为 `not_started`。** 当前 main、D:\放置 main 和 managed mirror 均为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。S04a 运行/冻结证据及集成证据均获父级与原 astra 同对象双 PASS；必要 DLL 与运行清单已交付，测试和审计证据未入 main。两条 S04a 临时分支已验证无独有成果并删除，实施线程于 2026-10-20 22:19 UTC 确认归档。当前无打开阶段，可启动唯一下一阶段 S05。验证不代表完整 Linux 游戏、真实断电、对抗性文件系统竞态或长期运行通过。
 
 ### S00 关闭记录
 
@@ -422,11 +422,11 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 next_stage_allowed: true
 ```
 
-### S04a 双审通过记录
+### S04a 关闭记录
 
 ```yaml
 stage: S04a
-status: integration_approved
+status: closed
 implementation_thread_id: 01a15b03-d9f7-710e-b869-ca083a8f90d5
 model: sol
 reasoning_effort: medium
@@ -443,13 +443,13 @@ verification: "Windows Godot 4.7.2 synthetic dual process OS lock and alias gate
 prior_review: "original astra FAIL on 01ddfcaf/56397d3b because plan entry still said S04a not_started; corrected in this audit snapshot, fresh same-object reviews required"
 parent_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
-integration: "remote and D:\\放置 main at 01ddfcaf678321fafae51162b3bb6665b34e4301; actual 玩游戏.cmd isolated save, restart and two-instance acceptance completed; parent and original astra integration PASS on 01ddfcaf/1a07dadd; closure pending"
+integration: "remote and D:\\放置 main at 01ddfcaf678321fafae51162b3bb6665b34e4301; actual 玩游戏.cmd isolated save, restart and two-instance acceptance completed; parent and original astra integration PASS on 01ddfcaf/1a07dadd; completed"
 integration_record: stages/S04a/LOCAL_INTEGRATION.md
 integration_parent_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 1a07dadd02cf126519628e46f74c0e1b12c7d2d0, unresolved: []}
 integration_astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 1a07dadd02cf126519628e46f74c0e1b12c7d2d0, turn: 01a15b61-38ba-7049-bba6-0c3885295d19, unresolved: []}
 branch_cleanup: {runtime_branch: s04a/single-writer, evidence_branch: s04a/audit-evidence, runtime_tip_equals_main: true, evidence_ancestor_of_formal_audit: true, unique_unmerged_commits: 0, remote_deleted: true, remote_readback_absent: true, record: stages/S04a/LOCAL_INTEGRATION.md}
-closure: pending
-next_stage_allowed: false
+closure: {state: closed, parent_closed_stage: true, implementation_thread_archived: true, archived_at_utc: "2026-10-20T22:19:11Z"}
+next_stage_allowed: true
 ```
 
 ```yaml

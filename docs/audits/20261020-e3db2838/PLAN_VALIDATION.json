@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04 closed; S04a runtime and integration same-object dual PASS, closure pending; later stages not started",
+  "scope": "S00-S04a closed; S05-S24 not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -61,11 +61,13 @@
     "s04a_direct_d_entry_managed_mirror_restart_pass": true,
     "s04a_integration_dual_pass_same_objects": true,
     "s04a_temporary_branches_no_unique_work": true,
-    "s04a_temporary_remote_branches_deleted_and_read_back": true
+    "s04a_temporary_remote_branches_deleted_and_read_back": true,
+    "s04a_thread_archived": true,
+    "s04a_closed": true
   },
   "stages": 26,
-  "active_stage": "S04a",
-  "active_stage_status": "integration_approved",
+  "active_stage": null,
+  "active_stage_status": "none",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
@@ -74,7 +76,8 @@
     "S01",
     "S02",
     "S03",
-    "S04"
+    "S04",
+    "S04a"
   ],
   "runtime_final_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
   "runtime_tree": "a1107e72f18d011cd693ef5e9b2447ac14abf940",
@@ -85,7 +88,7 @@
   "active_audit_branch": "audit/code-review-e3db2838-20261020",
   "active_evidence_entry": "stages/S04a/REVIEW_RECORD.md",
   "active_stage_main_integrated": true,
-  "active_stage_closed": false,
+  "active_stage_closed": true,
   "closed_stages_main_integrated": true,
   "last_integrated_main_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
   "active_frozen_evidence_sha": "36e4412197be2b66948cd17f5f1d1a8327ed8c73",
