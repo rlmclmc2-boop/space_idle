@@ -36,6 +36,7 @@ func _initialize() -> void:
 	source.profile.highestLevel = 6
 	source.profile.cleared = [1,2,3,4,5]
 	source.profile.resources["1"] = 4321.0
+	source.profile.aiTechLevels["singularity"] = 3
 	var valid := source.portable_save_data()
 	var bak_bytes := put(path+".bak", valid)
 	var broken_bytes := put(path, {"version":5})
@@ -54,6 +55,20 @@ func _initialize() -> void:
 	writer.validation_db=db
 	check(writer.write_progress(JSON.stringify(valid).to_utf8_buffer())==OK, "recovered progress can be saved")
 	check(FileAccess.get_file_as_bytes(path+".rejected")==broken_bytes and FileAccess.get_file_as_bytes(path+".bak")==bak_bytes, "successful replacement retains rejected primary and valid backup")
+	clear(path)
+	var sparse := {"version":5,"resources":{"1":0,"2":0},"highestLevel":1}
+	var sparse_bytes := put(path,sparse)
+	var complete_backup_bytes := put(path+".bak",valid)
+	result=Writer.read_progress_result(path,db)
+	check(result.status=="loaded" and result.source==".bak" and result.quality=="complete" and result.data.aiTechLevels.singularity==3, "complete backup outranks sparse v5 primary")
+	var recovered_progress := BattleGame.new(db,true)
+	check(recovered_progress.startup_error.is_empty() and recovered_progress.profile.resources["1"]==4321.0 and recovered_progress.profile.aiTechLevels.singularity==3, "startup retains backup balance and research")
+	recovered_progress.save_progress()
+	check(recovered_progress.last_save_error==OK and FileAccess.get_file_as_bytes(path+".bak")==complete_backup_bytes and FileAccess.get_file_as_bytes(path+".rejected")==sparse_bytes, "later save cannot rotate sparse primary over complete backup")
+	clear(path)
+	put(path,{"version":5,"resources":{"1":73,"2":19}})
+	var sparse_only := BattleGame.new(db,true)
+	check(sparse_only.startup_error.is_empty() and sparse_only.profile.resources=={"1":73.0,"2":19.0}, "sparse historical v5 remains loadable without a complete copy")
 	clear(path)
 	var current_bytes := put(path,valid)
 	put(path+".bak",{"version":5})
@@ -94,6 +109,16 @@ func _initialize() -> void:
 	var resumed := BattleGame.new(db,true)
 	check(resumed.startup_error.is_empty() and resumed.profile.resources["1"]==4321.0, "interrupted import resumes previous committed state")
 	check(FileAccess.file_exists(path) and not FileAccess.file_exists(path+".import-prev") and not FileAccess.file_exists(path+".import-new"), "successful load retires abandoned import staging")
+	clear(path)
+	var bad_primary := put(path,{"version":5})
+	var previous_bytes := put(path+".import-prev",valid)
+	var staged_bytes := put(path+".import-new",{"version":5})
+	var rejected_bytes := put(path+".rejected",{"sentinel":true})
+	var pending := BattleGame.new(db,true)
+	check(pending.startup_error=="progress_recovery_pending" and pending.last_save_error==ERR_ALREADY_EXISTS and not pending.save_enabled and pending.paused, "failed recovery finalization is visible and disables all saves")
+	check(pending.profile.resources["1"]==4321.0 and pending.profile.aiTechLevels.singularity==3, "pending recovery retains selected live progress")
+	pending.save_progress()
+	check(FileAccess.get_file_as_bytes(path)==bad_primary and FileAccess.get_file_as_bytes(path+".import-prev")==previous_bytes and FileAccess.get_file_as_bytes(path+".import-new")==staged_bytes and FileAccess.get_file_as_bytes(path+".rejected")==rejected_bytes, "pending recovery and rejected save retain every file")
 	clear(path)
 	check(Writer.read_progress_result(path,db).status=="absent", "empty directory is absent")
 	print("S04_RECOVERY: ",checks," checks ",failures," failures")

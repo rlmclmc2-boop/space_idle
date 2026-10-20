@@ -396,17 +396,18 @@ branch_cleanup:
 stage: S04
 status: review
 base_main_sha: 0d01530bdce168a55d0ce7c835f17072d66d6bc7
-runtime_final_sha: d51d9cab27a510b79094519674ce92303e12158f
-runtime_tree: 1abae7484268bcdd2ca1ba6a8c9863851abd5fd6
+runtime_final_sha: 3d24f84a10d6aa415f73008b2059356eb9e749b9
+runtime_tree: b5a8788dd3b7cc190152e07fa8c19619de5cd774
 runtime_files:
   - space-battleship/scripts/game.gd
   - space-battleship/scripts/progress_writer.gd
   - space-battleship/scripts/save_transfer.gd
 evidence_entry: stages/S04/README.md
 evidence_snapshot_sha: pending_final_commit
-verification: "Windows Godot 4.7.2 isolated S01 recovery gate 20/0 PASS; S03 transfer gate 155/0 PASS; S02 policy 51/0; startup rejection 7/0; historical disk migration 15/0; hyperspace state 284/0"
+verification: "Windows Godot 4.7.2 isolated S01 recovery gate 27/0 PASS; S03 transfer gate 155/0 PASS; S02 policy 51/0; startup rejection 7/0; historical disk migration 15/0; hyperspace state 284/0; save boundaries 21/0"
 decisions_required: []
-compatibility: "v2-v4 缺失 highestLevel 依原加载默认值 1 在副本上补齐；v5 仍严格要求；无弃档或不可逆迁移"
+compatibility: "v2-v5 稀疏历史档仍可加载，但不能遮蔽完整备份；缺失 highestLevel 和稀疏档负资源在副本上按旧默认值迁移；无弃档或不可逆迁移"
+prior_review: "父级与原 astra 对 d51d9cab/e04e6a9a 明确 FAIL，两个反例及返工见 stages/S04/README.md；旧审查不适用于本 SHA"
 parent_review: PENDING
 astra_review: PENDING
 integration: pending

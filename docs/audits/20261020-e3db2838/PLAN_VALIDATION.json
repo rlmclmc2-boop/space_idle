@@ -36,7 +36,9 @@
     "s03_integration_dual_pass": true,
     "s03_branch_deleted_remote": true,
     "s03_thread_archived": true,
-    "s04_recovery_matrix_s01_gate_pass": true,
+    "s04_recovery_matrix_27_checks_s01_gate_pass": true,
+    "s04_review_counterexamples_reproduced_and_fixed": true,
+    "s04_sparse_v5_boundary_21_checks_pass": true,
     "s04_hyperspace_reader_284_checks_pass": true,
     "s04_main_evidence_separated": true,
     "s04_dual_review_pending": true
@@ -53,8 +55,8 @@
     "S02",
     "S03"
   ],
-  "runtime_final_sha": "d51d9cab27a510b79094519674ce92303e12158f",
-  "runtime_tree": "1abae7484268bcdd2ca1ba6a8c9863851abd5fd6",
+  "runtime_final_sha": "3d24f84a10d6aa415f73008b2059356eb9e749b9",
+  "runtime_tree": "b5a8788dd3b7cc190152e07fa8c19619de5cd774",
   "evidence_snapshot_sha": null,
   "implementation_thread_id": null
 }
