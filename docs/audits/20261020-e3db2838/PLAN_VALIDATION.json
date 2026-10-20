@@ -1,7 +1,7 @@
 {
-  "scope": "S00/S01/S02 closed; S03 dual PASS, main integrated and isolated local player entry verified; audit evidence separated; closure pending",
+  "scope": "S00-S03 closed; S03 approved runtime integrated and local entry verified; S04 not started",
   "checks": {
-    "main_equals_audit_baseline": true,
+    "main_equals_audit_baseline": false,
     "single_stage_open": true,
     "s00_thread_recorded": true,
     "next_stage_blocked_until_dual_pass": true,
@@ -35,18 +35,19 @@
     "s03_branch_no_unique_work": true,
     "s03_integration_dual_pass": true,
     "s03_branch_deleted_remote": true,
-    "s03_stage_closure_pending": true
+    "s03_thread_archived": true
   },
   "stages": 26,
-  "active_stage": "S03",
-  "active_stage_status": "integrated",
+  "active_stage": null,
+  "active_stage_status": "none",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
   "closed_stages": [
     "S00",
     "S01",
-    "S02"
+    "S02",
+    "S03"
   ],
   "runtime_final_sha": "0d01530bdce168a55d0ce7c835f17072d66d6bc7",
   "runtime_tree": "10bf32ba2e060cde7269b6f54459a989e5b5538b",
