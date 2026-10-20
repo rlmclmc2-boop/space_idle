@@ -20,7 +20,7 @@ func fixture() -> Dictionary:
 	return {"binding":binding,"candidates":candidates}
 func _initialize() -> void:
 	var db:=ShipDatabase.new();db.config.offlineMax=0
-	var g:=BattleGame.new(db,false);g.profile.cleared=range(1,7);g.rebuild_unlocks()
+	var g:=BattleGame.new(db,false);g.profile.cleared=range(1,34);g.rebuild_unlocks()
 	var f:=fixture();var groups_before:=JSON.stringify(db.groups);var enemies_before:=JSON.stringify(db.enemies)
 	check(not g.hyperspace.snapshot(g).manual_ready,"absent production files stay disabled")
 	var live_binding:Variant=JSON.parse_string(FileAccess.get_file_as_string("res://data/space_enemy_routes.json")) if FileAccess.file_exists("res://data/space_enemy_routes.json") else null
@@ -31,11 +31,11 @@ func _initialize() -> void:
 	var review: Dictionary=f.binding.duplicate(true);review.data_status="review_candidate_not_all40_accepted"
 	check(not g.load_hyperspace_routes(review,f.candidates) and not g.hyperspace.snapshot(g).manual_ready,"review candidate never enables production")
 	var energy: float=g.profile.hyperspace.energy
-	check(not g.start_hyperspace("alpha",5) and g.profile.hyperspace.energy==energy,"unaccepted start spends no ticket")
+	check(not g.start_hyperspace("alpha",1) and g.profile.hyperspace.energy==energy,"unaccepted start spends no ticket")
 	check(g.load_hyperspace_routes(f.binding,f.candidates) and g.hyperspace.snapshot(g).manual_ready,"synthetic accepted manifest enables isolated routes")
 	check(g.manual_hyperspace.route_ids.alpha==f.binding.routes.laser.normal+f.binding.routes.laser.elite+f.binding.routes.laser.boss+f.binding.routes.laser.ultimate,"weapon route maps to configured Greek route")
 	check(JSON.stringify(db.groups)==groups_before and JSON.stringify(db.enemies)==enemies_before,"loader never registers candidates in mainline")
-	check(g.start_hyperspace("alpha",5) and not is_same(g.db.enemies,db.enemies),"manual session switches to independent enemy registry")
+	check(g.start_hyperspace("alpha",1) and not is_same(g.db.enemies,db.enemies),"manual session switches to independent enemy registry")
 	g.spawn_group();check(g.enemies.size()==1 and g.enemies[0].id==909101 and g.enemies[0].drops.size()==1,"spawn uses candidate enemies and authored ordinary drops")
 	var probe:=RandomNumberGenerator.new();probe.seed=112233
 	var first:=probe.randf();var second:=probe.randf();var chance: float=(first+second)*0.5

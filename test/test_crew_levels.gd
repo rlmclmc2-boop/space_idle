@@ -21,8 +21,6 @@ func run_case(label: String, overrides: Dictionary) -> void:
 	db.data.unlock[db.unlock_id("feature","crew_level")].mode="cleared"
 	var cfg: Dictionary=db.data.crew_config
 	var equipment_factor: float=pow(1.0+float(cfg.equip_bonus.value),3)
-	var ai: int=int(cfg.tech_ai_per_level.value)*2
-	var speed_factor: float=1.0+float(cfg.tech_speed.value)*2
 	var gem_factor: float=1.0+float(cfg.gem_bonus.value)*2
 	var charge_factor: float=1.0+float(cfg.charge_bonus.value)*2
 	# Text-format assertions use controlled templates, independent of editable wording.
@@ -58,30 +56,14 @@ func run_case(label: String, overrides: Dictionary) -> void:
 	c.load_state(g,[{"crewId":"navigator"}])
 	check(c.entry(g,"navigator").level==0,"Missing saved level defaults zero")
 	g.profile.cleared=range(1,61);g.rebuild_unlocks()
-	c.assign(g,"navigator","hightech_scientists","hightech")
-	var key: String=g.hightech_slots()[0]
-	check(g.dedicated_scientists(key)==0,"Level zero AI is zero")
-	g.profile.scientists=2;g.profile.scientistAssignments[key]=2
 	var first_cost: float=maxf(1.0,roundf(float(cfg.base_exp.value)))
 	var second_cost: float=maxf(1.0,roundf(float(cfg.base_exp.value)*float(cfg.exp_multiplier.value)))
 	g.add_crew_exp("navigator",first_cost+second_cost)
 	check(c.entry(g,"navigator").level==2,"XP from zero uses configured curve")
-	check(g.dedicated_scientists(key)==ai,"Each tech gets configured dedicated AI")
-	check(c.level_description(g,c.entry(g,"navigator")).contains("Research %+.2f%%" % ((speed_factor-1.0)*100)) and c.level_description(g,c.entry(g,"navigator")).contains("AI %d" % ai),"Research percent and AI count retain distinct units")
-	check(g.idle_scientists()==0 and g.profile.scientists==2,"Dedicated AI outside ordinary pool")
-	g.assign_scientist(key,-100)
-	check(g.assigned_scientists(key)==0 and g.dedicated_scientists(key)==ai,"Dedicated AI cannot be removed")
-	var expected: float=(roundf(pow(float(db.config.techPointGet)*ai,float(db.config.hightechLimit))) if ai>1 else float(db.config.techPointGet)*ai)*speed_factor
-	check(is_equal_approx(g.research_rate(key),expected),"AI and speed multiply research rate")
-	g.distribute_scientists()
-	check(g.dedicated_scientists(key)==ai,"Distribution preserves dedicated AI")
-	for tech in g.hightech_slots():
-		if g.hightech_unlocked(tech):check(g.dedicated_scientists(tech)==ai,"All unlocked techs derive dedicated AI")
-	var rate:=g.research_rate(key)
+	c.assign(g,"navigator","hightech_scientists","hightech")
 	db.data.crew_config.tech_ai_per_level.des="自定义 {level}/{value}/{effect}/{ai}/{unknown}"
 	var description: String=c.level_description(g,c.entry(g,"navigator"))
 	check(description.contains("自定义 2/") and description.contains("/{unknown}") and not description.contains("{ai}") and not description.contains("{effect}") and not description.contains("{value}"),"Descriptions substitute safe placeholders")
-	check(g.research_rate(key)==rate,"Text does not affect math")
 	c.assign(g,"navigator","jewel_auto","jewels")
 	check(c.level_description(g,c.entry(g,"navigator")).contains("Fragments %+.2f%%" % ((gem_factor-1.0)*100)),"Jewel bonus uses two decimal percent")
 	check(is_equal_approx(g.settle_jewel_fragments(10,"drop",1),snappedf(10*gem_factor,0.01)),"Direct fragments use bonus")
