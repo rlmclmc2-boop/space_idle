@@ -22,7 +22,7 @@ def clean_alpha(image):
 def main():
  OUTPUT.mkdir(parents=True,exist_ok=True)
  image=Image.open(SOURCE).convert('RGBA');clean=clean_alpha(image)
- override=SOURCE.with_name('reactive-three-plates.png')
+ override=SOURCE.with_name('reactive-refined-approved.png')
  report={'source_commit':'f9af84734145a6df6bcc1998fff15730936aa78a','source_sha256':sha(SOURCE),'source_size':list(image.size),'canvas':[887,1774],'opaque_width':720,'weapons_baked':False,'sprites':{}}
  for key,region in REGIONS.items():
   tile=clean.crop(region)
@@ -37,6 +37,6 @@ def main():
   canvas=Image.new('RGBA',(887,1774));canvas.alpha_composite(body,((887-size[0])//2,(1774-size[1])//2))
   target=OUTPUT/(key+'.png');canvas.save(target)
   report['sprites'][key]={'region':list(region),'source_bounds':[region[0]+box[0],region[1]+box[1],region[0]+box[2],region[1]+box[3]],'body_size':list(size),'texture':'res://'+str(target.relative_to(ROOT)),'sha256':sha(target)}
- report['overrides']={'reactive':{'source':'res://'+str(override.relative_to(ROOT)),'source_sha256':sha(override),'generator':'imagegen','request':'res://art_sources/enemy-fleet-20261019/reactive-three-plates-request.json'}}
+ report['overrides']={'reactive':{'source':'res://'+str(override.relative_to(ROOT)),'source_sha256':sha(override),'generator':'parent-approved refinement','source_commit':'e9e8da87b96ba8a191b0ba275a344f4733279ba4'}}
  (OUTPUT/'manifest.json').write_text(json.dumps(report,indent=2)+'\n')
 if __name__=='__main__':main()

@@ -1,0 +1,18 @@
+{
+  "source_commit": "e9e8da87b96ba8a191b0ba275a344f4733279ba4",
+  "source_sha256": "54be252dee38ea150c94c6b161bc294655245c07b5d9596f7acf818f709e85b4",
+  "other_seven_hulls_identical_to": "fc4c64fe",
+  "production_scripts_data_config_addons_unchanged": true,
+  "display_cell": [
+    114.4,
+    133.333333
+  ],
+  "display_hull_fit": [
+    90.4,
+    79.333333
+  ],
+  "runtime_canvas": [
+    887,
+    1774
+  ]
+}
