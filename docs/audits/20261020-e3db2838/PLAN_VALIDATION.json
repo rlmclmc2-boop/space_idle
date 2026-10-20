@@ -9,7 +9,8 @@
     "deadline_and_environment_recorded": true,
     "links_resolve": true,
     "unchanged:SHA256SUMS.json": true,
-    "unchanged:SUPPLEMENT_SHA256SUMS.json": true
+    "unchanged:SUPPLEMENT_SHA256SUMS.json": true,
+    "verification_tools_audit_branch_only": true
   },
   "stages": 26,
   "all_stage_status": "not_started",
