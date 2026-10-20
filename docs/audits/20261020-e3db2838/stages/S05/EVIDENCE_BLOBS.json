@@ -1,0 +1,17 @@
+{
+  "runtime_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+  "relative_to": "docs/audits/20261020-e3db2838/stages/S05/",
+  "files": {
+    "README.md": "0cb9e2ca2c679720701fcaf69b3c36685e3d5b2f",
+    "s05_probe.gd": "16bcb2e37bc479805b2e2d70d01126c8befb7ea9",
+    "checks.json": "b3e3ad72d3772110174185ae454a25d93232a437",
+    "RUNTIME_BLOBS.json": "a303c54ec24b00b4ad6b4acf5f0a2b3d54f4367d",
+    "logs/missing-ai_tech_tree.json.log": "9173b83c5d9c7acd24f5a4bedd4b05b8a74f75e3",
+    "logs/missing-equipment_evolution.json.log": "4b79e4867f0f8d45869d8375a180893c66501bda",
+    "logs/missing-space_enemy_reward_early_frozen.json.log": "93a3e178f3628a29b8571eeb28dd84ba98a184fd",
+    "logs/new.log": "d2a7b223d2dcec60471e9c44bc6a731b85d3d715",
+    "logs/reopen.log": "88dd090d4b44957ec52921ab8552757674d3597d",
+    "logs/import-diagnostic.log": "3b0235828cd34ae10a59a189d6c52a00b34fa953"
+  },
+  "note": "This index omits its own blob and the later plan/validation/checksum updates to avoid self-reference. Check those directly at the final audit commit."
+}
