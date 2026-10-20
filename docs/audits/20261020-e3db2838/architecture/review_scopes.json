@@ -1,0 +1,271 @@
+{
+  "baseline": "e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3",
+  "note": "此表为本次架构补审的人工边界阅读索引，不穷举原REPORT中的所有阅读；没有条目即不声称人工审查。",
+  "files": {
+    "space-battleship/scripts/game.gd": {
+      "review": "selected_manual_review",
+      "scope": "初始化/状态归属；保存恢复与缓存失效；reactor升级；compiled configuration事件；stat/fire接口",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/main.gd": {
+      "review": "selected_manual_review",
+      "scope": "_ready/_process/advance_game_time/create_battle_game；UI与游戏会话生命周期；pickupSeen写入",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/battlefield.gd": {
+      "review": "selected_manual_review",
+      "scope": "继承与preload；create_battle_game依赖注入；native启动及geometry/read model连接",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/presented_battle_game.gd": {
+      "review": "selected_manual_review",
+      "scope": "_init数据库投影；weapon_motion兼容；呈现执行路径与队列职责",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/player_weapon_database.gd": {
+      "review": "selected_manual_review",
+      "scope": "玩家配置深复制和敌人原始数据库委托",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/balance_game.gd": {
+      "review": "selected_manual_review",
+      "scope": "stat/fire数值签名；_init/save_progress/economy_time；实验路径继承契约",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/balance_runner.gd": {
+      "review": "selected_manual_review",
+      "scope": "调度预算/步长；baseline指纹与运行数据库创建；exact/fast入口",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/database.gd": {
+      "review": "selected_manual_review",
+      "scope": "初始化数据入口；equip与cost数值计算",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/progress_writer.gd": {
+      "review": "selected_manual_review",
+      "scope": "read/_read_progress_file/commit；备份选择与覆盖协议",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/save_transfer.gd": {
+      "review": "selected_manual_review",
+      "scope": "字段schema；clean/export/prepare与当前进度备份",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/crew_system.gd": {
+      "review": "selected_manual_review",
+      "scope": "attach/on_event；assign/changed配置变更协议",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/galaxy_system.gd": {
+      "review": "selected_manual_review",
+      "scope": "prepare_native_advance/prepare_region_refit/advance_region与pending时间保存",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/planet_buildings.gd": {
+      "review": "selected_manual_review",
+      "scope": "state/activate/sync；live Dictionary和变更失效",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/ai_tech_tree.gd": {
+      "review": "selected_manual_review",
+      "scope": "科技进度/收入峰值；配置变更guard与完成处理",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/hyperspace_system.gd": {
+      "review": "selected_manual_review",
+      "scope": "publish；模块集成和配置快照边界",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/hyperspace_state.gd": {
+      "review": "selected_manual_review",
+      "scope": "状态schema/票据/归一化边界（原专项验证证据另见REPORT）",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/hyperspace_manual_session.gd": {
+      "review": "selected_manual_review",
+      "scope": "start/finish；数据库替换与悬挂主线恢复",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/hyperspace_main_return.gd": {
+      "review": "selected_manual_review",
+      "scope": "schema/shape/valid/capture/restore边界",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/hyperspace_battle_return.gd": {
+      "review": "selected_manual_review",
+      "scope": "对象图编码、alias与尺寸限制；捕获前native所有权约束",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/native_execution_compiler.gd": {
+      "review": "selected_manual_review",
+      "scope": "admit数值范围、scope/branch白名单、descriptor构造",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/native_execution_session.gd": {
+      "review": "selected_manual_review",
+      "scope": "能力检测、绑定views与两阶段handoff",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/native_execution_handoff.gd": {
+      "review": "selected_manual_review",
+      "scope": "prepare/commit_views状态字段与revision检查",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/enhancement_branches.gd": {
+      "review": "selected_manual_review",
+      "scope": "缓存/entry身份/reset/reconcile职责",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/drone_combat_effects.gd": {
+      "review": "selected_manual_review",
+      "scope": "触发上下文、延迟状态与damage回调边界",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/combat_context.gd": {
+      "review": "selected_manual_review",
+      "scope": "全文件触发深度、chain allowance和派生上下文",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/compiled_combat_rules.gd": {
+      "review": "selected_manual_review",
+      "scope": "全文件配置编译、只读投影和instance绑定",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/battle_read_model.gd": {
+      "review": "selected_manual_review",
+      "scope": "begin与帧空间投影输入、fallback",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/battle_slice_runtime.gd": {
+      "review": "selected_manual_review",
+      "scope": "install/provider重绑定/数值geometry与时钟移交",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/equipment_display.gd": {
+      "review": "selected_manual_review",
+      "scope": "snapshot只读展示与大数格式边界",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/ai_tech_view_model.gd": {
+      "review": "selected_manual_review",
+      "scope": "领域状态到UI字段转换",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/config_panel.gd": {
+      "review": "selected_manual_review",
+      "scope": "execute_import工具入口与导入路径",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/ui_text.gd": {
+      "review": "selected_manual_review",
+      "scope": "reload_catalog阶段化验证后发布；格式替换",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/fleet_result_analyzer.gd": {
+      "review": "selected_manual_review",
+      "scope": "批次只读聚合、输入限制和归一化入口",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/enemy_fleet_simulator.gd": {
+      "review": "selected_manual_review",
+      "scope": "读取数据库与独立分析策略入口",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/scripts/player_loadout_generator.gd": {
+      "review": "selected_manual_review",
+      "scope": "创建游戏状态以生成玩家组合的入口",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/config_workbooks.py": {
+      "review": "selected_manual_review",
+      "scope": "incremental_import源/目标指纹复核；atomic_batch失败恢复",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/import_workbook.py": {
+      "review": "selected_manual_review",
+      "scope": "SECTIONS和主数据导入映射",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/import_ai_tech_tree.py": {
+      "review": "selected_manual_review",
+      "scope": "独立source/target和--check/--write入口、投影校验",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/level_editor_store.py": {
+      "review": "selected_manual_review",
+      "scope": "备份与主文件事务关系",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/ui_text_editor.py": {
+      "review": "selected_manual_review",
+      "scope": "本机HTTP绑定、token/origin/大小限制及revision/原子保存",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/build_release.ps1": {
+      "review": "selected_manual_review",
+      "scope": "staging数据allowlist及构建失败门禁",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/build_result_analyzer.py": {
+      "review": "selected_manual_review",
+      "scope": "全文件独立包allowlist、数据加工、导入错误门禁",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "tools/play_main.py": {
+      "review": "selected_manual_review",
+      "scope": "引擎和native hash绑定、来源检查与角色白名单",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/addons/native_battle/build_native.ps1": {
+      "review": "selected_manual_review",
+      "scope": "godot-cpp/API锁定和隔离输出",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/addons/native_battle/src/combat_execution_kernel.h": {
+      "review": "selected_manual_review",
+      "scope": "configure(约2099-2155)、advance(约2568-2608)、handoff revision(约2738-2758)；非完整C++审计",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/addons/native_battle/src/space_native.cpp": {
+      "review": "selected_manual_review",
+      "scope": "精度static_assert、ptrcall与类注册；非完整C++审计",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/tools/hyperspace_entities.py": {
+      "review": "selected_manual_review",
+      "scope": "实体schema、冻结来源、工作簿到多个JSON的生成边界",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "test/run.py": {
+      "review": "selected_manual_review",
+      "scope": "全文件隔离复制、filename特例、native能力注入和进程返回值判定",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "test/test_progression_scene_equivalence.gd": {
+      "review": "selected_manual_review",
+      "scope": "签名字段和场景驱动对比；未在补审执行",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "test/test_native_execution_handoff.gd": {
+      "review": "selected_manual_review",
+      "scope": "状态identity/RNG/cooldown/tube移交断言；未执行",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "test/test_native_numeric_range.gd": {
+      "review": "selected_manual_review",
+      "scope": "拒绝不支持范围的断言；未执行",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/docs/ARCHITECTURE.md": {
+      "review": "selected_manual_review",
+      "scope": "全文件与实际入口、保存版本和科技模块定位对照",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    },
+    "space-battleship/main.tscn": {
+      "review": "selected_manual_review",
+      "scope": "实际入口脚本",
+      "limit": "仅所列职责/边界；不代表全文件逐行、分支或运行覆盖"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "ARCHITECTURE_REVIEW.md": "557912132cb696f4523de69b3da98f6c6cf80efe483d061bac55cbc380fca8cf",
+  "architecture/boundary_checks.json": "ed49c6a94c3fd9c688e40ca89eeafad4731a7607cf5149c68a125dcbd5b1e70b",
+  "architecture/check_boundaries.py": "dca6a9af58f4a995bbea3ad21705a50fa8e53ba51477c3621303a7685c6f5537",
+  "architecture/coverage.csv": "a09692286f655126a02cd123763819e44da238cb40f49c27cb82d8d153015384",
+  "architecture/data_contracts.csv": "77f0395c426af0a916baaa0baa2be9293df15457cd573a8e0caac4322eec0c57",
+  "architecture/data_references.csv": "4d5f20db872005a280e32401e7ac994e909c380d8fcf54e37f95160dfb791c78",
+  "architecture/delivery_validation.json": "aea4120e5caeb8373c72d0e266cbc62270ab7574eeb22345e63a6d8d33cde4c4",
+  "architecture/event_emissions.csv": "26ecaf47d10261d6869b1d6cab2be4f0791cd30cffd259c590cf48182945bac4",
+  "architecture/files.csv": "a9e5153265aeaada61b36115c439dbfca5ad36eaa7ea203d79b924c327846c54",
+  "architecture/inventory.py": "488919c0f4d6e639799bc5c0e9e411fb0da32a67346f7f0a88b8658ab2060a23",
+  "architecture/module_coverage.csv": "526a2d0c73e6ed9ad0f8cea1652414e89910cdf015a1baad957fb7b148cceb03",
+  "architecture/references.csv": "90a78519334572bd2aa4c33fb0541a515220d121daae1fe22c51e5141b22cd7e",
+  "architecture/review_scopes.json": "29e647ebca439532205d2a3017c0a84ee790d12105bb298be227d4f52c4e7f4b",
+  "architecture/state_reference_candidates.csv": "a024f98b99fdcbd5c849ec3de339ce3a4bae443a47202de3181542a7c20587bf",
+  "architecture/summary.json": "f938437717bc1dc8467c3f02f1889f77607f834c7b68a69beb383c6dc5472bf8",
+  "architecture/symbols.csv": "5fc3ccc9ee57de28b293649f8407c21f16b2fa8dd2e6f900269bd6792851f772"
+}

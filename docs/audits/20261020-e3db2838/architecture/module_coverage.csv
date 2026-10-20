@@ -1,0 +1,25 @@
+module,inventory_files,lexically_scanned,selected_manual_files,manual_paths,unreviewed_boundary
+AI科技,6,4,2,space-battleship/scripts/ai_tech_tree.gd | space-battleship/scripts/ai_tech_view_model.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+addon_support,10,3,1,space-battleship/addons/native_battle/build_native.ps1,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+asset,747,3,0,,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+authoring_workbook,27,0,0,,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+dev_and_runtime_art_support,103,44,0,,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+documentation_or_evidence,795,0,1,space-battleship/docs/ARCHITECTURE.md,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+native_source,4,4,2,space-battleship/addons/native_battle/src/combat_execution_kernel.h | space-battleship/addons/native_battle/src/space_native.cpp,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+root_and_auxiliary,49,32,1,space-battleship/main.tscn,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+runtime_data,19,0,0,,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+test_source,488,488,4,test/run.py | test/test_native_execution_handoff.gd | test/test_native_numeric_range.gd | test/test_progression_scene_equivalence.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+test_support_or_evidence,2695,0,0,,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+tooling,31,29,9,space-battleship/tools/build_release.ps1 | space-battleship/tools/build_result_analyzer.py | space-battleship/tools/config_workbooks.py | space-battleship/tools/hyperspace_entities.py | space-battleship/tools/import_ai_tech_tree.py | space-battleship/tools/import_workbook.py | space-battleship/tools/level_editor_store.py | space-battleship/tools/ui_text_editor.py | tools/play_main.py,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+关卡工具,8,4,0,,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+其他运行脚本与UI（未细分）,99,62,4,space-battleship/scripts/config_panel.gd | space-battleship/scripts/equipment_display.gd | space-battleship/scripts/player_loadout_generator.gd | space-battleship/scripts/ui_text.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+原生桥接,6,3,3,space-battleship/scripts/native_execution_compiler.gd | space-battleship/scripts/native_execution_handoff.gd | space-battleship/scripts/native_execution_session.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+场景会话与几何,7,7,6,space-battleship/scripts/battle_read_model.gd | space-battleship/scripts/battle_slice_runtime.gd | space-battleship/scripts/battlefield.gd | space-battleship/scripts/main.gd | space-battleship/scripts/player_weapon_database.gd | space-battleship/scripts/presented_battle_game.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+存档,4,3,2,space-battleship/scripts/progress_writer.gd | space-battleship/scripts/save_transfer.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+平衡实验,26,13,2,space-battleship/scripts/balance_game.gd | space-battleship/scripts/balance_runner.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+核心规则与数值,8,8,6,space-battleship/scripts/combat_context.gd | space-battleship/scripts/compiled_combat_rules.gd | space-battleship/scripts/database.gd | space-battleship/scripts/drone_combat_effects.gd | space-battleship/scripts/enhancement_branches.gd | space-battleship/scripts/game.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+舰队分析,24,12,2,space-battleship/scripts/enemy_fleet_simulator.gd | space-battleship/scripts/fleet_result_analyzer.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+船员,4,2,1,space-battleship/scripts/crew_system.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+行星,16,8,1,space-battleship/scripts/planet_buildings.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+超空间,27,25,5,space-battleship/scripts/hyperspace_battle_return.gd | space-battleship/scripts/hyperspace_main_return.gd | space-battleship/scripts/hyperspace_manual_session.gd | space-battleship/scripts/hyperspace_state.gd | space-battleship/scripts/hyperspace_system.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
+银河,20,12,1,space-battleship/scripts/galaxy_system.gd,清点为全量；仅manual_scope内人工审查。未列函数/路径、所有运行分支与平台不作覆盖承诺。
