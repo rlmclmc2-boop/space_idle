@@ -59,6 +59,12 @@ var last_toon_enabled := true
 var last_rim_enabled := true
 var accelerated_quality := false
 var render_scale_sync_pending := false
+var hull_builds := 0
+var loadout_builds := 0
+var display_offset := Vector2.ZERO
+var display_yaw := 0.0
+var display_base_ship_transform := Transform3D.IDENTITY
+var display_base_carrier_transforms: Array[Transform3D] = []
 
 
 func _ready() -> void:
@@ -173,6 +179,7 @@ func _sync_render_scale() -> void:
 func set_hull(key: String) -> bool:
 	if key == hull_key: return true
 	if not manifest.hulls.has(key): return false
+	hull_builds+=1
 	for carrier in carriers: carrier.free()
 	carrier_states.clear()
 	pose_initialized = false
@@ -325,6 +332,7 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 	var assignment := LAYOUT.assign(entries,capacity,int(hull_config.hull_mount_budget))
 	var signature := str(assignment)
 	if signature == loadout_signature: return true
+	loadout_builds+=1
 	var resources := {"laser":"pulse_laser","missile":"missile","cannon":"cannon","longLaser":"long_laser"}
 	for item in assignment:
 		if not resources.has(item.key):
@@ -449,6 +457,21 @@ func screen_muzzle_for_slot(slot: int, ordinal:int=0) -> Vector2:
 			return camera.unproject_position(socket.global_position)
 	return Vector2.ZERO
 
+func canonical_screen_muzzle_for_slot(slot:int,ordinal:int,angles:Array)->Vector2:
+	if display_offset==Vector2.ZERO and is_zero_approx(display_yaw):return screen_muzzle_for_slot(slot,ordinal)
+	var visible_ship:=ship.transform
+	ship.transform=display_base_ship_transform
+	for index in carriers.size():carriers[index].transform=display_base_carrier_transforms[index]
+	set_slot_angles(angles)
+	var canonical:=screen_muzzle_for_slot(slot,ordinal)
+	ship.transform=visible_ship
+	for index in carriers.size():
+		var shifted:=display_base_carrier_transforms[index]
+		shifted.origin+=Vector3(display_offset.x,0.0,display_offset.y)*WORLD_PER_PIXEL
+		carriers[index].transform=shifted
+	set_slot_angles(angles)
+	return canonical
+
 
 func _add_exhausts() -> void:
 	var sockets := ship.find_children("ExhaustSocket*","Node3D",true,false)
@@ -516,6 +539,8 @@ func apply_parameters(settings: Dictionary, toon_enabled: bool, rim_enabled: boo
 
 
 func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vector2, time: float, shield_enabled: bool, close_up: bool, visual_delta := 0.0) -> void:
+	display_offset=Vector2.ZERO
+	display_yaw=0.0
 	elapsed = time
 	rendered_height = height_pixels * (2.8 if close_up else 1.0)
 	rendered_position = size*Vector2(0.5,0.58) if close_up else center
@@ -536,6 +561,33 @@ func set_pose(center: Vector2, height_pixels: float, angle: float, target: Vecto
 	# A paused diagnostic changes presentation without ticking gameplay. Request precisely one redraw.
 	if viewport.render_target_update_mode != SubViewport.UPDATE_ALWAYS:
 		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+
+func apply_display_motion(offset_pixels:Vector2,yaw:float)->void:
+	# Apply only after the canonical pose has been installed for this frame. The
+	# model, sockets, shield and exhaust share this root transform. Neither the
+	# body's bake inputs nor gameplay geometry are invalidated.
+	var transform_value:=ship.transform
+	display_base_ship_transform=transform_value
+	if display_base_carrier_transforms.size()!=carriers.size():display_base_carrier_transforms.resize(carriers.size())
+	for index in carriers.size():display_base_carrier_transforms[index]=carriers[index].transform
+	display_offset=offset_pixels
+	display_yaw=yaw
+	transform_value.origin+=Vector3(offset_pixels.x,0.0,offset_pixels.y)*WORLD_PER_PIXEL
+	transform_value.basis=Basis(Vector3.UP,-yaw)*transform_value.basis
+	ship.transform=transform_value
+	for carrier in carriers:carrier.position+=Vector3(offset_pixels.x,0.0,offset_pixels.y)*WORLD_PER_PIXEL
+
+func restore_canonical_display()->void:
+	if display_offset==Vector2.ZERO and is_zero_approx(display_yaw):return
+	ship.transform=display_base_ship_transform
+	for index in carriers.size():carriers[index].transform=display_base_carrier_transforms[index]
+	display_offset=Vector2.ZERO
+	display_yaw=0.0
+
+func set_display_exhaust(time:float)->void:
+	for index in exhaust_nodes.size():
+		exhaust_nodes[index].scale.z=1.0+0.045*sin(time*4.5+float(index)*1.7)
+		exhaust_materials[index].set_shader_parameter("phase",time*0.35+float(index)*1.7)
 
 
 func _update_carriers(scale_value: float, _visual_delta: float) -> void:
@@ -611,6 +663,8 @@ func set_rendering(enabled: bool, paused := false) -> void:
 var numeric_slice_only:=false
 
 func apply_geometry_frame(frame:Dictionary,shield_enabled:bool)->void:
+	display_offset=Vector2.ZERO
+	display_yaw=0.0
 	assert(str(frame.hull)==hull_key,"Fleet geometry/configuration generation mismatch")
 	elapsed=frame.elapsed;rendered_height=frame.rendered_height;rendered_position=frame.rendered_position
 	orbit_center=frame.orbit_center;orbit_elapsed=frame.orbit_elapsed

@@ -114,10 +114,20 @@ var shield_before_hit: Variant = 0.0
 var destruction_events: Array[Dictionary] = []
 var stable_center := Vector2.ZERO
 var stable_center_ready := false
+const MOTION_TOGGLE_KEY := KEY_F8
+var battlefield_motion_enabled := true
+var battlefield_motion_clock := 0.0
+var battlefield_motion_player: Dictionary = {"offset":Vector2.ZERO,"angle":0.0,"recoil":0.0,"hit":0.0}
+var battlefield_motion_enemies: Dictionary = {}
+var battlefield_motion_draw_enemy: Dictionary = {}
+var battlefield_motion_logical_phase := false
+var battlefield_motion_player_birth := -1.0
+var battlefield_motion_pose_frames := 0
 var encounter_presentation := preload("res://scripts/encounter_presentation.gd").new()
 
 
 func _ready() -> void:
+	battlefield_motion_enabled = OS.get_environment("SPACE_IDLE_BATTLE_MOTION") != "0"
 	super._ready()
 	rail_vfx.configure(db)
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
@@ -162,6 +172,10 @@ func _ready() -> void:
 	_set_reference_dimensions()
 	_sync_parameters()
 	ship_view.set_pose(player_render_position(),reference_height,0.0,player_render_position()+Vector2(0,-450),demo_time,false,false)
+	battlefield_motion_player_birth=battlefield_motion_clock
+
+func battlefield_motion_counters()->Dictionary:
+	return {"poses":battlefield_motion_pose_frames,"hull_builds":ship_view.hull_builds,"loadout_builds":ship_view.loadout_builds,"body_attach_builds":ship_view.body_baker.attach_builds,"body_texture_bakes":ship_view.body_baker.texture_bakes,"body_material_invalidations":ship_view.body_baker.material_invalidations,"enemy_hull_scans":enemy_recognition.hull_scans,"enemy_envelope_builds":enemy_recognition.envelope_builds}
 
 
 func create_battle_game(persist:bool)->BattleGame:
@@ -193,7 +207,7 @@ func _prototype_launch_pose(slot:int,aim:Vector2,ordinal:int)->Dictionary:
 	var angles:Array=[]
 	for index in game.weapon_entries().size():angles.append(turret_angle(index))
 	ship_view.set_slot_angles(angles)
-	var point:Vector2=ship_view.screen_muzzle_for_slot(slot,ordinal)
+	var point:Vector2=ship_view.canonical_screen_muzzle_for_slot(slot,ordinal,angles)
 	# Canonical battlefield coordinates are independent of viewport pixels and
 	# paused close-up inspection magnification.
 	if close_up:point=player_render_position()+reference_offset+(point-ship_view.rendered_position)/2.8
@@ -232,13 +246,43 @@ func visual_muzzle(shot:Dictionary)->Vector2:
 			var component=enemy_component_for_slot(enemy,enemy_shot_mount(enemy,shot))
 			if component!=null:
 				var art:=enemy_weapon_art_pose(enemy,component)
-				if not art.is_empty():return battle_logical_point(enemy_render_position(enemy)+Vector2(art.muzzle))
+				if not art.is_empty():
+					var art_muzzle:=Vector2(art.muzzle)
+					var motion:=_battlefield_motion_enemy(enemy)
+					if not motion.is_empty():
+						var yaw:=float(motion.angle)
+						var origin:=Vector2(art.origin)
+						art_muzzle=origin.rotated(yaw)+(art_muzzle-origin).rotated(yaw if component.mode() not in ["main","secondary"] else 0.0)+Vector2(motion.offset)
+					return battle_logical_point(enemy_render_position(enemy)+art_muzzle)
 	if not bool(shot.get("hostile",false)) and not bool(shot.get("chain_hop",false)) and _visual_drone_id(shot).is_empty() and is_instance_valid(ship_view):
 		var slot:int=shot_mount(shot)
 		if slot>=0:
 			var point:Vector2=ship_view.screen_visual_muzzle_for_slot(slot,int(shot.get("salvo_ordinal",0)))
 			if point!=Vector2.ZERO:return battle_logical_point(point)
 	return _numeric_launch_origin(shot)
+
+func entity_render_position(entity:Dictionary)->Vector2:
+	var point:Vector2=super.entity_render_position(entity)
+	if battle_draw_active and not battlefield_motion_logical_phase and entity.has("slot"):
+		return _battlefield_motion_enemy_point(entity,point)
+	return point
+
+func player_contact_screen_position()->Vector2:
+	var point:Vector2=super.player_contact_screen_position()
+	return point+Vector2(battlefield_motion_player.offset) if battlefield_motion_enabled and battle_draw_active and not battlefield_motion_logical_phase else point
+
+func resolve_damage_origin(entry:Dictionary)->void:
+	if not entry.get("needs_origin",false):return
+	super.resolve_damage_origin(entry)
+	if not battlefield_motion_enabled:return
+	var shift:=Vector2.ZERO
+	if entry.target=="player":shift=Vector2(battlefield_motion_player.offset)
+	else:
+		var enemy:Dictionary=entry.get("target_entity",{})
+		var state:=_battlefield_motion_enemy(enemy)
+		if not state.is_empty():shift=Vector2(state.offset)
+	entry.tag_anchor=Vector2(entry.tag_anchor)+shift
+	entry.origin=battle_logical_point(Vector2(entry.tag_anchor)-Vector2(0,float(entry.tag_half_height)+18.0))
 
 func _numeric_launch_origin(shot:Dictionary)->Vector2:
 	if bool(shot.get("chain_hop",false)) and shot.has("launch_point"):return Vector2(shot.launch_point)
@@ -320,6 +364,117 @@ func hold_departure_scene() -> void:
 	if is_instance_valid(damage_text_layer):damage_text_layer.hide()
 	if is_instance_valid(drop_layer):drop_layer.hide()
 
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == MOTION_TOGGLE_KEY:
+		battlefield_motion_enabled = not battlefield_motion_enabled
+		get_viewport().set_input_as_handled()
+		if is_instance_valid(battle_layer):battle_layer.queue_redraw()
+
+func _battlefield_motion_phase(identity:int)->float:
+	# Integer arithmetic is stable across runs and does not touch combat RNG.
+	return TAU*float(posmod(identity*7919+104729,65521))/65521.0
+
+func _battlefield_motion_reset()->void:
+	battlefield_motion_enemies.clear()
+	battlefield_motion_player_birth=battlefield_motion_clock
+	battlefield_motion_player.recoil=0.0
+	battlefield_motion_player.hit=0.0
+
+func _battlefield_motion_limits(enemy:Dictionary,center:Vector2)->Vector3:
+	# Resolve a conservative display budget once per actor, from stable
+	# formation centres. Motion never participates in layout or collision.
+	var heavy:=int(enemy.size)>=4
+	var lateral:=2.0 if heavy else 4.0
+	var longitudinal:=1.2 if heavy else 2.0
+	var yaw:=deg_to_rad(0.18 if heavy else 0.52)
+	var width:=enemy_render_width(enemy)
+	var tip:=width*yaw
+	for other in game.enemies:
+		if is_same(other,enemy) or float(other.get("hp",0))<=0:continue
+		var other_center:=super.enemy_render_position(other)
+		var other_width:=enemy_render_width(other)
+		var x_gap:=absf(center.x-other_center.x)-0.5*(width+other_width)-4.0
+		var y_gap:=absf(center.y-other_center.y)-(width+other_width)-4.0
+		if absf(center.y-other_center.y)<width+other_width+longitudinal*2.0+4.0:
+			lateral=minf(lateral,maxf(0.0,x_gap*0.25-tip))
+		if absf(center.x-other_center.x)<0.5*(width+other_width)+lateral*2.0+4.0:
+			longitudinal=minf(longitudinal,maxf(0.0,y_gap*0.25-tip))
+	return Vector3(lateral,longitudinal,yaw)
+
+func _battlefield_motion_frame(delta:float)->void:
+	if not game.paused:
+		battlefield_motion_clock+=minf(maxf(delta,0.0),0.1)
+		battlefield_motion_player.recoil=maxf(0.0,float(battlefield_motion_player.recoil)-delta*5.0)
+		battlefield_motion_player.hit=maxf(0.0,float(battlefield_motion_player.hit)-delta*6.0)
+	var t:=battlefield_motion_clock
+	var player_phase:=_battlefield_motion_phase(1)
+	var player_cycle:=TAU*t/8.9+player_phase
+	var player_entry:=maxf(0.0,1.0-(t-battlefield_motion_player_birth)/0.52) if battlefield_motion_player_birth>=0.0 else 0.0
+	battlefield_motion_player.offset=Vector2(3.0*sin(player_cycle),1.45*sin(player_cycle*0.72+0.8)+12.0*player_entry+0.65*float(battlefield_motion_player.recoil)*sin(player_cycle)-0.9*float(battlefield_motion_player.hit))
+	battlefield_motion_player.angle=deg_to_rad(0.28)*sin(player_cycle+0.33)
+	for enemy in game.enemies:
+		var uid:=int(enemy.get("uid",-1))
+		if uid<0:continue
+		var state:Dictionary=battlefield_motion_enemies.get(uid,{})
+		var base_center:=super.enemy_render_position(enemy)
+		if state.is_empty() or not is_same(state.entity,enemy):
+			var large:=int(enemy.size)>=4
+			var phase:=_battlefield_motion_phase(uid+17)
+			var limits:=_battlefield_motion_limits(enemy,base_center)
+			state={"entity":enemy,"center":base_center,"born":t,"phase":phase,"period":(11.2+2.6*sin(phase)) if large else (5.5+1.1*sin(phase)),"offset":Vector2.ZERO,"angle":0.0,"recoil":0.0,"hit":0.0,"seen":battlefield_motion_pose_frames,"limits":limits}
+			battlefield_motion_enemies[uid]=state
+		state.center=base_center
+		state.seen=battlefield_motion_pose_frames
+		if not game.paused:
+			state.recoil=maxf(0.0,float(state.recoil)-delta*5.5)
+			state.hit=maxf(0.0,float(state.hit)-delta*5.0)
+		var heavy:=int(enemy.size)>=4
+		var phase_angle:=TAU*t/float(state.period)+float(state.phase)
+		var entry:=maxf(0.0,1.0-(t-float(state.born))/0.45)
+		var limits:Vector3=state.limits
+		var lateral:=limits.x
+		var longitudinal:=limits.y
+		state.offset=Vector2(lateral*sin(phase_angle),longitudinal*sin(phase_angle*0.76+0.9)-9.0*entry+0.6*float(state.recoil)*sin(phase_angle)+0.8*float(state.hit))
+		state.angle=limits.z*sin(phase_angle+0.3)
+	battlefield_motion_pose_frames+=1
+	if battlefield_motion_pose_frames%60==0:
+		for uid in battlefield_motion_enemies.keys():
+			if int(battlefield_motion_enemies[uid].seen)<battlefield_motion_pose_frames-1:battlefield_motion_enemies.erase(uid)
+
+func _battlefield_motion_enemy(enemy:Dictionary)->Dictionary:
+	if not battlefield_motion_enabled:return {}
+	var state:Dictionary=battlefield_motion_enemies.get(int(enemy.get("uid",-1)),{})
+	return state if not state.is_empty() and is_same(state.entity,enemy) else {}
+
+func _battlefield_motion_enemy_point(enemy:Dictionary,point:Vector2)->Vector2:
+	var state:=_battlefield_motion_enemy(enemy)
+	if state.is_empty():return point
+	var center:Vector2=state.center
+	return center+(point-center).rotated(float(state.angle))+Vector2(state.offset)
+
+func _battlefield_motion_visible_target(target:Dictionary)->Vector2:
+	var point:Vector2=super.entity_render_position(target)
+	if is_same(target,game.player):return point+Vector2(battlefield_motion_player.offset)
+	if target.has("slot"):return _battlefield_motion_enemy_point(target,point)
+	return point
+
+func _battlefield_motion_flight_shift(shot:Dictionary,visual:Dictionary)->Vector2:
+	if not battlefield_motion_enabled or visual.is_empty():return Vector2.ZERO
+	var target:Dictionary=shot.get("target",{})
+	var desired:Vector2=visual.get("motion_target_shift",Vector2.ZERO)
+	if not target.is_empty() and (is_same(target,game.player) or (float(target.get("hp",0))>0.0 and not _battlefield_motion_enemy(target).is_empty())):
+		var initial:Vector2=visual.get("motion_target_birth",super.entity_render_position(target))
+		desired=(_battlefield_motion_visible_target(target)-initial).limit_length(8.0)
+	var previous:Vector2=visual.get("motion_target_shift",Vector2.ZERO)
+	var previous_time:float=float(visual.get("motion_target_time",battlefield_motion_clock))
+	var next:Vector2=previous.move_toward(desired,clampf(battlefield_motion_clock-previous_time,0.0,0.1)*30.0)
+	visual.motion_target_shift=next
+	visual.motion_target_time=battlefield_motion_clock
+	var start:Vector2=visual.get("logical_origin",game.projectile_position(shot))
+	var length_value:float=maxf(1.0,float(visual.get("motion_length",160.0)))
+	var progress:=smoothstep(0.08,1.0,clampf(start.distance_to(game.projectile_position(shot))/length_value,0.0,1.0))
+	return next*progress
+
 func _process(delta: float) -> void:
 	if battle_transition_blocked():
 		hold_departure_scene()
@@ -341,6 +496,8 @@ func _process(delta: float) -> void:
 	enemy_entry_distance_time=-INF
 
 func _process_battlefield(delta: float) -> void:
+	if is_instance_valid(ship_view):ship_view.restore_canonical_display()
+	if is_instance_valid(hyperspace_visual):hyperspace_visual.restore_canonical_display()
 	if is_instance_valid(ship_view):
 		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
@@ -353,7 +510,10 @@ func _process_battlefield(delta: float) -> void:
 				return
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
+	battlefield_motion_logical_phase=true
 	super._process(delta)
+	battlefield_motion_logical_phase=false
+	_battlefield_motion_frame(delta)
 	if is_instance_valid(damage_text_layer):
 		damage_text_layer.visible=battle_layer.visible and show_damage_numbers and not accelerated_visual_mode
 		damage_text_layer.queue_redraw()
@@ -392,15 +552,19 @@ func _process_battlefield(delta: float) -> void:
 		stable_center=stable_center.lerp(anchor,1.0-exp(-3.0*minf(delta,0.1)))
 	var target := player_render_position()+Vector2(0,-450)
 	if not game.enemies.is_empty(): target = enemy_render_position(game.enemies[0])
-	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time])
+	var pose_signature := str([game.drone_combat.disabled,current_hull,ship_view.loadout_signature,game.player.shield,parameters_signature,prototype_enabled,close_up,shield_enabled,battle_layer.visible,game.paused,player_render_position(),target,fx_time,battlefield_motion_enabled])
 	if game.paused and pose_signature==paused_presentation_signature: return
 	paused_presentation_signature = pose_signature
 	if battle_slice_runtime!=null:battle_slice_runtime.apply_nodes()
 	else:
 		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,target,demo_time,shield_enabled,close_up,0.0)
+	if battlefield_motion_enabled:
+		ship_view.apply_display_motion(Vector2(battlefield_motion_player.offset),float(battlefield_motion_player.angle))
+		ship_view.set_display_exhaust(battlefield_motion_clock)
+		hyperspace_visual.apply_display_motion(battlefield_motion_clock,ship_view.WORLD_PER_PIXEL)
 	if battle_slice_runtime==null:
 		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
-	var shield_impact:=maxf(0.0,1.0-(fx_time-player_hit_at)/0.38)
+	var shield_impact:=maxf(0.0,1.0-((battlefield_motion_clock if battlefield_motion_enabled else fx_time)-player_hit_at)/0.38)
 	ship_view.shield.visible = shield_enabled and (GrowthNumber.compare(game.player.shield,0)>0 or shield_impact>0.0)
 	ship_view.shield_material.set_shader_parameter("impact_strength",shield_impact)
 	var angles: Array = []
@@ -486,6 +650,20 @@ func _draw_muzzle_cues() -> void:
 
 
 func on_event(kind:String,info:Dictionary)->void:
+	if kind in ["fire","beam_started"] and info.has("shot"):
+		var fired:Dictionary=info.shot
+		if not bool(fired.get("hostile",false)):
+			if weapon_key(fired)=="cannon":battlefield_motion_player.recoil=minf(1.0,float(battlefield_motion_player.recoil)+0.6)
+		else:
+			var source:Dictionary=fired.get("source",{})
+			var state:Dictionary=battlefield_motion_enemies.get(int(source.get("uid",-1)),{})
+			if not state.is_empty() and is_same(state.entity,source) and weapon_key(fired)=="cannon":state.recoil=minf(1.0,float(state.recoil)+0.55)
+	if kind=="hit":
+		if bool(info.get("player",false)):
+			if bool(info.get("critical",false)):battlefield_motion_player.hit=minf(1.0,float(battlefield_motion_player.hit)+0.6)
+		else:
+			var state:Dictionary=battlefield_motion_enemies.get(int(info.get("uid",-1)),{})
+			if not state.is_empty() and bool(info.get("critical",false)):state.hit=minf(1.0,float(state.hit)+0.55)
 	# Compact laser feedback has no shot object; its lifetime is the immutable
 	# packet, even if the kernel recycled the flight before this signal.
 	if info.has("native_laser"):
@@ -516,7 +694,7 @@ func on_event(kind:String,info:Dictionary)->void:
 	if kind=="explode" and int(info.get("uid",-2))==encounter_presentation.leader_uid:
 		encounter_presentation.leader_fall=0.0
 	if kind=="hit" and bool(info.get("player",false)):
-		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=fx_time
+		if GrowthNumber.compare(shield_before_hit,0)>0:player_hit_at=battlefield_motion_clock if battlefield_motion_enabled else fx_time
 		shield_before_hit=game.player.shield
 	if kind=="explode":
 		if info.has("slot"):death_drop_positions[int(info.uid)]=enemy_drop_anchor(info)
@@ -525,7 +703,7 @@ func on_event(kind:String,info:Dictionary)->void:
 		var width:=34.0
 		for enemy in game.enemies:
 			if int(enemy.uid)==int(info.get("uid",-1)):
-				point=battle_logical_point(enemy_render_position(enemy));width=enemy_render_width(enemy)
+				point=battle_logical_point(_battlefield_motion_enemy_point(enemy,enemy_render_position(enemy)));width=enemy_render_width(enemy)
 		if destruction_events.size()>=24:destruction_events.pop_front()
 		destruction_events.append({"position":point,"width":width,"born":fx_time,"seed":int(info.get("uid",0)),"hyperspace":bool(game.manual_hyperspace.active)})
 		if bool(info.get("boss",false)):shake=maxf(shake,float(battle_visual.boss_destroy_shake))
@@ -607,7 +785,11 @@ func _is_own_missile(shot:Dictionary)->bool:
 
 func missile_visual_position(shot:Dictionary,spread:float,origin:Vector2,visual:Dictionary={})->Vector2:
 	if bool(shot.get("prototype_missile",false)):return game.projectile_position(shot)
-	if not _is_own_missile(shot):return super.missile_visual_position(shot,spread,origin,visual)
+	if not _is_own_missile(shot):
+		var base:Vector2=super.missile_visual_position(shot,spread,origin,visual)
+		if shot.has("fixed_screen_step") or visual.has("fixed_step"):
+			return battle_logical_point(battle_point(base)+_battlefield_motion_flight_shift(shot,visual))
+		return base
 	if visual.is_empty():visual=projectile_visual(shot)
 	var logical:=game.projectile_position(shot)
 	if visual.has("orphan_offset"):return logical+Vector2(visual.orphan_offset)
@@ -618,7 +800,8 @@ func missile_visual_position(shot:Dictionary,spread:float,origin:Vector2,visual:
 	var flight_length:=maxf(1.0,float(visual.get("missile_range",start.distance_to(target))))
 	var progress:=smoothstep(0.0,flight_length,distance)
 	var muzzle_shift:Vector2=(origin-start)*(1.0-progress)
-	var target_shift:Vector2=(battle_logical_point(entity_render_position(shot.target))-target)*progress
+	var target_screen:=_battlefield_motion_visible_target(shot.target) if battlefield_motion_enabled else entity_render_position(shot.target)
+	var target_shift:Vector2=(battle_logical_point(target_screen)-target)*progress
 	# Keep each real muzzle's departure lane through the flight instead of
 	# collapsing every carrier into the logical center after the first 160 units.
 	var fan:=spread*0.4*smoothstep(0.0,100.0,distance)*(1.0-progress)
@@ -681,6 +864,12 @@ func weapon_launch(shot:Dictionary,spread:=0.0)->void:
 	# Preserve the original launch projection/target/age/trail bookkeeping.
 	# Only the legacy flash/smoke calls are suppressed inside this visual context.
 	super.weapon_launch(shot,spread)
+	var flight:Dictionary=projectile_visual(shot)
+	if not flight.is_empty() and not shot.target.is_empty():
+		flight.motion_target_birth=super.entity_render_position(shot.target)
+		flight.motion_target_shift=Vector2.ZERO
+		flight.motion_target_time=battlefield_motion_clock
+		flight.motion_length=maxf(1.0,game.projectile_position(shot).distance_to(game.projectile_target_point(shot)))
 	if enemy_launch_context and not fast_mode_enabled():
 		var visual:=projectile_visual(shot)
 		# The base launch already solved this muzzle. Evaluate the fallback only
@@ -737,6 +926,15 @@ func weapon_smoke(pos:Vector2,color:Color,count:int,duration:float,size_value:fl
 
 func weapon_impact(shot:Dictionary,pos:Vector2)->void:
 	assert(battle_slice_runtime==null,"Direct slice executed retired event impact restoration")
+	if battlefield_motion_enabled:
+		var flight:Dictionary=projectile_visual(shot)
+		if shot.has("fixed_screen_step") or flight.has("fixed_step"):
+			pos=battle_logical_point(battle_point(pos)+_battlefield_motion_flight_shift(shot,flight))
+		else:
+			var target:Dictionary=shot.get("target",{})
+			if not target.is_empty():
+				if is_same(target,game.player):pos=battle_logical_point(battle_point(pos)+Vector2(battlefield_motion_player.offset))
+				elif target.has("slot"):pos=battle_logical_point(_battlefield_motion_enemy_point(target,battle_point(pos)))
 	if _is_simple_enemy(shot):
 		if not fast_mode_enabled():
 			var direction:Vector2=game.projectile_direction(shot)
@@ -997,19 +1195,44 @@ func enemy_hull_bounds(texture: Texture2D) -> Rect2:
 		hull_opaque_bounds[texture_key]=Rect2(-Vector2(pixels.size)/texture.get_size()*0.5,Vector2(pixels.size)/texture.get_size())
 	return hull_opaque_bounds[texture_key]
 
+func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
+	var pose:Dictionary=super.enemy_component_pose(enemy,component,render_position)
+	if battlefield_motion_draw_enemy.is_empty() or not is_same(battlefield_motion_draw_enemy.entity,enemy):return pose
+	var yaw:=float(battlefield_motion_draw_enemy.angle)
+	pose.origin=Vector2(pose.origin).rotated(yaw)
+	if component.mode() in ["main","secondary"]:
+		# The rotating barrel continues to point at its world target while its
+		# fixed mount follows the hull's yaw.
+		pose.muzzle=Vector2(pose.origin)+Vector2(pose.port).rotated(float(pose.angle))
+	else:
+		pose.angle=float(pose.angle)+yaw
+		pose.muzzle=Vector2(pose.origin)+Vector2(pose.port).rotated(float(pose.angle))
+	return pose
+
+func enemy_weapon_art_pose(enemy:Dictionary,component)->Dictionary:
+	var art:Dictionary=super.enemy_weapon_art_pose(enemy,component)
+	if art.is_empty() or battlefield_motion_draw_enemy.is_empty() or not is_same(battlefield_motion_draw_enemy.entity,enemy):return art
+	var yaw:=float(battlefield_motion_draw_enemy.angle)
+	art.origin=Vector2(art.origin).rotated(yaw)
+	if component.mode() not in ["main","secondary"]:art.angle=float(art.angle)+yaw
+	return art
+
 func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool)->void:
+	var motion:=_battlefield_motion_enemy(enemy)
 	var pos:=enemy_render_position(enemy)+offset
+	if not motion.is_empty():pos+=Vector2(motion.offset)
 	var width:=enemy_render_width(enemy)
 	var leader := encounter_presentation.is_leader(enemy)
 	# The published width already includes the actor's encounter scale. Body,
 	# mounts, collision and protection consume this same dimension.
 	var hull_width := width
 	var dimensions:=Vector2(hull_width,hull_width*2.0)
-	var angle:=enemy_render_angle(enemy)
+	var angle:=enemy_render_angle(enemy)+(float(motion.angle) if not motion.is_empty() else 0.0)
 	var light:=enemy_hull_light(enemy)
 	if boss_battle:
 		light=1.20 if leader else maxf(0.72,light*0.84)
 	if leader:encounter_presentation.draw_leader_frame(draw_surface,pos,hull_width)
+	battlefield_motion_draw_enemy=motion
 	draw_enemy_weapon_components(enemy,pos,angle,width,true)
 	draw_surface.draw_set_transform(pos,PI+angle)
 	draw_surface.draw_texture_rect(ship_hull_texture(enemy_ship_key(enemy)),enemy_hull_rect(enemy,hull_width),false,Color(light,light,light,1.0))
@@ -1024,6 +1247,7 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	var outline:PackedVector2Array=protection_outline
 	draw_surface.draw_set_transform(Vector2.ZERO)
 	draw_enemy_weapon_components(enemy,pos,angle,width,false)
+	battlefield_motion_draw_enemy={}
 	var layout:=enemy_status_layout(enemy,pos,hull_width,angle,outline)
 	battle_meter(layout.health,float(enemy.hp)/maxf(1,float(enemy.max_hp)),BATTLE_WARM)
 	if float(enemy.get("max_shield",0))>0:

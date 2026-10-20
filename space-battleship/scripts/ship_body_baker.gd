@@ -18,6 +18,9 @@ var source_hashes: Dictionary = {}
 var body_roots: Dictionary = {} # Includes unsupported bodies with no bake record.
 var shadow_sync_pending := false
 var live_shadows_allowed := true
+var attach_builds := 0
+var texture_bakes := 0
+var material_invalidations := 0
 
 
 func _ready() -> void:
@@ -28,6 +31,7 @@ func _ready() -> void:
 func attach(root: Node3D, key: String, refresh := false) -> void:
 	var id := root.get_instance_id()
 	if records.has(id) and records[id].request == key and not refresh: return
+	attach_builds+=1
 	presentation_pending = true
 	var parts: Array[Dictionary] = []
 	if records.has(id): parts = records[id].parts
@@ -157,6 +161,7 @@ func _new_bake_viewport() -> SubViewport:
 
 
 func _create_texture(parts: Array[Dictionary]) -> Dictionary:
+	texture_bakes+=1
 	var bake := _new_bake_viewport()
 	var scene := Node3D.new()
 	bake.add_child(scene)
@@ -199,6 +204,7 @@ func _create_texture(parts: Array[Dictionary]) -> Dictionary:
 
 
 func invalidate_materials() -> void:
+	material_invalidations+=1
 	if not export_mode:
 		for id in records.keys():
 			var record: Dictionary = records[id]

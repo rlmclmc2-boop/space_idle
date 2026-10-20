@@ -14,6 +14,8 @@ const TOON=preload("res://addons/flexible_toon_shader/flexible_toon.gdshader")
 const OFFSETS=[Vector2(-130,-28),Vector2(130,-60),Vector2(-130,-116),Vector2(130,-148),Vector2(0,-224)]
 var signature=""
 var nodes: Array[Node3D]=[]
+var display_base_transforms: Array[Transform3D]=[]
+var display_motion_applied=false
 var rebuilds=0
 var identities: Array[String]=[]
 var muzzles: Dictionary={}
@@ -102,6 +104,23 @@ func pose(view,disabled: Array=[],zoom: float=1.0) -> void:
  # Finish membership/style changes after every body, orbit, transform and
  # visibility has been assigned, including while the logical game is paused.
  if changed:view.request_fleet_redraw()
+
+func apply_display_motion(time:float,pixels_per_world:float)->void:
+ # Canonical drone transforms are restored by pose/apply_geometry_frame before
+ # each display update. Socket, body, ornament and muzzle share the same root.
+ if display_base_transforms.size()!=nodes.size():display_base_transforms.resize(nodes.size())
+ display_motion_applied=true
+ for index in nodes.size():
+  display_base_transforms[index]=nodes[index].transform
+  var phase:=TAU*float(posmod(identities[index].hash(),997))/997.0
+  var cycle:=time*TAU/(7.2+0.48*float(index))+phase
+  nodes[index].position+=Vector3(2.0*sin(cycle),0.0,1.0*sin(cycle*0.77+0.5))*pixels_per_world
+  nodes[index].rotation.y+=deg_to_rad(0.28)*sin(cycle+0.3)
+
+func restore_canonical_display()->void:
+ if not display_motion_applied or display_base_transforms.size()!=nodes.size():return
+ for index in nodes.size():nodes[index].transform=display_base_transforms[index]
+ display_motion_applied=false
 
 func apply_geometry_frame(view,frame:Dictionary,disabled:Array=[])->void:
  var changed:bool=body_bake_pending
