@@ -49,6 +49,14 @@ func write_progress(bytes: PackedByteArray) -> Error:
 	if not _may_write():return ERR_ALREADY_IN_USE
 	return _write_payload(bytes).error
 
+func write_import_stage(stage_path: String, bytes: PackedByteArray) -> Error:
+	if not owns_progress():return ERR_ALREADY_IN_USE
+	var target := path_key(stage_path)
+	if target.is_empty() or target not in [path_key(path + ".import-active"), path_key(path + ".import-new"), path_key(path + ".import-prev")]:return ERR_INVALID_PARAMETER
+	var staging: RefCounted = get_script().new()
+	staging.path = stage_path
+	return staging._write_payload(bytes).error
+
 func _write_payload(bytes: PackedByteArray) -> Dictionary:
 	var file := FileAccess.open(path + ".tmp", FileAccess.WRITE_READ)
 	if file == null:return {"error":FileAccess.get_open_error()}

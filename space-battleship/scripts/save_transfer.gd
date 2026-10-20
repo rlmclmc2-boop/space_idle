@@ -205,11 +205,13 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  # mistake an in-flight transaction for an interrupted import.
  var marker: String=game.progress_writer.path+".import-active"
  if FileAccess.file_exists(marker) or DirAccess.dir_exists_absolute(marker):return {"error":ERR_ALREADY_IN_USE}
- var error:=write_file(marker,JSON.stringify({"pid":OS.get_process_id()}).to_utf8_buffer())
+ var error:=game.progress_writer.write_import_stage(marker,JSON.stringify({"pid":OS.get_process_id()}).to_utf8_buffer())
  if error!=OK:return {"error":error}
  var transaction:=_commit_import(game,raw)
  DirAccess.remove_absolute(marker)
- if transaction.get("error") == OK:transaction.owner_lock=game.progress_writer.owner_handle()
+ if transaction.get("error") == OK:
+  transaction.owner_lock=game.progress_writer.owner_handle()
+  transaction.owner_writer=game.progress_writer
  return transaction
 
 func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
@@ -241,7 +243,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  if active.get("return_state",{}).is_empty():
   var candidate:=BattleGame.new(source_db,false)
   candidate.load_progress_data(prepared.data);candidate.reset_player();installed=candidate.portable_save_data()
- error=write_file(incoming,JSON.stringify(clean(installed,schema()),"\t").to_utf8_buffer())
+ error=game.progress_writer.write_import_stage(incoming,JSON.stringify(clean(installed,schema()),"\t").to_utf8_buffer())
  if error!=OK:return {"error":error}
  var had_primary:=FileAccess.file_exists(primary)
  if had_primary:
@@ -263,7 +265,7 @@ func rollback(transaction: Dictionary) -> Error:
   var bytes:=backup_file.get_buffer(backup_file.get_length())
   if backup_file.get_error()!=OK:return ERR_FILE_CANT_READ
   backup_file.close()
-  var restored:=write_file(primary+".import-prev",bytes)
+  var restored: Error=transaction.owner_writer.write_import_stage(primary+".import-prev",bytes)
   if restored!=OK:return restored
  var error:=DirAccess.remove_absolute(primary)
  if error!=OK:return error
@@ -275,4 +277,5 @@ func finish(transaction: Dictionary) -> void:
 
 func _transaction_owns_progress(transaction: Dictionary) -> bool:
  var owner: RefCounted=transaction.get("owner_lock")
- return owner != null and owner.owns()
+ var writer: RefCounted=transaction.get("owner_writer")
+ return owner != null and owner.owns() and writer != null and writer.owns_progress() and writer.owner_handle() == owner
