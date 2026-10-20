@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05 已提交运行候选和冻结证据，现处于 review，等待父级与原 astra 同对象双审；S06—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05 已获父级对同一运行和冻结证据的 PASS，第二方审计因原 astra 线程后台错误而 BLOCKED，阶段保持打开；S06—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04a 均为 `closed`；S05 为 `review`；S06—S24 均为 `not_started`。** main 仍为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段 S05 在线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9`；纯运行候选 `5a4d52957f68b22ef47e0ad91cbe787292872d83`，树 `2f161d9aac91d8d615770d9480d7dd6d9247b00d`，冻结证据 `ec162b9752a6a55938c8ca15630ac1e9d6bbfe42`。父级和原 astra 尚未双审；不得合 main、关闭线程或启动 S06。S05 只解决玩家发布依赖，完整 Windows 构建和产物验收尚未通过；详见 `stages/S05/README.md`。
+**S00—S04a 均为 `closed`；S05 为 `blocked`（缺第二方审查）；S06—S24 均为 `not_started`。** main 仍为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段 S05 在线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9`；纯运行候选 `5a4d52957f68b22ef47e0ad91cbe787292872d83`，树 `2f161d9aac91d8d615770d9480d7dd6d9247b00d`，被审冻结证据 `375ae2f5198739b42498dcc352e0c0a5ef37ce3b`。父级对该同一对象 PASS，原 astra 未取得新审查 turn，替代审计授权待用户答复；详见 `stages/S05/REVIEW_RECORD.md`。未满足双 PASS，不得合 main、关闭线程或启动 S06。完整 Windows 导出及产物验收仍因证书库环境错误 BLOCKED，不宣称 S22 发布验收完成。
 
 ### S00 关闭记录
 
@@ -452,11 +452,11 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_archiv
 next_stage_allowed: true
 ```
 
-### S05 review 记录
+### S05 blocked 记录
 
 ```yaml
 stage: S05
-status: review
+status: blocked
 implementation_thread_id: 01a15b67-0ffb-7749-8cfa-9680694f00e9
 model: sol
 base_main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301
@@ -470,9 +470,10 @@ runtime_files:
 main_file_justifications:
   - "build_release.ps1: 玩家发布构建必要工具；复制与前后检查共用配置清单，缺项明确失败"
   - "player_required_data.json: 玩家产品所需 15 个配置、26 个逐项文件与 scripts/assets/shaders 直接运行目录清单"
-evidence_snapshot_sha: ec162b9752a6a55938c8ca15630ac1e9d6bbfe42
+evidence_snapshot_sha: 375ae2f5198739b42498dcc352e0c0a5ef37ce3b
 evidence_entry: stages/S05/README.md
-evidence_files: [stages/S05/checks.json, stages/S05/RUNTIME_BLOBS.json, stages/S05/EVIDENCE_BLOBS.json, stages/S05/s05_probe.gd, stages/S05/logs/]
+review_record: stages/S05/REVIEW_RECORD.md
+evidence_files: [stages/S05/REVIEW_RECORD.md, stages/S05/checks.json, stages/S05/RUNTIME_BLOBS.json, stages/S05/EVIDENCE_BLOBS.json, stages/S05/s05_probe.gd, stages/S05/logs/]
 verification:
   results:
     - "空 staging 含 15/15 必需 JSON、26/26 逐项运行文件和三个目录；文件同源 SHA256；玩家直接 JSON 引用 15/15 全在清单"
@@ -480,8 +481,8 @@ verification:
     - "Godot 4.7.2 隔离 staging 数据库、奖励契约、新档真实保存、重开保留值，探针两次 exit 0"
   unverified:
     - "CodexSandboxOffline 不能读取 Windows 根证书库；Godot 导入报错，构建脚本正确中止；完整 Windows 导出和实际包验收未通过，S22 仍 pending"
-parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
-astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+parent_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, reviewed_evidence_sha: 375ae2f5198739b42498dcc352e0c0a5ef37ce3b, record_path: stages/S05/REVIEW_RECORD.md, unresolved: []}
+astra_review: {verdict: BLOCKED, reviewed_runtime_sha: null, reviewed_evidence_sha: null, record_path: stages/S05/REVIEW_RECORD.md, reason: 原线程后台错误且替代审计授权待答复, unresolved: [缺独立第二审查]}
 integration: {state: pending, main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, local_entry_result: not_run}
 closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
 ```
