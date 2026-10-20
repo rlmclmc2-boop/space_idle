@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04 均为 `closed`；S04a 为 `approved`；S05—S24 均为 `not_started`。** 远端 main 仍为 `abb68a7f7014dafee73c2f8c48a856aaddec0456`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，审计分支 `s04a/audit-evidence` 保存合成双进程、实际确认导入后场景重载、入口启动和 blob 清单。父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 和冻结证据 36e4412197be2b66948cd17f5f1d1a8327ed8c73 明确双 PASS；尚待 main 集成与本地入口验收，未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
+**S00—S04 均为 `closed`；S04a 为 `integration_review`；S05—S24 均为 `not_started`。** 远端及 D:\放置 的 main 已快进至获批运行 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，冻结证据在 `s04a/audit-evidence`，正式审计分支 `audit/code-review-e3db2838-20261020` 保存双审及集成记录。父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 和冻结证据 36e4412197be2b66948cd17f5f1d1a8327ed8c73 明确双 PASS；main 集成与隔离本地入口验收已完成，详见 `stages/S04a/LOCAL_INTEGRATION.md`；集成记录待独立复审，未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
 
 ### S00 关闭记录
 
@@ -426,7 +426,7 @@ next_stage_allowed: true
 
 ```yaml
 stage: S04a
-status: approved
+status: integration_review
 implementation_thread_id: 01a15b03-d9f7-710e-b869-ca083a8f90d5
 model: sol
 reasoning_effort: medium
@@ -436,14 +436,17 @@ runtime_candidate_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301
 runtime_tree: 46975cef1cd058b859525873b85b35453b26e8e3
 runtime_branch: s04a/single-writer
 runtime_files: [space-battleship/addons/native_battle/src/space_native.cpp, space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json, space-battleship/scripts/game.gd, space-battleship/scripts/main.gd, space-battleship/scripts/progress_writer.gd, space-battleship/scripts/save_transfer.gd, tools/player_runtime/space_native.dll]
-audit_branch: s04a/audit-evidence
+audit_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S04a/README.md
 review_record: stages/S04a/FINAL_REVIEW.md
 verification: "Windows Godot 4.7.2 synthetic dual process OS lock and alias gate PASS; confirmed import reload gives new scene writer, imported value 4321 and successful disk save; recovery 131/0, transfer 161/0, policy 59/0, startup rejection 7/0, boundaries 22/0; isolated candidate player entry exit 0; Linux runtime not executed here"
 prior_review: "original astra FAIL on 01ddfcaf/56397d3b because plan entry still said S04a not_started; corrected in this audit snapshot, fresh same-object reviews required"
 parent_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
-integration: pending
+integration: "remote and D:\\放置 main at 01ddfcaf678321fafae51162b3bb6665b34e4301; actual 玩游戏.cmd isolated save, restart and two-instance acceptance completed; independent integration review pending"
+integration_record: stages/S04a/LOCAL_INTEGRATION.md
+integration_parent_review: {verdict: PENDING, reviewed_evidence_sha: null, unresolved: []}
+integration_astra_review: {verdict: PENDING, reviewed_evidence_sha: null, unresolved: []}
 closure: pending
 next_stage_allowed: false
 ```

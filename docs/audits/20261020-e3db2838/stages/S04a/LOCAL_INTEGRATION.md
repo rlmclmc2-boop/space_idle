@@ -1,0 +1,27 @@
+# S04a local main and player entry acceptance
+
+Approved runtime: `01ddfcaf678321fafae51162b3bb6665b34e4301` (tree `46975cef1cd058b859525873b85b35453b26e8e3`). Frozen implementation evidence: `36e4412197be2b66948cd17f5f1d1a8327ed8c73`. Parent and original astra approved the same objects in `FINAL_REVIEW.md` at formal audit commit `422bba97030620ba9e4dab656222f8e3855b52fa`.
+
+## Protected local checkout
+
+The actual `D:\放置` checkout fast-forwarded from `abb68a7f7014dafee73c2f8c48a856aaddec0456` to the approved runtime. Local `HEAD` and `origin/main` read back as `01ddfcaf678321fafae51162b3bb6665b34e4301`. Before integration, 164 tracked modifications comprised 163 generated `.import` files and `space-battleship/project.godot`; 856 untracked generated or local files also existed. The seven approved runtime paths did not conflict. After integration the local `project.godot` SHA256 remained `c9716e3eeb59e2ee5412549077b79f35cac9c96907a61c9c88e2fabb0154191a`. No personal save, local edit, or untracked file was reset or deleted.
+
+## Actual launcher and synthetic save
+
+The real `玩游戏.cmd` was invoked from a clean clone of that integrated main under `C:\Users\Administrator\AppData\Local\Temp\s04a-player-main-integration-20261021`. Its pinned Python 3.12.10 runtime was copied from the local accepted installation; `SPACE_BATTLESHIP_ENGINE_PATH` named the accepted Godot 4.7.2 executable; `SPACE_BATTLESHIP_VERIFY_WINDOW=1` redirected `APPDATA` and `LOCALAPPDATA` to the clone's `test/work/player-window-check/userdata`. The GitHub origin URL and `origin/main` in the clone matched integrated main. The clone's ordinary user data and all `D:\放置` personal saves were unused.
+
+An initial invocation using the Windows 8.3 spelling `C:\Users\ADMINI~1\...` failed before launch because the sandbox denied PowerShell's current-directory resolution. Calling the same unmodified batch file using its long absolute path succeeded. The debug-only bootstrap edit was restored before the successful run. This path-specific sandbox failure did not reach the player or its save code.
+
+Actual batch startup exited 0 at 120 frames. Its receipt recorded main `01ddfcaf678321fafae51162b3bb6665b34e4301`, Godot `4.7.2.stable.official.ed1daf0bf`, installed DLL SHA256 `4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f`, and game data SHA256 `e25cec9db813b1122dae681c37cd990067efab439caec97f1cc4ef889bcf4c4a`. The installed DLL hash matched both the bundled DLL and launcher native inventory. Godot's editor import and game launch completed.
+
+The frozen audit-only `s04a_game_worker.gd`, temporarily copied into the isolated clone after launcher validation, created the first `user://progress.json` through `BattleGame.save_progress()` and reported `owns=true`, `enabled=true`, `save=0`, `startup=""`. That file was 42,647 bytes, SHA256 `94f274ed1ab8279fa117d41731d772c25de748d3794998f41fd4420e341ea91d`. The worker was removed from the clone before invoking the actual batch file again. The restart exited 0 at 120 frames and left the synthetic save byte-for-byte unchanged at that SHA; the DLL remained the accepted SHA. No `SCRIPT ERROR` or parse error appeared in the captured worker or final launcher game logs.
+
+## Two actual entry instances
+
+The first `玩游戏.cmd` ran for up to 3,600 frames against that same synthetic user data. While it was alive and after its game started, an independent Windows `File.Open(..., FileShare.None)` attempt on `progress.json.writer-lock` failed with sharing contention. A second actual `玩游戏.cmd` using the same user data launched and exited 0 after 120 frames while the first remained alive. The synthetic save SHA still equaled `94f274ed1ab8279fa117d41731d772c25de748d3794998f41fd4420e341ea91d` during that overlap.
+
+While the first batch instance held the lock, the frozen `s04a_game_worker.gd` in a separate Godot process reported `owns=false`, `enabled=false`, `initial=22`, `save=22`, `import=22`, `clear=22`, `recovery=22`; error 22 is `ERR_ALREADY_IN_USE`. A separate `s04a_ui_worker.gd` process reported `warned=true`, `processing=true`, `save_enabled=false`. Both exited 0. The first batch process subsequently exited; the independent Windows exclusive-open probe then succeeded. A new game worker process acquired ownership, reported `owns=true`, `enabled=true`, `save=0`, and exited 0. Its later save updated the synthetic file to 45,894 bytes, SHA256 `6ca6e21877bdc06fef5b936673b9dfe9a3985de3732c90d66df2e0d53a114bcb`. This post-release change was made only by the newly owning test worker.
+
+The four small worker logs and launcher receipt are saved under `local-integration-logs/`; no synthetic progress file or generated import cache is committed. Each worker log contains only the known Godot environment error `Failed to read the root certificate store` plus the expected result, with no script or parse errors. The launcher game log likewise contains that certificate-store error and no script or parse errors. The `s04a_game_worker.gd` and `s04a_ui_worker.gd` used here are the frozen audited worker sources, not runtime additions.
+
+S04a remains open for independent review of this integration record, parent closure, and thread archive. S05 has not started.

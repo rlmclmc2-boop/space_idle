@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04 closed; S04a dual PASS, integration pending; later stages not started",
+  "scope": "S00-S04 closed; S04a runtime dual PASS and main/local integration completed, integration review pending; later stages not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -55,14 +55,16 @@
     "s04a_runtime_and_evidence_separated": true,
     "s04a_confirmed_import_scene_reload_pass": true,
     "s04a_dual_review_pending": false,
-    "s04a_dual_pass_same_objects": true
+    "s04a_dual_pass_same_objects": true,
+    "s04a_main_fast_forwarded_to_approved_runtime": true,
+    "s04a_actual_entry_restart_and_two_instance_pass": true
   },
   "stages": 26,
   "active_stage": "S04a",
-  "active_stage_status": "approved",
+  "active_stage_status": "integration_review",
   "other_stage_status": "not_started",
   "product_code_changed": true,
-  "main_integrated": false,
+  "main_integrated": true,
   "closed_stages": [
     "S00",
     "S01",
@@ -76,11 +78,13 @@
   "implementation_thread_id": "01a15b03-d9f7-710e-b869-ca083a8f90d5",
   "active_runtime_candidate_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
   "active_runtime_tree": "46975cef1cd058b859525873b85b35453b26e8e3",
-  "active_audit_branch": "s04a/audit-evidence",
+  "active_audit_branch": "audit/code-review-e3db2838-20261020",
   "active_evidence_entry": "stages/S04a/REVIEW_RECORD.md",
-  "active_stage_main_integrated": false,
+  "active_stage_main_integrated": true,
   "active_stage_closed": false,
   "closed_stages_main_integrated": true,
-  "last_integrated_main_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
-  "active_frozen_evidence_sha": "36e4412197be2b66948cd17f5f1d1a8327ed8c73"
+  "last_integrated_main_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
+  "active_frozen_evidence_sha": "36e4412197be2b66948cd17f5f1d1a8327ed8c73",
+  "active_integration_record": "stages/S04a/LOCAL_INTEGRATION.md",
+  "active_integration_review_pending": true
 }
