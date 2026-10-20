@@ -131,11 +131,24 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
- # Early durable saves could omit this hint; the loader derives the stage from
- # cleared levels. Add its historical default on a copy before shared checks.
- if int(raw.version)<BattleGame.SAVE_VERSION and not raw.has("highestLevel"):
+ # Full v5 writers have always emitted this core. Sparse historical snapshots
+ # still load if no complete committed copy exists, but cannot outrank one.
+ var core := ["resources","highestLevel","cleared","unlocked","selectedShip","loadout","moduleVersion"] if int(raw.version)==BattleGame.SAVE_VERSION else ["resources","cleared","unlocked","selectedShip"]
+ var complete := core.all(func(key):return raw.has(key))
+ if int(raw.version)==BattleGame.SAVE_VERSION and complete:
+  complete=raw.loadout is Dictionary and raw.loadout.has("weapons") and raw.loadout.has("defence")
+ # The old loader defaults this hint when absent. Normalize only a copy.
+ if not raw.has("highestLevel"):
   raw=raw.merged({"highestLevel":1})
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
+ # The durable loader historically ignored negative balances, retaining the
+ # fresh profile's starting value. Keep that compatibility for sparse saves.
+ if not complete:
+  for id in ["1","2"]:
+   var amount = raw.resources[id]
+   if (amount is int or amount is float) and is_finite(float(amount)) and float(amount)<0:
+    raw=raw.duplicate(true)
+    raw.resources[id]=ceilf(float(db.defaults.startingIron if id=="1" else db.defaults.startingTitanium))
  if not shape(raw,schema()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
@@ -152,7 +165,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  var candidate:=BattleGame.new(db,false)
  candidate.load_progress_data(clean(raw,schema()))
  candidate.reset_player()
- return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip}
+ return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip,"quality":"complete" if complete else "compatible_sparse"}
 
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()

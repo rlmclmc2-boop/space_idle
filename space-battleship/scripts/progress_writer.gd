@@ -32,8 +32,12 @@ func _commit_temp() -> Error:
 	# the new file is installed; load also accepts this backup after interruption.
 	var displaced := ""
 	if FileAccess.file_exists(path):
-		# A damaged primary must never replace a good recovery copy.
-		if _read_progress_file(path, validation_db) == null and _read_progress_file(path + ".bak", validation_db) != null:
+		var primary_check := _check_progress_file(path, validation_db)
+		var backup_check := _check_progress_file(path + ".bak", validation_db)
+		if not primary_check.error.is_empty() and not backup_check.error.is_empty():return ERR_FILE_CORRUPT
+		var backup_preferred: bool = backup_check.error.is_empty() and (not primary_check.error.is_empty() or (primary_check.quality == "compatible_sparse" and backup_check.quality == "complete"))
+		# A damaged or sparse primary must never replace a complete recovery copy.
+		if backup_preferred:
 			# Retain the rejected bytes, including when installing the new file fails.
 			displaced = path + ".rejected"
 			if FileAccess.file_exists(displaced) or DirAccess.dir_exists_absolute(displaced):return ERR_ALREADY_EXISTS
@@ -99,13 +103,17 @@ static func read_progress_result(path: String, db: ShipDatabase = null) -> Dicti
 			active = _import_owner_running(int(pid))
 	var found := FileAccess.file_exists(marker) or FileAccess.file_exists(path+".import-new")
 	var rejected := []
+	var best := {}
 	for suffix in ["", ".import-prev", ".bak"]:
 		if not FileAccess.file_exists(path+suffix):continue
 		found = true
 		var checked := _check_progress_file(path + suffix, db)
 		if checked.error.is_empty():
-			return {"status":"loaded", "source":suffix, "data":checked.data, "rejected":rejected, "import_active":active}
-		rejected.append({"source":suffix, "error":checked.error})
+			if best.is_empty() or (checked.quality == "complete" and best.quality != "complete"):
+				best = {"status":"loaded", "source":suffix, "data":checked.data, "quality":checked.quality, "rejected":rejected, "import_active":active}
+		else:
+			rejected.append({"source":suffix, "error":checked.error})
+	if not best.is_empty():return best
 	return {"status":"invalid" if found else "absent", "source":"", "data":null, "rejected":rejected, "import_active":active}
 
 static func finish_loaded_recovery(path: String, result: Dictionary) -> Error:

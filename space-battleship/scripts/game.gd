@@ -353,7 +353,14 @@ func load_progress() -> void:
 	if result.status == "loaded":
 		load_progress_data(result.data)
 		if hyperspace.last_error.is_empty():
-			progress_writer.finish_loaded_recovery(SAVE_PATH,result)
+			var recovery_error := progress_writer.finish_loaded_recovery(SAVE_PATH,result)
+			if recovery_error != OK:
+				# The selected state is live, but unresolved disk recovery must not
+				# allow an automatic or manual save to overwrite any evidence.
+				startup_error="progress_recovery_pending"
+				save_enabled=false
+				paused=true
+				last_save_error=recovery_error
 			return
 	elif result.status == "absent":return
 	# A rejected existing save must never become an autosaved fresh profile.
