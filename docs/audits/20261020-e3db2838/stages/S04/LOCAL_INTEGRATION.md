@@ -48,4 +48,15 @@ Both captured entry outputs, seed and both read-back outputs, and final `player-
 
 ## Candidate branch assessment
 
-Fresh remote `main` and `s04/durable-recovery` both resolve to `abb68a7f7014dafee73c2f8c48a856aaddec0456`. `git rev-list --count main..origin/s04/durable-recovery` returned `0`, and `merge-base --is-ancestor origin/s04/durable-recovery main` exited `0`. The candidate branch has no unique unmerged work; it has **not** been deleted. Stage closure and S04a remain pending parent direction.
+Fresh remote `main` and `s04/durable-recovery` both resolved to `abb68a7f7014dafee73c2f8c48a856aaddec0456`. `git rev-list --count main..origin/s04/durable-recovery` returned `0`, and `merge-base --is-ancestor origin/s04/durable-recovery main` exited `0`. The audit branch retained the complete evidence at `5522fdded558d4831a447fbef593dcee766437e2`.
+
+The parent and original astra independently reviewed that same integration evidence commit and both returned **PASS**, unresolved 0. Their acceptance covers the isolated full-save load and actual entry startup/reopen; it does not extend to real power loss, multi-instance behavior, or long-running play.
+
+After those approvals, the only temporary S04 remote branch was deleted with an exact-SHA lease:
+
+```powershell
+git -c safe.directory='D:/放置' -C 'D:\放置' push --force-with-lease=refs/heads/s04/durable-recovery:abb68a7f7014dafee73c2f8c48a856aaddec0456 origin --delete s04/durable-recovery
+git -c safe.directory='D:/放置' -C 'D:\放置' ls-remote origin refs/heads/main refs/heads/s04/durable-recovery refs/heads/audit/code-review-e3db2838-20261020
+```
+
+The delete exited 0. The read-back returned only `main` at `abb68a7f7014dafee73c2f8c48a856aaddec0456` and the audit branch at `5522fdded558d4831a447fbef593dcee766437e2`; the deleted branch was absent. No other branch or local uncommitted content was deleted. Stage closure and thread archive belong to the parent; S04a remains blocked.

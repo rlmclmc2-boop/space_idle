@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S03 closed; S04 dual PASS and local integration complete; S04 closure pending",
+  "scope": "S00-S03 closed; S04 runtime and integration dual PASS, local verification complete, redundant branch deleted; S04 closure pending",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -47,7 +47,8 @@
     "s04_local_main_matches_approved": true,
     "s04_player_entry_full_save_reopen_exit_zero": true,
     "s04_isolated_user_data": true,
-    "s04_branch_no_unique_work_retained": true
+    "s04_integration_dual_pass_same_evidence": true,
+    "s04_branch_no_unique_work_deleted": true
   },
   "stages": 26,
   "active_stage": "S04",

@@ -413,8 +413,11 @@ prior_review: "父级与原 astra 对 d51d9cab/e04e6a9a、3d24f84a/e7736cd1 均�
 parent_review: {verdict: PASS, reviewed_runtime_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456, reviewed_evidence_sha: c345de52867a38a2cc0db6baadb2a53b2daa37aa, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456, reviewed_evidence_sha: c345de52867a38a2cc0db6baadb2a53b2daa37aa, unresolved: []}
 review_record: stages/S04/FINAL_REVIEW.md
-integration: "remote and D:\\放置 main at abb68a7f7014dafee73c2f8c48a856aaddec0456; actual 玩游戏.cmd isolated full-save startup and reopen exit 0; stages/S04/LOCAL_INTEGRATION.md"
+integration: "remote and D:\\放置 main at abb68a7f7014dafee73c2f8c48a856aaddec0456; actual 玩游戏.cmd isolated full-save startup and reopen exit 0; parent and original astra both PASS on audit integration commit 5522fdded558d4831a447fbef593dcee766437e2"
 integration_record: stages/S04/LOCAL_INTEGRATION.md
+integration_parent_review: {verdict: PASS, reviewed_evidence_sha: 5522fdded558d4831a447fbef593dcee766437e2, unresolved: []}
+integration_astra_review: {verdict: PASS, reviewed_evidence_sha: 5522fdded558d4831a447fbef593dcee766437e2, unresolved: []}
+branch_cleanup: {branch: s04/durable-recovery, approved_runtime_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456, unique_unmerged_commits: 0, remote_deleted: true, remote_readback_absent: true}
 closure: open
 next_stage_allowed: false
 ```
