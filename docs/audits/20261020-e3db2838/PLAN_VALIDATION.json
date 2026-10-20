@@ -28,11 +28,11 @@
     "s03_baseline_reproduced": true,
     "s03_transfer_154_checks_s01_gate_pass": true,
     "s03_runtime_tree_matches_tested_tree": true,
-    "s03_dual_review_pending": true
+    "s03_dual_pass_same_runtime_and_evidence": true
   },
   "stages": 26,
   "active_stage": "S03",
-  "active_stage_status": "review",
+  "active_stage_status": "approved",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": false,
@@ -43,6 +43,6 @@
   ],
   "runtime_final_sha": "0d01530bdce168a55d0ce7c835f17072d66d6bc7",
   "runtime_tree": "10bf32ba2e060cde7269b6f54459a989e5b5538b",
-  "evidence_snapshot_sha": "bf34457d48efe7d0975c1f958e11abab11ae225d",
+  "evidence_snapshot_sha": "e187f60aea5d5d0aad86718416914af915d44032",
   "implementation_thread_id": "01a15a8e-35c8-7632-8baf-8af7060310cd"
 }
