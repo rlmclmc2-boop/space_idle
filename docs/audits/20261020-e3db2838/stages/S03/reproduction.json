@@ -17,5 +17,5 @@
   },
   "diff_check": "pass",
   "review": "pending parent and astra",
-  "remote_publication": "runtime branch published after explicit authorization; audit evidence publication pending"
+  "remote_publication": "runtime branch and audit evidence published after explicit authorization"
 }
