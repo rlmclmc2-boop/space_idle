@@ -1,13 +1,13 @@
-# 当前：方向性装甲炮塔设计 05，待父审
+# 当前：原稿炮机结构设计 06，待父审
 
-04在父审中被否决，未交用户验收。本轮采用收束浅色前甲、宽厚深色后舱和可辨短炮口，内部先检查同尺寸正向/转向，再整理交付。
+05父审不通过。本轮回到15a102ac白色侧护甲包住深色炮机的结构，保留炮机高度、暗侧面和连接件，只缩短外露炮管。
 
-1. [先看正常尺寸 -35/0/+35 度方向对照](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/direction-check.png)
-2. [与04正常尺寸对比](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/normal-comparison.png)
-3. [八版整舰、转向与细节](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/design-board.png)
-4. [设计说明和HTML](../../art_sources/enemy-fleet-20261019/cannon-design-review-05/README.md)
+1. [正常尺寸前后对比](../../art_sources/enemy-fleet-20261019/cannon-design-review-06/normal-comparison.png)
+2. [八版整舰、转向与原稿局部对照](../../art_sources/enemy-fleet-20261019/cannon-design-review-06/design-board.png)
+3. [同尺寸 -35/0/+35 度](../../art_sources/enemy-fleet-20261019/cannon-design-review-06/direction-check.png)
+4. [设计说明与HTML](../../art_sources/enemy-fleet-20261019/cannon-design-review-06/README.md)
 
-仅静态设计稿，未接入游戏，未合main。舰体和底座原PNG、生产资源、挂点和数值配置均未改。下方为已否决旧实机候选的历史证据，不代表当前设计。
+仅静态设计稿，未接入、未合main。舰体与固定底座原PNG、生产资源、挂点及数值配置未改。下方为已否决旧实机候选，不代表当前设计。
 
 ---
 

@@ -1,0 +1,45 @@
+{
+  "design_only": true,
+  "baseline": "dca7001a",
+  "style_and_structure_authority": "15a102ac",
+  "all_eight_hull_pngs_byte_identical": true,
+  "runtime_data_scripts_config_qa_importer_tests_unchanged": true,
+  "game_not_launched": true,
+  "main_not_merged": true,
+  "native_housing_width_min_max": [
+    15.664306144329895,
+    18.896556756756755
+  ],
+  "native_dark_breech_width_min_max": [
+    4.716135183239108,
+    5.689285905260099
+  ],
+  "native_trunnion_span_min_max": [
+    8.590103369471233,
+    10.362627898866608
+  ],
+  "native_exposed_barrel_length_min_max": [
+    2.9981145093448616,
+    3.616760325486777
+  ],
+  "native_barrel_width_min_max": [
+    2.1896341922181572,
+    2.6414541702993315
+  ],
+  "source_sha256": "842ec05354622e5d578ad6f95c181d2693d9fccf7bd7d611ad2025813ed7e41d",
+  "source_mode": "RGBA",
+  "direction_panel_size": [
+    900,
+    737
+  ],
+  "native_comparison_size": [
+    760,
+    669
+  ],
+  "full_board_size": [
+    1240,
+    1142
+  ],
+  "internal_review": "normal-scale dark mechanism / white side armor / short muzzle separately inspected, plus both cases at0/\u00b135 and all eight; source reference detail provided",
+  "pending_parent_visual_review": true
+}
