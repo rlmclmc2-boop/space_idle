@@ -1,3 +1,5 @@
+> 本版已否决。当前继续稿： [04正常尺寸对比](../cannon-design-review-04/normal-comparison.png) / [04设计说明](../cannon-design-review-04/README.md)。仍仅设计，未接入。
+
 # 炮身设计审阅 03 · 未接入
 
 45fe11a2因外观被否决。本轮遵照补充方向：炮塔主体承担主要造型，外露炮管缩短并收细，不再用粗长炮管表达朝向。当前仅交设计稿，等待用户确认；不替换runtime，不接入游戏，不合main。

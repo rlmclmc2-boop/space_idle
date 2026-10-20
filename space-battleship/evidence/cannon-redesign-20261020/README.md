@@ -1,10 +1,12 @@
-# 当前：炮身设计稿，等待确认
+# 当前：宽扁装甲炮塔设计 04，等待外观确认
 
-45fe11a2的炮身外观已被否决。本轮只出设计稿，不再次接入游戏。新稿依照15a102ac审美，改为炮塔主体主导、短细外露炮管。
+03941bf5的细长尖状设计已被否决。本轮先按正常整舰比例自查，旋转主体改为宽扁厚实的装甲炮塔，短细炮管只小幅突出。
 
-[看设计板：细节 + 原舰体正常比例](../../art_sources/enemy-fleet-20261019/cannon-design-review-03/design-board.png) · [HTML原比例](../../art_sources/enemy-fleet-20261019/cannon-design-review-03/review.html) · [设计说明](../../art_sources/enemy-fleet-20261019/cannon-design-review-03/README.md)
+1. [先看正常尺寸前后对比](../../art_sources/enemy-fleet-20261019/cannon-design-review-04/normal-comparison.png)
+2. [八版整舰、转向与细节板](../../art_sources/enemy-fleet-20261019/cannon-design-review-04/design-board.png)
+3. [设计说明与HTML入口](../../art_sources/enemy-fleet-20261019/cannon-design-review-04/README.md)
 
-以上是静态设计示意，不是实机图。舰体/底座、生产资源、挂点和配置均未改。等待外观确认后再接入，不合main。以下保留的旧实机图仅作历史对比，不代表当前送审稿。
+以上均是静态设计示意，未接入游戏。舰体和固定底座原PNG、生产资源、挂点和数值配置均未改。不合main，等外观确认。下方仅保留已否决的旧实机候选，不是当前送审图。
 
 ---
 

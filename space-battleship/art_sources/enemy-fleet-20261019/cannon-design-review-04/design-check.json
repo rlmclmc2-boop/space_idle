@@ -1,0 +1,33 @@
+{
+  "design_only": true,
+  "baseline": "03941bf5",
+  "runtime_assets_data_scripts_config_and_qa_unchanged": true,
+  "eight_hull_pngs_byte_identical": true,
+  "no_game_launch_or_import": true,
+  "main_not_merged": true,
+  "source_rgba": true,
+  "body_width_to_length": 1.6073232323232323,
+  "native_housing_width_min_max": [
+    16.31698556701031,
+    19.683913288288288
+  ],
+  "native_housing_length_min_max": [
+    10.151651664628567,
+    12.246393813294834
+  ],
+  "native_exposed_barrel_length_min_max": [
+    2.614819368161904,
+    3.1543741640304876
+  ],
+  "normal_comparison_size": [
+    760,
+    669
+  ],
+  "full_board_size": [
+    1240,
+    1115
+  ],
+  "source_sha256": "99a3b1fe432085d37c1a667b1087dea28b38d59ef1aaea76ee934a8871b4e264",
+  "visual_self_review": "normal-size whole-hull comparison first; broad mass fills bearing face; no elongated pointed shell; short narrow protrusion; all eight and turns inspected",
+  "waiting_for_user_visual_review": true
+}
