@@ -126,23 +126,53 @@ try {
     foreach ($folder in @('Desktop','Documents','Downloads','Music','Pictures','Videos')) {
         New-Item -ItemType Directory -Force -Path (Join-Path $run ('user/' + $folder)) | Out-Null
     }
-    foreach ($file in @('project.godot','main.tscn')) { Copy-Item -LiteralPath (Join-Path $project $file) -Destination $staging }
-    foreach ($folder in @('scripts','assets')) { Copy-Item -LiteralPath (Join-Path $project $folder) -Destination $staging -Recurse }
-    New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
-    foreach ($dataFile in @('game_data.json','ui_text.json','ui_text_contract.json','ship_weapon_visuals.json','hyperspace_config.json','hyperspace_entity_schema.json','hyperspace_visuals.json','space_enemy_candidates.json','space_enemy_reward_catalog.json','space_enemy_reward_recipes.json','space_enemy_reward_sources.json','space_enemy_routes.json')) {
-        Copy-Item -LiteralPath (Join-Path $project "data/$dataFile") -Destination (Join-Path $staging 'data')
+    $manifestPath = Join-Path $PSScriptRoot 'player_required_data.json'
+    if (!(Test-Path -LiteralPath $manifestPath -PathType Leaf)) { throw "Missing player resource manifest: $manifestPath" }
+    $manifest = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $requiredDirectories = @($manifest.required_directories)
+    $requiredFiles = @($manifest.required_files)
+    $requiredData = @($manifest.required_data)
+    if ($manifest.schema_version -ne 1 -or $requiredDirectories.Count -eq 0 -or $requiredFiles.Count -eq 0 -or $requiredData.Count -eq 0 -or
+        @($requiredDirectories | Where-Object { $_ -isnot [string] -or $_ -cnotmatch '^[a-z0-9_]+$' }).Count -ne 0 -or
+        @($requiredDirectories | Select-Object -Unique).Count -ne $requiredDirectories.Count -or
+        @($requiredFiles | Where-Object { $_ -isnot [string] -or $_ -cnotmatch '^[A-Za-z0-9_./-]+$' -or $_ -match '(^|/)\.\.?(/|$)' }).Count -ne 0 -or
+        @($requiredFiles | Select-Object -Unique).Count -ne $requiredFiles.Count -or
+        @($requiredData | Where-Object { $_ -isnot [string] -or $_ -cnotmatch '^[a-z0-9_]+\.json$' }).Count -ne 0 -or
+        @($requiredData | Select-Object -Unique).Count -ne $requiredData.Count) {
+        throw "Invalid player resource manifest: $manifestPath"
     }
-    # Only runtime extension metadata/binary and the presentation resources it uses.
-    foreach ($relative in @('addons/native_battle/space_native.gdextension','bin/space_native.dll','addons/flexible_toon_shader/flexible_toon.gdshader','addons/flexible_toon_shader/LICENSE','dev/toon_ship/chain_vfx.gd','dev/toon_ship/missile_vfx.gd','dev/toon_ship/continuous_beam_vfx.gd','dev/toon_ship/rail_vfx.gd','dev/toon_ship/pulse_vfx.gd','dev/toon_ship/hybrid_layout.gd','dev/toon_ship/hybrid_manifest.json','dev/toon_ship/shield.gdshader','dev/toon_ship/exhaust.gdshader')) {
+    foreach ($folder in $requiredDirectories) {
+        $source = Join-Path $project $folder
+        if (!(Test-Path -LiteralPath $source -PathType Container)) { throw "Missing required player directory: $source" }
+        Copy-Item -LiteralPath $source -Destination $staging -Recurse
+        if (!(Test-Path -LiteralPath (Join-Path $staging $folder) -PathType Container)) {
+            throw "Missing staged player directory: $folder"
+        }
+    }
+    foreach ($relative in $requiredFiles) {
+        $source = Join-Path $project $relative
+        if (!(Test-Path -LiteralPath $source -PathType Leaf)) { throw "Missing required player file: $source" }
         $destination = Join-Path $staging $relative
         New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
-        Copy-Item -LiteralPath (Join-Path $project $relative) -Destination $destination
+        Copy-Item -LiteralPath $source -Destination $destination
+        if (!(Test-Path -LiteralPath $destination -PathType Leaf) -or
+            (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne
+            (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash) {
+            throw "Missing or changed staged player file: $relative"
+        }
     }
-    foreach ($folder in @('hulls','weapons')) {
-        $destination = Join-Path $staging ('dev/toon_ship/' + $folder)
-        New-Item -ItemType Directory -Force -Path $destination | Out-Null
-        foreach ($file in Get-ChildItem -LiteralPath (Join-Path $project ('dev/toon_ship/' + $folder)) -File | Where-Object { $_.Extension -in @('.glb','.tscn') }) {
-            Copy-Item -LiteralPath $file.FullName -Destination $destination
+    New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
+    foreach ($dataFile in $requiredData) {
+        $source = Join-Path $project "data/$dataFile"
+        if (!(Test-Path -LiteralPath $source -PathType Leaf)) { throw "Missing required player data: $source" }
+        Copy-Item -LiteralPath $source -Destination (Join-Path $staging 'data')
+    }
+    foreach ($dataFile in $requiredData) {
+        $staged = Join-Path $staging "data/$dataFile"
+        if (!(Test-Path -LiteralPath $staged -PathType Leaf)) { throw "Missing staged player data: $staged" }
+        if ((Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash -ne
+            (Get-FileHash -LiteralPath (Join-Path $project "data/$dataFile") -Algorithm SHA256).Hash) {
+            throw "Staged player data differs from source: $dataFile"
         }
     }
     $nativeHash = (Get-FileHash -LiteralPath (Join-Path $project 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
