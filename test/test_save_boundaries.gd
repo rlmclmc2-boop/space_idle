@@ -65,6 +65,7 @@ func _initialize() -> void:
 	check(FileAccess.file_exists(BattleGame.SAVE_PATH+".tmp"),"Observed rename failure retains temporary data; not an atomicity guarantee")
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH)
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
+	loaded.progress_writer._owner = null
 	# Loading may credit particles, but must discard the retired charge state.
 	db.config.offlineMax = 1.0/3600.0
 	var seed := BattleGame.new(db,false)
@@ -91,6 +92,8 @@ func _initialize() -> void:
 	var repeated := BattleGame.new(db,true)
 	check(repeated.profile.resources==settled.profile.resources and repeated.profile.chronoParticles==settled.profile.chronoParticles,"Immediate repeat cannot reclaim offline particle credit")
 	var immediate := LoadOrderGame.new(db,false)
+	settled.progress_writer._owner = null
+	check(immediate.progress_writer.acquire_owner(),"Isolated reactor fixture acquires ownership")
 	immediate.save_enabled = true
 	immediate.profile.cleared = [1]
 	immediate.profile.resources["2"] = 1000.0

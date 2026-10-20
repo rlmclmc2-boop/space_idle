@@ -81,6 +81,7 @@ func run() -> void:
 	check(OS.get_user_data_dir().replace("\\","/").begins_with(area),"Player data stays inside isolated test directory")
 	var db := ShipDatabase.new()
 	var g := PolicyGame.new(db,false)
+	check(g.progress_writer.acquire_owner(),"Policy fixture acquires the save lock")
 	g.progress_writer.clear_files()
 	g.save_enabled = true
 	check(g.save_interval_minutes==1 and g.next_timed_save_at==60 and g.attempts==0 and g.builds==0,"Startup builds no save snapshot and schedules one real minute")
@@ -114,9 +115,12 @@ func run() -> void:
 	check(g.attempts==4 and g.next_timed_save_at==740,"Pause and multiplier do not suppress the real-time save")
 	var loaded := PolicyGame.new(db,true)
 	check(loaded.save_interval_minutes==2 and loaded.attempts==0 and loaded.builds==0 and loaded.last_successful_save_at==g.last_successful_save_at,"Interval and last success reload without startup write")
+	loaded = null
 
 	# Business operations work normally even when creating a temporary file fails.
+	g.progress_writer = null
 	var business := PolicyGame.new(db,false)
+	check(business.progress_writer.acquire_owner(),"Business fixture acquires released ownership")
 	business.save_enabled = true
 	business.profile.highestLevel = int(db.unlock_row("feature","jewels").level)+1
 	business.profile.resources["1"] = 1.0e9
@@ -165,6 +169,9 @@ func run() -> void:
 	var saved_business = PolicyGame.new(db,false)
 	saved_business.load_progress()
 	check(business.attempts==1 and saved_business.enhancement_level()==31 and saved_business.enhancement_branch_choice("weapons","critical",3)=="B" and saved_business.enhancement_order("weapons")==["critical","repeat","proficiency"],"Timed save reloads purchased level, branch and order together")
+	business = null;saved_business = null
+	g.progress_writer = preload("res://scripts/progress_writer.gd").new()
+	check(g.progress_writer.acquire_owner(),"Policy fixture reacquires after business save")
 
 	# Actual safe-write failures retain committed bytes and live business results.
 	g.paused = false
@@ -175,6 +182,7 @@ func run() -> void:
 	var failed := FailureWriter.new()
 	failed.fail_install = true
 	g.progress_writer = failed
+	check(failed.acquire_owner(),"Failure writer acquires transferred ownership")
 	g.profile.resources["1"] = 200
 	var errors := [0]
 	g.event.connect(func(kind,_payload):
@@ -207,10 +215,13 @@ func run() -> void:
 	check(g.last_save_error==OK and not g.save_dirty and JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)).resources["1"]==200,"Explicit retry commits current memory after recovery")
 	saved = FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
 	g.progress_writer = PartialWriter.new()
+	failed = null
+	check(g.progress_writer.acquire_owner(),"Partial writer acquires transferred ownership")
 	g.profile.resources["1"] = 300
 	g.save_progress()
 	check(g.last_save_error!=OK and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==saved and g.profile.resources["1"]==300,"Truncated temporary write preserves disk and does not undo memory")
 	g.progress_writer = preload("res://scripts/progress_writer.gd").new()
+	check(g.progress_writer.acquire_owner(),"Temporary-open fixture acquires transferred ownership")
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH+".tmp")
 	g.save_progress()
@@ -218,11 +229,14 @@ func run() -> void:
 	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
 
 	# UI integration: actual connected controls, draft preservation and failure text.
+	g.progress_writer = null
 	var scene := SaveScene.new()
 	root.add_child(scene)
 	scene.set_process(false)
 	scene.game.event.disconnect(scene.on_event)
+	scene.game.progress_writer._owner = null
 	scene.game = PolicyGame.new(db,true)
+	check(scene.game.progress_writer.owns_progress(),"UI replacement game acquires ownership")
 	scene.game.event.connect(scene.on_event)
 	scene.game.paused = true
 	if DisplayServer.get_name()!="headless":
@@ -275,6 +289,8 @@ func run() -> void:
 	saved = FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
 	scene.free()
 	check(FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==saved,"Scene exit writes nothing")
+	g.progress_writer = preload("res://scripts/progress_writer.gd").new()
+	check(g.progress_writer.acquire_owner(),"Cleanup fixture reacquires ownership after scene exit")
 	g.progress_writer.clear_files()
 	var legacy := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
 	legacy.store_string(JSON.stringify({"version":2,"resources":{"1":73,"2":19}}))

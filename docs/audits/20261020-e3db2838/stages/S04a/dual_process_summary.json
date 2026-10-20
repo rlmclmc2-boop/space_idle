@@ -1,0 +1,49 @@
+{
+  "sidecar_remains_after_normal_exit": true,
+  "normal_exit_reacquire": true,
+  "same_save_while_held": "false",
+  "other_save_while_held": "true",
+  "reacquire_after_kill": true,
+  "first_game": {
+    "clear": -1,
+    "enabled": true,
+    "import": -1,
+    "initial": 0,
+    "owns": true,
+    "recovery": -1,
+    "save": 0,
+    "startup": ""
+  },
+  "second_game": {
+    "clear": 22,
+    "enabled": false,
+    "import": 22,
+    "initial": 22,
+    "owns": false,
+    "recovery": 22,
+    "save": 22,
+    "startup": ""
+  },
+  "read_only_ui": {
+    "processing": true,
+    "save_enabled": false,
+    "startup": "",
+    "warned": true
+  },
+  "post_crash_game": {
+    "clear": -1,
+    "enabled": true,
+    "import": -1,
+    "initial": 0,
+    "owns": true,
+    "recovery": -1,
+    "save": 0,
+    "startup": ""
+  },
+  "save_artifacts_during_denial": {
+    "progress.json": "4de4a7dba6eeca84ce211644711432b4764a31d7e812138a90f21edc3e9c083b",
+    "progress.json.writer-lock": "locked-sidecar"
+  },
+  "denied_writes_left_artifacts_identical": true,
+  "native_dll_sha256": "21a6a85131796759bf220e4d7913e0ac2a1cf9d6c589d4176fa1b2b61ffe69d1"
+}

@@ -19,6 +19,7 @@ func _initialize()->void:
 	rejected.save_progress();rejected.next_timed_save_at=0;rejected.check_timed_save()
 	check(FileAccess.get_file_as_bytes(path)==bytes,"manual and timed save cannot overwrite rejected original")
 	check(not FileAccess.file_exists(path+".bak") and not FileAccess.file_exists(path+".tmp"),"rejection creates no replacement or misleading backup")
+	rejected.progress_writer._owner = null
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	source.profile.highestLevel=6;source.profile.cleared=range(1,6);source.rebuild_unlocks()
 	raw=source.portable_save_data();raw.hyperspace.version=4;raw.hyperspace.erase("idle")
@@ -26,6 +27,7 @@ func _initialize()->void:
 	var restored:=BattleGame.new(db,true)
 	check(restored.startup_error.is_empty() and restored.save_enabled and restored.profile.highestLevel==6,"actual persisted v4 startup restores nonfresh stage")
 	check(restored.profile.resources==raw.resources and FileAccess.get_file_as_bytes(path)==bytes,"successful startup preserves balances and original bytes until explicit save")
+	restored.progress_writer._owner = null
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	var fresh:=BattleGame.new(db,true)
 	check(fresh.startup_error.is_empty() and fresh.save_enabled,"genuine first launch remains available")

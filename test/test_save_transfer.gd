@@ -41,6 +41,7 @@ func run() -> void:
  g.resource_samples=[{"time":sample_time,"production_time":495.0,"amount":7.0,"production_base":7.0,"id":"1","origin":"test"}]
  g.profile.hyperspaceReceipt={"round":int(g.profile.hyperspace.round_id),"run":int(g.profile.hyperspace.settled_run),"drone_id":"","unread":true}
  g.save_enabled=true
+ check(g.progress_writer.acquire_owner(),"Synthetic ordinary game acquires the save lock")
  g.save_progress()
  check(g.last_save_error==OK,"Ordinary save writes current progress")
  var ordinary: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
@@ -129,6 +130,7 @@ func run() -> void:
   check(live_backup.data.get(key)==raw[key],"Import pre-backup retains "+key)
  check(live_backup.data.resourceSamples[0].get("production_time")==495.0,"Import pre-backup retains sample production time")
  var restored:=BattleGame.new(db,true)
+ check(not restored.save_enabled and restored.last_save_error==ERR_ALREADY_IN_USE,"Parallel reload reads the committed import without gaining write ownership")
  check(restored.profile.aiTechLevels.singularity==3 and restored.profile.aiTechProgress.singularity==12.5 and restored.profile.aiTechActive=="singularity" and restored.profile.aiTechInput==g.profile.aiTechInput and restored.profile.aiIncomePeak==g.profile.aiIncomePeak and restored.profile.aiTechCompletionUnread,"Imported AI state survives startup")
  check(restored.profile.productionElapsed==500.0 and restored.profile.equipmentSwitchUntil.get(switch_id)==530.0 and restored.resource_samples.size()==1 and restored.resource_samples[0].get("production_time")==495.0,"Imported production clock, equipment deadline and sample survive startup")
  check(restored.profile.hyperspaceReceipt==g.profile.hyperspaceReceipt,"Confirmed import staging and startup reload retain the unread UI marker")
@@ -140,6 +142,7 @@ func run() -> void:
  var repeat:=BattleGame.new(db,true)
  check(repeat.profile.resources==restored.profile.resources,"Repeated import replaces rather than duplicates progress")
  check(transfer.export_progress(g,BattleGame.SAVE_PATH)==ERR_INVALID_PARAMETER,"Export cannot overwrite active progress path")
+ restored=null;repeat=null;transaction.clear();first.clear();second.clear();g=null
  # Recovery of a process interruption between old-primary move and installation.
  FileAccess.open(BattleGame.SAVE_PATH+".import-prev",FileAccess.WRITE).store_string(original)
  DirAccess.remove_absolute(BattleGame.SAVE_PATH)
@@ -147,6 +150,7 @@ func run() -> void:
  var recovery_result:=preload("res://scripts/progress_writer.gd").read_progress_result(BattleGame.SAVE_PATH,db)
  check(recovery_result.status=="loaded" and recovery_result.source==".import-prev" and recovery_result.data.resources["1"]==111 and not FileAccess.file_exists(BattleGame.SAVE_PATH),"Interrupted installation selects the previous committed file without changing disk")
  var recovered_game:=BattleGame.new(db,true)
+ check(recovered_game.progress_writer.owns_progress(),"Recovery startup reacquires released ownership")
  check(recovered_game.profile.resources["1"]==111 and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Successful startup restores the selected committed file")
  check(not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev") and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-new"),"Successful recovery clears owned staging files for retry")
  print("SAVE TRANSFER: %d checks, %d failures"%[checks,failures])

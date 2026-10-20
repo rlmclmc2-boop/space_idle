@@ -18,6 +18,7 @@ MARKERS = {
     "test_config_workbooks.py": "S01_COMPLETE:test_config_workbooks.py",
     "test_save_transfer.gd": "S01_COMPLETE:test_save_transfer.gd",
     "test_save_recovery_s04.gd": "S01_COMPLETE:test_save_recovery_s04.gd",
+    "test_single_writer_s04a.py": "S04A_SINGLE_WRITER_PASS: OS lock, two game processes, running read-only UI, crash retry, separate saves, write entry denials",
 }
 ERROR_LINE = re.compile(
     r"^(?:SCRIPT ERROR:|Parse Error:|Traceback \(most recent call last\):|"
@@ -70,6 +71,8 @@ def main(argv=None):
     parser.add_argument("--godot", type=Path)
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--headless", action="store_true")
+    parser.add_argument("--source-root", type=Path)
+    parser.add_argument("--native-dll", type=Path)
     parser.add_argument("--expect-error", action="append", default=[], metavar="EXACT_LINE",
                         help="Exact full script/parse diagnostic line; repeat for each occurrence")
     args = parser.parse_args(argv)
@@ -83,6 +86,10 @@ def main(argv=None):
         command.extend(("--godot", str(args.godot)))
     if args.headless:
         command.append("--headless")
+    if args.source_root:
+        command.extend(("--source-root", str(args.source_root)))
+    if args.native_dll:
+        command.extend(("--native-dll", str(args.native_dll)))
     output, reasons = run(command, MARKERS[args.test], args.timeout * 2 + 30,
                           args.expect_error)
     print(output, end="" if output.endswith("\n") else "\n")
