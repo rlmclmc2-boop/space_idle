@@ -32,21 +32,43 @@ func install_preview_mounts(scene,enemy:Dictionary)->void:
  var dimensions:Vector2=scene.enemy_hull_rect(enemy,width).size
  var row:Dictionary=scene.visual_config.ships[scene.enemy_ship_key(enemy)]
  row.hardpoints=plan.hardpoints;row.slot_map=plan.slot_map
- var smallest_well:=INF
- for point in row.hardpoints:smallest_well=minf(smallest_well,float(point.socket_well_width_uv))
  var meta:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(str(scene.visual_config.enemy_weapon_interface.movable_gun.manifest)))
- var desired_housing:float=smallest_well*dimensions.x*float(scene.visual_config.enemy_weapon_interface.movable_gun.housing_to_well_ratio)
+ var case_name:=str(enemy.archetype_id)+"_"+str(plan.rank)
+ var coverage:Array=meta.coverage[case_name]
+ var desired_housing:float=float(coverage[0].housing_width_uv)*dimensions.x
  var skin=preload("res://dev/qa/integrated_turret_preview.gd").new()
  skin.configure(meta,desired_housing,width*.42*.9*.45);scene.enemy_recognition=skin
- # This copy is for the explicit isolated fixture only; no production profile changes.
- scene.visual_config.weapons.cannon=scene.visual_config.weapons.cannon.duplicate(true)
- scene.visual_config.weapons.cannon.muzzle=[[skin.muzzle_factor,0]]
- for point in row.hardpoints:
+ for slot in row.hardpoints.size():
+  var point:Dictionary=row.hardpoints[slot]
+  point.qa_housing_width_uv=float(coverage[slot].housing_width_uv)
+  point.qa_outer_bearing_width_uv=float(coverage[slot].outer_bearing_width_uv)
+  point.qa_bearing_coverage=float(coverage[slot].applied_bearing_coverage)
   point.pos=[float(point.pos[0])*dimensions.x/width,float(point.pos[1])*dimensions.y/(width*2.0)]
  enemy.equipment=[];enemy.cooldowns=[]
  for slot in int(plan.slot_count):
   enemy.equipment.append({"name":"cannon-mon"});enemy.cooldowns.append(0.0)
  scene.enemy_pose(enemy).erase("components_signature")
+ # Per-component visual profile copies exist only in this isolated fixture.
+ for component in scene.enemy_weapon_components(enemy):
+  component.profile=component.profile.duplicate(true)
+  var module_width:float=scene.enemy_component_pose(enemy,component).width
+  var housing:float=float(component.hardpoint.qa_housing_width_uv)*dimensions.x
+  var factor:float=(skin.muzzle_px.y-skin.pivot_px.y)*housing/skin.housing_width_px/module_width
+  component.profile.muzzle=[[factor,0]]
+
+func stamp_retained_art(scene,enemy:Dictionary)->void:
+ var record=scene.retained_contacts.records.get(int(enemy.uid))
+ if record==null:return
+ var dimensions:Vector2=scene.enemy_hull_rect(enemy,scene.enemy_render_width(enemy)).size
+ var skin=scene.enemy_recognition
+ for mount in record.mounts:
+  var component=scene.enemy_component_for_slot(enemy,int(mount.owner_slot))
+  var pose:Dictionary=scene.enemy_component_pose(enemy,component)
+  var housing:float=float(component.hardpoint.qa_housing_width_uv)*dimensions.x
+  var factor:float=float(component.profile.muzzle[0][0])
+  mount.node.pieces.body.set_meta("qa_housing_per_w",housing/(float(pose.width)*.45))
+  mount.node.pieces.body.set_meta("qa_muzzle_factor",factor)
+  mount.node.pieces.body.queue_redraw()
 
 class Frame extends Node2D:
  var box:Rect2
@@ -98,6 +120,8 @@ func run()->void:
    production_hero.combat_tier=rank
    for field in ["inner","outer","front","single_front"]:check(production_packet[field]==production_base[field],"production original geometry and equipment retained")
    install_preview_mounts(scene,production_hero)
+   await process_frame;await RenderingServer.frame_post_draw
+   stamp_retained_art(scene,production_hero)
    if case_index==0:
     g.paused=false
     for frame in 130:
@@ -109,6 +133,7 @@ func run()->void:
    g.projectile_clear();scene.projectile_visuals.clear();scene.floats.clear();scene.damage_pending.clear();scene.rail_events.clear();scene.missile_events.clear();scene._pulse_events.clear()
    scene.battle_layer.queue_redraw();scene.pulse_layer.queue_redraw();scene.encounter_presentation.sync(g,0.0)
    var hero:Dictionary=g.enemies[0];var hero_key:String=scene.enemy_ship_key(hero)
+   stamp_retained_art(scene,hero)
    check(hero_key=="enemy_opening_"+key+"_"+rank,"ranked hull selected")
    for i in [1,2]:check(scene.enemy_ship_key(g.enemies[i])=="enemy_opening_sentry","boss escorts do not inherit boss art")
    var point:Vector2=scene.enemy_render_position(hero);var width:float=scene.enemy_render_width(hero);var angle:float=scene.enemy_render_angle(hero)
@@ -141,8 +166,8 @@ func run()->void:
     check(bool(component.hardpoint.stationary_base),"stationary base is baked once into hull, not another rotating disk")
     var skin=scene.enemy_recognition
     var w:float=float(mount_pose.width)*.45
-    var scale:float=w*skin.housing_per_w/skin.housing_width_px
-    var anchor:=Vector2(0,(.64-skin.muzzle_factor/.45)*w)
+    var scale:float=float(mount_pose.port.x)/(skin.muzzle_px.y-skin.pivot_px.y)
+    var anchor:=Vector2(0,.64*w-float(mount_pose.port.x))
     var offset:Vector2=Vector2(mount_pose.origin)+(Vector2(mount_pose.port)-Vector2(.64*w,0)).rotated(mount_pose.angle)
     var painted_axis:Vector2=offset+anchor.rotated(float(mount_pose.angle)-PI/2)
     var painted_muzzle:Vector2=offset+(anchor+(skin.muzzle_px-skin.pivot_px)*scale).rotated(float(mount_pose.angle)-PI/2)
@@ -151,16 +176,15 @@ func run()->void:
     var pixels_per_logical:float=(root.get_final_transform()*scene.battle_clip.get_global_transform_with_canvas()).get_scale().x
     var housing_world:float=skin.housing_width_px*scale
     check(housing_world*pixels_per_logical>=13.0,"gun housing occupies at least thirteen original-window pixels")
-    var barrel_pixels:float=float(gun_meta.barrel_width_px)*scale*pixels_per_logical
-    check(barrel_pixels>=5.0,"barrel silhouette remains at least five original-window pixels wide")
+    var target_housing:float=float(component.hardpoint.qa_housing_width_uv)*rect.size.x
+    check(is_equal_approx(housing_world,target_housing),"actual art uses exact07 normalized per-mount coverage")
     for previous in housing_centres:check(Vector2(mount_pose.origin).distance_to(previous)>housing_world+2.0,"separate rotating housings do not overlap")
     housing_centres.append(mount_pose.origin)
     var probes:Array=[]
     for yaw in [-55.0,0.0,55.0]:
      var yaw_radians:=deg_to_rad(yaw)
-     var housing_radius:float=housing_world*.72
-     var well_world:float=float(component.hardpoint.socket_well_width_uv)*rect.size.x
-     check(housing_radius<well_world*.80,"housing rotation stays supported by integrated foundation shoulders")
+     var bearing_world:float=float(component.hardpoint.qa_outer_bearing_width_uv)*rect.size.x
+     check(housing_world<=bearing_world*.95001,"housing coverage remains within07 outer bearing and hull clamp")
      var gun_box:=Rect2();var first_vertex:=true
      for pixel in [Vector2(gun_used.position),Vector2(gun_used.end.x,gun_used.position.y),Vector2(gun_used.end),Vector2(gun_used.position.x,gun_used.end.y)]:
       var vertex:Vector2=point+Vector2(mount_pose.origin)+((pixel-skin.pivot_px)*scale).rotated(float(mount_pose.angle)-PI/2+yaw_radians)
@@ -168,7 +192,7 @@ func run()->void:
       else:gun_box=gun_box.expand(vertex)
      probes.append({"yaw":yaw,"axis":mount_pose.origin,"opaque_gun_aabb":gun_box,"housing_supported":true})
     rotation_probes.append_array(probes)
-    mounts.append({"slot":component.owner_slot,"socket_centre_px":socket_px,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"housing_pixels":housing_world*pixels_per_logical,"barrel_pixels":barrel_pixels,"rotation_probes":probes})
+    mounts.append({"slot":component.owner_slot,"socket_centre_px":socket_px,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"housing_pixels":housing_world*pixels_per_logical,"coverage_uv":component.hardpoint.qa_housing_width_uv,"bearing_coverage":component.hardpoint.qa_bearing_coverage,"rotation_probes":probes})
    for i in [1,2]:check(g.enemies[i].equipment.size()==1 and scene.enemy_weapon_components(g.enemies[i]).size()==1,"ordinary escorts retain one weapon in QA")
    check(scene.enemy_render_position(hero)==point and is_equal_approx(scene.enemy_render_width(hero),width),"ranked skin does not move or resize model geometry")
    var outline:PackedVector2Array=packet.inner.duplicate();var protection_scale:float=scene.enemy_display_protection_scale(hero,packet,angle)
@@ -204,5 +228,5 @@ func run()->void:
      root.get_texture().get_image().save_png(output.path_join("command-boss-turn-"+str(int(yaw))+".png"))
     scene.enemy_recognition.probe_yaw=0.0
    snapshots.append({"case":key+"_"+rank,"file":filename,"visual_key":hero_key,"actor_size":hero.size,"weapon_slots":expected_slots,"mounts":mounts,"position":point,"model_width":width,"body":body,"display_frame":ruler.box,"health":status.health,"shield":status.shield,"caption":status.caption_bounds,"alpha_centre_error":centre.length()});case_index+=1
- var result={"approved_source":"15a102ac","stationary_foundations_in_hull":true,"movable_gun_independent":true,"window_png":root.get_texture().get_image().get_size(),"checks":checks,"failures":failures,"fires":fires,"hits":hits,"engine":Engine.get_version_info().string,"native_full_run":false,"fixture":"actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged","snapshots":snapshots}
+ var result={"approved_source":"15a102ac","selected_weapon_art":"51aae1ac","coverage_source":"3bed1e2e","stationary_foundations_in_hull":true,"movable_gun_independent":true,"window_png":root.get_texture().get_image().get_size(),"checks":checks,"failures":failures,"fires":fires,"hits":hits,"engine":Engine.get_version_info().string,"native_full_run":false,"fixture":"actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged","snapshots":snapshots}
  FileAccess.open(output.path_join("ranked.json"),FileAccess.WRITE).store_string(JSON.stringify(result,"  "));print("RANKED_CAPTURE ",JSON.stringify(result));quit(1 if failures else 0)

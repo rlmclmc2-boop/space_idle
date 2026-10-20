@@ -1,13 +1,10 @@
-# 当前：未来舰载电磁发射结构外观 10，待审阅
+# 当前：51aae1ac暂定稿已接入候选
 
-09因传统坦克炮造型被否决。本轮仅重新设计旋转武器外观：短分段双导轨、嵌入式发射通道、短分叉前端，明亮主体、少量大件，只有一枚小状态芯，无灯带。实际武器类型、数值和攻击逻辑不变。
+用户暂定造型并停止改稿。素材与07逐底座覆盖已导入，原隔离八版展示已更新；未启用生产1/2/4配装。
 
-1. [正常窗口整舰前后对比](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/normal-comparison.png)
-2. [正常窗口八舰、转向，后附细节](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/design-board.png)
-3. [同尺寸正向/转向](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/direction-check.png)
-4. [设计说明与检查](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/README.md)
+[八版原窗口实机图与本次接入检查](../em-turret-integration-20261020/README.md)
 
-保留07逐底座覆盖尺寸、舰体和固定底座轴心。120角度探针越界0，炮塔不互叠。仅静态设计稿，非实机图；生产资源及配置未改，未接入、未合main。下方为旧实机历史证据。
+一次资产检查及原夹具一次图形运行通过：932检查0失败。舰体、固定底座、数值与编队不变；未合main，交父审。下方旧实机证据只作历史记录。
 
 ---
 

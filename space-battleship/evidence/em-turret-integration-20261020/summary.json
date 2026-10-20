@@ -1,0 +1,59 @@
+{
+  "selected_art": "51aae1ac",
+  "coverage_plan": "3bed1e2e",
+  "checks": 932,
+  "failures": 0,
+  "actual_fires": 49,
+  "actual_hits": 62,
+  "single_existing_fixture_run": true,
+  "no_new_design_generation": true,
+  "raw_window_size": [
+    1372,
+    883
+  ],
+  "eight_case_pngs": 8,
+  "rotation_probe_pngs": 2,
+  "native_housing_pixels_min_max": [
+    17.4068575284644,
+    23.6433174412788
+  ],
+  "normalized_07_coverage_preserved_exactly": true,
+  "selected_source_sha256": "ac007044ef256f22b7a4d262e6467ced7c106b6cdff8677b7988d9d99fb23d35",
+  "coverage_source_sha256": "1273584a3a048c9115e7643784983032fd8f1229095d1051baa9f368dcf5e911",
+  "all_eight_hull_pngs_unchanged": true,
+  "all24_fixed_base_coordinates_and_display_size_unchanged": true,
+  "all_active_profiles_hardpoints_slots_and_numerical_type_damage_cooldown_formation_unchanged": true,
+  "interface_counts_not_applied": {
+    "normal": 1,
+    "elite": 2,
+    "boss": 4
+  },
+  "qa_showcase_only_elite2_boss4": true,
+  "canonical_and_retained_art_used": true,
+  "rotation_pixel_changes": [
+    {
+      "yaw": -35,
+      "changed_pixels": 1416,
+      "difference_bounds": [
+        157,
+        230,
+        245,
+        295
+      ],
+      "changes_confined_to_hero_weapon_region": true
+    },
+    {
+      "yaw": 35,
+      "changed_pixels": 1400,
+      "difference_bounds": [
+        157,
+        230,
+        245,
+        295
+      ],
+      "changes_confined_to_hero_weapon_region": true
+    }
+  ],
+  "native_full_run": false,
+  "main_not_merged": true
+}

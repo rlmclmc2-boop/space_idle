@@ -16,12 +16,18 @@ func draw_weapon(surface:CanvasItem,pos:Vector2,pose:Dictionary,damage_type:int,
  var w:=maxf(1.0/maxf(.1,scale_value),float(pose.width)*.45)
  var shift:=Vector2(pose.port)-Vector2(.64*w,0)
  surface.draw_set_transform(pos+Vector2(pose.origin)+shift.rotated(pose.angle),float(pose.angle)-PI/2)
- draw_weapon_body(surface,w,true)
+ var scale:=float(pose.port.x)/(muzzle_px.y-pivot_px.y)
+ var axis:=Vector2(0,.64*w-float(pose.port.x))
+ draw_gun_quad(surface,scale,axis)
  surface.draw_set_transform(Vector2.ZERO)
 func draw_weapon_body(surface:CanvasItem,w:float,physical:bool)->void:
  if not physical:super.draw_weapon_body(surface,w,physical);return
- var scale:=w*housing_per_w/housing_width_px
- var axis:=Vector2(0,(.64-muzzle_factor/.45)*w)
+ var per_w:=float(surface.get_meta("qa_housing_per_w",housing_per_w))
+ var factor:=float(surface.get_meta("qa_muzzle_factor",muzzle_factor))
+ var scale:=w*per_w/housing_width_px
+ var axis:=Vector2(0,(.64-factor/.45)*w)
+ draw_gun_quad(surface,scale,axis)
+func draw_gun_quad(surface:CanvasItem,scale:float,axis:Vector2)->void:
  var size:Vector2=gun_texture.get_size()
  var points:PackedVector2Array=[]
  for pixel in [Vector2.ZERO,Vector2(size.x,0),size,Vector2(0,size.y)]:points.append(axis+((pixel-pivot_px)*scale).rotated(probe_yaw))

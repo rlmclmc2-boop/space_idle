@@ -1,42 +1,225 @@
 {
-  "source_sha256": "c466f055499a757d479e7ca5167017a2b3a8574103831a92a36dcc3ca9706d29",
+  "approved_art_commit": "51aae1ac",
+  "coverage_commit": "3bed1e2e",
+  "source": "res://art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/cannon-design.png",
+  "source_sha256": "ac007044ef256f22b7a4d262e6467ced7c106b6cdff8677b7988d9d99fb23d35",
   "source_bounds": [
-    205,
-    152,
-    819,
-    1281
+    129,
+    125,
+    1101,
+    1163
   ],
   "source_pivot": [
-    512,
-    1000
+    615,
+    720
   ],
   "source_muzzle": [
-    512,
-    158
+    615,
+    165
   ],
   "pivot_px": [
     159.0,
-    201.22852081488043
+    299.5115606936416
   ],
   "muzzle_px": [
     159.0,
-    552.496899911426
+    445.4797687861272
   ],
   "canvas": [
     320,
     640
   ],
-  "housing_width_px": 256,
-  "barrel_width_px": 96.31270358306189,
-  "source_barrel_scanline": {
-    "y": 500,
-    "opaque_span": [
-      397,
-      628
-    ]
-  },
+  "housing_width_px": 253.36625514403292,
   "runtime_forward": "down",
   "stationary_base_in_sprite": false,
+  "appearance_only": true,
+  "weapon_type_unchanged": true,
   "texture": "res://assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
-  "sha256": "a4ba8f5907b696331220fd4167e7f82d39d6c826782a52202474ac436443cf55"
+  "sha256": "f5252b35125f2667a4451d3648ad51803bc63a5dc3252dafe7dd1496307fb772",
+  "coverage": {
+    "anchor_elite": [
+      {
+        "housing_canvas_width_px": 113.72179054054054,
+        "housing_width_uv": 0.12820945945945947,
+        "outer_bearing_width_uv": 0.16088241567384748,
+        "applied_bearing_coverage": 0.7969140625000001,
+        "reference_screen_width": 22.086433324690315
+      },
+      {
+        "housing_canvas_width_px": 117.16165540540541,
+        "housing_width_uv": 0.13208754837137024,
+        "outer_bearing_width_uv": 0.1499131600597215,
+        "applied_bearing_coverage": 0.8810937500000001,
+        "reference_screen_width": 22.75450534169482
+      }
+    ],
+    "reactive_elite": [
+      {
+        "housing_canvas_width_px": 132.27480916030532,
+        "housing_width_uv": 0.1491260531683262,
+        "outer_bearing_width_uv": 0.15697479280876442,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 22.945610101781163
+      },
+      {
+        "housing_canvas_width_px": 132.27480916030532,
+        "housing_width_uv": 0.1491260531683262,
+        "outer_bearing_width_uv": 0.15697479280876442,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 22.945610101781163
+      }
+    ],
+    "shielded_elite": [
+      {
+        "housing_canvas_width_px": 126.54000000000002,
+        "housing_width_uv": 0.14266065388951524,
+        "outer_bearing_width_uv": 0.15016910935738445,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 22.761088997500003
+      },
+      {
+        "housing_canvas_width_px": 126.54000000000002,
+        "housing_width_uv": 0.14266065388951524,
+        "outer_bearing_width_uv": 0.15016910935738445,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 22.761088997500003
+      }
+    ],
+    "command_elite": [
+      {
+        "housing_canvas_width_px": 137.91825613079018,
+        "housing_width_uv": 0.15548845110573864,
+        "outer_bearing_width_uv": 0.1636720537955144,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 20.45693221798365
+      },
+      {
+        "housing_canvas_width_px": 141.6457765667575,
+        "housing_width_uv": 0.159690841676164,
+        "outer_bearing_width_uv": 0.16809562281701476,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 21.009822277929157
+      }
+    ],
+    "anchor_boss": [
+      {
+        "housing_canvas_width_px": 122.18747282608696,
+        "housing_width_uv": 0.1377536334003235,
+        "outer_bearing_width_uv": 0.1482280280378413,
+        "applied_bearing_coverage": 0.9293359375,
+        "reference_screen_width": 24.643163234755434
+      },
+      {
+        "housing_canvas_width_px": 118.95652173913042,
+        "housing_width_uv": 0.13411107298661828,
+        "outer_bearing_width_uv": 0.1411695505122298,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 23.99153460869565
+      },
+      {
+        "housing_canvas_width_px": 115.98260869565217,
+        "housing_width_uv": 0.13075829616195284,
+        "outer_bearing_width_uv": 0.13764031174942407,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 23.39174624347826
+      },
+      {
+        "housing_canvas_width_px": 118.95652173913042,
+        "housing_width_uv": 0.13411107298661828,
+        "outer_bearing_width_uv": 0.1411695505122298,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 23.99153460869565
+      }
+    ],
+    "reactive_boss": [
+      {
+        "housing_canvas_width_px": 108.01391752577321,
+        "housing_width_uv": 0.12177442787573078,
+        "outer_bearing_width_uv": 0.15062936575274005,
+        "applied_bearing_coverage": 0.8084375,
+        "reference_screen_width": 18.532115851546394
+      },
+      {
+        "housing_canvas_width_px": 108.15947164948453,
+        "housing_width_uv": 0.12193852497123397,
+        "outer_bearing_width_uv": 0.1464452167040528,
+        "applied_bearing_coverage": 0.83265625,
+        "reference_screen_width": 18.557088798969072
+      },
+      {
+        "housing_canvas_width_px": 141.03092783505153,
+        "housing_width_uv": 0.15899766385011446,
+        "outer_bearing_width_uv": 0.16736596194748896,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 24.196895670103093
+      },
+      {
+        "housing_canvas_width_px": 137.50515463917526,
+        "housing_width_uv": 0.15502272225386163,
+        "outer_bearing_width_uv": 0.1631818128988017,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 23.591973278350515
+      }
+    ],
+    "shielded_boss": [
+      {
+        "housing_canvas_width_px": 122.93087557603685,
+        "housing_width_uv": 0.13859174247580255,
+        "outer_bearing_width_uv": 0.1458860447113711,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 23.937383516129028
+      },
+      {
+        "housing_canvas_width_px": 126.08294930875574,
+        "housing_width_uv": 0.142145376898259,
+        "outer_bearing_width_uv": 0.14962671252448317,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 24.551162580645155
+      },
+      {
+        "housing_canvas_width_px": 119.77880184331796,
+        "housing_width_uv": 0.13503810805334607,
+        "outer_bearing_width_uv": 0.14214537689825904,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 23.323604451612898
+      },
+      {
+        "housing_canvas_width_px": 126.08294930875574,
+        "housing_width_uv": 0.142145376898259,
+        "outer_bearing_width_uv": 0.14962671252448317,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 24.551162580645155
+      }
+    ],
+    "command_boss": [
+      {
+        "housing_canvas_width_px": 133.78973105134472,
+        "housing_width_uv": 0.15083396961820147,
+        "outer_bearing_width_uv": 0.15877259959810683,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 22.128780635696817
+      },
+      {
+        "housing_canvas_width_px": 130.44498777506112,
+        "housing_width_uv": 0.14706312037774646,
+        "outer_bearing_width_uv": 0.15480328460815418,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 21.575561119804398
+      },
+      {
+        "housing_canvas_width_px": 130.44498777506112,
+        "housing_width_uv": 0.14706312037774646,
+        "outer_bearing_width_uv": 0.15480328460815418,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 21.575561119804398
+      },
+      {
+        "housing_canvas_width_px": 130.44498777506112,
+        "housing_width_uv": 0.14706312037774646,
+        "outer_bearing_width_uv": 0.15480328460815418,
+        "applied_bearing_coverage": 0.95,
+        "reference_screen_width": 21.575561119804398
+      }
+    ]
+  }
 }

@@ -38,16 +38,28 @@ for key in ['anchor','reactive','shielded','command']:
   for point in points:
    x=round(cx+point['pos'][0]*im.width);y=round(cy+point['pos'][1]*im.height)
    assert im.getpixel((x,y))[3]>80,(key,rank,point['pos'],'mount lies outside hull')
-assert 0<float(interface['movable_gun']['housing_to_well_ratio'])<=1.1
+assert interface['movable_gun']['scale_basis']=='outer_bearing95_percent_hull_clamped_07'
 gun=manifest['gun'];assert interface['movable_gun']['texture']==gun['texture'];gun_path=P/gun['texture'].removeprefix('res://');gun_image=Image.open(gun_path)
 assert gun_image.mode=='RGBA' and gun_image.size==(320,640) and sha(gun_path)==gun['sha256']
 assert not gun['stationary_base_in_sprite'] and gun['runtime_forward']=='down'
 assert abs(gun['pivot_px'][0]-gun['muzzle_px'][0])<.001 and gun['muzzle_px'][1]>gun['pivot_px'][1]
 assert gun_image.getpixel(tuple(round(x) for x in gun['pivot_px']))[3]>230
-source=Image.open(P/'art_sources/enemy-fleet-20261019/bold-cannon-source.png')
-scan=gun['source_barrel_scanline'];xs=np.where(np.asarray(source)[scan['y'],:,3]>230)[0]
-assert [int(xs.min()),int(xs.max()+1)]==scan['opaque_span']
-assert abs(gun['barrel_width_px']-(xs.max()-xs.min()+1)*256/(gun['source_bounds'][2]-gun['source_bounds'][0]))<.001
+assert gun['approved_art_commit']=='51aae1ac' and gun['coverage_commit']=='3bed1e2e'
+assert gun['appearance_only'] and gun['weapon_type_unchanged']
+source_path=P/gun['source'].removeprefix('res://');assert sha(source_path)==gun['source_sha256']
+assert source_path.read_bytes()==subprocess.check_output(['git','show','51aae1ac:space-battleship/'+str(source_path.relative_to(P))],cwd=ROOT)
+coverage=json.loads((P/'art_sources/enemy-fleet-20261019/cannon-coverage-review-07/coverage-measurements.json').read_text())['cases']
+for case,record in coverage.items():
+ for imported,pixels,point in zip(gun['coverage'][case],record['levels'][1]['width_screen'],record['sockets']):
+  expected=pixels/record['screen_per_canvas_pixel']
+  assert abs(imported['housing_canvas_width_px']-expected)<1e-8
+  assert abs(imported['housing_width_uv']-expected/887)<1e-10
+  assert abs(imported['outer_bearing_width_uv']-point['outer_canvas_span']/887)<1e-10
+  assert imported['housing_width_uv']<=imported['outer_bearing_width_uv']*.950001
+candidate=json.loads(subprocess.check_output(['git','show','51aae1ac:space-battleship/data/ship_weapon_visuals.json'],cwd=ROOT))
+assert json.loads((P/'data/ship_weapon_visuals.json').read_text())['weapons']==candidate['weapons']
+for path in (P/'assets/ships/enemy/elite_boss_20261020').glob('*.png'):
+ assert path.read_bytes()==subprocess.check_output(['git','show','51aae1ac:space-battleship/'+str(path.relative_to(P))],cwd=ROOT)
 for key in ['anchor','reactive','shielded','command']:
  for rank in ['elite','boss']:
   pts=interface['archetypes'][key][rank];sockets=manifest['sprites'][key+'_'+rank]['sockets']

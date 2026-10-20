@@ -6,7 +6,9 @@ from PIL import Image
 from scipy import ndimage
 ROOT=Path(__file__).resolve().parents[2]
 SOURCE=Path(__file__).with_name('integrated-empty-bases-atlas.png')
-GUN_SOURCE=SOURCE.with_name('bold-cannon-source.png')
+GUN_SOURCE=SOURCE.parent/'cannon-em-appearance-review-10/cannon-design.png'
+GUN_DESIGN=GUN_SOURCE.with_name('design-meta.json')
+COVERAGE=SOURCE.parent/'cannon-coverage-review-07/coverage-measurements.json'
 OUTPUT=ROOT/'assets/ships/enemy/elite_boss_20261020'
 GUN_OUTPUT=ROOT/'assets/weapons/integrated_ranked_20261020'
 KEYS=['anchor','reactive','shielded','command']
@@ -45,13 +47,20 @@ def main():
  assert min(offset)>=24
  runtime=Image.new('RGBA',(320,640));runtime.alpha_composite(crop.resize(size,Image.Resampling.LANCZOS),offset);runtime=runtime.transpose(Image.Transpose.ROTATE_180);GUN_OUTPUT.mkdir(parents=True,exist_ok=True);target=GUN_OUTPUT/'cannon-rotating.png';runtime.save(target)
  def convert(p):return [319-(offset[0]+(p[0]-box[0])*size[0]/crop.width),639-(offset[1]+(p[1]-box[1])*size[1]/crop.height)]
- gun_meta={'source_sha256':sha(GUN_SOURCE),'source_bounds':list(box),'source_pivot':[512,1000],'source_muzzle':[512,158],'pivot_px':convert([512,1000]),'muzzle_px':convert([512,158]),'canvas':[320,640],'housing_width_px':256,'barrel_width_px':231*size[0]/crop.width,'source_barrel_scanline':{'y':500,'opaque_span':[397,628]},'runtime_forward':'down','stationary_base_in_sprite':False,'texture':'res://'+str(target.relative_to(ROOT)),'sha256':sha(target)}
+ design=json.loads(GUN_DESIGN.read_text());coverage=json.loads(COVERAGE.read_text())['cases']
+ gun_meta={'approved_art_commit':'51aae1ac','coverage_commit':'3bed1e2e','source':'res://'+str(GUN_SOURCE.relative_to(ROOT)),'source_sha256':sha(GUN_SOURCE),'source_bounds':list(box),'source_pivot':design['pivot_source_px'],'source_muzzle':design['visual_aperture_source_px'],'pivot_px':convert(design['pivot_source_px']),'muzzle_px':convert(design['visual_aperture_source_px']),'canvas':[320,640],'housing_width_px':design['housing_width_source_px']*size[0]/crop.width,'runtime_forward':'down','stationary_base_in_sprite':False,'appearance_only':True,'weapon_type_unchanged':True,'texture':'res://'+str(target.relative_to(ROOT)),'sha256':sha(target),'coverage':{}}
+ for case,data in coverage.items():
+  selected=data['levels'][1];rows=[]
+  for point,pixels,factor in zip(data['sockets'],selected['width_screen'],selected['applied_coverages']):
+   canvas_width=pixels/data['screen_per_canvas_pixel']
+   rows.append({'housing_canvas_width_px':canvas_width,'housing_width_uv':canvas_width/887,'outer_bearing_width_uv':point['outer_canvas_span']/887,'applied_bearing_coverage':factor,'reference_screen_width':pixels})
+  gun_meta['coverage'][case]=rows
  (GUN_OUTPUT/'manifest.json').write_text(json.dumps(gun_meta,indent=2)+'\n');report['gun']=gun_meta
  (OUTPUT/'manifest.json').write_text(json.dumps(report,indent=2)+'\n')
  sync_visual_contract(report)
 def sync_visual_contract(report):
  path=ROOT/'data/ship_weapon_visuals.json';text=path.read_text();data=json.loads(text);contract=data['enemy_weapon_interface']
- contract['movable_gun']={'texture':report['gun']['texture'],'manifest':'res://assets/weapons/integrated_ranked_20261020/manifest.json','housing_to_well_ratio':1.10,'stationary_foundation':'baked into hull; do not draw or rotate another base'}
+ contract['movable_gun']={'texture':report['gun']['texture'],'manifest':'res://assets/weapons/integrated_ranked_20261020/manifest.json','scale_basis':'outer_bearing95_percent_hull_clamped_07','coverage_source':'res://art_sources/enemy-fleet-20261019/cannon-coverage-review-07/coverage-measurements.json','stationary_foundation':'baked into hull; do not draw or rotate another base'}
  names=[]
  for key in KEYS:
   for rank in ['elite','boss']:

@@ -1,17 +1,17 @@
 # Enemy fleet source assets
 
-Ordinary eight hulls retain base-eight-transparent.png fromf9af84734145a6df6bcc1998fff15730936aa78a and reactive-refined-approved.png frome9e8da87b96ba8a191b0ba275a344f4733279ba4. prepare_assets.py is their importer; their eight runtime PNGs are unchanged.
+Ordinary eight hulls retain base-eight-transparent.png fromf9af84734145a6df6bcc1998fff15730936aa78a and reactive-refined-approved.png frome9e8da87b96ba8a191b0ba275a344f4733279ba4. prepare_assets.py remains their importer; their runtime PNGs are unchanged.
 
-## Integrated-foundation elite/BOSS hulls
+## Fixed integrated hull foundations
 
-Sole hull design reference: integrated-turret-bases-approved-20261020.png from15a102ac3bee1b43d14e6f9666b8f19c10b21a06. integrated-empty-bases-atlas.png is the imagegen conversion retaining exactly2/4 empty stationary foundations and removing movable weapons; integrated-hulls-request.json records its request. Hull pixels and all24 socket centres remain unchanged during cannon redesign.
+Hull authority: integrated-turret-bases-approved-20261020.png from15a102ac3bee1b43d14e6f9666b8f19c10b21a06. integrated-empty-bases-atlas.png is the conversion retaining2/4 stationary empty foundations, without movable guns. integrated-hulls-request.json records its request. prepare_ranked_assets.py retains these hull pixels and24 measured static pivot coordinates; the selected weapon integration does not change hull geometry/display size.
 
-prepare_ranked_assets.py isolates connected hull components, cleans alpha fringe, crops/scales/centres them, locates dark-well centroids and synchronizes reserved visual metadata. Each elite/BOSS pair shares a source-pixel scale within unchanged2×2/3×2 frame limits. No procedural hull drawing, gun erasure or formation allocator.
+## Selected rotating weapon —51aae1ac
 
-## Current separate rotating cannon
+The user provisionally selected cannon-em-appearance-review-10/cannon-design.png. This exact PNG is now the independent gun input of prepare_ranked_assets.py; no further design generation. The importer reads its design-meta.json for the mechanical pivot and inset visual aperture, performs alpha cleanup/crop/uniform scale/180° direction conversion, and writes assets/weapons/integrated_ranked_20261020/cannon-rotating.png plus manifest.
 
-bold-cannon-source.png and bold-cannon-request.json are the current source and full imagegen request. Approved15a102ac hull sheet is the style reference. A single ivory rear housing, broad graphite barrel and continuous steel directional face replace the rejected small gray-cluster appearance. No small panels/engraving or stationary base. Source pivot(512,1000), muzzle(512,158), barrel opaque span397..627 at y500. Runtime320×640down-forward conversion is technical crop/scale/180° rotation only; manifest records pivot, muzzle, measured barrel width and hashes.
+cannon-coverage-review-07/coverage-measurements.json supplies the already-reviewed95%-outer-bearing target with per-mount hull clamp. Imported manifest stores the exact canvas/UV widths for every elite/BOSS slot; the original24 axis coordinates remain unchanged. The reserved enemy_weapon_interface references this manifest. Coverage is consumed only by the explicit isolated2/4 showcase; production1/2/4 numeric equipment is not activated.
 
-The separate gun housing is110% of the original dark-well width. The fixed foundation shoulders, all8 hull PNGs and24 sockets are unchanged. Isolated main.tscn checks require13px housing and5px barrel width, rotation support/bounds and axis/muzzle alignment. Production code, numerical equipment/damage/CD and formation remain unchanged; dormant1/2/4 counts are not applied.
+The short segmented rails and inset aperture change appearance only. Original weapon type, profiles, numerical damage/CD, production code and formation remain unchanged. Actual-window integration evidence: evidence/em-turret-integration-20261020/README.md. Candidate is not merged to main.
 
-integrated-gun-source.png and compact-gun-source.png are rejected historical weapon sources. elite-boss-approved.png and elite-boss-transparent.png are historical hull sources, not consumed. ca60668b point plan is not used. Original generated PNGs remain in/workspace/generated_images. Latest eight original-window images, turns and before/after comparison: evidence/cannon-redesign-20261020/README.md. Runtime owners: assets/ships/enemy/elite_boss_20261020/README.md and assets/weapons/integrated_ranked_20261020/README.md.
+integrated-gun-source.png, compact-gun-source.png, bold-cannon-source.png and design review03–09 remain historical, not the selected gun importer input. Earlier elite-boss-approved.png/elite-boss-transparent.png are historical hull sources; ca60668b layout is not used. Original imagegen PNGs remain in/workspace/generated_images. Runtime owner docs: assets/ships/enemy/elite_boss_20261020/README.md and assets/weapons/integrated_ranked_20261020/README.md.
