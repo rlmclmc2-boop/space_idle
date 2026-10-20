@@ -28,6 +28,9 @@ class MountRecord extends RefCounted:
  var under:bool
  var owner_slot:int
  var component
+ var base_origin:=Vector2.ZERO
+ var base_shift:=Vector2.ZERO
+ var cached_rotation:=0.0
 
 class DisplayRecord extends RefCounted:
  var entity:Dictionary
@@ -71,6 +74,7 @@ class DisplayRecord extends RefCounted:
  var body_signature:Array=[]
  var mount_signature:Array=[]
  var packet_large:bool=false
+ var applied_yaw:=INF
 
 var paint_owner
 var records:Dictionary={}
@@ -115,6 +119,7 @@ func create_record(enemy:Dictionary)->DisplayRecord:
 
 func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
  record.body_signature.clear();record.mount_signature.clear()
+ record.applied_yaw=INF
  var enemy=record.entity
  record.shape_revision=int(spatial.shape_revision);record.boss=boss
  record.source_id=spatial.source_id;record.appearance=spatial.appearance
@@ -183,6 +188,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
 func bind_pose(record:DisplayRecord,pose:Dictionary)->void:
  # Do not rebuild immutable mounts when only their live pose owner changes.
  record.pose=pose;record.status.clear()
+ record.mount_signature.clear();record.applied_yaw=INF
  record.packet={};record.packet_bucket=-999999
  record.protection_width=-INF;record.protection_clock=-INF
 
@@ -234,17 +240,19 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  var scale_value:float=paint_owner.enemy_recognition_screen_scale()
  if not is_equal_approx(record.screen_scale,scale_value):
   record.screen_scale=scale_value;record.packet_bucket=-999999
- var angle:float=paint_owner.enemy_render_angle(enemy)+yaw
- var body_key:Array=[pos,width,angle,record.screen_scale]
+ var base_angle:float=paint_owner.enemy_render_angle(enemy)
+ var angle:float=base_angle+yaw
+ if record.root.position!=pos:record.root.position=pos
+ if record.hull.rotation!=PI+angle:record.hull.rotation=PI+angle
+ if record.deck.rotation!=PI+angle:record.deck.rotation=PI+angle
+ var body_key:Array=[point,width,base_angle,record.screen_scale]
  if record.body_signature!=body_key:
   record.body_signature=body_key
   var depth=clampf((point.y-90.0)/maxf(1.0,float(spatial.frontline)-90.0),0,1)
   var light=lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
-  record.root.position=pos;record.hull.rotation=PI+angle
   var hull_rect:Rect2=paint_owner.enemy_hull_rect(enemy,1.0)
   if record.hull.data.rect!=hull_rect:record.hull.data.rect=hull_rect;record.hull.queue_redraw()
   record.hull.scale=Vector2.ONE*width;record.hull.self_modulate=Color(light,light,light,1)
-  record.deck.rotation=PI+angle
   for prefix in ["deck_physical_","deck_energy_"]:
    var body:Part=record.deck.pieces[prefix+"body"]
    if not body.visible:continue
@@ -292,41 +300,45 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  var display_outline:PackedVector2Array=outline.duplicate()
  for index in display_outline.size():display_outline[index]*=protection_scale
  update_meters(record,pos,width,angle,display_outline)
- var mount_key:Array=[point,width,angle,record.screen_scale,paint_owner.player_render_position()]
- if record.mount_signature==mount_key:return
- record.mount_signature=mount_key
- var desired:float=0.0
- if paint_owner.simulation_geometry_view==null:desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-angle,-PI,PI)
- # A one-screen-pixel floor avoids vanishing antialiased strokes; the weapon
- # body otherwise follows the authored hull-relative module size.
- var min_width=1.0/maxf(0.1,record.screen_scale)
- for mount in record.mounts:
-  var art:Dictionary=paint_owner.enemy_weapon_art_pose(enemy,mount.component)
-  var body:Part=mount.node.pieces.body
-  if not art.is_empty():
-   art=paint_owner._battlefield_motion_art_pose(art,motion,mount.component)
-   mount.node.position=art.origin;mount.node.rotation=float(art.angle)-PI/2
-   body.scale=Vector2.ONE
-   body.update({"art":art},[art.scale])
-   mount.node.pieces.strokes.hide()
-   continue
-  body.update({"physical":mount.physical},[mount.physical])
-  mount.node.pieces.strokes.visible=not mount.physical
-  var module_width=width*mount.module_factor
-  var w=maxf(min_width,module_width*0.45)
-  var mount_angle:float
-  var origin:Vector2
-  if paint_owner.simulation_geometry_view!=null:
-   var geometry:Dictionary=paint_owner.simulation_geometry_view.row(enemy).components[mount.owner_slot]
-   mount_angle=float(geometry.angle)+(yaw if mount.aim_factor==0.0 else 0.0)
-   origin=Vector2(geometry.origin).rotated(yaw)
-  else:
-   mount_angle=PI/2+angle+clampf(desired,-mount.aim_limit,mount.aim_limit)*mount.aim_factor+mount.base_rotation
-   origin=(mount.normalized*width).rotated(PI+angle)
-  var shift=mount.port_factor*module_width-Vector2((0.64 if mount.physical else 0.45)*w,0)
-  mount.node.position=origin+shift.rotated(mount_angle);mount.node.rotation=mount_angle-PI/2
-  mount.node.pieces.body.scale=Vector2.ONE*w
-  if not mount.physical:set_stroke_width(mount.node.pieces.strokes,w)
+ # The component geometry and authored art are stable while the logical pose
+ # and target stay fixed. Cache their ship-local anchors, then transform only
+ # the handful of visible mount nodes when display yaw changes.
+ var mount_key:Array=[point,width,base_angle,record.screen_scale,paint_owner.player_render_position()]
+ var rebuild_mount_anchors:bool=record.mount_signature!=mount_key
+ if rebuild_mount_anchors:
+  record.mount_signature=mount_key
+  var desired:float=0.0
+  if paint_owner.simulation_geometry_view==null:desired=wrapf((paint_owner.player_render_position()-point).angle()-PI/2-base_angle,-PI,PI)
+  var min_width=1.0/maxf(0.1,record.screen_scale)
+  for mount in record.mounts:
+   var art:Dictionary=paint_owner.enemy_weapon_art_pose(enemy,mount.component)
+   var body:Part=mount.node.pieces.body
+   if not art.is_empty():
+    mount.base_origin=Vector2(art.origin);mount.base_shift=Vector2.ZERO;mount.cached_rotation=float(art.angle)-PI/2
+    body.scale=Vector2.ONE
+    body.update({"art":art},[art.scale])
+    mount.node.pieces.strokes.hide()
+    continue
+   body.update({"physical":mount.physical},[mount.physical])
+   mount.node.pieces.strokes.visible=not mount.physical
+   var module_width=width*mount.module_factor
+   var w=maxf(min_width,module_width*0.45)
+   var mount_angle:float
+   if paint_owner.simulation_geometry_view!=null:
+    var geometry:Dictionary=paint_owner.simulation_geometry_view.row(enemy).components[mount.owner_slot]
+    mount_angle=float(geometry.angle);mount.base_origin=Vector2(geometry.origin)
+   else:
+    mount_angle=PI/2+base_angle+clampf(desired,-mount.aim_limit,mount.aim_limit)*mount.aim_factor+mount.base_rotation
+    mount.base_origin=(mount.normalized*width).rotated(PI+base_angle)
+   var shift=mount.port_factor*module_width-Vector2((0.64 if mount.physical else 0.45)*w,0)
+   mount.base_shift=shift.rotated(mount_angle);mount.cached_rotation=mount_angle-PI/2
+   mount.node.pieces.body.scale=Vector2.ONE*w
+   if not mount.physical:set_stroke_width(mount.node.pieces.strokes,w)
+ if rebuild_mount_anchors or record.applied_yaw!=yaw:
+  record.applied_yaw=yaw
+  for mount in record.mounts:
+   mount.node.position=mount.base_origin.rotated(yaw)+mount.base_shift.rotated(yaw if mount.aim_factor==0.0 else 0.0)
+   mount.node.rotation=mount.cached_rotation+(yaw if mount.aim_factor==0.0 else 0.0)
 
 func set_stroke_width(node:Part,width:float)->void:
  if node.data.width==width:return

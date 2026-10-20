@@ -56,3 +56,22 @@ Windows 本机 RTX 2060／OpenGL Compatibility 模式，旧三敌混合武器夹
 2. 旧三敌混合武器夹具在模型更新后不再代表高负载。上文及 [evidence/README.md](evidence/README.md) 中约 6 ms 的本机测量仅作历史记录，不能作为第 9 条预算达标证据；需用当前真正的高负载场景重新测完整忙帧平均、P95 和尖峰。先不降逻辑频率、不抽子弹、不放宽预算。
 
 修复后混合武器、跨波、暂停及十倍速的开关对照仍完全一致，舰体／装配／烘焙／材质新增重建为零；旧三敌夹具的性能问题仍未解决。因此本分支仍是待验候选，不合入 `main`。本地 10 秒录屏同样使用旧夹具，不能称为已验收的高负载视频；该 MP4 仅留在用户本地，不在 Git 或 Library 中。
+
+## 2026-10-20 current 15-enemy native GPU acceptance (supersedes earlier performance status)
+
+The old three-enemy fixture is historical only. Current `data/game_data.json` has 318 groups with all 15 slots occupied, the game's maximum. The local native GPU fixture uses 15 mixed current opening enemies, five equipped drones, a Heavy Battleship with eight regular weapon entries, fixed RNG seed 1701, and sustained enemies. No logical shots are thinned. The sample is the complete 1373 x 883 Godot 4.7.2 OpenGL Compatibility frame on a Windows RTX 2060 at real 1x: 240 logic steps of warmup and 240 sampled steps, VSync off, uncapped display, mean game/wall ratio approximately 1.0. The sampled load has about 114 live projectiles on average, 160 at peak, 720 fires and 2553 hits. The on/off screenshots are [off](evidence/real1x-max15-cached-off.png) and [on](evidence/real1x-max15-cached-on.png).
+
+The first ABBA run on commit `9f1426d4` showed paired mean increments of +0.762 and +1.033 ms, exceeding the +0.5 ms budget ([off 1](evidence/real1x-max15-off-1.json), [on 1](evidence/real1x-max15-on-1.json), [on 2](evidence/real1x-max15-on-2.json), [off 2](evidence/real1x-max15-off-2.json)). `scripts/retained_enemy_contacts.gd` now caches each mount's ship-local origin, shift and rotation; display yaw transforms only those retained nodes. It also separates static hull size and packet updates from root translation and yaw. The following five paired runs use that candidate optimization, with identical workload and native GPU configuration. Every raw frame, configuration, workload and 1x ratio is in `evidence/real1x-max15-cached-{off,on}-{1..5}.json`.
+
+| Pair | Off mean / P95 / spike (ms) | On mean / P95 / spike (ms) | On minus off mean / P95 (ms) |
+| --- | --- | --- | --- |
+| 1 | 9.055 / 13.886 / 42.189 | 9.117 / 12.798 / 38.944 | +0.062 / -1.088 |
+| 2 | 9.151 / 13.469 / 39.660 | 9.949 / 14.613 / 48.682 | +0.799 / +1.144 |
+| 3 | 8.233 / 11.344 / 39.241 | 8.701 / 11.936 / 38.994 | +0.468 / +0.592 |
+| 4 | 8.212 / 11.408 / 36.363 | 8.452 / 11.736 / 36.491 | +0.240 / +0.328 |
+| 5 | 8.478 / 12.071 / 40.723 | 8.273 / 11.603 / 36.486 | -0.206 / -0.468 |
+| All sampled frames pooled | 8.607 / 12.742 / 42.189 | 8.860 / 12.633 / 48.682 | +0.253 / -0.109 |
+
+The pooled estimate is below both budgets, but pair 2 exceeds both. These runs therefore do **not** establish repeatable acceptance at the strict limit; performance remains an explicit open gate. The maximum observed on spike is 48.682 ms; spikes are reported, not hidden in the mean. This is local GPU evidence, distinct from headless logic tests. The test held 1x game/wall time within about 0.3% each run. The per-run fire/hit totals, enemy positions, RNG state and stress configuration match off/on; the [fixed-seed mixed cross-wave/pause/10x consistency test](evidence/cached-consistency.json) also reports identical complete results and rebuild counters. Its counters are hull/loadout/body attachment/body texture/body material all zero on both sides; 13 enemy hull scans and four envelope builds are identical initial spawn work. The [retained Canvas test](evidence/cached-retained-visible.json) covers 300 visible frames with zero hull/protection rebuilds after settling, zero logical displacement, and 0.621 px maximum visible muzzle error.
+
+The optimization is a candidate pending final review and performance signoff. Do not merge into `main` until this open gate is resolved or explicitly accepted by the user.
