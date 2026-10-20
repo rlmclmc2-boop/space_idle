@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05 已提交运行候选和冻结证据，现处于 review，等待父级与原 astra 同对象双审；S06—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04a 均为 `closed`；S05—S24 均为 `not_started`。** 当前 main、D:\放置 main 和 managed mirror 均为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。S04a 运行/冻结证据及集成证据均获父级与原 astra 同对象双 PASS；必要 DLL 与运行清单已交付，测试和审计证据未入 main。两条 S04a 临时分支已验证无独有成果并删除，实施线程于 2026-10-20 22:19 UTC 确认归档。当前无打开阶段，可启动唯一下一阶段 S05。验证不代表完整 Linux 游戏、真实断电、对抗性文件系统竞态或长期运行通过。
+**S00—S04a 均为 `closed`；S05 为 `review`；S06—S24 均为 `not_started`。** main 仍为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段 S05 在线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9`；纯运行候选 `b32e1640248b25ee524645888979afd654edfcf5`，树 `482d183d4fac7b5680c92bddc63dc28ac65ed316`，冻结证据 `bbe8199cceaba7a75c85d509f773b090f0639043`。父级和原 astra 尚未双审；不得合 main、关闭线程或启动 S06。S05 只解决玩家发布依赖，完整 Windows 构建和产物验收尚未通过；详见 `stages/S05/README.md`。
 
 ### S00 关闭记录
 
@@ -450,6 +450,39 @@ integration_astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fa
 branch_cleanup: {runtime_branch: s04a/single-writer, evidence_branch: s04a/audit-evidence, runtime_tip_equals_main: true, evidence_ancestor_of_formal_audit: true, unique_unmerged_commits: 0, remote_deleted: true, remote_readback_absent: true, record: stages/S04a/LOCAL_INTEGRATION.md}
 closure: {state: closed, parent_closed_stage: true, implementation_thread_archived: true, archived_at_utc: "2026-10-20T22:19:11Z"}
 next_stage_allowed: true
+```
+
+### S05 review 记录
+
+```yaml
+stage: S05
+status: review
+implementation_thread_id: 01a15b67-0ffb-7749-8cfa-9680694f00e9
+model: sol
+base_main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301
+predecessor: S04a closed at audit 0a9f769b20853157a7d7535aa59161dac84adad0
+runtime_branch: s05/player-release-deps
+runtime_final_sha: b32e1640248b25ee524645888979afd654edfcf5
+runtime_tree: 482d183d4fac7b5680c92bddc63dc28ac65ed316
+runtime_files:
+  - space-battleship/tools/build_release.ps1
+  - space-battleship/tools/player_required_data.json
+main_file_justifications:
+  - "build_release.ps1: 玩家发布构建必要工具；复制与前后检查共用配置清单，缺项明确失败"
+  - "player_required_data.json: 玩家产品所需 15 个配置与 scripts/assets/shaders 直接运行目录清单"
+evidence_snapshot_sha: bbe8199cceaba7a75c85d509f773b090f0639043
+evidence_entry: stages/S05/README.md
+verification:
+  results:
+    - "空 staging 含 15/15 必需 JSON，同源 SHA256；玩家直接 JSON 引用 15/15 全在清单"
+    - "三个缺失 JSON 各自注入均 exit 1，指出缺失源路径"
+    - "Godot 4.7.2 隔离 staging 数据库、奖励契约、新档真实保存、重开保留值，探针两次 exit 0"
+  unverified:
+    - "CodexSandboxOffline 不能读取 Windows 根证书库；Godot 导入报错，构建脚本正确中止；完整 Windows 导出和实际包验收未通过，S22 仍 pending"
+parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+integration: {state: pending, main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, local_entry_result: not_run}
+closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
 ```
 
 ```yaml
