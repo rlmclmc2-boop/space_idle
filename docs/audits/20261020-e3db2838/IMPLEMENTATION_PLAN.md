@@ -404,7 +404,7 @@ runtime_files:
   - space-battleship/scripts/save_transfer.gd
 evidence_entry: stages/S04/README.md
 evidence_snapshot_sha: pending_final_commit
-verification: "Windows Godot 4.7.2 isolated S01 recovery gate 20/0 PASS; S03 transfer gate 155/0 PASS; S02 policy 51/0; startup rejection 7/0; historical disk migration 15/0"
+verification: "Windows Godot 4.7.2 isolated S01 recovery gate 20/0 PASS; S03 transfer gate 155/0 PASS; S02 policy 51/0; startup rejection 7/0; historical disk migration 15/0; hyperspace state 284/0"
 decisions_required: []
 compatibility: "v2-v4 缺失 highestLevel 依原加载默认值 1 在副本上补齐；v5 仍严格要求；无弃档或不可逆迁移"
 parent_review: PENDING

@@ -37,6 +37,7 @@
     "s03_branch_deleted_remote": true,
     "s03_thread_archived": true,
     "s04_recovery_matrix_s01_gate_pass": true,
+    "s04_hyperspace_reader_284_checks_pass": true,
     "s04_main_evidence_separated": true,
     "s04_dual_review_pending": true
   },

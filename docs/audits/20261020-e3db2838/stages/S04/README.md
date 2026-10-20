@@ -40,7 +40,8 @@ Host `BJNLPC-0459`; Godot `4.7.2.stable.official.ed1daf0bf`; Python 3.12. Each `
 3. `python test/run.py test_save_policy.gd --headless ...` with the S02 audit fixture — `Save policy: 51 checks, 0 failures`. The unpatched main fixture's three known setup failures remain excluded from acceptance, and its legacy v2 assertion initially exposed the compatibility gap fixed by this candidate.
 4. `python test/run.py test_save_startup_rejection.gd --headless ...` — 7 checks, 0 failures.
 5. `python test/run.py test_hyperspace_disk_migration.gd --headless ...` — 15 checks, 0 failures.
-6. `git diff --check 0d01530bdce168a55d0ce7c835f17072d66d6bc7 d51d9cab27a510b79094519674ce92303e12158f` — clean.
+6. `python test/run.py test_hyperspace_state.gd --headless ...` — `HYPERSPACE_CURRENT 284 checks 0 failures`; covers an existing direct `read_progress` caller.
+7. `git diff --check 0d01530bdce168a55d0ce7c835f17072d66d6bc7 d51d9cab27a510b79094519674ce92303e12158f` — clean.
 
 The generated logs stayed outside Git. Godot printed its existing Windows root certificate store warning during import; the S01 gate found no script/parse errors. The older `test_save_import_recovery.py` driver assumes a POSIX `test/work` path on Windows and expects `read_progress` itself to mutate disk; its assumptions no longer describe this read-only API. The S04 matrix and updated S03 transfer test exercise the affected recovery paths in isolated Godot projects. Fresh-process power-loss and multi-instance behavior are not claimed by this evidence.
 
