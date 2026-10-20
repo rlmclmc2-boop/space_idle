@@ -32,4 +32,8 @@ That D verification directory already contained an S04 synthetic `progress.json`
 
 The final real-entry [receipt](local-integration-logs/d-entry-player-launch.json) names the managed mirror project and accepted HEAD `01ddfcaf678321fafae51162b3bb6665b34e4301`, with Godot `4.7.2.stable.official.ed1daf0bf`, `game_data.json` SHA256 `e25cec9db813b1122dae681c37cd990067efab439caec97f1cc4ef889bcf4c4a`, and installed DLL SHA256 `4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f`. A direct hash of the mirror's `space-battleship/bin/space_native.dll` matched the receipt. The final [game log](local-integration-logs/d-entry-player-game.log) contains no script, parse or `ERROR:` line; the final import log also had no such line. This direct D entry confirms mirror selection, matching DLL and normal save reopen; the clean-clone two-process test above remains the concurrency evidence.
 
-S04a remains open for independent review of this integration record, parent closure, and thread archive. S05 has not started.
+## Independent integration verdicts
+
+The parent and original astra both returned integration **PASS**, unresolved 0, on exactly runtime `01ddfcaf678321fafae51162b3bb6665b34e4301` and this evidence at `1a07dadd02cf126519628e46f74c0e1b12c7d2d0`. The parent independently read back the direct D entry receipt and game log, confirmed matching main/mirror/DLL, and verified 55 manifest items and seven runtime blobs. The original astra's turn `01a15b61-38ba-7049-bba6-0c3885295d19` independently verified 107 digests. Their approvals distinguish direct D entry acceptance from the clean-clone concurrency run and do not extend the test to personal saves, full Linux gameplay, long-run play or power-loss durability.
+
+S04a remains open for parent closure and thread archive. S05 has not started.

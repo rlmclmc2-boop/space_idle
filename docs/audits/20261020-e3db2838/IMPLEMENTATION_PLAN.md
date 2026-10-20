@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04 均为 `closed`；S04a 为 `integration_review`；S05—S24 均为 `not_started`。** 远端及 D:\放置 的 main 已快进至获批运行 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，冻结证据在 `s04a/audit-evidence`，正式审计分支 `audit/code-review-e3db2838-20261020` 保存双审及集成记录。父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 和冻结证据 36e4412197be2b66948cd17f5f1d1a8327ed8c73 明确双 PASS；main 集成与隔离本地入口验收已完成，详见 `stages/S04a/LOCAL_INTEGRATION.md`；集成记录待独立复审，未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
+**S00—S04 均为 `closed`；S04a 为 `integration_approved`；S05—S24 均为 `not_started`。** 远端及 D:\放置 的 main 已快进至获批运行 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，冻结证据在 `s04a/audit-evidence`，正式审计分支 `audit/code-review-e3db2838-20261020` 保存双审及集成记录。父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 和冻结证据 36e4412197be2b66948cd17f5f1d1a8327ed8c73 明确双 PASS；main 集成与隔离本地入口验收已完成，详见 `stages/S04a/LOCAL_INTEGRATION.md`；父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 及集成证据 1a07dadd02cf126519628e46f74c0e1b12c7d2d0 同对象双 PASS；未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
 
 ### S00 关闭记录
 
@@ -426,7 +426,7 @@ next_stage_allowed: true
 
 ```yaml
 stage: S04a
-status: integration_review
+status: integration_approved
 implementation_thread_id: 01a15b03-d9f7-710e-b869-ca083a8f90d5
 model: sol
 reasoning_effort: medium
@@ -443,10 +443,10 @@ verification: "Windows Godot 4.7.2 synthetic dual process OS lock and alias gate
 prior_review: "original astra FAIL on 01ddfcaf/56397d3b because plan entry still said S04a not_started; corrected in this audit snapshot, fresh same-object reviews required"
 parent_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
-integration: "remote and D:\\放置 main at 01ddfcaf678321fafae51162b3bb6665b34e4301; actual 玩游戏.cmd isolated save, restart and two-instance acceptance completed; independent integration review pending"
+integration: "remote and D:\\放置 main at 01ddfcaf678321fafae51162b3bb6665b34e4301; actual 玩游戏.cmd isolated save, restart and two-instance acceptance completed; parent and original astra integration PASS on 01ddfcaf/1a07dadd; closure pending"
 integration_record: stages/S04a/LOCAL_INTEGRATION.md
-integration_parent_review: {verdict: PENDING, reviewed_evidence_sha: null, unresolved: []}
-integration_astra_review: {verdict: PENDING, reviewed_evidence_sha: null, unresolved: []}
+integration_parent_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 1a07dadd02cf126519628e46f74c0e1b12c7d2d0, unresolved: []}
+integration_astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 1a07dadd02cf126519628e46f74c0e1b12c7d2d0, turn: 01a15b61-38ba-7049-bba6-0c3885295d19, unresolved: []}
 closure: pending
 next_stage_allowed: false
 ```

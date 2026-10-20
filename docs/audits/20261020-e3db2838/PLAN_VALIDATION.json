@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04 closed; S04a runtime dual PASS and main/local integration completed, integration review pending; later stages not started",
+  "scope": "S00-S04 closed; S04a runtime and integration same-object dual PASS, closure pending; later stages not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -58,11 +58,12 @@
     "s04a_dual_pass_same_objects": true,
     "s04a_main_fast_forwarded_to_approved_runtime": true,
     "s04a_actual_entry_restart_and_two_instance_pass": true,
-    "s04a_direct_d_entry_managed_mirror_restart_pass": true
+    "s04a_direct_d_entry_managed_mirror_restart_pass": true,
+    "s04a_integration_dual_pass_same_objects": true
   },
   "stages": 26,
   "active_stage": "S04a",
-  "active_stage_status": "integration_review",
+  "active_stage_status": "integration_approved",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
@@ -87,5 +88,6 @@
   "last_integrated_main_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
   "active_frozen_evidence_sha": "36e4412197be2b66948cd17f5f1d1a8327ed8c73",
   "active_integration_record": "stages/S04a/LOCAL_INTEGRATION.md",
-  "active_integration_review_pending": true
+  "active_integration_review_pending": false,
+  "active_integration_reviewed_evidence_sha": "1a07dadd02cf126519628e46f74c0e1b12c7d2d0"
 }
