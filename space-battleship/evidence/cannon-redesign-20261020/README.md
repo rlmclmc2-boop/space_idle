@@ -1,13 +1,13 @@
-# 当前：炮机内部表达简化 08，待父审
+# 当前：炮机明度层级修正 09，待外观审阅
 
-保留07外承载面95%且逐底座限幅后的24个尺寸，以及06轮廓和短炮管比例。本轮只合并炮机密集小矩形、细亮边和套框，保留连续暗面、少量侧亮及白侧甲承载的高低关系。
+08因主体近黑、缩小看不清被用户否决。本轮保留07覆盖尺寸与06轮廓/短管比例，只把炮机顶面改为中亮钢灰，与更亮的白侧甲形成两级亮面，暗部留给侧面、缝与炮口，不恢复细亮边。
 
-1. [相同07覆盖尺寸的正常窗口前后对比](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/normal-comparison.png)
-2. [同尺寸正向/转向](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/direction-check.png)
-3. [正常窗口八舰，后附细节](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/design-board.png)
-4. [设计说明与检查](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/README.md)
+1. [相同07尺寸的正常窗口前后对比](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/normal-comparison.png)
+2. [正常窗口八舰、转向，后附细节](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/design-board.png)
+3. [同尺寸正向/转向](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/direction-check.png)
+4. [设计说明与检查](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/README.md)
 
-轮廓不透明alpha重合约99.63%，逐底座显示尺寸未变。120个角度探针越界0，炮塔不互叠。仅静态设计稿，不是实机图；舰体、底座坐标、生产资源和配置未改，未接入、未合main。下方为旧实机历史证据。
+逐底座尺寸、舰体与坐标不变；120角度探针越界0、炮塔不互叠。仅静态设计稿，不是实机图；生产配置未改，未接入、未合main。下方为旧实机历史证据。
 
 ---
 
