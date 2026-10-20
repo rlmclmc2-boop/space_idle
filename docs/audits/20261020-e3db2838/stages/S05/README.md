@@ -5,6 +5,7 @@
 - 运行树：`2f161d9aac91d8d615770d9480d7dd6d9247b00d`
 - 运行分支：`s05/player-release-deps`
 - 平台：Windows，Godot 4.7.2 stable official，Python 3.12，PowerShell 5.1；测试使用临时独立克隆和隔离 `APPDATA`。
+- 可核查的原始输出与退出码：`logs/missing-*.log`、`logs/new.log`、`logs/reopen.log`、`logs/import-diagnostic.log`；机器可读检查摘要：`checks.json`；运行 Git blob 清单：`RUNTIME_BLOBS.json`。各日志开头记录实际命令、隔离路径和退出码；导入日志仅摘录原始诊断行，省略进度动画。
 
 ## 范围和 main 文件理由
 
@@ -12,6 +13,8 @@
 - `space-battleship/tools/build_release.ps1`：必要发布构建工具，从上述清单复制资源；源缺项、staging 缺项、清单异常或副本散列不同均阻止发布。测试脚本、日志、审计记录未进入运行候选。
 
 不迁移 `dev/toon_ship` 素材目录，不改分析器产品构建，也不调整游戏数据或存档规则。S05 只关闭依赖修复；Windows 最终产物验收和 S22 发布验收均未据此宣称完成。
+
+复现准备：从 main `01ddfcaf...` 单独检出，将本阶段两个运行文件叠加；把与本机已验收玩家入口相同的 Godot 4.7.2 编辑器、匹配 Windows 导出模板放入 `space-battleship/engine/`，把已验收 `tools/player_runtime/space_native.dll` 复制到 `space-battleship/bin/space_native.dll`，并由仓库的 `space_native.gdextension.in` 生成同名 `.gdextension`。上述本机安装物不进入 Git。所有测试在临时工作目录和隔离用户目录执行，未读取玩家存档。
 
 ## 复现、执行和结果
 
