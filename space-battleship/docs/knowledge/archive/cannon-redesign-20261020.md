@@ -1,7 +1,8 @@
-# Cannon redesign — same task, 06 coverage-only review07
-目标：暂停新画，复用06炮身，按固定底座外承载面修正显示覆盖，只交正常比例对照和转向。
-禁止：不生成新炮图、不单独放大炮管，不变舰体/底座坐标/生产资源/接口/配装/数值/编队/存档，不接入不合main。
-基准/分支：1471e0ff，art/cannon-redesign-20261020。
-交付：cannon-coverage-review-07/normal-comparison.png、direction-check.png、design-board.png与测量JSON；入口evidence/cannon-redesign-20261020/README.md。
-检查：外承载面三条水平扫描，逐底座alpha边界限幅；0/±35/±55共240探针，全部主连通体alpha>230像素无越界；含炮管外接圆任意转向最小间隙约10px，不互叠。06PNG及生产/QA/导入器/测试冻结，未启动Godot。
-结论：主体18.5–24.6px，主案例可读性改善；锚定精英/反应BOSS部分底座受边界限制，不能都放满95%，部分同舰尺寸不同；不宣称比例彻底解决所有位置。Git交证据待父审，无执行权限阻塞。
+# Cannon redesign — same task, internal simplification08
+目标：保留07外承载95%目标及逐底座限幅，06轮廓/短炮管比例，仅简化炮机内部表达。
+基准/分支：3bed1e2e，art/cannon-redesign-20261020。
+范围：连续中央暗面、少量侧亮，白侧甲大面；去小矩形/细亮边/套框，保留凸起炮机与侧甲承载高低，不变平顶盖板。
+禁止：不改07尺寸/坐标/限幅、06源PNG、舰体/固定底座、生产资源/接口/配装/数值/编队/存档，不接入不合main。
+交付：cannon-internal-review-08/normal-comparison.png、direction-check.png、design-board.png（先八舰后细节）；入口evidence/cannon-redesign-20261020/README.md。
+自查：同07尺寸正常八舰/转向检查后看细节；新图与06alpha轮廓IoU99.63%，同画布/机械轴心/体量；120个新图几何探针越界0，任意转向外接圆间隙约10px；07尺寸和生产等冻结。未启动Godot。
+下一步：Git交设计稿待父审，无执行阻塞。07部分边界限幅和同舰尺寸差异不在本轮变动。

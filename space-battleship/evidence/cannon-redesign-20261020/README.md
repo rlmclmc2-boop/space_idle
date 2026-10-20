@@ -1,13 +1,13 @@
-# 当前：06现稿覆盖比例修正 07，待父审
+# 当前：炮机内部表达简化 08，待父审
 
-本轮停止画新素材，仅用现有06炮身按固定底座外承载面修正显示覆盖。整件等比，炮管不单独放大；舰体、底座及24轴心不动。
+保留07外承载面95%且逐底座限幅后的24个尺寸，以及06轮廓和短炮管比例。本轮只合并炮机密集小矩形、细亮边和套框，保留连续暗面、少量侧亮及白侧甲承载的高低关系。
 
-1. [正常窗口覆盖三档对照](../../art_sources/enemy-fleet-20261019/cannon-coverage-review-07/normal-comparison.png)
-2. [正常窗口正向/转向](../../art_sources/enemy-fleet-20261019/cannon-coverage-review-07/direction-check.png)
-3. [八版整舰比例](../../art_sources/enemy-fleet-20261019/cannon-coverage-review-07/design-board.png)
-4. [测量、边界限制与检查说明](../../art_sources/enemy-fleet-20261019/cannon-coverage-review-07/README.md)
+1. [相同07覆盖尺寸的正常窗口前后对比](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/normal-comparison.png)
+2. [同尺寸正向/转向](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/direction-check.png)
+3. [正常窗口八舰，后附细节](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/design-board.png)
+4. [设计说明与检查](../../art_sources/enemy-fleet-20261019/cannon-internal-review-08/README.md)
 
-主体约18.5–24.6像素宽；所查0/±35/±55度越界样本0，任意转向外接圆间隙为正。部分锚定精英/反应BOSS底座受舰体边界限幅，不能统一放满95%；不宣称仅靠比例已解决所有位置。仅设计证据，不是实机图，未接入、未合main。下方是旧实机历史证据。
+轮廓不透明alpha重合约99.63%，逐底座显示尺寸未变。120个角度探针越界0，炮塔不互叠。仅静态设计稿，不是实机图；舰体、底座坐标、生产资源和配置未改，未接入、未合main。下方为旧实机历史证据。
 
 ---
 
