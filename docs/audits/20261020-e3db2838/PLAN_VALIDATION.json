@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S03 closed; S03 approved runtime integrated and local entry verified; S04 not started",
+  "scope": "S00-S03 closed; S04 runtime and audit evidence ready for dual review; no S04 integration",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -35,11 +35,14 @@
     "s03_branch_no_unique_work": true,
     "s03_integration_dual_pass": true,
     "s03_branch_deleted_remote": true,
-    "s03_thread_archived": true
+    "s03_thread_archived": true,
+    "s04_recovery_matrix_s01_gate_pass": true,
+    "s04_main_evidence_separated": true,
+    "s04_dual_review_pending": true
   },
   "stages": 26,
-  "active_stage": null,
-  "active_stage_status": "none",
+  "active_stage": "S04",
+  "active_stage_status": "review",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
@@ -49,8 +52,8 @@
     "S02",
     "S03"
   ],
-  "runtime_final_sha": "0d01530bdce168a55d0ce7c835f17072d66d6bc7",
-  "runtime_tree": "10bf32ba2e060cde7269b6f54459a989e5b5538b",
-  "evidence_snapshot_sha": "e187f60aea5d5d0aad86718416914af915d44032",
-  "implementation_thread_id": "01a15a8e-35c8-7632-8baf-8af7060310cd"
+  "runtime_final_sha": "d51d9cab27a510b79094519674ce92303e12158f",
+  "runtime_tree": "1abae7484268bcdd2ca1ba6a8c9863851abd5fd6",
+  "evidence_snapshot_sha": null,
+  "implementation_thread_id": null
 }
