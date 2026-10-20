@@ -31,8 +31,8 @@ func _initialize() -> void:
 	var g=opened(db);var h=g.hyperspace;var s: Dictionary=g.profile.hyperspace
 	check(State.valid(s,h.config,db.levels.size()),"current namespace valid")
 	check(Permission.bindings_valid(g.portable_save_data(),db.data,h.config),"fresh bindings")
-	var a: Dictionary=h.start(g,"alpha",5,"manual")
-	check(not a.is_empty() and g.profile.hyperspace.energy==108000,"ticket paid")
+	var a: Dictionary=h.start(g,"alpha",1,"manual")
+	check(not a.is_empty() and a.ticket==0 and g.profile.hyperspace.energy==h.config.energy_cap,"current manual challenge does not charge an energy ticket")
 	check(h.complete(g,a.round_id,a.run_id,true,{},40,true),"reward generated frozen")
 	var pending: Dictionary=g.portable_save_data()
 	check(Transfer.new().prepare_data(pending,db).error=="","current pending export")
@@ -45,15 +45,15 @@ func _initialize() -> void:
 	var corrupt: Dictionary=saved.duplicate(true);corrupt.hyperspace.version=State.VERSION+1
 	var baseline: Dictionary=g.profile.duplicate(true);g.load_progress_data(corrupt)
 	check(g.profile==baseline and Transfer.new().prepare_data(corrupt,db).error=="format","incompatible version rejected atomically")
-	g.profile.hyperspace.energy=216000;a=h.start(g,"alpha",5,"manual");h.advance(g,10800)
-	check(h.complete(g,a.round_id,a.run_id,false) and g.profile.hyperspace.energy==324000,"refund over cap")
-	h.advance(g,1);check(g.profile.hyperspace.energy==324000,"over cap no recharge")
-	check(h.set_auto(g,true,"alpha",5,"navigator"),"real unlocked crew")
+	g.profile.hyperspace.energy=float(h.config.energy_cap);a=h.start(g,"alpha",2,"manual");h.advance(g,10800)
+	check(h.complete(g,a.round_id,a.run_id,false) and g.profile.hyperspace.energy==h.config.energy_cap,"failed zero-ticket challenge leaves capped energy unchanged")
+	h.advance(g,1);check(g.profile.hyperspace.energy==h.config.energy_cap,"full energy does not recharge beyond cap")
+	check(h.set_auto(g,true,"alpha",1,"navigator"),"real unlocked crew")
 	check(not g.idle_planet_crew("navigator"),"reserved cannot planet explore")
 	check(not g.crew.can_assign(g,"navigator","weapon","laser"),"reserved cannot reassign")
 	check(h.start_auto(g),"progress only automatic start")
-	check(g.profile.hyperspace.active.duration==40 and g.profile.hyperspace.active.ticket==108000,"locked crew levels count zero")
-	check(h.complete(g,g.profile.hyperspace.active.round_id,g.profile.hyperspace.active.run_id,false),"auto failure refunds")
+	check(g.profile.hyperspace.idle.duration==40 and g.profile.hyperspace.idle.ticket==0,"locked crew levels count zero")
+	check(h.complete(g,g.profile.hyperspace.idle.round_id,g.profile.hyperspace.idle.run_id,false),"auto failure refunds")
 	h.set_auto(g,false,"",0,"")
 	var d:=add(g,"forge");d.affixes=[{"key":"global_damage","tier":5,"value":0.05,"locked":true},{"key":"attack_speed","tier":5,"value":0.01,"locked":false}]
 	for key in g.profile.hyperspace.materials:g.profile.hyperspace.materials[key]=10000000
@@ -61,7 +61,7 @@ func _initialize() -> void:
 	var q:=request(g,"forge","replace_affix",{"guaranteed_key":"global_damage"})
 	baseline=g.profile.hyperspace.duplicate(true)
 	var quote: Dictionary=h.preview_forge(g,q)
-	check(quote.error=="" and quote.cost.degenerate_matter==5*quote.draws and g.profile.hyperspace==baseline,"read only deterministic forecast")
+	check(quote.error=="" and quote.cost.degenerate_matter==int(h.config.forge_costs.replace_affix.degenerate_matter)*int(h.config.material_unit_scale)*quote.draws and g.profile.hyperspace==baseline,"read only deterministic forecast")
 	var result: Dictionary=h.forge(g,q)
 	check(result.error=="" and result.cost==quote.cost,"quote commit cost exact")
 	check(g.profile.hyperspace.inventory.drones.forge.affixes[0]==baseline.inventory.drones.forge.affixes[0],"locked never selected")
@@ -124,7 +124,7 @@ func _initialize() -> void:
 	check(not ph.attach_hangings(probe,"probe",[first_module,first_module]),"same drone duplicate hanging denied")
 	check(ph.attach_hangings(probe,"probe",[first_module]),"unlocked hanging attaches")
 	var synthetic: Dictionary=probe.profile.hyperspace.duplicate(true)
-	var weights_config: Dictionary=ph.config.duplicate(true);weights_config.quality_weights={"white":0.0,"blue":0.0,"gold":0.0,"legendary":0.0,"ultimate_core":1.0};weights_config.policies.core_reward="exclusive"
+	var weights_config: Dictionary=ph.config.duplicate(true);weights_config.quality_weights={"white":1.0,"blue":0.0,"gold":0.0,"legendary":0.0,"ultimate_core":1.0};weights_config.ultimate_core_probability=1.0;weights_config.policies.core_reward="exclusive"
 	var core: Dictionary=Rewards.generate(synthetic,weights_config,{"round_id":1,"run_id":1,"route":"alpha","level":5},"1")
 	check(core.reward.drone.is_empty() and core.reward.ultimate_cores==1 and State.valid_reward(core.reward,"alpha",weights_config),"exclusive core reward is separate item")
 	var alt: Dictionary=ph.config.duplicate(true);alt.policies.core_reward=null
@@ -159,9 +159,9 @@ func _initialize() -> void:
 	check(reforged_game.profile.hyperspace.inventory.drones.retained.hangings==[retained_module] and not reforged_game.profile.hyperspace.hanging_modules[retained_module].unlocked and reforged_game.profile.hyperspace.hanging_modules[retained_module].level==0,"sealed layout retained but current global unlock and growth reset")
 	for action in ["keep_matches","clear_matches"]:
 		var filtered_game=opened(db);var filtered_config: Dictionary=filtered_game.hyperspace.config.duplicate(true)
-		filtered_config.quality_weights={"white":1.0,"blue":0.0,"gold":0.0,"legendary":0.0,"ultimate_core":0.0};filtered_game.hyperspace.configure(filtered_config)
+		filtered_config.ultimate_core_probability=0.0;filtered_config.quality_weights={"white":1.0,"blue":0.0,"gold":0.0,"legendary":0.0,"ultimate_core":0.0};filtered_game.hyperspace.configure(filtered_config)
 		check(filtered_game.hyperspace.set_filter(filtered_game,{"version":2,"enabled":true,"mode":"all","action":action,"conditions":[{"field":"weapon","value":"laser"}]}),"explicit filter action applies")
-		var receipt: Dictionary=filtered_game.hyperspace.start(filtered_game,"alpha",5,"manual")
+		var receipt: Dictionary=filtered_game.hyperspace.start(filtered_game,"alpha",1,"manual")
 		check(filtered_game.hyperspace.complete(filtered_game,receipt.round_id,receipt.run_id,true),"explicit filter completion")
 		check(filtered_game.profile.hyperspace.active.reward.drone.is_empty()==(action=="clear_matches"),"filter action controls actual frozen reward")
 		var roundtrip_filter:=Filter.import_string(filtered_game.hyperspace.export_filter(filtered_game),filtered_config)

@@ -2,7 +2,6 @@ extends RefCounted
 ## Permanent activation lives in planet progress, never in copied reward values.
 const FIELDS := {
 	"level_bonus:equipment":"equipment_level_bonus",
-	"level_bonus:hightech":"hightech_level_bonus",
 	"free_charge:all":"charge_free_ratio",
 	"level_bonus:enhancement":"gem_drop_level_bonus",
 	"luck:all":"hyperspace_luck",

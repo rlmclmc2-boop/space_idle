@@ -29,7 +29,9 @@ class EditorTests(unittest.TestCase):
         r['tables']['mon']['rows'].append(enemy)
         group = {'id': 999, 'des': '测试编队', 'mon': '{null,null,null,null,999,null,null,null,null,null}'}
         r['tables']['monGroup']['rows'].append(group)
-        level = r['tables']['level']['rows'][0]
+        # Use a non-opening stage; this test covers editor roundtrip, not the
+        # opening-route intelligence authoring contract.
+        level = r['tables']['level']['rows'][3]
         # Replace a first encounter without duplicating its position.
         level['monGroup'] = '{999|0.01,6|0.9}'
         original_ratios = copy.deepcopy(r['tables']['level']['rows'])
@@ -44,13 +46,13 @@ class EditorTests(unittest.TestCase):
 
 
         self.assertTrue(Path(result['backup']).is_dir())
-        self.assertEqual(result['tables']['level']['rows'][0]['lifeRatio'], original_ratios[0]['lifeRatio'])
+        self.assertEqual(result['tables']['level']['rows'][3]['lifeRatio'], original_ratios[3]['lifeRatio'])
         self.assertEqual(result['tables']['level']['rows'][1]['atkRatio'], original_ratios[1]['atkRatio'])
         self.assertEqual(incremental_import(self.store.directory, self.store.target)['changed'], [])
         with zipfile.ZipFile(self.store.paths['level']) as changed, zipfile.ZipFile(__import__('io').BytesIO(self.original[self.store.paths['level']])) as original:
             self.assertEqual(changed.read('xl/styles.xml'), original.read('xl/styles.xml'))
         # Delete the newly added records after removing their references.
-        result['tables']['level']['rows'][0]['monGroup'] = '{6|0.9}'
+        result['tables']['level']['rows'][3]['monGroup'] = '{6|0.9}'
         result['tables']['monGroup']['rows'].pop()
         result['tables']['mon']['rows'].pop()
         self.store.execute(result, True)
@@ -160,7 +162,7 @@ class EditorTests(unittest.TestCase):
             {'id': 998, 'des': '前置大型舰', 'mon': '{' + str(large) + ',null,null,null,null,null,null,null,null,null}'},
             {'id': 999, 'des': '最后普通舰', 'mon': '{' + str(small) + ',null,null,null,null,null,null,null,null,null}'},
         ])
-        self.request['tables']['level']['rows'][0]['monGroup'] = '{998|0.2,999|0.9}'
+        self.request['tables']['level']['rows'][3]['monGroup'] = '{998|0.2,999|0.9}'
         result = self.store.execute(self.request)
         self.assertFalse(any('没有 BOSS' in w or '不会执行' in w for w in result['warnings']))
 

@@ -1,0 +1,13 @@
+diff --git a/test/test_game.gd b/test/test_game.gd
+index 629e7ae6..a331415b 100644
+--- a/test/test_game.gd
++++ b/test/test_game.gd
+@@ -79,7 +79,7 @@ func run() -> void:
+ 	shield_probe.since_hit = 0
+ 	var shield_row := db.equip("shield",1)
+ 	var shield_delay := float(shield_row.para3)
+-	var shield_rate := shield_probe.max_shield() * float(shield_row.para2)
++	var shield_rate: Variant = shield_probe.max_shield() * float(shield_row.para2)
+ 	advance(shield_probe,maxf(0,shield_delay-0.1))
+ 	check(shield_probe.player.shield==0,"Shield waits for configured delay")
+ 	# Start exactly at the delay boundary to measure one full second of recovery.

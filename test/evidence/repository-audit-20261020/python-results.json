@@ -1,0 +1,152 @@
+[
+  {
+    "test": "test_ai_tech_tree_config.py",
+    "code": 0,
+    "seconds": 0.97
+  },
+  {
+    "test": "test_balance_fast_summary.py",
+    "code": 0,
+    "seconds": 0.46
+  },
+  {
+    "test": "test_config_input_matrix.py",
+    "code": 1,
+    "seconds": 10.9
+  },
+  {
+    "test": "test_config_workbooks.py",
+    "code": 1,
+    "seconds": 2.68
+  },
+  {
+    "test": "test_crew_import.py",
+    "code": 1,
+    "seconds": 6.7
+  },
+  {
+    "test": "test_enemy_attack_pairs.py",
+    "code": 1,
+    "seconds": 7.11
+  },
+  {
+    "test": "test_enemy_design_contract.py",
+    "code": 1,
+    "seconds": 4.25
+  },
+  {
+    "test": "test_enemy_intel_import.py",
+    "code": 1,
+    "seconds": 1.19
+  },
+  {
+    "test": "test_enemy_shield_schema.py",
+    "code": 1,
+    "seconds": 2.21
+  },
+  {
+    "test": "test_enemy_weapon_counts.py",
+    "code": 0,
+    "seconds": 0.99
+  },
+  {
+    "test": "test_enhance_config.py",
+    "code": 0,
+    "seconds": 5.1
+  },
+  {
+    "test": "test_equipment_growth_import.py",
+    "code": 0,
+    "seconds": 1.34
+  },
+  {
+    "test": "test_explicit_formation_import.py",
+    "code": 0,
+    "seconds": 1.07
+  },
+  {
+    "test": "test_galaxy_config.py",
+    "code": 0,
+    "seconds": 3.44
+  },
+  {
+    "test": "test_hyperspace_entities.py",
+    "code": 1,
+    "seconds": 5.07
+  },
+  {
+    "test": "test_hyperspace_route_rosters.py",
+    "code": 0,
+    "seconds": 0.7
+  },
+  {
+    "test": "test_hyperspace_workbook.py",
+    "code": 1,
+    "seconds": 12.68
+  },
+  {
+    "test": "test_import.py",
+    "code": 1,
+    "seconds": 1.29
+  },
+  {
+    "test": "test_jewel_furnace_import.py",
+    "code": 1,
+    "seconds": 1.75
+  },
+  {
+    "test": "test_jewel_import.py",
+    "code": 1,
+    "seconds": 1.04
+  },
+  {
+    "test": "test_level_editor.py",
+    "code": 1,
+    "seconds": 1.22
+  },
+  {
+    "test": "test_offline_config.py",
+    "code": 0,
+    "seconds": 3.12
+  },
+  {
+    "test": "test_planet_build_config.py",
+    "code": 1,
+    "seconds": 7.58
+  },
+  {
+    "test": "test_reactor_config.py",
+    "code": 0,
+    "seconds": 1.17
+  },
+  {
+    "test": "test_reward_source_integrity.py",
+    "code": 0,
+    "seconds": 1.87
+  },
+  {
+    "test": "test_scientist_config.py",
+    "code": 0,
+    "seconds": 4.11
+  },
+  {
+    "test": "test_ui_text.py",
+    "code": 1,
+    "seconds": 1.78
+  },
+  {
+    "test": "test_unlock_import.py",
+    "code": 1,
+    "seconds": 7.58
+  },
+  {
+    "test": "test_weapon_config.py",
+    "code": 1,
+    "seconds": 67.67
+  },
+  {
+    "test": "test_weapon_config_validation.py",
+    "code": 1,
+    "seconds": 13.59
+  }
+]

@@ -1,0 +1,7 @@
+Command: python test/run.py test_planet_buff_ui.gd --headless --godot /usr/local/bin/godot --timeout 180
+Isolated artifact: test/work/test_planet_buff_ui-nysg8r2o
+Driver exit: 0
+Capture: skipped only because DisplayServer is headless; real-display modal screenshot acceptance remains pending.
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+PLANET BUFF UI: 30 checks, 0 failures

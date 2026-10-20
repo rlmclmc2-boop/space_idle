@@ -1,0 +1,77 @@
+[
+  {
+    "file": "space-battleship/scripts/ai_tech_factory_page.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/ai_tech_view_model.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/balance_game.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/cycle_level_generator.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/cycle_level_panel.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/cycle_level_xlsx.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/enemy_intel_page.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/enhancement_panel.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/equipment_card.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/equipment_tab.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/fleet_level_generator.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/fleet_level_panel.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/game.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/main.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "file": "space-battleship/scripts/planet_panel.gd",
+    "code": 0,
+    "script_error": false
+  }
+]

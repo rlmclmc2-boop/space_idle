@@ -12,12 +12,13 @@ data = json.loads((root / 'space-battleship/data/game_data.json').read_text(enco
 validate_projection(data)
 for first, second in (('271022','271023'),('271026','271027')):
     assert data['enemies'][first]['intelName'] != data['enemies'][second]['intelName'], (first,second)
-for enemy_id, replacement in (
-    ('271024', []),
-    ('271024', ['shieldRecovery']),
-    ('271028', []),
-    ('271001', ['reactiveReduction']),
-):
+opening_ids = {str(eid) for level in data['levels'][:3] for group in level['groups']
+               for eid in data['groups'][str(group['id'])]['slots'] if eid is not None}
+# Mutate the current authoritative mechanism set rather than assuming old IDs
+# retain an editable combat mechanic forever.
+for enemy_id in sorted(opening_ids):
+    current = data['enemies'][enemy_id]['intelMechanics']
+    replacement = [] if current else ['reactiveReduction']
     altered = copy.deepcopy(data)
     altered['enemies'][enemy_id]['intelMechanics'] = replacement
     try:
@@ -48,4 +49,4 @@ timers = [float(row.get('shieldDelay',0)) for row in data['enemies'].values()]
 timers += [float(row['cd']) for row in data['enemy_weapon_base'].values()]
 timers.append(float(re.search(r'const REACTIVE_RESET_SECONDS := ([\d.]+)', legacy).group(1)))
 assert all(abs(value*1000-round(value*1000)) < 1e-9 for value in timers), 'Enemy intel duration cannot be represented as integer milliseconds'
-print('Enemy intel import: full data valid; 4 mechanism mismatches and visual mismatch rejected; native reactive constants and integer-ms durations match')
+print('Enemy intel import: full data valid; current opening mechanism mismatches and visual mismatch rejected; native reactive constants and integer-ms durations match')

@@ -53,6 +53,7 @@ for case in ('empty weapon_motion', 'empty enemy_weapon_base', 'null missile spe
         config = area / 'config_excel'
         shutil.copytree(game / 'config_excel', config, ignore=shutil.ignore_patterns('.import_state.json'))
         target = area / 'game_data.json'
+        shutil.copy2(game/'data/space_enemy_reward_sources.json',target.parent/'space_enemy_reward_sources.json')
         target.write_text(json.dumps(base), encoding='utf8')
         section = 'weapon_motion' if case == 'empty weapon_motion' else 'enemy_weapon_base'
         path = config / (section + '.xlsx')
@@ -83,6 +84,7 @@ with tempfile.TemporaryDirectory(dir=game.parent, prefix='rail-config-') as dire
     config = area / 'config_excel'
     shutil.copytree(game / 'config_excel', config, ignore=shutil.ignore_patterns('.import_state.json'))
     target = area / 'game_data.json'
+    shutil.copy2(game/'data/space_enemy_reward_sources.json',target.parent/'space_enemy_reward_sources.json')
     target.write_text(json.dumps(base), encoding='utf8')
     path = config / 'weapon_motion.xlsx'
     workbook = openpyxl.load_workbook(path)

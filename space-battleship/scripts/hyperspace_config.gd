@@ -10,7 +10,7 @@ static func load_config() -> Dictionary:
 
 static func valid(c: Dictionary) -> bool:
 	if not Entity.output_valid("hyperspace_config.json",c) or c.get("version")!=2:return false
-	for key in ["energy_rate","energy_cap","ticket","minimum_duration","modernization_base_coefficient","auto_duration_crew_base","auto_ticket_crew_base","modernization_legendary_multiplier"]:
+	for key in ["energy_rate","energy_cap","ticket","minimum_duration","modernization_base_coefficient","modernization_legendary_multiplier"]:
 		if not number(c.get(key)) or float(c[key])<=0:return false
 	for key in ["unlock_stage","minimum_level","warehouse_capacity","overflow_capacity","reforge_capacity_gain","retention_capacity_gain","maximum_equipped","maximum_legendary","maximum_ultimate","completion_budget","amplification_start_level"]:
 		if not integer(c.get(key)) or int(c[key])<=0:return false

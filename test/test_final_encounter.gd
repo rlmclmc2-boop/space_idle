@@ -10,6 +10,10 @@ func check(ok: bool, label: String) -> void:
 
 func _initialize() -> void:
 	var db := ShipDatabase.new()
+	UIText.reload_catalog()
+	UIText.entries["test.final_small_ship"]="Final small ship"
+	UIText.contracts["test.final_small_ship"]={"params":[]}
+	UIText.bindings.enemies["991"]={"des":"test.final_small_ship"}
 	var normal: Dictionary = db.enemies.values().filter(func(e): return e.size == 1)[0].duplicate(true)
 	var large: Dictionary = normal.duplicate(true)
 	normal.id = 991
@@ -17,7 +21,7 @@ func _initialize() -> void:
 	normal.equipment = []
 	large.id = 992
 	large.des = "Early large ship"
-	large.size = 3
+	large.size = 6
 	large.equipment = []
 	db.enemies["991"] = normal
 	db.enemies["992"] = large
@@ -33,7 +37,7 @@ func _initialize() -> void:
 		if kind == "encounter": events.append(info.boss))
 	for i in range(2):
 		g.spawn_group()
-		check(not g.is_boss_encounter() and g.enemies[0].boss, "Early large hull is not final battle")
+		check(not g.is_boss_encounter() and not g.enemies[0].boss, "Early large hull is not a boss merely because of its size")
 		check(g.boss_info() == "？？？", "Early large hull does not reveal final battle")
 		g.fire(g.enemies[0], g.player, db.equip("laser",1), 1, true, "laser_mon")
 		g.hit_enemy(g.enemies[0], 1e20, 1)
@@ -42,7 +46,7 @@ func _initialize() -> void:
 		check(g.state == BattleGame.State.TRAVEL and not g.profile.cleared.has(1), "Early battle continues without clear")
 		g.projectiles.clear()
 	g.spawn_group()
-	check(g.is_boss_encounter() and not g.enemies[0].boss, "Final small-ship group is boss battle")
+	check(g.is_boss_encounter() and g.enemies[0].boss, "Final small-ship group is boss battle")
 	check(g.boss_info() == "Final small ship", "Boss information describes final group only")
 	check(events == [false, false, true], "Encounter notifications follow position")
 	g.fire(g.enemies[0], g.player, db.equip("laser",1), 1, true, "laser_mon")

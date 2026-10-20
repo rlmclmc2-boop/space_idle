@@ -77,12 +77,16 @@ func _initialize() -> void:
 	var old_save := seed.profile.duplicate(true)
 	old_save.charge = {"攻击充能":{"level":99,"active":true}}
 	write_save(old_save)
+	var before_load := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var settled := LoadOrderGame.new(db,true)
-	check(settled.boundaries==["load","save","player"],"Load grants particles and saves before resetting player")
+	check(settled.boundaries==["load","player"],"Load settles in memory without an implicit save before resetting player")
 	check(settled.profile.chronoParticles==1 and settled.profile.resources["2"]==0,"Offline time credits only particles")
 	check(not settled.profile.has("charge"),"Old charge state is discarded")
 	var disk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(disk.resources==settled.profile.resources and disk.chronoParticles==1 and not disk.has("charge"),"Load persists particle credit and removes old charge")
+	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==before_load,"Loading leaves the existing save bytes unchanged")
+	settled.save_progress()
+	disk=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
+	check(disk.resources==settled.profile.resources and disk.chronoParticles==1 and not disk.has("charge"),"Explicit save persists particle credit and removes old charge")
 	# The saved timestamp prevents repeated particle credit.
 	var repeated := BattleGame.new(db,true)
 	check(repeated.profile.resources==settled.profile.resources and repeated.profile.chronoParticles==settled.profile.chronoParticles,"Immediate repeat cannot reclaim offline particle credit")
@@ -91,9 +95,11 @@ func _initialize() -> void:
 	immediate.profile.cleared = [1]
 	immediate.profile.resources["2"] = 1000.0
 	immediate.boundaries.clear()
+	var upgrade_cost := immediate.reactor_upgrade_cost(1)
 	check(immediate.upgrade_reactor(1),"Reactor upgrade succeeds")
-	check(immediate.boundaries.count("save")==1,"Reactor upgrade saves immediately")
+	check(immediate.boundaries.count("save")==0 and immediate.save_dirty,"Reactor upgrade marks dirty without an implicit save")
+	immediate.save_progress()
 	var upgraded: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(upgraded.reactorLevel==2 and upgraded.resources["2"]==900,"Saved reactor level and uranium match")
+	check(upgraded.reactorLevel==2 and upgraded.resources["2"]==1000.0-upgrade_cost,"Saved reactor level and uranium match")
 	print("Save boundaries: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

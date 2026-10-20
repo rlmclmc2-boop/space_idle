@@ -32,7 +32,7 @@ func _initialize():
 				poses.append({"target":Vector2(e.x,y+smoothstep(220.,420.,y)*220.),"logical_position":Vector2(e.x,y),"phase":0.,"born":0.,"duration":1.,"entry_x":0.,"variance":1.})
 			Layout.sync(h);var points=[]
 			for i in [0,5,10]:points.append(Layout.position(h,h.game.enemies[i],poses[i]))
-			assert(absf(points[0].y-(110.+sin(4.*.91)*7.*.25))<.001)
+			assert(absf(points[0].y-110.)<.001) # Fixed residence no longer adds idle oscillation.
 			assert(points[1].y-points[0].y>180. and points[2].y-points[1].y>180.)
 			assert(absf((points[1].y-points[0].y)-(points[2].y-points[1].y))<20.)
 			checks+=3;rows.append({"screen_scale":scale,"model_scale":model_scale,"row_y":[points[0].y,points[1].y,points[2].y]})

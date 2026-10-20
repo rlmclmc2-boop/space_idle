@@ -1,7 +1,16 @@
 extends SceneTree
 const Appearance=preload("res://scripts/hyperspace_appearance.gd")
 const Visual=preload("res://scripts/hyperspace_drone_visual.gd")
+# Pose/cache unit test; the baker collaborator is a spy, not a raster acceptance.
+class BakerProbe extends RefCounted:
+ var attachments:=0
+ func attach(_node,_key):attachments+=1
+ func guard_resolution(_value):pass
 class PoseView extends Node:
+ var body_baker=BakerProbe.new()
+ var viewport={"size":Vector2i(550,900),"scaling_3d_scale":1.0}
+ var camera={"size":45.0}
+ func request_fleet_redraw():pass
  const WORLD_PER_PIXEL=0.05
  var rendered_position=Vector2(280,700)
  var size=Vector2(550,900)

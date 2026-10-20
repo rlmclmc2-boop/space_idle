@@ -9,6 +9,13 @@ func make_game(db):
 	g.profile.cleared = range(1,61)
 	g.rebuild_unlocks()
 	return g
+func complete_shipyard(g, id: String) -> void:
+	# Building identity is table-driven: later planets may migrate a legacy ID.
+	for row in g.planet_buildings.rows(g,id):
+		if str(row.type)=="shipyard":
+			g.profile.planets[id].buildings[str(row.id)].status="built"
+			return
+	check(false,"Configured shipyard exists for " + id)
 func total_exp(g, member: Dictionary) -> float:
 	var result := float(member.exp)
 	for level in int(member.level):result += g.crew.required_exp(g,level)
@@ -42,19 +49,23 @@ func _initialize() -> void:
 	for index in 6:
 		var id := str(index+1)
 		var g = make_game(db)
-		check(g.planet_reforge_start(id)==(index+1)*5, "Configured initial start " + id)
+		# Later planets are unlocked by prior conquest, not just combat stage.
+		for previous in range(1,index+1):g.profile.planets[str(previous)].conquered=true
+		g.rebuild_unlocks()
+		var start := int(db.data.planet[id].reforgeStartLevel)
+		check(g.planet_reforge_start(id)==start, "Configured initial start " + id)
 		var amount: float = g.planet_exp_reward(id)
 		trip(g,id)
 		for member in g.profile.crew:
 			check(is_equal_approx(total_exp(g,member),amount if member.crewId=="navigator" else 0.0), "Before conquest explorer only " + str(member.crewId))
-		g.profile.planets[id].buildings.shipyard.status = "built"
+		complete_shipyard(g,id)
 		g.profile.planets[id].auto_explore = true
 		var historical: int = g.profile.highestLevel
 		var multiplier: float = g.planet_exp_multiplier()
 		var resources: Dictionary = g.profile.resources.duplicate()
 		var old_unlocks: Array = g.available_unlocks()
 		check(g.reforge_planet(id), "Conquest " + id)
-		check(g.stage==(index+1)*5 and g.profile.highestLevel==g.stage and g.profile.cleared==range(1,g.stage), "Starts at table stage, earlier stages skipped")
+		check(g.stage==start and g.profile.highestLevel==g.stage and g.profile.cleared==range(1,g.stage), "Starts at table stage, earlier stages skipped")
 		check(g.profile.resources==resources, "Skipped stages grant no resources")
 		check(g.profile.lifetime_max_stage==historical and g.planet_exp_multiplier()==multiplier, "Historical XP retained")
 		check(g.planet_progress(id).auto_explore and g.planet_progress(id).crewId=="", "Reforge retains auto preference without dispatch")
@@ -89,11 +100,11 @@ func _initialize() -> void:
 	check(g.pending_unlocks.has("test_future"), "New unlock still notifies")
 	while not g.pending_unlocks.is_empty():g.acknowledge_unlocks()
 	check(g.profile.seenUnlocks.has("test_future"), "Acknowledgement stores permanent history")
-	g.profile.planets["1"].buildings.shipyard.status="built"
+	complete_shipyard(g,"1")
 	db.data.planet["1"].reforgeStartLevel=17
 	check(g.reforge_planet("1") and g.stage==17, "Edited start table value controls runtime")
 	var first_peak: int=g.profile.lifetime_max_stage
-	g.profile.planets["2"].buildings.shipyard.status="built"
+	complete_shipyard(g,"2")
 	check(g.reforge_planet("2") and g.profile.lifetime_max_stage==first_peak, "Repeated reforge never lowers historical peak")
 	g.profile.cleared=range(1,64)
 	g.rebuild_unlocks()

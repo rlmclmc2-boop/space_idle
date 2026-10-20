@@ -1,6 +1,8 @@
 extends SceneTree
 class Host extends RefCounted:
  var blocked=false
+ var shield_before_hit=0.0
+ var player_hit_at=0.0
  var game_time_remainder=0.0
  var fx_time=0.0
  var demo_time=0.0

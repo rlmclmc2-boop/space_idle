@@ -1,0 +1,42 @@
+COMMAND=python test/run.py test_save_import_recovery.py --headless --godot /usr/local/bin/godot --timeout 180
+FRESH_ISOLATED_PROJECT=true
+IMPORT_EXIT_CODE=0
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY recover staged: 7 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY recover first-save: 7 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY recover staged: 7 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY recover moved: 7 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY recover installed: 7 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY active staged: 6 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY active moved: 6 checks, 0 failures
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+IMPORT RECOVERY active installed: 6 checks, 0 failures
+FRESH PROCESS IMPORT RECOVERY: 8 scenarios, 0 failures
+PROCESS_EXITS
+active-installed.exit=0
+active-moved.exit=0
+active-staged.exit=0
+interrupt-first-save-interrupted.exit=-9
+interrupt-first-save.exit=0
+interrupt-installed-interrupted.exit=-9
+interrupt-installed.exit=0
+interrupt-moved-interrupted.exit=-9
+interrupt-moved.exit=0
+interrupt-staged-interrupted.exit=-9
+interrupt-staged.exit=0
+legacy-staged.exit=0
+EXIT_CODE=0

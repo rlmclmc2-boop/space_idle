@@ -1,0 +1,15 @@
+Artifacts: /workspace/scratch/9ced2a722b42/space_idle_parent/test/work/test_ui_text-16c7e2pt
+....F..
+======================================================================
+FAIL: test_no_new_hardcoded_chinese_in_game_scripts (__main__.CatalogTests.test_no_new_hardcoded_chinese_in_game_scripts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/9ced2a722b42/space_idle_parent/test/work/test_ui_text-16c7e2pt/test/test_ui_text.py", line 134, in test_no_new_hardcoded_chinese_in_game_scripts
+    self.assertIn(value, allowed.get(path.name,set()), f'{path.name}: add display prose to the UI catalog')
+AssertionError: '武器伤害' not found in set() : ai_tech_view_model.gd: add display prose to the UI catalog
+
+----------------------------------------------------------------------
+Ran 7 tests in 16.131s
+
+FAILED (failures=1)
+

@@ -17,11 +17,12 @@ func _initialize()->void:
 	if not g.startup_error.is_empty():quit(1);return
 	for level in [0,1,10,100,500]:
 		var q:=g.hyperspace.auto_quote(900.0,level)
-		check(is_equal_approx(q.ticket,float(c.ticket)*20.0/(20.0+level)) and is_equal_approx(q.duration,maxf(float(c.minimum_duration),900.0*100.0/(100.0+level))),"default shared auto quote "+str(level))
-	var changed:=c.duplicate(true);changed.auto_duration_crew_base=200.0;changed.auto_ticket_crew_base=40.0;changed.amplification_start_level=6;changed.modernization_base_coefficient=2.0
+		check(q.ticket==0 and is_equal_approx(q.duration,900.0*20.0/(20.0+level)),"default shared auto quote "+str(level))
+	var changed:=c.duplicate(true);changed.amplification_start_level=6;changed.modernization_base_coefficient=2.0
 	check(g.hyperspace.configure(changed),"distinct valid numeric config")
-	var quote:=g.hyperspace.auto_quote(900.0,100)
-	check(is_equal_approx(quote.ticket,float(c.ticket)*40.0/140.0) and is_equal_approx(quote.duration,600.0),"both crew bases consumed")
+	g.db.data.crew_config.hyperspace_duration_k.value=40
+	var quote:=g.hyperspace.auto_quote(900.0,100,g)
+	check(quote.ticket==0 and is_equal_approx(quote.duration,900.0*40.0/140.0),"Current crew duration coefficient drives the free auto quote")
 	var a:Dictionary={"key":"global_damage","tier":5,"value":0.1,"locked":false}
 	check(is_equal_approx(Agg.affix_value(a,{"level":6},changed),0.1) and is_equal_approx(Agg.affix_value(a,{"level":5},changed),0.1/1.05),"amplification exponent start and below-start")
 	var rng:=RandomNumberGenerator.new();rng.seed=123
@@ -34,8 +35,9 @@ func _initialize()->void:
 	var common:float=1.0+float(10-int(c.material_reward_start_level))/float(c.modernization_level_step)
 	var weight:float=float(c.modernization_tier_weights["5"])
 	check(old.error.is_empty() and revised.error.is_empty(),"modernization actual planner accepts both configs")
-	check(old.cost.degenerate_matter==roundf(common*(1.0+weight))*float(c.modernization_cost_base) and revised.cost.degenerate_matter==roundf(common*(2.0+weight))*float(c.modernization_cost_base),"base coefficient consumed; price origin and quantization preserved")
-	for pair in [["auto_duration_crew_base",0],["maximum_equipped",6],["overflow_capacity",11]]:
+	var unit: float=float(c.material_unit_scale)*float(c.modernization_cost_base)
+	check(old.cost.degenerate_matter==roundf(common*(1.0+weight))*unit and revised.cost.degenerate_matter==roundf(common*(2.0+weight))*unit,"base coefficient consumed; price origin and quantization preserved")
+	for pair in [["modernization_base_coefficient",0],["maximum_equipped",6],["overflow_capacity",11]]:
 		var bad:=c.duplicate(true);bad[pair[0]]=pair[1];check(not C.valid(bad),"invalid runtime config rejected "+str(pair[0]))
 	var bad:=c.duplicate(true);bad.legendary_effects.dodge_counter.parameters.maximum_dodge[1]=1.1
 	check(not C.valid(bad),"dodge upper probability rejected at runtime")

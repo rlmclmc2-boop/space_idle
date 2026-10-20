@@ -18,8 +18,8 @@ func _initialize()->void:
 	var large:=c.duplicate(true);large.dismantle_amounts.white=51
 	for key in large.quality_weights:large.quality_weights[key]=1.0 if key=="white" else 0.0
 	var g:=BattleGame.new(ShipDatabase.new(),false);check(g.hyperspace.configure(large),"dismantle51 is valid numeric config")
-	g.profile.highestLevel=7;g.profile.hyperspace.filter={"version":2,"enabled":true,"mode":"all","action":"clear_matches","conditions":[{"field":"weapon","value":"laser"}]}
-	var run:=g.hyperspace.start(g,"alpha",7,"manual")
+	g.profile.highestLevel=int(large.unlock_stage);g.profile.hyperspace.filter={"version":2,"enabled":true,"mode":"all","action":"clear_matches","conditions":[{"field":"weapon","value":"laser"}]}
+	var run:=g.hyperspace.start(g,"alpha",1,"manual")
 	check(not run.is_empty(),"real run started without external reward injection")
 	if run.is_empty():quit(1);return
 	check(g.hyperspace.complete(g,int(run.round_id),int(run.run_id),true),"filtered actual generated reward accepts configured module budget")

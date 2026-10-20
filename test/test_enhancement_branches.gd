@@ -7,6 +7,11 @@ func check(ok: bool,label: String) -> void:
  if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture(key := "laser") -> BattleGame:
  var db:=ShipDatabase.new()
+ db.ships.Frigate.weaponSlots=2
+ db.ships.Frigate.defenseSlots=2
+ db.config.equipmentSwitchCooldownSeconds=0.0
+ db.data.equipment_evolution.first_stat_multiplier=1.0
+ db.data.equipment_evolution.later_stat_multiplier=1.0
  for weapon in ["laser","missile","cannon","longLaser"]:
   db.equipment[weapon][0].dmg=100;db.equipment[weapon][0].dmgMulti=0;db.equipment[weapon][0].cri=0;db.equipment[weapon][0].criDmg=0
  db.equipment.longLaser[0].para3=.2
@@ -22,6 +27,7 @@ func fixture(key := "laser") -> BattleGame:
  g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150},{"key":key,"level":150}],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
+ var second:Dictionary=g.enemies[0].duplicate(true);second.uid=10002;second.x+=80;g.enemies.append(second)
  for enemy in g.enemies:enemy.hp=1e10;enemy.max_hp=1e10;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)
  return g
 func choose(g,effect: String,node: int,choice := "B") -> void:

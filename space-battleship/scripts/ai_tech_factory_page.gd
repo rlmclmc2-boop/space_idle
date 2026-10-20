@@ -99,9 +99,9 @@ func setup(source: Variant = null) -> void:
 	scene = Control.new()
 	scene.size = size
 	add_child(scene)
-	_label(scene, "科技研发", Rect2(30, 20, 320, 53), 36)
-	_label(scene, "AI 科技工厂", Rect2(31, 72, 360, 30), 19, MUTED)
-	_button(scene, "选择研究  ›", Rect2(1060, 26, 254, 60), func(): set_drawer_open(true), true)
+	_label(scene, UIText.t("ui.ai_tech_factory_page.message_01"), Rect2(30, 20, 320, 53), 36)
+	_label(scene, UIText.t("ui.ai_tech_factory_page.message_02"), Rect2(31, 72, 360, 30), 19, MUTED)
+	_button(scene, UIText.t("ui.ai_tech_factory_page.message_03"), Rect2(1060, 26, 254, 60), func(): set_drawer_open(true), true)
 	_panel(scene, Rect2(24, 119, 1296, 713), Color("102637"))
 	art = ART.new()
 	art.position = Vector2(30, 125)
@@ -109,11 +109,11 @@ func setup(source: Variant = null) -> void:
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scene.add_child(art)
 	var caption := _panel(scene, Rect2(52, 143, 420, 86), Color("102637cc"))
-	active_name = _label(caption, "等待科技数据", Rect2(20, 8, 380, 40), 29)
+	active_name = _label(caption, UIText.t("ui.ai_tech_factory_page.message_04"), Rect2(20, 8, 380, 40), 29)
 	active_meta = _label(caption, "", Rect2(20, 49, 380, 29), 18, CYAN)
 	var foot := _panel(scene, Rect2(24, 850, 1296, 285), PANEL)
-	_label(foot, "当前研发", Rect2(24, 16, 270, 34), 23, MUTED)
-	status_text = _label(foot, "暂无研究", Rect2(24, 53, 760, 39), 27)
+	_label(foot, UIText.t("ui.ai_tech_factory_page.message_05"), Rect2(24, 16, 270, 34), 23, MUTED)
+	status_text = _label(foot, UIText.t("ui.ai_tech_factory_page.message_06"), Rect2(24, 53, 760, 39), 27)
 	progress_text = _label(foot, "—", Rect2(1078, 49, 174, 45), 30, CYAN)
 	progress_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_panel(foot, Rect2(26, 106, 1241, 13), DEEP)
@@ -147,7 +147,7 @@ func _investment_input(parent: Control, rect: Rect2, resource_id: String) -> Lin
 	e.add_theme_color_override("font_color", INK)
 	e.text_submitted.connect(func(value: String): _submit_investment(resource_id, value))
 	parent.add_child(e)
-	_button(parent, "应用", Rect2(rect.end.x + 7, rect.position.y, 70, rect.size.y),
+	_button(parent, UIText.t("ui.ai_tech_factory_page.message_07"), Rect2(rect.end.x + 7, rect.position.y, 70, rect.size.y),
 		func(): _submit_investment(resource_id, e.text))
 	return e
 
@@ -168,10 +168,10 @@ func _build_drawer() -> void:
 	shade.mouse_filter = Control.MOUSE_FILTER_STOP
 	drawer.add_child(shade)
 	var body := _panel(drawer, Rect2(77, 55, 1190, 1050), DEEP)
-	_label(body, "选择研究", Rect2(33, 20, 630, 55), 37)
-	_button(body, "收起  ⌃", Rect2(980, 18, 180, 59), func(): set_drawer_open(false))
+	_label(body, UIText.t("ui.ai_tech_factory_page.message_08"), Rect2(33, 20, 630, 55), 37)
+	_button(body, UIText.t("ui.ai_tech_factory_page.message_09"), Rect2(980, 18, 180, 59), func(): set_drawer_open(false))
 	_panel(body, Rect2(24, 91, 1142, 150), PANEL)
-	drawer_active = _label(body, "当前研发：暂无", Rect2(48, 106, 860, 37), 25)
+	drawer_active = _label(body, UIText.t("ui.ai_tech_factory_page.message_10"), Rect2(48, 106, 860, 37), 25)
 	drawer_progress = _label(body, "—", Rect2(983, 106, 158, 37), 25, CYAN)
 	drawer_progress.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_panel(body, Rect2(47, 159, 1094, 11), DEEP)
@@ -244,9 +244,9 @@ func set_snapshot(data: Dictionary) -> void:
 	art.visible = art_enabled and art_has_selection
 	art.set_display(_art_id(selected_id), int(shown.get("level", 0)), bool(data.get("advancing",working)) and selected_id == active_id, percent)
 	if drawer_open or not art_enabled: art.set_obscured(true)
-	active_name.text = str(shown.get("name", "等待科技数据"))
+	active_name.text = str(shown.get("name", UIText.t("ui.ai_tech_factory_page.message_04")))
 	active_meta.text = str(shown.get("generation_text", "")) # Caller supplies generation labels.
-	status_text.text = str(data.get("status_text", "暂无研究"))
+	status_text.text = str(data.get("status_text", UIText.t("ui.ai_tech_factory_page.message_06")))
 	effect_text.text = str(active.get("effect_text", ""))
 	progress_text.text = ("%d%%" % roundi(percent * 100.0)) if working else "—"
 	remaining_text.text = str(data.get("remaining_text", ""))
@@ -257,7 +257,7 @@ func set_snapshot(data: Dictionary) -> void:
 	uranium_state.text = str(data.get("uranium_state", ""))
 	_sync_input(iron_edit, str(data.get("iron_investment", "0")))
 	_sync_input(uranium_edit, str(data.get("uranium_investment", "0")))
-	drawer_active.text = "当前研发：" + str(active.get("name", "暂无"))
+	drawer_active.text = UIText.t("ui.ai_tech_factory_page.message_11") + str(active.get("name", UIText.t("ui.ai_tech_factory_page.message_12")))
 	drawer_progress.text = progress_text.text
 	drawer_fill.size.x = 1090.0 * percent if working else 0.0
 	if drawer_open: _sync_rows(items)
@@ -291,7 +291,7 @@ func _sync_rows(items: Array) -> void:
 			var tier := str(item.get("tier", "basic"))
 			if tier != previous_tier:
 				var heading := Label.new()
-				heading.text = {"independent":"独立科技", "basic":"基础科技", "core":"核心科技", "final":"终极科技"}.get(tier, tier)
+				heading.text = {"independent":UIText.t("ui.ai_tech_factory_page.message_13"), "basic":UIText.t("ui.ai_tech_factory_page.message_14"), "core":UIText.t("ui.ai_tech_factory_page.message_15"), "final":UIText.t("ui.ai_tech_factory_page.message_16")}.get(tier, tier)
 				heading.custom_minimum_size = Vector2(1112, 36)
 				heading.add_theme_font_size_override("font_size", 23)
 				heading.add_theme_color_override("font_color", CYAN)
@@ -308,7 +308,7 @@ func _sync_rows(items: Array) -> void:
 		row.condition.text = str(item.get("requirement_text", ""))
 		row.state.text = str(item.get("state_text", ""))
 		row.action.disabled = not bool(item.get("can_research", false))
-		row.action.text = str(item.get("action_text", "选择研究"))
+		row.action.text = str(item.get("action_text", UIText.t("ui.ai_tech_factory_page.message_08")))
 		row.art.set_display(_art_id(id), int(item.get("level", 0)), false, 0.0, true)
 
 func _create_row(id: String) -> void:
@@ -327,6 +327,6 @@ func _create_row(id: String) -> void:
 	var condition_label := _label(card, "", Rect2(138, 87, 700, 30), 17, MUTED)
 	var state_label := _label(card, "", Rect2(838, 24, 246, 29), 19, CYAN)
 	state_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	var action := _button(card, "选择研究", Rect2(860, 70, 213, 48), func(): research_requested.emit(id), true)
+	var action := _button(card, UIText.t("ui.ai_tech_factory_page.message_08"), Rect2(860, 70, 213, 48), func(): research_requested.emit(id), true)
 	row_nodes[id] = {"name":name_label, "effect":effect_label, "condition":condition_label,
 		"state":state_label, "action":action, "art":icon}

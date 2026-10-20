@@ -1,5 +1,5 @@
 """Run via run.py. Crew participates in existing workbook projection and transactions."""
-import copy,json,sys,unittest
+import copy,json,sys,unittest,shutil
 from pathlib import Path
 from unittest.mock import patch
 import openpyxl
@@ -35,6 +35,7 @@ class CrewImportTests(unittest.TestCase):
 
     def test_incremental_and_optional_discovery(self):
         target=ROOT/'.runtime/crew-import.json'
+        shutil.copy2(ROOT/'data/space_enemy_reward_sources.json', target.parent/'space_enemy_reward_sources.json')
         previous=copy.deepcopy(self.data);previous['crew_level']={'normal':{}}
         target.write_text(json.dumps(previous,ensure_ascii=False),encoding='utf-8')
         result=incremental_import(ROOT/'config_excel',target)

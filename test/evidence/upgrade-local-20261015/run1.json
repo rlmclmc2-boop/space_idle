@@ -1,1 +1,0 @@
-{"checks":95,"failures":["kernel post-upgrade exact except construction seed","future birth/update parity","equal full entry different insertion order shares projection","shared projection exact identity","different level is distinct; equal inactive entry shares only projection","refresh_slots scoped cache","next refresh uses fresh cache"]}

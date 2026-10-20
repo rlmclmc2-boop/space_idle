@@ -38,8 +38,8 @@ class UI extends "res://scripts/battlefield.gd":
  func draw_projectile_fx(shot:Dictionary,pos:Vector2,offset:Vector2,core:=true,visual:Dictionary={},trail_budget:=-1)->float:
   if off=="vfx":return float(visual.get("angle",Vector2(shot.direction).angle()))
   return super.draw_projectile_fx(shot,pos,offset,core,visual,trail_budget)
- func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float)->bool:
-  return true if off=="vfx" else super.draw_projectile_body_override(shot,pos,angle)
+ func draw_projectile_body_override(shot:Dictionary,pos:Vector2,angle:float,visual_scale:Variant=null)->bool:
+  return true if off=="vfx" else super.draw_projectile_body_override(shot,pos,angle,visual_scale)
  func draw_beam_override(shot:Dictionary,offset:Vector2,core:bool=true)->bool:
   return true if off=="vfx" else super.draw_beam_override(shot,offset,core)
  func draw_battle_particles(offset:Vector2,core:bool)->void:

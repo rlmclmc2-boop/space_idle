@@ -10,6 +10,11 @@ static func level(game, id: String) -> int:
 static func ai_count(game) -> int:
 	return 1 + level(game, "singularity")
 
+static func research_speed(game) -> float:
+	# Existing drone module remains an AI-speed consumer after the tree migration.
+	var bonus := float(game.hyperspace_totals().hangings.get("distributed_algorithm",0.0))
+	return float(ai_count(game)+9)/10.0 * (1.0+bonus)
+
 static func required(game, id: String) -> float:
 	var row: Dictionary = game.db.data.ai_tech_tree.get(id, {})
 	if row.is_empty():return INF
@@ -92,7 +97,7 @@ static func record_income(game, id: String) -> void:
 static func snapshot(game) -> Dictionary:
 	var selected := str(game.profile.aiTechActive)
 	var inputs := {}
-	var acceleration := float(ai_count(game) + 9) / 10.0
+	var acceleration := research_speed(game)
 	for resource_id in ["1", "2"]:
 		var amount := int(game.profile.aiTechInput.get(resource_id, 0))
 		var affordable := amount == 0 or N.compare(game.profile.resources.get(resource_id, 0), 0) > 0
@@ -133,7 +138,7 @@ static func advance(game, dt: float) -> void:
 			game.event.emit("tech_tree_changed", {"reason":"prerequisite_stopped","id":id})
 			break
 		var step := remaining
-		var speed := float(ai_count(game) + 9) / 10.0
+		var speed := research_speed(game)
 		var factors := {}
 		for resource_id in ["1", "2"]:
 			var amount := int(game.profile.aiTechInput.get(resource_id, 0))

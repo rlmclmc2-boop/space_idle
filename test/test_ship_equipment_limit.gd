@@ -10,6 +10,7 @@ func check(ok: bool, label: String) -> void:
 
 func _initialize() -> void:
 	var db := ShipDatabase.new()
+	db.config.equipmentSwitchCooldownSeconds=0.0
 	var game := BattleGame.new(db,false)
 	game.profile.unlocked = ["laser","cannon","missile","armour","shield"]
 	for ship in db.ships:
@@ -32,8 +33,9 @@ func _initialize() -> void:
 			check(game.unequip_slot(category,0), "removal frees count")
 			check(game.equip_slot(category,0,key), "can re-equip")
 			check(game.slot_entry(category,0).level == 1, "new instance level one")
-	# Existing over-limit saves remain intact; only new installations are rejected.
+	# Legacy same-kind caps no longer restrict existing or new module installations.
 	db.ships[game.first_ship()].sameEquipmentLimit = 1
+	db.ships[game.first_ship()].weaponSlots=3 # Pin capacity for legacy duplicate preservation.
 	var old := BattleGame.new(db,false)
 	old.profile.loadout.weapons[1] = {"key":"laser","level":2}
 	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)

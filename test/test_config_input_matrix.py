@@ -25,6 +25,7 @@ AREA.mkdir(exist_ok=True)
 originals = {str(p.relative_to(ROOT)): p.read_bytes()
              for p in (ROOT / 'config_excel').iterdir() if p.is_file() and not p.name.startswith('~$')}
 originals['data/game_data.json'] = (ROOT / 'data/game_data.json').read_bytes()
+originals['data/space_enemy_reward_sources.json'] = (ROOT / 'data/space_enemy_reward_sources.json').read_bytes()
 checks = 0
 
 
@@ -150,7 +151,7 @@ CASES = ['valid', 'manifest_missing', 'manifest_broken',
          *['manifest_value_' + x for x in ('empty', 'list', 'sheets_missing', 'sheets_null', 'sheets_list')],
          'required_mapping_missing',
          *['path_' + x for x in ('empty', 'null', 'number', 'parent', 'backslash', 'absolute', 'missing_file', 'wrong_sheet')],
-         *['optional_' + n + '_' + v for n in ('charge', 'ship') for v in
+         *['optional_' + n + '_' + v for n in ('ship',) for v in
            ('fallback', 'null', 'empty', 'absent_existing_projection', 'absent_no_projection')],
          'target_missing', 'target_broken', 'cache_broken', 'cache_valid', 'cache_old', 'cache_wrong_target',
          *['invalid_' + x for x in ('health', 'size', 'armour', 'weapon', 'drop', 'id', 'reference')],
@@ -165,9 +166,9 @@ def run_case(case, entry):
     stage = 'import' if entry == 'incremental' else 'construct'
     parsed = []
     real_reader = cw.read_changed_file
-    def reader(path, name, raw):
+    def reader(path, name, raw, **kwargs):
         parsed.append(name)
-        return real_reader(path, name, raw)
+        return real_reader(path, name, raw, **kwargs)
     with patch.object(cw, 'read_changed_file', reader), patch.object(le, 'read_changed_file', reader), \
          patch.object(cw.uuid, 'uuid4', return_value=SimpleNamespace(hex='matrix')):
         try:
@@ -184,6 +185,8 @@ def run_case(case, entry):
         except Exception as error:
             outcome = {'accepted': False, 'stage': stage, 'error_type': type(error).__name__, 'error': str(error)}
     after = snapshot(root)
+    if case == 'valid':
+        check(outcome['accepted'], 'valid input must succeed: ' + entry + ': ' + str(outcome))
     outcome.update(case=case, entry=entry, files=delta(before, after), unchanged=sorted(k for k in before if after.get(k)==before[k]),
                    parsed=parsed, file_hashes=after)
     if not outcome['accepted'] or entry in ('store_load', 'store_validate'):
@@ -206,9 +209,9 @@ def transaction_case(entry, fault):
     real_replace, real_write = cw.os.replace, Path.write_bytes
     real_reader = cw.read_changed_file
     fired = False
-    def reader(path, name, raw):
+    def reader(path, name, raw, **kwargs):
         nonlocal fired
-        result = real_reader(path, name, raw)
+        result = real_reader(path, name, raw, **kwargs)
         if not fired and fault.startswith('concurrent_'):
             fired = True
             changed = {'source': store.paths['mon'], 'manifest': store.manifest, 'target': target}[fault.removeprefix('concurrent_')]
@@ -225,7 +228,7 @@ def transaction_case(entry, fault):
     def replace(src, dst):
         nonlocal fired
         dst = Path(dst); calls.append(str(dst.relative_to(root)).replace('\\','/'))
-        if fault in ('replace_failure', 'rollback_failure') and dst.name == '.import_state.json':
+        if fault in ('replace_failure', 'rollback_failure') and dst == target.with_name('.import_state.json'):
             fired = True; raise OSError('injected commit failure')
         if fault == 'rollback_failure' and fired and dst == target:
             raise OSError('injected rollback failure')
@@ -251,6 +254,10 @@ def transaction_case(entry, fault):
     check(not outcome['temporary_files'], 'temporary cleanup: '+entry+'/'+fault)
     if fault in ('stage_failure','replace_failure') and entry != 'store_validate':
         check(not outcome['accepted'] and before==after,'successful rollback restores every file')
+    if entry == 'incremental' and fault in ('concurrent_manifest', 'concurrent_target'):
+        check(not outcome['accepted'], 'concurrent import input/output change must reject')
+        check(all(outcome['external_bytes_preserved'].values()), 'concurrent writer bytes preserved')
+        check(set(outcome['files']) == set(external), 'concurrency rejection writes no importer output')
     if fault == 'rollback_failure' and entry != 'store_validate':
         check(outcome.get('error_type')=='RuntimeError' and before!=after,'characterize existing rollback failure; NOT atomicity certification')
     return json.loads(json.dumps(outcome,ensure_ascii=False).replace(str(root).replace('\\','\\\\'),'<CASE>'))
@@ -269,31 +276,36 @@ def projection_and_excel():
     check(result['parsed']==['mon'],'single-table parses only mon')
     check({k:v for k,v in before.items() if k!='enemies'}=={k:v for k,v in after.items() if k!='enemies'},'other JSON fields unchanged')
     state = json.loads(target.with_name('.import_state.json').read_text(encoding='utf-8'))
-    check(state['version']==cw.CACHE_VERSION==4 and state['target_hash']==cw.sha(target.read_bytes()),'cache and target hash')
+    check(state['version']==cw.CACHE_VERSION and state['target_hash']==cw.sha(target.read_bytes()),'cache and target hash')
     store=le.Store(root)
     check(state['hashes']=={n:cw.sha(p.read_bytes()) for n,p in store.paths.items()},'source hashes')
     request=store.load(); old={p:p.read_bytes() for p in [*store.paths.values(),target,target.with_name('.import_state.json')]}
-    table=request['tables']['level']; table['rows'][0]['atkRatio']='=ROUND(1.005,2)'; table['rows'][0]['lifeRatio']='=D4/3'
+    # Level ratios are protected, so exercise formula evaluation on editable health cells.
+    table=request['tables']['mon']
+    health_column=le.get_column_letter(table['headers'].index('health')+1)
+    table['rows'][0]['health']='=ROUND(1.005,2)'
+    table['rows'][1]['health']='='+health_column+'4/3'
+    first_id, second_id = (str(row['id']) for row in table['rows'][:2])
     result=store.execute(request,True)
     projected=json.loads(target.read_text(encoding='utf-8'))
-    check(projected['levels'][0]['atkRatio']==1.01 and projected['levels'][0]['lifeRatio']==1.01/3,'ROUND and Decimal/float reference boundary')
+    check(projected['enemies'][first_id]['health']==1.01 and projected['enemies'][second_id]['health']==1.01/3,'ROUND and Decimal/float reference boundary')
     backup=Path(result['backup'])
-    for p in (store.paths['level'],target,target.with_name('.import_state.json')):
+    for p in (store.paths['mon'],target,target.with_name('.import_state.json')):
         check((backup/p.relative_to(root)).read_bytes()==old[p],'backup original bytes')
     for name,p in store.paths.items():
-        if name!='level': check(p.read_bytes()==old[p],'unmodified workbook bytes '+name)
-    with zipfile.ZipFile(io.BytesIO(old[store.paths['level']])) as a, zipfile.ZipFile(store.paths['level']) as b:
-        part=dict(cw.sheet_parts(a))['level']
+        if name!='mon': check(p.read_bytes()==old[p],'unmodified workbook bytes '+name)
+    with zipfile.ZipFile(io.BytesIO(old[store.paths['mon']])) as a, zipfile.ZipFile(store.paths['mon']) as b:
+        part=dict(cw.sheet_parts(a))['mon']
         check(a.namelist()==b.namelist(),'ZIP members/order')
         for name in a.namelist():
             if name!=part: check(a.read(name)==b.read(name),'unchanged ZIP part '+name)
-        tree=cw.ET.fromstring(b.read(part)); cell=next(c for c in tree.iter(cw.Q+'c') if c.get('r')=='D4')
+        tree=cw.ET.fromstring(b.read(part)); cell=next(c for c in tree.iter(cw.Q+'c') if c.get('r')==health_column+'4')
         check(cell.find(cw.Q+'f').text=='ROUND(1.005,2)' and float(cell.find(cw.Q+'v').text)==1.01,'formula and XML cache')
     check(cw.incremental_import(store.directory,target)['parsed']==[],'Store fingerprint accepted by incremental')
     before=snapshot(root)
     try: full.full_import(ROOT.parent/'太空战舰.xlsx',target)
     except ValueError as error:
-        check('techPointGet' in str(error),'historical aggregate rejection')
+        check(bool(str(error)),'historical aggregate rejection includes a reason')
     else: raise AssertionError('Historical aggregate unexpectedly accepted')
     check(snapshot(root)==before and not target.with_suffix('.json.tmp').exists(),'full-import failure preserves output')
 

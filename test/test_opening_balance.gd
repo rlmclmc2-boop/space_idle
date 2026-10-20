@@ -21,6 +21,7 @@ func run() -> void:
 	check(is_equal_approx(float(db.equipment.laser[0].cd), 1.5) and is_equal_approx(float(db.equipment.laser[0].dmg), 350.0), "pulse timing and damage")
 	var g := BattleGame.new(db, false)
 	g.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
+	g.profile.selectedShip = "Cruiser" # Two active defence modules for this repair fixture.
 	g.profile.loadout = {"weapons": [{"key":"missile","level":1}], "defence": [{"key":"armour","level":1},{"key":"shield","level":1}]}
 	g.reset_player()
 	g.change_state(BattleGame.State.TRAVEL)

@@ -3,9 +3,9 @@ extends SceneTree
 class TrackedUI extends "res://scripts/main.gd":
 	var details_built := 0
 	var budget_queries := 0
-	func equipment_stat_text(entry: Dictionary) -> String:
+	func equipment_stat_text(entry: Dictionary, projected: Dictionary = {}, context: Dictionary = {}) -> String:
 		details_built += 1
-		return super.equipment_stat_text(entry)
+		return super.equipment_stat_text(entry,projected,context)
 	func decoration_budget(pos: Vector2, count: int) -> int:
 		budget_queries += 1
 		return super.decoration_budget(pos,count)
@@ -28,14 +28,18 @@ func run() -> void:
 	scene.game.paused = true
 	scene.game.pending_unlocks.clear()
 	scene.game.profile.cleared = range(1,60)
+	scene.game.rebuild_unlocks()
 	scene.game.profile.unlocked = BattleGame.EQUIPMENT.duplicate()
 	scene.game.profile.resources = {"1":1e20,"2":1e20}
 	scene.refresh_structure()
-	scene.equipment_tabs.current_tab = 0
+	scene.refresh_tab_visibility()
+	scene.select_system(0)
+	await process_frame
 	scene.refresh_visible_cards()
 	await process_frame
 	var panel = scene.equipment_panel
 	panel.select_item("weapons_0")
+	panel.show_inspector() # Affordability assertion below concerns a visible inspector.
 	var item: Dictionary = panel.items.weapons_0
 	var order: Array = panel.sorted_ids
 	var details: int = scene.details_built
@@ -52,11 +56,13 @@ func run() -> void:
 	scene.refresh_visible_cards()
 	check(panel.items.weapons_0.mainStatNumber==scene.game.jewel_equipment_stat(entry),"Reactor stat event refreshes affected value")
 	check(panel.stats_dirty.is_empty() and not panel.sort_dirty,"Local dirty flags clear after refresh")
-	scene.equipment_tabs.current_tab=2
+	scene.select_system(2)
+	await process_frame # Tab visibility changes are applied on the next UI frame.
 	scene.game.set_reactor_allocation("weapons",20)
 	scene.game.event.emit("equipment_stats",{"category":"weapons"})
-	check(panel.dirty,"Hidden stat event defers work")
-	scene.equipment_tabs.current_tab = 0
+	check(not panel.is_visible_in_tree() and panel.dirty,"Hidden stat event defers work")
+	scene.select_system(0)
+	await process_frame
 	scene.refresh_visible_cards()
 	check(not panel.dirty and panel.items.weapons_0.mainStatNumber==scene.game.jewel_equipment_stat(entry),"Showing page catches up hidden stats")
 	# Identical shot trajectories still have distinct serial identities.

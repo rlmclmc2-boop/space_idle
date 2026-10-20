@@ -16,6 +16,8 @@ func fixture(key:="laser"):
  g.speed=1;g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=50
  g.profile.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
+ for ordinal in range(1,3):
+  var secondary:Dictionary=g.enemies[0].duplicate(true);secondary.uid=10002+ordinal;secondary.x+=80*ordinal;g.enemies.append(secondary)
  for enemy in g.enemies:enemy.hp=1e12;enemy.max_hp=1e12;enemy.armourType=0
  g.set_enhancement_branch("weapons","repeat",1,"B")
  return g

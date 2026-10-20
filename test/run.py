@@ -73,10 +73,15 @@ def main():
 
     def run(command, label):
         with (area / (label + ".log")).open("w", encoding="utf-8") as log:
-            result = subprocess.run(command, cwd=game, env=env, stdout=log,
-                                    stderr=subprocess.STDOUT, timeout=args.timeout)
+            try:
+                result = subprocess.run(command, cwd=game, env=env, stdout=log,
+                                        stderr=subprocess.STDOUT, timeout=args.timeout)
+                code = result.returncode
+            except subprocess.TimeoutExpired:
+                log.write(f"\nTIMEOUT: {label} exceeded {args.timeout} seconds\n")
+                code = 124
         print((area / (label + ".log")).read_text(encoding="utf-8", errors="replace"))
-        return result.returncode
+        return code
 
     godot = str(args.godot.resolve())
     if args.test == "test_weapon_config.py":
@@ -84,11 +89,29 @@ def main():
         code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
         if code:
             return code
+    if args.test == "test_save_import_recovery.py":
+        (isolated_tests / "fixtures").mkdir()
+        shutil.copy2(tests / "fixtures/save_import_recovery_worker.gd",
+                     isolated_tests / "fixtures/save_import_recovery_worker.gd")
+        code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
+        if code:
+            return code
+        return run([sys.executable, str(isolated_tests / args.test),
+                    "--project", str(game), "--output", str(area / "driver-evidence"),
+                    "--godot", godot], "test")
     if args.test.endswith(".py"):
         return run([sys.executable, str(isolated_tests / args.test)], "test")
     code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
     if code:
         return code
+    if args.test == "test_hyperspace_catalog_consumers.gd":
+        fixture = area / "reward-fixture.json"
+        code = run([sys.executable, str(tests / "fixtures/hyperspace_reward_fixture_builder.py"),
+                    str(fixture)], "fixture")
+        if code:
+            return code
+        return run([godot, *(["--headless"] if args.headless else []), "--path", str(game),
+                    "--script", str(isolated_tests / args.test), "--", str(fixture)], "test")
     return run([godot, *(["--headless"] if args.headless else []), "--path", str(game), "--script", str(isolated_tests / args.test)], "test")
 
 

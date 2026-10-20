@@ -75,18 +75,18 @@ func run() -> void:
 	await settle()
 	check(panel._multiplier_percent(98) == "+9.7K%", "Compact percentage points, no multiplier/percent confusion")
 	check(panel._multiplier_percent(1.126) == "+13%", "Small percent uses integer points")
-	check(panel._description_metric("AI工厂效果等级 +20") == ["AI工厂效果等级", "+20"], "Description remains authoritative despite value 5")
+	check(panel._description_metric("装备效果等级 +20") == ["装备效果等级", "+20"], "Description remains authoritative despite value 5")
 	check(panel._description_metric("所有充能模块免费充能 +10%") == ["所有充能模块免费充能", "+10%"], "Percentage unit remains with highlighted value")
 	await click(panel.cards["1"].bonuses)
 	check(panel.bonus_dialog.visible, "Real bonus button opens grouped modal")
 	var details_buttons: Array = panel.bonus_dialog.find_children("*", "Button", true, false).filter(func(button):return button.text == UIText.t("planet.bonus_details"))
 	check(details_buttons.is_empty(), "Planet bonus modal has no details entry")
-	var buff: Dictionary = g.db.data.planet_buff["2"]
+	var buff: Dictionary = g.db.data.planet_buff["1"]
 	var authored_description: String = buff.des
 	var business_value: float = buff.value
-	buff.des = "AI工厂效果等级 +27"
+	buff.des = "装备效果等级 +27"
 	panel._refresh_bonus_dialog()
-	check(panel.bonus_rows["buff:2"].metric.text == "+27", "UI preserves distinct authored description fixture")
+	check(panel.bonus_rows["buff:1"].metric.text == "+27", "UI preserves distinct authored description fixture")
 	check(float(buff.value) == business_value, "Rendering description never changes business value")
 	buff.des = authored_description
 	panel._refresh_bonus_dialog()
@@ -111,12 +111,12 @@ func run() -> void:
 	panel._refresh_bonus_dialog()
 	check(scene.writes == 0, "Stable dialog refresh writes no properties")
 	await capture("planet-bonus-groups")
-	check(panel.bonus_rows["buff:2"].root.tooltip_text == g.db.data.planet_buff["2"].des, "Authoritative description remains available on effect card")
-	check(panel.bonus_label.text.contains(g.db.data.planet_buff["2"].des), "Full authoritative description retained")
+	check(panel.bonus_rows["buff:1"].root.tooltip_text == g.db.data.planet_buff["1"].des, "Authoritative description remains available on effect card")
+	check(panel.bonus_label.text.contains(g.db.data.planet_buff["1"].des), "Full authoritative description retained")
 	panel.bonus_dialog.hide()
 	panel.show_bonuses("2")
 	check(not panel.bonus_label.visible, "Explicit reopening starts with primary effects")
-	check(not panel.bonus_rows["buff:2"].root.visible and panel.bonus_rows["buff:12"].root.visible, "Planet switch hides previous planet bonuses")
+	check(not panel.bonus_rows["buff:1"].root.visible and panel.bonus_rows["buff:11"].root.visible, "Planet switch hides previous planet bonuses")
 	for id in ["3", "4", "5", "6"]:
 		panel.show_bonuses(id)
 		check(panel.bonus_label.text == panel.bonus_text(id), "Each planet uses its active effects")

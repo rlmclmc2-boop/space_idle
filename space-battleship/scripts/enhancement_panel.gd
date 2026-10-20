@@ -302,7 +302,7 @@ func effect_overview(kind: String) -> String:
 			var values := {"chance":FORMAT.percentage(runtime.probability_percent),"multiplier":FORMAT.percentage(N.multiply(runtime.damage_multiplier,100.0))}
 			if guaranteed:values.underlying=FORMAT.percentage(runtime.underlying_probability_percent)
 			return PARAMETER_TEXT.render("enhance.overview.critical_guaranteed" if guaranteed else "enhance.overview.critical",values,{"chance":{"role":"effect","unit":"%"},"underlying":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
-		"memory_material":return effect_overview_text("enhance.overview.memory_material",float(runtime.heal_percent)/float(runtime.interval),"%/秒")
+		"memory_material":return effect_overview_text("enhance.overview.memory_material",float(runtime.heal_percent)/float(runtime.interval),UIText.t("ui.enhancement_panel.message_01"))
 		"delayed_damage":return PARAMETER_TEXT.render("enhance.overview.delayed_damage",{"value":FORMAT.percentage(runtime.fraction_percent),"chance":FORMAT.percentage(runtime.probability_percent)},{"value":{"role":"effect","unit":"%"},"chance":{"role":"effect","unit":"%"}})
 	return UIText.t("enhance.description.pending")
 
@@ -453,11 +453,11 @@ func branch_option_markup(metadata: Dictionary) -> String:
 		parameters[key] = FORMAT.percentage(values[key]) if str(key).ends_with("_percent") else FORMAT.compact(values[key]) if values[key] is float else values[key]
 		var unit := "%"
 		var role := "effect"
-		if key in ["interval","duration","lockout"]:unit=" 秒";role="time"
-		elif key=="extra_targets":unit=" 个"
-		elif key in ["extra_repeats","attacks"]:unit=" 次"
-		elif key=="stacks":unit=" 层" if str(metadata.effect)=="critical" else " 次"
-		elif key=="probability_percent" and (str(metadata.choice)=="A" or (str(metadata.effect)=="critical" and int(metadata.node)==2)):unit=" 个百分点"
+		if key in ["interval","duration","lockout"]:unit=UIText.t("ui.enhancement_panel.message_02");role="time"
+		elif key=="extra_targets":unit=UIText.t("ui.enhancement_panel.message_03")
+		elif key in ["extra_repeats","attacks"]:unit=UIText.t("ui.enhancement_panel.message_04")
+		elif key=="stacks":unit=UIText.t("ui.enhancement_panel.message_05") if str(metadata.effect)=="critical" else UIText.t("ui.enhancement_panel.message_04")
+		elif key=="probability_percent" and (str(metadata.choice)=="A" or (str(metadata.effect)=="critical" and int(metadata.node)==2)):unit=UIText.t("ui.enhancement_panel.message_06")
 		spans[key]={"role":role,"unit":unit}
 	return PARAMETER_TEXT.render(text_id,parameters,spans)
 

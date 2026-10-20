@@ -993,19 +993,21 @@ func apply_refit_health() -> void:
 		event.emit("battle_blocked",{"reason":"zero_defence"})
 
 func invalidate_module_attack(index: int) -> void:
+	# This invalidates a physical module, including dormant slots after a hull change.
+	var module_id := "weapons_%d" % index
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
-	jewel_charged.erase(slot_id("weapons",index))
+	jewel_charged.erase(module_id)
 	for shot in projectiles:
 		if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index:shot.dead=true
 	var entry := slot_entry("weapons",index)
 	if entry.is_empty() or str(entry.key).is_empty():
-		cooldowns.erase(slot_id("weapons",index))
+		cooldowns.erase(module_id)
 	else:
 		var cd := float(db.equip(str(entry.key),int(entry.level)).cd)
 		# Loadout edits while travelling keep the upcoming encounter's quick salvo.
 		if state == State.TRAVEL and str(entry.key) == "missile":
 			cd = minf(cd,0.4)
-		cooldowns[slot_id("weapons",index)] = cd
+		cooldowns[module_id] = cd
 
 func player_alive() -> bool:
 	return N.compare(player.get("armour",0),0)>0 or N.compare(player.get("shield",0),0)>0
@@ -1116,9 +1118,6 @@ func hyperspace_totals() -> Dictionary:
 func equipment_level_bonus() -> int:
 	return int(permanent_modifiers().equipment_level_bonus)
 
-func hightech_level_bonus() -> int:
-	return int(permanent_modifiers().hightech_level_bonus)
-
 func charge_free_ratio() -> float:
 	return float(permanent_modifiers().charge_free_ratio)
 
@@ -1129,14 +1128,14 @@ func effective_equipment_level(actual: int) -> int:
 	return actual+equipment_level_bonus()
 
 func effective_hightech_level(key: String) -> int:
-	return hightech_level(key)+hightech_level_bonus() if hightech_unlocked(key) else 0
+	return hightech_level(key) if hightech_unlocked(key) else 0
 
 func permanent_level_text(actual: int, target: String) -> String:
-	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
+	var bonus := equipment_level_bonus() if target=="equipment" else 0
 	return UIText.t("planet.level_with_bonus",{"actual":actual,"bonus":bonus}) if bonus!=0 else str(actual)
 
 func permanent_level_tooltip(actual: int, target: String) -> String:
-	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
+	var bonus := equipment_level_bonus() if target=="equipment" else 0
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
 func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:

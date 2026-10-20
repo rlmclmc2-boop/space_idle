@@ -169,7 +169,7 @@ func refresh(item: Dictionary, chosen: bool) -> void:
 	var remaining:=int(item.get("refit_remaining",0))
 	host.set_ui_value(cooldown_label,"text",str(remaining)+"s" if remaining>0 else "")
 	host.set_ui_value(cooldown_label,"visible",remaining>0)
-	host.set_ui_value(name_button,"tooltip_text",("换装冷却 %ds" % remaining) if remaining>0 else UIText.t("equipment.swap"))
+	host.set_ui_value(name_button,"tooltip_text",(UIText.t("ui.equipment_card.message_01", {"value_1":"%d" % (remaining)})) if remaining>0 else UIText.t("equipment.swap"))
 	host.set_ui_value(fields.title,"text",item.name)
 	host.set_ui_value(fields.level,"text",item.get("cardLevelText",UIText.t("equipment.level",{"level":item.get("levelText",str(item.level))})))
 	host.set_ui_value(fields.type,"text",UIText.t("weapon.tab" if item.category=="weapons" else "defense.tab"))

@@ -1,0 +1,1642 @@
+{
+  "code_sha256": {
+    "config_workbooks.py": "953aa9ad56f03dd8c1fcaca582efddbc65240233403e49a865af2db4ab03e2a3",
+    "level_editor_store.py": "c1682eb910fab5643af9aa07fcaa24cdea66fe298e1e334bbc1f47d9af399b44",
+    "import_workbook.py": "7f0cf576ed3d8592400b91f5c0d14ea5134b0cd189e51f2de380701c384dafd7"
+  },
+  "assertions": 219,
+  "input_outcomes": 152,
+  "fault_outcomes": 18,
+  "outcomes": [
+    {
+      "case": "valid",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "valid",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "valid",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "valid",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "manifest_missing",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "请先点击「拆分／同步 Excel」，建立独立配置表",
+      "files": {}
+    },
+    {
+      "case": "manifest_missing",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/config_excel/.split_manifest.json'",
+      "files": {}
+    },
+    {
+      "case": "manifest_missing",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/config_excel/.split_manifest.json'",
+      "files": {}
+    },
+    {
+      "case": "manifest_missing",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/config_excel/.split_manifest.json'",
+      "files": {}
+    },
+    {
+      "case": "manifest_broken",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "manifest_broken",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "manifest_broken",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "manifest_broken",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_empty",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "请先点击「拆分／同步 Excel」，建立独立配置表",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_empty",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'sheets'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_empty",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'sheets'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_empty",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'sheets'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_list",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "请先点击「拆分／同步 Excel」，建立独立配置表",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_list",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_list",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_list",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_missing",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "分表清单缺少或包含无效路径：level",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_missing",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'sheets'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_missing",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'sheets'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_missing",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'sheets'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_null",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "AttributeError",
+      "error": "'NoneType' object has no attribute 'get'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_null",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "'NoneType' object is not subscriptable",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_null",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "'NoneType' object is not subscriptable",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_null",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "'NoneType' object is not subscriptable",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_list",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "AttributeError",
+      "error": "'list' object has no attribute 'get'",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_list",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_list",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "files": {}
+    },
+    {
+      "case": "manifest_value_sheets_list",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "list indices must be integers or slices, not str",
+      "files": {}
+    },
+    {
+      "case": "required_mapping_missing",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "分表清单缺少或包含无效路径：mon",
+      "files": {}
+    },
+    {
+      "case": "required_mapping_missing",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'mon'",
+      "files": {}
+    },
+    {
+      "case": "required_mapping_missing",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'mon'",
+      "files": {}
+    },
+    {
+      "case": "required_mapping_missing",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'mon'",
+      "files": {}
+    },
+    {
+      "case": "path_empty",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "分表清单缺少或包含无效路径：mon",
+      "files": {}
+    },
+    {
+      "case": "path_empty",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "IsADirectoryError",
+      "error": "[Errno 21] Is a directory: '<CASE>/config_excel'",
+      "files": {}
+    },
+    {
+      "case": "path_empty",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "IsADirectoryError",
+      "error": "[Errno 21] Is a directory: '<CASE>/config_excel'",
+      "files": {}
+    },
+    {
+      "case": "path_empty",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "IsADirectoryError",
+      "error": "[Errno 21] Is a directory: '<CASE>/config_excel'",
+      "files": {}
+    },
+    {
+      "case": "path_null",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "分表清单缺少或包含无效路径：mon",
+      "files": {}
+    },
+    {
+      "case": "path_null",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+      "files": {}
+    },
+    {
+      "case": "path_null",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+      "files": {}
+    },
+    {
+      "case": "path_null",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+      "files": {}
+    },
+    {
+      "case": "path_number",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'int'",
+      "files": {}
+    },
+    {
+      "case": "path_number",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'int'",
+      "files": {}
+    },
+    {
+      "case": "path_number",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'int'",
+      "files": {}
+    },
+    {
+      "case": "path_number",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'int'",
+      "files": {}
+    },
+    {
+      "case": "path_parent",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "分表清单缺少或包含无效路径：mon",
+      "files": {}
+    },
+    {
+      "case": "path_parent",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_parent",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_parent",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_backslash",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "缺少 ..\\mon.xlsx；原配置保留，请恢复文件或重新同步",
+      "files": {}
+    },
+    {
+      "case": "path_backslash",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_backslash",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_backslash",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_absolute",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "分表清单缺少或包含无效路径：mon",
+      "files": {}
+    },
+    {
+      "case": "path_absolute",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_absolute",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_absolute",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "ValueError",
+      "error": "分表清单路径无效：mon",
+      "files": {}
+    },
+    {
+      "case": "path_missing_file",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "缺少 absent.xlsx；原配置保留，请恢复文件或重新同步",
+      "files": {}
+    },
+    {
+      "case": "path_missing_file",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/config_excel/absent.xlsx'",
+      "files": {}
+    },
+    {
+      "case": "path_missing_file",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/config_excel/absent.xlsx'",
+      "files": {}
+    },
+    {
+      "case": "path_missing_file",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/config_excel/absent.xlsx'",
+      "files": {}
+    },
+    {
+      "case": "path_wrong_sheet",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "level.xlsx：level.xlsx 必须仅包含名为 mon 的工作表",
+      "files": {}
+    },
+    {
+      "case": "path_wrong_sheet",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "KeyError",
+      "error": "'Worksheet mon does not exist.'",
+      "files": {}
+    },
+    {
+      "case": "path_wrong_sheet",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "KeyError",
+      "error": "'Worksheet mon does not exist.'",
+      "files": {}
+    },
+    {
+      "case": "path_wrong_sheet",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "KeyError",
+      "error": "'Worksheet mon does not exist.'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_fallback",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "optional_ship_fallback",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_fallback",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_fallback",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_null",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "optional_ship_null",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_null",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_null",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "TypeError",
+      "error": "argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_empty",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "optional_ship_empty",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "IsADirectoryError",
+      "error": "[Errno 21] Is a directory: '<CASE>/config_excel'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_empty",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "IsADirectoryError",
+      "error": "[Errno 21] Is a directory: '<CASE>/config_excel'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_empty",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "IsADirectoryError",
+      "error": "[Errno 21] Is a directory: '<CASE>/config_excel'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_existing_projection",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "缺少 ship.xlsx；原配置保留，请恢复文件",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_existing_projection",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_existing_projection",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_existing_projection",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_no_projection",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "Invalid or duplicate unlock target: ship/Frigate",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_no_projection",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_no_projection",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "optional_ship_absent_no_projection",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "construct",
+      "error_type": "KeyError",
+      "error": "'ship'",
+      "files": {}
+    },
+    {
+      "case": "target_missing",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "created",
+        "data/game_data.json": "created",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "target_missing",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/data/game_data.json'",
+      "files": {}
+    },
+    {
+      "case": "target_missing",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/data/game_data.json'",
+      "files": {}
+    },
+    {
+      "case": "target_missing",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "FileNotFoundError",
+      "error": "[Errno 2] No such file or directory: '<CASE>/data/game_data.json'",
+      "files": {}
+    },
+    {
+      "case": "target_broken",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "target_broken",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "target_broken",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "target_broken",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "cache_broken",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "JSONDecodeError",
+      "error": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "files": {}
+    },
+    {
+      "case": "cache_broken",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "cache_broken",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "cache_broken",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/.import_state.json": "created",
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        "data/.import_state.json": "modified",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "cache_valid",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {}
+    },
+    {
+      "case": "cache_valid",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "cache_valid",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "cache_valid",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/.import_state.json": "created",
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        ".runtime/level-editor-backups/matrix/data/hyperspace_config.json": "created",
+        ".runtime/level-editor-backups/matrix/data/hyperspace_visuals.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_candidates.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_reward_catalog.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_reward_recipes.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "cache_old",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "modified"
+      }
+    },
+    {
+      "case": "cache_old",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "cache_old",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "cache_old",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/.import_state.json": "created",
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        ".runtime/level-editor-backups/matrix/data/hyperspace_config.json": "created",
+        ".runtime/level-editor-backups/matrix/data/hyperspace_visuals.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_candidates.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_reward_catalog.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_reward_recipes.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_routes.json": "created",
+        "data/.import_state.json": "modified"
+      }
+    },
+    {
+      "case": "cache_wrong_target",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "modified"
+      }
+    },
+    {
+      "case": "cache_wrong_target",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "cache_wrong_target",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "cache_wrong_target",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/.import_state.json": "created",
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        ".runtime/level-editor-backups/matrix/data/hyperspace_config.json": "created",
+        ".runtime/level-editor-backups/matrix/data/hyperspace_visuals.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_candidates.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_reward_catalog.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_reward_recipes.json": "created",
+        ".runtime/level-editor-backups/matrix/data/space_enemy_routes.json": "created",
+        "data/.import_state.json": "modified"
+      }
+    },
+    {
+      "case": "invalid_health",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "enemy 1 health: expected positive number, got -1",
+      "files": {}
+    },
+    {
+      "case": "invalid_health",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_health",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "enemy 1 health: expected positive number, got -1",
+      "files": {}
+    },
+    {
+      "case": "invalid_health",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "enemy 1 health: expected positive number, got -1",
+      "files": {}
+    },
+    {
+      "case": "invalid_size",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "敌机 1：外观尺寸等级必须为正整数",
+      "files": {}
+    },
+    {
+      "case": "invalid_size",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_size",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "敌机 1：外观尺寸等级必须为正整数",
+      "files": {}
+    },
+    {
+      "case": "invalid_size",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "敌机 1：外观尺寸等级必须为正整数",
+      "files": {}
+    },
+    {
+      "case": "invalid_armour",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "敌机 1：抗性应为 0/1/2",
+      "files": {}
+    },
+    {
+      "case": "invalid_armour",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_armour",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "敌机 1：抗性应为 0/1/2",
+      "files": {}
+    },
+    {
+      "case": "invalid_armour",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "敌机 1：抗性应为 0/1/2",
+      "files": {}
+    },
+    {
+      "case": "invalid_weapon",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "敌机 1：无效武器 missing",
+      "files": {}
+    },
+    {
+      "case": "invalid_weapon",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_weapon",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "敌机 1：无效武器 missing",
+      "files": {}
+    },
+    {
+      "case": "invalid_weapon",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "敌机 1：无效武器 missing",
+      "files": {}
+    },
+    {
+      "case": "invalid_drop",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "敌机 1：无效掉落资源",
+      "files": {}
+    },
+    {
+      "case": "invalid_drop",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_drop",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "敌机 1：无效掉落资源",
+      "files": {}
+    },
+    {
+      "case": "invalid_drop",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "敌机 1：无效掉落资源",
+      "files": {}
+    },
+    {
+      "case": "invalid_id",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "mon.xlsx：mon：ID 必须为不重复的正整数",
+      "files": {}
+    },
+    {
+      "case": "invalid_id",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_id",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "mon：ID 必须为不重复的正整数",
+      "files": {}
+    },
+    {
+      "case": "invalid_id",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "mon：ID 必须为不重复的正整数",
+      "files": {}
+    },
+    {
+      "case": "invalid_reference",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "Unknown enemy 999",
+      "files": {}
+    },
+    {
+      "case": "invalid_reference",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "invalid_reference",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "validate",
+      "error_type": "ValueError",
+      "error": "Unknown enemy 999",
+      "files": {}
+    },
+    {
+      "case": "invalid_reference",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "save",
+      "error_type": "ValueError",
+      "error": "Unknown enemy 999",
+      "files": {}
+    },
+    {
+      "case": "missing_formula_cache",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "level.xlsx：level.xlsx / level!D64 公式缺少计算缓存，请在 Excel 中计算并保存",
+      "files": {}
+    },
+    {
+      "case": "missing_formula_cache",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "missing_formula_cache",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "missing_formula_cache",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "corrupt_xlsx",
+      "entry": "incremental",
+      "accepted": false,
+      "stage": "import",
+      "error_type": "ValueError",
+      "error": "mon.xlsx：File is not a zip file",
+      "files": {}
+    },
+    {
+      "case": "corrupt_xlsx",
+      "entry": "store_load",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "BadZipFile",
+      "error": "File is not a zip file",
+      "files": {}
+    },
+    {
+      "case": "corrupt_xlsx",
+      "entry": "store_validate",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "BadZipFile",
+      "error": "File is not a zip file",
+      "files": {}
+    },
+    {
+      "case": "corrupt_xlsx",
+      "entry": "store_save",
+      "accepted": false,
+      "stage": "load",
+      "error_type": "BadZipFile",
+      "error": "File is not a zip file",
+      "files": {}
+    },
+    {
+      "case": "extra_json",
+      "entry": "incremental",
+      "accepted": true,
+      "stage": "import",
+      "files": {
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "extra_json",
+      "entry": "store_load",
+      "accepted": true,
+      "stage": "load",
+      "files": {}
+    },
+    {
+      "case": "extra_json",
+      "entry": "store_validate",
+      "accepted": true,
+      "stage": "validate",
+      "files": {}
+    },
+    {
+      "case": "extra_json",
+      "entry": "store_save",
+      "accepted": true,
+      "stage": "save",
+      "files": {
+        ".runtime/level-editor-backups/matrix/data/game_data.json": "created",
+        "data/.import_state.json": "created",
+        "data/game_data.json": "modified",
+        "data/hyperspace_config.json": "created",
+        "data/hyperspace_visuals.json": "created",
+        "data/space_enemy_candidates.json": "created",
+        "data/space_enemy_reward_catalog.json": "created",
+        "data/space_enemy_reward_recipes.json": "created",
+        "data/space_enemy_routes.json": "created"
+      }
+    },
+    {
+      "case": "stage_failure",
+      "entry": "incremental",
+      "accepted": false,
+      "error_type": "OSError",
+      "error": "injected staging failure",
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "replace_failure",
+      "entry": "incremental",
+      "accepted": false,
+      "error_type": "OSError",
+      "error": "injected commit failure",
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "rollback_failure",
+      "entry": "incremental",
+      "accepted": false,
+      "error_type": "RuntimeError",
+      "error": "提交失败且部分文件无法恢复，请检查：<CASE>/data/game_data.json",
+      "files": {
+        "data/game_data.json": "modified"
+      },
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_source",
+      "entry": "incremental",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "mon.xlsx 在读取过程中又被修改，请保存完成后重试",
+      "files": {
+        "config_excel/mon.xlsx": "modified"
+      },
+      "external_bytes_preserved": {
+        "config_excel/mon.xlsx": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_manifest",
+      "entry": "incremental",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": ".split_manifest.json 在读取过程中又被修改，请保存完成后重试",
+      "files": {
+        "config_excel/.split_manifest.json": "modified"
+      },
+      "external_bytes_preserved": {
+        "config_excel/.split_manifest.json": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_target",
+      "entry": "incremental",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "game_data.json 在读取过程中又被修改，请保存完成后重试",
+      "files": {
+        "data/game_data.json": "modified"
+      },
+      "external_bytes_preserved": {
+        "data/game_data.json": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "stage_failure",
+      "entry": "store_validate",
+      "accepted": true,
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "replace_failure",
+      "entry": "store_validate",
+      "accepted": true,
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "rollback_failure",
+      "entry": "store_validate",
+      "accepted": true,
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_source",
+      "entry": "store_validate",
+      "accepted": true,
+      "files": {
+        "config_excel/mon.xlsx": "modified"
+      },
+      "external_bytes_preserved": {
+        "config_excel/mon.xlsx": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_manifest",
+      "entry": "store_validate",
+      "accepted": true,
+      "files": {
+        "config_excel/.split_manifest.json": "modified"
+      },
+      "external_bytes_preserved": {
+        "config_excel/.split_manifest.json": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_target",
+      "entry": "store_validate",
+      "accepted": true,
+      "files": {
+        "data/game_data.json": "modified"
+      },
+      "external_bytes_preserved": {
+        "data/game_data.json": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "stage_failure",
+      "entry": "store_save",
+      "accepted": false,
+      "error_type": "OSError",
+      "error": "injected staging failure",
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "replace_failure",
+      "entry": "store_save",
+      "accepted": false,
+      "error_type": "OSError",
+      "error": "injected commit failure",
+      "files": {},
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "rollback_failure",
+      "entry": "store_save",
+      "accepted": false,
+      "error_type": "RuntimeError",
+      "error": "提交失败且部分文件无法恢复，请检查：<CASE>/data/game_data.json",
+      "files": {
+        "data/game_data.json": "modified"
+      },
+      "external_bytes_preserved": {},
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_source",
+      "entry": "store_save",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "保存前文件发生变化，请重新加载",
+      "files": {
+        "config_excel/mon.xlsx": "modified"
+      },
+      "external_bytes_preserved": {
+        "config_excel/mon.xlsx": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_manifest",
+      "entry": "store_save",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "保存前文件发生变化，请重新加载",
+      "files": {
+        "config_excel/.split_manifest.json": "modified"
+      },
+      "external_bytes_preserved": {
+        "config_excel/.split_manifest.json": true
+      },
+      "temporary_files": []
+    },
+    {
+      "case": "concurrent_target",
+      "entry": "store_save",
+      "accepted": false,
+      "error_type": "ValueError",
+      "error": "保存前文件发生变化，请重新加载",
+      "files": {
+        "data/game_data.json": "modified"
+      },
+      "external_bytes_preserved": {
+        "data/game_data.json": true
+      },
+      "temporary_files": []
+    }
+  ]
+}

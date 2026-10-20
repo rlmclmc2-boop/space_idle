@@ -696,8 +696,6 @@
   "late_material_reward_multiplier": 4,
   "late_supply_ramp_seconds": 600,
   "modernization_base_coefficient": 1.0,
-  "auto_duration_crew_base": 100.0,
-  "auto_ticket_crew_base": 20.0,
   "material_unit_scale": 10,
   "ultimate_core_probability": 0.002
 }

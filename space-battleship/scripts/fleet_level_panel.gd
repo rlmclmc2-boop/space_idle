@@ -138,9 +138,9 @@ func refresh() -> void:
 	if generator.busy():return
 	list.clear()
 	for stage in generator.levels:
-		var level_text:="+"+str(stage.recommended_level) if stage.recommended_level!=null else "未达标"
+		var level_text:="+"+str(stage.recommended_level) if stage.recommended_level!=null else UIText.t("ui.fleet_level_panel.message_01")
 		var spread_text:=str(stage.required_level_spread) if stage.required_level_spread!=null else "—"
-		if stage.spread_is_lower_bound:spread_text="至少 "+spread_text
+		if stage.spread_is_lower_bound:spread_text=UIText.t("ui.fleet_level_panel.message_02")+spread_text
 		list.add_item(UIText.t("auto_level.item",{"name":stage.name,"type":level_text,"rate":spread_text}))
 	if not generator.levels.is_empty():list.select(0);show_selected(0)
 
@@ -161,12 +161,12 @@ func show_selected(index: int) -> void:
 	for row in stage.loadout_results:
 		var keys:=PackedStringArray()
 		for key in row.weapons:keys.append(str(generator.inputs.get("display_names",{}).get("equipment",{}).get(str(key),key)))
-		var level_text:=str(row.required_level) if row.required_level!=null else "未达标"
+		var level_text:=str(row.required_level) if row.required_level!=null else UIText.t("ui.fleet_level_panel.message_01")
 		lines.append(UIText.t("auto_level.loadout_result",{"weapons":" + ".join(keys),"level":level_text,"rate":"%.0f%%" % (100*float(row.winrate_at_level)) if row.winrate_at_level!=null else "—","tests":row.sample_count,"time":"%.1f" % float(row.battle_time) if row.battle_time!=null else "—"}))
 	var spread_text:=str(stage.required_level_spread) if stage.required_level_spread!=null else "—"
-	if stage.spread_is_lower_bound:spread_text="至少 "+spread_text
+	if stage.spread_is_lower_bound:spread_text=UIText.t("ui.fleet_level_panel.message_02")+spread_text
 	var difference_text:=UIText.t("auto_level.unknown_difference") if stage.required_level_spread==null else UIText.t("auto_level.no_difference") if stage.no_difference else UIText.t("auto_level.difference",{"spread":spread_text})
-	details.text=UIText.t("auto_level.card",{"name":stage.name,"waves":"\n".join(waves),"composition":"\n".join(composition),"tags":" / ".join(tags),"powers":"\n".join(lines),"recommended_power":"+"+str(stage.recommended_level) if stage.recommended_level!=null else "未达标","recommended":configurations(stage.best_loadouts),"weak":configurations(stage.worst_loadouts),"reason":difference_text})
+	details.text=UIText.t("auto_level.card",{"name":stage.name,"waves":"\n".join(waves),"composition":"\n".join(composition),"tags":" / ".join(tags),"powers":"\n".join(lines),"recommended_power":"+"+str(stage.recommended_level) if stage.recommended_level!=null else UIText.t("ui.fleet_level_panel.message_01"),"recommended":configurations(stage.best_loadouts),"weak":configurations(stage.worst_loadouts),"reason":difference_text})
 
 func configurations(rows: Array) -> String:
 	var names: Dictionary=generator.inputs.get("display_names",{}).get("equipment",{})
@@ -174,5 +174,5 @@ func configurations(rows: Array) -> String:
 	for row in rows:
 		var weapons:=PackedStringArray()
 		for key in row.weapons:weapons.append(str(names.get(str(key),key)))
-		lines.append("%s · %s · +%s" % [UIText.data_text("ship",str(row.ship),"des")," + ".join(weapons),str(row.required_level) if row.required_level!=null else "未达标"])
+		lines.append("%s · %s · +%s" % [UIText.data_text("ship",str(row.ship),"des")," + ".join(weapons),str(row.required_level) if row.required_level!=null else UIText.t("ui.fleet_level_panel.message_01")])
 	return "\n".join(lines) if not lines.is_empty() else UIText.t("design.no_ranking")

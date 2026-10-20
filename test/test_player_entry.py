@@ -4,6 +4,7 @@ import json
 import subprocess
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -43,7 +44,8 @@ class PlayerEntry(unittest.TestCase):
         (self.root / 'tools' / 'play_main.py').write_text('entry v1', encoding='utf-8')
         self.launcher.write_text('launch v1', encoding='utf-8')
         (self.root / '.gitignore').write_text('space-battleship/bin/\nspace-battleship/engine/\n'
-                                              'space-battleship/space_native.gdextension\n', encoding='utf-8')
+                                              'space-battleship/space_native.gdextension\n'
+                                              'space-battleship/.runtime/\n', encoding='utf-8')
         self.git('init', '-q', '-b', 'main')
         self.git('config', 'user.name', 'Player Entry Test')
         self.git('config', 'user.email', 'player-entry@example.invalid')
@@ -184,6 +186,63 @@ class PlayerEntry(unittest.TestCase):
         old_sha = hashlib.sha256(b'old DLL').hexdigest()
         backup = self.project / '.runtime' / 'native-backup' / ('space_native-' + old_sha + '.dll')
         self.assertEqual(backup.read_bytes(), b'old DLL')
+
+    def test_dirty_checkout_gets_clean_mirror_without_losing_edit(self):
+        game = self.project / 'scripts' / 'game.gd'
+        game.write_text('personal work', encoding='utf-8')
+        head = self.git('rev-parse', 'HEAD')
+        mirror = entry.prepare_clean_mirror(self.root, head)
+        self.assertEqual(game.read_text(encoding='utf-8'), 'personal work')
+        self.assertEqual((mirror / 'space-battleship/scripts/game.gd').read_text(encoding='utf-8'), 'game v1')
+        self.assertEqual(entry.run(['git', 'branch', '--show-current'], mirror), 'main')
+        self.assertEqual(entry.run(['git', 'rev-parse', 'refs/remotes/origin/main'], mirror), head)
+
+        launcher = self.root / 'tools' / 'play_main.py'
+        launcher.write_text('accepted launcher v2', encoding='utf-8')
+        self.git('add', '--', 'tools/play_main.py')
+        self.git('commit', '-qm', 'next accepted main')
+        self.accept_main()
+        updated = entry.prepare_clean_mirror(self.root, self.git('rev-parse', 'HEAD'))
+        self.assertEqual(updated, mirror)
+        self.assertEqual((mirror / 'tools/play_main.py').read_text(encoding='utf-8'), 'accepted launcher v2')
+        self.assertEqual(game.read_text(encoding='utf-8'), 'personal work')
+
+        (mirror / 'tools/play_main.py').write_text('unexpected mirror edit', encoding='utf-8')
+        launcher.write_text('accepted launcher v3', encoding='utf-8')
+        self.git('add', '--', 'tools/play_main.py')
+        self.git('commit', '-qm', 'another accepted main')
+        self.accept_main()
+        with self.assertRaisesRegex(RuntimeError, 'non-generated local edits'):
+            entry.prepare_clean_mirror(self.root, self.git('rev-parse', 'HEAD'))
+
+    def test_missing_engine_downloads_verified_official_archive(self):
+        self.engine.unlink()
+        source_zip = self.root / 'official-fixture.zip'
+        with zipfile.ZipFile(source_zip, 'w') as archive:
+            archive.writestr(entry.ENGINE_NAME, b'fresh engine')
+            archive.writestr(entry.ENGINE_NAME.replace('.exe', '_console.exe'), b'console')
+        archive_sha = hashlib.sha256(source_zip.read_bytes()).hexdigest()
+        exe_sha = hashlib.sha256(b'fresh engine').hexdigest()
+        with patch.object(entry, 'ENGINE_URL', source_zip.as_uri()), \
+             patch.object(entry, 'ENGINE_ARCHIVE_SHA256', archive_sha), \
+             patch.object(entry, 'ENGINE_EXE_SHA256', exe_sha):
+            self.assertEqual(entry.prepare_engine(self.root), self.engine)
+            self.assertEqual(self.engine.read_bytes(), b'fresh engine')
+            self.assertEqual(entry.prepare_engine(self.root), self.engine)
+
+    def test_initial_import_access_violation_retries_once_and_keeps_log(self):
+        runtime = self.root / 'import-runtime'
+        runtime.mkdir()
+        outcomes = iter([3221225477, 0])
+        def fake_run(args, **kwargs):
+            code = next(outcomes)
+            kwargs['stdout'].write('attempt ' + str(code))
+            return subprocess.CompletedProcess(args, code)
+        with patch.object(entry.subprocess, 'run', side_effect=fake_run) as mocked:
+            entry.import_project(self.engine, self.project, runtime, {})
+        self.assertEqual(mocked.call_count, 2)
+        self.assertEqual((runtime / 'player-import-first-attempt.log').read_text(), 'attempt 3221225477')
+        self.assertEqual((runtime / 'player-import.log').read_text(), 'attempt 0')
 
 
 class RepositoryInventory(unittest.TestCase):

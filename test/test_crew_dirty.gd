@@ -152,6 +152,8 @@ func _initialize() -> void:
 	for frame in 120:idle.tick(1.0/60.0)
 	check(idle.profile==before,"pause freezes pending work and economy")
 	idle.paused=false
+	idle.profile.highestLevel=int(idle.hyperspace.config.unlock_stage)
+	idle.profile.hyperspace.materials[idle.db.evolution_material_id()]=10000
 	idle.crew.advance(idle,10)
 	check(idle.slot_entry("weapons",0).level==22,"large step attempts once")
 	idle.crew.advance(idle,0.1)

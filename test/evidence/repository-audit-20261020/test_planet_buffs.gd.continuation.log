@@ -1,0 +1,7 @@
+COMMAND=python test/run.py test_planet_buffs.gd --headless --godot /usr/local/bin/godot --timeout 180
+FRESH_ISOLATED_PROJECT=true
+IMPORT_EXIT_CODE=0
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+PLANET BUFFS: 23 checks, 0 failures
+EXIT_CODE=0

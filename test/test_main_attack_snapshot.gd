@@ -19,8 +19,14 @@ func fixture(key := "laser",beam_period := 0.2):
  g.stat_cache_enabled=true;g.speed=1
  g.profile.cleared=range(1,41);g.rebuild_unlocks()
  g.profile.enhancementLevel=50
+ g.profile.selectedShip="Cruiser" # Explicit multi-module fixture.
  g.profile.loadout={"weapons":[{"key":key,"level":150},{"key":key,"level":150}],"defence":[{"key":"shield","level":150},{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
+ # This tests secondary targeting independently of the authored opening roster.
+ var target_template:Dictionary=g.enemies[0].duplicate(true)
+ for ordinal in range(g.enemies.size(),4):
+  var target:Dictionary=target_template.duplicate(true);target.uid=10000+ordinal;target.x+=float(ordinal)*70.0
+  g.enemies.append(target)
  for enemy in g.enemies:enemy.hp=1e10;enemy.max_hp=1e10;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)
  g.refresh_missile_target_registry()
  return g
@@ -48,14 +54,14 @@ func run()->void:
  var snapshot=salvo(g)
  check(g.profile.enhancementAttacks==history+1,"five missiles plus secondary count one primary attack")
  check(g.missile_queue.size()==10,"one secondary decision copies exactly one five-missile salvo")
- check(g.jewel_repeats.size()==2,"bounded extra generation planned at launch")
+ check(g.jewel_repeats.size()==1,"one non-recursive extra generation planned at launch")
  check(g.enhancement_branches.weapon(g,0).next==3 and g.enhancement_branches.weapon(g,0).stacks==1,"critical buffs applied once after full primary salvo")
  for packet in g.missile_queue:
   check(packet.attack.main_attack_id==snapshot.id and packet.attack.critical and packet.attack.damage==snapshot.damage,"batch and secondary inherit primary outcome")
  var rng_state=g.rng.state
  g.advance_jewel_repeats(10)
- check(g.profile.enhancementAttacks==history+3,"primary and two extra salvos each count once, secondary does not")
- check(g.rng.state==rng_state and g.missile_queue.size()==20 and g.jewel_repeats.is_empty(),"two derived full salvos execute without rerolls or recursive queue")
+ check(g.profile.enhancementAttacks==history+2,"primary and one extra salvo count once, secondary does not")
+ check(g.rng.state==rng_state and g.missile_queue.size()==15 and g.jewel_repeats.is_empty(),"one derived full salvo executes without rerolls or recursion")
  check(g.enhancement_branches.weapon(g,0).next==3 and g.enhancement_branches.weapon(g,0).stacks==1,"derived salvos neither consume next-three nor retrigger stacks")
  for packet in g.missile_queue:check(packet.attack.main_attack_id==snapshot.id,"derived trace retains root attack id")
  var chains=[]
@@ -126,8 +132,8 @@ func run()->void:
  entry.level+=10000;g.invalidate_stat_cache();rng_state=g.rng.state
  history=g.profile.enhancementAttacks
  g.advance_jewel_repeats(10)
- check(g.profile.enhancementAttacks==history+2,"each extra beam startup counts one attack")
- check(g.projectiles.size()==3 and g.rng.state==rng_state,"bounded derived beams launch without new attack rolls")
+ check(g.profile.enhancementAttacks==history+1,"extra beam startup counts one attack")
+ check(g.projectiles.size()==2 and g.rng.state==rng_state,"bounded derived beams launch without new attack rolls")
  for derived in g.projectiles:
   check(derived.main_attack_id==frozen.id and is_same(derived.attack_snapshot,frozen),"derived beams inherit root snapshot")
   g.tick_long_laser(derived,.4)
@@ -146,7 +152,7 @@ func run()->void:
  g.db.data.enhance_config.repeat_probability.value=1
  g.db.data.enhance_config.repeat_b2_repeats.value=2
  snapshot=salvo(g)
- check(snapshot.repeat_plan.size()==3,"alternate configured repeat cap preplans three bounded generations")
+ check(snapshot.repeat_plan.size()==1,"legacy repeat cap cannot enable triggered recursion")
  # Configured cooldown reduction freezes the current beam interval at startup.
  g=fixture("longLaser");choose(g,"proficiency",2)
  entry=g.slot_entry("weapons",0)
@@ -162,8 +168,12 @@ func run()->void:
  check(is_equal_approx(float(g.projectiles.back().attack_snapshot.weapon.cd),.2) and g.projectiles.back().charged_multiplier==3.,"next beam reads changed interval and queued charge")
  # Shared path also covers ordinary single-shot laser/cannon.
  for key in ["laser","cannon"]:
-  g=fixture(key);var root=salvo(g)
-  check(g.projectiles.size()==1 and g.projectiles[0].main_attack_id==root.id,"single-shot weapon uses shared snapshot "+key)
+  g=fixture(key)
+  var launched:Array=[]
+  g.event.connect(func(kind,payload):
+   if kind=="fire":launched.append(payload.shot))
+  var root=salvo(g)
+  check(launched.size()==1 and launched[0].main_attack_id==root.id,"single-shot weapon uses shared snapshot "+key)
  check_snapshot_boundaries()
  check_live_beam_period()
  print("MAIN ATTACK SNAPSHOT: ",checks," checks, ",failures," failures")
@@ -233,7 +243,7 @@ func check_snapshot_boundaries()->void:
   g.lock_long_laser(g.player,g.player_weapon_row(entry),false,0,entry)
   beam=g.projectiles.back();var before=beam.ticks
   if cause=="target":beam.target.hp=0
-  else:g.player.armour=0
+  else:g.player.armour=0;g.player.shield=0
   g.tick_long_laser(beam,.4)
   check(beam.dead and beam.ticks==before,cause+" loss prevents further periodic damage")
  # A real saved profile restores progression, never in-flight snapshots/queues.

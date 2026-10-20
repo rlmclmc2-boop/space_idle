@@ -1,7 +1,13 @@
 extends SceneTree
 
+func encounter_interval(db, key: String) -> float:
+	var interval := float(db.equip(key,1).cd)
+	return minf(interval,0.4) if key=="missile" else interval
+
 func _initialize() -> void:
 	var db := ShipDatabase.new()
+	db.ships.Frigate.weaponSlots=3
+	db.config.equipmentSwitchCooldownSeconds=0.0
 	var g := BattleGame.new(db,false)
 	g.start(1,false)
 	g.profile.unlocked = ["laser","cannon","missile"]
@@ -19,7 +25,7 @@ func _initialize() -> void:
 	g.tick(0.01)
 	assert(g.state==BattleGame.State.TRAVEL,"Wave completion starts travel")
 	for key in g.profile.unlocked:
-		assert(is_equal_approx(g.cooldowns[g.slot_id("weapons",g.first_weapon_index(key))],float(db.equip(key,1).cd)),"Wave completion resets full interval: "+key)
+		assert(is_equal_approx(g.cooldowns[g.slot_id("weapons",g.first_weapon_index(key))],encounter_interval(db,key)),"Wave completion resets encounter opening interval: "+key)
 	g.spawn_group()
 	for enemy in g.enemies:
 		enemy.equipment = []
@@ -41,7 +47,7 @@ func _initialize() -> void:
 		assert(probe.equip_slot("defence",0,"armour"),"Cooldown probe requires a live armoured ship")
 		probe.equip_slot("weapons",0,key)
 		probe.start(1,false)
-		var cd := float(db.equip(key,1).cd)
+		var cd := encounter_interval(db,key)
 		probe.tick(0.001)
 		assert(is_equal_approx(probe.cooldowns.weapons_0,cd),"Travel preserves full interval")
 		probe.spawn_group()
@@ -53,6 +59,6 @@ func _initialize() -> void:
 		probe.event.connect(func(kind,info):
 			if kind=="fire": fires.append(info))
 		probe.tick(cd*0.011)
-		assert(not fires.is_empty(),"Fire after full interval: "+key)
-	print("Travel cooldowns: 22 checks passed")
+		assert(not fires.is_empty(),"Fire after encounter opening interval: "+key)
+	print("Travel cooldowns: passed")
 	quit()

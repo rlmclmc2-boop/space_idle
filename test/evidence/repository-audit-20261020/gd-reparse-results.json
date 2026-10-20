@@ -1,0 +1,276 @@
+[
+  {
+    "test": "benchmark_enhancement_branches.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "benchmark_presented_repeat30.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "one_times_ablation.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "qa_battle_consistency_real.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "qa_cloud_compare.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "qa_cloud_tail.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "qa_galaxy_refit_real.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "saved_game_tail_meter.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_balance_fast.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_fast_accuracy.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_fast_performance.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_balance_history_cost.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_lab.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_lifecycle.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_long_performance.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_metrics.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_balance_perf_contract.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_performance.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_balance_report_memory.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_research_performance.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_stationary_projectiles.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_balance_v2.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_beam_instance_render.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_candidate_pair_scene.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_crew_performance.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_enemy_design_probe.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_enemy_shield_timing.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_enhancements.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_fleet_batch_retest.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_fleet_battle_runner.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_fleet_battle_sampling.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_fleet_battle_speed.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_fleet_level_generator.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_game.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_hightech_construction.gd",
+    "status": "retired"
+  },
+  {
+    "test": "test_hightech_render_audit.gd",
+    "status": "retired"
+  },
+  {
+    "test": "test_hot_paths.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_hyperspace_balance_context.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_jewel_center.gd",
+    "status": "retired"
+  },
+  {
+    "test": "test_jewel_center_ui.gd",
+    "status": "retired"
+  },
+  {
+    "test": "test_jewel_combine_all.gd",
+    "status": "retired"
+  },
+  {
+    "test": "test_jewels.gd",
+    "status": "retired"
+  },
+  {
+    "test": "test_lazy_equipment_inspector.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_legacy_player_defence_timing.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_missile_event_render.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_native_galaxy_refit.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_player_loadout_generator.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_progression_scene_equivalence.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_protection_hit_feedback.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_rail_hit_armour_lock.gd",
+    "code": 0,
+    "script_error": false
+  },
+  {
+    "test": "test_stat_snapshot.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_state_ownership.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_tail_save.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_tail_save_equivalence.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_upgrade_local_extra.gd",
+    "code": 1,
+    "script_error": true
+  },
+  {
+    "test": "test_upgrade_local_reuse.gd",
+    "code": 1,
+    "script_error": true
+  }
+]

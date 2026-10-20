@@ -21,6 +21,7 @@ func _initialize() -> void:
 	var level := int(g.profile.reactorLevel)
 	var cost := g.reactor_upgrade_cost()
 	g.profile.resources["2"] = cost
+	g.resources_changed(["2"])
 	c.advance(g,0.9)
 	check(g.profile.reactorLevel==level and g.reactor_allocated()==0,"No upgrade or distribution before one second")
 	c.advance(g,0.1)
@@ -36,6 +37,7 @@ func _initialize() -> void:
 	c.advance(g,1.0)
 	check(events.count==0,"Unaffordable, already balanced cycle emits no events")
 	g.profile.resources["2"] = g.reactor_upgrade_cost()*100
+	g.resources_changed(["2"])
 	g.paused = true
 	g.tick(2.0)
 	check(g.profile.reactorLevel==level+1,"Pause freezes automation")

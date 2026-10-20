@@ -3,6 +3,7 @@ from pathlib import Path
 import copy
 import sys
 import tempfile
+import shutil
 import json
 import openpyxl
 root=Path(__file__).resolve().parents[1]/'space-battleship'
@@ -59,6 +60,7 @@ for rule,value in [('all',''),('only','3,6,9'),('exclude','1,2'),('tag','ancient
     validate_planets(edited)
 with tempfile.TemporaryDirectory(dir=root/'.runtime') as folder:
     target=Path(folder)/'projection.json'
+    shutil.copy2(root/'data/space_enemy_reward_sources.json',target.parent/'space_enemy_reward_sources.json')
     target.write_text(json.dumps(data,ensure_ascii=False),encoding='utf-8')
     result=incremental_import(root/'config_excel',target)
     assert 'planet_build' in result['parsed']

@@ -2572,7 +2572,7 @@ func refresh_equipment_effects(tech: String) -> void:
 func refresh_crew_tab_badge(index: int) -> void:
 	if not is_instance_valid(equipment_tabs) or index>=equipment_tabs.get_tab_count():return
 	var badge: Dictionary=game.crew.tab_badge(game,CREW_TAB_TYPES[index])
-	var title: String=("科技研发" if index==1 else UIText.t(str(CREW_TAB_TITLES[index])))+("  "+str(badge.text) if not str(badge.text).is_empty() else "")
+	var title: String=(UIText.t("ui.main.message_01") if index==1 else UIText.t(str(CREW_TAB_TITLES[index])))+("  "+str(badge.text) if not str(badge.text).is_empty() else "")
 	if equipment_tabs.get_tab_title(index)!=title:equipment_tabs.set_tab_title(index,title)
 	var bar: TabBar=equipment_tabs.get_tab_bar()
 	if bar.get_tab_tooltip(index)!=badge.tooltip:bar.set_tab_tooltip(index,badge.tooltip)
@@ -3864,7 +3864,7 @@ func build_hightech_tab() -> void:
 	hightech_page = preload("res://scripts/ai_tech_factory_page.gd").new()
 	hightech_page.name = "Hightech"
 	equipment_tabs.add_child(hightech_page)
-	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(hightech_page),"科技研发")
+	equipment_tabs.set_tab_title(equipment_tabs.get_tab_idx_from_control(hightech_page),UIText.t("ui.main.message_01"))
 	hightech_page.setup()
 	hightech_page.set_snapshot_provider(Callable(self,"ai_tech_page_snapshot"))
 	hightech_page.research_requested.connect(on_ai_tech_research_requested)

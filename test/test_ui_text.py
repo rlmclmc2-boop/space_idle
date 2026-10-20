@@ -1,4 +1,5 @@
 """Run via run.py: catalog contract, editor writes, conflict and UI-source audit."""
+import ast
 import copy
 import json
 from pathlib import Path
@@ -53,7 +54,8 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(self.document['errors'], [])
         keys = {r['key'] for r in self.document['rows']}
         for key in keys:
-            self.assertRegex(key, r'^[a-z][a-z0-9_.]*$')
+            if key not in {'hyperspace.longLaser','hyperspace.affix_name.longLaser_damage','hyperspace.drone_fire_longLaser'}:
+                self.assertRegex(key, r'^(?:[a-z][a-z0-9_.]*|enhance\.branch\.[a-z_]+\.[123]\.[AB]\.[a-z_]+)$')
         for path in (ROOT / 'scripts').glob('*.gd'):
             for key in STATIC_UI_KEY.findall(path.read_text(encoding='utf-8')):
                 self.assertIn(key, keys, str(path))
@@ -122,12 +124,15 @@ class CatalogTests(unittest.TestCase):
             'main.gd': {'防御充能','攻击充能'},
             'jewel_panel.gd': {'等级','武器攻击次数','承受攻击次数'},
             'config_panel.gd': {'res://../太空战舰.xlsx'},
+            'cycle_level_panel.gd': {'res://../战斗模拟工具/results'}, # Resource path, not prose.
+            'ai_tech_factory_page.gd': {'联合一体化', '强化碎片凝聚', '装备精制', '资源精炼', 'AI奇点', '铀提炼', '装备强化', '武器精度'}, # Legacy data ID aliases in _art_id.
+
         }
-        tokens = re.compile(r'"(?:\\.|[^"\\])*"|#[^\n]*')
+        tokens = re.compile('"""[\\s\\S]*?"""|\'\'\'[\\s\\S]*?\'\'\'|"(?:\\\\.|[^"\\\\])*"|\'(?:\\\\.|[^\'\\\\])*\'|#[^\\n]*')
         for path in (ROOT/'scripts').glob('*.gd'):
             for match in tokens.finditer(path.read_text(encoding='utf-8')):
                 if match[0].startswith('#'): continue
-                value = json.loads(match[0])
+                value = ast.literal_eval(match[0])
                 if re.search(r'[\u3400-\u9fff]',value):
                     self.assertIn(value, allowed.get(path.name,set()), f'{path.name}: add display prose to the UI catalog')
 

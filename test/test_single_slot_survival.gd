@@ -7,6 +7,8 @@ func check(ok: bool, label: String) -> void:
 
 func fresh() -> BattleGame:
 	var game := BattleGame.new(ShipDatabase.new(),false)
+	# This fixture isolates pool survival; switch-lock timing has its own test.
+	game.db.config.equipmentSwitchCooldownSeconds=0.0
 	game.profile.unlocked=["laser","armour","shield"]
 	game.start(1,false)
 	game.spawn_group()

@@ -22,19 +22,21 @@ func _initialize() -> void:
 	var events: Array=[]
 	counted.event.connect(func(kind,info):events.append({"kind":kind,"info":info}))
 	counted.saves=0
+	counted.save_dirty=false
 	counted.upgrade_equipment_batch("1")
-	check(counted.saves==1,"Successful sweep saves exactly once")
+	check(counted.saves==0 and counted.save_dirty,"Successful sweep schedules persistence without synchronous disk writes")
 	check(events.filter(func(e):return e.kind=="upgrade").size()==counted.loadout_entries("weapons").size()+counted.loadout_entries("defence").size(),"Per-module upgrade events remain available to consumers")
 	check(events[-1].kind=="upgrades_completed","Completion event follows per-module events")
 	check(counted._upgrade_costs.is_empty() and not counted._upgrade_batch,"Sweep cache is released synchronously")
 	counted.saves=0
+	counted.save_dirty=false
 	counted.profile.resources={"1":0.0,"2":0.0}
 	events.clear()
 	counted.upgrade_equipment_batch("max")
-	check(counted.saves==0 and events.is_empty(),"Unaffordable sweep does not save or refresh")
+	check(counted.saves==0 and not counted.save_dirty and events.is_empty(),"Unaffordable sweep does not save or refresh")
 	counted.profile.resources={"1":1e6,"2":1e6}
 	counted.upgrade_slot("weapons",0)
-	check(counted.saves==1 and not events[-1].info.batch,"Manual upgrade still saves immediately")
+	check(counted.saves==0 and counted.save_dirty and not events[-1].info.batch,"Manual upgrade schedules persistence and emits non-batch event")
 	var stress := make_game()
 	var reference := make_game()
 	stress.profile.resources={"1":1e100,"2":1e100}
@@ -97,7 +99,7 @@ func _initialize() -> void:
 	check(g.crew.entry(g,"engineer").assignmentType=="","Migration retains Excel capacity without duplicate system checks")
 	g.crew.assign(g,"navigator","","")
 	for id in g.db.data.crew:
-		check(g.assign_crew(id,"equipment_upgrade","equipment"),"Every crew can do the same equipment work: "+id)
+		check(g.assign_crew(id,"equipment_upgrade","equipment")==g.crew.unlocked(g,id),"Equipment assignment respects crew unlock: "+id)
 		g.assign_crew(id,"","")
 	print("CREW EQUIPMENT: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

@@ -21,8 +21,8 @@ func _initialize() -> void:
 	check(edge.equipment_cost("missing",1).is_empty(),"Missing cost configuration stays empty")
 	check(db.equipment.armour.size() == 1, "Projection contains only base rows")
 	check(db.equip("armour", 3).para1 == 1400, "Armour rounds two significant digits")
-	check(db.equip("shield", 3).para1 == 720, "Shield uses para4")
-	check(db.equip("laser", 3).dmg == 430, "Weapon damage growth")
+	check(is_equal_approx(float(db.equip("shield",3).para1),float(db.equip("armour",3).para1)*float(db.equipment.shield[0].para1)/float(db.equipment.armour[0].para1)), "Shield retains authored armour ratio")
+	check(db.equip("laser",3).dmg==db.equipment_combat_growth(float(db.equipment.laser[0].dmg),float(db.equipment.laser[0].dmgMulti),3), "Weapon uses configured growth projection")
 	check(db.equip("laser", 2).cost_1 == 65, "Cost 60 rounds to 65")
 	# Explicit rounding fixture; the authored base damage may change independently.
 	db.equipment.missile[0].dmg = 30
@@ -32,16 +32,20 @@ func _initialize() -> void:
 		check(db.equipment_growth(value, 0, 2) == 65, "Confirmed low rounding %s" % value)
 	check(db.equipment_growth(0, 0.2, 2) == 0, "Zero remains zero")
 	check(db.equipment_growth(995, 0, 2) == 1000, "Rounding carries into next magnitude")
-	var large = db.equipment_combat_growth(1.0,1.0,1025)
+	var rounding := ShipDatabase.new()
+	rounding.data.equipment_evolution.first_stat_multiplier=1.0
+	rounding.data.equipment_evolution.later_stat_multiplier=1.0
+	var large = rounding.equipment_combat_growth(1.0,1.0,1025)
 	check(GrowthNumber.valid(large) and large=={"m":1.8,"e":308.0}, "Overflowing 2^1024 retains two significant digits")
-	check(db.equipment_combat_growth(9.96,9.0,310)=={"m":1.0,"e":310.0}, "Large combat rounding carries into next exponent")
+	check(rounding.equipment_combat_growth(9.96,9.0,310)=={"m":1.0,"e":310.0}, "Large combat rounding carries into next exponent")
 	var original: Dictionary = db.equipment.shield[0].duplicate(true)
 	var derived := db.equip("shield", 150)
 	for field in ["para2", "para3", "cd", "dmgtype", "des"]:
 		check(derived[field] == original[field], "Static field inherited: " + field)
 	check(db.equipment.shield[0] == original, "Read does not mutate source")
+	var before_legacy = db.equip("laser",2).dmg
 	db.equipment.laser.append({"level":2, "dmg":999999})
-	check(db.equip("laser", 2).dmg == 360, "Legacy higher rows ignored")
+	check(db.equip("laser", 2).dmg == before_legacy, "Legacy higher rows ignored")
 	db.equipment.laser[0].res_3 = 3
 	db.equipment.laser[0].cost_3 = 100
 	db.equipment.laser[0].cost_multi_3 = 0.5
@@ -70,4 +74,6 @@ func reference_cost(db: ShipDatabase, key: String, level: int) -> Dictionary:
 		if str(field).begins_with("res_") and row[field]!=null:
 			var amount = row.get("cost_"+str(field).trim_prefix("res_"))
 			if amount!=null:costs[str(int(row[field]))]=ceilf(float(amount))
+	if not row.is_empty() and level>=int(db.data.equipment_evolution.interval) and level%int(db.data.equipment_evolution.interval)==0:
+		costs[str(db.data.equipment_evolution.material_id)]=int(db.data.equipment_evolution.material_cost_per_tier)*int(level/int(db.data.equipment_evolution.interval))
 	return costs

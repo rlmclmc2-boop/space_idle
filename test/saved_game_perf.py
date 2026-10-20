@@ -22,7 +22,6 @@ MODULES = {
     "planet_panel": ["_process", "refresh"],
     "reactor_panel": ["_process", "refresh"],
     "crew_panel": ["refresh"],
-    "hightech_construction": ["_process", "_draw"],
 }
 MODULES["game"] += ["advance_jewel_repair", "sync_jewel_defence_damage", "jewel_hit_player", "jewel_attack", "jewel_fire", "hit_enemy", "hit_player", "tick_long_laser", "spawn_group", "advance_jewel_repeats", "capture_refit_health", "apply_refit_health", "add_crew_exp", "collect"]
 MODULES["crew_system"] += ["gain_exp"]
