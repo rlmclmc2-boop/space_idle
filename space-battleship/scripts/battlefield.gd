@@ -800,8 +800,10 @@ func missile_visual_position(shot:Dictionary,spread:float,origin:Vector2,visual:
 	var flight_length:=maxf(1.0,float(visual.get("missile_range",start.distance_to(target))))
 	var progress:=smoothstep(0.0,flight_length,distance)
 	var muzzle_shift:Vector2=(origin-start)*(1.0-progress)
-	var target_screen:=_battlefield_motion_visible_target(shot.target) if battlefield_motion_enabled else entity_render_position(shot.target)
-	var target_shift:Vector2=(battle_logical_point(target_screen)-target)*progress
+	# Share the bounded, time-continuous display target with ordinary rounds.
+	# A dying or switched target keeps its last shift instead of snapping the
+	# missile lane back to its logical endpoint.
+	var target_shift:Vector2=battle_logical_point(battle_point(logical)+_battlefield_motion_flight_shift(shot,visual))-logical
 	# Keep each real muzzle's departure lane through the flight instead of
 	# collapsing every carrier into the logical center after the first 160 units.
 	var fan:=spread*0.4*smoothstep(0.0,100.0,distance)*(1.0-progress)
