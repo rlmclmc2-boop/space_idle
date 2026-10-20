@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S03 均为 `closed`；S04 为 `review`；S04a 与 S05—S24 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。S03 实施线程 `01a15a8e-35c8-7632-8baf-8af7060310cd` 已归档，运行 SHA=`0d01530bdce168a55d0ce7c835f17072d66d6bc7`，main 与实际本地 `D:\放置` 均为此 SHA，隔离用户目录入口验证通过，临时分支清理完毕；其关闭记录已经完成，旧句“待父级统一关闭”已失效。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证。S00—S03 均已获父级与原 astra 对各自同一对象的双 PASS 并完成关闭。S04 运行候选与审计侧证据见 [stages/S04/README.md](stages/S04/README.md)；双审、main 集成、本地入口验收及阶段关闭仍待父级执行。
+**S00—S03 均为 `closed`；S04 为 `approved`；S04a 与 S05—S24 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。S03 实施线程 `01a15a8e-35c8-7632-8baf-8af7060310cd` 已归档，运行 SHA=`0d01530bdce168a55d0ce7c835f17072d66d6bc7`，main 与实际本地 `D:\放置` 均为此 SHA，隔离用户目录入口验证通过，临时分支清理完毕；其关闭记录已经完成，旧句“待父级统一关闭”已失效。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证。S00—S03 均已获父级与原 astra 对各自同一对象的双 PASS 并完成关闭。S04 运行候选与审计侧证据见 [stages/S04/README.md](stages/S04/README.md)；双审、main 集成、本地入口验收及阶段关闭仍待父级执行。
 
 ### S00 关闭记录
 
@@ -394,7 +394,8 @@ branch_cleanup:
 
 ```yaml
 stage: S04
-status: review
+status: approved
+implementation_thread_id: 01a15abc-a83d-709a-990c-b376f407b0ec
 base_main_sha: 0d01530bdce168a55d0ce7c835f17072d66d6bc7
 runtime_final_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456
 runtime_tree: a1107e72f18d011cd693ef5e9b2447ac14abf940
@@ -404,13 +405,14 @@ runtime_files:
   - space-battleship/scripts/save_transfer.gd
 evidence_entry: stages/S04/README.md
 field_contract: stages/S04/FIELD_CONTRACT.md
-evidence_snapshot_sha: pending_final_commit
+evidence_snapshot_sha: c345de52867a38a2cc0db6baadb2a53b2daa37aa
 verification: "Windows Godot 4.7.2 isolated S01 recovery gate 126/0 PASS; S03 transfer gate 155/0 PASS; S02 policy 51/0; startup rejection 7/0; historical disk migration 15/0; hyperspace state 284/0; save boundaries 21/0; current v5 47-field probe exact"
 decisions_required: []
 compatibility: "v2-v5 稀疏历史磁盘档仍可加载，但不能遮蔽完整备份；缺失 highestLevel 和稀疏档负资源仅在磁盘副本上按旧默认值迁移，便携导入保持严格拒绝；无弃档或不可逆迁移"
 prior_review: "父级与原 astra 对 d51d9cab/e04e6a9a、3d24f84a/e7736cd1 均明确 FAIL；反例及返工见 stages/S04/README.md；旧审查不适用于本 SHA"
-parent_review: PENDING
-astra_review: PENDING
+parent_review: {verdict: PASS, reviewed_runtime_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456, reviewed_evidence_sha: c345de52867a38a2cc0db6baadb2a53b2daa37aa, unresolved: []}
+astra_review: {verdict: PASS, reviewed_runtime_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456, reviewed_evidence_sha: c345de52867a38a2cc0db6baadb2a53b2daa37aa, unresolved: []}
+review_record: stages/S04/FINAL_REVIEW.md
 integration: pending
 closure: open
 next_stage_allowed: false

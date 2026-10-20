@@ -43,11 +43,12 @@
     "s04_sparse_v5_boundary_21_checks_pass": true,
     "s04_hyperspace_reader_284_checks_pass": true,
     "s04_main_evidence_separated": true,
-    "s04_dual_review_pending": true
+    "s04_dual_review_pending": true,
+    "s04_dual_pass_same_runtime_and_evidence": true
   },
   "stages": 26,
   "active_stage": "S04",
-  "active_stage_status": "review",
+  "active_stage_status": "approved",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
@@ -59,6 +60,6 @@
   ],
   "runtime_final_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
   "runtime_tree": "a1107e72f18d011cd693ef5e9b2447ac14abf940",
-  "evidence_snapshot_sha": null,
+  "evidence_snapshot_sha": "c345de52867a38a2cc0db6baadb2a53b2daa37aa",
   "implementation_thread_id": null
 }
