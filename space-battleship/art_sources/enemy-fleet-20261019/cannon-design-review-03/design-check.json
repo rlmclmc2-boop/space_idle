@@ -1,0 +1,17 @@
+{
+  "design_only": true,
+  "baseline": "45fe11a2",
+  "runtime_assets_data_scripts_config_and_qa_unchanged": true,
+  "eight_original_hull_pngs_byte_identical": true,
+  "game_importer_unchanged": true,
+  "game_not_launched_for_this_design": true,
+  "main_not_merged": true,
+  "source_rgba": true,
+  "board_size": [
+    1240,
+    1059
+  ],
+  "source_sha256": "1525e887ed5c17eaa75c009481193973f807f2a8774abed89a97f8f073234030",
+  "native_scale_is_static_mockup": true,
+  "waiting_for_visual_confirmation": true
+}
