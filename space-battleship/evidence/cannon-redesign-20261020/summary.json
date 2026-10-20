@@ -1,0 +1,34 @@
+{
+  "baseline": "419d5687",
+  "checks": 908,
+  "failures": 0,
+  "fires": 41,
+  "hits": 53,
+  "eight_hull_pngs_byte_identical": true,
+  "static_socket_metadata_unchanged": true,
+  "production_code_equipment_stats_formation_unchanged": true,
+  "rotation_pixel_diff": [
+    {
+      "degrees": -35,
+      "different_pixels": 970,
+      "bounds": [
+        161,
+        234,
+        246,
+        299
+      ]
+    },
+    {
+      "degrees": 35,
+      "different_pixels": 967,
+      "bounds": [
+        156,
+        234,
+        241,
+        299
+      ]
+    }
+  ],
+  "source": "compact-gun-source.png",
+  "not_merged_to_main": true
+}

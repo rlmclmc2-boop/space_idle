@@ -1,6 +1,6 @@
 """Validate ranked display additions and frozen base/geometry/mount/config contract."""
 from pathlib import Path
-import copy,hashlib,json,subprocess
+import copy,hashlib,json,subprocess,os
 import numpy as np
 from PIL import Image
 from scipy import ndimage
@@ -54,4 +54,4 @@ for p in (P/'assets/ships/enemy/fleet_20261019').glob('*.png'):assert p.read_byt
 for path in ['scripts/game.gd','scripts/enemy_formation.gd','scripts/enemy_fixed_layout.gd','scripts/simulation_geometry_authority.gd','scripts/simulation_geometry_view.gd','scripts/battle_slice_runtime.gd','scripts/battlefield.gd','scripts/retained_enemy_contacts.gd']:assert (P/path).read_bytes()==prior(path),path
 assert not subprocess.check_output(['git','diff',BASE,'--','space-battleship/data/game_data.json','space-battleship/config_excel'],cwd=ROOT)
 result={'baseline':BASE,'all_original_visual_rows_unchanged':True,'eight_base_pngs_unchanged':True,'active_geometry_mounts_slots_gameplay_formation_runtime_unchanged':True,'reserved_slot_counts_not_applied':interface['slot_counts'],'approved_source':'15a102ac','baked_foundations':True,'separate_gun':gun['texture'],'sprites':rows}
-out=P/'evidence/integrated-rank-hulls-20261020';out.mkdir(parents=True,exist_ok=True);(out/'asset-check.json').write_text(json.dumps(result,indent=2)+'\n');print('RANKED_ASSETS PASS eight alpha/aspect/core/geometry/mount/config checks')
+out=Path(os.environ.get('ENEMY_RANKED_EVIDENCE',str(P/'evidence/integrated-rank-hulls-20261020')));out.mkdir(parents=True,exist_ok=True);(out/'asset-check.json').write_text(json.dumps(result,indent=2)+'\n');print('RANKED_ASSETS PASS eight alpha/aspect/core/geometry/mount/config checks')
