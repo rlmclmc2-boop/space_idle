@@ -358,6 +358,8 @@ func load_progress() -> void:
 		load_progress_data(result.data)
 		if hyperspace.last_error.is_empty():
 			if not progress_writer.owns_progress():return
+			# Our OS lock proves a prior import owner is gone even if its PID was reused.
+			result.import_active = false
 			var recovery_error := progress_writer.finish_loaded_recovery(SAVE_PATH,result)
 			if recovery_error != OK:
 				# The selected state is live, but unresolved disk recovery must not
