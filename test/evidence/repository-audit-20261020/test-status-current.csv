@@ -50,7 +50,7 @@ test/test_config_input_matrix.py,not revalidated on current branch,exit 1 (pytho
 test/test_config_panel.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
 test/test_config_workbooks.py,not revalidated on current branch,exit 1 (python-results.json),
 test/test_crew.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
-test/test_crew_dirty.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
+test/test_crew_dirty.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_crew_dirty.gd.continuation.log
 test/test_crew_equipment.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
 test/test_crew_experience_display.gd,not revalidated on current branch,exit 0 (gd-gui-results.json),
 test/test_crew_import.py,not revalidated on current branch,exit 1 (python-results.json),
@@ -59,7 +59,6 @@ test/test_crew_levels_ui.gd,not revalidated on current branch,exit 0 (gd-gui-res
 test/test_crew_performance.gd,not revalidated on current branch,not in initial execution matrix,
 test/test_crew_presentation.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_crew_reactor.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
-test/test_crew_scientists.gd,current screening failed; triage pending,exit 1 (gd-logic-results.json),
 test/test_crew_single_probe.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_crew_ui.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_crew_unlock.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
@@ -165,7 +164,7 @@ test/test_hyperspace_guide.gd,not revalidated on current branch,exit 1 (gd-gui-r
 test/test_hyperspace_higgs_geometry.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_launch_sources.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_layers.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
-test/test_hyperspace_manual.gd,current screening failed; triage pending,exit 124 (gd-logic-results.json),
+test/test_hyperspace_manual.gd,passed on current branch,exit 124 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_manual.continuation.log
 test/test_hyperspace_material_economy.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_module_visibility.gd,not revalidated on current branch,exit 0 (gd-gui-results.json),
 test/test_hyperspace_performance.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
@@ -201,7 +200,7 @@ test/test_missile_event_modulate.gd,not revalidated on current branch,exit 125 (
 test/test_missile_event_order.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_missile_event_render.gd,not revalidated on current branch,not in initial execution matrix,
 test/test_missile_orphan_acceleration.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
-test/test_missile_retarget.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_missile_retarget.gd.continuation.log
+test/test_missile_retarget.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_missile_retarget.continuation.log
 test/test_module_refit.gd,not revalidated on current branch,exit 124 (gd-logic-results.json),
 test/test_module_ui.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
 test/test_muzzle_visibility.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),

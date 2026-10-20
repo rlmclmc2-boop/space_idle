@@ -21,3 +21,4 @@ CURRENT: Release needs clean Windows acceptance; deep-space BGM musicality/loop 
 | U-026 | BOSS card auxiliary coordinates used only in specialty test; main UI has no render entry. Verify actual requirement. |
 | U-028 | Occasional full-page flicker not reproducible; research brightness fix does not close it. |
 | U-029 | player_loadout_generator.gd module_snapshot infers from Variant-valued equipment stats; Godot rejects its inferred types, blocking the full fleet battle regression. Explicit number handling must follow the growth-number contract. |
+| U-030 | `hightech_scientists` remains a selectable crew job, but its purchase and distribution handlers call retired scientist APIs that always return false. Decide whether to retire the job or define an AI research replacement; crew research migration is not approved. |
