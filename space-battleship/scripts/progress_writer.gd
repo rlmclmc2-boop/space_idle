@@ -2,8 +2,33 @@ extends RefCounted
 # Synchronous safe writes, used only by timed/manual saves. No thread or queue.
 var path := ProjectSettings.globalize_path("user://progress.json")
 var validation_db: ShipDatabase
+var ownership_required := false
+var _owner: RefCounted
+var _owned_path := ""
+
+func acquire_owner() -> bool:
+	ownership_required = true
+	if _owner != null:return owns_progress()
+	var candidate: RefCounted = ClassDB.instantiate("SpaceSaveLock")
+	if candidate == null:return false
+	var absolute := ProjectSettings.globalize_path(path).simplify_path()
+	if not candidate.acquire(absolute + ".writer-lock"):return false
+	_owner = candidate
+	_owned_path = absolute
+	return true
+
+func owns_progress() -> bool:
+	return _owner != null and _owner.owns() and _owned_path == ProjectSettings.globalize_path(path).simplify_path()
+
+func owner_handle() -> RefCounted:
+	return _owner if owns_progress() else null
+
+func _may_write() -> bool:
+	var live_path := ProjectSettings.globalize_path("user://progress.json").simplify_path()
+	return (not ownership_required and ProjectSettings.globalize_path(path).simplify_path() != live_path) or owns_progress()
 
 func write_progress(bytes: PackedByteArray) -> Error:
+	if not _may_write():return ERR_ALREADY_IN_USE
 	return _write_payload(bytes).error
 
 func _write_payload(bytes: PackedByteArray) -> Dictionary:
@@ -61,6 +86,7 @@ func _rename(from: String, to: String) -> Error:
 	return DirAccess.rename_absolute(from, to)
 
 func clear_files() -> Error:
+	if not _may_write():return ERR_ALREADY_IN_USE
 	# Remove recovery state first. If deleting the main file fails, it stays live.
 	for suffix in [".bak", ".tmp", ""]:
 		if FileAccess.file_exists(path + suffix):
@@ -116,7 +142,9 @@ static func read_progress_result(path: String, db: ShipDatabase = null) -> Dicti
 	if not best.is_empty():return best
 	return {"status":"invalid" if found else "absent", "source":"", "data":null, "rejected":rejected, "import_active":active}
 
-static func finish_loaded_recovery(path: String, result: Dictionary) -> Error:
+func finish_loaded_recovery(recovery_path: String, result: Dictionary) -> Error:
+	var path := ProjectSettings.globalize_path(recovery_path).simplify_path()
+	if not _may_write() or path != ProjectSettings.globalize_path(self.path).simplify_path():return ERR_ALREADY_IN_USE
 	# Only a successfully applied save may retire an abandoned import transaction.
 	if result.status != "loaded" or result.import_active:return OK
 	var previous := path + ".import-prev"

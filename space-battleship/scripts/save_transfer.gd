@@ -190,7 +190,7 @@ func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  var primary:=game.progress_writer.path.simplify_path()
- if target in [primary,primary+".bak",primary+".tmp",primary+".rejected",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak"]:return ERR_INVALID_PARAMETER
+ if target in [primary,primary+".bak",primary+".tmp",primary+".rejected",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak",primary+".writer-lock"]:return ERR_INVALID_PARAMETER
  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
 
 func write_file(path: String, bytes: PackedByteArray) -> Error:
@@ -201,6 +201,7 @@ func rename(from: String,to: String) -> Error:
  return DirAccess.rename_absolute(from,to)
 
 func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
+ if not game.progress_writer.owns_progress():return {"error":ERR_ALREADY_IN_USE}
  # Install ownership before staging bytes, so startup in another process cannot
  # mistake an in-flight transaction for an interrupted import.
  var marker: String=game.progress_writer.path+".import-active"
@@ -209,6 +210,7 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  if error!=OK:return {"error":error}
  var transaction:=_commit_import(game,raw)
  DirAccess.remove_absolute(marker)
+ if transaction.get("error") == OK:transaction.owner_lock=game.progress_writer.owner_handle()
  return transaction
 
 func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
@@ -254,6 +256,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  return {"error":OK,"backup":backup,"primary":primary,"had_primary":had_primary}
 
 func rollback(transaction: Dictionary) -> Error:
+ if not _transaction_owns_progress(transaction):return ERR_ALREADY_IN_USE
  var primary: String=transaction.primary
  if transaction.had_primary and not FileAccess.file_exists(primary+".import-prev"):
   var backup_file:=FileAccess.open(str(transaction.backup)+"/original-progress.json",FileAccess.READ)
@@ -268,4 +271,9 @@ func rollback(transaction: Dictionary) -> Error:
  return rename(primary+".import-prev",primary) if transaction.had_primary else OK
 
 func finish(transaction: Dictionary) -> void:
+ if not _transaction_owns_progress(transaction):return
  if transaction.had_primary:DirAccess.remove_absolute(str(transaction.primary)+".import-prev")
+
+func _transaction_owns_progress(transaction: Dictionary) -> bool:
+ var owner: RefCounted=transaction.get("owner_lock")
+ return owner != null and owner.owns()

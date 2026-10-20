@@ -316,6 +316,11 @@ func _ready() -> void:
 			problem.dialog_text = UIText.t("hyperspace.invalid_config_pack")
 		add_child(problem);problem.popup_centered(Vector2i(900,420))
 		return
+	if game.last_save_error == ERR_ALREADY_IN_USE:
+		var warning := AcceptDialog.new()
+		warning.title = "存档已被占用"
+		warning.dialog_text = "另一个游戏实例正在使用此存档。本实例仍可运行，但无法保存或导入进度。关闭另一个实例后重新启动本实例，才能继续写入。"
+		add_child(warning);warning.popup_centered(Vector2i(760,260))
 	railgun_fx.configure(db)
 	if game.save_enabled:
 		load_music_setting()

@@ -172,6 +172,10 @@ func _init(database: ShipDatabase, persist := true) -> void:
 		return
 	speed = default_speed()
 	save_enabled = persist
+	if persist and not progress_writer.acquire_owner():
+		# A second process may inspect/play this snapshot, but cannot commit it.
+		save_enabled = false
+		last_save_error = ERR_ALREADY_IN_USE
 	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
@@ -353,6 +357,7 @@ func load_progress() -> void:
 	if result.status == "loaded":
 		load_progress_data(result.data)
 		if hyperspace.last_error.is_empty():
+			if not progress_writer.owns_progress():return
 			var recovery_error := progress_writer.finish_loaded_recovery(SAVE_PATH,result)
 			if recovery_error != OK:
 				# The selected state is live, but unresolved disk recovery must not
