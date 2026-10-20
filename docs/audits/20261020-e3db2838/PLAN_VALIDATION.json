@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04a closed; S05 review; S06-S24 not started",
+  "scope": "S00-S04a closed; S05 blocked on second review; S06-S24 not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -77,11 +77,13 @@
     "s05_main_not_integrated": true,
     "s05_stage_open": true,
     "s05_raw_log_blobs_indexed": true,
-    "s05_all_evidence_git_blobs_indexed": true
+    "s05_all_evidence_git_blobs_indexed": true,
+    "s05_parent_pass_same_runtime_and_frozen_evidence": true,
+    "s05_second_review_blocked_by_original_thread_errors": true
   },
   "stages": 26,
   "active_stage": "S05",
-  "active_stage_status": "review",
+  "active_stage_status": "blocked",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": false,
@@ -95,7 +97,7 @@
   ],
   "runtime_final_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
   "runtime_tree": "2f161d9aac91d8d615770d9480d7dd6d9247b00d",
-  "evidence_snapshot_sha": "ec162b9752a6a55938c8ca15630ac1e9d6bbfe42",
+  "evidence_snapshot_sha": "375ae2f5198739b42498dcc352e0c0a5ef37ce3b",
   "implementation_thread_id": "01a15b67-0ffb-7749-8cfa-9680694f00e9",
   "active_runtime_candidate_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
   "active_runtime_tree": "2f161d9aac91d8d615770d9480d7dd6d9247b00d",
@@ -105,7 +107,7 @@
   "active_stage_closed": false,
   "closed_stages_main_integrated": true,
   "last_integrated_main_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
-  "active_frozen_evidence_sha": "ec162b9752a6a55938c8ca15630ac1e9d6bbfe42",
+  "active_frozen_evidence_sha": "375ae2f5198739b42498dcc352e0c0a5ef37ce3b",
   "active_integration_record": null,
   "active_integration_review_pending": true,
   "active_integration_reviewed_evidence_sha": null,
