@@ -36,6 +36,9 @@ func _initialize() -> void:
 	var a := ClockGame.new(ShipDatabase.new(),false)
 	var b := ClockGame.new(ShipDatabase.new(),false)
 	for g in [a,b]:
+		g.db.ships.Frigate.weaponSlots=2
+		g.db.ships.Frigate.defenseSlots=2
+		g.db.config.equipmentSwitchCooldownSeconds=0.0
 		if FileAccess.file_exists(BattleGame.SAVE_PATH):
 			# The launcher supplies only an isolated copy of the player's snapshot.
 			g.load_progress()
@@ -45,9 +48,8 @@ func _initialize() -> void:
 			g.profile.resources={"1":1e100,"2":1e100}
 			g.profile.loadout.weapons=[{"key":"laser","level":10},{"key":"missile","level":10}]
 			g.profile.loadout.defence=[{"key":"shield","level":10},{"key":"armour","level":10}]
-			g.db.config.equipmentSocket=10
-			g.profile.loadout.weapons[0].sockets=[g.new_jewel("4",2)]
-			g.profile.loadout.defence[0].sockets=[g.new_jewel("6",2)]
+			g.profile.enhancementLevel=2 # Current shared enhancement effects, not retired sockets.
+		g.profile.hyperspace.random_state="1701"
 		g.profile.chronoParticles=0.0
 		g.rng.seed=91531
 		g.resume_progress()
@@ -57,7 +59,7 @@ func _initialize() -> void:
 	var effects := a.jewel_effects(a.module_entry("weapons",0))
 	if not effects.is_empty():
 		effects[0].source=999
-		check(not a.jewel_effects(a.module_entry("weapons",0))[0].has("source"),"Projectile effect annotations cannot mutate cached socket effects")
+		check(not a.jewel_effects(a.module_entry("weapons",0))[0].has("source"),"Projectile effect annotations cannot mutate shared enhancement effects")
 	for frame in 600:
 		var dt := 1.0/60.0 if frame<300 else 1.0/15.0
 		for g in [a,b]:
@@ -83,6 +85,7 @@ func _initialize() -> void:
 	a=ClockGame.new(ShipDatabase.new(),false)
 	b=ClockGame.new(ShipDatabase.new(),false)
 	for g in [a,b]:
+		g.profile.hyperspace.random_state="1701"
 		g.rng.seed=91531
 		g.profile.cleared=range(1,101)
 		g.rebuild_unlocks()
@@ -99,7 +102,11 @@ func _initialize() -> void:
 		g.start_planet_exploration("1","navigator")
 		g.advance_planets(g.planet_duration("1"))
 	compare(a,b,"planet trip")
-	for g in [a,b]:check(g.reforge_planet("1"),"reforge accepted")
+	for g in [a,b]:
+		check(g.reforge_planet("1"),"reforge accepted")
+		# Reforge creates a new random exploration namespace; pin that independent
+		# fixture seed before comparing cache/direct behavior. Battle RNG stays checked.
+		g.profile.hyperspace.random_state="1701"
 	compare(a,b,"reforge")
 	print("STAT CACHE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

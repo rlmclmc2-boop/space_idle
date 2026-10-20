@@ -1,0 +1,25 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+CHECK true 1000 stable syncs create no models/resources and aggregate no affixes
+CHECK true blue-origin legendary plus ultimate and strongest T1 are independent
+CHECK true appearance preserves blue module origin
+CHECK true same-ID modernization retains original model
+CHECK true same-ID modernization retains original authored muzzle and launch position
+CHECK true all unrelated models retain instances
+CHECK true only changed drone style updated
+CHECK true restored ultimate affix never activates T1 cosmetic
+CHECK true effective min tier wins irrespective of affix order
+CHECK true T4/T5 do not cause visually irrelevant rebuilds
+CHECK true cache identity ignores drone ID and random values
+CHECK true random ID and rolled values add no thumbnail resources
+CHECK true 70 distinct appearances evict thumbnails at hard capacity64
+CHECK true eviction preserves live control texture references
+CHECK true one equip replacement creates only one new model
+CHECK true equip replacement preserves unaffected model and socket
+CHECK true source fixture unchanged by cosmetic projection
+CHECK true disabled parent hides all ornaments and ultimate ring
+CHECK true reenabled drone restores visibility
+CHECK true ultimate visual orbit uses existing presentation clock
+CHECK true accelerated mode freezes orbit animation
+CHECK true pose animation creates no mesh material or texture resources
+VISUAL_REGRESSION failures=0

@@ -1,7 +1,7 @@
 extends Node2D
 ## Native Canvas command owners. Motion updates transforms; true shape/status
-## changes rebuild only their own part. No textures, offscreen views or scaling
-## approximation. Unrecognized mounts and leaders use the original painter.
+## changes rebuild only their own part. Ranked mounts use the same authored art
+## as the canonical painter. Unrecognized mounts and leaders use that painter.
 class Part extends Node2D:
  var host
  var kind:String
@@ -27,6 +27,7 @@ class MountRecord extends RefCounted:
  var aim_factor:float
  var under:bool
  var owner_slot:int
+ var component
 
 class DisplayRecord extends RefCounted:
  var entity:Dictionary
@@ -163,7 +164,7 @@ func compile_record(record:DisplayRecord,spatial:Dictionary,boss:bool)->void:
   mount.aim_factor=1.0 if role=="main" else 0.2 if role=="secondary" else 0.0
   mount.aim_limit=deg_to_rad(float(aim_component.hardpoint.get("rotation_limit",0))) if aim_component!=null else 0.0
   mount.under=int(point.get("z",1))<=0
-  mount.owner_slot=int(component.owner_slot)
+  mount.owner_slot=int(component.owner_slot);mount.component=component
   mount.node.pieces.body.data={"physical":mount.physical};mount.node.pieces.body.queue_redraw()
   mount.node.pieces.strokes.visible=not mount.physical
   mount.node.pieces.strokes.data={"width":-INF}
@@ -296,6 +297,16 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  # body otherwise follows the authored hull-relative module size.
  var min_width=1.0/maxf(0.1,record.screen_scale)
  for mount in record.mounts:
+  var art:Dictionary=paint_owner.enemy_weapon_art_pose(enemy,mount.component)
+  var body:Part=mount.node.pieces.body
+  if not art.is_empty():
+   mount.node.position=art.origin;mount.node.rotation=float(art.angle)-PI/2
+   body.scale=Vector2.ONE
+   body.update({"art":art},[art.scale])
+   mount.node.pieces.strokes.hide()
+   continue
+  body.update({"physical":mount.physical},[mount.physical])
+  mount.node.pieces.strokes.visible=not mount.physical
   var module_width=width*mount.module_factor
   var w=maxf(min_width,module_width*0.45)
   var mount_angle:float
@@ -358,7 +369,9 @@ func paint(surface:Part,kind:String,data:Dictionary)->void:
    surface.draw_texture_rect(data.texture,data.rect,false,Color.WHITE)
   "deck_physical_body","deck_energy_body":paint_owner.enemy_recognition.draw_deck_body(surface,1.0,data.physical)
   "deck_physical_strokes","deck_energy_strokes":paint_owner.enemy_recognition.draw_deck_strokes(surface,data.width,data.physical)
-  "weapon_body":paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
+  "weapon_body":
+   if data.has("art"):paint_owner.enemy_rotating_art.draw_local(surface,data.art)
+   else:paint_owner.enemy_recognition.draw_weapon_body(surface,1.0,data.physical)
   "weapon_strokes":paint_owner.enemy_recognition.draw_weapon_strokes(surface,data.width)
   "protection":paint_owner.enemy_recognition.draw_protection(surface,data.enemy,data.width,data.packet,data.status,data.clock,paint_owner.game.stage<=3)
   "meter":paint_owner.battle_meter(data.rect,data.ratio,data.color)
