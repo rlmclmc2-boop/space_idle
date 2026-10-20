@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S03 closed; S04 runtime and integration dual PASS, local verification complete, redundant branch deleted; S04 closure pending",
+  "scope": "S00-S04 closed; S04 runtime integrated and isolated synthetic save reopening verified; S04a not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -48,11 +48,12 @@
     "s04_player_entry_full_save_reopen_exit_zero": true,
     "s04_isolated_user_data": true,
     "s04_integration_dual_pass_same_evidence": true,
-    "s04_branch_no_unique_work_deleted": true
+    "s04_branch_no_unique_work_deleted": true,
+    "s04_thread_archived": true
   },
   "stages": 26,
-  "active_stage": "S04",
-  "active_stage_status": "approved",
+  "active_stage": null,
+  "active_stage_status": "none",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
@@ -60,10 +61,11 @@
     "S00",
     "S01",
     "S02",
-    "S03"
+    "S03",
+    "S04"
   ],
   "runtime_final_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
   "runtime_tree": "a1107e72f18d011cd693ef5e9b2447ac14abf940",
   "evidence_snapshot_sha": "c345de52867a38a2cc0db6baadb2a53b2daa37aa",
-  "implementation_thread_id": null
+  "implementation_thread_id": "01a15abc-a83d-709a-990c-b376f407b0ec"
 }

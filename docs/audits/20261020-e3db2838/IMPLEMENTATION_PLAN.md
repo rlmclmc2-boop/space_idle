@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00—S03 已双审、集成所需运行改动、本地验收并关闭；S04 已交付运行候选与审计证据，处于 `review`；后续阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00—S04 均已双审、完成适用的运行集成及本地验收并关闭；S04a 与后续阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S03 均为 `closed`；S04 为 `approved`；S04a 与 S05—S24 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。S03 实施线程 `01a15a8e-35c8-7632-8baf-8af7060310cd` 已归档，运行 SHA=`0d01530bdce168a55d0ce7c835f17072d66d6bc7`，main 与实际本地 `D:\放置` 均为此 SHA，隔离用户目录入口验证通过，临时分支清理完毕；其关闭记录已经完成，旧句“待父级统一关闭”已失效。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证。S00—S03 均已获父级与原 astra 对各自同一对象的双 PASS 并完成关闭。S04 运行候选与审计侧证据见 [stages/S04/README.md](stages/S04/README.md)；双审、main 集成、本地入口验收及阶段关闭仍待父级执行。
+**S00—S04 均为 `closed`；S04a 与 S05—S24 均为 `not_started`。** 当前远端 main、D:\放置 本地 main 和实际入口使用的干净镜像均为 `abb68a7f7014dafee73c2f8c48a856aaddec0456`。S04 运行与冻结证据、集成记录分别获父级及原 astra 同对象双 PASS，隔离合成完整存档完成两次真实入口启动和读回；临时分支 s04/durable-recovery 已核对无独有成果并删除。S04 实施线程 `01a15abc-a83d-709a-990c-b376f407b0ec` 已确认归档。验收不覆盖真实断电、多实例或长时间运行。当前无打开阶段，允许启动唯一下一阶段 S04a。此前各阶段记录保留在下文；P05 的现有 DLL 加载不代表源码重新构建已验收。
 
 ### S00 关闭记录
 
@@ -390,11 +390,11 @@ branch_cleanup:
   deletion_result: "exit 0; GitHub branch read-back 404 Branch not found"
 ```
 
-### S04 review 记录
+### S04 关闭记录
 
 ```yaml
 stage: S04
-status: approved
+status: closed
 implementation_thread_id: 01a15abc-a83d-709a-990c-b376f407b0ec
 base_main_sha: 0d01530bdce168a55d0ce7c835f17072d66d6bc7
 runtime_final_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456
@@ -418,8 +418,8 @@ integration_record: stages/S04/LOCAL_INTEGRATION.md
 integration_parent_review: {verdict: PASS, reviewed_evidence_sha: 5522fdded558d4831a447fbef593dcee766437e2, unresolved: []}
 integration_astra_review: {verdict: PASS, reviewed_evidence_sha: 5522fdded558d4831a447fbef593dcee766437e2, unresolved: []}
 branch_cleanup: {branch: s04/durable-recovery, approved_runtime_sha: abb68a7f7014dafee73c2f8c48a856aaddec0456, unique_unmerged_commits: 0, remote_deleted: true, remote_readback_absent: true}
-closure: open
-next_stage_allowed: false
+closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, closed_at: 2026-10-20T20:30:35Z}
+next_stage_allowed: true
 ```
 
 ```yaml
