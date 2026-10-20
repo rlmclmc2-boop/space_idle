@@ -16,6 +16,7 @@ RUNNER = ROOT / "test" / "run.py"
 MARKERS = {
     "test_save_policy.gd": "S01_COMPLETE:test_save_policy.gd",
     "test_config_workbooks.py": "S01_COMPLETE:test_config_workbooks.py",
+    "test_save_transfer.gd": "S01_COMPLETE:test_save_transfer.gd",
 }
 ERROR_LINE = re.compile(
     r"^(?:SCRIPT ERROR:|Parse Error:|Traceback \(most recent call last\):|"
