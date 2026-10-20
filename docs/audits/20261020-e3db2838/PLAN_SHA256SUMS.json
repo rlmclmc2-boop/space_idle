@@ -1,6 +1,6 @@
 {
-  "IMPLEMENTATION_PLAN.md": "f9005dd4628f48e97212d7375ebf41bd536ca53da3b4336be0fe64c820aff58b",
-  "PLAN_VALIDATION.json": "81ada2b0f2d247ea083c13734ec23de9e40de8d4a07dcac43c6c376906d586b1",
+  "IMPLEMENTATION_PLAN.md": "4d1141bffca2e3a08219388d5a59aebd368659b6d2bccff7577bd08a5b664cfa",
+  "PLAN_VALIDATION.json": "853665419a1881201cb9c546ea5ef0936f907d127ca89b78c64b23aaf0dd3109",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S01/README.md": "8233617a6a0b49e011fc585e3bdb3a8bcd145bf050c055dee65057e60ee913c5",
@@ -64,5 +64,6 @@
   "stages/S05/logs/new.log": "c1d0addb2affa03caa90af958043874768b6a91029644758c7e81b61a65c40c8",
   "stages/S05/logs/reopen.log": "4287f4ad8e7196fcd9a54c1b5a0d7fe1bd3e38c181fdb0dc220073e04ef2f91e",
   "stages/S05/logs/import-diagnostic.log": "b894c9d1f6d9f30d59ab213e21db5b009f5d48ebe50c32d0fe8b47d0d4c9922c",
-  "stages/S05/EVIDENCE_BLOBS.json": "eaf1659c38e95d0c9a213d8e4ce56a58688be58aaa0e2f36737bcf0c6252af68"
+  "stages/S05/EVIDENCE_BLOBS.json": "eaf1659c38e95d0c9a213d8e4ce56a58688be58aaa0e2f36737bcf0c6252af68",
+  "stages/S05/REVIEW_RECORD.md": "7adce2138f0474d973b10b49f12d2bdc1ca216933af91dbf9ca8dd1879d95200"
 }
