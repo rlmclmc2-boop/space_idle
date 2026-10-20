@@ -163,7 +163,7 @@ test/test_hyperspace_exchange.gd,not revalidated on current branch,exit 0 (gd-lo
 test/test_hyperspace_guide.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
 test/test_hyperspace_higgs_geometry.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_launch_sources.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
-test/test_hyperspace_layers.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
+test/test_hyperspace_layers.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_layers.continuation.log
 test/test_hyperspace_manual.gd,passed on current branch,exit 124 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_manual.continuation.log
 test/test_hyperspace_material_economy.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_module_visibility.gd,not revalidated on current branch,exit 0 (gd-gui-results.json),

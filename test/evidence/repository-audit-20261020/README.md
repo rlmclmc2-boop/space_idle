@@ -30,4 +30,6 @@ An additional isolated `test_hyperspace_consumers.gd` run on this branch complet
 
 `test_hyperspace_entity_edges.gd` also passed 10/10 in an isolated run. Its zero-weight, single-point grid, large dismantle and post-claim save-state boundaries are current with the trimmed hyperspace config. The initial exit 1 was from the old matrix; the current command and result are in `test_hyperspace_entity_edges.continuation.log`.
 
+`test_hyperspace_layers.gd` passed 226/226 in an isolated run. It exercises live combat suspension/return, portable save validation, claimed and idle layer settlement, crew automation, receipt luck freezing and further layer boundaries. This is headless behavior acceptance, with the command and result in `test_hyperspace_layers.continuation.log`; it does not establish GUI rendering.
+
 Observed failures include obsolete aggregate-workbook fixtures, missing frozen reward-source dependency in isolated data directories, removed APIs/UI, stale editable-value assertions and outdated subclass method signatures. Do not delete a still-useful failing test or weaken its rule solely to get green results.
