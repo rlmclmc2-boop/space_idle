@@ -51,6 +51,17 @@ def digest(path):
             h.update(part)
     return h.hexdigest()
 
+def generated_evidence_translation(path, tracked_csv):
+    if not path.endswith('.translation') or '/evidence/' not in path:
+        return False
+    for csv in tracked_csv:
+        prefix = csv[:-4] + '.'
+        if path.startswith(prefix):
+            variant = path[len(prefix):-len('.translation')]
+            if variant and '/' not in variant:
+                return True
+    return False
+
 def checked_source(root):
     if root.resolve() != ROOT.resolve():
         raise RuntimeError('Player entry must run from its own checkout')
@@ -76,11 +87,13 @@ def checked_source(root):
     ).splitlines() if path[3:] not in NON_RUNTIME_CHANGES and not path[3:].endswith(('.uid', '.import')))
     # These are entry-managed files, not additional trusted source. The DLL
     # and descriptor are both checked separately before the engine starts.
+    tracked_csv = {path for path in run(
+        ['git', 'ls-files', '--', '*.csv'], root
+    ).splitlines() if path.startswith('space-battleship/') and '/evidence/' in path}
     untracked_runtime = '\n'.join(path for path in run(
         ['git', 'ls-files', '--others', '--exclude-standard', '--', 'space-battleship'], root
     ).splitlines() if not path.endswith(('.uid', '.import'))
-    and not (path.startswith('space-battleship/docs/tasks/playtest-ui-art/evidence/')
-             and path.endswith('.translation'))
+    and not generated_evidence_translation(path, tracked_csv)
     and path not in {'space-battleship/space_native.gdextension',
                      'space-battleship/bin/space_native.dll'})
     if untracked_runtime:

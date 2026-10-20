@@ -23,14 +23,16 @@ class PlayerEntry(unittest.TestCase):
         self.root = Path(temp.name)
         self.project = self.root / 'space-battleship'
         self.source = self.root / SOURCE_PATH
+        self.evidence_csv = self.project / 'evidence' / 'sample' / 'labels.csv'
         self.bundle = self.root / entry.BUNDLED_DLL
         self.inventory = self.root / entry.NATIVE_INVENTORY
         self.installed = self.project / 'bin' / 'space_native.dll'
         self.engine = self.project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
-        for path in (self.source, self.bundle, self.inventory, self.installed, self.engine,
+        for path in (self.source, self.evidence_csv, self.bundle, self.inventory, self.installed, self.engine,
                      self.project / 'scripts' / 'game.gd', self.root / 'tools' / 'play_main.py'):
             path.parent.mkdir(parents=True, exist_ok=True)
         self.source.write_text('native v1', encoding='utf-8')
+        self.evidence_csv.write_text('keys,en\nlabel,Label\n', encoding='utf-8')
         self.bundle.write_bytes(b'accepted DLL')
         self.installed.write_bytes(self.bundle.read_bytes())
         self.engine.write_bytes(b'engine')
@@ -110,6 +112,15 @@ class PlayerEntry(unittest.TestCase):
     def test_untracked_runtime_script_is_rejected(self):
         extra = self.project / 'scripts' / 'unexpected.gd'
         extra.write_text('unreviewed', encoding='utf-8')
+        with self.assertRaisesRegex(RuntimeError, 'Unreviewed local runtime changes'):
+            entry.validate(self.root)
+
+    def test_generated_csv_translations_do_not_break_second_launch(self):
+        generated = self.evidence_csv.with_name('labels.en.translation')
+        generated.write_bytes(b'Godot generated')
+        self.assertEqual(entry.validate(self.root)[0], self.project)
+        unrelated = self.evidence_csv.with_name('unexpected.translation')
+        unrelated.write_bytes(b'unreviewed')
         with self.assertRaisesRegex(RuntimeError, 'Unreviewed local runtime changes'):
             entry.validate(self.root)
 
