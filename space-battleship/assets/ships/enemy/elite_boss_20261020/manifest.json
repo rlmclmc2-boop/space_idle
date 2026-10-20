@@ -1,0 +1,240 @@
+{
+  "approved_concept_commit": "3887ead570b7c1a58aed84a5dd15669fc6d03195",
+  "source_sha256": "1187736873ca2af7af8e26d5ac53f0a7fd08cd28de402216babf6a5ea1f07963",
+  "source_size": [
+    1774,
+    887
+  ],
+  "canvas": [
+    887,
+    1774
+  ],
+  "body_width": 720,
+  "weapons_baked": false,
+  "sprites": {
+    "anchor_elite": {
+      "region": [
+        0,
+        0,
+        472,
+        440
+      ],
+      "source_bounds": [
+        37,
+        133,
+        443,
+        400
+      ],
+      "body_size": [
+        720,
+        473
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/anchor-elite.png",
+      "sha256": "c5423a07030192d7ac8ed5548d30f55a066c38ea4ab6235735bf2f64594e4053",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    "reactive_elite": {
+      "region": [
+        472,
+        0,
+        878,
+        440
+      ],
+      "source_bounds": [
+        511,
+        123,
+        847,
+        416
+      ],
+      "body_size": [
+        720,
+        628
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/reactive-elite.png",
+      "sha256": "45595b475fb7123ee097767f46aacaf32efd2cf4cc3016eb54569c61978484b8",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    "shielded_elite": {
+      "region": [
+        878,
+        0,
+        1327,
+        440
+      ],
+      "source_bounds": [
+        901,
+        132,
+        1297,
+        401
+      ],
+      "body_size": [
+        720,
+        489
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/shielded-elite.png",
+      "sha256": "8d642ab1547c1a0fcda9935864d70e2130494e9fdb77d5cceb0c744ba24a125a",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    "command_elite": {
+      "region": [
+        1327,
+        0,
+        1774,
+        440
+      ],
+      "source_bounds": [
+        1342,
+        115,
+        1758,
+        391
+      ],
+      "body_size": [
+        720,
+        478
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/command-elite.png",
+      "sha256": "880c5b6190436e614615c240ca75561acdb3184468d7c7eee3a0535c1aa93ee2",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    "anchor_boss": {
+      "region": [
+        0,
+        440,
+        472,
+        887
+      ],
+      "source_bounds": [
+        15,
+        478,
+        463,
+        788
+      ],
+      "body_size": [
+        720,
+        498
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/anchor-boss.png",
+      "sha256": "f48fd6fc83e696897d15cd05f461352fca9cbc122394de151cc0f927405e17ca",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    "reactive_boss": {
+      "region": [
+        472,
+        440,
+        878,
+        887
+      ],
+      "source_bounds": [
+        482,
+        470,
+        875,
+        800
+      ],
+      "body_size": [
+        720,
+        605
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/reactive-boss.png",
+      "sha256": "1522933bd334bf7673e69fe10feb8cdd196e34fae99b0099b0a62d5f77a33e3f",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    "shielded_boss": {
+      "region": [
+        878,
+        440,
+        1327,
+        887
+      ],
+      "source_bounds": [
+        882,
+        475,
+        1316,
+        795
+      ],
+      "body_size": [
+        720,
+        531
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/shielded-boss.png",
+      "sha256": "bf7ad22fb8c1730de702eebef8a5f17a72abae4a117df563b02e56b97153674c",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    "command_boss": {
+      "region": [
+        1327,
+        440,
+        1774,
+        887
+      ],
+      "source_bounds": [
+        1338,
+        449,
+        1759,
+        788
+      ],
+      "body_size": [
+        720,
+        580
+      ],
+      "texture": "res://assets/ships/enemy/elite_boss_20261020/command-boss.png",
+      "sha256": "b137276943b1f2ef3ed3955ec160c88be25a2e426209ee949e2128caccb2de21",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    }
+  }
+}

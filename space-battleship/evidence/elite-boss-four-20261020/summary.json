@@ -1,0 +1,23 @@
+{
+  "baseline": "108080a7",
+  "approved_concept_commit": "3887ead570b7c1a58aed84a5dd15669fc6d03195",
+  "ranked_checks": 616,
+  "ranked_failures": 0,
+  "ordinary_regression_checks": 96,
+  "ordinary_regression_failures": 0,
+  "identity_interface_unit_checks": 438,
+  "preview_weapons": {
+    "anchor_elite": 2,
+    "reactive_elite": 2,
+    "shielded_elite": 2,
+    "command_elite": 2,
+    "anchor_boss": 4,
+    "reactive_boss": 4,
+    "shielded_boss": 4,
+    "command_boss": 4
+  },
+  "max_alpha_centre_error": 3.0517578125e-05,
+  "slot_contract_applied_to_production": false,
+  "production_equipment_damage_cooldowns_multipliers_formations_unchanged": true,
+  "native_full_run": false
+}

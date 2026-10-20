@@ -1,0 +1,165 @@
+{
+  "baseline": "108080a7",
+  "all_original_visual_rows_unchanged": true,
+  "eight_base_pngs_unchanged": true,
+  "active_geometry_mounts_slots_gameplay_formation_runtime_unchanged": true,
+  "reserved_slot_counts_not_applied": {
+    "normal": 1,
+    "elite": 2,
+    "boss": 4
+  },
+  "sprites": [
+    {
+      "key": "anchor_elite",
+      "alpha_bounds": [
+        83,
+        650,
+        802,
+        1123
+      ],
+      "sha256": "c5423a07030192d7ac8ed5548d30f55a066c38ea4ab6235735bf2f64594e4053",
+      "geometry_sha256": "88b12b481bb2ec9c5ccc385caa845d1fd57630115f4605ba402a6a055dbf6b18",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "anchor_boss",
+      "alpha_bounds": [
+        83,
+        638,
+        803,
+        1136
+      ],
+      "sha256": "f48fd6fc83e696897d15cd05f461352fca9cbc122394de151cc0f927405e17ca",
+      "geometry_sha256": "88b12b481bb2ec9c5ccc385caa845d1fd57630115f4605ba402a6a055dbf6b18",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    {
+      "key": "reactive_elite",
+      "alpha_bounds": [
+        83,
+        573,
+        803,
+        1201
+      ],
+      "sha256": "45595b475fb7123ee097767f46aacaf32efd2cf4cc3016eb54569c61978484b8",
+      "geometry_sha256": "870a355a7db4ee5a01cbd70f1eecc77410f2cb95121969974e952e3e72c3cc52",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "reactive_boss",
+      "alpha_bounds": [
+        83,
+        584,
+        803,
+        1189
+      ],
+      "sha256": "1522933bd334bf7673e69fe10feb8cdd196e34fae99b0099b0a62d5f77a33e3f",
+      "geometry_sha256": "870a355a7db4ee5a01cbd70f1eecc77410f2cb95121969974e952e3e72c3cc52",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    {
+      "key": "shielded_elite",
+      "alpha_bounds": [
+        83,
+        642,
+        803,
+        1131
+      ],
+      "sha256": "8d642ab1547c1a0fcda9935864d70e2130494e9fdb77d5cceb0c744ba24a125a",
+      "geometry_sha256": "e157999bd1b36ccececba6615a3ba86cb4d97544bff24b7357a78c8f5714de90",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "shielded_boss",
+      "alpha_bounds": [
+        83,
+        621,
+        803,
+        1152
+      ],
+      "sha256": "bf7ad22fb8c1730de702eebef8a5f17a72abae4a117df563b02e56b97153674c",
+      "geometry_sha256": "e157999bd1b36ccececba6615a3ba86cb4d97544bff24b7357a78c8f5714de90",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    {
+      "key": "command_elite",
+      "alpha_bounds": [
+        83,
+        648,
+        803,
+        1126
+      ],
+      "sha256": "880c5b6190436e614615c240ca75561acdb3184468d7c7eee3a0535c1aa93ee2",
+      "geometry_sha256": "971e4f8560f30634575740f4bf4eb486491436e80b0e00b949bba840e1235b8c",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "command_boss",
+      "alpha_bounds": [
+        83,
+        597,
+        803,
+        1177
+      ],
+      "sha256": "b137276943b1f2ef3ed3955ec160c88be25a2e426209ee949e2128caccb2de21",
+      "geometry_sha256": "971e4f8560f30634575740f4bf4eb486491436e80b0e00b949bba840e1235b8c",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        319.2,
+        194.6666666667
+      ]
+    }
+  ]
+}

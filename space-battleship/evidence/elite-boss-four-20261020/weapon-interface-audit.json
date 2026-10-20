@@ -1,0 +1,25 @@
+{
+  "baseline": "108080a7",
+  "enemy_rows": 10461,
+  "equipment_count_rows": {
+    "1": 10453,
+    "2": 2,
+    "4": 2,
+    "6": 2,
+    "8": 2
+  },
+  "four_archetype_rows": 27,
+  "four_archetype_equipment_counts": {
+    "1": 27
+  },
+  "tier_source": "published combat_tier plus encounter_leader; no size inference",
+  "gds_fire_loop": "game.gd: per enemy.equipment entry, per cooldown, db.enemy_attack_damage; longLaser keeps existing lock path",
+  "reserved_interface": {
+    "normal": 1,
+    "elite": 2,
+    "boss": 4
+  },
+  "production_interface_consumers": [],
+  "equipment_data_gameplay_cooldowns_damage_multipliers_formation_unchanged": true,
+  "preview_only": "test_enemy_ranked_art.gd explicitly adapts display-canvas mount positions and installs held-health QA 2/4 equipment; ordinary escorts 1"
+}
