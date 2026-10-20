@@ -10,7 +10,15 @@ const ARCHETYPES := {
 	"shielded":["enemy_opening_shielded",1],
 	"command":["enemy_opening_command",1]
 }
+const RANKED_ARCHETYPES:=["anchor","reactive","shielded","command"]
 var diagnostics:Dictionary={}
+
+static func visual_rank(enemy:Dictionary)->String:
+	# Use published encounter metadata, never numeric size or final-wave index.
+	var tier:=str(enemy.get("combat_tier","normal"))
+	if tier in ["boss","ultimate"] and bool(enemy.get("encounter_leader",false)):return "boss"
+	return "elite" if tier=="elite" else ""
+
 
 func resolve(enemy:Dictionary,config:Dictionary)->String:
 	var fallback="enemy_"+str(clampi(int(enemy.get("size",1)),1,6))
@@ -22,7 +30,12 @@ func resolve(enemy:Dictionary,config:Dictionary)->String:
 		if int(enemy.get("armourType",0))!=int(binding[1]):reason="armour_type_mismatch"
 		else:
 			var row:Dictionary=config.get("ships",{}).get(binding[0],{})
-			if bool(row.get("asset_ready",false)):return str(binding[0])
+			if bool(row.get("asset_ready",false)):
+				var rank:=visual_rank(enemy)
+				if archetype in RANKED_ARCHETYPES and not rank.is_empty():
+					var variant:=str(binding[0])+"_"+rank
+					if bool(config.get("ships",{}).get(variant,{}).get("asset_ready",false)):return variant
+				return str(binding[0])
 			reason="asset_unavailable"
 	var diagnostic=archetype+":"+reason
 	if not diagnostics.has(diagnostic):

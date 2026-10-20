@@ -1,0 +1,70 @@
+{
+  "base": "108080a747e3182ee8447d0ba8b41988e68cd2bc",
+  "source_candidate": "707981f3",
+  "branch": "art/em-turret-release-20261020",
+  "runtime_pngs_equal_source_candidate": {
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/anchor-elite.png": "1b6bb40679af09700c83e629b61cdfea8ec10e0b83efa7cbb5fa6fb7283afa18",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/anchor-boss.png": "fbed2eba5d173f97b5fe83927fbb51e5ec0527dad5417f8e28759ef2c3010c50",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/reactive-elite.png": "b9f067e577d494b9d0687253ab5d60c7e8a6dd0212baf9744fcf7ae1ae4180ad",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/reactive-boss.png": "e5efc27836e633097f6208a7841d437daed41dd1464ed4510489392eb44580c9",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/shielded-elite.png": "2d457858bb5ba222089caf798da869ff4be192291670889881aa78fa7831040d",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/shielded-boss.png": "3e87b7f9991a0aa91e5abf8ab645c203a59ed14ed1cab31a285c812972944d5d",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/command-elite.png": "c9f3d6f099691983377ee69f4dc9c81f16993a8299bfe9cded08bc50576cabd1",
+    "space-battleship/assets/ships/enemy/elite_boss_20261020/command-boss.png": "6a16b97e155d9ebe45beffbc620c44c6ca390ba098ddbc70316384a6cb65c149",
+    "space-battleship/assets/weapons/integrated_ranked_20261020/cannon-rotating.png": "f5252b35125f2667a4451d3648ad51803bc63a5dc3252dafe7dd1496307fb772"
+  },
+  "display_interface_qa_and_capture_code_equal_source_candidate": {
+    "space-battleship/scripts/main.gd": "1beed28d609fae079228f07736ab348685914e2550931065b7d009416cd9baa7",
+    "space-battleship/scripts/enemy_visual_identity.gd": "be6124b2ca5f2361150e7cdd66a438c8eb1c505a1cea7342878b7e0b79e6bc21",
+    "space-battleship/scripts/enemy_weapon_interface.gd": "d920ac39265e0e5d399b5f902283907d31fc93654d0486131084c23c6e28256f",
+    "space-battleship/dev/qa/integrated_turret_preview.gd": "32e5a73e5e97ef44c636ad6b4606e0efe08a82ff5793969df2ce575348c043fc",
+    "test/test_enemy_ranked_art.gd": "01f6b122d3d1347b57ad604c3bf0662b22d4c625f80e8ed7371a67d278b5fff3",
+    "test/check_enemy_base_eight_assets.py": "d9276eaa804d233d7ed58523c6dbe79f843c84d5d5be18ec2d04d2f2258e5e5b"
+  },
+  "raw_captures_equal_source_candidate": {
+    "space-battleship/evidence/em-turret-integration-20261020/reactive-boss.png": "ca4795d218f2ce76fd1dbe0465b660b39da0c3eeeeb7c36c99b5250e0bc7a5e9",
+    "space-battleship/evidence/em-turret-integration-20261020/command-boss-turn-35.png": "a5134094c0570a98afc0394d24c81a906362201f342865d66e57b7a1f86063bc",
+    "space-battleship/evidence/em-turret-integration-20261020/command-elite.png": "305c44421a9c02326bd0c8bd4d2180f38f46e02bf7940cd339174f8d26f2b811",
+    "space-battleship/evidence/em-turret-integration-20261020/anchor-elite.png": "e98752aefdcb53621543831759a213a48024ddc5a2e4329e20850560fba6b833",
+    "space-battleship/evidence/em-turret-integration-20261020/shielded-elite.png": "56dea6991e4f4ee48f0c86909c4c05ec475dcdc103dc08dbcab70da6819ad804",
+    "space-battleship/evidence/em-turret-integration-20261020/command-boss-turn--35.png": "19c92dd38cc2948ed1b7c94cfc197165ff6c5ca46a8d47aa959aa4a6767a7d71",
+    "space-battleship/evidence/em-turret-integration-20261020/shielded-boss.png": "72b077919edc3950b316730182916724419b1ab623a0e395b747b08d902c51ec",
+    "space-battleship/evidence/em-turret-integration-20261020/reactive-elite.png": "dc4a10fdf1dad211395b86f7978213d0d8f8c8651fa4358babfcd0c413719d8c",
+    "space-battleship/evidence/em-turret-integration-20261020/command-boss.png": "2e97d7b37e07e490e8b3d80f787c6bf881d2d24beaa014dbc2aae6ab6ba2ca84",
+    "space-battleship/evidence/em-turret-integration-20261020/anchor-boss.png": "72543204ebc122b95e80e59eeb7711c38b543eec5c7321e00f47c8974badd53c"
+  },
+  "capture_json_equal_source_candidate": true,
+  "render_fields_equivalent_except_provenance_paths": true,
+  "provenance_path_changes_only": [
+    "weapon_manifest.source",
+    "hull_manifest.gun.source",
+    "visual_config.enemy_weapon_interface.movable_gun.coverage_source"
+  ],
+  "final_sources_self_contained": true,
+  "asset_import_reproduces_all9_runtime_png_hashes": true,
+  "asset_check": "PASS",
+  "graphics_evidence": "original707981f3 run932 checks0failures; not rerun during packaging",
+  "no_rejected_intermediate_art_needed": true,
+  "production_numerical_formation_and_main_scene_unchanged_from_base": true,
+  "main_update_attempted": false,
+  "parent_default_branch_update": "denied by automatic approval review:229 files too broad; main unchanged; not retried",
+  "introduced_resource_references_all_exist": [
+    "res://art_sources/enemy-fleet-20261019/approved-emitter-20261020.png",
+    "res://art_sources/enemy-fleet-20261019/integrated-empty-bases-atlas.png",
+    "res://art_sources/enemy-fleet-20261019/ranked-import.json",
+    "res://assets/ships/enemy/elite_boss_20261020/anchor-boss.png",
+    "res://assets/ships/enemy/elite_boss_20261020/anchor-elite.png",
+    "res://assets/ships/enemy/elite_boss_20261020/command-boss.png",
+    "res://assets/ships/enemy/elite_boss_20261020/command-elite.png",
+    "res://assets/ships/enemy/elite_boss_20261020/reactive-boss.png",
+    "res://assets/ships/enemy/elite_boss_20261020/reactive-elite.png",
+    "res://assets/ships/enemy/elite_boss_20261020/shielded-boss.png",
+    "res://assets/ships/enemy/elite_boss_20261020/shielded-elite.png",
+    "res://assets/ships/enemy/opening_v2/anchor-hull.png",
+    "res://assets/ships/enemy/opening_v2/command-hull.png",
+    "res://assets/ships/enemy/opening_v2/reactive-hull.png",
+    "res://assets/ships/enemy/opening_v2/shielded-hull.png",
+    "res://assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
+    "res://assets/weapons/integrated_ranked_20261020/manifest.json"
+  ]
+}

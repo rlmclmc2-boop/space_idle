@@ -30,7 +30,11 @@ for key in keys:
  assert geometry.read_bytes()==expected
  rows.append({'key':key,'alpha_bounds':box,'components':int(components),'geometry_sha256':hashlib.sha256(expected).hexdigest()})
  row['texture']=before['texture']
-assert new==old,'Non-display configuration changed'
+# Ranked art rows are checked separately; the original base contract stays exact.
+for archetype in ['anchor','reactive','shielded','command']:
+ for rank in ['elite','boss']:new['ships'].pop('enemy_opening_'+archetype+'_'+rank,None)
+new.pop('enemy_weapon_interface',None) # Dormant interface has its own validation.
+assert new==old,'Original configuration changed'
 result={'baseline':BASE,'display_only_rows':8,'all_other_config_unchanged':True,'all_geometry_bytes_unchanged':True,'sprites':rows}
 out=PROJECT/'evidence/enemy-eight-main-ready-20261020';out.mkdir(parents=True,exist_ok=True)
 (out/'asset-check.json').write_text(json.dumps(result,indent=2)+'\n')
