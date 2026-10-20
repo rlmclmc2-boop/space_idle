@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00 已完成双审并关闭，S01 已完成双审并关闭，S02 已双审通过并关闭，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00 已完成双审并关闭，S01 已完成双审并关闭，S02 已双审通过并关闭，S03 已提交运行候选与证据并处于 review，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00 为 `closed`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01 为 `closed`，实施线程 `01a15a61-fd87-7064-a145-397991b320e8`；S02 为 `closed`; S03-S24 and S04a are `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。S01 已关闭，父级与 astra 已对 624c903395c65d756a0c88cae1fd9b59b303d3fa 分别 PASS，未解决项为 0；实施线程已确认归档，S02 已对 c2cfe0795450638e1351923d1c986f519a3aadd0 双 PASS，实施线程已确认归档，S02 关闭，允许启动唯一下一阶段 S03。
+**S00、S01、S02 均为 `closed`；S03 为 `review`，实施线程 `01a15a8e-35c8-7632-8baf-8af7060310cd`；S04—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。S03 运行候选 SHA=`0d01530bdce168a55d0ce7c835f17072d66d6bc7`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，尚未 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。S01 已关闭，父级与 astra 已对 624c903395c65d756a0c88cae1fd9b59b303d3fa 分别 PASS，未解决项为 0；实施线程已确认归档，S02 已对 c2cfe0795450638e1351923d1c986f519a3aadd0 双 PASS，实施线程已确认归档，S02 关闭；当前唯一打开阶段为 S03，已交付候选及证据，待父级和 astra 对同一最终运行 SHA 双审。
 
 ### S00 关闭记录
 
@@ -310,6 +310,74 @@ closure:
   implementation_thread_closed: true
   closed_at: 2026-10-20T18:22:25Z
   next_stage_allowed: true
+```
+
+### S03 review 记录
+
+```yaml
+stage: S03
+status: review
+implementation_thread_id: 01a15a8e-35c8-7632-8baf-8af7060310cd
+model: sol
+reasoning_effort: medium
+base_main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+predecessor_closed_sha: 6486727dfec23a94a0f9cce93ffc2da8610bf6ad
+scope_and_allowed_files:
+  - space-battleship/scripts/save_transfer.gd # 唯一运行文件
+  - test/test_save_transfer.gd # 仅审计分支
+  - docs/audits/20261020-e3db2838/stages/S01/gate.py # 仅审计分支门禁接入
+  - docs/audits/20261020-e3db2838/stages/S03/README.md
+  - docs/audits/20261020-e3db2838/stages/S03/reproduction.json
+  - docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md
+  - docs/audits/20261020-e3db2838/PLAN_VALIDATION.json
+  - docs/audits/20261020-e3db2838/PLAN_SHA256SUMS.json
+decisions_required: []
+decisions_received: []
+runtime_final_sha: 0d01530bdce168a55d0ce7c835f17072d66d6bc7
+runtime_tree: 10bf32ba2e060cde7269b6f54459a989e5b5538b
+main_file_justifications:
+  - "space-battleship/scripts/save_transfer.gd: 便携字段白名单与清洗原本丢失八个已持久化字段及 resourceSamples[].production_time；仅补契约，不改既有时间语义"
+evidence_snapshot_sha: bf34457d48efe7d0975c1f958e11abab11ae225d
+verification:
+  commands_and_environment:
+    - "Windows BJNLPC-0459 / Godot 4.7.2 / Python 3.12: baseline e3db2838 的 save_transfer.gd 与审计测试叠加，在隔离目录运行"
+    - "Windows BJNLPC-0459 / Godot 4.7.2 / Python 3.12: PYTHONIOENCODING=utf-8 python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_transfer.gd --headless --godot D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe"
+    - "git diff --check e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3 944f8e65a77d1a5dfc2bf0fee2ecd6fc933188cc # 本地同 tree 候选"
+  results:
+    - "基线复现：8 个顶层字段与 sample.production_time 缺失；测试退出 1"
+    - "最终候选：SAVE TRANSFER 154 checks, 0 failures；S01_GATE_PASS"
+    - "远端运行 SHA 与已测试本地 SHA 的 tree 同为 10bf32ba2e060cde7269b6f54459a989e5b5538b；运行差异仅 save_transfer.gd"
+  unverified:
+    - "父级与 astra 对同一最终运行 SHA 和证据快照的独立审查"
+parent_review:
+  verdict: PENDING
+  reviewed_runtime_sha: null
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+astra_review:
+  verdict: PENDING
+  reviewed_runtime_sha: null
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+integration:
+  state: pending
+  main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+  approved_sha_matches: false
+  local_entry_command: null
+  local_entry_result: not_run
+closure:
+  evidence_persisted_and_read_back: true
+  parent_closed_stage: false
+  implementation_thread_closed: false
+  closed_at: null
+  next_stage_allowed: false
+branch_cleanup:
+  candidate: s03/durable-portable
+  unique_work_checked: false
+  evidence_preserved: true
+  deletion_executed: false
 ```
 
 ```yaml
