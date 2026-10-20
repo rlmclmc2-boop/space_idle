@@ -1,18 +1,21 @@
 {
-  "scope": "规划文档一致性检查；未执行游戏测试、未启动实施线程",
+  "scope": "S00 基线与执行准备；仅审计材料和隔离能力探针，未执行游戏专项或产品修复",
   "checks": {
-    "25_table_stages_unique_and_ordered": true,
-    "single_writer_stage_active": true,
-    "all_issue_ids_mapped": true,
-    "same_final_sha_dual_review_record": true,
-    "approved_decisions_recorded": true,
-    "deadline_and_environment_recorded": true,
-    "links_resolve": true,
+    "main_equals_audit_baseline": true,
+    "single_stage_open": true,
+    "s00_thread_recorded": true,
+    "s00_review_pending": true,
+    "next_stage_blocked_until_dual_pass": true,
+    "p04_audit_only": true,
+    "p05_local_and_target_distinguished": true,
+    "known_test_failures_separate_from_fixture_causes": true,
     "unchanged:SHA256SUMS.json": true,
-    "unchanged:SUPPLEMENT_SHA256SUMS.json": true,
-    "verification_tools_audit_branch_only": true
+    "unchanged:SUPPLEMENT_SHA256SUMS.json": true
   },
   "stages": 26,
-  "all_stage_status": "not_started",
-  "product_code_changed": false
+  "active_stage": "S00",
+  "active_stage_status": "review",
+  "other_stage_status": "not_started",
+  "product_code_changed": false,
+  "main_integrated": false
 }
