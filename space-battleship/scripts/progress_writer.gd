@@ -13,22 +13,37 @@ func acquire_owner() -> bool:
 	if candidate == null:return false
 	var absolute := ProjectSettings.globalize_path(path).simplify_path()
 	if not candidate.acquire(absolute + ".writer-lock"):return false
+	_owned_path = path_key(absolute)
+	if _owned_path.is_empty():return false
 	_owner = candidate
-	_owned_path = _path_key(absolute)
 	return true
 
-func _path_key(value: String) -> String:
+static func path_key(value: String) -> String:
 	var absolute := ProjectSettings.globalize_path(value).simplify_path()
-	return absolute.to_lower() if OS.get_name() == "Windows" else absolute
+	var identity: RefCounted = ClassDB.instantiate("SpaceSaveLock")
+	if identity == null:return ""
+	var resolved: String = identity.canonical_path(absolute)
+	return resolved.to_lower() if OS.get_name() == "Windows" else resolved
+
+static func is_protected_target(value: String, primary_path: String = "user://progress.json") -> bool:
+	var primary := path_key(primary_path)
+	if primary.is_empty():return true
+	var protected := [primary]
+	for suffix in [".bak", ".tmp", ".rejected", ".import-prev", ".import-new", ".import-active", ".import-active.tmp", ".import-active.bak", ".writer-lock"]:
+		protected.append(path_key(primary_path + suffix))
+	for output in [value, value + ".tmp", value + ".bak"]:
+		var key := path_key(output)
+		if key.is_empty() or key in protected:return true
+	return false
 
 func owns_progress() -> bool:
-	return _owner != null and _owner.owns() and _owned_path == _path_key(path)
+	return _owner != null and _owner.owns() and not _owned_path.is_empty() and _owned_path == path_key(path)
 
 func owner_handle() -> RefCounted:
 	return _owner if owns_progress() else null
 
 func _may_write() -> bool:
-	return (not ownership_required and _path_key(path) != _path_key("user://progress.json")) or owns_progress()
+	return (not ownership_required and not is_protected_target(path)) or owns_progress()
 
 func write_progress(bytes: PackedByteArray) -> Error:
 	if not _may_write():return ERR_ALREADY_IN_USE
@@ -147,7 +162,7 @@ static func read_progress_result(path: String, db: ShipDatabase = null) -> Dicti
 
 func finish_loaded_recovery(recovery_path: String, result: Dictionary) -> Error:
 	var path := ProjectSettings.globalize_path(recovery_path).simplify_path()
-	if not _may_write() or _path_key(path) != _path_key(self.path):return ERR_ALREADY_IN_USE
+	if not _may_write() or path_key(path) != path_key(self.path):return ERR_ALREADY_IN_USE
 	# Only a successfully applied save may retire an abandoned import transaction.
 	if result.status != "loaded" or result.import_active:return OK
 	var previous := path + ".import-prev"
