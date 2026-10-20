@@ -35,7 +35,7 @@ func _commit_temp() -> Error:
 		var primary_check := _check_progress_file(path, validation_db)
 		var backup_check := _check_progress_file(path + ".bak", validation_db)
 		if not primary_check.error.is_empty() and not backup_check.error.is_empty():return ERR_FILE_CORRUPT
-		var backup_preferred: bool = backup_check.error.is_empty() and (not primary_check.error.is_empty() or (primary_check.quality == "compatible_sparse" and backup_check.quality == "complete"))
+		var backup_preferred: bool = backup_check.error.is_empty() and (not primary_check.error.is_empty() or backup_check.quality_rank > primary_check.quality_rank)
 		# A damaged or sparse primary must never replace a complete recovery copy.
 		if backup_preferred:
 			# Retain the rejected bytes, including when installing the new file fails.
@@ -109,8 +109,8 @@ static func read_progress_result(path: String, db: ShipDatabase = null) -> Dicti
 		found = true
 		var checked := _check_progress_file(path + suffix, db)
 		if checked.error.is_empty():
-			if best.is_empty() or (checked.quality == "complete" and best.quality != "complete"):
-				best = {"status":"loaded", "source":suffix, "data":checked.data, "quality":checked.quality, "rejected":rejected, "import_active":active}
+			if best.is_empty() or checked.quality_rank > best.quality_rank:
+				best = {"status":"loaded", "source":suffix, "data":checked.data, "quality":checked.quality, "quality_rank":checked.quality_rank, "rejected":rejected, "import_active":active}
 		else:
 			rejected.append({"source":suffix, "error":checked.error})
 	if not best.is_empty():return best
@@ -152,7 +152,7 @@ static func _check_progress_file(path: String, db: ShipDatabase = null) -> Dicti
 	var data = parser.data
 	var database := db if db != null else ShipDatabase.new()
 	# Runtime load uses the same shape, semantic and legacy migration rules as import.
-	return load("res://scripts/save_transfer.gd").new().prepare_data(data, database)
+	return load("res://scripts/save_transfer.gd").new().prepare_disk_data(data, database)
 
 static func _read_progress_file(path: String, db: ShipDatabase = null) -> Variant:
 	var checked := _check_progress_file(path, db)

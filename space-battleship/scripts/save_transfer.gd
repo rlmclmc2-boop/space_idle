@@ -5,6 +5,25 @@ const Layout := preload("res://scripts/galaxy_layout.gd")
 const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
 const SUPPORTED_VERSIONS := [2,3,4,BattleGame.SAVE_VERSION]
+# Unconditional top-level fields emitted by the current v5 portable/ordinary
+# writer. Conditional journey/guard fields and retired fields are not required.
+# Older v5 saves predate some of these fields and remain compatible at lower
+# recovery priority; their format has no sub-version to distinguish them from
+# a truncated current save.
+const CURRENT_V5_FIELDS := ["version","resources","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
+# v3/v4 writer baseline (4cac4e16 / cc5e4b0e). Version 2 has no matching
+# writer in this tree, so it remains compatible without a completeness claim.
+const HISTORICAL_CORE := ["version","resources","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","hightechSavedAt","furnaceElapsed","furnaceIncomePeak","grantedUnlocks","jewels","levels"]
+
+static func structure_quality(raw: Dictionary) -> Dictionary:
+ var version = raw.get("version")
+ var loadout = raw.get("loadout")
+ var slots_present: bool = loadout is Dictionary and loadout.has("weapons") and loadout.has("defence")
+ if version==BattleGame.SAVE_VERSION and slots_present and CURRENT_V5_FIELDS.all(func(key):return raw.has(key)):
+  return {"quality":"complete","quality_rank":3}
+ if version in [3,4,5] and slots_present and HISTORICAL_CORE.all(func(key):return raw.has(key)):
+  return {"quality":"historical_complete","quality_rank":2}
+ return {"quality":"compatible_sparse","quality_rank":1}
 
 static func schema() -> Dictionary:
  var building := {"status":"s","build_progress":"g","crew":["s"]}
@@ -131,24 +150,7 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
- # Full v5 writers have always emitted this core. Sparse historical snapshots
- # still load if no complete committed copy exists, but cannot outrank one.
- var core := ["resources","highestLevel","cleared","unlocked","selectedShip","loadout","moduleVersion"] if int(raw.version)==BattleGame.SAVE_VERSION else ["resources","cleared","unlocked","selectedShip"]
- var complete := core.all(func(key):return raw.has(key))
- if int(raw.version)==BattleGame.SAVE_VERSION and complete:
-  complete=raw.loadout is Dictionary and raw.loadout.has("weapons") and raw.loadout.has("defence")
- # The old loader defaults this hint when absent. Normalize only a copy.
- if not raw.has("highestLevel"):
-  raw=raw.merged({"highestLevel":1})
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
- # The durable loader historically ignored negative balances, retaining the
- # fresh profile's starting value. Keep that compatibility for sparse saves.
- if not complete:
-  for id in ["1","2"]:
-   var amount = raw.resources[id]
-   if (amount is int or amount is float) and is_finite(float(amount)) and float(amount)<0:
-    raw=raw.duplicate(true)
-    raw.resources[id]=ceilf(float(db.defaults.startingIron if id=="1" else db.defaults.startingTitanium))
  if not shape(raw,schema()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
@@ -165,7 +167,25 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  var candidate:=BattleGame.new(db,false)
  candidate.load_progress_data(clean(raw,schema()))
  candidate.reset_player()
- return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip,"quality":"complete" if complete else "compatible_sparse"}
+ var quality:=structure_quality(raw)
+ return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip,"quality":quality.quality,"quality_rank":quality.quality_rank}
+
+func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
+ # Only existing durable files receive the loader's historical defaults.
+ # Portable import keeps prepare_data's strict validation unchanged.
+ var quality:=structure_quality(raw)
+ var migrated:=raw.duplicate(true)
+ if not migrated.has("highestLevel"):migrated.highestLevel=1
+ if quality.quality_rank<3 and migrated.get("resources") is Dictionary:
+  for id in ["1","2"]:
+   var amount = migrated.resources.get(id)
+   if (amount is int or amount is float) and is_finite(float(amount)) and float(amount)<0:
+    migrated.resources[id]=ceilf(float(db.defaults.startingIron if id=="1" else db.defaults.startingTitanium))
+ var checked:=prepare_data(migrated,db)
+ if checked.error.is_empty():
+  checked.quality=quality.quality
+  checked.quality_rank=quality.quality_rank
+ return checked
 
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
