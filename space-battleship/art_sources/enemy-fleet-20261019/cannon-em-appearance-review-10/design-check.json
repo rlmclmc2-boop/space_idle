@@ -1,0 +1,871 @@
+{
+  "design_only": true,
+  "baseline": "da6025ea",
+  "07_per_mount_dimensions_reused_exactly": true,
+  "07_geometry_caps_and_coordinates_unchanged": true,
+  "source_canvas": [
+    1230,
+    1278
+  ],
+  "same07_dimensions_and_mechanical_pivot": true,
+  "native_width_min_max": [
+    18.532115851546394,
+    24.643163234755434
+  ],
+  "probes": [
+    {
+      "case": "anchor_elite",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_elite",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_elite",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_elite",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_elite",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 2,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 2,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 2,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 2,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 2,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 3,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 3,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 3,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 3,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "anchor_boss",
+      "slot": 3,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 2,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 2,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 2,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 2,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 2,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 3,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 3,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 3,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 3,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "reactive_boss",
+      "slot": 3,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 2,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 2,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 2,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 2,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 2,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 3,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 3,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 3,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 3,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "shielded_boss",
+      "slot": 3,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 0,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 0,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 0,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 0,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 0,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 1,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 1,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 1,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 1,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 1,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 2,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 2,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 2,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 2,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 2,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 3,
+      "yaw": -55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 3,
+      "yaw": -35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 3,
+      "yaw": 0,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 3,
+      "yaw": 35,
+      "opaque_pixels": 680212,
+      "outside": 0
+    },
+    {
+      "case": "command_boss",
+      "slot": 3,
+      "yaw": 55,
+      "opaque_pixels": 680212,
+      "outside": 0
+    }
+  ],
+  "outside_total": 0,
+  "minimum_any_yaw_separation_pixels": 12.158682690608751,
+  "production_runtime_qa_importer_tests_unchanged": true,
+  "06_source_unchanged": true,
+  "source_sha256": "ac007044ef256f22b7a4d262e6467ced7c106b6cdff8677b7988d9d99fb23d35",
+  "game_not_launched_or_integrated": true,
+  "main_not_merged": true,
+  "09_reference_unchanged": true,
+  "appearance_only_no_weapon_type_or_attack_change": true,
+  "appearance_structure": "two short segmented rails, recessed launch channel, compact fork tips; no cylindrical barrel",
+  "forward_tip_projection_native_pixels": [
+    2.9088872074672616,
+    3.868105663667433
+  ]
+}

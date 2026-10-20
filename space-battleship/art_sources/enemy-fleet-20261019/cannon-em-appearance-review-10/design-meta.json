@@ -1,0 +1,37 @@
+{
+  "design_only": true,
+  "approved_style_reference": "15a102ac",
+  "source_canvas": [
+    1230,
+    1278
+  ],
+  "housing_width_source_px": 962,
+  "housing_bounds_source_px": [
+    134,
+    280,
+    1096,
+    1159
+  ],
+  "pivot_source_px": [
+    615,
+    720
+  ],
+  "screen_scale": 0.7,
+  "not_a_runtime_config": true,
+  "source_texture": "cannon-design.png",
+  "coverage_levels": [
+    0.85,
+    0.95
+  ],
+  "preferred_coverage": 0.95,
+  "same07_per_mount_dimensions": true,
+  "appearance_only_em_launcher": true,
+  "mechanics_unchanged": true,
+  "visual_aperture_source_px": [
+    615,
+    165
+  ],
+  "forward_tip_y_source_px": 129,
+  "fore_support_y_source_px": 280,
+  "only_appearance_not_weapon_type": true
+}

@@ -1,13 +1,13 @@
-# 当前：炮机明度层级修正 09，待外观审阅
+# 当前：未来舰载电磁发射结构外观 10，待审阅
 
-08因主体近黑、缩小看不清被用户否决。本轮保留07覆盖尺寸与06轮廓/短管比例，只把炮机顶面改为中亮钢灰，与更亮的白侧甲形成两级亮面，暗部留给侧面、缝与炮口，不恢复细亮边。
+09因传统坦克炮造型被否决。本轮仅重新设计旋转武器外观：短分段双导轨、嵌入式发射通道、短分叉前端，明亮主体、少量大件，只有一枚小状态芯，无灯带。实际武器类型、数值和攻击逻辑不变。
 
-1. [相同07尺寸的正常窗口前后对比](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/normal-comparison.png)
-2. [正常窗口八舰、转向，后附细节](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/design-board.png)
-3. [同尺寸正向/转向](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/direction-check.png)
-4. [设计说明与检查](../../art_sources/enemy-fleet-20261019/cannon-value-review-09/README.md)
+1. [正常窗口整舰前后对比](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/normal-comparison.png)
+2. [正常窗口八舰、转向，后附细节](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/design-board.png)
+3. [同尺寸正向/转向](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/direction-check.png)
+4. [设计说明与检查](../../art_sources/enemy-fleet-20261019/cannon-em-appearance-review-10/README.md)
 
-逐底座尺寸、舰体与坐标不变；120角度探针越界0、炮塔不互叠。仅静态设计稿，不是实机图；生产配置未改，未接入、未合main。下方为旧实机历史证据。
+保留07逐底座覆盖尺寸、舰体和固定底座轴心。120角度探针越界0，炮塔不互叠。仅静态设计稿，非实机图；生产资源及配置未改，未接入、未合main。下方为旧实机历史证据。
 
 ---
 
