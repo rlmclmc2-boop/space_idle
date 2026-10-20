@@ -14,18 +14,21 @@ func acquire_owner() -> bool:
 	var absolute := ProjectSettings.globalize_path(path).simplify_path()
 	if not candidate.acquire(absolute + ".writer-lock"):return false
 	_owner = candidate
-	_owned_path = absolute
+	_owned_path = _path_key(absolute)
 	return true
 
+func _path_key(value: String) -> String:
+	var absolute := ProjectSettings.globalize_path(value).simplify_path()
+	return absolute.to_lower() if OS.get_name() == "Windows" else absolute
+
 func owns_progress() -> bool:
-	return _owner != null and _owner.owns() and _owned_path == ProjectSettings.globalize_path(path).simplify_path()
+	return _owner != null and _owner.owns() and _owned_path == _path_key(path)
 
 func owner_handle() -> RefCounted:
 	return _owner if owns_progress() else null
 
 func _may_write() -> bool:
-	var live_path := ProjectSettings.globalize_path("user://progress.json").simplify_path()
-	return (not ownership_required and ProjectSettings.globalize_path(path).simplify_path() != live_path) or owns_progress()
+	return (not ownership_required and _path_key(path) != _path_key("user://progress.json")) or owns_progress()
 
 func write_progress(bytes: PackedByteArray) -> Error:
 	if not _may_write():return ERR_ALREADY_IN_USE
@@ -144,7 +147,7 @@ static func read_progress_result(path: String, db: ShipDatabase = null) -> Dicti
 
 func finish_loaded_recovery(recovery_path: String, result: Dictionary) -> Error:
 	var path := ProjectSettings.globalize_path(recovery_path).simplify_path()
-	if not _may_write() or path != ProjectSettings.globalize_path(self.path).simplify_path():return ERR_ALREADY_IN_USE
+	if not _may_write() or _path_key(path) != _path_key(self.path):return ERR_ALREADY_IN_USE
 	# Only a successfully applied save may retire an abandoned import transaction.
 	if result.status != "loaded" or result.import_active:return OK
 	var previous := path + ".import-prev"

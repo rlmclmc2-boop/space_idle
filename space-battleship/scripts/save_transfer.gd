@@ -190,7 +190,12 @@ func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  var primary:=game.progress_writer.path.simplify_path()
- if target in [primary,primary+".bak",primary+".tmp",primary+".rejected",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak",primary+".writer-lock"]:return ERR_INVALID_PARAMETER
+ var protected := [primary,primary+".bak",primary+".tmp",primary+".rejected",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak",primary+".writer-lock"]
+ var compared_target:=target
+ if OS.get_name()=="Windows":
+  compared_target=target.to_lower()
+  protected=protected.map(func(value):return str(value).to_lower())
+ if compared_target in protected:return ERR_INVALID_PARAMETER
  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
 
 func write_file(path: String, bytes: PackedByteArray) -> Error:
