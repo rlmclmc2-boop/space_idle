@@ -52,6 +52,10 @@ func run()->void:
  var output:=OS.get_environment("RANKED_OUTPUT");DirAccess.make_dir_recursive_absolute(output)
  root.size=Vector2i(1373,883)
  var scene=load("res://main.tscn").instantiate();scene.automation_args=["--capture"];scene.music_on=false;root.add_child(scene);scene.automation_args=[]
+ if OS.get_environment("RANKED_TURRET_BEFORE")!="1":
+  var preview_skin=preload("res://dev/qa/ranked_turret_preview.gd").new()
+  preview_skin.muzzle_factor=float(scene.weapon_visual_profile("cannon").muzzle[0][0])
+  scene.enemy_recognition=preview_skin
  var g=scene.game;g.save_enabled=false;g.native_execution_auto=false;g.rng.seed=20261020
  g.profile.onboarding.completed=true;g.profile.onboarding.dismissed=true;scene.beginner_guide.hide()
  g.profile.cleared=range(1,101);g.profile.highestLevel=101;g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.rebuild_unlocks();g.pending_unlocks.clear()
@@ -118,10 +122,19 @@ func run()->void:
    var components:Array=scene.enemy_weapon_components(hero)
    check(hero.equipment.size()==expected_slots and components.size()==expected_slots,"QA has exact reserved elite/BOSS weapon count")
    var mounts:Array=[]
+   var mount_centres:Array[Vector2]=[]
    for component in components:
     check(component.mode()=="main" and float(component.hardpoint.rotation_limit)>0,"each reserved weapon has an independent rotating mount")
     var mount_pose:Dictionary=scene.enemy_component_pose(hero,component)
-    mounts.append({"slot":component.owner_slot,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle})
+    var canvas_scale:float=(root.get_final_transform()*scene.battle_clip.get_global_transform_with_canvas()).get_scale().x
+    var base_diameter:float=float(mount_pose.width)*.45*2.06
+    check(base_diameter*canvas_scale>=12.0,"turret base remains legible in original window pixels")
+    var local_uv:Array=component.hardpoint.pos
+    var pixel:=Vector2(used.position)+Vector2(used.size)*.5+Vector2(float(local_uv[0])*width,float(local_uv[1])*width*2.0)/rect.size*texture.get_size()
+    check(texture.get_image().get_pixelv(Vector2i(pixel)).a>.3,"turret axis lies on opaque armor, not between accessories")
+    for other in mount_centres:check(Vector2(mount_pose.origin).distance_to(other)>base_diameter+2.0,"independent turret bases do not overlap")
+    mount_centres.append(mount_pose.origin)
+    mounts.append({"slot":component.owner_slot,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"base_diameter_pixels":base_diameter*canvas_scale})
    for i in [1,2]:check(g.enemies[i].equipment.size()==1 and scene.enemy_weapon_components(g.enemies[i]).size()==1,"ordinary escorts retain one weapon in QA")
    check(scene.enemy_render_position(hero)==point and is_equal_approx(scene.enemy_render_width(hero),width),"ranked skin does not move or resize model geometry")
    var outline:PackedVector2Array=packet.inner.duplicate();var protection_scale:float=scene.enemy_display_protection_scale(hero,packet,angle)
@@ -136,6 +149,7 @@ func run()->void:
    if rank=="elite":
     var record=scene.retained_contacts.records[int(hero.uid)]
     check(record.supported and (record.hull.data.rect.size*record.hull.scale).is_equal_approx(rect.size),"elite retained and canonical hull agree")
+    for mount in record.mounts:check(mount.node.get_index()>record.protection.get_index(),"turret foreground order stays above hull, accessories and protection")
    var geometry=preload("res://scripts/simulation_geometry_authority.gd").new();geometry.prepare(scene,g)
    check(geometry.enemy_ship_key(hero)==hero_key,"native authority selects same ranked art")
    check(geometry.enemy_render_position(hero).distance_to(point)<.001,"native authority keeps same authored position")
@@ -147,5 +161,5 @@ func run()->void:
    await process_frame;await RenderingServer.frame_post_draw
    var filename:String=str(key)+"-"+str(rank)+".png";root.get_texture().get_image().save_png(output.path_join(filename))
    snapshots.append({"case":key+"_"+rank,"file":filename,"visual_key":hero_key,"actor_size":hero.size,"weapon_slots":expected_slots,"mounts":mounts,"position":point,"model_width":width,"body":body,"display_frame":ruler.box,"health":status.health,"shield":status.shield,"caption":status.caption_bounds,"alpha_centre_error":centre.length()});case_index+=1
- var result={"checks":checks,"failures":failures,"fires":fires,"hits":hits,"engine":Engine.get_version_info().string,"native_full_run":false,"fixture":"actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged","snapshots":snapshots}
+ var result={"window_png":root.get_texture().get_image().get_size(),"viewport_final_scale":root.get_final_transform().get_scale(),"checks":checks,"failures":failures,"fires":fires,"hits":hits,"engine":Engine.get_version_info().string,"native_full_run":false,"fixture":"actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged","snapshots":snapshots}
  FileAccess.open(output.path_join("ranked.json"),FileAccess.WRITE).store_string(JSON.stringify(result,"  "));print("RANKED_CAPTURE ",JSON.stringify(result));quit(1 if failures else 0)

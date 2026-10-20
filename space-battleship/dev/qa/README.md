@@ -1,0 +1,3 @@
+# Explicit visual QA only
+
+`ranked_turret_preview.gd` is selected only by test/test_enemy_ranked_art.gd. It inherits the existing enemy recognition renderer, overrides physical-weapon paint only, and keeps inherited geometry/profile/state and the same live pivot/aim/port. It draws a larger high-contrast base/housing with muzzle_factor supplied from the live cannon visual profile. It is not registered by production scripts, does not load in normal battles, and does not mutate the reserved 1/2/4 interface, weapon loadouts, damage/cooldowns or formation. Source artwork remains unchanged. See evidence/ranked-turret-readability-20261020/README.md for original-window comparisons and pixel checks.

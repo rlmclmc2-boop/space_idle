@@ -1,0 +1,18 @@
+{
+  "baseline": "6fe75f56",
+  "checks": 700,
+  "failures": 0,
+  "decoded_raw_png_size": [
+    1372,
+    883
+  ],
+  "pngs_resized_or_cropped": false,
+  "viewport_final_scale": "(0.702869, 0.703025)",
+  "base_diameter_pixels_min": 12.4531653261661,
+  "base_diameter_pixels_max": 18.3669747377098,
+  "hull_frame_status_pivots_muzzles_before_after_identical": true,
+  "before_pngs_exact_git_bytes": true,
+  "production_scripts_data_hulls_weapon_interfaces_stats_formation_unchanged": true,
+  "scope": "QA-only weapon painter and preview checks",
+  "note": "Raw after.json window_png used ViewportTexture.get_size, which double-reports stretch here (965x621); decoded PNGs are1372x883. Fixture logging now uses get_image().get_size; actual pixel checks use root.get_final_transform."
+}
