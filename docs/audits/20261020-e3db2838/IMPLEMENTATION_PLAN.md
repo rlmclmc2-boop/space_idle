@@ -125,7 +125,62 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-本次仅生成方案，**所有 S00—S24 均为 `not_started`；S04a亦为 `not_started`（D03已批准），当前实施线程 `none`**。无阶段获得PASS、无产品改动、无main合入。下一动作：父级接收方案，记录已到达决策，核实P05，然后开S00；不是同时开多个线程。
+**S00 为 `review`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已分项记录本机实测与指定目标机待核查；父级和原 astra 尚未双审，S00 不可关闭，S01 不可启动。
+
+### S00 当前记录（待双审）
+
+```yaml
+stage: S00
+status: review
+implementation_thread_id: 01a15a4c-ea59-75a6-afea-513fefe8a0c0
+model: sol
+reasoning_effort: medium
+base_main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+scope_and_allowed_files:
+  - docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md
+  - docs/audits/20261020-e3db2838/stages/S00/README.md
+  - docs/audits/20261020-e3db2838/PLAN_VALIDATION.json
+  - docs/audits/20261020-e3db2838/PLAN_SHA256SUMS.json
+decisions_required: []
+decisions_received: [D01, D02, D03, P04]
+runtime_final_sha: N/A
+runtime_tree: N/A
+main_file_justifications: []
+evidence_snapshot_sha: null # 最终审计交付提交由双审者引用；不自引用
+verification:
+  commands_and_environment: ["详见 stages/S00/README.md；本机 DESKTOP-I3QUONB"]
+  results: ["main 与基线相同", "本机 Godot 4.7.2/native DLL 加载/GPU 最小入口/隔离目录可用", "目标 BJNLPC-0459 待实测"]
+  unverified: ["目标机 native 构建与匹配 DLL", "目标机 GPU 与隔离入口", "真实产品入口"]
+parent_review:
+  verdict: PENDING
+  reviewed_runtime_sha: null
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+astra_review:
+  verdict: PENDING
+  reviewed_runtime_sha: null
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+integration:
+  state: N/A
+  main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+  approved_sha_matches: false
+  local_entry_command: null
+  local_entry_result: not_run
+closure:
+  evidence_persisted_and_read_back: false
+  parent_closed_stage: false
+  implementation_thread_closed: false
+  closed_at: null
+  next_stage_allowed: false
+branch_cleanup:
+  candidate: null
+  unique_work_checked: false
+  evidence_preserved: true
+  deletion_executed: false
+```
 
 父级每次状态变化更新本节下的对应记录。可附详细审查文件，但最终状态以本入口为准。没有完整SHA、明确PASS和零未解决项，不可写closed。
 
