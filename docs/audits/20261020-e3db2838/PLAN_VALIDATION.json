@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04 closed; S04a review on isolated runtime and audit branches; S05-S24 not started",
+  "scope": "S00-S04 closed; S04a dual PASS, integration pending; later stages not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -54,11 +54,12 @@
     "s04a_implementation_thread_recorded": true,
     "s04a_runtime_and_evidence_separated": true,
     "s04a_confirmed_import_scene_reload_pass": true,
-    "s04a_dual_review_pending": true
+    "s04a_dual_review_pending": false,
+    "s04a_dual_pass_same_objects": true
   },
   "stages": 26,
   "active_stage": "S04a",
-  "active_stage_status": "review",
+  "active_stage_status": "approved",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": false,
@@ -80,5 +81,6 @@
   "active_stage_main_integrated": false,
   "active_stage_closed": false,
   "closed_stages_main_integrated": true,
-  "last_integrated_main_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456"
+  "last_integrated_main_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
+  "active_frozen_evidence_sha": "36e4412197be2b66948cd17f5f1d1a8327ed8c73"
 }

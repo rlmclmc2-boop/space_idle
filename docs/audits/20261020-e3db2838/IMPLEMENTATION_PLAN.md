@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00—S04 均已双审、完成适用的运行集成及本地验收并关闭；S04a 已进入 `review`，待父级与原 astra 对最终运行及审计提交同对象复核；S05 与后续阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00—S04 均已双审、完成适用的运行集成及本地验收并关闭；S04a 已获同对象双审 PASS，状态 `approved`，待运行集成与关闭；S05 与后续阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04 均为 `closed`；S04a 为 `review`；S05—S24 均为 `not_started`。** 远端 main 仍为 `abb68a7f7014dafee73c2f8c48a856aaddec0456`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，审计分支 `s04a/audit-evidence` 保存合成双进程、实际确认导入后场景重载、入口启动和 blob 清单。父级与原 astra 对最终同一组运行/审计提交均待重新判定，尚无双 PASS；因此未合入 main、未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
+**S00—S04 均为 `closed`；S04a 为 `approved`；S05—S24 均为 `not_started`。** 远端 main 仍为 `abb68a7f7014dafee73c2f8c48a856aaddec0456`。唯一打开的实施阶段为 S04a，实施线程 `01a15b03-d9f7-710e-b869-ca083a8f90d5`；从当前 main 起的运行候选为 `01ddfcaf678321fafae51162b3bb6665b34e4301`，审计分支 `s04a/audit-evidence` 保存合成双进程、实际确认导入后场景重载、入口启动和 blob 清单。父级与原 astra 已对运行 01ddfcaf678321fafae51162b3bb6665b34e4301 和冻结证据 36e4412197be2b66948cd17f5f1d1a8327ed8c73 明确双 PASS；尚待 main 集成与本地入口验收，未关闭 S04a、不得启动 S05。原 astra 对旧审计快照 `56397d3b` 的 FAIL 指出本入口状态滞后；本记录随新审计快照修正，旧判定不沿用。S04 关闭记录及此前各阶段结论保留在下文。
 
 ### S00 关闭记录
 
@@ -422,11 +422,11 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 next_stage_allowed: true
 ```
 
-### S04a 审查中记录
+### S04a 双审通过记录
 
 ```yaml
 stage: S04a
-status: review
+status: approved
 implementation_thread_id: 01a15b03-d9f7-710e-b869-ca083a8f90d5
 model: sol
 reasoning_effort: medium
@@ -438,11 +438,11 @@ runtime_branch: s04a/single-writer
 runtime_files: [space-battleship/addons/native_battle/src/space_native.cpp, space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json, space-battleship/scripts/game.gd, space-battleship/scripts/main.gd, space-battleship/scripts/progress_writer.gd, space-battleship/scripts/save_transfer.gd, tools/player_runtime/space_native.dll]
 audit_branch: s04a/audit-evidence
 evidence_entry: stages/S04a/README.md
-review_record: stages/S04a/REVIEW_RECORD.md
+review_record: stages/S04a/FINAL_REVIEW.md
 verification: "Windows Godot 4.7.2 synthetic dual process OS lock and alias gate PASS; confirmed import reload gives new scene writer, imported value 4321 and successful disk save; recovery 131/0, transfer 161/0, policy 59/0, startup rejection 7/0, boundaries 22/0; isolated candidate player entry exit 0; Linux runtime not executed here"
 prior_review: "original astra FAIL on 01ddfcaf/56397d3b because plan entry still said S04a not_started; corrected in this audit snapshot, fresh same-object reviews required"
-parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
-astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+parent_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
+astra_review: {verdict: PASS, reviewed_runtime_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, reviewed_evidence_sha: 36e4412197be2b66948cd17f5f1d1a8327ed8c73, unresolved: []}
 integration: pending
 closure: pending
 next_stage_allowed: false

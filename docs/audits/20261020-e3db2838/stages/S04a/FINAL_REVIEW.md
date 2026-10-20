@@ -1,0 +1,13 @@
+# S04a independent final approvals
+
+Runtime: 01ddfcaf678321fafae51162b3bb6665b34e4301. Frozen evidence: 36e4412197be2b66948cd17f5f1d1a8327ed8c73.
+
+## Parent PASS; unresolved 0
+Parent independently reviewed the seven runtime file diff, OS handle lifetime and failure behavior, normal save/clear/recovery/import/export guards, path canonicalization, transaction lock retention, readonly UI, and actual import scene reload test. Parent rejected the original candidate for missing bundled DLL/launcher source inventory and hidden child diagnostics. Those defects are fixed in this pair. The actual main.confirm_save_import -> scene reload evidence shows new owner, imported value 4321, save OK and correct disk value without directly mutating ownership.
+Parent independently verified 46 audit manifest blobs, all seven runtime Git blob IDs and SHA256 values, launcher native source/DLL hashes; tested rejection of five diagnostic false-success cases using the audit driver. Parent compiled the exact final native POSIX class method bodies with minimal String/RefCounted adapters and -fno-exceptions; normal exit reacquire, same-path and directory-symlink contention, different paths, process-kill reacquire and canonical alias identity all passed. This standalone native probe is not a full Godot integration run. Windows full game tests are independently inspected frozen evidence, not parent reruns. All required runtime files, including matching DLL and launcher-consumed inventory, are approved for main; audit tests/evidence are not.
+
+## Original astra PASS; unresolved 0
+Original thread 01a15a1c-99be-70e6-9c8d-227fb097f0c0, turn 01a15b4e-4cdd-71b5-9a5e-707c298e3cef explicitly PASS on these same runtime and frozen evidence SHAs. It independently reviewed write entrances, corrected directory alias protection and actual scene reload, verified 98 evidence digests and 11 full child logs, plus earlier seven runtime files, native source/build hashes and DLL. Its independent native POSIX class probe passed; no claim of independently running Windows was made.
+
+## Limits and pending integration
+Same-save one writer is verified for the documented Windows synthetic two-process contract, normal exit/crash reacquisition, different paths and alias rejection. This is not universal operating-system certification, adversarial filesystem-race or hardlink protection, real power-loss durability, or long-run validation. POSIX native probes are not full Linux game acceptance. Main integration and actual D:\放置 entry acceptance remain pending. No later stage is authorized to start until S04a integration, closure and thread archival.
