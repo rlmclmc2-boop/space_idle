@@ -1,0 +1,195 @@
+{
+  "checks": 279,
+  "failures": 0,
+  "fires": 31,
+  "fixture": "production main.tscn; actual 270005-270008 equipment/size/damage; held health and staged tier/position only; no QA art/mount/profile replacement",
+  "hits": 40,
+  "native_full_run": false,
+  "snapshots": [
+    {
+      "actor_size": 4.0,
+      "case": "anchor_elite",
+      "component_count": 1,
+      "dmgMultiple": 0.2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "file": "anchor-elite.png",
+      "fixed_bases": 2,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(54.59085, 24.33254)",
+          "muzzle": "(54.59085, 41.77091)",
+          "owner_slot": 0,
+          "scale": 0.119466937646825
+        }
+      ],
+      "retained": true
+    },
+    {
+      "actor_size": 3.0,
+      "case": "reactive_elite",
+      "component_count": 1,
+      "dmgMultiple": 0.3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "file": "reactive-elite.png",
+      "fixed_bases": 2,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(44.98444, -13.92585)",
+          "muzzle": "(44.98444, 3.73546)",
+          "owner_slot": 0,
+          "scale": 0.120994249028934
+        }
+      ],
+      "retained": true
+    },
+    {
+      "actor_size": 3.0,
+      "case": "shielded_elite",
+      "component_count": 1,
+      "dmgMultiple": 0.25,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "file": "shielded-elite.png",
+      "fixed_bases": 2,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(58.0308, 14.14904)",
+          "muzzle": "(58.0308, 31.76554)",
+          "owner_slot": 0,
+          "scale": 0.120687246120417
+        }
+      ],
+      "retained": true
+    },
+    {
+      "actor_size": 5.0,
+      "case": "command_elite",
+      "component_count": 1,
+      "dmgMultiple": 0.5,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "file": "command-elite.png",
+      "fixed_bases": 2,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(47.31019, 14.97414)",
+          "muzzle": "(47.31019, 31.69088)",
+          "owner_slot": 0,
+          "scale": 0.114523172456456
+        }
+      ],
+      "retained": true
+    },
+    {
+      "actor_size": 4.0,
+      "case": "anchor_boss",
+      "component_count": 1,
+      "dmgMultiple": 0.2,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "file": "anchor-boss.png",
+      "fixed_bases": 4,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(55.18805, 45.10867)",
+          "muzzle": "(55.18805, 64.89671)",
+          "owner_slot": 0,
+          "scale": 0.13556405925076
+        }
+      ],
+      "retained": false
+    },
+    {
+      "actor_size": 3.0,
+      "case": "reactive_boss",
+      "component_count": 1,
+      "dmgMultiple": 0.3,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "file": "reactive-boss.png",
+      "fixed_bases": 4,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(45.9608, 39.84578)",
+          "muzzle": "(45.9608, 54.77109)",
+          "owner_slot": 0,
+          "scale": 0.102250365888446
+        }
+      ],
+      "retained": false
+    },
+    {
+      "actor_size": 3.0,
+      "case": "shielded_boss",
+      "component_count": 1,
+      "dmgMultiple": 0.25,
+      "equipment": [
+        {
+          "name": "laser_mon"
+        }
+      ],
+      "file": "shielded-boss.png",
+      "fixed_bases": 4,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(58.03811, 41.86094)",
+          "muzzle": "(58.03811, 61.01276)",
+          "owner_slot": 0,
+          "scale": 0.131205435804393
+        }
+      ],
+      "retained": false
+    },
+    {
+      "actor_size": 5.0,
+      "case": "command_boss",
+      "component_count": 1,
+      "dmgMultiple": 0.5,
+      "equipment": [
+        {
+          "name": "cannon-mon"
+        }
+      ],
+      "file": "command-boss.png",
+      "fixed_bases": 4,
+      "mounts": [
+        {
+          "angle": 1.57079637050629,
+          "axis": "(48.93806, 29.66662)",
+          "muzzle": "(48.93806, 47.73028)",
+          "owner_slot": 0,
+          "scale": 0.12375062204651
+        }
+      ],
+      "retained": false
+    }
+  ],
+  "window_png": "(1372, 883)"
+}

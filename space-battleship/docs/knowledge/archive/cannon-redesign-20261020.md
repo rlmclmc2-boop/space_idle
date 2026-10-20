@@ -1,8 +1,7 @@
-# Cannon redesign — selected51aae1ac integration complete
-目标：用户暂定51aae1ac后停止改稿，沿原任务导入该素材及07覆盖，八版原窗口实机交父审。
-范围：独立runtime PNG/manifest、未启用movable_gun描述、原隔离展示的逐组件尺寸/可视端口；未生成新设计。
-禁止：不改舰体/固定底座坐标/生产数值/编队/船中心，1/2/4仍仅接口及原隔离展示，不启用生产配装，不合main。
-基准/分支：51aae1ac，art/cannon-redesign-20261020。
-交付：evidence/em-turret-integration-20261020/README.md，8张1372×883原窗口PNG和原夹具±35度两帧，日志/JSON；素材来源51aae1ac，覆盖来源3bed1e2e。
-验证：一次资产检查+原夹具一次图形运行932检查0失败，49次开火/62次命中；无独立单测/复测。轴心/端口/覆盖/绘制框/retained与canonical实机已看。8舰体PNG、24坐标、display_size、active配置、生产scripts/game_data/Excel冻结。未接触用户存档，未做native整场/性能验收。
-状态：候选接入完成，Git交父审，不合main；无执行阻塞。
+# Cannon runtime integration complete
+目标：最终51aae1ac炮台及八舰体正式接入；不改配装、数值、船中心，不合main。
+交付：运行候选24f0751d，art/em-turret-runtime-20261020，基于108080a7，18文件（15运行+3必要回归）。32101f46未合入。
+证据：evidence/em-turret-integration-20261020/RELEASE_SCOPE.md；runtime/有8舰+2转向原窗口图、runtime.json/run.log，仅原任务分支保留。
+验收：正式main.tscn 279检查0失败，31开火40命中；两个素材/配置检查PASS；canonical、retained、native显示view数学一致；未做native整场/性能验收。
+数值边界：真实270005–270008各1武器，精英2/BOSS4只为烘焙底座数；active硬点/槽映射/profile/普通配置/旧几何冻结。game/authority/native execution/game_data字节不变。
+状态：Git交父审，不合main。环境可用，无执行阻塞。
