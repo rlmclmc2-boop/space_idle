@@ -21,15 +21,19 @@ func run() -> void:
 	var g=scene.game
 	g.save_enabled=false;g.paused=true
 	g.profile.cleared=range(1,101)
+	g.profile.grantedUnlocks=[]
+	for gate in g.db.data.unlock.values():
+		if gate.type in ["planet","crew"]:g.profile.grantedUnlocks.append(gate.name)
 	g.rebuild_unlocks();g.pending_unlocks.clear()
+	g.load_planets({})
 	g.profile.planets["1"].conquered=true
 	for key in g.db.data.hightech:g.profile.hightechLevels[key]=1
 	scene.refresh_structure()
 	scene.equipment_panel.refresh()
 	var item: Dictionary=scene.equipment_panel.items.values()[0]
 	var card=scene.equipment_panel.cards[item.id]
-	check(card.fields.level.text.contains("1 (+10)") and card.tooltip_text.contains("效果等级：11"),"Equipment actual/bonus/effective display")
-	check(preload("res://scripts/hightech_presentation.gd").title(g,BattleGame.ENERGY_FOCUS).contains("1 (+10)"),"Hightech matches equipment level display")
+	check(card.fields.level.text.contains("1 (+35)") and card.tooltip_text.contains("效果等级：36"),"Equipment actual/bonus/effective display")
+	check(g.effective_hightech_level(BattleGame.ENERGY_FOCUS)==g.hightech_level(BattleGame.ENERGY_FOCUS),"Planet bonus leaves technology level unchanged")
 	scene.equipment_tabs.current_tab=6
 	scene.planet_panel.refresh()
 	var detail: String=scene.planet_panel.cards["1"].detail.text

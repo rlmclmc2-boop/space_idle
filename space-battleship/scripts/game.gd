@@ -1118,9 +1118,6 @@ func hyperspace_totals() -> Dictionary:
 func equipment_level_bonus() -> int:
 	return int(permanent_modifiers().equipment_level_bonus)
 
-func hightech_level_bonus() -> int:
-	return int(permanent_modifiers().hightech_level_bonus)
-
 func charge_free_ratio() -> float:
 	return float(permanent_modifiers().charge_free_ratio)
 
@@ -1131,14 +1128,14 @@ func effective_equipment_level(actual: int) -> int:
 	return actual+equipment_level_bonus()
 
 func effective_hightech_level(key: String) -> int:
-	return hightech_level(key)+hightech_level_bonus() if hightech_unlocked(key) else 0
+	return hightech_level(key) if hightech_unlocked(key) else 0
 
 func permanent_level_text(actual: int, target: String) -> String:
-	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
+	var bonus := equipment_level_bonus() if target=="equipment" else 0
 	return UIText.t("planet.level_with_bonus",{"actual":actual,"bonus":bonus}) if bonus!=0 else str(actual)
 
 func permanent_level_tooltip(actual: int, target: String) -> String:
-	var bonus := equipment_level_bonus() if target=="equipment" else hightech_level_bonus()
+	var bonus := equipment_level_bonus() if target=="equipment" else 0
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
 func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:

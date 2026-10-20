@@ -321369,19 +321369,6 @@
       "order": 1,
       "des": "装备效果等级 +35"
     },
-    "2": {
-      "id": 2,
-      "planet_id": 1,
-      "source": "conquer",
-      "source_id": 0,
-      "condition": "conquered",
-      "buff_type": "level_bonus",
-      "target": "hightech",
-      "value": 25,
-      "stack": "add",
-      "order": 2,
-      "des": "AI工厂效果等级 +25"
-    },
     "3": {
       "id": 3,
       "planet_id": 1,
@@ -321499,19 +321486,6 @@
       "order": 1,
       "des": "装备效果等级 +15"
     },
-    "12": {
-      "id": 12,
-      "planet_id": 2,
-      "source": "conquer",
-      "source_id": 0,
-      "condition": "conquered",
-      "buff_type": "level_bonus",
-      "target": "hightech",
-      "value": 10,
-      "stack": "add",
-      "order": 2,
-      "des": "AI工厂效果等级 +10"
-    },
     "13": {
       "id": 13,
       "planet_id": 2,
@@ -321550,19 +321524,6 @@
       "stack": "add",
       "order": 1,
       "des": "装备效果等级 +15"
-    },
-    "16": {
-      "id": 16,
-      "planet_id": 3,
-      "source": "conquer",
-      "source_id": 0,
-      "condition": "conquered",
-      "buff_type": "level_bonus",
-      "target": "hightech",
-      "value": 10,
-      "stack": "add",
-      "order": 2,
-      "des": "AI工厂效果等级 +10"
     },
     "17": {
       "id": 17,
@@ -321603,19 +321564,6 @@
       "order": 1,
       "des": "装备效果等级 +15"
     },
-    "20": {
-      "id": 20,
-      "planet_id": 4,
-      "source": "conquer",
-      "source_id": 0,
-      "condition": "conquered",
-      "buff_type": "level_bonus",
-      "target": "hightech",
-      "value": 10,
-      "stack": "add",
-      "order": 2,
-      "des": "AI工厂效果等级 +10"
-    },
     "21": {
       "id": 21,
       "planet_id": 4,
@@ -321655,19 +321603,6 @@
       "order": 1,
       "des": "装备效果等级 +15"
     },
-    "24": {
-      "id": 24,
-      "planet_id": 5,
-      "source": "conquer",
-      "source_id": 0,
-      "condition": "conquered",
-      "buff_type": "level_bonus",
-      "target": "hightech",
-      "value": 10,
-      "stack": "add",
-      "order": 2,
-      "des": "AI工厂效果等级 +10"
-    },
     "25": {
       "id": 25,
       "planet_id": 5,
@@ -321706,19 +321641,6 @@
       "stack": "add",
       "order": 1,
       "des": "装备效果等级 +15"
-    },
-    "28": {
-      "id": 28,
-      "planet_id": 6,
-      "source": "conquer",
-      "source_id": 0,
-      "condition": "conquered",
-      "buff_type": "level_bonus",
-      "target": "hightech",
-      "value": 10,
-      "stack": "add",
-      "order": 2,
-      "des": "AI工厂效果等级 +10"
     },
     "29": {
       "id": 29,
