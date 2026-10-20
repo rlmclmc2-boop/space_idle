@@ -30,7 +30,7 @@ Counter deltas in the final 600 frame run, identical off and on:
 
 The 13 scans and four envelope builds are initial work for newly spawned enemies, so the dynamic increment is zero. This is a native, headless logic and geometry comparison; it does not establish visible frame time.
 
-## Local GPU frame measurement
+## Historical local GPU frame measurement — not current high-load acceptance
 
 Windows display, RTX 2060, Godot 4.7.2 OpenGL Compatibility, 1373×883 window. Existing `test/whole_game_perf.gd` was copied into this isolated project as a temporary probe. It uses a fixed Heavy Battleship with laser, missile, cannon and long laser weapons; three durable enemies; identical seed `1701`; page 0; 15 warmup frames, then 600 complete presented frames. Saves are disabled and user directories isolated. The game logic is advanced with 1/60 second steps to hold the same load. `frames_us` measures real wall time through `await process_frame` on the local GPU, not just logical tick time. Temporary probe and fixture files are not part of the deliverable.
 
@@ -40,8 +40,8 @@ Windows display, RTX 2060, Godot 4.7.2 OpenGL Compatibility, 1373×883 window. E
 | Motion on | 6.208 ms | 7.747 ms | 29.396 ms | 3.602 ms |
 | On minus off | -0.119 ms | -0.842 ms | -1.417 ms | -0.111 ms |
 
-Before the final missile endpoint continuity change, additional 600-frame off/on/off/on and 300-frame off/on pairs had worst paired increases of +0.189 ms average and +0.483 ms P95. The final-code pair is the acceptance measurement; earlier pairs only show measurement variation. Both are within the +0.5 ms average and +1 ms P95 budgets. Peaks are reported independently because they include scheduling noise.
+Before the final missile endpoint continuity change, additional 600-frame off/on/off/on and 300-frame off/on pairs had worst paired increases of +0.189 ms average and +0.483 ms P95. These are valid observations for this fixture only. The user reported that model updates made the old three-enemy fixture insufficient as a high-load case. Consequently none of these numbers establish the +0.5 ms average or +1 ms P95 acceptance budget under current high load. A representative busy battle must be defined and measured again. Peaks are reported independently because they include scheduling noise.
 
-[Motion off screenshot](gpu-final-0.png) · [Motion on screenshot](gpu-final-1.png). The visible long lasers begin at the turret muzzles and end on the enemy hulls in the final on screenshot. The two images are single-frame alignment evidence, not proof of every transition. The workload uses actual GPU rendering but is a synthetic battle fixture; a normal player startup and fresh-machine installation are separate acceptance gates owned by the startup work.
+[Motion off screenshot](gpu-final-0.png) · [Motion on screenshot](gpu-final-1.png). The visible long lasers begin at the turret muzzles and end on the enemy hulls in the final on screenshot. The two images are single-frame alignment evidence, not proof of every transition or visible enemy hull motion. The user observed that enemy hulls appeared stationary in the current candidate while the player ship moved slightly; enemy presentation remains unaccepted pending direct observation and diagnosis. The workload uses actual GPU rendering but is a synthetic battle fixture; a normal player startup and fresh-machine installation are separate acceptance gates owned by the startup work.
 
 The console logged `Failed to read the root certificate store` and shutdown-only Godot ObjectDB/RID leak notices; neither changed the test exit code, snapshot equality, or captured frames. These warnings should be investigated separately if reproduced in player startup.
