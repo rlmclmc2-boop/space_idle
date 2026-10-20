@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00 已完成双审并关闭，S01 已完成双审并关闭，S02 已双审通过并关闭，S03 已双审通过，待集成及本地验收，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。正常顺序为 S00→S01→S02→S03→S04→S04a→S05→…→S24，共26个阶段；S00 已完成双审并关闭，S01 已完成双审并关闭，S02 已双审通过并关闭，S03 已双审通过、集成并完成本地入口验收，待父级关闭阶段，其余阶段尚未启动。两个审计报告保留历史结论，不再另建竞争性的实施清单。后续新增问题、拆分阶段、调整顺序和决策均先更新本文件；不能由实现线程自行扩展范围。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00、S01、S02 均为 `closed`；S03 为 `approved`，实施线程 `01a15a8e-35c8-7632-8baf-8af7060310cd`；S04—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。S03 运行候选 SHA=`0d01530bdce168a55d0ce7c835f17072d66d6bc7`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，尚未 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。S01 已关闭，父级与 astra 已对 624c903395c65d756a0c88cae1fd9b59b303d3fa 分别 PASS，未解决项为 0；实施线程已确认归档，S02 已对 c2cfe0795450638e1351923d1c986f519a3aadd0 双 PASS，实施线程已确认归档，S02 关闭；当前唯一打开阶段为 S03，已交付候选及证据，父级和 astra 已对同一最终运行 SHA 及冻结证据明确 PASS，待集成及本地验收。
+**S00、S01、S02 均为 `closed`；S03 为 `integrated`，实施线程 `01a15a8e-35c8-7632-8baf-8af7060310cd`；S04—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。S03 运行候选 SHA=`0d01530bdce168a55d0ce7c835f17072d66d6bc7`，main 与实际本地 `D:\放置` 均为 `0d01530bdce168a55d0ce7c835f17072d66d6bc7`，隔离用户目录入口验证通过。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。S01 已关闭，父级与 astra 已对 624c903395c65d756a0c88cae1fd9b59b303d3fa 分别 PASS，未解决项为 0；实施线程已确认归档，S02 已对 c2cfe0795450638e1351923d1c986f519a3aadd0 双 PASS，实施线程已确认归档，S02 关闭；当前唯一打开阶段为 S03，已交付候选及证据，父级和 astra 已对同一最终运行 SHA 及冻结证据明确 PASS，待父级统一关闭；S04 未启动。
 
 ### S00 关闭记录
 
@@ -316,7 +316,7 @@ closure:
 
 ```yaml
 stage: S03
-status: approved
+status: integrated
 implementation_thread_id: 01a15a8e-35c8-7632-8baf-8af7060310cd
 model: sol
 reasoning_effort: medium
@@ -328,6 +328,7 @@ scope_and_allowed_files:
   - docs/audits/20261020-e3db2838/stages/S01/gate.py # 仅审计分支门禁接入
   - docs/audits/20261020-e3db2838/stages/S03/README.md
   - docs/audits/20261020-e3db2838/stages/S03/reproduction.json
+  - docs/audits/20261020-e3db2838/stages/S03/LOCAL_INTEGRATION.md # 仅审计分支
   - docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md
   - docs/audits/20261020-e3db2838/PLAN_VALIDATION.json
   - docs/audits/20261020-e3db2838/PLAN_SHA256SUMS.json
@@ -347,8 +348,9 @@ verification:
     - "基线复现：8 个顶层字段与 sample.production_time 缺失；测试退出 1"
     - "最终候选：SAVE TRANSFER 154 checks, 0 failures；S01_GATE_PASS"
     - "远端运行 SHA 与已测试本地 SHA 的 tree 同为 10bf32ba2e060cde7269b6f54459a989e5b5538b；运行差异仅 save_transfer.gd"
-  unverified:
-    - "合入后的实际本地入口验证尚未执行"
+    - "main 和 D:\\放置 本地 HEAD 均为批准 SHA；实际玩游戏.cmd 入口隔离 user data 运行 120 帧退出 0；入口、导入与游戏日志错误模式匹配数均为 0；详见 stages/S03/LOCAL_INTEGRATION.md"
+    - "s03/durable-portable 与 main 同 SHA，无独有未合入运行成果；暂未删除分支"
+  unverified: []
 parent_review:
   verdict: PASS
   reviewed_runtime_sha: 0d01530bdce168a55d0ce7c835f17072d66d6bc7
@@ -362,11 +364,11 @@ astra_review:
   record_path: stages/S03/FINAL_REVIEW.md
   unresolved: []
 integration:
-  state: pending
-  main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+  state: integrated
+  main_sha: 0d01530bdce168a55d0ce7c835f17072d66d6bc7
   approved_sha_matches: true
-  local_entry_command: null
-  local_entry_result: not_run
+  local_entry_command: "SPACE_BATTLESHIP_VERIFY_WINDOW=1 SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES=120 SPACE_BATTLESHIP_ENGINE_PATH=D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64.exe; & D:\\放置\\玩游戏.cmd"
+  local_entry_result: "PASS; exit 0; 120 frames; isolated user data; 0 entry/import/game error-pattern lines"
 closure:
   evidence_persisted_and_read_back: true
   parent_closed_stage: false
@@ -375,7 +377,7 @@ closure:
   next_stage_allowed: false
 branch_cleanup:
   candidate: s03/durable-portable
-  unique_work_checked: false
+  unique_work_checked: true
   evidence_preserved: true
   deletion_executed: false
 ```

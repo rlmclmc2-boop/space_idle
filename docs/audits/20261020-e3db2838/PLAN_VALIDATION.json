@@ -1,5 +1,5 @@
 {
-  "scope": "S00/S01/S02 closed; S03 review; runtime candidate and audit evidence separated; main unchanged",
+  "scope": "S00/S01/S02 closed; S03 dual PASS, main integrated and isolated local player entry verified; audit evidence separated; closure pending",
   "checks": {
     "main_equals_audit_baseline": true,
     "single_stage_open": true,
@@ -28,14 +28,18 @@
     "s03_baseline_reproduced": true,
     "s03_transfer_154_checks_s01_gate_pass": true,
     "s03_runtime_tree_matches_tested_tree": true,
-    "s03_dual_pass_same_runtime_and_evidence": true
+    "s03_dual_pass_same_runtime_and_evidence": true,
+    "s03_local_main_matches_approved": true,
+    "s03_player_entry_exit_zero": true,
+    "s03_isolated_user_data": true,
+    "s03_branch_no_unique_work": true
   },
   "stages": 26,
   "active_stage": "S03",
-  "active_stage_status": "approved",
+  "active_stage_status": "integrated",
   "other_stage_status": "not_started",
   "product_code_changed": true,
-  "main_integrated": false,
+  "main_integrated": true,
   "closed_stages": [
     "S00",
     "S01",
