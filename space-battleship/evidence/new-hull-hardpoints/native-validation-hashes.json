@@ -2,25 +2,25 @@
   "algorithm": "SHA-256",
   "purpose": "Current player runtime acceptance inventory; historical versions remain in Git",
   "reviewed_cache_delivery": "d07f0b9eade96671e6553eee8b593b18d2e1167f",
-  "native_source_commit": "e9c2408a9c0058f6ffbd0ed74c2dd1faa3f75085",
+  "native_source_commit": "dcc69f67d38c9131f3142a2d62e4503903129f48",
   "cache_source_commit": "90b4c02862ad21a6e5d15ad3a9522b02395e30d2",
   "integrated_source_commit": "712d03b1375b98d0670c2e785d4886b0ec6390eb",
   "dll": {
     "runtime_path": "space-battleship/bin/space_native.dll",
-    "runtime_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272",
+    "runtime_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
     "bundled_path": "tools/player_runtime/space_native.dll",
-    "bundled_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272",
+    "bundled_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
     "validation_bundle_path": "tools/player_runtime/space_native.dll",
-    "validation_build_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272",
+    "validation_build_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
     "match": true
   },
   "sources": [
     {
       "name": "space_native.cpp",
       "repository_path": "space-battleship/addons/native_battle/src/space_native.cpp",
-      "repository_sha256": "acc564ea9fe6fb188ea841f595385c6c097e556ed5a8ddfd09a08b1b62f886f4",
-      "repository_git_blob": "56d782121bd338a04195fc1bc78502480d939d46",
-      "validation_build_input_sha256": "66c422bfedd61202de9d195c295b04c203d612d0ae70d9421389440edbbcb7a6",
+      "repository_sha256": "e58e535165c37a459d13e89e2703dbc2be831f2f732f35db8a53f0febb326d3f",
+      "repository_git_blob": "1169bcd6a3319cc56ec5a234cba6e85cf12eb339",
+      "validation_build_input_sha256": "fe8188246b9ea4511a026d8f8d72edff4da062044e81df76db81533a0e5e7288",
       "match": true,
       "comparison": "Build input normalized by Git text attributes matches this Git blob"
     },
@@ -61,7 +61,7 @@
     "scope": "S04a Windows native dual-process, recovery, transfer, policy gates"
   },
   "supersedes": {
-    "dll_sha256": "21a6a85131796759bf220e4d7913e0ac2a1cf9d6c589d4176fa1b2b61ffe69d1",
+    "dll_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272",
     "historical_record": "test/evidence/dynamic-port-cache-win472-20261019/builds/windows-native.zip"
   },
   "location": "All deployable paths are relative to the launcher repository root; no alternate checkout search"
