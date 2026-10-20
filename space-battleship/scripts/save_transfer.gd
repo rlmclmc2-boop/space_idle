@@ -131,6 +131,10 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
+ # Early durable saves could omit this hint; the loader derives the stage from
+ # cleared levels. Add its historical default on a copy before shared checks.
+ if int(raw.version)<BattleGame.SAVE_VERSION and not raw.has("highestLevel"):
+  raw=raw.merged({"highestLevel":1})
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
@@ -153,7 +157,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  var primary:=game.progress_writer.path.simplify_path()
- if target in [primary,primary+".bak",primary+".tmp",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak"]:return ERR_INVALID_PARAMETER
+ if target in [primary,primary+".bak",primary+".tmp",primary+".rejected",primary+".import-prev",primary+".import-new",primary+".import-active",primary+".import-active.tmp",primary+".import-active.bak"]:return ERR_INVALID_PARAMETER
  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
 
 func write_file(path: String, bytes: PackedByteArray) -> Error:

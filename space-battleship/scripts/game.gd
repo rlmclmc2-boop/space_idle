@@ -165,6 +165,7 @@ func economy_time() -> float:
 func _init(database: ShipDatabase, persist := true) -> void:
 	event.connect(_compiled_configuration_event)
 	db = database
+	progress_writer.validation_db = db
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
 		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
 		push_error(startup_error)
@@ -348,14 +349,13 @@ func empty_loadout(key: String) -> Dictionary:
 	return {"weapons":weapons, "defence":defence}
 
 func load_progress() -> void:
-	var existing:=false
-	for suffix in ["", ".bak", ".import-prev"]:
-		existing=existing or FileAccess.file_exists(SAVE_PATH+suffix)
-	var raw = progress_writer.read_progress(SAVE_PATH)
-	if raw is Dictionary:
-		load_progress_data(raw)
-		if hyperspace.last_error.is_empty():return
-	elif not existing:return
+	var result := progress_writer.read_progress_result(SAVE_PATH, db)
+	if result.status == "loaded":
+		load_progress_data(result.data)
+		if hyperspace.last_error.is_empty():
+			progress_writer.finish_loaded_recovery(SAVE_PATH,result)
+			return
+	elif result.status == "absent":return
 	# A rejected existing save must never become an autosaved fresh profile.
 	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 

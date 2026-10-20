@@ -1,6 +1,7 @@
 extends RefCounted
 # Synchronous safe writes, used only by timed/manual saves. No thread or queue.
 var path := ProjectSettings.globalize_path("user://progress.json")
+var validation_db: ShipDatabase
 
 func write_progress(bytes: PackedByteArray) -> Error:
 	return _write_payload(bytes).error
@@ -29,11 +30,15 @@ func _commit_temp() -> Error:
 	# Godot's Windows rename removes an existing destination before moving.
 	# Move only to absent destinations. Keep the previous file recoverable until
 	# the new file is installed; load also accepts this backup after interruption.
+	var displaced := ""
 	if FileAccess.file_exists(path):
 		# A damaged primary must never replace a good recovery copy.
-		if _read_progress_file(path) == null and _read_progress_file(path + ".bak") != null:
-			var removed := DirAccess.remove_absolute(path)
-			if removed != OK:return removed
+		if _read_progress_file(path, validation_db) == null and _read_progress_file(path + ".bak", validation_db) != null:
+			# Retain the rejected bytes, including when installing the new file fails.
+			displaced = path + ".rejected"
+			if FileAccess.file_exists(displaced) or DirAccess.dir_exists_absolute(displaced):return ERR_ALREADY_EXISTS
+			var moved := _rename(path, displaced)
+			if moved != OK:return moved
 		else:
 			if FileAccess.file_exists(path + ".bak"):
 				var removed := DirAccess.remove_absolute(path + ".bak")
@@ -41,8 +46,11 @@ func _commit_temp() -> Error:
 			var moved := _rename(path, path + ".bak")
 			if moved != OK:return moved
 	var error := _rename(path + ".tmp", path)
-	if error != OK and FileAccess.file_exists(path + ".bak"):
-		_rename(path + ".bak", path)
+	if error != OK:
+		if not displaced.is_empty():
+			_rename(displaced, path)
+		elif FileAccess.file_exists(path + ".bak"):
+			_rename(path + ".bak", path)
 	return error
 
 func _rename(from: String, to: String) -> Error:
@@ -72,9 +80,14 @@ static func _import_owner_ps_result(error: int, output: Array) -> bool:
 	# execution failure leave ownership unknown, so retain the transaction.
 	return error!=1 or output.any(func(line):return not str(line).strip_edges().is_empty())
 
-static func read_progress(path: String) -> Variant:
+static func read_progress(path: String, db: ShipDatabase = null) -> Variant:
+	var result := read_progress_result(path, db)
+	return result.data if result.status == "loaded" else null
+
+static func read_progress_result(path: String, db: ShipDatabase = null) -> Dictionary:
 	# Interrupted import installation keeps the previous committed primary here.
 	# Never read .import-new: it is uncommitted, even if it parses successfully.
+	# Selection is read-only: failed recovery must preserve every on-disk clue.
 	var marker := path+".import-active"
 	var active := false
 	if FileAccess.file_exists(marker):
@@ -84,34 +97,55 @@ static func read_progress(path: String) -> Variant:
 		active = true
 		if (pid is float or pid is int) and is_finite(float(pid)) and pid==floorf(float(pid)) and pid>0 and pid<9.22e18:
 			active = _import_owner_running(int(pid))
-		if not active:DirAccess.remove_absolute(marker)
-	var previous := path+".import-prev"
-	if not active:
-		if FileAccess.file_exists(previous):
-			if _read_progress_file(path)==null and _read_progress_file(previous)!=null:
-				if not FileAccess.file_exists(path):DirAccess.rename_absolute(previous,path)
-			if _read_progress_file(path)!=null:DirAccess.remove_absolute(previous)
-		# Also covers interruption after staging new bytes, before moving the old primary.
-		# An uncommitted incoming file must never replace a valid committed primary.
-		# First import may have no primary yet; abandoned bytes are still uncommitted.
-		if FileAccess.file_exists(path+".import-new"):
-			DirAccess.remove_absolute(path+".import-new")
+	var found := FileAccess.file_exists(marker) or FileAccess.file_exists(path+".import-new")
+	var rejected := []
 	for suffix in ["", ".import-prev", ".bak"]:
-		var data = _read_progress_file(path + suffix)
-		if data != null:return data
-	return null
+		if not FileAccess.file_exists(path+suffix):continue
+		found = true
+		var checked := _check_progress_file(path + suffix, db)
+		if checked.error.is_empty():
+			return {"status":"loaded", "source":suffix, "data":checked.data, "rejected":rejected, "import_active":active}
+		rejected.append({"source":suffix, "error":checked.error})
+	return {"status":"invalid" if found else "absent", "source":"", "data":null, "rejected":rejected, "import_active":active}
 
-static func _read_progress_file(path: String) -> Variant:
-	if not FileAccess.file_exists(path):return null
+static func finish_loaded_recovery(path: String, result: Dictionary) -> Error:
+	# Only a successfully applied save may retire an abandoned import transaction.
+	if result.status != "loaded" or result.import_active:return OK
+	var previous := path + ".import-prev"
+	if result.source == ".import-prev":
+		if FileAccess.file_exists(path):
+			var rejected := path + ".rejected"
+			if FileAccess.file_exists(rejected) or DirAccess.dir_exists_absolute(rejected):return ERR_ALREADY_EXISTS
+			var moved := DirAccess.rename_absolute(path,rejected)
+			if moved != OK:return moved
+			moved = DirAccess.rename_absolute(previous,path)
+			if moved != OK:
+				DirAccess.rename_absolute(rejected,path)
+				return moved
+		else:
+			var moved := DirAccess.rename_absolute(previous,path)
+			if moved != OK:return moved
+	elif result.source == "":
+		if FileAccess.file_exists(previous):
+			var removed := DirAccess.remove_absolute(previous)
+			if removed != OK:return removed
+	else:
+		return OK # Backup recovery keeps all primary/import evidence available.
+	for suffix in [".import-new", ".import-active"]:
+		if FileAccess.file_exists(path+suffix):
+			var removed := DirAccess.remove_absolute(path+suffix)
+			if removed != OK:return removed
+	return OK
+
+static func _check_progress_file(path: String, db: ShipDatabase = null) -> Dictionary:
+	if not FileAccess.file_exists(path):return {"error":"absent"}
 	var parser := JSON.new()
-	if parser.parse(FileAccess.get_file_as_string(path)) != OK:return null
+	if parser.parse(FileAccess.get_file_as_string(path)) != OK or not parser.data is Dictionary:return {"error":"format"}
 	var data = parser.data
-	if data is Dictionary:
-		var version = data.get("version",0)
-		if (version is int or version is float) and (version == 2 or version == 3 or version == 4 or version == 5):
-			if data.has("hyperspace"):
-				if not data.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(data.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),2147483647):return null
-				var definitions=JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
-				if not definitions is Dictionary or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(data,definitions,preload("res://scripts/hyperspace_config.gd").load_config()):return null
-			return data
-	return null
+	var database := db if db != null else ShipDatabase.new()
+	# Runtime load uses the same shape, semantic and legacy migration rules as import.
+	return load("res://scripts/save_transfer.gd").new().prepare_data(data, database)
+
+static func _read_progress_file(path: String, db: ShipDatabase = null) -> Variant:
+	var checked := _check_progress_file(path, db)
+	return checked.data if checked.error.is_empty() else null
