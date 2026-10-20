@@ -28,8 +28,10 @@ class PlayerEntry(unittest.TestCase):
         self.inventory = self.root / entry.NATIVE_INVENTORY
         self.installed = self.project / 'bin' / 'space_native.dll'
         self.engine = self.project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
+        self.launcher = self.root / entry.ENTRY_CMD
         for path in (self.source, self.evidence_csv, self.bundle, self.inventory, self.installed, self.engine,
-                     self.project / 'scripts' / 'game.gd', self.root / 'tools' / 'play_main.py'):
+                     self.project / 'scripts' / 'game.gd', self.root / 'tools' / 'play_main.py',
+                     self.launcher):
             path.parent.mkdir(parents=True, exist_ok=True)
         self.source.write_text('native v1', encoding='utf-8')
         self.evidence_csv.write_text('keys,en\nlabel,Label\n', encoding='utf-8')
@@ -39,6 +41,7 @@ class PlayerEntry(unittest.TestCase):
         (self.project / 'space_native.gdextension').write_text(entry.DESCRIPTOR, encoding='utf-8')
         (self.project / 'scripts' / 'game.gd').write_text('game v1', encoding='utf-8')
         (self.root / 'tools' / 'play_main.py').write_text('entry v1', encoding='utf-8')
+        self.launcher.write_text('launch v1', encoding='utf-8')
         (self.root / '.gitignore').write_text('space-battleship/bin/\nspace-battleship/engine/\n'
                                               'space-battleship/space_native.gdextension\n', encoding='utf-8')
         self.git('init', '-q', '-b', 'main')
@@ -101,7 +104,8 @@ class PlayerEntry(unittest.TestCase):
             entry.validate(self.root)
 
     def test_dirty_runtime_and_launcher_are_rejected(self):
-        for path in (self.project / 'scripts' / 'game.gd', self.root / 'tools' / 'play_main.py'):
+        for path in (self.project / 'scripts' / 'game.gd', self.root / 'tools' / 'play_main.py',
+                     self.launcher):
             with self.subTest(path=path):
                 original = path.read_bytes()
                 path.write_bytes(b'local edit')

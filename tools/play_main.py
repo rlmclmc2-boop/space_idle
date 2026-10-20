@@ -9,6 +9,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
+ENTRY_CMD = '\u73a9\u6e38\u620f.cmd'
 NATIVE_INVENTORY = Path('space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json')
 APPROVED_ORIGIN_URLS = frozenset({
     'https://github.com/rlmclmc2-boop/space_idle.git',
@@ -83,7 +84,7 @@ def checked_source(root):
     # Local edits to accepted runtime and entry files are never silently launched.
     local_changes = '\n'.join(path for path in run(
         ['git', 'status', '--porcelain', '--untracked-files=no', '--',
-         'space-battleship', 'tools/play_main.py', BUNDLED_DLL.as_posix()], root
+         'space-battleship', ENTRY_CMD, 'tools/play_main.py', BUNDLED_DLL.as_posix()], root
     ).splitlines() if path[3:] not in NON_RUNTIME_CHANGES and not path[3:].endswith(('.uid', '.import')))
     # These are entry-managed files, not additional trusted source. The DLL
     # and descriptor are both checked separately before the engine starts.
