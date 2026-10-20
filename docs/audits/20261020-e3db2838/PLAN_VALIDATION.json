@@ -1,5 +1,5 @@
 {
-  "scope": "S00 and S01 closed; S02 not started; no product change",
+  "scope": "S00 and S01 closed; S02 under dual review; no product change",
   "checks": {
     "main_equals_audit_baseline": true,
     "single_stage_open": true,
@@ -16,11 +16,13 @@
     "s01_gate_six_cases_pass": true,
     "main_runner_unchanged": true,
     "s01_dual_pass_same_sha": true,
-    "s01_thread_archived": true
+    "s01_thread_archived": true,
+    "s02_selected_suites_pass_s01_gate": true,
+    "s02_only_test_and_audit_files_changed": true
   },
   "stages": 26,
-  "active_stage": null,
-  "active_stage_status": "none",
+  "active_stage": "S02",
+  "active_stage_status": "review",
   "other_stage_status": "not_started",
   "product_code_changed": false,
   "main_integrated": false,

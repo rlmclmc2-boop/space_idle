@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00 为 `closed`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01 为 `closed`，实施线程 `01a15a61-fd87-7064-a145-397991b320e8`；S02—S24 与 S04a 均为 `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。S01 已关闭，父级与 astra 已对 624c903395c65d756a0c88cae1fd9b59b303d3fa 分别 PASS，未解决项为 0；实施线程已确认归档，允许启动唯一下一阶段 S02。
+**S00 为 `closed`，实施线程 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`；S01 为 `closed`，实施线程 `01a15a61-fd87-7064-a145-397991b320e8`；S02 is `review`; S03-S24 and S04a are `not_started`。** S00 证据见 [stages/S00/README.md](stages/S00/README.md)。运行 SHA=`N/A`，main 仍为 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，无产品改动或 main 集成。P05 已核对当前会话的 `hostname.exe`/DNS 主机名为 `BJNLPC-0459`，`COMPUTERNAME` 环境变量与 `.NET MachineName` 显示旧名称 `DESKTOP-I3QUONB`；固定 DLL 已实际加载，源码重新构建仍未验证；父级与 astra 已对 S00 审计交付 015c2204be0fa8391187479851930105e55429c1 分别明确 PASS，未解决项均为 0；S00 线程已归档关闭。S01 已关闭，父级与 astra 已对 624c903395c65d756a0c88cae1fd9b59b303d3fa 分别 PASS，未解决项为 0；实施线程已确认归档，允许启动唯一下一阶段 S02。
 
 ### S00 关闭记录
 
@@ -251,6 +251,61 @@ branch_cleanup:
 ```
 
 父级每次状态变化更新本节下的对应记录。可附详细审查文件，但最终状态以本入口为准。没有完整SHA、明确PASS和零未解决项，不可写closed。
+
+```yaml
+stage: S02
+status: review
+implementation_thread_id: 01a15a74-7e6c-77de-a595-0654cf22a0d4
+model: sol
+base_main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+predecessor_closed_sha: 87fab83acecd6933d6a86ca50b172742333d1654
+scope_and_allowed_files:
+  - test/test_save_policy.gd
+  - test/test_config_workbooks.py
+  - docs/audits/20261020-e3db2838/stages/S02/README.md
+  - docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md
+  - docs/audits/20261020-e3db2838/PLAN_VALIDATION.json
+  - docs/audits/20261020-e3db2838/PLAN_SHA256SUMS.json
+decisions_required: []
+decisions_received: []
+runtime_final_sha: N/A
+runtime_tree: N/A
+main_file_justifications: []
+implementation_candidate_sha: 505d5fa82f77128cb65b18bea769b67a695bed2f
+evidence_snapshot_sha: null # the final audit commit SHA is reported in handoff
+verification:
+  commands_and_environment:
+    - "Windows / Godot 4.7.2 / Python godot-native venv: S01 gate.py test_save_policy.gd --headless"
+    - "Windows / Python godot-native venv: S01 gate.py test_config_workbooks.py"
+  results:
+    - "save_policy: 49 checks, 0 failures; S01_GATE_PASS"
+    - "config_workbooks: 14 tests OK; S01_GATE_PASS"
+    - "minimal reproductions and oracle sources: stages/S02/README.md"
+  unverified: []
+product_defects_found: []
+parent_review:
+  verdict: PENDING
+  reviewed_runtime_sha: N/A
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+astra_review:
+  verdict: PENDING
+  reviewed_runtime_sha: N/A
+  reviewed_evidence_sha: null
+  record_path: null
+  unresolved: []
+integration:
+  state: N/A
+  main_sha: e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3
+  approved_sha_matches: false
+closure:
+  evidence_persisted_and_read_back: false
+  parent_closed_stage: false
+  implementation_thread_closed: false
+  closed_at: null
+  next_stage_allowed: false
+```
 
 ```yaml
 stage: Sxx
