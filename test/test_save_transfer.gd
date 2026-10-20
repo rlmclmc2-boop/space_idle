@@ -1,5 +1,6 @@
 extends SceneTree
 const Transfer := preload("res://scripts/save_transfer.gd")
+const Writer := preload("res://scripts/progress_writer.gd")
 class FailInstall extends Transfer:
  func rename(from: String,to: String) -> Error:
   return ERR_FILE_CANT_WRITE if from.ends_with(".import-new") else super.rename(from,to)
@@ -142,6 +143,13 @@ func run() -> void:
  var repeat:=BattleGame.new(db,true)
  check(repeat.profile.resources==restored.profile.resources,"Repeated import replaces rather than duplicates progress")
  check(transfer.export_progress(g,BattleGame.SAVE_PATH)==ERR_INVALID_PARAMETER,"Export cannot overwrite active progress path")
+ if OS.get_name()=="Windows":
+  var path_alias:=ProjectSettings.globalize_path(BattleGame.SAVE_PATH).to_upper()
+  var protected_bytes:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+  var alias_writer:=Writer.new();alias_writer.path=path_alias
+  check(alias_writer.write_progress("{}".to_utf8_buffer())==ERR_ALREADY_IN_USE and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==protected_bytes,"Case-varied writer path cannot bypass archive ownership")
+  check(transfer.export_progress(g,path_alias)==ERR_INVALID_PARAMETER and FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)==protected_bytes,"Case-varied export cannot overwrite active progress")
+  check(transfer.export_progress(g,path_alias+".WRITER-LOCK")==ERR_INVALID_PARAMETER,"Case-varied export cannot overwrite lock sidecar")
  restored=null;repeat=null;transaction.clear();first.clear();second.clear();g=null
  # Recovery of a process interruption between old-primary move and installation.
  FileAccess.open(BattleGame.SAVE_PATH+".import-prev",FileAccess.WRITE).store_string(original)

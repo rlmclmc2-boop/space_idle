@@ -5,8 +5,8 @@
 | 对象 | SHA |
 | --- | --- |
 | 起点 main | `abb68a7f7014dafee73c2f8c48a856aaddec0456` |
-| 纯运行候选 | `4efef1c2a2dad438dd515ee3dca0cbf77a8b14d6` |
-| 运行 tree | `21fe58a96e3d4a3bd9430aa95adb34fdca6b68bd` |
+| 纯运行候选 | `cde9d0427b1fd107a9962621d87d2bb7b28dda18` |
+| 运行 tree | `bbca9f36a291a9b7be686702d4b1bdf83a7ebc45` |
 | 审计起点 | `f451b5eaae9c57196a7a627ee452b83e85df27da` |
 | 最终审计证据 | 本文件及摘要清单所在的审计提交；审查前回读完整 SHA |
 
@@ -17,9 +17,9 @@
 | 必要运行文件 | 作用 |
 | --- | --- |
 | `space-battleship/addons/native_battle/src/space_native.cpp` | 实际 OS 排他句柄及生命周期，区别于 PID 标记。发行时须从该源码重建匹配 DLL。 |
-| `space-battleship/scripts/progress_writer.gd` | 游戏档写入前持锁；普通保存、清档与恢复完成均校验所有权。读取保持无副作用；通用备份/导出目标不受游戏档锁误拦。 |
+| `space-battleship/scripts/progress_writer.gd` | 游戏档写入前持锁；普通保存、清档与恢复完成均校验所有权。Windows 同档路径按大小写不敏感比较，防止别名绕过；读取保持无副作用。 |
 | `space-battleship/scripts/game.gd` | 持久游戏创建时取得所有权；失败时加载快照并关闭写入，跳过恢复的磁盘提交，继续运行。取得 OS 锁后，即使旧导入 PID 被复用，也可确认旧事务不再活动并完成恢复。 |
-| `space-battleship/scripts/save_transfer.gd` | 导入创建标记前校验所有权；回滚/清理保留事务持有的 OS 锁；导出不准覆盖锁侧文件。原 PID 标记只用于判断中断导入事务，不再充当写入所有权。 |
+| `space-battleship/scripts/save_transfer.gd` | 导入创建标记前校验所有权；回滚/清理保留事务持有的 OS 锁；导出不准覆盖锁侧文件，Windows 同档大小写别名也拒绝。原 PID 标记只用于判断中断导入事务，不再充当写入所有权。 |
 | `space-battleship/scripts/main.gd` | 第二实例提示存档占用和只读运行，不停止主场景。 |
 
 未改玩家进度合并、存档格式、数值或恢复优先级。未持锁实例直接调用保存、导入、清档、恢复收尾均返回 `ERR_ALREADY_IN_USE`（Godot 4.7.2 值 22）；同时测试主档、`.tmp`、`.bak`、导入中间文件及锁侧文件快照未变化。侧文件保留且可在正常退出后重获锁。
@@ -42,7 +42,7 @@ python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_policy.gd --he
 | 同档双进程 | 仅首进程持锁；第二进程不写，UI 继续运行并提示 | [合成摘要](dual_process_summary.json)：第二进程占用错误 22，UI processing=true，主档及所有写入中间/备份文件快照一致 |
 | OS 锁语义 | 侧文件存在仍可重获；持锁时同档失败、不同档可用；杀进程后可重获 | `S04A_SINGLE_WRITER_PASS`；侧文件保留，竞争/异档/杀进程后结果符合预期 |
 | S04 恢复矩阵 | 不丢完整备份，失败保留现场；旧 PID 复用不会阻止恢复 | 131 checks / 0 failures；`S01_GATE_PASS` |
-| S03 传输与导入 | 往返及导入事务有效 | 158 checks / 0 failures；`S01_GATE_PASS` |
+| S03 传输与导入 | 往返及导入事务有效；Windows 同档大小写别名被挡住 | 161 checks / 0 failures；`S01_GATE_PASS` |
 | S02 保存策略与 UI | 定时/手动保存及失败反馈 | 59 checks / 0 failures；`S01_GATE_PASS` |
 | 启动拒绝 / 保存边界 | 无误盖、历史兼容 | 7/0 与 22/0；隔离用户目录 Godot 直接运行，退出 0 |
 | Git 白名单 | 仅五个运行文件 | `git diff --check` 清洁；运行提交仅表列五文件 |

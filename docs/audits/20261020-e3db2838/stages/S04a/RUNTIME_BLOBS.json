@@ -1,6 +1,6 @@
 {
-  "runtime_sha": "4efef1c2a2dad438dd515ee3dca0cbf77a8b14d6",
-  "runtime_tree": "21fe58a96e3d4a3bd9430aa95adb34fdca6b68bd",
+  "runtime_sha": "cde9d0427b1fd107a9962621d87d2bb7b28dda18",
+  "runtime_tree": "bbca9f36a291a9b7be686702d4b1bdf83a7ebc45",
   "files": {
     "space-battleship/addons/native_battle/src/space_native.cpp": {
       "git_blob_sha1": "a5ebeed10f009cf2d7a2dbf1e02fc7909f89cf54",
@@ -15,12 +15,12 @@
       "blob_sha256": "6e212062705d0edb976c7339af764d6c213868055749a1cefee483f057c9bced"
     },
     "space-battleship/scripts/progress_writer.gd": {
-      "git_blob_sha1": "a3e790e484c916f5b032744f7fd5807beb418ecf",
-      "blob_sha256": "51d7ecde59e27469a83d96a7a94fea9b8d8164e89e4149b63b2ee426b6bf8c7e"
+      "git_blob_sha1": "b1bb9a5717f74cdfac952d4b8c2a94fe7e492625",
+      "blob_sha256": "c71475c439e42cd014d23920d0c57eb3c3e4d31986c744acd55e01e2cfc65bc2"
     },
     "space-battleship/scripts/save_transfer.gd": {
-      "git_blob_sha1": "749b8c1e45268855efe5f67c28139d6aa76cf981",
-      "blob_sha256": "1139832bbc50965e7f91736de8b142f4ebb54597edd2f1786ce32e63845a0bb8"
+      "git_blob_sha1": "993c27f20e11fe3b44736490c6faf47694c7fc66",
+      "blob_sha256": "93697008350f37c87225bce33440162b11c9ac9f127db6d71006bf56105b7345"
     }
   }
 }
