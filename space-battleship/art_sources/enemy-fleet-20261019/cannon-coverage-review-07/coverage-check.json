@@ -1,0 +1,42 @@
+{
+  "design_evidence_only": true,
+  "baseline": "1471e0ff",
+  "no_image_generation": true,
+  "no_new_cannon_png": true,
+  "reused06_sha256": "842ec05354622e5d578ad6f95c181d2693d9fccf7bd7d611ad2025813ed7e41d",
+  "06_source_bytes_unchanged": true,
+  "all_runtime_hull_base_coordinates_data_scripts_qa_importer_tests_unchanged": true,
+  "gun_barrel_and_body_uniform_scale": true,
+  "proposed_native_width_min_max": [
+    18.532115851546394,
+    24.643163234755434
+  ],
+  "checked_hull_yaws": [
+    -55,
+    -35,
+    0,
+    35,
+    55
+  ],
+  "outside_hull_opaque_samples_all_levels": 0,
+  "geometry_probe_count": 240,
+  "source_opaque_samples_per_probe": 649787,
+  "minimum_separation_any_yaw_pixels": 9.956802338094972,
+  "limitations": "some anchor-elite and reactive-boss mounts hit the hull alpha boundary before95% carrier coverage; capped independently, no claim that size alone resolves every mount",
+  "board_png_sizes": {
+    "normal-comparison": [
+      1000,
+      1050
+    ],
+    "direction-check": [
+      1000,
+      1030
+    ],
+    "design-board": [
+      1240,
+      1008
+    ]
+  },
+  "game_not_launched_or_integrated": true,
+  "main_not_merged": true
+}

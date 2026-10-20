@@ -1,0 +1,35 @@
+{
+  "design_only": true,
+  "approved_style_reference": "15a102ac",
+  "source_canvas": [
+    1230,
+    1278
+  ],
+  "housing_width_source_px": 930,
+  "housing_bounds_source_px": [
+    150,
+    280,
+    1080,
+    1155
+  ],
+  "pivot_source_px": [
+    615,
+    720
+  ],
+  "muzzle_source_px": [
+    615,
+    102
+  ],
+  "exposed_barrel_length_source_px": 178,
+  "barrel_width_source_px": 130,
+  "dark_mechanism_width_source_px": 280,
+  "trunnion_span_source_px": 510,
+  "screen_scale": 0.7,
+  "not_a_runtime_config": true,
+  "source_texture": "../cannon-design-review-06/cannon-design.png",
+  "coverage_levels": [
+    0.85,
+    0.95
+  ],
+  "preferred_coverage": 0.95
+}

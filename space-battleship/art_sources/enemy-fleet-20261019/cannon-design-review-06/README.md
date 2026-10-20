@@ -1,3 +1,5 @@
+> 本版显示比例暂不放行。当前仅用同一炮身做覆盖比例修正：[07正常窗口覆盖对照](../cannon-coverage-review-07/normal-comparison.png) / [07测量与边界说明](../cannon-coverage-review-07/README.md)。不生成新炮图，未接入。
+
 # 原稿炮机结构设计 06 · 仅设计稿
 
 05仍像白色盾形盖板，未通过父审。本轮重新以唯一认可原稿integrated-turret-bases-approved-20261020.png（15a102ac）为结构依据：白色侧护甲包住暴露的深色炮机，保留炮机高度、暗侧面与机械连接，只缩短外露炮管。没有用整块装甲顶盖覆盖炮机。

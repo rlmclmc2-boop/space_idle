@@ -1,0 +1,2446 @@
+{
+  "source": "existing06 PNG, unchanged",
+  "bearing_measurement": "three horizontal source scanlines \u00b12px; first burgundy ring run plus 2px outer rim; symmetric span uses shorter measured radius",
+  "cases": {
+    "anchor_elite": {
+      "screen_per_canvas_pixel": 0.1942146111111111,
+      "sockets": [
+        {
+          "centre_px": [
+            234.4079335460182,
+            803.3556246421394
+          ],
+          "source_centre": [
+            125.36822568671121,
+            156.23014105419452
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              52
+            ],
+            [
+              44,
+              52
+            ],
+            [
+              44,
+              46
+            ]
+          ],
+          "outer_source_span": 88.0,
+          "outer_canvas_span": 142.7027027027027,
+          "outer_screen_span": 27.714949909909908,
+          "hull_fit_coverage_cap": 0.7969140625000001
+        },
+        {
+          "centre_px": [
+            653.985727300334,
+            806.2877590694916
+          ],
+          "source_centre": [
+            384.1078651685393,
+            158.038202247191
+          ],
+          "horizontal_rays": [
+            [
+              46,
+              41
+            ],
+            [
+              46,
+              41
+            ],
+            [
+              45,
+              42
+            ]
+          ],
+          "outer_source_span": 82.0,
+          "outer_canvas_span": 132.97297297297297,
+          "outer_screen_span": 25.82529423423423,
+          "hull_fit_coverage_cap": 0.8810937500000001
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            22.086433324690315,
+            21.951500099099096
+          ],
+          "applied_coverages": [
+            0.7969140625000001,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 52.04365275640302
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            22.086433324690315,
+            22.75450534169482
+          ],
+          "applied_coverages": [
+            0.7969140625000001,
+            0.8810937500000001
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 51.50671398553459
+        }
+      ]
+    },
+    "reactive_elite": {
+      "screen_per_canvas_pixel": 0.1734692361111111,
+      "sockets": [
+        {
+          "centre_px": [
+            253.42461832061068,
+            959.6203253424658
+          ],
+          "source_centre": [
+            590.0234375,
+            254.39375
+          ],
+          "horizontal_rays": [
+            [
+              42,
+              38
+            ],
+            [
+              42,
+              38
+            ],
+            [
+              42,
+              38
+            ]
+          ],
+          "outer_source_span": 76.0,
+          "outer_canvas_span": 139.23664122137404,
+          "outer_screen_span": 24.153273791348596,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            634.7030288106378,
+            960.1742532037118
+          ],
+          "source_centre": [
+            798.1379032258064,
+            254.69596774193548
+          ],
+          "horizontal_rays": [
+            [
+              38,
+              41
+            ],
+            [
+              38,
+              41
+            ],
+            [
+              38,
+              45
+            ]
+          ],
+          "outer_source_span": 76.0,
+          "outer_canvas_span": 139.23664122137404,
+          "outer_screen_span": 24.153273791348596,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            20.530282722646305,
+            20.530282722646305
+          ],
+          "applied_coverages": [
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 38.68452099805591
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            22.945610101781163,
+            22.945610101781163
+          ],
+          "applied_coverages": [
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 35.45444765505919
+        }
+      ]
+    },
+    "shielded_elite": {
+      "screen_per_canvas_pixel": 0.17987268055555555,
+      "sockets": [
+        {
+          "centre_px": [
+            206.45582524271848,
+            815.2671907234135
+          ],
+          "source_centre": [
+            980.586569579288,
+            164.66181229773463
+          ],
+          "horizontal_rays": [
+            [
+              37,
+              46
+            ],
+            [
+              37,
+              47
+            ],
+            [
+              37,
+              48
+            ]
+          ],
+          "outer_source_span": 74.0,
+          "outer_canvas_span": 133.20000000000002,
+          "outer_screen_span": 23.959041050000003,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            674.8897637795277,
+            815.5689432325491
+          ],
+          "source_centre": [
+            1240.827646544182,
+            164.82939632545933
+          ],
+          "horizontal_rays": [
+            [
+              44,
+              37
+            ],
+            [
+              47,
+              37
+            ],
+            [
+              47,
+              37
+            ]
+          ],
+          "outer_source_span": 74.0,
+          "outer_canvas_span": 133.20000000000002,
+          "outer_screen_span": 23.959041050000003,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            20.365184892500004,
+            20.365184892500004
+          ],
+          "applied_coverages": [
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 57.023651412987284
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            22.761088997500003,
+            22.761088997500003
+          ],
+          "applied_coverages": [
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 53.8195532651375
+        }
+      ]
+    },
+    "command_elite": {
+      "screen_per_canvas_pixel": 0.1483265,
+      "sockets": [
+        {
+          "centre_px": [
+            218.70319424838328,
+            814.0353391281001
+          ],
+          "source_centre": [
+            1428.1709337349398,
+            167.2921686746988
+          ],
+          "horizontal_rays": [
+            [
+              38,
+              39
+            ],
+            [
+              37,
+              39
+            ],
+            [
+              37,
+              39
+            ]
+          ],
+          "outer_source_span": 74.0,
+          "outer_canvas_span": 145.17711171662125,
+          "outer_screen_span": 21.533612861035422,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            665.6820035477203,
+            814.009312054572
+          ],
+          "source_centre": [
+            1656.0059656972408,
+            167.27889634601044
+          ],
+          "horizontal_rays": [
+            [
+              38,
+              38
+            ],
+            [
+              38,
+              38
+            ],
+            [
+              38,
+              38
+            ]
+          ],
+          "outer_source_span": 76.0,
+          "outer_canvas_span": 149.1008174386921,
+          "outer_screen_span": 22.115602397820165,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            18.30357093188011,
+            18.79826203814714
+          ],
+          "applied_coverages": [
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 41.49023144803687
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            20.45693221798365,
+            21.009822277929157
+          ],
+          "applied_coverages": [
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 38.57157603369597
+        }
+      ]
+    },
+    "anchor_boss": {
+      "screen_per_canvas_pixel": 0.2016832222222222,
+      "sockets": [
+        {
+          "centre_px": [
+            241.90162122328667,
+            732.0526039403157
+          ],
+          "source_centre": [
+            126.5204802259887,
+            529.7549435028249
+          ],
+          "horizontal_rays": [
+            [
+              41,
+              49
+            ],
+            [
+              42,
+              49
+            ],
+            [
+              42,
+              48
+            ]
+          ],
+          "outer_source_span": 84.0,
+          "outer_canvas_span": 131.47826086956522,
+          "outer_screen_span": 26.516959304347825,
+          "hull_fit_coverage_cap": 0.9293359375
+        },
+        {
+          "centre_px": [
+            644.112684894666,
+            731.2340646753019
+          ],
+          "source_centre": [
+            383.4886597938144,
+            529.2316151202749
+          ],
+          "horizontal_rays": [
+            [
+              51,
+              40
+            ],
+            [
+              51,
+              40
+            ],
+            [
+              38,
+              41
+            ]
+          ],
+          "outer_source_span": 80.0,
+          "outer_canvas_span": 125.21739130434783,
+          "outer_screen_span": 25.254246956521737,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            233.0419899300168,
+            976.129456365436
+          ],
+          "source_centre": [
+            120.86016023306628,
+            685.8040786598689
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              39
+            ],
+            [
+              40,
+              39
+            ],
+            [
+              40,
+              39
+            ]
+          ],
+          "outer_source_span": 78.0,
+          "outer_canvas_span": 122.08695652173914,
+          "outer_screen_span": 24.622890782608696,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            650.6460939231769,
+            975.9528825144266
+          ],
+          "source_centre": [
+            387.6627822286963,
+            685.6911871813547
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              40
+            ]
+          ],
+          "outer_source_span": 80.0,
+          "outer_canvas_span": 125.21739130434783,
+          "outer_screen_span": 25.254246956521737,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            22.53941540869565,
+            21.466109913043475,
+            20.92945716521739,
+            21.466109913043475
+          ],
+          "applied_coverages": [
+            0.85,
+            0.85,
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 20.192659292259076
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            24.643163234755434,
+            23.99153460869565,
+            23.39174624347826,
+            23.99153460869565
+          ],
+          "applied_coverages": [
+            0.9293359375,
+            0.95,
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 17.139525747052407
+        }
+      ]
+    },
+    "reactive_boss": {
+      "screen_per_canvas_pixel": 0.17157155555555556,
+      "sockets": [
+        {
+          "centre_px": [
+            254.74403076758722,
+            717.0608283698933
+          ],
+          "source_centre": [
+            592.5509499136442,
+            535.3955094991364
+          ],
+          "horizontal_rays": [
+            [
+              36,
+              55
+            ],
+            [
+              36,
+              39
+            ],
+            [
+              36,
+              39
+            ]
+          ],
+          "outer_source_span": 72.0,
+          "outer_canvas_span": 133.60824742268042,
+          "outer_screen_span": 22.923374845360826,
+          "hull_fit_coverage_cap": 0.8084375
+        },
+        {
+          "centre_px": [
+            628.6173390697297,
+            716.7085183277323
+          ],
+          "source_centre": [
+            794.0271216097988,
+            535.2055993000874
+          ],
+          "horizontal_rays": [
+            [
+              48,
+              35
+            ],
+            [
+              55,
+              35
+            ],
+            [
+              39,
+              35
+            ]
+          ],
+          "outer_source_span": 70.0,
+          "outer_canvas_span": 129.89690721649484,
+          "outer_screen_span": 22.28661443298969,
+          "hull_fit_coverage_cap": 0.83265625
+        },
+        {
+          "centre_px": [
+            248.31841182522527,
+            1000.4544797000209
+          ],
+          "source_centre": [
+            589.0882552613714,
+            688.1568228105906
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              39
+            ]
+          ],
+          "outer_source_span": 80.0,
+          "outer_canvas_span": 148.4536082474227,
+          "outer_screen_span": 25.470416494845363,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            636.472991988054,
+            1002.001897144196
+          ],
+          "source_centre": [
+            798.2604456824513,
+            688.990947075209
+          ],
+          "horizontal_rays": [
+            [
+              39,
+              39
+            ],
+            [
+              39,
+              40
+            ],
+            [
+              39,
+              40
+            ]
+          ],
+          "outer_source_span": 78.0,
+          "outer_canvas_span": 144.7422680412371,
+          "outer_screen_span": 24.833656082474228,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            18.532115851546394,
+            18.557088798969072,
+            21.64985402061856,
+            21.108607670103094
+          ],
+          "applied_coverages": [
+            0.8084375,
+            0.83265625,
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 21.76664611400784
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            18.532115851546394,
+            18.557088798969072,
+            24.196895670103093,
+            23.591973278350515
+          ],
+          "applied_coverages": [
+            0.8084375,
+            0.83265625,
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 20.06353716766507
+        }
+      ]
+    },
+    "shielded_boss": {
+      "screen_per_canvas_pixel": 0.19472230555555553,
+      "sockets": [
+        {
+          "centre_px": [
+            223.4957436624213,
+            738.7054908996864
+          ],
+          "source_centre": [
+            977.6877121520706,
+            538.9416157501697
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              39
+            ],
+            [
+              40,
+              39
+            ],
+            [
+              40,
+              40
+            ]
+          ],
+          "outer_source_span": 78.0,
+          "outer_canvas_span": 129.40092165898616,
+          "outer_screen_span": 25.19724580645161,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            661.2963635061246,
+            737.2729104983963
+          ],
+          "source_centre": [
+            1241.5841968911918,
+            538.0783678756477
+          ],
+          "horizontal_rays": [
+            [
+              39,
+              40
+            ],
+            [
+              40,
+              40
+            ],
+            [
+              54,
+              40
+            ]
+          ],
+          "outer_source_span": 80.0,
+          "outer_canvas_span": 132.71889400921657,
+          "outer_screen_span": 25.843329032258058,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            233.86923263493713,
+            981.3134551121393
+          ],
+          "source_centre": [
+            983.940620782726,
+            685.1329284750337
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              22
+            ],
+            [
+              40,
+              38
+            ],
+            [
+              40,
+              49
+            ]
+          ],
+          "outer_source_span": 76.0,
+          "outer_canvas_span": 126.08294930875576,
+          "outer_screen_span": 24.55116258064516,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            651.0576036866357,
+            983.8015930451129
+          ],
+          "source_centre": [
+            1235.4125,
+            686.6322368421053
+          ],
+          "horizontal_rays": [
+            [
+              47,
+              40
+            ],
+            [
+              38,
+              40
+            ],
+            [
+              50,
+              40
+            ]
+          ],
+          "outer_source_span": 80.0,
+          "outer_canvas_span": 132.71889400921657,
+          "outer_screen_span": 25.843329032258058,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            21.417658935483868,
+            21.966829677419348,
+            20.868488193548384,
+            21.966829677419348
+          ],
+          "applied_coverages": [
+            0.85,
+            0.85,
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 18.669265828720896
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            23.937383516129028,
+            24.551162580645155,
+            23.323604451612898,
+            24.551162580645155
+          ],
+          "applied_coverages": [
+            0.95,
+            0.95,
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 15.213177477199363
+        }
+      ]
+    },
+    "command_boss": {
+      "screen_per_canvas_pixel": 0.16539969444444444,
+      "sockets": [
+        {
+          "centre_px": [
+            233.2706962527224,
+            761.9225928039143
+          ],
+          "source_centre": [
+            1427.3621038435604,
+            547.9608900876601
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              40
+            ]
+          ],
+          "outer_source_span": 80.0,
+          "outer_canvas_span": 140.83129584352076,
+          "outer_screen_span": 23.293453300733493,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            650.4134913507738,
+            761.290483719438
+          ],
+          "source_centre": [
+            1664.3223860589812,
+            547.6018766756032
+          ],
+          "horizontal_rays": [
+            [
+              39,
+              40
+            ],
+            [
+              39,
+              41
+            ],
+            [
+              39,
+              41
+            ]
+          ],
+          "outer_source_span": 78.0,
+          "outer_canvas_span": 137.31051344743275,
+          "outer_screen_span": 22.71111696821516,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            232.51152265515265,
+            998.8034188034188
+          ],
+          "source_centre": [
+            1426.9308510638298,
+            682.5
+          ],
+          "horizontal_rays": [
+            [
+              41,
+              39
+            ],
+            [
+              41,
+              39
+            ],
+            [
+              41,
+              39
+            ]
+          ],
+          "outer_source_span": 78.0,
+          "outer_canvas_span": 137.31051344743275,
+          "outer_screen_span": 22.71111696821516,
+          "hull_fit_coverage_cap": 0.95
+        },
+        {
+          "centre_px": [
+            650.9677292465273,
+            997.8497613847771
+          ],
+          "source_centre": [
+            1664.6372239747634,
+            681.9583596214511
+          ],
+          "horizontal_rays": [
+            [
+              40,
+              40
+            ],
+            [
+              40,
+              24
+            ],
+            [
+              40,
+              39
+            ]
+          ],
+          "outer_source_span": 78.0,
+          "outer_canvas_span": 137.31051344743275,
+          "outer_screen_span": 22.71111696821516,
+          "hull_fit_coverage_cap": 0.95
+        }
+      ],
+      "levels": [
+        {
+          "coverage": 0.85,
+          "width_screen": [
+            19.79943530562347,
+            19.304449422982884,
+            19.304449422982884,
+            19.304449422982884
+          ],
+          "applied_coverages": [
+            0.85,
+            0.85,
+            0.85,
+            0.85
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 13.03295129755771
+        },
+        {
+          "coverage": 0.95,
+          "width_screen": [
+            22.128780635696817,
+            21.575561119804398,
+            21.575561119804398,
+            21.575561119804398
+          ],
+          "applied_coverages": [
+            0.95,
+            0.95,
+            0.95,
+            0.95
+          ],
+          "outside_samples": 0,
+          "rotation_probes": [
+            {
+              "slot": 0,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 0,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 1,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 2,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": -35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 0,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 35,
+              "outside_samples": 0,
+              "total_samples": 649787
+            },
+            {
+              "slot": 3,
+              "yaw": 55,
+              "outside_samples": 0,
+              "total_samples": 649787
+            }
+          ],
+          "minimum_any_yaw_separation_pixels": 9.956802338094972
+        }
+      ]
+    }
+  }
+}
