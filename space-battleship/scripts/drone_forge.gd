@@ -156,8 +156,10 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 	# Scale after the complete base formula; cores retain their authored units.
 	for key in cost:
 		if key in s.materials:cost[key]=float(cost[key])*float(c.get("material_unit_scale",10))
-	for value in cost.values():
-		if not C.integer(value) or value<0:return error("cost_limit")
+	for key in cost:
+		if not C.integer(cost[key]) or cost[key]<0 or float(cost[key])>=9223372036854775808.0:return error("cost_limit")
+		# Initial commit and cached retry must expose the same integral cost schema.
+		cost[key]=int(cost[key])
 	if not can_pay(s,cost):return {"error":"insufficient_materials","applied":false,"cost":cost,"draws":draws}
 	debit(s,cost)
 	d.forge_rng_state=str(rng.state)

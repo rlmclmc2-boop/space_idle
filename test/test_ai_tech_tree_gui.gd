@@ -44,6 +44,11 @@ func run() -> void:
 	if main.game == null or not is_instance_valid(main.hightech_page):
 		quit(1)
 		return
+	main.game.profile.cleared.append_array([3,4])
+	main.game.rebuild_unlocks()
+	main.game.pending_unlocks.clear()
+	main.beginner_guide.dismiss()
+	main.refresh_tab_visibility()
 	main.game.paused = true
 	main.select_system(1)
 	await frame()

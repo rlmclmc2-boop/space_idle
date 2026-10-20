@@ -17,5 +17,8 @@ for field,value in [('shield',-1),('shield',True),('shieldRecovery',float('nan')
 legacy=copy.deepcopy(source)
 for row in legacy['enemies'].values():
     for field in ['shield','shieldType','shieldRecovery','shieldDelay']:row.pop(field,None)
+    # Legacy fixtures also predate derived intel metadata.
+    if 'intelMechanics' in row:
+        row['intelMechanics']=[key for key in row['intelMechanics'] if key!='shieldRecovery']
 validate_projection(legacy)
 print('Enemy shield schema: authored data, omitted legacy fields and 6 invalid cases passed')

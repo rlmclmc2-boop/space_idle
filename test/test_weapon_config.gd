@@ -59,8 +59,9 @@ func run():
  for i in 240:g.tick(1.0/60.0)
  var default_state={"growth":growth,"packets":packets,"launches":g.launch_records,"hits":g.hit_records,"enemy_hp":g.enemies[0].hp if not g.enemies.is_empty() else 0,"rng":str(g.rng.state),"attacks":g.profile.enhancementAttacks,"incoming":g.profile.enhancementHits,"cooldown":g.cooldowns.weapons_0,"enemy":default_enemy,"fallback":default_fallback,"null_fields":fallback_values(g,true)}
  FileAccess.open("res://weapon-default-results.json",FileAccess.WRITE).store_string(JSON.stringify(default_state))
- check(packets.size()==5 and g.launch_records.size()==5,"Default source fires current five-carrier salvo")
- check(g.db.equip("missile",1).dmg==120 and g.db.equip("missile",1).cd==2.4,"Default damage and cooldown match current presentation")
+ var authored:Dictionary=ShipDatabase.new().equip("missile",1)
+ check(packets.size()==int(authored.para1) and g.launch_records.size()==int(authored.para1),"Default source fires authored salvo count")
+ check(g.db.equip("missile",1).dmg==authored.dmg and g.db.equip("missile",1).cd==authored.cd,"Default damage and cooldown match current presentation")
  var damage_sample=fixture({},1,10000.0)
  damage_sample.enemies[0].armourType=1 # Missile type 2: no resistance in this exact-total sample.
  damage_sample.enemies[0].interference=0.0
@@ -69,16 +70,21 @@ func run():
  var recorded_damage:=0.0
  for hit in damage_sample.hit_records:recorded_damage+=float(hit.damage)
  var remaining_hp:float=damage_sample.enemies[0].hp if not damage_sample.enemies.is_empty() else 0.0
- check(damage_sample.hit_records.size()==5 and remaining_hp>0 and remaining_hp<10000,"Finite-HP sample receives all five hits without killing target")
- check(recorded_damage==600.0 and 10000.0-remaining_hp==recorded_damage,"Finite-HP loss equals exact five-carrier damage total")
+ check(damage_sample.hit_records.size()==int(authored.para1) and remaining_hp>0 and remaining_hp<10000,"Finite-HP sample receives all authored hits without killing target")
+ check(recorded_damage==float(authored.dmg)*int(authored.para1) and 10000.0-remaining_hp==recorded_damage,"Finite-HP loss equals exact authored-salvo damage total")
  FileAccess.open("res://weapon-damage-sample.json",FileAccess.WRITE).store_string(JSON.stringify({"initial_hp":10000,"remaining_hp":remaining_hp,"total_damage":recorded_damage,"hits":damage_sample.hit_records,"rng":str(damage_sample.rng.state)}))
  if OS.get_environment("WEAPON_CONFIG_BASELINE")!="1":
   var source:=ShipDatabase.new();var legacy_equipment:Dictionary=source.equipment.duplicate(true)
   for field in ["dmg","cd","dmgtype","para1","para2","para3"]:legacy_equipment.missile[0][field]=source.data.enemy_weapon_base.missile[field]
   var legacy_defaults:Dictionary=source.defaults.duplicate(true);legacy_defaults.projectilePixelsPerUnit=28.0
+  source.equipment=legacy_equipment;source.data.erase("enemy_weapon_base")
+  var expected_legacy_enemy:Dictionary={}
+  for enemy_key in default_enemy:
+   var enemy_row:Dictionary=source.enemy_weapon(enemy_key);expected_legacy_enemy[enemy_key]={}
+   for field in ["dmg","cd","dmgtype","para1","para2","para3"]:expected_legacy_enemy[enemy_key][field]=enemy_row.get(field)
   var legacy=fixture({"_legacy":true,"equipment":legacy_equipment,"defaults":legacy_defaults})
   check(legacy.db.equip("missile",1).dmg==120 and legacy.db.equip("missile",1).cd==2.4 and legacy.db.equip("missile",1).para1==5,"Legacy JSON without migration sections retains former presented missile values")
-  check(enemy_values(legacy)==default_enemy,"Legacy data fallback preserves hostile weapon values")
+  check(enemy_values(legacy)==expected_legacy_enemy,"Legacy data fallback preserves hostile weapon values")
   check(legacy.MISSILE_CRUISE_SPEED==420 and legacy.EJECTION_GAP==.28 and legacy.RAIL_SPEED_FACTOR==12,"Legacy missing motion data uses former presentation defaults")
  if OS.get_environment("WEAPON_CONFIG_BASELINE")!="1":
   var scan=load("res://scripts/balance_scan.gd")
@@ -110,7 +116,7 @@ func run():
     var expected=g.equipment_stat("missile",1)
     if g.missile_queue[0].attack.critical:expected=N.multiply(expected,g.jewel_critical(g.slot_entry("weapons",0)).y)
     check(N.compare(payload,expected)==0,label+" actual damage carrier inherits the authored base and unchanged crit")
-    if variant.field=="dmgMulti":check(g.db.equip("missile",50).dmg==g.db.equipment_combat_growth(120,.15,50),label+" new growth affects target-level damage")
+    if variant.field=="dmgMulti":check(g.db.equip("missile",50).dmg==g.db.equipment_combat_growth(float(authored.dmg),float(variant.value),50),label+" new growth affects target-level damage")
    g.tick_projectiles(0);var shot:Dictionary=g.projectiles.back()
    check(shot.speed==g.MISSILE_LAUNCH_SPEED and shot.cruise_speed==float(g.db.equip("missile",1).para2)*float(g.db.call("projectile_pixels_per_unit",false)),label+" launch and cruise come from exported values")
    if key=="missile_departure_angle":check(is_equal_approx(absf(Vector2.UP.angle_to(shot.direction)),deg_to_rad(float(variant.value))),label+" actual tube departure uses authored angle")

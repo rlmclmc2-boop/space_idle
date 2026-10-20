@@ -13,8 +13,14 @@ func fixture(key: String) -> BattleGame:
  db.data.enhance_config.base_critical_rate.value=0;db.data.enhance_config.repeat_probability.value=0
  var g:=BattleGame.new(db,false)
  g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=50
+ g.profile.selectedShip="Cruiser" # Explicit multi-module fixture.
  g.profile.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
  g.reset_player();g.spawn_group()
+ # This tests secondary targeting independently of the authored opening roster.
+ var target_template:Dictionary=g.enemies[0].duplicate(true)
+ for ordinal in range(g.enemies.size(),4):
+  var target:Dictionary=target_template.duplicate(true);target.uid=10000+ordinal;target.x+=float(ordinal)*70.0
+  g.enemies.append(target)
  for enemy in g.enemies:enemy.hp=1e12;enemy.max_hp=1e12;enemy.cooldowns=enemy.cooldowns.map(func(_cd):return 999.0)
  g.set_enhancement_branch("weapons","critical",1,"B")
  g.enhancement_branches.weapon(g,0).next=3
@@ -57,11 +63,11 @@ func run() -> void:
  check(original_repeat_multiplier==expected_multiplier,"first repeat derives configured source multiplier")
  g.advance_jewel_repeats(g.enhancement_parameter("repeat_delay"))
  check(g.profile.enhancementAttacks==2 and g.jewel_repeats.is_empty() and g.projectiles.size()==salvo*2,"first repeat launches a full salvo and queues no descendant")
- var expected_repeat_damage=N.ceiling(N.multiply(primary_damage,expected_multiplier))
+ var expected_repeat_damage=N.multiply(primary_damage,expected_multiplier)
  check(g.projectiles.slice(salvo).all(func(shot):return N.compare(shot.damage,expected_repeat_damage)==0 and int(shot.combat_context.trigger_depth)==1),"derived salvo retains source damage multiplier and first-level context")
  for i in 150:g.tick_projectiles(.02)
  check(missile_events.fire==salvo*2 and missile_events.hit==salvo*2 and missile_events.secondary==0 and g.projectiles.is_empty(),"root and first repeat each settle once per missile without another triggered attack")
- check(is_equal_approx(float(missile_events.damage),float(N.add(N.multiply(primary_damage,salvo),N.multiply(expected_repeat_damage,salvo)))),"settled missile damage equals root plus first repeat only")
+ check(is_equal_approx(float(missile_events.damage),float(N.add(N.multiply(N.ceiling(primary_damage),salvo),N.multiply(N.ceiling(expected_repeat_damage),salvo)))),"settled missile damage equals root plus first repeat only")
  g.advance_jewel_repeats(2*g.enhancement_parameter("repeat_delay"))
  check(g.profile.enhancementAttacks==2 and g.jewel_repeats.is_empty() and g.enhancement_branches.weapon(g,0).next==2 and missile_events.fire==salvo*2,"later repeat windows add no attack, event, or root charge consumption")
  for key in ["laser","cannon","missile","longLaser"]:

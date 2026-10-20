@@ -35,9 +35,9 @@ class ObservedGame extends BattleGame:
   launched_damage.append(float(attack.damage))
   counts["projectile_launch"]=counts.get("projectile_launch",0)+1
   super.launch_player_attack(index,target,weapon,attack,offset,visual_spread,salvo_index,salvo_count)
- func hit_enemy(enemy,raw,type,effects=[],critical=false):
+ func hit_enemy(enemy,raw,type,effects=[],critical=false,context:Dictionary={}):
   var before=enemy.hp
-  super.hit_enemy(enemy,raw,type,effects,critical)
+  super.hit_enemy(enemy,raw,type,effects,critical,context)
   var actual=float(N.subtract(before,N.maximum(0,enemy.hp)))
   dealt+=actual
   var source="derived"

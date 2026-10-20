@@ -23,7 +23,7 @@ class JewelFurnaceImportTests(unittest.TestCase):
         validate_projection(self.data)
         contract = json.loads((ROOT / 'data/ui_text_contract.json').read_text(encoding='utf-8'))
         binding = contract['bindings']['hightech']['宝石熔炼炉']
-        self.assertEqual(ui_text.t(binding['name']), '宝石熔炼炉')
+        self.assertEqual(ui_text.t(binding['name']), '强化碎片熔炼炉')
         self.assertIn('不含自身', contract['entries'][binding['description']]['formulas'][1])
 
     def test_invalid_interval_rejected_for_both_furnaces(self):

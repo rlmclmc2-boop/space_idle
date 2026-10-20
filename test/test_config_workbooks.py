@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
+from current_workbook_fixture import build_current_master, seed_current_data
 
 ROOT = Path(__file__).resolve().parents[1] / "space-battleship"
 sys.path.insert(0, str(ROOT / "tools"))
@@ -25,6 +26,9 @@ def edit_cell(path, sheet_name, coordinate, value=None, remove_cache=False):
         cached = cell.find(cw.Q + "v")
         if remove_cache:
             if cached is not None:
+                if cell.find(cw.Q + "f") is None:
+                    formula = cw.ET.SubElement(cell, cw.Q + "f")
+                    formula.text = cached.text
                 cell.remove(cached)
         else:
             if cached is None:
@@ -45,12 +49,16 @@ class IncrementalTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.source = self.root / "太空战舰.xlsx"
-        shutil.copyfile(ROOT.parent / "太空战舰.xlsx", self.source)
+        build_current_master(ROOT, self.source, full.SECTIONS)
         self.folder = self.root / "config_excel"
         self.target = self.root / "data/game_data.json"
         self.sync = cw.sync_workbooks(self.source, self.folder)
+        seed_current_data(ROOT, self.target.parent)
 
     def first_import(self):
+        for name in ('hyperspace_config.xlsx','hyperspace_enemies.xlsx'):
+            if not (self.folder/name).exists():
+                shutil.copy2(ROOT/'config_excel'/name,self.folder/name)
         return cw.incremental_import(self.folder, self.target)
 
     def test_split_preserves_formulas_caches_styles_and_values(self):
@@ -65,8 +73,10 @@ class IncrementalTests(unittest.TestCase):
                     self.assertEqual(master.read("xl/styles.xml"), output.read("xl/styles.xml"))
                     self.assertNotIn("xl/calcChain.xml", output.namelist())
         projected = full.full_import(self.source, self.root / "baseline.json")
+        prior_entities = {p.stem: p.read_bytes() for p in self.target.parent.glob("*.json") if p.name != "game_data.json"}
         result = self.first_import()
-        self.assertEqual(set(full.SECTIONS) & set(names), set(result["parsed"]))
+        changed_entities = {p.stem for p in self.target.parent.glob("*.json") if p.name not in ("game_data.json", ".import_state.json") and prior_entities.get(p.stem) != p.read_bytes()}
+        self.assertEqual((set(full.SECTIONS) & set(names)) | changed_entities, set(result["parsed"]))
         actual = json.loads(self.target.read_text(encoding="utf-8"))
         for section in full.SECTIONS.values():
             self.assertEqual(projected.get(section), actual.get(section))
@@ -111,7 +121,7 @@ class IncrementalTests(unittest.TestCase):
         self.first_import()
         before = self.target.read_bytes()
         edit_cell(self.folder / "config.xlsx", "config", "C6", 39)
-        edit_cell(self.folder / "equipment.xlsx", "equipment", "C5", remove_cache=True)
+        edit_cell(self.folder / "equipment.xlsx", "equipment", "E4", remove_cache=True)
         with self.assertRaisesRegex(ValueError, "公式缺少计算缓存"):
             self.first_import()
         self.assertEqual(before, self.target.read_bytes())
@@ -149,7 +159,7 @@ class IncrementalTests(unittest.TestCase):
         self.assertEqual(["hightech"], result["parsed"])
         self.assertEqual(1, parse.call_count)
         after = json.loads(self.target.read_text(encoding="utf-8"))
-        self.assertEqual(90, after["hightech"]["超时空炼铁炉"]["timeCostBase"])
+        self.assertEqual(90, after["hightech"]["超时空炼铁炉"]["tpCostBase"])
         self.assertEqual(before["hightech"]["超时空炼铁炉"]["des"], after["hightech"]["超时空炼铁炉"]["des"])
         for section in full.SECTIONS.values():
             if section != "hightech": self.assertEqual(before.get(section), after.get(section))
@@ -167,13 +177,13 @@ class IncrementalTests(unittest.TestCase):
     def test_hightech_limit_and_offline_max_validation(self):
         self.first_import()
         before = self.target.read_bytes()
-        for coordinate, value in [("C9", 0), ("C9", 1.5), ("C10", -1)]:
+        for coordinate, value in [("C12", 0), ("C12", -1), ("C9", -1)]:
             cw.sync_workbooks(self.source, self.folder)
             edit_cell(self.folder / "config.xlsx", "config", coordinate, value)
             with self.assertRaises(ValueError): self.first_import()
             self.assertEqual(before, self.target.read_bytes())
         cw.sync_workbooks(self.source, self.folder)
-        edit_cell(self.folder / "config.xlsx", "config", "C10", 0)
+        edit_cell(self.folder / "config.xlsx", "config", "C9", 0)
         self.first_import()
         self.assertEqual(0, json.loads(self.target.read_text(encoding="utf-8"))["config"]["offlineMax"])
 

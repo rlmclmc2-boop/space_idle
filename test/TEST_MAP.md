@@ -10,7 +10,7 @@
 | 初始资源 / 升级费用向上取整 | test_rule_rounding.gd | Starting resources / Fractional final cost / deduct same cost | COVERED |
 | 关卡倍率插值、端点截断 / 敌武器空字段回退 | test_rule_rounding.gd | Within-stage / base one / endpoints / own row / blank fallback不写源表 | COVERED |
 | 反应炉能源、逐级费用与MAX | test_reactor.gd; test_reactor_config.py | 配置源一致、100×1.2^(L−1)、100×1.4^(L−1)、x10与MAX逐级扣费 | COVERED |
-| 大数研发与显示 | test_large_numbers.gd | 大数预算、等级、有限时间退出和显示不溢出 | COVERED |
+| 大数显示与表达式 | test_large_numbers.gd | 科学计数显示、表达式求值和非法输入拒绝；旧科学家批量研发已移除 | COVERED |
 | 战斗/前进/驻守 | test_guard.gd | 巡航到达、无移动、清敌等待、重复驻守 | COVERED |
 | 跃迁已通关 / 拒绝未通关 | test_loop_retreat.gd | warp cleared / rejects uncleared | COVERED |
 | 死亡回退 / 三种驻守处理 | test_guard.gd; test_loop_retreat.gd | 原点/就地/取消、跨关、恢复生命 | COVERED |
@@ -25,8 +25,7 @@
 | MAX预算边界、10次与逐次一致、级数上限 | test_bulk_upgrades.gd; test_equipment_limits.gd | exact ten-level budget / all-or-nothing / cap | COVERED |
 | 自动生产间隔、飞行、拾取损耗 | test_auto_gen_resources.gd | interval / full13 / loss7 | COVERED |
 | 击杀掉落、手动/自动拾取 | test_reactor.gd; test_auto_gen_resources.gd | smelting only enemy iron / full pickup / auto loss | COVERED |
-| 炼铁炉、非自身收入峰值、寿命 | test_furnace_income.gd | base150 / peak200 / expire / no amplification | COVERED |
-| 60秒收入窗口、资源分离、支出不扣收入 | test_resource_display.gd; test_furnace_income.gd | exact boundary / expired zero / spending | COVERED |
+| 60秒收入窗口、资源分离、支出不扣收入 | test_resource_display.gd | exact boundary / expired zero / spending | COVERED |
 | 离线微粒、上限、倒时钟、旧存档 | test_offline_resources.gd | 每完整秒、12小时、零上限、回拨、旧离线速率不结算 | COVERED |
 | 资源守恒 | test_module_refit.gd; test_bulk_upgrades.gd; test_reactor.gd | 换舰不退款、逐级成本、反应炉分配不扣铀且不超过总能源 | COVERED |
 | 目标位置排序 / 抗性优先 / 全抵抗回退 | test_target_resistance.gd | non-resistant first / positional ties / all resistant | COVERED |
@@ -35,7 +34,7 @@
 | 失锁直飞、出屏删除、死亡发射者弹体 | test_projectile_lifecycle.gd | flies straight / leaving screen / dead shooter / player death | COVERED |
 | BOSS/末敌清弹及同帧致死弹不再结算 | test_boss_projectile_clear.gd; test_final_encounter.gd | no lethal hostile resolution / last small group | COVERED |
 | 战斗冷却推进 / 前进重置 / 暂停 | test_travel_cooldowns.gd; test_state_ownership.gd | full cooldown / no early fire / independent countdown | COVERED |
-| 现实时间收入窗口 | test_resource_display.gd; test_furnace_income.gd | 显式时间戳的60秒边界 | COVERED |
+| 现实时间收入窗口 | test_resource_display.gd | 显式时间戳的60秒边界 | COVERED |
 | 离线微粒/统一倍率 | test_offline_resources.gd; test_time_steps.gd; test_chrono_ui.gd; test_chrono_login.gd; test_offline_config.py | 12小时储量、旧档、现实时间扣费、游戏时间、后台x1在线收益；每次启动报告实际新增微粒含零收益，配置扩展 | COVERED |
 | 加载：只结算微粒并保存 | test_save_boundaries.gd | load→save→player；不推进离线充能或研究 | COVERED |
 | 当前存档版本内旧levels、缺loadout、矛盾首槽优先 | test_state_ownership.gd | legacy migration / conflict first slot / missing levels | COVERED |
@@ -48,7 +47,7 @@
 | 换舰候选选择 | test_module_ui.gd | selection no immediate switch / 点击确认后换舰 | COVERED |
 | 通关解锁弹窗阻止自动推进 | test_skip_clear.gd | Unlock acknowledgment is preserved | COVERED |
 | 伤害文本独立数字、位置避让 | test_damage_text.gd | 同帧与连续命中、真实文字边界不相交 | COVERED |
-| 舰船/炮口/敌舰位置 | test_ship_visuals.gd; test_enemy_ship_visuals.gd; test_enemy_weapon_positions.gd | occupancy / muzzle / effect / symmetric mounts | COVERED |
+| 舰船/炮口/敌舰位置 | test_ship_visuals.gd; test_enemy_base_eight_battle.gd; test_enemy_weapon_positions.gd | occupancy / muzzle / effect / symmetric mounts | COVERED |
 | 资源总量/速率切换与重建保持 | test_resource_display.gd | toggles current total / rebuild preserves rate | COVERED |
 | 读取不得修改profile、loadout、生命、冷却 | test_state_ownership.gd | Read purity深比较 + slot array identity | COVERED |
 | 装备等级与玩家冷却唯一槽位状态 | test_state_ownership.gd | stale legacy ignored / no runtime levels / transient cooldowns | COVERED |

@@ -3,9 +3,9 @@ const Tab = preload("res://scripts/equipment_tab.gd")
 class ObservedTab extends Tab:
 	var attribute_calls := 0
 	var height_calls := 0
-	func equipment_attributes(entry: Dictionary) -> String:
+	func equipment_attributes(entry: Dictionary, detailed := false) -> String:
 		attribute_calls+=1
-		return super.equipment_attributes(entry)
+		return super.equipment_attributes(entry,detailed)
 	func update_detail_height(force := false) -> void:
 		if force or (is_instance_valid(detail_frame) and detail_frame.is_visible_in_tree()):height_calls+=1
 		super.update_detail_height(force)
@@ -67,6 +67,7 @@ func fixture(eager: bool):
 	panel.name="Equipment";scene.equipment_panel=panel
 	scene.equipment_tabs.add_child(panel);scene.equipment_tabs.move_child(panel,0);panel.setup(scene)
 	var g=scene.game
+	g.profile.hyperspace.random_state="1701" # Paired fixtures start from identical private RNG state.
 	g.speed=1;g.save_enabled=false;g.stat_cache_enabled=true;g.profile.onboarding.completed=true
 	if is_instance_valid(scene.beginner_guide):scene.beginner_guide.hide()
 	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.pending_unlocks.clear()

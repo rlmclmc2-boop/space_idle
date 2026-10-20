@@ -68,6 +68,8 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture(legacy:bool)->BattleGame:
 	var db=ShipDatabase.new()
+	db.ships.Heavy_Battleship.defenseSlots=4
+	db.config.equipmentSwitchCooldownSeconds=0.0 # Owner replacement, not switch-lock timing.
 	for key in ["shield","armour"]:
 		db.equipment[key][0].para1=100
 		db.equipment[key][0]["para2" if key=="armour" else "para4"]=0

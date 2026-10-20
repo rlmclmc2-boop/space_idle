@@ -420,11 +420,11 @@ func fitting_weapon_prefix(best_loadouts: Array) -> String:
 		for key in loadout.weapons:
 			var weapon: Dictionary=database.equip(str(key),1)
 			var damage_type: int=int(weapon.get("dmgtype",0))
-			if damage_type==energy_type:styles["能量"]=true
-			elif damage_type==physical_type:styles["物理"]=true
-			else:styles["混合"]=true
+			if damage_type==energy_type:styles[UIText.t("ui.fleet_level_generator.message_01")]=true
+			elif damage_type==physical_type:styles[UIText.t("ui.fleet_level_generator.message_02")]=true
+			else:styles[UIText.t("ui.fleet_level_generator.message_03")]=true
 	if styles.is_empty():return ""
-	return str(styles.keys()[0]) if styles.size()==1 else "混合"
+	return str(styles.keys()[0]) if styles.size()==1 else UIText.t("ui.fleet_level_generator.message_03")
 
 func order_value(row: Dictionary) -> int:
 	return int(row.recommended_level) if row.recommended_level!=null else int(policy.max_level)+1

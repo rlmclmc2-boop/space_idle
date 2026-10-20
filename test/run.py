@@ -73,10 +73,15 @@ def main():
 
     def run(command, label):
         with (area / (label + ".log")).open("w", encoding="utf-8") as log:
-            result = subprocess.run(command, cwd=game, env=env, stdout=log,
-                                    stderr=subprocess.STDOUT, timeout=args.timeout)
+            try:
+                result = subprocess.run(command, cwd=game, env=env, stdout=log,
+                                        stderr=subprocess.STDOUT, timeout=args.timeout)
+                code = result.returncode
+            except subprocess.TimeoutExpired:
+                log.write(f"\nTIMEOUT: {label} exceeded {args.timeout} seconds\n")
+                code = 124
         print((area / (label + ".log")).read_text(encoding="utf-8", errors="replace"))
-        return result.returncode
+        return code
 
     godot = str(args.godot.resolve())
     if args.test == "test_weapon_config.py":

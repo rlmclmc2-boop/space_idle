@@ -7,6 +7,9 @@ func check(ok: bool,label: String) -> void:
  if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture() -> BattleGame:
  var db:=ShipDatabase.new()
+ db.ships.Frigate.defenseSlots=3 # Pin active capacity for multi-pool hit fixtures.
+ db.data.equipment_evolution.first_stat_multiplier=1.0
+ db.data.equipment_evolution.later_stat_multiplier=1.0
  for key in ["armour","shield"]:
   db.equipment[key][0].para1=100
   db.equipment[key][0]["para2" if key=="armour" else "para4"]=0
@@ -34,7 +37,7 @@ func run()->void:
  g.hit_player(10,0)
  check(g.player.armour==0 and g.state==BattleGame.State.RETREAT,"no shield lethal hit still kills")
  g=fixture();g.player.armour=0;g.hit_player(0,0)
- check(g.player.shield==100 and g.state==BattleGame.State.RETREAT,"zero HP never survives on remaining shield")
+ check(g.player.shield==100 and g.player_alive() and g.state==BattleGame.State.COMBAT,"Shield-only survival remains alive until both pools deplete")
  for sample in [[100,50,10,50],[200,0,10,100],[210,0,5,105],[220,0,0,110]]:
   g=fixture();g.player.armour=10;g.hit_player(sample[0],0)
   check(g.player.shield==sample[1] and g.player.armour==sample[2] and g.enhancement_deferred_total()==sample[3],"deferral capacity is actual immediate payment "+str(sample[0]))
@@ -62,13 +65,13 @@ func run()->void:
  check(g.player.shield==50 and g.player.armour==10 and g.enhancement_deferred_total()==50,"shield resistance precedes one immediate/deferred split")
  g.advance_jewel_repair(2)
  check(is_zero_approx(float(g.player.shield)) and g.player.armour==10 and N.compare(g.enhancement_deferred_total(),0)==0,"already reduced debt pays exactly once")
- # Shield modules can differ in delay eligibility; no raw overflow may skip spare shield.
+ # Shared enhancement rank applies equally to different equipment levels.
  g=fixture();g.profile.selectedShip="Heavy_Battleship"
  g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"shield","level":50},{"key":"armour","level":50}]
  g.invalidate_stat_cache();g.reset_player();g.player.armour=10;g.hit_player(250,0)
- check(g.player.shield==25 and g.player.armour==10 and g.enhancement_deferred_total()==75,"redistribute capped module overflow within shield before HP")
+ check(g.player.shield==75 and g.player.armour==10 and g.enhancement_deferred_total()==125,"shared delay applies to both shield modules regardless of equipment level")
  # Preserve cover -> neutral temporary protection -> ordinary shield ordering.
- g=fixture();g.profile.loadout.defence[0].level=150;g.invalidate_stat_cache();g.reset_player();g.player.armour=10
+ g=fixture();g.profile.enhancementLevel=20;g.profile.loadout.defence[0].level=150;g.invalidate_stat_cache();g.reset_player();g.player.armour=10
  var entry=g.slot_entry("defence",0)
  g.enhancement_branches.defense(g,0).cover=5
  g.enhancement_buffers[0]=5.;g.enhancement_buffer_owners[0]={"entry":entry,"key":"shield"}
@@ -90,18 +93,18 @@ func check_mixed_shield_rounding()->void:
  for delayed in [false,true]:
   var g=fixture();g.profile.selectedShip="Heavy_Battleship"
   g.profile.enhancementLevel=30
-  g.profile.enhancementOrder.defence=["adaptation","memory_material","delayed_damage"]
+  g.profile.enhancementOrder.defence=["adaptation","memory_material","delayed_damage" if delayed else ""]
   g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"shield","level":150 if delayed else 50},{"key":"armour","level":1}]
   check(g.set_enhancement_branch("defence","adaptation",3,"B"),"mixed shield resistance fixture")
   g.db.config.dmgReduce=.5
   g.invalidate_stat_cache();g.reset_player();g.player.armour=10
   var incoming=401.0
   var factor=1.0-g.enhancement_branches.resistance(g,g.slot_entry("defence",1),.5)
-  # First module consumes raw200. The remaining raw201 crosses only the second
-  # module's resistance once; split debt only after that one reduction.
-  var second_damage=(incoming-200.0)*factor
+  # Both modules use the same shared enhancement branch, independent of module level.
+  # Body resistance is applied once, then split into immediate/deferred payment.
+  var second_damage=incoming*factor
   var fraction=g.enhancement_deferred_fraction() if delayed else 0.0
-  var expected_payment=100.0+second_damage*(1.0-fraction)
+  var expected_payment=second_damage*(1.0-fraction)
   if not delayed:expected_payment=ceilf(expected_payment)
   g.hit_player(incoming,int(g.db.equip("shield",1).dmgtype))
   check(is_equal_approx(float(g.player.shield),200.0-expected_payment) and g.player.armour==10,"mixed shields round once and never bypass spare shield")

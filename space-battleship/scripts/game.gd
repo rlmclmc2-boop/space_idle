@@ -993,19 +993,21 @@ func apply_refit_health() -> void:
 		event.emit("battle_blocked",{"reason":"zero_defence"})
 
 func invalidate_module_attack(index: int) -> void:
+	# This invalidates a physical module, including dormant slots after a hull change.
+	var module_id := "weapons_%d" % index
 	jewel_repeats = jewel_repeats.filter(func(p):return int(p.index)!=index)
-	jewel_charged.erase(slot_id("weapons",index))
+	jewel_charged.erase(module_id)
 	for shot in projectiles:
 		if shot.get("beam",false) and not shot.hostile and int(shot.mount)==index:shot.dead=true
 	var entry := slot_entry("weapons",index)
 	if entry.is_empty() or str(entry.key).is_empty():
-		cooldowns.erase(slot_id("weapons",index))
+		cooldowns.erase(module_id)
 	else:
 		var cd := float(db.equip(str(entry.key),int(entry.level)).cd)
 		# Loadout edits while travelling keep the upcoming encounter's quick salvo.
 		if state == State.TRAVEL and str(entry.key) == "missile":
 			cd = minf(cd,0.4)
-		cooldowns[slot_id("weapons",index)] = cd
+		cooldowns[module_id] = cd
 
 func player_alive() -> bool:
 	return N.compare(player.get("armour",0),0)>0 or N.compare(player.get("shield",0),0)>0

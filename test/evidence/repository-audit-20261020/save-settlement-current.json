@@ -1,0 +1,26 @@
+[
+  {
+    "test": "test_save_boundaries.gd",
+    "sha256": "741cf3e1d4caabb33ef0e4220f1fedc839519d856c76e6690c8ea71c71bc81b4",
+    "result": "passed",
+    "log": "test_save_boundaries-current.log"
+  },
+  {
+    "test": "test_offline_settlement_contract.gd",
+    "sha256": "aa92097a470a08ad76ab47a82a2069fa69918f50d77c7a7c3b483d3014fac7d5",
+    "result": "passed",
+    "log": "test_offline_settlement_contract-current.log"
+  },
+  {
+    "test": "test_offline_resources.gd",
+    "sha256": "1923ee565cfbc2b7b6622544cf9c9f02ca0eee0a641a4ca4cfc03b9dc073e027",
+    "result": "passed",
+    "log": "test_offline_resources-current.log"
+  },
+  {
+    "test": "test_single_slot_survival.gd",
+    "sha256": "6fb45a8e5f03911f631476ffd72925394a524bf74ca4ee798f9d29677bbbde8a",
+    "result": "passed",
+    "log": "test_single_slot_survival-current.log"
+  }
+]

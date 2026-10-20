@@ -18,7 +18,8 @@ import zipfile
 from lxml import etree as ET
 
 import openpyxl
-from hyperspace_entities import read_bundle as read_hyperspace_bundle
+from hyperspace_entities import (read_bundle as read_hyperspace_bundle, load_schema,
+                                 SCHEMA_PATH, EARLY_FROZEN_PATH)
 from import_workbook import ROOT, SECTIONS, read_rows, convert_sheet, projection_base, validate_projection, encode
 
 NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -26,7 +27,7 @@ REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PKG = "http://schemas.openxmlformats.org/package/2006/relationships"
 Q = "{" + NS + "}"
 MANIFEST = ".split_manifest.json"
-CACHE_VERSION = 12
+CACHE_VERSION = 13
 
 
 def sha(value):
@@ -207,13 +208,41 @@ def read_changed_file(path, name, raw, *, ignored_formula_columns=()):
         book.close()
 
 
+def entity_cache_signature(raw_by_filename, data_directory, outputs=None):
+    """Cover schema, frozen authority and every derived output, without opening XLSX."""
+    schema = load_schema()
+    dependencies = [SCHEMA_PATH, EARLY_FROZEN_PATH]
+    dependencies.extend(data_directory / name for name in schema['frozen_inputs'])
+    signature = {'workbooks': {name: sha(raw) for name, raw in raw_by_filename.items()},
+                 'dependencies': {str(path): sha(path.read_bytes()) for path in dependencies}}
+    if outputs is None:
+        return signature
+    signature['outputs'] = {name: sha(raw) for name, raw in outputs.items()}
+    return signature
+
+
+def cached_entities_valid(state, raw_by_filename, data_directory):
+    cached = state.get('entity_cache', {})
+    current = entity_cache_signature(raw_by_filename, data_directory)
+    if any(cached.get(key) != value for key, value in current.items()):
+        return False
+    outputs = cached.get('outputs', {})
+    return bool(outputs) and all(pathlib.Path(name).name == name and
+        (data_directory / name).is_file() and sha((data_directory / name).read_bytes()) == digest
+        for name, digest in outputs.items())
+
+
 def incremental_import(directory, target):
-    manifest = read_json(directory / MANIFEST)
+    manifest_path = directory / MANIFEST
+    manifest_raw = manifest_path.read_bytes() if manifest_path.exists() else None
+    manifest = json.loads(manifest_raw) if manifest_raw is not None else {}
     if not manifest:
         raise ValueError(ui_text('debug.config_workbooks.message_02'))
     state_path = target.with_name(".import_state.json")
-    state = read_json(state_path)
-    original = target.read_bytes() if target.exists() else b""
+    state_raw = state_path.read_bytes() if state_path.exists() else None
+    state = json.loads(state_raw) if state_raw is not None else {}
+    target_raw = target.read_bytes() if target.exists() else None
+    original = target_raw if target_raw is not None else b""
     current = json.loads(original) if original else {}
     hyperspace_paths = {name: directory / name for name in ('hyperspace_config.xlsx', 'hyperspace_enemies.xlsx')}
     entity_required = any(p.exists() for p in hyperspace_paths.values()) or target.with_name('hyperspace_config.json').exists()
@@ -252,14 +281,19 @@ def incremental_import(directory, target):
         validate_projection(data)
         data["source_files"] = {name:str(path.resolve()) for name,path in paths.items()}
     entity_outputs, frozen_snapshot = {}, {}
-    if hyperspace_raw:
+    entity_cache = state.get("entity_cache", {})
+    entity_inputs = entity_cache_signature(hyperspace_raw, target.parent) if hyperspace_raw else {}
+    if hyperspace_raw and (changed or not trustworthy or not cached_entities_valid(state, hyperspace_raw, target.parent)):
         projected, frozen_snapshot = read_hyperspace_bundle(hyperspace_raw, data, target.parent)
+        projected_payloads = {}
         for filename, values in projected.items():
             entity_target = target.with_name(filename)
             entity_payload = (json.dumps(values, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
+            projected_payloads[filename] = entity_payload
             if not entity_target.exists() or entity_target.read_bytes() != entity_payload:
                 entity_outputs[entity_target] = entity_payload
-    if not changed and not entity_outputs:
+        entity_cache = entity_cache_signature(hyperspace_raw, target.parent, projected_payloads)
+    if not changed and not entity_outputs and entity_cache == state.get("entity_cache", {}):
         return {"ok":True,"action":"import","changed":[],"parsed":[],"message":ui_text('debug.config_workbooks.message_07')}
     payload = encode(data) if changed else original
     # Never commit a snapshot that was changed again while it was being parsed.
@@ -267,6 +301,7 @@ def incremental_import(directory, target):
         if sha(path.read_bytes()) != snapshot[name]:
             raise ValueError(ui_text('debug.config_workbooks.message_08', name=path.name))
     next_state = {"version":CACHE_VERSION,"directory":str(directory.resolve()),"target_hash":sha(payload),"hashes":snapshot}
+    next_state['entity_cache'] = entity_cache
     next_state['hyperspace_hashes'] = {name:sha(raw) for name,raw in hyperspace_raw.items()}
     outputs = {target:payload, state_path:encode(next_state)} if changed else {state_path:encode(next_state)}
     for name, raw in hyperspace_raw.items():
@@ -275,7 +310,14 @@ def incremental_import(directory, target):
     for path, raw in frozen_snapshot.items():
         if path.read_bytes() != raw:
             raise ValueError('Frozen reward baseline changed during import: ' + path.name)
+    if hyperspace_raw and entity_cache_signature(hyperspace_raw, target.parent) != entity_inputs:
+        raise ValueError("Hyperspace schema or frozen baseline changed during import")
     outputs.update(entity_outputs)
+    # Protect concurrent editor/import writes as well as workbook inputs.
+    for path, expected in ((manifest_path, manifest_raw), (target, target_raw), (state_path, state_raw)):
+        actual = path.read_bytes() if path.exists() else None
+        if actual != expected:
+            raise ValueError(ui_text("debug.config_workbooks.message_08", name=path.name))
     atomic_batch(outputs)
     names = [name for name, _ in changed]
     names.extend(path.stem for path in entity_outputs)

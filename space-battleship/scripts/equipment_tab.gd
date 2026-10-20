@@ -739,7 +739,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.meta,"tooltip_text",host.game.permanent_level_tooltip(int(entry.level),"equipment"))
 	host.set_ui_value(detail.primary,"text",item.mainStatLabel+"  "+item.mainStatValue)
 	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
-	host.set_ui_value(detail.status,"text",("换装冷却 %ds" % int(item.get("refit_remaining",0))) if int(item.get("refit_remaining",0))>0 else UIText.t("equipment.fixed_armour") if item.get("refit_fixed",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
+	host.set_ui_value(detail.status,"text",(UIText.t("ui.equipment_tab.message_01", {"value_1":"%d" % (int(item.get("refit_remaining",0)))})) if int(item.get("refit_remaining",0))>0 else UIText.t("equipment.fixed_armour") if item.get("refit_fixed",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
 	for action in ["upgrade","ten","max"]:
 		host.set_ui_value(detail[action],"visible",true)

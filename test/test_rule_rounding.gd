@@ -12,11 +12,14 @@ func check(ok: bool, label: String) -> void:
 func _initialize() -> void:
 	# Rule fixtures are explicit; no dependency on historical workbook tuning.
 	var db := ShipDatabase.new()
+	db.ships.Frigate.defenseSlots=2
 	db.config.dmgReduce = 0.5
 	db.config.autoCollectReduce = 0.4
 	db.equipment.shield[0].dmgtype = 1
 	db.equipment.armour[0].dmgtype = 2
 	var g := BattleGame.new(db,false)
+	g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1}]
+	g.reset_player()
 	check(g.reduced_damage(5,1,1)==3,"Matching resistance rounds damage up")
 	check(g.reduced_damage(0.2,2,2)==1,"Reduced damage has minimum one")
 	check(g.reduced_damage(2.1,1,2)==3,"Nonmatching resistance still rounds up")
@@ -38,7 +41,7 @@ func _initialize() -> void:
 	resources.event.connect(func(kind, info):
 		if kind == "collect":
 			collected.append(info))
-	var resource_enemy := {"hp":1.0,"armourType":0,"x":500.0,"y":300.0,"res_ratio":1.1,"drops":[{"resourceId":1,"amount":3.0,"chance":1.0}]}
+	var resource_enemy := {"uid":999,"hp":1.0,"armourType":0,"x":500.0,"y":300.0,"res_ratio":1.1,"drops":[{"resourceId":1,"amount":3.0,"chance":1.0}]}
 	resources.hit_enemy(resource_enemy,10,1)
 	check(resources.drops[0].amount==4,"Drop rounds after multiplier: ceil(3 * 1.1)")
 	resources.collect(resources.drops[0],false)
@@ -46,9 +49,10 @@ func _initialize() -> void:
 	resources.drops=[{"uid":99,"x":500.0,"y":300.0,"age":0.0,"id":"1","amount":4.0}]
 	resources.collect(resources.drops[0],true)
 	check(resources.profile.resources["1"]==7 and resources.run_resources["1"]==7 and collected[1].amount==4,"Manual collection credits the displayed integer drop")
-	db.equipment.laser[1].cost_1 = 3.2
-	db.equipment.laser[1].res_2 = null
-	db.equipment.laser[1].cost_2 = null
+	db.equipment.laser[0].cost_1 = 3.2
+	db.equipment.laser[0].costMulti_1 = null # Isolate final fractional-price rounding from growth.
+	db.equipment.laser[0].res_2 = null
+	db.equipment.laser[0].cost_2 = null
 	resources.profile.resources["1"] = 3
 	check(resources.slot_upgrade_cost("weapons",0)["1"]==4 and not resources.can_upgrade_slot("weapons",0),"Fractional final cost rounds up for affordability")
 	resources.profile.resources["1"] = 5
@@ -65,6 +69,7 @@ func _initialize() -> void:
 	check(is_equal_approx(db.ratio(1,0,"lifeRatio"),1.0),"First level starts at base multiplier one")
 	check(is_equal_approx(db.ratio(2,-1,"lifeRatio"),1.1) and is_equal_approx(db.ratio(2,point_count,"lifeRatio"),1.3),"Battle-point interpolation clamps at both endpoints")
 	db.equipment.cannon[0].dmg = 20
+	db.data.enemy_weapon_base.cannon.dmg=20
 	db.equipment["cannon-mon"][0].dmg = null
 	db.equipment.laser_mon[0].dmg = 7
 	check(db.enemy_weapon("laser_mon").dmg==7,"Enemy weapon uses its own base row")

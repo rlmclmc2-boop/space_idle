@@ -49,9 +49,9 @@ class Observed extends Presented:
   groups[group].ordinals.append(int(release_context.ordinal))
   groups[group].due.append(float(release_context.due))
   releases.append({"group":group,"time":motion_clock,"due":release_context.due,"ordinal":release_context.ordinal,"count":release_context.count,"damage":shot.damage,"target_uid":int(shot.target.get("uid",-1))})
- func hit_enemy(enemy,raw,type,effects=[],critical=false):
+ func hit_enemy(enemy,raw,type,effects=[],critical=false,context:Dictionary={}):
   var before=enemy.hp
-  super.hit_enemy(enemy,raw,type,effects,critical)
+  super.hit_enemy(enemy,raw,type,effects,critical,context)
   dealt+=float(N.subtract(before,N.maximum(0,enemy.hp)))
   raw_hit_payload+=float(raw)
   counts["hit"]=counts.get("hit",0)+1

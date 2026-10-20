@@ -17,6 +17,17 @@ func _initialize() -> void:
 	# Fixed construction boundary for this scenario; live table balance is editable.
 	db.data.planet_build.station.unlock_explore=10
 	db.data.planet_build.station.build_explore=5
+	# Independent construction arithmetic fixture, with one shipyard per planet.
+	# Live split shipyard identities are exercised by conquest/migration tests.
+	db.data.planet_build.erase("shipyard_later")
+	db.data.planet_build.shipyard.planet_rule="all"
+	db.data.planet_build.shipyard.planet_value=""
+	db.data.planet_build.shipyard.build_explore=10
+	db.data.planet_build.workshop.build_explore=10
+	db.data.planet_build.workshop.config1=0.1
+	db.data.planet_build.workshop.config2=0.8
+	db.data.planet_build.refinery.config1=0.1
+	db.data.planet_build.refinery.config2=0.8
 	var g := BattleGame.new(db,false)
 	var b=g.planet_buildings
 	g.profile.cleared=range(1,41)
@@ -130,7 +141,7 @@ func _initialize() -> void:
 	trip(resumed)
 	check(resumed.planet_progress("1").degree==old_degree+1 and resumed.planet_progress("1").crewId=="navigator","Read resumes exactly one automatic trip")
 	# Reforge validates once, clears all reset systems, preserves every planet.
-	g.profile.hightechLevels[BattleGame.FURNACE]=5
+	g.profile.aiTechLevels.singularity=5
 	g.profile.reactorLevel=8
 	g.profile.jewels=[{"id":"1","level":3}]
 	g.profile.chronoParticles=50
@@ -142,7 +153,7 @@ func _initialize() -> void:
 	for planet_id in permanent:
 		check(g.planet_progress(planet_id).auto_explore==permanent[planet_id].auto_explore,"Reforge retains each planet auto preference")
 	check(g.stage==g.planet_reforge_start("1") and g.profile.highestLevel==g.stage and g.profile.cleared==range(1,g.stage),"Reforge resets run to configured start stage")
-	check(g.profile.jewels.is_empty() and g.profile.hightechLevels.is_empty() and g.profile.chronoParticles==50 and g.profile.reactorLevel==int(db.config.reactorInitialLevel),"Reset run systems while preserving chrono reserve")
+	check(g.profile.jewels.is_empty() and g.hightech_level("singularity")==0 and g.profile.chronoParticles==50 and g.profile.reactorLevel==int(db.config.reactorInitialLevel),"Reset run systems while preserving chrono reserve")
 	for feature in ["jewels","reactor"]:
 		var gate=db.data.unlock[db.unlock_id("feature",feature)]
 		check(g.content_unlocked("feature",feature)==(int(gate.level)<=g.stage),"Reset systems follow configured start stage")

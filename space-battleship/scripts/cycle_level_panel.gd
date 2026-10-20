@@ -38,7 +38,7 @@ func _ready() -> void:
 	var open_dialog:=FileDialog.new()
 	open_dialog.access=FileDialog.ACCESS_FILESYSTEM
 	open_dialog.file_mode=FileDialog.FILE_MODE_OPEN_FILE
-	open_dialog.add_filter("*.json","已分析的 generated_levels.json")
+	open_dialog.add_filter("*.json",UIText.t("ui.cycle_level_panel.message_01"))
 	add_child(open_dialog)
 	open_dialog.file_selected.connect(func(path):source_input.text=path)
 	_button(source_bar,"browse",func():open_dialog.popup_centered(Vector2i(900,600)))
@@ -128,7 +128,7 @@ func _ready() -> void:
 	var save_dialog:=FileDialog.new()
 	save_dialog.access=FileDialog.ACCESS_FILESYSTEM
 	save_dialog.file_mode=FileDialog.FILE_MODE_SAVE_FILE
-	save_dialog.add_filter("*.xlsx","Excel 工作簿")
+	save_dialog.add_filter("*.xlsx",UIText.t("ui.cycle_level_panel.message_02"))
 	save_dialog.current_dir=_output_directory()
 	save_dialog.current_file="level_monGroup_generated.xlsx"
 	add_child(save_dialog)
@@ -183,7 +183,7 @@ func _integers(raw: String) -> Dictionary:
 	else:tokens=source.split(",")
 	var values: Array=[]
 	for token in tokens:
-		if not token.is_valid_int():return {"error":"周期数值必须为逗号分隔的整数。"}
+		if not token.is_valid_int():return {"error":UIText.t("ui.cycle_level_panel.message_03")}
 		values.append(int(token))
 	return {"values":values}
 
@@ -209,11 +209,11 @@ func generate_levels() -> void:
 	table.clear()
 	var path: String=source_input.text.strip_edges()
 	if not FileAccess.file_exists(path):
-		status_label.text=UIText.t("cycle_level.error",{"reason":"请选择已有 generated_levels.json。"})
+		status_label.text=UIText.t("cycle_level.error",{"reason":UIText.t("ui.cycle_level_panel.message_04")})
 		return
 	var parsed=JSON.parse_string(FileAccess.get_file_as_string(path))
 	if not parsed is Dictionary:
-		status_label.text=UIText.t("cycle_level.error",{"reason":"分析文件不是有效 JSON。"})
+		status_label.text=UIText.t("cycle_level.error",{"reason":UIText.t("ui.cycle_level_panel.message_05")})
 		return
 	var config:=_read_config()
 	if config.has("error"):

@@ -9,6 +9,7 @@ func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func opened(db):
+	db.ships.Frigate.weaponSlots=2 # Preserve both live attack sources in the suspension fixture.
 	var g=preload("res://scripts/presented_battle_game.gd").new(db,false)
 	g.profile.highestLevel=34;g.profile.cleared=range(1,34);g.rebuild_unlocks();g.pending_unlocks.clear();g.stat_cache_enabled=true
 	g.load_hyperspace_routes();return g

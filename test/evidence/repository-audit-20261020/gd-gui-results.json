@@ -1,0 +1,727 @@
+[
+  {
+    "test": "test_boss_info.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 10.04
+  },
+  {
+    "test": "test_planet_toon_preview.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 17.05
+  },
+  {
+    "test": "test_equipment_shared_detail.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 9.25
+  },
+  {
+    "test": "test_hot_path_probe.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 8.4
+  },
+  {
+    "test": "test_ai_tech_tree_gui.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 0.67
+  },
+  {
+    "test": "test_battle_tab.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.07
+  },
+  {
+    "test": "test_enemy_ship_visuals.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.08
+  },
+  {
+    "test": "test_turret_rotation.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.07
+  },
+  {
+    "test": "test_full_restart_driver.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.04
+  },
+  {
+    "test": "test_enemy_fleet_ui.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.08
+  },
+  {
+    "test": "test_delete_save.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.04
+  },
+  {
+    "test": "test_percentage_expected_damage.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 10.6
+  },
+  {
+    "test": "test_battle_lab_standalone.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.05
+  },
+  {
+    "test": "test_balance_lab_ui.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 16.95
+  },
+  {
+    "test": "test_save_policy.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 9.42
+  },
+  {
+    "test": "test_damage_numbers.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.09
+  },
+  {
+    "test": "test_workspace_shell.gd",
+    "code": 124,
+    "script_error": true,
+    "seconds": 60.07
+  },
+  {
+    "test": "test_equipment_card_context.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 6.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_ship_preview.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 10.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_rich15_identity.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_hyperspace_player_feedback.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 10.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_reactor_supply_ui.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 23.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_crew_experience_display.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 13.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_enemy_entry_batch.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 11.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_unlock_ui.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 12.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_ui_text.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.52,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_equipment_tabs.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 9.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_config_panel.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 14.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_planet_rotation.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 5.07,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_upgrade_ui_probe.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 11.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_module_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_locked_ships.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 7.0,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_planet_dialog_layout.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 12.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_parent_hyperspace_routes.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 19.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_galaxy_demo.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 3.0,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_planet_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 5.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_ship_visuals.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 15.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_tab_unlocks.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_opening_feedback.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 12.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_pause_key_focus.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_guard.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 13.53,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_planet_orbit_acceptance.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 8.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_hyperspace_guide.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 9.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_battle_damage_stats_ui.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 9.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_reactor_integer_cost.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 9.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_reactor_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 7.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_overlay_layout.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.07,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_local_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 8.57,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_long_laser.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.52,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_enemy_hull_warmup.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 9.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_release_font.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 1.0,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_damage_display_timing.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 9.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_crew_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_chrono_login.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_level_editor.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 2.0,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_crew_unlock.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 5.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_planet_celestials.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 7.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_single_slot_visual.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.02,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_missile_event_order.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.02,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_weapon_fx.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 7.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_enemy_grid.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.52,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_dialog_reactor_chrome.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 16.52,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_railgun_presentation.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 18.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_reforge_disclosure.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 3.0,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_portrait_presentation.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 16.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_enemy_recognition_visual.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 8.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_resource_display.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 10.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_unlock_skip_checkbox.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_skip_clear.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_time_steps.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 15.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_equipment_limits.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 2.02,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_hyperspace_dedicated_routes_ui.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 10.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_player_visual_scale.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_warp_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 6.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_planet_bonus_dialog.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 7.5,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_planet_conquest_gates.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 6.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_planet_buff_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.0,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_fx_comparison.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 7.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_hightech_flicker.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 6.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_performance_projection.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 9.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_journey_resume.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 26.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_equipment_visible_choices.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 8.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_planet_polish.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 31.57,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_frame_sample.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 13.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_compact_fleet_defense.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 11.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_pulse_flash_geometry.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 1.0,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_loop_retreat.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 13.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_enemy_defence_inspector.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 21.2,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_reactor_allocation_ui.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 8.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_crew_levels_ui.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 7.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_restart_save_failure.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 16.09,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_damage_text.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 7.07,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_vertical_battle_logic.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 8.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_size_formation_rail_path.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 25.02,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_hyperspace_module_visibility.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 8.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_boss_projectile_clear.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.01,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_missile_event_modulate.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 1.0,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_bulk_upgrades.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 10.04,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_hyperspace_compact_geometry.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_reactor_scalability_ui.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 11.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_resource_art.gd",
+    "code": 0,
+    "script_error": false,
+    "seconds": 10.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_chrono_ui.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 7.51,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_muzzle_visibility.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 7.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_battle_transition_ui.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 9.54,
+    "stopped_on_script_error": true
+  },
+  {
+    "test": "test_reactor_condensation.gd",
+    "code": 1,
+    "script_error": false,
+    "seconds": 8.01,
+    "stopped_on_script_error": false
+  },
+  {
+    "test": "test_boss_health_cards.gd",
+    "code": 125,
+    "script_error": true,
+    "seconds": 10.07,
+    "stopped_on_script_error": true
+  }
+]

@@ -69,6 +69,15 @@ func _initialize()->void:
 		var a:=Forge.plan(s.duplicate(true),original,request,g);var b:=Forge.plan(s.duplicate(true),c,request,g)
 		check(a.error=="" and b.error=="" and a.draws==b.draws,"complex cost keeps original forecast and draws "+operation)
 		for key in a.get("cost",{}):check(b.cost[key]==a.cost[key]*10,"complete complex base cost scales once "+operation)
+	# Guard integral conversion before it can wrap a huge positive price negative.
+	var overflow_config: Dictionary=c.duplicate(true)
+	overflow_config.forge_costs.lock_affix.glueball=1e30
+	var overflow_state: Dictionary=g.profile.hyperspace.duplicate(true)
+	var overflow_drone:=make_drone(c)
+	overflow_state.inventory.drones[overflow_drone.id]=overflow_drone
+	overflow_state.inventory.warehouse=[overflow_drone.id]
+	var overflow_request: Dictionary={"operation":"lock_affix","drone_id":overflow_drone.id,"args":{}}
+	check(Forge.plan(overflow_state,overflow_config,overflow_request,g).error=="cost_limit","out-of-range material price is rejected before integer conversion")
 	# Actual equipped same-type copies add their grown material bonus.
 	var module:=make_drone(c);module.hangings=["hyperspace_charge"];module.hanging_slots=1
 	Bag.insert(g.profile.hyperspace.inventory,module,c);g.profile.hyperspace.inventory.equipped=[module.id]

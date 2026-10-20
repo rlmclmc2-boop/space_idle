@@ -372,7 +372,7 @@ func show_entry(index: int) -> void:
 
 func duration_text(seconds: float) -> String:
  # Authored timers have millisecond precision; present their value in seconds.
- return str(snappedf(seconds,0.001))+" 秒"
+ return str(snappedf(seconds,0.001))+UIText.t("ui.enemy_intel_page.message_01")
 
 func add_detail_line(value: String) -> void:
  if detail_cursor == detail_lines.size():

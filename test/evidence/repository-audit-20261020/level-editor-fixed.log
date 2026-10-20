@@ -1,0 +1,22 @@
+Artifacts: /workspace/scratch/9ced2a722b42/space_idle_parent/test/work/test_level_editor-d6z5p8zu
+.......F..
+======================================================================
+FAIL: test_roundtrip_and_incremental (__main__.EditorTests.test_roundtrip_and_incremental)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/9ced2a722b42/space_idle_parent/test/work/test_level_editor-d6z5p8zu/test/test_level_editor.py", line 51, in test_roundtrip_and_incremental
+    self.assertEqual(incremental_import(self.store.directory, self.store.target)['changed'], [])
+AssertionError: Lists differ: ['space_enemy_reward_catalog'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'space_enemy_reward_catalog'
+
+- ['space_enemy_reward_catalog']
++ []
+
+----------------------------------------------------------------------
+Ran 10 tests in 103.612s
+
+FAILED (failures=1)
+

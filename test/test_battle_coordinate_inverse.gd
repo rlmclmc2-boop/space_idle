@@ -16,6 +16,7 @@ func reference(point:Vector2)->Vector2:
 func _initialize()->void:call_deferred("run")
 func run()->void:
  var ui:=UI.new()
+ ui.game=BattleGame.new(ShipDatabase.new(),false) # Valid fallback owner; never loads a player save.
  var rng:=RandomNumberGenerator.new();rng.seed=1701
  for y in [-10000.0,-512.001,-512.0,-511.999,0.0,219.999,220.0,220.001,639.999,640.0,640.001,2047.999,2048.0,2048.001,10000.0]:
   compare(ui,Vector2(137.25,y))

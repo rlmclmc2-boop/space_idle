@@ -17,7 +17,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 from lxml import etree as ET
 from config_workbooks import (Q, MANIFEST, CACHE_VERSION, atomic_batch, sha,
-                              sheet_parts, read_changed_file)
+                              sheet_parts, read_changed_file, read_hyperspace_bundle, entity_cache_signature)
 from import_workbook import ROOT, SECTIONS, validate_projection, encode
 
 EDITABLE = ('mon', 'monGroup', 'level')
@@ -33,7 +33,7 @@ class Store:
         mapping = json.loads(self.manifest.read_text(encoding='utf-8'))['sheets']
         self.paths = {}
         for name in SECTIONS:
-            if name in ('jewel', 'unlock', 'crew', 'crew_assignment', 'crew_config', 'planet', 'planet_build', 'planet_buff', 'galaxy', 'galaxy_build', 'galaxy_config') and name not in mapping:
+            if name in ('jewel', 'unlock', 'crew', 'crew_assignment', 'crew_config', 'planet', 'planet_build', 'planet_buff', 'galaxy', 'galaxy_build', 'galaxy_config', 'enhance_config', 'weapon_motion', 'enemy_weapon_base', 'battle_design') and name not in mapping:
                 if not (self.directory / f'{name}.xlsx').is_file():
                     continue
                 mapping[name] = f'{name}.xlsx'
@@ -43,7 +43,12 @@ class Store:
             self.paths[name] = self.directory / filename
 
     def snapshot(self):
-        return {str(p): sha(p.read_bytes()) for p in [*self.paths.values(), self.target, self.manifest]}
+        paths = [*self.paths.values(), self.target, self.manifest]
+        paths.extend(self.directory / name for name in ('hyperspace_config.xlsx', 'hyperspace_enemies.xlsx') if (self.directory / name).exists())
+        from hyperspace_entities import load_schema, SCHEMA_PATH, EARLY_FROZEN_PATH
+        paths.extend([SCHEMA_PATH, EARLY_FROZEN_PATH])
+        paths.extend(self.target.parent / name for name in load_schema()['frozen_inputs'])
+        return {str(p): sha(p.read_bytes()) for p in paths}
 
     def load(self):
         before = self.snapshot()
@@ -212,6 +217,14 @@ class Store:
         payload = encode(data)
         state = {'version': CACHE_VERSION, 'directory': str(self.directory.resolve()),
                  'target_hash': sha(payload), 'hashes': {n: sha(raw) for n, raw in raw_files.items()}}
+        entity_paths = [self.directory / name for name in ('hyperspace_config.xlsx', 'hyperspace_enemies.xlsx')]
+        if any(p.exists() for p in entity_paths):
+            raw_entities = {p.name: p.read_bytes() for p in entity_paths}
+            projected, _ = read_hyperspace_bundle(raw_entities, data, self.target.parent)
+            entity_payloads = {name: (json.dumps(values, ensure_ascii=False, indent=2) + '\n').encode('utf-8') for name, values in projected.items()}
+            files.update({self.target.with_name(name): raw for name, raw in entity_payloads.items()})
+            state['entity_cache'] = entity_cache_signature(raw_entities, self.target.parent, entity_payloads)
+            state['hyperspace_hashes'] = {name: sha(raw) for name, raw in raw_entities.items()}
         files[self.target] = payload
         files[self.target.with_name('.import_state.json')] = encode(state)
         return files, warnings

@@ -31,11 +31,19 @@ func _initialize() -> void:
 		check(g.chrono_capacity()==chrono,"detach leaves chrono limit unchanged")
 	for key in g.reactor_modules():g.profile.reactorAllocation[key]=0
 	g.invalidate_stat_cache()
-	var rate_keys: Array=g.db.data.hightech.keys().filter(func(key):return g.hightech_unlocked(key))
-	var key: String=rate_keys[0];g.profile.scientistAssignments[key]=1
-	var base_rate:=g.research_rate(key,{"tech_ai_per_level":0,"tech_speed":1.0})
-	g.hyperspace.attach_hangings(g,drone.id,["distributed_algorithm"])
-	check(is_equal_approx(g.research_rate(key,{"tech_ai_per_level":0,"tech_speed":1.0}),base_rate*1.21),"algorithm targets AI research production")
+	check(g.select_tech("singularity"),"current AI research starts")
+	var base_rate: float=g.tech_tree_snapshot().speed
+	for growth in [0.1,0.2]:
+		g.hyperspace.config.hanging_modules.distributed_algorithm.effect_growth=growth
+		g.invalidate_stat_cache()
+		check(g.hyperspace.attach_hangings(g,drone.id,["distributed_algorithm"]),"algorithm attaches")
+		var expected_rate := base_rate*pow(1.0+growth,2)
+		check(is_equal_approx(g.tech_tree_snapshot().speed,expected_rate),"algorithm changes current AI displayed speed")
+		var before_progress := float(g.profile.aiTechProgress.get("singularity",0.0))
+		g.advance_hightech(1.0)
+		check(is_equal_approx(float(g.profile.aiTechProgress.singularity)-before_progress,expected_rate),"algorithm changes actual AI research progress")
+		g.hyperspace.attach_hangings(g,drone.id,[])
+		check(is_equal_approx(g.tech_tree_snapshot().speed,base_rate),"detached algorithm stops accelerating AI")
 	g.hyperspace.attach_hangings(g,drone.id,["resource_collector"])
 	check(is_equal_approx(float(g.planet_resource_multiplier()),1.21),"collector targets iron uranium output")
 	g.hyperspace.attach_hangings(g,drone.id,["gem_refiner"])
@@ -43,6 +51,7 @@ func _initialize() -> void:
 	check(g.settle_jewel_fragments(10,"refund",1)==10,"refiner never multiplies refund")
 	g.hyperspace.attach_hangings(g,drone.id,["hyperspace_charge"])
 	var online: Dictionary=g.hyperspace.online_config(g)
-	check(is_equal_approx(online.energy_cap,float(g.hyperspace.config.energy_cap)*1.21) and is_equal_approx(online.energy_rate,float(g.hyperspace.config.energy_rate)*1.21),"hyperspace charge targets its own rate and cap")
+	check(is_equal_approx(online.energy_cap,float(g.hyperspace.config.energy_cap)) and is_equal_approx(online.energy_rate,float(g.hyperspace.config.energy_rate)),"material module does not modify energy rate or cap")
+	check(is_equal_approx(online.exploration_material_multiplier,1.21),"hyperspace charge now targets exploration material income")
 	print("HYPERSPACE_CONSUMERS ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)

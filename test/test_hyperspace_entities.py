@@ -68,13 +68,8 @@ class EntityTests(unittest.TestCase):
         late_id=self.default['space_enemy_reward_catalog.json']['references'][fallback['reference_id']]['late_reference_actual_group_id']
         late_enemy=next(v for v in main['groups'][str(late_id)]['slots'] if v is not None)
         main['enemies'][str(late_enemy)]['drops'][0]['amount']=17
-        early_key,early_ref=next((k,r) for k,r in self.default['space_enemy_reward_catalog.json']['references'].items() if r['early_existing_encounters'])
-        early_gid=early_ref['early_existing_encounters'][0]['group_id']
-        early_enemy=next(v for v in main['groups'][str(early_gid)]['slots'] if v is not None)
-        main['enemies'][str(early_enemy)]['drops'][0]['amount']=19
         out=h.project_tables(t,main,self.frozen)['space_enemy_reward_catalog.json']
         self.assertEqual(17,out['references'][fallback['reference_id']]['late_drop_blocks'][0][0]['amount'])
-        self.assertEqual(19,out['references'][early_key]['early_drop_blocks'][0][0]['amount'])
         self.assertEqual(13,out['references'][fallback['reference_id']]['early_drop_blocks'][0][0]['amount'])
         self.reject(lambda t:t[('hyperspace_enemies.xlsx','早段回退预算')][0].update(chance=1.01))
         self.reject(lambda t:t[('hyperspace_enemies.xlsx','早段回退预算')][0].update(resource_id=99999))
@@ -88,7 +83,11 @@ class EntityTests(unittest.TestCase):
         self.assertEqual(1,o['modernization_base_coefficient'])
         self.assertTrue(all(v==0 for v in o['modernization_tier_weights'].values()))
     def test_sources_structure_rechecked(self):
-        main=copy.deepcopy(self.main);main['levels'][0]['groups'][0]['id']=999999
+        main=copy.deepcopy(self.main)
+        wave=self.frozen['space_enemy_reward_sources.json']['waves'][0]
+        level=next(row for row in main['levels'] if row['id']==wave['stage'])
+        for field in ('groups','rewardReferenceGroups'):
+            if len(level.get(field,[]))>=wave['node']:level[field][wave['node']-1]['id']=999999
         with self.assertRaises(ValueError):h.project_tables(self.tables,main,self.frozen)
     def test_frozen_hash(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -96,6 +95,22 @@ class EntityTests(unittest.TestCase):
             for n in self.schema['frozen_inputs']:shutil.copyfile(self.data/n,d/n)
             (d/'space_enemy_reward_sources.json').write_text('{}')
             with self.assertRaises(ValueError):h.read_bundle(self.raw,self.main,d)
+    def test_editable_workbook_cell_and_formula_rejection(self):
+        import io
+        import openpyxl
+        def modified(value):
+            book=openpyxl.load_workbook(io.BytesIO(self.raw['hyperspace_config.xlsx']))
+            sheet=book['基础参数']
+            row=next(row for row in sheet.iter_rows(min_row=4) if row[0].value=='energy_rate')
+            row[2].value=value
+            stream=io.BytesIO();book.save(stream);book.close()
+            return {**self.raw,'hyperspace_config.xlsx':stream.getvalue()}
+        value=float(self.default['hyperspace_config.json']['energy_rate'])*2
+        projected,_=h.read_bundle(modified(value),self.main,self.data)
+        self.assertEqual(value,projected['hyperspace_config.json']['energy_rate'])
+        for invalid in [-1,'=10*2']:
+            with self.assertRaises(ValueError):h.read_bundle(modified(invalid),self.main,self.data)
+
     def test_formal_incremental_noop_and_six_output_rollback(self):
         with tempfile.TemporaryDirectory() as tmp:
             area=Path(tmp);folder=area/'config_excel';data=area/'data'

@@ -7,6 +7,9 @@ func check(ok: bool,label: String) -> void:
  if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture(deferred := false) -> BattleGame:
  var db:=ShipDatabase.new()
+ db.ships.Frigate.defenseSlots=3 # Pin active capacity for multi-pool hit fixtures.
+ db.data.equipment_evolution.first_stat_multiplier=1.0
+ db.data.equipment_evolution.later_stat_multiplier=1.0
  for key in ["armour","shield"]:
   db.equipment[key][0].para1=100
   db.equipment[key][0]["para2" if key=="armour" else "para4"]=0
