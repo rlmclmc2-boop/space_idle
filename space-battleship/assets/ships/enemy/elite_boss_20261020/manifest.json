@@ -1,240 +1,687 @@
 {
-  "approved_concept_commit": "3887ead570b7c1a58aed84a5dd15669fc6d03195",
-  "source_sha256": "1187736873ca2af7af8e26d5ac53f0a7fd08cd28de402216babf6a5ea1f07963",
-  "source_size": [
-    1774,
-    887
-  ],
+  "approved_concept_commit": "15a102ac3bee1b43d14e6f9666b8f19c10b21a06",
+  "source": "res://art_sources/enemy-fleet-20261019/integrated-empty-bases-atlas.png",
+  "source_sha256": "b61e3bcfeb1670265547a1a011d502b20cc55cc67f9c1254dee607069c89279b",
   "canvas": [
     887,
     1774
   ],
-  "body_width": 720,
-  "weapons_baked": false,
+  "stationary_foundations_baked": true,
+  "movable_weapons_baked": false,
   "sprites": {
     "anchor_elite": {
-      "region": [
-        0,
-        0,
-        472,
-        440
-      ],
       "source_bounds": [
+        32,
         37,
-        133,
-        443,
-        400
+        476,
+        378
       ],
       "body_size": [
         720,
-        473
+        553
+      ],
+      "source_body_size": [
+        444,
+        341
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/anchor-elite.png",
-      "sha256": "c5423a07030192d7ac8ed5548d30f55a066c38ea4ab6235735bf2f64594e4053",
+      "sha256": "1b6bb40679af09700c83e629b61cdfea8ec10e0b83efa7cbb5fa6fb7283afa18",
       "display_span": [
         2,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         204.8,
         212.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.23516580209017113,
+            -0.04686830628966209
+          ],
+          "socket_centre_px": [
+            234.4079335460182,
+            803.3556246421394
+          ],
+          "source_centre_px": [
+            125.36822568671121,
+            156.23014105419452
+          ],
+          "socket_well_width_uv": 0.09689509125811269,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.2378644050736573,
+            -0.045215468393747696
+          ],
+          "socket_centre_px": [
+            653.985727300334,
+            806.2877590694916
+          ],
+          "source_centre_px": [
+            384.1078651685393,
+            158.038202247191
+          ],
+          "socket_well_width_uv": 0.0914104634510497,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        201.47319347322798,
+        154.73504273506924
       ]
     },
     "reactive_elite": {
-      "region": [
-        472,
-        0,
-        878,
-        440
-      ],
       "source_bounds": [
-        511,
-        123,
-        847,
-        416
+        497,
+        32,
+        890,
+        397
       ],
       "body_size": [
         720,
-        628
+        669
+      ],
+      "source_body_size": [
+        393,
+        365
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/reactive-elite.png",
-      "sha256": "45595b475fb7123ee097767f46aacaf32efd2cf4cc3016eb54569c61978484b8",
+      "sha256": "b9f067e577d494b9d0687253ab5d60c7e8a6dd0212baf9744fcf7ae1ae4180ad",
       "display_span": [
         2,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         204.8,
         212.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.21372647314474558,
+            0.04121777076801904
+          ],
+          "socket_centre_px": [
+            253.42461832061068,
+            959.6203253424658
+          ],
+          "source_centre_px": [
+            590.0234375,
+            254.39375
+          ],
+          "socket_well_width_uv": 0.09914197440553543,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.21612517340545406,
+            0.04153001871686123
+          ],
+          "socket_centre_px": [
+            634.7030288106378,
+            960.1742532037118
+          ],
+          "source_centre_px": [
+            798.1379032258064,
+            254.69596774193548
+          ],
+          "socket_well_width_uv": 0.09088014320507413,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        178.74766355143248,
+        166.01246105921845
       ]
     },
     "shielded_elite": {
-      "region": [
-        878,
-        0,
-        1327,
-        440
-      ],
       "source_bounds": [
-        901,
-        132,
-        1297,
-        401
+        912,
+        39,
+        1312,
+        370
       ],
       "body_size": [
         720,
-        489
+        596
+      ],
+      "source_body_size": [
+        400,
+        331
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/shielded-elite.png",
-      "sha256": "8d642ab1547c1a0fcda9935864d70e2130494e9fdb77d5cceb0c744ba24a125a",
+      "sha256": "2d457858bb5ba222089caf798da869ff4be192291670889881aa78fa7831040d",
       "display_span": [
         2,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         204.8,
         212.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.26667888924158006,
+            -0.040435630933814276
+          ],
+          "socket_centre_px": [
+            206.45582524271848,
+            815.2671907234135
+          ],
+          "source_centre_px": [
+            980.586569579288,
+            164.66181229773463
+          ],
+          "socket_well_width_uv": 0.09334836527621194,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.2614315262452398,
+            -0.04026553369078402
+          ],
+          "socket_centre_px": [
+            674.8897637795277,
+            815.5689432325491
+          ],
+          "source_centre_px": [
+            1240.827646544182,
+            164.82939632545933
+          ],
+          "socket_well_width_uv": 0.08726042841037204,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        185.39682539685714,
+        153.41587301589928
       ]
     },
     "command_elite": {
-      "region": [
-        1327,
-        0,
-        1774,
-        440
-      ],
       "source_bounds": [
-        1342,
-        115,
-        1758,
-        391
+        1359,
+        25,
+        1726,
+        384
       ],
       "body_size": [
         720,
-        478
+        704
+      ],
+      "source_body_size": [
+        367,
+        359
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/command-elite.png",
-      "sha256": "880c5b6190436e614615c240ca75561acdb3184468d7c7eee3a0535c1aa93ee2",
+      "sha256": "c9f3d6f099691983377ee69f4dc9c81f16993a8299bfe9cded08bc50576cabd1",
       "display_span": [
         2,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         204.8,
         212.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.2528712578935927,
+            -0.041130023039402434
+          ],
+          "socket_centre_px": [
+            218.70319424838328,
+            814.0353391281001
+          ],
+          "source_centre_px": [
+            1428.1709337349398,
+            167.2921686746988
+          ],
+          "socket_well_width_uv": 0.10837744102675952,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.25105073680690004,
+            -0.04114469444499889
+          ],
+          "socket_centre_px": [
+            665.6820035477203,
+            814.009312054572
+          ],
+          "source_centre_px": [
+            1656.0059656972408,
+            167.27889634601044
+          ],
+          "socket_well_width_uv": 0.11058922553750972,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        152.6552706552968,
+        149.3276353276609
       ]
     },
     "anchor_boss": {
-      "region": [
-        0,
-        440,
-        472,
-        887
-      ],
       "source_bounds": [
-        15,
-        478,
-        463,
-        788
+        25,
+        414,
+        485,
+        843
       ],
       "body_size": [
         720,
-        498
+        671
+      ],
+      "source_body_size": [
+        460,
+        429
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/anchor-boss.png",
-      "sha256": "f48fd6fc83e696897d15cd05f461352fca9cbc122394de151cc0f927405e17ca",
+      "sha256": "fbed2eba5d173f97b5fe83927fbb51e5ec0527dad5417f8e28759ef2c3010c50",
       "display_span": [
         3,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         319.2,
+        194.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.2267174507065539,
+            -0.08706166632451198
+          ],
+          "socket_centre_px": [
+            241.90162122328667,
+            732.0526039403157
+          ],
+          "source_centre_px": [
+            126.5204802259887,
+            529.7549435028249
+          ],
+          "socket_well_width_uv": 0.08823096907014362,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.22673357936264488,
+            -0.08752307515484675
+          ],
+          "socket_centre_px": [
+            644.112684894666,
+            731.2340646753019
+          ],
+          "source_centre_px": [
+            383.4886597938144,
+            529.2316151202749
+          ],
+          "socket_well_width_uv": 0.09176020783294937,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            -0.236705761071007,
+            0.05052393256225254
+          ],
+          "socket_centre_px": [
+            233.0419899300168,
+            976.129456365436
+          ],
+          "source_centre_px": [
+            120.86016023306628,
+            685.8040786598689
+          ],
+          "socket_well_width_uv": 0.07940787216312926,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.2340993167115861,
+            0.05042439826066889
+          ],
+          "socket_centre_px": [
+            650.6460939231769,
+            975.9528825144266
+          ],
+          "source_centre_px": [
+            387.6627822286963,
+            685.6911871813547
+          ],
+          "socket_well_width_uv": 0.08823096907014362,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        208.73348873352447,
         194.6666666667
       ]
     },
     "reactive_boss": {
-      "region": [
-        472,
-        440,
-        878,
-        887
-      ],
       "source_bounds": [
-        482,
-        470,
-        875,
-        800
+        500,
+        413,
+        888,
+        841
       ],
       "body_size": [
         720,
-        605
+        794
+      ],
+      "source_body_size": [
+        388,
+        428
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/reactive-boss.png",
-      "sha256": "1522933bd334bf7673e69fe10feb8cdd196e34fae99b0099b0a62d5f77a33e3f",
+      "sha256": "e5efc27836e633097f6208a7841d437daed41dd1464ed4510489392eb44580c9",
       "display_span": [
         3,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         319.2,
+        194.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.21223897320452398,
+            -0.09579434702937242
+          ],
+          "socket_centre_px": [
+            254.74403076758722,
+            717.0608283698933
+          ],
+          "source_centre_px": [
+            592.5509499136442,
+            535.3955094991364
+          ],
+          "socket_well_width_uv": 0.08577505549808807,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.2092641928632804,
+            -0.09599294344547218
+          ],
+          "socket_centre_px": [
+            628.6173390697297,
+            716.7085183277323
+          ],
+          "source_centre_px": [
+            794.0271216097988,
+            535.2055993000874
+          ],
+          "socket_well_width_uv": 0.0899592045467753,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            -0.21948318847212483,
+            0.06395404718152249
+          ],
+          "socket_centre_px": [
+            248.31841182522527,
+            1000.4544797000209
+          ],
+          "source_centre_px": [
+            589.0882552613714,
+            688.1568228105906
+          ],
+          "socket_well_width_uv": 0.10041957716849335,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.21812062230896728,
+            0.06482632308015561
+          ],
+          "socket_centre_px": [
+            636.472991988054,
+            1002.001897144196
+          ],
+          "source_centre_px": [
+            798.2604456824513,
+            688.990947075209
+          ],
+          "socket_well_width_uv": 0.10041957716849335,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        176.4735202492514,
         194.6666666667
       ]
     },
     "shielded_boss": {
-      "region": [
-        878,
-        440,
-        1327,
-        887
-      ],
       "source_bounds": [
-        882,
-        475,
-        1316,
-        795
+        893,
+        418,
+        1327,
+        838
       ],
       "body_size": [
         720,
-        531
+        697
+      ],
+      "source_body_size": [
+        434,
+        420
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/shielded-boss.png",
-      "sha256": "bf7ad22fb8c1730de702eebef8a5f17a72abae4a117df563b02e56b97153674c",
+      "sha256": "3e87b7f9991a0aa91e5abf8ab645c203a59ed14ed1cab31a285c812972944d5d",
       "display_span": [
         3,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         319.2,
+        194.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.24746815821598503,
+            -0.08331144819634362
+          ],
+          "socket_centre_px": [
+            223.4957436624213,
+            738.7054908996864
+          ],
+          "source_centre_px": [
+            977.6877121520706,
+            538.9416157501697
+          ],
+          "socket_well_width_uv": 0.08790569360813387,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.24610638501254187,
+            -0.08411899069988935
+          ],
+          "socket_centre_px": [
+            661.2963635061246,
+            737.2729104983963
+          ],
+          "source_centre_px": [
+            1241.5841968911918,
+            538.0783678756477
+          ],
+          "socket_well_width_uv": 0.09538702923435803,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            -0.23577313118947335,
+            0.05344614155137503
+          ],
+          "socket_centre_px": [
+            233.86923263493713,
+            981.3134551121393
+          ],
+          "source_centre_px": [
+            983.940620782726,
+            685.1329284750337
+          ],
+          "socket_well_width_uv": 0.09164636142124595,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.2345632510559591,
+            0.054848699574471756
+          ],
+          "socket_centre_px": [
+            651.0576036866357,
+            983.8015930451129
+          ],
+          "source_centre_px": [
+            1235.4125,
+            686.6322368421053
+          ],
+          "socket_well_width_uv": 0.09164636142124595,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        201.15555555558998,
         194.6666666667
       ]
     },
     "command_boss": {
-      "region": [
-        1327,
-        440,
-        1774,
-        887
-      ],
       "source_bounds": [
-        1338,
-        449,
-        1759,
-        788
+        1342,
+        385,
+        1751,
+        853
       ],
       "body_size": [
         720,
-        580
+        824
+      ],
+      "source_body_size": [
+        409,
+        468
       ],
       "texture": "res://assets/ships/enemy/elite_boss_20261020/command-boss.png",
-      "sha256": "b137276943b1f2ef3ed3955ec160c88be25a2e426209ee949e2128caccb2de21",
+      "sha256": "6a16b97e155d9ebe45beffbc620c44c6ca390ba098ddbc70316384a6cb65c149",
       "display_span": [
         3,
         2
       ],
-      "display_size": [
+      "display_frame_body_size": [
         319.2,
+        194.6666666667
+      ],
+      "sockets": [
+        {
+          "pos": [
+            -0.2364479185425903,
+            -0.07050586651414074
+          ],
+          "socket_centre_px": [
+            233.2706962527224,
+            761.9225928039143
+          ],
+          "source_centre_px": [
+            1427.3621038435604,
+            547.9608900876601
+          ],
+          "socket_well_width_uv": 0.09724821725384045,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.23383708156795247,
+            -0.07086218505104958
+          ],
+          "socket_centre_px": [
+            650.4134913507738,
+            761.290483719438
+          ],
+          "source_centre_px": [
+            1664.3223860589812,
+            547.6018766756032
+          ],
+          "socket_well_width_uv": 0.09724821725384045,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            -0.23730380760411202,
+            0.06302334769076597
+          ],
+          "socket_centre_px": [
+            232.51152265515265,
+            998.8034188034188
+          ],
+          "source_centre_px": [
+            1426.9308510638298,
+            682.5
+          ],
+          "socket_well_width_uv": 0.09327890226388777,
+          "stationary_base": true
+        },
+        {
+          "pos": [
+            0.23446192699721224,
+            0.062485773046661294
+          ],
+          "socket_centre_px": [
+            650.9677292465273,
+            997.8497613847771
+          ],
+          "source_centre_px": [
+            1664.6372239747634,
+            681.9583596214511
+          ],
+          "socket_well_width_uv": 0.10518684723374579,
+          "stationary_base": true
+        }
+      ],
+      "display_size": [
+        170.12535612538525,
         194.6666666667
       ]
     }
+  },
+  "gun": {
+    "source_sha256": "7ae7961c0c316ab6c4e7344cd7151273beefced274860d7c833a46a52c116e4f",
+    "source_bounds": [
+      353,
+      182,
+      830,
+      1120
+    ],
+    "source_pivot": [
+      591,
+      880
+    ],
+    "source_muzzle": [
+      591,
+      184
+    ],
+    "pivot_px": [
+      159.26834381551362,
+      196.69936034115136
+    ],
+    "muzzle_px": [
+      159.26834381551362,
+      569.9275053304904
+    ],
+    "canvas": [
+      320,
+      640
+    ],
+    "housing_width_px": 256,
+    "runtime_forward": "down",
+    "stationary_base_in_sprite": false,
+    "texture": "res://assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
+    "sha256": "3a092c06a01b19b36349218adb00a25f55912a96b289a7968c2e98d51bb84bf2"
   }
 }

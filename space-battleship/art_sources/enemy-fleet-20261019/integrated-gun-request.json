@@ -1,0 +1,7 @@
+{
+  "transparent_background": true,
+  "referenced_image_paths": [
+    "/workspace/space_idle/space-battleship/art_sources/enemy-fleet-20261019/integrated-turret-bases-approved-20261020.png"
+  ],
+  "prompt": "Extract/refine ONE standalone MOVABLE GUN ASSEMBLY from the supplied approved spacecraft design sheet, matching the small turrets shown on all eight ships. This is the independently rotating part only: angular compact WHITE/GRAY armored breech/housing, a small copper/orange detail, and one long thick DARK GRAPHITE cannon barrel with a clear dark muzzle. Do NOT include the burgundy octagonal stationary foundation, no mounting deck, no ship or engine. Use exactly the approved turret visual style, crisp black outlines, cel-shaded top-down sprite seen directly overhead, symmetric, straight barrel pointing UP (12 o'clock). Shape like a compact narrow white armored housing at bottom around its mechanical swivel axis, with a clearly longer dark barrel extending toward the top. Make the axis the centre of the round-ish widest white housing, easy to determine; leave ample alpha margin all sides. Single complete module centered on a transparent portrait canvas, no ground shadow, no text, no backgrounds, no particles, no other versions. This gun part will rotate above the built-in burgundy base in the separately produced hull image; do not bake in that stationary base."
+}

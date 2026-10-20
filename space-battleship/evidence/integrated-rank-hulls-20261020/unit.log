@@ -1,0 +1,9 @@
+Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
+
+WARNING: Enemy visual fallback: anchor:armour_type_mismatch -> enemy_6
+     at: push_warning (core/variant/variant_utility.cpp:1034)
+     GDScript backtrace (most recent call first):
+         [0] resolve (res://scripts/enemy_visual_identity.gd:43)
+         [1] identity_checks (res://test_enemy_ranked_art.gd:27)
+         [2] run (res://test_enemy_ranked_art.gd:59)
+RANKED_UNIT 438 checks 0 failures

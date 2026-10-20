@@ -1,0 +1,48 @@
+{
+  "base": "6fe75f56",
+  "sole_approved_source": "15a102ac3bee1b43d14e6f9666b8f19c10b21a06",
+  "rejected_ca60668b_not_ancestor": true,
+  "runtime_hulls_replaced": 8,
+  "stationary_foundations_in_hull": 24,
+  "moving_gun_texture_separate": true,
+  "scene_checks": 908,
+  "scene_failures": 0,
+  "identity_interface_unit_checks_included": 438,
+  "raw_window_png": [
+    1372,
+    883
+  ],
+  "housing_pixels_min": 11.0348840131725,
+  "housing_pixels_max": 14.0581581544637,
+  "production_equipment_stats_weapon_profiles_active_hardpoints_and_formation_unchanged": true,
+  "numerical_count_interface_unapplied": {
+    "normal": 1,
+    "elite": 2,
+    "boss": 4
+  },
+  "paused_gun_rotation_examples": [
+    {
+      "image": "command-boss-turn--35.png",
+      "changed_pixels": 770,
+      "changed_pixel_bbox": [
+        162,
+        235,
+        246,
+        298
+      ],
+      "all_other_scene_pixels_identical": true
+    },
+    {
+      "image": "command-boss-turn-35.png",
+      "changed_pixels": 758,
+      "changed_pixel_bbox": [
+        157,
+        235,
+        241,
+        298
+      ],
+      "all_other_scene_pixels_identical": true
+    }
+  ],
+  "native_full_run": false
+}

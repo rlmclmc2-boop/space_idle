@@ -1,0 +1,200 @@
+{
+  "baseline": "108080a7",
+  "all_original_visual_rows_unchanged": true,
+  "eight_base_pngs_unchanged": true,
+  "active_geometry_mounts_slots_gameplay_formation_runtime_unchanged": true,
+  "reserved_slot_counts_not_applied": {
+    "normal": 1,
+    "elite": 2,
+    "boss": 4
+  },
+  "approved_source": "15a102ac",
+  "baked_foundations": true,
+  "separate_gun": "res://assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
+  "sprites": [
+    {
+      "key": "anchor_elite",
+      "alpha_bounds": [
+        83,
+        610,
+        803,
+        1163
+      ],
+      "sha256": "1b6bb40679af09700c83e629b61cdfea8ec10e0b83efa7cbb5fa6fb7283afa18",
+      "geometry_sha256": "88b12b481bb2ec9c5ccc385caa845d1fd57630115f4605ba402a6a055dbf6b18",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        201.47319347322798,
+        154.73504273506924
+      ],
+      "display_frame_body_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "anchor_boss",
+      "alpha_bounds": [
+        83,
+        551,
+        803,
+        1222
+      ],
+      "sha256": "fbed2eba5d173f97b5fe83927fbb51e5ec0527dad5417f8e28759ef2c3010c50",
+      "geometry_sha256": "88b12b481bb2ec9c5ccc385caa845d1fd57630115f4605ba402a6a055dbf6b18",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        208.73348873352447,
+        194.6666666667
+      ],
+      "display_frame_body_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    {
+      "key": "reactive_elite",
+      "alpha_bounds": [
+        83,
+        552,
+        803,
+        1221
+      ],
+      "sha256": "b9f067e577d494b9d0687253ab5d60c7e8a6dd0212baf9744fcf7ae1ae4180ad",
+      "geometry_sha256": "870a355a7db4ee5a01cbd70f1eecc77410f2cb95121969974e952e3e72c3cc52",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        178.74766355143248,
+        166.01246105921845
+      ],
+      "display_frame_body_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "reactive_boss",
+      "alpha_bounds": [
+        83,
+        490,
+        803,
+        1284
+      ],
+      "sha256": "e5efc27836e633097f6208a7841d437daed41dd1464ed4510489392eb44580c9",
+      "geometry_sha256": "870a355a7db4ee5a01cbd70f1eecc77410f2cb95121969974e952e3e72c3cc52",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        176.4735202492514,
+        194.6666666667
+      ],
+      "display_frame_body_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    {
+      "key": "shielded_elite",
+      "alpha_bounds": [
+        83,
+        589,
+        803,
+        1185
+      ],
+      "sha256": "2d457858bb5ba222089caf798da869ff4be192291670889881aa78fa7831040d",
+      "geometry_sha256": "e157999bd1b36ccececba6615a3ba86cb4d97544bff24b7357a78c8f5714de90",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        185.39682539685714,
+        153.41587301589928
+      ],
+      "display_frame_body_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "shielded_boss",
+      "alpha_bounds": [
+        83,
+        538,
+        803,
+        1235
+      ],
+      "sha256": "3e87b7f9991a0aa91e5abf8ab645c203a59ed14ed1cab31a285c812972944d5d",
+      "geometry_sha256": "e157999bd1b36ccececba6615a3ba86cb4d97544bff24b7357a78c8f5714de90",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        201.15555555558998,
+        194.6666666667
+      ],
+      "display_frame_body_size": [
+        319.2,
+        194.6666666667
+      ]
+    },
+    {
+      "key": "command_elite",
+      "alpha_bounds": [
+        83,
+        535,
+        803,
+        1239
+      ],
+      "sha256": "c9f3d6f099691983377ee69f4dc9c81f16993a8299bfe9cded08bc50576cabd1",
+      "geometry_sha256": "971e4f8560f30634575740f4bf4eb486491436e80b0e00b949bba840e1235b8c",
+      "display_span": [
+        2,
+        2
+      ],
+      "display_size": [
+        152.6552706552968,
+        149.3276353276609
+      ],
+      "display_frame_body_size": [
+        204.8,
+        212.6666666667
+      ]
+    },
+    {
+      "key": "command_boss",
+      "alpha_bounds": [
+        83,
+        475,
+        803,
+        1299
+      ],
+      "sha256": "6a16b97e155d9ebe45beffbc620c44c6ca390ba098ddbc70316384a6cb65c149",
+      "geometry_sha256": "971e4f8560f30634575740f4bf4eb486491436e80b0e00b949bba840e1235b8c",
+      "display_span": [
+        3,
+        2
+      ],
+      "display_size": [
+        170.12535612538525,
+        194.6666666667
+      ],
+      "display_frame_body_size": [
+        319.2,
+        194.6666666667
+      ]
+    }
+  ]
+}

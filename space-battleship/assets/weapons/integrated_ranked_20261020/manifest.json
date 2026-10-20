@@ -1,0 +1,34 @@
+{
+  "source_sha256": "7ae7961c0c316ab6c4e7344cd7151273beefced274860d7c833a46a52c116e4f",
+  "source_bounds": [
+    353,
+    182,
+    830,
+    1120
+  ],
+  "source_pivot": [
+    591,
+    880
+  ],
+  "source_muzzle": [
+    591,
+    184
+  ],
+  "pivot_px": [
+    159.26834381551362,
+    196.69936034115136
+  ],
+  "muzzle_px": [
+    159.26834381551362,
+    569.9275053304904
+  ],
+  "canvas": [
+    320,
+    640
+  ],
+  "housing_width_px": 256,
+  "runtime_forward": "down",
+  "stationary_base_in_sprite": false,
+  "texture": "res://assets/weapons/integrated_ranked_20261020/cannon-rotating.png",
+  "sha256": "3a092c06a01b19b36349218adb00a25f55912a96b289a7968c2e98d51bb84bf2"
+}

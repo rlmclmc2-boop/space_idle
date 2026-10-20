@@ -32,6 +32,15 @@ func install_preview_mounts(scene,enemy:Dictionary)->void:
  var dimensions:Vector2=scene.enemy_hull_rect(enemy,width).size
  var row:Dictionary=scene.visual_config.ships[scene.enemy_ship_key(enemy)]
  row.hardpoints=plan.hardpoints;row.slot_map=plan.slot_map
+ var smallest_well:=INF
+ for point in row.hardpoints:smallest_well=minf(smallest_well,float(point.socket_well_width_uv))
+ var meta:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(str(scene.visual_config.enemy_weapon_interface.movable_gun.manifest)))
+ var desired_housing:float=smallest_well*dimensions.x*float(scene.visual_config.enemy_weapon_interface.movable_gun.housing_to_well_ratio)
+ var skin=preload("res://dev/qa/integrated_turret_preview.gd").new()
+ skin.configure(meta,desired_housing,width*.42*.9*.45);scene.enemy_recognition=skin
+ # This copy is for the explicit isolated fixture only; no production profile changes.
+ scene.visual_config.weapons.cannon=scene.visual_config.weapons.cannon.duplicate(true)
+ scene.visual_config.weapons.cannon.muzzle=[[skin.muzzle_factor,0]]
  for point in row.hardpoints:
   point.pos=[float(point.pos[0])*dimensions.x/width,float(point.pos[1])*dimensions.y/(width*2.0)]
  enemy.equipment=[];enemy.cooldowns=[]
@@ -118,10 +127,46 @@ func run()->void:
    var components:Array=scene.enemy_weapon_components(hero)
    check(hero.equipment.size()==expected_slots and components.size()==expected_slots,"QA has exact reserved elite/BOSS weapon count")
    var mounts:Array=[]
+   var gun_meta:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(str(scene.visual_config.enemy_weapon_interface.movable_gun.manifest)))
+   var gun_texture:Texture2D=load(str(gun_meta.texture))
+   var gun_used:Rect2i=gun_texture.get_image().get_used_rect()
+   var housing_centres:Array[Vector2]=[]
+   var rotation_probes:Array=[]
    for component in components:
     check(component.mode()=="main" and float(component.hardpoint.rotation_limit)>0,"each reserved weapon has an independent rotating mount")
     var mount_pose:Dictionary=scene.enemy_component_pose(hero,component)
-    mounts.append({"slot":component.owner_slot,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle})
+    var socket_px:Array=component.hardpoint.socket_centre_px
+    var expected_axis:Vector2=(rect.position+Vector2(float(socket_px[0]),float(socket_px[1]))/texture.get_size()*rect.size).rotated(PI+angle)
+    check(expected_axis.distance_to(mount_pose.origin)<.001,"rotating gun axis is exactly the baked foundation centre")
+    check(bool(component.hardpoint.stationary_base),"stationary base is baked once into hull, not another rotating disk")
+    var skin=scene.enemy_recognition
+    var w:float=float(mount_pose.width)*.45
+    var scale:float=w*skin.housing_per_w/skin.housing_width_px
+    var anchor:=Vector2(0,(.64-skin.muzzle_factor/.45)*w)
+    var offset:Vector2=Vector2(mount_pose.origin)+(Vector2(mount_pose.port)-Vector2(.64*w,0)).rotated(mount_pose.angle)
+    var painted_axis:Vector2=offset+anchor.rotated(float(mount_pose.angle)-PI/2)
+    var painted_muzzle:Vector2=offset+(anchor+(skin.muzzle_px-skin.pivot_px)*scale).rotated(float(mount_pose.angle)-PI/2)
+    check(painted_axis.distance_to(mount_pose.origin)<.001,"gun sprite mechanical pivot stays on static foundation")
+    check(painted_muzzle.distance_to(mount_pose.muzzle)<.001,"separate gun image tip matches isolated live muzzle")
+    var pixels_per_logical:float=(root.get_final_transform()*scene.battle_clip.get_global_transform_with_canvas()).get_scale().x
+    var housing_world:float=skin.housing_width_px*scale
+    check(housing_world*pixels_per_logical>=7.0,"independent white gun housing is legible in original window")
+    for previous in housing_centres:check(Vector2(mount_pose.origin).distance_to(previous)>housing_world+2.0,"separate rotating housings do not overlap")
+    housing_centres.append(mount_pose.origin)
+    var probes:Array=[]
+    for yaw in [-55.0,0.0,55.0]:
+     var yaw_radians:=deg_to_rad(yaw)
+     var housing_radius:float=housing_world*.72
+     var well_world:float=float(component.hardpoint.socket_well_width_uv)*rect.size.x
+     check(housing_radius<well_world*.80,"housing rotation stays supported by integrated foundation shoulders")
+     var gun_box:=Rect2();var first_vertex:=true
+     for pixel in [Vector2(gun_used.position),Vector2(gun_used.end.x,gun_used.position.y),Vector2(gun_used.end),Vector2(gun_used.position.x,gun_used.end.y)]:
+      var vertex:Vector2=point+Vector2(mount_pose.origin)+((pixel-skin.pivot_px)*scale).rotated(float(mount_pose.angle)-PI/2+yaw_radians)
+      if first_vertex:gun_box=Rect2(vertex,Vector2.ZERO);first_vertex=false
+      else:gun_box=gun_box.expand(vertex)
+     probes.append({"yaw":yaw,"axis":mount_pose.origin,"opaque_gun_aabb":gun_box,"housing_supported":true})
+    rotation_probes.append_array(probes)
+    mounts.append({"slot":component.owner_slot,"socket_centre_px":socket_px,"origin":mount_pose.origin,"muzzle":mount_pose.muzzle,"housing_pixels":housing_world*pixels_per_logical,"rotation_probes":probes})
    for i in [1,2]:check(g.enemies[i].equipment.size()==1 and scene.enemy_weapon_components(g.enemies[i]).size()==1,"ordinary escorts retain one weapon in QA")
    check(scene.enemy_render_position(hero)==point and is_equal_approx(scene.enemy_render_width(hero),width),"ranked skin does not move or resize model geometry")
    var outline:PackedVector2Array=packet.inner.duplicate();var protection_scale:float=scene.enemy_display_protection_scale(hero,packet,angle)
@@ -129,6 +174,7 @@ func run()->void:
    var status:Dictionary=scene.enemy_status_layout(hero,point,width,angle,outline)
    var padding_top:=42.0 if rank=="elite" else 60.0
    ruler.box=Rect2(point-available*.5-Vector2(12,padding_top),Vector2(228.8,266.6666666667) if rank=="elite" else Vector2(343.2,266.6666666667));ruler.label=key+" "+rank+(" 2x2" if rank=="elite" else " 3x2");ruler.queue_redraw()
+   for probe in rotation_probes:check(ruler.box.encloses(probe.opaque_gun_aabb),"rotating gun remains within reserved display frame")
    check(ruler.box.encloses(body) and ruler.box.encloses(status.health) and ruler.box.encloses(status.shield),"hull and both meters inside reserved display frame")
    check(absf(status.health.get_center().x-point.x)<.001 and absf(status.shield.get_center().x-point.x)<.001,"ranked meters centred")
    if rank=="boss":check(ruler.box.encloses(status.caption_bounds),"boss name fits reserved top space")
@@ -146,6 +192,15 @@ func run()->void:
    scene.simulation_geometry_view=null;geometry.close({"providers":{},"spatial":g.target_spatial_source})
    await process_frame;await RenderingServer.frame_post_draw
    var filename:String=str(key)+"-"+str(rank)+".png";root.get_texture().get_image().save_png(output.path_join(filename))
+   if rank=="boss" and key=="command":
+    for yaw in [-35.0,35.0]:
+     scene.enemy_recognition.probe_yaw=deg_to_rad(yaw)
+     for record in scene.retained_contacts.records.values():
+      for mount in record.mounts:mount.node.pieces.body.queue_redraw()
+      record.fallback.queue_redraw()
+     scene.battle_layer.queue_redraw();await process_frame;await RenderingServer.frame_post_draw
+     root.get_texture().get_image().save_png(output.path_join("command-boss-turn-"+str(int(yaw))+".png"))
+    scene.enemy_recognition.probe_yaw=0.0
    snapshots.append({"case":key+"_"+rank,"file":filename,"visual_key":hero_key,"actor_size":hero.size,"weapon_slots":expected_slots,"mounts":mounts,"position":point,"model_width":width,"body":body,"display_frame":ruler.box,"health":status.health,"shield":status.shield,"caption":status.caption_bounds,"alpha_centre_error":centre.length()});case_index+=1
- var result={"checks":checks,"failures":failures,"fires":fires,"hits":hits,"engine":Engine.get_version_info().string,"native_full_run":false,"fixture":"actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged","snapshots":snapshots}
+ var result={"approved_source":"15a102ac","stationary_foundations_in_hull":true,"movable_gun_independent":true,"window_png":root.get_texture().get_image().get_size(),"checks":checks,"failures":failures,"fires":fires,"hits":hits,"engine":Engine.get_version_info().string,"native_full_run":false,"fixture":"actual main.tscn, save disabled, held-health QA actor metadata; explicit QA-only 2/4 equipment and reserved mount installation, two ordinary one-weapon escorts; production loadouts/stats/formation unchanged","snapshots":snapshots}
  FileAccess.open(output.path_join("ranked.json"),FileAccess.WRITE).store_string(JSON.stringify(result,"  "));print("RANKED_CAPTURE ",JSON.stringify(result));quit(1 if failures else 0)
