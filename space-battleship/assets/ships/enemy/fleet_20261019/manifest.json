@@ -1,0 +1,184 @@
+{
+  "source_commit": "f9af84734145a6df6bcc1998fff15730936aa78a",
+  "source_sha256": "94184402f15f67d72ea82c051f40b9de98d8497caed98d8f612521df908e6ea8",
+  "source_size": [
+    1774,
+    887
+  ],
+  "canvas": [
+    887,
+    1774
+  ],
+  "opaque_width": 720,
+  "weapons_baked": false,
+  "sprites": {
+    "scout": {
+      "region": [
+        0,
+        0,
+        396,
+        440
+      ],
+      "source_bounds": [
+        133,
+        114,
+        307,
+        386
+      ],
+      "body_size": [
+        720,
+        1126
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/scout.png",
+      "sha256": "acb4f1bbe3011a38c323444ac0d2141d9c35b615a830137a51d2602aa136eaea"
+    },
+    "sentry": {
+      "region": [
+        396,
+        0,
+        887,
+        440
+      ],
+      "source_bounds": [
+        485,
+        89,
+        828,
+        389
+      ],
+      "body_size": [
+        720,
+        630
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/sentry.png",
+      "sha256": "611f42c213a38dae52dbf56387367cb8deec4384e32c4edbc34d10a9efcd44cc"
+    },
+    "interceptor": {
+      "region": [
+        887,
+        0,
+        1301,
+        440
+      ],
+      "source_bounds": [
+        946,
+        91,
+        1239,
+        395
+      ],
+      "body_size": [
+        720,
+        747
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/interceptor.png",
+      "sha256": "ba5f29ebeeb548046e7e1b489f86ab2e20b8ccfbe4e433114cec2b1ecbf0d0a0"
+    },
+    "swarm": {
+      "region": [
+        1301,
+        0,
+        1774,
+        440
+      ],
+      "source_bounds": [
+        1363,
+        93,
+        1731,
+        398
+      ],
+      "body_size": [
+        720,
+        597
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/swarm.png",
+      "sha256": "2318ec1f7632b0d62c4a3fbbd183ee4915560691225a8316b960d4f154b8bdd8"
+    },
+    "anchor": {
+      "region": [
+        0,
+        440,
+        495,
+        887
+      ],
+      "source_bounds": [
+        14,
+        513,
+        475,
+        817
+      ],
+      "body_size": [
+        720,
+        475
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/anchor.png",
+      "sha256": "c0537907af243c46c6d342530b869f069d4f653c93b2c77255d4079cb592a8fb"
+    },
+    "reactive": {
+      "region": [
+        0,
+        0,
+        1233,
+        1275
+      ],
+      "source_bounds": [
+        80,
+        152,
+        1150,
+        1123
+      ],
+      "body_size": [
+        720,
+        653
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/reactive.png",
+      "sha256": "72da5db9646ea27834e50aa3015b8bf947c91eb79c96376d9d2ba3efcff41e83"
+    },
+    "shielded": {
+      "region": [
+        896,
+        440,
+        1323,
+        887
+      ],
+      "source_bounds": [
+        913,
+        507,
+        1303,
+        817
+      ],
+      "body_size": [
+        720,
+        572
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/shielded.png",
+      "sha256": "0f6fbd6516ca6a0e7f3d51956db1697b396463b8999f42c8670942fca23f4dae"
+    },
+    "command": {
+      "region": [
+        1323,
+        440,
+        1774,
+        887
+      ],
+      "source_bounds": [
+        1344,
+        514,
+        1752,
+        816
+      ],
+      "body_size": [
+        720,
+        533
+      ],
+      "texture": "res://assets/ships/enemy/fleet_20261019/command.png",
+      "sha256": "63b017e18d47169b899052513584da66fd7d73b3fd28e876b3fce5795dffe460"
+    }
+  },
+  "overrides": {
+    "reactive": {
+      "source": "res://art_sources/enemy-fleet-20261019/reactive-refined-approved.png",
+      "source_sha256": "54be252dee38ea150c94c6b161bc294655245c07b5d9596f7acf818f709e85b4",
+      "generator": "parent-approved refinement",
+      "source_commit": "e9e8da87b96ba8a191b0ba275a344f4733279ba4"
+    }
+  }
+}

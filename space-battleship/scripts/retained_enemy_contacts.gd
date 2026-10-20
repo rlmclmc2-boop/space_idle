@@ -236,6 +236,8 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   var depth=clampf((point.y-90.0)/maxf(1.0,float(spatial.frontline)-90.0),0,1)
   var light=lerpf(1.18,1.30,depth) if int(enemy.size)<=2 else lerpf(0.76,1.0,depth)
   record.root.position=pos;record.hull.rotation=PI+angle
+  var hull_rect:Rect2=paint_owner.enemy_hull_rect(enemy,1.0)
+  if record.hull.data.rect!=hull_rect:record.hull.data.rect=hull_rect;record.hull.queue_redraw()
   record.hull.scale=Vector2.ONE*width;record.hull.self_modulate=Color(light,light,light,1)
   record.deck.rotation=PI+angle
   for prefix in ["deck_physical_","deck_energy_"]:
@@ -274,13 +276,17 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
  if changed:
   record.protection.data.width=width;record.protection.data.packet=packet;record.protection.data.clock=paint_owner.game.enemy_shield_time
   record.protection.queue_redraw()
+ var protection_scale:float=paint_owner.enemy_display_protection_scale(enemy,packet,angle)
+ record.protection.scale=Vector2.ONE*protection_scale
  var outline:PackedVector2Array=packet.inner
  if not status.alive:outline=PackedVector2Array()
  elif status.active and shield_type in [0,1,2]:
   outline=packet.outer if status.show_hull and armour in [1,2] else packet.inner
   if shield_type==1 and size>=4:outline=packet.front if status.show_hull and armour in [1,2] else packet.single_front
  elif not (status.show_hull and armour in [1,2]) and not status.repair:outline=PackedVector2Array()
- update_meters(record,pos,width,angle,outline)
+ var display_outline:PackedVector2Array=outline.duplicate()
+ for index in display_outline.size():display_outline[index]*=protection_scale
+ update_meters(record,pos,width,angle,display_outline)
  var mount_key:Array=[point,width,angle,record.screen_scale,paint_owner.player_render_position()]
  if record.mount_signature==mount_key:return
  record.mount_signature=mount_key
@@ -313,10 +319,11 @@ func update_meters(record:DisplayRecord,pos:Vector2,width:float,angle:float,outl
  # Ordinary contacts draw only meters. Leader/caption consumers keep the full
  # canonical enemy_status_layout through the unsupported painter above.
  var top:float=pos.y
- for corner in record.corners:top=minf(top,pos.y+(corner*Vector2(width,width*2.0)).rotated(PI+angle).y)
+ var dimensions:Vector2=record.hull.data.rect.size*width
+ for corner in record.corners:top=minf(top,pos.y+(corner*dimensions).rotated(PI+angle).y)
  for point in outline:top=minf(top,pos.y+point.rotated(PI+angle).y)
  top-=9.0
- var bar_width=clampf(width*record.used.size.x,28,100)
+ var bar_width=clampf(dimensions.x*record.used.size.x,28,100)
  var left=clampf(pos.x-bar_width*0.5,6,paint_owner.BATTLE_VIEW_SIZE.x-bar_width-6)
  var enemy=record.entity
  if enemy.get("explicit_formation",false) and absf(float(enemy.x)-paint_owner.BATTLE_VIEW_SIZE.x*0.5)>150.0:

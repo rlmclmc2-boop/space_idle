@@ -1639,10 +1639,33 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
 
+# Approved eight base hulls use a common display box. This never changes the
+# authored formation, actor size, simulation geometry or encounter rank.
+const ENEMY_BASE_DISPLAY_SIZE:=Vector2(90.4,79.3333333333)
+
+func enemy_display_fit(opaque:Vector2,angle:float)->float:
+	var c:=absf(cos(angle));var sn:=absf(sin(angle))
+	var rotated:=Vector2(opaque.x*c+opaque.y*sn,opaque.x*sn+opaque.y*c)
+	return minf(ENEMY_BASE_DISPLAY_SIZE.x/maxf(rotated.x,.001),ENEMY_BASE_DISPLAY_SIZE.y/maxf(rotated.y,.001))
+
 func enemy_hull_rect(enemy:Dictionary,width:float)->Rect2:
 	var dimensions:=Vector2(width,width*2.0)
-	var row:Dictionary=visual_config.ships[enemy_ship_key(enemy)]
+	var key:=enemy_ship_key(enemy)
+	var row:Dictionary=visual_config.ships[key]
+	if key.begins_with("enemy_opening_"):
+		var actual_width:float=enemy_render_width(enemy)
+		var texture:Texture2D=ship_hull_texture(key)
+		var used:Rect2=visual_region(str(row.texture))
+		dimensions*=enemy_display_fit(used.size/texture.get_size()*Vector2(actual_width,actual_width*2.0),enemy_render_angle(enemy))
 	return Rect2(-dimensions*0.5-Vector2(row.get("origin_offset",Vector2.ZERO))*dimensions,dimensions)
+
+# Fit only the drawn defence envelope, preserving its original centre-hit packet.
+func enemy_display_protection_scale(enemy:Dictionary,packet:Dictionary,angle:float)->float:
+	if not enemy_ship_key(enemy).begins_with("enemy_opening_"):return 1.0
+	var half:=Vector2.ZERO
+	for key in ["inner","outer","front","single_front"]:
+		for point in packet.get(key,PackedVector2Array()):half=half.max(Vector2(point).abs())
+	return minf(1.0,enemy_display_fit(half*2.0,angle))
 
 func enemy_render_width(enemy: Dictionary) -> float:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
