@@ -156,7 +156,8 @@ def prepare_engine(root):
     if not archive.exists():
         partial = archive.with_name(archive.name + '.' + str(os.getpid()) + '.partial')
         try:
-            with urllib.request.urlopen(ENGINE_URL, timeout=60) as response, partial.open('xb') as output:
+            request = urllib.request.Request(ENGINE_URL, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(request, timeout=60) as response, partial.open('xb') as output:
                 shutil.copyfileobj(response, output)
             if digest(partial) != ENGINE_ARCHIVE_SHA256:
                 raise RuntimeError('Official Godot archive failed SHA256 verification: ' + str(partial))

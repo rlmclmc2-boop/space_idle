@@ -2,6 +2,17 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+function Get-Sha256([string]$path) {
+    $hash = [Security.Cryptography.SHA256]::Create()
+    $stream = [IO.File]::OpenRead($path)
+    try {
+        return ([BitConverter]::ToString($hash.ComputeHash($stream))).Replace('-', '').ToLowerInvariant()
+    } finally {
+        $stream.Dispose()
+        $hash.Dispose()
+    }
+}
+
 try {
     if (-not [Environment]::Is64BitOperatingSystem) {
         throw 'The player entry supports Windows x64 only.'
@@ -26,7 +37,7 @@ try {
             try {
                 Write-Host 'Downloading the pinned Python player runtime from python.org...'
                 Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $partial
-                if ((Get-FileHash -LiteralPath $partial -Algorithm SHA256).Hash.ToLowerInvariant() -ne $archiveHash) {
+                if ((Get-Sha256 $partial) -ne $archiveHash) {
                     throw 'Python download failed SHA256 verification.'
                 }
                 Move-Item -LiteralPath $partial -Destination $archive
@@ -34,14 +45,15 @@ try {
                 if (Test-Path -LiteralPath $partial) { Remove-Item -LiteralPath $partial }
             }
         }
-        if ((Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant() -ne $archiveHash) {
+        if ((Get-Sha256 $archive) -ne $archiveHash) {
             throw 'Cached Python runtime failed SHA256 verification.'
         }
         $staging = $pythonDir + '.' + $PID + '.partial'
-        Expand-Archive -LiteralPath $archive -DestinationPath $staging
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [IO.Compression.ZipFile]::ExtractToDirectory($archive, $staging)
         foreach ($item in $fileHashes.GetEnumerator()) {
             $path = Join-Path $staging $item.Key
-            if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $item.Value) {
+            if ((Get-Sha256 $path) -ne $item.Value) {
                 throw ('Python runtime file failed SHA256 verification: ' + $item.Key)
             }
         }
@@ -49,7 +61,7 @@ try {
     }
     foreach ($item in $fileHashes.GetEnumerator()) {
         $path = Join-Path $pythonDir $item.Key
-        if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -ne $item.Value) {
+        if ((Get-Sha256 $path) -ne $item.Value) {
             throw ('Installed player Python runtime is missing or changed: ' + $path)
         }
     }
