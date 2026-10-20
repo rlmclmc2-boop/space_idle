@@ -10,13 +10,11 @@
 | 初始资源 / 升级费用向上取整 | test_rule_rounding.gd | Starting resources / Fractional final cost / deduct same cost | COVERED |
 | 关卡倍率插值、端点截断 / 敌武器空字段回退 | test_rule_rounding.gd | Within-stage / base one / endpoints / own row / blank fallback不写源表 | COVERED |
 | 反应炉能源、逐级费用与MAX | test_reactor.gd; test_reactor_config.py | 配置源一致、100×1.2^(L−1)、100×1.4^(L−1)、x10与MAX逐级扣费 | COVERED |
-| 科学家逐人费用 round | test_scientists.gd | Third cost / Ten purchase equals ten sequential rounded costs | COVERED |
 | 大数研发与显示 | test_large_numbers.gd | 大数预算、等级、有限时间退出和显示不溢出 | COVERED |
 | 战斗/前进/驻守 | test_guard.gd | 巡航到达、无移动、清敌等待、重复驻守 | COVERED |
 | 跃迁已通关 / 拒绝未通关 | test_loop_retreat.gd | warp cleared / rejects uncleared | COVERED |
 | 死亡回退 / 三种驻守处理 | test_guard.gd; test_loop_retreat.gd | 原点/就地/取消、跨关、恢复生命 | COVERED |
 | 通关等待、立即过关、重复点击 | test_skip_clear.gd | acknowledgment / repeated click / automatic countdown | COVERED |
-| 暂停冷却/生产/研究 | test_travel_cooldowns.gd; test_furnace_income.gd; test_scientists.gd | Pause freezes / preserves | COVERED |
 | delta截断 / 子步 / 1X、2X、5X | test_time_steps.gd | delta 0.04/0.1/0.8 × speed 1/2/5；每步≤1/60、总和与前进距离 | COVERED |
 | 在线模拟时间与现实保存计时 | test_time_steps.gd | Online save interval / UI clock / pause state deep equality | COVERED |
 | 同名槽位等级与冷却独立 / 首槽卸下 | test_state_ownership.gd | independent levels、0.7/0.2冷却、remaining slot | COVERED |
@@ -47,20 +45,14 @@
 | 保存完整故障恢复 | test_save_boundaries.gd | 已覆盖open/rename失败；未模拟断电、写入中磁盘满/损坏，U-008，不能保证所有故障原子性 | PARTIAL |
 | QA删除后旧场景不得复活档案 | test_delete_save.gd | disk cleared / no resurrection / new game save | COVERED |
 | 页签解锁/重锁/全隐藏 | test_tab_unlocks.gd | preserves selected / fallback / selected -1 | COVERED |
-| 科研无拖拽、配置扩展、旧顺序兼容 | test_hightech_construction.gd; test_hightech_slots.gd | no drag / 12 projects / compact legacy holes / retained nodes | COVERED |
 | 换舰候选选择 | test_module_ui.gd | selection no immediate switch / 点击确认后换舰 | COVERED |
-| 科技滚动位置与页签保持 | test_hightech_slots.gd; test_hightech_construction.gd | scroll after refresh / selected tab / focus | COVERED |
 | 通关解锁弹窗阻止自动推进 | test_skip_clear.gd | Unlock acknowledgment is preserved | COVERED |
 | 伤害文本独立数字、位置避让 | test_damage_text.gd | 同帧与连续命中、真实文字边界不相交 | COVERED |
 | 舰船/炮口/敌舰位置 | test_ship_visuals.gd; test_enemy_ship_visuals.gd; test_enemy_weapon_positions.gd | occupancy / muzzle / effect / symmetric mounts | COVERED |
 | 资源总量/速率切换与重建保持 | test_resource_display.gd | toggles current total / rebuild preserves rate | COVERED |
-| 科学家MAX即时按钮、暂停也更新 | test_scientist_affordability.gd | 0→1e100→0、paused/unpaused | COVERED |
 | 读取不得修改profile、loadout、生命、冷却 | test_state_ownership.gd | Read purity深比较 + slot array identity | COVERED |
 | 装备等级与玩家冷却唯一槽位状态 | test_state_ownership.gd | stale legacy ignored / no runtime levels / transient cooldowns | COVERED |
 | 旧levels仅加载/保存兼容边界 | test_state_ownership.gd | derived first level / runtime unaffected | COVERED |
-| MAX可购买性与原规则等价 | test_scientist_affordability.gd | scientist_purchase参照与profile纯度，500组参数各检查等价/纯度 | COVERED |
-| 免费首人、递减费用、多资源、大数、锁定 | test_scientist_affordability.gd | 五种费用、五种预算、四种人数、锁定 | COVERED |
-| 科学家正数量购买不变 | test_scientists.gd; test_scientist_affordability.gd | 十人与逐人实际扣费一致、0/1/10可购买性 | COVERED |
 
 ## 使用边界
 
