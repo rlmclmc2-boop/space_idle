@@ -15,6 +15,7 @@ func capture(viewport: SubViewport, name: String) -> void:
 func run() -> void:
 	var viewport := SubViewport.new()
 	viewport.size=Vector2i(2048,1280)
+	viewport.gui_embed_subwindows=true
 	viewport.render_target_update_mode=SubViewport.UPDATE_ALWAYS
 	root.add_child(viewport)
 	var scene:=preload("res://scripts/main.gd").new()
@@ -59,6 +60,7 @@ func run() -> void:
 		previous=index
 	await process_frame
 	await process_frame
+	check(scene.planet_panel.bonus_dialog.visible,"Conquest bonus dialog is visible in the captured viewport")
 	check(scene.planet_panel.bonus_label.text==detail,"Bonus dialog retains the complete ordered reward text")
 	await capture(viewport,"planet-conquest-buffs")
 	scene.planet_panel.bonus_dialog.hide()
