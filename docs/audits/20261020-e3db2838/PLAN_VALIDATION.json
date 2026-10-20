@@ -4,19 +4,23 @@
     "main_equals_audit_baseline": true,
     "single_stage_open": true,
     "s00_thread_recorded": true,
-    "s00_review_pending": true,
     "next_stage_blocked_until_dual_pass": true,
     "p04_audit_only": true,
     "p05_hostname_alias_reconciled": true,
     "native_existing_dll_load_separate_from_rebuild": true,
     "known_test_failures_separate_from_fixture_causes": true,
     "unchanged:SHA256SUMS.json": true,
-    "unchanged:SUPPLEMENT_SHA256SUMS.json": true
+    "unchanged:SUPPLEMENT_SHA256SUMS.json": true,
+    "s00_dual_pass_same_sha": true,
+    "s00_thread_archived": true
   },
   "stages": 26,
-  "active_stage": "S00",
-  "active_stage_status": "review",
+  "active_stage": null,
+  "active_stage_status": "none",
   "other_stage_status": "not_started",
   "product_code_changed": false,
-  "main_integrated": false
+  "main_integrated": false,
+  "closed_stages": [
+    "S00"
+  ]
 }
