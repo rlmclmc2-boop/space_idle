@@ -41,7 +41,7 @@
     "startup": ""
   },
   "save_artifacts_during_denial": {
-    "progress.json": "4de4a7dba6eeca84ce211644711432b4764a31d7e812138a90f21edc3e9c083b",
+    "progress.json": "c38ff92eb28a84be241c7fdc34eda06448d725c84ab6502c8975006ece1a6907",
     "progress.json.writer-lock": "locked-sidecar"
   },
   "denied_writes_left_artifacts_identical": true,

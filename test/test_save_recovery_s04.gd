@@ -148,6 +148,14 @@ func _initialize() -> void:
 	check(FileAccess.file_exists(path) and not FileAccess.file_exists(path+".import-prev") and not FileAccess.file_exists(path+".import-new"), "successful load retires abandoned import staging")
 	resumed = null
 	clear(path)
+	put(path+".import-prev",valid)
+	put(path+".import-new",{"version":5})
+	put(path+".import-active",{"pid":OS.get_process_id()})
+	var reused_pid := BattleGame.new(db,true)
+	check(reused_pid.progress_writer.owns_progress() and reused_pid.profile.resources["1"]==4321.0,"OS ownership overrides a stale import marker with a reused PID")
+	check(FileAccess.file_exists(path) and not FileAccess.file_exists(path+".import-prev") and not FileAccess.file_exists(path+".import-new") and not FileAccess.file_exists(path+".import-active"),"stale PID marker cannot prevent committed recovery cleanup")
+	reused_pid = null
+	clear(path)
 	var bad_primary := put(path,{"version":5})
 	var previous_bytes := put(path+".import-prev",valid)
 	var staged_bytes := put(path+".import-new",{"version":5})
