@@ -47,7 +47,7 @@
     "startup": ""
   },
   "save_artifacts_during_denial": {
-    "progress.json": "c03a30ba6e09b5adbee29e38b745c81e1c42abd1df2dc512d09761cf4afa47e5",
+    "progress.json": "0677e60a267b3dcc0f66c4f2d40f34b5fae205cf3453e03e9c7365b1d411692b",
     "progress.json.writer-lock": "locked-sidecar"
   },
   "denied_writes_left_artifacts_identical": true,
@@ -56,43 +56,43 @@
   "worker_logs": [
     {
       "file": "00-s04a_lock_worker.gd.log",
-      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+      "sha256": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34"
     },
     {
       "file": "01-s04a_lock_worker.gd.log",
-      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+      "sha256": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34"
     },
     {
       "file": "02-s04a_lock_worker.gd.log",
-      "sha256": "0234e18bfcb91f9d164f8bd53b00371c4ea5ee375dce4d74bf88c9144bf24ac4"
+      "sha256": "5aa39460c03c8c99946ed7245791cdde22efc9707f59f2e590f358efdde172c2"
     },
     {
       "file": "03-s04a_lock_worker.gd.log",
-      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+      "sha256": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34"
     },
     {
       "file": "04-s04a_lock_worker.gd.log",
-      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+      "sha256": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34"
     },
     {
       "file": "05-s04a_lock_worker.gd.log",
-      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+      "sha256": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34"
     },
     {
       "file": "06-s04a_game_worker.gd.log",
-      "sha256": "8006c0286c443dfc5f0ddb1eda1781a683e6a8a025a8046892f5a7577a1d4131"
+      "sha256": "6408bc04ba81b2d6af8d68cc1ccf99c16558dd142485851ffba078278c06fe34"
     },
     {
       "file": "07-s04a_ui_worker.gd.log",
-      "sha256": "76a5be84343869540bbc120f86ebe4dd8441a2f3ba46fdc6a132a19ad9431ea4"
+      "sha256": "075b626a386974ccf76c13614005c824018b5a2103ec8432fb666a5afdb3d73d"
     },
     {
       "file": "08-s04a_game_worker.gd.log",
-      "sha256": "b9a91d844e439c555ee223ad1837419299cb6ec0f0e22e81ac024852bcca716e"
+      "sha256": "37cb76a4df0d2c8e4449ed40413f1cbb68c65019a2133e14ad0a7bdba7a51917"
     },
     {
       "file": "09-s04a_game_worker.gd.log",
-      "sha256": "b9a91d844e439c555ee223ad1837419299cb6ec0f0e22e81ac024852bcca716e"
+      "sha256": "37cb76a4df0d2c8e4449ed40413f1cbb68c65019a2133e14ad0a7bdba7a51917"
     }
   ]
 }

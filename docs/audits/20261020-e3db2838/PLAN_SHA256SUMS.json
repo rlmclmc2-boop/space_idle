@@ -20,9 +20,9 @@
   "stages/S04/FINAL_REVIEW.md": "1803daa0da3c8228a904cf412fa1488c4823ccea755be031fb1ce3aa6df08f2f",
   "stages/S04/LOCAL_INTEGRATION.md": "6ae49d945ab45b762ce4b76e344871741c18e4946096f0520dc14c2009c5f7b8",
   "stages/S04/isolated_save_probe.gd": "15e72956149cda75a9569b444096a16678e9e2316a74906620c42c900e7b0227",
-  "stages/S04a/README.md": "7935249ee2782e1e224fcf4b949d5eb9e0e1b75b45375bf4c951b4298b604c3a",
+  "stages/S04a/README.md": "2dba2f83b9692ec6f98f9958fb7039f6d911c1ca7de881719e5e64f06a2a3d2d",
   "stages/S04a/REVIEW_RECORD.md": "d2511e618cf088a310868eea2f75b49e4fb7af3bac707a73a10e5ae47f8237f7",
-  "stages/S04a/dual_process_summary.json": "9f7f1f6a1c291c333ab20975357b49f26301731a9351e45324aea0cd4259192a",
+  "stages/S04a/dual_process_summary.json": "9ba79c4776555867b420a3a5a95b9e7ef34467bc43dc279063ae1a9ae7d910db",
   "stages/S04a/RUNTIME_BLOBS.json": "e8199f7852b6c4bdd8ad369b31cb055b5cc64ef34f919eb266192e7650ece6ef",
   "../../../test/run.py": "5dde94528558977181c4b83575663ca43857f314fa77ead240c0043fcc46ad79",
   "../../../test/test_save_boundaries.gd": "9f3b7962d94556c77d4c2b0108451fc119a1a71a77823235bc73654e48933bcd",
@@ -31,7 +31,7 @@
   "../../../test/s04a_lock_worker.gd": "b97f5d607a34fee2e31b237fc06ebdb243cfcdafc326d637b1303462f988a099",
   "../../../test/s04a_game_worker.gd": "85adb46fa3277603c8b592bdd6a9ea814414f3f9a9cfcc46dfc4cfc2ec818b46",
   "../../../test/s04a_ui_worker.gd": "f287a0c77581c64a3a539e0b6ef1e6e3f55ca8e2ff921f5a156a6288e0ebfca8",
-  "../../../test/test_single_writer_s04a.py": "516979ffe71efd533839a424972a705600858512a57e83215dbdce831b849f5c",
+  "../../../test/test_single_writer_s04a.py": "7bf59130417ed8866f87375b8dcacdbcef5754952ed7f8a4bfd2d6a196ea4e8a",
   "stages/S04a/player_entry_validation.json": "ff6f9e678b90b1df8e6524af76424dd4ff113e9a19878e143229f26765dbe5f2",
   "stages/S04a/worker-logs/00-s04a_lock_worker.gd.log": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34",
   "stages/S04a/worker-logs/01-s04a_lock_worker.gd.log": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34",
@@ -39,8 +39,8 @@
   "stages/S04a/worker-logs/03-s04a_lock_worker.gd.log": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34",
   "stages/S04a/worker-logs/04-s04a_lock_worker.gd.log": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34",
   "stages/S04a/worker-logs/05-s04a_lock_worker.gd.log": "20d7faa5f08cf862e273a94e8e3c66d67f993390a6ea7fafd72dd08c18325c34",
-  "stages/S04a/worker-logs/06-s04a_game_worker.gd.log": "9e8e851cdeb9980533b75e03a14554f8414c0dc3afff9d25a1bee946284d1740",
+  "stages/S04a/worker-logs/06-s04a_game_worker.gd.log": "6408bc04ba81b2d6af8d68cc1ccf99c16558dd142485851ffba078278c06fe34",
   "stages/S04a/worker-logs/07-s04a_ui_worker.gd.log": "075b626a386974ccf76c13614005c824018b5a2103ec8432fb666a5afdb3d73d",
-  "stages/S04a/worker-logs/08-s04a_game_worker.gd.log": "fb4c66fc174daf16d6f8a46fc637674d50e58e43ce457b47f933ff2c43b333d8",
-  "stages/S04a/worker-logs/09-s04a_game_worker.gd.log": "fb4c66fc174daf16d6f8a46fc637674d50e58e43ce457b47f933ff2c43b333d8"
+  "stages/S04a/worker-logs/08-s04a_game_worker.gd.log": "37cb76a4df0d2c8e4449ed40413f1cbb68c65019a2133e14ad0a7bdba7a51917",
+  "stages/S04a/worker-logs/09-s04a_game_worker.gd.log": "37cb76a4df0d2c8e4449ed40413f1cbb68c65019a2133e14ad0a7bdba7a51917"
 }

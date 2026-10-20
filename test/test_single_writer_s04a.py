@@ -19,7 +19,7 @@ LOGS = []
 
 def check_output(script, output):
     log = LOG_DIR / f"{len(LOGS):02d}-{script}.log"
-    log.write_text(output, encoding="utf-8")
+    log.write_bytes(output.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8"))
     LOGS.append({"file": log.name, "sha256": digest(log)})
     errors = [line.strip() for line in output.splitlines()
               if ERROR_LINE.match(line.strip())]
