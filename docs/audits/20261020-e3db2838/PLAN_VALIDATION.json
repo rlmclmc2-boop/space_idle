@@ -18,7 +18,8 @@
     "s01_dual_pass_same_sha": true,
     "s01_thread_archived": true,
     "s02_selected_suites_pass_s01_gate": true,
-    "s02_only_test_and_audit_files_changed": true
+    "s02_only_test_and_audit_files_changed": true,
+    "s02_timestamp_oracle_bound_to_actual_save": true
   },
   "stages": 26,
   "active_stage": "S02",

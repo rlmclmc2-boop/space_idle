@@ -271,14 +271,19 @@ decisions_received: []
 runtime_final_sha: N/A
 runtime_tree: N/A
 main_file_justifications: []
-implementation_candidate_sha: 505d5fa82f77128cb65b18bea769b67a695bed2f
+implementation_candidate_sha: 696e7c9affe7eb94c8d98454add13e6863d95ec0
 evidence_snapshot_sha: null # the final audit commit SHA is reported in handoff
+prior_review_of_2613962e:
+  parent: "FAIL: endpoint-only local-time oracle can reject an intermediate save second"
+  astra: "FAIL: endpoint-only oracle can also accept stale UI text inside the interval"
 verification:
   commands_and_environment:
     - "Windows / Godot 4.7.2 / Python godot-native venv: S01 gate.py test_save_policy.gd --headless"
+    - "Windows / Godot 4.7.2 / Python godot-native venv: S01 gate.py test_save_policy.gd with window"
     - "Windows / Python godot-native venv: S01 gate.py test_config_workbooks.py"
   results:
-    - "save_policy: 49 checks, 0 failures; S01_GATE_PASS"
+    - "save_policy headless: 51 checks, 0 failures; S01_GATE_PASS"
+    - "save_policy windowed: 53 checks, 0 failures; S01_GATE_PASS"
     - "config_workbooks: 14 tests OK; S01_GATE_PASS"
     - "minimal reproductions and oracle sources: stages/S02/README.md"
   unverified: []
