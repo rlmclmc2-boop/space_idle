@@ -150,7 +150,7 @@ test/test_hyperspace_balance_context.gd,not revalidated on current branch,not in
 test/test_hyperspace_catalog_consumers.gd,passed on current branch,exit 1 (gd-logic-results.json),/workspace/space_idle/test/evidence/repository-audit-20261020/test_hyperspace_catalog_consumers.gd.continuation.log
 test/test_hyperspace_combat.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_compact_geometry.gd,not revalidated on current branch,exit 125 (gd-gui-results.json),
-test/test_hyperspace_consumers.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
+test/test_hyperspace_consumers.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_consumers.continuation.log
 test/test_hyperspace_dedicated_routes.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
 test/test_hyperspace_dedicated_routes_ui.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
 test/test_hyperspace_departure_gate.gd,not revalidated on current branch,not in initial execution matrix,
@@ -158,7 +158,7 @@ test/test_hyperspace_disk_migration.gd,not revalidated on current branch,exit 0 
 test/test_hyperspace_effects.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_entities.py,passed on current branch,exit 1 (python-results.json),test/evidence/repository-audit-20261020/test_hyperspace_entities.continuation.log
 test/test_hyperspace_entity_consumers.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_entity_consumers.continuation.log
-test/test_hyperspace_entity_edges.gd,not revalidated on current branch,exit 1 (gd-logic-results.json),
+test/test_hyperspace_entity_edges.gd,passed on current branch,exit 1 (gd-logic-results.json),test/evidence/repository-audit-20261020/test_hyperspace_entity_edges.continuation.log
 test/test_hyperspace_exchange.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
 test/test_hyperspace_guide.gd,not revalidated on current branch,exit 1 (gd-gui-results.json),
 test/test_hyperspace_higgs_geometry.gd,not revalidated on current branch,exit 0 (gd-logic-results.json),
