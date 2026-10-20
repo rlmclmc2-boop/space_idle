@@ -112,7 +112,7 @@ def main():
         if not args.native_dll:
             raise RuntimeError("S04a requires --native-dll built from the runtime candidate")
         (game / "test").mkdir(exist_ok=True)
-        for name in ("s04a_lock_worker.gd", "s04a_game_worker.gd", "s04a_ui_worker.gd"):
+        for name in ("s04a_lock_worker.gd", "s04a_game_worker.gd", "s04a_ui_worker.gd", "s04a_scene_reload_worker.gd"):
             shutil.copy2(tests / name, game / "test" / name)
         code = run([godot, "--headless", "--editor", "--import", "--quit", "--path", str(game)], "import")
         if code:

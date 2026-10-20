@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04 closed; S04 runtime integrated and isolated synthetic save reopening verified; S04a not started",
+  "scope": "S00-S04 closed; S04a review on isolated runtime and audit branches; S05-S24 not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -49,14 +49,19 @@
     "s04_isolated_user_data": true,
     "s04_integration_dual_pass_same_evidence": true,
     "s04_branch_no_unique_work_deleted": true,
-    "s04_thread_archived": true
+    "s04_thread_archived": true,
+    "s04a_review_entry_recorded": true,
+    "s04a_implementation_thread_recorded": true,
+    "s04a_runtime_and_evidence_separated": true,
+    "s04a_confirmed_import_scene_reload_pass": true,
+    "s04a_dual_review_pending": true
   },
   "stages": 26,
-  "active_stage": null,
-  "active_stage_status": "none",
+  "active_stage": "S04a",
+  "active_stage_status": "review",
   "other_stage_status": "not_started",
   "product_code_changed": true,
-  "main_integrated": true,
+  "main_integrated": false,
   "closed_stages": [
     "S00",
     "S01",
@@ -67,5 +72,13 @@
   "runtime_final_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
   "runtime_tree": "a1107e72f18d011cd693ef5e9b2447ac14abf940",
   "evidence_snapshot_sha": "c345de52867a38a2cc0db6baadb2a53b2daa37aa",
-  "implementation_thread_id": "01a15abc-a83d-709a-990c-b376f407b0ec"
+  "implementation_thread_id": "01a15b03-d9f7-710e-b869-ca083a8f90d5",
+  "active_runtime_candidate_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
+  "active_runtime_tree": "46975cef1cd058b859525873b85b35453b26e8e3",
+  "active_audit_branch": "s04a/audit-evidence",
+  "active_evidence_entry": "stages/S04a/REVIEW_RECORD.md",
+  "active_stage_main_integrated": false,
+  "active_stage_closed": false,
+  "closed_stages_main_integrated": true,
+  "last_integrated_main_sha": "abb68a7f7014dafee73c2f8c48a856aaddec0456"
 }

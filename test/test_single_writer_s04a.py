@@ -73,11 +73,13 @@ def run(godot, project, env, script, *args):
     check_output(script, result.stdout)
     assert result.returncode == 0, result.stdout
     prefix = {"s04a_game_worker.gd": "S04A_GAME:",
-              "s04a_ui_worker.gd": "S04A_UI:"}.get(script, "S04A_ACQUIRE:")
+              "s04a_ui_worker.gd": "S04A_UI:",
+              "s04a_scene_reload_worker.gd": "S04A_RELOAD:"}.get(script, "S04A_ACQUIRE:")
     rows = [line[len(prefix):] for line in result.stdout.splitlines()
             if line.startswith(prefix)]
     assert len(rows) == 1, result.stdout
-    return json.loads(rows[0]) if script in {"s04a_game_worker.gd", "s04a_ui_worker.gd"} else rows[0]
+    return json.loads(rows[0]) if script in {"s04a_game_worker.gd", "s04a_ui_worker.gd",
+                                          "s04a_scene_reload_worker.gd"} else rows[0]
 
 
 def held(godot, project, env, script, *args):
@@ -149,6 +151,8 @@ def main():
         end_holder(game_owner, "s04a_game_worker.gd", game_owner_output)
     third = run(args.godot, args.project, env, "s04a_game_worker.gd")
     assert third["owns"] and third["enabled"] and third["save"] == 0, third
+    scene_reload = run(args.godot, args.project, env, "s04a_scene_reload_worker.gd")
+    assert scene_reload["passed"], scene_reload
     summary = {
         "sidecar_remains_after_normal_exit": sidecar_present,
         "normal_exit_reacquire": True,
@@ -159,6 +163,7 @@ def main():
         "second_game": {k: v for k, v in second.items() if k != "path"},
         "read_only_ui": ui,
         "post_crash_game": {k: v for k, v in third.items() if k != "path"},
+        "confirmed_import_scene_reload": scene_reload,
         "save_artifacts_during_denial": before,
         "denied_writes_left_artifacts_identical": True,
         "directory_alias_denied": True,
