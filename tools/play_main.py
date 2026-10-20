@@ -9,7 +9,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 # Reviewed source-tree anchor. The parent merge must retain its ancestry.
-BASE = 'fda7be2c217a208067f97266f85497b83cbdd840'
+BASE = '24f0751d5acd698eeb06d8ec7f0eb02e34a09e94'
 DLL_SHA = '137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78'
 BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
 NON_RUNTIME_CHANGES = frozenset({

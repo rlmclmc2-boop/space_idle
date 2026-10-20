@@ -2,7 +2,7 @@
 
 从仓库根目录双击 `玩游戏.cmd`。入口按脚本所在目录定位当前仓库，不依赖工作目录或固定盘符。
 
-当前已审源码基点：`fda7be2c217a208067f97266f85497b83cbdd840`。父线程合入 main 时须保留该提交祖先关系；若改用 squash 或再修改游戏源码，需重新审定源码基点。入口只在 main 上运行，并拒绝相对基点的游戏源码变化和未审本地运行文件。
+当前已审源码基点：`24f0751d5acd698eeb06d8ec7f0eb02e34a09e94`。父线程合入 main 时须保留该提交祖先关系；若改用 squash 或再修改游戏源码，需重新审定源码基点。入口只在 main 上运行，并拒绝相对基点的游戏源码变化和未审本地运行文件。
 
 正式配套 DLL：[player_runtime/space_native.dll](player_runtime/space_native.dll)，SHA-256 为 `137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78`。来源与验收清单：[native-validation-hashes.json](../space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json)。这是 d07f0b9 缓存交付的 Windows 4.7.2 实际构建；既有 5717 项正确性和 8 次有效高负载记录沿用，不重复扩测。
 
