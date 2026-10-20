@@ -230,6 +230,20 @@ class PlayerEntry(unittest.TestCase):
             self.assertEqual(self.engine.read_bytes(), b'fresh engine')
             self.assertEqual(entry.prepare_engine(self.root), self.engine)
 
+    def test_initial_import_access_violation_retries_once_and_keeps_log(self):
+        runtime = self.root / 'import-runtime'
+        runtime.mkdir()
+        outcomes = iter([3221225477, 0])
+        def fake_run(args, **kwargs):
+            code = next(outcomes)
+            kwargs['stdout'].write('attempt ' + str(code))
+            return subprocess.CompletedProcess(args, code)
+        with patch.object(entry.subprocess, 'run', side_effect=fake_run) as mocked:
+            entry.import_project(self.engine, self.project, runtime, {})
+        self.assertEqual(mocked.call_count, 2)
+        self.assertEqual((runtime / 'player-import-first-attempt.log').read_text(), 'attempt 3221225477')
+        self.assertEqual((runtime / 'player-import.log').read_text(), 'attempt 0')
+
 
 class RepositoryInventory(unittest.TestCase):
     def test_committed_bundle_and_native_sources_match_inventory(self):

@@ -286,6 +286,22 @@ def validate(root, engine=None):
         descriptor.write_text(DESCRIPTOR, encoding='utf-8')
     return project, engine, head, version
 
+def import_project(engine, project, runtime, env):
+    log_path = runtime / 'player-import.log'
+    args = [str(engine), '--headless', '--editor', '--import', '--quit', '--path', str(project)]
+    for attempt in range(2):
+        with log_path.open('w', encoding='utf-8') as log:
+            result = subprocess.run(args, cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT)
+        if result.returncode == 0:
+            return
+        # Godot can crash while finalizing the initial asset index on Windows.
+        # One retry uses the index already written by the first attempt.
+        if attempt == 0 and result.returncode in (3221225477, -1073741819):
+            log_path.replace(runtime / 'player-import-first-attempt.log')
+            print('Godot import exited with a Windows access violation; retrying once.', flush=True)
+            continue
+        raise subprocess.CalledProcessError(result.returncode, args)
+
 def main():
     if sys.argv[1:] == ['--install-native']:
         dll = install_native(ROOT)
@@ -320,9 +336,7 @@ def main():
     (runtime/'player-launch.json').write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding='utf-8')
     # Import in-place, reusing Godot's cache. No project or asset copies.
     print('检查资源导入……', flush=True)
-    with (runtime/'player-import.log').open('w', encoding='utf-8') as log:
-        subprocess.run([str(engine), '--headless', '--editor', '--import', '--quit', '--path', str(project)],
-                       cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
+    import_project(engine, project, runtime, env)
     print('启动正式游戏。', flush=True)
     game_args = [str(engine), '--path', str(project), 'res://main.tscn',
                  '--log-file', str(runtime/'player-game.log')]
