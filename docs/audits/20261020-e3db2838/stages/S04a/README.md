@@ -5,14 +5,14 @@ State: **review**. Parent and original astra must independently pass the same fi
 | Item | Exact object |
 | --- | --- |
 | Base main | `abb68a7f7014dafee73c2f8c48a856aaddec0456` |
-| Runtime candidate | `5f410762f4b9baa1164b9cecb6644acfc57e2b89` |
-| Runtime tree | `abccc30616fdd1aebc35b76f6dc5623e0f1d6f85` |
+| Runtime candidate | `01ddfcaf678321fafae51162b3bb6665b34e4301` |
+| Runtime tree | `46975cef1cd058b859525873b85b35453b26e8e3` |
 | Audit base | `f451b5eaae9c57196a7a627ee452b83e85df27da` |
-| Native DLL SHA-256 | `be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272` |
+| Native DLL SHA-256 | `4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f` |
 
 ## Runtime delivery
 
-The runtime diff contains seven paths, all in [RUNTIME_BLOBS.json](RUNTIME_BLOBS.json): five implementation sources, the tracked player DLL `tools/player_runtime/space_native.dll`, and the player acceptance inventory `space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json`. The DLL and inventory are required by `tools/play_main.py`: it verifies the native source Git blobs and DLL SHA-256, then installs that exact DLL into `space-battleship/bin`. A source-only merge would fail player verification or leave the new lock class unavailable. The normal launcher continues to require a clean, accepted `main`; the candidate was tested in an isolated `main` mirror without changing the actual main branch.
+The native path method uses `std::error_code` and was rebuilt with `-fno-exceptions`, matching the default godot-cpp SCons option. The runtime diff contains seven paths, all in [RUNTIME_BLOBS.json](RUNTIME_BLOBS.json): five implementation sources, the tracked player DLL `tools/player_runtime/space_native.dll`, and the player acceptance inventory `space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json`. The DLL and inventory are required by `tools/play_main.py`: it verifies the native source Git blobs and DLL SHA-256, then installs that exact DLL into `space-battleship/bin`. A source-only merge would fail player verification or leave the new lock class unavailable. The normal launcher continues to require a clean, accepted `main`; the candidate was tested in an isolated `main` mirror without changing the actual main branch.
 
 `SpaceSaveLock` holds an exclusive Windows `CreateFileW` handle or POSIX nonblocking `flock` on a permanent `.writer-lock` sidecar. Only the OS handle grants ownership. Closing or killing the process releases it. No valid lock is removed. The second game loads its snapshot and displays a read-only warning while the UI continues running. Ordinary saves, clear, import staging/commit, and recovery finalization require ownership. Native `weakly_canonical` resolves existing file links, directory links/junctions and the parent of new files; progress and export share protected path identity checks. Import's internal marker and staging writes flow through the owning `ProgressWriter`.
 

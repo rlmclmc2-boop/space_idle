@@ -1,10 +1,10 @@
 {
-  "candidate_main_mirror": "5f410762f4b9baa1164b9cecb6644acfc57e2b89",
+  "candidate_main_mirror": "01ddfcaf678321fafae51162b3bb6665b34e4301",
   "launcher": "tools/play_main.py",
   "launch_exit_code": 0,
   "quit_after_frames": 120,
   "engine_version": "4.7.2.stable.official.ed1daf0bf",
-  "bundled_and_installed_dll_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272",
+  "bundled_and_installed_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
   "game_log_sha256": "4075b7e878d2d7113cc2e60697daf1dd0ef84c8b82327ecb50a6c9d8d7a66892",
   "game_script_error_lines": []
 }

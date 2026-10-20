@@ -1,15 +1,15 @@
 {
-  "runtime_sha": "5f410762f4b9baa1164b9cecb6644acfc57e2b89",
-  "runtime_tree": "abccc30616fdd1aebc35b76f6dc5623e0f1d6f85",
+  "runtime_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
+  "runtime_tree": "46975cef1cd058b859525873b85b35453b26e8e3",
   "base_main": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
   "files": {
     "space-battleship/addons/native_battle/src/space_native.cpp": {
-      "git_blob_sha1": "56d782121bd338a04195fc1bc78502480d939d46",
-      "blob_sha256": "acc564ea9fe6fb188ea841f595385c6c097e556ed5a8ddfd09a08b1b62f886f4"
+      "git_blob_sha1": "1169bcd6a3319cc56ec5a234cba6e85cf12eb339",
+      "blob_sha256": "e58e535165c37a459d13e89e2703dbc2be831f2f732f35db8a53f0febb326d3f"
     },
     "space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json": {
-      "git_blob_sha1": "33ed1345f0b01c36456c7c5e4beac61d3cda94ea",
-      "blob_sha256": "704c996113405a8b0f88bff9033e23d9315aaa19389e05a29ca4b560609743e9"
+      "git_blob_sha1": "259088a2b6653f760ff9bb8ce5022653de3a6fda",
+      "blob_sha256": "34079324d0e52c4ce8062fbb6ae47b1d41a3afa3c95229b02368bb87635b645c"
     },
     "space-battleship/scripts/game.gd": {
       "git_blob_sha1": "ef0b58ff3f7d9a06f5cdd8fd781c578f7cf3bf51",
@@ -28,8 +28,8 @@
       "blob_sha256": "a12ea144da1a04c8c5e8145b3dbe24c488eca9ef1530c10b529c7ef7c66d970f"
     },
     "tools/player_runtime/space_native.dll": {
-      "git_blob_sha1": "36e0cb3db9e9a76aa54ddd7d099ebb5c2b24a82c",
-      "blob_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272"
+      "git_blob_sha1": "6211ee3d49728ec4906e3871a718cb225869875f",
+      "blob_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
     }
   }
 }
