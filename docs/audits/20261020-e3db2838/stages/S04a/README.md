@@ -1,54 +1,36 @@
-# S04a 单存档写入所有权：审查交付
+# S04a single writer handoff
 
-状态：`review`；父级与原 astra 对同一运行及证据 SHA 的结论均待定。不得据此自行合入 main、关闭 S04a 或启动 S05。
+State: **review**. Parent and original astra must independently pass the same final runtime and audit commits before any main integration. S04a remains open; S05 has not begun.
 
-| 对象 | SHA |
+| Item | Exact object |
 | --- | --- |
-| 起点 main | `abb68a7f7014dafee73c2f8c48a856aaddec0456` |
-| 纯运行候选 | `cde9d0427b1fd107a9962621d87d2bb7b28dda18` |
-| 运行 tree | `bbca9f36a291a9b7be686702d4b1bdf83a7ebc45` |
-| 审计起点 | `f451b5eaae9c57196a7a627ee452b83e85df27da` |
-| 最终审计证据 | 本文件及摘要清单所在的审计提交；审查前回读完整 SHA |
+| Base main | `abb68a7f7014dafee73c2f8c48a856aaddec0456` |
+| Runtime candidate | `5f410762f4b9baa1164b9cecb6644acfc57e2b89` |
+| Runtime tree | `abccc30616fdd1aebc35b76f6dc5623e0f1d6f85` |
+| Audit base | `f451b5eaae9c57196a7a627ee452b83e85df27da` |
+| Native DLL SHA-256 | `be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272` |
 
-## 范围与设计
+## Runtime delivery
 
-`space_native.cpp` 新增 `SpaceSaveLock`：Windows 用 `CreateFileW` 独占打开持久侧文件；POSIX 用 `flock(LOCK_EX | LOCK_NB)`。进程关闭或崩溃时 OS 关闭句柄并释放所有权。侧文件留在原位；不读取其 PID、不凭文件存在性判断所有权，也不删除有效锁。获取失败按不能写处理。
+The runtime diff contains seven paths, all in [RUNTIME_BLOBS.json](RUNTIME_BLOBS.json): five implementation sources, the tracked player DLL `tools/player_runtime/space_native.dll`, and the player acceptance inventory `space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json`. The DLL and inventory are required by `tools/play_main.py`: it verifies the native source Git blobs and DLL SHA-256, then installs that exact DLL into `space-battleship/bin`. A source-only merge would fail player verification or leave the new lock class unavailable. The normal launcher continues to require a clean, accepted `main`; the candidate was tested in an isolated `main` mirror without changing the actual main branch.
 
-| 必要运行文件 | 作用 |
-| --- | --- |
-| `space-battleship/addons/native_battle/src/space_native.cpp` | 实际 OS 排他句柄及生命周期，区别于 PID 标记。发行时须从该源码重建匹配 DLL。 |
-| `space-battleship/scripts/progress_writer.gd` | 游戏档写入前持锁；普通保存、清档与恢复完成均校验所有权。Windows 同档路径按大小写不敏感比较，防止别名绕过；读取保持无副作用。 |
-| `space-battleship/scripts/game.gd` | 持久游戏创建时取得所有权；失败时加载快照并关闭写入，跳过恢复的磁盘提交，继续运行。取得 OS 锁后，即使旧导入 PID 被复用，也可确认旧事务不再活动并完成恢复。 |
-| `space-battleship/scripts/save_transfer.gd` | 导入创建标记前校验所有权；回滚/清理保留事务持有的 OS 锁；导出不准覆盖锁侧文件，Windows 同档大小写别名也拒绝。原 PID 标记只用于判断中断导入事务，不再充当写入所有权。 |
-| `space-battleship/scripts/main.gd` | 第二实例提示存档占用和只读运行，不停止主场景。 |
+`SpaceSaveLock` holds an exclusive Windows `CreateFileW` handle or POSIX nonblocking `flock` on a permanent `.writer-lock` sidecar. Only the OS handle grants ownership. Closing or killing the process releases it. No valid lock is removed. The second game loads its snapshot and displays a read-only warning while the UI continues running. Ordinary saves, clear, import staging/commit, and recovery finalization require ownership. Native `weakly_canonical` resolves existing file links, directory links/junctions and the parent of new files; progress and export share protected path identity checks. Import's internal marker and staging writes flow through the owning `ProgressWriter`.
 
-未改玩家进度合并、存档格式、数值或恢复优先级。未持锁实例直接调用保存、导入、清档、恢复收尾均返回 `ERR_ALREADY_IN_USE`（Godot 4.7.2 值 22）；同时测试主档、`.tmp`、`.bak`、导入中间文件及锁侧文件快照未变化。侧文件保留且可在正常退出后重获锁。
+## Windows verification
 
-## 验证
-
-主机 BJNLPC-0459，Windows，Godot `4.7.2.stable.official.ed1daf0bf`，Python 3.12。DLL 从运行候选的 C++ 源码，用本机固定版本 godot-cpp 和 LLVM MinGW 静态库编译；SHA-256 为 `21a6a85131796759bf220e4d7913e0ac2a1cf9d6c589d4176fa1b2b61ffe69d1`。DLL 只叠加在隔离测试工程，不纳入 Git。原生类由引擎加载并用于真实 Godot 双进程验证。构建没有在本线程重跑 Linux 产物。
-
-从本审计分支根目录运行以下命令，`RUNTIME_ROOT` 指向已检出的上述运行候选，`DLL` 指向该候选重建的 Windows DLL：
+Godot `4.7.2.stable.official.ed1daf0bf`, fixed godot-cpp binding and LLVM MinGW, synthetic user directories. Run the four S01 commands from the audit branch with `--source-root <candidate root>` and `--native-dll <candidate root>/tools/player_runtime/space_native.dll`:
 
 ```text
-python docs/audits/20261020-e3db2838/stages/S01/gate.py test_single_writer_s04a.py --headless --godot <Godot-4.7.2-console> --source-root <RUNTIME_ROOT> --native-dll <DLL>
-python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_recovery_s04.gd --headless --godot <Godot-4.7.2-console> --source-root <RUNTIME_ROOT> --native-dll <DLL>
-python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_transfer.gd --headless --godot <Godot-4.7.2-console> --source-root <RUNTIME_ROOT> --native-dll <DLL>
-python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_policy.gd --headless --godot <Godot-4.7.2-console> --source-root <RUNTIME_ROOT> --native-dll <DLL>
+python docs/audits/20261020-e3db2838/stages/S01/gate.py test_single_writer_s04a.py --headless --godot <Godot console> --source-root <candidate root> --native-dll <candidate DLL>
+python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_recovery_s04.gd --headless --godot <Godot console> --source-root <candidate root> --native-dll <candidate DLL>
+python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_transfer.gd --headless --godot <Godot console> --source-root <candidate root> --native-dll <candidate DLL>
+python docs/audits/20261020-e3db2838/stages/S01/gate.py test_save_policy.gd --headless --godot <Godot console> --source-root <candidate root> --native-dll <candidate DLL>
 ```
 
-| 验证点 | 预期 | 实际 |
-| --- | --- | --- |
-| 同档双进程 | 仅首进程持锁；第二进程不写，UI 继续运行并提示 | [合成摘要](dual_process_summary.json)：第二进程占用错误 22，UI processing=true，主档及所有写入中间/备份文件快照一致 |
-| OS 锁语义 | 侧文件存在仍可重获；持锁时同档失败、不同档可用；杀进程后可重获 | `S04A_SINGLE_WRITER_PASS`；侧文件保留，竞争/异档/杀进程后结果符合预期 |
-| S04 恢复矩阵 | 不丢完整备份，失败保留现场；旧 PID 复用不会阻止恢复 | 131 checks / 0 failures；`S01_GATE_PASS` |
-| S03 传输与导入 | 往返及导入事务有效；Windows 同档大小写别名被挡住 | 161 checks / 0 failures；`S01_GATE_PASS` |
-| S02 保存策略与 UI | 定时/手动保存及失败反馈 | 59 checks / 0 failures；`S01_GATE_PASS` |
-| 启动拒绝 / 保存边界 | 无误盖、历史兼容 | 7/0 与 22/0；隔离用户目录 Godot 直接运行，退出 0 |
-| Git 白名单 | 仅五个运行文件 | `git diff --check` 清洁；运行提交仅表列五文件 |
+The dual process gate asserts same-save rejection, different-save independence, normal exit and forced kill reacquisition, denial at save/import/clear/recovery, a running read-only UI, identical save artifact hashes, and rejection of an alias directory (Windows junction here; POSIX symbolic link in the same cross-platform test). Alias export returns 31; direct Writer returns 22. [The summary](dual_process_summary.json) contains exact results and hashes; [worker-logs](worker-logs) retains full output from all ten Godot subprocesses, including both holders before forced termination. The Python driver rejects any child script or parse diagnostic using the S01 gate pattern. Linux execution and filesystem race attacks were not validated on this Windows host.
 
-前四项由 `test/run.py` 新增的 `--source-root`、`--native-dll` 审计选项在隔离目录构造产品工程。原 S04/S03/S02 测试中同一进程交替创建多个测试游戏的夹具已按新契约显式交还所有权；测试改动仅在审计分支。单次独立进程验收的合成输入、相对路径文件快照及匹配 DLL 哈希归档在摘要 JSON，不含个人存档或凭据。Godot 输出已有的 Windows 根证书存储警告，不属于脚本解析或存档失败。
+Recovery: 131 checks / 0 failures. Transfer: 161 / 0. Save policy: 59 / 0. Startup rejection: 7 / 0 and save boundaries: 22 / 0 in isolated direct runs. The tracked DLL and acceptance inventory also passed `tools.play_main.verified_bundle()`. A clean, isolated main mirror ran `tools/play_main.py` using the bundled DLL, imported resources, opened the game and quit after 120 frames with exit 0. [Player entry receipt](player_entry_validation.json) identifies the head, DLL and game log hashes. The game log had no script errors. Final gate results refer to the exact candidate above.
 
-## 审查边界
+## Review scope
 
-需要父级与原 astra 各自检查：五文件必要性；Windows/POSIX OS 句柄语义；主档、导入和恢复所有写入口；失败保持原文件；第二实例仍运行；DLL 重建与实际入口。当前证据覆盖 Windows 合成双进程及异常终止，不宣称 Linux 运行、断电文件系统行为或发布包已验收。两方同对象明确 PASS、无未解决项后才可由父级集成 main 并执行本地真实入口验收。
+Reviewers should inspect OS lock lifetime, all write entrances, canonical path behavior on both platforms, import/recovery ownership, read-only UI, test output validation, DLL provenance and launcher inventory. Windows OS certificate-store warnings in Godot output did not cause script or save failures. The audit branch holds test scripts, fixtures, logs, summaries and review records; none of those are part of the runtime diff. See [REVIEW_RECORD.md](REVIEW_RECORD.md) for independent verdict slots. No main merge or stage closure was performed.

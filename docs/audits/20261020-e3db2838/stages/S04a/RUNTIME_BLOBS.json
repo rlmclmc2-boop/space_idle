@@ -1,10 +1,15 @@
 {
-  "runtime_sha": "cde9d0427b1fd107a9962621d87d2bb7b28dda18",
-  "runtime_tree": "bbca9f36a291a9b7be686702d4b1bdf83a7ebc45",
+  "runtime_sha": "5f410762f4b9baa1164b9cecb6644acfc57e2b89",
+  "runtime_tree": "abccc30616fdd1aebc35b76f6dc5623e0f1d6f85",
+  "base_main": "abb68a7f7014dafee73c2f8c48a856aaddec0456",
   "files": {
     "space-battleship/addons/native_battle/src/space_native.cpp": {
-      "git_blob_sha1": "a5ebeed10f009cf2d7a2dbf1e02fc7909f89cf54",
-      "blob_sha256": "d318079fbc866d8f19d8416a070ab5aa354911ab40d9351e2f1bdb1f374965c5"
+      "git_blob_sha1": "56d782121bd338a04195fc1bc78502480d939d46",
+      "blob_sha256": "acc564ea9fe6fb188ea841f595385c6c097e556ed5a8ddfd09a08b1b62f886f4"
+    },
+    "space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json": {
+      "git_blob_sha1": "33ed1345f0b01c36456c7c5e4beac61d3cda94ea",
+      "blob_sha256": "704c996113405a8b0f88bff9033e23d9315aaa19389e05a29ca4b560609743e9"
     },
     "space-battleship/scripts/game.gd": {
       "git_blob_sha1": "ef0b58ff3f7d9a06f5cdd8fd781c578f7cf3bf51",
@@ -15,12 +20,16 @@
       "blob_sha256": "6e212062705d0edb976c7339af764d6c213868055749a1cefee483f057c9bced"
     },
     "space-battleship/scripts/progress_writer.gd": {
-      "git_blob_sha1": "b1bb9a5717f74cdfac952d4b8c2a94fe7e492625",
-      "blob_sha256": "c71475c439e42cd014d23920d0c57eb3c3e4d31986c744acd55e01e2cfc65bc2"
+      "git_blob_sha1": "e0ae3f7fc7b893e2bd0be634c857f6ae8fec2fd0",
+      "blob_sha256": "45abf718c52383f3eef81705c89672e26b4bc6d1d731c3146305e9c67ca5eae5"
     },
     "space-battleship/scripts/save_transfer.gd": {
-      "git_blob_sha1": "993c27f20e11fe3b44736490c6faf47694c7fc66",
-      "blob_sha256": "93697008350f37c87225bce33440162b11c9ac9f127db6d71006bf56105b7345"
+      "git_blob_sha1": "54713b8af2b0bbe97222729801b590ab23c49dea",
+      "blob_sha256": "a12ea144da1a04c8c5e8145b3dbe24c488eca9ef1530c10b529c7ef7c66d970f"
+    },
+    "tools/player_runtime/space_native.dll": {
+      "git_blob_sha1": "36e0cb3db9e9a76aa54ddd7d099ebb5c2b24a82c",
+      "blob_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272"
     }
   }
 }

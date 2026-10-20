@@ -1,23 +1,28 @@
 # S04a review record
 
-Stage state: `review`. Runtime candidate `cde9d0427b1fd107a9962621d87d2bb7b28dda18`; tree `bbca9f36a291a9b7be686702d4b1bdf83a7ebc45`; base main `abb68a7f7014dafee73c2f8c48a856aaddec0456`. Evidence snapshot is the audit commit containing this file and the updated hash manifest. It must be read back before either independent verdict. Earlier handoffs `4ef3659e` and `4efef1c2` were superseded by PID-reuse and Windows path-alias corrections; no verdict can be inherited.
+State: **review pending**. Base main `abb68a7f7014dafee73c2f8c48a856aaddec0456`; runtime candidate `5f410762f4b9baa1164b9cecb6644acfc57e2b89`, tree `abccc30616fdd1aebc35b76f6dc5623e0f1d6f85`. Audit snapshot is the commit containing this record and [the hash manifest](../../PLAN_SHA256SUMS.json). Both reviewers must state PASS on the final exact runtime and audit commit objects. Earlier heads `4efef1c2`, `cde9d042` and `8fcc99c1` are superseded.
+
+## Findings closed in this candidate
+
+- Parent P1: the tracked `tools/player_runtime/space_native.dll` and the launcher native acceptance inventory initially remained at the old version. Both are now runtime dependencies in the candidate. `verified_bundle()` passed, bundled and installed DLL SHA-256 matched, and a clean isolated main mirror completed actual `tools/play_main.py` start and 120-frame exit 0. See [player entry receipt](player_entry_validation.json).
+- Original astra P1: string-only path comparison allowed an unowned export through a directory alias to the same progress file. Native path canonicalization now feeds the ordinary Writer guard and export guard; the Windows junction negative test returned 31 for export, 22 for Writer, and left all save artifacts identical. The cross-platform test constructs a POSIX directory symlink when run on POSIX. Windows execution passed; Linux execution remains for independent review.
+- Parent gate finding: the dual process Python driver previously summarized each Godot subprocess without checking its complete output. It now saves every child output, including holders before kill, and rejects any script/parse diagnostic matched by the S01 gate pattern. See [worker logs](worker-logs) and [summary](dual_process_summary.json).
+- Regression caught during this correction: the shared protected-path guard initially rejected the owning import transaction's marker and staging writes. Those writes now use `ProgressWriter.write_import_stage()` after verifying the OS owner and permitted suffix. Transfer regression was rerun after this repair.
 
 ## Implementation handoff
 
-- **Contract:** one OS-held writer per archive, second instance runs without writing; no merge. OS lock is held in the native `SpaceSaveLock` object for the game's lifetime. Windows exclusive `CreateFileW` and POSIX nonblocking `flock` close automatically on process death; sidecar existence or PID does not confer ownership.
-- **Runtime scope:** exactly five files listed in [README.md](README.md). `space_native.cpp` provides the necessary OS primitive; `progress_writer.gd`, `game.gd`, `save_transfer.gd` cover ordinary save, import, recovery finalization and deletion; `main.gd` shows the read-only warning while the game continues. No audit test, runner, generated DLL, logs or screenshot belongs in main.
-- **Evidence scope:** audit-only `test_single_writer_s04a.py` and three Godot workers, adjusted recovery/transfer/policy/startup/boundary fixtures, runner and S01 gate options, [synthetic summary](dual_process_summary.json), this record, and manifest. The new test compares the entire save artifact set before and after denied writes.
-- **Verification:** Windows Godot 4.7.2 native DLL SHA-256 `21a6a85131796759bf220e4d7913e0ac2a1cf9d6c589d4176fa1b2b61ffe69d1`; dual process gate PASS; recovery 131/0, transfer 161/0, policy 59/0 under S01 gate; startup 7/0 and boundaries 22/0 direct isolated run; `git diff --check` clean. Exact commands and limitations are in README.
-- **Authorization:** D03 explicitly approved. No data migration, forced exit, automatic merge, gameplay or numeric policy change.
+Windows `CreateFileW` exclusive handle and POSIX `flock(LOCK_EX|LOCK_NB)` hold a permanent sidecar; no PID file grants ownership or is removed. A second process continues read-only and reports ERR_ALREADY_IN_USE (22) at save, import, clear and recovery write entrances. `weakly_canonical` resolves file/directory aliases before protected-file comparison. The runtime diff is exactly the seven paths in [RUNTIME_BLOBS.json](RUNTIME_BLOBS.json), including the necessary DLL and launcher inventory. Audit test code and logs stay on the audit branch.
+
+Windows validation: S01 dual process PASS, recovery 131/0, transfer 161/0, policy 59/0; isolated startup rejection 7/0 and save boundaries 22/0. Native DLL SHA-256 `be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272`. Actual player entry on isolated candidate main mirror exited 0. The synthetic save directory and worker logs are in the audit test area; committed evidence contains summaries and worker logs only. No personal save or credentials were used.
 
 ## Parent independent review
 
-Verdict: **PENDING**. Reviewed runtime SHA: pending. Reviewed evidence SHA: pending. Unresolved review items: inspect native OS lock and lifetime, every write entrance, UI behavior, synthetic snapshots, runtime file whitelist, platform limits, and rebuild obligation. Parent must independently state PASS/FAIL on the final exact two SHAs; this handoff does not claim approval.
+Verdict: **PENDING**. Reviewed runtime SHA: pending. Reviewed audit SHA: pending. Check launcher delivery, native lock/path semantics, every write entrance, import/recovery ownership, read-only UI, test validity, and platform limits. Record an independent PASS or FAIL for the final pair.
 
 ## Original astra independent review
 
-Verdict: **PENDING**. Reviewed runtime SHA: pending. Reviewed evidence SHA: pending. Unresolved review items: same contract and evidence, including whether `flock`/Windows `CreateFileW` semantics and import/recovery ownership are complete. The original astra must independently state PASS/FAIL on the same final two SHAs.
+Verdict: **PENDING**. Reviewed runtime SHA: pending. Reviewed audit SHA: pending. Recheck the original directory-alias P1, canonical path coverage and negative evidence, along with the full S04a contract. Record an independent PASS or FAIL for the same final pair.
 
 ## Integration and closure
 
-State: **not integrated**. Current main remains `abb68a7f7014dafee73c2f8c48a856aaddec0456`. Local actual entry result: **not run for this runtime SHA**; parent owns integration and entry validation after dual PASS. S04a closure: **pending**; S05 remains blocked by S04a. A code or evidence change affecting conclusions requires a new snapshot and fresh reviews.
+Main remains `abb68a7f7014dafee73c2f8c48a856aaddec0456`. No merge, closure or S05 start was performed. Parent owns main integration and final acceptance after two matching PASS verdicts. Any further change affecting review conclusions requires a new exact snapshot and fresh reviews.

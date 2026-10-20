@@ -4,7 +4,26 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
+
+
+ERROR_LINE = re.compile(
+    r"^(?:SCRIPT ERROR:|Parse Error:|Traceback \(most recent call last\):|"
+    r"(?:SyntaxError|IndentationError):|ERROR: .*\b(?:script|pars(?:e|ing|er)|compil(?:e|ation))\b)",
+    re.IGNORECASE,
+)
+LOG_DIR = None
+LOGS = []
+
+
+def check_output(script, output):
+    log = LOG_DIR / f"{len(LOGS):02d}-{script}.log"
+    log.write_text(output, encoding="utf-8")
+    LOGS.append({"file": log.name, "sha256": digest(log)})
+    errors = [line.strip() for line in output.splitlines()
+              if ERROR_LINE.match(line.strip())]
+    assert not errors, f"{script}: unexpected diagnostics {errors}; full log {log}"
 
 
 def digest(path):
@@ -26,6 +45,18 @@ def command(godot, project, script, *args):
             "--script", "res://test/" + script, "--", *map(str, args)]
 
 
+def directory_alias(alias, target):
+    try:
+        os.symlink(target, alias, target_is_directory=True)
+    except OSError:
+        if os.name != "nt":
+            raise
+        result = subprocess.run(["cmd", "/c", "mklink", "/J", str(alias), str(target)],
+                                text=True, encoding="utf-8", errors="replace", capture_output=True)
+        assert result.returncode == 0, result.stdout + result.stderr
+    assert alias.is_dir() and (alias / "progress.json").resolve() == (target / "progress.json").resolve()
+
+
 def wait_line(proc, prefix):
     seen = []
     for line in proc.stdout:
@@ -39,6 +70,7 @@ def run(godot, project, env, script, *args):
     result = subprocess.run(command(godot, project, script, *args), env=env,
                             text=True, encoding="utf-8", errors="replace", stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT, timeout=45)
+    check_output(script, result.stdout)
     assert result.returncode == 0, result.stdout
     prefix = {"s04a_game_worker.gd": "S04A_GAME:",
               "s04a_ui_worker.gd": "S04A_UI:"}.get(script, "S04A_ACQUIRE:")
@@ -54,16 +86,25 @@ def held(godot, project, env, script, *args):
                             stderr=subprocess.STDOUT, bufsize=1)
     prefix = "S04A_GAME:" if script == "s04a_game_worker.gd" else "S04A_ACQUIRE:"
     value, output = wait_line(proc, prefix)
-    return proc, (json.loads(value) if script == "s04a_game_worker.gd" else value)
+    return proc, (json.loads(value) if script == "s04a_game_worker.gd" else value), output
+
+
+def end_holder(proc, script, first_lines):
+    proc.kill()
+    remaining, _ = proc.communicate(timeout=10)
+    check_output(script, "\n".join(first_lines) + "\n" + remaining)
 
 
 def main():
+    global LOG_DIR
     parser = argparse.ArgumentParser()
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--project", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
+    LOG_DIR = args.output / "worker-logs"
+    LOG_DIR.mkdir(exist_ok=True)
     env = os.environ.copy()
     for key, sub in (("APPDATA", "roaming"), ("LOCALAPPDATA", "local"),
                      ("XDG_DATA_HOME", "data"), ("XDG_CONFIG_HOME", "config"),
@@ -77,7 +118,7 @@ def main():
     sidecar_present = lock_a.with_name(lock_a.name + ".writer-lock").exists()
     assert sidecar_present
     assert run(args.godot, args.project, env, "s04a_lock_worker.gd", lock_a) == "true", "stale sidecar must not block"
-    owner, acquired = held(args.godot, args.project, env, "s04a_lock_worker.gd", lock_a)
+    owner, acquired, owner_output = held(args.godot, args.project, env, "s04a_lock_worker.gd", lock_a)
     try:
         assert acquired == "true"
         same_save = run(args.godot, args.project, env, "s04a_lock_worker.gd", lock_a)
@@ -85,26 +126,27 @@ def main():
         assert same_save == "false"
         assert other_save == "true", "other save blocked"
     finally:
-        owner.kill()
-        owner.communicate(timeout=10)
+        end_holder(owner, "s04a_lock_worker.gd", owner_output)
     assert run(args.godot, args.project, env, "s04a_lock_worker.gd", lock_a) == "true", "crash did not release"
 
-    game_owner, first = held(args.godot, args.project, env, "s04a_game_worker.gd")
+    game_owner, first, game_owner_output = held(args.godot, args.project, env, "s04a_game_worker.gd")
     try:
         assert first["owns"] and first["enabled"] and first["save"] == 0 and not first["startup"], first
         progress = Path(first["path"])
         before = save_artifacts(progress)
-        second = run(args.godot, args.project, env, "s04a_game_worker.gd")
+        alias = args.output / "save-directory-alias"
+        directory_alias(alias, progress.parent)
+        second = run(args.godot, args.project, env, "s04a_game_worker.gd", alias / progress.name)
         assert not second["owns"] and not second["enabled"] and not second["startup"], second
         errors = [second[key] for key in ("initial", "save", "import", "clear", "recovery")]
         assert errors[0] != 0 and len(set(errors)) == 1, second
+        assert second["alias_export"] != 0 and second["alias_writer"] == errors[0], second
         assert save_artifacts(progress) == before, "second process changed primary, staging, backup, or lock file"
         ui = run(args.godot, args.project, env, "s04a_ui_worker.gd")
         assert ui["warned"] and ui["processing"] and not ui["save_enabled"] and not ui["startup"], ui
         assert save_artifacts(progress) == before, "read-only UI changed save artifacts"
     finally:
-        game_owner.kill()
-        game_owner.communicate(timeout=10)
+        end_holder(game_owner, "s04a_game_worker.gd", game_owner_output)
     third = run(args.godot, args.project, env, "s04a_game_worker.gd")
     assert third["owns"] and third["enabled"] and third["save"] == 0, third
     summary = {
@@ -119,7 +161,9 @@ def main():
         "post_crash_game": {k: v for k, v in third.items() if k != "path"},
         "save_artifacts_during_denial": before,
         "denied_writes_left_artifacts_identical": True,
+        "directory_alias_denied": True,
         "native_dll_sha256": digest(args.project / "bin" / "space_native.dll"),
+        "worker_logs": LOGS,
     }
     (args.output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("S04A_SINGLE_WRITER_PASS: OS lock, two game processes, running read-only UI, crash retry, separate saves, write entry denials")

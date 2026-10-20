@@ -5,6 +5,8 @@
   "other_save_while_held": "true",
   "reacquire_after_kill": true,
   "first_game": {
+    "alias_export": -1,
+    "alias_writer": -1,
     "clear": -1,
     "enabled": true,
     "import": -1,
@@ -15,6 +17,8 @@
     "startup": ""
   },
   "second_game": {
+    "alias_export": 31,
+    "alias_writer": 22,
     "clear": 22,
     "enabled": false,
     "import": 22,
@@ -31,6 +35,8 @@
     "warned": true
   },
   "post_crash_game": {
+    "alias_export": -1,
+    "alias_writer": -1,
     "clear": -1,
     "enabled": true,
     "import": -1,
@@ -41,9 +47,52 @@
     "startup": ""
   },
   "save_artifacts_during_denial": {
-    "progress.json": "79c9d7f3e9201937a8153d3075e2bf7eaecfd65407c29ecd9f410caf17a70b8b",
+    "progress.json": "d3ac331a0a76ab2f3553b5a3ff78b1a0cd68f3dea60b3422f6037903cfd68e11",
     "progress.json.writer-lock": "locked-sidecar"
   },
   "denied_writes_left_artifacts_identical": true,
-  "native_dll_sha256": "21a6a85131796759bf220e4d7913e0ac2a1cf9d6c589d4176fa1b2b61ffe69d1"
+  "directory_alias_denied": true,
+  "native_dll_sha256": "be9a90aafc713e57ced79372ba6a0e58acc22d86cc1266166bdde03632f06272",
+  "worker_logs": [
+    {
+      "file": "00-s04a_lock_worker.gd.log",
+      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+    },
+    {
+      "file": "01-s04a_lock_worker.gd.log",
+      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+    },
+    {
+      "file": "02-s04a_lock_worker.gd.log",
+      "sha256": "0234e18bfcb91f9d164f8bd53b00371c4ea5ee375dce4d74bf88c9144bf24ac4"
+    },
+    {
+      "file": "03-s04a_lock_worker.gd.log",
+      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+    },
+    {
+      "file": "04-s04a_lock_worker.gd.log",
+      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+    },
+    {
+      "file": "05-s04a_lock_worker.gd.log",
+      "sha256": "822bda9cd119f515b809a280186f39922490a8facf15d406471b7f5cc47d7712"
+    },
+    {
+      "file": "06-s04a_game_worker.gd.log",
+      "sha256": "9bd2c966376b52555afb729cdb4033eab37c4fe0b2bf88e968a73675fdddc8d3"
+    },
+    {
+      "file": "07-s04a_ui_worker.gd.log",
+      "sha256": "76a5be84343869540bbc120f86ebe4dd8441a2f3ba46fdc6a132a19ad9431ea4"
+    },
+    {
+      "file": "08-s04a_game_worker.gd.log",
+      "sha256": "260c8195d760a241bc718c7183aa9a838402fc8ade52d8880450522576d42771"
+    },
+    {
+      "file": "09-s04a_game_worker.gd.log",
+      "sha256": "260c8195d760a241bc718c7183aa9a838402fc8ade52d8880450522576d42771"
+    }
+  ]
 }
