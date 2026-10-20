@@ -19,24 +19,26 @@
 
 - D01/D02：持续成长大数、不新增等级上限、保留公式及取整；D03：同档单写入者、第二实例阻止写入，均已由用户答复“按”批准。这里只登记，不实施。
 - P04 已明确：`test/run.py` 等验收工具仅在审计侧交付，main 不纳入。S00 不实现 S01 门禁，也不把 A08 标为修复。
-- P05：父级记录 `BJNLPC-0459` connected、attached、已授权。该连接事实不等于本线程已在该机器执行命令。本线程执行器实际主机名为 `DESKTOP-I3QUONB`；下表将本机能力和指定目标机验收分列。
+- P05：父级记录 `BJNLPC-0459` connected、attached、已授权，并说明本线程创建时使用环境 ID `ccarenv_b64_Y2NhcmVudl82YWMwMTAxZGQxMWM4MTkxYmFjMGYwYmY4MjllMzU1Yg`，目录显示名为 `BJNLPC-0459`。本线程 `hostname.exe` 与 DNS 主机名也返回 `BJNLPC-0459`；`COMPUTERNAME` 环境变量及 `.NET MachineName` 返回 `DESKTOP-I3QUONB`。这是名称来源差异，现有证据不支持“另一台机器”的结论；控制面环境 ID 的归属由父级核对。
 - 当前阶段状态为 `review`，两位审查者的结论均待填写；未集成 main，未关闭 S00，S01 不可启动。
 
 ## Windows 4.7.2 / native / GPU / 隔离能力矩阵
 
-下列均为只读探测或位于本线程可写目录 `.s00_probe/` 的合成小工程。未运行玩家游戏、未使用个人存档。探针首次直接运行时 `S00_NATIVE_CLASS=false, exit=2`，原因是新工程尚无 Godot 导入生成的 `.godot/extension_list.cfg`；完成编辑器扫描后相同探针成功。编辑器导入命令在首轮等待期间被中断，不能把它的退出状态写成通过；它已经生成扩展登记，随后的实际类加载是直接证据。
+以下只读探测及合成小工程均在本线程的已授权 Windows 环境执行，写入仅限可写目录 `.s00_probe/`。线程标识 `CODEX_SESSION_ID` / `CODEX_THREAD_ID` 均为 `01a15a4c-ea59-75a6-afea-513fefe8a0c0`。独立的 `hostname.exe` 和 `[System.Net.Dns]::GetHostName()` 均输出 `BJNLPC-0459`；`COMPUTERNAME` 与 `[System.Environment]::MachineName` 输出 `DESKTOP-I3QUONB`。父级提供的任务创建环境 ID 对应 `BJNLPC-0459` 显示名。故先前以旧名称推断“目标机未执行”的判断撤回；显示名、环境变量与 OS 主机名不是同一证据来源。
 
-| 能力 | `DESKTOP-I3QUONB` 的实测 / 状态 | `BJNLPC-0459` 的状态与补齐路径 |
+合成 native 探针首次直接运行时 `S00_NATIVE_CLASS=false, exit=2`，因为新工程尚未由 Godot 生成 `.godot/extension_list.cfg`；编辑器首次扫描生成扩展登记后，实际类加载成功。编辑器导入进程在等待时被中断，不能把导入退出状态写成通过。未运行玩家游戏、未用个人存档。
+
+| 能力 | 当前授权环境的证据与结论 | 尚待验证的范围 |
 |---|---|---|
-| Windows 与指定引擎 | Windows NT 10.0.19044；`D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe --version` 输出 `4.7.2.stable.official.ed1daf0bf`：**available** | **blocked / 未在目标机执行**。在已授权连接上记录主机名、OS、同一引擎完整版本与二进制位置。 |
-| native 构建输入 | `build_native.ps1` 的固定 `godot-cpp` 提交 `507ed9d840c01a3c5b2a39af8bb4000bfac30bf5` 与本机检出相同；4.7.2 API SHA-256 为脚本要求的 `d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986`；LLVM MinGW、Python/SCons 路径存在：**静态就绪，构建未执行** | **blocked / 未构建**。目标机用阶段隔离构建目录运行固定脚本，记录命令、退出码、源码和产物哈希；须遵守脚本的 D: 路径约束。 |
-| 匹配 DLL 与实际加载 | `tools/player_runtime/space_native.dll` SHA-256 为 `137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78`，与 `native-validation-hashes.json` 一致。将该 DLL 和模板 descriptor 放入合成工程，导入后 `ClassDB.class_exists("SpaceCombatKernel")=true`, exit 0：**本机加载 available**。既有 `D:\CodexBuild\space_idle\native-stable\bin\space_native.dll` 是旧哈希 `04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f`，不可充作本次匹配产物。 | **blocked / 未在目标机加载**。在目标机校验 DLL、descriptor、引擎哈希/版本并以隔离工程实际加载；构建产物需与被验收运行提交匹配。 |
-| GPU 图形入口 | `nvidia-smi -L` 识别 NVIDIA GeForce RTX 2060；合成 Godot 工程以非 headless、`gl_compatibility` 运行五帧，输出 `OpenGL API 3.3.0 NVIDIA 610.88`、`S00_DISPLAY=Windows`、`S00_RENDERER=NVIDIA GeForce RTX 2060`、exit 0：**本机最小图形入口 available** | **blocked / 未在目标机运行**。在目标机执行隔离的图形入口并记录适配器、渲染器、退出码；S22 才验收真实玩家产物。 |
-| 用户目录隔离 | 合成探针仅设置进程级 `APPDATA` / `LOCALAPPDATA` 到 `.s00_probe/userdata/`，可见 Godot 在该目录创建编辑器/应用数据：**本机隔离机制 available**。`test/run.py` 另会给每次测试建独立 `test/work/<test>-*` 并设置 Windows 与 XDG 用户目录。 | **blocked / 未在目标机验证**。目标机用合成进度及独立目录确认日志/存档落点；不得读取或覆盖真实玩家存档。 |
+| Windows 与指定引擎 | Windows NT 10.0.19044；`D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe --version` 输出 `4.7.2.stable.official.ed1daf0bf`：**available**。 | 真实玩家入口与发布包未运行，留 S22。 |
+| native 构建输入 | `build_native.ps1` 固定的 `godot-cpp` 提交 `507ed9d840c01a3c5b2a39af8bb4000bfac30bf5` 与检出一致；4.7.2 API SHA-256 为要求的 `d0e4c08c03b165156dabe6bfb6a906baf0069189f62035341230a246c86d6986`；LLVM MinGW 与 Python/SCons 路径存在：**输入静态就绪**。 | **源码重新构建未执行，构建能力/新产物未验证**。后续在隔离 D: 构建目录运行固定脚本，记录退出码、源码及新 DLL 哈希；不把路径存在当成构建通过。 |
+| 匹配 DLL 与实际加载 | `tools/player_runtime/space_native.dll` SHA-256 `137bd043ce2833b6378551e878cb6e9c3221cc0d98590d72db8399c89e0b0c78` 与 `native-validation-hashes.json` 一致。合成工程导入后 `ClassDB.class_exists("SpaceCombatKernel")=true`、exit 0：**现有匹配 DLL 加载 available**。 | `D:\CodexBuild\space_idle\native-stable\bin\space_native.dll` 为旧哈希 `04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f`，不能作为新构建证据；运行提交变化后还需重新核对匹配。 |
+| GPU 图形入口 | `nvidia-smi -L` 识别 NVIDIA GeForce RTX 2060；非 headless、`gl_compatibility` 合成工程运行五帧，输出 `OpenGL API 3.3.0 NVIDIA 610.88`、`S00_DISPLAY=Windows`、`S00_RENDERER=NVIDIA GeForce RTX 2060`、exit 0：**最小图形入口 available**。 | 游戏 UI、原生战斗和发布包的图形验收留 S22。 |
+| 用户目录隔离 | 探针将进程级 `APPDATA` / `LOCALAPPDATA` 指向 `.s00_probe/userdata/`，Godot 数据确实写入该目录：**隔离机制 available**。`test/run.py` 另为每次测试建独立 `test/work/<test>-*` 并设置 Windows 与 XDG 用户目录。 | 产品新档/保存/重开的隔离验收未执行；后续只用合成进度，不碰真实玩家存档。 |
 
-三个 Godot 探针都输出 `ERROR: Failed to read the root certificate store`，但版本、native 类加载和 GPU 探针的相应退出码如上；该错误需在真实入口检查时单独归因，不当作功能通过或产品故障已定论。GPU 小工程通过不代表游戏 UI、原生战斗或发布包通过。
+三个 Godot 探针均输出 `ERROR: Failed to read the root certificate store`，但版本、native 加载和 GPU 探针的相应退出码如上。该错误留在真实产品入口检查时归因，不据此宣称产品故障或产品验收通过。GPU 小工程通过也不代表游戏 UI、原生战斗或发布包通过。
 
-本机能力核查的可复核命令与输入（仓库根目录；`$probe` 指向新建的、位于可写目录中的空项目）：
+本环境能力核查的可复核命令与输入（仓库根目录；`$probe` 指向新建的、位于可写目录中的空项目）：
 
 ```powershell
 $godot = 'D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe'
@@ -74,7 +76,7 @@ func run_probe() -> void:
 | `test_save_policy.gd` | 原审计首次 48 checks、5 failures（含隔离目录断言）；修正隔离目录后重跑为 48 checks、4 failures。剩余项涉及时间戳重载精确相等、强化购买、分支与重载联动；31 级强化当前费用约 `1.0737e11`，原夹具仅给 `1e9` 碎片。 | **既有失败，产品缺陷未定**；S02 分离夹具和时间语义，保留正确 oracle，不能为绿灯改规则。 |
 | `test_config_workbooks.py` | 原审计 14 tests、1 error；`test_hightech_limit_and_offline_max_validation` 所用 `level.xlsx!D4` 缺公式缓存。 | **既有夹具/工作簿错误**；S02 修正可重复输入并核对实时配置，不改游戏公式。 |
 | `test/run.py` | 原审计 `probe_test_gate.gd/.log` 证明 `SCRIPT ERROR` 可伴随 exit 0，现入口仅按退出码可能误判通过。 | **门禁缺陷 A08**；S01 在审计侧实现可靠完成/错误协议。main runner 按 P04 保持未修。 |
-| Windows/native/GPU 产品验收 | 原报告在 Linux Godot 4.6.3 上核查，未执行目标 Windows 原生 DLL、真实 GPU 和最终 EXE。 | **未验证**；本次只证实另一台 Windows 主机上的基础能力，目标机和产品入口仍待后续阶段。 |
+| Windows/native/GPU 产品验收 | 原报告在 Linux Godot 4.6.3 上核查，未执行 Windows 原生 DLL、真实 GPU 和最终 EXE。 | **真实产品仍未验证**；S00 已在当前授权环境确认指定引擎、现有匹配 DLL 加载、GPU 最小入口及隔离机制，源码重建与玩家产品/发布包另待执行。 |
 
 原报告的 16 个既有专项为 14 通过、2 未通过；这不是本阶段的新测试结果。A01—A07 与 AR01—AR07 仍按唯一计划的后续阶段处理，不因准备工作而关闭。
 
