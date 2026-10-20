@@ -190,19 +190,18 @@ public:
     String canonical_path(const String &path) const {
         // weakly_canonical resolves an existing link or junction and still
         // resolves the parent of a not-yet-created save/staging file.
-        try {
 #ifdef _WIN32
-            Char16String wide = path.utf16();
-            std::filesystem::path input(reinterpret_cast<const wchar_t *>(wide.get_data()));
+        Char16String wide = path.utf16();
+        std::filesystem::path input(reinterpret_cast<const wchar_t *>(wide.get_data()));
 #else
-            CharString bytes = path.utf8();
-            std::filesystem::path input(bytes.get_data());
+        CharString bytes = path.utf8();
+        std::filesystem::path input(bytes.get_data());
 #endif
-            auto resolved = std::filesystem::weakly_canonical(input).u8string();
-            return String::utf8(resolved.c_str());
-        } catch (const std::filesystem::filesystem_error &) {
-            return String(); // Unknown identity cannot authorize a write.
-        }
+        std::error_code error;
+        auto canonical = std::filesystem::weakly_canonical(input, error);
+        if (error) return String(); // Unknown identity cannot authorize a write.
+        auto resolved = canonical.u8string();
+        return String::utf8(resolved.c_str());
     }
 };
 
