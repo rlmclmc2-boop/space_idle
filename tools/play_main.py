@@ -6,11 +6,18 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import urllib.request
+import zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
 BUNDLED_DLL = Path('tools/player_runtime/space_native.dll')
 ENTRY_CMD = '\u73a9\u6e38\u620f.cmd'
 NATIVE_INVENTORY = Path('space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json')
+ENGINE_NAME = 'Godot_v4.7.2-stable_win64.exe'
+ENGINE_URL = ('https://downloads.godotengine.org/?flavor=stable&platform=windows.64'
+              '&slug=win64.exe.zip&version=4.7.2')
+ENGINE_ARCHIVE_SHA256 = '731980f9608d61333e5baf54a2ef17210acc7a538446c0cb9969f002aca1e953'
+ENGINE_EXE_SHA256 = 'ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424'
 APPROVED_ORIGIN_URLS = frozenset({
     'https://github.com/rlmclmc2-boop/space_idle.git',
     'https://github.com/rlmclmc2-boop/space_idle',
@@ -41,6 +48,8 @@ windows.release.x86_64 = "res://bin/space_native.dll"
 '''
 
 def run(args, cwd, env=None):
+    if args[0] == 'git':
+        args = ['git', '-c', 'safe.directory=' + str(cwd), *args[1:]]
     return subprocess.run(args, cwd=cwd, env=env, check=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                           text=True, encoding='utf-8', errors='replace').stdout.strip()
@@ -51,6 +60,10 @@ def digest(path):
         for part in iter(lambda: f.read(1024 * 1024), b''):
             h.update(part)
     return h.hexdigest()
+
+
+class LocalRuntimeChanges(RuntimeError):
+    pass
 
 def generated_evidence_translation(path, tracked_csv):
     if not path.endswith('.translation') or '/evidence/' not in path:
@@ -100,7 +113,7 @@ def checked_source(root):
     if untracked_runtime:
         local_changes += '\n' + untracked_runtime
     if local_changes:
-        raise RuntimeError('Unreviewed local runtime changes:\n' + local_changes)
+        raise LocalRuntimeChanges('Unreviewed local runtime changes:\n' + local_changes)
     return project, head
 
 def verified_bundle(root):
@@ -127,6 +140,80 @@ def verified_bundle(root):
         raise RuntimeError('Bundled native DLL is missing or has the wrong SHA256: ' + str(bundle))
     return bundle, expected_sha, inventory['acceptance']['engine']
 
+
+def prepare_engine(root):
+    external = os.environ.get('SPACE_BATTLESHIP_ENGINE_PATH')
+    engine = (Path(external) if external else root / 'space-battleship' / 'engine' / ENGINE_NAME)
+    if engine.exists():
+        if not engine.is_file() or digest(engine) != ENGINE_EXE_SHA256:
+            raise RuntimeError('Godot executable does not match the approved Windows 4.7.2 build: ' + str(engine))
+        return engine
+    if external:
+        raise RuntimeError('Approved Godot executable is missing: ' + str(engine))
+    engine.parent.mkdir(parents=True, exist_ok=True)
+    archive = engine.parent / 'downloads' / (ENGINE_NAME + '.zip')
+    archive.parent.mkdir(parents=True, exist_ok=True)
+    if not archive.exists():
+        partial = archive.with_name(archive.name + '.' + str(os.getpid()) + '.partial')
+        try:
+            with urllib.request.urlopen(ENGINE_URL, timeout=60) as response, partial.open('xb') as output:
+                shutil.copyfileobj(response, output)
+            if digest(partial) != ENGINE_ARCHIVE_SHA256:
+                raise RuntimeError('Official Godot archive failed SHA256 verification: ' + str(partial))
+            partial.replace(archive)
+        finally:
+            if partial.exists():
+                partial.unlink()
+    if digest(archive) != ENGINE_ARCHIVE_SHA256:
+        raise RuntimeError('Cached Godot archive failed SHA256 verification: ' + str(archive))
+    temporary = engine.with_name(engine.name + '.' + str(os.getpid()) + '.partial')
+    try:
+        with zipfile.ZipFile(archive) as bundle:
+            if sorted(bundle.namelist()) != [ENGINE_NAME, ENGINE_NAME.replace('.exe', '_console.exe')]:
+                raise RuntimeError('Official Godot archive has unexpected contents: ' + str(archive))
+            with bundle.open(ENGINE_NAME) as source, temporary.open('xb') as output:
+                shutil.copyfileobj(source, output)
+        if digest(temporary) != ENGINE_EXE_SHA256:
+            raise RuntimeError('Godot executable failed SHA256 verification: ' + str(temporary))
+        temporary.replace(engine)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+    return engine
+
+
+def prepare_clean_mirror(root, head):
+    mirror = root / 'space-battleship' / '.runtime' / 'player-main' / head
+    if not mirror.exists():
+        mirror.parent.mkdir(parents=True, exist_ok=True)
+        temporary = mirror.with_name(head + '.' + str(os.getpid()) + '.partial')
+        subprocess.run(['git', '-c', 'safe.directory=' + str(root), 'clone', '--shared',
+                        '--branch', 'main', '--single-branch', str(root), str(temporary)],
+                       cwd=root, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        origin = run(['git', 'remote', 'get-url', 'origin'], root)
+        run(['git', 'remote', 'set-url', 'origin', origin], temporary)
+        if run(['git', 'rev-parse', 'HEAD'], temporary) != head:
+            raise RuntimeError('Player mirror did not checkout the accepted main commit')
+        run(['git', 'update-ref', 'refs/remotes/origin/main', head], temporary)
+        temporary.rename(mirror)
+    if run(['git', 'rev-parse', 'HEAD'], mirror) != head:
+        raise RuntimeError('Existing player mirror points at a different commit: ' + str(mirror))
+    return mirror
+
+
+def launch_clean_mirror(root, changes):
+    if os.environ.get('SPACE_BATTLESHIP_MANAGED_MIRROR') == '1':
+        raise changes
+    head = run(['git', 'rev-parse', 'HEAD'], root)
+    engine = prepare_engine(root)
+    mirror = prepare_clean_mirror(root, head)
+    print('Local runtime edits remain untouched; playing accepted main from:', mirror, flush=True)
+    env = os.environ.copy()
+    env['SPACE_BATTLESHIP_MANAGED_MIRROR'] = '1'
+    env['SPACE_BATTLESHIP_PLAYER_SOURCE_ROOT'] = str(root)
+    env['SPACE_BATTLESHIP_ENGINE_PATH'] = str(engine)
+    return subprocess.call([sys.executable, str(mirror / 'tools' / 'play_main.py')], cwd=mirror, env=env)
+
 def install_native(root):
     project, _ = checked_source(root)
     bundle, dll_sha, _ = verified_bundle(root)
@@ -150,11 +237,11 @@ def install_native(root):
     temporary.replace(dll)
     return dll
 
-def validate(root):
+def validate(root, engine=None):
     project, head = checked_source(root)
     _, dll_sha, accepted_engine = verified_bundle(root)
 
-    engine = project / 'engine' / 'Godot_v4.7.2-stable_win64.exe'
+    engine = engine or project / 'engine' / ENGINE_NAME
     if not engine.is_file():
         raise RuntimeError('缺少引擎：' + str(engine))
     if engine.with_suffix('.pck').exists():
@@ -189,13 +276,20 @@ def main():
         return 0
     if len(sys.argv) != 1:
         raise RuntimeError('Unknown player-entry argument')
-    project, engine, head, version = validate(ROOT)
+    try:
+        checked_source(ROOT)
+    except LocalRuntimeChanges as changes:
+        return launch_clean_mirror(ROOT, changes)
+    engine = prepare_engine(ROOT)
+    install_native(ROOT)
+    project, engine, head, version = validate(ROOT, engine)
     dll_sha = digest(project / 'bin' / 'space_native.dll')
     env = os.environ.copy()
     window_check = env.get('SPACE_BATTLESHIP_VERIFY_WINDOW') == '1'
-    runtime = (ROOT / 'test' / 'work' / 'player-window-check'
-               if window_check else project / '.runtime')
-    user_data = runtime / 'userdata' if window_check else project / '.userdata'
+    player_root = Path(env.get('SPACE_BATTLESHIP_PLAYER_SOURCE_ROOT', ROOT))
+    runtime = (player_root / 'test' / 'work' / 'player-window-check'
+               if window_check else player_root / 'space-battleship' / '.runtime')
+    user_data = runtime / 'userdata' if window_check else player_root / 'space-battleship' / '.userdata'
     env['APPDATA'] = str(user_data / 'roaming')
     env['LOCALAPPDATA'] = str(user_data / 'local')
     for p in [Path(env['APPDATA']), Path(env['LOCALAPPDATA']), runtime]:
