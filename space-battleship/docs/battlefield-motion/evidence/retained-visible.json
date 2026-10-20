@@ -1,0 +1,18 @@
+{
+  "source_candidate": "c17b5e304c5a4125ca596ec1f3f6ff9003e7c671",
+  "test": "res://test/test_battlefield_motion_retained.gd",
+  "environment": "Windows, Godot 4.7.2 native runtime, headless Canvas node inspection",
+  "retained_enabled": true,
+  "visible_frames": 300,
+  "root_x_span_px": 7.99981689453125,
+  "root_y_span_px": 12.9902267456055,
+  "hull_angle_span_degrees": 1.03996460302614,
+  "mount_global_x_span_px": 7.74258422851563,
+  "visible_muzzle_max_error_px": 0.621439933776855,
+  "root_pose_max_error_px": 0.0,
+  "shield_angle_max_error_radians": 0.0,
+  "hit_anchor_max_error_px": 0.0,
+  "hull_rebuilds_after_settle": 0,
+  "protection_rebuilds_after_settle": 0,
+  "logical_position_unchanged": true
+}

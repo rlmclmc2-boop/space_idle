@@ -254,6 +254,17 @@ func visual_muzzle(shot:Dictionary)->Vector2:
 						var origin:=Vector2(art.origin)
 						art_muzzle=origin.rotated(yaw)+(art_muzzle-origin).rotated(yaw if component.mode() not in ["main","secondary"] else 0.0)+Vector2(motion.offset)
 					return battle_logical_point(enemy_render_position(enemy)+art_muzzle)
+				var motion:=_battlefield_motion_enemy(enemy)
+				if not motion.is_empty():
+					# Retained generic mounts have no authored texture muzzle. Transform
+					# their cached component port by the same hull pose as the Canvas
+					# mount; a tracking turret keeps its world aim angle.
+					var geometry:Dictionary=enemy_component_pose(enemy,component)
+					var yaw:=float(motion.angle)
+					var origin:=Vector2(geometry.origin)
+					var port:=Vector2(geometry.muzzle)-origin
+					var point:=enemy_render_position(enemy)+origin.rotated(yaw)+port.rotated(yaw if component.mode() not in ["main","secondary"] else 0.0)+Vector2(motion.offset)
+					return battle_logical_point(point)
 	if not bool(shot.get("hostile",false)) and not bool(shot.get("chain_hop",false)) and _visual_drone_id(shot).is_empty() and is_instance_valid(ship_view):
 		var slot:int=shot_mount(shot)
 		if slot>=0:
@@ -1214,7 +1225,11 @@ func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.IN
 func enemy_weapon_art_pose(enemy:Dictionary,component)->Dictionary:
 	var art:Dictionary=super.enemy_weapon_art_pose(enemy,component)
 	if art.is_empty() or battlefield_motion_draw_enemy.is_empty() or not is_same(battlefield_motion_draw_enemy.entity,enemy):return art
-	var yaw:=float(battlefield_motion_draw_enemy.angle)
+	return _battlefield_motion_art_pose(art,battlefield_motion_draw_enemy,component)
+
+func _battlefield_motion_art_pose(art:Dictionary,motion:Dictionary,component)->Dictionary:
+	if art.is_empty() or motion.is_empty():return art
+	var yaw:=float(motion.angle)
 	art.origin=Vector2(art.origin).rotated(yaw)
 	if component.mode() not in ["main","secondary"]:art.angle=float(art.angle)+yaw
 	return art

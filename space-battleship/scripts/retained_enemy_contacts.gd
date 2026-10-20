@@ -224,13 +224,17 @@ func sync(offset:Vector2,boss:bool)->void:
 func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void:
  var enemy=record.entity
  var point:Vector2=spatial.position
- var pos=point+offset
+ # The spatial row remains the combat/collision authority. Retained Canvas
+ # owners consume the same cached display pose as the fallback painter.
+ var motion:Dictionary=paint_owner._battlefield_motion_enemy(enemy)
+ var yaw:float=float(motion.get("angle",0.0))
+ var pos:Vector2=point+offset+Vector2(motion.get("offset",Vector2.ZERO))
  var width:float=paint_owner.enemy_render_width_at_y(enemy,point.y)
  # Live screen scale invalidates pixel-width strokes without rebuilding bodies.
  var scale_value:float=paint_owner.enemy_recognition_screen_scale()
  if not is_equal_approx(record.screen_scale,scale_value):
   record.screen_scale=scale_value;record.packet_bucket=-999999
- var angle:float=paint_owner.enemy_render_angle(enemy)
+ var angle:float=paint_owner.enemy_render_angle(enemy)+yaw
  var body_key:Array=[pos,width,angle,record.screen_scale]
  if record.body_signature!=body_key:
   record.body_signature=body_key
@@ -300,6 +304,7 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   var art:Dictionary=paint_owner.enemy_weapon_art_pose(enemy,mount.component)
   var body:Part=mount.node.pieces.body
   if not art.is_empty():
+   art=paint_owner._battlefield_motion_art_pose(art,motion,mount.component)
    mount.node.position=art.origin;mount.node.rotation=float(art.angle)-PI/2
    body.scale=Vector2.ONE
    body.update({"art":art},[art.scale])
@@ -313,7 +318,8 @@ func update_record(record:DisplayRecord,spatial:Dictionary,offset:Vector2)->void
   var origin:Vector2
   if paint_owner.simulation_geometry_view!=null:
    var geometry:Dictionary=paint_owner.simulation_geometry_view.row(enemy).components[mount.owner_slot]
-   mount_angle=geometry.angle;origin=geometry.origin
+   mount_angle=float(geometry.angle)+(yaw if mount.aim_factor==0.0 else 0.0)
+   origin=Vector2(geometry.origin).rotated(yaw)
   else:
    mount_angle=PI/2+angle+clampf(desired,-mount.aim_limit,mount.aim_limit)*mount.aim_factor+mount.base_rotation
    origin=(mount.normalized*width).rotated(PI+angle)
