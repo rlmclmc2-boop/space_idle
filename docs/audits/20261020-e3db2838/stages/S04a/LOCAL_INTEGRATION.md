@@ -36,4 +36,10 @@ The final real-entry [receipt](local-integration-logs/d-entry-player-launch.json
 
 The parent and original astra both returned integration **PASS**, unresolved 0, on exactly runtime `01ddfcaf678321fafae51162b3bb6665b34e4301` and this evidence at `1a07dadd02cf126519628e46f74c0e1b12c7d2d0`. The parent independently read back the direct D entry receipt and game log, confirmed matching main/mirror/DLL, and verified 55 manifest items and seven runtime blobs. The original astra's turn `01a15b61-38ba-7049-bba6-0c3885295d19` independently verified 107 digests. Their approvals distinguish direct D entry acceptance from the clean-clone concurrency run and do not extend the test to personal saves, full Linux gameplay, long-run play or power-loss durability.
 
+## Temporary remote branch cleanup
+
+Before deletion, a fresh remote readback showed `main` and `s04a/single-writer` both at the approved runtime `01ddfcaf678321fafae51162b3bb6665b34e4301`, formal `audit/code-review-e3db2838-20261020` at review-record commit `76c362f45b356755e3f1bb87a009fe4ee4e286de`, and `s04a/audit-evidence` at frozen evidence `36e4412197be2b66948cd17f5f1d1a8327ed8c73`. `git merge-base --is-ancestor 36e4412197be2b66948cd17f5f1d1a8327ed8c73 76c362f45b356755e3f1bb87a009fe4ee4e286de` exited 0, and `git rev-list --count 76c362f45b356755e3f1bb87a009fe4ee4e286de..36e4412197be2b66948cd17f5f1d1a8327ed8c73` returned 0. Thus neither temporary branch held unique work.
+
+The ordinary `git push origin --delete s04a/single-writer s04a/audit-evidence` succeeded for exactly those two remote refs. A fresh `ls-remote origin` readback for all four names returned only `main` at `01ddfcaf678321fafae51162b3bb6665b34e4301` and the formal audit branch at `76c362f45b356755e3f1bb87a009fe4ee4e286de`; both temporary names were absent. No other branch was deleted. The local `D:\放置` main still resolved to the approved runtime and its existing `space-battleship/project.godot` modification remained present. This record itself is a later formal audit commit, so the formal branch will advance beyond the readback SHA.
+
 S04a remains open for parent closure and thread archive. S05 has not started.
