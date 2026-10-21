@@ -264,9 +264,11 @@
     "s11_stage_open": true,
     "s11_runtime_sha_na": true,
     "s11_audit_only_prototype": true,
-    "s11_godot_69_checks_pass": true,
     "s11_dual_review_pending": true,
-    "s11_main_unchanged": true
+    "s11_main_unchanged": true,
+    "s11_godot_98_checks_pass": true,
+    "s11_prior_dual_fail_old_object": true,
+    "s11_revised_dual_review_pending": true
   },
   "stages": 26,
   "active_stage": "S11",

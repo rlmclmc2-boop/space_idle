@@ -3,6 +3,7 @@ extends RefCounted
 
 # Audit-only S12 candidate. Currency amounts are exact nonnegative integers.
 const I := preload("res://scripts/reactor_integer.gd")
+const G := preload("res://scripts/growth_number.gd")
 
 static func _old_growth(base: float, multiplier: float, level: int) -> float:
 	var value := base * pow(1.0 + multiplier, level - 1)
@@ -97,13 +98,17 @@ static func affordable(wallet: Dictionary, costs: Dictionary) -> bool:
 		if not wallet.has(id):
 			return false
 		var balance = wallet[id]
-		if balance is Dictionary and balance.has("m") and balance.has("e"):
-			if not (balance.size() == 2 and is_finite(float(balance.m)) and is_finite(float(balance.e)) and float(balance.m) >= 1.0 and float(balance.m) < 10.0 and float(balance.e) == floorf(float(balance.e))):
-				return false
+		if not G.valid(balance):
+			return false
+		if balance is Dictionary and balance.has("m"):
 			if I.compare_legacy_growth_to_integer(balance, costs[id]) < 0:
 				return false
+		elif balance is float:
+			# Costs are integers. floor(balance) >= cost is equivalent to the
+			# legacy comparison, including a valid fractional wallet balance.
+			if I.compare(I.float_floor(balance), costs[id]) < 0:
+				return false
 		else:
-			var integer = I.from_growth(balance)
-			if integer == null or I.compare(integer, costs[id]) < 0:
+			if I.compare(balance, costs[id]) < 0:
 				return false
 	return true

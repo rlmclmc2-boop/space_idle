@@ -13,7 +13,7 @@
 
 高阶按 `base × (1+multi)^(level−1)` 求目标级原值，不逐级递推**报价**、不求未量化几何和。精确十进制乘积采用现有 `ReactorInteger.cost_cursor`：其输入系数是 Godot binary64 操作数的十进制表示；原 float 已不能表达结果的域内，舍入取前两位和被舍弃的首位，恰好实现旧 `floor(v/step+0.5)×step` 的量级规则。各级价格和批量总价是现有 `{v:1,i:"..."}`/int 形式的整数，可与旧 `{m,e}` 钱包比较；缩写文字不参与比较。
 
-测试脚本 `space-battleship/test/audit_s11_quote_test.gd` 调用真实 `ShipDatabase.equipment_cost` 逐项对照普通域，并读独立 `reference_oracle.py` 生成的 `audit_s11_quote_oracle.json` 对照 3873 级和 3901–3910 全溢出批量。受控行检查 99.9/100/149/150、一级 50、无倍率、溢出域半步与十进位进位、进化材料触发级。一次有限单价求和跨过 float 上界时仍保留整数总价。69 项断言全通过，原始输出在 `godot-test.log`。
+测试脚本 `space-battleship/test/audit_s11_quote_test.gd` 调用真实 `ShipDatabase.equipment_cost` 逐项对照普通域；即使原型价格已编码为整数字典，只要旧报价仍有限，也把旧 float 的实际二进制整数值提取后比较，覆盖 500/1000 与 3800–3870 等高位目标级。独立 `reference_oracle.py` 生成的 `audit_s11_quote_oracle.json` 对照 3873 级和 3901–3910 全溢出批量。受控行检查 99.9/100/149/150、一级 50、无倍率、溢出域半步与十进位进位、进化材料触发级。一次有限单价求和跨过 float 上界时仍保留整数总价。钱包测试覆盖合法有限小数足额/不足额和非法 `{m,e}` 字符串字段拒绝。98 项断言全通过，原始输出在 `godot-test.log`。
 
 ## 复现
 
@@ -25,10 +25,12 @@ python docs/audits/20261020-e3db2838/stages/S11/reference_oracle.py
 python docs/audits/20261020-e3db2838/stages/S11/verify_log.py
 ```
 
-Windows Godot 4.7.2，Python 3.12。第一次全新 checkout 可先运行 Godot `--headless --path space-battleship --editor --import --quit` 建立 class cache；它产生的资产导入物不在交付清单。验收看 Godot 退出 0、`checks=69 failures=0` 和日志门禁。日志中一次系统根证书库读取错误是此 Windows 环境的已知诊断，测试门禁只精确放行该行及紧随的引擎位置行；其他 `ERROR`、`SCRIPT ERROR`、`FAIL` 均失败。
+Windows Godot 4.7.2，Python 3.12。第一次全新 checkout 可先运行 Godot `--headless --path space-battleship --editor --import --quit` 建立 class cache；它产生的资产导入物不在交付清单。验收看 Godot 退出 0、`checks=98 failures=0` 和日志门禁。日志中一次系统根证书库读取错误是此 Windows 环境的已知诊断，测试门禁只精确放行该行及紧随的引擎位置行；其他 `ERROR`、`SCRIPT ERROR`、`FAIL` 均失败。
 
 ## 阶段边界和后续
 
 S11 没有购买/扣费、MAX 游标、缓存、UI、native 或存档接入；这些要由 S12 对最终运行 SHA 单独验证。S11 的比较不等于实际扣费守恒证明。`max_equipment_level=2147483647` 是现有等级存储边界，没有新增政策上限。Godot 内存和运行时间随指数位数、批次数增加；没有声称任意巨大配置可在有限资源中算完。退款沿用同一单价即可，正式交易和钱包减法仍属于 S12。
 
 本阶段状态：`review`；父级 dot 与原 astra 的同对象结论均 `PENDING`。证据快照以包含本目录、测试原型和唯一入口状态的审计提交完整 SHA 为准。
+
+旧证据提交 `c87d7d508cb4257c5ad27050fa52e4b77ed35fb9` 已由父级 dot 和原 astra 独立判定 FAIL：小数余额被误拒、字符串 `{m,e}` 被误接收；旧测试还跳过已编码的大整数普通域对照。当前修订恢复 `GrowthNumber.valid` 输入边界，并用 `floor(有限钱包)` 对整数报价比较，旧 FAIL 不适用于新的证据对象。

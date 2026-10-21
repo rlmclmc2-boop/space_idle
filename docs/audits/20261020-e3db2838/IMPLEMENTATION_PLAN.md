@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not a claim of overall product completion.** S00-S10 (including S04a) are closed after same-object implementation and integration dual PASS. S11 is the only open stage, `review`, with audit-only prototype and evidence awaiting parent dot and original astra same-object reviews. S12-S24 remain `not_started`. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
+**Planning and status record, not a claim of overall product completion.** S00-S10 (including S04a) are closed after same-object implementation and integration dual PASS. S11 is the only open stage, `review`, after correcting the prior dual-FAIL prototype; revised audit-only evidence awaits parent dot and original astra same-object reviews. S12-S24 remain `not_started`. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -725,7 +725,8 @@ evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S11/README.md
 verification_record: stages/S11/verification.json
 blob_index: stages/S11/BLOB_INDEX.json
-verification: Godot 4.7.2 audit prototype 69/69 checks; independent Decimal oracle; exact log gate PASS
+verification: Godot 4.7.2 audit prototype 98/98 checks; independent Decimal oracle; exact log gate PASS
+prior_review: parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9 (fractional wallet, malformed {m,e}, skipped encoded finite-domain comparison); new object pending review
 parent_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null}
 astra_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null}
 integration: N/A

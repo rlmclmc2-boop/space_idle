@@ -23,7 +23,17 @@ PASS laser legacy 50
 PASS laser quote ok 100
 PASS laser legacy 100
 PASS laser quote ok 500
+PASS laser legacy 500
 PASS laser quote ok 1000
+PASS laser legacy 1000
+PASS laser quote ok 3800
+PASS laser legacy 3800
+PASS laser quote ok 3850
+PASS laser legacy 3850
+PASS laser quote ok 3865
+PASS laser legacy 3865
+PASS laser quote ok 3870
+PASS laser legacy 3870
 PASS laser quote ok 3873
 PASS laser oracle 3873
 PASS laser 3873 finite
@@ -52,7 +62,17 @@ PASS armour legacy 50
 PASS armour quote ok 100
 PASS armour legacy 100
 PASS armour quote ok 500
+PASS armour legacy 500
 PASS armour quote ok 1000
+PASS armour legacy 1000
+PASS armour quote ok 3800
+PASS armour legacy 3800
+PASS armour quote ok 3850
+PASS armour legacy 3850
+PASS armour quote ok 3865
+PASS armour legacy 3865
+PASS armour quote ok 3870
+PASS armour legacy 3870
 PASS armour quote ok 3873
 PASS armour oracle 3873
 PASS armour 3873 finite
@@ -71,4 +91,13 @@ PASS overflow half-step
 PASS overflow decade carry
 PASS material crossing
 PASS finite float wallet
-S11 checks=69 failures=0
+PASS fractional wallet sufficient
+PASS fractional wallet insufficient
+PASS fractional wallet below next integer
+PASS integral float wallet boundary
+PASS invalid string mantissa
+PASS invalid string exponent
+PASS valid numeric legacy mantissa
+PASS invalid extra legacy field
+PASS encoded finite legacy comparisons
+S11 checks=98 failures=0

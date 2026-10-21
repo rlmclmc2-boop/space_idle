@@ -12,11 +12,12 @@
   ],
   "results": [
     "reference oracle: 6 cases, maximum 312 digits, exit 0",
-    "Godot: 69 checks, 0 failures, exit 0",
-    "log gate: 69 PASS lines, one exact certificate-store diagnostic, no other errors, exit 0"
+    "Godot: 98 checks, 0 failures, exit 0",
+    "log gate: 98 PASS lines, one exact certificate-store diagnostic, no other errors, exit 0"
   ],
-  "raw_log_sha256": "fea4a7ba242e2669fe9c4d2f5703e1128533db08c8831e8501116900663c6d61",
+  "raw_log_sha256": "6cc2350462aeb5be06d8d96af86b01fe4ed87719885cb64bc99dc9dfa60f8dc4",
   "oracle_sha256": "8a619102f5c1074ca7d80d8eccbf7799400e2ef792618285054dcd89ce26ef8a",
+  "prior_review": "Parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9; fractional wallet rejected, malformed legacy m/e accepted, encoded finite-domain comparison skipped",
   "review": {"parent": "PENDING", "original_astra": "PENDING"},
   "integration": "N/A",
   "unverified": ["purchase/debit", "MAX cursor", "cache", "UI", "save", "native", "refund transaction"]

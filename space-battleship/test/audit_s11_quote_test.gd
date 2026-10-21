@@ -6,6 +6,7 @@ const NumberFormat := preload("res://scripts/number_format.gd")
 
 var checks := 0
 var failures := 0
+var encoded_finite_comparisons := 0
 
 func check(name: String, actual: Variant, expected: Variant) -> void:
 	checks += 1
@@ -24,14 +25,16 @@ func _initialize() -> void:
 	var cases: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://test/audit_s11_quote_oracle.json"))
 	for key in ["laser", "armour"]:
 		var row: Dictionary = db.equipment[key][0]
-		for level in [1, 2, 3, 4, 5, 6, 10, 20, 50, 100, 500, 1000, 3873]:
+		for level in [1, 2, 3, 4, 5, 6, 10, 20, 50, 100, 500, 1000, 3800, 3850, 3865, 3870, 3873]:
 			var got := Q.quote_row(row, level, evolution)
 			check(key + " quote ok " + str(level), got.ok, true)
 			if not got.ok:
 				continue
 			var legacy = db.equipment_cost(key, level).get("1", 0)
-			if is_finite(float(legacy)) and not got.costs["1"] is Dictionary:
-				check(key + " legacy " + str(level), float(got.costs["1"]), float(legacy))
+			if is_finite(float(legacy)):
+				if got.costs["1"] is Dictionary:
+					encoded_finite_comparisons += 1
+				check(key + " legacy " + str(level), digits(got.costs["1"]), digits(I.float_floor(float(legacy))))
 			if cases.has(key + ":" + str(level)):
 				check(key + " oracle " + str(level), digits(got.costs["1"]), str(cases[key + ":" + str(level)]))
 		var high := Q.quote_row(row, 3873, evolution)
@@ -59,5 +62,14 @@ func _initialize() -> void:
 	var material_batch := Q.batch(material_row, 19, 2, evolution)
 	check("material crossing", digits(material_batch.costs[evolution.material_id]), "10")
 	check("finite float wallet", Q.affordable({"1": 1.0e100, evolution.material_id: 1000}, Q.quote_row(material_row, 100, evolution).costs), true)
+	check("fractional wallet sufficient", Q.affordable({"1": 10.5}, {"1": 10}), true)
+	check("fractional wallet insufficient", Q.affordable({"1": 9.99}, {"1": 10}), false)
+	check("fractional wallet below next integer", Q.affordable({"1": 10.5}, {"1": 11}), false)
+	check("integral float wallet boundary", Q.affordable({"1": 10.0}, {"1": 10}), true)
+	check("invalid string mantissa", Q.affordable({"1": {"m": "1", "e": "400"}}, {"1": 10}), false)
+	check("invalid string exponent", Q.affordable({"1": {"m": 1, "e": "400"}}, {"1": 10}), false)
+	check("valid numeric legacy mantissa", Q.affordable({"1": {"m": 1, "e": 400}}, {"1": 10}), true)
+	check("invalid extra legacy field", Q.affordable({"1": {"m": 1, "e": 400, "x": 1}}, {"1": 10}), false)
+	check("encoded finite legacy comparisons", encoded_finite_comparisons >= 8, true)
 	print("S11 checks=", checks, " failures=", failures)
 	quit(0 if failures == 0 else 1)
