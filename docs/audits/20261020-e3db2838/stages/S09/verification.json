@@ -4,7 +4,7 @@
   "type": "audit_only",
   "base_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "runtime_sha": "N/A",
-  "entry_parent_sha": "1ca7ef0be3fc809e629b8950a10df723c200de48",
+  "entry_parent_sha": "398cec055a583f526af536d7fe884162c139faae",
   "thread_id": "01a15ce4-0ee7-7705-8472-f6b42817303e",
   "checks": [
     {
@@ -25,7 +25,7 @@
     {
       "id": "scope_coverage",
       "result": "PASS",
-      "evidence": "README.md sections 1-5: capacity, allocation, cost, batch, rounding, display, save, native, D01/D02 mapping and S10-S12 handoff"
+      "evidence": "README.md sections 1-5: D01/D02 mapping; equipment level-1 and growth-guard oracle; reactor/equipment level indexing; allocation command/state/import; refund consumer; S10-S12 handoff"
     },
     {
       "id": "runtime_tests",
@@ -35,7 +35,7 @@
     {
       "id": "dual_review",
       "result": "PENDING",
-      "evidence": "parent and original astra independently review same final audit SHA"
+      "evidence": "prior 398cec05 FAIL superseded by correction; parent and original astra independently review new final audit SHA"
     }
   ],
   "source_blobs": {
@@ -47,5 +47,11 @@
     "space-battleship/scripts/save_transfer.gd": "54713b8af2b0bbe97222729801b590ab23c49dea",
     "space-battleship/scripts/native_execution_session.gd": "f25208e0e26da76eca4098bafea82095311e6fd5",
     "space-battleship/scripts/native_execution_compiler.gd": "0abdd38806fe2fa07abb59c6a4046dc1acaa727b"
+  },
+  "prior_review": {
+    "reviewer": "original astra",
+    "verdict": "FAIL",
+    "reviewed_evidence_sha": "398cec055a583f526af536d7fe884162c139faae",
+    "resolution": "D02 level-1 base cost and growth guard; allocation command/state/import separation; level indexing, refund consumer and SHA256 index corrected; fresh same-object dual review required"
   }
 }

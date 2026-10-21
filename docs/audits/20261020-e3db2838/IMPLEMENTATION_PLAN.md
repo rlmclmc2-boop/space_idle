@@ -605,10 +605,12 @@ scope_and_allowed_files:
   - docs/audits/20261020-e3db2838/stages/S09/README.md
   - docs/audits/20261020-e3db2838/stages/S09/verification.json
   - docs/audits/20261020-e3db2838/stages/S09/BLOB_INDEX.json
+  - docs/audits/20261020-e3db2838/PLAN_SHA256SUMS.json
 decisions_received: [D01 approved, D02 approved, D04 compatibility constraint]
 evidence_entry: stages/S09/README.md
 verification_record: stages/S09/verification.json
-evidence_snapshot_sha: "本条所在审计提交；提交SHA在交接中回读，避免自引用"
+evidence_snapshot_sha: "本条所在最终审计提交；提交SHA在交接中回读，避免自引用"
+prior_review: "原 astra 对 398cec055a583f526af536d7fe884162c139faae FAIL；修正一级基价、输入/存档边界、报价级数及 SHA256 清单后，父级与原 astra 对新对象重新独立审查"
 verification: "代码/规则静态核对及文档完整性；运行测试 N/A，未修改产品"
 parent_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null, unresolved: []}
 astra_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null, unresolved: []}
