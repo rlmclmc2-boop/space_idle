@@ -65,22 +65,28 @@ static func _legacy_adjustment(value:Dictionary)->Dictionary:
 	return _term(1,part[0],-shift)
 
 static func _merged_base(a:Dictionary,b:Dictionary)->Variant:
-	if float(a.e)!=float(b.e):return null
 	var x:Array=I.decimal_factor(float(a.m))
 	var y:Array=I.decimal_factor(float(b.m))
-	var places:int=maxi(int(x[1]),int(y[1]))
-	var total=I.add(I.multiply(x[0],I.make("1"+"0".repeat(places-int(x[1])))),I.multiply(y[0],I.make("1"+"0".repeat(places-int(y[1])))))
+	var x_shift:float=float(a.e)-float(x[1])
+	var y_shift:float=float(b.e)-float(y[1])
+	# Beyond the printed mantissas' precision, a second remote base cannot
+	# be folded into one legacy base without losing a real income unit.
+	if absf(x_shift-y_shift)>float(maxi(I.digits(x[0]).length(),I.digits(y[0]).length())+17):return null
+	var common:float=minf(x_shift,y_shift)
+	var x_pad:int=int(x_shift-common)
+	var y_pad:int=int(y_shift-common)
+	if x_shift-common!=float(x_pad) or y_shift-common!=float(y_pad):return null
+	var total=I.add(I.multiply(x[0],I.make("1"+"0".repeat(x_pad))),I.multiply(y[0],I.make("1"+"0".repeat(y_pad))))
 	var digits:String=I.digits(total)
-	var shift:int=digits.length()-places-1
-	var exponent:float=float(a.e)+float(shift)
-	if exponent-float(a.e)!=float(shift):return null
+	var exponent:float=common+float(digits.length()-1)
+	if exponent-common!=float(digits.length()-1):return null
 	var mantissa:float=float(digits[0]+"."+digits.substr(1))
 	if not is_finite(mantissa) or mantissa<1.0 or mantissa>=10.0:return null
 	var printed:Array=I.decimal_factor(mantissa)
-	var expected_places:int=places+shift
-	var common:int=maxi(0,maxi(expected_places,int(printed[1])))
-	var expected=I.multiply(total,I.make("1"+"0".repeat(common-expected_places)))
-	var actual=I.multiply(printed[0],I.make("1"+"0".repeat(common-int(printed[1]))))
+	var expected_places:int=digits.length()-1
+	var common_places:int=maxi(0,maxi(expected_places,int(printed[1])))
+	var expected=I.multiply(total,I.make("1"+"0".repeat(common_places-expected_places)))
+	var actual=I.multiply(printed[0],I.make("1"+"0".repeat(common_places-int(printed[1]))))
 	return {"m":mantissa,"e":exponent} if I.compare(expected,actual)==0 else null
 
 static func _base(value:Variant)->Variant:
@@ -135,7 +141,9 @@ static func valid(value:Variant)->bool:
 	if not is_compact(value) or value.size()!=5 or not value.has("base") or not value.has("sign") or not value.has("delta") or not value.has("places"):return false
 	if not legacy_valid(value.base) or not (value.sign is int or value.sign is float) or not is_finite(float(value.sign)) or int(value.sign) not in [-1,1] or float(value.sign)!=float(int(value.sign)):return false
 	if not (value.places is int or value.places is float) or not is_finite(float(value.places)) or value.places<0 or value.places>MAX_PLACES or float(value.places)!=float(int(value.places)):return false
+	if value.delta is float and (not is_finite(value.delta) or value.delta!=floorf(value.delta)):return false
 	if (value.delta is float or value.delta is int) and value.delta>9007199254740991:return false
+	if not (value.delta is int or value.delta is float or I.valid(value.delta)):return false
 	var coefficient=I.command_floor(value.delta)
 	if coefficient==null or I.compare(coefficient,0)==0:return false
 	if value.places>0 and I.digits(coefficient).ends_with("0"):return false
@@ -148,12 +156,13 @@ static func make(base:Dictionary,adjustment:Dictionary)->Variant:
 	return result if valid(result) else null
 
 static func change(value:Variant,amount:Variant,sign:int)->Variant:
+	if is_compact(value) and not valid(value):return null
 	var base=_base(value)
 	if base==null:return null
 	if is_compact(amount):
 		push_error("unsupported_numeric_domain: combining two compact wallet bases")
 		return null
-	if legacy_valid(amount) and is_compact(value) and float(amount.e)==float(base.e) and sign==1:
+	if legacy_valid(amount) and is_compact(value) and sign==1:
 		var next_base=_merged_base(base,amount)
 		if next_base!=null:
 			var retained:=_value_term(value)

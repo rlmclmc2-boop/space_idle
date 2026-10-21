@@ -630,6 +630,7 @@ func load_hightech(raw: Dictionary) -> void:
 	if raw.get("aiIncomePeak") is Dictionary:
 		for id in ["1", "2", "jewel"]:
 			if N.valid(raw.aiIncomePeak.get(id)):profile.aiIncomePeak[id] = raw.aiIncomePeak[id]
+	if N.valid(raw.get("furnaceIncomePeak")):profile.furnaceIncomePeak=raw.furnaceIncomePeak.duplicate(true) if raw.furnaceIncomePeak is Dictionary else float(raw.furnaceIncomePeak)
 	var selected := str(raw.get("aiTechActive", ""))
 	if selected.is_empty() or bool(AITech.eligibility(self,selected).ok):profile.aiTechActive = selected
 	if raw.get("resourceSamples") is Array:
@@ -998,7 +999,7 @@ func equipment_debits(costs: Dictionary,wallet: Dictionary={}) -> Dictionary:
 		result[id]=next
 	return result
 
-func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,levels:int=0,extra_samples:Array=[])->bool:
+func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,levels:int=0,extra_samples:Array=[],extra_fields:Dictionary={})->bool:
 	var needs_check:=false
 	for value in next_wallet.values():
 		if CompactWallet.is_compact(value):needs_check=true;break
@@ -1012,6 +1013,7 @@ func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,
 		else:snapshot.resources[id]=ReactorInt.encode(next_wallet[id]) if ReactorInt.valid(next_wallet[id]) else next_wallet[id]
 	if not category.is_empty() and index>=0:snapshot.loadout[category][index].level=int(snapshot.loadout[category][index].level)+levels
 	for sample in extra_samples:snapshot.resourceSamples.append(sample)
+	for field in extra_fields:snapshot[field]=extra_fields[field]
 	# SaveTransfer.MAX_BYTES applies to the whole serialized document. This is
 	# a pre-effect transport check, never a gameplay exponent or wallet cap.
 	return JSON.stringify(snapshot,"\t").to_utf8_buffer().size()<=16*1024*1024
@@ -1541,7 +1543,7 @@ func hightech_description(key: String, now := -1.0) -> String:
 		return UIText.t("system.hightech_description.text_01")
 	var row: Dictionary = db.data.hightech[key]
 	if key == JEWEL_FURNACE:
-		var peak := furnace_income_peak(now,true)
+		var peak = furnace_income_peak(now,true)
 		return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),peak,peak)
 	return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
 
@@ -1926,8 +1928,9 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 			total = N.add(total,sample.get("production_base",sample.amount) if exclude_furnace else sample.amount)
 	return total
 
-func furnace_income_peak(now := -1.0, jewel := false) -> float:
-	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(production_minute_total("jewel" if jewel else "1",now)))
+func furnace_income_peak(now := -1.0, jewel := false) -> Variant:
+	if jewel:return maxf(float(profile.get("jewelFurnaceIncomePeak",0.0)),float(production_minute_total("jewel",now)))
+	return N.maximum(profile.get("furnaceIncomePeak",0.0),production_minute_total("1",now))
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -1997,9 +2000,13 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 				break
 			uid += 1
 			var produced_at := end_time - age * wall_per_step
-			var income := furnace_income_peak(produced_at,jewel_furnace)
+			var income = furnace_income_peak(produced_at,jewel_furnace)
 			profile["jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"] = income
-			var amount := ceilf(income * float(row.para2) * effective_hightech_level(key) * (1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY")) * (1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0))))
+			var amount_value=N.multiply(income,float(row.para2))
+			amount_value=N.multiply(amount_value,effective_hightech_level(key))
+			amount_value=N.multiply(amount_value,1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY"))
+			amount_value=N.multiply(amount_value,1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
+			var amount=N.ceiling(amount_value)
 			var block := {"uid":uid,"x":rng.randf_range(70,BATTLE_SIZE.x-70),"y":rng.randf_range(250,480),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
 			if jewel_furnace:
 				block.jewel = true
@@ -2800,14 +2807,16 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
 	var credited=N.add(profile.resources[drop.id],amount)
 	var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"}
-	if credited==null or not N.valid(credited) or not equipment_save_fits({str(drop.id):credited},"",-1,0,[sample]):
+	var next_peak=profile.get("furnaceIncomePeak",0.0)
+	if str(drop.id)=="1" and sample.origin=="drop":next_peak=N.maximum(next_peak,N.add(production_minute_total("1"),sample.production_base))
+	if credited==null or not N.valid(credited) or not N.valid(next_peak) or not equipment_save_fits({str(drop.id):credited},"",-1,0,[sample],{"furnaceIncomePeak":next_peak}):
 		push_error("resource collection rejected before side effects: exact wallet/save representation")
 		return
 	drops.erase(drop)
 	profile.resources[drop.id] = credited
 	resource_samples.append(sample)
 	AITech.record_income(self,str(drop.id))
-	profile.furnaceIncomePeak = furnace_income_peak()
+	profile.furnaceIncomePeak = next_peak
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
 	info.amount = amount
