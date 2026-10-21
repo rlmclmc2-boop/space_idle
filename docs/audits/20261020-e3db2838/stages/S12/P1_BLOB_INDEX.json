@@ -1,7 +1,7 @@
 {
-  "subject_commit": "0cc8633d10423e7f98d2ee55658e25fd7ecf5c40",
+  "subject_commit": "6e2c4a15a4dd4aaad3016e505f55d81a9448aa07",
   "semantics": "SHA-256 of the bytes in Git blobs; no ignored runtime/cache files",
-  "file_count": 345,
+  "file_count": 346,
   "files": {
     "docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md": {
       "git_blob": "0ff7cc16ddef0e797578ab7ce6d9788c7d8baefb",
@@ -19,9 +19,9 @@
       "bytes": 6802
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_APPROX_MAX_PROTOTYPE.md": {
-      "git_blob": "4e070ebcac22fed498f5e0dd19f451d43b741314",
-      "sha256_git_bytes": "e67150d2b0eef6b2eeb8e89327d17a2f94ac115279a4c58c97ac3e9bb0d5a21a",
-      "bytes": 5841
+      "git_blob": "281f142da4621609ddc10e2539d5079c06a6e3e2",
+      "sha256_git_bytes": "10a64a6971606a26b14cb4eff8c3fbcd2a7cf94c652a2b9fbf432015d4f60e36",
+      "bytes": 7565
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_EXPLORATORY_EVIDENCE.md": {
       "git_blob": "c9ec5a0bb1a0da7fd7e2e4517b36d9bfb8a1c7e4",
@@ -207,6 +207,11 @@
       "git_blob": "230d63b093dff2b47dc032bc8be094b4b53fa16f",
       "sha256_git_bytes": "f1b58a8906d07ce1144b00e73d4966f936e2ea6e44f2341a0ef4ae0fdc3203bd",
       "bytes": 970
+    },
+    "docs/audits/20261020-e3db2838/stages/S12/p1_proto/exploratory_approx_quotes_independent_sparse_1.log": {
+      "git_blob": "fc11d4a9774587f01f729c31f808ed26008cca0f",
+      "sha256_git_bytes": "4d731565fec9dbd8123df4e96fdb248a80d5e08555b29bef4c6e074a823858fe",
+      "bytes": 1089
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/exploratory_approx_silent_replace_freeze.meta.json": {
       "git_blob": "b5f5111cc75206d20d8d0b9112c3ebaa60539908",
@@ -1704,9 +1709,9 @@
       "bytes": 2869
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/verify_approx_quotes.py": {
-      "git_blob": "d88165de55d73eca93dc76ec93df780fcf437422",
-      "sha256_git_bytes": "288e56921b8556da52183b122f04033292c29d81589b86eea337b825d3c77d9c",
-      "bytes": 5746
+      "git_blob": "6f69e89a115ec820cf88e664e0815107d33df142",
+      "sha256_git_bytes": "7cf9b6597f9eebe49770134b60e690be816a5e243de1c5d15b33d9d66d6e8630",
+      "bytes": 9192
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/verify_binary_prices.gd": {
       "git_blob": "10712ab719b543f5aafa13c400e0814f349433e5",
