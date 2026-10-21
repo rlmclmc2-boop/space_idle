@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S07 共 9 阶段为 `closed`；S08 为 `review`，S09—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前唯一打开阶段为 S08，实施线程 `01a15cbc-2bea-7616-8273-5af69cf2d01c`；运行候选 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`，冻结测试证据 `9600d8d7da9cffe958599df91bf35c21835213c6`，待父级与原 astra 对同一对象独立审查；尚未合入 main。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
+**S00—S07 共 9 阶段为 `closed`；S08 为 `review`，S09—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前唯一打开阶段为 S08，实施线程 `01a15cbc-2bea-7616-8273-5af69cf2d01c`；运行候选 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`，冻结测试证据 `e0bb9c2993a9974b577306b8998e1ab5bca5fb60`，待父级与原 astra 对同一对象独立审查；尚未合入 main。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
 
 ### S00 关闭记录
 
@@ -574,8 +574,8 @@ runtime_final_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8
 runtime_tree: dc633257c72cb8202b5f121455b36cba79443663
 runtime_files: [space-battleship/tools/config_workbooks.py, space-battleship/tools/level_editor_store.py]
 evidence_entry: stages/S08/README.md
-evidence_snapshot_sha: 9600d8d7da9cffe958599df91bf35c21835213c6
-verification: "Python 3.12 AST-isolated fault injection exit 0; baseline loss reproduced; single failure rollback, secondary failure material preservation, editor independent backup, manual restore, success cleanup and two CLI recovery JSON checks PASS; full workbook import not run because lxml unavailable"
+evidence_snapshot_sha: e0bb9c2993a9974b577306b8998e1ab5bca5fb60
+verification: "Python 3.12 AST-isolated fault injection exit 0; baseline loss reproduced; single failure rollback, secondary failure material preservation, editor independent backup, manual restore, success cleanup and two CLI recovery JSON checks PASS; Windows existing venv isolated workbook 14/14 and editor 10/10 PASS; no cross-file ACID claim"
 recovery_policy: "project .runtime/config-recovery/<uuid> retained on failed rollback; editor backup .runtime/level-editor-backups/<uuid> separately committed; parent/astra review pending"
 parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
 astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
