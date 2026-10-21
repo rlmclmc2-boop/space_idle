@@ -1,12 +1,12 @@
 {
-  "subject_commit": "4e3bfab0173f31e21b1a50f61e44f0b7bb4ad9bb",
+  "subject_commit": "13873b2b0b88245c3bfe4736e2bf224a6fc64c59",
   "semantics": "SHA-256 of the bytes in Git blobs; no ignored runtime/cache files",
   "file_count": 295,
   "files": {
     "docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md": {
-      "git_blob": "483410acb6f16f30abafffc3737ce463af339252",
-      "sha256_git_bytes": "66fb7310f62f3017c7fcc973349eadc57a7313c0fcc30b7b7445105a2ab68177",
-      "bytes": 70038
+      "git_blob": "16be14248a7537786fd72013ff2c9158f402a86c",
+      "sha256_git_bytes": "0e95c9cfb36bd885f1b4772b82a0d16b5289c21e908ba912d463e9c4e3d338cd",
+      "bytes": 70647
     },
     "docs/audits/20261020-e3db2838/stages/S12/P0_CONTRACT_P1_GATE.md": {
       "git_blob": "d6cc6a3d4ecffb972581ab14bd4f95820e731840",
@@ -24,9 +24,9 @@
       "bytes": 18339
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_FEASIBILITY_AND_GAPS.md": {
-      "git_blob": "c8bec63ed35195497811087803ff9ef7c596224a",
-      "sha256_git_bytes": "efcc3be92b709796a821b48620ad6556b215977c2d12e9a31426d4af4c14d414",
-      "bytes": 21445
+      "git_blob": "fe22af9ced47bedb97c92eea2b70dd16aa4199ba",
+      "sha256_git_bytes": "654c79c4fe6db5b92fe02364e88f9d2560a5ac6564f1bb170b8df4e224fb83ee",
+      "bytes": 22368
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_PERFORMANCE_PREREGISTRATION.md": {
       "git_blob": "fb5bf30708674ab565772699e53b185f353f4f15",
