@@ -1,0 +1,10 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"add_us":8,"compare_result":0,"compare_us":5,"decode_us":43,"encode_us":8,"input_bytes":26,"kind":"exploratory_sparse","n":1,"output_blocks":1,"output_bytes":26,"parse_us":9,"remote":false,"subtract_us":6}
+{"add_us":6,"compare_result":0,"compare_us":3,"decode_us":16,"encode_us":7,"input_bytes":34,"kind":"exploratory_sparse","n":1,"output_blocks":1,"output_bytes":34,"parse_us":6,"remote":true,"subtract_us":7}
+{"add_us":67,"compare_result":0,"compare_us":45,"decode_us":180,"encode_us":131,"input_bytes":908,"kind":"exploratory_sparse","n":100,"output_blocks":100,"output_bytes":908,"parse_us":52,"remote":false,"subtract_us":67}
+{"add_us":68,"compare_result":0,"compare_us":31,"decode_us":114,"encode_us":114,"input_bytes":915,"kind":"exploratory_sparse","n":100,"output_blocks":100,"output_bytes":915,"parse_us":51,"remote":true,"subtract_us":68}
+{"add_us":592,"compare_result":0,"compare_us":286,"decode_us":945,"encode_us":1169,"input_bytes":9908,"kind":"exploratory_sparse","n":1000,"output_blocks":1000,"output_bytes":9908,"parse_us":420,"remote":false,"subtract_us":601}
+{"add_us":704,"compare_result":0,"compare_us":326,"decode_us":1037,"encode_us":1180,"input_bytes":9914,"kind":"exploratory_sparse","n":1000,"output_blocks":1000,"output_bytes":9914,"parse_us":613,"remote":true,"subtract_us":669}
+{"add_us":5816,"compare_result":0,"compare_us":2826,"decode_us":9980,"encode_us":14033,"input_bytes":108908,"kind":"exploratory_sparse","n":10000,"output_blocks":10000,"output_bytes":108908,"parse_us":5027,"remote":false,"subtract_us":6096}
+{"add_us":5858,"compare_result":0,"compare_us":3825,"decode_us":10536,"encode_us":13239,"input_bytes":108913,"kind":"exploratory_sparse","n":10000,"output_blocks":10000,"output_bytes":108913,"parse_us":6355,"remote":true,"subtract_us":6305}

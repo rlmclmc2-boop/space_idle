@@ -1,0 +1,6 @@
+SCRIPT ERROR: Parse Error: Static function "hash()" not found in base "GDScriptNativeClass".
+   at: GDScript::reload (res://price_probe.gd:122)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "sha" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://price_probe.gd:122)
+ERROR: Failed to load script "res://price_probe.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

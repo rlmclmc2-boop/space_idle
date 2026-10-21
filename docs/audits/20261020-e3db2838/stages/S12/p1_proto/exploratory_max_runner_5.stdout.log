@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"count":3872,"first_price_mismatches":[],"first_slices":[{"elapsed_us":4297,"level":10,"n":1},{"elapsed_us":4116,"level":20,"n":2},{"elapsed_us":4216,"level":34,"n":3},{"elapsed_us":4147,"level":48,"n":4},{"elapsed_us":4066,"level":63,"n":5},{"elapsed_us":4220,"level":80,"n":6},{"elapsed_us":4185,"level":99,"n":7},{"elapsed_us":4060,"level":120,"n":8},{"elapsed_us":4055,"level":148,"n":9},{"elapsed_us":4059,"level":200,"n":10}],"first_unaffordable":"23000000000000000000...309 digits","id":"MAX-3873-GODOT","kind":"exploratory_max","level":3873,"max_level_us":8150,"max_slice_us":10851,"price_mismatch_count":0,"remaining_blocks":2,"remaining_matches_generator":true,"remaining_material":0,"remaining_storage":{"blocks":[["76",1500],["77",1]],"v":4},"slices":1459,"stop_matches_generator":true,"total_us":7642616}
+ERROR: 1 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 1 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.

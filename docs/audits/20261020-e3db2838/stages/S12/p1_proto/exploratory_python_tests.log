@@ -1,0 +1,14 @@
+test_cross_safe_json_and_income (test_proto.LedgerProbe.test_cross_safe_json_and_income) ... ok
+test_float_and_legacy_fraction (test_proto.LedgerProbe.test_float_and_legacy_fraction) ... ok
+test_random_small_against_independent_integer (test_proto.LedgerProbe.test_random_small_against_independent_integer) ... ok
+test_reject_bad_candidate (test_proto.LedgerProbe.test_reject_bad_candidate) ... ok
+test_remote_gap_and_commutativity (test_proto.LedgerProbe.test_remote_gap_and_commutativity) ... ok
+test_batch_vs_steps (test_proto.PriceProbe.test_batch_vs_steps) ... ok
+test_frozen_low_amounts (test_proto.PriceProbe.test_frozen_low_amounts) ... ok
+test_overflow_reference (test_proto.PriceProbe.test_overflow_reference) ... ok
+test_zero_and_material (test_proto.PriceProbe.test_zero_and_material) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.063s
+
+OK

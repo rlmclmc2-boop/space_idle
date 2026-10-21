@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+{"add_us":10,"compare_result":0,"compare_us":6,"decode_us":54,"encode_us":9,"input_bytes":26,"kind":"exploratory_sparse","n":1,"output_blocks":1,"output_bytes":26,"parse_us":11,"remote":false,"subtract_us":6}
+{"add_us":6,"compare_result":0,"compare_us":2,"decode_us":9,"encode_us":6,"input_bytes":34,"kind":"exploratory_sparse","n":1,"output_blocks":1,"output_bytes":34,"parse_us":4,"remote":true,"subtract_us":6}
+{"add_us":64,"compare_result":0,"compare_us":29,"decode_us":106,"encode_us":132,"input_bytes":908,"kind":"exploratory_sparse","n":100,"output_blocks":100,"output_bytes":908,"parse_us":41,"remote":false,"subtract_us":65}
+{"add_us":66,"compare_result":0,"compare_us":30,"decode_us":105,"encode_us":114,"input_bytes":915,"kind":"exploratory_sparse","n":100,"output_blocks":100,"output_bytes":915,"parse_us":47,"remote":true,"subtract_us":67}
+{"add_us":580,"compare_result":0,"compare_us":292,"decode_us":940,"encode_us":1184,"input_bytes":9908,"kind":"exploratory_sparse","n":1000,"output_blocks":1000,"output_bytes":9908,"parse_us":500,"remote":false,"subtract_us":599}
+{"add_us":585,"compare_result":0,"compare_us":279,"decode_us":925,"encode_us":1177,"input_bytes":9914,"kind":"exploratory_sparse","n":1000,"output_blocks":1000,"output_bytes":9914,"parse_us":499,"remote":true,"subtract_us":592}
+{"add_us":5871,"compare_result":0,"compare_us":2825,"decode_us":9989,"encode_us":15199,"input_bytes":108908,"kind":"exploratory_sparse","n":10000,"output_blocks":10000,"output_bytes":108908,"parse_us":4913,"remote":false,"subtract_us":6021}
+{"add_us":5874,"compare_result":0,"compare_us":2839,"decode_us":9886,"encode_us":11304,"input_bytes":108913,"kind":"exploratory_sparse","n":10000,"output_blocks":10000,"output_bytes":108913,"parse_us":5564,"remote":true,"subtract_us":5874}
