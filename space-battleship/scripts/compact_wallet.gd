@@ -64,6 +64,25 @@ static func _legacy_adjustment(value:Dictionary)->Dictionary:
 	if -shift>16000000:return {}
 	return _term(1,part[0],-shift)
 
+static func _merged_base(a:Dictionary,b:Dictionary)->Variant:
+	if float(a.e)!=float(b.e):return null
+	var x:Array=I.decimal_factor(float(a.m))
+	var y:Array=I.decimal_factor(float(b.m))
+	var places:int=maxi(int(x[1]),int(y[1]))
+	var total=I.add(I.multiply(x[0],I.make("1"+"0".repeat(places-int(x[1])))),I.multiply(y[0],I.make("1"+"0".repeat(places-int(y[1])))))
+	var digits:String=I.digits(total)
+	var shift:int=digits.length()-places-1
+	var exponent:float=float(a.e)+float(shift)
+	if exponent-float(a.e)!=float(shift):return null
+	var mantissa:float=float(digits[0]+"."+digits.substr(1))
+	if not is_finite(mantissa) or mantissa<1.0 or mantissa>=10.0:return null
+	var printed:Array=I.decimal_factor(mantissa)
+	var expected_places:int=places+shift
+	var common:int=maxi(0,maxi(expected_places,int(printed[1])))
+	var expected=I.multiply(total,I.make("1"+"0".repeat(common-expected_places)))
+	var actual=I.multiply(printed[0],I.make("1"+"0".repeat(common-int(printed[1]))))
+	return {"m":mantissa,"e":exponent} if I.compare(expected,actual)==0 else null
+
 static func _base(value:Variant)->Variant:
 	if is_compact(value):return value.base
 	return value if legacy_valid(value) else null
@@ -135,9 +154,8 @@ static func change(value:Variant,amount:Variant,sign:int)->Variant:
 		push_error("unsupported_numeric_domain: combining two compact wallet bases")
 		return null
 	if legacy_valid(amount) and is_compact(value) and float(amount.e)==float(base.e) and sign==1:
-		var combined:float=float(base.m)+float(amount.m)
-		if combined<10.0 and is_finite(combined):
-			var next_base:Dictionary={"m":combined,"e":base.e}
+		var next_base=_merged_base(base,amount)
+		if next_base!=null:
 			var retained:=_value_term(value)
 			return make(next_base,retained)
 	var term:=_legacy_adjustment(amount) if legacy_valid(amount) else _value_term(amount)
