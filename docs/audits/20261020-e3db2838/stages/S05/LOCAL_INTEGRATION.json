@@ -1,0 +1,98 @@
+{
+  "stage": "S05",
+  "observed_at_utc": "2026-10-21T02:57:05Z",
+  "reviewed_runtime_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+  "reviewed_evidence_sha": "375ae2f5198739b42498dcc352e0c0a5ef37ce3b",
+  "dual_review_record_audit_sha": "c684f146e4469f4319115cd091cc68884fa3e04e",
+  "entry": "D:\\放置\\玩游戏.cmd",
+  "environment": {
+    "SPACE_BATTLESHIP_VERIFY_WINDOW": "1",
+    "SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES": "120",
+    "SPACE_BATTLESHIP_ENGINE_PATH": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe"
+  },
+  "commands": [
+    "git fetch origin main",
+    "git merge --ff-only refs/remotes/origin/main",
+    "& 'D:\\放置\\玩游戏.cmd' (twice with environment above)"
+  ],
+  "heads": {
+    "D_main": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+    "D_origin_main": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+    "managed_mirror": "5a4d52957f68b22ef47e0ad91cbe787292872d83"
+  },
+  "main_worktree_tracked_modifications_before_after": [
+    164,
+    164
+  ],
+  "main_build_files_clean": true,
+  "resource_manifest_counts": {
+    "required_data": 15,
+    "required_files": 26,
+    "required_directories": 3
+  },
+  "build_file_git_blobs": {
+    "main_build_script": "6c337fea7a31b1de5e118c6a147611072843d10c",
+    "main_resource_manifest": "f172c0c76d947fecef119ea7d4c31c7c6c9cfcd5",
+    "mirror_build_script": "6c337fea7a31b1de5e118c6a147611072843d10c",
+    "mirror_resource_manifest": "f172c0c76d947fecef119ea7d4c31c7c6c9cfcd5"
+  },
+  "native_dll_sha256": {
+    "bundled_before_after": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+    "D_source_bin_before_after": "04e7be92c92637a72dde5f71ccc57a865ad20842e00aca63fd628b86e321590f",
+    "managed_mirror": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  },
+  "local_project_godot_sha256_before_after": "c9716e3eeb59e2ee5412549077b79f35cac9c96907a61c9c88e2fabb0154191a",
+  "isolated_synthetic_save": {
+    "size_before_after": [
+      42650,
+      42650
+    ],
+    "sha256_before_after": [
+      "113e106e8d217de9e39595a554b2ef00acad5e5fd53feadfecb0a941eb679baf",
+      "113e106e8d217de9e39595a554b2ef00acad5e5fd53feadfecb0a941eb679baf"
+    ],
+    "path_scope": "D:/放置/test/work/player-window-check/userdata/roaming"
+  },
+  "player_launch_receipt": {
+    "project": "D:\\放置\\space-battleship\\.runtime\\player-main\\checkout\\space-battleship",
+    "head": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+    "accepted_runtime": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+    "engine": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+    "engine_version": "4.7.2.stable.official.ed1daf0bf",
+    "dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+    "game_data_sha256": "e25cec9db813b1122dae681c37cd990067efab439caec97f1cc4ef889bcf4c4a"
+  },
+  "runs": {
+    "first": {
+      "exit_code": 0,
+      "sha256": "f0933353a960f8103265ee7f026987bdeceeaf75023fa022160269d65128ed98",
+      "accepted_head_seen": true,
+      "managed_mirror_selected": true
+    },
+    "reopen": {
+      "exit_code": 0,
+      "sha256": "f0933353a960f8103265ee7f026987bdeceeaf75023fa022160269d65128ed98",
+      "accepted_head_seen": true,
+      "managed_mirror_selected": true
+    }
+  },
+  "logs_after_reopen": {
+    "player-import.log": {
+      "sha256": "87e0ded7417077e5831d04ebbc0d00ff072a4fd82667bc53e0c41287b9310788",
+      "error_pattern_lines": 0,
+      "warning_other_project_godot": true
+    },
+    "player-game.log": {
+      "sha256": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a",
+      "error_pattern_lines": 0,
+      "warning_other_project_godot": false
+    }
+  },
+  "limitations": [
+    "Actual D player entry and reopen verified; no complete Windows release export was run.",
+    "Only the managed mirror's approved DLL was used; the D source checkout's different local DLL was preserved.",
+    "No personal save directory was selected; the preexisting synthetic verification save was unchanged."
+  ],
+  "integration_review": "pending",
+  "stage_closed": false
+}
