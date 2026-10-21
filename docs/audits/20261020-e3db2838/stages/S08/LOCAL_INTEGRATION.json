@@ -1,0 +1,94 @@
+{
+  "stage": "S08",
+  "state": "integrated_pending_dual_integration_review",
+  "approved_runtime_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "runtime_tree": "dc633257c72cb8202b5f121455b36cba79443663",
+  "approved_review_evidence_sha": "088e8ba5a0fdeabd760cd879bd647f1947e2c7d0",
+  "github_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "local_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "local_origin_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "managed_mirror_head_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "managed_mirror_origin_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "runtime_files": {
+    "space-battleship/tools/config_workbooks.py": {
+      "approved_blob": "ab7e4d616254737dce7c1a92d02a9a004556e81b",
+      "source_checkout_blob": "ab7e4d616254737dce7c1a92d02a9a004556e81b",
+      "managed_mirror_blob": "ab7e4d616254737dce7c1a92d02a9a004556e81b"
+    },
+    "space-battleship/tools/level_editor_store.py": {
+      "approved_blob": "0131dc26dd4355d60ccc015d9d5c05c6499568d5",
+      "source_checkout_blob": "0131dc26dd4355d60ccc015d9d5c05c6499568d5",
+      "managed_mirror_blob": "0131dc26dd4355d60ccc015d9d5c05c6499568d5"
+    }
+  },
+  "dll_sha256": {
+    "source_bundle": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+    "managed_mirror_bundle": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+    "managed_mirror_installed": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  },
+  "tool_check": {
+    "python": "D:/CodexTools/venv/godot-native/Scripts/python.exe",
+    "source_and_mirror_py_compile_exit": 0,
+    "source_import_exit": 0,
+    "mirror_import_exit": 0,
+    "pycache_location": "task workspace"
+  },
+  "entry": {
+    "path": "D:/放置/玩游戏.cmd",
+    "engine": "4.7.2.stable.official.ed1daf0bf",
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "quit_after_frames": 120,
+    "first_exit": 0,
+    "reopen_exit": 0,
+    "same_isolated_user_directory": true,
+    "logs_no_script_parse_or_error": true
+  },
+  "local_protection": {
+    "tracked_status_count_before_after": 164,
+    "non_generated_count_before_after": 1,
+    "project_godot_edit_preserved": true,
+    "two_target_tool_files_clean_before_update": true,
+    "preexisting_verification_dir_restored": true,
+    "s08_verification_dir_preserved": "D:/放置/test/work/player-window-check-s08-verified-20261021",
+    "personal_user_directory_used": false
+  },
+  "scope_limit": "Actual player entry first/reopen passed; no progress.json generated in isolated directory, so no save/load roundtrip or full native acceptance claimed.",
+  "known_import_warning": "Nested tools/result_analyzer project.godot ignored by editor import, once per run.",
+  "files": {
+    "stages/S08/integration-logs/first-entry.log": {
+      "git_blob": "33b60de06929d51836fb82af07536a9ecb32b40a",
+      "sha256": "8146a940cc6175f226bbad3e0ac1cc3d868c128be8ed64d81a39e4d33f51f3d3"
+    },
+    "stages/S08/integration-logs/first-player-game.log": {
+      "git_blob": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+      "sha256": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a"
+    },
+    "stages/S08/integration-logs/first-player-import.log": {
+      "git_blob": "aa9d6e5e185b02bfe2cbb502ab9cfc882e468dfb",
+      "sha256": "5299a1f682b0eaa494f2f5912156ae4d0bc67a6b9842334ca6b245c0fd808a7c"
+    },
+    "stages/S08/integration-logs/first-player-launch.json": {
+      "git_blob": "cf1b8a3a23a143acb5dff71913594f41620d4d05",
+      "sha256": "c7ea486a2818aa88c079a4622dfff4a63a211ade7f627bc06535e90cde490ea2"
+    },
+    "stages/S08/integration-logs/reopen-entry.log": {
+      "git_blob": "33b60de06929d51836fb82af07536a9ecb32b40a",
+      "sha256": "8146a940cc6175f226bbad3e0ac1cc3d868c128be8ed64d81a39e4d33f51f3d3"
+    },
+    "stages/S08/integration-logs/reopen-player-game.log": {
+      "git_blob": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+      "sha256": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a"
+    },
+    "stages/S08/integration-logs/reopen-player-import.log": {
+      "git_blob": "83b99cccd07d9874c87534d89ac192c7ac4316be",
+      "sha256": "13b96103f386bc44a1dca7e26bf7455ca97b974a84fbc4ac2eca0d7e5d2f9dce"
+    },
+    "stages/S08/integration-logs/reopen-player-launch.json": {
+      "git_blob": "cf1b8a3a23a143acb5dff71913594f41620d4d05",
+      "sha256": "c7ea486a2818aa88c079a4622dfff4a63a211ade7f627bc06535e90cde490ea2"
+    }
+  },
+  "parent_integration_review": "PENDING",
+  "original_astra_integration_review": "PENDING",
+  "closure": "OPEN"
+}
