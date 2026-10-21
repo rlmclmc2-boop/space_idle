@@ -83,7 +83,7 @@ func _initialize() -> void:
 	check(I.compare(material_restored.profile.hyperspace.materials[material_id],material_after)==0,"material units survive JSON and reload")
 	material_restored.profile.hyperspace.materials[material_id]=I.MAX_INT.to_int()
 	var material_refund_before=material_restored.profile.hyperspace.materials.duplicate(true)
-	material_restored.refund_equipment("laser",20)
+	check(not material_restored.refund_equipment("laser",20),"material overflow refund reports failure")
 	check(material_restored.profile.hyperspace.materials==material_refund_before,"material int64 overflow refund rejects before credit")
 	var bulk:=fixture(db,3870)
 	var singles:=fixture(db,3870)
@@ -110,11 +110,54 @@ func _initialize() -> void:
 	check(cache.upgrade_slot("weapons",0,maximum),"MAX cached purchase")
 	for id in three:check(same_money(cache.profile.resources[id],0),"MAX exact debit "+id)
 	check(cache.max_upgrade_amount_slot("weapons",0)==0,"MAX cache invalidated by purchase")
-	var unsupported:=fixture(db,1)
-	unsupported.profile.resources={"1":{"m":1.0,"e":8000001.0},"2":{"m":1.0,"e":8000001.0}}
-	var unsupported_before:Dictionary=unsupported.profile.duplicate(true)
-	check(not unsupported.upgrade_slot("weapons",0),"unrepresentable exact debit rejects")
-	check(unsupported.profile.resources==unsupported_before.resources and unsupported.profile.loadout==unsupported_before.loadout,"technical reject has no wallet/level side effect")
+	var distant:=fixture(db,1)
+	distant.profile.resources={"1":{"m":1.0,"e":1000000000.0},"2":{"m":1.0,"e":1000000000.0}}
+	var distant_before:Dictionary=distant.profile.resources.duplicate(true)
+	check(distant.portable_save_data().resources==distant_before,"untransacted distant legacy wallet stays old shape")
+	var distant_quote:Dictionary=distant.slot_upgrade_cost("weapons",0)
+	check(distant.upgrade_slot("weapons",0),"distant legal legacy wallet purchases")
+	for id in distant_quote:
+		check(distant.profile.resources[id] is Dictionary and distant.profile.resources[id].get("v")==2,"distant wallet stays compact "+id)
+		check(N.compare(distant.profile.resources[id],distant_quote[id])>0,"distant wallet remains affordable "+id)
+		var after_income=N.add(distant.profile.resources[id],1)
+		check(N.compare(after_income,distant.profile.resources[id])>0,"distant wallet keeps next income "+id)
+		var fractional=N.add(distant.profile.resources[id],0.5)
+		check(N.compare(fractional,distant.profile.resources[id])>0,"distant wallet keeps fractional income "+id)
+		check(N.compare(N.subtract(fractional,0.5),distant.profile.resources[id])==0,"fractional income reverses exactly "+id)
+	var distant_json=JSON.parse_string(JSON.stringify(distant.portable_save_data()))
+	check(preload("res://scripts/save_transfer.gd").new().prepare_data(distant_json,db).error=="","compact wallet portable validation")
+	check(preload("res://scripts/save_transfer.gd").new().prepare_disk_data(distant_json,db).error=="","compact wallet ordinary/backup validation")
+	var malformed=distant_json.duplicate(true)
+	malformed.resources["1"].extra=0
+	check(preload("res://scripts/save_transfer.gd").new().prepare_data(malformed,db).error=="format","portable rejects extra compact field")
+	check(preload("res://scripts/save_transfer.gd").new().prepare_disk_data(malformed,db).error=="format","ordinary/backup rejects extra compact field")
+	var refused_load:=BattleGame.new(db,false)
+	var refused_before=refused_load.profile.resources.duplicate(true)
+	refused_load.load_progress_data(malformed)
+	check(refused_load.startup_error=="invalid_compact_wallet_save" and refused_load.profile.resources==refused_before,"direct reload rejects malformed compact wallet before mutation")
+	var distant_restored:=BattleGame.new(db,false)
+	distant_restored.load_progress_data(distant_json)
+	if distant_restored.profile.resources!=distant.profile.resources:print("DISTANT_RELOAD ",distant_restored.profile.resources," expected ",distant.profile.resources)
+	check(distant_restored.profile.resources==distant.profile.resources,"compact wallet JSON reload")
+	check(distant.refund_equipment("laser",2),"compact refund reports success")
+	check(distant.profile.resources==distant_before,"refund cancels compact wallet debit")
+	var compact_bulk:=fixture(db,1)
+	var compact_singles:=fixture(db,1)
+	for game in [compact_bulk,compact_singles]:game.profile.resources=distant_before.duplicate(true)
+	check(compact_bulk.upgrade_slot("weapons",0,10),"compact x10 purchase")
+	var compact_singles_ok:=true
+	for ignored in 10:
+		if not compact_singles.upgrade_slot("weapons",0):compact_singles_ok=false;break
+	check(compact_singles_ok and compact_bulk.profile.resources==compact_singles.profile.resources,"compact x10 equals ten single debits")
+	var compact_max:=fixture(db,1)
+	var compact_three:=compact_max.slot_upgrade_cost("weapons",0,3)
+	for id in compact_three:
+		compact_max.profile.resources[id]=preload("res://scripts/compact_wallet.gd").change({"m":1.0,"e":4.0},I.subtract(10000,compact_three[id]),-1)
+	compact_max.profile.hyperspace.materials[db.evolution_material_id()]=0
+	var compact_amount:=compact_max.max_upgrade_amount_slot("weapons",0)
+	check(compact_amount==3 and compact_max.slot_upgrade_cost("weapons",0,compact_amount)==compact_three,"compact MAX cache matches quote")
+	check(compact_max.upgrade_slot("weapons",0,compact_amount),"compact MAX purchase")
+	for id in compact_three:check(N.compare(compact_max.profile.resources[id],0)==0,"compact MAX exact debit "+id)
 	var refund:=fixture(db,1)
 	refund.profile.resources={"1":0,"2":0}
 	refund.profile.hyperspace.materials[db.evolution_material_id()]=0

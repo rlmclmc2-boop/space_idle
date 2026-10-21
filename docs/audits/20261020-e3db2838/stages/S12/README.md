@@ -40,3 +40,5 @@
 还需针对同一最终运行 SHA 和冻结证据 SHA 获得父级 dot 与原 astra 独立 PASS、未解决项为空，再由父级决定 main 集成及本地入口验收。本线程不自行合 main、开启下一阶段或关闭阶段。
 
 2026-10-21 update: runtime candidate 1f7c160 adds the jointly scoped direct-consumer fixes and material precision repair. See OPEN_ISSUES.md for the regression table and unapproved compact-wallet proposal. S12 remains open; a7251e1 is superseded, and no dual PASS is claimed.
+
+2026-10-21 latest candidate: runtime `82492c5ed267044e66840ed3fd99e9aad707b814`; final regression logs, probes, and the independently distant income blocker are in `CANDIDATE_82492c5.md`. Earlier candidate counts above are historical. S12 remains open; no dual PASS or main merge is claimed.

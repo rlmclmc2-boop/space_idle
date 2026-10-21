@@ -1,6 +1,6 @@
 # S12 中途证据与待裁定设计
 
-当前运行候选 `1f7c160e`（完整 SHA 见 Git）；阶段仍开放，不能据此验收或合入 main。父级和原 astra 已将本次新编码直接破坏的分析器消费者纳入 S12，有限域算法和购买顺序未调整。
+当前运行候选 `1f7c160f194eabc745016001da53110b047ff5a1`（完整 SHA 见 Git）；阶段仍开放，不能据此验收或合入 main。父级和原 astra 已将本次新编码直接破坏的分析器消费者纳入 S12，有限域算法和购买顺序未调整。
 
 | 直接消费者 | 入口及失败链 | 本次最小适配 |
 |---|---|---|
@@ -20,5 +20,15 @@
 此为评审方案，不是已批准的存档契约或运行代码。需确认相邻消费者和旧存档恢复语义后才实施。S20 整体模拟评分政策不在本设计内。
 
 ## 已授权的分支清理收据
+
+## Compact-wallet contract under implementation review
+
+The legacy base means the exact decimal value of `String.num_scientific(m) * 10^e`, matching the existing `ReactorInteger.decimal_factor`/`legacy_integer` interpretation. A v2 value is `base + sign * coefficient * 10^-places`. `base` must be a valid legacy `{m,e}` pair; `sign` is `-1` or `1`; `coefficient` is a valid nonnegative ReactorInteger (small `int` or large v1 tag); `places` is an integer from 0 through 1074. A zero coefficient is normalized back to the unmodified base. No negative resulting wallet, nested v2, extra fields, noncanonical coefficient, or malformed decimal is accepted. Binary64 fractional income is decoded from its payload to an exact finite decimal coefficient and places; real fractional income is accumulated, never rounded to zero merely because the base exponent is distant.
+
+The comparison path must handle old, v1 and v2 pairs, including different bases: combine signed deltas at a common decimal scale, then compare bases. An exponent or prefix shortcut is legal only when a bound proves the smaller terms cannot change the ordering; otherwise use exact decimal arithmetic over the input-sized region, including carry, cancellation and borrowing. No `parts()` or formatted value is an authoritative comparison or debit. Single, repeated and batch purchases, refunds and income use the same normalized delta arithmetic; cancellation restores the old base. Material currency remains in its existing signed-int64 hyperspace subsystem and uses only the v1 transport tag above 2^53.
+
+The same strict v2 validation applies to the live profile, ordinary save, backup/recovery and portable import. A legacy wallet stays in its old shape until its first transaction. Before a real mutation, validate the resulting whole save against the existing 16 MiB transport limit and platform allocation failure; return a specific error with no wallet, event, level or save-dirty mutation if it cannot be represented. Keep a bounded nearby materialization optimization, without a fixed permanent wallet exponent limit. Reports may explicitly reject their finite projection range; the player transaction must not inherit that reporting limit.
+
+**2026-10-21 implementation status:** the one-base v2 contract above is implemented in runtime `82492c5ed267044e66840ed3fd99e9aad707b814`, including strict coefficient validation, same/adjacent-exponent exact income merging, old/v1/v2 save paths, and the direct consumers. `CANDIDATE_82492c5.md` is the current evidence and blocker record. The earlier 8-million-digit refusal described above was removed. An independently distant large income term still cannot fit this one-base representation; its collection is explicitly rejected before side effects. This is not claimed as A07 closure or dual PASS.
 
 父级先核验四个旧远端分支相对当前 main 均无独有提交，用户随后明确允许删除无用分支。本线程只对 `s06/analyzer-deps`、`s07/reactor-cache`、`s08/config-recovery`、`s10/reactor-numeric` 执行 `git push origin --delete`；Git 返回四个 `[deleted]`，随后 `git ls-remote --heads origin` 查询四名均无输出且退出 0。main、审计和 S12 候选分支未删除，本地未提交文件未清理。

@@ -750,6 +750,8 @@ evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/README.md
 evidence_snapshot_sha: PENDING
 scope_decision: parent and original astra included direct new-encoding consumers in S12; compact old-wallet design awaits review
+
+**2026-10-21 S12 candidate update:** implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` pushed runtime `82492c5ed267044e66840ed3fd99e9aad707b814`. Final probes, logs, and the remaining independently distant income representation limit are in `stages/S12/CANDIDATE_82492c5.md`. S12 and A07 remain open pending a joint dot/original-astra decision and same-object dual PASS. Main is unchanged; S13-S24 are not started.
 parent_review: PENDING
 astra_review: PENDING
 integration: PENDING

@@ -32,6 +32,10 @@ func run()->void:
 	check(ordinary.upgrade_slot("weapons",0),"finite native purchase")
 	check(ordinary.native_execution!=null,"finite purchase remains native")
 	for id in price:check(ordinary.profile.resources[id]==before[id]-float(price[id]),"finite native debit "+id)
+	var distant:=fixture()
+	distant.profile.resources={"1":{"m":1.0,"e":1000000000.0},"2":{"m":1.0,"e":1000000000.0}}
+	check(distant.upgrade_slot("weapons",0),"compact wallet finite stat native purchase")
+	check(distant.native_execution!=null and distant.profile.resources["1"].get("v")==2,"compact wallet leaves finite native owner intact")
 	var high:=fixture()
 	high.profile.loadout.weapons[0].level=3872
 	high.profile.resources={"1":{"m":1.0,"e":400.0},"2":{"m":1.0,"e":400.0}}

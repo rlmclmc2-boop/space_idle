@@ -22,6 +22,10 @@ func _initialize()->void:
 		if not result.has("error"):
 			check(int(result.loadout.weapons[0].level)==220,"generator advances requested levels")
 			check(not result.resources.has(db.evolution_material_id()),"generator keeps material in hyperspace wallet")
+		var distant_profile=generator.rules.profile.duplicate(true)
+		distant_profile.resources={"1":{"m":1.0,"e":1000000000.0},"2":{"m":1.0,"e":1000000000.0}}
+		var distant_result=preload("res://scripts/player_loadout_generator.gd").upgraded_profile(db,generated.results[0],distant_profile,120)
+		check(not distant_result.has("error"),"generator continues across compact wallet purchases")
 	var auto:=BattleGame.new(db,false)
 	auto.state=BattleGame.State.RETREAT
 	auto.profile.highestLevel=999
