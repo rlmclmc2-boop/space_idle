@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"cancel_observed_us":0,"cancel_requested_us":0,"count":49999,"fallback_count":15,"kind":"exploratory_schedulable_max","level":50000,"live_unchanged":true,"material_remaining":0,"max_tick_us":2742,"over_budget_ticks":0,"phase":"verify","phase_max_us":{"decode":965,"factor":234,"fallback":406,"load":2742,"powers":864,"replay":116,"scan":1178,"verify":2722,"window":1176},"prices_at_request":0,"prices_at_stop":50016,"repeated_price_targets":0,"request_in_work_phase":"","revision":0,"state":"complete","stop_reason":"insufficient_resource","stop_us":2759094,"ticks":8123,"total_us":2408817,"windows":1562}
+ERROR: 16 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 16 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 16 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.

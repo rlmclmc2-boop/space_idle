@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"cancel_after_units":4,"cancel_ok":true,"cases":15,"failures":[{"level":13706,"reason":"price_mismatch"},{"level":19504,"reason":"price_mismatch"},{"level":21588,"reason":"price_mismatch"},{"level":29530,"reason":"price_mismatch"},{"level":32344,"reason":"price_mismatch"},{"level":33146,"reason":"price_mismatch"},{"level":33762,"reason":"price_mismatch"},{"level":35604,"reason":"price_mismatch"},{"level":37109,"reason":"price_mismatch"},{"level":37234,"reason":"price_mismatch"},{"level":37247,"reason":"price_mismatch"},{"level":38082,"reason":"price_mismatch"},{"level":40530,"reason":"price_mismatch"},{"level":44957,"reason":"price_mismatch"},{"level":47198,"reason":"price_mismatch"}],"kind":"exploratory_resumable_fallback","max_init_us":268,"max_precision":16,"max_step_us":194,"steps":279}
+ERROR: 16 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 16 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 16 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.

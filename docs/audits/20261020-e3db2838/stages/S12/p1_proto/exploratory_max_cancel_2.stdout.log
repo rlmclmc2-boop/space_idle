@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"kind":"exploratory_default_work_cancel","latency_us_including_request_wait":28,"live_unchanged":true,"max_tick_us":2949,"observed_us":387181,"prices_at_request":67,"prices_at_stop":68,"request_in_work_phase":"scan","requested_us":387154,"state":"cancelled","stopped_us":387182,"success":true,"ticks":22}
+ERROR: 1 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 1 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.

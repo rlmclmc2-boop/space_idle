@@ -1,0 +1,14 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"base_bits":"000730d67819e8d2","growth_bits":"3ff31eb851eb851f","id":"Q-LOW-25","kind":"edge_payload","level":4001,"multiplier_bits":"3fc8f5c28f5c28f6","observed":"25"}
+{"base_bits":"000730d67819e8d2","growth_bits":"3ff31b8ee14a81ac","id":"Q-LOW-5","kind":"edge_payload","level":4001,"multiplier_bits":"3fc8dc770a540d60","observed":"5"}
+{"base_bits":"0000000000000000","growth_bits":"3ff3333333333333","id":"Q-ZERO","kind":"edge_payload","level":4001,"multiplier_bits":"3fc999999999999a","observed":"0"}
+{"base_bits":"4023ffffffffffff","growth_bits":"3ff0000000000000","id":"Q-EDGE-10-0","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"5"}
+{"base_bits":"4024000000000000","growth_bits":"3ff0000000000000","id":"Q-EDGE-10-1","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"15"}
+{"base_bits":"4024000000000001","growth_bits":"3ff0000000000000","id":"Q-EDGE-10-2","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"15"}
+{"base_bits":"4057bfffffffffff","growth_bits":"3ff0000000000000","id":"Q-EDGE-95-0","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"95"}
+{"base_bits":"4057c00000000000","growth_bits":"3ff0000000000000","id":"Q-EDGE-95-1","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"95"}
+{"base_bits":"4057c00000000001","growth_bits":"3ff0000000000000","id":"Q-EDGE-95-2","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"95"}
+{"base_bits":"4058ffffffffffff","growth_bits":"3ff0000000000000","id":"Q-EDGE-100-0","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"95"}
+{"base_bits":"4059000000000000","growth_bits":"3ff0000000000000","id":"Q-EDGE-100-1","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"100"}
+{"base_bits":"4059000000000001","growth_bits":"3ff0000000000000","id":"Q-EDGE-100-2","kind":"edge_payload","level":2,"multiplier_bits":"0000000000000000","observed":"100"}

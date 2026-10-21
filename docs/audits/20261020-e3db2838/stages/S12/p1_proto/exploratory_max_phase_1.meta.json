@@ -1,0 +1,29 @@
+{
+  "classification": "exploratory, not official P1 repetition",
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+    "--headless",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto",
+    "--script",
+    "max_resumable_probe.gd"
+  ],
+  "cwd": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto",
+  "appdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto\\.runtime\\exploratory_max_phase_1\\Roaming",
+  "localappdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto\\.runtime\\exploratory_max_phase_1\\Local",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ms": 2880.4513001814485,
+  "sampled_peak_process_family_rss_bytes": 105361408,
+  "rss_sample_interval_target_ms": 1,
+  "godot_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "godot_banner_observed": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+  "cpu_model": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel",
+  "physical_cores": 8,
+  "logical_cores": 16,
+  "os": "Windows-10-10.0.19044-SP0",
+  "ram_total_bytes": 34272337920,
+  "ram_available_before_record_bytes": 9843453952,
+  "stdout_sha256": "7cc9f39b2069ea7306057313043c132655db9e086cf973b64871c2fa71917b2b",
+  "stderr_sha256": "1add70ff22bfe19dfb0d3145c18b2587bced096b8cd69a77476c8f1eb384f493"
+}

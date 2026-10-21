@@ -22,6 +22,7 @@ func from_two_digit(leading: int, power: int) -> CurrencyValue:
 	return CurrencyValue.new(positions, digits)
 
 func _initialize() -> void:
+	var started := Time.get_ticks_usec()
 	var profile = JSON.parse_string(FileAccess.get_file_as_string("res://generated_wallets/MAX-50000-GODOT-EXPLORATORY.json"))
 	var expected: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://generated_wallets/MAX-50000-GODOT-EXPLORATORY.manifest.json"))
 	var wallet = decode(profile.resources["1"])
@@ -41,11 +42,11 @@ func _initialize() -> void:
 	var windows := 0
 	var fallback_levels := 0
 	var ambiguous := 0
+	var ambiguity_levels: Array = []
 	var quote_us := 0
 	var ledger_us := 0
 	var max_window_us := 0
 	var first_unaffordable: CurrencyValue = null
-	var started := Time.get_ticks_usec()
 	build_powers()
 	var setup_us := Time.get_ticks_usec() - started
 	while level < 50100:
@@ -70,6 +71,8 @@ func _initialize() -> void:
 					cost = from_two_digit(int(lo[0]), int(lo[1]))
 				else:
 					ambiguous += 1
+					if ambiguity_levels.size() < 20:
+						ambiguity_levels.append({"level":target,"lower":lo,"upper":hi})
 					var fallback = engine.quote(50.0, 0.2, target)
 					if fallback != null:
 						cost = currency_from_integer(fallback)
@@ -109,5 +112,5 @@ func _initialize() -> void:
 	var total_us := Time.get_ticks_usec() - started
 	var remaining_matches := compare(wallet, currency_from_integer(I.make(str(expected.remaining_after_expected_purchases)))) == 0
 	var stop_matches := first_unaffordable != null and compare(first_unaffordable, currency_from_integer(I.make(str(expected.first_unaffordable_price)))) == 0
-	print(JSON.stringify({"kind":"exploratory_max_stream","window":WINDOW,"level":level,"count":level-int(profile.laser_level),"windows":windows,"fallback_levels":fallback_levels,"ambiguous":ambiguous,"setup_us":setup_us,"quote_us":quote_us,"ledger_us":ledger_us,"max_window_us":max_window_us,"total_us":total_us,"remaining_matches":remaining_matches,"stop_matches":stop_matches,"remaining_material":material_wallet,"remaining_blocks":wallet.positions.size()}))
+	print(JSON.stringify({"kind":"exploratory_max_stream","window":WINDOW,"level":level,"count":level-int(profile.laser_level),"windows":windows,"fallback_levels":fallback_levels,"ambiguous":ambiguous,"ambiguity_levels":ambiguity_levels,"setup_us":setup_us,"quote_us":quote_us,"ledger_us":ledger_us,"max_window_us":max_window_us,"total_us":total_us,"remaining_matches":remaining_matches,"stop_matches":stop_matches,"remaining_material":material_wallet,"remaining_blocks":wallet.positions.size()}))
 	quit(0 if level == 50000 and remaining_matches and stop_matches else 1)
