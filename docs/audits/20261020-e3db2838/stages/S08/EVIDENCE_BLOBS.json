@@ -7,13 +7,13 @@
     "space-battleship/tools/level_editor_store.py": "0131dc26dd4355d60ccc015d9d5c05c6499568d5"
   },
   "audit_blobs": {
-    "IMPLEMENTATION_PLAN.md": "4ee707144faf77fce3bf55ed68567d969fe6da1c",
-    "PLAN_VALIDATION.json": "aed58c4df6e697d9638212578f770b8d7335b7d5",
-    "PLAN_SHA256SUMS.json": "77c5471c398aa59693719716f6310ae691f97e46",
-    "stages/S08/README.md": "df2ce85fae8248863c859299096a9ecc0a17ccbb",
-    "stages/S08/RESULT.json": "7a5effa9bd5a2cf9a852f05731c8917aa38219c2",
-    "stages/S08/fault_injection.log": "4fe0c61cbacb44ea8315dbb53cf033ccefe580f7",
-    "stages/S08/s08_atomic_recovery.py": "b530ada0c13f5e8dbbb7c03f730c1dbc244b95db"
+    "IMPLEMENTATION_PLAN.md": "e57e8ff57d4b58152a0b887a3effa245c7525b4f",
+    "PLAN_VALIDATION.json": "7df517dc39027ddb57c921038225a253f46ea528",
+    "PLAN_SHA256SUMS.json": "f241970bb47d562242805ca0d338fdfc528adcd6",
+    "stages/S08/README.md": "34f2e3e5860a4ddaa447521683ad18c83349eaea",
+    "stages/S08/RESULT.json": "c81b03edd2103f4950c4f60d3a35af006694c8f5",
+    "stages/S08/fault_injection.log": "ec314dc5c5f625f171ea7903fdffdecc207500dc",
+    "stages/S08/s08_atomic_recovery.py": "0576bff3086b8b703d8152eaaea838d274a8a32a"
   },
   "note": "Blob IDs obtained from final remote branch readback; this index excludes its own blob to avoid self-reference."
 }
