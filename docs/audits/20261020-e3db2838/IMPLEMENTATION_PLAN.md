@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S05 共 7 阶段已完成双审、适用的 main 集成与本地验收并关闭；S06—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S05 共 7 阶段已完成双审、适用的 main 集成与本地验收并关闭；S06 正在复核；S07—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S05 共 7 阶段均为 `closed`；S06—S24 均为 `not_started`。** main、D:\放置 main 及受管镜像为 `5a4d52957f68b22ef47e0ad91cbe787292872d83`。S05 运行/冻结证据及集成收据均获父级与原 astra 同对象双 PASS，详见 stages/S05/INTEGRATION_REVIEW.md。用户明确批准后仅删除无独有成果的 S05 临时分支。实施线程已于 2026-10-21 03:05 UTC 确认归档，当前无打开阶段，可启动唯一下一阶段 S06。完整 Windows 发布导出仍未通过，保留 S22。11 点整体报告已于北京时间 10:56 交付，报告时 S05 尚在集成验收，本关闭记录为后续进展。
+**S00—S05 共 7 阶段均为 `closed`；S06 为 `review`，S07—S24 均为 `not_started`。** main、D:\放置 main 及受管镜像为 `5a4d52957f68b22ef47e0ad91cbe787292872d83`。S05 运行/冻结证据及集成收据均获父级与原 astra 同对象双 PASS，详见 stages/S05/INTEGRATION_REVIEW.md。用户明确批准后仅删除无独有成果的 S05 临时分支。S05 实施线程已于 2026-10-21 03:05 UTC 确认归档；唯一打开阶段 S06 的运行候选和冻结证据已提交，等待父级与原 astra 同对象双审。完整 Windows 发布导出仍未通过，保留 S22。11 点整体报告已于北京时间 10:56 交付，报告时 S05 尚在集成验收，本关闭记录为后续进展。
 
 ### S00 关闭记录
 
@@ -490,6 +490,37 @@ integration_parent_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22
 integration_astra_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, reviewed_evidence_sha: 9d55ce884fdadcf6bc0d2d75a2293776af5c13ed, turn: 01a15c65-f6cd-778e-83a4-6d22e76c3a2e, unresolved: []}
 branch_cleanup: {candidate: s05/player-release-deps, compare_to_main: identical, unique_commits: 0, initial_delete_denied: true, user_authorized_at_utc: 2026-10-21T03:02:09Z, deletion_executed: true, remote_readback_absent: true, record: stages/S05/INTEGRATION_REVIEW.md}
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T03:05:38Z", next_stage_allowed: true}
+```
+
+### S06 审查中记录
+
+```yaml
+stage: S06
+status: review
+implementation_thread_id: 01a15c6d-d351-72c1-916e-89c123183008
+model: sol
+base_main_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83
+predecessor: S05 closed at audit 0f54a8fd0a1f7bd8d2c584e77a90227bda46d483
+runtime_branch: s06/analyzer-deps
+runtime_final_sha: 670a158be8a85716f5caaa8d62b01513383b5d31
+runtime_tree: 8197d2792c543a2d2de58babc52a2d1de40032ef
+runtime_files:
+  - space-battleship/tools/build_result_analyzer.py
+  - space-battleship/tools/analyzer_required_data.json
+  - space-battleship/scripts/mon_group_xlsx.gd
+  - space-battleship/scripts/cycle_level_panel.gd
+main_file_justifications:
+  - "builder 和清单：独立分析器产品必需的闭包复制与导入前核验"
+  - "mon_group_xlsx.gd：既有外部 mon.xlsx 使用内联字符串时不读不存在的 sharedStrings"
+  - "cycle_level_panel.gd：可选邻近历史结果目录不存在时安全返回空结果"
+evidence_snapshot_sha: 8d1d47bdc8404dc3385a441c21cc054a39ff0580
+evidence_entry: stages/S06/README.md
+verification: "Windows Godot 4.7.2，空目录构造及导入 exit 0；实际入口 120 帧 exit 0；最小分析 tests=1 candidates=1 exit 0；原审计 23 个直接缺项逐一匹配，传递闭包 66 scripts/17 JSON；原始日志各只有已知根证书库环境读取错误"
+external_workbook_contract: "mon.xlsx 继续由既有 source_mon marker/邻接路径读取，不打入分析器包；无便携或邻接约定变更"
+parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+integration: {state: pending, main_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, approved_sha_matches: false, local_entry_result: not_run}
+closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
 ```
 
 ```yaml

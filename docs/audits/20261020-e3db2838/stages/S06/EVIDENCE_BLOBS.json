@@ -1,0 +1,12 @@
+{
+  "frozen_evidence_sha": "8d1d47bdc8404dc3385a441c21cc054a39ff0580",
+  "files": {
+    "docs/audits/20261020-e3db2838/stages/S06/README.md": "4b12e56b4f627a4e8b71435abe13f47e89f1ddd1",
+    "docs/audits/20261020-e3db2838/stages/S06/RUNTIME_BLOBS.json": "1cea0f87f5b50fdd7a3bba503138e8d9dd452b7d",
+    "docs/audits/20261020-e3db2838/stages/S06/checks.json": "633549639dc774f4d3c39f646ad71c2a101a4ddc",
+    "docs/audits/20261020-e3db2838/stages/S06/logs/analysis.log": "a522a4ea58c0c4dc00fc038f1818e4d2d3498f5a",
+    "docs/audits/20261020-e3db2838/stages/S06/logs/entry.log": "7575172178370865728a36e66b919adb892a7718",
+    "docs/audits/20261020-e3db2838/stages/S06/logs/import.log": "4f81de65cd49e791659e2311edc6f0527a5b0993",
+    "docs/audits/20261020-e3db2838/stages/S06/s06_smoke.gd": "ebcc0f91e669a56e7ef1ebea324ffbee716397dd"
+  }
+}
