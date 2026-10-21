@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S07 共 9 阶段为 `closed`；S08—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前无打开阶段，可开始 S08。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
+**S00—S07 共 9 阶段为 `closed`；S08 为 `review`，S09—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前唯一打开阶段为 S08，实施线程 `01a15cbc-2bea-7616-8273-5af69cf2d01c`；运行候选 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`，冻结测试证据 `005e960c7c93478deb738aa1544f26fd96ce0b21`，待父级与原 astra 对同一对象独立审查；尚未合入 main。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
 
 ### S00 关闭记录
 
@@ -561,6 +561,29 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 本地集成与隔离首启/重开日志见 `stages/S07/LOCAL_INTEGRATION.json`；该收据不代表完整 native 验收或存档往返。原有 D:\放置 `project.godot` 编辑、生成文件和验证目录均保留；集成同对象双 PASS，S07 已由父级归档关闭。
 
 集成双审记录见 `stages/S07/INTEGRATION_REVIEW.md`；reviewed evidence 为 `dbf9eb3887ac25913c896902cd5f5f93cded2863`。`s07/reactor-cache` 与 main 相同、无独有成果，仅登记待授权清理，不执行删除。
+
+### S08 运行候选待双审
+
+```yaml
+stage: S08
+status: review
+implementation_thread_id: 01a15cbc-2bea-7616-8273-5af69cf2d01c
+base_main_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab6ec
+runtime_branch: s08/config-recovery
+runtime_final_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8
+runtime_tree: dc633257c72cb8202b5f121455b36cba79443663
+runtime_files: [space-battleship/tools/config_workbooks.py, space-battleship/tools/level_editor_store.py]
+evidence_entry: stages/S08/README.md
+evidence_snapshot_sha: 005e960c7c93478deb738aa1544f26fd96ce0b21
+verification: "Python 3.12 AST-isolated fault injection exit 0; baseline loss reproduced; single failure rollback, secondary failure material preservation, editor independent backup, manual restore and success cleanup PASS; full workbook import not run because lxml unavailable"
+recovery_policy: "project .runtime/config-recovery/<uuid> retained on failed rollback; editor backup .runtime/level-editor-backups/<uuid> separately committed; parent/astra review pending"
+parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+integration: {state: pending, main_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab6ec}
+closure: {state: open, implementation_thread_closed: false, next_stage_allowed: false}
+branch_cleanup: {candidate: s08/config-recovery, deletion_executed: false}
+```
+
 
 ```yaml
 stage: Sxx
