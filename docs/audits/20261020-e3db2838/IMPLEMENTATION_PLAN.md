@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S07 共 9 阶段为 `closed`；S08 为 `integrated`（同对象双 PASS、本地入口通过、待集成双审），S09—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前唯一打开阶段为 S08，实施线程 `01a15cbc-2bea-7616-8273-5af69cf2d01c`；运行候选 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`，完整审查证据 `088e8ba5a0fdeabd760cd879bd647f1947e2c7d0` 已获父级和原 astra 同对象双 PASS；main 和 D:\放置 main 已快进到该 SHA，实际入口隔离首启/重开各 120 帧 exit 0，集成双审待定。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
+**S00—S07 共 9 阶段为 `closed`；S08 为 `integrated`（运行与集成同对象双 PASS、待父级关闭），S09—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前唯一打开阶段为 S08，实施线程 `01a15cbc-2bea-7616-8273-5af69cf2d01c`；运行候选 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`，完整审查证据 `088e8ba5a0fdeabd760cd879bd647f1947e2c7d0` 已获父级和原 astra 同对象双 PASS；main 和 D:\放置 main 已快进到该 SHA，实际入口隔离首启/重开各 120 帧 exit 0，集成证据 `801ab029fe2eb0680d4133593b35cf651b1d3cbc` 已获父级与原 astra 同对象双 PASS，待父级关闭。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
 
 ### S00 关闭记录
 
@@ -562,7 +562,7 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 
 集成双审记录见 `stages/S07/INTEGRATION_REVIEW.md`；reviewed evidence 为 `dbf9eb3887ac25913c896902cd5f5f93cded2863`。`s07/reactor-cache` 与 main 相同、无独有成果，仅登记待授权清理，不执行删除。
 
-### S08 已集成，待集成双审
+### S08 集成双审 PASS，待父级关闭
 
 ```yaml
 stage: S08
@@ -583,9 +583,9 @@ review_record: stages/S08/FINAL_REVIEW.md
 integration: {state: integrated, main_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8, local_entry_result: "D:/放置/玩游戏.cmd first/reopen 120 frames each exit 0; managed mirror and two tool blobs/DLL matched; isolated user data; no script/parse/ERROR lines"}
 integration_record: stages/S08/LOCAL_INTEGRATION.json
 integration_evidence_snapshot_sha: d7e8819f3215de4f7605834b12909e18f9db7aee
-integration_review: {parent_verdict: PENDING, astra_verdict: PENDING, unresolved: []}
+integration_review: {parent_verdict: PASS, astra_verdict: PASS, reviewed_runtime_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8, reviewed_evidence_sha: 801ab029fe2eb0680d4133593b35cf651b1d3cbc, astra_turn: 01a15cdf-8dab-7363-ae28-6a856c529dd9, record_path: stages/S08/INTEGRATION_REVIEW.md, unresolved: []}
 closure: {state: open, implementation_thread_closed: false, next_stage_allowed: false}
-branch_cleanup: {candidate: s08/config-recovery, deletion_executed: false}
+branch_cleanup: {candidate: s08/config-recovery, remote_tip_equals_main: true, unique_runtime_commits: 0, deletion_authorized: false, deletion_executed: false, cleanup_deferred: true}
 ```
 
 
