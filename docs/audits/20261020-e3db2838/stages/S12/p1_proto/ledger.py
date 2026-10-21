@@ -111,9 +111,19 @@ class CurrencyValue:
             return cls.from_legacy(float(value["m"]), float(value["e"]))
         if set(value) == {"v", "i"} and value["v"] == 1 and type(value["i"]) is str:
             raw = value["i"]
-            if not _DIGITS.fullmatch(raw) or int(raw) <= SAFE_JSON_INT:
+            safe = str(SAFE_JSON_INT)
+            if not _DIGITS.fullmatch(raw) or len(raw) < len(safe) or (len(raw) == len(safe) and raw <= safe):
                 raise ValueError("noncanonical v1")
-            return cls.from_integer(int(raw))
+            # Do not turn a legal old decimal wallet into one giant Python int:
+            # recent Python runtimes reject >4300 decimal digits by default.
+            terms = []
+            position = 0
+            for end in range(len(raw), 0, -4):
+                digit = int(raw[max(0, end - 4):end])
+                if digit:
+                    terms.append((position, digit))
+                position += 1
+            return cls.from_terms(terms)
         if set(value) != {"v", "blocks"} or value["v"] != 4 or type(value["blocks"]) is not list:
             raise ValueError("invalid candidate shape")
         raw = value["blocks"]
