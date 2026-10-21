@@ -10,8 +10,8 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "fba7563c3f18287676b7b92ed7d6da1cf5afd795409af75546e528b113aa8e90",
-  "PLAN_VALIDATION.json": "caf2c1a26f09ffa315a9183ad725bd294fb572c14d5d327bd545eb82a9e5e4bf",
+  "IMPLEMENTATION_PLAN.md": "4333960f2913bc4eae292cfdc53ad2e2b1432d3c3bf6299d46b9d63f877d7d8a",
+  "PLAN_VALIDATION.json": "a5477719f43ba5917b0af32ad8f23800b0d778fe321ac752194bededf17dc2b2",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S01/FINAL_REVIEW.md": "a884bfe287664aa0fb44c7048875817c27c7489507bda43cc257c41cc9a6651a",
@@ -128,5 +128,6 @@
   "stages/S08/integration-logs/reopen-entry.log": "8146a940cc6175f226bbad3e0ac1cc3d868c128be8ed64d81a39e4d33f51f3d3",
   "stages/S08/integration-logs/reopen-player-game.log": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a",
   "stages/S08/integration-logs/reopen-player-import.log": "13b96103f386bc44a1dca7e26bf7455ca97b974a84fbc4ac2eca0d7e5d2f9dce",
-  "stages/S08/integration-logs/reopen-player-launch.json": "c7ea486a2818aa88c079a4622dfff4a63a211ade7f627bc06535e90cde490ea2"
+  "stages/S08/integration-logs/reopen-player-launch.json": "c7ea486a2818aa88c079a4622dfff4a63a211ade7f627bc06535e90cde490ea2",
+  "stages/S08/INTEGRATION_REVIEW.md": "33e1da7c34e292a95a3f5417d3cd7ef951efd907fd91604c36417a1ddc3cce73"
 }
