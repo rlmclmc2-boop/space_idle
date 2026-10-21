@@ -1,5 +1,7 @@
 # S12 P1 fixed scenarios and full configuration
 
+**HISTORICAL / SUPERSEDED INPUT OBJECT.** This preregistration was rejected during input review before official timing. Its errors and omissions remain visible for audit. The single current test table is [P1_SCENARIOS_V3_AUTHORITY.md](P1_SCENARIOS_V3_AUTHORITY.md), pending dot and original-astra confirmation; P0/P1 thresholds are unchanged.
+
 Status: preregistered **before** any P1 implementation or measurement. Authority is `IMPLEMENTATION_PLAN.md` at `e806d458c9c836e636321aaa6c5759707e7dc5fc` and its linked `P0_CONTRACT_P1_GATE.md` / `P1_PERFORMANCE_PREREGISTRATION.md`. This addendum specifies concrete inputs; it does not alter their gates. Main baseline is `31e79337741bf9860d69fff21dae6be994dacd00`. Old runtime `2a6119564e1cffc07bf0b833c3118b97faf6d728` is reference only. Every source or generated benchmark input and log belongs under this audit directory. No player save, production script, native DLL, or main merge is used.
 
 ## Immutable input sources

@@ -21,8 +21,8 @@ GODOT = Path(r"D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_consol
 
 
 def main() -> int:
-    if len(sys.argv) != 3 or sys.argv[1] not in {"bench_sparse.gd", "research_probe.gd", "price_probe.gd", "max_probe.gd", "export_prices_3873.gd"}:
-        print("usage: run_probe.py {bench_sparse.gd|research_probe.gd|price_probe.gd|max_probe.gd|export_prices_3873.gd} OUTPUT_STEM", file=sys.stderr)
+    if len(sys.argv) != 3 or sys.argv[1] not in {"bench_sparse.gd", "research_probe.gd", "price_probe.gd", "max_probe.gd", "export_prices_3873.gd", "reactor_quote_probe.gd", "save_size_probe.gd"}:
+        print("usage: run_probe.py {bench_sparse.gd|research_probe.gd|price_probe.gd|max_probe.gd|export_prices_3873.gd|reactor_quote_probe.gd|save_size_probe.gd} OUTPUT_STEM", file=sys.stderr)
         return 2
     script, stem = sys.argv[1:]
     if Path(stem).name != stem or not stem.startswith("exploratory_"):

@@ -1,5 +1,7 @@
 # S12 P1 consolidated fixed inputs — awaiting dot and astra review
 
+**HISTORICAL / SUPERSEDED INPUT OBJECT.** Dot and original astra found further gaps. Retained as review history, not combined with later cases. The single current test table is [P1_SCENARIOS_V3_AUTHORITY.md](P1_SCENARIOS_V3_AUTHORITY.md), pending their confirmation.
+
 This is a correction of the preregistered input object at `b9ce803d5a2c16617bef3a0f689b768e40c25d6c`, with revision 1 at `9c1e78303a5e8c1c071eabaa05c55efabab02325` retained as audit history. It does **not** change P0/P1 targets or authorize production integration. Dot and astra found missing/wrong inputs before official timing; therefore no timed P1 result is valid until they confirm this object. All official inputs below are synthetic, isolated, and created from the stated immutable main blobs. Existing `P1_SCENARIOS_FROZEN.md` tables apply where not replaced here. If a listed construction fails or is too large, record its real failure, size and cause; do not shrink, omit or replace it.
 
 ## Source, price and wallet generator

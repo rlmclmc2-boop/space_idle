@@ -1,5 +1,7 @@
 # P1 scenario correction 1 — review required before official timing
 
+**HISTORICAL / SUPERSEDED INPUT OBJECT.** Retained to show the first correction, including its still-incomplete transaction definition. Use only [P1_SCENARIOS_V3_AUTHORITY.md](P1_SCENARIOS_V3_AUTHORITY.md) for current inputs; it awaits dual confirmation.
+
 This addendum preserves the original preregistration commit `b9ce803d5a2c16617bef3a0f689b768e40c25d6c` as evidence. It corrects the test definitions, not the P0/P1 gate or its thresholds. Dot identified the R-HALF, three-slot, high-start, block-construction, and edge-input omissions before any official timed run. **No P1 scenario is yet frozen for official timing**; dot and original astra must confirm this revision. Audit-only exploratory correctness runs may be labeled as such.
 
 ## Research R-HALF: full main `ai_tech_tree.advance` order
