@@ -237,7 +237,10 @@
     "s10_runtime_candidate_separate": true,
     "s10_evidence_only_on_audit_branch": true,
     "s10_29_original_logs_recorded": true,
-    "s10_native_real_dll_hash_recorded": true
+    "s10_native_real_dll_hash_recorded": true,
+    "s10_prior_dual_fail_recorded": true,
+    "s10_round2_21_final_logs_recorded": true,
+    "s10_round2_runtime_blobs_recorded": true
   },
   "stages": 26,
   "active_stage": "S10",
@@ -262,8 +265,8 @@
   "runtime_tree": "dc633257c72cb8202b5f121455b36cba79443663",
   "evidence_snapshot_sha": "088e8ba5a0fdeabd760cd879bd647f1947e2c7d0",
   "implementation_thread_id": "01a15cf1-5d62-701d-a9aa-91182acf9012",
-  "active_runtime_candidate_sha": "49dd8a68eda20bf1b1260be0439970e79f738cda",
-  "active_runtime_tree": "000a09ca8c43a87262246efdcc54b260f01a2b3b",
+  "active_runtime_candidate_sha": "d7fc31a94fb6930d175e771437799cae0238ecec",
+  "active_runtime_tree": "93412662e9f59f512e5a9b7a6b46b1018f5596fd",
   "active_audit_branch": "audit/code-review-e3db2838-20261020",
   "active_evidence_entry": "stages/S10/README.md",
   "active_stage_main_integrated": false,

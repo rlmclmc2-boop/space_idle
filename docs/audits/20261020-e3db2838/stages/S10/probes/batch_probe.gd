@@ -1,5 +1,6 @@
 extends SceneTree
 const R=preload("res://scripts/reactor_integer.gd")
+const N=preload("res://scripts/growth_number.gd")
 func _initialize():call_deferred("run")
 func run():
  var db=ShipDatabase.new();var a=BattleGame.new(db,false);var b=BattleGame.new(db,false)
@@ -8,5 +9,5 @@ func run():
  var singles=true
  for i in 10:singles=singles and b.upgrade_reactor(1)
  var equal=a.profile.reactorLevel==b.profile.reactorLevel and a.profile.resources["2"]==b.profile.resources["2"]
- print("BATCH ",batch," SINGLES ",singles," EQUAL ",equal," LEFTLEN ",R.digits(a.profile.resources["2"]).length())
+ print("BATCH ",batch," SINGLES ",singles," EQUAL ",equal," LEFT ",N.text(a.profile.resources["2"]))
  quit(0 if batch and singles and equal else 1)

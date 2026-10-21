@@ -1,9 +1,9 @@
 {
   "stage": "S10",
-  "status": "review_pending",
+  "status": "review_pending_after_dual_fail_corrections",
   "runtime_branch": "s10/reactor-numeric",
-  "runtime_final_sha": "49dd8a68eda20bf1b1260be0439970e79f738cda",
-  "runtime_tree": "000a09ca8c43a87262246efdcc54b260f01a2b3b",
+  "runtime_final_sha": "d7fc31a94fb6930d175e771437799cae0238ecec",
+  "runtime_tree": "93412662e9f59f512e5a9b7a6b46b1018f5596fd",
   "base_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "contract_sha": "0442a1b627a07fa1af0d0671cdeb97dd070c5efc",
   "environment": {
@@ -13,27 +13,27 @@
     "python": "D:\\CodexTools\\venv\\godot-native\\Scripts\\python.exe",
     "native_dll_runtime_path": "tools/player_runtime/space_native.dll",
     "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
-    "userdata": "isolated APPDATA and LOCALAPPDATA under task-12/s10_final_logs"
+    "userdata": "isolated APPDATA and LOCALAPPDATA under task-12/s10_round2_final_logs"
   },
   "commands": [
     "cd space-battleship; godot --headless --path . --script ../test/<test>.gd",
     "cd space-battleship; godot --headless --path . --script res://s10_scratch/<probe>.gd",
     "cd space-battleship; python s10_scratch/oracle_compare.py",
     "cd space-battleship; godot --headless --editor --import --quit --path .",
-    "git diff --check cf213e2f 49dd8a68"
+    "git diff --check cf213e2f d7fc31a9"
   ],
   "checks": [
     {
       "name": "editor import and parser",
-      "expected": "exit 0, no SCRIPT ERROR or Parse Error",
-      "actual": "exit 0, no script parse error",
+      "expected": "exit 0, no script parse errors",
+      "actual": "exit 0, no script parse errors",
       "result": "PASS",
-      "log": "logs/editor_import.log"
+      "log": "review2-logs/editor_import.log"
     },
     {
-      "name": "existing reactor/cache/large-number/native tests",
+      "name": "existing affected reactor/cache/large-number/native tests",
       "expected": "all exit 0, zero failures",
-      "actual": "7 scripts exit 0; cost 109, refresh 38, deadline 7, stat cache 9177, large 14, native 39 checks; zero failures",
+      "actual": "7 existing scripts exit 0; cost 109, refresh 38, deadline 7, stat cache 9177, large 14, real-DLL native 39 checks; zero failures",
       "result": "PASS",
       "logs": [
         "test_reactor",
@@ -46,49 +46,68 @@
       ]
     },
     {
-      "name": "decimal capacity and cost reference",
-      "expected": "97/98/120/1000 plus early crossing match reference",
-      "actual": "9 comparisons pass; 97=8030838074769683456, 98=12046257112154525552, early 97=16061676149539367403",
+      "name": "independent finite float and overflow decimal oracle",
+      "expected": "all finite prices match same-engine original expression; only nonfinite prices use Decimal",
+      "actual": "15 comparisons pass at levels 97,98,120,140,150,1000,2500 and early capacity 97; Windows old finite 140=13073558688141897728, 150=262864238164782415872; target-engine comparison required",
       "result": "PASS",
-      "log": "logs/oracle_compare.log"
+      "log": "review2-logs/oracle_compare.log"
     },
     {
-      "name": "targeted reactor numeric/consumers/save/native probes",
-      "expected": "all exit 0 with assertions",
-      "actual": "20 probes exit 0; transaction, exact subtraction, quotient/remainder, free charge, stat/drop/fragment, UI, portable/legacy save, real DLL handoff/refusal",
+      "name": "dual-review counterexamples",
+      "expected": "legacy m/e type and actual damage history, finite cost/batch, exact balance after JSON/disk, ordered/decimal/scientific/mixed legacy save, huge exponent without expansion",
+      "actual": "review_round2_probe exit 0, zero failures",
+      "result": "PASS",
+      "log": "review2-logs/review_round2_probe.log"
+    },
+    {
+      "name": "targeted consumers, portable save and real native DLL",
+      "expected": "all selected probes exit 0",
+      "actual": "11 selected probes exit 0; corrected native exact tagged balance debit and failed handoff verified",
       "result": "PASS",
       "logs": [
-        "s10_game_probe",
         "transaction_probe",
         "batch_probe",
-        "free_probe",
-        "free_small_probe",
         "fragment_probe",
         "mult_probe",
         "ui_probe",
         "portable_after_buy",
-        "legacy_probe",
         "legacy_disk_probe",
-        "shape_probe",
-        "duplicate_probe",
-        "native_probe",
         "native_upgrade_probe",
         "native_reject_probe",
         "native_drop_probe",
-        "native_galaxy_probe",
-        "equal_probe",
-        "float_probe"
+        "native_galaxy_probe"
       ]
     },
     {
       "name": "source diff",
-      "expected": "no whitespace errors, only 11 necessary runtime scripts",
-      "actual": "git diff --check clean; 11 script blobs",
+      "expected": "no whitespace errors; only 4 necessary scripts in correction commit",
+      "actual": "git diff --check clean; final branch 11 runtime scripts",
       "result": "PASS",
       "log": "BLOB_INDEX.json"
     }
   ],
-  "raw_log_sha256": {
+  "known_unverified": [
+    "Existing test_save_transfer.gd commit_import assumes a save owner although it constructs BattleGame(db,false); dedicated fresh-userdata owner=true portable probe passed.",
+    "Existing test_reactor_allocation_ui.gd waits for RenderingServer.frame_post_draw unavailable under headless; dedicated panel probe passed.",
+    "No full interactive rendered UI run or S20 simulator-wide big-number review."
+  ],
+  "parent_review": "PENDING_RE_REVIEW",
+  "astra_review": "PENDING_RE_REVIEW",
+  "integration": "NOT_AUTHORIZED",
+  "review_round1": {
+    "runtime_sha": "49dd8a68eda20bf1b1260be0439970e79f738cda",
+    "evidence_sha": "450dcb363b9053ce16749e873fa09ba99784d4d5",
+    "parent_verdict": "FAIL",
+    "original_astra_verdict": "FAIL",
+    "counterexamples": [
+      "global legacy m/e to exact-tag type change reaches actual damage history",
+      "finite old float reactor costs at 140/150 and batch grouping changed at false 2^63 boundary",
+      "exact uranium debit to int above 2^53 lost one unit in JSON",
+      "historical allocation recovery returned early on preceding 0.0 field",
+      "large finite old m/e exponent could be expanded into huge decimal allocation"
+    ]
+  },
+  "historical_first_round_log_sha256": {
     "logs/batch_probe.log": "18cfb050c1aad8a9e15f1f7a67a4f0ad3f4ab8d9218d472122eca1a16c2d8ae2",
     "logs/duplicate_probe.log": "fdfdcdf472f974e560e4de27ce61acc3bf1e20bf9b381a697ebdd80f2499e009",
     "logs/editor_import.log": "becb733b6d3d5f43cf59cd6a5c7eaff5f4ba4b6668a9f37f978112a0a9a35088",
@@ -119,12 +138,27 @@
     "logs/transaction_probe.log": "04e5566c43ab51af01314f2c94bd1ceffe63c58e64aa8d24dc36ba15f795a241",
     "logs/ui_probe.log": "776022f8f4c7ea82bef512b96e2f63e6bad990ae3b1a901e719941085f8804eb"
   },
-  "known_unverified": [
-    "Existing test_save_transfer.gd commit_import assumes a save owner although it constructs BattleGame(db,false); dedicated fresh-userdata owner=true portable probe passed.",
-    "Existing test_reactor_allocation_ui.gd waits for RenderingServer.frame_post_draw unavailable under headless; dedicated panel probe passed.",
-    "No full interactive rendered UI run or S20 simulator-wide big-number review."
-  ],
-  "parent_review": "PENDING",
-  "astra_review": "PENDING",
-  "integration": "NOT_AUTHORIZED"
+  "final_raw_log_sha256": {
+    "review2-logs/batch_probe.log": "d22d7c0886d8f79c42662b5d50cf7f242b2aa9ba5ff73fa06d13e1ad81335015",
+    "review2-logs/editor_import.log": "becb733b6d3d5f43cf59cd6a5c7eaff5f4ba4b6668a9f37f978112a0a9a35088",
+    "review2-logs/fragment_probe.log": "5dea9619e81acaea64a81447e74c0d93addc27d67c4c5f5d08c6772bede72192",
+    "review2-logs/legacy_disk_probe.log": "660ef4fbc8bc538b71b6992c9fe3d3a90c8e4f05253fb519e30d3eaa3daede7d",
+    "review2-logs/mult_probe.log": "f0a9000ebaefea8793f5a41d12f9ef1801da9afa5380d53c87ee8c236664f027",
+    "review2-logs/native_drop_probe.log": "71721b98261d1cfa10b2a706d743c87b068b97fac6cdf77e823674966d84bcaf",
+    "review2-logs/native_galaxy_probe.log": "43e9e490c8947db258da664c31063539f1e763fe96449af39f259f94fa9a5bc0",
+    "review2-logs/native_reject_probe.log": "7f806122a4291beecf4e30c5fed733de3ae3103c5b51abc269ea1b6e6947a604",
+    "review2-logs/native_upgrade_probe.log": "d00adb93f7a5deff5e0a09c33557d4955d27a343b48448df419e5890079ed470",
+    "review2-logs/oracle_compare.log": "f1fe2484a99cc4a90789a1dd9c61b9b466d7ade75c5996b41e41d072d140dd8f",
+    "review2-logs/portable_after_buy.log": "49113ea7199c25bbb2caaad963c66b9ce48c95781ee861fb8fff79831f07512f",
+    "review2-logs/review_round2_probe.log": "bb47bc5b2f1432d1c4fb28f7585500e34e4ad1a1b672b6775352ce52f0a03397",
+    "review2-logs/test_large_numbers.log": "4679ffe7d9f5f628dbd7cade30ba9202bfcdcc536a8055dc1ad393a79fece12c",
+    "review2-logs/test_native_numeric_range.log": "f133a68629c3ae339cdc510ab978628b77b811d31eb721cc53d326718d4c6a76",
+    "review2-logs/test_reactor.log": "24cd6d8bfe1a8e993b4fde1bd9cc6b733f987ec70a40259b2807cc1690ac3eda",
+    "review2-logs/test_reactor_dirty_deadline.log": "5238d69c016e950222a072da04ad5aa5e1e829b0ce87932d13c086fbeefaa5ab",
+    "review2-logs/test_reactor_integer_cost.log": "ca532c03f2f370d5bdc3a74c770ddfad69afda8057ac770f9ef6957f019d47ca",
+    "review2-logs/test_reactor_refresh.log": "e739018bd891d4293f3287b3be4931f99a80ce34cce9db68ccaf9d7b7bc79ee8",
+    "review2-logs/test_stat_cache.log": "02d408f3a280128b3b90b17f5f856857b2a8a10b2b3754582bb365baf84ceb59",
+    "review2-logs/transaction_probe.log": "04e5566c43ab51af01314f2c94bd1ceffe63c58e64aa8d24dc36ba15f795a241",
+    "review2-logs/ui_probe.log": "776022f8f4c7ea82bef512b96e2f63e6bad990ae3b1a901e719941085f8804eb"
+  }
 }

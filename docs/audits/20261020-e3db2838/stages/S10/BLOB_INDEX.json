@@ -1,19 +1,19 @@
 {
-  "runtime_commit": "49dd8a68eda20bf1b1260be0439970e79f738cda",
-  "runtime_tree": "000a09ca8c43a87262246efdcc54b260f01a2b3b",
+  "runtime_commit": "d7fc31a94fb6930d175e771437799cae0238ecec",
+  "runtime_tree": "93412662e9f59f512e5a9b7a6b46b1018f5596fd",
   "base_main": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "runtime_blobs": {
-    "space-battleship/scripts/game.gd": "233eeea09087d9bc0be3e7ba9b25aa56d6d295fc",
-    "space-battleship/scripts/growth_number.gd": "70a29adb2af04d69fef0c4a1dfcbce2642022e80",
+    "space-battleship/scripts/game.gd": "5a8bd14d7a3ed6294644a9afa8f21519d935752b",
+    "space-battleship/scripts/growth_number.gd": "7c900b7cbc8c2de6e07ecacdaa567c6a08e68344",
     "space-battleship/scripts/hyperspace_system.gd": "86efc8270a3ae35a097531cfe2abfd76e1daa5d6",
     "space-battleship/scripts/main.gd": "1d84766d11905fe29eeee53e50869f765c2dcd1c",
     "space-battleship/scripts/native_execution_session.gd": "17d3e415bb3d8b488e32e31e066a4745c55961e7",
     "space-battleship/scripts/number_format.gd": "8f9585c81a53c72deab4613a3a90ebaa15ee2e25",
     "space-battleship/scripts/progress_writer.gd": "364d8fc768c88a1f4b0641f2e8d12730dc3e7114",
-    "space-battleship/scripts/reactor_integer.gd": "c8082d1cc943e7ca67f12399dfbf78f8b80f1a92",
+    "space-battleship/scripts/reactor_integer.gd": "844292e81551d065137424fd5439c2dbc671b2e6",
     "space-battleship/scripts/reactor_panel.gd": "fe862edebb3ed6448f7dd7fe5539af62b3e837af",
     "space-battleship/scripts/reactor_power_input.gd": "49bb4c191d506f89eb64043e9a52f2c93cbe0da1",
-    "space-battleship/scripts/save_transfer.gd": "156c59c48dcc8893883011afdf26b9d731635621"
+    "space-battleship/scripts/save_transfer.gd": "fe2503b918ab4ac40e5e667ce2d4f7f9eeaa7c75"
   },
   "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
 }

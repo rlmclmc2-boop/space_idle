@@ -11,7 +11,7 @@ func run():
  check(g.set_reactor_allocation("weapons",R.make("9007199254740993")),"set exact")
  check(g.set_reactor_allocation("defence",7),"set other")
  check(g.upgrade_reactor(1),"large cost purchase")
- check(g.profile.resources["2"] is Dictionary and g.profile.resources["2"].has("i"),"exact remaining currency")
+ check(g.profile.resources["2"] is Dictionary and g.profile.resources["2"].has("m"),"legacy currency type retained")
  var transfer=T.new();check(transfer.export_progress(g,"user://s10-export.json")==OK,"export")
  var prepared=transfer.prepare("user://s10-export.json",db)
  check(prepared.error.is_empty(),"prepare")

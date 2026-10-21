@@ -14,9 +14,9 @@ func run():
  var admitted=g.admit_native_execution(desc) if not desc.has("error") else false
  print("ADMIT ",admitted)
  if admitted:
-  g.profile.resources["2"]={"m":1.0,"e":400.0}
+  g.profile.resources["2"]=R.make("1"+"0".repeat(400))
   var before=g.profile.resources["2"].duplicate(true)
   var bought=g.upgrade_reactor(1)
-  print("BOUGHT ",bought," HANDOFF ",g.native_execution==null," LEVEL ",g.profile.reactorLevel," DEBIT ",GrowthNumber.compare(before,g.profile.resources["2"])>0)
-  quit(0 if bought and g.native_execution==null and g.profile.reactorLevel==2501 and GrowthNumber.compare(before,g.profile.resources["2"])>0 else 1)
+  print("BOUGHT ",bought," HANDOFF ",g.native_execution==null," LEVEL ",g.profile.reactorLevel," DEBIT ",R.compare(before,g.profile.resources["2"])>0)
+  quit(0 if bought and g.native_execution==null and g.profile.reactorLevel==2501 and R.compare(before,g.profile.resources["2"])>0 else 1)
  else:quit(2)

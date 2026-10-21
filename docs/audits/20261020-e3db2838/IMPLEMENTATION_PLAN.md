@@ -681,7 +681,7 @@ branch_cleanup:
 截止时父级即使仍在实施，也须交付：最终已验证main SHA；已关闭阶段与双方PASS对应SHA；当前打开阶段/线程及阻断；已修/未修A01—A08；AR风险缓解边界；已执行与未执行平台测试；待决策/权限项；下一唯一阶段；证据位置与保留/清理候选。未完成项目逐项写明，不以测试数量或截止时间包装为整体完成。
 ### S10 implementation handoff — runtime and evidence review pending
 
-S10 began from main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8` under frozen S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Parent/original-astra resolved the initial representation boundary as necessary engineering scope below. Implementation and local verification are complete at runtime commit `49dd8a68eda20bf1b1260be0439970e79f738cda`; `stages/S10/README.md`, `verification.json`, `BLOB_INDEX.json`, `logs/` and `probes/` are the audit evidence. Parent/astra implementation verdicts remain PENDING; main integration, closure and S11 start remain prohibited.
+S10 began from main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8` under frozen S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Parent/original-astra resolved the initial representation boundary as necessary engineering scope below. The corrected implementation and local verification are complete at runtime commit `d7fc31a94fb6930d175e771437799cae0238ecec` after parent and original-astra both FAILed the prior `49dd8a68`/`450dcb36` object for the four counterexamples documented in `stages/S10/README.md`; `stages/S10/README.md`, `verification.json`, `BLOB_INDEX.json`, `review2-logs/`, historical `logs/` and `probes/` are the audit evidence. Parent/astra implementation verdicts remain PENDING; main integration, closure and S11 start remain prohibited.
 
 #### S10 engineering scope clarification (parent + original astra, review turn `01a15cf7-e50c-71f7-900e-57aa7ba585cc`)
 
@@ -696,8 +696,9 @@ model: sol
 base_main_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8
 approved_contract_sha: 0442a1b627a07fa1af0d0671cdeb97dd070c5efc
 runtime_branch: s10/reactor-numeric
-runtime_final_sha: 49dd8a68eda20bf1b1260be0439970e79f738cda
-runtime_tree: 000a09ca8c43a87262246efdcc54b260f01a2b3b
+runtime_final_sha: d7fc31a94fb6930d175e771437799cae0238ecec
+runtime_tree: 93412662e9f59f512e5a9b7a6b46b1018f5596fd
+prior_dual_review: {verdict: FAIL, runtime_sha: 49dd8a68eda20bf1b1260be0439970e79f738cda, evidence_sha: 450dcb363b9053ce16749e873fa09ba99784d4d5}
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S10/README.md
 verification_record: stages/S10/verification.json
