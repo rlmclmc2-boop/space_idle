@@ -10,7 +10,7 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "14509267b9019191172e3596d9f61c17253eeb2f24b0a13e2bb91efc901fbb0b",
+  "IMPLEMENTATION_PLAN.md": "bc06deaa7ef1635415ca39de811f3e8930ff71ae4c248751fd6d0c24bb8c5dfd",
   "PLAN_VALIDATION.json": "b2321848bca6f4be7fa488d23f982e803727df82250104fe4ee0131c3068b375",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
@@ -268,5 +268,12 @@
   "../../../space-battleship/test/audit_s11_equipment_quote.gd": "ec8429f758764ac130adfa7c7e54d708e63d51aa376de7b13edb2885cc6f971a",
   "../../../space-battleship/test/audit_s11_quote_test.gd": "4a9dfa98f3a93d8621ed0cfee35b4ba394b67d6c791cdde17d219b957843f103",
   "../../../space-battleship/test/audit_s11_quote_oracle.json": "9938e9ba88710e8cdaf2a6e53a70aa3deea700e51c334aa47c5a0c307e84408a",
-  "stages/S11/FINAL_REVIEW.md": "bbbd15f75686fc27ebba14be8110a7088ef5ea48489e2dab1763488f0d0f988b"
+  "stages/S11/FINAL_REVIEW.md": "bbbd15f75686fc27ebba14be8110a7088ef5ea48489e2dab1763488f0d0f988b",
+  "stages/S12/SPARSE_CORE_PLAN.md": "96277ffc86915fde92e7cf640713f64f6a1c46102be338850f567686e87893cf",
+  "stages/S12/SPARSE_CORE_EVIDENCE.md": "aa438bb07d0cd79b1eb762c835d2ad9787e55d41e1de0d7a3a9c71b54e3eac46",
+  "stages/S12/probes/sparse_wallet_core.gd": "0434d9977cb1eb2a4f65ae5134486a2d2f72a7a8c4430cade3b625d05b588b8b",
+  "stages/S12/probes/audit_s12_sparse_core.gd": "e25bf0bb97d3ed2fb94f22203525cced36250aa0f37a19aaefddc400b8839d56",
+  "stages/S12/probes/generate_sparse_decimal_oracle.py": "54ae6e2b8bb677a69e488ad9df386d16e987976a97fa4fc157ed50437ba3f5b8",
+  "stages/S12/probes/sparse_decimal_oracle.json": "5a609e2181ec81d6c2f79c8b3b437fdf985ec93239ee57dd14669a444b2423c6",
+  "stages/S12/logs/sparse-core-audit.log": "97121377dace354976235b6cf1e950051f779f5096558c0ab64a2ee2b3c4411c"
 }
