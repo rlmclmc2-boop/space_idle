@@ -1,0 +1,51 @@
+{
+  "stage": "S09",
+  "status": "review",
+  "type": "audit_only",
+  "base_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "runtime_sha": "N/A",
+  "entry_parent_sha": "1ca7ef0be3fc809e629b8950a10df723c200de48",
+  "thread_id": "01a15ce4-0ee7-7705-8472-f6b42817303e",
+  "checks": [
+    {
+      "id": "predecessor",
+      "result": "PASS",
+      "evidence": "IMPLEMENTATION_PLAN.md S08 closure at entry parent"
+    },
+    {
+      "id": "D01_D02_authorization",
+      "result": "PASS",
+      "evidence": "IMPLEMENTATION_PLAN.md decision table; both approved"
+    },
+    {
+      "id": "legacy_rules",
+      "result": "PASS",
+      "evidence": "main code static inspection: game.gd, database.gd, reactor_panel.gd, save_transfer.gd, native_execution_session.gd"
+    },
+    {
+      "id": "scope_coverage",
+      "result": "PASS",
+      "evidence": "README.md sections 1-5: capacity, allocation, cost, batch, rounding, display, save, native, D01/D02 mapping and S10-S12 handoff"
+    },
+    {
+      "id": "runtime_tests",
+      "result": "N/A",
+      "evidence": "S09 changes documentation only; no game execution claimed"
+    },
+    {
+      "id": "dual_review",
+      "result": "PENDING",
+      "evidence": "parent and original astra independently review same final audit SHA"
+    }
+  ],
+  "source_blobs": {
+    "space-battleship/scripts/game.gd": "c1de0a2c92ae29ef5d9eccdb0aa149bf8ac6728f",
+    "space-battleship/scripts/database.gd": "0f2064fd4964ab26e39c12738f2f03392f8b5f79",
+    "space-battleship/scripts/reactor_panel.gd": "29022ec42c1bf209502f71b771506029452a65f3",
+    "space-battleship/scripts/growth_number.gd": "d13bab9f625aa14ed486fca2340473db99b1f14f",
+    "space-battleship/scripts/number_format.gd": "14d0be0ffa3dd9514c9b74eae76343e17e75e266",
+    "space-battleship/scripts/save_transfer.gd": "54713b8af2b0bbe97222729801b590ab23c49dea",
+    "space-battleship/scripts/native_execution_session.gd": "f25208e0e26da76eca4098bafea82095311e6fd5",
+    "space-battleship/scripts/native_execution_compiler.gd": "0abdd38806fe2fa07abb59c6a4046dc1acaa727b"
+  }
+}
