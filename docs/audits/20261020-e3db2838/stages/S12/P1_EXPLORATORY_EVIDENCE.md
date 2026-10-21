@@ -34,6 +34,8 @@ A historical deferred-queue MAX-50000 audit query [completed](p1_proto/explorato
 
 ## Gate status after this prototype
 
+New audit-only ledger lifecycle [source](p1_proto/ledger_lifecycle_probe.gd), [first raw run](p1_proto/exploratory_ledger_lifecycle_1.stdout.log), [zero-value revision](p1_proto/exploratory_ledger_lifecycle_2.stdout.log), [failed strict profile-equality check](p1_proto/exploratory_ledger_lifecycle_3.stdout.log), and [final passing control](p1_proto/exploratory_ledger_lifecycle_4.stdout.log) are recorded in [feasibility and gaps](P1_FEASIBILITY_AND_GAPS.md). The failed equality check compared Godot JSON-parsed numeric Variants by exact container type; the final control checks the preserved small integer field values. No public 4 ms or full schema claim follows from the final local success.
+
 | Gate | Status and evidence gap |
 |---|---|
 | Q1 | PENDING: selected Windows prices correct; full branch/domain oracle and ten-process checks absent. |

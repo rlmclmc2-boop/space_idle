@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"blocks":10000,"cold_json_parse_us":4989,"cold_strict_validation_us":9860,"cold_total_us":14849,"correct":true,"cost_alias_safe":true,"exact_roundtrip":true,"fake_cost_rejected":true,"hot_new_value_debit_us":4715,"hot_typed_compare_us":9,"kind":"exploratory_verified_ledger_lifecycle","load_alias_safe":true,"negative_rejected":true,"profile_dictionary":true,"quote_validation_us":45,"repeated_debit_rejected":true,"save_clone_encode_json_us":16971,"saved_bytes":108996,"source_bytes":108996,"stale_rejected":true}

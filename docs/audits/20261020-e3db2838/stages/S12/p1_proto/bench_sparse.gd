@@ -36,7 +36,8 @@ func decode(value: Variant) -> CurrencyValue:
 			return null
 		p.append(position)
 		d.append(digit)
-	if p.is_empty() or d[-1] < 0:
+	# Empty blocks are the unique canonical encoding of zero.
+	if not d.is_empty() and d[-1] < 0:
 		return null
 	return CurrencyValue.new(p, d)
 
