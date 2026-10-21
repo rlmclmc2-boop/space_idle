@@ -89,7 +89,9 @@ static func _bounded_large_growth(base:float,multiplier:float,level:int)->Varian
 			if int(rounded_low[1])>10000:
 				return S._encode(S._normalized(S._from_digits(str(rounded_low[0]),str(rounded_low[1]))))
 			return I.make(str(rounded_low[0])+"0".repeat(int(rounded_low[1])))
-	return null
+	# Exact half-step cases can keep every outward interval ambiguous. Retain
+	# the proven integer path rather than rejecting a legal authored formula.
+	return _large_growth(base,multiplier,level)
 
 static func quote_row(row: Dictionary, level: int, evolution: Dictionary) -> Dictionary:
 	if level < 1:
