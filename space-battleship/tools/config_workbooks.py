@@ -12,6 +12,7 @@ import os
 import pathlib
 import posixpath
 import re
+import shutil
 import sys
 import uuid
 import zipfile
@@ -38,9 +39,28 @@ def read_json(path, default=None):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else ({} if default is None else default)
 
 
-def atomic_batch(files):
-    """Stage every file first; rollback already-replaced files on a commit error."""
+class RecoveryRequired(RuntimeError):
+    def __init__(self, directory, problems):
+        self.recovery_required = True
+        self.recovery_path = str(directory)
+        self.rollback_failed = [str(path) for path in problems]
+        super().__init__(f"Recovery required; original files and manifest retained at {directory}; "
+                         f"restore or retry these paths manually: {', '.join(self.rollback_failed)}")
+
+
+def atomic_batch(files, recovery_root=None):
+    """Stage replacements; retain a pre-install recovery journal if rollback fails.
+
+    This is a recoverable best-effort batch, not a cross-file atomic commit.
+    """
+    if not files:
+        return
+    paths = [pathlib.Path(path) for path in files]
+    recovery_root = pathlib.Path(recovery_root) if recovery_root else paths[0].parent / '.runtime/config-recovery'
+    recovery = recovery_root / uuid.uuid4().hex
     staged, previous, completed = {}, {}, []
+    installing = False
+    recovery_needed = False
     try:
         for path, payload in files.items():
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -48,12 +68,26 @@ def atomic_batch(files):
             temp = path.with_name("." + path.name + "." + uuid.uuid4().hex + ".tmp")
             temp.write_bytes(payload)
             staged[path] = temp
+        recovery.mkdir(parents=True)
+        entries = []
+        for index, path in enumerate(staged):
+            original = previous[path]
+            saved = f'{index:04d}.original' if original is not None else None
+            if saved:
+                (recovery / saved).write_bytes(original)
+            entries.append({'target': str(path.resolve()), 'original': saved,
+                            'original_sha256': sha(original) if original is not None else None,
+                            'replacement_sha256': sha(files[path])})
+        (recovery / 'manifest.json').write_text(
+            json.dumps({'version': 1, 'state': 'installing', 'entries': entries}, indent=2) + '\n',
+            encoding='utf-8')
+        installing = True
         for path, temp in staged.items():
             os.replace(temp, path)
             completed.append(path)
     except Exception as error:
         problems = []
-        for path in reversed(completed):
+        for path in reversed(completed) if installing else ():
             try:
                 if previous[path] is None:
                     path.unlink()
@@ -61,14 +95,19 @@ def atomic_batch(files):
                     staged[path].write_bytes(previous[path])
                     os.replace(staged[path], path)
             except OSError:
-                problems.append(str(path))
+                problems.append(path)
         if problems:
-            raise RuntimeError(ui_text('debug.config_workbooks.message_09', problems=", ".join(problems))) from error
+            recovery_needed = True
+            raise RecoveryRequired(recovery, problems) from error
         raise
     finally:
         for temp in staged.values():
-            if temp.exists():
-                temp.unlink()
+            try:
+                temp.unlink(missing_ok=True)
+            except OSError:
+                pass
+        if not recovery_needed and recovery.exists():
+            shutil.rmtree(recovery, ignore_errors=True)
 
 
 def sheet_parts(archive):
@@ -183,7 +222,7 @@ def sync_workbooks(source, directory):
         if next_manifest != manifest:
             files[directory / MANIFEST] = encode(next_manifest)
     # No deleting unrelated files or worksheets removed from the master.
-    atomic_batch(files)
+    atomic_batch(files, directory.parent / '.runtime/config-recovery')
     return {"ok":True,"action":"split","created":created,"updated":updated,"unchanged":unchanged,
             "directory":str(directory.resolve()),"message":ui_text('debug.config_workbooks.message_01', created=len(created), updated=len(updated), unchanged=len(unchanged))}
 
@@ -318,7 +357,7 @@ def incremental_import(directory, target):
         actual = path.read_bytes() if path.exists() else None
         if actual != expected:
             raise ValueError(ui_text("debug.config_workbooks.message_08", name=path.name))
-    atomic_batch(outputs)
+    atomic_batch(outputs, target.parent.parent / '.runtime/config-recovery')
     names = [name for name, _ in changed]
     names.extend(path.stem for path in entity_outputs)
     return {"ok":True,"action":"import","changed":names,"parsed":names,"message":ui_text('debug.config_workbooks.message_03', names="、".join(names))}
@@ -337,7 +376,11 @@ def main():
     try:
         result = sync_workbooks(args.source, args.directory) if args.action == "split" else incremental_import(args.directory, args.target)
     except Exception as error:
-        print(json.dumps({"ok":False,"action":args.action,"message":str(error)}, ensure_ascii=True))
+        result = {"ok":False,"action":args.action,"message":str(error),
+                  "recovery_required": isinstance(error, RecoveryRequired)}
+        if isinstance(error, RecoveryRequired):
+            result.update(recovery_path=error.recovery_path, rollback_failed=error.rollback_failed)
+        print(json.dumps(result, ensure_ascii=True))
         return 1
     # ASCII transport avoids Windows OS.execute code-page corruption; JSON restores Unicode.
     print(json.dumps(result, ensure_ascii=True))

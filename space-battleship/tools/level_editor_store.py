@@ -16,7 +16,7 @@ import zipfile
 import openpyxl
 from openpyxl.utils import get_column_letter
 from lxml import etree as ET
-from config_workbooks import (Q, MANIFEST, CACHE_VERSION, atomic_batch, sha,
+from config_workbooks import (Q, MANIFEST, CACHE_VERSION, RecoveryRequired, atomic_batch, sha,
                               sheet_parts, read_changed_file, read_hyperspace_bundle, entity_cache_signature)
 from import_workbook import ROOT, SECTIONS, validate_projection, encode
 
@@ -235,7 +235,15 @@ class Store:
             if request['snapshot'] != self.snapshot(): raise ValueError(ui_text('debug.level_editor_store.message_09'))
             backup = self.root / '.runtime/level-editor-backups' / uuid.uuid4().hex
             backups = {backup / p.relative_to(self.root): p.read_bytes() for p in files if p.exists()}
-            atomic_batch({**backups, **files})
+            backup_manifest = {'version': 1, 'files': [
+                {'target': str((self.root / saved.relative_to(backup)).resolve()),
+                 'original': str(saved.relative_to(backup)), 'sha256': sha(raw)}
+                for saved, raw in backups.items()
+            ]}
+            atomic_batch({**backups, backup / 'manifest.json':
+                          (json.dumps(backup_manifest, indent=2) + '\n').encode('utf-8')},
+                         self.root / '.runtime/config-recovery')
+            atomic_batch(files, self.root / '.runtime/config-recovery')
             return {**self.load(), 'warnings': warnings, 'backup': str(backup), 'message': ui_text('debug.level_editor_store.message_10')}
         return {'warnings': warnings, 'message': ui_text('debug.level_editor_store.message_03')}
 
@@ -250,7 +258,10 @@ def main():
         result = store.load() if args.action == 'load' else store.execute(json.loads(args.request.read_text(encoding='utf-8')), args.action == 'save')
         print(json.dumps({'ok': True, **result}, ensure_ascii=True, allow_nan=False))
     except Exception as error:
-        print(json.dumps({'ok': False, 'message': str(error)}, ensure_ascii=True))
+        result = {'ok': False, 'message': str(error), 'recovery_required': isinstance(error, RecoveryRequired)}
+        if isinstance(error, RecoveryRequired):
+            result.update(recovery_path=error.recovery_path, rollback_failed=error.rollback_failed)
+        print(json.dumps(result, ensure_ascii=True))
         return 1
     return 0
 
