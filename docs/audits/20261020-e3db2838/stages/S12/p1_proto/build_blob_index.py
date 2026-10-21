@@ -25,6 +25,7 @@ def main() -> None:
         "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_FROZEN.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_REVISION_1.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_V2_REVIEW.md",
+        "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_V3_AUTHORITY.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_EXPLORATORY_EVIDENCE.md",
     })
     files = {}
