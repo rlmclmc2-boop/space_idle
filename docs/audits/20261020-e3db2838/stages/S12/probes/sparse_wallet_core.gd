@@ -124,7 +124,11 @@ static func blocks(value:Variant)->Variant:
 	if C.is_compact(value):
 		if not C.valid(value):return null
 		var base=blocks(value.base)
-		var adjustment=_from_digits(I.digits(value.delta),str(-int(value.places)))
+		# JSON reads a small v2 integer coefficient back as a float. Convert its
+		# exact integer payload before splitting decimal digits into radix blocks.
+		var coefficient=I.command_floor(value.delta)
+		if coefficient==null:return null
+		var adjustment=_from_digits(I.digits(coefficient),str(-int(value.places)))
 		var result=_signed_sum(base,adjustment,int(value.sign)<0)
 		return result if _positive(result) else null
 	if C.legacy_valid(value):

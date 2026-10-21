@@ -1,6 +1,7 @@
 extends SceneTree
 const S=preload("res://test/sparse_wallet_core.gd")
 const C=preload("res://scripts/compact_wallet.gd")
+const I=preload("res://scripts/reactor_integer.gd")
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -10,6 +11,22 @@ func _initialize()->void:
 	var low={"m":1.0,"e":1000000000.0}
 	var high={"m":1.0,"e":1000000100.0}
 	var low_minus_one=C.change(low,1,-1)
+	var v2_cases:Array=[
+		{"label":"small coefficient","amount":1234},
+		{"label":"large v1 coefficient","amount":I.make("9007199254740993")},
+		{"label":"fractional places","amount":0.125},
+		{"label":"fractional with whole part","amount":2.5}
+	]
+	for row in v2_cases:
+		var original=C.change(low,row.amount,-1)
+		var parsed=JSON.parse_string(JSON.stringify(original))
+		var from_original=S.add(original,0)
+		var from_json=S.add(parsed,0)
+		check(C.valid(original) and C.valid(parsed),"v2 input valid "+row.label)
+		check(S.valid(from_original) and S.valid(from_json) and S.compare(from_original,from_json)==0,"v2 JSON to v3 exact "+row.label)
+		check(S.compare(S.add(from_json,row.amount),low)==0,"v2 parsed refund exact "+row.label)
+		check(S.valid(JSON.parse_string(JSON.stringify(from_json))),"v3 JSON round trip "+row.label)
+	check(not C.valid({"v":2,"base":low,"sign":-1,"delta":1.5,"places":0}),"malformed fractional v2 coefficient rejected")
 	var order_a=S.add(low_minus_one,high)
 	var order_b=S.add(high,low_minus_one)
 	check(S.valid(order_a) and S.valid(order_b) and S.compare(order_a,order_b)==0,"distant income both orders")
