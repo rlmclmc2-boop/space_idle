@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S04a closed; S05 approved, integration pending; S06-S24 not started",
+  "scope": "S00-S04a closed; S05 integrated and branch cleaned, parent closure pending; S06-S24 not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -74,7 +74,7 @@
     "s05_database_new_save_reopen_probe_pass": true,
     "s05_full_build_blocked_by_cert_store": true,
     "s05_dual_review_pending": false,
-    "s05_main_not_integrated": true,
+    "s05_main_not_integrated": false,
     "s05_stage_open": true,
     "s05_raw_log_blobs_indexed": true,
     "s05_all_evidence_git_blobs_indexed": true,
@@ -82,14 +82,24 @@
     "s05_second_review_blocked_by_original_thread_errors": false,
     "s05_original_astra_pass_same_runtime_and_frozen_evidence": true,
     "s05_dual_pass_same_objects": true,
-    "s05_integration_pending": true
+    "s05_integration_pending": false,
+    "s05_main_integrated_matches_approved": true,
+    "s05_D_entry_and_reopen_exit_zero": true,
+    "s05_main_mirror_dll_and_save_preserved": true,
+    "s05_integration_dual_pass_same_objects": true,
+    "s05_candidate_branch_identical_to_main": true,
+    "s05_candidate_branch_unique_commits_zero": true,
+    "s05_branch_deletion_denied_pending_authorization": false,
+    "s05_branch_deletion_initially_denied": true,
+    "s05_branch_deletion_user_authorized": true,
+    "s05_temporary_remote_branch_deleted_and_read_back": true
   },
   "stages": 26,
   "active_stage": "S05",
-  "active_stage_status": "approved",
+  "active_stage_status": "integrated",
   "other_stage_status": "not_started",
   "product_code_changed": true,
-  "main_integrated": false,
+  "main_integrated": true,
   "closed_stages": [
     "S00",
     "S01",
@@ -106,13 +116,13 @@
   "active_runtime_tree": "2f161d9aac91d8d615770d9480d7dd6d9247b00d",
   "active_audit_branch": "audit/code-review-e3db2838-20261020",
   "active_evidence_entry": "stages/S05/README.md",
-  "active_stage_main_integrated": false,
+  "active_stage_main_integrated": true,
   "active_stage_closed": false,
   "closed_stages_main_integrated": true,
-  "last_integrated_main_sha": "01ddfcaf678321fafae51162b3bb6665b34e4301",
+  "last_integrated_main_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
   "active_frozen_evidence_sha": "375ae2f5198739b42498dcc352e0c0a5ef37ce3b",
-  "active_integration_record": null,
-  "active_integration_review_pending": true,
-  "active_integration_reviewed_evidence_sha": null,
-  "active_temporary_branches_cleaned": false
+  "active_integration_record": "stages/S05/LOCAL_INTEGRATION.json",
+  "active_integration_review_pending": false,
+  "active_integration_reviewed_evidence_sha": "9d55ce884fdadcf6bc0d2d75a2293776af5c13ed",
+  "active_temporary_branches_cleaned": true
 }
