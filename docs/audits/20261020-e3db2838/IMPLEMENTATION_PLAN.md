@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not a claim of overall product completion.** S00-S11 (including S04a) are closed. S11 audit-only prototype passed independent dot and original-astra review on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime N/A. S12 is open and awaiting a scope decision; S13-S24 remain not_started. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
+**Planning and status record, not a claim of overall product completion.** S00-S11 (including S04a) are closed. S11 audit-only prototype passed independent dot and original-astra review on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime N/A. S12 is in review: dot and original astra both rejected runtime `42cc37c6d3470ab2e195df9c302de617a7402fa6` / evidence `79bead0bd6be8124eb94067141ccfc07b02ef3be`, and the corrected runtime `68205410956f555e021eb955095769e7a3896df5` awaits a new same-object dual review with its complete audit evidence. S12/A07 remain open; S13-S24 remain not_started. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` is open; runtime candidate `a7251e1ff4fe9a9a01017ab135bcfb546bdc9bdf` is not yet a final reviewed object. S12 awaits a parent/original-astra scope decision about additional float-price consumers. S13-S24 remain not_started. A07 is not fixed until S12 transaction integration passes.
+**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` is open. Its prior runtime/evidence pair `42cc37c6d3470ab2e195df9c302de617a7402fa6` / `79bead0bd6be8124eb94067141ccfc07b02ef3be` received dot FAIL and original-astra FAIL. The replacement runtime candidate is `68205410956f555e021eb955095769e7a3896df5`; current review entry is `stages/S12/CANDIDATE_6820541.md`. S12 status is `review`, awaiting independent same-object dual PASS and remaining open until then. A07 is not fixed; S13-S24 remain not_started. The user-authorized obsolete remote branches `s06/analyzer-deps`, `s07/reactor-cache`, `s08/config-recovery`, and `s10/reactor-numeric` were verified absent with `git ls-remote --heads origin`; main, audit, and S12 candidate branches remain.
 
 ### S00 关闭记录
 
@@ -754,6 +754,8 @@ scope_decision: parent and original astra included direct new-encoding consumers
 **2026-10-21 S12 candidate update:** implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` pushed runtime `82492c5ed267044e66840ed3fd99e9aad707b814`. Final probes, logs, and the remaining independently distant income representation limit are in `stages/S12/CANDIDATE_82492c5.md`. S12 and A07 remain open pending a joint dot/original-astra decision and same-object dual PASS. Main is unchanged; S13-S24 are not started.
 
 **2026-10-21 S12 sparse runtime update:** the audit-only sparse core and Git-byte index at `c7cac7d6c242b2abd8656f92ee64fe8fe623b706` received a limited same-object dual PASS as an integration input. Runtime candidate `42cc37c6d3470ab2e195df9c302de617a7402fa6` replaces the one-base blocker with sparse wallet wiring. Its probes, operation-budget boundary, and outstanding full review are in `stages/S12/SPARSE_RUNTIME_EVIDENCE.md`. S12/A07 remain open; main stays `31e79337741bf9860d69fff21dae6be994dacd00`; S13-S24 remain not_started.
+
+**2026-10-21 S12 correction after dual FAIL:** dot and original astra both rejected the prior full runtime/evidence pair `42cc37c6d3470ab2e195df9c302de617a7402fa6` / `79bead0bd6be8124eb94067141ccfc07b02ef3be`. Runtime `68205410956f555e021eb955095769e7a3896df5` addresses the reactor x10, jewel pickup, atomic refund, resumable MAX/cashflow, native save preflight, Windows parse/startup, and status/index findings. `stages/S12/CANDIDATE_6820541.md` is the current complete evidence entry. This is a review candidate, not a PASS, approval, main merge, or S13 start. The four user-authorized obsolete remote branches named in the Current stage record were deleted and their absence verified remotely.
 parent_review: PENDING
 astra_review: PENDING
 integration: PENDING

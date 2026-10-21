@@ -76,14 +76,19 @@ func _initialize()->void:
 	huge.event.connect(func(kind,payload):events.append(kind))
 	var max_count:=huge.max_upgrade_amount_slot("weapons",0)
 	check(max_count==-1,"extreme MAX reports incomplete work instead of partial amount")
-	check(huge.max_upgrade_quote_cache.values().any(func(row):return row.get("status")=="work_budget"),"MAX cache records work-budget status")
+	check(huge.max_upgrade_quote_cache.values().any(func(row):return row.get("status")=="pending"),"MAX cache records resumable cursor")
 	check(huge.profile==untouched and not huge.save_dirty and events.is_empty(),"MAX quote budget has no game effects")
 	check(not huge.upgrade_equipment_batch("max") and huge.profile==untouched and events.is_empty(),"MAX batch budget rejects before purchase")
 	check(huge.reactor_max_upgrades()==-1 and huge.profile==untouched,"reactor MAX reports work budget without spending sparse wallet")
 	var blocks:Array=[]
-	for index in 5000:blocks.append({"p":str(index),"d":1})
+	for index in 600:blocks.append({"p":str(index),"d":1})
 	var costly_sparse={"v":3,"blocks":blocks}
-	check(S.valid(costly_sparse) and S.scale_result(costly_sparse,0.1).status=="work_budget","cashflow factor work limit uses actual block products")
+	var partial=S.scale_result(costly_sparse,0.1)
+	var factor_pending:bool=partial.status=="pending"
+	for attempt in 30:
+		if partial.status!="pending":break
+		partial=S.scale_result(costly_sparse,0.1,partial.cursor)
+	check(S.valid(costly_sparse) and factor_pending and partial.status=="ok","cashflow factor work limit resumes actual block products")
 	var limited_db:=ShipDatabase.new()
 	limited_db.config.autoCollectReduce=0.9
 	var limited:=BattleGame.new(limited_db,false)
@@ -91,7 +96,11 @@ func _initialize()->void:
 	var over_budget_drop={"id":"1","amount":costly_sparse,"age":100.0}
 	limited.drops.append(over_budget_drop)
 	limited.collect(over_budget_drop,false)
-	check(limited.drops.has(over_budget_drop) and limited.profile.resources==uncredited and not limited.save_dirty,"factor work budget rejects actual pickup before effects")
+	check(limited.drops.has(over_budget_drop) and limited.profile.resources==uncredited and not limited.save_dirty,"pending factor leaves actual pickup unchanged")
+	for attempt in 30:
+		if not limited.drops.has(over_budget_drop):break
+		limited.collect(over_budget_drop,false)
+	check(not limited.drops.has(over_budget_drop) and N.compare(limited.profile.resources["1"],uncredited["1"])>0,"factor pickup resumes and credits exact wallet")
 	var limited_furnace:=BattleGame.new(ShipDatabase.new(),false)
 	var limited_key:=BattleGame.FURNACE
 	limited_furnace.profile.grantedUnlocks=[limited_furnace.db.unlock_id("hightech",limited_key)]
@@ -101,6 +110,10 @@ func _initialize()->void:
 	var prior_furnace=limited_furnace.profile.duplicate(true)
 	var prior_uid:=limited_furnace.uid
 	limited_furnace.advance_furnace(0.02,limited_furnace.economy_time(),1.0)
-	check(limited_furnace.profile==prior_furnace and limited_furnace.uid==prior_uid and limited_furnace.drops.is_empty(),"furnace factor work budget rejects planned blocks atomically")
+	check(limited_furnace.profile==prior_furnace and limited_furnace.uid==prior_uid and limited_furnace.drops.is_empty(),"pending furnace factor leaves planned blocks unchanged")
+	for attempt in 30:
+		if not limited_furnace.drops.is_empty():break
+		limited_furnace.advance_furnace(0.02,limited_furnace.economy_time(),1.0)
+	check(not limited_furnace.drops.is_empty(),"furnace factor resumes planned block")
 	print("S12_SPARSE_RUNTIME checks=",checks," failures=",failures)
 	quit(1 if failures else 0)

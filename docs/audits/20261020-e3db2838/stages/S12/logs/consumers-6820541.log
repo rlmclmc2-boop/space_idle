@@ -1,0 +1,19 @@
+ERROR: Failed to open 'user://logs/godot2026-10-21T21.23.44.log'.
+   at: copy (core/io/dir_access.cpp:429)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+CONSUMER_PROBE generated_count=1
+CONSUMER_PROBE target=220 quote_type=Dictionary quote_valid=true
+CONSUMER_PROBE generator_error=
+CONSUMER_PROBE autoplayer_affordable=true
+CONSUMER_PROBE metrics_spending=11000000000000000000.0
+ERROR: unsupported_numeric_domain: collected income 1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] on_event (res://scripts/balance_metrics.gd:99)
+       [1] _initialize (res://test/audit_s12_consumer_probe.gd:47)
+S12_CONSUMERS failures=0

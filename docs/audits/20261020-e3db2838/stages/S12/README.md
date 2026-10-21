@@ -1,6 +1,6 @@
 # S12 装备报价接入：当前候选与待决范围
 
-状态：`awaiting_decision`，A07 未关闭。基线 main `31e79337741bf9860d69fff21dae6be994dacd00`。当前运行候选分支 `impl/s12-transaction-integration`，提交 `a7251e1ff4fe9a9a01017ab135bcfb546bdc9bdf`；这是可复核候选，**尚非双审最终运行 SHA**。实施线程 `01a15dcd-a9fa-76f2-a28f-312cf153a002`。审计父提交 `b21f839ae26dd2554bb3ad7cf27614c3545a433c`。
+Status: review (same-object dual PASS pending). Main 31e79337741bf9860d69fff21dae6be994dacd00 is unchanged. Runtime candidate 68205410956f555e021eb955095769e7a3896df5 on impl/s12-transaction-integration; current full evidence is CANDIDATE_6820541.md. S12/A07 remain open. Implementation thread 01a15dcd-a9fa-76f2-a28f-312cf153a002.
 
 ## 已接入的玩家路径
 
@@ -44,3 +44,5 @@
 2026-10-21 latest candidate: runtime `82492c5ed267044e66840ed3fd99e9aad707b814`; final regression logs, probes, and the independently distant income blocker are in `CANDIDATE_82492c5.md`. Earlier candidate counts above are historical. S12 remains open; no dual PASS or main merge is claimed.
 
 2026-10-21 sparse integration candidate: runtime `42cc37c6d3470ab2e195df9c302de617a7402fa6`; `SPARSE_RUNTIME_EVIDENCE.md` is the current review record. The earlier `82492c5` blocker record is historical. The sparse *audit core* at `c7cac7d6c242b2abd8656f92ee64fe8fe623b706` had only a limited dual PASS for wiring. Full runtime/evidence dual review remains pending; S12/A07 are open and main is unchanged.
+
+2026-10-21 same-object review candidate: dot and original astra both marked the `42cc37c6` / `79bead0b` pair FAIL. Runtime `68205410956f555e021eb955095769e7a3896df5` addresses their seven reported blockers. `CANDIDATE_6820541.md` is the current evidence and replay entry; prior counts and candidates above are historical. S12/A07 remain open awaiting fresh dual PASS on this runtime and the complete audit SHA. Main is unchanged.

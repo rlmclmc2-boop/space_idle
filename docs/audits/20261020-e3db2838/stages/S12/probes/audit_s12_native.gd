@@ -74,5 +74,15 @@ func run()->void:
 	var before_max=max_budget.profile.duplicate(true)
 	check(not max_budget.upgrade_equipment_batch("max"),"native MAX reports synchronous quote budget")
 	check(max_budget.native_execution!=null and max_budget.native_handoff_count==0 and max_budget.profile==before_max,"native MAX budget rejects before handoff and wallet effects")
+	var oversized:=fixture()
+	oversized.profile.resources={"1":{"m":1.0,"e":1000000000.0},"2":{"m":1.0,"e":1000000000.0}}
+	oversized.resource_samples.append({"time":oversized.economy_time(),"production_time":oversized.production_time(),"id":"1","amount":1,"origin":"x".repeat(16*1024*1024)})
+	var oversized_before=oversized.profile.duplicate(true)
+	var oversized_events:Array=[]
+	oversized.event.connect(func(kind,payload):oversized_events.append(kind))
+	var oversized_debits=oversized.equipment_debits(oversized.slot_upgrade_cost("weapons",0,10))
+	check(not oversized_debits.is_empty() and not oversized.equipment_save_fits(oversized_debits,"weapons",0,10),"native size fixture exceeds actual whole-save limit")
+	check(not oversized.upgrade_equipment_batch("10"),"native batch rejects oversized save before descriptor")
+	check(oversized.native_execution!=null and oversized.native_handoff_count==0 and oversized.profile==oversized_before and oversized_events.is_empty(),"native oversized batch has no purchase, descriptor or event effect")
 	print("S12_NATIVE checks=",checks," failures=",failures)
 	quit(1 if failures else 0)
