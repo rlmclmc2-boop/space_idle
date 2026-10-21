@@ -1,6 +1,6 @@
 # S10 reactor numeric closure: review handoff
 
-Status: parent dot and original astra PASSed the same runtime and frozen evidence objects; fast-forward integration and actual-entry acceptance are pending. Do not close S10 or start S11. Runtime branch `s10/reactor-numeric`, commit `31e79337741bf9860d69fff21dae6be994dacd00`, tree `6870a7c240c354f56282e0b543cbe5b322d06872`, starts at main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`. The S09 contract is frozen at `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`.
+Status: parent dot and original astra PASSed the same runtime and frozen evidence objects; main fast-forward and actual-entry acceptance passed; integration evidence review is pending. Do not close S10 or start S11. Runtime branch `s10/reactor-numeric`, commit `31e79337741bf9860d69fff21dae6be994dacd00`, tree `6870a7c240c354f56282e0b543cbe5b322d06872`, starts at main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`. The S09 contract is frozen at `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`.
 
 The parent and original astra resolved the initial representation blocker as necessary D01/S09 engineering in review turn `01a15cf7-e50c-71f7-900e-57aa7ba585cc`; that was a scope clarification, not an implementation PASS. A local exact reactor integer backend preserves capacity, allocation, remaining, quotient and JSON round trips, including `10^20-5`. Ordinary finite formulas, prices and ordinary-budget batch sum keep their prior float order and floor/ceil; exact-tag budgets sum the same per-level quotes as exact integers. The overflow path uses decimal factor evaluation. Multiplier growth and necessary stat, drop, fragment, pickup and read-only panel consumers use GrowthNumber transport. Global `{m,e}` operations stay in their old arithmetic domain. Reactor transactions materialize a nearby legacy integer wallet only when its decimal size is bounded by the quote and coefficient precision; distant exponents remain virtual. Reactor quote traversal keeps the current-level first item and one-by-one aggregation. The candidate does not change equipment cost or the S20 simulator policy.
 
@@ -32,8 +32,8 @@ The Godot startup warning `Failed to read the root certificate store` appears in
 
 ## Review and integration gate
 
-Parent review: PASS. Original astra review: PASS. Both reviewed runtime `31e79337741bf9860d69fff21dae6be994dacd00` and frozen evidence `813c43126db07dc6d3c3b19917359b4f29e2fcf5`; see `REVIEW_RECORD.md`. Fast-forward only that runtime, then capture actual-entry integration evidence. S10 closure and S11 remain blocked until the parent accepts the integration result.
+Parent review: PASS. Original astra review: PASS. Both reviewed runtime `31e79337741bf9860d69fff21dae6be994dacd00` and frozen evidence `813c43126db07dc6d3c3b19917359b4f29e2fcf5`; see `REVIEW_RECORD.md`. That runtime is now main; `LOCAL_INTEGRATION.md` and `integration-logs/` record passing actual-entry acceptance. S10 closure and S11 remain blocked until the parent and original astra accept the integration result.
 
-## Integration preflight
+## Integration acceptance
 
-`INTEGRATION_PREFLIGHT.md` records a passing isolated exact-allocation and post-debit save/reopen probe on the reviewed runtime. The main publication was blocked before execution by automatic approval review, and the D:\放置 actual-entry acceptance is pending. This is not an integration PASS.
+`INTEGRATION_PREFLIGHT.md` preserves the earlier isolated probe and the initial approval block. `LOCAL_INTEGRATION.md`, `integration-result.json` and `integration-logs/` record the subsequent approved main fast-forward, actual D player-entry first launch, exact-state reopen and restoration of the prior verification save. This integration record awaits review; S10 remains open.
