@@ -1,0 +1,54 @@
+{
+  "stage": "S06",
+  "status": "integrated_pending_integration_review",
+  "approved_runtime_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+  "approved_runtime_tree": "5ed9ae14f65312b73a8d558054c07069380cb007",
+  "reviewed_evidence_sha": "b7fb6744f421d5450db141b928345321e01660b4",
+  "remote_main_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+  "local_main_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+  "managed_mirror_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+  "runtime_blobs": {
+    "source_checkout": "4/4 match RUNTIME_BLOBS.json",
+    "managed_mirror": "4/4 match RUNTIME_BLOBS.json"
+  },
+  "local_edit_preservation": {
+    "path": "D:/放置/space-battleship/project.godot",
+    "sha256_before": "c9716e3eeb59e2ee5412549077b79f35cac9c96907a61c9c88e2fabb0154191a",
+    "sha256_after": "c9716e3eeb59e2ee5412549077b79f35cac9c96907a61c9c88e2fabb0154191a",
+    "status": "preserved"
+  },
+  "entry": "D:/放置/玩游戏.cmd",
+  "environment": {
+    "SPACE_BATTLESHIP_VERIFY_WINDOW": "1",
+    "SPACE_BATTLESHIP_VERIFY_QUIT_AFTER_FRAMES": "120",
+    "SPACE_BATTLESHIP_ENGINE_PATH": "D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe",
+    "isolated_user_directory": "D:/放置/test/work/player-window-check/userdata",
+    "normal_player_user_directory_used": false
+  },
+  "first_start": {
+    "exit_code": 0,
+    "receipt_head": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+    "script_parse_or_error_lines": 0,
+    "logs": [
+      "integration-logs/first-entry.log",
+      "integration-logs/first-player-import.log",
+      "integration-logs/first-player-game.log",
+      "integration-logs/first-player-launch.json"
+    ]
+  },
+  "reopen": {
+    "exit_code": 0,
+    "receipt_head": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+    "script_parse_or_error_lines": 0,
+    "logs": [
+      "integration-logs/reopen-entry.log",
+      "integration-logs/reopen-player-import.log",
+      "integration-logs/reopen-player-game.log",
+      "integration-logs/reopen-player-launch.json"
+    ]
+  },
+  "limits": [
+    "This checks actual player entry startup and reopen for 120 frames in isolated verification user data; it does not assert a new save round trip.",
+    "No S06 branch deletion, stage closure, or S07 start performed."
+  ]
+}
