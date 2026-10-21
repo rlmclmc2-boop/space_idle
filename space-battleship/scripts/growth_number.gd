@@ -1,14 +1,19 @@
 class_name GrowthNumber
 extends RefCounted
 const ReactorInt := preload("res://scripts/reactor_integer.gd")
+const CompactWallet := preload("res://scripts/compact_wallet.gd")
 ## Ordinary values stay floats. Large values use a JSON-safe mantissa/exponent.
 ## No gameplay cap: exponent arithmetic replaces overflowing float products.
 static func valid(value) -> bool:
+	if CompactWallet.is_compact(value):return CompactWallet.valid(value)
 	if value is int or value is float:return is_finite(float(value)) and value>=0
 	if value is Dictionary and value.has("i"):return ReactorInt.valid(value)
 	return value is Dictionary and value.size()==2 and value.has("m") and value.has("e") and (value.m is float or value.m is int) and (value.e is float or value.e is int) and is_finite(float(value.m)) and is_finite(float(value.e)) and float(value.m)>=1 and float(value.m)<10 and float(value.e)==floorf(float(value.e))
 
 static func parts(value) -> Array:
+	if CompactWallet.is_compact(value):
+		var nearby=CompactWallet.near_integer(value,320)
+		return parts(nearby) if nearby!=null else parts(value.base)
 	if value is Dictionary and value.has("i"):
 		var s: String=value.i
 		return [float(s.substr(0,mini(16,s.length())))/pow(10.0,mini(16,s.length())-1),float(s.length()-1)]
@@ -27,6 +32,8 @@ static func make(m: float, e: float):
 	return {"m":m,"e":e}
 
 static func add(a,b):
+	if CompactWallet.is_compact(a):return CompactWallet.change(a,b,1)
+	if CompactWallet.is_compact(b):return CompactWallet.change(b,a,1)
 	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")) or (a is int and a>9007199254740991) or (b is int and b>9007199254740991):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.add(ai,bi)
@@ -41,6 +48,10 @@ static func add(a,b):
 	return make(x[0]*pow(10,x[1]-e)+y[0]*pow(10,y[1]-e),e)
 
 static func subtract(a,b):
+	if CompactWallet.is_compact(a) or CompactWallet.is_compact(b):
+		if compare(a,b)<=0:return 0.0
+		if CompactWallet.is_compact(b):return CompactWallet.difference(a,b)
+		return CompactWallet.change(a,b,-1)
 	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")) or (a is int and a>9007199254740991) or (b is int and b>9007199254740991):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.subtract(ai,bi) if ReactorInt.compare(ai,bi)>0 else 0
@@ -81,6 +92,7 @@ static func power(a, exponent: float):
 	return make(pow(10,logarithm-floorf(logarithm)),floorf(logarithm))
 
 static func compare(a,b) -> int:
+	if CompactWallet.is_compact(a) or CompactWallet.is_compact(b):return CompactWallet.compare(a,b)
 	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.compare(ai,bi)
@@ -99,6 +111,7 @@ static func ratio(a,b) -> float:
 	var value = divide(a,b)
 	return float(value) if not value is Dictionary else (0.0 if value.e<0 else 1.0)
 static func text(a) -> String:
+	if CompactWallet.is_compact(a):return CompactWallet.text(a)
 	if a is Dictionary and a.has("i"):
 		var s: String=a.i
 		return s if s.length()<=18 else "%.2fe+%d" % [parts(a)[0],s.length()-1]

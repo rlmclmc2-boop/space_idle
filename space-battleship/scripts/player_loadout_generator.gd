@@ -269,6 +269,11 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 			if costs.is_empty():return {"error":"level_cap"}
 			for id in costs:
 				var current=game.upgrade_currency(id)
+				if current is Dictionary and current.get("v")==2:
+					if preload("res://scripts/growth_number.gd").compare(current,costs[id])<0:
+						if id==database.evolution_material_id():return {"error":"unsupported_material_range"}
+						game.profile.resources[id]=costs[id]
+					continue
 				if not current is Dictionary and not costs[id] is Dictionary:
 					var ordinary=maxf(float(current),float(costs[id]))
 					if id==database.evolution_material_id():game.profile.hyperspace.materials[id]=ordinary

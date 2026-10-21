@@ -106,6 +106,9 @@ static func affordable(wallet: Dictionary, costs: Dictionary) -> bool:
 		var balance = wallet[id]
 		if not G.valid(balance):
 			return false
+		if balance is Dictionary and balance.get("v")==2:
+			if G.compare(balance,costs[id])<0:return false
+			continue
 		if balance is Dictionary and balance.has("m"):
 			if I.compare_legacy_growth_to_integer(balance, costs[id]) < 0:
 				return false

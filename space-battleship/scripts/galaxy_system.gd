@@ -136,12 +136,28 @@ func advance(g, dt: float) -> void:
 	if income_elapsed>=setting(g,"income_interval"):
 		refresh_unlocks(g)
 		var rates: Dictionary=effects.rates(g,self)
+		var credits:Dictionary={}
+		var incomes:Dictionary={}
+		var samples:Dictionary={}
 		for pair in [["iron",str(int(setting(g,"iron_resource_id")))],["uranium",str(int(g.db.config.reactorUraniumId))]]:
 			var amount=g.N.multiply(rates[pair[0]],income_elapsed)
 			if g.N.compare(amount,0)>0:
-				g.profile.resources[pair[1]]=g.N.add(g.profile.resources.get(pair[1],0),amount)
-				g.resource_samples.append({"time":g.economy_time(),"production_time":g.production_time(),"id":pair[1],"amount":amount,"origin":"galaxy"})
-				g.event.emit("galaxy_income",{"id":pair[1],"amount":amount})
+				var next=g.N.add(credits.get(pair[1],g.profile.resources.get(pair[1],0)),amount)
+				if next==null or not g.N.valid(next):
+					push_error("galaxy income rejected before wallet effects: exact numeric representation")
+					g.paused=true
+					return
+				credits[pair[1]]=next
+				incomes[pair[1]]=g.N.add(incomes.get(pair[1],0),amount)
+		for id in incomes:samples[id]={"time":g.economy_time(),"production_time":g.production_time(),"id":id,"amount":incomes[id],"origin":"galaxy"}
+		if not g.equipment_save_fits(credits,"",-1,0,samples.values()):
+			push_error("galaxy income rejected before wallet effects: whole save size")
+			g.paused=true
+			return
+		for id in credits:
+			g.profile.resources[id]=credits[id]
+			g.resource_samples.append(samples[id])
+			g.event.emit("galaxy_income",{"id":id,"amount":incomes[id]})
 		income_elapsed=0
 	for key in regions:
 		var region=regions[key]

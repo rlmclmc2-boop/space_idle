@@ -169,11 +169,23 @@ static func advance(game, dt: float) -> void:
 				if N.compare(game.profile.resources.get(resource_id,0),float(factors[resource_id])*0.0000000001) < 0:
 					game.profile.resources[resource_id] = 0.0
 			continue
+		var planned_balances:Dictionary={}
 		for resource_id in factors:
 			var expense := float(factors[resource_id])*step
 			var next_balance = N.subtract(game.profile.resources.get(resource_id,0),expense)
-			game.profile.resources[resource_id] = next_balance if N.compare(next_balance,0) > 0 else 0.0
-			paid[resource_id] = true
+			if next_balance==null or not N.valid(next_balance):
+				push_error("AI tech spending rejected before wallet effects: exact numeric representation")
+				game.paused=true
+				break
+			planned_balances[resource_id]=next_balance if N.compare(next_balance,0)>0 else 0.0
+		if game.paused:break
+		if not game.equipment_save_fits(planned_balances):
+			push_error("AI tech spending rejected before wallet effects: whole save size")
+			game.paused=true
+			break
+		for resource_id in planned_balances:
+			game.profile.resources[resource_id]=planned_balances[resource_id]
+			paid[resource_id]=true
 		game.profile.aiTechProgress[id] = progress + step*speed
 		remaining -= step
 		changed = true

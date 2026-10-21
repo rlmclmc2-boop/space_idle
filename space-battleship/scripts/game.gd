@@ -16,7 +16,8 @@ const SAVE_PATH := "user://progress.json"
 const SAVE_VERSION := 5
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
-const MAX_EXACT_WALLET_DIGITS := 8000000 # Within the portable save's existing 16 MiB bound.
+const CompactWallet := preload("res://scripts/compact_wallet.gd")
+const LOCAL_WALLET_EXPANSION_DIGITS := 8192 # Optimization only; larger balances use compact deltas.
 const N = preload("res://scripts/growth_number.gd")
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
@@ -380,6 +381,11 @@ func load_progress() -> void:
 func load_progress_data(raw: Dictionary) -> void:
 	# Also used on an isolated fresh game to validate portable imports.
 	# Reject a future/corrupt subsystem before changing any authoritative balance.
+	if raw.get("resources") is Dictionary:
+		for value in raw.resources.values():
+			if value is Dictionary and value.has("v") and not N.valid(value):
+				startup_error="invalid_compact_wallet_save"
+				return
 	var validation_db=manual_hyperspace.base_db if manual_hyperspace.active else db
 	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,validation_db.levels.size()) or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,validation_db.data,hyperspace.config)):
 		hyperspace.last_error="invalid_hyperspace_save"
@@ -424,7 +430,7 @@ func load_progress_data(raw: Dictionary) -> void:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if N.valid(value):
 			# Restoring a balance must not mint the remainder of a fractional unit.
-			profile.resources[id] = ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
+			profile.resources[id] = CompactWallet.change(value,0,1) if CompactWallet.is_compact(value) else ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -964,14 +970,19 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 
 func equipment_debit(balance: Variant,cost: Variant) -> Variant:
 	if not N.valid(balance) or not ReactorInt.valid(cost):return null
-	if balance is Dictionary and balance.has("m") and float(balance.e)>float(MAX_EXACT_WALLET_DIGITS):return null
+	if CompactWallet.is_compact(balance):return N.subtract(balance,cost) if N.compare(balance,cost)>=0 else null
 	var exact_balance=ReactorInt.from_growth(balance)
 	if exact_balance==null and balance is Dictionary and balance.has("m"):
-		exact_balance=ReactorInt.legacy_integer(balance,MAX_EXACT_WALLET_DIGITS)
+		exact_balance=ReactorInt.legacy_integer(balance,LOCAL_WALLET_EXPANSION_DIGITS)
 	if exact_balance!=null:
 		return ReactorInt.subtract(exact_balance,cost) if ReactorInt.compare(exact_balance,cost)>=0 else null
-	# Keep fractional historical balances in their existing numeric domain.
-	if balance is float or (balance is Dictionary and balance.has("m")):
+	if balance is Dictionary and balance.has("m"):
+		if float(balance.e)<16.0:
+			var ordinary_remainder=N.subtract(balance,cost)
+			if ordinary_remainder!=null and (ReactorInt.compare(cost,0)==0 or N.compare(ordinary_remainder,balance)<0):return ordinary_remainder
+		return CompactWallet.change(balance,cost,-1) if ReactorInt.compare_legacy_growth_to_integer(balance,cost)>=0 else null
+	# Keep ordinary fractional float balances in their existing numeric domain.
+	if balance is float:
 		var remainder=N.subtract(balance,cost)
 		return remainder if ReactorInt.compare(cost,0)==0 or N.compare(remainder,balance)<0 else null
 	return null
@@ -987,40 +998,63 @@ func equipment_debits(costs: Dictionary,wallet: Dictionary={}) -> Dictionary:
 		result[id]=next
 	return result
 
+func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,levels:int=0,extra_samples:Array=[])->bool:
+	var needs_check:=false
+	for value in next_wallet.values():
+		if CompactWallet.is_compact(value):needs_check=true;break
+	if not needs_check:
+		for value in profile.resources.values():
+			if CompactWallet.is_compact(value):needs_check=true;break
+	if not needs_check:return true
+	var snapshot:=portable_save_data()
+	for id in next_wallet:
+		if id==db.evolution_material_id():snapshot.hyperspace.materials[id]=ReactorInt.encode(next_wallet[id])
+		else:snapshot.resources[id]=ReactorInt.encode(next_wallet[id]) if ReactorInt.valid(next_wallet[id]) else next_wallet[id]
+	if not category.is_empty() and index>=0:snapshot.loadout[category][index].level=int(snapshot.loadout[category][index].level)+levels
+	for sample in extra_samples:snapshot.resourceSamples.append(sample)
+	# SaveTransfer.MAX_BYTES applies to the whole serialized document. This is
+	# a pre-effect transport check, never a gameplay exponent or wallet cap.
+	return JSON.stringify(snapshot,"\t").to_utf8_buffer().size()<=16*1024*1024
+
 func resources_changed(ids: Array) -> void:
 	event.emit("resources_changed",{"ids":ids})
 
-func refund_equipment(key: String, level: int) -> void:
+func refund_equipment(key: String, level: int) -> bool:
 	var refunded := {}
 	for target_level in range(2, level + 1):
 		var quote:=upgrade_cost_for_level(key,target_level)
 		if quote.is_empty():
 			push_warning("equipment refund rejected: no valid quote")
-			return
+			return false
 		for id in quote:refunded[id]=ReactorInt.add(refunded.get(id,0),quote[id])
 	var credited := {}
 	for id in refunded:
 		var balance=upgrade_currency(id)
-		if not N.valid(balance) or (balance is Dictionary and balance.has("m") and float(balance.e)>float(MAX_EXACT_WALLET_DIGITS)):
+		if not N.valid(balance):
 			push_warning("equipment refund rejected: exact credit outside save domain")
-			return
+			return false
 		var exact=ReactorInt.from_growth(balance)
 		if exact==null and balance is Dictionary and balance.has("m"):
-			exact=ReactorInt.legacy_integer(balance,MAX_EXACT_WALLET_DIGITS)
-		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id])
+			exact=ReactorInt.legacy_integer(balance,LOCAL_WALLET_EXPANSION_DIGITS)
+		var ordinary_credit=balance is Dictionary and balance.has("m") and float(balance.e)<16.0 and ReactorInt.compare(refunded[id],9007199254740991)<=0
+		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id]) if ordinary_credit else CompactWallet.change(balance,refunded[id],1) if balance is Dictionary and balance.has("m") else N.add(balance,refunded[id])
 		if id==db.evolution_material_id() and (not ReactorInt.valid(next) or ReactorInt.compare(next,ReactorInt.MAX_INT)>0):
 			push_warning("equipment refund rejected: material outside existing int64 wallet domain")
-			return
+			return false
 		if not N.valid(next) or (ReactorInt.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):
 			push_warning("equipment refund rejected: credit cannot be represented")
-			return
+			return false
 		credited[id]=next
+	if not equipment_save_fits(credited):
+		push_warning("equipment refund rejected: whole save exceeds transport size")
+		return false
 	for id in credited:
 		if id==db.evolution_material_id():profile.hyperspace.materials[id]=credited[id]
 		else:profile.resources[id]=credited[id]
 	if not refunded.is_empty():
 		resources_changed(refunded.keys().filter(func(id):return id!=db.evolution_material_id()))
 		if refunded.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
+	return true
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -1143,11 +1177,12 @@ func unequip_slot(category: String, index: int) -> bool:
 	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
 
-func refund_all_equipment() -> void:
+func refund_all_equipment() -> bool:
 	# Retained for explicit legacy callers; normal refit never refunds module growth.
 	for category in ["weapons","defence"]:
 		for entry in loadout_entries(category):
-			if not str(entry.key).is_empty():refund_equipment(str(entry.key),int(entry.level))
+			if not str(entry.key).is_empty() and not refund_equipment(str(entry.key),int(entry.level)):return false
+	return true
 
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
@@ -1346,6 +1381,7 @@ func reactor_max_upgrades() -> int:
 		var exact_cost=ReactorInt.from_growth(cost)
 		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(cost,budget):break
 		budget = N.subtract(budget,cost) if cost is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,cost)
+		if budget==null or not N.valid(budget):break
 		level += 1
 		count += 1
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
@@ -1370,8 +1406,13 @@ func upgrade_reactor(amount: int) -> bool:
 			total=ReactorInt.add(ReactorInt.from_growth(total),exact)
 		if not reactor_affordable(total,budget):return false
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
+	var next_budget=N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,total)
+	var resource_id:=str(int(db.config.reactorUraniumId))
+	if next_budget==null or not N.valid(next_budget) or not equipment_save_fits({resource_id:next_budget}):
+		push_warning("reactor upgrade rejected: exact wallet/save representation")
+		return false
 	if not native_before_configuration_change():return false
-	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,total)
+	profile.resources[resource_id] = next_budget
 	profile.reactorLevel += amount
 	invalidate_stat_cache()
 	resources_changed([str(int(db.config.reactorUraniumId))])
@@ -2754,12 +2795,17 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 		return
 	if drop.get("hightech", false) and not manual and not force and float(drop.get("age",0)) < 10.0:
 		return
-	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
-	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
-	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
+	var credited=N.add(profile.resources[drop.id],amount)
+	var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"}
+	if credited==null or not N.valid(credited) or not equipment_save_fits({str(drop.id):credited},"",-1,0,[sample]):
+		push_error("resource collection rejected before side effects: exact wallet/save representation")
+		return
+	drops.erase(drop)
+	profile.resources[drop.id] = credited
+	resource_samples.append(sample)
 	AITech.record_income(self,str(drop.id))
 	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
@@ -2895,6 +2941,9 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var debits:=equipment_debits(costs)
 	if debits.is_empty():
 		push_warning("equipment upgrade rejected: exact debit cannot be represented")
+		return false
+	if not equipment_save_fits(debits,category,index,levels):
+		push_warning("equipment upgrade rejected: whole save exceeds transport size")
 		return false
 	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
 	if batch_update:

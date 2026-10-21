@@ -30,6 +30,7 @@ static func trimmed_decimal(value: float, decimals: int) -> String:
 	return text.rstrip("0").trim_suffix(".") if text.contains(".") else text
 
 static func compact(value, suffix_decimals := -1) -> String:
+	if value is Dictionary and value.get("v")==2:return GrowthNumber.text(value)
 	var mantissa: float
 	var exponent: float
 	if value is Dictionary:
