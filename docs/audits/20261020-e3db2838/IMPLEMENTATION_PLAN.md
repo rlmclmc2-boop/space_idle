@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共 26 阶段，S00—S06 共 8 阶段已完成双审、适用的 main 集成与本地验收并关闭；S07 运行及集成均获同对象双 PASS，待父级归档关闭；S08—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共 26 阶段，S00—S07 共 9 阶段已完成双审、适用的 main 集成与本地验收并关闭；S08—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S06 共 8 阶段均为 `closed`；S07 为 `integrated`（集成双审 PASS、待父级关闭），S08—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec`。S06 运行/最终证据及集成最终证据均获父级与原 astra 同对象双 PASS；实施线程于 2026-10-21 03:52 UTC 确认归档。当前唯一打开阶段为 S07，实施线程 `01a15c98-6ebc-74c1-ba8a-b2db5720c02f`。运行候选 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec` 与冻结证据 `ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b` 已获父级及原 astra 双 PASS；main 与 D:\放置 main、managed mirror 均为该运行 SHA，实际入口首启及重开各 120 帧 exit 0，集成证据 `dbf9eb3887ac25913c896902cd5f5f93cded2863` 已获双方 PASS，待父级归档关闭。临时分支 s06/analyzer-deps 无独有提交，待专项删除授权，未删除；该引用清理留后续收尾，不阻塞已验收阶段关闭。完整 Windows 发布导出仍留 S22，不宣称完整模拟器/native/GPU通过。
+**S00—S07 共 9 阶段为 `closed`；S08—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前无打开阶段，可开始 S08。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
 
 ### S00 关闭记录
 
@@ -528,11 +528,11 @@ branch_cleanup: {candidate: s06/analyzer-deps, remote_tip_equals_main: true, uni
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T03:52:06Z", next_stage_allowed: true}
 ```
 
-### S07 集成双审 PASS，待父级关闭
+### S07 关闭记录
 
 ```yaml
 stage: S07
-status: integrated
+status: closed
 implementation_thread_id: 01a15c98-6ebc-74c1-ba8a-b2db5720c02f
 model: sol
 base_main_sha: ba3e9ce4b12fb250850b176478dcafd48e696840
@@ -553,12 +553,12 @@ integration: {state: integrated, main_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab
 integration_evidence_snapshot_sha: dbf9eb3887ac25913c896902cd5f5f93cded2863
 integration_review: {parent_verdict: PASS, astra_verdict: PASS, reviewed_runtime_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab6ec, reviewed_evidence_sha: dbf9eb3887ac25913c896902cd5f5f93cded2863, astra_turn: 01a15cb7-6dc7-755e-b5f8-81386ac63260, record_path: stages/S07/INTEGRATION_REVIEW.md, unresolved: []}
 branch_cleanup: {candidate: s07/reactor-cache, remote_tip_equals_main: true, unique_runtime_commits: 0, deletion_authorized: false, deletion_executed: false, cleanup_deferred: true}
-closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
+closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T04:32:00Z", next_stage_allowed: true}
 ```
 
 双审记录在 `stages/S07/FINAL_REVIEW.md`；冻结证据快照为此前审计提交，当前审查记录提交不回写该快照以避免自引用。较大 native 专项旧接口失败保留后续测试维护待办。
 
-本地集成与隔离首启/重开日志见 `stages/S07/LOCAL_INTEGRATION.json`；该收据不代表完整 native 验收或存档往返。原有 D:\放置 `project.godot` 编辑、生成文件和验证目录均保留；集成同对象双 PASS，S07 仍打开，待父级归档关闭。
+本地集成与隔离首启/重开日志见 `stages/S07/LOCAL_INTEGRATION.json`；该收据不代表完整 native 验收或存档往返。原有 D:\放置 `project.godot` 编辑、生成文件和验证目录均保留；集成同对象双 PASS，S07 已由父级归档关闭。
 
 集成双审记录见 `stages/S07/INTEGRATION_REVIEW.md`；reviewed evidence 为 `dbf9eb3887ac25913c896902cd5f5f93cded2863`。`s07/reactor-cache` 与 main 相同、无独有成果，仅登记待授权清理，不执行删除。
 

@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S06 closed; S07 integrated with dual integration PASS, parent closure pending; S08-S24 not started; S06/S07 branch cleanup pending specific approval",
+  "scope": "S00-S07 closed; S08-S24 not started; S06/S07 branch cleanup pending approval",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -177,11 +177,13 @@
     "s07_branch_tip_equals_main": true,
     "s07_branch_unique_runtime_commits_zero": true,
     "s07_branch_deletion_pending_special_authorization": true,
-    "s07_branch_not_deleted": true
+    "s07_branch_not_deleted": true,
+    "s07_thread_archived": true,
+    "s07_closed": true
   },
   "stages": 26,
-  "active_stage": "S07",
-  "active_stage_status": "integrated",
+  "active_stage": null,
+  "active_stage_status": "none",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": true,
@@ -193,7 +195,8 @@
     "S04",
     "S04a",
     "S05",
-    "S06"
+    "S06",
+    "S07"
   ],
   "runtime_final_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
   "runtime_tree": "e6f66e8e31f35054191e9a089c6ce41818d96102",
@@ -204,7 +207,7 @@
   "active_audit_branch": "audit/code-review-e3db2838-20261020",
   "active_evidence_entry": "stages/S07/README.md",
   "active_stage_main_integrated": true,
-  "active_stage_closed": false,
+  "active_stage_closed": true,
   "closed_stages_main_integrated": true,
   "last_integrated_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
   "active_frozen_evidence_sha": "ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b",
