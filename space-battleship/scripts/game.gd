@@ -748,6 +748,12 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 	if saved.get("reactorAllocation") is Dictionary:
 		saved.reactorAllocation=saved.reactorAllocation.duplicate(true)
 		for key in saved.reactorAllocation:saved.reactorAllocation[key]=ReactorInt.encode(saved.reactorAllocation[key])
+	if saved.get("resources") is Dictionary:
+		saved.resources=saved.resources.duplicate(true)
+		var uranium_id := str(int(db.config.reactorUraniumId))
+		var uranium = saved.resources.get(uranium_id)
+		if uranium is int and uranium>9007199254740991:
+			saved.resources[uranium_id]=ReactorInt.encode(uranium)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -1230,7 +1236,7 @@ func reactor_capacity(galaxy_charge := -1.0) -> Variant:
 func reactor_upgrade_cost(level := -1) -> Variant:
 	var actual := int(profile.reactorLevel) if level < 0 else level
 	var ordinary := float(db.config.reactorUpgradeBase)*pow(float(db.config.reactorUpgradeGrowth),actual-1)
-	if is_finite(ordinary) and ordinary<9223372036854775808.0:return ceilf(ordinary)
+	if is_finite(ordinary):return ceilf(ordinary)
 	return ReactorInt.formula_ceil([float(db.config.reactorUpgradeBase)],float(db.config.reactorUpgradeGrowth),actual-1)
 
 func reactor_allocated() -> Variant:
@@ -1257,8 +1263,16 @@ func reactor_multiplier(key: String, galaxy_charge := -1.0) -> Variant:
 	return N.add(1.0,N.divide(N.power(allocation,float(db.config.reactorBoostExponent)),float(db.config.reactorPercentScale))) if N.compare(allocation,0)>0 else 1.0
 
 func reactor_affordable(cost: Variant,budget: Variant) -> bool:
+	if cost is float and not reactor_exact_budget(budget):
+		return N.compare(cost,budget)<=0
 	var exact_budget=ReactorInt.from_growth(budget)
-	return ReactorInt.compare(exact_budget,cost)>=0 if exact_budget!=null else N.compare(budget,cost)>=0
+	var exact_cost=ReactorInt.from_growth(cost)
+	if budget is Dictionary and budget.has("m") and exact_cost!=null:
+		return ReactorInt.compare_legacy_growth_to_integer(budget,exact_cost)>=0
+	return ReactorInt.compare(exact_budget,exact_cost)>=0 if exact_budget!=null and exact_cost!=null else N.compare(budget,cost)>=0
+
+func reactor_exact_budget(budget: Variant) -> bool:
+	return (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
 
 func reactor_max_upgrades() -> int:
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
@@ -1269,9 +1283,9 @@ func reactor_max_upgrades() -> int:
 		var cost: Variant=reactor_upgrade_cost(level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
 		var exact_cost=ReactorInt.from_growth(cost)
-		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(exact_cost,budget):break
+		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(cost,budget):break
 		var exact_budget=ReactorInt.from_growth(budget)
-		budget = ReactorInt.subtract(exact_budget,exact_cost) if exact_budget!=null else N.subtract(budget,cost)
+		budget = N.subtract(budget,cost) if cost is float and not reactor_exact_budget(budget) else ReactorInt.subtract(exact_budget,exact_cost) if exact_budget!=null else N.subtract(budget,cost)
 		level += 1
 		count += 1
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
@@ -1280,7 +1294,7 @@ func reactor_max_upgrades() -> int:
 func upgrade_reactor(amount: int) -> bool:
 	if not reactor_unlocked() or amount <= 0:return false
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
-	var total: Variant=0
+	var total: Variant=0.0
 	var cursor: Array=[]
 	for offset in amount:
 		var quote_level: int=int(profile.reactorLevel)+offset
@@ -1288,12 +1302,15 @@ func upgrade_reactor(amount: int) -> bool:
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),quote_level-1)
 		var exact=ReactorInt.from_growth(cost)
 		if exact==null or ReactorInt.compare(exact,0)<=0:return false
-		total=ReactorInt.add(total,exact)
+		if total is float and cost is float and is_finite(total+cost):
+			total+=cost
+		else:
+			total=ReactorInt.add(ReactorInt.from_growth(total),exact)
 		if not reactor_affordable(total,budget):return false
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
 	if not native_before_configuration_change():return false
 	var exact_budget=ReactorInt.from_growth(budget)
-	profile.resources[str(int(db.config.reactorUraniumId))] = ReactorInt.subtract(exact_budget,total) if exact_budget!=null else N.subtract(budget,total)
+	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else ReactorInt.subtract(exact_budget,ReactorInt.from_growth(total)) if exact_budget!=null else N.subtract(budget,total)
 	profile.reactorLevel += amount
 	invalidate_stat_cache()
 	resources_changed([str(int(db.config.reactorUraniumId))])
@@ -3213,7 +3230,12 @@ func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 		if nonnegative_number(ordinary):return snappedf(ordinary,0.01)
 	var result=N.multiply(amount,factor)
 	if not N.valid(result):return 0.0
-	return ReactorInt.from_growth(result) if result is Dictionary and ReactorInt.from_growth(result)!=null else 0.0 if result is Dictionary else snappedf(float(result),0.01)
+	if result is Dictionary:
+		if result.has("i"):return result
+		# GrowthNumber only keeps a mantissa/exponent outside the float domain;
+		# sub-cent underflow is zero, while a huge amount has no visible cents.
+		return 0.0 if float(result.e)<-2.0 else result
+	return snappedf(float(result),0.01)
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
 	var production_bonus: float=1.0+float(hyperspace_totals().hangings.get("gem_refiner",0)) if source in ["drop","furnace"] else 1.0

@@ -27,7 +27,7 @@ static func make(m: float, e: float):
 	return {"m":m,"e":e}
 
 static func add(a,b):
-	if a is Dictionary or b is Dictionary:
+	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.add(ai,bi)
 	if compare(a,0)==0:return b
@@ -41,7 +41,7 @@ static func add(a,b):
 	return make(x[0]*pow(10,x[1]-e)+y[0]*pow(10,y[1]-e),e)
 
 static func subtract(a,b):
-	if a is Dictionary or b is Dictionary:
+	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.subtract(ai,bi) if ReactorInt.compare(ai,bi)>0 else 0
 	if compare(a,b)<=0:return 0.0
@@ -51,7 +51,7 @@ static func subtract(a,b):
 	return make(x[0]-y[0]*pow(10,y[1]-x[1]),x[1])
 
 static func multiply(a,b):
-	if a is Dictionary or b is Dictionary:
+	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.multiply(ai,bi)
 	if not a is Dictionary and not b is Dictionary:
@@ -81,7 +81,7 @@ static func power(a, exponent: float):
 	return make(pow(10,logarithm-floorf(logarithm)),floorf(logarithm))
 
 static func compare(a,b) -> int:
-	if a is Dictionary or b is Dictionary:
+	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.compare(ai,bi)
 	if not a is Dictionary and not b is Dictionary:return 0 if a==b else (1 if a>b else -1)

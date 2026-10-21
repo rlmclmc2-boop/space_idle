@@ -64,22 +64,83 @@ static func restore_legacy_reactor_integers(source: String,raw: Dictionary) -> b
   elif c=='"':quoted=true;start=index
   elif c=="{":depth+=1
   elif c=="}":depth-=1
- if bodies.size()!=1:return bodies.is_empty() # Duplicate top-level keys are unsafe.
- if bodies[0].contains("{"):
-  var mixed:=RegEx.new();mixed.compile('"[^"]+"\\s*:\\s*[0-9]{16,}')
-  return mixed.search(bodies[0])==null # Mixed ambiguous large bare numbers are unsafe.
- var pair:=RegEx.new()
- pair.compile('^\\s*"([^"]+)"\\s*:\\s*([0-9]+)\\s*$')
+ if bodies.size()!=1:return false # Missing or duplicate top-level keys are unsafe.
+ var body: String=bodies[0]
  var seen: Dictionary={}
- for item in bodies[0].split(",",false):
-  var match_result=pair.search(item)
-  if match_result==null:return true # Let the schema reject unsupported shapes.
-  var key=match_result.get_string(1)
-  if seen.has(key) or not raw.reactorAllocation.has(key):return false
-  seen[key]=true
-  var lexeme=match_result.get_string(2)
-  if lexeme.length()>15:raw.reactorAllocation[key]=ReactorInt.make(lexeme)
+ var at:=0
+ while at<body.length():
+  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
+  if at>=body.length():break
+  if body[at]!='"':return false
+  var key_start:=at;at+=1
+  var slash:=false
+  while at<body.length():
+   if slash:slash=false
+   elif body[at]=="\\":slash=true
+   elif body[at]=='"':break
+   at+=1
+  if at>=body.length():return false
+  var key=JSON.parse_string(body.substr(key_start,at-key_start+1))
+  if not key is String or seen.has(key) or not raw.reactorAllocation.has(key):return false
+  seen[key]=true;at+=1
+  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
+  if at>=body.length() or body[at] != ":":return false
+  at+=1
+  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
+  if at>=body.length():return false
+  if body[at]=="{":
+   var nested:=0;var quoted_value:=false;slash=false
+   while at<body.length():
+    var c:=body[at]
+    if quoted_value:
+     if slash:slash=false
+     elif c=="\\":slash=true
+     elif c=='"':quoted_value=false
+    elif c=='"':quoted_value=true
+    elif c=="{":nested+=1
+    elif c=="}":
+     nested-=1
+     if nested==0:
+      at+=1
+      break
+    at+=1
+   if nested!=0 or not ReactorInt.valid(raw.reactorAllocation[key]):return false
+  else:
+   var value_start:=at
+   while at<body.length() and body[at]!=",":at+=1
+   if not (raw.reactorAllocation[key] is int or raw.reactorAllocation[key] is float) or not is_finite(float(raw.reactorAllocation[key])):return false
+   var recovered=legacy_reactor_integer_lexeme(body.substr(value_start,at-value_start).strip_edges())
+   if recovered==null:return false
+   raw.reactorAllocation[key]=recovered
+  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
+  if at<body.length():
+   if body[at]!=",":return false
+   at+=1
  return true
+
+static func legacy_reactor_integer_lexeme(lexeme: String) -> Variant:
+ if lexeme.begins_with("-"):
+  var absolute=legacy_reactor_integer_lexeme(lexeme.substr(1))
+  return 0 if absolute!=null and ReactorInt.compare(absolute,0)==0 else null
+ var number:=RegEx.new()
+ number.compile('^(0|[1-9][0-9]*)(?:\\.([0-9]+))?(?:[eE]([+-]?[0-9]+))?$')
+ var match_result=number.search(lexeme)
+ if match_result==null:return null
+ var whole=match_result.get_string(1)
+ var fractional=match_result.get_string(2)
+ var exponent_text=match_result.get_string(3)
+ var digits=(whole+fractional).lstrip("0")
+ if digits.is_empty():return 0
+ var exponent:=0
+ if not exponent_text.is_empty():
+  var sign:=-1 if exponent_text[0]=="-" else 1
+  var clean=exponent_text.trim_prefix("+").trim_prefix("-").lstrip("0")
+  if clean.length()>4:return null # Such values were never finite legacy JSON numbers.
+  exponent=sign*int(clean) if not clean.is_empty() else 0
+ var places=exponent-fractional.length()
+ if places>=0:return ReactorInt.make(digits+"0".repeat(places))
+ if -places>digits.length() or digits.substr(digits.length()+places).lstrip("0")!="":return null
+ return ReactorInt.make(digits.substr(0,digits.length()+places))
 
 static func schema() -> Dictionary:
  var building := {"status":"s","build_progress":"g","crew":["s"]}

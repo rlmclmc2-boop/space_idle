@@ -123,14 +123,30 @@ static func decimal_factor(value: float) -> Array:
 static func from_growth(value: Variant) -> Variant:
 	if valid(value):return value
 	if value is float and is_finite(value) and value>=0.0 and value==floorf(value):return float_floor(value)
-	if not value is Dictionary or not value.has("m") or not value.has("e"):return null
-	if not is_finite(float(value.m)) or not is_finite(float(value.e)) or float(value.m)<0 or float(value.e)!=floorf(float(value.e)):return null
-	var part := decimal_factor(float(value.m))
-	var scale := int(part[1])-int(value.e)
-	if scale<=0:return make(digits(part[0])+"0".repeat(-scale))
-	var s := digits(part[0])
-	if scale>s.length() or s.substr(s.length()-scale).lstrip("0")!="":return null
-	return make(s.substr(0,s.length()-scale))
+	# Legacy {m,e} values remain in GrowthNumber's domain. Expanding an arbitrary
+	# valid exponent into decimal digits can allocate unbounded memory and also
+	# changes the legacy value's arithmetic type outside reactor transactions.
+	return null
+
+static func compare_legacy_growth_to_integer(value: Dictionary,integer: Variant) -> int:
+	# Compare an old {m,e} wallet with an integer quote without expanding e zeros.
+	var part:=decimal_factor(float(value.m))
+	var coefficient:=digits(part[0])
+	var target:=digits(integer)
+	var shift: float=float(value.e)-float(part[1])
+	if shift>=0.0:
+		var length: float=float(coefficient.length())+shift
+		if length!=float(target.length()):return 1 if length>target.length() else -1
+		var prefix:=target.substr(0,coefficient.length())
+		var compared:=_cmp_digits(coefficient,prefix)
+		if compared!=0:return compared
+		return 0 if target.substr(coefficient.length()).lstrip("0")=="" else -1
+	var integral_length: float=float(coefficient.length())+shift
+	if integral_length<=0.0:return -1 if target!="0" else 1
+	var whole:=coefficient.substr(0,int(integral_length))
+	var compared:=_cmp_digits(whole,target)
+	if compared!=0:return compared
+	return 0 if coefficient.substr(int(integral_length)).lstrip("0")=="" else 1
 
 static func to_float(value: Variant) -> float:
 	var s := digits(value)
