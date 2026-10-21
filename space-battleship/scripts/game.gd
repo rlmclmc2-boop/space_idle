@@ -1242,6 +1242,7 @@ func upgrade_reactor(amount: int) -> bool:
 	if not native_before_configuration_change():return false
 	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
 	profile.reactorLevel += amount
+	invalidate_stat_cache()
 	resources_changed([str(int(db.config.reactorUraniumId))])
 	save_dirty = true
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
