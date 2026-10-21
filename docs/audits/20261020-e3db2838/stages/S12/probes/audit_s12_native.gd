@@ -35,7 +35,7 @@ func run()->void:
 	var distant:=fixture()
 	distant.profile.resources={"1":{"m":1.0,"e":1000000000.0},"2":{"m":1.0,"e":1000000000.0}}
 	check(distant.upgrade_slot("weapons",0),"compact wallet finite stat native purchase")
-	check(distant.native_execution!=null and distant.profile.resources["1"].get("v")==2,"compact wallet leaves finite native owner intact")
+	check(distant.native_execution!=null and distant.profile.resources["1"].get("v")==3,"sparse wallet leaves finite native owner intact")
 	var high:=fixture()
 	high.profile.loadout.weapons[0].level=3872
 	high.profile.resources={"1":{"m":1.0,"e":400.0},"2":{"m":1.0,"e":400.0}}
@@ -68,5 +68,11 @@ func run()->void:
 	var before_batch:Dictionary=reject_batch.profile.duplicate(true)
 	check(not reject_batch.upgrade_equipment_batch("10"),"unaffordable native batch rejects")
 	check(reject_batch.native_execution!=null and reject_batch.native_handoff_count==0 and reject_batch.profile.resources==before_batch.resources and reject_batch.profile.loadout==before_batch.loadout,"batch reject has no wallet/level/handoff effect")
+	var max_budget:=fixture()
+	max_budget.db.data.equipment_evolution.interval=1000000000
+	max_budget.profile.resources={"1":{"m":1.0,"e":1000000000.0},"2":{"m":1.0,"e":1000000000.0}}
+	var before_max=max_budget.profile.duplicate(true)
+	check(not max_budget.upgrade_equipment_batch("max"),"native MAX reports synchronous quote budget")
+	check(max_budget.native_execution!=null and max_budget.native_handoff_count==0 and max_budget.profile==before_max,"native MAX budget rejects before handoff and wallet effects")
 	print("S12_NATIVE checks=",checks," failures=",failures)
 	quit(1 if failures else 0)

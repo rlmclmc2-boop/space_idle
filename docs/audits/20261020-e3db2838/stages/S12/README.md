@@ -42,3 +42,5 @@
 2026-10-21 update: runtime candidate 1f7c160 adds the jointly scoped direct-consumer fixes and material precision repair. See OPEN_ISSUES.md for the regression table and unapproved compact-wallet proposal. S12 remains open; a7251e1 is superseded, and no dual PASS is claimed.
 
 2026-10-21 latest candidate: runtime `82492c5ed267044e66840ed3fd99e9aad707b814`; final regression logs, probes, and the independently distant income blocker are in `CANDIDATE_82492c5.md`. Earlier candidate counts above are historical. S12 remains open; no dual PASS or main merge is claimed.
+
+2026-10-21 sparse integration candidate: runtime `42cc37c6d3470ab2e195df9c302de617a7402fa6`; `SPARSE_RUNTIME_EVIDENCE.md` is the current review record. The earlier `82492c5` blocker record is historical. The sparse *audit core* at `c7cac7d6c242b2abd8656f92ee64fe8fe623b706` had only a limited dual PASS for wiring. Full runtime/evidence dual review remains pending; S12/A07 are open and main is unchanged.

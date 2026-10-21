@@ -1,0 +1,14 @@
+ERROR: Failed to open 'user://logs/godot2026-10-21T20.06.15.log'.
+   at: copy (core/io/dir_access.cpp:429)
+ERROR: Failed to open log file for writing: user://logs/godot.log
+   at: rotate_file (core/io/logger.cpp:169)
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+WARNING: MAX upgrade rejected before side effects: quote work budget
+   at: push_warning (core/variant/variant_utility.cpp:1033)
+   GDScript backtrace (most recent call first):
+       [0] upgrade_equipment_batch (res://scripts/game.gd:3048)
+       [1] run (res://test/audit_s12_native.gd:75)
+S12_NATIVE checks=35 failures=0

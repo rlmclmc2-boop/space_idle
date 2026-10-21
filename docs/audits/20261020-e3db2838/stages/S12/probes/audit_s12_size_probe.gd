@@ -11,5 +11,9 @@ func _initialize()->void:
 	game.event.connect(func(kind,payload):events.append(kind))
 	var accepted:=game.upgrade_slot("weapons",0)
 	var clean:bool=not accepted and game.profile.resources==before.resources and game.profile.loadout==before.loadout and game.save_dirty==dirty and events.is_empty()
-	print("S12_SIZE rejection_atomic=",clean)
-	quit(0 if clean else 1)
+	var drop={"id":"1","amount":{"m":1.0,"e":1000000100.0},"age":100.0}
+	game.drops.append(drop)
+	game.collect(drop,true)
+	var pickup_clean:bool=game.drops.has(drop) and game.profile.resources==before.resources and game.save_dirty==dirty and events.is_empty()
+	print("S12_SIZE rejection_atomic=",clean," pickup_atomic=",pickup_clean)
+	quit(0 if clean and pickup_clean else 1)

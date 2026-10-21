@@ -752,6 +752,8 @@ evidence_snapshot_sha: PENDING
 scope_decision: parent and original astra included direct new-encoding consumers in S12; compact old-wallet design awaits review
 
 **2026-10-21 S12 candidate update:** implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` pushed runtime `82492c5ed267044e66840ed3fd99e9aad707b814`. Final probes, logs, and the remaining independently distant income representation limit are in `stages/S12/CANDIDATE_82492c5.md`. S12 and A07 remain open pending a joint dot/original-astra decision and same-object dual PASS. Main is unchanged; S13-S24 are not started.
+
+**2026-10-21 S12 sparse runtime update:** the audit-only sparse core and Git-byte index at `c7cac7d6c242b2abd8656f92ee64fe8fe623b706` received a limited same-object dual PASS as an integration input. Runtime candidate `42cc37c6d3470ab2e195df9c302de617a7402fa6` replaces the one-base blocker with sparse wallet wiring. Its probes, operation-budget boundary, and outstanding full review are in `stages/S12/SPARSE_RUNTIME_EVIDENCE.md`. S12/A07 remain open; main stays `31e79337741bf9860d69fff21dae6be994dacd00`; S13-S24 remain not_started.
 parent_review: PENDING
 astra_review: PENDING
 integration: PENDING
