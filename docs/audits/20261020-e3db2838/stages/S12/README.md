@@ -1,6 +1,6 @@
 # S12 装备报价接入：当前候选与待决范围
 
-状态：`awaiting_decision`，A07 未关闭。基线 main `31e79337741bf9860d69fff21dae6be994dacd00`。当前运行候选分支 `impl/s12-transaction-integration`，提交 `23acd13f7e863d8b8d763299f23352c6b1996886`；这是可复核候选，**尚非双审最终运行 SHA**。实施线程 `01a15dcd-a9fa-76f2-a28f-312cf153a002`。审计父提交 `b21f839ae26dd2554bb3ad7cf27614c3545a433c`。
+状态：`awaiting_decision`，A07 未关闭。基线 main `31e79337741bf9860d69fff21dae6be994dacd00`。当前运行候选分支 `impl/s12-transaction-integration`，提交 `a7251e1ff4fe9a9a01017ab135bcfb546bdc9bdf`；这是可复核候选，**尚非双审最终运行 SHA**。实施线程 `01a15dcd-a9fa-76f2-a28f-312cf153a002`。审计父提交 `b21f839ae26dd2554bb3ad7cf27614c3545a433c`。
 
 ## 已接入的玩家路径
 
@@ -17,11 +17,11 @@
 
 | 入口 | 结果 | 证据 |
 |---|---:|---|
-| `res://test/audit_s12_transactions.gd` | 26/26 | `probes/audit_s12_transactions.gd`, `logs/transactions.log` |
+| `res://test/audit_s12_transactions.gd` | 28/28 | `probes/audit_s12_transactions.gd`, `logs/transactions.log` |
 | `res://test/audit_s12_native.gd` | 27/27 | `probes/audit_s12_native.gd`, `logs/native.log` |
 | `res://test/test_equipment_switch_cooldown.gd` | 24/24 | `logs/equipment-switch.log` |
 
-交易探针覆盖 3873 级 `{m:1,e:400}` 足/不足额、事件与脏标记、整数余额精确扣除及 JSON 往返、合法旧钱包往返、十次单买与 x10 的资源及材料一致、逐级和、MAX 缓存一致及购买后失效、退款材料、无法保存精确余额时的副作用前拒绝。native 探针覆盖实际 DLL 的有限单次/批量保留 native、超域单次/批量先 handoff 后购买、未付费单次/批量在 handoff 前拒绝。两份日志都有本机根证书读取诊断，测试本身无其他脚本错误。
+交易探针覆盖 3873 级 `{m:1,e:400}` 足/不足额、事件与脏标记、整数余额精确扣除及 JSON/便携校验往返、合法旧钱包往返、十次单买与 x10 的资源及材料一致、逐级和、MAX 缓存一致及购买后失效、退款材料、无法保存精确余额时的副作用前拒绝。native 探针覆盖实际 DLL 的有限单次/批量保留 native、超域单次/批量先 handoff 后购买、未付费单次/批量在 handoff 前拒绝。交易日志中有预期的超域拒绝 warning；各日志都有本机根证书读取诊断，测试本身无其他脚本错误。
 
 复核时从运行候选 SHA 检出完整工程，把本目录 `probes/` 两个脚本以同名复制到 `space-battleship/test/`，用已核对的 DLL 和扩展描述文件做 Godot 编辑器导入，再执行：
 

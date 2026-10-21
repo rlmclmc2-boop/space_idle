@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` is open; runtime candidate `23acd13f7e863d8b8d763299f23352c6b1996886` is not yet a final reviewed object. S12 awaits a parent/original-astra scope decision about additional float-price consumers. S13-S24 remain not_started. A07 is not fixed until S12 transaction integration passes.
+**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` is open; runtime candidate `a7251e1ff4fe9a9a01017ab135bcfb546bdc9bdf` is not yet a final reviewed object. S12 awaits a parent/original-astra scope decision about additional float-price consumers. S13-S24 remain not_started. A07 is not fixed until S12 transaction integration passes.
 
 ### S00 关闭记录
 
@@ -744,7 +744,7 @@ status: awaiting_decision
 implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
 candidate_branch: impl/s12-transaction-integration
-runtime_candidate_sha: 23acd13f7e863d8b8d763299f23352c6b1996886
+runtime_candidate_sha: a7251e1ff4fe9a9a01017ab135bcfb546bdc9bdf
 runtime_final_sha: PENDING
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/README.md

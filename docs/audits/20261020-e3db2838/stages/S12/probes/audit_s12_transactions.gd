@@ -49,6 +49,7 @@ func _initialize() -> void:
 	check(events.count("upgrade")==1 and high.save_dirty,"successful quote emits one upgrade and marks save")
 	var saved:=high.portable_save_data()
 	var parsed=JSON.parse_string(JSON.stringify(saved))
+	check(preload("res://scripts/save_transfer.gd").new().prepare_data(parsed,db).error=="","exact tagged wallet passes portable validation")
 	var restored:=BattleGame.new(db,false)
 	restored.load_progress_data(parsed)
 	for id in price:
@@ -56,6 +57,7 @@ func _initialize() -> void:
 	check(int(restored.slot_entry("weapons",0).level)==3873,"level save round trip")
 	var old:=fixture(db,2)
 	var old_saved=JSON.parse_string(JSON.stringify(old.portable_save_data()))
+	check(preload("res://scripts/save_transfer.gd").new().prepare_data(old_saved,db).error=="","legacy wallet passes portable validation")
 	var old_restored:=BattleGame.new(db,false)
 	old_restored.load_progress_data(old_saved)
 	check(old_restored.profile.resources==old.profile.resources,"legal legacy wallet round trip")
