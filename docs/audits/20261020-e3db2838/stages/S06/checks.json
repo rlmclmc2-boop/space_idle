@@ -1,6 +1,6 @@
 {
-  "runtime_sha": "670a158be8a85716f5caaa8d62b01513383b5d31",
-  "runtime_tree": "8197d2792c543a2d2de58babc52a2d1de40032ef",
+  "runtime_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+  "runtime_tree": "5ed9ae14f65312b73a8d558054c07069380cb007",
   "base_main_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
   "godot": "4.7.2.stable.official.ed1daf0bf",
   "original_scripts": 27,
@@ -20,10 +20,40 @@
   "minimal_analysis": "tests=1 candidates=1",
   "log_non_certificate_errors": 0,
   "root_certificate_store_error": "environment only; seen once in each Godot log",
-  "log_sha256": {
-    "import.log": "4df97c0fdfea7a629812493e90858c60892852edc5641432087ce4852bb418d1",
-    "entry.log": "f0509d7aead71e12324459f8661449e7d16b8b5b18034707caa269a14ecbc543",
-    "analysis.log": "625e1e14f0393ae5a439dc09b3b9a1f12425b163563a0d91fff41e5f49d17899"
+  "log_gate_cases": 7,
+  "log_gate_result": "7 PASS; exit-0 resource ERROR rejected",
+  "hash_scope": "SHA256 of canonical Git blob bytes, not worktree CRLF",
+  "evidence_git_blobs": {
+    "logs/import.log": {
+      "git_blob": "4f81de65cd49e791659e2311edc6f0527a5b0993",
+      "sha256": "dee64e5bb877ba8647d305d57e2ec77585a80d06e3b5ce40a52155d5c3ae1f60"
+    },
+    "logs/entry.log": {
+      "git_blob": "7575172178370865728a36e66b919adb892a7718",
+      "sha256": "554054a141b798078e4a93fc360a602b580addeb5324c47d43134694ac7c0de1"
+    },
+    "logs/analysis.log": {
+      "git_blob": "a522a4ea58c0c4dc00fc038f1818e4d2d3498f5a",
+      "sha256": "48d9d76404ffc37448d3899f25b23460e14673bbe8e09114a6a9deb5c548f64c"
+    },
+    "logs/gate.log": {
+      "git_blob": "c38c1a5585c9bc8c64fb1559de90ba4ebb77f08a",
+      "sha256": "431d8e6cf16baef89806a3bec0d06abeafab84c13627e9c532d046c0689a1c8c"
+    },
+    "s06_smoke.gd": {
+      "git_blob": "ebcc0f91e669a56e7ef1ebea324ffbee716397dd",
+      "sha256": "2153bbaa97e871ebed92a859ad357543524d8bfdc4f3a59acf34c0ae3e5a294d"
+    },
+    "s06_log_gate.py": {
+      "git_blob": "0777e8f8ec1885be78a96479f8454c3c71e0a5dd",
+      "sha256": "cd05c4ad35d2920654f9ac851dd483a41fae3f8df713fa1f5918386bcf1af22f"
+    }
   },
-  "smoke_sha256": "c876d910688284b077b87045aeaa6281b8bd47a9840e54c01286cf3e9d8fa754"
+  "log_sha256": {
+    "import.log": "dee64e5bb877ba8647d305d57e2ec77585a80d06e3b5ce40a52155d5c3ae1f60",
+    "entry.log": "554054a141b798078e4a93fc360a602b580addeb5324c47d43134694ac7c0de1",
+    "analysis.log": "48d9d76404ffc37448d3899f25b23460e14673bbe8e09114a6a9deb5c548f64c",
+    "gate.log": "431d8e6cf16baef89806a3bec0d06abeafab84c13627e9c532d046c0689a1c8c"
+  },
+  "smoke_sha256": "2153bbaa97e871ebed92a859ad357543524d8bfdc4f3a59acf34c0ae3e5a294d"
 }

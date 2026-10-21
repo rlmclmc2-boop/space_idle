@@ -1,0 +1,7 @@
+S06_GATE_PASS clean: accepted
+S06_GATE_PASS known_certificate: accepted
+S06_GATE_PASS resource_error_exit_zero: rejected
+S06_GATE_PASS duplicate_certificate: rejected
+S06_GATE_PASS unknown_certificate_trace: rejected
+S06_GATE_PASS parse_error: rejected
+S06_GATE_PASS script_error: rejected
