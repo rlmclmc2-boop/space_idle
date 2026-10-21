@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05 已获父级与原 astra 对同一运行和冻结证据的双 PASS，现为 approved、待父级集成；S06—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S04a 已完成同对象双审、适用的 main 集成及本地验收并关闭；S05 已获运行及实际入口集成的父级与原 astra 同对象双 PASS，现为 integrated；获用户授权后唯一临时分支已删除并回读，待父级关闭阶段与线程；S06—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S04a 均为 `closed`；S05 为 `approved`、集成 `pending`；S06—S24 均为 `not_started`。** main 仍为 `01ddfcaf678321fafae51162b3bb6665b34e4301`。唯一打开的实施阶段 S05 在线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9`；纯运行候选 `5a4d52957f68b22ef47e0ad91cbe787292872d83`，树 `2f161d9aac91d8d615770d9480d7dd6d9247b00d`，被审冻结证据 `375ae2f5198739b42498dcc352e0c0a5ef37ce3b`。父级与原 astra 已对该同一对象分别明确 PASS、S05 未解决项 0；原 astra turn `01a15c5c-005a-730e-9733-8e5f7eab9e49`；详见 `stages/S05/REVIEW_RECORD.md`。尚未合 main 或完成集成后的本地入口验收，不得关闭阶段或启动 S06。完整 Windows 发布导出及产物验收仍因证书库环境错误 BLOCKED，不宣称 S22 发布验收完成。
+**S00—S04a 均为 `closed`；S05 为 `integrated`、清理完成、待父级关闭；S06—S24 均为 `not_started`。** 远端及 `D:\放置` main、受管镜像均为获批运行 `5a4d52957f68b22ef47e0ad91cbe787292872d83`。S05 唯一实施线程 `01a15b67-0ffb-7749-8cfa-9680694f00e9` 保持打开。父级与原 astra 对运行 `5a4d52957f68b22ef47e0ad91cbe787292872d83` / 冻结证据 `375ae2f5198739b42498dcc352e0c0a5ef37ce3b` 双 PASS；实际 `D:\放置\玩游戏.cmd` 隔离启动与重开的集成收据 `9d55ce884fdadcf6bc0d2d75a2293776af5c13ed` 亦获双方同对象 PASS，详见 `stages/S05/INTEGRATION_REVIEW.md`。完整 Windows 发布导出未通过，仍留 S22。候选分支与 main 双向 compare 为 identical、无独有提交；首次删除因 AGENTS.md 自动授权范围不足被拒，随后获用户明确授权，仅删除 `s05/player-release-deps`，GitHub 回读不存在。S05 仍待父级关闭，不得启动 S06。
 
 ### S00 关闭记录
 
@@ -452,11 +452,11 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_archiv
 next_stage_allowed: true
 ```
 
-### S05 approved 记录
+### S05 integrated 记录
 
 ```yaml
 stage: S05
-status: approved
+status: integrated
 implementation_thread_id: 01a15b67-0ffb-7749-8cfa-9680694f00e9
 model: sol
 base_main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301
@@ -473,6 +473,8 @@ main_file_justifications:
 evidence_snapshot_sha: 375ae2f5198739b42498dcc352e0c0a5ef37ce3b
 evidence_entry: stages/S05/README.md
 review_record: stages/S05/REVIEW_RECORD.md
+integration_record: stages/S05/LOCAL_INTEGRATION.json
+integration_review_record: stages/S05/INTEGRATION_REVIEW.md
 evidence_files: [stages/S05/REVIEW_RECORD.md, stages/S05/checks.json, stages/S05/RUNTIME_BLOBS.json, stages/S05/EVIDENCE_BLOBS.json, stages/S05/s05_probe.gd, stages/S05/logs/]
 verification:
   results:
@@ -483,7 +485,10 @@ verification:
     - "CodexSandboxOffline 不能读取 Windows 根证书库；Godot 导入报错，构建脚本正确中止；完整 Windows 导出和实际包验收未通过，S22 仍 pending"
 parent_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, reviewed_evidence_sha: 375ae2f5198739b42498dcc352e0c0a5ef37ce3b, record_path: stages/S05/REVIEW_RECORD.md, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, reviewed_evidence_sha: 375ae2f5198739b42498dcc352e0c0a5ef37ce3b, turn: 01a15c5c-005a-730e-9733-8e5f7eab9e49, record_path: stages/S05/REVIEW_RECORD.md, unresolved: []}
-integration: {state: pending, main_sha: 01ddfcaf678321fafae51162b3bb6665b34e4301, local_entry_result: not_run}
+integration: {state: integrated, main_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, approved_sha_matches: true, local_entry_result: two_isolated_D_entry_runs_exit_0, receipt_sha: 9d55ce884fdadcf6bc0d2d75a2293776af5c13ed}
+integration_parent_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, reviewed_evidence_sha: 9d55ce884fdadcf6bc0d2d75a2293776af5c13ed, unresolved: []}
+integration_astra_review: {verdict: PASS, reviewed_runtime_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, reviewed_evidence_sha: 9d55ce884fdadcf6bc0d2d75a2293776af5c13ed, turn: 01a15c65-f6cd-778e-83a4-6d22e76c3a2e, unresolved: []}
+branch_cleanup: {candidate: s05/player-release-deps, compare_to_main: identical, unique_commits: 0, initial_delete_denied: true, user_authorized_at_utc: 2026-10-21T03:02:09Z, deletion_executed: true, remote_readback_absent: true, record: stages/S05/INTEGRATION_REVIEW.md}
 closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
 ```
 
