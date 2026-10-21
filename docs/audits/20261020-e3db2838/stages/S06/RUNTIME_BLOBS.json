@@ -1,0 +1,10 @@
+{
+  "runtime_sha": "670a158be8a85716f5caaa8d62b01513383b5d31",
+  "runtime_tree": "8197d2792c543a2d2de58babc52a2d1de40032ef",
+  "files": {
+    "space-battleship/scripts/cycle_level_panel.gd": "9e613b012d23957c53636639e97fe256fe33e78b",
+    "space-battleship/scripts/mon_group_xlsx.gd": "55ac7c2d4e313fed6409a33ee2dfe79ff46996bb",
+    "space-battleship/tools/analyzer_required_data.json": "8019c9dfb2c55c2515b17c65546f4dd5e936550e",
+    "space-battleship/tools/build_result_analyzer.py": "1993bacbf14923dc524a3c18695034a42c5d83fd"
+  }
+}

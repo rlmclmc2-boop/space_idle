@@ -1,0 +1,29 @@
+{
+  "runtime_sha": "670a158be8a85716f5caaa8d62b01513383b5d31",
+  "runtime_tree": "8197d2792c543a2d2de58babc52a2d1de40032ef",
+  "base_main_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "original_scripts": 27,
+  "direct_missing_from_original": 23,
+  "direct_missing_matches_architecture_audit": true,
+  "transitive_closure_scripts": 66,
+  "listed_data_json": 17,
+  "listed_assets": 1,
+  "listed_bundled_workbooks": 2,
+  "external_workbook": "source_mon: config_excel/mon.xlsx; absolute source path stored in package marker, intentionally outside package",
+  "packaged_script_missing": [],
+  "packaged_data_missing": [],
+  "source_mon_inside_package": false,
+  "import_exit": 0,
+  "entry_exit": 0,
+  "minimal_analysis_exit": 0,
+  "minimal_analysis": "tests=1 candidates=1",
+  "log_non_certificate_errors": 0,
+  "root_certificate_store_error": "environment only; seen once in each Godot log",
+  "log_sha256": {
+    "import.log": "4df97c0fdfea7a629812493e90858c60892852edc5641432087ce4852bb418d1",
+    "entry.log": "f0509d7aead71e12324459f8661449e7d16b8b5b18034707caa269a14ecbc543",
+    "analysis.log": "625e1e14f0393ae5a439dc09b3b9a1f12425b163563a0d91fff41e5f49d17899"
+  },
+  "smoke_sha256": "c876d910688284b077b87045aeaa6281b8bd47a9840e54c01286cf3e9d8fa754"
+}
