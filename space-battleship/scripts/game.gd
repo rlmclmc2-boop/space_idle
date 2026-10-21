@@ -1274,6 +1274,14 @@ func reactor_affordable(cost: Variant,budget: Variant) -> bool:
 func reactor_exact_budget(budget: Variant) -> bool:
 	return (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
 
+func reactor_debit_budget(budget: Variant,cost: Variant) -> Variant:
+	var exact_cost=ReactorInt.from_growth(cost)
+	var exact_budget=ReactorInt.from_growth(budget)
+	if exact_cost!=null and exact_budget==null and budget is Dictionary and budget.has("m"):
+		exact_budget=ReactorInt.nearby_legacy_integer(budget,exact_cost)
+	if exact_budget!=null and exact_cost!=null:return ReactorInt.subtract(exact_budget,exact_cost)
+	return N.subtract(budget,cost)
+
 func reactor_max_upgrades() -> int:
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
 	var level := int(profile.reactorLevel)
@@ -1284,8 +1292,7 @@ func reactor_max_upgrades() -> int:
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
 		var exact_cost=ReactorInt.from_growth(cost)
 		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(cost,budget):break
-		var exact_budget=ReactorInt.from_growth(budget)
-		budget = N.subtract(budget,cost) if cost is float and not reactor_exact_budget(budget) else ReactorInt.subtract(exact_budget,exact_cost) if exact_budget!=null else N.subtract(budget,cost)
+		budget = N.subtract(budget,cost) if cost is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,cost)
 		level += 1
 		count += 1
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
@@ -1311,8 +1318,7 @@ func upgrade_reactor(amount: int) -> bool:
 		if not reactor_affordable(total,budget):return false
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
 	if not native_before_configuration_change():return false
-	var exact_budget=ReactorInt.from_growth(budget)
-	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else ReactorInt.subtract(exact_budget,ReactorInt.from_growth(total)) if exact_budget!=null else N.subtract(budget,total)
+	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,total)
 	profile.reactorLevel += amount
 	invalidate_stat_cache()
 	resources_changed([str(int(db.config.reactorUraniumId))])

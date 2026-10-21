@@ -148,6 +148,25 @@ static func compare_legacy_growth_to_integer(value: Dictionary,integer: Variant)
 	if compared!=0:return compared
 	return 0 if coefficient.substr(int(integral_length)).lstrip("0")=="" else 1
 
+static func nearby_legacy_integer(value: Dictionary,integer: Variant) -> Variant:
+	# Only materialize a legacy wallet when its decimal size is close to an
+	# already materialized quote. A distant exponent stays in GrowthNumber.
+	var part:=decimal_factor(float(value.m))
+	var coefficient:=digits(part[0])
+	var shift: float=float(value.e)-float(part[1])
+	var length: float=float(coefficient.length())+shift
+	var quote_length:=digits(integer).length()
+	# A difference larger than the coefficient's own decimal precision cannot
+	# cause a near-cost cancellation. This also bounds materialization by the
+	# size of the quote plus the already present coefficient.
+	if not is_finite(length) or length<float(quote_length) or length>float(quote_length+coefficient.length()):return null
+	if shift>=0.0:
+		return make(coefficient+"0".repeat(int(shift)))
+	if length<=0.0:return null
+	var cut:=int(length)
+	if coefficient.substr(cut).lstrip("0")!="":return null
+	return make(coefficient.substr(0,cut))
+
 static func to_float(value: Variant) -> float:
 	var s := digits(value)
 	return float(s) if s.length()<300 else float(s.substr(0,17))*pow(10.0,s.length()-17)
