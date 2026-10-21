@@ -1,5 +1,7 @@
 # 唯一实施入口：串行修复与架构收敛
 
+**S12/P1 audit-only MAX-APPROX-v1 prototype:** The [bounded approximate MAX result](stages/S12/P1_APPROX_MAX_PROTOTYPE.md) records fixed-configuration executable quotes, exact material accounting, same-quote debit, cancellation and stale-owner controls. It does not pass P1, authorize product connection, replace the failed public-ledger timing, or change main.
+
 **S12/P1 limited dual-review record (evidence a26a4803a977dba1da1efc2ca010bfe461503afb):** dot and the original astra agree that the two specified audit-prototype correctness blockers are fixed: signed-int64 endpoint sentinel/carry handling, and host-bound debit rejection before commit after profile replacement or mutation. This is not a P1, complete large-number-domain, performance, game-integration, or main-merge PASS. The 10,000-block 4 ms public-operation failure remains. Extreme-MAX approximate fees and old-rule refund differences are now user-authorized under the linked MAX-APPROX-v1 amendment; this is policy approval, not implementation approval. Work stays in P1 audit scope.
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
