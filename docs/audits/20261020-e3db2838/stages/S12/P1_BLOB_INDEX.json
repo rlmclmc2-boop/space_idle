@@ -1,12 +1,12 @@
 {
-  "subject_commit": "0c4aa26df569dce330e1fd27209e7a31522027ff",
+  "subject_commit": "4e8ca711603570d01f97010d6a5dd2860a2d4e0f",
   "semantics": "SHA-256 of the bytes in Git blobs; no ignored runtime/cache files",
-  "file_count": 700,
+  "file_count": 702,
   "files": {
     "docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md": {
-      "git_blob": "73b67280c4b6e5bc8ddd9edcb58b369b8cc15a82",
-      "sha256_git_bytes": "124c320c0249abb697ae972589f76fc4498745ae8c186586830da7274a653f1b",
-      "bytes": 73475
+      "git_blob": "cab1bacdca3787d00be3259f3d5137b963490174",
+      "sha256_git_bytes": "c84dedc350c36f723d00521be5a4cedb987007e2fc6a8f30416d1e743c527edb",
+      "bytes": 74070
     },
     "docs/audits/20261020-e3db2838/stages/S12/P0_CONTRACT_P1_GATE.md": {
       "git_blob": "46c74352d3658c87ae83fdc69f0f3186ad0e79ee",
@@ -42,6 +42,11 @@
       "git_blob": "bddbbb5c54c7b32394867392d69a56b440b3717f",
       "sha256_git_bytes": "0af4960393fc216416e8625ccacb4ae15cc486c1c92d327ea1fd6b7b50e3bb75",
       "bytes": 2589
+    },
+    "docs/audits/20261020-e3db2838/stages/S12/P1_EXIT_DUAL_REVIEW.md": {
+      "git_blob": "9319d917602618d22078f03796fd2114cc8a8aeb",
+      "sha256_git_bytes": "63e84fed0dc10ec64df469ead2ef0f34d5c5afad61f693b26530c90a8e45da9b",
+      "bytes": 1640
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_EXIT_REPAIR.md": {
       "git_blob": "e1218d9d9f1c0b7de25f9ce0086fa0e27969453b",
@@ -103,6 +108,11 @@
       "sha256_git_bytes": "b6eca022eaab926924d056521f6094bf19ec76f8488e4a46a011f4b089cc8cb7",
       "bytes": 23257
     },
+    "docs/audits/20261020-e3db2838/stages/S12/README.md": {
+      "git_blob": "9ef0e4a37a83a1bbb22bc804fc6859853d2c5801",
+      "sha256_git_bytes": "473a2382dfc3ca602b641dc418c7975921052eb8c130d3028b2cd5181ce74d30",
+      "bytes": 6482
+    },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/actual_equipment_main31e793.json": {
       "git_blob": "0aa21c4f7d103026e82c4a4663026d52f95d2def",
       "sha256_git_bytes": "55f3236b75a1393addfc00773d7124194860269c98a81497ad0bb2576a9eb06e",
@@ -134,9 +144,9 @@
       "bytes": 3027
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/build_blob_index.py": {
-      "git_blob": "a528de6d8e0b63590881781933c902a7bc8ee545",
-      "sha256_git_bytes": "ad1b23aa72732e5040304433976641d3c6be339e37740b2be7a612b7375400fb",
-      "bytes": 2877
+      "git_blob": "167f218e7a6a71b7d512c228d48fbf8dad269861",
+      "sha256_git_bytes": "3ddaff0df416def5eb17b8c11921a4efd99d0373a7e25398c4a2154e170fa990",
+      "bytes": 3014
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/edge_payload_probe.gd": {
       "git_blob": "2952d97ffff398e8aae9ead35860e0efed1bbdc9",
