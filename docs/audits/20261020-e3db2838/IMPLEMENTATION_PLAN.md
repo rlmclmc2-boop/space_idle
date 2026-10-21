@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共26阶段，S00—S09 共11阶段已按各自范围双审并关闭；S10—S24 尚未启动。S09 仅工程契约，运行及集成 N/A；后续数值实现仍须独立双审。
+**Planning and status record, not a claim of overall product completion.** Current stage: S00-S09 are `closed`; S10 is the only open stage, `review_pending` on runtime `7e37f2a12d63797af5b269a58d713690d2c73ce5`. Both reviewers must PASS the same final runtime and evidence objects before main integration or closure. S11-S24 remain `not_started`.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S09 共11阶段为 `closed`；S10—S24 为 `not_started`。** main 保持 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`。S09 修订契约 `0442a1b627a07fa1af0d0671cdeb97dd070c5efc` 获父级及原astra同对象双 PASS，运行及集成 N/A，实施线程于2026-10-21 05:30 UTC确认归档。当前无打开阶段，可启动 S10。S06-S08临时引用清理待专项授权；完整Windows发布与较大native专项旧接口问题仍待后续验收。
+**Current stage record:** S00-S09 `closed`; S10 `review_pending` in implementation thread `01a15cf1-5d62-701d-a9aa-91182acf9012`; S11-S24 `not_started`. Main remains `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`, and the S09 contract is `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Prior S10 review objects failed; the current runtime `7e37f2a12d63797af5b269a58d713690d2c73ce5` and this audit revision await same-object full dual PASS. S06-S08 temporary reference cleanup remains separately pending; later Windows release and native acceptance remain outside S10 closure.
 
 ### S00 关闭记录
 
