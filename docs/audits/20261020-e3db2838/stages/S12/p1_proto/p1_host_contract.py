@@ -148,6 +148,9 @@ class AuditHost:
         """Finite R-HALF duration model; float expense follows baseline order."""
         if not self._profile or not math.isfinite(dt) or dt <= 0 or type(rate) is not int or rate <= 0:
             return {"status": "invalid_research"}
+        # ai_tech_tree.advance never enters its loop for this duration.
+        if dt <= 1e-10:
+            return {"status": "no_change"}
         proposed = copy.deepcopy(self._profile)
         try:
             balance = CurrencyValue.decode(proposed["resources"]["1"])
@@ -157,8 +160,12 @@ class AuditHost:
                 # Only the small exhausted-balance branch needs a float.
                 paid_step = min(dt, float(balance.small_decimal()) / float(rate))
             if paid_step <= 1e-10:
-                # Baseline clears a sub-step depleted input and proceeds with
-                # basic, unpaid research for the remaining requested time.
+                # The baseline clears only a balance strictly below this
+                # threshold. Equality spins without progress or dirty write.
+                threshold = CurrencyValue.from_float(float(rate) * 1e-10)
+                if balance.compare(threshold) >= 0:
+                    return {"status": "no_change"}
+                # A smaller depleted input clears, then basic research runs.
                 paid_step = 0.0
             expense = CurrencyValue.from_float(float(rate) * paid_step)
             next_balance = balance.subtract(expense) if paid_step else CurrencyValue.from_integer(0)

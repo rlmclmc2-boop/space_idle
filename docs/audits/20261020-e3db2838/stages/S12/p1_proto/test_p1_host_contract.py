@@ -93,6 +93,20 @@ class HostProtocol(unittest.TestCase):
         micro_host = AuditHost(micro)
         self.assertEqual(micro_host.research_step(1.0, 1), {"status": "advanced", "step": 1.0, "paid_step": 0.0})
         self.assertEqual(wallet(micro_host).small_decimal(), 0)
+        short = AuditHost(fixture(wallet=100))
+        short_before = short.snapshot()
+        short_generation = short._generation
+        self.assertEqual(short.research_step(1e-12, 1), {"status": "no_change"})
+        self.assertEqual(short.snapshot(), short_before)
+        self.assertEqual(short._generation, short_generation)
+        equal = fixture()
+        equal["resources"]["1"] = 1e-10
+        equal_host = AuditHost(equal)
+        equal_before = equal_host.snapshot()
+        equal_generation = equal_host._generation
+        self.assertEqual(equal_host.research_step(1.0, 1), {"status": "no_change"})
+        self.assertEqual(equal_host.snapshot(), equal_before)
+        self.assertEqual(equal_host._generation, equal_generation)
         source = fixture(wallet=100)
         source["drops"].append({"id": "1", "amount": 5, "production_base": 3, "hightech": False})
         host = AuditHost(source)
