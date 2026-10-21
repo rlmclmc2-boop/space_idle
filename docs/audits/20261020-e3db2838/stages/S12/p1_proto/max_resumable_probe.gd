@@ -1,7 +1,8 @@
 extends "res://max_stream_probe.gd"
 
-# Audit-only schedulable query experiment. Each deferred invocation advances
-# bounded setup or scan state. The live parsed profile is never debited.
+# Historical audit-only deferred-queue query experiment. Its self-deferred
+# calls can drain within the same idle cycle: callback count is NOT evidence
+# of frame yielding or main-thread responsiveness. The live profile is read-only.
 # This is not a full public API: huge-wallet decode and arbitrary-precision
 # multiplication still need a worst-case sub-4-ms proof.
 const Fallback = preload("res://fallback_job.gd")
@@ -81,6 +82,13 @@ func _cancel_now() -> bool:
 	return requested
 
 func _tick() -> void:
+	_tick_step()
+	if result_state == "pending":
+		call_deferred("_tick")
+	else:
+		_finish()
+
+func _tick_step() -> void:
 	_before_tick()
 	if inject_cancel_at_tick == tick_count:
 		request_cancel()
@@ -110,10 +118,6 @@ func _tick() -> void:
 	if elapsed > 4000:
 		over_budget_ticks += 1
 	tick_count += 1
-	if result_state == "pending":
-		call_deferred("_tick")
-	else:
-		_finish()
 
 func _before_tick() -> void:
 	pass

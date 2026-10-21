@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"add_typed_us":6999,"blocks":10000,"compare_typed_us":3143,"correct":true,"encode_json_us":13853,"kind":"exploratory_full_public_ledger_cost","loaded_two_json_values_us":34111,"public_add_path_us":54963,"public_compare_path_us":37254,"source_bytes":108908,"subtract_typed_us":5952,"typed_reuse_add_us":6999,"warning":"sequential components; public path includes two parsed and validated operands"}
