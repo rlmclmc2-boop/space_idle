@@ -2,9 +2,9 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S05 共 7 阶段已完成双审、适用的 main 集成与本地验收并关闭；S06 已双审通过待集成；S07—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。顺序 S00→S01→S02→S03→S04→S04a→S05→…→S24，共 26 阶段。S00—S05 共 7 阶段已完成双审、适用的 main 集成与本地验收并关闭；S06 已集成并完成本地入口验收，待集成复核与关闭；S07—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
-整体报告截止为 **北京时间 2026-10-21 11:00（UTC 2026-10-21 03:00）**。截止交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。截止不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
+原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
 ## 1. 角色、串行纪律与硬门槛
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S05 共 7 阶段均为 `closed`；S06 为 `approved`，S07—S24 均为 `not_started`。** main、D:\放置 main 及受管镜像为 `5a4d52957f68b22ef47e0ad91cbe787292872d83`。S05 运行/冻结证据及集成收据均获父级与原 astra 同对象双 PASS，详见 stages/S05/INTEGRATION_REVIEW.md。用户明确批准后仅删除无独有成果的 S05 临时分支。S05 实施线程已于 2026-10-21 03:05 UTC 确认归档；唯一打开阶段 S06 已获父级与原 astra 对同一运行 SHA 和最终证据 SHA 双 PASS，等待父级集成。完整 Windows 发布导出仍未通过，保留 S22。11 点整体报告已于北京时间 10:56 交付，报告时 S05 尚在集成验收，本关闭记录为后续进展。
+**S00—S05 共 7 阶段均为 `closed`；S06 为 `integrated`，S07—S24 均为 `not_started`。** main、D:\放置 main 及受管镜像为 `ba3e9ce4b12fb250850b176478dcafd48e696840`。S05 运行/冻结证据及集成收据均获父级与原 astra 同对象双 PASS，详见 stages/S05/INTEGRATION_REVIEW.md。用户明确批准后仅删除无独有成果的 S05 临时分支。S05 实施线程已于 2026-10-21 03:05 UTC 确认归档；唯一打开阶段 S06 已获父级与原 astra 对同一运行 SHA 和最终证据 SHA 双 PASS，main 已快进，D:\放置 实际入口隔离用户目录首启和重开均 exit 0；待集成复核与关闭。完整 Windows 发布导出仍未通过，保留 S22。11 点整体报告已于北京时间 10:56 交付，报告时 S05 尚在集成验收，本关闭记录为后续进展。
 
 ### S00 关闭记录
 
@@ -492,11 +492,11 @@ branch_cleanup: {candidate: s05/player-release-deps, compare_to_main: identical,
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T03:05:38Z", next_stage_allowed: true}
 ```
 
-### S06 双审通过待集成
+### S06 已集成待复核
 
 ```yaml
 stage: S06
-status: approved
+status: integrated
 implementation_thread_id: 01a15c6d-d351-72c1-916e-89c123183008
 model: sol
 base_main_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83
@@ -520,7 +520,10 @@ verification: "Windows Godot 4.7.2，空目录构造及导入 exit 0；实际入
 external_workbook_contract: "mon.xlsx 继续由既有 source_mon marker/邻接路径读取，不打入分析器包；无便携或邻接约定变更"
 parent_review: {verdict: PASS, reviewed_runtime_sha: ba3e9ce4b12fb250850b176478dcafd48e696840, reviewed_evidence_sha: b7fb6744f421d5450db141b928345321e01660b4, record_path: stages/S06/FINAL_REVIEW.md, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: ba3e9ce4b12fb250850b176478dcafd48e696840, reviewed_evidence_sha: b7fb6744f421d5450db141b928345321e01660b4, turn: 01a15c86-6fe0-71a2-9ba2-8af8c23dbdf3, record_path: stages/S06/FINAL_REVIEW.md, unresolved: []}
-integration: {state: pending, main_sha: 5a4d52957f68b22ef47e0ad91cbe787292872d83, approved_sha_matches: false, local_entry_result: not_run}
+integration: {state: integrated, main_sha: ba3e9ce4b12fb250850b176478dcafd48e696840, approved_sha_matches: true, local_entry_result: "D:\\放置\\玩游戏.cmd first/reopen 120 frames each exit 0; isolated verification userdata; managed mirror same SHA; 0 script/parse/ERROR lines"}
+integration_evidence_snapshot_sha: 41149d9306388f82a12284f01d002ae726bcb1d7
+integration_record: stages/S06/LOCAL_INTEGRATION.json
+integration_review: {parent_verdict: PENDING, astra_verdict: PENDING, reviewed_evidence_sha: null, unresolved: []}
 closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
 ```
 

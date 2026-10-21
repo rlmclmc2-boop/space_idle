@@ -1,0 +1,14 @@
+{
+  "integration_snapshot_sha": "41149d9306388f82a12284f01d002ae726bcb1d7",
+  "files": {
+    "docs/audits/20261020-e3db2838/stages/S06/LOCAL_INTEGRATION.json": "b153ccc250a3e0c5b43262f0d2ed25705b5e1feb",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/first-entry.log": "a9753251becd19a0f75e7a962ca6223eea1313c5",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/first-player-game.log": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/first-player-import.log": "cbb455017f3dd1b4548b6fe33f109f58b0a8f24e",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/first-player-launch.json": "a0150c979c5b58023479f2eef62bc987b16d3c28",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/reopen-entry.log": "a9753251becd19a0f75e7a962ca6223eea1313c5",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/reopen-player-game.log": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/reopen-player-import.log": "83b99cccd07d9874c87534d89ac192c7ac4316be",
+    "docs/audits/20261020-e3db2838/stages/S06/integration-logs/reopen-player-launch.json": "a0150c979c5b58023479f2eef62bc987b16d3c28"
+  }
+}
