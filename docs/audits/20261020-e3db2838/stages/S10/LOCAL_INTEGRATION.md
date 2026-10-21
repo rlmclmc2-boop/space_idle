@@ -8,4 +8,4 @@ The entry placed its verification save under `D:\放置\test\work\player-window-
 
 Raw first and reopen console logs, the second import/game logs, entry receipt and remote main readback are in `integration-logs/`; `integration-result.json` contains machine-readable assertions. The first run’s import/game files were overwritten by the entry during the second run, so its separately retained console log and exit code are the first-run record. The local exact-save probe and its raw log are in `integration-preflight/`.
 
-This is the implementation thread’s integration acceptance evidence. S10 stays open for the parent and original astra to review this integration record; branches remain in place and S11 has not started.
+This integration acceptance evidence at `38fc6ccc05ebee8e8d00f8ba76f1826fa3a38ca8` received same-object PASS from parent dot and original astra; see `FINAL_REVIEW.md`. Parent approved closure, while thread archival and the final closed-stage record remain pending. Branches remain in place and S11 has not started.

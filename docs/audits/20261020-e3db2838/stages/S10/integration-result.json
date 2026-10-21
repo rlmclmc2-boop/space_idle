@@ -1,6 +1,6 @@
 {
   "stage": "S10",
-  "status": "implementation_integration_acceptance_pass_review_pending",
+  "status": "integration_dual_pass_closure_approved_archive_pending",
   "reviewed_runtime_commit": "31e79337741bf9860d69fff21dae6be994dacd00",
   "reviewed_evidence_commit": "813c43126db07dc6d3c3b19917359b4f29e2fcf5",
   "remote_main_commit": "31e79337741bf9860d69fff21dae6be994dacd00",
@@ -33,5 +33,11 @@
     "integration-logs/main-readback.log"
   ],
   "stage_closed": false,
-  "next_stage_started": false
+  "next_stage_started": false,
+  "reviewed_integration_evidence_commit": "38fc6ccc05ebee8e8d00f8ba76f1826fa3a38ca8",
+  "parent_integration_verdict": "PASS",
+  "original_astra_integration_verdict": "PASS",
+  "actual_entry_reopen_claim": "high integer fields remained unchanged in verification save file",
+  "in_memory_debit_save_reopen_evidence": "integration-preflight/integration_exact_save_probe.gd and integration_exact_save.log",
+  "full_interactive_acceptance_claimed": false
 }
