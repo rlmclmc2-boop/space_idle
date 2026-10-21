@@ -4,6 +4,8 @@
 
 The [cold-process source and input freeze](stages/S12/P1_EXIT_COLD_FREEZE.json) pins the exact-256, middle compact wallet, far compact wallet and cancellation classes before ten-process measurements. Measurement outcomes must remain separate from this freeze.
 
+**P1 exit status: FAIL on this frozen run.** The [40-process result](stages/S12/P1_EXIT_COLD_RESULT.md) records two far-exponent frame-work violations (5.610 and 16.700 ms against 4 ms) and the remaining public host/old-wallet-to-Godot-MAX interface gap. Keep the finite protocol and fixed-configuration dual PASS as limited assets; do not infer P1 closure or product integration.
+
 **S12/P1 audit-only MAX-APPROX-v1 prototype:** The [bounded approximate MAX result](stages/S12/P1_APPROX_MAX_PROTOTYPE.md) records fixed-configuration executable quotes, exact material accounting, same-quote debit, cancellation and stale-owner controls. It does not pass P1, authorize product connection, replace the failed public-ledger timing, or change main.
 
 **S12/P1 actual-main family follow-up:** The [parameterized equipment result](stages/S12/P1_PARAM_MAIN_FAMILY.md) reads six player cost rows from pinned main, uses the actual start level, and explicitly rejects configs outside this fixed support family before quoting. It is audit-only; ordinary x1/x10 and product wiring are unchanged.

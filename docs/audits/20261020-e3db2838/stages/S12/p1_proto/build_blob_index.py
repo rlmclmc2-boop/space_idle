@@ -36,6 +36,7 @@ def main() -> None:
         "docs/audits/20261020-e3db2838/stages/S12/P1_EXIT_REVISION.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_HOST_PROTOCOL.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_EXIT_COLD_FREEZE.json",
+        "docs/audits/20261020-e3db2838/stages/S12/P1_EXIT_COLD_RESULT.md",
     })
     files = {}
     for path in sorted(paths):

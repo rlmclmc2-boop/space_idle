@@ -1,0 +1,1 @@
+{"failures": [{"class": "far", "frame_work_us": 5610, "run": 3}, {"class": "far", "frame_work_us": 16700, "run": 8}], "kind": "independent_p1_exit_cold_readback", "maxima": {"cancel_stop_us": 31349, "frame_work_us": 16700, "heartbeat_gap_us": 17155}, "processes": 40, "verdict": "FAIL"}
