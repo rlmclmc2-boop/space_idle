@@ -311,8 +311,10 @@ func prepare_numeric_batch(game,mode:String)->Dictionary:
 			if levels<=0:continue
 			var costs:Dictionary=game.slot_upgrade_cost(category,index,levels)
 			if costs.is_empty():continue
-			if not costs.keys().all(func(id):return (id!=game.db.evolution_material_id() or game.hyperspace.is_unlocked(game)) and is_finite(float(costs[id])) and game.N.compare(wallet.get(id,0),costs[id])>=0):continue
-			for id in costs:wallet[id]=game.N.subtract(wallet.get(id,0),costs[id])
+			if costs.has(game.db.evolution_material_id()) and not game.hyperspace.is_unlocked(game):continue
+			var debits:Dictionary=game.equipment_debits(costs,wallet)
+			if debits.is_empty():continue
+			for id in debits:wallet[id]=debits[id]
 			var entry:Dictionary=game.slot_entry(category,index)
 			var projected=entry.duplicate();projected.level=int(entry.level)+levels
 			planned[game.slot_id(category,index)]={"levels":levels,"before":int(entry.level)}

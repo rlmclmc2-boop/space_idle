@@ -16,6 +16,7 @@ const SAVE_PATH := "user://progress.json"
 const SAVE_VERSION := 5
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
+const MAX_EXACT_WALLET_DIGITS := 8000000 # Within the portable save's existing 16 MiB bound.
 const N = preload("res://scripts/growth_number.gd")
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
@@ -750,10 +751,10 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 		for key in saved.reactorAllocation:saved.reactorAllocation[key]=ReactorInt.encode(saved.reactorAllocation[key])
 	if saved.get("resources") is Dictionary:
 		saved.resources=saved.resources.duplicate(true)
-		var uranium_id := str(int(db.config.reactorUraniumId))
-		var uranium = saved.resources.get(uranium_id)
-		if uranium is int and uranium>9007199254740991:
-			saved.resources[uranium_id]=ReactorInt.encode(uranium)
+		for id in saved.resources:
+			var balance=saved.resources[id]
+			if balance is int and balance>9007199254740991:
+				saved.resources[id]=ReactorInt.encode(balance)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -931,8 +932,9 @@ func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictiona
 		return total
 	for level in range(current + 1, current + levels + 1):
 		var cost := upgrade_cost_for_level(key, level)
+		if cost.is_empty():return {}
 		for id in cost:
-			total[id] = float(total.get(id, 0)) + float(cost[id])
+			total[id] = ReactorInt.add(total.get(id, 0), cost[id])
 	return total
 
 func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
@@ -940,7 +942,7 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if entry.is_empty() or levels<1:
 		return false
 	var costs := slot_upgrade_cost(category, index, levels)
-	return can_afford_upgrade_costs(costs)
+	return can_afford_upgrade_costs(costs) and not equipment_debits(costs).is_empty()
 
 func upgrade_currency(id: String) -> Variant:
 	return profile.hyperspace.materials.get(id,0) if id==db.evolution_material_id() else profile.resources.get(id,0)
@@ -948,11 +950,36 @@ func upgrade_currency(id: String) -> Variant:
 func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	if costs.is_empty():
 		return false
+	var wallet := {}
 	for id in costs:
 		if id==db.evolution_material_id() and not hyperspace.is_unlocked(self):return false
-		if not is_finite(float(costs[id])) or N.compare(upgrade_currency(id),costs[id])<0:
-			return false
-	return true
+		wallet[id]=upgrade_currency(id)
+	return EquipmentQuote.affordable(wallet,costs)
+
+func equipment_debit(balance: Variant,cost: Variant) -> Variant:
+	if not N.valid(balance) or not ReactorInt.valid(cost):return null
+	if balance is Dictionary and balance.has("m") and float(balance.e)>float(MAX_EXACT_WALLET_DIGITS):return null
+	var exact_balance=ReactorInt.from_growth(balance)
+	if exact_balance==null and balance is Dictionary and balance.has("m"):
+		exact_balance=ReactorInt.legacy_integer(balance,MAX_EXACT_WALLET_DIGITS)
+	if exact_balance!=null:
+		return ReactorInt.subtract(exact_balance,cost) if ReactorInt.compare(exact_balance,cost)>=0 else null
+	# Keep fractional historical balances in their existing numeric domain.
+	if balance is float or (balance is Dictionary and balance.has("m")):
+		var remainder=N.subtract(balance,cost)
+		return remainder if ReactorInt.compare(cost,0)==0 or N.compare(remainder,balance)<0 else null
+	return null
+
+func equipment_debits(costs: Dictionary,wallet: Dictionary={}) -> Dictionary:
+	if costs.is_empty():return {}
+	var result := {}
+	for id in costs:
+		var balance=upgrade_currency(id) if wallet.is_empty() else wallet.get(id,0)
+		if not EquipmentQuote.affordable({id:balance},{id:costs[id]}):return {}
+		var next=equipment_debit(balance,costs[id])
+		if next==null:return {}
+		result[id]=next
+	return result
 
 func resources_changed(ids: Array) -> void:
 	event.emit("resources_changed",{"ids":ids})
@@ -960,11 +987,22 @@ func resources_changed(ids: Array) -> void:
 func refund_equipment(key: String, level: int) -> void:
 	var refunded := {}
 	for target_level in range(2, level + 1):
-		for id in upgrade_cost_for_level(key, target_level):
-			var amount=upgrade_cost_for_level(key,target_level)[id]
-			if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.add(upgrade_currency(id),amount)
-			else:profile.resources[id]=N.add(upgrade_currency(id),amount)
-			refunded[id]=true
+		var quote:=upgrade_cost_for_level(key,target_level)
+		if quote.is_empty():return
+		for id in quote:refunded[id]=ReactorInt.add(refunded.get(id,0),quote[id])
+	var credited := {}
+	for id in refunded:
+		var balance=upgrade_currency(id)
+		if not N.valid(balance) or (balance is Dictionary and balance.has("m") and float(balance.e)>float(MAX_EXACT_WALLET_DIGITS)):return
+		var exact=ReactorInt.from_growth(balance)
+		if exact==null and balance is Dictionary and balance.has("m"):
+			exact=ReactorInt.legacy_integer(balance,MAX_EXACT_WALLET_DIGITS)
+		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id])
+		if not N.valid(next) or (ReactorInt.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):return
+		credited[id]=next
+	for id in credited:
+		if id==db.evolution_material_id():profile.hyperspace.materials[id]=credited[id]
+		else:profile.resources[id]=credited[id]
 	if not refunded.is_empty():
 		resources_changed(refunded.keys().filter(func(id):return id!=db.evolution_material_id()))
 		if refunded.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
@@ -2753,7 +2791,8 @@ func clear_level() -> void:
 func upgrade_cost_for_level(key: String, level: int) -> Dictionary:
 	if _upgrade_batch and _upgrade_costs.get(key,{}).has(level):
 		return _upgrade_costs[key][level]
-	var cost := db.equipment_cost(key,level)
+	var quote := db.equipment_quote(key,level)
+	var cost:Dictionary=quote.costs if quote.ok else {}
 	if _upgrade_batch:
 		if not _upgrade_costs.has(key):_upgrade_costs[key]={}
 		_upgrade_costs[key][level]=cost
@@ -2806,16 +2845,12 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 	var level := current + 1
 	while level <= db.max_equipment_level(key):
 		var costs := upgrade_cost_for_level(key, level)
-		var affordable := true
+		if costs.is_empty() or (costs.has(db.evolution_material_id()) and not hyperspace.is_unlocked(self)):break
+		var debits:=equipment_debits(costs,available)
+		if debits.is_empty():break
 		for id in costs:
-			if (id==db.evolution_material_id() and not hyperspace.is_unlocked(self)) or not is_finite(float(costs[id])) or N.compare(available.get(id,0),costs[id])<0:
-				affordable = false
-				break
-		if not affordable:
-			break
-		for id in costs:
-			available[id] = N.subtract(available.get(id,0),costs[id])
-			total[id]=float(total.get(id,0))+float(costs[id])
+			available[id] = debits[id]
+			total[id]=ReactorInt.add(total.get(id,0),costs[id])
 		amount += 1
 		level += 1
 	if budget.is_empty():
@@ -2834,11 +2869,13 @@ func upgrade(key: String, levels := 1) -> bool:
 	return upgrade_slot(category, index, levels)
 
 func upgrade_slot(category: String, index: int, levels := 1) -> bool:
-	if not can_upgrade_slot(category, index, levels):
-		return false
 	var entry = slot_entry(category, index)
+	if entry.is_empty() or levels<1:return false
 	var key = str(entry.key)
 	var costs = slot_upgrade_cost(category, index, levels)
+	if not can_afford_upgrade_costs(costs):return false
+	var debits:=equipment_debits(costs)
+	if debits.is_empty():return false
 	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
 	if batch_update:
 		var expected:Dictionary=native_upgrade_batch.planned.get(slot_id(category,index),{})
@@ -2850,9 +2887,9 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
 		if not native_updated and not native_before_configuration_change():return false
 	native_numeric_update=native_updated
-	for id in costs:
-		if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.subtract(upgrade_currency(id),costs[id])
-		else:profile.resources[id]=N.subtract(upgrade_currency(id),costs[id])
+	for id in debits:
+		if id==db.evolution_material_id():profile.hyperspace.materials[id]=debits[id]
+		else:profile.resources[id]=debits[id]
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
 	resources_changed(costs.keys().filter(func(id):return id!=db.evolution_material_id()))

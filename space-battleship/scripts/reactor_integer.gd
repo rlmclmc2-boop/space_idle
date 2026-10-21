@@ -1,6 +1,6 @@
 class_name ReactorInteger
 extends RefCounted
-## Exact, nonnegative decimal integers used only by the reactor and its receipts.
+## Exact, nonnegative decimal integers used by reactor and equipment transactions.
 ## Ordinary values remain Godot ints. The tagged form survives JSON unchanged.
 const MAX_INT := "9223372036854775807"
 
@@ -163,6 +163,19 @@ static func nearby_legacy_integer(value: Dictionary,integer: Variant) -> Variant
 	if shift>=0.0:
 		return make(coefficient+"0".repeat(int(shift)))
 	if length<=0.0:return null
+	var cut:=int(length)
+	if coefficient.substr(cut).lstrip("0")!="":return null
+	return make(coefficient.substr(0,cut))
+
+static func legacy_integer(value: Dictionary,max_digits: int) -> Variant:
+	# Materialize an integral historical {m,e} balance before an exact debit.
+	# A balance too large for the save transport is rejected by its caller.
+	var part:=decimal_factor(float(value.m))
+	var coefficient:=digits(part[0])
+	var shift:float=float(value.e)-float(part[1])
+	var length:float=float(coefficient.length())+shift
+	if not is_finite(length) or length<1.0 or length>float(max_digits):return null
+	if shift>=0.0:return make(coefficient+"0".repeat(int(shift)))
 	var cut:=int(length)
 	if coefficient.substr(cut).lstrip("0")!="":return null
 	return make(coefficient.substr(0,cut))

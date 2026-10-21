@@ -750,6 +750,9 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
+	var max_count:=host.game.max_upgrade_amount_slot(category,selected_slot) if not item.locked else 0
+	var max_cost:=host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,max_count)) if max_count>0 else ""
+	host.set_ui_value(detail.max,"tooltip_text",max_cost)
 	var description: String = ""
 	if not key.is_empty():
 		description=host.equipment_stat_text(entry,item.projection,next_projection)+"\n"

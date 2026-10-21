@@ -66,24 +66,16 @@ func ship(key: String) -> Dictionary:
 	return ships.get(key, {})
 
 func equipment_cost(key: String, level: int) -> Dictionary:
-	# Same cost projection as equip(), without copying/growing unrelated combat fields.
-	if level<1:return {}
+	var quote := equipment_quote(key, level)
+	return quote.costs if quote.ok else {}
+
+func equipment_quote(key: String, level: int) -> Dictionary:
+	# Quote only the level-one cost row; combat growth remains independent.
+	if level<1 or level>max_equipment_level(key):return {"ok":false,"error":"invalid equipment level"}
 	for row in equipment.get(key,[]):
 		if int(row.get("level",0))!=1:continue
-		var result := {}
-		for field in row:
-			if not str(field).begins_with("res_") or row[field]==null:continue
-			var suffix := str(field).trim_prefix("res_")
-			var amount = row.get("cost_"+suffix)
-			if amount==null:continue
-			var multiplier = row.get("cost_multi_"+suffix,row.get("costMulti_"+suffix))
-			if level>1 and suffix.is_valid_int() and multiplier!=null:
-				amount=equipment_growth(float(amount),float(multiplier),level)
-			result[str(int(row[field]))]=ceilf(float(amount))
-		if level>=int(data.equipment_evolution.interval) and level%int(data.equipment_evolution.interval)==0:
-			result[evolution_material_id()]=int(data.equipment_evolution.material_cost_per_tier)*int(level/int(data.equipment_evolution.interval))
-		return result
-	return {}
+		return EquipmentQuote.quote_row(row,level,data.equipment_evolution)
+	return {"ok":false,"error":"missing equipment cost row"}
 
 func equipment_growth(base: float, multiplier: float, level: int) -> float:
 	var value := base * pow(1.0 + multiplier, level - 1)
