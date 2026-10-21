@@ -191,7 +191,8 @@
     "s08_full_workbook_import_not_run_lxml_missing": true,
     "s08_dual_review_pending": true,
     "s08_main_not_integrated": true,
-    "s08_branch_not_deleted": true
+    "s08_branch_not_deleted": true,
+    "s08_both_cli_recovery_json_pass": true
   },
   "stages": 26,
   "active_stage": "S08",
@@ -212,7 +213,7 @@
   ],
   "runtime_final_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "runtime_tree": "dc633257c72cb8202b5f121455b36cba79443663",
-  "evidence_snapshot_sha": "005e960c7c93478deb738aa1544f26fd96ce0b21",
+  "evidence_snapshot_sha": "9600d8d7da9cffe958599df91bf35c21835213c6",
   "implementation_thread_id": "01a15cbc-2bea-7616-8273-5af69cf2d01c",
   "active_runtime_candidate_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "active_runtime_tree": "dc633257c72cb8202b5f121455b36cba79443663",
@@ -222,7 +223,7 @@
   "active_stage_closed": false,
   "closed_stages_main_integrated": true,
   "last_integrated_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
-  "active_frozen_evidence_sha": "005e960c7c93478deb738aa1544f26fd96ce0b21",
+  "active_frozen_evidence_sha": "9600d8d7da9cffe958599df91bf35c21835213c6",
   "active_integration_record": null,
   "active_integration_review_pending": true,
   "active_integration_reviewed_evidence_sha": null,
