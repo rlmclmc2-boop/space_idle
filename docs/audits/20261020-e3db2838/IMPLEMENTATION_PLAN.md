@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not a claim of overall product completion.** S00-S11 (including S04a) are closed. S11 audit-only prototype passed independent dot and original-astra review on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime N/A. S12 is in review: dot and original astra both rejected runtime `42cc37c6d3470ab2e195df9c302de617a7402fa6` / evidence `79bead0bd6be8124eb94067141ccfc07b02ef3be`, and the corrected runtime `68205410956f555e021eb955095769e7a3896df5` awaits a new same-object dual review with its complete audit evidence. S12/A07 remain open; S13-S24 remain not_started. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
+**Planning and status record, not product completion.** S00–S11 (including S04a) closed; S12 is `contract_review`, with old runtime implementation paused. P0 narrow-ledger contract is delivered for dot review; P1 audit-only prototype is `not_started` pending that review and handoff. Current authority: [S12 P0 contract and P1 gate](stages/S12/P0_CONTRACT_P1_GATE.md). Main remains `31e79337741bf9860d69fff21dae6be994dacd00`; S13–S24 remain not_started. No runtime candidate is approved.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -75,7 +75,7 @@
 | **S09 数值政策关口** | sol 仅调查/提出容量、分配、费用、批量、取整/显示/存档/native范围表与方案；不改产品；把已批准D01/D02落实为可检查的工程契约 | S08 closed | 策略文档含旧规则、边界样例、迁移兼容、拒绝/支持范围及已批准D01/D02的逐项映射；父级/astra审同一方案 SHA 后关闭。仅新发现且原规则无法推导的政策问题待决时暂停，不重复询问现有授权 | D01/D02已有明确答复；保护既有进度，不能借工程细化改公式/取整/上限 |
 | **S10 反应炉数值闭环（A04）** | 按 S09 容量→分配→剩余→倍率及展示/保存的最小闭环；不动装备成本 | S09 closed 且 D01 approved | 97/98级与倍数提前越界、足额/不足额、分配/重载、免费充能；扣费前验证，不出现容量0/NaN/静默截断；native支持/拒绝符合能力约定；旧档不丢分配 | 新发现取整/比例问题返回 S09 决策记录，不临时选策略 |
 | **S11 装备报价数值核心（A07上半）** | 按 D02 在审计侧实现单级/批量成本大数原型及比较测试，形成可正式接入的实现；本阶段不合main、不改购买命令和UI，避免未使用代码进入main | S10 closed 且 D02 approved | 普通范围费用及取整结果与旧规则一致，显示误差不得改变实际扣费；3873级、超float批量、几何求和/取整边界通过；原型与旧接口的映射明确；本阶段运行SHA为N/A，S12正式接入后重新双审 | D02；采用近似算法或改变逐级/总价取整需用户批准 |
-| **S12 报价到交易接入（A07下半）** | 购买、批量求和/扣费、报价缓存、显示及保存中相关消费者；不改伤害成长 | S11 closed | `{m:1,e:400}`等合成资源可按契约交易；不足额不改状态，成功恰好扣费；单次与批次按已批准取整一致；UI无INF，重载正确。至此才能关闭 A07整体 | 沿用 D02；若消费者过多先拆分本阶段，不边改边扩大 |
+| **S12 报价到交易接入（A07下半，拆为证明/接入单元）** | [P0 契约与 P1 门槛](stages/S12/P0_CONTRACT_P1_GATE.md) 为当前权威；窄账本，不扩炉/碎片/战斗数值域 | S11 closed；P0待dot审阅后原sol执行P1；后续逐单元双审 | 先证明价格、账本、科研小数及MAX协议/性能，再纵向接入全部消费者，最后交错与正式产物验收；多槽购买允许顺序部分成功，整批退款原子 | 当前仅契约交付；P1未开始；旧候选暂停、不合main |
 | **S13 状态投影契约（AR02）** | 给 durable/portable/suspended/native/simulation 建字段归属表和核查，不强迫共用一个schema；补已知AI字段的比较签名；不重写对象图序列化 | S12 closed | 每类边界明确保留/排除字段理由；新增字段缺归属能被检查；选定往返/alias/revision不变量覆盖；差异明确，不把清点当运行证明 | 不同边界的有意排除经父级/astra审；如涉及游戏状态损失转用户批准 |
 | **S14 配置命令协议试点（AR03）** | 用反应炉一个命令落地guard→结算→修改→revision/失效→脏标记→通知；不批量迁移全Game | S13 closed | S07/S10行为保持；拒绝不扣费、不发完成事件；成功一次失效/通知，旧配置待结算时间不受新配置污染；协议可复用且副作用清楚 | 执行顺序必须保持现有时间语义；改变收益需批准 |
 | **S15 船员命令接入** | 仅 crew assign/changed 接入 S14协议，保留crew效果计算和UI | S14 closed | 船员切换前后pending时间、缓存/native快照、save_dirty与事件验证；普通和拒绝路径一致，无重复结算 | 行为保持；新发现时序歧义先停当前阶段审定 |
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` is open. Its prior runtime/evidence pair `42cc37c6d3470ab2e195df9c302de617a7402fa6` / `79bead0bd6be8124eb94067141ccfc07b02ef3be` received dot FAIL and original-astra FAIL. The replacement runtime candidate is `68205410956f555e021eb955095769e7a3896df5`; current review entry is `stages/S12/CANDIDATE_6820541.md`. S12 status is `review`, awaiting independent same-object dual PASS and remaining open until then. A07 is not fixed; S13-S24 remain not_started. The user-authorized obsolete remote branches `s06/analyzer-deps`, `s07/reactor-cache`, `s08/config-recovery`, and `s10/reactor-numeric` were verified absent with `git ls-remote --heads origin`; main, audit, and S12 candidate branches remain.
+**Current stage record:** S00–S11 closed. S12/A07 remain open; current delivery is documentation-only P0 `contract_review`, P1 `not_started`. Original implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` remains paused until dot reviews this contract and issues the audit-only P1 task. Runtime `68205410956f555e021eb955095769e7a3896df5` / evidence `959fe957a992c7bf6e49b2e3a67eef59fd2b8cc5` was rejected. Latest `2a6119564e1cffc07bf0b833c3118b97faf6d728` is reuse reference only, without frozen evidence or PASS. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. [P0/P1 authority](stages/S12/P0_CONTRACT_P1_GATE.md); no runtime integration or next stage is authorized by this delivery.
 
 ### S00 关闭记录
 
@@ -736,20 +736,25 @@ integration: N/A
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T09:30:26Z", next_stage_allowed: true}
 ```
 
-### S12 open: equipment transaction integration
+### S12 current: P0 contract review; P1 not started
 
 ```yaml
 stage: S12
-status: awaiting_decision
+status: contract_review
+p0: awaiting_dot_review
+p1: not_started
 implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
+implementation_state: paused
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
-candidate_branch: impl/s12-transaction-integration
-runtime_candidate_sha: 1f7c160f194eabc745016001da53110b047ff5a1
-runtime_final_sha: PENDING
+runtime_final_sha: N/A
+reuse_reference_sha: 2a6119564e1cffc07bf0b833c3118b97faf6d728
+reuse_reference_approved: false
 evidence_branch: audit/code-review-e3db2838-20261020
-evidence_entry: stages/S12/README.md
-evidence_snapshot_sha: PENDING
-scope_decision: parent and original astra included direct new-encoding consumers in S12; compact old-wallet design awaits review
+evidence_entry: stages/S12/P0_CONTRACT_P1_GATE.md
+next_action: dot_reviews_contract_then_hands_audit_only_P1_to_original_sol
+```
+
+The entries below are historical candidate records, not current approval or execution instructions. This contract supersedes their scope proposals; it does not change their historical evidence or verdicts.
 
 **2026-10-21 S12 candidate update:** implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` pushed runtime `82492c5ed267044e66840ed3fd99e9aad707b814`. Final probes, logs, and the remaining independently distant income representation limit are in `stages/S12/CANDIDATE_82492c5.md`. S12 and A07 remain open pending a joint dot/original-astra decision and same-object dual PASS. Main is unchanged; S13-S24 are not started.
 

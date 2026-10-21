@@ -10,8 +10,8 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "285156323090dbb60795bf746f50bacf691d162f9ed5d672b513dc848b709716",
-  "PLAN_VALIDATION.json": "b2321848bca6f4be7fa488d23f982e803727df82250104fe4ee0131c3068b375",
+  "IMPLEMENTATION_PLAN.md": "46949467125a3a7c209f88fc358a723abb60499f5937a3b511505c29d9906d70",
+  "PLAN_VALIDATION.json": "1435ccdeed743a50905c0f4b8a420de67fec5e30601176cc916623700b8a5773",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S01/FINAL_REVIEW.md": "a884bfe287664aa0fb44c7048875817c27c7489507bda43cc257c41cc9a6651a",
@@ -277,7 +277,7 @@
   "stages/S12/probes/sparse_decimal_oracle.json": "5a609e2181ec81d6c2f79c8b3b437fdf985ec93239ee57dd14669a444b2423c6",
   "stages/S12/logs/sparse-core-audit.log": "97121377dace354976235b6cf1e950051f779f5096558c0ab64a2ee2b3c4411c",
   "stages/S12/OPEN_ISSUES.md": "f4ec6dff533b7dc7bcbccd8641d11a31884df72e4cf692df64eb52f205366a8c",
-  "stages/S12/README.md": "ce352dfcfeeb9833a96d9c39e7c9917db384cbde5f0fafa7ac345e227aba83f0",
+  "stages/S12/README.md": "05540be03ce6edce776513a2fbc37367a93f6435464bcb3e90c67e4977c424da",
   "stages/S12/SPARSE_RUNTIME_EVIDENCE.md": "9aa6ef3e7ccf224592861d0f66f9928c2b7324eb4ebf5c3518acaa8e17ce6202",
   "stages/S12/probes/audit_s12_transactions.gd": "6bcb0f29afd25d2216efc227de644048603194b2789c813093d955f13c032006",
   "stages/S12/probes/audit_s12_native.gd": "8918a25c5a2b457cfcc66f098003cc49dd6e5096e63daf966f2fcde80da2e012",
@@ -303,5 +303,7 @@
   "stages/S12/logs/windows-editor-6820541.log": "5162e73f4632a5a2236390ea9aa354e7d06545b8eef3e5235ee605884b5b7275",
   "stages/S12/logs/windows-main-6820541.log": "41e81e30e449d987380f26b388c8d514f46e912a1446fb4955d17dc6ec09a6fa",
   "stages/S12/probes/audit_s12_quote_bounds.gd": "7ed962143dcb90ac1c19ae4fbc1665c2e742c2050bccb80b13685da470833881",
-  "stages/S12/probes/audit_s12_review_failures.gd": "5b4fa1054f296f99d04364d36d38deb15083c6f77c017482923cbb18f7b27901"
+  "stages/S12/probes/audit_s12_review_failures.gd": "5b4fa1054f296f99d04364d36d38deb15083c6f77c017482923cbb18f7b27901",
+  "stages/S12/P0_CONTRACT_P1_GATE.md": "29563b76839f9ede039b86c6525a91a16048b541bd7994bacbd362d0205c6f03",
+  "../../../space-battleship/docs/knowledge/archive/s12-p0-review.md": "bbdd53f31d1fbd0427cfffdc6626e023ba37260e3710f27d9bb0818ae6e859e5"
 }

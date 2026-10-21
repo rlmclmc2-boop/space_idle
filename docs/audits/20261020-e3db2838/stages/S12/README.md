@@ -1,6 +1,8 @@
 # S12 装备报价接入：当前候选与待决范围
 
-Status: review (same-object dual PASS pending). Main 31e79337741bf9860d69fff21dae6be994dacd00 is unchanged. Runtime candidate 68205410956f555e021eb955095769e7a3896df5 on impl/s12-transaction-integration; current full evidence is CANDIDATE_6820541.md. S12/A07 remain open. Implementation thread 01a15dcd-a9fa-76f2-a28f-312cf153a002.
+Status: contract_review; old runtime implementation paused. Current authority: [P0 contract and P1 gate](P0_CONTRACT_P1_GATE.md). P1 is not_started pending dot review/handoff. Main remains 31e79337741bf9860d69fff21dae6be994dacd00. The 6820541/959fe957 pair was rejected; latest 2a611956 is an unapproved reuse reference. S12/A07 remain open.
+
+The implementation descriptions below are historical candidate notes, not the current scope or acceptance claim.
 
 ## 已接入的玩家路径
 
