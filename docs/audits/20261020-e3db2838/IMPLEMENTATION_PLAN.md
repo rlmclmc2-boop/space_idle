@@ -1,5 +1,7 @@
 # 唯一实施入口：串行修复与架构收敛
 
+**S12/P1 second frozen audit gate (review pending):** [source/repair record](stages/S12/P1_EXIT_REPAIR.md), [freeze 2](stages/S12/P1_EXIT_COLD_FREEZE_2.json) and [40-process result](stages/S12/P1_EXIT_COLD_RESULT_2.md) record 40/40 finite measurement gates passing on the repaired audit prototype, with independent raw-stream readback. The first frozen 03/08 frame-work FAIL remains historical evidence. This is not a dual-review P1 PASS or permission to connect production, merge main or start P2.
+
 **S12/P1 finite exit authority:** [P1_EXIT_REVISION.md](stages/S12/P1_EXIT_REVISION.md) sets the current audit-only interface, protocol and measured scheduling gates. Historical full-public-ledger/all-tier timing failures remain evidence, but are no longer P1 prerequisites without a measured hot-path frequency. P1 is still open; P2 receives actual UI/native/save integration and real workload measurement.
 
 The [cold-process source and input freeze](stages/S12/P1_EXIT_COLD_FREEZE.json) pins the exact-256, middle compact wallet, far compact wallet and cancellation classes before ten-process measurements. Measurement outcomes must remain separate from this freeze.
