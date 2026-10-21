@@ -1,5 +1,7 @@
 # S12 P0：窄账本契约与 P1 审计侧证明门槛
 
+> 当前修订：[极端 MAX 数量估算政策](P0_P1_EXTREME_MAX_AMENDMENT.md) 优先于本文极端 MAX 精确数量/累计前置要求；旧失败不改判，费用近似未自动授权。下文旧阶段状态与压力记录按历史理解，P1 当前为 exploratory_not_passed。
+
 状态：**P0 direction_accepted / performance_preregistered；P1 not_started**。dot 已审阅 `3a6b0bdaca320d771736f9f10f33c91e2ac7bc5c` 并通过契约方向；原 astra 接受随后提出的性能指标，详见 [固定性能预登记](P1_PERFORMANCE_PREREGISTRATION.md)。本提交仍需 dot 回读冻结对象后向原 sol 交接，不是产品或原型 PASS；P1 成果仍需双方对同一审计提交一致通过。S12/A07 未关闭，S13—S24 不启动。
 
 ## 1. 对象、职责与授权边界

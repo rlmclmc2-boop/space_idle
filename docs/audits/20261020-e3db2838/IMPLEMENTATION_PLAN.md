@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not product completion.** S00-S11 (including S04a) closed; S12 remains in_progress for audit-only P1, and old runtime implementation is paused. P0 direction and P1 performance targets remain frozen at e806d458c9c836e636321aaa6c5759707e7dc5fc. The [single current P1 scenario table](stages/S12/P1_SCENARIOS_V3_AUTHORITY.md) replaces all earlier input tables, which are labeled historical. Dot and original astra accepted its last four definition corrections at `73b6d2b4822d4d7e27225bef4254a783e2b3b30d`; that is a scene-definition review, **not** an execution or performance PASS. The final independent generator, all actual input hashes and oracles still require freezing before official timing. The [audit-only raw evidence](stages/S12/P1_EXPLORATORY_EVIDENCE.md) and [feasibility/gap record](stages/S12/P1_FEASIBILITY_AND_GAPS.md) show P1 is **NOT PASSED**. Current authority: [S12 P0 contract and P1 gate](stages/S12/P0_CONTRACT_P1_GATE.md). Main remains 31e79337741bf9860d69fff21dae6be994dacd00; S13-S24 remain not_started. No runtime candidate is approved, no official ten-process measurement has begun, and no game-script/native/main integration is authorized.
+**当前权威：** S00—S11 已关闭；S12/P1 审计原型未通过、旧运行实现暂停。用户已允许极端 MAX 估算数量，适用 [P0/P1 极端 MAX 修订](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md)，优先于旧契约的极端精确累计前置绑定。旧失败历史保留；整批费用近似尚未批准。本次仅契约修订，待 dot 回读；main 仍为 `31e79337741bf9860d69fff21dae6be994dacd00`，无产品接入授权。既有 [场景](stages/S12/P1_SCENARIOS_V3_AUTHORITY.md)、[原始证据](stages/S12/P1_EXPLORATORY_EVIDENCE.md) 和 [可行性记录](stages/S12/P1_FEASIBILITY_AND_GAPS.md) 按该修订解释，不构成 PASS。
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -736,13 +736,13 @@ integration: N/A
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T09:30:26Z", next_stage_allowed: true}
 ```
 
-### S12 current: P0 contract review; P1 not started
+### S12 current: extreme MAX contract amendment; P1 not passed
 
 ```yaml
 stage: S12
 status: contract_review
-p0: direction_accepted_performance_preregistered
-p1: not_started
+p0: extreme_max_quantity_policy_amended_fee_policy_pending
+p1: exploratory_not_passed
 implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
 implementation_state: paused
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
@@ -751,7 +751,7 @@ reuse_reference_sha: 2a6119564e1cffc07bf0b833c3118b97faf6d728
 reuse_reference_approved: false
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/P0_CONTRACT_P1_GATE.md
-next_action: dot_reads_frozen_preregistration_then_hands_audit_only_P1_to_original_sol
+next_action: dot_reviews_extreme_max_amendment_and_resolves_fee_policy_if_needed
 ```
 
 The entries below are historical candidate records, not current approval or execution instructions. This contract supersedes their scope proposals; it does not change their historical evidence or verdicts.
