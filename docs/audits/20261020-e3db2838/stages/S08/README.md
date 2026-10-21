@@ -10,4 +10,4 @@
 
 实际模块集成回归：`D:\\CodexTools\\venv\\godot-native\\Scripts\\python.exe test/run.py test_config_workbooks.py` 在 `test/work` 隔离夹具运行 14/14 PASS、exit 0、102.424 秒，原始日志 `logs/config-workbooks-isolated.log`；同一解释器运行 `test/run.py test_level_editor.py` 为 10/10 PASS、exit 0、115.796 秒，原始日志 `logs/level-editor-isolated.log`。`test/run.py` 复制工程到独立目录，未改主工程配置或真实用户数据。其余双失败故障注入仍由专用测试覆盖，不把这些既有回归冒称为跨文件 ACID 证明。\n\n恢复操作：停止编辑器及配置导入；按返回的 `recovery_path/manifest.json` 核对每个 `original_sha256`，逐项检查目标当前哈希，再用 `original` 文件恢复旧版。清单中 `original=null` 的目标原先不存在，应由操作者核对后决定是否移除。恢复完成且故障原因排除后重新发起编辑器保存或工作簿导入。原件、独立编辑器备份及清单由操作者确认后再清理；运行代码不会自动删除失败恢复材料。恢复目录位于项目 `.runtime/config-recovery/<uuid>`，编辑器备份位于 `.runtime/level-editor-backups/<uuid>`；此布局及保留策略交父级与原 astra 双审。
 
-限制：这仅是安装失败时的可恢复回滚；多文件提交期间或进程/机器突然中断仍可能出现混合版本，不能宣称跨文件 ACID。审计前不合 main、不关闭 S08，也不清理 S06/S07 分支。
+限制：这仅是安装失败时的可恢复回滚；多文件提交期间或进程/机器突然中断仍可能出现混合版本，不能宣称跨文件 ACID。运行候选已由父级同对象双审后快进 main；本地集成收据为 `LOCAL_INTEGRATION.json`，实际玩家入口首启和重开各 120 帧 exit 0，隔离用户目录且无进度档生成。集成双审仍待完成，不关闭 S08，也不清理 S06/S07 分支。
