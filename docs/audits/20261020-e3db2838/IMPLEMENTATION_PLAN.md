@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共 26 阶段，S00—S06 共 8 阶段已完成双审、适用的 main 集成与本地验收并关闭；S07 正在双审前交接；S08—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共 26 阶段，S00—S06 共 8 阶段已完成双审、适用的 main 集成与本地验收并关闭；S07 已获双方同对象 PASS，待 main 集成；S08—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S06 共 8 阶段均为 `closed`；S07 为 `review`，S08—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `ba3e9ce4b12fb250850b176478dcafd48e696840`。S06 运行/最终证据及集成最终证据均获父级与原 astra 同对象双 PASS；实施线程于 2026-10-21 03:52 UTC 确认归档。当前唯一打开阶段为 S07，实施线程 `01a15c98-6ebc-74c1-ba8a-b2db5720c02f`。运行候选 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec` 未合 main，待父级与原 astra 对同一运行及冻结证据双审。临时分支 s06/analyzer-deps 无独有提交，待专项删除授权，未删除；该引用清理留后续收尾，不阻塞已验收阶段关闭。完整 Windows 发布导出仍留 S22，不宣称完整模拟器/native/GPU通过。
+**S00—S06 共 8 阶段均为 `closed`；S07 为 `approved`（集成待执行），S08—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `ba3e9ce4b12fb250850b176478dcafd48e696840`。S06 运行/最终证据及集成最终证据均获父级与原 astra 同对象双 PASS；实施线程于 2026-10-21 03:52 UTC 确认归档。当前唯一打开阶段为 S07，实施线程 `01a15c98-6ebc-74c1-ba8a-b2db5720c02f`。运行候选 `19879285e68f0e1b7ad722d7e27dd402ad4ab6ec` 与冻结证据 `ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b` 已获父级及原 astra 双 PASS；未合 main，待父级集成及本地入口验证。临时分支 s06/analyzer-deps 无独有提交，待专项删除授权，未删除；该引用清理留后续收尾，不阻塞已验收阶段关闭。完整 Windows 发布导出仍留 S22，不宣称完整模拟器/native/GPU通过。
 
 ### S00 关闭记录
 
@@ -528,11 +528,11 @@ branch_cleanup: {candidate: s06/analyzer-deps, remote_tip_equals_main: true, uni
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T03:52:06Z", next_stage_allowed: true}
 ```
 
-### S07 审查交接记录
+### S07 双审通过，集成待执行
 
 ```yaml
 stage: S07
-status: review
+status: approved
 implementation_thread_id: 01a15c98-6ebc-74c1-ba8a-b2db5720c02f
 model: sol
 base_main_sha: ba3e9ce4b12fb250850b176478dcafd48e696840
@@ -545,13 +545,15 @@ runtime_files:
 main_file_justifications:
   - "升级后统一失效免费充能依赖的装备属性缓存、revision 与编译配置；无数值公式变化"
 evidence_entry: stages/S07/README.md
-evidence_snapshot_sha: pending_this_audit_commit
+evidence_snapshot_sha: ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b
 verification: "Windows Godot 4.7.2；原 main 复现 8/20 失败；修复缓存 20/20、真实 DLL native 11/11；原反应炉 0 failures、缓存 9177/9177、编译规则 172/172。现有扩大 native 专项因旧接口错误未通过，详见 S07 证据。"
-parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
-astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, unresolved: []}
+parent_review: {verdict: PASS, reviewed_runtime_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab6ec, reviewed_evidence_sha: ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b, record_path: stages/S07/FINAL_REVIEW.md, unresolved: []}
+astra_review: {verdict: PASS, reviewed_runtime_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab6ec, reviewed_evidence_sha: ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b, turn: 01a15ca8-a733-7408-9333-b72191d8d87a, record_path: stages/S07/FINAL_REVIEW.md, unresolved: []}
 integration: {state: pending, main_sha: ba3e9ce4b12fb250850b176478dcafd48e696840, approved_sha_matches: false, local_entry_result: not_run}
 closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
 ```
+
+双审记录在 `stages/S07/FINAL_REVIEW.md`；冻结证据快照为此前审计提交，当前审查记录提交不回写该快照以避免自引用。较大 native 专项旧接口失败保留后续测试维护待办。
 
 ```yaml
 stage: Sxx
