@@ -322,12 +322,15 @@
   "next_overall_report": "2026-10-21T18:00:00+08:00",
   "previous_overall_report": "2026-10-21T10:56:00+08:00",
   "active_integration_review_record": null,
-  "next_stage": "S12/P1 (after dot contract review and handoff)",
-  "s12_p0_status": "awaiting_dot_review",
+  "next_stage": "S12/P1 (after dot frozen-preregistration readback and handoff)",
+  "s12_p0_status": "direction_accepted_performance_preregistered",
   "s12_p1_status": "not_started",
   "s12_implementation_paused": true,
   "s12_reuse_reference_sha": "2a6119564e1cffc07bf0b833c3118b97faf6d728",
   "s12_reuse_reference_approved": false,
   "s12_last_rejected_runtime_sha": "68205410956f555e021eb955095769e7a3896df5",
-  "s12_last_rejected_evidence_sha": "959fe957a992c7bf6e49b2e3a67eef59fd2b8cc5"
+  "s12_last_rejected_evidence_sha": "959fe957a992c7bf6e49b2e3a67eef59fd2b8cc5",
+  "s12_performance_preregistration": "stages/S12/P1_PERFORMANCE_PREREGISTRATION.md",
+  "s12_p0_dot_direction_reviewed_sha": "3a6b0bdaca320d771736f9f10f33c91e2ac7bc5c",
+  "s12_performance_executed": false
 }

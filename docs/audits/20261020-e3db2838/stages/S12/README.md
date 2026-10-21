@@ -1,6 +1,6 @@
 # S12 装备报价接入：当前候选与待决范围
 
-Status: contract_review; old runtime implementation paused. Current authority: [P0 contract and P1 gate](P0_CONTRACT_P1_GATE.md). P1 is not_started pending dot review/handoff. Main remains 31e79337741bf9860d69fff21dae6be994dacd00. The 6820541/959fe957 pair was rejected; latest 2a611956 is an unapproved reuse reference. S12/A07 remain open.
+Status: contract_review; old runtime implementation paused. Current authority: [P0 contract and P1 gate](P0_CONTRACT_P1_GATE.md). P0 direction accepted; [performance targets preregistered](P1_PERFORMANCE_PREREGISTRATION.md). P1 is not_started pending dot frozen-object readback/handoff. Main remains 31e79337741bf9860d69fff21dae6be994dacd00. The 6820541/959fe957 pair was rejected; latest 2a611956 is an unapproved reuse reference. S12/A07 remain open.
 
 The implementation descriptions below are historical candidate notes, not the current scope or acceptance claim.
 

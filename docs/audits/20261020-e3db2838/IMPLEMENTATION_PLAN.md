@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not product completion.** S00–S11 (including S04a) closed; S12 is `contract_review`, with old runtime implementation paused. P0 narrow-ledger contract is delivered for dot review; P1 audit-only prototype is `not_started` pending that review and handoff. Current authority: [S12 P0 contract and P1 gate](stages/S12/P0_CONTRACT_P1_GATE.md). Main remains `31e79337741bf9860d69fff21dae6be994dacd00`; S13–S24 remain not_started. No runtime candidate is approved.
+**Planning and status record, not product completion.** S00–S11 (including S04a) closed; S12 is `contract_review`, with old runtime implementation paused. P0 contract direction was accepted by dot; performance targets are preregistered with original-astra agreement. P1 audit-only prototype remains `not_started` pending dot readback and handoff. Current authority: [S12 P0 contract and P1 gate](stages/S12/P0_CONTRACT_P1_GATE.md). Main remains `31e79337741bf9860d69fff21dae6be994dacd00`; S13–S24 remain not_started. No runtime candidate is approved.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00–S11 closed. S12/A07 remain open; current delivery is documentation-only P0 `contract_review`, P1 `not_started`. Original implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` remains paused until dot reviews this contract and issues the audit-only P1 task. Runtime `68205410956f555e021eb955095769e7a3896df5` / evidence `959fe957a992c7bf6e49b2e3a67eef59fd2b8cc5` was rejected. Latest `2a6119564e1cffc07bf0b833c3118b97faf6d728` is reuse reference only, without frozen evidence or PASS. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. [P0/P1 authority](stages/S12/P0_CONTRACT_P1_GATE.md); no runtime integration or next stage is authorized by this delivery.
+**Current stage record:** S00–S11 closed. S12/A07 remain open; current delivery is documentation-only P0 `performance_preregistered`, P1 `not_started`. Original implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` remains paused until dot reviews this contract and issues the audit-only P1 task. Runtime `68205410956f555e021eb955095769e7a3896df5` / evidence `959fe957a992c7bf6e49b2e3a67eef59fd2b8cc5` was rejected. Latest `2a6119564e1cffc07bf0b833c3118b97faf6d728` is reuse reference only, without frozen evidence or PASS. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. [P0/P1 authority](stages/S12/P0_CONTRACT_P1_GATE.md); no runtime integration or next stage is authorized by this delivery.
 
 ### S00 关闭记录
 
@@ -741,7 +741,7 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 ```yaml
 stage: S12
 status: contract_review
-p0: awaiting_dot_review
+p0: direction_accepted_performance_preregistered
 p1: not_started
 implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
 implementation_state: paused
@@ -751,7 +751,7 @@ reuse_reference_sha: 2a6119564e1cffc07bf0b833c3118b97faf6d728
 reuse_reference_approved: false
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/P0_CONTRACT_P1_GATE.md
-next_action: dot_reviews_contract_then_hands_audit_only_P1_to_original_sol
+next_action: dot_reads_frozen_preregistration_then_hands_audit_only_P1_to_original_sol
 ```
 
 The entries below are historical candidate records, not current approval or execution instructions. This contract supersedes their scope proposals; it does not change their historical evidence or verdicts.
@@ -766,3 +766,5 @@ astra_review: PENDING
 integration: PENDING
 closure: open
 ```
+
+**S12 P0 性能预登记补充：** dot 已通过 `3a6b0bdaca320d771736f9f10f33c91e2ac7bc5c` 契约方向；原 astra 接受 [P1 固定性能目标与配置冻结要求](stages/S12/P1_PERFORMANCE_PREREGISTRATION.md)。4 ms工作片段/账本操作、100 ms取消、普通至50000档2秒及十亿档10秒、每场景10次冷运行。尚未执行原型；超目标保持未通过，不放宽门槛。
