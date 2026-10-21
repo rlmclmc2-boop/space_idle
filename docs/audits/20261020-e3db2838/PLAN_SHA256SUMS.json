@@ -10,8 +10,8 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "a484df337a4ed32849ba8e45622713153bb7a161fc5b3cbb3f7746c5abdf1206",
-  "PLAN_VALIDATION.json": "aac294e81327eb85306d5255bc12376b27af9bdd03ffa3492725ba6fa3c7bd9f",
+  "IMPLEMENTATION_PLAN.md": "0bede4436ac93e098dba67b801bb19894a309567a7f6c5a41ff9bfdffe0ea258",
+  "PLAN_VALIDATION.json": "a219e64daa63b9c86387cd398ec0e58d3927cb685442653ddb586a93b390fadd",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S01/FINAL_REVIEW.md": "a884bfe287664aa0fb44c7048875817c27c7489507bda43cc257c41cc9a6651a",
@@ -113,8 +113,10 @@
   "stages/S07/logs/stat-cache-regression.log": "02d408f3a280128b3b90b17f5f856857b2a8a10b2b3754582bb365baf84ceb59",
   "stages/S07/test_s07_reactor_cache.gd": "ad321b2f70b8cb14bedac82f7c0375bccb328a8f004ea96ec84ae8bc1ac320cd",
   "stages/S07/test_s07_reactor_native.gd": "890aa4f81252760d68d3fb60da1c4f60665a9c1570a8ae8c72f829350563ad70",
-  "stages/S08/README.md": "46baf209b7182e0e3d8ce845e45ffa3f941c5a1cc3532402a9ae915c38f00e19",
-  "stages/S08/RESULT.json": "456ef7a46fb4649737f11827bfaf80d32815e1525588e44de600fdba9e957c35",
-  "stages/S08/fault_injection.log": "973842923fcebeca48d03d6433b4415ab18105ad7fddb22695387ab370a6c2ab",
-  "stages/S08/s08_atomic_recovery.py": "4a59c4caf3c673466fb2de662dd7678d46b89b54d78216aee43bc00f0bae08bf"
+  "stages/S08/README.md": "16880e178e2022e0a2ecc4c7711b1500f67ec2cbc2233205b5984a87779c63a0",
+  "stages/S08/RESULT.json": "1ff89400157b257761ba0b862968bb983b5a8b71f691432bab1099ed29d39351",
+  "stages/S08/fault_injection.log": "dfd1266cfd050766654dedd04d04101298011f48c3546359fc5b131b90d898cc",
+  "stages/S08/s08_atomic_recovery.py": "4a59c4caf3c673466fb2de662dd7678d46b89b54d78216aee43bc00f0bae08bf",
+  "stages/S08/logs/config-workbooks-isolated.log": "81fb00eccff37befc4be03ee00cea5b29dcb63ba5653b8d78ef5a532110c272b",
+  "stages/S08/logs/level-editor-isolated.log": "fb9cb96d17ea39518af979ba27763b11fe335f767219d6cd80d19b095e1e9b6f"
 }
