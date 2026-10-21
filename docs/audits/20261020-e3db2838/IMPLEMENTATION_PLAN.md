@@ -1,10 +1,10 @@
 # 唯一实施入口：串行修复与架构收敛
 
-**S12/P1 limited dual-review record (evidence a26a4803a977dba1da1efc2ca010bfe461503afb):** dot and the original astra agree that the two specified audit-prototype correctness blockers are fixed: signed-int64 endpoint sentinel/carry handling, and host-bound debit rejection before commit after profile replacement or mutation. This is not a P1, complete large-number-domain, performance, game-integration, or main-merge PASS. The 10,000-block 4 ms public-operation failure remains. Extreme-MAX fee/refund policy is awaiting the user decision; no approximate debit is authorized. Work stays in P1 audit scope.
+**S12/P1 limited dual-review record (evidence a26a4803a977dba1da1efc2ca010bfe461503afb):** dot and the original astra agree that the two specified audit-prototype correctness blockers are fixed: signed-int64 endpoint sentinel/carry handling, and host-bound debit rejection before commit after profile replacement or mutation. This is not a P1, complete large-number-domain, performance, game-integration, or main-merge PASS. The 10,000-block 4 ms public-operation failure remains. Extreme-MAX approximate fees and old-rule refund differences are now user-authorized under the linked MAX-APPROX-v1 amendment; this is policy approval, not implementation approval. Work stays in P1 audit scope.
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**当前权威：** S00—S11 已关闭；S12/P1 审计原型未通过、旧运行实现暂停。用户已允许极端 MAX 估算数量，适用 [P0/P1 极端 MAX 修订](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md)，优先于旧契约的极端精确累计前置绑定。旧失败历史保留；整批费用近似尚未批准。本次仅契约修订，待 dot 回读；main 仍为 `31e79337741bf9860d69fff21dae6be994dacd00`，无产品接入授权。既有 [场景](stages/S12/P1_SCENARIOS_V3_AUTHORITY.md)、[原始证据](stages/S12/P1_EXPLORATORY_EVIDENCE.md) 和 [可行性记录](stages/S12/P1_FEASIBILITY_AND_GAPS.md) 按该修订解释，不构成 PASS。
+**当前权威：** S00—S11 已关闭；S12/P1 审计原型未通过、旧运行实现暂停。用户已允许极端 MAX 估算数量，适用 [P0/P1 极端 MAX 修订](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md)，优先于旧契约的极端精确累计前置绑定。旧失败历史保留；极端 MAX 总费用近似及旧退款差额已批准，执行 MAX-APPROX-v1 的确定性切换与12%费用界。本次仅契约修订，待 dot 回读；main 仍为 `31e79337741bf9860d69fff21dae6be994dacd00`，无产品接入授权。既有 [场景](stages/S12/P1_SCENARIOS_V3_AUTHORITY.md)、[原始证据](stages/S12/P1_EXPLORATORY_EVIDENCE.md) 和 [可行性记录](stages/S12/P1_FEASIBILITY_AND_GAPS.md) 按该修订解释，不构成 PASS。
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -743,7 +743,7 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 ```yaml
 stage: S12
 status: contract_review
-p0: extreme_max_quantity_policy_amended_fee_policy_pending
+p0: extreme_max_quantity_and_fee_policy_approved
 p1: exploratory_not_passed
 implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
 implementation_state: paused
@@ -753,7 +753,7 @@ reuse_reference_sha: 2a6119564e1cffc07bf0b833c3118b97faf6d728
 reuse_reference_approved: false
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/P0_CONTRACT_P1_GATE.md
-next_action: dot_reviews_extreme_max_amendment_and_resolves_fee_policy_if_needed
+next_action: dot_reviews_MAX_APPROX_v1_then_hands_audit_only_implementation_to_original_sol
 ```
 
 The entries below are historical candidate records, not current approval or execution instructions. This contract supersedes their scope proposals; it does not change their historical evidence or verdicts.

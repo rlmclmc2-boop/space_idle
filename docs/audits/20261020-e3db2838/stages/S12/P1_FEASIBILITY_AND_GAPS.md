@@ -1,6 +1,6 @@
 # S12 P1 feasibility and remaining gates — audit only
 
-> 当前修订：[极端 MAX 数量估算政策](P0_P1_EXTREME_MAX_AMENDMENT.md) 优先于本文极端 MAX 精确数量/累计前置要求；旧失败不改判，费用近似未自动授权。下文旧阶段状态与压力记录按历史理解，P1 当前为 exploratory_not_passed。
+> 当前修订：[极端 MAX 数量估算政策](P0_P1_EXTREME_MAX_AMENDMENT.md) 优先于本文极端 MAX 精确数量/累计前置要求；旧失败不改判，极端费用近似及旧退款差额已批准，按修订v2的确定性规则和12%费用界执行。下文旧阶段状态与压力记录按历史理解，P1 当前为 exploratory_not_passed。
 
 Read from the [unique plan](../../IMPLEMENTATION_PLAN.md) with the [P0 contract](P0_CONTRACT_P1_GATE.md), [fixed performance targets](P1_PERFORMANCE_PREREGISTRATION.md), [single scenario table](P1_SCENARIOS_V3_AUTHORITY.md), and [raw exploratory evidence](P1_EXPLORATORY_EVIDENCE.md). **No P1 PASS, product integration, runtime candidate, native DLL result, or main merge is claimed.** The final actual MAX inputs and ten-process protocol remain unfrozen.
 
