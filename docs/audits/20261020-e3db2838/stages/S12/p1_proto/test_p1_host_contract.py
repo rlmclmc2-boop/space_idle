@@ -88,6 +88,11 @@ class HostProtocol(unittest.TestCase):
         self.assertEqual(wallet(host).small_decimal(), 0)
         self.assertEqual((host.snapshot()["research_elapsed"], host.snapshot()["research_paid_elapsed"]), (1.0, 0.5))
         self.assertEqual(host.research_step(1.0, 1), {"status": "advanced", "step": 1.0, "paid_step": 0.0})
+        micro = fixture()
+        micro["resources"]["1"] = 1e-12
+        micro_host = AuditHost(micro)
+        self.assertEqual(micro_host.research_step(1.0, 1), {"status": "advanced", "step": 1.0, "paid_step": 0.0})
+        self.assertEqual(wallet(micro_host).small_decimal(), 0)
         source = fixture(wallet=100)
         source["drops"].append({"id": "1", "amount": 5, "production_base": 3, "hightech": False})
         host = AuditHost(source)
@@ -113,6 +118,17 @@ class HostProtocol(unittest.TestCase):
         self.assertEqual(host.snapshot(), before)
         self.assertEqual(host.native_commit_aggregate(batch), {"status": "committed", "planned": ("weapons_0", "defence_0"), "descriptor_updates": 1})
         self.assertEqual(host.native_commit_aggregate(batch), {"status": "stale"})
+        late = AuditHost(fixture())
+        prepared = late.native_prepare_aggregate(("weapons_0", "weapons_1", "defence_0"))
+        self.assertEqual(late.native_commit_aggregate(prepared, fail_after_successes=1), {
+            "status": "partial_handoff_stop", "changed": ("weapons_0",),
+            "stopped_before": "defence_0", "descriptor_updates": 0,
+        })
+        current = late.snapshot()
+        self.assertEqual((current["loadout"]["weapons_0"]["level"], current["loadout"]["defence_0"]["level"]), (2, 1))
+        self.assertEqual(wallet(late).small_decimal(), 65)
+        self.assertEqual([e["kind"] for e in current["events"]],
+                         ["resources_changed", "upgrade", "upgrades_completed"])
 
 
 if __name__ == "__main__":

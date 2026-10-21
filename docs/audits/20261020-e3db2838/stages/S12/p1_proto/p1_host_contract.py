@@ -161,7 +161,7 @@ class AuditHost:
                 # basic, unpaid research for the remaining requested time.
                 paid_step = 0.0
             expense = CurrencyValue.from_float(float(rate) * paid_step)
-            next_balance = balance.subtract(expense) if paid_step else balance
+            next_balance = balance.subtract(expense) if paid_step else CurrencyValue.from_integer(0)
             proposed["resources"]["1"] = next_balance.encode()
             proposed["research_elapsed"] = float(proposed.get("research_elapsed", 0.0)) + dt
             proposed["research_paid_elapsed"] = float(proposed.get("research_paid_elapsed", 0.0)) + paid_step
@@ -188,7 +188,8 @@ class AuditHost:
         self._pending_native = copy.deepcopy({key: value for key, value in result_batch.items() if key != "owner"})
         return result_batch
 
-    def native_commit_aggregate(self, batch: dict, kernel_accept: bool = True) -> dict:
+    def native_commit_aggregate(self, batch: dict, kernel_accept: bool = True,
+                                fail_after_successes: int | None = None) -> dict:
         if batch.get("status") != "prepared" or batch.get("owner") is not self or batch.get("generation") != self._generation or not self._profile or batch.get("source") != _wire(self._profile):
             return {"status": "stale"}
         if self._pending_native is None or {key: value for key, value in batch.items() if key != "owner"} != self._pending_native:
@@ -203,5 +204,22 @@ class AuditHost:
             return {"status": "descriptor_mismatch"}
         if not kernel_accept:
             return {"status": "handoff_rejected"}
+        if fail_after_successes is not None:
+            if fail_after_successes != 1 or len(batch["planned"]) < 2:
+                return {"status": "invalid_failure_injection"}
+            # Model a native handoff failure observed after the first genuine
+            # purchase. The aggregate descriptor is discarded, no later slot
+            # runs, and only that already-successful slot remains visible.
+            partial = copy.deepcopy(self._profile)
+            first = batch["planned"][0]
+            status, ticket = plan_purchase(partial, first, 1)
+            if status != "ready" or ticket is None:
+                return {"status": "stale"}
+            if commit_purchase(partial, ticket)["status"] != "committed":
+                return {"status": "stale"}
+            partial["events"].append({"kind": "upgrades_completed", "slots": [first]})
+            self._publish(partial)
+            return {"status": "partial_handoff_stop", "changed": (first,),
+                    "stopped_before": batch["planned"][1], "descriptor_updates": 0}
         self._publish(simulated)
         return {"status": "committed", "planned": batch["planned"], "descriptor_updates": 1}

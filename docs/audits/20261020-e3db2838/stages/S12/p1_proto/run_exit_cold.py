@@ -8,7 +8,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent
-FREEZE = ROOT.parent / "P1_EXIT_COLD_FREEZE.json"
+FREEZE = ROOT.parent / "P1_EXIT_COLD_FREEZE_2.json"
+OUTPUT_PREFIX = "exploratory_exit_cold_2"
 
 
 def _canonical_bytes(path: Path) -> bytes:
@@ -24,13 +25,25 @@ def verify_freeze(freeze: dict) -> None:
         assert hashlib.sha256(_canonical_bytes(ROOT / name)).hexdigest() == expected, f"working file changed: {name}"
 
 
+def complete_gates(results: list[dict]) -> bool:
+    gate_keys = {"state", "frame_work", "heartbeat", "cancel", "no_failed_write"}
+    expected_rows = {(kind, repetition) for kind in ("exact", "middle", "far", "cancel")
+                     for repetition in range(1, 11)}
+    return len(results) == 40 and {(row.get("class"), row.get("run")) for row in results} == expected_rows and all(
+        set(row.get("gates", {})) == gate_keys
+        and row.get("state") == ("cancelled" if row.get("class") == "cancel" else "committed")
+        and all(value is True for value in row["gates"].values())
+        for row in results
+    )
+
+
 def main() -> None:
     freeze = json.loads(FREEZE.read_text(encoding="utf-8"))
     verify_freeze(freeze)
     results = []
     for kind, script in freeze["cases"].items():
         for repetition in range(1, 11):
-            stem = f"exploratory_exit_cold_{kind}_{repetition:02d}"
+            stem = f"{OUTPUT_PREFIX}_{kind}_{repetition:02d}"
             proc = subprocess.run([sys.executable, str(ROOT / "run_probe.py"), script, stem],
                                   cwd=ROOT, capture_output=True, text=True)
             meta = json.loads((ROOT / f"{stem}.meta.json").read_text(encoding="utf-8"))
@@ -57,7 +70,7 @@ def main() -> None:
                             "cancel_stop_us": record["cancel_stop_latency_us"],
                             "commit_us": record["commit_wall_us"], "gates": gates})
     summary = {"kind": "p1_cold_process_exit_matrix", "freeze": freeze,
-               "all_gates_passed": len(results) == 40 and all(all(r.get("gates", {}).values()) for r in results),
+               "all_gates_passed": complete_gates(results),
                "results": results}
     print(json.dumps(summary, sort_keys=True))
     if not summary["all_gates_passed"]:
