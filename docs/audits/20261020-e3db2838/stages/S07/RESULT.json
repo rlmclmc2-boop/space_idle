@@ -1,0 +1,94 @@
+{
+  "stage": "S07",
+  "status": "review_pending_dual_pass",
+  "base_main_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
+  "implementation_thread_id": "01a15c98-6ebc-74c1-ba8a-b2db5720c02f",
+  "runtime": {
+    "branch": "s07/reactor-cache",
+    "commit": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+    "tree": "e6f66e8e31f35054191e9a089c6ce41818d96102",
+    "files": {
+      "space-battleship/scripts/game.gd": "c1de0a2c92ae29ef5d9eccdb0aa149bf8ac6728f"
+    },
+    "sha256": {
+      "space-battleship/scripts/game.gd": "bb528a70c6f0891582f2752cb2f4c09fb24ea3065ca9c5179dfe11ffb9b455df"
+    }
+  },
+  "environment": {
+    "os": "Windows NT 10.0.19044",
+    "godot": "4.7.2.stable.official.ed1daf0bf",
+    "native_dll": "tools/player_runtime/space_native.dll",
+    "isolated_user_data": true
+  },
+  "checks": {
+    "baseline_reproduction": "expected_fail_8_of_20",
+    "reactor_cache": "pass_20_of_20",
+    "native_actual_dll": "pass_11_of_11",
+    "reactor_regression": "pass",
+    "stat_cache_regression": "pass_9177_of_9177",
+    "compiled_rules_regression": "pass_172_of_172",
+    "existing_broad_native_suite": "blocked_unrelated_missing_advance_hightech_bulk"
+  },
+  "audit_files": {
+    "README.md": {
+      "git_blob": "52bc1baa334e03dfc70f5ab7b5e8c86a4bd3cc1f",
+      "sha256": "bd400590f605ff7794587d2969db4b57d91b8ae026c187e99f64330de46ca800",
+      "bytes": 3513
+    },
+    "test_s07_reactor_cache.gd": {
+      "git_blob": "3ff9852de6ce09d126cf4616b2fe4f6a05786dbd",
+      "sha256": "ad321b2f70b8cb14bedac82f7c0375bccb328a8f004ea96ec84ae8bc1ac320cd",
+      "bytes": 2413
+    },
+    "test_s07_reactor_native.gd": {
+      "git_blob": "dcac13ed80675d139169e5e5af0c698430d735bd",
+      "sha256": "890aa4f81252760d68d3fb60da1c4f60665a9c1570a8ae8c72f829350563ad70",
+      "bytes": 3375
+    },
+    "logs/baseline-repro.log": {
+      "git_blob": "9c316632fe7fc5ca180500d2c950c9e3e095cbb8",
+      "sha256": "c799f4b2203fa9f3071ffb298c30d8201fefe2bd3ded7049114296b44ee72d34",
+      "bytes": 677
+    },
+    "logs/compiled-rules-regression.log": {
+      "git_blob": "14b6ad969b75bb8ef0877439d722e1a07e2e665b",
+      "sha256": "aaeebd35ccb172e7a7a462f5108635f5de1198e7edb34f7fd1cd851da7469a9a",
+      "bytes": 236
+    },
+    "logs/existing-native-suite-failure.log": {
+      "git_blob": "1b035c4d6a6baaba5b39701b1b16dbbf98d7901d",
+      "sha256": "62d87cec5ffbbad41966f21601333d857eedc6d177cfc41db7685c420e870b4a",
+      "bytes": 684
+    },
+    "logs/native-import.log": {
+      "git_blob": "80484d0148257f4ea6afcf204b5d69509ff202dd",
+      "sha256": "b0e47aa318bf1867f25379e6de6c7bda03b07af8d251d531cc6b06c588fc23dd",
+      "bytes": 1508
+    },
+    "logs/reactor-cache.log": {
+      "git_blob": "78f76ffdbc09f43e3feed18f842a4ac8158be669",
+      "sha256": "42e392f8d7b77ecf15e3a818bef72096353498734db5b948b23cf322680f4912",
+      "bytes": 398
+    },
+    "logs/reactor-native.log": {
+      "git_blob": "79e1c2c3d4fb2e85fd454197d55aabff2aacbb6a",
+      "sha256": "2b4210d844119a9f7b1fb6d8dae6a1d1d7b6a2719989791bcd64cef5ff1e58b2",
+      "bytes": 230
+    },
+    "logs/reactor-regression.log": {
+      "git_blob": "ac7d44afc5085f76844a34ff9bb3b8f12411a36f",
+      "sha256": "24cd6d8bfe1a8e993b4fde1bd9cc6b733f987ec70a40259b2807cc1690ac3eda",
+      "bytes": 216
+    },
+    "logs/stat-cache-regression.log": {
+      "git_blob": "7be70c516234c808a8480d474f46e2700ce20e48",
+      "sha256": "02d408f3a280128b3b90b17f5f856857b2a8a10b2b3754582bb365baf84ceb59",
+      "bytes": 232
+    }
+  },
+  "review": {
+    "parent": "PENDING",
+    "original_astra": "PENDING"
+  },
+  "integration": "PENDING"
+}
