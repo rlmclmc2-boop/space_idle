@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S06 closed; S07 integrated, integration review pending; S08-S24 not started; S06 branch cleanup pending specific approval",
+  "scope": "S00-S06 closed; S07 integrated with dual integration PASS, parent closure pending; S08-S24 not started; S06/S07 branch cleanup pending specific approval",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -167,8 +167,17 @@
     "s07_existing_verification_dir_restored": true,
     "s07_isolated_verification_user_data": true,
     "s07_player_entry_logs_no_script_parse_or_error": true,
-    "s07_integration_review_pending": true,
-    "s07_no_full_native_or_save_roundtrip_claim": true
+    "s07_integration_review_pending": false,
+    "s07_no_full_native_or_save_roundtrip_claim": true,
+    "s07_integration_parent_pass_same_objects": true,
+    "s07_integration_original_astra_pass_same_objects": true,
+    "s07_integration_dual_pass_same_objects": true,
+    "s07_integration_unresolved_zero": true,
+    "s07_integration_review_record_persisted": true,
+    "s07_branch_tip_equals_main": true,
+    "s07_branch_unique_runtime_commits_zero": true,
+    "s07_branch_deletion_pending_special_authorization": true,
+    "s07_branch_not_deleted": true
   },
   "stages": 26,
   "active_stage": "S07",
@@ -200,12 +209,12 @@
   "last_integrated_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
   "active_frozen_evidence_sha": "ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b",
   "active_integration_record": "stages/S07/LOCAL_INTEGRATION.json",
-  "active_integration_review_pending": true,
-  "active_integration_reviewed_evidence_sha": "e877b73d1bd7aa6867c2e9b7115f16d1341a8a2a",
+  "active_integration_review_pending": false,
+  "active_integration_reviewed_evidence_sha": "dbf9eb3887ac25913c896902cd5f5f93cded2863",
   "active_temporary_branches_cleaned": false,
   "active_review_record": "stages/S07/FINAL_REVIEW.md",
-  "active_integration_evidence_sha": null,
+  "active_integration_evidence_sha": "dbf9eb3887ac25913c896902cd5f5f93cded2863",
   "next_overall_report": "2026-10-21T18:00:00+08:00",
   "previous_overall_report": "2026-10-21T10:56:00+08:00",
-  "active_integration_review_record": null
+  "active_integration_review_record": "stages/S07/INTEGRATION_REVIEW.md"
 }
