@@ -1,0 +1,21 @@
+test_cross_safe_json_and_income (test_proto.LedgerProbe.test_cross_safe_json_and_income) ... ok
+test_float_and_legacy_fraction (test_proto.LedgerProbe.test_float_and_legacy_fraction) ... ok
+test_nontrivial_ten_thousand_blocks (test_proto.LedgerProbe.test_nontrivial_ten_thousand_blocks) ... ok
+test_random_small_against_independent_integer (test_proto.LedgerProbe.test_random_small_against_independent_integer) ... ok
+test_reject_bad_candidate (test_proto.LedgerProbe.test_reject_bad_candidate) ... ok
+test_remote_gap_and_commutativity (test_proto.LedgerProbe.test_remote_gap_and_commutativity) ... ok
+test_batch_vs_steps (test_proto.PriceProbe.test_batch_vs_steps) ... ok
+test_frozen_low_amounts (test_proto.PriceProbe.test_frozen_low_amounts) ... ok
+test_overflow_reference (test_proto.PriceProbe.test_overflow_reference) ... ok
+test_zero_and_material (test_proto.PriceProbe.test_zero_and_material) ... ok
+test_aggregate_refund_overflow (test_transactions.TransactionControls.test_aggregate_refund_overflow) ... ok
+test_batch_exact_and_one_below (test_transactions.TransactionControls.test_batch_exact_and_one_below) ... ok
+test_collect_source_credit_and_preflight (test_transactions.TransactionControls.test_collect_source_credit_and_preflight) ... ok
+test_middle_slot_material_only (test_transactions.TransactionControls.test_middle_slot_material_only) ... ok
+test_stale_without_effects (test_transactions.TransactionControls.test_stale_without_effects) ... ok
+test_three_slots_resource_first (test_transactions.TransactionControls.test_three_slots_resource_first) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.121s
+
+OK

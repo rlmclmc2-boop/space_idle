@@ -66,6 +66,18 @@ class LedgerProbe(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 CurrencyValue.decode(value)
 
+    def test_nontrivial_ten_thousand_blocks(self):
+        unit = CurrencyValue.from_integer(1)
+        carried = CurrencyValue.from_terms([(i, 4999) for i in range(10_000)]).add(unit)
+        self.assertEqual(carried.blocks, tuple((i, -5000) for i in range(10_000)) + ((10_000, 1),))
+        borrowed = CurrencyValue.from_terms([(i, 1) for i in range(1, 10_001)]).subtract(unit)
+        self.assertEqual(borrowed.blocks, ((0, -1),) + tuple((i, 1) for i in range(1, 10_001)))
+        near = CurrencyValue.from_terms([(i, 1) for i in range(10_000)])
+        self.assertEqual(near.subtract(near).blocks, ())
+        self.assertEqual(near.subtract(near.subtract(unit)).blocks, unit.blocks)
+        with self.assertRaises(ValueError):
+            near.subtract(near.add(unit))
+
 
 class PriceProbe(unittest.TestCase):
     def test_frozen_low_amounts(self):
