@@ -33,3 +33,7 @@ The Godot startup warning `Failed to read the root certificate store` appears in
 ## Review and integration gate
 
 Parent review: PASS. Original astra review: PASS. Both reviewed runtime `31e79337741bf9860d69fff21dae6be994dacd00` and frozen evidence `813c43126db07dc6d3c3b19917359b4f29e2fcf5`; see `REVIEW_RECORD.md`. Fast-forward only that runtime, then capture actual-entry integration evidence. S10 closure and S11 remain blocked until the parent accepts the integration result.
+
+## Integration preflight
+
+`INTEGRATION_PREFLIGHT.md` records a passing isolated exact-allocation and post-debit save/reopen probe on the reviewed runtime. The main publication was blocked before execution by automatic approval review, and the D:\放置 actual-entry acceptance is pending. This is not an integration PASS.

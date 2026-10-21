@@ -248,7 +248,9 @@
     "s10_round4_17_final_logs_recorded": true,
     "s10_round4_runtime_blobs_recorded": true,
     "s10_dual_pass_same_objects": true,
-    "s10_integration_pending": true
+    "s10_integration_pending": true,
+    "s10_isolated_exact_save_preflight_pass": true,
+    "s10_main_publication_blocked_before_execution": true
   },
   "stages": 26,
   "active_stage": "S10",
