@@ -21,11 +21,72 @@ def integer_wallet(encoded: dict) -> int:
     return sum(int(digit) * 10000 ** int(position) for position, digit in encoded["blocks"])
 
 
-def decimal_wallet(encoded: dict) -> Decimal:
+def sparse_terms(encoded: dict) -> dict[int, int]:
+    """Read signed base-10000 coefficients without expanding vacant positions."""
+    assert set(encoded) == {"v", "blocks"} and encoded["v"] == 4
+    assert isinstance(encoded["blocks"], list)
+    terms = {}
+    previous = None
+    for pair in encoded["blocks"]:
+        assert isinstance(pair, list) and len(pair) == 2
+        position_text, digit = pair
+        assert isinstance(position_text, str) and position_text.lstrip("-").isdigit()
+        position = int(position_text)
+        assert str(position) == position_text and isinstance(digit, int) and not isinstance(digit, bool)
+        assert -5000 <= digit <= 4999 and digit != 0
+        assert previous is None or position > previous
+        terms[position] = digit
+        previous = position
+    assert not terms or terms[previous] > 0
+    return terms
+
+
+def integer_terms(value: int) -> dict[int, int]:
+    assert value >= 0
+    result = {}
+    position = 0
+    while value:
+        value, digit = divmod(value, 10000)
+        if digit:
+            result[position] = digit
+        position += 1
+    return result
+
+
+def sparse_normalize(*operands: tuple[int, dict[int, int]]) -> dict[int, int]:
+    """Exact sparse sum; carry only at occupied neighbors."""
+    coefficients = {}
+    normalized = {}
+    for factor, terms in operands:
+        for position, digit in terms.items():
+            coefficients[position] = coefficients.get(position, 0) + factor * digit
+    while coefficients:
+        position = min(coefficients)
+        digit = coefficients.pop(position)
+        carry = (digit + 5000) // 10000
+        remainder = digit - carry * 10000
+        if remainder:
+            normalized[position] = remainder
+        if carry:
+            coefficients[position + 1] = coefficients.get(position + 1, 0) + carry
+            if coefficients[position + 1] == 0:
+                del coefficients[position + 1]
+    return normalized
+
+
+def sparse_sign(*operands: tuple[int, dict[int, int]]) -> int:
+    normalized = sparse_normalize(*operands)
+    if not normalized:
+        return 0
+    highest = normalized[max(normalized)]
+    return (highest > 0) - (highest < 0)
+
+
+def decimal_sparse(terms: dict[int, int]) -> Decimal:
     with localcontext(Context(prec=120, Emax=999_999_999, Emin=-999_999_999)):
         result = Decimal(0)
-        for position, digit in encoded["blocks"]:
-            result += Decimal(digit) * Decimal(f"1E{4*int(position)}")
+        for position, digit in terms.items():
+            result += Decimal(digit) * Decimal(f"1E{4*position}")
         return result
 
 
@@ -42,6 +103,8 @@ def original_costs() -> list[int]:
 
 
 def main() -> None:
+    assert sparse_normalize((1, {0: 10000}), (-1, {1: 1})) == {}
+    assert sparse_normalize((1, {0: -10000}), (1, {1: 1})) == {}
     costs = original_costs()
     results = []
     for stem, wallet in [
@@ -87,26 +150,43 @@ def main() -> None:
     huge = read("exploratory_approx_billion_freeze")
     quote = huge["quoted"]
     count = int(quote["count"])
-    fee = decimal_wallet(quote["resource_debit"])
-    low = decimal_wallet(quote["bound_certificate"]["lower"])
+    old_terms = {250000000: 1}  # independent fixture: exactly 10^1,000,000,000
+    fee_terms = sparse_terms(quote["resource_debit"])
+    new_terms = sparse_terms(huge["post_wallet"])
+    low_terms = sparse_terms(quote["bound_certificate"]["lower"])
+    upper_terms = sparse_terms(quote["bound_certificate"]["upper"])
+    assert upper_terms == fee_terms  # the quoted upper bound is the debit
+    residual = sparse_normalize((1, old_terms), (-1, fee_terms), (-1, new_terms))
+    assert residual == {}  # exact low-block identity, without expanding the gap
+    assert sparse_sign((1, old_terms), (-1, fee_terms), (-1, new_terms), (-1, {0: 1})) == -1
+    assert sparse_sign((1, old_terms), (-1, fee_terms)) >= 0
+    assert sparse_sign((1, low_terms), (-1, fee_terms)) <= 0
+    assert sparse_sign((28, low_terms), (1, integer_terms(24)), (-25, fee_terms)) >= 0
+    prefix = sum(costs[:256])
+    prefix_terms = integer_terms(prefix)
+    tail_lower = decimal_sparse(sparse_normalize((1, low_terms), (-1, prefix_terms)))
+    tail_upper = decimal_sparse(sparse_normalize((1, upper_terms), (-1, prefix_terms)))
     with localcontext(Context(prec=120, Emax=999_999_999, Emin=-999_999_999, rounding=ROUND_FLOOR)):
         raw_lower = Decimal(50) * G ** 257 * ((G ** (count - 256) - 1) / (G - 1))
         original_lower = Decimal("0.95") * raw_lower
     with localcontext(Context(prec=120, Emax=999_999_999, Emin=-999_999_999, rounding=ROUND_CEILING)):
         raw_upper = Decimal(50) * G ** 257 * ((G ** (count - 256) - 1) / (G - 1))
         original_upper = Decimal("1.05") * raw_upper
-    # The exact 256-price prefix is negligible at this exponent but positive.
-    assert low <= original_lower and original_upper <= fee
-    with localcontext(Context(prec=120, Emax=999_999_999, Emin=-999_999_999)):
-        assert fee * 25 <= low * 28 + 24
+    # Decimal independently cross-checks the tail scale; exact prefix removal
+    # and all wallet/fee identities above use integer sparse arithmetic.
+    assert tail_lower <= original_lower and original_upper <= tail_upper
     assert int(quote["material_debit"]) == material(count)
     assert int(huge["post_material"]) == 9007199254740991 - material(count)
     assert int(huge["post_level"]) == 1 + count
-    assert huge["remaining_matches"] and huge["material_matches"] and huge["level_matches"]
     assert huge["boundary_next"]["count"] == count + 1
     assert int(huge["boundary_next"]["material_due"]) > 9007199254740991
     assert huge["post_profile_bytes"] < 16 * 1024 * 1024
-    results.append({"fixture": "compact_billion", "count": count, "material_exact": True, "direct_decimal_tail_enclosed": True, "quoted_equals_actual_debit": True, "resource_fee_decimal_magnitude": fee.adjusted()})
+    results.append({"fixture": "compact_billion", "count": count, "material_exact": True,
+                    "direct_decimal_tail_scale_crosscheck": True,
+                    "exact_256_prefix_digits": len(str(prefix)),
+                    "exact_sparse_wallet_residual_blocks": len(residual),
+                    "exact_sparse_fee_ratio_check": True, "quoted_equals_actual_debit": True,
+                    "resource_fee_decimal_magnitude": decimal_sparse(fee_terms).adjusted()})
     for stem in ["stale", "wallet_stale", "config_stale", "silent_replace", "tamper", "cancel"]:
         run = read(f"exploratory_approx_{stem}_freeze")
         assert run["success"] and run["live_unchanged_on_failure"]
