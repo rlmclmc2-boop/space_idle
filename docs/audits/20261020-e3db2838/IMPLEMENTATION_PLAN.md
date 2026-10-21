@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not product completion.** S00–S11 (including S04a) closed; S12 is `contract_review`, with old runtime implementation paused. P0 contract direction was accepted by dot; performance targets are preregistered with original-astra agreement. P1 audit-only prototype remains `not_started` pending dot readback and handoff. Current authority: [S12 P0 contract and P1 gate](stages/S12/P0_CONTRACT_P1_GATE.md). Main remains `31e79337741bf9860d69fff21dae6be994dacd00`; S13–S24 remain not_started. No runtime candidate is approved.
+**Planning and status record, not product completion.** S00-S11 (including S04a) closed; S12 is in_progress for audit-only P1, with old runtime implementation paused. P0 contract direction and P1 performance targets were accepted; the first concrete scene object at b9ce803 failed preregistration review before official timing. The [P1 fixed input revision under review](stages/S12/P1_SCENARIOS_V2_REVIEW.md) supersedes its test inputs only after dot and original astra confirm it. Current authority: [S12 P0 contract and P1 gate](stages/S12/P0_CONTRACT_P1_GATE.md). Main remains 31e79337741bf9860d69fff21dae6be994dacd00; S13-S24 remain not_started. No runtime candidate is approved, and no official P1 measurement has begun.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
