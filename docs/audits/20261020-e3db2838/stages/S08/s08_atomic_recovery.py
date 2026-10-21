@@ -1,5 +1,8 @@
 import hashlib
 import ast
+import argparse
+from contextlib import redirect_stdout
+import io
 import json
 import os
 from pathlib import Path
@@ -150,3 +153,40 @@ with tempfile.TemporaryDirectory() as temporary:
             print(json.dumps({'case': 'editor_secondary_failure', 'status': 'recovery_required',
                               'disk': ['A-new', 'B-old'], 'persistent_backup_files': 2,
                               'journal_exists': True, 'calls': len(calls)}))
+
+for label, parsed, filename in (('config_cli', tree, source),
+                                ('editor_cli', editor_tree, editor_source)):
+    main_node = next(node for node in parsed.body if isinstance(node, ast.FunctionDef) and node.name == 'main')
+    failure = RecoveryRequired(Path('recovery-journal'), [Path('A')])
+
+    def fail(*args, **kwargs):
+        raise failure
+
+    class FailingStore:
+        def __init__(self):
+            pass
+
+        load = fail
+        execute = fail
+
+    cli_scope = {'argparse': argparse, 'pathlib': pathlib, 'Path': Path, 'ROOT': Path('.'),
+                 'sys': sys, 'json': json, 'Store': FailingStore, 'RecoveryRequired': RecoveryRequired,
+                 'sync_workbooks': fail, 'incremental_import': fail}
+    exec(compile(ast.Module(body=[main_node], type_ignores=[]), str(filename), 'exec'), cli_scope)
+    output = io.StringIO()
+    old_argv = sys.argv
+    request_path = Path(tempfile.gettempdir()) / ('s08-' + uuid.uuid4().hex + '.json')
+    try:
+        request_path.write_text('{}', encoding='utf-8')
+        sys.argv = ([label, 'split'] if label == 'config_cli' else
+                    [label, 'save', '--request', str(request_path)])
+        with redirect_stdout(output):
+            code = cli_scope['main']()
+    finally:
+        sys.argv = old_argv
+        request_path.unlink(missing_ok=True)
+    response = json.loads(output.getvalue())
+    assert code == 1 and response['recovery_required'] is True
+    assert response['recovery_path'] == 'recovery-journal'
+    assert response['rollback_failed'] == ['A']
+    print(json.dumps({'case': label, 'status': 'recovery_fields_returned', 'exit_code': code}))
