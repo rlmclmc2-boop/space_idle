@@ -1,0 +1,6 @@
+{"case": "single_failure", "status": "rolled_back", "calls": 3}
+{"case": "secondary_failure", "status": "recovery_required", "calls": 3, "disk": ["A-new", "B-old"], "originals_verified": 2, "recovery_path_exists": true}
+{"case": "manual_restore", "status": "old_versions_restored"}
+{"case": "success", "status": "cleaned", "calls": 2}
+{"case": "baseline_secondary_failure", "status": "materials_removed", "disk": ["A-new", "B-old"], "calls": 3}
+{"case": "editor_secondary_failure", "status": "recovery_required", "disk": ["A-new", "B-old"], "persistent_backup_files": 2, "journal_exists": true, "calls": 6}
