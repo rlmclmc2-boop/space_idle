@@ -1,0 +1,23 @@
+{
+  "stage": "S11",
+  "status": "review",
+  "runtime_sha": "N/A",
+  "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "contract_sha": "0442a1b627a07fa1af0d0671cdeb97dd070c5efc",
+  "platform": "Windows, Godot 4.7.2.stable.official.ed1daf0bf, Python 3.12",
+  "commands": [
+    "python docs/audits/20261020-e3db2838/stages/S11/reference_oracle.py",
+    "D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe --headless --path space-battleship --script res://test/audit_s11_quote_test.gd --log-file <workspace>/docs/audits/20261020-e3db2838/stages/S11/godot-internal.log",
+    "python docs/audits/20261020-e3db2838/stages/S11/verify_log.py"
+  ],
+  "results": [
+    "reference oracle: 6 cases, maximum 312 digits, exit 0",
+    "Godot: 69 checks, 0 failures, exit 0",
+    "log gate: 69 PASS lines, one exact certificate-store diagnostic, no other errors, exit 0"
+  ],
+  "raw_log_sha256": "fea4a7ba242e2669fe9c4d2f5703e1128533db08c8831e8501116900663c6d61",
+  "oracle_sha256": "8a619102f5c1074ca7d80d8eccbf7799400e2ef792618285054dcd89ce26ef8a",
+  "review": {"parent": "PENDING", "original_astra": "PENDING"},
+  "integration": "N/A",
+  "unverified": ["purchase/debit", "MAX cursor", "cache", "UI", "save", "native", "refund transaction"]
+}

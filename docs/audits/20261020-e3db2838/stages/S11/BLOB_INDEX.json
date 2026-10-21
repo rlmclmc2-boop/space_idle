@@ -1,0 +1,14 @@
+{
+  "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "runtime_sha": "N/A",
+  "blobs": {
+    "space-battleship/test/audit_s11_equipment_quote.gd": "328282c0a245bf6c40ce90e9c76e8d6b590731aa",
+    "space-battleship/test/audit_s11_quote_test.gd": "0e02ea137c8efd31b0f319cab86b84df6b1b0fad",
+    "space-battleship/test/audit_s11_quote_oracle.json": "7166972fcd05cf1f72baef9c86a25e56a5863301",
+    "docs/audits/20261020-e3db2838/stages/S11/README.md": "3294da81a28f21685c3f169acf333baf3a40c964",
+    "docs/audits/20261020-e3db2838/stages/S11/reference_oracle.py": "689e6cfeacbde7f6ec2bdfb5831025ffae6ced8a",
+    "docs/audits/20261020-e3db2838/stages/S11/verify_log.py": "767d1a8e4b4e596ca6f81e5722d0eae25d3a944a",
+    "docs/audits/20261020-e3db2838/stages/S11/godot-test.log": "a70a8f39e28b20f851ed91ecc2b8e7b121d2417b",
+    "docs/audits/20261020-e3db2838/stages/S11/verification.json": "8d9a34ed5328c8056fb7b59fbbb763d5404701d2"
+  }
+}

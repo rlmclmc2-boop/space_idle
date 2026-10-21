@@ -10,8 +10,8 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "ded04651b747c9535ddaa0c9f5a27b6c7207d1b94de88fba378ed3dd1e23e826",
-  "PLAN_VALIDATION.json": "c76d609cd9228571b2c91e26e1e9f4e885735fa76bc8612b1f00fabdf3146ef8",
+  "IMPLEMENTATION_PLAN.md": "0906bf6b899a910c1b6fdf1ceb6eb31588be8deb3e3711444f97093cf47487c4",
+  "PLAN_VALIDATION.json": "ea176c4098bca603b4febadef0a4be5610ffb138894bd1904ad5aba2f542196a",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S01/FINAL_REVIEW.md": "a884bfe287664aa0fb44c7048875817c27c7489507bda43cc257c41cc9a6651a",
@@ -258,5 +258,14 @@
   "stages/S10/review4-logs/test_reactor.log": "24cd6d8bfe1a8e993b4fde1bd9cc6b733f987ec70a40259b2807cc1690ac3eda",
   "stages/S10/review4-logs/test_reactor_integer_cost.log": "ca532c03f2f370d5bdc3a74c770ddfad69afda8057ac770f9ef6957f019d47ca",
   "stages/S10/review4-logs/transaction_probe.log": "04e5566c43ab51af01314f2c94bd1ceffe63c58e64aa8d24dc36ba15f795a241",
-  "stages/S10/verification.json": "573ed9658e3f846950cb4b1e8ca2b669747479dc1022a0ab7d52ec1ba21de8b0"
+  "stages/S10/verification.json": "573ed9658e3f846950cb4b1e8ca2b669747479dc1022a0ab7d52ec1ba21de8b0",
+  "stages/S11/README.md": "619b2c3274495794f0ea009ee88f5a2bd581ddfa0500dfa9c50a539661cf4f9d",
+  "stages/S11/reference_oracle.py": "aa0ea84757ccd6c3b45cc230da2e6ac434d295719b3aab91bb889ee5b09aa72e",
+  "stages/S11/verify_log.py": "9bf022e9ac8b83b7d146eccb5bf437c3b28f6ea26e9661c66a2b422b0f0186b6",
+  "stages/S11/godot-test.log": "fea4a7ba242e2669fe9c4d2f5703e1128533db08c8831e8501116900663c6d61",
+  "stages/S11/verification.json": "82f8d69093850f3bc0e60f74d1e64a5f91f4c9b0d29b1004a395aa20ca3792b5",
+  "stages/S11/BLOB_INDEX.json": "c4b8d51da59aa96ebb10ff4039ad3a88cd3a512ceed4cac3dbdc76478b76759e",
+  "../../../space-battleship/test/audit_s11_equipment_quote.gd": "4dae020df53c71b6386faf6325cc040d78eeeb78f9c70d1e0a666a6d1ea94ff7",
+  "../../../space-battleship/test/audit_s11_quote_test.gd": "447ff6f13caf6fe03f1487a3d7c3cd739b83230310514b2e83aa7fb28bdc3735",
+  "../../../space-battleship/test/audit_s11_quote_oracle.json": "8a619102f5c1074ca7d80d8eccbf7799400e2ef792618285054dcd89ce26ef8a"
 }

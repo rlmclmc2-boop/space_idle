@@ -1,0 +1,74 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PASS laser quote ok 1
+PASS laser legacy 1
+PASS laser quote ok 2
+PASS laser legacy 2
+PASS laser quote ok 3
+PASS laser legacy 3
+PASS laser quote ok 4
+PASS laser legacy 4
+PASS laser quote ok 5
+PASS laser legacy 5
+PASS laser quote ok 6
+PASS laser legacy 6
+PASS laser quote ok 10
+PASS laser legacy 10
+PASS laser quote ok 20
+PASS laser legacy 20
+PASS laser quote ok 50
+PASS laser legacy 50
+PASS laser quote ok 100
+PASS laser legacy 100
+PASS laser quote ok 500
+PASS laser quote ok 1000
+PASS laser quote ok 3873
+PASS laser oracle 3873
+PASS laser 3873 finite
+PASS laser insufficient 1e300
+PASS laser sufficient 1e400
+PASS laser batch ok
+PASS laser batch oracle
+PASS armour quote ok 1
+PASS armour legacy 1
+PASS armour quote ok 2
+PASS armour legacy 2
+PASS armour quote ok 3
+PASS armour legacy 3
+PASS armour quote ok 4
+PASS armour legacy 4
+PASS armour quote ok 5
+PASS armour legacy 5
+PASS armour quote ok 6
+PASS armour legacy 6
+PASS armour quote ok 10
+PASS armour legacy 10
+PASS armour quote ok 20
+PASS armour legacy 20
+PASS armour quote ok 50
+PASS armour legacy 50
+PASS armour quote ok 100
+PASS armour legacy 100
+PASS armour quote ok 500
+PASS armour quote ok 1000
+PASS armour quote ok 3873
+PASS armour oracle 3873
+PASS armour 3873 finite
+PASS armour insufficient 1e300
+PASS armour sufficient 1e400
+PASS armour batch ok
+PASS armour batch oracle
+PASS boundary 99.9
+PASS boundary 100.0
+PASS boundary 149.0
+PASS boundary 150.0
+PASS level one unrounded
+PASS missing multiplier unrounded
+PASS finite items overflow batch
+PASS overflow half-step
+PASS overflow decade carry
+PASS material crossing
+PASS finite float wallet
+S11 checks=69 failures=0
