@@ -1,0 +1,91 @@
+{
+  "stage": "S07",
+  "state": "integrated_pending_dual_integration_review",
+  "approved_runtime_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "runtime_tree": "e6f66e8e31f35054191e9a089c6ce41818d96102",
+  "frozen_review_evidence_sha": "ea963a6ff5a79bb2486d283d4dde89cc7c2ced8b",
+  "dual_review_record_sha": "514fa96d171cc47d2fd4f5a604f43116f2afb15e",
+  "github_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "local_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "local_origin_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "managed_mirror_head_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "managed_mirror_origin_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "runtime_file": {
+    "path": "space-battleship/scripts/game.gd",
+    "git_blob": "c1de0a2c92ae29ef5d9eccdb0aa149bf8ac6728f",
+    "source_checkout_blob": "c1de0a2c92ae29ef5d9eccdb0aa149bf8ac6728f",
+    "managed_mirror_blob": "c1de0a2c92ae29ef5d9eccdb0aa149bf8ac6728f"
+  },
+  "dll_sha256": {
+    "source_bundle": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+    "managed_mirror_bundle": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+    "managed_mirror_installed": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  },
+  "entry": {
+    "path": "D:/放置/玩游戏.cmd",
+    "engine": "4.7.2.stable.official.ed1daf0bf",
+    "gpu": "NVIDIA GeForce RTX 2060",
+    "quit_after_frames": 120,
+    "first_exit": 0,
+    "reopen_exit": 0,
+    "same_isolated_user_directory": true,
+    "logs_no_script_parse_or_error": true
+  },
+  "local_protection": {
+    "before_status_count": 970,
+    "after_status_count": 970,
+    "non_generated_count_before_after": 25,
+    "project_godot_edit_preserved": true,
+    "target_game_file_clean_before_after": true,
+    "preexisting_verification_dir_restored": true,
+    "s07_verification_dir_preserved": "D:/放置/test/work/player-window-check-s07-verified-20261021",
+    "personal_user_directory_used": false
+  },
+  "scope_limit": "Actual player entry first launch and reopen passed; no progress.json was generated in the isolated directory, so this is not a save/load roundtrip or full native acceptance.",
+  "known_import_warning": "Nested tools/result_analyzer project.godot ignored by editor import, once per run.",
+  "files": {
+    "integration-logs/first-entry.log": {
+      "git_blob": "489970db0ca6316efd99319012f0750ef548112c",
+      "sha256": "b636105602bb99bf7d134e2875c6530efed56fc210f41a8943a2cb977a49ce56",
+      "bytes": 583
+    },
+    "integration-logs/first-player-game.log": {
+      "git_blob": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+      "sha256": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a",
+      "bytes": 169
+    },
+    "integration-logs/first-player-import.log": {
+      "git_blob": "aa9d6e5e185b02bfe2cbb502ab9cfc882e468dfb",
+      "sha256": "5299a1f682b0eaa494f2f5912156ae4d0bc67a6b9842334ca6b245c0fd808a7c",
+      "bytes": 50709
+    },
+    "integration-logs/first-player-launch.json": {
+      "git_blob": "d01e5810b309f19bf9b292388140eedf82be9202",
+      "sha256": "a6ea1530a5df155de285781cf29acf4e60e6fb9cc34e982e1e110f24b13ca08c",
+      "bytes": 530
+    },
+    "integration-logs/reopen-entry.log": {
+      "git_blob": "489970db0ca6316efd99319012f0750ef548112c",
+      "sha256": "b636105602bb99bf7d134e2875c6530efed56fc210f41a8943a2cb977a49ce56",
+      "bytes": 583
+    },
+    "integration-logs/reopen-player-game.log": {
+      "git_blob": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+      "sha256": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a",
+      "bytes": 169
+    },
+    "integration-logs/reopen-player-import.log": {
+      "git_blob": "83b99cccd07d9874c87534d89ac192c7ac4316be",
+      "sha256": "13b96103f386bc44a1dca7e26bf7455ca97b974a84fbc4ac2eca0d7e5d2f9dce",
+      "bytes": 1250
+    },
+    "integration-logs/reopen-player-launch.json": {
+      "git_blob": "d01e5810b309f19bf9b292388140eedf82be9202",
+      "sha256": "a6ea1530a5df155de285781cf29acf4e60e6fb9cc34e982e1e110f24b13ca08c",
+      "bytes": 530
+    }
+  },
+  "parent_integration_review": "PENDING",
+  "original_astra_integration_review": "PENDING",
+  "closure": "OPEN"
+}
