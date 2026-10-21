@@ -45,14 +45,18 @@ func compare(a: CurrencyValue, b: CurrencyValue) -> int:
 	var i := a.positions.size() - 1
 	var j := b.positions.size() - 1
 	while i >= 0 or j >= 0:
-		var pa := a.positions[i] if i >= 0 else -9223372036854775807
-		var pb := b.positions[j] if j >= 0 else -9223372036854775807
 		var delta := 0
-		if pa == pb:
+		if i < 0:
+			delta = -b.digits[j]
+			j -= 1
+		elif j < 0:
+			delta = a.digits[i]
+			i -= 1
+		elif a.positions[i] == b.positions[j]:
 			delta = a.digits[i] - b.digits[j]
 			i -= 1
 			j -= 1
-		elif pa > pb:
+		elif a.positions[i] > b.positions[j]:
 			delta = a.digits[i]
 			i -= 1
 		else:
@@ -68,18 +72,24 @@ func combine(a: CurrencyValue, b: CurrencyValue, b_sign: int) -> CurrencyValue:
 	var i := 0
 	var j := 0
 	var carry := 0
-	var carry_position := -9223372036854775807
+	var carry_position := 0
 	while i < a.positions.size() or j < b.positions.size() or carry != 0:
-		var pa := a.positions[i] if i < a.positions.size() else 9223372036854775807
-		var pb := b.positions[j] if j < b.positions.size() else 9223372036854775807
-		var at: int = mini(pa, pb)
+		var at: int
+		if i < a.positions.size():
+			at = a.positions[i]
+		elif j < b.positions.size():
+			at = b.positions[j]
+		else:
+			at = carry_position
+		if j < b.positions.size():
+			at = mini(at, b.positions[j])
 		if carry != 0:
 			at = mini(at, carry_position)
 		var sum := 0
-		if pa == at:
+		if i < a.positions.size() and a.positions[i] == at:
 			sum += a.digits[i]
 			i += 1
-		if pb == at:
+		if j < b.positions.size() and b.positions[j] == at:
 			sum += b_sign * b.digits[j]
 			j += 1
 		if carry != 0 and carry_position == at:
@@ -91,6 +101,8 @@ func combine(a: CurrencyValue, b: CurrencyValue, b_sign: int) -> CurrencyValue:
 			p.append(at)
 			d.append(sum)
 		if next_carry != 0:
+			if at == 9223372036854775807:
+				return null
 			carry = next_carry
 			carry_position = at + 1
 	return CurrencyValue.new(p, d)

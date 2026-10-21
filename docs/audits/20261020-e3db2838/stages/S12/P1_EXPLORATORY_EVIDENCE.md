@@ -34,6 +34,8 @@ A historical deferred-queue MAX-50000 audit query [completed](p1_proto/explorato
 
 ## Gate status after this prototype
 
+Dual-review repair of the lifecycle candidate adds [host-bound source](p1_proto/ledger_lifecycle_probe.gd), [failed first check](p1_proto/exploratory_ledger_host_commit_1.stdout.log), [passing host replacement control](p1_proto/exploratory_ledger_host_commit_2.stdout.log), [passing signed-position endpoints and atomic overflow control](p1_proto/exploratory_ledger_host_edges_1.stdout.log), [final whole-profile stale control](p1_proto/exploratory_ledger_host_full_1.stdout.log), and [flat-ledger regression](p1_proto/exploratory_sparse_sentinel_regression_1.stdout.log). Old session-only timings remain historical. The current full host commit costs still exceed 4 ms; [feasibility and gaps](P1_FEASIBILITY_AND_GAPS.md) states the supported experimental representation and unresolved larger-exponent domain.
+
 New audit-only ledger lifecycle [source](p1_proto/ledger_lifecycle_probe.gd), [first raw run](p1_proto/exploratory_ledger_lifecycle_1.stdout.log), [zero-value revision](p1_proto/exploratory_ledger_lifecycle_2.stdout.log), [failed strict profile-equality check](p1_proto/exploratory_ledger_lifecycle_3.stdout.log), and [final passing control](p1_proto/exploratory_ledger_lifecycle_4.stdout.log) are recorded in [feasibility and gaps](P1_FEASIBILITY_AND_GAPS.md). The failed equality check compared Godot JSON-parsed numeric Variants by exact container type; the final control checks the preserved small integer field values. No public 4 ms or full schema claim follows from the final local success.
 
 | Gate | Status and evidence gap |
