@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"ambiguous":0,"checked":5,"elapsed_us":1666374,"first_overflow":3873,"kind":"exploratory_rolling_price","levels":50000,"mismatches":[],"sampled":[{"level":3873,"match":true,"power":307,"same_bound":true},{"level":4001,"match":true,"power":317,"same_bound":true},{"level":10000,"match":true,"power":792,"same_bound":true},{"level":50000,"match":true,"power":3959,"same_bound":true},{"level":50001,"match":true,"power":3959,"same_bound":true}]}
+ERROR: 1 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 1 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.

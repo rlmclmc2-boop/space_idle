@@ -1,0 +1,4 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "value" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://max_stream_probe.gd:9)
+ERROR: Failed to load script "res://max_stream_probe.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

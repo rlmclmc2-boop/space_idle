@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"ambiguous":0,"compact_bytes":1066176,"compact_file":"res://generated_wallets/godot_prices_50000_compact.json","count":50000,"finite_count":3871,"full_line_stream_sha256":"ba7343d298a2a04214910ecf9c86c36e672541df8bd4a96930cd0132ecb4b9d9","kind":"exploratory_compact_price_export"}
+ERROR: 1 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 1 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.
