@@ -85,8 +85,8 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 	if not kernel.has_method("can_refit_configuration"):return {}
 	for key in ["equipment_value","charge_max"]:
 		if not values.has(key) or not is_finite(float(values[key])) or float(values[key])<0:return {}
-	var energy:float=game.reactor_energy(-1,float(values.charge_max))
-	if not is_finite(energy) or energy<0 or energy>=9223372036854775808.0:return {}
+	var energy=game.reactor_energy(-1,float(values.charge_max))
+	if energy is Dictionary or not is_finite(float(energy)) or float(energy)<0 or float(energy)>=9223372036854775808.0:return {}
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{},values)
 	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	var ratios:Dictionary=game.refit_health_ratios.duplicate()

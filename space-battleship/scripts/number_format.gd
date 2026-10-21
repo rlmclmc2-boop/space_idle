@@ -33,8 +33,9 @@ static func compact(value, suffix_decimals := -1) -> String:
 	var mantissa: float
 	var exponent: float
 	if value is Dictionary:
-		mantissa = float(value.m)
-		exponent = float(value.e)
+		var parts: Array=GrowthNumber.parts(value)
+		mantissa = float(parts[0])
+		exponent = float(parts[1])
 	else:
 		var amount := float(value)
 		if not is_finite(amount):return str(amount)

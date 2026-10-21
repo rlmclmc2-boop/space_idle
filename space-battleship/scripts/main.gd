@@ -3361,8 +3361,10 @@ func pickup_preview_amount(drop: Dictionary, manual: bool):
 	if core and not manual:amount = ceilf(amount*loss)
 	var source := "furnace" if core else "drop"
 	var production_bonus := 1.0+float(game.hyperspace_totals().hangings.get("gem_refiner",0))
-	var effect := game.crew.system_effect(game,"gem_bonus")*game.reactor_multiplier("condensation")*game.galaxy.multiplier("gem_fragment") if source=="drop" else 1.0
-	return game.jewel_fragment_amount(amount*production_bonus*effect,1.0 if core else float(drop.get("jewelRatio",game.jewel_ratio())))
+	var reactor_bonus=game.reactor_multiplier("condensation") if source=="drop" else 1.0
+	var effect=GrowthNumber.multiply(GrowthNumber.multiply(game.crew.system_effect(game,"gem_bonus"),reactor_bonus),game.galaxy.multiplier("gem_fragment")) if source=="drop" and reactor_bonus is Dictionary else game.crew.system_effect(game,"gem_bonus")*reactor_bonus*game.galaxy.multiplier("gem_fragment") if source=="drop" else 1.0
+	var input=GrowthNumber.multiply(GrowthNumber.multiply(amount,production_bonus),effect) if effect is Dictionary else amount*production_bonus*effect
+	return game.jewel_fragment_amount(input,1.0 if core else float(drop.get("jewelRatio",game.jewel_ratio())))
 
 func draw_battle_resources() -> void:
 	for drop in game.drops:

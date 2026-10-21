@@ -2,6 +2,7 @@ extends RefCounted
 ## Desktop portable progress, validated before any live state or file replacement.
 const Writer := preload("res://scripts/progress_writer.gd")
 const Layout := preload("res://scripts/galaxy_layout.gd")
+const ReactorInt := preload("res://scripts/reactor_integer.gd")
 const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
 const SUPPORTED_VERSIONS := [2,3,4,BattleGame.SAVE_VERSION]
@@ -25,6 +26,61 @@ static func structure_quality(raw: Dictionary) -> Dictionary:
   return {"quality":"historical_complete","quality_rank":2}
  return {"quality":"compatible_sparse","quality_rank":1}
 
+static func restore_legacy_reactor_integers(source: String,raw: Dictionary) -> bool:
+ # v5 wrote integer allocations as bare JSON numbers; JSON.parse converts them
+ # to binary64. Recover the original digits before semantic validation.
+ if not raw.get("reactorAllocation") is Dictionary:return true
+ var bodies: Array=[]
+ var depth:=0;var quoted:=false;var escaped:=false;var start:=0
+ for index in source.length():
+  var c:=source[index]
+  if quoted:
+   if escaped:escaped=false
+   elif c=="\\":escaped=true
+   elif c=='"':
+    quoted=false
+    if depth==1 and source.substr(start,index-start+1)=='"reactorAllocation"':
+     var at:=index+1
+     while at<source.length() and source[at] in [" ","\t","\r","\n"]:at+=1
+     if at<source.length() and source[at]==":":
+      at+=1
+      while at<source.length() and source[at] in [" ","\t","\r","\n"]:at+=1
+      if at>=source.length() or source[at]!="{":return false
+      var opening:=at;var nesting:=0;var inside:=false;var slash:=false
+      while at<source.length():
+       var item:=source[at]
+       if inside:
+        if slash:slash=false
+        elif item=="\\":slash=true
+        elif item=='"':inside=false
+       elif item=='"':inside=true
+       elif item=="{":nesting+=1
+       elif item=="}":
+        nesting-=1
+        if nesting==0:break
+       at+=1
+      if nesting!=0:return false
+      bodies.append(source.substr(opening+1,at-opening-1))
+  elif c=='"':quoted=true;start=index
+  elif c=="{":depth+=1
+  elif c=="}":depth-=1
+ if bodies.size()!=1:return bodies.is_empty() # Duplicate top-level keys are unsafe.
+ if bodies[0].contains("{"):
+  var mixed:=RegEx.new();mixed.compile('"[^"]+"\\s*:\\s*[0-9]{16,}')
+  return mixed.search(bodies[0])==null # Mixed ambiguous large bare numbers are unsafe.
+ var pair:=RegEx.new()
+ pair.compile('^\\s*"([^"]+)"\\s*:\\s*([0-9]+)\\s*$')
+ var seen: Dictionary={}
+ for item in bodies[0].split(",",false):
+  var match_result=pair.search(item)
+  if match_result==null:return true # Let the schema reject unsupported shapes.
+  var key=match_result.get_string(1)
+  if seen.has(key) or not raw.reactorAllocation.has(key):return false
+  seen[key]=true
+  var lexeme=match_result.get_string(2)
+  if lexeme.length()>15:raw.reactorAllocation[key]=ReactorInt.make(lexeme)
+ return true
+
 static func schema() -> Dictionary:
  var building := {"status":"s","build_progress":"g","crew":["s"]}
  var planet := {"degree":"g","unlocked":"b","conquered":"b","auto_explore":"b","crewId":"s","elapsed":"n","buildings":{"*":building}}
@@ -37,7 +93,8 @@ static func schema() -> Dictionary:
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","jewelFurnaceElapsed","jewelFurnaceIncomePeak","chronoParticles","chronoSavedAt","hightechSavedAt","furnaceElapsed","furnaceIncomePeak","guardDeath","loopLevel","guardStage","guardIndex","guardDistance","reactorLevel"]:result[key]="n"
  for key in ["cleared","bossSeen"]:result[key]=["n"]
  for key in ["grantedUnlocks","seenUnlocks","readUnlocks","hightechOrder"]:result[key]=["s"]
- for key in ["hightechLevels","scientistAssignments","reactorAllocation"]:result[key]={"*":"i"}
+ for key in ["hightechLevels","scientistAssignments"]:result[key]={"*":"i"}
+ result.reactorAllocation={"*":"r"}
  # The portable projection includes every live durable field used by the
  # ordinary save. Legacy versions may omit these fields during migration.
  result.aiTechLevels={"*":"i"}
@@ -67,6 +124,7 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
    "n":return (value is int or value is float) and is_finite(float(value))
    "i":return (value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)) and absf(float(value))<9.22e18
    "g":return GrowthNumber.valid(value)
+   "r":return ReactorInt.valid(value) or ((value is int or value is float) and is_finite(float(value)) and value>=0 and value==floorf(float(value)) and float(value)<9223372036854775808.0)
    "currency":return GrowthNumber.valid(value) or (value is Dictionary and value.values().all(func(n):return GrowthNumber.valid(n)))
    "interval":return BattleGame.parse_save_interval(str(value))>0 and (value is String or value is int or value is float)
    "p":return value is Array and value.size()==2 and value.all(func(n):return (n is float or n is int) and is_finite(float(n)))
@@ -145,13 +203,19 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
  if file.get_error()!=OK:return {"error":"read"}
  file.close()
  var parser:=JSON.new()
- if parser.parse(bytes.get_string_from_utf8())!=OK or not parser.data is Dictionary:return {"error":"format"}
+ var source:=bytes.get_string_from_utf8()
+ if parser.parse(source)!=OK or not parser.data is Dictionary:return {"error":"format"}
+ if not restore_legacy_reactor_integers(source,parser.data):return {"error":"format"}
  return prepare_data(parser.data,db)
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
+ if raw.get("reactorAllocation") is Dictionary:
+  var allowed:=String(db.config.reactorModules).split(",")
+  for key in raw.reactorAllocation:
+   if key not in allowed:return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
  for key in raw.get("galaxies",{}):

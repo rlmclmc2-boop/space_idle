@@ -202,7 +202,9 @@ func finish_loaded_recovery(recovery_path: String, result: Dictionary) -> Error:
 static func _check_progress_file(path: String, db: ShipDatabase = null) -> Dictionary:
 	if not FileAccess.file_exists(path):return {"error":"absent"}
 	var parser := JSON.new()
-	if parser.parse(FileAccess.get_file_as_string(path)) != OK or not parser.data is Dictionary:return {"error":"format"}
+	var source:=FileAccess.get_file_as_string(path)
+	if parser.parse(source) != OK or not parser.data is Dictionary:return {"error":"format"}
+	if not load("res://scripts/save_transfer.gd").restore_legacy_reactor_integers(source,parser.data):return {"error":"format"}
 	var data = parser.data
 	var database := db if db != null else ShipDatabase.new()
 	# Runtime load uses the same shape, semantic and legacy migration rules as import.

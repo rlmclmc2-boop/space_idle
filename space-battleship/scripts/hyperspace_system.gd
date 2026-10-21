@@ -1,4 +1,5 @@
 extends RefCounted
+const ReactorInt = preload("res://scripts/reactor_integer.gd")
 ## Commands mutate one profile namespace; no battle, ordinary economy, or save IO.
 const C=preload("res://scripts/hyperspace_config.gd")
 const S=preload("res://scripts/hyperspace_state.gd")
@@ -76,15 +77,15 @@ func publish(g,next: Dictionary,kind: String) -> bool:
 	var refit: bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
 	if (refit or kind=="hull_capacity_changed") and not g.native_before_configuration_change():return false
 	if refit:g.capture_refit_health()
-	var previous_capacity: int=g.reactor_capacity() if refit else 0
+	var previous_capacity=g.reactor_capacity() if refit else 0
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
 	if refit or kind=="hull_capacity_changed":g.invalidate_stat_cache()
 	if refit:
-		var capacity: int=g.reactor_capacity()
-		var remaining: int=capacity
+		var capacity=g.reactor_capacity()
+		var remaining=capacity
 		for key in g.reactor_modules():
-			g.profile.reactorAllocation[key]=mini(int(g.profile.reactorAllocation.get(key,0)),remaining)
-			remaining-=int(g.profile.reactorAllocation[key])
+			g.profile.reactorAllocation[key]=ReactorInt.minimum(g.profile.reactorAllocation.get(key,0),remaining)
+			remaining=ReactorInt.subtract(remaining,g.profile.reactorAllocation[key])
 		g.apply_refit_health()
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
 	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":next.round_id})

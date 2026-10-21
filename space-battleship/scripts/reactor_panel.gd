@@ -1,6 +1,8 @@
 extends Panel
 
 const ROUTES := preload("res://scripts/reactor_routes.gd")
+const ReactorInt := preload("res://scripts/reactor_integer.gd")
+const N := preload("res://scripts/growth_number.gd")
 const SKIN := preload("res://scripts/dialog_presentation.gd")
 const ACCENT := Color("83cfcb")
 const CYAN := Color("286b73")
@@ -74,13 +76,14 @@ func set_readout(label: Label, value: String) -> void:
 			break
 	if label.get_theme_font_size("font_size") != selected:label.add_theme_font_size_override("font_size",selected)
 
-func energy_text(value: float) -> String:
+func energy_text(value: Variant) -> String:
 	# Keep modest pools exact: generic two-significant-digit compact formatting
 	# otherwise turns capacity 207 into 200 and makes shares appear incorrect.
+	if value is Dictionary:return N.text(value)
 	if absf(value)<1000000.0:return ("%.1f" % value).trim_suffix(".0")
 	return NumberFormat.compact(value)
 
-func percent_text(value: float) -> String:
+func percent_text(value: Variant) -> String:
 	return NumberFormat.percentage(value)
 
 func supply_segment(parent: Control, color: Color) -> ColorRect:
@@ -93,12 +96,12 @@ func supply_segment(parent: Control, color: Color) -> ColorRect:
 	return segment
 
 func update_supply_display(controls: Dictionary, manual_percent: String, power_ratio: float, free_ratio: float) -> void:
-	set_readout(controls.share,UIText.t("reactor.flow.share_free",{"percent":manual_percent,"free":percent_text(free_ratio*100.0)}))
+	set_readout(controls.share,UIText.t("reactor.flow.share_free",{"percent":manual_percent,"free":percent_text(N.multiply(free_ratio,100.0))}))
 	# Supply colors include free power; the input remains an integer
 	# allocation on the original capacity scale. Above 100%, fit both contributions.
 	var scale := maxf(1.0,power_ratio+free_ratio)
-	var manual_width := 346.0*clampf(power_ratio/scale,0.0,1.0)
-	var free_width := 346.0*clampf(free_ratio/scale,0.0,1.0)
+	var manual_width := 346.0*clampf(power_ratio/scale,0.0,1.0) if is_finite(scale) else 0.0
+	var free_width := 346.0*clampf(free_ratio/scale,0.0,1.0) if is_finite(scale) else 346.0
 	host.set_ui_value(controls.manual_segment,"size",Vector2(manual_width,28))
 	host.set_ui_value(controls.free_segment,"position",Vector2(114+manual_width,40))
 	host.set_ui_value(controls.free_segment,"size",Vector2(free_width,28))
@@ -339,6 +342,20 @@ func setup(owner_ui: Node) -> void:
 		allocation_row.add_child(input)
 		var energy := make_label(allocation_row,"",Vector2(70,70),438,19,INK,30)
 		energy.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var exact_input := LineEdit.new()
+		exact_input.position=Vector2(112,70)
+		exact_input.size=Vector2(350,30)
+		exact_input.placeholder_text="0"
+		exact_input.visible=false
+		exact_input.text_submitted.connect(submit_exact_allocation.bind(key))
+		allocation_row.add_child(exact_input)
+		var edit_button:=Button.new()
+		edit_button.text="✎"
+		edit_button.position=Vector2(478,72)
+		edit_button.size=Vector2(30,27)
+		edit_button.tooltip_text="Enter exact allocation"
+		edit_button.pressed.connect(func():exact_input.visible=true;exact_input.grab_focus())
+		allocation_row.add_child(edit_button)
 		var supply_background := supply_segment(allocation_row,INK)
 		supply_background.size.x = 346
 		var manual_segment := supply_segment(allocation_row,MODULE_COLORS.weapons)
@@ -357,7 +374,7 @@ func setup(owner_ui: Node) -> void:
 			step_button.pressed.connect(step_allocation.bind(key,direction))
 			allocation_row.add_child(step_button)
 			steps.append(step_button)
-		module_controls[key] = {"index":index,"row":row,"allocation_row":allocation_row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps,"manual_segment":manual_segment,"free_segment":free_segment}
+		module_controls[key] = {"index":index,"row":row,"allocation_row":allocation_row,"branch":branch,"dimmer":dimmer,"scene_fx":scene_fx,"name":name_label,"icon":icon,"slider":slider,"input":input,"exact_input":exact_input,"track":track,"energy":energy,"boost":boost,"clear":clear_button,"bay_energy":bay_energy,"bay_track":bay_track,"share":share,"allocation_boost":allocation_boost,"steps":steps,"manual_segment":manual_segment,"free_segment":free_segment}
 		index += 1
 	move_child(readout_plate(self,Vector2(48,1080),Vector2(546,62)),allocation_label.get_parent().get_index())
 	total_track = visual(self,"segments",Vector2(63,1088),Vector2(510,40))
@@ -425,13 +442,20 @@ func refresh_pending(delta := 0.0) -> void:
 	if delta<=0.0 or refresh_elapsed+0.000000001>=1.0:refresh()
 
 func step_allocation(key: String, direction: int) -> void:
-	change_allocation(float(host.game.profile.reactorAllocation.get(key,0))+direction*int(host.db.config.reactorAllocationStep),key)
+	var current=host.game.profile.reactorAllocation.get(key,0)
+	var step: int=int(host.db.config.reactorAllocationStep)
+	change_allocation(ReactorInt.add(current,step) if direction>0 else ReactorInt.subtract(current,ReactorInt.minimum(current,step)),key)
+
+func submit_exact_allocation(value: String,key: String) -> void:
+	var input: LineEdit=module_controls[key].exact_input
+	if ReactorInt._canonical(value):change_allocation(ReactorInt.make(value),key)
+	input.visible=false
 
 func upgrade(mode: String) -> void:
 	var amount: int = host.game.reactor_max_upgrades() if mode == "MAX" else 10 if mode == "x10" else 1
 	if host.game.upgrade_reactor(amount):refresh()
 
-func change_allocation(value: float, key: String) -> void:
+func change_allocation(value: Variant, key: String) -> void:
 	if refreshing:return
 	host.game.set_reactor_allocation(key,value)
 	refresh()
@@ -478,16 +502,16 @@ func refresh() -> void:
 	var animate: bool = not host.game.paused
 	var game = host.game
 	sync_module_visibility(game)
-	var capacity: int = game.reactor_capacity()
-	var allocated: int = game.reactor_allocated()
+	var capacity=game.reactor_capacity()
+	var allocated=game.reactor_allocated()
 	var available = game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
 	var reactor_enabled: bool = game.reactor_unlocked()
 	var free_ratio: float = game.charge_free_ratio()
 	# The visual source follows real effective module supply, including free power.
-	var source_strength := 0.0
+	var source_strength: Variant=0.0
 	for key in module_controls:
-		source_strength+=game.reactor_effective_ratio(key)
-	source_strength=clampf(source_strength,0.0,1.0) if capacity>0 else 0.0
+		source_strength=N.add(source_strength,game.reactor_effective_ratio(key))
+	source_strength=(1.0 if source_strength is Dictionary else clampf(source_strength,0.0,1.0)) if ReactorInt.compare(capacity,0)>0 else 0.0
 	# Each control owns only its display dependencies. Hidden changes are caught
 	# on reveal; direct input and income refresh immediately without a timer.
 	if host.ui_state_changed(level_label,[game.profile.reactorLevel,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
@@ -511,42 +535,45 @@ func refresh() -> void:
 		var slider: HSlider = controls.slider
 		var unlocked: bool = game.reactor_module_unlocked(key)
 		var enabled: bool = unlocked and reactor_enabled
-		var amount: int = int(game.profile.reactorAllocation.get(key,0)) if unlocked else 0
+		var amount=game.profile.reactorAllocation.get(key,0) if unlocked else 0
 		if not host.ui_state_changed(controls.row,[capacity,allocated,unlocked,reactor_enabled,amount,free_ratio,source_strength,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale,host.db.unlock_row("reactor_module",key).get("level",0)]):continue
-		host.set_ui_value(slider,"editable",enabled)
-		host.set_ui_value(controls.input,"mouse_filter",Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE)
-		controls.input.capacity = capacity
-		controls.input.available_max = maxi(amount,capacity-allocated+amount)
-		host.set_ui_value(slider,"max_value",capacity)
-		host.set_ui_value(slider,"value",amount)
-		var power_ratio := float(amount)/maxf(1.0,capacity)
-		var effective_ratio: float = game.reactor_effective_ratio(key)
-		var effective_energy: float = effective_ratio*capacity
-		var free_energy: float = maxf(0.0,effective_energy-amount)
-		var visual_ratio := clampf(effective_ratio,0.0,1.0) if effective_energy>0.0 else 0.0
+		var large: bool=capacity is Dictionary or amount is Dictionary
+		host.set_ui_value(slider,"editable",enabled and not large)
+		host.set_ui_value(controls.input,"mouse_filter",Control.MOUSE_FILTER_STOP if enabled and not large else Control.MOUSE_FILTER_IGNORE)
+		controls.input.capacity = capacity if not large else 1
+		controls.input.available_max = ReactorInt.add(ReactorInt.subtract(capacity,allocated),amount)
+		host.set_ui_value(slider,"max_value",capacity if not large else 1)
+		host.set_ui_value(slider,"value",amount if not large else 0)
+		if not controls.exact_input.has_focus():controls.exact_input.text=ReactorInt.digits(amount)
+		var power_ratio: float=N.ratio(amount,ReactorInt.maximum(1,capacity))
+		var effective_ratio=game.reactor_effective_ratio(key)
+		var free_energy=N.multiply(capacity,free_ratio if enabled else 0.0)
+		var effective_energy=N.add(amount,free_energy)
+		var visual_ratio := (1.0 if effective_ratio is Dictionary else clampf(effective_ratio,0.0,1.0)) if N.compare(effective_energy,0)>0 else 0.0
 		controls.track.set_ratio(power_ratio)
 		controls.branch.set_ratio(visual_ratio)
 		controls.branch.set_trunk_ratio(source_strength)
 		controls.bay_track.set_ratio(visual_ratio)
-		var manual_percent := UIText.t("reactor.allocation_tiny") if amount > 0 and power_ratio < 0.01 else percent_text(power_ratio*100.0)+"%"
+		var manual_percent := UIText.t("reactor.allocation_tiny") if ReactorInt.compare(amount,0)>0 and power_ratio < 0.01 else percent_text(power_ratio*100.0)+"%"
 		update_supply_display(controls,manual_percent,power_ratio,free_ratio if enabled else 0.0)
-		host.set_ui_value(controls.steps[0],"disabled",amount <= 0 or not enabled)
-		host.set_ui_value(controls.steps[1],"disabled",allocated >= capacity or not enabled)
-		controls.track.set_available_ratio(float(controls.input.available_max)/maxf(1.0,capacity))
+		host.set_ui_value(controls.steps[0],"disabled",ReactorInt.compare(amount,0)<=0 or not enabled)
+		host.set_ui_value(controls.steps[1],"disabled",ReactorInt.compare(allocated,capacity)>=0 or not enabled)
+		controls.track.set_available_ratio(N.ratio(controls.input.available_max,ReactorInt.maximum(1,capacity)))
 		controls.scene_fx.set_ratio(visual_ratio)
 		var shade := 0.58 if not enabled else 0.32 if visual_ratio == 0 else 0.08*(1.0-sqrt(visual_ratio))
 		host.set_ui_value(controls.dimmer,"color",Color(0.0,0.015,0.03,shade))
 		host.set_ui_value(controls.boost,"modulate",Color(1.0,1.0,1.0,1.0) if visual_ratio > 0 else Color(0.72,0.72,0.72,1.0))
 		set_readout(controls.energy,UIText.t("reactor.flow.manual",{"amount":energy_text(amount),"capacity":energy_text(capacity)}))
-		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(effective_ratio*100.0)}))
-		host.set_ui_value(controls.clear,"disabled",amount == 0 or not enabled)
-		var percent: float = (game.reactor_multiplier(key)-1.0)*float(host.db.config.reactorPercentScale)
-		var effect_percent: String = NumberFormat.percentage(percent)
-		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.flow.free",{"energy":energy_text(free_energy),"percent":percent_text(free_ratio*100.0 if enabled else 0.0)}))
+		set_readout(controls.bay_energy,UIText.t("reactor.flow.effective",{"energy":energy_text(effective_energy),"percent":percent_text(N.multiply(effective_ratio,100.0))}))
+		host.set_ui_value(controls.clear,"disabled",ReactorInt.compare(amount,0)==0 or not enabled)
+		var multiplier=game.reactor_multiplier(key)
+		var percent=N.multiply(N.subtract(multiplier,1.0),float(host.db.config.reactorPercentScale))
+		var effect_percent: String = N.text(percent) if percent is Dictionary else NumberFormat.percentage(percent)
+		host.set_ui_value(controls.allocation_boost,"text",UIText.t("reactor.flow.free",{"energy":energy_text(free_energy),"percent":percent_text(N.multiply(free_ratio,100.0) if enabled else 0.0)}))
 		var effect_key := "reactor.module.%s.effect" % key
 		var effect: String = UIText.t(effect_key) if MODULE_COLORS.has(key) else key
 		set_readout(controls.boost,effect+"  "+UIText.t("reactor.module.boost",{"percent":effect_percent}) if unlocked else UIText.t("reactor.module.locked",{"level":str(int(host.db.unlock_row("reactor_module",key).get("level",0)))}))
-		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.flow.details",{"manual":energy_text(amount),"share":manual_percent,"free":energy_text(free_energy),"free_percent":percent_text(free_ratio*100.0 if enabled else 0.0),"effective":energy_text(effective_energy),"effect":controls.boost.text})+("\n"+UIText.t("reactor.flow.smelting_scope") if key == "smelting" else "\n"+UIText.t("reactor.module.condensation.desc") if key == "condensation" else ""))
+		host.set_ui_value(controls.row,"tooltip_text",UIText.t("reactor.flow.details",{"manual":energy_text(amount),"share":manual_percent,"free":energy_text(free_energy),"free_percent":percent_text(N.multiply(free_ratio,100.0) if enabled else 0.0),"effective":energy_text(effective_energy),"effect":controls.boost.text})+("\n"+UIText.t("reactor.flow.smelting_scope") if key == "smelting" else "\n"+UIText.t("reactor.module.condensation.desc") if key == "condensation" else ""))
 	update_module_animation_visibility()
 	core.set_ratio(source_strength)
 	network.set_ratio(source_strength)
@@ -554,6 +581,6 @@ func refresh() -> void:
 	if network.is_processing() != (animate and source_strength>0.0):network.set_process(animate and source_strength>0.0)
 	if host.ui_state_changed(allocation_label,[capacity,allocated]):
 		set_readout(allocation_label,UIText.t("reactor.allocated",{"allocated":energy_text(allocated),"total":energy_text(capacity)}))
-		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(capacity-allocated)}))
-		total_track.set_ratio(float(allocated)/maxf(1.0,capacity))
+		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(ReactorInt.subtract(capacity,allocated))}))
+		total_track.set_ratio(N.ratio(allocated,ReactorInt.maximum(1,capacity)))
 	refreshing = false

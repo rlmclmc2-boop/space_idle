@@ -17,6 +17,7 @@ const SAVE_VERSION := 5
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
+const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
@@ -99,6 +100,8 @@ var startup_error := ""
 var save_enabled := true
 var stat_cache_enabled := false
 var stat_cache: Dictionary = {}
+var reactor_capacity_signature: Array=[]
+var reactor_capacity_cached: Variant=0
 var ai_tech_last_resource_notice_ms := 0
 var stat_cache_revision := 0
 var jewel_defence_capacity_cache: Dictionary = {}
@@ -420,7 +423,7 @@ func load_progress_data(raw: Dictionary) -> void:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if N.valid(value):
 			# Restoring a balance must not mint the remainder of a fractional unit.
-			profile.resources[id] = value.duplicate(true) if value is Dictionary else float(value)
+			profile.resources[id] = ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -742,6 +745,9 @@ func portable_save_data() -> Dictionary:
 
 func _compose_save_data(saved: Dictionary) -> Dictionary:
 	for retired in ["scientists","scientistAssignments","techPoints","hightechLevels","hightechOrder","hightechDrops"]:saved.erase(retired)
+	if saved.get("reactorAllocation") is Dictionary:
+		saved.reactorAllocation=saved.reactorAllocation.duplicate(true)
+		for key in saved.reactorAllocation:saved.reactorAllocation[key]=ReactorInt.encode(saved.reactorAllocation[key])
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -869,6 +875,7 @@ func invalidate_stat_cache() -> void:
 	if native_execution!=null and not native_numeric_update:native_execution.configuration_changed()
 	combat_sources_dirty=true
 	stat_cache.clear()
+	reactor_capacity_signature.clear()
 	jewel_defence_capacity_cache.clear()
 	if compiled_combat_rules!=null and native_upgrade_batch.is_empty():compiled_combat_rules.compile(self)
 
@@ -1168,8 +1175,8 @@ func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
 	var tech_factor = AITech.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")
 	if N.compare(tech_factor,1.0) != 0:
 		value = N.ceiling(N.multiply(value,tech_factor))
-	var reactor_bonus := reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
-	if reactor_bonus != 1.0:
+	var reactor_bonus: Variant=reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
+	if N.compare(reactor_bonus,1.0)!=0:
 		value = N.ceiling(N.multiply(value,reactor_bonus))
 	if stat_cache_enabled and galaxy_charge<0:
 		# Bound previews as well as equipped modules; reads never retain entries.
@@ -1193,54 +1200,100 @@ func reactor_available_modules() -> PackedStringArray:
 func reactor_unlocked() -> bool:
 	return content_unlocked("feature", "reactor")
 
-func reactor_energy(level := -1, galaxy_charge := -1.0) -> float:
+func reactor_energy(level := -1, galaxy_charge := -1.0) -> Variant:
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return float(db.config.reactorEnergyBase) * pow(float(db.config.reactorEnergyGrowth), actual - 1) * crew.system_effect(self,"charge_bonus") * (galaxy.multiplier("charge_max") if galaxy_charge<0 else galaxy_charge) * (1.0+float(hyperspace_totals().hangings.get("extra_storage",0)))
+	var base := float(db.config.reactorEnergyBase)
+	var growth := float(db.config.reactorEnergyGrowth)
+	var crew_bonus: float=crew.system_effect(self,"charge_bonus")
+	var galaxy_bonus: float=galaxy.multiplier("charge_max") if galaxy_charge<0 else galaxy_charge
+	var extra := 1.0+float(hyperspace_totals().hangings.get("extra_storage",0))
+	var ordinary := base*pow(growth,actual-1)*crew_bonus*galaxy_bonus*extra
+	if is_finite(ordinary):return ordinary
+	return N.multiply(N.multiply(N.multiply(N.multiply(base,N.power(growth,actual-1)),crew_bonus),galaxy_bonus),extra)
 
-func reactor_capacity(galaxy_charge := -1.0) -> int:
-	return maxi(0, int(floor(reactor_energy(-1,galaxy_charge))))
+func reactor_capacity(galaxy_charge := -1.0) -> Variant:
+	var galaxy_bonus: float=galaxy.multiplier("charge_max") if galaxy_charge<0 else galaxy_charge
+	var crew_bonus: float=crew.system_effect(self,"charge_bonus")
+	var extra: float=1.0+float(hyperspace_totals().hangings.get("extra_storage",0))
+	var signature: Array=[int(profile.reactorLevel),float(db.config.reactorEnergyBase),float(db.config.reactorEnergyGrowth),crew_bonus,galaxy_bonus,extra]
+	if signature==reactor_capacity_signature:return reactor_capacity_cached
+	var energy=reactor_energy(-1,galaxy_charge)
+	var result: Variant
+	if not energy is Dictionary and is_finite(float(energy)) and float(energy)<9223372036854775808.0:
+		result=maxi(0,int(floor(float(energy))))
+	else:
+		result=ReactorInt.formula_floor([float(db.config.reactorEnergyBase),crew_bonus,galaxy_bonus,extra],float(db.config.reactorEnergyGrowth),int(profile.reactorLevel)-1)
+	reactor_capacity_signature=signature
+	reactor_capacity_cached=result
+	return result
 
-func reactor_upgrade_cost(level := -1) -> float:
+func reactor_upgrade_cost(level := -1) -> Variant:
 	var actual := int(profile.reactorLevel) if level < 0 else level
-	return ceilf(float(db.config.reactorUpgradeBase) * pow(float(db.config.reactorUpgradeGrowth), actual - 1))
+	var ordinary := float(db.config.reactorUpgradeBase)*pow(float(db.config.reactorUpgradeGrowth),actual-1)
+	if is_finite(ordinary) and ordinary<9223372036854775808.0:return ceilf(ordinary)
+	return ReactorInt.formula_ceil([float(db.config.reactorUpgradeBase)],float(db.config.reactorUpgradeGrowth),actual-1)
 
-func reactor_allocated() -> int:
-	var total := 0
-	for key in reactor_modules():total += int(profile.reactorAllocation.get(key,0))
+func reactor_allocated() -> Variant:
+	var total: Variant=0
+	for key in reactor_modules():total = ReactorInt.add(total,profile.reactorAllocation.get(key,0))
 	return total
 
-func reactor_effective_ratio(key: String) -> float:
+func reactor_effective_ratio(key: String) -> Variant:
 	if not reactor_unlocked() or not reactor_module_unlocked(key):return 0.0
-	return float(profile.reactorAllocation.get(key,0))/maxf(1.0,reactor_capacity())+charge_free_ratio()
+	return N.add(N.ratio(profile.reactorAllocation.get(key,0),ReactorInt.maximum(1,reactor_capacity())),charge_free_ratio())
 
-func reactor_multiplier(key: String, galaxy_charge := -1.0) -> float:
+func reactor_multiplier(key: String, galaxy_charge := -1.0) -> Variant:
 	if not reactor_module_unlocked(key):return 1.0
-	var allocation := float(profile.reactorAllocation.get(key,0))
-	if reactor_unlocked():allocation+=float(reactor_capacity(galaxy_charge))*charge_free_ratio()
-	return 1.0 + pow(float(allocation),float(db.config.reactorBoostExponent)) / float(db.config.reactorPercentScale) if allocation > 0 else 1.0
+	var manual=profile.reactorAllocation.get(key,0)
+	var capacity=reactor_capacity(galaxy_charge)
+	if not manual is Dictionary and not capacity is Dictionary:
+		var ordinary := float(manual)
+		if reactor_unlocked():ordinary+=float(capacity)*charge_free_ratio()
+		var boost := pow(ordinary,float(db.config.reactorBoostExponent)) if ordinary>0 else 0.0
+		var ordinary_bonus := 1.0+boost/float(db.config.reactorPercentScale)
+		if is_finite(ordinary_bonus):return ordinary_bonus
+	var allocation=manual
+	if reactor_unlocked():allocation=N.add(allocation,N.multiply(capacity,charge_free_ratio()))
+	return N.add(1.0,N.divide(N.power(allocation,float(db.config.reactorBoostExponent)),float(db.config.reactorPercentScale))) if N.compare(allocation,0)>0 else 1.0
+
+func reactor_affordable(cost: Variant,budget: Variant) -> bool:
+	var exact_budget=ReactorInt.from_growth(budget)
+	return ReactorInt.compare(exact_budget,cost)>=0 if exact_budget!=null else N.compare(budget,cost)>=0
 
 func reactor_max_upgrades() -> int:
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
 	var level := int(profile.reactorLevel)
 	var count := 0
+	var cursor: Array=[]
 	while true:
-		var cost := reactor_upgrade_cost(level)
-		if not is_finite(cost) or cost <= 0 or N.compare(cost,budget)>0:break
-		budget = N.subtract(budget,cost)
+		var cost: Variant=reactor_upgrade_cost(level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
+		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
+		var exact_cost=ReactorInt.from_growth(cost)
+		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(exact_cost,budget):break
+		var exact_budget=ReactorInt.from_growth(budget)
+		budget = ReactorInt.subtract(exact_budget,exact_cost) if exact_budget!=null else N.subtract(budget,cost)
 		level += 1
 		count += 1
+		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
 	return count
 
 func upgrade_reactor(amount: int) -> bool:
 	if not reactor_unlocked() or amount <= 0:return false
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
-	var total := 0.0
+	var total: Variant=0
+	var cursor: Array=[]
 	for offset in amount:
-		var cost := reactor_upgrade_cost(int(profile.reactorLevel)+offset)
-		if not is_finite(cost) or cost <= 0 or N.compare(N.add(total,cost),budget)>0:return false
-		total += cost
+		var quote_level: int=int(profile.reactorLevel)+offset
+		var cost: Variant=reactor_upgrade_cost(quote_level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
+		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),quote_level-1)
+		var exact=ReactorInt.from_growth(cost)
+		if exact==null or ReactorInt.compare(exact,0)<=0:return false
+		total=ReactorInt.add(total,exact)
+		if not reactor_affordable(total,budget):return false
+		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
 	if not native_before_configuration_change():return false
-	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total)
+	var exact_budget=ReactorInt.from_growth(budget)
+	profile.resources[str(int(db.config.reactorUraniumId))] = ReactorInt.subtract(exact_budget,total) if exact_budget!=null else N.subtract(budget,total)
 	profile.reactorLevel += amount
 	invalidate_stat_cache()
 	resources_changed([str(int(db.config.reactorUraniumId))])
@@ -1248,11 +1301,14 @@ func upgrade_reactor(amount: int) -> bool:
 	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
 	return true
 
-func set_reactor_allocation(key: String, value: float) -> bool:
-	if not reactor_unlocked() or not reactor_module_unlocked(key) or not is_finite(value):return false
-	var allowed := maxi(0,reactor_capacity() - reactor_allocated() + int(profile.reactorAllocation.get(key,0)))
-	var next := clampi(int(floor(value)),0,allowed)
-	if next == int(profile.reactorAllocation.get(key,0)):return false
+func set_reactor_allocation(key: String, value: Variant) -> bool:
+	if not reactor_unlocked() or not reactor_module_unlocked(key):return false
+	var requested=ReactorInt.command_floor(value)
+	if requested==null:return false
+	var current=profile.reactorAllocation.get(key,0)
+	var allowed=ReactorInt.subtract(reactor_capacity(),ReactorInt.subtract(reactor_allocated(),current))
+	var next=ReactorInt.minimum(requested,allowed)
+	if ReactorInt.compare(next,current)==0:return false
 	if not native_before_configuration_change():return false
 	profile.reactorAllocation[key] = next
 	invalidate_stat_cache()
@@ -1269,11 +1325,12 @@ func equalize_reactor_allocation() -> bool:
 	if not reactor_unlocked():return false
 	var modules := reactor_available_modules()
 	if modules.is_empty():return false
-	var share := reactor_capacity()/modules.size()
-	var remainder := reactor_capacity()%modules.size()
+	var division := ReactorInt.div_small(reactor_capacity(),modules.size())
+	var share=division[0]
+	var remainder: int=division[1]
 	var next: Dictionary = profile.reactorAllocation.duplicate()
 	for index in modules.size():
-		next[modules[index]] = share + (1 if index < remainder else 0)
+		next[modules[index]] = ReactorInt.add(share,1 if index < remainder else 0)
 	if next==profile.reactorAllocation:return false
 	if not native_before_configuration_change():return false
 	profile.reactorAllocation=next
@@ -1295,7 +1352,9 @@ func load_reactor(raw: Dictionary) -> void:
 	for key in reactor_modules():profile.reactorAllocation[key] = 0
 	for key in reactor_modules():
 		var value = saved.get(key)
-		if reactor_module_unlocked(key) and nonnegative_number(value):profile.reactorAllocation[key] = mini(int(floor(float(value))),maxi(0,reactor_capacity()-reactor_allocated()))
+		if reactor_module_unlocked(key):
+			var requested=ReactorInt.command_floor(value)
+			if requested!=null:profile.reactorAllocation[key] = ReactorInt.minimum(requested,ReactorInt.subtract(reactor_capacity(),reactor_allocated()))
 
 func hightech_level(key: String) -> int:
 	return AITech.level(self,key)
@@ -2537,7 +2596,8 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			if rng.randf() < float(drop.chance):
 				uid += 1
 				var multiplier = reactor_multiplier("smelting") if int(drop.resourceId) == 1 else 1.0
-				var base_amount = N.ceiling(N.multiply(N.multiply(drop.amount,float(enemy.res_ratio)*multiplier),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
+				var drop_factor=N.multiply(float(enemy.res_ratio),multiplier) if multiplier is Dictionary else float(enemy.res_ratio)*multiplier
+				var base_amount = N.ceiling(N.multiply(N.multiply(drop.amount,drop_factor),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
 				var drop_amount = N.ceiling(N.multiply(base_amount,planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base_amount
 				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(int(drop.resourceId)),"amount":drop_amount,"production_base":base_amount})
 
@@ -3144,15 +3204,23 @@ func jewel_ratio() -> float:
 	var value = db.levels[clampi(stage-1,0,db.levels.size()-1)].get("jewelRatio",1.0)
 	return float(value) if nonnegative_number(value) else 1.0
 
-func jewel_fragment_amount(amount: float, ratio := -1.0) -> float:
-	if not nonnegative_number(amount):
+func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
+	if not N.valid(amount):
 		return 0.0
-	var result := amount * (jewel_ratio() if ratio < 0 else ratio)
-	return snappedf(result,0.01) if nonnegative_number(result) else 0.0
+	var factor: float=jewel_ratio() if ratio < 0 else ratio
+	if not amount is Dictionary:
+		var ordinary := float(amount)*factor
+		if nonnegative_number(ordinary):return snappedf(ordinary,0.01)
+	var result=N.multiply(amount,factor)
+	if not N.valid(result):return 0.0
+	return ReactorInt.from_growth(result) if result is Dictionary and ReactorInt.from_growth(result)!=null else 0.0 if result is Dictionary else snappedf(float(result),0.01)
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
 	var production_bonus: float=1.0+float(hyperspace_totals().hangings.get("gem_refiner",0)) if source in ["drop","furnace"] else 1.0
-	var earned = N.multiply(jewel_fragment_amount(amount * production_bonus * (crew.system_effect(self,"gem_bonus") * reactor_multiplier("condensation") * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0),ratio),AITech.income_factor(self,"fragment_income"))
+	var reactor_bonus=reactor_multiplier("condensation") if source=="drop" else 1.0
+	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" and reactor_bonus is Dictionary else crew.system_effect(self,"gem_bonus") * reactor_bonus * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0
+	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor) if gem_factor is Dictionary else amount*production_bonus*gem_factor
+	var earned = N.multiply(jewel_fragment_amount(input,ratio),AITech.income_factor(self,"fragment_income"))
 	profile.jewelFragments = N.add(profile.jewelFragments,earned)
 	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
 	# Production only: refunds must not inflate future income.
@@ -4367,10 +4435,10 @@ func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> vo
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 	if kinds.has("hightech"):event.emit("scientists_changed",{})
 	if kinds.has("reactor"):
-		var remaining := reactor_capacity()
+		var remaining=reactor_capacity()
 		for key in reactor_modules():
-			profile.reactorAllocation[key]=mini(int(profile.reactorAllocation.get(key,0)),remaining)
-			remaining-=int(profile.reactorAllocation[key])
+			profile.reactorAllocation[key]=ReactorInt.minimum(profile.reactorAllocation.get(key,0),remaining)
+			remaining=ReactorInt.subtract(remaining,profile.reactorAllocation[key])
 		invalidate_stat_cache()
 		apply_refit_health()
 		event.emit("reactor_changed",{})

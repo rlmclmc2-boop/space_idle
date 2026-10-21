@@ -2,8 +2,8 @@ extends Control
 
 var slider: HSlider
 var track: Control
-var capacity := 1
-var available_max := 0
+var capacity: Variant = 1
+var available_max: Variant = 0
 var dragging := false
 
 func _ready() -> void:
@@ -34,6 +34,8 @@ func _gui_input(event: InputEvent) -> void:
 
 func _input(event: InputEvent) -> void:
 	if not dragging:return
+	if not slider.editable:
+		dragging=false;set_process_input(false);track.set_preview_ratio(-1.0);return
 	if event is InputEventMouseMotion:
 		apply_pointer((get_global_transform().affine_inverse()*event.global_position).x)
 		get_viewport().set_input_as_handled()
@@ -42,6 +44,7 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 func apply_pointer(local_x: float) -> void:
+	if not slider.editable:return
 	var fraction := clampf(local_x/maxf(size.x,1.0),0.0,1.0)
 	var continuous := minf(fraction*float(capacity),float(available_max))
 	var value := mini(roundi(fraction*float(capacity)),available_max)
