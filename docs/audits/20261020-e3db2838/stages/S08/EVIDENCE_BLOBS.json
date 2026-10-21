@@ -7,9 +7,9 @@
     "space-battleship/tools/level_editor_store.py": "0131dc26dd4355d60ccc015d9d5c05c6499568d5"
   },
   "audit_blobs": {
-    "IMPLEMENTATION_PLAN.md": "34bf9af9dd93cb892c9b7b3fbebb9e1093873166",
-    "PLAN_VALIDATION.json": "7fcfb8203d3e4d9cbad215c4091bc33b2c27421f",
-    "PLAN_SHA256SUMS.json": "9950602da1a0be9fb08527f40febb4e94aa2765b",
+    "IMPLEMENTATION_PLAN.md": "3f5c96d7b7165bf64e5a32f9ca2f5fb615e610d8",
+    "PLAN_VALIDATION.json": "7cd9468b0022b9714ee319bc91acf0e1778efc12",
+    "PLAN_SHA256SUMS.json": "7a8a50dc2df4708758f1ed262736dd6a2311fe6b",
     "stages/S08/README.md": "136b49081e24f450411a4ba758df796777d7652a",
     "stages/S08/RESULT.json": "4da09c9c9459350b98b8b619107e1dd02dfccfdd",
     "stages/S08/fault_injection.log": "ec314dc5c5f625f171ea7903fdffdecc207500dc",
@@ -25,7 +25,8 @@
     "stages/S08/integration-logs/reopen-entry.log": "33b60de06929d51836fb82af07536a9ecb32b40a",
     "stages/S08/integration-logs/reopen-player-game.log": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
     "stages/S08/integration-logs/reopen-player-import.log": "83b99cccd07d9874c87534d89ac192c7ac4316be",
-    "stages/S08/integration-logs/reopen-player-launch.json": "cf1b8a3a23a143acb5dff71913594f41620d4d05"
+    "stages/S08/integration-logs/reopen-player-launch.json": "cf1b8a3a23a143acb5dff71913594f41620d4d05",
+    "stages/S08/INTEGRATION_REVIEW.md": "de788aa9f1fd508623af324a1e5647b3bebe3001"
   },
   "note": "Blob IDs obtained from final remote branch readback; this index excludes its own blob to avoid self-reference."
 }
