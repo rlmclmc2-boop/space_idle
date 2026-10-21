@@ -54,6 +54,25 @@ def required_files() -> dict:
         raise ValueError("Analyzer entry script has an unlisted script dependency")
     return manifest
 
+
+def check_import_log(log_text: str, path: Path) -> None:
+    lines = log_text.splitlines()
+    certificate_error = "ERROR: Failed to read the root certificate store."
+    certificate_trace = "   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)"
+    certificate_count = 0
+    for index, line in enumerate(lines):
+        if "SCRIPT ERROR" in line or "Parse Error" in line:
+            raise RuntimeError(f"Analyzer import script error: {path}: {line}")
+        if not line.lstrip().startswith("ERROR:"):
+            continue
+        if (line == certificate_error and index + 1 < len(lines)
+                and lines[index + 1] == certificate_trace):
+            certificate_count += 1
+            if certificate_count == 1:
+                continue
+        raise RuntimeError(f"Analyzer import error: {path}: {line}")
+
+
 def build(output: Path, engine: Path | None = None) -> None:
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
@@ -109,8 +128,7 @@ def build(output: Path, engine: Path | None = None) -> None:
                         "--editor", "--import", "--quit"], env=env, stdout=log, stderr=subprocess.STDOUT,
                        check=True, timeout=90)
     log_text = (output / "build.log").read_text(encoding="utf-8")
-    if "SCRIPT ERROR" in log_text or "Parse Error" in log_text:
-        raise RuntimeError(f"Analyzer import failed: {output / 'build.log'}")
+    check_import_log(log_text, output / "build.log")
     print(output)
 
 if __name__ == "__main__":
