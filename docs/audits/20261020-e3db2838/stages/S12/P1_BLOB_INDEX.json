@@ -1,12 +1,12 @@
 {
-  "subject_commit": "793699d1c75895218b48d5361ce7668d53f06c46",
+  "subject_commit": "0c4aa26df569dce330e1fd27209e7a31522027ff",
   "semantics": "SHA-256 of the bytes in Git blobs; no ignored runtime/cache files",
-  "file_count": 698,
+  "file_count": 700,
   "files": {
     "docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md": {
-      "git_blob": "327d7b9261dc47cb40d1521ca3e3d36318657625",
-      "sha256_git_bytes": "9eb93bd39112d66b75cfa9442e3b146b6d00d4e4f56f600725a5d05e835e9623",
-      "bytes": 73065
+      "git_blob": "73b67280c4b6e5bc8ddd9edcb58b369b8cc15a82",
+      "sha256_git_bytes": "124c320c0249abb697ae972589f76fc4498745ae8c186586830da7274a653f1b",
+      "bytes": 73475
     },
     "docs/audits/20261020-e3db2838/stages/S12/P0_CONTRACT_P1_GATE.md": {
       "git_blob": "46c74352d3658c87ae83fdc69f0f3186ad0e79ee",
@@ -64,9 +64,9 @@
       "bytes": 22852
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_HOST_PROTOCOL.md": {
-      "git_blob": "b061d5681d5d44b04f74a625dec813abba9b3ca7",
-      "sha256_git_bytes": "c9ba793105f18ae087a95086f227d02e3bc64e3e6271bb77cc7d32db35281376",
-      "bytes": 4924
+      "git_blob": "5184bd48b39ffa97b22af79007b309752529d3e6",
+      "sha256_git_bytes": "6f97a0822b19b5bc15f6edfa73530bef1f74c9c176719b8bc682dcdc39229b8f",
+      "bytes": 4994
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_PARAM_MAIN_FAMILY.md": {
       "git_blob": "8729690c16ac2395e103b2f2432caca99598f810",
@@ -77,6 +77,11 @@
       "git_blob": "0e8cb5b54eddd1e3af4e2857b44bacbd16145f6d",
       "sha256_git_bytes": "b97b3cc704cf856d86fed1e2df43354fe2589501e04a024982728c1c0648cc62",
       "bytes": 7509
+    },
+    "docs/audits/20261020-e3db2838/stages/S12/P1_RESEARCH_THRESHOLD_REPAIR.md": {
+      "git_blob": "b7fc3b7908b994c268d8cce046388ee4c32aa30f",
+      "sha256_git_bytes": "7b35f0dee1d87c7d077e8dfea49bb6a3405486eefc5f6aa4de6f23fa70e882a9",
+      "bytes": 1615
     },
     "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_FROZEN.md": {
       "git_blob": "3330766c9b52808a66cd3d5d6c97fc3bdc6f646c",
@@ -129,9 +134,9 @@
       "bytes": 3027
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/build_blob_index.py": {
-      "git_blob": "28674ac3cb579807f4c8a96fe8d3328e1cfc4248",
-      "sha256_git_bytes": "c2f3f58d5993366094e44d7441e2cb74eece10433d61e1a320056fd7b13b61d3",
-      "bytes": 2793
+      "git_blob": "a528de6d8e0b63590881781933c902a7bc8ee545",
+      "sha256_git_bytes": "ad1b23aa72732e5040304433976641d3c6be339e37740b2be7a612b7375400fb",
+      "bytes": 2877
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/edge_payload_probe.gd": {
       "git_blob": "2952d97ffff398e8aae9ead35860e0efed1bbdc9",
@@ -2393,6 +2398,11 @@
       "sha256_git_bytes": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "bytes": 0
     },
+    "docs/audits/20261020-e3db2838/stages/S12/p1_proto/exploratory_p1_research_threshold_repair.log": {
+      "git_blob": "130f78b16785f03d429a26c7a60dd214c9ab9943",
+      "sha256_git_bytes": "5071e1d5fc61901e59554aa08a8f2286a5c05e17eccb213870d6d6dbcbc3a5be",
+      "bytes": 122
+    },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/exploratory_param_armour20_config_stale_freeze.meta.json": {
       "git_blob": "b7d9e889a43bf4460cf10c3f63071393dc80ee7e",
       "sha256_git_bytes": "ba98b7761ac0b5c9582a5e36cfdf3877dea3cb8c6804cc063d87be8e9307721e",
@@ -3339,9 +3349,9 @@
       "bytes": 5059
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/p1_host_contract.py": {
-      "git_blob": "80377236fb75eb2efd05b822eca015d0b080755a",
-      "sha256_git_bytes": "b2ee1940f4860a154dd73b3b085c482abd3e6ad4258c005ae68e3a43cf41848d",
-      "bytes": 10968
+      "git_blob": "dbc011337ae46eec8eedba66d6423e7cf2f05a4c",
+      "sha256_git_bytes": "c39d7c049aba07ad51225c6616e3e51075ce453dfbdae2938504cc7de2cbd64c",
+      "bytes": 11358
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/price.py": {
       "git_blob": "4cfc71bf52179f5d70cd39489881514ae26dba7e",
@@ -3424,9 +3434,9 @@
       "bytes": 10474
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/test_p1_host_contract.py": {
-      "git_blob": "6e2136f792e7cc83dda5dd23a0b7cde1ad72c234",
-      "sha256_git_bytes": "8b21a494490bb7193981cb8f66ce62c3b84ad50d154d267aae1b861e4f6f7b3d",
-      "bytes": 7299
+      "git_blob": "ab74f12b6c40da91bda6031d40e7d4c86834ce51",
+      "sha256_git_bytes": "4e269d78feccf27822c702f35c59b24e08ee817245752870aaa6516adb29952c",
+      "bytes": 8043
     },
     "docs/audits/20261020-e3db2838/stages/S12/p1_proto/test_proto.py": {
       "git_blob": "e89df97278a0aae5f2468daa805e0eca8c2e5f76",
