@@ -1,0 +1,19 @@
+{
+  "stage": "S10",
+  "status": "blocked_pending_parent_policy_boundary_review",
+  "base_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "approved_contract_sha": "0442a1b627a07fa1af0d0671cdeb97dd070c5efc",
+  "runtime_final_sha": null,
+  "commands_and_environment": [
+    "Windows PowerShell static source inspection of game.gd, growth_number.gd, reactor_panel.gd, save_transfer.gd, native_execution_compiler.gd and named consumers",
+    "Godot 4.7.2 headless probe attempted; timed out and was terminated without a result"
+  ],
+  "results": [
+    {"check": "exact large integer allocation with current GrowthNumber", "result": "blocked", "reason": "binary64 mantissa loses small increments near 1e20; no quotient/remainder API"},
+    {"check": "unbounded reactor multiplier in current float consumers", "result": "blocked", "reason": "return type and dependent arithmetic are float and can become nonfinite"},
+    {"check": "97/98, transactions, save/portable, native DLL", "result": "not_run", "reason": "implementation not started pending boundary decision"}
+  ],
+  "parent_review": "PENDING",
+  "astra_review": "PENDING",
+  "integration": "not_eligible"
+}
