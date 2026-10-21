@@ -38,3 +38,5 @@
 额外费用消费者：`space-battleship/scripts/player_loadout_generator.gd:268-271` 把报价转 float 后补钱包；`balance_autoplayer.gd:83-85` 和 `balance_metrics.gd:73-74` 把报价转 float 用于模拟器。S12 目标明确包含玩家购买、批量/MAX、扣费、缓存、显示、相关保存和 native；S20 另有模拟器数值域政策关口。请父级与原 astra 先共同确定这些消费者在 A07/S12 的责任边界或修订阶段，不由实施线程单独扩大模拟器范围。当前候选不得据此宣称 A07 闭环。
 
 还需针对同一最终运行 SHA 和冻结证据 SHA 获得父级 dot 与原 astra 独立 PASS、未解决项为空，再由父级决定 main 集成及本地入口验收。本线程不自行合 main、开启下一阶段或关闭阶段。
+
+2026-10-21 update: runtime candidate 1f7c160 adds the jointly scoped direct-consumer fixes and material precision repair. See OPEN_ISSUES.md for the regression table and unapproved compact-wallet proposal. S12 remains open; a7251e1 is superseded, and no dual PASS is claimed.

@@ -744,12 +744,12 @@ status: awaiting_decision
 implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
 candidate_branch: impl/s12-transaction-integration
-runtime_candidate_sha: a7251e1ff4fe9a9a01017ab135bcfb546bdc9bdf
+runtime_candidate_sha: 1f7c160f194eabc745016001da53110b047ff5a1
 runtime_final_sha: PENDING
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/README.md
 evidence_snapshot_sha: PENDING
-scope_decision: parent and original astra to classify extra float-price consumers before A07 closure
+scope_decision: parent and original astra included direct new-encoding consumers in S12; compact old-wallet design awaits review
 parent_review: PENDING
 astra_review: PENDING
 integration: PENDING
