@@ -30,6 +30,7 @@ var projection_builds := 0
 var refresh_passes := 0
 var selected_next_stat = 0.0
 var detail_dirty := true
+var pending_max_slot:String=""
 var details_open := false
 var footer: Panel
 var footer_title: Label
@@ -312,7 +313,8 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
 	if count<0:
-		item.cost="MAX calculation unavailable; choose a smaller batch"
+		pending_max_slot=module_card_id(item.category,item.index)
+		item.cost="MAX calculating…"
 		item.costs={}
 		item.direct_upgradeable=false
 		quotes[quote_key]={"cost":item.cost,"costs":{},"available":false}
@@ -502,6 +504,7 @@ func refresh_slots(changed: Array) -> void:
 		dirty = true
 		return
 	var detail_changed := dirty or changed.is_empty() or changed.has(selected)
+	pending_max_slot=""
 	var structure_changed := false
 	# A reforge replaces the stored module array; remove only obsolete cards.
 	for id in items.keys():
@@ -548,6 +551,9 @@ func refresh_slots(changed: Array) -> void:
 
 func refresh_pending() -> void:
 	if not is_visible_in_tree():return
+	if not pending_max_slot.is_empty() and upgrade_amount==0:
+		refresh(pending_max_slot)
+		return
 	refresh_new_weapon()
 	if dirty:
 		refresh()
@@ -756,8 +762,8 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	var cost: String = host.cost_text(host.game.slot_upgrade_cost(category,selected_slot)) if not item.locked else "—"
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
-	var max_count:=host.game.max_upgrade_amount_slot(category,selected_slot) if not item.locked else 0
-	var max_cost:=host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,max_count)) if max_count>0 else "MAX calculation unavailable; choose a smaller batch" if max_count<0 else ""
+	var max_count:int=host.game.max_upgrade_amount_slot(category,selected_slot) if not item.locked else 0
+	var max_cost:String=host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,max_count)) if max_count>0 else "MAX calculating…" if max_count<0 else ""
 	host.set_ui_value(detail.max,"tooltip_text",max_cost)
 	if max_count<0:host.set_ui_value(detail.max,"disabled",true)
 	var description: String = ""

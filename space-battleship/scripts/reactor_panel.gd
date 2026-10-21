@@ -40,6 +40,7 @@ var refreshing := false
 var dirty := true
 var refresh_elapsed := 0.0
 var animation_state: Array = []
+var max_quote_pending:bool=false
 
 func make_label(parent: Control, key: String, at: Vector2, width: float, font_size := 18, color := INK, height := 42.0) -> Label:
 	var result: Label = host.equipment_card_label(parent,"" if key.is_empty() else UIText.t(key),Rect2(at,Vector2(width,height)),font_size,color)
@@ -437,6 +438,9 @@ func refresh_pending(delta := 0.0) -> void:
 		animation_state=next
 		refresh_animation_state()
 	if not dirty or not next[0]:return
+	if max_quote_pending:
+		refresh()
+		return
 	if not host.game.paused:refresh_elapsed+=maxf(0.0,delta)*host.game.speed
 	# One game-second from first change, matching automation; direct actions/reveal stay immediate.
 	if delta<=0.0 or refresh_elapsed+0.000000001>=1.0:refresh()
@@ -523,14 +527,17 @@ func refresh() -> void:
 		set_readout(capacity_label,energy_label.text)
 	if host.ui_state_changed(uranium_label,[available]):
 		host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":host.number(available)}))
-	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
+	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]) or max_quote_pending:
 		var max_count: int = game.reactor_max_upgrades()
+		max_quote_pending=max_count<0
 		host.set_ui_value(equalize_button,"disabled",not reactor_enabled)
 		for mode in upgrade_buttons:
 			var needed: int = max_count if mode == "MAX" else 10 if mode == "x10" else 1
-			var single_affordable:=game.reactor_affordable(game.reactor_upgrade_cost(),available) if max_count<0 and mode=="x1" else false
-			host.set_ui_value(upgrade_buttons[mode],"disabled",needed <= 0 or (max_count<needed and not single_affordable) or not reactor_enabled)
-			if mode == "MAX":host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.upgrade.max",{"count":str(max_count)}) if max_count>=0 else "MAX unavailable")
+			var single_affordable:bool=game.reactor_affordable(game.reactor_upgrade_cost(),available) if max_count<0 and mode=="x1" else false
+			var pending_fixed:bool=max_count<0 and mode=="x10"
+			host.set_ui_value(upgrade_buttons[mode],"disabled",needed <= 0 or (max_count<needed and not single_affordable and not pending_fixed) or not reactor_enabled)
+			if mode == "MAX":host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.upgrade.max",{"count":str(max_count)}) if max_count>=0 else "MAX calculating…")
+		if max_quote_pending:dirty=true
 	for key in module_controls:
 		var controls: Dictionary = module_controls[key]
 		var slider: HSlider = controls.slider

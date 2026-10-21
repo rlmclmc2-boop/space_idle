@@ -5,6 +5,7 @@ extends RefCounted
 # preserves the pre-S12 float formula and its per-level rounding.
 const I := preload("res://scripts/reactor_integer.gd")
 const G := preload("res://scripts/growth_number.gd")
+const S := preload("res://scripts/sparse_wallet.gd")
 
 static func _old_growth(base: float, multiplier: float, level: int) -> float:
 	var value := base * pow(1.0 + multiplier, level - 1)
@@ -39,6 +40,57 @@ static func _large_growth(base: float, multiplier: float, level: int) -> Variant
 		leading += 1
 	return I.make(str(leading) + "0".repeat(step_power))
 
+static func _trim_bound(coefficient:Variant,exponent:int,precision:int,up:bool)->Array:
+	var digits:String=I.digits(coefficient)
+	if digits.length()<=precision:return [coefficient,exponent]
+	var cut:int=digits.length()-precision
+	var kept:Variant=I.make(digits.substr(0,precision))
+	if up and digits.substr(precision).lstrip("0")!="":kept=I.add(kept,1)
+	return [kept,exponent+cut]
+
+static func _multiply_bound(a:Array,b:Array,precision:int,up:bool)->Array:
+	return _trim_bound(I.multiply(a[0],b[0]),int(a[1])+int(b[1]),precision,up)
+
+static func _rounded_bound(bound:Array)->Array:
+	var digits:String=I.digits(bound[0])
+	var magnitude:int=digits.length()+int(bound[1])-1
+	var step_power:int=magnitude-1
+	var shift:int=int(bound[1])-step_power
+	var shifted:String=digits+"0".repeat(shift) if shift>=0 else digits
+	var whole_length:int=shifted.length()+mini(shift,0)
+	var leading:int=int(shifted.substr(0,maxi(0,whole_length)))
+	if shift<0 and whole_length>=0 and whole_length<shifted.length() and shifted[whole_length]>="5":leading+=1
+	return [leading,step_power]
+
+static func _bounded_large_growth(base:float,multiplier:float,level:int)->Variant:
+	# Outward decimal bounds make the two leading rounded digits exact without
+	# expanding every digit of a large intermediate power. Ambiguous boundaries
+	# increase precision instead of guessing which side of the half-step wins.
+	var base_part:Array=I.decimal_factor(base)
+	var growth_part:Array=I.decimal_factor(1.0+multiplier)
+	for precision in [48,96,192,384,768,1536,3072]:
+		var lower:Array=[1,0];var upper:Array=[1,0]
+		var low_power:Array=[growth_part[0],-int(growth_part[1])]
+		var high_power:Array=low_power.duplicate()
+		var count:int=level-1
+		while count>0:
+			if count%2==1:
+				lower=_multiply_bound(lower,low_power,precision,false)
+				upper=_multiply_bound(upper,high_power,precision,true)
+			count=int(count/2)
+			if count>0:
+				low_power=_multiply_bound(low_power,low_power,precision,false)
+				high_power=_multiply_bound(high_power,high_power,precision,true)
+		lower=_multiply_bound(lower,[base_part[0],-int(base_part[1])],precision,false)
+		upper=_multiply_bound(upper,[base_part[0],-int(base_part[1])],precision,true)
+		var rounded_low:Array=_rounded_bound(lower)
+		var rounded_high:Array=_rounded_bound(upper)
+		if rounded_low==rounded_high:
+			if int(rounded_low[1])>10000:
+				return S._encode(S._normalized(S._from_digits(str(rounded_low[0]),str(rounded_low[1]))))
+			return I.make(str(rounded_low[0])+"0".repeat(int(rounded_low[1])))
+	return null
+
 static func quote_row(row: Dictionary, level: int, evolution: Dictionary) -> Dictionary:
 	if level < 1:
 		return {"ok": false, "error": "invalid level"}
@@ -64,13 +116,13 @@ static func quote_row(row: Dictionary, level: int, evolution: Dictionary) -> Dic
 			if is_finite(ordinary):
 				amount = ceilf(ordinary)
 			else:
-				amount = _large_growth(base, multi, level)
+				amount = _bounded_large_growth(base,multi,level) if level>4000 else _large_growth(base, multi, level)
 				if amount == null:
 					return {"ok": false, "error": "unrepresentable growth " + suffix}
 		else:
 			amount = ceilf(base)
 		if amount is Dictionary:
-			if not I.valid(amount):
+			if not I.valid(amount) and not S.valid(amount):
 				return {"ok": false, "error": "invalid quote " + suffix}
 		elif not is_finite(float(amount)):
 			return {"ok": false, "error": "invalid quote " + suffix}
@@ -94,7 +146,7 @@ static func batch(row: Dictionary, current: int, count: int, evolution: Dictiona
 		if not item.ok:
 			return item
 		for id in item.costs:
-			total[id] = I.add(total.get(id, 0), item.costs[id])
+			total[id] = G.add(total.get(id,0),item.costs[id]) if S.is_sparse(item.costs[id]) or S.is_sparse(total.get(id,0)) else I.add(total.get(id, 0), item.costs[id])
 	return {"ok": true, "costs": total}
 
 static func affordable(wallet: Dictionary, costs: Dictionary) -> bool:
@@ -106,6 +158,9 @@ static func affordable(wallet: Dictionary, costs: Dictionary) -> bool:
 		var balance = wallet[id]
 		if not G.valid(balance):
 			return false
+		if S.is_sparse(costs[id]):
+			if G.compare(balance,costs[id])<0:return false
+			continue
 		if balance is Dictionary and balance.get("v") in [2,3]:
 			if G.compare(balance,costs[id])<0:return false
 			continue

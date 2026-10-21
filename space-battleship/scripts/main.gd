@@ -3357,14 +3357,14 @@ func pickup_preview_amount(drop: Dictionary, manual: bool):
 	if not drop.has("jewel"):
 		return GrowthNumber.ceiling(GrowthNumber.multiply(drop.amount,1.0 if manual else loss))
 	var core: bool = drop.get("hightech",false)
-	var amount := float(drop.get("amount",1))
-	if core and not manual:amount = ceilf(amount*loss)
+	var amount:Variant=drop.get("amount",1)
+	if core and not manual:
+		var adjusted=game.cashflow_multiply(amount,loss)
+		if adjusted==null:return 0.0
+		amount=GrowthNumber.ceiling(adjusted)
 	var source := "furnace" if core else "drop"
-	var production_bonus := 1.0+float(game.hyperspace_totals().hangings.get("gem_refiner",0))
-	var reactor_bonus=game.reactor_multiplier("condensation") if source=="drop" else 1.0
-	var effect=GrowthNumber.multiply(GrowthNumber.multiply(game.crew.system_effect(game,"gem_bonus"),reactor_bonus),game.galaxy.multiplier("gem_fragment")) if source=="drop" else 1.0
-	var input=GrowthNumber.multiply(GrowthNumber.multiply(amount,production_bonus),effect)
-	return game.jewel_fragment_amount(input,1.0 if core else float(drop.get("jewelRatio",game.jewel_ratio())))
+	var earned=game.jewel_earned(amount,source,1.0 if core else float(drop.get("jewelRatio",game.jewel_ratio())))
+	return earned if earned!=null else 0.0
 
 func draw_battle_resources() -> void:
 	for drop in game.drops:

@@ -315,7 +315,9 @@ func prepare_numeric_batch(game,mode:String,planned_max:Dictionary={})->Dictiona
 			if costs.has(game.db.evolution_material_id()) and not game.hyperspace.is_unlocked(game):continue
 			var debits:Dictionary=game.equipment_debits(costs,wallet)
 			if debits.is_empty():continue
+			if not game.equipment_save_fits(debits,category,index,levels):return {"skip":true,"error":"save_size"}
 			for id in debits:wallet[id]=debits[id]
+			if not game.equipment_save_fits(wallet,category,index,levels):return {"skip":true,"error":"save_size"}
 			var entry:Dictionary=game.slot_entry(category,index)
 			var projected=entry.duplicate();projected.level=int(entry.level)+levels
 			planned[game.slot_id(category,index)]={"levels":levels,"before":int(entry.level)}
@@ -325,6 +327,7 @@ func prepare_numeric_batch(game,mode:String,planned_max:Dictionary={})->Dictiona
 				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
 					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
 	if planned.is_empty():return {"skip":true}
+	if not game.equipment_batch_save_fits(wallet,planned):return {"skip":true,"error":"save_size"}
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
 	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	descriptor.player=player

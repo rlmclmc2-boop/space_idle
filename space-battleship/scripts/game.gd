@@ -31,6 +31,9 @@ var rail_geometry_provider:=Callable()
 var rail_target_point_provider:=Callable()
 var player_launch_payload: Dictionary={}
 var max_upgrade_quote_cache:Dictionary={}
+var reactor_max_quote_cache:Dictionary={}
+var cashflow_scale_cache:Dictionary={}
+var cashflow_pending:bool=false
 var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new()
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
@@ -634,6 +637,7 @@ func load_hightech(raw: Dictionary) -> void:
 		for id in ["1", "2", "jewel"]:
 			if N.valid(raw.aiIncomePeak.get(id)):profile.aiIncomePeak[id] = raw.aiIncomePeak[id]
 	if N.valid(raw.get("furnaceIncomePeak")):profile.furnaceIncomePeak=raw.furnaceIncomePeak.duplicate(true) if raw.furnaceIncomePeak is Dictionary else float(raw.furnaceIncomePeak)
+	if N.valid(raw.get("jewelFurnaceIncomePeak")):profile.jewelFurnaceIncomePeak=raw.jewelFurnaceIncomePeak.duplicate(true) if raw.jewelFurnaceIncomePeak is Dictionary else float(raw.jewelFurnaceIncomePeak)
 	var selected := str(raw.get("aiTechActive", ""))
 	if selected.is_empty() or bool(AITech.eligibility(self,selected).ok):profile.aiTechActive = selected
 	if raw.get("resourceSamples") is Array:
@@ -950,7 +954,7 @@ func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictiona
 		var cost := upgrade_cost_for_level(key, level)
 		if cost.is_empty():return {}
 		for id in cost:
-			total[id] = ReactorInt.add(total.get(id, 0), cost[id])
+			total[id] = equipment_cost_add(total.get(id,0),cost[id])
 	return total
 
 func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
@@ -973,7 +977,8 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	return EquipmentQuote.affordable(wallet,costs)
 
 func equipment_debit(balance: Variant,cost: Variant) -> Variant:
-	if not N.valid(balance) or not ReactorInt.valid(cost):return null
+	if not N.valid(balance) or not (ReactorInt.valid(cost) or SparseWallet.is_sparse(cost) and SparseWallet.valid(cost)):return null
+	if SparseWallet.is_sparse(cost):return SparseWallet.subtract(balance,cost)
 	if SparseWallet.is_sparse(balance) or CompactWallet.is_compact(balance):return SparseWallet.subtract(balance,cost)
 	var exact_balance=ReactorInt.from_growth(balance)
 	if exact_balance==null and balance is Dictionary and balance.has("m"):
@@ -991,6 +996,9 @@ func equipment_debit(balance: Variant,cost: Variant) -> Variant:
 		return remainder if ReactorInt.compare(cost,0)==0 or N.compare(remainder,balance)<0 else null
 	return null
 
+func equipment_cost_add(a:Variant,b:Variant)->Variant:
+	return SparseWallet.add(a,b) if SparseWallet.is_sparse(a) or SparseWallet.is_sparse(b) else ReactorInt.add(a,b)
+
 func equipment_debits(costs: Dictionary,wallet: Dictionary={}) -> Dictionary:
 	if costs.is_empty():return {}
 	var result := {}
@@ -1003,7 +1011,7 @@ func equipment_debits(costs: Dictionary,wallet: Dictionary={}) -> Dictionary:
 	return result
 
 func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,levels:int=0,extra_samples:Array=[],extra_fields:Dictionary={})->bool:
-	var needs_check:=false
+	var needs_check:=not extra_samples.is_empty() or not extra_fields.is_empty()
 	for value in next_wallet.values():
 		if CompactWallet.is_compact(value) or SparseWallet.is_sparse(value):needs_check=true;break
 	if not needs_check:
@@ -1021,6 +1029,24 @@ func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,
 	# a pre-effect transport check, never a gameplay exponent or wallet cap.
 	return JSON.stringify(snapshot,"\t").to_utf8_buffer().size()<=16*1024*1024
 
+func equipment_batch_save_fits(wallet:Dictionary,planned:Dictionary)->bool:
+	var needs_check:=false
+	for value in wallet.values():
+		if CompactWallet.is_compact(value) or SparseWallet.is_sparse(value):needs_check=true;break
+	if not needs_check:
+		for value in profile.resources.values():
+			if CompactWallet.is_compact(value) or SparseWallet.is_sparse(value):needs_check=true;break
+	if not needs_check:return true
+	var snapshot:=portable_save_data()
+	for id in wallet:
+		if id==db.evolution_material_id():snapshot.hyperspace.materials[id]=ReactorInt.encode(wallet[id])
+		else:snapshot.resources[id]=ReactorInt.encode(wallet[id]) if ReactorInt.valid(wallet[id]) else wallet[id]
+	for category in ["weapons","defence"]:
+		for index in snapshot.loadout[category].size():
+			var key:=slot_id(category,index)
+			if planned.has(key):snapshot.loadout[category][index].level=int(snapshot.loadout[category][index].level)+int(planned[key].levels)
+	return JSON.stringify(snapshot,"\t").to_utf8_buffer().size()<=16*1024*1024
+
 func resources_changed(ids: Array) -> void:
 	event.emit("resources_changed",{"ids":ids})
 
@@ -1031,7 +1057,10 @@ func refund_equipment(key: String, level: int) -> bool:
 		if quote.is_empty():
 			push_warning("equipment refund rejected: no valid quote")
 			return false
-		for id in quote:refunded[id]=ReactorInt.add(refunded.get(id,0),quote[id])
+		for id in quote:refunded[id]=equipment_cost_add(refunded.get(id,0),quote[id])
+	return credit_equipment_refund(refunded)
+
+func credit_equipment_refund(refunded:Dictionary)->bool:
 	var credited := {}
 	for id in refunded:
 		var balance=upgrade_currency(id)
@@ -1041,12 +1070,12 @@ func refund_equipment(key: String, level: int) -> bool:
 		var exact=ReactorInt.from_growth(balance)
 		if exact==null and balance is Dictionary and balance.has("m"):
 			exact=ReactorInt.legacy_integer(balance,LOCAL_WALLET_EXPANSION_DIGITS)
-		var ordinary_credit=balance is Dictionary and balance.has("m") and float(balance.e)<16.0 and ReactorInt.compare(refunded[id],9007199254740991)<=0
-		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id]) if ordinary_credit else SparseWallet.add(balance,refunded[id]) if (balance is Dictionary and (balance.has("m") or balance.get("v") in [2,3])) else N.add(balance,refunded[id])
+		var ordinary_credit=not SparseWallet.is_sparse(refunded[id]) and balance is Dictionary and balance.has("m") and float(balance.e)<16.0 and ReactorInt.compare(refunded[id],9007199254740991)<=0
+		var next=equipment_cost_add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id]) if ordinary_credit else SparseWallet.add(balance,refunded[id]) if (balance is Dictionary and (balance.has("m") or balance.get("v") in [2,3])) else N.add(balance,refunded[id])
 		if id==db.evolution_material_id() and (not ReactorInt.valid(next) or ReactorInt.compare(next,ReactorInt.MAX_INT)>0):
 			push_warning("equipment refund rejected: material outside existing int64 wallet domain")
 			return false
-		if not N.valid(next) or (ReactorInt.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):
+		if not N.valid(next) or (N.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):
 			push_warning("equipment refund rejected: credit cannot be represented")
 			return false
 		credited[id]=next
@@ -1184,10 +1213,15 @@ func unequip_slot(category: String, index: int) -> bool:
 
 func refund_all_equipment() -> bool:
 	# Retained for explicit legacy callers; normal refit never refunds module growth.
+	var refunded:Dictionary={}
 	for category in ["weapons","defence"]:
 		for entry in loadout_entries(category):
-			if not str(entry.key).is_empty() and not refund_equipment(str(entry.key),int(entry.level)):return false
-	return true
+			if str(entry.key).is_empty():continue
+			for target_level in range(2,int(entry.level)+1):
+				var quote:=upgrade_cost_for_level(str(entry.key),target_level)
+				if quote.is_empty():return false
+				for id in quote:refunded[id]=equipment_cost_add(refunded.get(id,0),quote[id])
+	return credit_equipment_refund(refunded)
 
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
@@ -1365,7 +1399,7 @@ func reactor_affordable(cost: Variant,budget: Variant) -> bool:
 	return ReactorInt.compare(exact_budget,exact_cost)>=0 if exact_budget!=null and exact_cost!=null else N.compare(budget,cost)>=0
 
 func reactor_exact_budget(budget: Variant) -> bool:
-	return (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
+	return SparseWallet.is_sparse(budget) or CompactWallet.is_compact(budget) or (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
 
 func reactor_debit_budget(budget: Variant,cost: Variant) -> Variant:
 	var exact_cost=ReactorInt.from_growth(cost)
@@ -1377,13 +1411,19 @@ func reactor_debit_budget(budget: Variant,cost: Variant) -> Variant:
 
 func reactor_max_upgrades() -> int:
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
-	var sparse_budget:=SparseWallet.is_sparse(budget) or CompactWallet.is_compact(budget) or CompactWallet.legacy_valid(budget)
+	var signature:Array=[budget.duplicate(true) if budget is Dictionary else budget,int(profile.reactorLevel),db.config.reactorUpgradeBase,db.config.reactorUpgradeGrowth]
+	if reactor_max_quote_cache.get("signature",[])==signature and reactor_max_quote_cache.get("status")=="complete":return int(reactor_max_quote_cache.count)
+	var resume:bool=reactor_max_quote_cache.get("signature",[])==signature and reactor_max_quote_cache.get("status")=="pending"
+	if resume:budget=reactor_max_quote_cache.budget
 	var started:=Time.get_ticks_msec()
-	var level := int(profile.reactorLevel)
-	var count := 0
-	var cursor: Array=[]
+	var level:int=int(reactor_max_quote_cache.level) if resume else int(profile.reactorLevel)
+	var count:int=int(reactor_max_quote_cache.count) if resume else 0
+	var cursor:Array=reactor_max_quote_cache.cursor.duplicate(true) if resume else []
+	var steps:=0
 	while true:
-		if sparse_budget and (count>=MAX_SYNC_QUOTE_STEPS or Time.get_ticks_msec()-started>=MAX_SYNC_QUOTE_MS):return -1
+		if steps>=MAX_SYNC_QUOTE_STEPS or Time.get_ticks_msec()-started>=MAX_SYNC_QUOTE_MS:
+			reactor_max_quote_cache={"signature":signature,"status":"pending","budget":budget,"level":level,"count":count,"cursor":cursor}
+			return -1
 		var cost: Variant=reactor_upgrade_cost(level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
 		var exact_cost=ReactorInt.from_growth(cost)
@@ -1392,7 +1432,9 @@ func reactor_max_upgrades() -> int:
 		if budget==null or not N.valid(budget):break
 		level += 1
 		count += 1
+		steps += 1
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
+	reactor_max_quote_cache={"signature":signature,"status":"complete","count":count}
 	return count
 
 func upgrade_reactor(amount: int) -> bool:
@@ -1935,17 +1977,32 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 	return total
 
 func furnace_income_peak(now := -1.0, jewel := false) -> Variant:
-	if jewel:return maxf(float(profile.get("jewelFurnaceIncomePeak",0.0)),float(production_minute_total("jewel",now)))
+	if jewel:return N.maximum(profile.get("jewelFurnaceIncomePeak",0.0),production_minute_total("jewel",now))
 	return N.maximum(profile.get("furnaceIncomePeak",0.0),production_minute_total("1",now))
 
 func cashflow_multiply(value:Variant,factor:Variant)->Variant:
+	cashflow_pending=false
 	# Only pickup/furnace cashflow consumes a sparse product. Combat and S20
 	# projections retain their existing GrowthNumber multiplication rules.
 	if SparseWallet.is_sparse(value) or CompactWallet.is_compact(value):
-		var scaled=SparseWallet.scale_result(value,factor)
+		var cache_key:int=hash([value,factor])
+		var cached:Dictionary=cashflow_scale_cache.get(cache_key,{})
+		if not cached.is_empty() and cached.value==value and cached.factor==factor and cached.has("complete"):
+			return cached.complete
+		var cursor:Dictionary=cached.get("cursor",{}) if not cached.is_empty() and cached.value==value and cached.factor==factor else {}
+		var scaled=SparseWallet.scale_result(value,factor,cursor)
+		if scaled.status=="pending":
+			cashflow_pending=true
+			if cashflow_scale_cache.size()>=8 and not cashflow_scale_cache.has(cache_key):
+				for old_key in cashflow_scale_cache.keys():
+					if cashflow_scale_cache[old_key].has("complete"):cashflow_scale_cache.erase(old_key)
+					if cashflow_scale_cache.size()<8:break
+			cashflow_scale_cache[cache_key]={"value":value.duplicate(true),"factor":factor.duplicate(true) if factor is Dictionary else factor,"cursor":scaled.cursor}
+			return null
 		if scaled.status!="ok":
 			push_error("sparse cashflow multiplication rejected: "+str(scaled.status))
 			return null
+		cashflow_scale_cache[cache_key]={"value":value.duplicate(true),"factor":factor.duplicate(true) if factor is Dictionary else factor,"complete":scaled.value}
 		return scaled.value
 	return N.multiply(value,factor)
 
@@ -2023,15 +2080,23 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			var produced_at := end_time - age * wall_per_step
 			var peak_field:="jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"
 			var rolling=production_minute_total("jewel" if jewel_furnace else "1",produced_at)
-			var income=maxf(float(planned_peak[peak_field]),float(rolling)) if jewel_furnace else N.maximum(planned_peak[peak_field],rolling)
+			var income=N.maximum(planned_peak[peak_field],rolling)
 			var amount_value=cashflow_multiply(income,float(row.para2))
-			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: multiplier");return
+			if amount_value==null or not N.valid(amount_value):
+				if not cashflow_pending:push_error("furnace income rejected before block effects: multiplier")
+				return
 			amount_value=cashflow_multiply(amount_value,effective_hightech_level(key))
-			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: level factor");return
+			if amount_value==null or not N.valid(amount_value):
+				if not cashflow_pending:push_error("furnace income rejected before block effects: level factor")
+				return
 			amount_value=cashflow_multiply(amount_value,1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY"))
-			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: crew factor");return
+			if amount_value==null or not N.valid(amount_value):
+				if not cashflow_pending:push_error("furnace income rejected before block effects: crew factor")
+				return
 			amount_value=cashflow_multiply(amount_value,1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
-			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: collector factor");return
+			if amount_value==null or not N.valid(amount_value):
+				if not cashflow_pending:push_error("furnace income rejected before block effects: collector factor")
+				return
 			var amount=N.ceiling(amount_value)
 			if amount==null or not N.valid(amount):push_error("furnace income rejected before block effects: ceiling");return
 			planned_peak[peak_field]=income
@@ -2211,10 +2276,11 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if N.compare(stat("armour"),0)<=0 and N.compare(stat("shield"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_defence"})
 		return false
+	settle_drops()
+	if cashflow_pending:return false
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
 		native_execution_requested=false
-	settle_drops()
 	drone_combat.reset();invalidate_stat_cache()
 	stage = level
 	distance = 0
@@ -2821,6 +2887,7 @@ func guided_missile_damage(enemy: Dictionary,raw,context: Dictionary) -> Variant
 	return N.multiply(raw,factors[key])
 
 func collect(drop: Dictionary, manual: bool, force := false) -> void:
+	cashflow_pending=false
 	if not drops.has(drop):
 		return
 	if drop.has("jewel"):
@@ -2829,11 +2896,16 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 		var core: bool = drop.get("hightech",false)
 		if core and not manual and not force and float(drop.get("age",0)) < 10.0:
 			return
-		drops.erase(drop)
-		var amount := float(drop.get("amount",1))
+		var amount:Variant=drop.get("amount",1)
+		if not N.valid(amount):return
 		if core and not manual:
-			amount = ceilf(amount * (1.0 - float(db.config.autoCollectReduce)))
-		drop.amount = settle_jewel_fragments(amount, "furnace" if core else "drop", 1.0 if core else float(drop.get("jewelRatio", jewel_ratio())))
+			var adjusted=cashflow_multiply(amount,1.0-float(db.config.autoCollectReduce))
+			if adjusted==null or not N.valid(adjusted):return
+			amount=N.ceiling(adjusted)
+		var earned=settle_jewel_fragments(amount, "furnace" if core else "drop", 1.0 if core else float(drop.get("jewelRatio", jewel_ratio())))
+		if earned==null:return
+		drops.erase(drop)
+		drop.amount=earned
 		enhancement_currency_changed()
 		event.emit("jewel_pickup", drop)
 		return
@@ -2841,13 +2913,19 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 		return
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var adjusted=cashflow_multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce))
-	if adjusted==null or not N.valid(adjusted):push_error("resource collection rejected before side effects: cashflow factor");return
+	if adjusted==null or not N.valid(adjusted):
+		if not cashflow_pending:push_error("resource collection rejected before side effects: cashflow factor")
+		return
 	var amount=N.ceiling(adjusted)
 	var boosted=cashflow_multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income"))
-	if boosted==null or not N.valid(boosted):push_error("resource collection rejected before side effects: income factor");return
+	if boosted==null or not N.valid(boosted):
+		if not cashflow_pending:push_error("resource collection rejected before side effects: income factor")
+		return
 	amount=N.ceiling(boosted)
 	var production_adjusted=cashflow_multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))
-	if production_adjusted==null or not N.valid(production_adjusted):push_error("resource collection rejected before side effects: production factor");return
+	if production_adjusted==null or not N.valid(production_adjusted):
+		if not cashflow_pending:push_error("resource collection rejected before side effects: production factor")
+		return
 	var balance=profile.resources[drop.id]
 	var credited=SparseWallet.add(balance,amount) if (SparseWallet.is_sparse(balance) or CompactWallet.is_compact(balance) or CompactWallet.legacy_valid(balance)) else N.add(balance,amount)
 	var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(production_adjusted),"origin":"furnace" if drop.get("hightech",false) else "drop"}
@@ -2869,8 +2947,11 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	save_dirty = true
 
 func settle_drops(force := false) -> void:
+	var pending:=false
 	for drop in drops.duplicate():
 		collect(drop, false, force)
+		pending=pending or cashflow_pending
+	cashflow_pending=pending
 
 func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionary = {}, path_start: Variant = null) -> void:
 	if paused:
@@ -2948,19 +3029,23 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 	if entry.is_empty():
 		return 0
 	var current := int(entry.level)
-	var cache_key:String=str([key,current])
+	var cache_key:String=str([key,current,category,index,"live" if budget.is_empty() else "projected"])
 	var signature:Array=upgrade_quote_signature(key)
+	if not budget.is_empty():signature.append(budget.duplicate(true))
 	var cached:Dictionary=max_upgrade_quote_cache.get(cache_key,{})
-	if budget.is_empty() and not cached.is_empty() and cached.signature==signature:return int(cached.amount)
-	var available: Dictionary = (profile.resources if budget.is_empty() else budget).duplicate()
+	if not cached.is_empty() and cached.signature==signature and cached.status=="complete":return int(cached.amount)
+	var resume:bool=not cached.is_empty() and cached.signature==signature and cached.status=="pending"
+	var available: Dictionary = cached.available.duplicate(true) if resume else (profile.resources if budget.is_empty() else budget).duplicate(true)
 	if not available.has(db.evolution_material_id()):available[db.evolution_material_id()]=upgrade_currency(db.evolution_material_id())
-	var total:Dictionary={}
-	var amount := 0
-	var level := current + 1
+	var total:Dictionary=cached.costs.duplicate(true) if resume else {}
+	var amount:int=int(cached.amount) if resume else 0
+	var level:int=current+amount+1
 	var started:=Time.get_ticks_msec()
+	var steps:=0
 	while level <= db.max_equipment_level(key):
-		if amount>=MAX_SYNC_QUOTE_STEPS or Time.get_ticks_msec()-started>=MAX_SYNC_QUOTE_MS:
-			if budget.is_empty():max_upgrade_quote_cache[cache_key]={"signature":signature,"status":"work_budget","amount":-1,"costs":{}}
+		if steps>=MAX_SYNC_QUOTE_STEPS or Time.get_ticks_msec()-started>=MAX_SYNC_QUOTE_MS:
+			if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
+			max_upgrade_quote_cache[cache_key]={"signature":signature,"status":"pending","amount":amount,"costs":total,"available":available}
 			return -1
 		var costs := upgrade_cost_for_level(key, level)
 		if costs.is_empty() or (costs.has(db.evolution_material_id()) and not hyperspace.is_unlocked(self)):break
@@ -2968,12 +3053,13 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 		if debits.is_empty():break
 		for id in costs:
 			available[id] = debits[id]
-			total[id]=ReactorInt.add(total.get(id,0),costs[id])
+			total[id]=equipment_cost_add(total.get(id,0),costs[id])
 		amount += 1
+		steps += 1
 		level += 1
-	if budget.is_empty():
-		if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
-		max_upgrade_quote_cache[cache_key]={"signature":signature,"status":"complete","amount":amount,"costs":total}
+	if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
+	max_upgrade_quote_cache[cache_key]={"signature":signature,"status":"complete","amount":amount,"costs":total}
+	if budget.is_empty():max_upgrade_quote_cache[str([key,current])]={"signature":upgrade_quote_signature(key),"status":"complete","amount":amount,"costs":total}
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:
@@ -3045,7 +3131,7 @@ func upgrade_equipment_batch(mode: String) -> bool:
 			for index in loadout_entries(category).size():
 				var planned_amount:=max_upgrade_amount_slot(category,index,planned_wallet)
 				if planned_amount<0:
-					push_warning("MAX upgrade rejected before side effects: quote work budget")
+					# The quote cursor persists; a later call resumes without spending.
 					return false
 				if planned_amount<=0:continue
 				var planned_costs:=slot_upgrade_cost(category,index,planned_amount)
@@ -3058,12 +3144,17 @@ func upgrade_equipment_batch(mode: String) -> bool:
 		if native_upgrade_batch.get("skip",false):native_upgrade_batch={};return false
 		if native_upgrade_batch.is_empty() and not native_before_configuration_change():return false
 	_upgrade_batch=true
+	var batch_failed:=false
 	for category in ["weapons","defence"]:
+		if batch_failed:break
 		for index in loadout_entries(category).size():
 			var amount: int=int(max_plan.get(slot_id(category,index),0)) if mode=="max" else int(mode)
-			if amount>0:upgrade_slot(category,index,amount)
-	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
-	if native_execution!=null and not native_upgrade_batch.is_empty():
+			if amount>0 and not upgrade_slot(category,index,amount) and not native_upgrade_batch.is_empty() and native_upgrade_batch.planned.has(slot_id(category,index)):
+				batch_failed=true
+				break
+	if batch_failed and native_execution!=null:native_before_configuration_change()
+	if not batch_failed and not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
+	if not batch_failed and native_execution!=null and not native_upgrade_batch.is_empty():
 		if not native_execution.commit_numeric_batch(self,native_upgrade_batch):
 			push_error("prevalidated native batch changed during synchronous commit")
 			native_before_configuration_change()
@@ -3082,8 +3173,9 @@ func upgrade_max(key: String) -> bool:
 	return levels > 0 and upgrade(key, levels)
 
 func leave(next: State) -> void:
-	if manual_hyperspace.active:manual_hyperspace.finish(self,false,"user_exit")
 	settle_drops()
+	if cashflow_pending:return
+	if manual_hyperspace.active:manual_hyperspace.finish(self,false,"user_exit")
 	projectiles.clear()
 	enemies.clear()
 	paused = false
@@ -3163,6 +3255,9 @@ func tick(dt: float) -> void:
 		if "motion_clock" in self:set("motion_clock",motion_step_end)
 	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	if state == State.LEVEL_CLEAR:
+		if not drops.is_empty():
+			settle_drops(true)
+			if cashflow_pending:return
 		if not advance_jewel_repair(dt):return
 		if state!=State.LEVEL_CLEAR:return
 		tick_projectiles(dt)
@@ -3410,31 +3505,46 @@ func jewel_ratio() -> float:
 
 func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 	if not N.valid(amount):
-		return 0.0
+		return null
 	var factor: float=jewel_ratio() if ratio < 0 else ratio
 	if not amount is Dictionary:
 		var ordinary := float(amount)*factor
 		if nonnegative_number(ordinary):return snappedf(ordinary,0.01)
-	var result=N.multiply(amount,factor)
-	if not N.valid(result):return 0.0
+	var result=cashflow_multiply(amount,factor)
+	if not N.valid(result):return null
 	if result is Dictionary:
-		if result.has("i"):return result
+		if result.has("i") or result.get("v") in [2,3]:return result
 		# GrowthNumber only keeps a mantissa/exponent outside the float domain;
 		# sub-cent underflow is zero, while a huge amount has no visible cents.
 		return 0.0 if float(result.e)<-2.0 else result
 	return snappedf(float(result),0.01)
 
-func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
+func jewel_earned(amount:Variant,source:String,ratio:float=-1.0)->Variant:
 	var production_bonus: float=1.0+float(hyperspace_totals().hangings.get("gem_refiner",0)) if source in ["drop","furnace"] else 1.0
 	var reactor_bonus=reactor_multiplier("condensation") if source=="drop" else 1.0
 	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" else 1.0
-	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor)
-	var earned = N.multiply(jewel_fragment_amount(input,ratio),AITech.income_factor(self,"fragment_income"))
-	profile.jewelFragments = N.add(profile.jewelFragments,earned)
-	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
+	var input=cashflow_multiply(amount,production_bonus)
+	if input==null or not N.valid(input):return null
+	input=cashflow_multiply(input,gem_factor)
+	if input==null or not N.valid(input):return null
+	var fragments=jewel_fragment_amount(input,ratio)
+	if fragments==null:return null
+	var earned=cashflow_multiply(fragments,AITech.income_factor(self,"fragment_income"))
+	if earned==null or not N.valid(earned):return null
+	return earned
+
+func settle_jewel_fragments(amount: Variant, source: String, ratio := -1.0) -> Variant:
+	var earned=jewel_earned(amount,source,ratio)
+	if earned==null:return null
+	var credited=N.add(profile.jewelFragments,earned)
+	if not N.valid(credited):return null
+	if not credited is Dictionary:credited=snappedf(float(credited),0.01)
+	var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source}
+	if not equipment_save_fits({},"",-1,0,[sample] if source in ["drop","furnace"] and N.compare(earned,0)>0 else [],{"jewelFragments":credited}):return null
+	profile.jewelFragments=credited
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and N.compare(earned,0) > 0:
-		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
+		resource_samples.append(sample)
 		AITech.record_income(self,"jewel")
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
@@ -3442,7 +3552,7 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Var
 func pickup_jewel_fragment(_legacy_id := "") -> bool:
 	if not jewels_unlocked():
 		return false
-	settle_jewel_fragments(1.0,"drop")
+	if settle_jewel_fragments(1.0,"drop")==null:return false
 	enhancement_currency_changed()
 	return true
 

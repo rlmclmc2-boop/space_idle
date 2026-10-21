@@ -3,7 +3,7 @@ extends RefCounted
 const I=preload("res://scripts/reactor_integer.gd")
 const C=preload("res://scripts/compact_wallet.gd")
 const RADIX:=10000
-const MAX_FACTOR_PRODUCTS:=50000 # Preflight pair work, independent of exponent gap.
+const MAX_FACTOR_PRODUCTS:=512 # Pair work per call, independent of exponent gap.
 
 static func is_sparse(value:Variant)->bool:
 	return value is Dictionary and value.get("v")==3
@@ -163,15 +163,23 @@ static func subtract(a:Variant,b:Variant)->Variant:
 	var result:=_signed_sum(x,y,true)
 	return _encode(result) if _positive(result) else null
 
-static func scale_result(value:Variant,factor:Variant)->Dictionary:
+static func scale_result(value:Variant,factor:Variant,cursor:Dictionary={})->Dictionary:
 	var x=blocks(value);var y=blocks(factor)
 	if x==null or y==null:return {"status":"invalid_numeric"}
-	if x.size()>0 and y.size()>MAX_FACTOR_PRODUCTS/x.size():return {"status":"work_budget"}
+	if x.is_empty() or y.is_empty():return {"status":"ok","value":0}
+	var ix:int=int(cursor.get("ix",0))
+	var iy:int=int(cursor.get("iy",0))
+	if ix<0 or ix>x.size() or iy<0 or iy>=maxi(1,y.size()):return {"status":"invalid_cursor"}
 	var products:Array=[]
-	for a in x:
-		for b in y:
-			products.append({"p":_signed_integer(a.p,b.p),"d":int(a.d)*int(b.d)})
-	var result:=_normalized(products)
+	while ix<x.size() and products.size()<MAX_FACTOR_PRODUCTS:
+		var a:Dictionary=x[ix]
+		var b:Dictionary=y[iy]
+		products.append({"p":_signed_integer(a.p,b.p),"d":int(a.d)*int(b.d)})
+		iy+=1
+		if iy>=y.size():iy=0;ix+=1
+	var partial:Array=cursor.get("partial",[])
+	var result:=_signed_sum(partial,_normalized(products))
+	if ix<x.size():return {"status":"pending","cursor":{"ix":ix,"iy":iy,"partial":result}}
 	return {"status":"ok","value":_encode(result)} if _positive(result) else {"status":"negative_result"}
 
 static func ceiling(value:Variant)->Variant:
