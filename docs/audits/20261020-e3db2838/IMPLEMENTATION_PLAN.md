@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共 26 阶段，S00—S07 共 9 阶段已完成双审、适用的 main 集成与本地验收并关闭；S08—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
+**这是规划交付，不是产品实现。** 本文件是唯一排程、授权、阶段状态及关闭记录入口。共26阶段，S00—S08 共10阶段已完成双审、适用的 main 集成与本地验收并关闭；S09—S24 尚未启动。后续问题、决策和阶段状态均以本入口为准。
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**S00—S07 共 9 阶段为 `closed`；S08 为 `integrated`（运行与集成同对象双 PASS、待父级关闭），S09—S24 为 `not_started`。** main、D:\放置 main 与 managed mirror 为 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`。S07 运行/冻结证据与集成最终证据均获父级及原 astra 同对象双 PASS，实施线程于 2026-10-21 04:32 UTC 确认归档。当前唯一打开阶段为 S08，实施线程 `01a15cbc-2bea-7616-8273-5af69cf2d01c`；运行候选 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`，完整审查证据 `088e8ba5a0fdeabd760cd879bd647f1947e2c7d0` 已获父级和原 astra 同对象双 PASS；main 和 D:\放置 main 已快进到该 SHA，实际入口隔离首启/重开各 120 帧 exit 0，集成证据 `801ab029fe2eb0680d4133593b35cf651b1d3cbc` 已获父级与原 astra 同对象双 PASS，待父级关闭。s06/analyzer-deps、s07/reactor-cache 均无独有运行成果，引用清理待专项授权，未删除；清理留后续收尾。完整 Windows 发布导出与较大 native 专项旧接口失败仍待后续验收，不因阶段关闭而视为通过。
+**S00—S08 共10阶段为 `closed`；S09—S24 为 `not_started`。** main、D:\放置 main及managed mirror 为 `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`。S08 运行/完整证据与最终集成证据均获父级及原 astra 同对象双 PASS，实施线程于2026-10-21 05:15 UTC确认归档。当前无打开阶段，可开始唯一下一阶段 S09。s06/analyzer-deps、s07/reactor-cache、s08/config-recovery 无独有运行成果，清理待专项授权且未删除，留后续收尾。完整Windows发布导出与较大native专项旧接口失败仍未通过。
 
 ### S00 关闭记录
 
@@ -562,11 +562,11 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 
 集成双审记录见 `stages/S07/INTEGRATION_REVIEW.md`；reviewed evidence 为 `dbf9eb3887ac25913c896902cd5f5f93cded2863`。`s07/reactor-cache` 与 main 相同、无独有成果，仅登记待授权清理，不执行删除。
 
-### S08 集成双审 PASS，待父级关闭
+### S08 关闭记录
 
 ```yaml
 stage: S08
-status: integrated
+status: closed
 implementation_thread_id: 01a15cbc-2bea-7616-8273-5af69cf2d01c
 base_main_sha: 19879285e68f0e1b7ad722d7e27dd402ad4ab6ec
 runtime_branch: s08/config-recovery
@@ -584,7 +584,7 @@ integration: {state: integrated, main_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5
 integration_record: stages/S08/LOCAL_INTEGRATION.json
 integration_evidence_snapshot_sha: d7e8819f3215de4f7605834b12909e18f9db7aee
 integration_review: {parent_verdict: PASS, astra_verdict: PASS, reviewed_runtime_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8, reviewed_evidence_sha: 801ab029fe2eb0680d4133593b35cf651b1d3cbc, astra_turn: 01a15cdf-8dab-7363-ae28-6a856c529dd9, record_path: stages/S08/INTEGRATION_REVIEW.md, unresolved: []}
-closure: {state: open, implementation_thread_closed: false, next_stage_allowed: false}
+closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T05:15:23Z", next_stage_allowed: true}
 branch_cleanup: {candidate: s08/config-recovery, remote_tip_equals_main: true, unique_runtime_commits: 0, deletion_authorized: false, deletion_executed: false, cleanup_deferred: true}
 ```
 
