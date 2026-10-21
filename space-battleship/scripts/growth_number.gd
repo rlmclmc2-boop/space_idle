@@ -2,15 +2,18 @@ class_name GrowthNumber
 extends RefCounted
 const ReactorInt := preload("res://scripts/reactor_integer.gd")
 const CompactWallet := preload("res://scripts/compact_wallet.gd")
+const SparseWallet := preload("res://scripts/sparse_wallet.gd")
 ## Ordinary values stay floats. Large values use a JSON-safe mantissa/exponent.
 ## No gameplay cap: exponent arithmetic replaces overflowing float products.
 static func valid(value) -> bool:
+	if SparseWallet.is_sparse(value):return SparseWallet.valid(value)
 	if CompactWallet.is_compact(value):return CompactWallet.valid(value)
 	if value is int or value is float:return is_finite(float(value)) and value>=0
 	if value is Dictionary and value.has("i"):return ReactorInt.valid(value)
 	return value is Dictionary and value.size()==2 and value.has("m") and value.has("e") and (value.m is float or value.m is int) and (value.e is float or value.e is int) and is_finite(float(value.m)) and is_finite(float(value.e)) and float(value.m)>=1 and float(value.m)<10 and float(value.e)==floorf(float(value.e))
 
 static func parts(value) -> Array:
+	if SparseWallet.is_sparse(value):return SparseWallet.parts(value)
 	if CompactWallet.is_compact(value):
 		var nearby=CompactWallet.near_integer(value,320)
 		return parts(nearby) if nearby!=null else parts(value.base)
@@ -32,8 +35,7 @@ static func make(m: float, e: float):
 	return {"m":m,"e":e}
 
 static func add(a,b):
-	if CompactWallet.is_compact(a):return CompactWallet.change(a,b,1)
-	if CompactWallet.is_compact(b):return CompactWallet.change(b,a,1)
+	if SparseWallet.is_sparse(a) or SparseWallet.is_sparse(b) or CompactWallet.is_compact(a) or CompactWallet.is_compact(b):return SparseWallet.add(a,b)
 	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")) or (a is int and a>9007199254740991) or (b is int and b>9007199254740991):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.add(ai,bi)
@@ -48,10 +50,9 @@ static func add(a,b):
 	return make(x[0]*pow(10,x[1]-e)+y[0]*pow(10,y[1]-e),e)
 
 static func subtract(a,b):
-	if CompactWallet.is_compact(a) or CompactWallet.is_compact(b):
+	if SparseWallet.is_sparse(a) or SparseWallet.is_sparse(b) or CompactWallet.is_compact(a) or CompactWallet.is_compact(b):
 		if compare(a,b)<=0:return 0.0
-		if CompactWallet.is_compact(b):return CompactWallet.difference(a,b)
-		return CompactWallet.change(a,b,-1)
+		return SparseWallet.subtract(a,b)
 	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")) or (a is int and a>9007199254740991) or (b is int and b>9007199254740991):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.subtract(ai,bi) if ReactorInt.compare(ai,bi)>0 else 0
@@ -92,7 +93,7 @@ static func power(a, exponent: float):
 	return make(pow(10,logarithm-floorf(logarithm)),floorf(logarithm))
 
 static func compare(a,b) -> int:
-	if CompactWallet.is_compact(a) or CompactWallet.is_compact(b):return CompactWallet.compare(a,b)
+	if SparseWallet.is_sparse(a) or SparseWallet.is_sparse(b) or CompactWallet.is_compact(a) or CompactWallet.is_compact(b):return SparseWallet.compare(a,b)
 	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.compare(ai,bi)
@@ -106,11 +107,12 @@ static func compare(a,b) -> int:
 
 static func minimum(a,b):return a if compare(a,b)<=0 else b
 static func maximum(a,b):return a if compare(a,b)>=0 else b
-static func ceiling(a):return a if a is Dictionary and a.has("i") else (1.0 if a.e<0 else a) if a is Dictionary else ceilf(float(a))
+static func ceiling(a):return SparseWallet.ceiling(a) if SparseWallet.is_sparse(a) or CompactWallet.is_compact(a) else a if a is Dictionary and a.has("i") else (1.0 if a.e<0 else a) if a is Dictionary else ceilf(float(a))
 static func ratio(a,b) -> float:
 	var value = divide(a,b)
 	return float(value) if not value is Dictionary else (0.0 if value.e<0 else 1.0)
 static func text(a) -> String:
+	if SparseWallet.is_sparse(a):return SparseWallet.text(a)
 	if CompactWallet.is_compact(a):return CompactWallet.text(a)
 	if a is Dictionary and a.has("i"):
 		var s: String=a.i

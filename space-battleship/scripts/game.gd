@@ -17,7 +17,10 @@ const SAVE_VERSION := 5
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const CompactWallet := preload("res://scripts/compact_wallet.gd")
-const LOCAL_WALLET_EXPANSION_DIGITS := 8192 # Optimization only; larger balances use compact deltas.
+const SparseWallet := preload("res://scripts/sparse_wallet.gd")
+const LOCAL_WALLET_EXPANSION_DIGITS := 8192 # Local optimization; distant balances transact as sparse blocks.
+const MAX_SYNC_QUOTE_STEPS := 512 # Work per synchronous UI quote; -1 reports incomplete work.
+const MAX_SYNC_QUOTE_MS := 40
 const N = preload("res://scripts/growth_number.gd")
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
@@ -430,7 +433,7 @@ func load_progress_data(raw: Dictionary) -> void:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
 		if N.valid(value):
 			# Restoring a balance must not mint the remainder of a fractional unit.
-			profile.resources[id] = CompactWallet.change(value,0,1) if CompactWallet.is_compact(value) else ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
+			profile.resources[id] = value.duplicate(true) if SparseWallet.is_sparse(value) else CompactWallet.change(value,0,1) if CompactWallet.is_compact(value) else ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -971,7 +974,7 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 
 func equipment_debit(balance: Variant,cost: Variant) -> Variant:
 	if not N.valid(balance) or not ReactorInt.valid(cost):return null
-	if CompactWallet.is_compact(balance):return N.subtract(balance,cost) if N.compare(balance,cost)>=0 else null
+	if SparseWallet.is_sparse(balance) or CompactWallet.is_compact(balance):return SparseWallet.subtract(balance,cost)
 	var exact_balance=ReactorInt.from_growth(balance)
 	if exact_balance==null and balance is Dictionary and balance.has("m"):
 		exact_balance=ReactorInt.legacy_integer(balance,LOCAL_WALLET_EXPANSION_DIGITS)
@@ -981,7 +984,7 @@ func equipment_debit(balance: Variant,cost: Variant) -> Variant:
 		if float(balance.e)<16.0:
 			var ordinary_remainder=N.subtract(balance,cost)
 			if ordinary_remainder!=null and (ReactorInt.compare(cost,0)==0 or N.compare(ordinary_remainder,balance)<0):return ordinary_remainder
-		return CompactWallet.change(balance,cost,-1) if ReactorInt.compare_legacy_growth_to_integer(balance,cost)>=0 else null
+		return SparseWallet.subtract(balance,cost)
 	# Keep ordinary fractional float balances in their existing numeric domain.
 	if balance is float:
 		var remainder=N.subtract(balance,cost)
@@ -1002,10 +1005,10 @@ func equipment_debits(costs: Dictionary,wallet: Dictionary={}) -> Dictionary:
 func equipment_save_fits(next_wallet:Dictionary,category:String="",index:int=-1,levels:int=0,extra_samples:Array=[],extra_fields:Dictionary={})->bool:
 	var needs_check:=false
 	for value in next_wallet.values():
-		if CompactWallet.is_compact(value):needs_check=true;break
+		if CompactWallet.is_compact(value) or SparseWallet.is_sparse(value):needs_check=true;break
 	if not needs_check:
 		for value in profile.resources.values():
-			if CompactWallet.is_compact(value):needs_check=true;break
+			if CompactWallet.is_compact(value) or SparseWallet.is_sparse(value):needs_check=true;break
 	if not needs_check:return true
 	var snapshot:=portable_save_data()
 	for id in next_wallet:
@@ -1039,7 +1042,7 @@ func refund_equipment(key: String, level: int) -> bool:
 		if exact==null and balance is Dictionary and balance.has("m"):
 			exact=ReactorInt.legacy_integer(balance,LOCAL_WALLET_EXPANSION_DIGITS)
 		var ordinary_credit=balance is Dictionary and balance.has("m") and float(balance.e)<16.0 and ReactorInt.compare(refunded[id],9007199254740991)<=0
-		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id]) if ordinary_credit else CompactWallet.change(balance,refunded[id],1) if balance is Dictionary and balance.has("m") else N.add(balance,refunded[id])
+		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id]) if ordinary_credit else SparseWallet.add(balance,refunded[id]) if (balance is Dictionary and (balance.has("m") or balance.get("v") in [2,3])) else N.add(balance,refunded[id])
 		if id==db.evolution_material_id() and (not ReactorInt.valid(next) or ReactorInt.compare(next,ReactorInt.MAX_INT)>0):
 			push_warning("equipment refund rejected: material outside existing int64 wallet domain")
 			return false
@@ -1374,10 +1377,13 @@ func reactor_debit_budget(budget: Variant,cost: Variant) -> Variant:
 
 func reactor_max_upgrades() -> int:
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
+	var sparse_budget:=SparseWallet.is_sparse(budget) or CompactWallet.is_compact(budget) or CompactWallet.legacy_valid(budget)
+	var started:=Time.get_ticks_msec()
 	var level := int(profile.reactorLevel)
 	var count := 0
 	var cursor: Array=[]
 	while true:
+		if sparse_budget and (count>=MAX_SYNC_QUOTE_STEPS or Time.get_ticks_msec()-started>=MAX_SYNC_QUOTE_MS):return -1
 		var cost: Variant=reactor_upgrade_cost(level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
 		var exact_cost=ReactorInt.from_growth(cost)
@@ -1932,6 +1938,17 @@ func furnace_income_peak(now := -1.0, jewel := false) -> Variant:
 	if jewel:return maxf(float(profile.get("jewelFurnaceIncomePeak",0.0)),float(production_minute_total("jewel",now)))
 	return N.maximum(profile.get("furnaceIncomePeak",0.0),production_minute_total("1",now))
 
+func cashflow_multiply(value:Variant,factor:Variant)->Variant:
+	# Only pickup/furnace cashflow consumes a sparse product. Combat and S20
+	# projections retain their existing GrowthNumber multiplication rules.
+	if SparseWallet.is_sparse(value) or CompactWallet.is_compact(value):
+		var scaled=SparseWallet.scale_result(value,factor)
+		if scaled.status!="ok":
+			push_error("sparse cashflow multiplication rejected: "+str(scaled.status))
+			return null
+		return scaled.value
+	return N.multiply(value,factor)
+
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
 	if not raw is String:
@@ -1979,6 +1996,10 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			drop.age += dt
 			if float(drop.age) >= 10.0:
 				collect(drop, false)
+	var planned_elapsed:Dictionary={}
+	var planned_peak:Dictionary={"furnaceIncomePeak":profile.get("furnaceIncomePeak",0.0),"jewelFurnaceIncomePeak":profile.get("jewelFurnaceIncomePeak",0.0)}
+	var peak_changed:Dictionary={}
+	var planned_blocks:Array=[]
 	for key in [FURNACE,JEWEL_FURNACE]:
 		if effective_hightech_level(key) <= 0 or not db.data.get("hightech", {}).has(key):
 			continue
@@ -1991,27 +2012,43 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			continue
 		var elapsed := float(profile.get(elapsed_field,0.0)) + dt
 		var count := floorf(elapsed / interval)
-		profile[elapsed_field] = fposmod(elapsed, interval)
+		var remaining:=fposmod(elapsed, interval)
+		planned_elapsed[elapsed_field]=remaining
 		# Skip expired blocks, with work bounded by the 10-second visible window.
 		var visible := mini(int(count), int(ceilf(10.0 / interval)))
 		for i in range(visible):
-			var age := float(profile[elapsed_field]) + i * interval
+			var age := remaining + i * interval
 			if age >= 10.0:
 				break
-			uid += 1
 			var produced_at := end_time - age * wall_per_step
-			var income = furnace_income_peak(produced_at,jewel_furnace)
-			profile["jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"] = income
-			var amount_value=N.multiply(income,float(row.para2))
-			amount_value=N.multiply(amount_value,effective_hightech_level(key))
-			amount_value=N.multiply(amount_value,1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY"))
-			amount_value=N.multiply(amount_value,1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
+			var peak_field:="jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"
+			var rolling=production_minute_total("jewel" if jewel_furnace else "1",produced_at)
+			var income=maxf(float(planned_peak[peak_field]),float(rolling)) if jewel_furnace else N.maximum(planned_peak[peak_field],rolling)
+			var amount_value=cashflow_multiply(income,float(row.para2))
+			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: multiplier");return
+			amount_value=cashflow_multiply(amount_value,effective_hightech_level(key))
+			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: level factor");return
+			amount_value=cashflow_multiply(amount_value,1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY"))
+			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: crew factor");return
+			amount_value=cashflow_multiply(amount_value,1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
+			if amount_value==null or not N.valid(amount_value):push_error("furnace income rejected before block effects: collector factor");return
 			var amount=N.ceiling(amount_value)
-			var block := {"uid":uid,"x":rng.randf_range(70,BATTLE_SIZE.x-70),"y":rng.randf_range(250,480),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
+			if amount==null or not N.valid(amount):push_error("furnace income rejected before block effects: ceiling");return
+			planned_peak[peak_field]=income
+			peak_changed[peak_field]=true
+			var block := {"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
 			if jewel_furnace:
 				block.jewel = true
 				block.jewelRatio = 1.0
-			drops.append(block)
+			planned_blocks.append(block)
+	for field in planned_elapsed:profile[field]=planned_elapsed[field]
+	for field in peak_changed:profile[field]=planned_peak[field]
+	for block in planned_blocks:
+		uid+=1
+		block.uid=uid
+		block.x=rng.randf_range(70,BATTLE_SIZE.x-70)
+		block.y=rng.randf_range(250,480)
+		drops.append(block)
 
 func max_shield() -> Variant:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
@@ -2803,10 +2840,17 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	if drop.get("hightech", false) and not manual and not force and float(drop.get("age",0)) < 10.0:
 		return
 	# Auto-collection loss is a separate calculation on the integer drop amount.
-	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
-	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
-	var credited=N.add(profile.resources[drop.id],amount)
-	var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"}
+	var adjusted=cashflow_multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce))
+	if adjusted==null or not N.valid(adjusted):push_error("resource collection rejected before side effects: cashflow factor");return
+	var amount=N.ceiling(adjusted)
+	var boosted=cashflow_multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income"))
+	if boosted==null or not N.valid(boosted):push_error("resource collection rejected before side effects: income factor");return
+	amount=N.ceiling(boosted)
+	var production_adjusted=cashflow_multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))
+	if production_adjusted==null or not N.valid(production_adjusted):push_error("resource collection rejected before side effects: production factor");return
+	var balance=profile.resources[drop.id]
+	var credited=SparseWallet.add(balance,amount) if (SparseWallet.is_sparse(balance) or CompactWallet.is_compact(balance) or CompactWallet.legacy_valid(balance)) else N.add(balance,amount)
+	var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(production_adjusted),"origin":"furnace" if drop.get("hightech",false) else "drop"}
 	var next_peak=profile.get("furnaceIncomePeak",0.0)
 	if str(drop.id)=="1" and sample.origin=="drop":next_peak=N.maximum(next_peak,N.add(production_minute_total("1"),sample.production_base))
 	if credited==null or not N.valid(credited) or not N.valid(next_peak) or not equipment_save_fits({str(drop.id):credited},"",-1,0,[sample],{"furnaceIncomePeak":next_peak}):
@@ -2913,7 +2957,11 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 	var total:Dictionary={}
 	var amount := 0
 	var level := current + 1
+	var started:=Time.get_ticks_msec()
 	while level <= db.max_equipment_level(key):
+		if amount>=MAX_SYNC_QUOTE_STEPS or Time.get_ticks_msec()-started>=MAX_SYNC_QUOTE_MS:
+			if budget.is_empty():max_upgrade_quote_cache[cache_key]={"signature":signature,"status":"work_budget","amount":-1,"costs":{}}
+			return -1
 		var costs := upgrade_cost_for_level(key, level)
 		if costs.is_empty() or (costs.has(db.evolution_material_id()) and not hyperspace.is_unlocked(self)):break
 		var debits:=equipment_debits(costs,available)
@@ -2925,7 +2973,7 @@ func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={})
 		level += 1
 	if budget.is_empty():
 		if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
-		max_upgrade_quote_cache[cache_key]={"signature":signature,"amount":amount,"costs":total}
+		max_upgrade_quote_cache[cache_key]={"signature":signature,"status":"complete","amount":amount,"costs":total}
 	return amount
 
 func upgrade(key: String, levels := 1) -> bool:
@@ -2989,14 +3037,30 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 
 func upgrade_equipment_batch(mode: String) -> bool:
 	if _upgrade_batch:return false
+	var max_plan:Dictionary={}
+	if mode=="max":
+		var planned_wallet:Dictionary=profile.resources.duplicate(true)
+		planned_wallet[db.evolution_material_id()]=upgrade_currency(db.evolution_material_id())
+		for category in ["weapons","defence"]:
+			for index in loadout_entries(category).size():
+				var planned_amount:=max_upgrade_amount_slot(category,index,planned_wallet)
+				if planned_amount<0:
+					push_warning("MAX upgrade rejected before side effects: quote work budget")
+					return false
+				if planned_amount<=0:continue
+				var planned_costs:=slot_upgrade_cost(category,index,planned_amount)
+				var planned_debits:=equipment_debits(planned_costs,planned_wallet)
+				if planned_debits.is_empty():return false
+				for id in planned_debits:planned_wallet[id]=planned_debits[id]
+				max_plan[slot_id(category,index)]=planned_amount
 	if native_execution!=null:
-		native_upgrade_batch=native_execution.prepare_numeric_batch(self,mode)
+		native_upgrade_batch=native_execution.prepare_numeric_batch(self,mode,max_plan)
 		if native_upgrade_batch.get("skip",false):native_upgrade_batch={};return false
 		if native_upgrade_batch.is_empty() and not native_before_configuration_change():return false
 	_upgrade_batch=true
 	for category in ["weapons","defence"]:
 		for index in loadout_entries(category).size():
-			var amount: int=max_upgrade_amount_slot(category,index) if mode=="max" else int(mode)
+			var amount: int=int(max_plan.get(slot_id(category,index),0)) if mode=="max" else int(mode)
 			if amount>0:upgrade_slot(category,index,amount)
 	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
 	if native_execution!=null and not native_upgrade_batch.is_empty():

@@ -116,6 +116,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 	if game.idle_scientists() > 0:game.distribute_scientists()
 	if game.reactor_unlocked():
 		var count := game.reactor_max_upgrades()
+		if count<0:numeric_error="reactor_max_quote_work_budget";return false
 		if count > 0:game.upgrade_reactor(count)
 		game.equalize_reactor_allocation()
 	# Shared enhancement purchase cadence remains ten game seconds.

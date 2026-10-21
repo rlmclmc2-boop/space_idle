@@ -269,7 +269,7 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 			if costs.is_empty():return {"error":"level_cap"}
 			for id in costs:
 				var current=game.upgrade_currency(id)
-				if current is Dictionary and current.get("v")==2:
+				if current is Dictionary and current.get("v") in [2,3]:
 					if preload("res://scripts/growth_number.gd").compare(current,costs[id])<0:
 						if id==database.evolution_material_id():return {"error":"unsupported_material_range"}
 						game.profile.resources[id]=costs[id]

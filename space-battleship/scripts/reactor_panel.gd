@@ -528,8 +528,9 @@ func refresh() -> void:
 		host.set_ui_value(equalize_button,"disabled",not reactor_enabled)
 		for mode in upgrade_buttons:
 			var needed: int = max_count if mode == "MAX" else 10 if mode == "x10" else 1
-			host.set_ui_value(upgrade_buttons[mode],"disabled",needed <= 0 or max_count < needed or not reactor_enabled)
-			if mode == "MAX":host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.upgrade.max",{"count":str(max_count)}))
+			var single_affordable:=game.reactor_affordable(game.reactor_upgrade_cost(),available) if max_count<0 and mode=="x1" else false
+			host.set_ui_value(upgrade_buttons[mode],"disabled",needed <= 0 or (max_count<needed and not single_affordable) or not reactor_enabled)
+			if mode == "MAX":host.set_ui_value(upgrade_buttons[mode],"text",UIText.t("reactor.upgrade.max",{"count":str(max_count)}) if max_count>=0 else "MAX unavailable")
 	for key in module_controls:
 		var controls: Dictionary = module_controls[key]
 		var slider: HSlider = controls.slider

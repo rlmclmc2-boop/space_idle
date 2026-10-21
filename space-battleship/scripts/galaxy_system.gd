@@ -142,7 +142,8 @@ func advance(g, dt: float) -> void:
 		for pair in [["iron",str(int(setting(g,"iron_resource_id")))],["uranium",str(int(g.db.config.reactorUraniumId))]]:
 			var amount=g.N.multiply(rates[pair[0]],income_elapsed)
 			if g.N.compare(amount,0)>0:
-				var next=g.N.add(credits.get(pair[1],g.profile.resources.get(pair[1],0)),amount)
+				var balance=credits.get(pair[1],g.profile.resources.get(pair[1],0))
+				var next=g.SparseWallet.add(balance,amount) if (g.SparseWallet.is_sparse(balance) or g.CompactWallet.is_compact(balance) or g.CompactWallet.legacy_valid(balance)) else g.N.add(balance,amount)
 				if next==null or not g.N.valid(next):
 					push_error("galaxy income rejected before wallet effects: exact numeric representation")
 					g.paused=true

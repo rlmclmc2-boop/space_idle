@@ -300,14 +300,15 @@ func configuration_changed()->void:
 	# replace this pause with explicit typed configuration commands.
 	paused_by_configuration=true
 
-func prepare_numeric_batch(game,mode:String)->Dictionary:
+func prepare_numeric_batch(game,mode:String,planned_max:Dictionary={})->Dictionary:
 	var wallet:Dictionary=game.profile.resources.duplicate()
 	wallet[game.db.evolution_material_id()]=game.upgrade_currency(game.db.evolution_material_id())
 	var weapon_levels:Dictionary={};var defence_levels:Dictionary={};var planned:Dictionary={}
 	var player:Dictionary=game.player.duplicate(true)
 	for category in ["weapons","defence"]:
 		for index in game.loadout_entries(category).size():
-			var levels:int=game.max_upgrade_amount_slot(category,index,wallet) if mode=="max" else int(mode)
+			var levels:int=int(planned_max.get(game.slot_id(category,index),0)) if mode=="max" else int(mode)
+			if levels<0:return {"skip":true,"error":"max_quote_work_budget"}
 			if levels<=0:continue
 			var costs:Dictionary=game.slot_upgrade_cost(category,index,levels)
 			if costs.is_empty():continue

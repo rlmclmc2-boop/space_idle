@@ -311,6 +311,12 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 		item.direct_upgradeable = quotes[quote_key].available
 		return
 	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
+	if count<0:
+		item.cost="MAX calculation unavailable; choose a smaller batch"
+		item.costs={}
+		item.direct_upgradeable=false
+		quotes[quote_key]={"cost":item.cost,"costs":{},"available":false}
+		return
 	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
 	item.cost = host.cost_text(costs)
 	item.costs = costs
@@ -751,8 +757,9 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.upgrade,"tooltip_text",UIText.t("upgrade.cost_one",{"cost":cost}))
 	host.set_ui_value(detail.ten,"tooltip_text",UIText.t("upgrade.cost_ten",{"cost":host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,10)) if not item.locked else "—"}))
 	var max_count:=host.game.max_upgrade_amount_slot(category,selected_slot) if not item.locked else 0
-	var max_cost:=host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,max_count)) if max_count>0 else ""
+	var max_cost:=host.cost_text(host.game.slot_upgrade_cost(category,selected_slot,max_count)) if max_count>0 else "MAX calculation unavailable; choose a smaller batch" if max_count<0 else ""
 	host.set_ui_value(detail.max,"tooltip_text",max_cost)
+	if max_count<0:host.set_ui_value(detail.max,"disabled",true)
 	var description: String = ""
 	if not key.is_empty():
 		description=host.equipment_stat_text(entry,item.projection,next_projection)+"\n"
@@ -807,6 +814,6 @@ func act(action: String) -> void:
 		"upgrade","ten","max":
 			var amount := 10 if action=="ten" else 1
 			if action=="max":amount=host.game.max_upgrade_amount_slot(category,selected_slot)
-			host.game.upgrade_slot(category,selected_slot,amount)
+			if amount>0:host.game.upgrade_slot(category,selected_slot,amount)
 		"remove":host.game.unequip_slot(category,selected_slot)
 	refresh(selected)

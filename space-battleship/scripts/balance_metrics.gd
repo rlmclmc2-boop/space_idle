@@ -92,7 +92,13 @@ func upgraded(count: int) -> void:
 	upgrades += count
 
 func on_event(kind: String, payload: Dictionary) -> void:
-	if kind == "collect":add(income,str(payload.id),float(payload.amount))
+	if kind == "collect":
+		var projected=NumericProjection.finite(payload.amount)
+		if projected==null:
+			numeric_error="unsupported_numeric_domain: collected income " + str(payload.id)
+			push_error(numeric_error)
+			return
+		add(income,str(payload.id),float(projected))
 	elif kind == "upgrade":
 		spend("weapons" if str(payload.slot).begins_with("weapons") else "defence",payload.cost)
 		upgraded(int(payload.levels))
