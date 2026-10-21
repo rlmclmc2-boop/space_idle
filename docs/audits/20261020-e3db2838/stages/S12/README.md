@@ -1,5 +1,7 @@
 # S12 装备报价接入：当前候选与待决范围
 
+Status: P1 audit-only finite exit has limited same-object dual PASS at `163ad3dba4131036446faaa37a6073b513fb3be1`; S12/A07 remains open, P2 and any new implementation thread await user approval. Old runtime implementation remains paused. Historical record follows.
+
 Status: contract_review; old runtime implementation paused. Current authority: [P0 contract and P1 gate](P0_CONTRACT_P1_GATE.md). P0 direction accepted; [performance targets preregistered](P1_PERFORMANCE_PREREGISTRATION.md). P1 is not_started pending dot frozen-object readback/handoff. Main remains 31e79337741bf9860d69fff21dae6be994dacd00. The 6820541/959fe957 pair was rejected; latest 2a611956 is an unapproved reuse reference. S12/A07 remain open.
 
 The implementation descriptions below are historical candidate notes, not the current scope or acceptance claim.
