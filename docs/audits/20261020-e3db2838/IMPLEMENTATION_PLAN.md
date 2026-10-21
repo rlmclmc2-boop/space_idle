@@ -679,10 +679,31 @@ branch_cleanup:
 ### 截止时整体报告格式
 
 截止时父级即使仍在实施，也须交付：最终已验证main SHA；已关闭阶段与双方PASS对应SHA；当前打开阶段/线程及阻断；已修/未修A01—A08；AR风险缓解边界；已执行与未执行平台测试；待决策/权限项；下一唯一阶段；证据位置与保留/清理候选。未完成项目逐项写明，不以测试数量或截止时间包装为整体完成。
-### S10 implementation handoff — representation boundary pending
+### S10 implementation handoff — runtime and evidence review pending
 
-S10 began from main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8` under frozen S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Implementation is blocked pending parent/original-astra review of the exact-integer allocation and large-multiplier gameplay-consumer boundary recorded in `stages/S10/README.md` and `stages/S10/verification.json`. No runtime commit or passed verification exists. Parent/astra verdicts remain PENDING; main integration, closure and S11 start remain prohibited.
+S10 began from main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8` under frozen S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Parent/original-astra resolved the initial representation boundary as necessary engineering scope below. Implementation and local verification are complete at runtime commit `49dd8a68eda20bf1b1260be0439970e79f738cda`; `stages/S10/README.md`, `verification.json`, `BLOB_INDEX.json`, `logs/` and `probes/` are the audit evidence. Parent/astra implementation verdicts remain PENDING; main integration, closure and S11 start remain prohibited.
 
 #### S10 engineering scope clarification (parent + original astra, review turn `01a15cf7-e50c-71f7-900e-57aa7ba585cc`)
 
 The two representation risks are necessary D01/S09 engineering work, not new gameplay policy. S10 proceeds without a fixed level rejection threshold. Capacity, allocation and remaining use a local exact integer backend and serialization; formula evaluation stays separate, keeps the old float order and floor/ceil in the representable domain, and uses a reference oracle for overflow-domain rounding. `GrowthNumber` is not globally replaced. The multiplier follows the original real formula with large-value transport; necessary `N.multiply`/`N.ceiling`, cache and type handling in equipment attributes are in scope, without changing equipment growth or damage rules. Legacy smelting drops, jewel fragment settlement and its hundredth quantization, pickup preview, and read-only reactor UI are included while preserving ordinary-domain grouping, ceil layers, source guards and event order. Native drop compilation/downstream and reactor/galaxy refit conversion must support large values or hand off before effects; failed handoff may reject an operation, not impose a permanent level cap. S20 overall simulation policy, native kernel big-number rewrite, `advance_hightech_bulk`, and global wallet refactor remain out of scope. This clarification is not implementation PASS. Parent/astra reviews remain PENDING.
+
+
+```yaml
+stage: S10
+status: review_pending
+implementation_thread_id: 01a15cf1-5d62-701d-a9aa-91182acf9012
+model: sol
+base_main_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8
+approved_contract_sha: 0442a1b627a07fa1af0d0671cdeb97dd070c5efc
+runtime_branch: s10/reactor-numeric
+runtime_final_sha: 49dd8a68eda20bf1b1260be0439970e79f738cda
+runtime_tree: 000a09ca8c43a87262246efdcc54b260f01a2b3b
+evidence_branch: audit/code-review-e3db2838-20261020
+evidence_entry: stages/S10/README.md
+verification_record: stages/S10/verification.json
+runtime_blob_index: stages/S10/BLOB_INDEX.json
+parent_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null}
+astra_review: {verdict: PENDING, reviewed_runtime_sha: null, reviewed_evidence_sha: null, review_turn: 01a15cf7-e50c-71f7-900e-57aa7ba585cc}
+integration: {state: prohibited_pending_dual_pass, main_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8}
+closure: {state: open, parent_closed_stage: false, implementation_thread_closed: false, next_stage_allowed: false}
+```

@@ -1,0 +1,13 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+BAD -1 ACCEPTED false
+BAD 1.5 ACCEPTED false
+BAD inf ACCEPTED false
+BAD nan ACCEPTED false
+BAD { "i": "05" } ACCEPTED false
+BAD { "i": "5" } ACCEPTED false
+BAD { "i": "9007199254740993", "x": 0 } ACCEPTED false
+BAD { "m": 1.0, "e": 400.0 } ACCEPTED false
+BAD 123 ACCEPTED false

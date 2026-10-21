@@ -1,0 +1,9 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+FLOAT 1.0 FLOOR 1
+FLOAT 1.5 FLOOR 1
+FLOAT 9007199254740992.0 FLOOR 9007199254740992
+FLOAT 100000000000000000000.0 FLOOR 100000000000000000000
+FLOAT 100000000000000020000.0 FLOOR 100000000000000016384
