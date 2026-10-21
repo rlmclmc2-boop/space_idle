@@ -1,0 +1,28 @@
+{
+  "stage": "S08",
+  "state": "review",
+  "implementation_thread_id": "01a15cbc-2bea-7616-8273-5af69cf2d01c",
+  "base_main_sha": "19879285e68f0e1b7ad722d7e27dd402ad4ab6ec",
+  "runtime_final_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
+  "runtime_tree": "dc633257c72cb8202b5f121455b36cba79443663",
+  "runtime_blobs": {
+    "space-battleship/tools/config_workbooks.py": "ab7e4d616254737dce7c1a92d02a9a004556e81b",
+    "space-battleship/tools/level_editor_store.py": "0131dc26dd4355d60ccc015d9d5c05c6499568d5"
+  },
+  "environment": "Windows Python 3.12 AST-isolated target functions; lxml unavailable",
+  "command": "python s08_atomic_recovery.py",
+  "exit_code": 0,
+  "cases": {
+    "baseline_secondary_failure": "PASS: mixed A-new/B-old; old temp removed",
+    "single_failure": "PASS: rollback A/B old; journal cleaned",
+    "secondary_failure": "PASS: recovery_required; original A/B hashes verified; mixed A-new/B-old",
+    "manual_restore": "PASS: old A restored from journal",
+    "success": "PASS: replacement A/B new; journal cleaned",
+    "editor_secondary_failure": "PASS: independent persistent backup and recovery journal"
+  },
+  "full_workbook_import": "NOT_RUN: lxml unavailable",
+  "cross_file_acid": "NOT_CLAIMED",
+  "parent_review": "PENDING",
+  "astra_review": "PENDING",
+  "main_integrated": false
+}
