@@ -22,9 +22,24 @@
     "config_cli": "PASS: exit 1 with recovery_required, recovery_path and rollback_failed",
     "editor_cli": "PASS: exit 1 with recovery_required, recovery_path and rollback_failed"
   },
-  "full_workbook_import": "NOT_RUN: lxml unavailable",
+  "full_workbook_import": "PASS: isolated test_config_workbooks.py 14/14 on Windows Python 3.12.4, lxml 6.1.3, openpyxl 3.1.5",
   "cross_file_acid": "NOT_CLAIMED",
   "parent_review": "PENDING",
   "astra_review": "PENDING",
-  "main_integrated": false
+  "main_integrated": false,
+  "integration_regressions": {
+    "environment": "D:\\CodexTools\\venv\\godot-native\\Scripts\\python.exe; Windows Python 3.12.4; lxml 6.1.3; openpyxl 3.1.5",
+    "workbooks": {
+      "command": "python test/run.py test_config_workbooks.py",
+      "result": "PASS 14/14, exit 0, 102.424s",
+      "raw_log": "stages/S08/logs/config-workbooks-isolated.log",
+      "blob": "417ae405d8582b6ba5db3addefbca32ceb703d29"
+    },
+    "editor": {
+      "command": "python test/run.py test_level_editor.py",
+      "result": "PASS 10/10, exit 0, 115.796s",
+      "raw_log": "stages/S08/logs/level-editor-isolated.log",
+      "blob": "41729468daba844a15a7225021ac77b2f9408355"
+    }
+  }
 }
