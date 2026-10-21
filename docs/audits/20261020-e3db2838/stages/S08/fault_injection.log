@@ -4,3 +4,5 @@
 {"case": "success", "status": "cleaned", "calls": 2}
 {"case": "baseline_secondary_failure", "status": "materials_removed", "disk": ["A-new", "B-old"], "calls": 3}
 {"case": "editor_secondary_failure", "status": "recovery_required", "disk": ["A-new", "B-old"], "persistent_backup_files": 2, "journal_exists": true, "calls": 6}
+{"case": "config_cli", "status": "recovery_fields_returned", "exit_code": 1}
+{"case": "editor_cli", "status": "recovery_fields_returned", "exit_code": 1}
