@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not a claim of overall product completion.** S00-S11 (including S04a) are closed. S11 audit-only prototype passed independent dot and original-astra review on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime N/A. No implementation stage is open; S12-S24 remain not_started. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
+**Planning and status record, not a claim of overall product completion.** S00-S11 (including S04a) are closed. S11 audit-only prototype passed independent dot and original-astra review on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime N/A. S12 is open and awaiting a scope decision; S13-S24 remain not_started. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 is the next authorized serial stage; S12-S24 not_started. A07 is not fixed until S12 transaction integration passes.
+**Current stage record:** S00-S11 closed. S11 implementation thread `01a15d9b-867a-74d9-87a1-41b8ffa69017` archived at 2026-10-21T09:30:26Z after same-object dual PASS on evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b`, runtime/integration N/A. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. S12 implementation thread `01a15dcd-a9fa-76f2-a28f-312cf153a002` is open; runtime candidate `23acd13f7e863d8b8d763299f23352c6b1996886` is not yet a final reviewed object. S12 awaits a parent/original-astra scope decision about additional float-price consumers. S13-S24 remain not_started. A07 is not fixed until S12 transaction integration passes.
 
 ### S00 关闭记录
 
@@ -734,4 +734,24 @@ parent_review: {verdict: PASS, reviewed_runtime_sha: N/A, reviewed_evidence_sha:
 astra_review: {verdict: PASS, reviewed_runtime_sha: N/A, reviewed_evidence_sha: 4f49ccc3633aac1e65696dfc96a4f1349741ac9b, turn: 01a15dc7-521c-7710-be76-0f782e325df8, unresolved: []}
 integration: N/A
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T09:30:26Z", next_stage_allowed: true}
+```
+
+### S12 open: equipment transaction integration
+
+```yaml
+stage: S12
+status: awaiting_decision
+implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
+base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
+candidate_branch: impl/s12-transaction-integration
+runtime_candidate_sha: 23acd13f7e863d8b8d763299f23352c6b1996886
+runtime_final_sha: PENDING
+evidence_branch: audit/code-review-e3db2838-20261020
+evidence_entry: stages/S12/README.md
+evidence_snapshot_sha: PENDING
+scope_decision: parent and original astra to classify extra float-price consumers before A07 closure
+parent_review: PENDING
+astra_review: PENDING
+integration: PENDING
+closure: open
 ```
