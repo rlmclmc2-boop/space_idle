@@ -576,7 +576,7 @@ runtime_files: [space-battleship/tools/config_workbooks.py, space-battleship/too
 evidence_entry: stages/S08/README.md
 evidence_snapshot_sha: 088e8ba5a0fdeabd760cd879bd647f1947e2c7d0
 verification: "Python 3.12 AST-isolated fault injection exit 0; baseline loss reproduced; single failure rollback, secondary failure material preservation, editor independent backup, manual restore, success cleanup and two CLI recovery JSON checks PASS; Windows existing venv isolated workbook 14/14 and editor 10/10 PASS; no cross-file ACID claim"
-recovery_policy: "project .runtime/config-recovery/<uuid> retained on failed rollback; editor backup .runtime/level-editor-backups/<uuid> separately committed; parent/astra review pending"
+recovery_policy: "project .runtime/config-recovery/<uuid> retained on failed rollback; editor backup .runtime/level-editor-backups/<uuid> separately committed; parent/astra same-object PASS within S08 scope"
 parent_review: {verdict: PASS, reviewed_runtime_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8, reviewed_evidence_sha: 088e8ba5a0fdeabd760cd879bd647f1947e2c7d0, unresolved: []}
 astra_review: {verdict: PASS, reviewed_runtime_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8, reviewed_evidence_sha: 088e8ba5a0fdeabd760cd879bd647f1947e2c7d0, turn: 01a15cd3-f2a7-762f-b022-0252de715ee3, unresolved: []}
 review_record: stages/S08/FINAL_REVIEW.md
