@@ -1,9 +1,9 @@
 {
   "stage": "S10",
-  "status": "review_pending_after_two_rejected_candidates",
+  "status": "review_pending_after_three_rejected_candidates",
   "runtime_branch": "s10/reactor-numeric",
-  "runtime_final_sha": "7e37f2a12d63797af5b269a58d713690d2c73ce5",
-  "runtime_tree": "a43b2de4b5c78b8770906891630c1e9ac602a3da",
+  "runtime_final_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "runtime_tree": "6870a7c240c354f56282e0b543cbe5b322d06872",
   "base_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "contract_sha": "0442a1b627a07fa1af0d0671cdeb97dd070c5efc",
   "environment": {
@@ -13,14 +13,14 @@
     "python": "D:\\CodexTools\\venv\\godot-native\\Scripts\\python.exe",
     "native_dll_runtime_path": "tools/player_runtime/space_native.dll",
     "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
-    "userdata": "isolated APPDATA and LOCALAPPDATA under task-12/s10_round3_complete_logs"
+    "userdata": "isolated APPDATA and LOCALAPPDATA per stateful probe under task-12/s10_round4_userdata"
   },
   "commands": [
     "cd space-battleship; godot --headless --path . --script ../test/<test>.gd",
     "cd space-battleship; godot --headless --path . --script res://s10_scratch/<probe>.gd",
     "cd space-battleship; python s10_scratch/oracle_compare.py",
     "cd space-battleship; godot --headless --editor --import --quit --path .",
-    "git diff --check cf213e2f 7e37f2a1"
+    "git diff --check cf213e2f 31e79337"
   ],
   "checks": [
     {
@@ -28,7 +28,7 @@
       "expected": "exit 0 with no script parse error",
       "actual": "exit 0 and no script parse error",
       "result": "PASS",
-      "log": "review3-logs/editor_import.log"
+      "log": "review4-logs/editor_import.log"
     },
     {
       "name": "existing reactor and cost tests",
@@ -36,8 +36,8 @@
       "actual": "both exit 0; integer cost 109 checks and zero failures",
       "result": "PASS",
       "logs": [
-        "review3-logs/test_reactor.log",
-        "review3-logs/test_reactor_integer_cost.log"
+        "review4-logs/test_reactor.log",
+        "review4-logs/test_reactor_integer_cost.log"
       ]
     },
     {
@@ -45,28 +45,28 @@
       "expected": "finite costs match the old same-engine float expression; nonfinite costs match Decimal",
       "actual": "15 comparisons pass including 140, 150, 1000, 2500 and early capacity crossing",
       "result": "PASS",
-      "log": "review3-logs/oracle_compare.log"
+      "log": "review4-logs/oracle_compare.log"
     },
     {
       "name": "prior dual FAIL corrections",
       "expected": "legacy m/e, damage history, finite quote grouping, exact uranium save and ordered historical allocation recovery remain correct",
       "actual": "review_round2_probe exit 0 with zero failures on current runtime",
       "result": "PASS",
-      "log": "review3-logs/review_round2_probe.log"
+      "log": "review4-logs/review_round2_probe.log"
     },
     {
       "name": "exact batch conservation and escaped top-level JSON key",
       "expected": "exact-tag x10 equals ten singles and exact sum of per-level quotes; escaped semantic key accepted, duplicate semantic key rejected",
       "actual": "review_round3_probe exit 0; Windows x10 and singles both 9999286312344352455899136, exact quoted sum 713687655647544100864",
       "result": "PASS",
-      "log": "review3-logs/review_round3_probe.log"
+      "log": "review4-logs/review_round3_probe.log"
     },
     {
       "name": "finite factor intermediate overflow consumers",
       "expected": "fragment settlement, pickup preview and legacy iron drop remain valid positive GrowthNumber values",
       "actual": "consumer_round3_probe exit 0; finite factor 4.25e297, income and preview 4.25e317, one valid legacy drop",
       "result": "PASS",
-      "log": "review3-logs/consumer_round3_probe.log"
+      "log": "review4-logs/consumer_round3_probe.log"
     },
     {
       "name": "transaction/save/native affected probes",
@@ -74,30 +74,37 @@
       "actual": "transaction, batch, fragment, stat, portable, legacy disk, native upgrade/reject/drop all exit 0; real DLL exercised",
       "result": "PASS",
       "logs": [
-        "review3-logs/transaction_probe.log",
-        "review3-logs/batch_probe.log",
-        "review3-logs/fragment_probe.log",
-        "review3-logs/mult_probe.log",
-        "review3-logs/portable_after_buy.log",
-        "review3-logs/legacy_disk_probe.log",
-        "review3-logs/native_upgrade_probe.log",
-        "review3-logs/native_reject_probe.log",
-        "review3-logs/native_drop_probe.log"
+        "review4-logs/transaction_probe.log",
+        "review4-logs/batch_probe.log",
+        "review4-logs/fragment_probe.log",
+        "review4-logs/mult_probe.log",
+        "review4-logs/portable_after_buy.log",
+        "review4-logs/legacy_disk_probe.log",
+        "review4-logs/native_upgrade_probe.log",
+        "review4-logs/native_reject_probe.log",
+        "review4-logs/native_drop_probe.log"
       ]
     },
     {
       "name": "source diff",
-      "expected": "only 3 necessary runtime scripts changed in correction; whitespace clean",
-      "actual": "game.gd, main.gd, save_transfer.gd; diff --check clean",
+      "expected": "only 2 necessary runtime scripts changed in the latest correction; whitespace clean",
+      "actual": "game.gd and reactor_integer.gd; diff --check clean",
       "result": "PASS",
       "log": "BLOB_INDEX.json"
+    },
+    {
+      "name": "near-cost legacy m/e wallet transaction",
+      "expected": "comparison, MAX, single and x10 debit use the same near-cost integer value; exact quote and minus-one boundaries, portable and disk reopen retain the remainder",
+      "actual": "review_round4_probe exit 0; level 2379 wallet 8.584232684623766e310 leaves the positive exact decimal remainder; x10 equals ten singles; distant exponent remains unexpanded",
+      "result": "PASS",
+      "log": "review4-logs/review_round4_probe.log"
     }
   ],
   "known_unverified": [
     "Existing test_save_transfer.gd commit_import assumes a save owner although it constructs BattleGame(db,false); dedicated fresh-userdata owner=true portable probe passed.",
     "Existing test_reactor_allocation_ui.gd waits for RenderingServer.frame_post_draw unavailable under headless; dedicated panel probe passed.",
     "No full interactive rendered UI run or S20 simulator-wide big-number review.",
-    "Prior refresh/stat-cache/native-range suites passed on d7fc31a9 and were not rerun on 7e37f2a1; current affected native operations use the real DLL."
+    "Prior refresh/stat-cache/native-range suites passed on d7fc31a9 and were not rerun on 31e79337; current affected native operations use the real DLL."
   ],
   "parent_review": "PENDING_RE_REVIEW",
   "astra_review": "PENDING_RE_REVIEW",
@@ -181,6 +188,36 @@
     "review2-logs/ui_probe.log": "776022f8f4c7ea82bef512b96e2f63e6bad990ae3b1a901e719941085f8804eb"
   },
   "final_raw_log_sha256": {
+    "review4-logs/batch_probe.log": "d22d7c0886d8f79c42662b5d50cf7f242b2aa9ba5ff73fa06d13e1ad81335015",
+    "review4-logs/consumer_round3_probe.log": "2e18c9c75e44d498b90675bc976f274be6f0a12324e71e13cf4aeda39892e275",
+    "review4-logs/editor_import.log": "becb733b6d3d5f43cf59cd6a5c7eaff5f4ba4b6668a9f37f978112a0a9a35088",
+    "review4-logs/fragment_probe.log": "5dea9619e81acaea64a81447e74c0d93addc27d67c4c5f5d08c6772bede72192",
+    "review4-logs/legacy_disk_probe.log": "660ef4fbc8bc538b71b6992c9fe3d3a90c8e4f05253fb519e30d3eaa3daede7d",
+    "review4-logs/mult_probe.log": "f0a9000ebaefea8793f5a41d12f9ef1801da9afa5380d53c87ee8c236664f027",
+    "review4-logs/native_drop_probe.log": "71721b98261d1cfa10b2a706d743c87b068b97fac6cdf77e823674966d84bcaf",
+    "review4-logs/native_reject_probe.log": "7f806122a4291beecf4e30c5fed733de3ae3103c5b51abc269ea1b6e6947a604",
+    "review4-logs/native_upgrade_probe.log": "d00adb93f7a5deff5e0a09c33557d4955d27a343b48448df419e5890079ed470",
+    "review4-logs/oracle_compare.log": "c5412a3e4a7206f7aeb31524162c51a405fa2ad2d088f990546c18ea50038dd1",
+    "review4-logs/portable_after_buy.log": "49113ea7199c25bbb2caaad963c66b9ce48c95781ee861fb8fff79831f07512f",
+    "review4-logs/review_round2_probe.log": "bb47bc5b2f1432d1c4fb28f7585500e34e4ad1a1b672b6775352ce52f0a03397",
+    "review4-logs/review_round3_probe.log": "fc9d9e7d9f8574f267f58241e747949e4afc1a795be6de2021075066f7c5d2f4",
+    "review4-logs/review_round4_probe.log": "36e81c96c2448ac8f66fe2904e68923c11b8f4e83880451b44cca830c15acb0d",
+    "review4-logs/test_reactor.log": "24cd6d8bfe1a8e993b4fde1bd9cc6b733f987ec70a40259b2807cc1690ac3eda",
+    "review4-logs/test_reactor_integer_cost.log": "ca532c03f2f370d5bdc3a74c770ddfad69afda8057ac770f9ef6957f019d47ca",
+    "review4-logs/transaction_probe.log": "04e5566c43ab51af01314f2c94bd1ceffe63c58e64aa8d24dc36ba15f795a241"
+  },
+  "review_round3": {
+    "runtime_sha": "7e37f2a12d63797af5b269a58d713690d2c73ce5",
+    "evidence_sha": "43e5507faf874bb742eba661dbbc4e657ac48533",
+    "parent_verdict": "FAIL",
+    "original_astra_verdict": "FAIL",
+    "counterexamples": [
+      "near-cost old m/e wallet compared above an exact quote but GrowthNumber debit rounded the positive balance to zero at level 2379",
+      "MAX used the same inconsistent compare and debit path",
+      "entry stage summary falsely said S10 had not started; corrected in the current audit branch"
+    ]
+  },
+  "historical_third_round_log_sha256": {
     "review3-logs/batch_probe.log": "d22d7c0886d8f79c42662b5d50cf7f242b2aa9ba5ff73fa06d13e1ad81335015",
     "review3-logs/consumer_round3_probe.log": "2e18c9c75e44d498b90675bc976f274be6f0a12324e71e13cf4aeda39892e275",
     "review3-logs/editor_import.log": "becb733b6d3d5f43cf59cd6a5c7eaff5f4ba4b6668a9f37f978112a0a9a35088",
