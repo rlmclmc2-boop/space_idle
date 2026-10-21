@@ -229,6 +229,7 @@ func fresh_profile() -> Dictionary:
 	profile.seenUnlocks = []
 	profile.readUnlocks = []
 	profile.jewelFragments = 0.0
+	profile.furnaceElapsed = 0.0
 	profile.jewelFurnaceElapsed = 0.0
 	profile.jewelFurnaceIncomePeak = 0.0
 	profile.chronoParticles = 0.0
@@ -617,7 +618,7 @@ func nonnegative_number(value) -> bool:
 func load_hightech(raw: Dictionary) -> void:
 	invalidate_stat_cache()
 	profile.aiTechCompletionUnread = raw.get("aiTechCompletionUnread",false) == true
-	for field in ["productionElapsed", "hightechSavedAt"]:
+	for field in ["productionElapsed", "hightechSavedAt", "furnaceElapsed", "jewelFurnaceElapsed"]:
 		if nonnegative_number(raw.get(field)):
 			profile[field] = float(raw[field])
 	if raw.get("aiTechLevels") is Dictionary:
@@ -2083,19 +2084,23 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 			var income=N.maximum(planned_peak[peak_field],rolling)
 			var amount_value=cashflow_multiply(income,float(row.para2))
 			if amount_value==null or not N.valid(amount_value):
-				if not cashflow_pending:push_error("furnace income rejected before block effects: multiplier")
+				if cashflow_pending:_retain_furnace_pending_time(dt)
+				else:push_error("furnace income rejected before block effects: multiplier")
 				return
 			amount_value=cashflow_multiply(amount_value,effective_hightech_level(key))
 			if amount_value==null or not N.valid(amount_value):
-				if not cashflow_pending:push_error("furnace income rejected before block effects: level factor")
+				if cashflow_pending:_retain_furnace_pending_time(dt)
+				else:push_error("furnace income rejected before block effects: level factor")
 				return
 			amount_value=cashflow_multiply(amount_value,1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY"))
 			if amount_value==null or not N.valid(amount_value):
-				if not cashflow_pending:push_error("furnace income rejected before block effects: crew factor")
+				if cashflow_pending:_retain_furnace_pending_time(dt)
+				else:push_error("furnace income rejected before block effects: crew factor")
 				return
 			amount_value=cashflow_multiply(amount_value,1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
 			if amount_value==null or not N.valid(amount_value):
-				if not cashflow_pending:push_error("furnace income rejected before block effects: collector factor")
+				if cashflow_pending:_retain_furnace_pending_time(dt)
+				else:push_error("furnace income rejected before block effects: collector factor")
 				return
 			var amount=N.ceiling(amount_value)
 			if amount==null or not N.valid(amount):push_error("furnace income rejected before block effects: ceiling");return
@@ -2114,6 +2119,21 @@ func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
 		block.x=rng.randf_range(70,BATTLE_SIZE.x-70)
 		block.y=rng.randf_range(250,480)
 		drops.append(block)
+
+func _retain_furnace_pending_time(dt:float)->void:
+	# A resumable sparse product has not committed a block. Preserve elapsed
+	# production time in the existing saved clocks; the next call retries all
+	# due blocks before replacing these clocks with their interval remainders.
+	for key in [FURNACE,JEWEL_FURNACE]:
+		if effective_hightech_level(key)<=0 or not db.data.get("hightech",{}).has(key):continue
+		var jewel_furnace:bool=key==JEWEL_FURNACE
+		var target_type:="smelting" if jewel_furnace else "production"
+		var row:Dictionary=db.data.hightech[key]
+		var interval:=float(row.para1)/(1.0+crew.get_modifier(self,target_type,key,"SPEED"))
+		if interval<=0 or not is_finite(interval):continue
+		var elapsed_field:="jewelFurnaceElapsed" if jewel_furnace else "furnaceElapsed"
+		profile[elapsed_field]=float(profile.get(elapsed_field,0.0))+dt
+	save_dirty=true
 
 func max_shield() -> Variant:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
@@ -3021,7 +3041,7 @@ func max_upgrade_amount(key: String) -> int:
 func upgrade_quote_signature(key:String)->Array:
 	# Value copies catch purchases, load/config replacement, and in-place edits.
 	# Separate from combat stat invalidation: attack counters do not change prices.
-	return [profile.resources.duplicate(true),profile.hyperspace.materials.duplicate(true),profile.highestLevel,db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
+	return [profile.resources.duplicate(true),profile.hyperspace.materials.duplicate(true),profile.highestLevel,db.equipment.get(key,[]).duplicate(true),db.data.equipment_evolution.duplicate(true),db.max_equipment_level(key),hyperspace.is_unlocked(self)]
 
 func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={}) -> int:
 	var entry := slot_entry(category,index)
@@ -3510,13 +3530,14 @@ func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 	if not amount is Dictionary:
 		var ordinary := float(amount)*factor
 		if nonnegative_number(ordinary):return snappedf(ordinary,0.01)
+	else:
+		# One exact representation for every encoded source keeps the established
+		# cent snap independent of whether the same value arrived as v1/v2/v3.
+		amount=SparseWallet.add(amount,0)
+		if amount==null:return null
 	var result=cashflow_multiply(amount,factor)
 	if not N.valid(result):return null
-	if result is Dictionary:
-		if result.has("i") or result.get("v") in [2,3]:return result
-		# GrowthNumber only keeps a mantissa/exponent outside the float domain;
-		# sub-cent underflow is zero, while a huge amount has no visible cents.
-		return 0.0 if float(result.e)<-2.0 else result
+	if result is Dictionary:return SparseWallet.snap_cent(result)
 	return snappedf(float(result),0.01)
 
 func jewel_earned(amount:Variant,source:String,ratio:float=-1.0)->Variant:

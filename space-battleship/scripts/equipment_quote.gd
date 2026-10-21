@@ -54,6 +54,12 @@ static func _multiply_bound(a:Array,b:Array,precision:int,up:bool)->Array:
 static func _rounded_bound(bound:Array)->Array:
 	var digits:String=I.digits(bound[0])
 	var magnitude:int=digits.length()+int(bound[1])-1
+	if magnitude<2:
+		# The established sub-100 quote snaps to the middle of each ten,
+		# including values below one.  The interval endpoints must agree on
+		# that ten before the bounded path can return a price.
+		var tens:int=int(digits.substr(0,1)) if magnitude==1 else 0
+		return [tens*10+5,0]
 	var step_power:int=magnitude-1
 	var shift:int=int(bound[1])-step_power
 	var shifted:String=digits+"0".repeat(shift) if shift>=0 else digits

@@ -194,6 +194,27 @@ static func ceiling(value:Variant)->Variant:
 	var high=integral if int(fractional[-1].d)<0 else _signed_sum(integral,[{"p":"0","d":1}])
 	return _encode(high)
 
+static func snap_cent(value:Variant)->Variant:
+	var source=blocks(value)
+	if source==null:return null
+	# For nonnegative amounts, snappedf(value, 0.01) rounds by first adding
+	# half a cent, then taking the lower whole cent. Keep the tiny tail when
+	# deciding an exact boundary; balanced radix blocks may hold a negative tail.
+	var shifted:=_signed_sum(source,[{"p":"-1","d":50}])
+	var whole:Array=[]
+	var cent_digit:=0
+	var negative_tail:=false
+	for block in shifted:
+		var position:String=block.p
+		if _position_compare(position,"0")>=0:whole.append(block)
+		elif position=="-1":cent_digit=int(block.d)
+		else:negative_tail=int(block.d)<0
+	var cent_groups:int=floori(float(cent_digit)/100.0)
+	if cent_digit==cent_groups*100 and negative_tail:cent_groups-=1
+	if cent_groups!=0:whole.append({"p":"-1","d":cent_groups*100})
+	var rounded:=_normalized(whole)
+	return _encode(rounded) if _positive(rounded) else null
+
 static func _front(source:Array)->Array:
 	var highest:Dictionary=source[-1]
 	var prefix:=float(highest.d)
