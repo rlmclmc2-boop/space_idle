@@ -10,8 +10,8 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "dc6dbf1de369a0e9701e42cb0532d3d25328f02e764321217d5314d934f3d16c",
-  "PLAN_VALIDATION.json": "87ecafce5a0f88a32b92f0b033472ec0615261f180f2f47e8dbb8a331633cff6",
+  "IMPLEMENTATION_PLAN.md": "14509267b9019191172e3596d9f61c17253eeb2f24b0a13e2bb91efc901fbb0b",
+  "PLAN_VALIDATION.json": "b2321848bca6f4be7fa488d23f982e803727df82250104fe4ee0131c3068b375",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S01/FINAL_REVIEW.md": "a884bfe287664aa0fb44c7048875817c27c7489507bda43cc257c41cc9a6651a",
@@ -268,5 +268,5 @@
   "../../../space-battleship/test/audit_s11_equipment_quote.gd": "ec8429f758764ac130adfa7c7e54d708e63d51aa376de7b13edb2885cc6f971a",
   "../../../space-battleship/test/audit_s11_quote_test.gd": "4a9dfa98f3a93d8621ed0cfee35b4ba394b67d6c791cdde17d219b957843f103",
   "../../../space-battleship/test/audit_s11_quote_oracle.json": "9938e9ba88710e8cdaf2a6e53a70aa3deea700e51c334aa47c5a0c307e84408a",
-  "stages/S11/FINAL_REVIEW.md": "e104a94d660bf427c5f3b48d8c6c3a143923c65a05318ed0b6495b0776fb7035"
+  "stages/S11/FINAL_REVIEW.md": "bbbd15f75686fc27ebba14be8110a7088ef5ea48489e2dab1763488f0d0f988b"
 }
