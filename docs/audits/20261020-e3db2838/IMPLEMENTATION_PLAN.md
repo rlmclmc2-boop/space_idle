@@ -2,6 +2,8 @@
 
 **S12/P1 finite exit authority:** [P1_EXIT_REVISION.md](stages/S12/P1_EXIT_REVISION.md) sets the current audit-only interface, protocol and measured scheduling gates. Historical full-public-ledger/all-tier timing failures remain evidence, but are no longer P1 prerequisites without a measured hot-path frequency. P1 is still open; P2 receives actual UI/native/save integration and real workload measurement.
 
+The [cold-process source and input freeze](stages/S12/P1_EXIT_COLD_FREEZE.json) pins the exact-256, middle compact wallet, far compact wallet and cancellation classes before ten-process measurements. Measurement outcomes must remain separate from this freeze.
+
 **S12/P1 audit-only MAX-APPROX-v1 prototype:** The [bounded approximate MAX result](stages/S12/P1_APPROX_MAX_PROTOTYPE.md) records fixed-configuration executable quotes, exact material accounting, same-quote debit, cancellation and stale-owner controls. It does not pass P1, authorize product connection, replace the failed public-ledger timing, or change main.
 
 **S12/P1 actual-main family follow-up:** The [parameterized equipment result](stages/S12/P1_PARAM_MAIN_FAMILY.md) reads six player cost rows from pinned main, uses the actual start level, and explicitly rejects configs outside this fixed support family before quoting. It is audit-only; ordinary x1/x10 and product wiring are unchanged.

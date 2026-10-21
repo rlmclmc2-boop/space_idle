@@ -1,0 +1,40 @@
+{
+  "authority": "P1_EXIT_REVISION.md",
+  "source_commit": "913f270ac5d94e01d35e1c50448a56f887861d9f",
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "godot_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "runner_sha256": "27412ceb437110daa8db8b0305980f130f6ab78361761d0995e20f0366937b8b",
+  "source_git_byte_sha256": {
+    "max_approx_probe.gd": "dc46b7417f0baf7f813de143e1e2df35dcce72f2f0f973bd8afa1ac048559670",
+    "max_approx_transition_probe.gd": "aadde419e28bf45878ad0b27035e811611e411ae9382faf7bb7c3d52d44c76ae",
+    "max_approx_billion_probe.gd": "7632fc6a651bc7c71acf2e8668e29980dee9e2d4a6db0ad3b3bbd05ce87571fb",
+    "max_approx_cancel_probe.gd": "8a8d1f5017d41390dabee6a75227e8fd46ca6d8b13dae3ff73de9f364fe9b021",
+    "approx_bounds.gd": "3abc73bfd58b5b57268faa422398733a09f31b28a5e890d707d2ba1a6d38a8bf",
+    "bench_sparse.gd": "f0cb8b020c68f78078e8353f0739f04452ff4a536a6ea279b24118358fc2cb9c",
+    "max_probe.gd": "15d72d6cb8b3defa66a95ac06d61bfb788d376aaf616edcd664c15da664f4156",
+    "max_chunk_probe.gd": "b3b2cc6144978a0acd7d012924fefd8ef3d2d4a58b5a6592465c2868c038831d",
+    "max_binary_probe.gd": "42b24178525d3ff8976615bee1c207e6791fe73839eae34b1ff01c1b5d5d6a26",
+    "price_probe.gd": "259b3d706287cc3c05df3791cb15cd93e38b9d3bed6f819fb85c268eb34a6fdf",
+    "reference_integer.gd": "5fd393fe1cf9d7909ad349ace7f0d7d39706f890bc7bc40b98f514e4185185f9",
+    "run_probe.py": "0f04da0ba88feb4c1a7471516fc0cd5a5d99a8b6b0302d02a9837ec373a15f02",
+    "actual_equipment_main31e793.json": "55f3236b75a1393addfc00773d7124194860269c98a81497ad0bb2576a9eb06e",
+    "project.godot": "44dcf72a84cbd72ed4225fa4f701e544ff2009662a1e49e51f3b73063839f045",
+    "generated_wallets/godot_prices_3873.json": "ae82b2236152806048a4a18eaf62f0a0210d340f185dcf15930c4ab4604975fb"
+  },
+  "cases": {
+    "exact": "max_approx_transition_probe.gd",
+    "middle": "max_approx_probe.gd",
+    "far": "max_approx_billion_probe.gd",
+    "cancel": "max_approx_cancel_probe.gd"
+  },
+  "inputs": {
+    "exact": "laser start1; exact wallet sum of original target levels 2..257; material 2^53-1",
+    "middle": "laser start1; v4 wallet 10^3800; material 2^53-1",
+    "far": "laser start1; v4 wallet 10^1000000000; material 2^53-1",
+    "cancel": "middle wallet and material; request at the first active bound worker after candidate count reaches 32768"
+  },
+  "cold_processes_per_class": 10,
+  "gates_us": {"per_frame_query_work": 4000, "main_heartbeat_gap": 50000, "request_to_actual_stop": 100000},
+  "total_query_time": "report only; no P1 total-time threshold",
+  "cache": "new Godot process and isolated APPDATA/LOCALAPPDATA directory for every run; OS file cache is not cleared"
+}
