@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not a claim of overall product completion.** S00-S10 (including S04a) are closed after same-object implementation and integration dual PASS. S11 is the only open stage, `review`, after correcting the prior dual-FAIL prototype; revised audit-only evidence awaits parent dot and original astra same-object reviews. S12-S24 remain `not_started`. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
+**Planning and status record, not a claim of overall product completion.** S00-S10 (including S04a) are closed after same-object implementation and integration dual PASS. S11 is the only open stage, `closure_approved_archive_pending`: parent dot and original astra independently PASSed audit-only evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b` with runtime `N/A`; parent approved closure, awaiting implementation-thread archival. S12-S24 remain `not_started`. Main is `31e79337741bf9860d69fff21dae6be994dacd00`.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00-S10 closed; S11 `review` (audit-only prototype, runtime SHA `N/A`) with parent dot and original astra both `PENDING`. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`; S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. S11 evidence entry: `stages/S11/README.md`; S12-S24 `not_started`. S11 cannot close or open S12 before same-object dual PASS.
+**Current stage record:** S00-S10 closed; S11 `closure_approved_archive_pending`. Parent dot and original astra both PASSed runtime `N/A` and frozen evidence `4f49ccc3633aac1e65696dfc96a4f1349741ac9b` with no unresolved blockers; review record `stages/S11/FINAL_REVIEW.md`. Parent approved closure; implementation-thread archival remains pending. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`; S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Integration `N/A`; S12-S24 `not_started`, S12 cannot start before archival and S11 closed record.
 
 ### S00 关闭记录
 
@@ -712,11 +712,11 @@ closure: {state: closed, parent_closed_stage: true, implementation_thread_closed
 ```
 
 
-### S11 audit-only prototype handoff — dual review pending
+### S11 audit-only prototype — same-object dual PASS, archival pending
 
 ```yaml
 stage: S11
-status: review
+status: closure_approved_archive_pending
 predecessor: S10 closed at audit 852d8b9af92cf922b010b2ed2b7555e26cffd0c8
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
 approved_contract_sha: 0442a1b627a07fa1af0d0671cdeb97dd070c5efc
@@ -725,10 +725,12 @@ evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S11/README.md
 verification_record: stages/S11/verification.json
 blob_index: stages/S11/BLOB_INDEX.json
+evidence_snapshot_sha: 4f49ccc3633aac1e65696dfc96a4f1349741ac9b
+review_record: stages/S11/FINAL_REVIEW.md
 verification: Godot 4.7.2 audit prototype 108/108 checks; independent Decimal oracle including zero/subnormal final products; exact log gate PASS
-prior_review: parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9 (fractional wallet, malformed {m,e}, skipped encoded finite-domain comparison); original astra FAIL on ccff47ab247bbbe92d33e2e7de937e0abf10ab2c (intermediate power overflow with final zero or below-100 product); new object pending review
-parent_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null}
-astra_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null}
+prior_review: parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9 (fractional wallet, malformed {m,e}, skipped encoded finite-domain comparison); original astra FAIL on ccff47ab247bbbe92d33e2e7de937e0abf10ab2c (intermediate power overflow with final zero or below-100 product); final 4f49ccc3633aac1e65696dfc96a4f1349741ac9b dual PASS
+parent_review: {verdict: PASS, reviewed_runtime_sha: N/A, reviewed_evidence_sha: 4f49ccc3633aac1e65696dfc96a4f1349741ac9b, unresolved: []}
+astra_review: {verdict: PASS, reviewed_runtime_sha: N/A, reviewed_evidence_sha: 4f49ccc3633aac1e65696dfc96a4f1349741ac9b, turn: 01a15dc7-521c-7710-be76-0f782e325df8, unresolved: []}
 integration: N/A
-closure: {state: review, next_stage_allowed: false}
+closure: {state: parent_approved_archive_pending, implementation_thread_closed: false, next_stage_allowed: false}
 ```
