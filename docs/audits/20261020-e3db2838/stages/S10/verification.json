@@ -1,6 +1,6 @@
 {
   "stage": "S10",
-  "status": "blocked_pending_parent_policy_boundary_review",
+  "status": "in_progress_after_engineering_scope_clarification",
   "base_main_sha": "cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8",
   "approved_contract_sha": "0442a1b627a07fa1af0d0671cdeb97dd070c5efc",
   "runtime_final_sha": null,

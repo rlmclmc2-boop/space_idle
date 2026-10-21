@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S09 closed; S10 blocked pending parent policy-boundary review; S11-S24 not started; S10 runtime none",
+  "scope": "S00-S09 closed; S10 in progress under clarified D01 engineering scope; S11-S24 not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -232,7 +232,8 @@
     "s09_closed": true,
     "s10_runtime_unchanged": true,
     "s10_dual_review_pending": true,
-    "s11_blocked_until_s10_closed": true
+    "s11_blocked_until_s10_closed": true,
+    "s10_engineering_scope_clarified": true
   },
   "stages": 26,
   "active_stage": null,
