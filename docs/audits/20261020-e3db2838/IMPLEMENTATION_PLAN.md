@@ -697,7 +697,7 @@ base_main_sha: cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8
 approved_contract_sha: 0442a1b627a07fa1af0d0671cdeb97dd070c5efc
 runtime_branch: s10/reactor-numeric
 runtime_final_sha: 31e79337741bf9860d69fff21dae6be994dacd00
-runtime_tree: a43b2de4b5c78b8770906891630c1e9ac602a3da
+runtime_tree: 6870a7c240c354f56282e0b543cbe5b322d06872
 second_dual_review: {verdict: FAIL, runtime_sha: d7fc31a94fb6930d175e771437799cae0238ecec, evidence_sha: 65d7008cdf995a1b3b331bb449c09187d8298092}
 prior_dual_review: {verdict: FAIL, runtime_sha: 49dd8a68eda20bf1b1260be0439970e79f738cda, evidence_sha: 450dcb363b9053ce16749e873fa09ba99784d4d5}
 evidence_branch: audit/code-review-e3db2838-20261020
