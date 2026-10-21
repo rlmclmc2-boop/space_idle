@@ -22,6 +22,9 @@ def main() -> None:
     ).decode().splitlines())
     paths.update({
         "docs/audits/20261020-e3db2838/IMPLEMENTATION_PLAN.md",
+        "docs/audits/20261020-e3db2838/stages/S12/P0_CONTRACT_P1_GATE.md",
+        "docs/audits/20261020-e3db2838/stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md",
+        "docs/audits/20261020-e3db2838/stages/S12/P1_PERFORMANCE_PREREGISTRATION.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_FROZEN.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_REVISION_1.md",
         "docs/audits/20261020-e3db2838/stages/S12/P1_SCENARIOS_V2_REVIEW.md",
