@@ -2,7 +2,7 @@
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Planning and status record, not a claim of overall product completion.** Current stage: S00-S09 are `closed`; S10 is the only open stage, `review_pending` on runtime `31e79337741bf9860d69fff21dae6be994dacd00`. Both reviewers must PASS the same final runtime and evidence objects before main integration or closure. S11-S24 remain `not_started`.
+**Planning and status record, not a claim of overall product completion.** Current stage: S00-S09 are `closed`; S10 is the only open stage, `integration_pending` after same-object dual PASS on runtime `31e79337741bf9860d69fff21dae6be994dacd00`. Both reviewers must PASS the same final runtime and evidence objects before main integration or closure. S11-S24 remain `not_started`.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -125,7 +125,7 @@ S03/S04、S10、S12、S17可能因现代码变化而需拆分。S00先核对；�
 
 ## 6. 唯一阶段状态记录
 
-**Current stage record:** S00-S09 `closed`; S10 `review_pending` in implementation thread `01a15cf1-5d62-701d-a9aa-91182acf9012`; S11-S24 `not_started`. Main remains `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`, and the S09 contract is `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Prior S10 review objects failed; the current runtime `31e79337741bf9860d69fff21dae6be994dacd00` and this audit revision await same-object full dual PASS. S06-S08 temporary reference cleanup remains separately pending; later Windows release and native acceptance remain outside S10 closure.
+**Current stage record:** S00-S09 `closed`; S10 `integration_pending` after dual PASS in implementation thread `01a15cf1-5d62-701d-a9aa-91182acf9012`; S11-S24 `not_started`. Main remains `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8`, and the S09 contract is `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Prior S10 review objects failed; parent dot and original astra both PASSed runtime `31e79337741bf9860d69fff21dae6be994dacd00` with frozen evidence `813c43126db07dc6d3c3b19917359b4f29e2fcf5`. Integration acceptance remains pending. S06-S08 temporary reference cleanup remains separately pending; later Windows release and native acceptance remain outside S10 closure.
 
 ### S00 关闭记录
 
@@ -679,9 +679,9 @@ branch_cleanup:
 ### 截止时整体报告格式
 
 截止时父级即使仍在实施，也须交付：最终已验证main SHA；已关闭阶段与双方PASS对应SHA；当前打开阶段/线程及阻断；已修/未修A01—A08；AR风险缓解边界；已执行与未执行平台测试；待决策/权限项；下一唯一阶段；证据位置与保留/清理候选。未完成项目逐项写明，不以测试数量或截止时间包装为整体完成。
-### S10 implementation handoff — runtime and evidence review pending
+### S10 implementation handoff — same-object dual PASS, integration pending
 
-S10 began from main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8` under frozen S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Parent/original-astra resolved the initial representation boundary as necessary engineering scope below. The corrected implementation and local verification are complete at runtime commit `31e79337741bf9860d69fff21dae6be994dacd00` after parent and original-astra both FAILed the prior `49dd8a68`/`450dcb36` object for the four counterexamples documented in `stages/S10/README.md`, then both reviewers FAILed the second `d7fc31a9`/`65d7008c` object for exact-batch, semantic JSON key and intermediate-product counterexamples, and both FAILed the third `7e37f2a1`/`43e5507f` object for the near-cost legacy wallet debit mismatch and inconsistent stage summary; `stages/S10/README.md`, `verification.json`, `BLOB_INDEX.json`, `review4-logs/`, historical `review3-logs/`, `review2-logs/` and `logs/`, and `probes/` are the audit evidence. Parent/astra implementation verdicts remain PENDING; main integration, closure and S11 start remain prohibited.
+S10 began from main `cf213e2f36e4b0ec60a0629e2ed641ac93ef5cd8` under frozen S09 contract `0442a1b627a07fa1af0d0671cdeb97dd070c5efc`. Parent/original-astra resolved the initial representation boundary as necessary engineering scope below. The corrected implementation and local verification are complete at runtime commit `31e79337741bf9860d69fff21dae6be994dacd00` after parent and original-astra both FAILed the prior `49dd8a68`/`450dcb36` object for the four counterexamples documented in `stages/S10/README.md`, then both reviewers FAILed the second `d7fc31a9`/`65d7008c` object for exact-batch, semantic JSON key and intermediate-product counterexamples, and both FAILed the third `7e37f2a1`/`43e5507f` object for the near-cost legacy wallet debit mismatch and inconsistent stage summary; `stages/S10/README.md`, `verification.json`, `BLOB_INDEX.json`, `review4-logs/`, historical `review3-logs/`, `review2-logs/` and `logs/`, and `probes/` are the audit evidence. Parent dot and original astra gave same-object PASS on runtime `31e79337741bf9860d69fff21dae6be994dacd00` and frozen evidence `813c43126db07dc6d3c3b19917359b4f29e2fcf5`; see `stages/S10/REVIEW_RECORD.md`. Only this runtime may fast-forward into main. S10 closure and S11 start remain prohibited pending actual-entry integration acceptance.
 
 #### S10 engineering scope clarification (parent + original astra, review turn `01a15cf7-e50c-71f7-900e-57aa7ba585cc`)
 
