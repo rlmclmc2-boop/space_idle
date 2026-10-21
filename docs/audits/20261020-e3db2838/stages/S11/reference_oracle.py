@@ -13,6 +13,8 @@ def quote(row, level):
         return int(base.to_integral_value(rounding="ROUND_CEILING"))
     factor = Decimal(str(1.0 + float(row["costMulti_1"])))
     value = base * factor ** (level - 1)
+    if value <= 0:
+        return int(value.to_integral_value(rounding="ROUND_CEILING"))
     if value < 100:
         return int((value / 10).to_integral_value(rounding=ROUND_FLOOR) * 10 + 5)
     step = Decimal(10) ** (value.adjusted() - 1)
@@ -28,6 +30,14 @@ def main():
             for level in (3873, 3901):
                 out[f"{key}:{level}"] = str(quote(row, level))
             out[f"{key}:batch:3900:10"] = str(sum(quote(row, n) for n in range(3901, 3911)))
+        zero = {"cost_1": 0, "costMulti_1": 0.2}
+        # Godot 4.7.2 constructs the test operand as 1.25e-300 * 1e-8;
+        # String.num_scientific reports its binary64 value as this decimal.
+        subnormal = {"cost_1": float("1.2499999999999996e-308"), "costMulti_1": 9.0}
+        out["zero:4000"] = str(quote(zero, 4000))
+        for level in (309, 310, 311):
+            out[f"subnormal:{level}"] = str(quote(subnormal, level))
+        out["subnormal:batch:308:3"] = str(sum(quote(subnormal, n) for n in range(309, 312)))
     target = ROOT / "space-battleship/test/audit_s11_quote_oracle.json"
     target.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(f"oracle_cases={len(out)} max_digits={max(map(len, out.values()))}")

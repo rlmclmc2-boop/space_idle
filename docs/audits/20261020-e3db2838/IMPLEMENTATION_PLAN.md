@@ -725,8 +725,8 @@ evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S11/README.md
 verification_record: stages/S11/verification.json
 blob_index: stages/S11/BLOB_INDEX.json
-verification: Godot 4.7.2 audit prototype 98/98 checks; independent Decimal oracle; exact log gate PASS
-prior_review: parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9 (fractional wallet, malformed {m,e}, skipped encoded finite-domain comparison); new object pending review
+verification: Godot 4.7.2 audit prototype 108/108 checks; independent Decimal oracle including zero/subnormal final products; exact log gate PASS
+prior_review: parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9 (fractional wallet, malformed {m,e}, skipped encoded finite-domain comparison); original astra FAIL on ccff47ab247bbbe92d33e2e7de937e0abf10ab2c (intermediate power overflow with final zero or below-100 product); new object pending review
 parent_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null}
 astra_review: {verdict: PENDING, reviewed_runtime_sha: N/A, reviewed_evidence_sha: null}
 integration: N/A

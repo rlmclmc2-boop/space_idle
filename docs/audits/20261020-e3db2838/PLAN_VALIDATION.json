@@ -266,9 +266,11 @@
     "s11_audit_only_prototype": true,
     "s11_dual_review_pending": true,
     "s11_main_unchanged": true,
-    "s11_godot_98_checks_pass": true,
     "s11_prior_dual_fail_old_object": true,
-    "s11_revised_dual_review_pending": true
+    "s11_revised_dual_review_pending": true,
+    "s11_godot_108_checks_pass": true,
+    "s11_second_astra_fail_old_object": true,
+    "s11_zero_subnormal_oracle_pass": true
   },
   "stages": 26,
   "active_stage": "S11",

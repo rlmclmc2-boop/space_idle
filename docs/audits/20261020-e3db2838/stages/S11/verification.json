@@ -11,13 +11,13 @@
     "python docs/audits/20261020-e3db2838/stages/S11/verify_log.py"
   ],
   "results": [
-    "reference oracle: 6 cases, maximum 312 digits, exit 0",
-    "Godot: 98 checks, 0 failures, exit 0",
-    "log gate: 98 PASS lines, one exact certificate-store diagnostic, no other errors, exit 0"
+    "reference oracle: 11 cases, maximum 312 digits, exit 0",
+    "Godot: 108 checks, 0 failures, exit 0",
+    "log gate: 108 PASS lines, one exact certificate-store diagnostic, no other errors, exit 0"
   ],
-  "raw_log_sha256": "6cc2350462aeb5be06d8d96af86b01fe4ed87719885cb64bc99dc9dfa60f8dc4",
-  "oracle_sha256": "8a619102f5c1074ca7d80d8eccbf7799400e2ef792618285054dcd89ce26ef8a",
-  "prior_review": "Parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9; fractional wallet rejected, malformed legacy m/e accepted, encoded finite-domain comparison skipped",
+  "raw_log_sha256": "acd890639962cc83bc75cf90bd3b3b8d257faa386c5b511eab67c0bfcde461bc",
+  "oracle_sha256": "9938e9ba88710e8cdaf2a6e53a70aa3deea700e51c334aa47c5a0c307e84408a",
+  "prior_review": ["Parent dot and original astra FAIL on c87d7d508cb4257c5ad27050fa52e4b77ed35fb9; fractional wallet rejected, malformed legacy m/e accepted, encoded finite-domain comparison skipped", "Original astra FAIL on ccff47ab247bbbe92d33e2e7de937e0abf10ab2c; intermediate power overflow with final zero or below-100 value was rejected"],
   "review": {"parent": "PENDING", "original_astra": "PENDING"},
   "integration": "N/A",
   "unverified": ["purchase/debit", "MAX cursor", "cache", "UI", "save", "native", "refund transaction"]

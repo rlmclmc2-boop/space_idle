@@ -2,13 +2,13 @@
   "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
   "runtime_sha": "N/A",
   "blobs": {
-    "space-battleship/test/audit_s11_equipment_quote.gd": "51f546bdc337f683e3c4d8d129d58787e50b3db8",
-    "space-battleship/test/audit_s11_quote_test.gd": "936e758f314875e72061077841b8e88a6f20b9e4",
-    "space-battleship/test/audit_s11_quote_oracle.json": "7166972fcd05cf1f72baef9c86a25e56a5863301",
-    "docs/audits/20261020-e3db2838/stages/S11/README.md": "c38607c935209778b751ebd5f2836479d3eba167",
-    "docs/audits/20261020-e3db2838/stages/S11/reference_oracle.py": "689e6cfeacbde7f6ec2bdfb5831025ffae6ced8a",
-    "docs/audits/20261020-e3db2838/stages/S11/verify_log.py": "714b44684e1760e0a8073336404ce17043c345d8",
-    "docs/audits/20261020-e3db2838/stages/S11/godot-test.log": "bf3079c89284951306dda3a2afc21538eabb96a2",
-    "docs/audits/20261020-e3db2838/stages/S11/verification.json": "287ce5fdd32f5317aa59af07918e681bcc5fc090"
+    "space-battleship/test/audit_s11_equipment_quote.gd": "b6013f52348a02971e9a775168af911b7efdae86",
+    "space-battleship/test/audit_s11_quote_test.gd": "06ca0a377e17da17b91f9bdfd630ab185936a469",
+    "space-battleship/test/audit_s11_quote_oracle.json": "01a4e95cb04b1be4027859d3dd0012599f1f6dd5",
+    "docs/audits/20261020-e3db2838/stages/S11/README.md": "36812877e78df8684f500795df8ef3f0f98c96a7",
+    "docs/audits/20261020-e3db2838/stages/S11/reference_oracle.py": "05e2bc6924baeb1de735ab2f2f3dffbe87c0f4c7",
+    "docs/audits/20261020-e3db2838/stages/S11/verify_log.py": "48113e762ded4806d66667af6a4f92d4cacf2d6e",
+    "docs/audits/20261020-e3db2838/stages/S11/godot-test.log": "9508359f3e01a78ac48196eb824ea707f3f68b56",
+    "docs/audits/20261020-e3db2838/stages/S11/verification.json": "7f57649efc631ce5552275a7ffc9f89051734566"
   }
 }

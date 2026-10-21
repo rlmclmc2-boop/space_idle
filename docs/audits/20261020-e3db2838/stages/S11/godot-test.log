@@ -100,4 +100,14 @@ PASS invalid string exponent
 PASS valid numeric legacy mantissa
 PASS invalid extra legacy field
 PASS encoded finite legacy comparisons
-S11 checks=98 failures=0
+PASS overflow zero quote ok
+PASS overflow zero oracle
+PASS subnormal quote ok 309
+PASS subnormal oracle 309
+PASS subnormal quote ok 310
+PASS subnormal oracle 310
+PASS subnormal quote ok 311
+PASS subnormal oracle 311
+PASS subnormal batch ok
+PASS subnormal batch oracle
+S11 checks=108 failures=0

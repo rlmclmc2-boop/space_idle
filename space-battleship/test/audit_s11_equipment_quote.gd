@@ -17,11 +17,16 @@ static func _old_growth(base: float, multiplier: float, level: int) -> float:
 static func _large_growth(base: float, multiplier: float, level: int) -> Variant:
 	# The same binary64 operands are converted to decimal factors only after the
 	# old float path overflows. Never recur from the preceding rounded quote.
+	if base == 0.0:
+		return 0
 	var product: Array = I.cost_cursor(base, 1.0 + multiplier, level - 1)
 	var digits: String = I.digits(product[0])
 	var magnitude: int = digits.length() - int(product[1]) - 1
 	if magnitude < 2:
-		return null
+		# The intermediate power may overflow even when its product with a
+		# subnormal base is below 100. Preserve floor(v/10)*10+5 exactly.
+		var tens: Variant = I._integral([product[0], int(product[1]) + 1], false)
+		return I.add(I.multiply(tens, 10), 5)
 	var step_power: int = magnitude - 1
 	var keep: int = digits.length() - int(product[1]) - step_power
 	if keep != 2:

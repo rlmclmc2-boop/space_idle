@@ -71,5 +71,18 @@ func _initialize() -> void:
 	check("valid numeric legacy mantissa", Q.affordable({"1": {"m": 1, "e": 400}}, {"1": 10}), true)
 	check("invalid extra legacy field", Q.affordable({"1": {"m": 1, "e": 400, "x": 1}}, {"1": 10}), false)
 	check("encoded finite legacy comparisons", encoded_finite_comparisons >= 8, true)
+	var zero := Q.quote_row({"level": 1, "res_1": 1, "cost_1": 0, "cost_multi_1": 0.2}, 4000, evolution)
+	check("overflow zero quote ok", zero.ok, true)
+	check("overflow zero oracle", digits(zero.costs["1"]), str(cases["zero:4000"]))
+	# Godot's literal parser turns 1.25e-308 into zero; construct the finite
+	# binary64 operand instead, as a loaded configuration would provide it.
+	var subnormal_row := {"level": 1, "res_1": 1, "cost_1": 1.25e-300 * 1.0e-8, "cost_multi_1": 9.0}
+	for level in [309, 310, 311]:
+		var subnormal := Q.quote_row(subnormal_row, level, evolution)
+		check("subnormal quote ok " + str(level), subnormal.ok, true)
+		check("subnormal oracle " + str(level), digits(subnormal.costs["1"]), str(cases["subnormal:" + str(level)]))
+	var subnormal_batch := Q.batch(subnormal_row, 308, 3, evolution)
+	check("subnormal batch ok", subnormal_batch.ok, true)
+	check("subnormal batch oracle", digits(subnormal_batch.costs["1"]), str(cases["subnormal:batch:308:3"]))
 	print("S11 checks=", checks, " failures=", failures)
 	quit(0 if failures == 0 else 1)

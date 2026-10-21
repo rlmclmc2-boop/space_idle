@@ -8,7 +8,7 @@ summary = [line for line in lines if line.startswith("S11 checks=")]
 cert = sum(line == next(iter(allowed)) for line in lines)
 passes = sum(line.startswith("PASS ") for line in lines)
 assert not errors, errors
-assert summary == ["S11 checks=98 failures=0"], summary
-assert passes == 98, passes
+assert summary == ["S11 checks=108 failures=0"], summary
+assert passes == 108, passes
 assert cert == 1, cert
 print(f"PASS log gate: {passes} PASS lines, one exact Windows certificate diagnostic, no other errors")
