@@ -10,8 +10,8 @@
   "../../../test/test_save_startup_rejection.gd": "de0fa48bd018c1adb2e7b7f92ce9c3b64f0357adbbb537fb214f9d195413163f",
   "../../../test/test_save_transfer.gd": "53aab9bbc4f7def1e943961e3c000a95a25ec322b1250e61bd52de3145ded19a",
   "../../../test/test_single_writer_s04a.py": "2061ed48820d94e33a68a72e92d6dac1302817db638fe4c1f44f96a3f3005c96",
-  "IMPLEMENTATION_PLAN.md": "9e4834a108205751196df6d49543ecd474a3c5ac324a8aa1afe37559cf87f236",
-  "PLAN_VALIDATION.json": "688f46d1adc5ddba1f834e464056f8c35b94e819608d19087617684574e054e3",
+  "IMPLEMENTATION_PLAN.md": "2b98763b0c0d769a254f516b7ed8436a3c3285ac00a48f7108301aa74a9e1744",
+  "PLAN_VALIDATION.json": "9b36cad75ae92b21dfe3e40c0b98dabeca5462df7c7e808d3f4ef25f1ac023bb",
   "stages/S00/FINAL_REVIEW.md": "7539bffd0b779874b2eb31ba82c953d7faf2870a00eb77d954a2d203f2aba911",
   "stages/S00/README.md": "e9134878a9dd747d44aa6fd269c4fc6a9d86f763eedfb36b212a03ab8531c79e",
   "stages/S01/FINAL_REVIEW.md": "a884bfe287664aa0fb44c7048875817c27c7489507bda43cc257c41cc9a6651a",
@@ -112,5 +112,9 @@
   "stages/S07/logs/reactor-regression.log": "24cd6d8bfe1a8e993b4fde1bd9cc6b733f987ec70a40259b2807cc1690ac3eda",
   "stages/S07/logs/stat-cache-regression.log": "02d408f3a280128b3b90b17f5f856857b2a8a10b2b3754582bb365baf84ceb59",
   "stages/S07/test_s07_reactor_cache.gd": "ad321b2f70b8cb14bedac82f7c0375bccb328a8f004ea96ec84ae8bc1ac320cd",
-  "stages/S07/test_s07_reactor_native.gd": "890aa4f81252760d68d3fb60da1c4f60665a9c1570a8ae8c72f829350563ad70"
+  "stages/S07/test_s07_reactor_native.gd": "890aa4f81252760d68d3fb60da1c4f60665a9c1570a8ae8c72f829350563ad70",
+  "stages/S08/README.md": "099fac3f5243048a8fa5808d906918df01346fe31de768a72468d63a96679dd7",
+  "stages/S08/RESULT.json": "3cec2e7fd6aeeb6ec4546a5c5aef31337687a9eb47984f917527e1c44d055674",
+  "stages/S08/fault_injection.log": "c3ba558208178fa29ec2bfd1bd375bcc5be8da54c6334394c2dbc687a7c203d9",
+  "stages/S08/s08_atomic_recovery.py": "0aa5213537cae484955d40130d74361bf0cb7d8fa8fc32deb72cd59e0667e988"
 }
