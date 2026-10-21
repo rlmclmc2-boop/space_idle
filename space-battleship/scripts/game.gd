@@ -1294,7 +1294,9 @@ func reactor_max_upgrades() -> int:
 func upgrade_reactor(amount: int) -> bool:
 	if not reactor_unlocked() or amount <= 0:return false
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
-	var total: Variant=0.0
+	# Exact-tag budgets debit the exact sum of the same per-level quotes.
+	# Ordinary budgets retain the historical float accumulation order.
+	var total: Variant=0 if reactor_exact_budget(budget) else 0.0
 	var cursor: Array=[]
 	for offset in amount:
 		var quote_level: int=int(profile.reactorLevel)+offset
@@ -2613,7 +2615,7 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			if rng.randf() < float(drop.chance):
 				uid += 1
 				var multiplier = reactor_multiplier("smelting") if int(drop.resourceId) == 1 else 1.0
-				var drop_factor=N.multiply(float(enemy.res_ratio),multiplier) if multiplier is Dictionary else float(enemy.res_ratio)*multiplier
+				var drop_factor=N.multiply(float(enemy.res_ratio),multiplier)
 				var base_amount = N.ceiling(N.multiply(N.multiply(drop.amount,drop_factor),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
 				var drop_amount = N.ceiling(N.multiply(base_amount,planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base_amount
 				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(int(drop.resourceId)),"amount":drop_amount,"production_base":base_amount})
@@ -3240,8 +3242,8 @@ func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
 	var production_bonus: float=1.0+float(hyperspace_totals().hangings.get("gem_refiner",0)) if source in ["drop","furnace"] else 1.0
 	var reactor_bonus=reactor_multiplier("condensation") if source=="drop" else 1.0
-	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" and reactor_bonus is Dictionary else crew.system_effect(self,"gem_bonus") * reactor_bonus * galaxy.multiplier("gem_fragment") if source=="drop" else 1.0
-	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor) if gem_factor is Dictionary else amount*production_bonus*gem_factor
+	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" else 1.0
+	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor)
 	var earned = N.multiply(jewel_fragment_amount(input,ratio),AITech.income_factor(self,"fragment_income"))
 	profile.jewelFragments = N.add(profile.jewelFragments,earned)
 	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)

@@ -39,7 +39,7 @@ static func restore_legacy_reactor_integers(source: String,raw: Dictionary) -> b
    elif c=="\\":escaped=true
    elif c=='"':
     quoted=false
-    if depth==1 and source.substr(start,index-start+1)=='"reactorAllocation"':
+    if depth==1 and JSON.parse_string(source.substr(start,index-start+1))=="reactorAllocation":
      var at:=index+1
      while at<source.length() and source[at] in [" ","\t","\r","\n"]:at+=1
      if at<source.length() and source[at]==":":
