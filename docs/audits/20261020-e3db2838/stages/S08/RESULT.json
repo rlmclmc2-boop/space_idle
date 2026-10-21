@@ -18,7 +18,9 @@
     "secondary_failure": "PASS: recovery_required; original A/B hashes verified; mixed A-new/B-old",
     "manual_restore": "PASS: old A restored from journal",
     "success": "PASS: replacement A/B new; journal cleaned",
-    "editor_secondary_failure": "PASS: independent persistent backup and recovery journal"
+    "editor_secondary_failure": "PASS: independent persistent backup and recovery journal",
+    "config_cli": "PASS: exit 1 with recovery_required, recovery_path and rollback_failed",
+    "editor_cli": "PASS: exit 1 with recovery_required, recovery_path and rollback_failed"
   },
   "full_workbook_import": "NOT_RUN: lxml unavailable",
   "cross_file_acid": "NOT_CLAIMED",
