@@ -1,0 +1,66 @@
+{
+  "evolution": {
+    "interval": 20,
+    "material_cost_per_tier": 10,
+    "material_id": "degenerate_matter"
+  },
+  "evolution_sha256": "6f494f85b50d4e6d3a993ce03a7f5420cbdd04deb979a2cde1734253b4d9c99c",
+  "game_data_sha256": "fd9507a476d6164fd5f1dac9250923d9b0450f2450c22004b52be2def9bd2609",
+  "rows": {
+    "armour": {
+      "costMulti_1": 0.2,
+      "costMulti_2": null,
+      "cost_1": 50,
+      "cost_2": null,
+      "name": "armour",
+      "res_1": 1,
+      "res_2": null
+    },
+    "cannon": {
+      "costMulti_1": 0.2,
+      "costMulti_2": null,
+      "cost_1": 50,
+      "cost_2": null,
+      "name": "cannon",
+      "res_1": 1,
+      "res_2": null
+    },
+    "laser": {
+      "costMulti_1": 0.2,
+      "costMulti_2": null,
+      "cost_1": 50,
+      "cost_2": null,
+      "name": "laser",
+      "res_1": 1,
+      "res_2": null
+    },
+    "longLaser": {
+      "costMulti_1": 0.2,
+      "costMulti_2": null,
+      "cost_1": 50,
+      "cost_2": null,
+      "name": "longLaser",
+      "res_1": 1,
+      "res_2": null
+    },
+    "missile": {
+      "costMulti_1": 0.2,
+      "costMulti_2": null,
+      "cost_1": 50,
+      "cost_2": null,
+      "name": "missile",
+      "res_1": 1,
+      "res_2": null
+    },
+    "shield": {
+      "costMulti_1": 0.2,
+      "costMulti_2": null,
+      "cost_1": 50,
+      "cost_2": null,
+      "name": "shield",
+      "res_1": 1,
+      "res_2": null
+    }
+  },
+  "source_commit": "31e79337741bf9860d69fff21dae6be994dacd00"
+}

@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"bound_worker_wall_us":0,"boundary_next":{},"cancel_requested_us":0,"cancel_stop_latency_us":0,"count":-1,"equipment_id":"laser","evaluated_candidates":0,"fixture":"compact_medium","heartbeat_frames":1,"kind":"exploratory_max_approx_query","level_matches":false,"live_unchanged_on_failure":true,"material_matches":false,"max_heartbeat_gap_us":0,"mode":"","mutation_mode":"replacement","post_level":19,"post_material":9,"post_profile_bytes":116,"post_wallet":null,"pre_profile_bytes":116,"quoted":{},"reason":"first_purchase_unaffordable","remaining_blocks":1,"remaining_matches":false,"start_level":19,"state":"not_affordable","success":true,"total_wall_us":1805}
+ERROR: 1 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.
+ERROR: 1 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.

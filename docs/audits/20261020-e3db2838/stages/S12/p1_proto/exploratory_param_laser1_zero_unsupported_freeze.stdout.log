@@ -1,0 +1,3 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+{"bound_worker_wall_us":0,"boundary_next":{},"cancel_requested_us":0,"cancel_stop_latency_us":0,"count":-1,"equipment_id":"laser","evaluated_candidates":0,"fixture":"compact_medium","heartbeat_frames":0,"kind":"exploratory_max_approx_query","level_matches":false,"live_unchanged_on_failure":true,"material_matches":false,"max_heartbeat_gap_us":0,"mode":"","mutation_mode":"replacement","post_level":1,"post_material":9007199254740991,"post_profile_bytes":130,"post_wallet":null,"pre_profile_bytes":130,"quoted":{},"reason":"outside_fixed_main_equipment_family","remaining_blocks":1,"remaining_matches":false,"start_level":1,"state":"unsupported","success":true,"total_wall_us":1133}

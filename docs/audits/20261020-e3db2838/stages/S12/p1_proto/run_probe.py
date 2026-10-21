@@ -21,7 +21,7 @@ GODOT = Path(r"D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_consol
 
 
 def main() -> int:
-    if len(sys.argv) != 3 or sys.argv[1] not in {"bench_sparse.gd", "bench_sparse_public.gd", "ledger_lifecycle_probe.gd", "approx_math_probe.gd", "max_approx_probe.gd", "max_approx_billion_probe.gd", "max_approx_transition_probe.gd", "max_approx_fallback_probe.gd", "max_approx_stale_probe.gd", "max_approx_config_stale_probe.gd", "max_approx_wallet_stale_probe.gd", "max_approx_silent_replace_probe.gd", "max_approx_cancel_probe.gd", "max_approx_tamper_probe.gd", "research_probe.gd", "price_probe.gd", "max_probe.gd", "max_chunk_probe.gd", "max_binary_probe.gd", "max_stream_probe.gd", "max_resumable_probe.gd", "max_cancel_probe.gd", "max_change_probe.gd", "max_aba_probe.gd", "max_frame_probe.gd", "max_frame_cancel_probe.gd", "max_frame_stale_probe.gd", "max_material_probe.gd", "max_material_9_probe.gd", "max_material_10_probe.gd", "verify_binary_prices.gd", "verify_float_bits.gd", "price_stream_probe.gd", "export_prices_3873.gd", "export_compact_50000.gd", "edge_payload_probe.gd", "fallback_job_probe.gd", "reactor_quote_probe.gd", "save_size_probe.gd"}:
+    if len(sys.argv) != 3 or sys.argv[1] not in {"bench_sparse.gd", "bench_sparse_public.gd", "ledger_lifecycle_probe.gd", "approx_math_probe.gd", "max_approx_probe.gd", "max_approx_parameter_probe.gd", "max_approx_billion_probe.gd", "max_approx_transition_probe.gd", "max_approx_fallback_probe.gd", "max_approx_stale_probe.gd", "max_approx_config_stale_probe.gd", "max_approx_wallet_stale_probe.gd", "max_approx_silent_replace_probe.gd", "max_approx_cancel_probe.gd", "max_approx_tamper_probe.gd", "research_probe.gd", "price_probe.gd", "max_probe.gd", "max_chunk_probe.gd", "max_binary_probe.gd", "max_stream_probe.gd", "max_resumable_probe.gd", "max_cancel_probe.gd", "max_change_probe.gd", "max_aba_probe.gd", "max_frame_probe.gd", "max_frame_cancel_probe.gd", "max_frame_stale_probe.gd", "max_material_probe.gd", "max_material_9_probe.gd", "max_material_10_probe.gd", "verify_binary_prices.gd", "verify_float_bits.gd", "price_stream_probe.gd", "export_prices_3873.gd", "export_compact_50000.gd", "edge_payload_probe.gd", "fallback_job_probe.gd", "reactor_quote_probe.gd", "save_size_probe.gd"}:
         print("usage: run_probe.py {bench_sparse.gd|research_probe.gd|price_probe.gd|max_probe.gd|max_chunk_probe.gd|max_binary_probe.gd|max_stream_probe.gd|max_resumable_probe.gd|max_cancel_probe.gd|max_change_probe.gd|max_aba_probe.gd|max_frame_probe.gd|max_frame_cancel_probe.gd|max_material_probe.gd|max_material_9_probe.gd|max_material_10_probe.gd|verify_binary_prices.gd|verify_float_bits.gd|price_stream_probe.gd|export_prices_3873.gd|export_compact_50000.gd|edge_payload_probe.gd|fallback_job_probe.gd|reactor_quote_probe.gd|save_size_probe.gd} OUTPUT_STEM", file=sys.stderr)
         return 2
     script, stem = sys.argv[1:]
@@ -84,6 +84,10 @@ def main() -> int:
         "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
     }
+    if script == "max_approx_parameter_probe.gd":
+        meta["scenario_inputs"] = {key: env.get(key, "") for key in (
+            "S12_EQUIPMENT", "S12_START_LEVEL", "S12_MATERIAL", "S12_WALLET_MODE", "S12_CONFIG_ALTERATION", "S12_MUTATION"
+        )}
     (ROOT / f"{stem}.meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(meta, ensure_ascii=False))
     return process.returncode

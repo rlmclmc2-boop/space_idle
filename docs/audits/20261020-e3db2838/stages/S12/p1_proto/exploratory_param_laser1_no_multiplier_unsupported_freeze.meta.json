@@ -1,0 +1,37 @@
+{
+  "classification": "exploratory, not official P1 repetition",
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+    "--headless",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto",
+    "--script",
+    "max_approx_parameter_probe.gd"
+  ],
+  "cwd": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto",
+  "appdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto\\.runtime\\exploratory_param_laser1_no_multiplier_unsupported_freeze\\Roaming",
+  "localappdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-21\\task-14\\s12-p1-audit\\docs\\audits\\20261020-e3db2838\\stages\\S12\\p1_proto\\.runtime\\exploratory_param_laser1_no_multiplier_unsupported_freeze\\Local",
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_ms": 470.54609982296824,
+  "sampled_peak_process_family_rss_bytes": 108052480,
+  "rss_sample_interval_target_ms": 1,
+  "godot_sha256": "c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643",
+  "godot_banner_observed": "Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org",
+  "cpu_model": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel",
+  "physical_cores": 8,
+  "logical_cores": 16,
+  "os": "Windows-10-10.0.19044-SP0",
+  "ram_total_bytes": 34272337920,
+  "ram_available_before_record_bytes": 9642721280,
+  "stdout_sha256": "4318d2e4cb3e987a0cf3efa4a1a6065fccd3eb1a34e351d3dc99b7ce666e21d7",
+  "stderr_sha256": "354f6b41afac0af85c870c4ddfdbe208e44ad5223ae6d89aba867d4090718998",
+  "scenario_inputs": {
+    "S12_EQUIPMENT": "laser",
+    "S12_START_LEVEL": "1",
+    "S12_MATERIAL": "9007199254740991",
+    "S12_WALLET_MODE": "compact_medium",
+    "S12_CONFIG_ALTERATION": "no_multiplier",
+    "S12_MUTATION": ""
+  }
+}
