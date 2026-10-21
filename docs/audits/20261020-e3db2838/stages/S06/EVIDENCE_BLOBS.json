@@ -1,12 +1,14 @@
 {
-  "frozen_evidence_sha": "8d1d47bdc8404dc3385a441c21cc054a39ff0580",
+  "frozen_evidence_sha": "6851272ee7d91c9f51fb0351e3d07cce9f72f69b",
   "files": {
-    "docs/audits/20261020-e3db2838/stages/S06/README.md": "4b12e56b4f627a4e8b71435abe13f47e89f1ddd1",
-    "docs/audits/20261020-e3db2838/stages/S06/RUNTIME_BLOBS.json": "1cea0f87f5b50fdd7a3bba503138e8d9dd452b7d",
-    "docs/audits/20261020-e3db2838/stages/S06/checks.json": "633549639dc774f4d3c39f646ad71c2a101a4ddc",
+    "docs/audits/20261020-e3db2838/stages/S06/README.md": "114a017d5c4e67adaa2b13d5a4649e38ce5d697b",
+    "docs/audits/20261020-e3db2838/stages/S06/RUNTIME_BLOBS.json": "793b9352de40eded5cdbbf195787a0e47636af35",
+    "docs/audits/20261020-e3db2838/stages/S06/checks.json": "e4fae137a76222c8cf5db581aebe3c860dbbf377",
     "docs/audits/20261020-e3db2838/stages/S06/logs/analysis.log": "a522a4ea58c0c4dc00fc038f1818e4d2d3498f5a",
     "docs/audits/20261020-e3db2838/stages/S06/logs/entry.log": "7575172178370865728a36e66b919adb892a7718",
+    "docs/audits/20261020-e3db2838/stages/S06/logs/gate.log": "c38c1a5585c9bc8c64fb1559de90ba4ebb77f08a",
     "docs/audits/20261020-e3db2838/stages/S06/logs/import.log": "4f81de65cd49e791659e2311edc6f0527a5b0993",
+    "docs/audits/20261020-e3db2838/stages/S06/s06_log_gate.py": "0777e8f8ec1885be78a96479f8454c3c71e0a5dd",
     "docs/audits/20261020-e3db2838/stages/S06/s06_smoke.gd": "ebcc0f91e669a56e7ef1ebea324ffbee716397dd"
   }
 }
