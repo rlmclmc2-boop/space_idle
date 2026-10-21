@@ -163,6 +163,7 @@ func _join_strings(values: Array) -> String:
 
 func _latest_analysis() -> String:
 	var base: String=ProjectSettings.globalize_path("res://../战斗模拟工具/results")
+	if not DirAccess.dir_exists_absolute(base):return ""
 	var dirs:=DirAccess.get_directories_at(base)
 	dirs.sort()
 	for index in range(dirs.size()-1,-1,-1):

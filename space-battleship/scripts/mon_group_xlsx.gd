@@ -60,7 +60,8 @@ static func _read_mon_rows() -> Dictionary:
 	if sheet.is_empty():
 		archive.close()
 		return {"error":"invalid_mon_table"}
-	var shared:=_shared_strings(archive.read_file("xl/sharedStrings.xml"))
+	# Excel may store strings inline, in which case there is no sharedStrings.xml.
+	var shared:=_shared_strings(archive.read_file("xl/sharedStrings.xml")) if archive.get_files().has("xl/sharedStrings.xml") else []
 	var parser:=XMLParser.new()
 	if parser.open_buffer(archive.read_file(sheet))!=OK:
 		archive.close()

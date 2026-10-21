@@ -4,21 +4,57 @@ import filecmp
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = (
-    "ui_text.gd", "fleet_result_analyzer.gd", "fleet_analysis_panel.gd", "fleet_design_cards.gd", "fleet_batch_retest.gd",
-    "database.gd", "game.gd", "number_format.gd", "crew_system.gd", "ship_visuals.gd",
-    "balance_game.gd", "balance_database.gd", "balance_metrics.gd", "balance_timeline.gd",
-    "enemy_fleet_simulator.gd", "player_loadout_generator.gd", "fleet_battle_sampling.gd",
-    "fleet_battle_runner.gd", "enemy_fleet_panel.gd", "player_loadout_panel.gd", "fleet_battle_panel.gd",
-    "fleet_level_generator.gd", "fleet_level_panel.gd", "mon_group_xlsx.gd",
-    "cycle_level_generator.gd", "cycle_level_panel.gd", "cycle_level_xlsx.gd",
-)
+MANIFEST = ROOT / "tools/analyzer_required_data.json"
+SCRIPT_REF = re.compile(r'res://scripts/([^"\']+\.gd)')
+DATA_REF = re.compile(r'res://data/([^"\']+\.json)')
 
-def build(output: Path) -> None:
+
+def required_files() -> dict:
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    scripts = set(manifest["scripts"])
+    data = set(manifest["data"])
+    for name in scripts:
+        source = ROOT / "scripts" / name
+        if not source.is_file():
+            raise FileNotFoundError(source)
+        contents = source.read_text(encoding="utf-8")
+        missing_scripts = set(SCRIPT_REF.findall(contents)) - scripts
+        missing_data = set(DATA_REF.findall(contents)) - data
+        if missing_scripts or missing_data:
+            raise ValueError(f"Unlisted analyzer dependency in {name}: scripts={sorted(missing_scripts)}, data={sorted(missing_data)}")
+    if set(manifest["dynamic_data"]) - data:
+        raise ValueError("Dynamic analyzer data must also be in the data allowlist")
+    config_source = (ROOT / "scripts/hyperspace_config.gd").read_text(encoding="utf-8")
+    dynamic_loop = re.search(r'for name in \[(.*?)\]:\s*\n\s*var parsed=.*?"res://data/"\+name', config_source, re.S)
+    if dynamic_loop is None:
+        raise ValueError("Analyzer dynamic data read changed; update its manifest")
+    dynamic_names = set(re.findall(r'"([^"/]+\.json)"', dynamic_loop.group(1)))
+    schema = json.loads((ROOT / "data/hyperspace_entity_schema.json").read_text(encoding="utf-8"))
+    dynamic_names.update(schema["frozen_inputs"])
+    if dynamic_names - set(manifest["dynamic_data"]):
+        raise ValueError(f"Undeclared dynamic analyzer data: {sorted(dynamic_names - set(manifest['dynamic_data']))}")
+    for name in manifest["data"]:
+        source = ROOT / "data" / name
+        if not source.is_file():
+            raise FileNotFoundError(source)
+    for name in manifest["assets"] + manifest["workbooks"]:
+        source = ROOT / name
+        if not source.is_file():
+            raise FileNotFoundError(source)
+    source_mon = ROOT / manifest["external_workbooks"]["source_mon"]
+    if not source_mon.is_file():
+        raise FileNotFoundError(source_mon)
+    entry = (ROOT / "tools/result_analyzer/entry.gd").read_text(encoding="utf-8")
+    if set(SCRIPT_REF.findall(entry)) - scripts:
+        raise ValueError("Analyzer entry script has an unlisted script dependency")
+    return manifest
+
+def build(output: Path, engine: Path | None = None) -> None:
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
         raise ValueError("Output must be outside the game project")
@@ -26,16 +62,23 @@ def build(output: Path) -> None:
     marker = output / "analyzer-package.json"
     if output.exists() and any(output.iterdir()) and not marker.is_file():
         raise ValueError("Nonempty output is not an analyzer package")
+    manifest = required_files()
+    engine = (engine or ROOT / "engine/Godot_v4.7.2-stable_win64.exe").resolve()
+    if not engine.is_file():
+        raise FileNotFoundError(engine)
     output.mkdir(parents=True, exist_ok=True)
     marker.write_text(json.dumps({"tool": "battle-simulation-lab", "version": 2,
                                   "source_mon": str((ROOT / "config_excel/mon.xlsx").resolve())}), encoding="utf-8")
+    shutil.copy2(MANIFEST, output / "analyzer_required_data.json")
     for folder in ("scripts", "data", "assets/fonts", "config_excel", "runtime", "results"):
         (output / folder).mkdir(parents=True, exist_ok=True)
     # Generated CSV/PNG output is data, not an editor asset to reimport.
     (output / "results/.gdignore").touch()
-    for name in SCRIPTS:
+    for name in manifest["scripts"]:
         shutil.copy2(ROOT / "scripts" / name, output / "scripts" / name)
-    for name in ("ui_text.json", "ui_text_contract.json", "battle_result_analysis.json", "enemy_fleet_analysis.json", "auto_level_generation.json", "level_generation_config.json"):
+    for name in manifest["data"]:
+        if name == "game_data.json":
+            continue
         shutil.copy2(ROOT / "data" / name, output / "data" / name)
     data = json.loads((ROOT / "data/game_data.json").read_text(encoding="utf-8"))
     # Enemy rows are read directly from the original mon.xlsx at runtime.
@@ -43,12 +86,10 @@ def build(output: Path) -> None:
     (output / "data/game_data.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     names = {"equipment": {k: rows[0].get("name", "") for k, rows in data["equipment"].items() if rows}}
     (output / "data/analysis_display_names.json").write_text(json.dumps(names, ensure_ascii=False), encoding="utf-8")
-    shutil.copy2(ROOT / "assets/fonts/NotoSansSC.ttf", output / "assets/fonts/NotoSansSC.ttf")
-    shutil.copy2(ROOT / "config_excel/monGroup.xlsx", output / "config_excel/monGroup.xlsx")
-    shutil.copy2(ROOT / "config_excel/level.xlsx", output / "config_excel/level.xlsx")
+    for name in manifest["assets"] + manifest["workbooks"]:
+        shutil.copy2(ROOT / name, output / name)
     for name in ("project.godot", "main.tscn", "entry.gd", "start.bat", "周期关卡工具.cmd"):
         shutil.copy2(ROOT / "tools/result_analyzer" / name, output / name)
-    engine = ROOT / "engine/Godot_v4.7.2-stable_win64.exe"
     runtime = output / "runtime/analyzer.exe"
     if not runtime.exists() or not filecmp.cmp(engine, runtime, shallow=False):
         shutil.copy2(engine, runtime)
@@ -75,4 +116,6 @@ def build(output: Path) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT.parent / "战斗模拟工具")
-    build(parser.parse_args().output)
+    parser.add_argument("--engine", type=Path, help="Godot 4.7.2 executable (default: project engine)")
+    args = parser.parse_args()
+    build(args.output, args.engine)
