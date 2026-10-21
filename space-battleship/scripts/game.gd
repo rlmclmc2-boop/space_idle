@@ -988,17 +988,23 @@ func refund_equipment(key: String, level: int) -> void:
 	var refunded := {}
 	for target_level in range(2, level + 1):
 		var quote:=upgrade_cost_for_level(key,target_level)
-		if quote.is_empty():return
+		if quote.is_empty():
+			push_warning("equipment refund rejected: no valid quote")
+			return
 		for id in quote:refunded[id]=ReactorInt.add(refunded.get(id,0),quote[id])
 	var credited := {}
 	for id in refunded:
 		var balance=upgrade_currency(id)
-		if not N.valid(balance) or (balance is Dictionary and balance.has("m") and float(balance.e)>float(MAX_EXACT_WALLET_DIGITS)):return
+		if not N.valid(balance) or (balance is Dictionary and balance.has("m") and float(balance.e)>float(MAX_EXACT_WALLET_DIGITS)):
+			push_warning("equipment refund rejected: exact credit outside save domain")
+			return
 		var exact=ReactorInt.from_growth(balance)
 		if exact==null and balance is Dictionary and balance.has("m"):
 			exact=ReactorInt.legacy_integer(balance,MAX_EXACT_WALLET_DIGITS)
 		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id])
-		if not N.valid(next) or (ReactorInt.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):return
+		if not N.valid(next) or (ReactorInt.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):
+			push_warning("equipment refund rejected: credit cannot be represented")
+			return
 		credited[id]=next
 	for id in credited:
 		if id==db.evolution_material_id():profile.hyperspace.materials[id]=credited[id]
@@ -2873,9 +2879,14 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if entry.is_empty() or levels<1:return false
 	var key = str(entry.key)
 	var costs = slot_upgrade_cost(category, index, levels)
+	if costs.is_empty():
+		push_warning("equipment upgrade rejected: no valid quote")
+		return false
 	if not can_afford_upgrade_costs(costs):return false
 	var debits:=equipment_debits(costs)
-	if debits.is_empty():return false
+	if debits.is_empty():
+		push_warning("equipment upgrade rejected: exact debit cannot be represented")
+		return false
 	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
 	if batch_update:
 		var expected:Dictionary=native_upgrade_batch.planned.get(slot_id(category,index),{})
