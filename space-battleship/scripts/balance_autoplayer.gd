@@ -2,6 +2,7 @@ extends RefCounted
 ## Replace this object to experiment with policies; all actions use BattleGame APIs.
 const DECISION_SECONDS := 1.0
 const MAX_PURCHASES := 12
+const NumericProjection=preload("res://scripts/balance_numeric_projection.gd")
 var strategy := "BALANCED"
 var forced_weapon := ""
 var respect_guard := false
@@ -9,12 +10,14 @@ var unlock_acknowledgements_per_visit := 1
 var random := RandomNumberGenerator.new()
 var last_refit := -60.0
 var unlocked_count := 0
+var numeric_error := ""
 
 func configure(name: String, seed_value: int) -> void:
 	strategy = name
 	random.seed = seed_value ^ 0x51A7
 	last_refit = -60.0
 	unlocked_count = 0
+	numeric_error = ""
 
 func weapon_value(game: BattleGame, key: String, level: int) -> float:
 	var row := game.db.equip(key,level)
@@ -82,7 +85,12 @@ func act(game: BattleGame, elapsed: float) -> bool:
 				var cost := 0.0
 				var costs := game.slot_upgrade_cost(category,index)
 				for id in costs:
-					cost += float(costs[id])/maxf(float(game.profile.resources.get(id,0)),1.0)
+					var share=NumericProjection.ratio(costs[id],game.upgrade_currency(id))
+					if share==null:
+						numeric_error="unsupported_numeric_domain: upgrade ratio " + str(id)
+						push_error(numeric_error)
+						return false
+					cost += float(share)
 				var before: float = game.jewel_equipment_stat(entry)
 				var gain := maxf(0,game.jewel_equipment_stat(entry,int(entry.level)+1)-before)/maxf(before,1.0)
 				if gain <= 0:continue
@@ -101,6 +109,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 		game.upgrade_slot(best.category,best.index)
 	# Reserve at most 10% of each current resource balance for a scientist.
 	if strategy != "ECONOMY_FIRST":buy_scientist(game,random.randf_range(0.05,0.3) if strategy == "RANDOM_VALID" else 0.1)
+	if not numeric_error.is_empty():return false
 	if strategy == "ECONOMY_FIRST" and game.can_research(BattleGame.FURNACE):game.assign_scientist(BattleGame.FURNACE,game.idle_scientists())
 	for key in game.db.data.get("hightech",{}):
 		if game.can_research(key) and game.assigned_scientists(key) == 0:game.assign_scientist(key,1)
@@ -118,5 +127,10 @@ func buy_scientist(game: BattleGame, fraction: float) -> void:
 	var purchase := game.scientist_purchase(1)
 	var cheap := int(purchase.count)>0
 	for id in purchase.costs:
-		if float(purchase.costs[id]) > float(game.profile.resources.get(id,0))*fraction:cheap = false
+		var share=NumericProjection.ratio(purchase.costs[id],game.profile.resources.get(id,0))
+		if share==null:
+			numeric_error="unsupported_numeric_domain: scientist ratio " + str(id)
+			push_error(numeric_error)
+			return
+		if float(share)>fraction:cheap = false
 	if cheap:game.generate_scientist()

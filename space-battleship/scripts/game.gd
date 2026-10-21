@@ -755,6 +755,12 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 			var balance=saved.resources[id]
 			if balance is int and balance>9007199254740991:
 				saved.resources[id]=ReactorInt.encode(balance)
+	if saved.get("hyperspace") is Dictionary and saved.hyperspace.get("materials") is Dictionary:
+		saved.hyperspace=saved.hyperspace.duplicate(true)
+		for id in saved.hyperspace.materials:
+			var material=saved.hyperspace.materials[id]
+			if material is int and material>9007199254740991:
+				saved.hyperspace.materials[id]=ReactorInt.encode(material)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -1002,6 +1008,9 @@ func refund_equipment(key: String, level: int) -> void:
 		if exact==null and balance is Dictionary and balance.has("m"):
 			exact=ReactorInt.legacy_integer(balance,MAX_EXACT_WALLET_DIGITS)
 		var next=ReactorInt.add(exact,refunded[id]) if exact!=null else N.add(balance,refunded[id])
+		if id==db.evolution_material_id() and (not ReactorInt.valid(next) or ReactorInt.compare(next,ReactorInt.MAX_INT)>0):
+			push_warning("equipment refund rejected: material outside existing int64 wallet domain")
+			return
 		if not N.valid(next) or (ReactorInt.compare(refunded[id],0)>0 and N.compare(next,balance)<=0):
 			push_warning("equipment refund rejected: credit cannot be represented")
 			return

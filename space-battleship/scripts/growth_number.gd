@@ -27,7 +27,7 @@ static func make(m: float, e: float):
 	return {"m":m,"e":e}
 
 static func add(a,b):
-	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
+	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")) or (a is int and a>9007199254740991) or (b is int and b>9007199254740991):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.add(ai,bi)
 	if compare(a,0)==0:return b
@@ -41,7 +41,7 @@ static func add(a,b):
 	return make(x[0]*pow(10,x[1]-e)+y[0]*pow(10,y[1]-e),e)
 
 static func subtract(a,b):
-	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")):
+	if (a is Dictionary and a.has("i")) or (b is Dictionary and b.has("i")) or (a is int and a>9007199254740991) or (b is int and b>9007199254740991):
 		var ai=ReactorInt.from_growth(a);var bi=ReactorInt.from_growth(b)
 		if ai!=null and bi!=null:return ReactorInt.subtract(ai,bi) if ReactorInt.compare(ai,bi)>0 else 0
 	if compare(a,b)<=0:return 0.0

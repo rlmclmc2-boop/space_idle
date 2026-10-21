@@ -267,7 +267,26 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 			if str(game.profile.loadout[category][index].get("key"," ")).strip_edges().is_empty():continue
 			var costs: Dictionary=game.slot_upgrade_cost(category,index,delta)
 			if costs.is_empty():return {"error":"level_cap"}
-			for id in costs:game.profile.resources[id]=maxf(float(game.profile.resources.get(id,0)),float(costs[id]))
+			for id in costs:
+				var current=game.upgrade_currency(id)
+				if not current is Dictionary and not costs[id] is Dictionary:
+					var ordinary=maxf(float(current),float(costs[id]))
+					if id==database.evolution_material_id():game.profile.hyperspace.materials[id]=ordinary
+					else:game.profile.resources[id]=ordinary
+					continue
+				if current is Dictionary and current.has("m") and preload("res://scripts/growth_number.gd").valid(current) and preload("res://scripts/growth_number.gd").compare(current,costs[id])>=0:
+					if id==database.evolution_material_id():return {"error":"unsupported_material_range"}
+					game.profile.resources[id]=current
+					continue
+				var funded=preload("res://scripts/reactor_integer.gd").from_growth(current)
+				if funded==null and current is Dictionary and current.has("m"):
+					funded=preload("res://scripts/reactor_integer.gd").nearby_legacy_integer(current,costs[id])
+				if funded==null:return {"error":"unsupported_numeric_domain"}
+				var amount=preload("res://scripts/reactor_integer.gd").maximum(funded,costs[id])
+				if id==database.evolution_material_id():
+					if preload("res://scripts/reactor_integer.gd").compare(amount,preload("res://scripts/reactor_integer.gd").MAX_INT)>0:return {"error":"unsupported_material_range"}
+					game.profile.hyperspace.materials[id]=amount
+				else:game.profile.resources[id]=amount
 			if not game.upgrade_slot(category,index,delta):return {"error":"upgrade_failed"}
 	return game.profile.duplicate(true)
 

@@ -283,16 +283,26 @@ func generate_scientist(amount := 1) -> bool:
 	var previous_count:int=int(profile.scientists)
 	var result := super.generate_scientist(amount)
 	if result and metrics != null:
-		for id in before:before[id] = float(before[id])-float(profile.resources[id])
+		for id in before:
+			before[id]=preload("res://scripts/balance_numeric_projection.gd").finite(N.subtract(before[id],profile.resources[id]))
+			if before[id]==null:
+				metrics.numeric_error="unsupported_numeric_domain: scientist spending " + str(id)
+				push_error(metrics.numeric_error)
+				return result
 		metrics.spend("scientists",before)
 		metrics.use("scientists",int(profile.scientists)-previous_count)
 	return result
 
 func upgrade_reactor(amount: int) -> bool:
-	var before := float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))
+	var before=profile.resources.get(str(int(db.config.reactorUraniumId)),0)
 	var result := super.upgrade_reactor(amount)
 	if result and metrics != null:
-		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))})
+		var spent=preload("res://scripts/balance_numeric_projection.gd").finite(N.subtract(before,profile.resources.get(str(int(db.config.reactorUraniumId)),0)))
+		if spent==null:
+			metrics.numeric_error="unsupported_numeric_domain: reactor spending"
+			push_error(metrics.numeric_error)
+			return result
+		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):spent})
 		metrics.use("reactor_levels",amount)
 	return result
 

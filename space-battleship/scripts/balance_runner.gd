@@ -59,7 +59,7 @@ func start(request: Dictionary) -> String:
 	status = "running"
 	performance_log.configure(str(normalized.get("performance_directory",ProjectSettings.globalize_path("res://../test/work/balance_lab"))),bool(normalized.get("performance_diagnostics",true)))
 	next_run()
-	return ""
+	return str(completed.get("error","")) if status=="unsupported_numeric_domain" else ""
 
 func next_run() -> void:
 	var database := RunDatabase.new()
@@ -84,6 +84,8 @@ func next_run() -> void:
 	last_decision = 0.0
 	if policy.has_method("configure"):policy.configure(str(job.strategy),int(job.seed))
 	affordable = policy.act(game,0)
+	if not policy.numeric_error.is_empty():
+		status="unsupported_numeric_domain";completed={"error":policy.numeric_error};return
 	metrics.timeline.snapshot(game,metrics,true)
 	# Metrics describe the build used during the next decision interval.
 
@@ -118,8 +120,12 @@ func step_once() -> void:
 	if logic_steps_total % 1024 == 0:performance_log.sample(self)
 	if steps % 60 == 0 or remaining <= STEP+0.000000001:
 		metrics.sample(game,metrics.time-last_decision,affordable)
+		if not metrics.numeric_error.is_empty():
+			status="unsupported_numeric_domain";completed={"error":metrics.numeric_error};return
 		last_decision = metrics.time
 		if remaining > STEP+0.000000001:affordable = policy.act(game,steps*STEP)
+		if not policy.numeric_error.is_empty():
+			status="unsupported_numeric_domain";completed={"error":policy.numeric_error};return
 		metrics.timeline.snapshot(game,metrics,remaining <= STEP+0.000000001)
 	if remaining <= STEP+0.000000001:
 		finish_run(false)

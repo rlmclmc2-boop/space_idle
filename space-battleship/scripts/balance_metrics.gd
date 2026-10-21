@@ -1,5 +1,6 @@
 extends RefCounted
 const Timeline := preload("res://scripts/balance_timeline.gd")
+const NumericProjection := preload("res://scripts/balance_numeric_projection.gd")
 ## Lab-only cumulative statistics. Enemy records live only until death/retreat.
 const THRESHOLDS := {"dominance":0.70,"unused":0.01,"ttk_low":0.25,"ttk_high":60.0,"idle_seconds":300.0,"surplus_minutes":30.0}
 var time := 0.0
@@ -40,6 +41,7 @@ var normal_ttk_sum := 0.0
 var spawn_count := 0
 var spawn_hp := 0.0
 var blocked_marked := false
+var numeric_error := ""
 
 func initialize(game: BattleGame) -> void:
 	for key in BattleGame.WEAPON_KEYS:damage[key] = 0.0
@@ -69,9 +71,17 @@ func use(key: String, count := 1) -> void:
 
 func spend(system: String, costs: Dictionary) -> void:
 	if not spending_by_system.has(system):spending_by_system[system] = {}
+	var projected:Dictionary={}
 	for id in costs:
-		add(spending,str(id),float(costs[id]))
-		add(spending_by_system[system],str(id),float(costs[id]))
+		var amount=NumericProjection.finite(costs[id])
+		if amount==null:
+			numeric_error="unsupported_numeric_domain: spending " + str(id)
+			push_error(numeric_error)
+			return
+		projected[id]=amount
+	for id in projected:
+		add(spending,str(id),float(projected[id]))
+		add(spending_by_system[system],str(id),float(projected[id]))
 
 func upgraded(count: int) -> void:
 	if upgrades > 0:
@@ -112,7 +122,12 @@ func sample(game: BattleGame, seconds: float, affordable: bool) -> void:
 	elif affordable:blocked_marked = false
 	for id in game.profile.resources:
 		var rate := float(income.get(id,0))/maxf(time/60.0,1.0)
-		if rate > 0 and float(game.profile.resources[id]) > rate*THRESHOLDS.surplus_minutes:
+		var balance=NumericProjection.finite(game.profile.resources[id])
+		if balance==null:
+			numeric_error="unsupported_numeric_domain: balance sample " + str(id)
+			push_error(numeric_error)
+			return
+		if rate > 0 and float(balance) > rate*THRESHOLDS.surplus_minutes:
 			add(overflow_seconds,str(id),seconds)
 		else:overflow_seconds[id] = 0.0
 		longest_overflow[id] = maxf(float(longest_overflow.get(id,0)),float(overflow_seconds[id]))

@@ -4,6 +4,7 @@ const Bag=preload("res://scripts/drone_inventory.gd")
 const R=preload("res://scripts/hyperspace_random.gd")
 const Filter=preload("res://scripts/hyperspace_filter.gd")
 const Rewards=preload("res://scripts/drone_rewards.gd")
+const ReactorInt=preload("res://scripts/reactor_integer.gd")
 const VERSION:=5
 const MATERIAL_UNIT_VERSION:=2
 
@@ -17,7 +18,7 @@ static func schema() -> Dictionary:
 	var drone: Dictionary={"id":"s","origin_quality":"s","weapon":"s","level":"i","planet_id":"s","hanging_slots":"i","preserved_hanging_slots":"i","omen":"b","forge_revision":"i","forge_rng_state":"s","legendary":"b","ultimate":"b","blue_source_bonus":"b","legendary_effect":{"effect_id":"s","parameters":{"*":"n"}},"ultimate_affix":affix,"affixes":[affix],"hangings":["s"]}
 	var reward: Dictionary={"drone":drone,"materials":{"*":"i"},"ultimate_cores":"i","hanging_rewards":{"*":"i"}}
 	var receipt:Dictionary={"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","crew_snapshot":"s","luck":"n","crew_luck":"n","permanent_luck":"n","luck_state":"s","return_state":preload("res://scripts/hyperspace_main_return.gd").schema(),"return_journey":{"stage":"i","distance":"n","groupIndex":"i","state":"i","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"],"loop":"b"},"ticket":"n","duration":"n","work":"n","reward":reward}
-	return {"version":"i","material_unit_version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","late_supply_work":"n","materials":{"*":"i"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":receipt,"idle":receipt,"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
+	return {"version":"i","material_unit_version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","late_supply_work":"n","materials":{"*":"r"},"history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":receipt,"idle":receipt,"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","ultimate_cores":"i","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
 
 static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool:
 	if not c.routes.has(route) or not reward.get("drone") is Dictionary or not reward.get("materials") is Dictionary or not reward.get("hanging_rewards") is Dictionary:return false
@@ -69,7 +70,11 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 	var known_materials: Array=c.routes.values().map(func(r):return r.material)
 	if s.materials.size()!=known_materials.size():return false
 	for key in s.materials:
-		if not known_materials.has(key) or not C.integer(s.materials[key]) or s.materials[key]<0:return false
+		var amount=s.materials[key]
+		if not known_materials.has(key):return false
+		if amount is Dictionary:
+			if int(s.get("material_unit_version",1))!=MATERIAL_UNIT_VERSION or not ReactorInt.valid(amount) or ReactorInt.compare(amount,ReactorInt.MAX_INT)>0:return false
+		elif not C.integer(amount) or amount<0:return false
 	if not Bag.valid(s.inventory,c):return false
 	for drone in s.inventory.drones.values():
 		if int(drone.level)>max_stage:return false
@@ -127,6 +132,8 @@ static func migrate(raw:Dictionary,c:Dictionary={})->Dictionary:
 				history[str(int(a.level))]=minf(old,float(a.work)) if old>0 else float(a.work)
 				s.history[a.route]=history
 			if a.mode=="auto":s.idle=a;s.active={}
+	for key in s.materials:
+		if s.materials[key] is Dictionary:s.materials[key]=int(s.materials[key].i)
 	# The stored auto layer is informational; real progression comes only from wins.
 	if int(s.get("material_unit_version",1))==1:
 		if c.is_empty():c=C.load_config()
