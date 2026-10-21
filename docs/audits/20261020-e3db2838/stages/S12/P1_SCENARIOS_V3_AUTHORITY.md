@@ -1,5 +1,7 @@
 # S12 P1 single authoritative scenario table (review object)
 
+> 当前修订：[极端 MAX 数量估算政策](P0_P1_EXTREME_MAX_AMENDMENT.md) 优先于本文极端 MAX 精确数量/累计前置要求；旧失败不改判，费用近似未自动授权。下文旧阶段状态与压力记录按历史理解，P1 当前为 exploratory_not_passed。
+
 **Status: input-correction review, no official performance run authorized yet.** This file wholly replaces the test inputs in `P1_SCENARIOS_FROZEN.md`, `P1_SCENARIOS_REVISION_1.md` and `P1_SCENARIOS_V2_REVIEW.md`; those are history, not additional instructions. P0 contract and P1 performance thresholds remain frozen at `e806d458c9c836e636321aaa6c5759707e7dc5fc`. Main stays `31e79337741bf9860d69fff21dae6be994dacd00`; old runtime `2a6119564e1cffc07bf0b833c3118b97faf6d728` is unapproved reference. This table authorizes only audit-side correctness/oracle work. Dot and original astra must confirm this exact input object before official timing. Incomplete billion input or absent hashes are PENDING, never a smaller substitute or a PASS.
 
 ## Common fixture and price oracle
