@@ -7,16 +7,25 @@
     "space-battleship/tools/level_editor_store.py": "0131dc26dd4355d60ccc015d9d5c05c6499568d5"
   },
   "audit_blobs": {
-    "IMPLEMENTATION_PLAN.md": "c5ea836ddbfe71aaff14010cbf501c2783a51acb",
-    "PLAN_VALIDATION.json": "07f33d89e96894dde60b8924222f428fc7d55ed8",
-    "PLAN_SHA256SUMS.json": "dbc4539975160a02e1df3b3ee65fb647050986d1",
-    "stages/S08/README.md": "47fd5da20a76a5363e3ba918c3645946ad38aa5c",
+    "IMPLEMENTATION_PLAN.md": "34bf9af9dd93cb892c9b7b3fbebb9e1093873166",
+    "PLAN_VALIDATION.json": "7fcfb8203d3e4d9cbad215c4091bc33b2c27421f",
+    "PLAN_SHA256SUMS.json": "9950602da1a0be9fb08527f40febb4e94aa2765b",
+    "stages/S08/README.md": "136b49081e24f450411a4ba758df796777d7652a",
     "stages/S08/RESULT.json": "4da09c9c9459350b98b8b619107e1dd02dfccfdd",
     "stages/S08/fault_injection.log": "ec314dc5c5f625f171ea7903fdffdecc207500dc",
     "stages/S08/s08_atomic_recovery.py": "0576bff3086b8b703d8152eaaea838d274a8a32a",
     "stages/S08/logs/config-workbooks-isolated.log": "417ae405d8582b6ba5db3addefbca32ceb703d29",
     "stages/S08/logs/level-editor-isolated.log": "41729468daba844a15a7225021ac77b2f9408355",
-    "stages/S08/FINAL_REVIEW.md": "b7fea970a70f8516ded39a045027009ff68ba407"
+    "stages/S08/FINAL_REVIEW.md": "b7fea970a70f8516ded39a045027009ff68ba407",
+    "stages/S08/LOCAL_INTEGRATION.json": "f01186c814bd419edfb064290b929590c55906a9",
+    "stages/S08/integration-logs/first-entry.log": "33b60de06929d51836fb82af07536a9ecb32b40a",
+    "stages/S08/integration-logs/first-player-game.log": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+    "stages/S08/integration-logs/first-player-import.log": "aa9d6e5e185b02bfe2cbb502ab9cfc882e468dfb",
+    "stages/S08/integration-logs/first-player-launch.json": "cf1b8a3a23a143acb5dff71913594f41620d4d05",
+    "stages/S08/integration-logs/reopen-entry.log": "33b60de06929d51836fb82af07536a9ecb32b40a",
+    "stages/S08/integration-logs/reopen-player-game.log": "e3d87f2c6c43e43b21786868f3aee8402a481db8",
+    "stages/S08/integration-logs/reopen-player-import.log": "83b99cccd07d9874c87534d89ac192c7ac4316be",
+    "stages/S08/integration-logs/reopen-player-launch.json": "cf1b8a3a23a143acb5dff71913594f41620d4d05"
   },
   "note": "Blob IDs obtained from final remote branch readback; this index excludes its own blob to avoid self-reference."
 }
