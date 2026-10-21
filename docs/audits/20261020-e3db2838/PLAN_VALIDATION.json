@@ -1,5 +1,5 @@
 {
-  "scope": "S00-S05 closed; S06 review; S07-S24 not started",
+  "scope": "S00-S05 closed; S06 approved pending integration; S07-S24 not started",
   "checks": {
     "main_equals_audit_baseline": false,
     "single_stage_open": true,
@@ -107,18 +107,24 @@
     "s06_minimal_analysis_pass": true,
     "s06_root_cert_error_classified_environment": true,
     "s06_raw_logs_and_git_blobs_indexed": true,
-    "s06_dual_review_pending": true,
+    "s06_dual_review_pending": false,
     "s06_main_not_integrated": true,
     "s06_stage_open": true,
     "s06_prior_review_failed_old_object": true,
     "s06_log_gate_seven_cases_pass": true,
     "s06_exit_zero_resource_error_rejected": true,
     "s06_new_windows_empty_build_import_entry_analysis_pass": true,
-    "s06_git_blob_hashes_recomputed": true
+    "s06_git_blob_hashes_recomputed": true,
+    "s06_parent_pass_same_final_objects": true,
+    "s06_original_astra_pass_same_final_objects": true,
+    "s06_dual_pass_same_objects": true,
+    "s06_review_unresolved_zero": true,
+    "s06_review_record_persisted": true,
+    "s06_integration_pending": true
   },
   "stages": 26,
   "active_stage": "S06",
-  "active_stage_status": "review",
+  "active_stage_status": "approved",
   "other_stage_status": "not_started",
   "product_code_changed": true,
   "main_integrated": false,
@@ -133,7 +139,7 @@
   ],
   "runtime_final_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
   "runtime_tree": "5ed9ae14f65312b73a8d558054c07069380cb007",
-  "evidence_snapshot_sha": "6851272ee7d91c9f51fb0351e3d07cce9f72f69b",
+  "evidence_snapshot_sha": "b7fb6744f421d5450db141b928345321e01660b4",
   "implementation_thread_id": "01a15c6d-d351-72c1-916e-89c123183008",
   "active_runtime_candidate_sha": "ba3e9ce4b12fb250850b176478dcafd48e696840",
   "active_runtime_tree": "5ed9ae14f65312b73a8d558054c07069380cb007",
@@ -143,9 +149,10 @@
   "active_stage_closed": false,
   "closed_stages_main_integrated": true,
   "last_integrated_main_sha": "5a4d52957f68b22ef47e0ad91cbe787292872d83",
-  "active_frozen_evidence_sha": "6851272ee7d91c9f51fb0351e3d07cce9f72f69b",
+  "active_frozen_evidence_sha": "b7fb6744f421d5450db141b928345321e01660b4",
   "active_integration_record": null,
   "active_integration_review_pending": true,
   "active_integration_reviewed_evidence_sha": null,
-  "active_temporary_branches_cleaned": false
+  "active_temporary_branches_cleaned": false,
+  "active_review_record": "stages/S06/FINAL_REVIEW.md"
 }
