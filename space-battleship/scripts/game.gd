@@ -23,6 +23,7 @@ const AITech = preload("res://scripts/ai_tech_tree.gd")
 var research := AITech.new()
 const EquipmentState=preload("res://scripts/equipment_state.gd")
 var equipment := EquipmentState.new()
+const AttackBirth=preload("res://scripts/attack_birth_configuration.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
 const RailGeometry=preload("res://scripts/rail_geometry.gd")
@@ -3236,9 +3237,8 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 		var primary_missile: bool=entry.key=="missile" and not context.get("derived",false)
 		var wild_substitute: bool=primary_missile and drone_combat.next_is_wild(self)
 		if wild_substitute:context.derived=true
-		var effects := jewel_effects(entry)
-		if float(hyperspace_totals().repeat_chance)>0 and not effects.any(func(e):return e.kind=="repeat"):effects.append({"kind":"repeat","p4":0.0,"level":0})
-		var extra_chain:=int(hyperspace_totals().chain_count)
+		var birth:=AttackBirth.prepare(self,entry,hyperspace_totals())
+		var effects:Array=birth.effects
 		var critical := jewel_critical(entry,effects)
 		var raw = N.multiply(jewel_equipment_stat(entry,-1,effects),float(context.get("next_multiplier",1.0))*drone_combat.weapon_multiplier(self,str(entry.key)))
 		var is_critical := rng.randf() < critical.x
@@ -3251,14 +3251,7 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 		main_attack_serial+=1
 		for effect in effects:
 			effect.source=index;effect.weapon_key=str(entry.key);effect.main_attack_id=main_attack_serial
-			if enhancement_branches.active(self,entry,"proficiency",3,"B"):effect.enemy_resistance=enhancement_parameter("proficiency_b3_resistance")
-			if effect.kind=="repeat" and enhancement_branches.active(self,entry,"repeat",1,"B"):
-				effect.chain=true;effect.chain_targets=int(enhancement_parameter("repeat_b1_targets"))
-		if extra_chain>0:
-			var existing: Array=effects.filter(func(e):return e.get("chain",false))
-			if existing.is_empty():effects.append({"kind":"hyperspace_chain","chain":true,"chain_targets":extra_chain,"source":index,"weapon_key":str(entry.key),"main_attack_id":main_attack_serial})
-			else:existing[0].chain_targets=int(existing[0].get("chain_targets",0))+extra_chain
-		var secondary: bool = not context.get("derived",false) and enhancement_branches.active(self,entry,"repeat",3,"B") and rng.randf()<enhancement_parameter("repeat_b3_probability")
+		var secondary:bool=not context.get("derived",false) and birth.secondary_enabled and rng.randf()<float(birth.secondary_probability)
 		context.snapshot={"id":main_attack_serial,"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied,"secondary":secondary,"secondary_used":false,"repeats_queued":false,"repeat_plan":[] if context.get("derived",false) else plan_attack_repeats(entry,effects),"weapon":player_weapon_row(entry).duplicate(true)}
 		context.snapshot.combat_context=CombatContext.root(main_attack_serial,"drone:"+str(entry.drone_id) if entry.has("drone_id") else "module:%d"%index,str(entry.key))
 		if primary_missile:
@@ -3314,7 +3307,7 @@ func plan_attack_repeats(entry: Dictionary, effects: Array) -> Array:
 		var pending: Array=[]
 		for effect in effects:
 			if effect.kind=="repeat" and rng.randf()<enhancement_branches.repeat_probability(self,entry):
-				pending.append(1.0+float(effect.p4)*int(effect.level))
+				pending.append(enhancement_branches.repeat_multiplier(effect))
 		for i in pending.size():
 			var choice := rng.randi_range(i,pending.size()-1)
 			var value: float=pending[choice];pending[choice]=pending[i];pending[i]=value

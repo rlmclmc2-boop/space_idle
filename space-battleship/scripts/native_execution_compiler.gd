@@ -1,5 +1,7 @@
 extends RefCounted
-## Cold compiler for the authorized layer2 fixture. No running battle is evaluated.
+## Validate and compile the supported live configuration for the resident kernel.
+## Shared birth rules stay authoritative; unsupported active capabilities reject.
+const AttackBirth=preload("res://scripts/attack_birth_configuration.gd")
 const N=preload("res://scripts/growth_number.gd")
 const KEYS=["laser","cannon","missile","longLaser"]
 const ALLOWED_BRANCHES={"proficiency":{"2":"B"},"repeat":{"1":"B","3":"B"},"critical":{}}
@@ -33,9 +35,13 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 	if g.enhancement_growth.attacks()>=9007199254740992 or g.enhancement_growth.hits()>=9007199254740992:return {"error":"unsupported_native_counter"}
 	var enhancement_choices:Dictionary=g.enhancement_growth.branches()
 	for category in ["weapons","defence"]:
-		for effect in enhancement_choices[category]:
-			for node in enhancement_choices[category][effect]:
-				if category!="weapons" or ALLOWED_BRANCHES.get(effect,{}).get(node,"")!=enhancement_choices[category][effect][node]:return {"error":"unsupported_branch"}
+		var entries:Array=g.combat_weapon_entries() if category=="weapons" else g.defense_entries()
+		for entry in entries:
+			for effect in enhancement_choices[category]:
+				for node in enhancement_choices[category][effect]:
+					var choice:String=enhancement_choices[category][effect][node]
+					if not g.enhancement_branch_active(entry,effect,int(node),choice):continue
+					if category!="weapons" or ALLOWED_BRANCHES.get(effect,{}).get(node,"")!=choice:return {"error":"unsupported_branch"}
 	if typeof(upgrade.get("weapon_levels",{}))!=TYPE_DICTIONARY or typeof(upgrade.get("defence_levels",{}))!=TYPE_DICTIONARY:return {"error":"unsupported_native_shape:upgrade"}
 	if upgrade.get("category","") in ["weapons","defence"] and (not native_integer(upgrade.get("index")) or not native_integer(upgrade.get("level"))):return {"error":"unsupported_native_scalar:upgrade"}
 	for category in ["weapon_levels","defence_levels"]:
@@ -65,12 +71,9 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 		var per_source=charge.constants.get("bonus_per_laser")
 		if not native_scalar(maximum) or not native_scalar(per_source):return {"error":"unsupported_native_scalar:laser_charge"}
 		if float(maximum)<0 or float(per_source)<0:return {"error":"unsupported_native_range:laser_charge"}
-		var sources:=0
-		for entry in g.combat_weapon_entries():
-			if entry.key=="laser":sources+=1
-		var uncapped:float=float(per_source)*sources
-		if not is_finite(uncapped):return {"error":"unsupported_native_arithmetic:laser_charge"}
-		charge_multiplier=1.0+minf(float(maximum),uncapped)
+		var contribution:Dictionary=g.drone_combat.laser_charge_contribution(g,charge)
+		if not is_finite(float(contribution.uncapped)):return {"error":"unsupported_native_arithmetic:laser_charge"}
+		charge_multiplier=float(contribution.multiplier)
 		if not is_finite(charge_multiplier):return {"error":"unsupported_native_arithmetic:laser_charge"}
 	var strange_probability:=0.0;var strange_delay:=0.0;var strange_multiplier:=0.0
 	var strange_count:=0;var strange_type:=0
@@ -137,26 +140,17 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 		var row:Dictionary=g.player_weapon_row(entry,totals,index==endless_slot)
 		if not native_weapon_row(row,KEYS.find(entry.key)):return {"error":"unsupported_native_scalar:player_weapon"}
 		var critical:Vector2=g.jewel_critical(entry,null,false,totals)
-		var chain=int(totals.chain_count);var repeat_factor=1.0
 		for effect in g.enhancement_recipe(entry):
 			if effect.kind=="proficiency" and not native_fields(effect,["p2","level"]):return {"error":"unsupported_native_scalar:proficiency"}
 			if effect.kind=="repeat" and (not native_scalar(effect.get("p4")) or not native_integer(effect.get("level"))):return {"error":"unsupported_native_scalar:repeat"}
 			if effect.kind=="proficiency":growth=float(effect.p2);effect_level=float(effect.level)
-			if effect.kind=="repeat":
-				repeat_factor=1.0+float(effect.p4)*int(effect.level)
-				if g.enhancement_branch_active(entry,"repeat",1,"B"):chain+=int(g.enhancement_parameter("repeat_b1_targets"))
-		var transfer_effects:Array=g.enhancement_recipe(entry).duplicate(true)
-		if chain>0:
-			var found=false
-			for effect in transfer_effects:
-				if effect.kind=="repeat":effect.chain=true;effect.chain_targets=chain;found=true
-			if not found:transfer_effects.append({"kind":"hyperspace_chain","chain":true,"chain_targets":chain})
+		var birth:=AttackBirth.prepare(g,entry,totals)
 		var factor=external_factor(g,entry,totals,galaxy_values)
 		if not native_scalar(factor):return {"error":"unsupported_native_scalar:weapon_factor"}
 		if KEYS.find(entry.key)!=3 and not native_scalar(g.cooldowns.get(g.slot_id("weapons",index),row.cd)):return {"error":"unsupported_native_scalar:cooldown"}
 		var kind=KEYS.find(entry.key)
 		var offset:Vector2=g.player_weapon_offset(index)
-		weapons.append({"endless":totals.legendary.has("endless_beam") and index==endless_slot,"kind":kind,"type":int(row.dmgtype),"slot":index,"source":-1,"hostile":false,"damage":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"interval":float(row.cd),"remaining":float(g.cooldowns.get(g.slot_id("weapons",index),row.cd)) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0,"salvo":int(row.para1) if kind==2 else 1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(g.player.x,g.player.y)+offset,"entry":entry.duplicate(true),"row":row.duplicate(true),"transfer_effects":transfer_effects,"critical_rate":critical.x,"critical_multiplier":critical.y,"repeat_probability":g.enhancement_branches.repeat_probability(g,entry),"repeat_multiplier":repeat_factor,"chain_count":chain,"secondary_probability":g.enhancement_parameter("repeat_b3_probability") if g.enhancement_branch_active(entry,"repeat",3,"B") else 0.0})
+		weapons.append({"endless":totals.legendary.has("endless_beam") and index==endless_slot,"kind":kind,"type":int(row.dmgtype),"slot":index,"source":-1,"hostile":false,"damage":g.equipment_stat(entry.key,int(entry.level),float(galaxy_values.get("charge_max",-1.0))),"factor":factor,"interval":float(row.cd),"remaining":float(g.cooldowns.get(g.slot_id("weapons",index),row.cd)) if kind!=3 else 0.0,"speed":float(row.para2 if kind==2 else row.para1)*g.db.projectile_pixels_per_unit() if kind!=3 else 1.0,"salvo":int(row.para1) if kind==2 else 1,"charge":float(row.para3) if kind==3 and row.get("para3")!=null else -1.0,"ramp":float(row.para1) if kind==3 else 1.0,"maximum":float(row.para2) if kind==3 else 1.0,"muzzle":Vector2(g.player.x,g.player.y)+offset,"entry":entry.duplicate(true),"row":row.duplicate(true),"transfer_effects":birth.effects,"critical_rate":critical.x,"critical_multiplier":critical.y,"repeat_probability":birth.repeat_probability,"repeat_multiplier":birth.repeat_multiplier,"chain_count":birth.chain_count,"secondary_probability":birth.secondary_probability})
 	for source in enemies.size():
 		var enemy:Dictionary=enemies[source]
 		for slot in enemy.equipment.size():

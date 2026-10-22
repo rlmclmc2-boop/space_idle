@@ -138,6 +138,9 @@ func capacity_multiplier(g,entry: Dictionary) -> float:
 func cooldown_multiplier(g,entry: Dictionary) -> float:
  return g.enhancement_parameter("proficiency_b2_interval_multiplier") if active(g,entry,"proficiency",2,"B") else 1.0
 
+func repeat_multiplier(effect:Dictionary)->float:
+ return 1.0+float(effect.p4)*int(effect.level)
+
 func repeat_probability(g,entry: Dictionary) -> float:
  if not g.has_enhancement_effect(entry,"repeat"):return clampf(float(g.hyperspace_totals().repeat_chance),0,1)
  return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability")+float(g.hyperspace_totals().repeat_chance),0,1)

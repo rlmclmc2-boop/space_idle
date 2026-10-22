@@ -25,6 +25,11 @@ func restore_rebuild(g) -> void:
 func effect(g,key: String) -> Dictionary:
 	if g.hyperspace.state.inventory.equipped.is_empty():return {}
 	return g.hyperspace_totals().legendary.get(key,{})
+func laser_charge_contribution(g,charge:Dictionary)->Dictionary:
+	var count:int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
+	var uncapped:float=float(charge.constants.bonus_per_laser)*count
+	return {"uncapped":uncapped,"multiplier":1.0+minf(float(charge.parameters.maximum_bonus),uncapped)}
+
 func weapon_multiplier(g,key: String) -> float:
 	var multiplier:=1.0
 	if key=="cannon":
@@ -34,9 +39,7 @@ func weapon_multiplier(g,key: String) -> float:
 		var scatter:=effect(g,"scatter_pulse")
 		if not scatter.is_empty() and g.targets().size()==1:multiplier*=1.0+float(scatter.parameters.single_target_bonus)
 		var charge:=effect(g,"laser_charge")
-		if not charge.is_empty():
-			var count: int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
-			multiplier*=1.0+minf(float(charge.parameters.maximum_bonus),float(charge.constants.bonus_per_laser)*count)
+		if not charge.is_empty():multiplier*=float(laser_charge_contribution(g,charge).multiplier)
 	return multiplier
 func absorb(g,raw,hostile: bool) -> bool:
 	if black_hole_remaining<=0:return false
