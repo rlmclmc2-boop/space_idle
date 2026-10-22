@@ -13,18 +13,23 @@ func run() -> void:
 	g.profile.cleared=range(1,int(g.db.data.unlock["feature/galaxy"].level)+1)
 	g.profile.highestLevel=int(g.db.data.unlock["feature/galaxy"].level)+1
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
-	for progress in g.profile.planets.values():progress.conquered=true
-	g.rebuild_unlocks();g.galaxy.refresh_unlocks(g)
+	var planets:Dictionary=g.planets.save_data();planets.merge(g.crew.save_data())
+	for progress in planets.planets.values():progress.conquered=true
+	if not g.planets.install_snapshot(planets,g.db):push_error("Invalid preview planet snapshot");quit(1);return
+	g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g)
 	var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://../test/fixtures/galaxy_1_complete.json"))
-	var snapshot:=g.galaxy.save_data()
+	var snapshot:Dictionary=g.galaxy.save_data()
 	snapshot.galaxies.galaxy_1=fixture.save.duplicate(true)
 	snapshot.galaxies.galaxy_1.pending_online_time=0.0;snapshot.galaxies.galaxy_1.pending_crew_count=0
-	g.galaxy.install_snapshot(snapshot,g.db)
-	var region=g.galaxy.regions.galaxy_1
-	for slot in region.slots:
+	var prepared:Dictionary=snapshot.galaxies.galaxy_1
+	prepared.status="developing";prepared.explore_work=0.0
+	for slot in prepared.slots:
 		slot.level=1+int(slot.id)%5
 		slot.status="active"
-	region.refresh_counts();region.building_revision+=1
+		slot.construction=0.0;slot.upgrade_progress=0.0
+		prepared.explore_work+=float(slot.work)
+	if not g.galaxy.install_snapshot(snapshot,g.db):push_error("Invalid preview galaxy snapshot");quit(1);return
+	g.invalidate_stat_cache()
 	scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(8)
 	for i in 4:await process_frame
 	var panel=scene.galaxy_panel
