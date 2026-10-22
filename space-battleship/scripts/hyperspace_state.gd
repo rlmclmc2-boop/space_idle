@@ -1,5 +1,6 @@
 extends RefCounted
 const C=preload("res://scripts/hyperspace_config.gd")
+const CurrencyStorage=preload("res://scripts/currency_storage.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
 const R=preload("res://scripts/hyperspace_random.gd")
 const Filter=preload("res://scripts/hyperspace_filter.gd")
@@ -69,7 +70,7 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 	var known_materials: Array=c.routes.values().map(func(r):return r.material)
 	if s.materials.size()!=known_materials.size():return false
 	for key in s.materials:
-		if not known_materials.has(key) or not C.integer(s.materials[key]) or s.materials[key]<0:return false
+		if not known_materials.has(key) or not CurrencyStorage.valid_int64(s.materials[key]):return false
 	if not Bag.valid(s.inventory,c):return false
 	for drone in s.inventory.drones.values():
 		if int(drone.level)>max_stage:return false

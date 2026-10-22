@@ -5,31 +5,20 @@ extends RefCounted
 const I = preload("res://scripts/currency_integer.gd")
 const PRECISION := 32
 var growth: Array
+var _precision:int=PRECISION
 
-func _init() -> void:
-	growth = _exact_binary64_decimal(1.0 + 0.2)
-
-func _exact_binary64_decimal(value: float) -> Array:
-	var bytes := PackedByteArray()
-	bytes.resize(8)
-	bytes.encode_double(0, value)
-	var bits: int = bytes.decode_u64(0)
-	var exponent: int = (bits >> 52) & 2047
-	var mantissa: int = (bits & 4503599627370495) + 4503599627370496
-	var shift: int = exponent - 1023 - 52
-	assert(shift <= 0 and exponent > 0 and exponent < 2047)
-	var coefficient: Variant = mantissa
-	for i in -shift:
-		coefficient = I.multiply(coefficient, 5)
-	return [coefficient, shift]
+func _init(precision:int=PRECISION) -> void:
+	_precision=precision
+	var part:Array=I.decimal_factor(1.0+0.2)
+	growth=[part[0],-int(part[1])]
 
 func _trim(coefficient: Variant, exponent: int, up: bool) -> Array:
 	var digits: String = I.digits(coefficient)
-	if digits == "0" or digits.length() <= PRECISION:
+	if digits == "0" or digits.length() <= _precision:
 		return [coefficient, exponent]
-	var cut := digits.length() - PRECISION
-	var kept: Variant = I.make(digits.substr(0, PRECISION))
-	if up and digits.substr(PRECISION).lstrip("0") != "":
+	var cut := digits.length() - _precision
+	var kept: Variant = I.make(digits.substr(0, _precision))
+	if up and digits.substr(_precision).lstrip("0") != "":
 		kept = I.add(kept, 1)
 	return [kept, exponent + cut]
 
@@ -91,29 +80,12 @@ func encoded_integer(bound: Array, up: bool) -> Dictionary:
 	if exponent < 0:
 		var kept: int = coefficients.length() + exponent
 		if kept <= 0:
-			return {"currency_version":1,"blocks":[{"p":"0","d":1}]} if up and coefficients != "0" else {"currency_version":1,"blocks":[]}
+			return preload("res://scripts/currency_ledger.gd").encode(preload("res://scripts/currency_ledger.gd").decode(1 if up and coefficients != "0" else 0).value)
 		var remaining: String = coefficients.substr(kept)
 		var whole: Variant = I.make(coefficients.substr(0, kept))
 		if up and remaining.lstrip("0") != "":
 			whole = I.add(whole, 1)
 		coefficients = I.digits(whole)
 		exponent = 0
-	if coefficients == "0":
-		return {"currency_version":1,"blocks":[]}
-	var group: int = exponent / 4
-	var remainder: int = exponent % 4
-	var digits: String = coefficients + "0".repeat(remainder)
-	var blocks: Array = []
-	var carry := 0
-	for end in range(digits.length(), 0, -4):
-		var start := maxi(0, end - 4)
-		var raw: int = int(digits.substr(start, end - start)) + carry
-		carry = 1 if raw >= 5000 else 0
-		var digit := raw - carry * 10000
-		if digit != 0:
-			blocks.append({"p":str(group),"d":digit})
-		group += 1
-	if carry != 0:
-		blocks.append({"p":str(group),"d":carry})
-	return {"currency_version":1,"blocks":blocks}
-
+	var amount=preload("res://scripts/currency_ledger.gd").from_price_integer(I.make(coefficients),str(exponent),1 if up else -1)
+	return preload("res://scripts/currency_ledger.gd").encode(amount.value)

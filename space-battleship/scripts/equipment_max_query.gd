@@ -132,15 +132,6 @@ func _material(start:int,count:int)->Variant:
 	var lower:Variant=I.div_small(I.multiply(first,first+1),2)[0]
 	return I.multiply(I.subtract(upper,lower),10)
 
-func _scale(value:Ledger.Value,times:int,id:int)->Ledger.Value:
-	var result:Ledger.Value=Ledger.decode(0).value
-	for unused in times:
-		if _cancelled(id):return null
-		var sum:Ledger.Outcome=Ledger.add(result,value)
-		if sum.status!="ok":return null
-		result=sum.value
-	return result
-
 func _fee(start:int,count:int,cursor:Dictionary,id:int)->Dictionary:
 	if _cancelled(id):return {"status":"cancelled"}
 	if cursor.fees.has(count):return cursor.fees[count]
@@ -161,16 +152,12 @@ func _fee(start:int,count:int,cursor:Dictionary,id:int)->Dictionary:
 		var lower:Ledger.Outcome=Ledger.decode(engine.encoded_integer(interval[0],false))
 		var upper:Ledger.Outcome=Ledger.decode(engine.encoded_integer(interval[1],true))
 		if lower.status!="ok" or upper.status!="ok":return {"status":"error","reason":"bound_encoding"}
-		var lower_total:Ledger.Outcome=Ledger.add(cursor.prefix[256],lower.value)
-		var upper_total:Ledger.Outcome=Ledger.add(cursor.prefix[256],upper.value)
+		var lower_total:Ledger.Outcome=Ledger.add_directed(cursor.prefix_low[256],lower.value,-1)
+		var upper_total:Ledger.Outcome=Ledger.add_directed(cursor.prefix_high[256],upper.value,1)
 		if lower_total.status!="ok" or upper_total.status!="ok":return {"status":"error","reason":"bound_sum"}
 		low=lower_total.value
 		high=upper_total.value
-		var left:Ledger.Value=_scale(high,25,id)
-		var right:Ledger.Value=_scale(low,28,id)
-		if left==null or right==null:return {"status":"cancelled" if _cancelled(id) else "error","reason":"certificate_arithmetic"}
-		right=Ledger.add(right,Ledger.decode(24).value).value
-		if Ledger.compare(left,right).order>0:return {"status":"error","reason":"fee_certificate"}
+		if not Ledger.certifies_ratio(high,low):return {"status":"error","reason":"fee_certificate"}
 	var result:Dictionary={"status":"ready","lower":low,"upper":high,"material":material}
 	cursor.fees[count]=result
 	return result
@@ -194,6 +181,7 @@ func _search(id:int,inputs:Dictionary)->Dictionary:
 	var material:Variant=inputs.get("material")
 	if not start is int or not limit is int or start<1 or limit<0 or limit>9223372036854775807-start:
 		return {"status":"error","reason":"level_transport"}
+	if limit==0:return {"status":"error","reason":"level_transport"}
 	if not material is int or material<0:return {"status":"error","reason":"material_transport"}
 	if not bool(inputs.get("supported",false)):return {"status":"error","reason":"unsupported_configuration"}
 	var decoded:Ledger.Outcome=Ledger.decode(inputs.get("wallet"))
@@ -202,7 +190,7 @@ func _search(id:int,inputs:Dictionary)->Dictionary:
 	var key:String=JSON.stringify([inputs.get("price_signature"),start,RULE])
 	if not _cursors.has(key):
 		if _cursors.size()>=32:_cursors.erase(_cursors.keys()[0])
-		_cursors[key]={"prefix":[Ledger.decode(0).value],"fees":{}}
+		_cursors[key]={"prefix":[Ledger.decode(0).value],"prefix_low":[Ledger.decode(0).value],"prefix_high":[Ledger.decode(0).value],"fees":{}}
 	var cursor:Dictionary=_cursors[key]
 	var prices:=Price.new()
 	var count:=0
@@ -219,6 +207,11 @@ func _search(id:int,inputs:Dictionary)->Dictionary:
 			var sum:Ledger.Outcome=Ledger.add(cursor.prefix[-1],quoted.value)
 			if sum.status!="ok":return {"status":"error","reason":sum.status}
 			cursor.prefix.append(sum.value)
+			var lower_quote=prices.quote(50.0,0.2,start+next,-1)
+			var upper_quote=prices.quote(50.0,0.2,start+next,1)
+			if lower_quote.status!="ok" or upper_quote.status!="ok":return {"status":"error","reason":"prefix_bounds"}
+			cursor.prefix_low.append(Ledger.add_directed(cursor.prefix_low[-1],lower_quote.value,-1).value)
+			cursor.prefix_high.append(Ledger.add_directed(cursor.prefix_high[-1],upper_quote.value,1).value)
 		var fee:Dictionary={"status":"ready","lower":cursor.prefix[next],"upper":cursor.prefix[next],"material":_material(start,next)}
 		if not _fits(fee,wallet,material):
 			var exact:Dictionary=_fee(start,count,cursor,id)

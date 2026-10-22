@@ -214,6 +214,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
 	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "aiTechLevels":{}, "aiTechProgress":{}, "aiTechActive":"", "aiTechInput":{"1":0,"2":0}, "aiIncomePeak":{"1":0.0,"2":0.0,"jewel":0.0}, "hightechSavedAt":Time.get_unix_time_from_system()}
+	for id in profile.resources:profile.resources[id]=Currency.encode(Currency.decode(profile.resources[id]).value)
 	profile.aiTechCompletionUnread = false
 	profile.equipmentSwitchUntil = {}
 	# The retired page still reads these inert values until the new art page lands.
@@ -441,9 +442,8 @@ func load_progress_data(raw: Dictionary) -> void:
 				profile.bossSeen.append(int(n))
 	for id in ["1", "2"]:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
-		if Currency.decode(value).status == "ok":
-			# Restoring a balance must not mint the remainder of a fractional unit.
-			profile.resources[id] = ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
+		var normalized:Currency.Outcome=Currency.decode(value)
+		if normalized.status=="ok":profile.resources[id]=Currency.encode(normalized.value)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -774,10 +774,9 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 		for key in saved.reactorAllocation:saved.reactorAllocation[key]=ReactorInt.encode(saved.reactorAllocation[key])
 	if saved.get("resources") is Dictionary:
 		saved.resources=saved.resources.duplicate(true)
-		var uranium_id := str(int(db.config.reactorUraniumId))
-		var uranium = saved.resources.get(uranium_id)
-		if uranium is int and uranium>9007199254740991:
-			saved.resources[uranium_id]=ReactorInt.encode(uranium)
+		for id in saved.resources:
+			var normalized:Currency.Outcome=Currency.decode(saved.resources[id])
+			if normalized.status=="ok":saved.resources[id]=Currency.encode(normalized.value)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()

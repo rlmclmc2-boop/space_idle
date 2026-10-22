@@ -707,7 +707,7 @@ func refresh_stats() -> void:
 		var projection_changed: bool=item.projection!=projection
 		if selected==id and not item.key.is_empty():
 			if detail_frame.is_visible_in_tree():
-				selected_preview=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(item.key)))
+				selected_preview=host.equipment_display_snapshot(entry,int(entry.level)+1 if int(entry.level)<9223372036854775807 else int(entry.level))
 				selected_changed = selected_changed or GrowthNumber.compare(selected_preview.expected,selected_next_stat)!=0
 			else:detail_dirty=true
 			selected_changed = selected_changed or projection_changed
@@ -836,7 +836,7 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	detail_dirty=false
 	var entry: Dictionary = host.game.module_entry(category,selected_slot)
 	var key := str(entry.key)
-	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,mini(int(entry.level)+1,host.db.max_equipment_level(key))) if not key.is_empty() else {"expected":0.0}
+	if next_projection.is_empty():next_projection=host.equipment_display_snapshot(entry,int(entry.level)+1 if int(entry.level)<9223372036854775807 else int(entry.level)) if not key.is_empty() else {"expected":0.0}
 	selected_next_stat = next_projection.expected
 	var options := equipment_choices(category,selected_slot)
 	if host.ui_state_changed(detail.slots,options):
