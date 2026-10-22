@@ -23,7 +23,7 @@ func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=fals
 	equipment.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1},{"key":"shield","level":1},{"key":"armour","level":1}]
 	check(g.equipment.install_snapshot(equipment,db),"Equipment fixture validates")
 	if beam_chain:
-		g.profile.enhancementLevel=40;g.profile.cleared=range(1,61);g.profile.highestLevel=61
+		var enhancement=g.enhancement_growth.save_data();enhancement.enhancementLevel=40;g.enhancement_growth.install_snapshot(enhancement);g.profile.cleared=range(1,61);g.profile.highestLevel=61
 		g.rebuild_unlocks();g.set_enhancement_branch("weapons","repeat",1,"B")
 		if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
 	g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
@@ -127,6 +127,8 @@ func run()->void:
 	var points_before=g.research.progress(tech);var tech_level=g.hightech_level(tech)
 	g.advance_hightech(1.0)
 	check(g.research.progress(tech)==points_before and g.hightech_level(tech)==tech_level,"failed research completion handoff spends no progress or level")
+	var growth_before=g.enhancement_growth.save_data();g.economy.credit_fragments(10000.0);var fragments_before=g.economy.balance("jewel")
+	check(g.upgrade_enhancement(1)==0 and g.enhancement_growth.save_data()==growth_before and g.economy.balance("jewel")==fragments_before,"Failed native preparation changes no enhancement or fragments")
 	var reactor_level=g.reactor.level();var uranium=g.economy.balance("2")
 	check(not g.upgrade_reactor(1) and g.reactor.level()==reactor_level and N.compare(g.economy.balance("2"),uranium)==0,"failed reactor handoff spends no resources or level")
 	g.begin_retreat()
@@ -163,7 +165,7 @@ func run()->void:
 		var quote=g.slot_upgrade_cost("weapons",0,1)
 		fund(g,{"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5})
 		var legacy=preload("res://scripts/presented_battle_game.gd").new(g.db,false)
-		legacy.profile=g.profile.duplicate(true);legacy.equipment.install_snapshot(g.equipment.save_data(),g.db);legacy.research.install_snapshot(g.research.save_data(),g.db.data.ai_tech_tree);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
+		legacy.profile=g.profile.duplicate(true);legacy.enhancement_growth.install_snapshot(g.enhancement_growth.save_data());legacy.equipment.install_snapshot(g.equipment.save_data(),g.db);legacy.research.install_snapshot(g.research.save_data(),g.db.data.ai_tech_tree);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
 		legacy.enable_compiled_combat_rules();legacy.invalidate_stat_cache()
 		var expected_ok=legacy.upgrade_equipment_batch(mode)
 		var actual_ok=g.upgrade_equipment_batch(mode)

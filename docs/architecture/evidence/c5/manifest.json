@@ -1,0 +1,115 @@
+{
+  "runtime_commit": "e83ef208cc98ba3c74f17beec5b074e66412f704",
+  "previous_runtime_commit": "f04d88f524af7dabaa5711680903c39b109b3e70",
+  "branch": "impl/domain-architecture-20261022",
+  "scope": "Shared enhancement ownership, quoted purchases, exact durable histories and native counter boundary",
+  "sha256_basis": "Canonical Git blob bytes and LF-normalized fixture/log text; binary image/runtime bytes",
+  "sources": {
+    "space-battleship/scripts/enhancement_branches.gd": {
+      "git_blob": "f5f8ac194549d0431072edbd670acbd198188f57",
+      "sha256": "137773f5ffbf809122e65d8530d1c451b9ce8c800c07baf8ec3d726157c5bec6"
+    },
+    "space-battleship/scripts/enhancement_growth.gd": {
+      "git_blob": "11f1ec542335927c0aab1930642140bcb67c220c",
+      "sha256": "be96a70ee568e476b866a4ea2eadb7e00e4af89071e9db189e7f7a3928f35f66"
+    },
+    "space-battleship/scripts/enhancement_panel.gd": {
+      "git_blob": "429c9858dd5ddfb21884ad8653c206ab1a502934",
+      "sha256": "b2f4406d8b2421433a78c30bdf894a7f90e0a134f82563ed5ac4d2e57666823b"
+    },
+    "space-battleship/scripts/game.gd": {
+      "git_blob": "8e199a4f607e65862b54e6a16ce64b756e491e0a",
+      "sha256": "df5f346ec0b826652bd4c40979270a6a13d8cf0942e5763507a0167a26762e50"
+    },
+    "space-battleship/scripts/native_execution_compiler.gd": {
+      "git_blob": "6db2a4974ab67048ff8071507a9489d2a9877749",
+      "sha256": "e4a5946aaaeb285589eb1b6721e3a35ac6947dfc4fc3e15121670fdda478745f"
+    },
+    "space-battleship/scripts/native_execution_handoff.gd": {
+      "git_blob": "eea525d8d1b6ce9b23726a37b9768ba4af719b45",
+      "sha256": "819d2fe40d85a19797a4be1bd9c79743c14d059f1315955f1f050228e5179f54"
+    },
+    "space-battleship/scripts/native_execution_session.gd": {
+      "git_blob": "cb4b5262beeb89b683dfdd595027cd6cca44e80d",
+      "sha256": "6c1f130c9ff701d8f5cb2cb620027d455fc3d5daa4049637a000b68792700393"
+    },
+    "space-battleship/scripts/save_transfer.gd": {
+      "git_blob": "95f5bf888aed83d0ca8ec094a84edf46fe7cfe8b",
+      "sha256": "216c665626d6915c6393c0264c62eee4fc2a0d251801333caa013c04b0d6575a"
+    }
+  },
+  "fixtures": {
+    "test/test_enhancement_cost.gd": {
+      "sha256": "f1cc4b004a95255ca0738e179ce532b33be901c8be702ab80e26737b5a15cbbc"
+    },
+    "test/test_enhancement_branch_attacks.gd": {
+      "sha256": "76f856b7eb43ccac27ba7874bba25b94f385bc1b25d9f529a64779b5b4aff6a1"
+    },
+    "test/test_native_numeric_upgrade.gd": {
+      "sha256": "21741141c138de6abb86df4817259620cfe96a37bc8da6a4ed0b3a6ff6dbec68"
+    },
+    "test/test_shared_enhancement_ranks.gd": {
+      "sha256": "61d160e216a17ecdf9eaa6e628c104605501c410004bf8351bdeaab4a0d3144b"
+    },
+    "test/test_save_boundaries.gd": {
+      "sha256": "fc0b9fb29c1cf146ab9275bfcad427a9f1442b9eea6ad99eb317a6d47f8fe539"
+    }
+  },
+  "evidence": {
+    "attacks.log": {
+      "sha256": "340eb44862a1999eeeee2516f1fb6a719999ff2959b4814729d94292916d25bf"
+    },
+    "cost.log": {
+      "sha256": "69d102c25cc41169ba97abf5596838d990d8025b6b0919d9c7c706a2deea8e61"
+    },
+    "enhancement-ui.png": {
+      "sha256": "eff527530da5966fdd3ae993960d64ef3109f4d9cf40a03cd56adc3ec9c72645"
+    },
+    "latest.log": {
+      "sha256": "c620522d39ded660c6b0dd0c5d24fc7f5d8ab6602c2813f7fb1491001477eb77"
+    },
+    "native.log": {
+      "sha256": "1a35dfd7b188af54f52f3d0b6531ee1064106f79e922b2cbc9cd5ea1eaaaca13"
+    },
+    "ranks.log": {
+      "sha256": "0a34bfb259085d9574bae157bfc4b51a216cff75e5ed8a1febee7a1423b12c88"
+    },
+    "recovery.log": {
+      "sha256": "883e50507dd6ef28c1d44595904c150b3eff972857de665b0f7c8f26887b2700"
+    },
+    "reopen.log": {
+      "sha256": "ca697f7101214703529998b9bbd2106a88242babf6fe95cd49a62aced6319b05"
+    },
+    "write.log": {
+      "sha256": "8bdc0d0d869e9ad639690c72c15cfa4c5c6a647759a2118d0a38acebe5cbb2cf"
+    }
+  },
+  "checks": {
+    "enhancement_cost": 51,
+    "branch_attacks": 59,
+    "native_numeric_upgrade": 111,
+    "shared_enhancement_ranks_gpu": 171,
+    "save_write": 20,
+    "save_reopen": 14,
+    "save_latest": 5,
+    "save_recovery": 7
+  },
+  "checks_total": 438,
+  "failures": 0,
+  "engine": {
+    "version": "4.7.2.stable.official.ed1daf0bf",
+    "sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424"
+  },
+  "native": {
+    "sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  },
+  "limitations": [
+    "Stage 1 remains incomplete: crew, planets, galaxies and remaining hyperspace durable state pending",
+    "Growth owns persistent values and contributions; unified cross-domain stat composition and cache/time ownership remain phase 2",
+    "Existing native supported-branch restrictions and <2^53 counter step guard retained; compiler refuses out-of-range durable counters before double conversion",
+    "GPU rank fixture disables saving; real persistence verified separately through four processes",
+    "No whole-game or complete-picture performance acceptance",
+    "Old large player-generator suite remains unresolved and was not repeated",
+    "Only system certificate-store warning remains in final logs; initial parse error and observer lifecycle warning were fixed before accepting results"
+  ]
+}

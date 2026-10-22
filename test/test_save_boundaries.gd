@@ -68,6 +68,11 @@ func _initialize() -> void:
 	check(game.switch_ship("Heavy_Battleship") and game.upgrade_slot("weapons",4,3),"Prepare invested dormant module")
 	check(game.equip_slot("weapons",4,"missile") and game.switch_ship("Frigate"),"Store switch deadline on dormant module")
 	check(not game.profile.has("loadout") and not game.profile.has("selectedShip") and not game.profile.has("equipmentSwitchUntil"),"Profile no longer owns equipment or switch deadlines")
+	game.economy.credit_fragments(1e12)
+	check(game.upgrade_enhancement(30)==30 and game.set_enhancement_order("weapons",["critical","repeat","proficiency"]) and game.set_enhancement_branch("weapons","critical",3,"B"),"Persist purchased enhancement, reordered effects and branch choice")
+	var history:=game.enhancement_growth.save_data();history.enhancementAttacks="9007199254740993";history.enhancementHits="9007199254740995"
+	check(game.enhancement_growth.install_snapshot(history),"Exact history fixture exceeds JSON double integer precision")
+	check(preload("res://scripts/native_execution_compiler.gd").new().compile(game,"native_low_contract").error=="unsupported_native_counter","History beyond native exact range is rejected before double conversion")
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -89,6 +94,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var restored := BattleGame.new(db, true)
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
 	check(restored.equipment.selected_ship()==saved.selectedShip and restored.module_entry("weapons",4).level==4 and restored.module_entry("weapons",4).key=="missile" and restored.equipment.save_data().equipmentSwitchUntil==saved.equipmentSwitchUntil,"Disk reopen/recovery preserves hull, dormant investment and switch deadline")
+	check(restored.enhancement_level()==30 and restored.enhancement_order("weapons")==["critical","repeat","proficiency"] and restored.enhancement_branch_choice("weapons","critical",3)=="B" and restored.enhancement_growth.attacks()==9007199254740993 and restored.enhancement_growth.hits()==9007199254740995,"Reopen/recovery preserves shared enhancement and exact history without JSON rounding")
 	if phase == "latest":
 		check(restored.economy.resources() == saved.latest, "Second real process reopen selects latest commit")
 		var damaged := FileAccess.open(BattleGame.SAVE_PATH, FileAccess.WRITE)
@@ -118,6 +124,9 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	bad_equipment.loadout.weapons[0].level=-1;bad_equipment.resources["1"]=999
 	restored.load_progress_data(bad_equipment)
 	check(restored.module_entry("weapons",0).level==unchanged.loadout.weapons[0].level and restored.economy.resources()==saved.resources,"Invalid equipment rejects the whole snapshot before any balance install")
+	var invalid_growth:=unchanged.duplicate(true);invalid_growth.enhancementOrder.weapons=["critical","critical","repeat"];invalid_growth.resources["1"]=999
+	restored.load_progress_data(invalid_growth)
+	check(restored.enhancement_order("weapons")==unchanged.enhancementOrder.weapons and restored.economy.resources()==saved.resources,"Invalid enhancement rejects the whole save before balance installation")
 	restored.hyperspace.last_error = ""
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH + ".tmp")
 	restored.economy.credit("1", 7)
