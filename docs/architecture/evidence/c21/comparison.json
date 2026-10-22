@@ -1,0 +1,313 @@
+{
+  "before_runtime": "f113c51f3496b2ca488a0ae99981ca783a359f5d",
+  "after_runtime": "edf8a192ff462a0f22eede6da3d45c058ca99591",
+  "perf_fixture_unchanged_since": "517a7708e2ffba010c5aeb1337132f58418b9435",
+  "environment": {
+    "adapter": "NVIDIA GeForce RTX 2060",
+    "cap": 0,
+    "display": "Windows",
+    "engine": "4.7.2-stable (official)",
+    "galaxy_assignment": true,
+    "galaxy_initial": {
+      "active_upgrade_work": 1786.5,
+      "building_revision": 0,
+      "crew": {
+        "assignment": "galaxy_explore",
+        "id": "navigator",
+        "target": "galaxy_1"
+      },
+      "crew_count": 1,
+      "effect_generation": 2,
+      "game_time": 0.12,
+      "income_events": 0,
+      "level_total": 120,
+      "settlements": 0,
+      "status": "developing",
+      "upgrade_work": 1786.5
+    },
+    "galaxy_work": "active",
+    "low_processor": false,
+    "method": "gl_compatibility",
+    "resolution": "(1373, 883)",
+    "vendor": "NVIDIA"
+  },
+  "pages": [
+    {
+      "page": 0,
+      "before_switch_cpu_us": 443,
+      "after_switch_cpu_us": 421,
+      "before_switch_frame_us": 203673,
+      "after_switch_frame_us": 205144,
+      "before_frames_us": {
+        "max": 45208,
+        "mean": 6474.43166666667,
+        "p50": 6137,
+        "p95": 8725,
+        "p99": 10522
+      },
+      "after_frames_us": {
+        "max": 45198,
+        "mean": 6924.38,
+        "p50": 6460,
+        "p95": 9486,
+        "p99": 12485
+      },
+      "before_main_us": {
+        "max": 6569,
+        "mean": 2952.8,
+        "p50": 2686,
+        "p95": 4767,
+        "p99": 5902
+      },
+      "after_main_us": {
+        "max": 7843,
+        "mean": 3173.79166666667,
+        "p50": 2802,
+        "p95": 5170,
+        "p99": 6118
+      },
+      "before_boundaries": [
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5194,
+          "effects_changed": true,
+          "frame": 224,
+          "frame_us": 8503
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5602,
+          "effects_changed": false,
+          "frame": 284,
+          "frame_us": 9252
+        }
+      ],
+      "after_boundaries": [
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5431,
+          "effects_changed": true,
+          "frame": 224,
+          "frame_us": 8930
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5458,
+          "effects_changed": false,
+          "frame": 284,
+          "frame_us": 8956
+        }
+      ],
+      "before_switch_attribution": {},
+      "after_switch_attribution": {},
+      "before_boundary_asset_attribution": null,
+      "after_boundary_asset_attribution": null
+    },
+    {
+      "page": 8,
+      "before_switch_cpu_us": 143079,
+      "after_switch_cpu_us": 133876,
+      "before_switch_frame_us": 152522,
+      "after_switch_frame_us": 142276,
+      "before_frames_us": {
+        "max": 16292,
+        "mean": 6463.70833333333,
+        "p50": 6318,
+        "p95": 7863,
+        "p99": 9972
+      },
+      "after_frames_us": {
+        "max": 16382,
+        "mean": 6942.38833333333,
+        "p50": 6764,
+        "p95": 8849,
+        "p99": 10786
+      },
+      "before_main_us": {
+        "max": 12049,
+        "mean": 2506.56,
+        "p50": 2351,
+        "p95": 3276,
+        "p99": 5998
+      },
+      "after_main_us": {
+        "max": 12137,
+        "mean": 2729.97333333333,
+        "p50": 2499,
+        "p95": 3731,
+        "p99": 6028
+      },
+      "before_boundaries": [
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 12049,
+          "effects_changed": true,
+          "frame": 209,
+          "frame_us": 16292
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6042,
+          "effects_changed": false,
+          "frame": 269,
+          "frame_us": 12511
+        }
+      ],
+      "after_boundaries": [
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 12137,
+          "effects_changed": true,
+          "frame": 209,
+          "frame_us": 16382
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 8012,
+          "effects_changed": false,
+          "frame": 269,
+          "frame_us": 12166
+        }
+      ],
+      "before_switch_attribution": {
+        "galaxy_city_modules.bake": [
+          52,
+          27740,
+          1931
+        ],
+        "galaxy_city_structure.configure": [
+          1,
+          75984,
+          75984
+        ],
+        "galaxy_map._process": [
+          1,
+          150,
+          150
+        ],
+        "galaxy_map.asset": [
+          67,
+          52324,
+          18001
+        ],
+        "galaxy_map.refresh": [
+          3,
+          37421,
+          37418
+        ],
+        "galaxy_map.refresh_city_routes": [
+          1,
+          43,
+          43
+        ],
+        "galaxy_map.select": [
+          1,
+          110259,
+          110259
+        ],
+        "galaxy_panel.refresh": [
+          1,
+          110560,
+          110560
+        ],
+        "galaxy_panel.refresh_detail": [
+          1,
+          4,
+          4
+        ],
+        "galaxy_region.view": [
+          72,
+          40,
+          1
+        ]
+      },
+      "after_switch_attribution": {
+        "galaxy_city_modules.bake": [
+          28,
+          19334,
+          1599
+        ],
+        "galaxy_city_structure.configure": [
+          1,
+          55935,
+          55935
+        ],
+        "galaxy_map._process": [
+          1,
+          142,
+          142
+        ],
+        "galaxy_map.asset": [
+          67,
+          49408,
+          15604
+        ],
+        "galaxy_map.refresh": [
+          3,
+          36479,
+          36476
+        ],
+        "galaxy_map.refresh_city_routes": [
+          1,
+          43,
+          43
+        ],
+        "galaxy_map.select": [
+          1,
+          87527,
+          87527
+        ],
+        "galaxy_panel.refresh": [
+          1,
+          87833,
+          87833
+        ],
+        "galaxy_panel.refresh_detail": [
+          1,
+          4,
+          4
+        ],
+        "galaxy_region.view": [
+          72,
+          31,
+          1
+        ]
+      },
+      "before_boundary_asset_attribution": [
+        1,
+        4743,
+        4743
+      ],
+      "after_boundary_asset_attribution": [
+        1,
+        4694,
+        4694
+      ]
+    }
+  ],
+  "notes": [
+    "Uninstrumented before/after both capture each page only after measurement. Same 1373x883, rich15, navigator, developing galaxy_1,0/8 pages,600frames,15warmup,1/60 fixed step.",
+    "Recorded order: before-attribution, after uninstrumented, UI correctness, before uninstrumented, after-attribution. GPU processes were serial.",
+    "Inclusive nested attribution is not added together or used as the uninstrumented gain.",
+    "First galaxy switch CPU143.079->133.876ms and next-frame interval152.522->142.276ms; limited one-pair observation.",
+    "Steady galaxy P95 7.863->8.849ms is worse in this short sample and not attributed; not a throughput or overall performance pass.",
+    "First asset preparation includes loading, instantiation and material sharing.49.408ms must not be called pure disk IO.",
+    "Existing resource scene cache remains. A newly reached model still costs4.694ms; no new warming/loading strategy was implemented."
+  ]
+}

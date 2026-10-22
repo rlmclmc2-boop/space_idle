@@ -1,0 +1,112 @@
+{
+  "runtime": "edf8a192ff462a0f22eede6da3d45c058ca99591",
+  "fixture_fix": "aa42e08f9f204bec6dd1e0c9b6268283786d53c7",
+  "branch": "impl/domain-architecture-20261022",
+  "source_sha256_git_lf": {
+    "space-battleship/scripts/galaxy_city_modules.gd": "664ed39a51d2ac03a29b9136cdfd6ff4fcb0c01dcf308ac1f9cd70541bcb4b5d",
+    "space-battleship/scripts/galaxy_city_structure.gd": "4d8e4d4380192f4b41a747b7f934ea0e1ce50a8fa35c48a1d90cb81ffd7e1a34",
+    "space-battleship/scripts/galaxy_city_layout.gd": "efce65bbc06a3ed89757198e97b5d00bccebf80ecfccdee4ca71ca9987ae5867",
+    "space-battleship/scripts/galaxy_map.gd": "ab50a05580571f45c60ebe78e282bb222554bea6f9be3166036469dc0ac34b4c",
+    "space-battleship/scripts/galaxy_system.gd": "ac372bef78ac83a2b8c54affb86c569d4e810ed1226678123029d281ecf18476",
+    "test/test_galaxy_ui.gd": "18e2134111b0e2433ed1c7dacce9e9682a8ea4319a4c39013ee0813e4d18d622",
+    "test/whole_game_perf.gd": "ad39cc358aece658d63dc8f700b070dba242961921b2bc63c44bab82f206cf66",
+    "test/whole_game_perf.py": "1f7ebcc28343f196ffd0ca9f7b30c07709dfaa5a7a8a65db081d4f32b2a584fd",
+    "test/saved_game_perf.py": "d556ddab1b24df6a66544191a2a93f1c7e647b5c6b26e72058d13169d6737ef0",
+    "test/fixtures/galaxy_1_complete.json": "13d2df9c972565a1168edf1ce1f15ab28d2f61b33eec609f71d8ce136202f312",
+    "space-battleship/data/game_data.json": "fd9507a476d6164fd5f1dac9250923d9b0450f2450c22004b52be2def9bd2609",
+    "space-battleship/assets/galaxy/v3/manifest.json": "e9f6df60dcb1fe58881f1af9e14c25440dbadd1921ac59674cf5e717631ffbe1"
+  },
+  "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "changes": [
+    "Only existing test_galaxy_ui apply_region_fixture call receives its required effects_changed field. No production default or test framework changes.",
+    "Equal actual socket spans reuse the first baked static bridge mesh. Original geometry generation,each connection socket guards,placement,material,shadows and32connections retained. No rounded span keys or simplified models.",
+    "No asset preloading,async scheduler,delayed presentation,gameplay changes or capacity precision/level limit changes."
+  ],
+  "checks": {
+    "galaxy_ui": {
+      "checks": 904,
+      "failures": 0,
+      "runtime": "edf8a192ff462a0f22eede6da3d45c058ca99591",
+      "fixture": "aa42e08f9f204bec6dd1e0c9b6268283786d53c7",
+      "runner": "Original test_galaxy_ui.gd executed against the existing whole_game_perf imported isolated project. Required original fixture copied into its normal ../test/fixtures path. Isolated APPDATA/LOCALAPPDATA/XDG. No new project or runner.",
+      "scope": "30platforms,32socket connections and clearance,5levels/4orientations,750roof samples,unchanged model/static mesh identity,real input,pause/hidden lifecycle.",
+      "log": "galaxy-ui.log"
+    },
+    "active_perf": {
+      "checks": 3,
+      "failures": 0,
+      "note": "Same three active work assertions repeated across four measurements, not12distinct checks. Saving disabled; no persistence claim.",
+      "commits": 20,
+      "work_before_after": [
+        1786.5,
+        1816.5
+      ],
+      "levels_before_after": [
+        120,
+        122
+      ],
+      "native_frames_each_page": 600
+    }
+  },
+  "runs": [
+    {
+      "report": "c21-before.json",
+      "runtime": "f113c51f3496b2ca488a0ae99981ca783a359f5d",
+      "instrumented": false,
+      "production_note": ""
+    },
+    {
+      "report": "c21-after.json",
+      "runtime": "edf8a192ff462a0f22eede6da3d45c058ca99591",
+      "instrumented": false,
+      "production_note": ""
+    },
+    {
+      "report": "c21-before-attribution.json",
+      "runtime": "aa42e08f9f204bec6dd1e0c9b6268283786d53c7",
+      "instrumented": true,
+      "production_note": "aa42 adds only the UI fixture field; production identical to f113."
+    },
+    {
+      "report": "c21-after-attribution.json",
+      "runtime": "edf8a192ff462a0f22eede6da3d45c058ca99591",
+      "instrumented": true,
+      "production_note": ""
+    }
+  ],
+  "executed_copy_checks": [
+    "Uninstrumented after production bridge/system copies matched edf8a192 before the original UI test.",
+    "UI fixture copy matched aa42e08f.",
+    "Uninstrumented before bridge/system copies matched archived f113c51f before after-attribution replaced them.",
+    "Normalized Git source hashes above verified; attribution copies derive solely from the unchanged committed runner wrappers."
+  ],
+  "evidence_limits": [
+    "Single before/after short pair,not general or long-session performance acceptance. Steady-page sample regressed without attribution; no further unrelated repetitions.",
+    "Static preparation reduction corroborated by bake52->28 and configure75.984->55.935ms in separate inclusive instrumentation.",
+    "Model preparation still49.408ms on first visit and4.694ms at next unseen upgrade asset; existing scene cache already reuses loaded scenes.",
+    "No resource income events in this synthetic city; no new resource receipt or save/reopen checks. C16 persistence and C20 native correctness keep original SHA attribution."
+  ],
+  "next_decision": "Further substantial first-visit latency reduction may need preparing assets/structure before visiting (earlier startup/unlock work and memory), or a visible first-load wait/staged city presentation. Neither strategy is implemented or assumed approved; no new scheduling framework.",
+  "remaining": [
+    "First galaxy CPU133.876ms and frame interval142.276ms remain visibly blocking.",
+    "Galaxy P95 worsened7.863->8.849ms in this short pair; overall product/performance not passed.",
+    "Capacity/allocation precision and level range still await user answer.",
+    "C20 production limited dual approval recorded. C21 candidate awaits independent dual review; main untouched."
+  ],
+  "log_review": "All completed runs contain only known system certificate warning; no script or resource-exit errors.",
+  "visual_review": "Before and after actual main-scene screenshots inspected:complete city geometry,connection placement and current active state retained.",
+  "artifact_sha256_git_blob": {
+    "active-galaxy.png": "4cede5ad80a6749f9c7068ca6e68edede54111b7aaa81ccf07a0a1890ecbca48",
+    "before-galaxy.png": "3c42242c4da9cc8e067ed58353d18ade4d4b331b224bbecf287fd5a7f011a0f4",
+    "c21-after-attribution.json": "30e8a069baab51ffd4d864c9eb69a432d829427d064363873167c4d4236da9ee",
+    "c21-after-attribution.log": "df2ed6d1b45a0d7b25853711c23277041f07c5d8848a2866335542e12849517b",
+    "c21-after.json": "bb171af20e6723bdd0b5e539521022444392dea476382ce50ea399635a6eb6bd",
+    "c21-after.log": "52771683e01cc2e96f6ad769282bc5cb8c53ea6cb620abee253c7a00d5aea4ca",
+    "c21-before-attribution.json": "c03be4edb232073ebf35a7ac7a240091d7cf0c1753264b791abe6e9eeafb001c",
+    "c21-before-attribution.log": "9e11e3d5ceb79d5dc2d09f6d12b12c92fba206a43fbcec92923295f0330ea12a",
+    "c21-before.json": "450a7bb40aa829c4d9150b5a1a4f24ab3c896939c6f15b81ba0facd69959ba82",
+    "c21-before.log": "7238c9551e54ab5d6f4b93f45085ee183b4040fcbb372578bb2ca245dbc17dab",
+    "comparison.json": "9e1ab1cbc02be5924df1c7db67c407c299f34692128a664f970596934d745c0b",
+    "galaxy-ui.log": "df36c3301528085a0d2053bcbb0a8fa500fbfd077b027db07f8f306c1ab1c494"
+  }
+}
