@@ -1667,6 +1667,8 @@ func enemy_display_protection_scale(enemy:Dictionary,packet:Dictionary,angle:flo
 	return minf(1.0,enemy_display_fit(half*2.0,angle,enemy_display_size(enemy)))
 
 func enemy_render_width(enemy: Dictionary) -> float:
+	if fixed_enemy_layout and simulation_geometry_view==null:
+		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 

@@ -22,6 +22,9 @@ func points(scene)->Dictionary:
  for enemy in scene.game.enemies:out[str(enemy.uid)]=scene.enemy_render_position(enemy)
  return out
 func run()->void:
+ var args:=OS.get_cmdline_user_args()
+ if not args.is_empty() and str(args[0]).begins_with("product-"):
+  await run_product(str(args[0]));return
  for native in [false,true]:
   var scene=load("res://main.tscn").instantiate();scene.set_script(UI);scene.automation_args=["--capture","--capture-all"];scene.music_on=false
   root.add_child(scene);current_scene=scene;scene.set_process(false);scene.automation_args=[]
@@ -52,3 +55,122 @@ func run()->void:
   scene.queue_free();await process_frame
  var out=FileAccess.open("res://.runtime/ordinary-entry.json",FileAccess.WRITE);out.store_string(JSON.stringify({"checks":checks,"failures":failures,"runs":reports},"\t"));out.close()
  print("ORDINARY_ENTRY ",checks," checks ",failures," failures");quit(1 if failures else 0)
+
+func product_state(g)->Dictionary:
+ var wallet:Dictionary=g.economy.save_data();wallet.erase("chronoParticles")
+ return {"wallet":wallet,"equipment":g.equipment.save_data(),"enhancement":g.enhancement_growth.save_data(),"reactor":g.reactor.save_data(),"crew":g.crew.save_data(),"planets":g.planets.save_data(),"galaxy":g.galaxy.save_data(),"research":g.research.save_data(),"hyperspace":g.hyperspace.save_data(),"time":g.production_time()}
+
+func product_capture(scene,label:String)->void:
+ scene.battle_layer.queue_redraw();scene.refresh_save_status()
+ await process_frame;await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png("res://.runtime/"+label+".png")
+
+func product_remember(g,receipt:Dictionary)->void:
+ var file:=FileAccess.open("user://product-expected.json",FileAccess.WRITE)
+ file.store_string(JSON.stringify({"domains":product_state(g),"receipt":receipt,"chrono":g.economy.balance("chrono")}));file.close()
+
+func run_product(phase:String)->void:
+ Engine.max_fps=0;DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+ var area:=ProjectSettings.globalize_path("res://../userdata").simplify_path().replace("\\","/")
+ check(OS.get_user_data_dir().replace("\\","/").begins_with(area),"Product run uses isolated player data")
+ # Keep the shipped scene, real constructor, caches, native choice and save writer.
+ # No --capture or replacement scene script is used in these process phases.
+ var scene=load("res://main.tscn").instantiate();scene.automation_args=[];scene.music_on=false
+ root.add_child(scene);current_scene=scene;scene.set_process(false)
+ var g=scene.game
+ check(g.startup_error.is_empty() and g.save_enabled and g.progress_writer.owns_progress() and g.stat_cache_enabled,"Original product scene holds its writer lock with saving and caches enabled")
+ if not g.startup_error.is_empty() or not g.save_enabled:quit(1);return
+ await process_frame
+ if is_instance_valid(scene.chrono_login_dialog):scene.chrono_login_dialog.hide()
+ var receipt:Dictionary={}
+ if phase=="product-write":
+  check(not FileAccess.file_exists(BattleGame.SAVE_PATH),"Product starts in a fresh isolated slot")
+  # Seed unlocks and a finite budget; perform progression through real commands.
+  # This is an authored acceptance scenario, not a claim of playing 60 stages.
+  g.rng.seed=1701
+  g.profile.cleared=range(1,61);g.rebuild_unlocks();g.pending_unlocks.clear()
+  g.profile.onboarding.completed=true;scene.beginner_guide.hide()
+  check(g.economy.credit_many({"1":1e15,"2":1e15,"jewel":1e12}),"Acceptance budget credits through economy")
+  var wallet:Dictionary=g.economy.save_data();wallet.chronoParticles=100.0;wallet.materials[g.db.evolution_material_id()]=10000
+  check(g.economy.install_snapshot(wallet),"Acceptance chrono balance installs")
+  check(g.equip_slot("weapons",0,"cannon"),"Real module selection prepares the challenge ship")
+  check(g.upgrade_slot("weapons",0,119),"Real weapon purchase prepares the challenge ship")
+  check(g.upgrade_slot("defence",0,119),"Real defence purchase prepares the challenge ship")
+  check(g.upgrade_enhancement(30)==30 and g.upgrade_reactor(2),"Real enhancement and reactor purchases succeed")
+  check(g.set_reactor_allocation("weapons",3),"Real allocation commits before product save")
+  check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.set_crew_upgrade_mode("navigator","1"),"Real automatic upgrade job is assigned")
+  check(g.select_tech("weapon_accuracy") and g.set_tech_input("1",10),"Real paid research starts")
+  scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(0)
+  scene.equipment_panel.set_upgrade_amount(1);scene.equipment_panel.refresh()
+  var level:int=g.slot_entry("weapons",0).level
+  var quote:Dictionary=g.slot_upgrade_cost("weapons",0,1);var iron=g.economy.balance("1")
+  scene.equipment_panel.cards["weapons_0"].upgrade_button.pressed.emit()
+  check(g.slot_entry("weapons",0).level==level+1 and g.economy.balance("1")==g.N.subtract(iron,quote.get("1",0)),"Actual equipment card signal commits its displayed one-level price")
+  check(g.start(1,false),"Product starts a normal sortie")
+  g.auto_gen_elapsed=float(g.auto_gen_settings().interval)-0.1 # Near-due acceptance timer; keep configured drop travel and amount.
+  level=int(g.slot_entry("weapons",0).level);var collections:Array=[];g.event.connect(func(kind,info):
+   if kind=="collect" and info.get("auto_gen",false):collections.append(info.duplicate(true)))
+  var points=g.research.progress("weapon_accuracy")
+  for frame in 2400:
+   scene._process(1.0/60.0)
+   if frame%10==0:await process_frame
+  check(g.slot_entry("weapons",0).level>level,"Product external clock executes automatic equipment purchases")
+  check(not collections.is_empty(),"Product clock advances configured 30-second automatic income")
+  check(g.research.progress("weapon_accuracy")>points or g.hightech_level("weapon_accuracy")>0,"Product clock advances paid research")
+  g.paused=true;var elapsed=g.production_time();var particles=g.economy.balance("chrono")
+  scene._process(0.5)
+  check(g.production_time()==elapsed and g.economy.balance("chrono")==particles,"Paused product spends no game time or particles")
+  g.paused=false;check(g.set_speed(5),"Product accepts configured x5 speed")
+  scene._process(0.1)
+  check(is_equal_approx(g.production_time()-elapsed,0.5) and g.economy.balance("chrono")<particles,"Product consumes one boosted external interval")
+  g.set_speed(1)
+  check(g.start_hyperspace_challenge("alpha"),"Product enters a real production hyperspace route")
+  for frame in 12000:
+   if not g.manual_hyperspace.active:break
+   scene._process(1.0/60.0)
+   if frame%20==0:await process_frame
+  print("PRODUCT_CHALLENGE ",JSON.stringify({"result":g.manual_hyperspace.last_result,"point":g.group_index,"state":g.state,"active":g.manual_hyperspace.active,"enemies":g.enemies.map(func(enemy):return {"id":enemy.id,"hp":enemy.hp,"shield":enemy.shield})}))
+  check(not g.manual_hyperspace.active and g.manual_hyperspace.last_result.get("reason")=="success","Actual attacks clear the manual challenge and return")
+  check(g.hyperspace.state.active.get("status")=="completed_pending","Actual challenge leaves an unclaimed reward receipt")
+  check(g.distance==0 and g.group_index==0 and g.enemies.is_empty(),"Product returns to a clean mainline start")
+  receipt=g.hyperspace.state.active.duplicate(true)
+  g.paused=true;scene.show_save_page();scene.save_panel.manual_button.pressed.emit()
+  check(g.last_save_error==OK and FileAccess.file_exists(BattleGame.SAVE_PATH),"Actual save button writes the complete current-format snapshot")
+  product_remember(g,receipt)
+  await product_capture(scene,phase)
+ else:
+  var expected:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("user://product-expected.json"))
+  # Disk JSON has one numeric type; compare values after the same encoding,
+  # not textual int/float spellings (all domain keys and values remain checked).
+  var restored:Dictionary=JSON.parse_string(JSON.stringify(product_state(g)))
+  var mismatches:Array=[]
+  for key in expected.domains:
+   if restored.get(key)!=expected.domains[key]:mismatches.append(key)
+  print("PRODUCT_RESTORED ",JSON.stringify({"domains":restored.keys(),"mismatches":mismatches}))
+  check(restored.size()==expected.domains.size() and mismatches.is_empty(),"Fresh product process restores all domain snapshots and settled time")
+  check(g.economy.balance("chrono")>=float(expected.chrono) and g.economy.balance("chrono")<=g.chrono_capacity(),"Reopen preserves balance plus bounded offline chrono")
+  g.profile.onboarding.completed=true;scene.beginner_guide.hide();g.pending_unlocks.clear()
+  receipt=expected.receipt
+  if phase=="product-reopen":
+   check(g.hyperspace.state.active.get("status")=="completed_pending","Pending challenge reward survives process restart")
+   check(g.claim_hyperspace(int(receipt.round_id),int(receipt.run_id)),"Product claims the saved real challenge reward")
+   var committed:Dictionary=g.economy.save_data();var inventory:Dictionary=g.hyperspace.save_data()
+   check(not g.claim_hyperspace(int(receipt.round_id),int(receipt.run_id)) and g.economy.save_data()==committed and g.hyperspace.save_data()==inventory,"Same receipt cannot credit again")
+   scene.show_save_page();scene.save_panel.manual_button.pressed.emit()
+   check(g.last_save_error==OK,"Actual save button persists the completed claim")
+   product_remember(g,receipt)
+  else:
+   var committed:Dictionary=g.economy.save_data();var inventory:Dictionary=g.hyperspace.save_data()
+   check(not g.claim_hyperspace(int(receipt.round_id),int(receipt.run_id)) and g.economy.save_data()==committed and g.hyperspace.save_data()==inventory,"Claim remains final after another product process restart")
+   check(g.start(1,false),"Reopened product can start a fresh sortie")
+   for frame in 90:
+    scene._process(1.0/60.0)
+    if frame%10==0:await process_frame
+   check(g.production_time()>float(expected.domains.time),"Reopened product resumes live simulation")
+  await product_capture(scene,phase)
+ var report:={"phase":phase,"checks":checks,"failures":failures,"saving":g.save_enabled,"writer":g.progress_writer.owns_progress(),"startup_error":g.startup_error,"production_time":g.production_time(),"receipt_status":g.hyperspace.state.active.get("status",""),"native":g.native_execution!=null}
+ FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," "))
+ if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
+ if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
+ scene.queue_free();await process_frame
+ print("PRODUCT_ENTRY ",phase," ",checks," checks ",failures," failures");quit(1 if failures else 0)
