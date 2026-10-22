@@ -1,6 +1,8 @@
 extends RefCounted
 ## Owns crew growth, assignments and the event-driven job schedule. Game commits cross-domain commands.
 var revision := 0
+var contribution_revision:=0
+var _contribution_inputs:Array=[]
 var _members: Array = []
 var _entries: Dictionary = {}
 var handlers: Dictionary = {}
@@ -180,6 +182,9 @@ func save_data() -> Dictionary:
 	return {"crew":_members.duplicate(true),"crewEquipment":{}}
 
 func _install_members(items: Array) -> void:
+	var inputs:Array=[]
+	for item in items:inputs.append([item.crewId,item.level,item.assignmentType,item.targetId])
+	if inputs!=_contribution_inputs:contribution_revision+=1;_contribution_inputs=inputs
 	_members=items.duplicate(true);_entries={}
 	for item in _members:
 		item.equipmentSlots.make_read_only();item.make_read_only();_entries[item.crewId]=item

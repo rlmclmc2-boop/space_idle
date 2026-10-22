@@ -32,7 +32,7 @@ func refit_fixture(key:String="missile",effect:String="equipment_value",shared_c
 	check(g.enhancement_growth.install_snapshot(enhancement),"Current native enhancement fixture installs")
 	g.set_enhancement_branch("weapons","repeat",1,"B")
 	if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
-	g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
+	g.configuration_committed();g.reset_player();g.state=BattleGame.State.COMBAT
 	g.enemies.assign([{"uid":100,"slot":4,"x":286.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0},{"uid":101,"slot":3,"x":240.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
 	g.cooldowns[g.slot_id("weapons",0)]=0.0
 	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g)
@@ -51,7 +51,7 @@ func refit_fixture(key:String="missile",effect:String="equipment_value",shared_c
 	g.enemies[0].drops=[{"resourceId":1,"chance":1.0,"amount":100000.0}]
 	var reactor:Dictionary=g.reactor.save_data();reactor.reactorLevel=20;check(g.reactor.install_snapshot(reactor,db.config),"Reactor fixture installs")
 	var planets:Dictionary=g.planets.save_data();planets.merge(g.crew.save_data());planets.planets["1"].conquered=true;check(g.planets.install_snapshot(planets,db),"Planet contribution fixture installs")
-	g.invalidate_stat_cache();g.reset_player()
+	g.configuration_committed();g.reset_player()
 	g.player.armour*=0.6;g.player.shield*=0.6;g.sync_jewel_defence_damage()
 	# Deliberately uneven damage: preserving prior loss would fail the refit
 	# contract even though aggregate HP could still look correct.

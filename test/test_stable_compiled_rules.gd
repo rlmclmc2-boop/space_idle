@@ -5,14 +5,19 @@ func check(ok:bool,label:String)->void:
  checks+=1
  if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture(compiled:bool):
- var g=BattleGame.new(ShipDatabase.new(),false)
- g.profile.cleared=range(1,61);g.profile.highestLevel=61;g.profile.enhancementLevel=40;g.rebuild_unlocks()
- g.profile.resources={"1":1e30,"2":1e30};g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
- g.profile.selectedShip="Heavy_Battleship"
- g.profile.loadout={"weapons":[],"defence":[]}
- for key in ["laser","missile","cannon","longLaser","laser","missile","cannon","longLaser"]:g.profile.loadout.weapons.append({"key":key,"level":5})
- for key in ["armour","shield","armour","shield"]:g.profile.loadout.defence.append({"key":key,"level":5})
- g.invalidate_stat_cache();g.reset_player();g.rng.seed=29
+ var db=ShipDatabase.new()
+ db.ships.Heavy_Battleship.weaponSlots=8;db.ships.Heavy_Battleship.defenseSlots=4
+ var g=BattleGame.new(db,false)
+ g.profile.cleared=range(1,61);g.rebuild_unlocks()
+ g.economy.credit_many({"1":1e30,"2":1e30});g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+ var equipment=g.equipment.save_data();equipment.selectedShip="Heavy_Battleship"
+ equipment.loadout={"weapons":[],"defence":[]}
+ for key in ["laser","missile","cannon","longLaser","laser","missile","cannon","longLaser"]:equipment.loadout.weapons.append({"key":key,"level":5})
+ for key in ["armour","shield","armour","shield"]:equipment.loadout.defence.append({"key":key,"level":5})
+ check(g.equipment.install_snapshot(equipment,g.db),"Current equipment snapshot installs")
+ var growth=g.enhancement_growth.save_data();growth.enhancementLevel=40
+ check(g.enhancement_growth.install_snapshot(growth),"Current enhancement snapshot installs")
+ g.notify_configuration_changed();g.reset_player();g.rng.seed=29
  if compiled:g.enable_compiled_combat_rules()
  return g
 func _initialize()->void:call_deferred("run")
@@ -27,7 +32,7 @@ func run()->void:
     for node in [1,2,3]:
      for choice in ["A","B"]:check(old.enhancement_branches.active(old,a,effect,node,choice)==cached.enhancement_branches.active(cached,b,effect,node,choice),"canonical branch qualification")
  check(cached.upgrade_equipment_batch("1") and old.upgrade_equipment_batch("1"),"original main batch purchases")
- check(cached.profile.loadout==old.profile.loadout and cached.profile.resources==old.profile.resources,"batch level/cost preserved")
+ check(cached.equipment.save_data()==old.equipment.save_data() and cached.economy.save_data()==old.economy.save_data(),"batch level/cost preserved")
  for entry in cached.combat_weapon_entries()+cached.defense_entries():
   check(cached.combat_equipment_row(entry.key,int(entry.level))==cached.compiled_combat_rules.row(entry.key,int(entry.level)),"final batch cached row")
  var entry=cached.combat_entry(0);var snapshot={"id":7,"damage":10.0,"critical":false,"critical_bonus_applied":false,"effects":[{"kind":"repeat","chain":true,"chain_targets":1}]}

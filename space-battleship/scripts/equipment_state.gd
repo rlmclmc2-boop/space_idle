@@ -11,6 +11,7 @@ var _active:Dictionary={"weapons":[],"defence":[]}
 var _switch_until:Dictionary={}
 var _serial:=0
 var revision:=0
+var contribution_revision:=0
 var _quotes:Dictionary={}
 
 func selected_ship()->String:return _ship
@@ -79,7 +80,7 @@ func _install(db,ship:String,modules:Dictionary,deadlines:Dictionary,preserve:bo
 			projection.make_read_only();values.append(projection)
 		values.make_read_only();next[category]=values
 		active[category]=values.slice(0,count(db,ship,category));active[category].make_read_only()
-	_ship=ship;_modules=next;_active=active;_switch_until=deadlines.duplicate();revision+=1
+	_ship=ship;_modules=next;_active=active;_switch_until=deadlines.duplicate();revision+=1;contribution_revision+=1
 
 func reset(db,ship:String,unlocked:Array)->void:
 	_install(db,ship,default_loadout(db,ship,unlocked),{},false)

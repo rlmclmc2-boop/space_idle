@@ -1,12 +1,15 @@
 extends RefCounted
 const N=preload("res://scripts/growth_number.gd")
 var weapons: Dictionary={}
+var weapon_revisions:Dictionary={}
+func changed(key:String)->void:weapon_revisions[key]=int(weapon_revisions.get(key,0))+1
 var defenses: Dictionary={}
 var incoming_sources: Dictionary={}
 var memory_reduction_remaining := 0.0
 var clear_reduction_remaining := 0.0
 
 func reset() -> void:
+ for key in ["laser","missile","cannon","longLaser"]:changed(key)
  weapons.clear();defenses.clear();incoming_sources.clear()
  memory_reduction_remaining=0.0;clear_reduction_remaining=0.0
 
@@ -23,7 +26,9 @@ func global_active(g,effect: String,node: int,choice: String) -> bool:
  return g.defense_entries().any(func(entry):return active(g,entry,effect,node,choice))
 
 func a_count(g,entry: Dictionary,effect: String) -> int:
- if g.compiled_combat_rules!=null and not g.compiled_combat_rules.compiling:return g.compiled_combat_rules.count_a(entry,effect)
+ if g.compiled_combat_rules!=null and not g.compiled_combat_rules.compiling:
+  g.compiled_combat_rules.compile(g)
+  return g.compiled_combat_rules.count_a(entry,effect)
  var count := 0
  for node in [1,2,3]:
   if active(g,entry,effect,node,"A"):count+=1
@@ -93,12 +98,12 @@ func advance_weapons(g,dt: float) -> void:
    data.dwell+=dt
   else:data.target={};data.dwell=0.0
   if before_stacks!=int(data.stacks) or before_focus!=int(floor(float(data.dwell)/interval)):
-   g.invalidate_equipment_counter(str(data.entry.get("key","")))
+   changed(str(data.entry.get("key","")))
    # Timed bonuses remain combat-only; module presentation has no dependency.
 
 func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary := true) -> Dictionary:
  var data:=weapon(g,index)
- if not derived and track_primary and not is_same(data.target,target):data.target=target;data.dwell=0.0
+ if not derived and track_primary and not is_same(data.target,target):data.target=target;data.dwell=0.0;changed(str(data.entry.get("key","")))
  var boost := 1.0
  if not derived and int(data.next)>0 and active(g,data.entry,"critical",1,"B"):
   boost+=g.enhancement_parameter("critical_b1_damage_bonus");data.next-=1
@@ -111,7 +116,7 @@ func finish_attack(g,context: Dictionary) -> void:
  if active(g,data.entry,"critical",2,"B"):
   data.stacks=mini(int(g.enhancement_parameter("critical_b2_stacks")),int(data.stacks)+1)
   data.stack_time=g.enhancement_parameter("critical_b2_duration")
- g.invalidate_equipment_counter(str(data.entry.get("key","")))
+ changed(str(data.entry.get("key","")))
 
 
 func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={},include_timed_buffs := true) -> Variant:

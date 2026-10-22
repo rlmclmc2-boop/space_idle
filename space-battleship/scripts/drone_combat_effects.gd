@@ -1,5 +1,6 @@
 extends RefCounted
 ## Battle-only timers/state. No save economy or visual nodes.
+var contribution_revision:=0
 const N=preload("res://scripts/growth_number.gd")
 const CC=preload("res://scripts/combat_context.gd")
 var delayed: Array=[]
@@ -12,13 +13,13 @@ var black_hole_remaining:=0.0
 var black_hole_damage=0.0
 var missile_attacks:=0
 func reset() -> void:
+	if not disabled.is_empty() or rebuild_bonus!=0.0:contribution_revision+=1
 	delayed.clear();disabled.clear();rebuild_bonus=0.0;rebuild_stacks=0;dodge_cooldown=0.0
 	black_hole_elapsed=0.0;black_hole_remaining=0.0;black_hole_damage=0.0;missile_attacks=0
 func restore_rebuild(g) -> void:
 	if disabled.is_empty() and rebuild_stacks==0 and rebuild_bonus==0.0:return
-	disabled.clear();rebuild_stacks=0;rebuild_bonus=0.0
+	disabled.clear();rebuild_stacks=0;rebuild_bonus=0.0;contribution_revision+=1
 	# Only expire the encounter's reconstruction cost/bonus, never heal or reset other effects.
-	g.invalidate_stat_cache()
 	g.event.emit("hyperspace_rebuild",{"restored":true,"stacks":0})
 	for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
 func effect(g,key: String) -> Dictionary:
@@ -93,7 +94,7 @@ func try_rebuild(g) -> bool:
 		var qb: String="ultimate" if db.ultimate else "legendary" if db.legendary else db.origin_quality
 		return str(a)<str(b) if rank[qa]==rank[qb] else rank[qa]<rank[qb])
 	disabled.append(ids[0]);rebuild_stacks+=1;rebuild_bonus+=float(rebuild.parameters.damage_and_defence_bonus)
-	g.invalidate_stat_cache();g.player.armour=g.stat("armour");g.player.shield=g.stat("shield")
+	contribution_revision+=1;g.player.armour=g.stat("armour");g.player.shield=g.stat("shield")
 	g.jewel_defence_damage.clear();g.enhancement_deferred.clear();g.sync_jewel_defence_damage()
 	g.event.emit("hyperspace_rebuild",{"drone_id":ids[0],"stacks":rebuild_stacks});return true
 func advance(g,dt: float) -> void:

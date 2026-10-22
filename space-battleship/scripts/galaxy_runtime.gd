@@ -56,7 +56,7 @@ func flush_pending(g,key:String)->bool:
 			if ready and not g.native_execution.paused_by_configuration and g.native_execution.commit_galaxy_refit(g,native_refit.plan):
 				proposal=native_refit.proposal
 				g.galaxy.commit_region(proposal);native_refit={}
-				g.native_numeric_update=true;g.invalidate_stat_cache();g.native_numeric_update=false
+				g.configuration_committed(true)
 				g.enhancement_branches.reconcile(g)
 				publish(g,proposal);return true
 			if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return block(g)
@@ -64,7 +64,7 @@ func flush_pending(g,key:String)->bool:
 	if not g.galaxy.region_current(proposal):return false
 	if proposal.refitted:g.capture_refit_health()
 	g.galaxy.commit_region(proposal)
-	if proposal.refitted:g.invalidate_stat_cache();g.apply_refit_health()
+	if proposal.refitted:g.configuration_committed();g.apply_refit_health()
 	publish(g,proposal);return true
 func publish(g,proposal:Dictionary)->void:
 	# Pending work was consumed before map callbacks, saves and business notifications.

@@ -3344,9 +3344,9 @@ func resource_hover_notices() -> Array[Dictionary]:
 func pickup_comparison(drop: Dictionary) -> String:
 	var uid := int(drop.get("uid",-1))
 	var cached: Dictionary = pickup_preview_cache.get(uid,{})
-	if cached.is_empty() or GrowthNumber.compare(cached.amount,drop.amount)!=0 or cached.get("ratio",-1)!=drop.get("jewelRatio",-1) or cached.get("stage",-1)!=game.stage or cached.get("revision",-1)!=game.stat_cache_revision:
+	if cached.is_empty() or GrowthNumber.compare(cached.amount,drop.amount)!=0 or cached.get("ratio",-1)!=drop.get("jewelRatio",-1) or cached.get("stage",-1)!=game.stage or cached.get("revision",-1)!=game.attributes.configuration_version(game):
 		pickup_preview_builds += 1
-		cached = {"amount":drop.amount.duplicate(true) if drop.amount is Dictionary else drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.stat_cache_revision,"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
+		cached = {"amount":drop.amount.duplicate(true) if drop.amount is Dictionary else drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.attributes.configuration_version(game),"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
 		if not pickup_preview_cache.has(uid):
 			if pickup_preview_order.size()>=64:pickup_preview_cache.erase(pickup_preview_order.pop_front())
 			pickup_preview_order.append(uid)

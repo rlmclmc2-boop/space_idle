@@ -7,9 +7,11 @@ const N = preload("res://scripts/growth_number.gd")
 const LEVEL_LIMIT := 9007199254740991
 var _state: Dictionary = fresh()
 var revision := 0
+var contribution_revision:=0
 var _level_revision := 0
 var _factor_level_revision := -1
-var _factor_config_hash := 0
+var _factor_config_revision := -1
+var _factor_database_id:=0
 var _factor_cache: Dictionary = {}
 
 static func fresh() -> Dictionary:
@@ -18,6 +20,7 @@ static func fresh() -> Dictionary:
 func reset() -> void:
 	_state = fresh()
 	_level_revision += 1
+	contribution_revision+=1
 	revision += 1
 
 func save_data() -> Dictionary:
@@ -71,6 +74,7 @@ func install_snapshot(raw: Dictionary, rows: Dictionary) -> bool:
 	for id in next.aiTechLevels:next.aiTechLevels[id] = int(next.aiTechLevels[id])
 	for id in next.aiTechInput:next.aiTechInput[id] = int(next.aiTechInput[id])
 	if _state.aiTechLevels != next.aiTechLevels:_level_revision += 1
+	if _state.aiTechLevels!=next.aiTechLevels or _state.aiIncomePeak!=next.aiIncomePeak:contribution_revision+=1
 	_state = next
 	revision += 1
 	return true
@@ -124,11 +128,11 @@ func input_factor(amount: int) -> float:
 	return 1.0 if amount <= 0 else 1.0 + log(float(amount)) / log(10.0) / 4.0
 
 func income_factor(game, id: String) -> Variant:
-	var config_hash: int = hash(game.db.data.ai_tech_tree)
-	if _factor_level_revision != _level_revision or _factor_config_hash != config_hash:
+	if _factor_level_revision != _level_revision or _factor_config_revision != game.configuration_revision or _factor_database_id!=game.db.get_instance_id():
 		_factor_cache.clear()
 		_factor_level_revision = _level_revision
-		_factor_config_hash = config_hash
+		_factor_config_revision = game.configuration_revision
+		_factor_database_id=game.db.get_instance_id()
 	if _factor_cache.has(id):return _factor_cache[id]
 	var result: Variant = 1.0
 	for tech in game.db.data.ai_tech_tree:
@@ -160,6 +164,7 @@ func income_peak_proposal(game, id: String) -> Dictionary:
 func commit_income_peak(proposal: Dictionary) -> bool:
 	if proposal.revision != revision:return false
 	_state.aiIncomePeak[proposal.id] = proposal.rate
+	if proposal.affects_combat:contribution_revision+=1
 	revision += 1
 	return true
 
@@ -254,6 +259,6 @@ func proposal_current(proposal: Dictionary) -> bool:
 	return proposal.revision == revision
 
 func commit_advance(proposal: Dictionary) -> void:
-	if _state.aiTechLevels != proposal.state.aiTechLevels:_level_revision += 1
+	if _state.aiTechLevels != proposal.state.aiTechLevels:_level_revision += 1;contribution_revision+=1
 	_state = proposal.state.duplicate(true)
 	revision += 1

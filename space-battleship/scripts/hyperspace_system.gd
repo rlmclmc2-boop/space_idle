@@ -13,6 +13,8 @@ const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var config: Dictionary=C.load_config()
 const Clock=preload("res://scripts/hyperspace_scheduler.gd")
 var revision:=0
+var contribution_revision:=0
+var _contribution_inputs:Array=[]
 var _state:Dictionary={}
 var _receipt:Dictionary={}
 var _view:Dictionary={}
@@ -24,7 +26,7 @@ var last_error:=""
 
 func configure(c: Dictionary) -> bool:
 	if not C.valid(c):return false
-	config=c.duplicate(true);freeze(config);_online_inputs=[];revision+=1;return true
+	config=c.duplicate(true);freeze(config);_online_inputs=[];revision+=1;contribution_revision+=1;return true
 
 func online_config(g) -> Dictionary:
 	var supplied:bool=g.profile.cleared.has(int(config.get("late_supply_unlock_stage",60)))
@@ -77,7 +79,15 @@ func view()->Dictionary:
 func receipt_marker()->Dictionary:return _receipt
 func save_data()->Dictionary:
 	return {"hyperspace":_state.duplicate(true),"hyperspaceReceipt":_receipt.duplicate(true)}
+func contribution_inputs(next:Dictionary)->Array:
+	var selected:Array=[]
+	for id in next.inventory.equipped:
+		if not next.inventory.sealed.has(id):selected.append(next.inventory.drones[id])
+	# Inventory is immutable after installation; keep only equipped rows and module growth.
+	return [selected,next.hanging_modules]
 func _install(next:Dictionary,marker:Dictionary)->void:
+	var inputs:=contribution_inputs(next)
+	if inputs!=_contribution_inputs:contribution_revision+=1;_contribution_inputs=inputs
 	_state=next.duplicate()
 	for key in _state:
 		if key in ["active","idle"]:_state[key]=_state[key].duplicate(true)

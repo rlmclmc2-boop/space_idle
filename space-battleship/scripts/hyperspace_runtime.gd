@@ -18,7 +18,7 @@ func commit(g,plan:Dictionary)->bool:
 	if not wallet.is_empty():g.economy.install_material_wallet(wallet)
 	g.hyperspace.commit(plan);g.save_dirty=true
 	if refit:
-		g.invalidate_stat_cache()
+		g.configuration_committed()
 		var capacity=g.reactor_capacity()
 		g.reactor.reconcile_capacity(capacity);g.apply_refit_health()
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})

@@ -18,14 +18,13 @@ func native_weapon_row(row:Dictionary,kind:int)->bool:
 	if kind==3 and (not native_fields(row,["para2"]) or (row.get("para3")!=null and not native_scalar(row.para3))):return false
 	return true
 func external_factor(g,entry:Dictionary,totals:Dictionary,galaxy_values:Dictionary={})->Variant:
-	var attack=entry.key in KEYS
-	var values:Array=[g.planet_equipment_multiplier(),g.crew.system_effect(g,"equip_bonus"),galaxy_values.get("equipment_value",g.galaxy.multiplier("equipment_value")),totals.get("damage" if attack else "defence"),totals.weapon_damage.get(entry.key,1.0) if attack else totals.get(entry.key,1.0),totals.get("base_damage" if attack else "base_defence",1.0)]
+	var values:Array=g.attributes.external_factors(g,entry,totals,float(galaxy_values.get("equipment_value",-1.0)))
+	values.append(totals.get("base_damage" if entry.key in KEYS else "base_defence",1.0))
 	for value in values:
 		if not native_scalar(value):return null
-	# Preserve the original grouping while rejecting before scalar conversion.
-	var drone=float(values[3])*float(values[4])
-	var result=float(values[0])*float(values[1])*float(values[2])*drone*float(values[5])
-	return result if is_finite(drone) and is_finite(result) else null
+	var result:Variant=g.attributes.apply_external(1.0,values)
+	return result if native_scalar(result) else null
+
 func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->Dictionary:
 	if scope not in ["native_low_contract","native_rich15_layer2"]:return {"error":"unsupported_scope"}
 	if g.manual_hyperspace.active:return {"error":"unsupported_optional_combat_mode"}

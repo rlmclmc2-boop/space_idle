@@ -152,7 +152,7 @@ static func signature_for(ship: String, equipment: Dictionary) -> String:
 
 func describe(ship: String, equipment: Dictionary) -> Dictionary:
 	rules.equipment.install_snapshot({"selectedShip":ship,"loadout":equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},db)
-	rules.invalidate_stat_cache()
+	rules.configuration_committed()
 	var stats := {"armour":rules.stat("armour"),"shield":rules.max_shield(),"movement":rules.ship_movement(),"burst":0.0,"sustained":0.0,"attack_rate":0.0,"multi_target":0.0,"aoe":0.0,"range":0.0}
 	var counts := {}
 	for entry in equipment.weapons:
@@ -260,7 +260,7 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 	var game:=BattleGame.new(database,false)
 	game.load_progress_data(base_profile)
 	game.equipment.install_snapshot({"selectedShip":record.ship,"loadout":record.equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},database)
-	game.invalidate_stat_cache()
+	game.configuration_committed()
 	game.state=BattleGame.State.RETREAT
 	for category in ["weapons","defence"]:
 		for index in range(game.module_entries(category).size()):
@@ -347,7 +347,7 @@ static func start_validated_battle(private_db: ShipDatabase, enemy_fleet: Dictio
 	if prepared_profile.is_empty():apply_progress(game,int(player_loadout.generation_options.cleared_through))
 	else:game.load_progress_data(prepared_profile)
 	if prepared_profile.is_empty():game.equipment.install_snapshot({"selectedShip":player_loadout.ship,"loadout":player_loadout.equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},private_db)
-	game.invalidate_stat_cache()
+	game.configuration_committed()
 	game.rng.seed = battle_seed
 	game.start(1,false)
 	game.spawn_group()

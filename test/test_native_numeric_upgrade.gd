@@ -26,7 +26,7 @@ func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=fals
 		var enhancement=g.enhancement_growth.save_data();enhancement.enhancementLevel=40;g.enhancement_growth.install_snapshot(enhancement);g.profile.cleared=range(1,61);g.profile.highestLevel=61
 		g.rebuild_unlocks();g.set_enhancement_branch("weapons","repeat",1,"B")
 		if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
-	g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
+	g.notify_configuration_changed();g.reset_player();g.state=BattleGame.State.COMBAT
 	g.enemies.assign([{"uid":100,"slot":4,"x":286.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0},{"uid":101,"slot":3,"x":240.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
 	if key=="laser":
 		var hurt_key=str(g.slot_entry("defence",0).key)
@@ -141,7 +141,7 @@ func run()->void:
 	var drone_rng:=RandomNumberGenerator.new();drone_rng.seed=123
 	var drone:Dictionary=preload("res://scripts/drone_rewards.gd").create_drone(drone_rng,g.hyperspace.config,"main_max","blue","laser",1,"1");drone.blue_source_bonus=false;drone.affixes=[];drone.hangings=[]
 	var hyperspace:Dictionary=g.hyperspace.save_data();hyperspace.hyperspace.inventory.drones[drone.id]=drone;hyperspace.hyperspace.inventory.warehouse=[drone.id];hyperspace.hyperspace.inventory.equipped=[drone.id];check(g.hyperspace.install_snapshot(hyperspace,g.db),"drone fixture installs into owner")
-	g.invalidate_stat_cache();g.reset_player();g.native_handoff_count=0
+	g.notify_configuration_changed();g.reset_player();g.native_handoff_count=0
 	var bonus=int(g.hyperspace.config.weapon_level_bonuses.blue)
 	check(int(g.combat_entry(3).level)==9+bonus,"drone inherits same-weapon maximum, ignores stronger different weapon")
 	check(int(g.projected_combat_entry(3,{0:3}).level)==9+bonus,"nonmaximum same-weapon purchase retains drone level")
@@ -167,7 +167,7 @@ func run()->void:
 		fund(g,{"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5})
 		var legacy=preload("res://scripts/presented_battle_game.gd").new(g.db,false)
 		legacy.profile=g.profile.duplicate(true);legacy.enhancement_growth.install_snapshot(g.enhancement_growth.save_data());legacy.equipment.install_snapshot(g.equipment.save_data(),g.db);legacy.research.install_snapshot(g.research.save_data(),g.db.data.ai_tech_tree);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
-		legacy.enable_compiled_combat_rules();legacy.invalidate_stat_cache()
+		legacy.enable_compiled_combat_rules();legacy.notify_configuration_changed()
 		var expected_ok=legacy.upgrade_equipment_batch(mode)
 		var actual_ok=g.upgrade_equipment_batch(mode)
 		check(actual_ok==expected_ok and g.equipment.save_data()==legacy.equipment.save_data() and g.economy.resources()==legacy.economy.resources(),"main ordered partial-budget batch preserved: "+mode)

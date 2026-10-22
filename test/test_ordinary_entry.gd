@@ -4,7 +4,7 @@ class UI extends "res://scripts/battlefield.gd":
  func show_chrono_login_report()->void:pass
  func create_battle_game(_persist:bool)->BattleGame:
   var g=preload("res://scripts/presented_battle_game.gd").new(db,false)
-  g.stat_cache_enabled=true;g.invalidate_stat_cache()
+  g.stat_cache_enabled=true;g.notify_configuration_changed()
   db=g.db;g.native_execution_auto=false
   g.launch_provider=_prototype_launch_pose;g.drone_launch_provider=_prototype_drone_launch_pose
   g.target_provider=_prototype_target_point;g.rail_geometry_provider=_rail_geometry;g.rail_target_point_provider=entity_render_position
@@ -29,7 +29,7 @@ func run()->void:
   check(g.economy.balance("1")==5000.0 and g.economy.balance("2")==100.0,"capture-all installs the complete economy snapshot")
   g.save_enabled=false;g.profile.onboarding.completed=true;scene.beginner_guide.hide();g.pending_unlocks.clear();var equipment=g.equipment.save_data()
   for entry in equipment.loadout.weapons:entry.key=""
-  g.equipment.install_snapshot(equipment,g.db);g.invalidate_stat_cache()
+  g.equipment.install_snapshot(equipment,g.db);g.notify_configuration_changed()
   check(g.start(1,false),"real first-stage travel starts")
   g.native_execution_auto=native
   g.distance=float(g.db.levels[0].groups[0].position)*float(g.db.levels[0].length)-0.1
