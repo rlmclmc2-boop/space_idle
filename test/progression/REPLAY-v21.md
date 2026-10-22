@@ -1,5 +1,7 @@
 # v21 numerical calibration source, not completed acceptance
 
+Historical replay only: use the original frozen source/policy recorded with the evidence. Its retired `--scientist-max` purchase option is unavailable in the current runner; the command below is not a current test entry.
+
 Godot4.6.3 official7d41c59c4; Python3/openpyxl; seed20261004 for fresh tests. Synthetic QA-played legal fixtures preserve exact older source/RNG fingerprints and originseed20261002; resumed experiments explicitly require --allow-version-change and cannot be concatenated into fresh acceptance. No engine/keys/personal saves included.
 
 Source normal export/protected543/source headers pass. v21 firststeps48/58/70/98/126; later8/16/24/42/70 remain pending. Income11–20 exponent6.5 (previous6.7), coefficient.1; ordinaryBosson21+ health.2 unchanged; onlyUlt21+ health.11 anddamage1.8. Original40 identities/formation/damage types retained, prior recorded pair compensation unchanged. These are hypotheses pending actual segments. Changes affect level33/35 and future attack/health dependencies, resource ratios11–220 and25generatedUltrows; no roster/gates changed byv21.

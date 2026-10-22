@@ -1,5 +1,7 @@
 # v23/v10 immutable fresh-run candidate, acceptance pending
 
+Historical replay only: use the original frozen source/policy recorded with the evidence. Its retired `--scientist-max` purchase option is unavailable in the current runner; the command below is not a current test entry.
+
 Godot4.6.3 official7d41c59c4; Python3/openpyxl. Source numerical data SHA256
 `4588c250929677a8199219117fcf6789381f151d7467c719ccc2878d73e07e1d`.
 Full-scene package fingerprint
