@@ -1,0 +1,11 @@
+{
+  "runtime_sha": "75d6e4c1e7e2c024e1b163253926d3fff97265a9",
+  "scope": "Two existing preview entry points; both GPU processes exited 0; no script errors. Independent of pending hyperspace edits. No full product/performance acceptance.",
+  "source_hash_basis": "Git blobs (LF normalization)",
+  "source_sha256": {
+    "space-battleship/dev/cosmic_city_block/preview.gd": "2d09314d107dda6fb130363bbf16291d32110eb921b07a3f187f25c51570c5b4",
+    "space-battleship/dev/cosmic_city_individual/preview.gd": "4d922fbb6c7dfaafc70997964d3386f19dccd49f51a777b170259f5f0a150640",
+    "test/fixtures/galaxy_1_complete.json": "13d2df9c972565a1168edf1ce1f15ab28d2f61b33eec609f71d8ce136202f312"
+  },
+  "validation": "Godot 4.7.2 / RTX 2060 / OpenGL; original preview scripts in existing test/run.py isolated project; both images visually inspected; system certificate warning remains."
+}
