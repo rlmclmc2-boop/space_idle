@@ -1,0 +1,13 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+FAIL: Every subdivision finishes inside the original manual session
+FAIL: Challenge receipt includes the entire logical step before return
+FAIL: No remainder segment advances the fresh mainline or revives old actors
+FAIL: Real departure hold does not settle pending time
+FAIL: Every subdivision finishes inside the original manual session
+FAIL: Challenge receipt includes the entire logical step before return
+FAIL: No remainder segment advances the fresh mainline or revives old actors
+FAIL: Real departure hold does not settle pending time
+DEPARTURE_BATCH_DEBT 38 checks 8 failures

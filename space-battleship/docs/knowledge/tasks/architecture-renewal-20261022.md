@@ -37,3 +37,5 @@
 属性与缓存运行候选 ddcd667eda1e13bd5dcc5b3ace5b28ed95700ba4：属性投影接管组合/取整/派生缓存，领域实际贡献版本取代全局清缓存；native 编译外部贡献同源，重复配置事件编译与科研逐查询整表 hash 退出。824 项必要检查通过，真实四进程保存/GPU 入口证据在唯一入口 c12。9b779670 已获双审局部通过。本候选待审，下一精确范围为 Game.tick/advance_shared_clock_and_economy、main._process、暂停/倍速/失焦和 galaxy_runtime 可见性接线；统一时间尚未改动，完整产品/性能与 native 收敛未完，不合 main。
 
 外部时间候选 57d04033d323981aa62ae06e70c1fc1f2f9fcc7d：Game 接管唯一外部时间/固定步余量/粒子分段，Main 与 native 显示循环退出；星系可见性不再改变结算，离场等待归会话。9 个复用专项进程全部成功，必要画面已核查；证据见唯一入口 c13。ddcd667e 已获局部双审，读取版本/编译检查的真实帧成本保留。本轮不重复 c12 的磁盘验证，不宣称产品/性能完成。下一精确范围是 native_execution_compiler/session、native_numeric_pipeline 与内核热路径的配置/规则/能力边界；保留保护与表现能力，不默认回迁 GDScript，不合 main。
+
+- 时间边界修订 `bacfb5eb8a6889ff5755a7f709185e38df5876a5`：Presented 导弹细分转入 Game.tick 完整边界内，旧版本新增离场用例复现 8 失败；修订 307 项通过。证据与范围见唯一入口 c13-revision，等待双审；继续 native 收敛，不合 main。

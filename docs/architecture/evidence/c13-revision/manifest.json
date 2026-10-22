@@ -1,0 +1,83 @@
+{
+  "runtime_sha": "bacfb5eb8a6889ff5755a7f709185e38df5876a5",
+  "base_runtime": "57d04033d323981aa62ae06e70c1fc1f2f9fcc7d",
+  "branch": "impl/domain-architecture-20261022",
+  "change": "Game.tick owns the complete Presented missile subdivision sequence; queued mode changes dispatch after the full logical step. No early return or discarded tail.",
+  "reproduction": {
+    "runtime": "1824a774f6b96252c70eaa6e115c190365a83919",
+    "fixture": "bacfb5eb8a6889ff5755a7f709185e38df5876a5:test/test_departure_batch_debt.gd",
+    "checks": 38,
+    "failures": 8,
+    "script_errors": 0,
+    "log": "departure-before-fix.log"
+  },
+  "sources": {
+    "space-battleship/scripts/presented_battle_game.gd": "18d00507c038fbcbd693314b106e0a1a6a99a8de38388e07934e5c5cb195b3cf",
+    "space-battleship/scripts/game.gd": "da27e68aa37a6fb9607dcafe941d85749cd7681dead6e85429b05a8fc1b6ca47",
+    "space-battleship/scripts/hyperspace_manual_session.gd": "aa850c8a34bcdf6da567a3638d12783bcde7e8b197435dfeb69e209ce290aef9",
+    "test/test_departure_batch_debt.gd": "457ca58d61d2a7e020f1a6a16cea2f6097514f41cd74603705ea353104e3259d",
+    "test/test_native_blocked_transfer.gd": "cf7d1bf397b9a9b089fa2438a60c68052b58f8b8e05e665f5b2b075b3b0cc42a",
+    "test/test_time_steps.gd": "71c6e16f3990559bc3603ba8ff931b24c3f344771a1a94917e145c1043d27050",
+    "test/test_hyperspace_departure_gate.gd": "1fc6f2f4353fdce1959005614acfc73f09bbafd6e45bae9f37cd2ea10d468021"
+  },
+  "source_hash_encoding": "SHA256 of LF Git blobs, compared with the actual isolated files",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "gpu": "RTX 2060 / OpenGL 3.3 / NVIDIA 610.88",
+  "runner": "Existing test/run.py imported test_departure_batch_debt-_8odqazj. Reused its imported game and existing fixtures with APPDATA/LOCALAPPDATA under isolated userdata; no new runner.",
+  "results": [
+    {
+      "test": "test_departure_batch_debt.gd",
+      "exit": 0,
+      "seconds": 11.33,
+      "script_errors": 0,
+      "log": "test_departure_batch_debt-verified.log",
+      "checks": 38,
+      "failures": 0
+    },
+    {
+      "test": "test_native_blocked_transfer.gd",
+      "exit": 0,
+      "seconds": 15.56,
+      "script_errors": 0,
+      "log": "test_native_blocked_transfer-verified.log",
+      "checks": 34,
+      "failures": 0
+    },
+    {
+      "test": "test_time_steps.gd",
+      "exit": 0,
+      "seconds": 27.75,
+      "script_errors": 0,
+      "log": "test_time_steps-verified.log",
+      "checks": 199,
+      "failures": 0
+    },
+    {
+      "test": "test_hyperspace_departure_gate.gd",
+      "exit": 0,
+      "seconds": 29.31,
+      "script_errors": 0,
+      "log": "test_hyperspace_departure_gate-verified.log",
+      "checks": 36,
+      "failures": 0
+    }
+  ],
+  "checks": 307,
+  "failures": 0,
+  "limitations": [
+    "GPU fixture disables saving; full official-entry persistence and full-frame performance remain pending. These elapsed durations are test process times, not frame benchmarks.",
+    "Four runs retain the known system certificate warning. Native negative fixture deliberately emits three refused-transfer errors. No SCRIPT ERROR or exit object/resource warnings.",
+    "Only the four listed fixtures reran at this revision. Earlier C13 evidence remains bound to its original runtime."
+  ],
+  "artifacts": {
+    "departure-before-fix.log": "9c603e32ceb97c9338a59c744f57478b55f5552ac62e226de38ebec3e4c06f69",
+    "return-check.json": "4ab98dcb876f6fa0fcf12b4f72ad20f6b19d3fbfdc83c09dfce492a7c2017278",
+    "return-complete.png": "7b3772226549a54b347a38801d161a6150c1d3623f0ccd86602bed4bc333026a",
+    "return-middle.png": "2c81c0ce23fd90854b2c3bb2c75bc76c8411984dcfac6e216f76bc0bcae33f07",
+    "test_departure_batch_debt-verified.log": "3203089c44ef7c54359a225d36deb236cc1e616b6543f65b4c6d8cbd5b6ed827",
+    "test_hyperspace_departure_gate-verified.log": "1e977d82a0dc8c9f2823ed762856eaf53476b3deffe4c6731589810c97f4336f",
+    "test_native_blocked_transfer-verified.log": "e5fb75563950678488aa6831d09540008e57109fbace9b1e690bca814a27c993",
+    "test_time_steps-verified.log": "ac9d464298669eef9a8d1b53dabbad3036f3b8ead42c859589c805027613aaa8"
+  }
+}
