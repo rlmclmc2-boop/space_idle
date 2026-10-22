@@ -56,7 +56,9 @@ func preview(g, planet_id: String) -> Dictionary:
 	return {}
 
 func sync(g, planet_id: String) -> void:
-	var progress: Dictionary = g.planet_progress(planet_id)
+	sync_progress(g,planet_id,g.planet_progress(planet_id))
+
+func sync_progress(g, planet_id: String, progress: Dictionary) -> void:
 	if not progress.has("buildings"):progress.buildings = {}
 	for row in rows(g,planet_id):
 		var id := str(row.id)
@@ -73,16 +75,17 @@ func sync(g, planet_id: String) -> void:
 			item.status = "ready"
 			item.crew = []
 
-func complete(g, planet_id: String) -> void:
-	# Called BEFORE this exploration increments degree; threshold-crossing trips
-	# unlock construction, but never count as a trip after unlocking.
-	sync(g,planet_id)
+func prepare_completion(g, planet_id: String) -> Dictionary:
+	var progress: Dictionary=g.planet_progress(planet_id).duplicate(true)
+	# Threshold-crossing trips unlock construction without building it early.
+	sync_progress(g,planet_id,progress)
 	for row in rows(g,planet_id):
-		var item := state(g,planet_id,str(row.id))
+		var item: Dictionary=progress.buildings[str(row.id)]
 		if item.status!="building" or item.crew.size()<int(row.extra_crew):continue
-		item.build_progress = N.add(item.build_progress,1)
-	g.profile.planets[planet_id].degree = N.add(g.planet_progress(planet_id).degree,1)
-	sync(g,planet_id)
+		item.build_progress=N.add(item.build_progress,1)
+	progress.degree=N.add(progress.degree,1)
+	sync_progress(g,planet_id,progress)
+	return progress
 
 func building_multiplier(g, planet_id: String, row: Dictionary):
 	return N.power(N.add(1,N.multiply(row.config1,g.planet_progress(planet_id).degree)),float(row.config2))

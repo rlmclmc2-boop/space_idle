@@ -553,7 +553,7 @@ func _refresh_task(id: String, refresh_roster := true) -> void:
 	host.set_ui_value(card.bar, "value", 100.0 if card.visual.completion_age < 0.18 else bar_value)
 	if not refresh_roster:return
 	var available: Array = []
-	for item in host.game.profile.crew:
+	for item in host.game.crew.members():
 		if not host.game.idle_planet_crew(str(item.crewId)):continue
 		available.append(item.crewId)
 	if card.crew_ids != available:
@@ -795,7 +795,7 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 	preload("res://scripts/dialog_presentation.gd").popup(popup)
 	var ids: Array=[]
 	var five_rows_height := 0.0
-	for member in g.profile.crew:
+	for member in g.crew.members():
 		if g.idle_planet_crew(str(member.crewId)):
 			ids.append(str(member.crewId))
 			popup.add_item(str(g.crew.definitions(g)[member.crewId].name))

@@ -266,7 +266,7 @@ func show_crew() -> void:
   crew_enable=panel.button(actions,"auto_enable",func():set_auto(true));panel.button(actions,"auto_disable",func():set_auto(false));crew_choice.item_selected.connect(func(_n):refresh_crew())
  crew_choice.clear()
  var reserved=str(game().profile.hyperspace.auto.crew_id)
- for member in game().profile.crew:
+ for member in game().crew.members():
   if not game().crew.unlocked(game(),str(member.crewId)):continue
   var name=str(game().crew.definitions(game())[member.crewId].name)
   var available= h().Permission.crew_available(game(),str(member.crewId))

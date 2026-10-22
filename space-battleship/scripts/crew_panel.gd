@@ -310,7 +310,7 @@ func refresh() -> void:
 	var next_gate := -1
 	var next_number := 0
 	var ordinal := 0
-	for item in g.profile.crew:
+	for item in g.crew.members():
 		ordinal+=1
 		if not g.crew.unlocked(g,item.crewId):
 			var gate: Dictionary=g.db.data.get("unlock",{}).get(str(g.crew.definitions(g)[item.crewId].get("unlockId","")),{})
@@ -400,11 +400,11 @@ func confirm_assignment() -> void:
 	if jobs.selected<0 or target_picker.selected<0:return
 	var g=host.game
 	var mode:=draft_mode if not mode_ids.is_empty() else ""
-	if not g.crew.assign(g,selected,job_ids[jobs.selected],target_ids[target_picker.selected],mode):refresh_actions()
+	if not g.assign_crew(selected,job_ids[jobs.selected],target_ids[target_picker.selected],mode):refresh_actions()
 
 func release_assignment() -> void:
 	var g=host.game
-	if g.crew.assign(g,selected,"",""):select(selected)
+	if g.assign_crew(selected,"",""):select(selected)
 	else:refresh_actions()
 
 func refresh_selection() -> void:

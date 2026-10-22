@@ -65,16 +65,14 @@ func refresh_unlocks(g) -> void:
 func available() -> bool:
 	return regions.values().any(func(region):return region.state.status!="locked")
 
-func start(g, key: String) -> bool:
+func start(key: String) -> bool:
 	if not regions.has(key) or regions[key].state.status!="available":return false
 	regions[key].state.status="exploring"
-	g.save_dirty = true
-	g.event.emit("galaxy_changed",{"key":key})
 	return true
 
 func crew_count(g, key: String) -> int:
 	var count := 0
-	for member in g.profile.get("crew",[]):
+	for member in g.crew.members():
 		if member.assignmentType=="galaxy_explore" and member.targetId==key and g.crew.unlocked(g,member.crewId):count+=1
 	return count
 

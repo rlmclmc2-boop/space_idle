@@ -2591,7 +2591,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.enhancement_unlocked())
-	pages.append(game.profile.get("crew",[]).any(func(item):return game.crew.unlocked(game,item.crewId)))
+	pages.append(game.crew.members().any(func(item):return game.crew.unlocked(game,item.crewId)))
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
 	pages.append(game.galaxy.available())

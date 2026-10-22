@@ -188,7 +188,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	reactor.reset(db.config)
 	crew.attach(self)
 	galaxy.load_state(self,{})
-	crew.load_state(self, [])
+	crew.reset(self)
 	load_planets({})
 	profile.hightechOrder = hightech_slots()
 	if persist:
@@ -456,7 +456,8 @@ func load_progress_data(raw: Dictionary) -> void:
 	load_hightech(raw)
 	profile.hightechOrder = hightech_slots()
 	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
-	crew.load_state(self, raw.get("crew", []))
+	crew.install_snapshot(raw,db)
+	crew.reset_schedule(self)
 	load_planets(raw.get("planets", {}))
 	galaxy.refresh_unlocks(self)
 	economy.accrue_chrono(0.0, chrono_capacity())
@@ -663,6 +664,7 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 	saved.merge(equipment.save_data(), true)
 	saved.merge(enhancement_growth.save_data(), true)
 	saved.merge(reactor.save_data(), true)
+	saved.merge(crew.save_data(), true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -1310,7 +1312,24 @@ func can_research(key: String) -> bool:
 func assign_scientist(_key: String, _delta: int) -> bool:
 	return false
 func add_crew_exp(crew_id: String, amount: float) -> bool:
-	return crew.gain_exp(self,crew_id,amount)
+	if not crew.levels_unlocked(self) or not crew.unlocked(self,crew_id):return false
+	var plan:=crew.prepare_experience(self,{crew_id:amount})
+	if not prepare_crew_commit(plan):return false
+	crew.commit(plan);notify_crew_changes(plan.changes)
+	return true
+
+func prepare_crew_commit(plan: Dictionary) -> bool:
+	if not crew.proposal_current(plan):return false
+	if plan.configuration and not native_before_configuration_change():return false
+	if not crew.proposal_current(plan):return false
+	capture_refit_health()
+	return true
+
+func notify_crew_changes(changes: Array) -> void:
+	if changes.is_empty():return
+	refresh_crew_level_effects(changes)
+	save_dirty=true
+	for change in changes:event.emit("crew_changed",{"crewId":change.current.crewId,"previous":change.previous,"current":change.current})
 
 func planet_row(id: String) -> Dictionary:
 	return db.data.get("planet", {}).get(id, {})
@@ -1446,8 +1465,6 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	# Prepare the complete replacement before changing any authoritative state.
 	var next := fresh_profile()
 	next.hyperspace=next_hyperspace
-	next.crew = profile.crew.duplicate(true)
-	next.crewEquipment = profile.get("crewEquipment",{}).duplicate(true)
 	next.planets = profile.planets.duplicate(true)
 	next.galaxies = profile.get("galaxies",{})
 	next.grantedUnlocks = []
@@ -1526,33 +1543,60 @@ func cancel_planet_exploration(id: String) -> bool:
 	return true
 
 func advance_planets(dt: float) -> void:
-	if dt <= 0:return
+	if dt<=0 or not is_finite(dt):return
 	for id in profile.planets:
-		var progress: Dictionary = profile.planets[id]
+		var progress: Dictionary=profile.planets[id]
 		if str(progress.crewId).is_empty():continue
-		progress.elapsed += dt
-		if progress.elapsed < planet_duration(str(id)):continue
-		var member_id := str(progress.crewId)
-		planet_buildings.complete(self,str(id))
-		progress.crewId = member_id if progress.get("auto_explore",false) and planet_buildings.built(self,str(id),"auto_explore") else ""
-		progress.elapsed = 0.0
-		invalidate_stat_cache()
-		var reward := planet_exp_reward(str(id))
-		# Persist the completed trip and its entire crew payout together.
-		var persist := save_enabled
-		save_enabled = false
-		if reward > 0:
-			planet_crew_payout_active = true
+		var elapsed:=float(progress.elapsed)+dt
+		if elapsed<planet_duration(str(id)):
+			progress.elapsed=elapsed;continue
+		var member_id:=str(progress.crewId)
+		var next:=planet_buildings.prepare_completion(self,str(id))
+		next.crewId=member_id if progress.get("auto_explore",false) and planet_buildings.built(self,str(id),"auto_explore") else ""
+		next.elapsed=0.0
+		var reward:=planet_exp_reward(str(id));var rewards: Dictionary={}
+		if reward>0:
 			if planet_buffs.shares_experience(self,str(id)):
-				for member in profile.crew:add_crew_exp(str(member.crewId), reward)
-			else:add_crew_exp(member_id, reward)
-			planet_crew_payout_active = false
-		save_enabled = persist
-		save_dirty = true
-		event.emit("planet_changed", {"id":id, "crewId":member_id, "reward":reward})
+				for member in crew.members():rewards[member.crewId]=reward
+			else:rewards[member_id]=reward
+		var plan:=crew.prepare_experience(self,rewards)
+		if not prepare_crew_commit(plan):return
+		# Completed construction, released/continuing assignment and every XP payout
+		# become visible together. No save/notification suppression is needed.
+		profile.planets[id]=next;crew.commit(plan)
+		invalidate_stat_cache();save_dirty=true
+		planet_crew_payout_active=true
+		notify_crew_changes(plan.changes)
+		planet_crew_payout_active=false
+		event.emit("planet_changed",{"id":id,"crewId":member_id,"reward":reward})
 
-func assign_crew(crew_id: String, assignment_type: String, target_id: String) -> bool:
-	return crew.assign(self,crew_id,assignment_type,target_id)
+func assign_crew(crew_id: String, assignment_type: String, target_id: String, upgrade_mode := "") -> bool:
+	var plan:=crew.prepare_assignment(self,crew_id,assignment_type,target_id,upgrade_mode)
+	if not prepare_crew_commit(plan):return false
+	if plan.changes.is_empty():return true
+	var previous: Dictionary=plan.changes[0].previous
+	if plan.configuration:
+		# Earned time belongs to the previous assignment and is settled before transfer.
+		if previous.assignmentType=="galaxy_explore" and not galaxy.flush_pending(self,str(previous.targetId)):return false
+		if assignment_type=="galaxy_explore" and not galaxy.flush_pending(self,target_id):return false
+		if not crew.proposal_current(plan) or not crew.can_assign(self,crew_id,assignment_type,target_id):return false
+		capture_refit_health()
+	crew.commit(plan)
+	var started: bool=galaxy.start(target_id) if assignment_type=="galaxy_explore" else false
+	notify_crew_changes(plan.changes)
+	if started:event.emit("galaxy_changed",{"key":target_id})
+	return true
+
+func set_crew_upgrade_mode(crew_id: String, mode: String, assignment := "") -> bool:
+	var plan:=crew.prepare_mode(self,crew_id,mode,assignment)
+	if not crew.proposal_current(plan):return false
+	crew.commit(plan);notify_crew_changes(plan.changes)
+	return true
+
+func start_galaxy(key: String) -> bool:
+	if not galaxy.start(key):return false
+	save_dirty=true;event.emit("galaxy_changed",{"key":key})
+	return true
 
 func get_crew_modifier(target_type: String, target_id: String, effect_type: String) -> float:
 	return crew.get_modifier(self,target_type,target_id,effect_type)
@@ -4103,24 +4147,22 @@ func sync_jewel_defence_damage() -> Dictionary:
 		capacities[key] = capacity
 	return capacities
 
-func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> void:
+func refresh_crew_level_effects(changes: Array) -> void:
 	if not crew.levels_unlocked(self):return
-	if previous.get("level")==current.get("level") and previous.get("assignmentType")==current.get("assignmentType") and previous.get("targetId")==current.get("targetId"):return
-	var kinds := {}
-	for member in [previous,current]:
-		var job: Dictionary=crew.assignments(self).get(str(member.get("assignmentType","")),{})
-		kinds[str(job.get("targetType",""))]=true
-	if kinds.has("equipment"):
-		invalidate_stat_cache()
-		apply_refit_health()
+	var kinds: Dictionary={}
+	for change in changes:
+		var previous: Dictionary=change.previous;var current: Dictionary=change.current
+		if previous.level==current.level and previous.assignmentType==current.assignmentType and previous.targetId==current.targetId:continue
+		for member in [previous,current]:
+			var job: Dictionary=crew.assignments(self).get(str(member.assignmentType),{})
+			kinds[str(job.get("targetType",""))]=true
+	# Install every affected projection before the first notification.
+	if kinds.has("reactor"):reactor.reconcile_capacity(reactor_capacity())
+	if kinds.has("equipment") or kinds.has("reactor"):
+		invalidate_stat_cache();apply_refit_health()
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 	if kinds.has("hightech"):event.emit("scientists_changed",{})
-	if kinds.has("reactor"):
-		reactor.reconcile_capacity(reactor_capacity())
-		invalidate_stat_cache()
-		apply_refit_health()
-		event.emit("reactor_changed",{})
-		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+	if kinds.has("reactor"):event.emit("reactor_changed",{})
 
 func native_before_configuration_change()->bool:
 	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")

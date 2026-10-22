@@ -67,7 +67,7 @@ func setup(owner) -> void:
 	CHROME.button_skin(start_button,true)
 	heading.add_child(start_button)
 	start_button.text=UIText.t("galaxy.start")
-	start_button.pressed.connect(func():game.galaxy.start(game,selected);refresh())
+	start_button.pressed.connect(func():game.start_galaxy(selected);refresh())
 	selector.item_selected.connect(func(index):selected=str(selector.get_item_metadata(index));detail_slot=-1;game.galaxy.set_visible(selected);refresh())
 	var summary := GridContainer.new()
 	summary.columns=4
@@ -273,7 +273,7 @@ func setup_crew_dialog() -> void:
 	crew_scroll.add_child(rows)
 	crew_empty.text=UIText.t("galaxy.crew_empty")
 	rows.add_child(crew_empty)
-	for member in game.profile.crew:
+	for member in game.crew.members():
 		var id := str(member.crewId)
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation",12)

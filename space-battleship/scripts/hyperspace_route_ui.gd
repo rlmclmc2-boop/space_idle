@@ -154,7 +154,7 @@ func show_crew() -> void:
   crew_choice.item_selected.connect(func(_index):refresh_crew())
  crew_choice.clear()
  var reserved=str(game().profile.hyperspace.auto.get("crew_id",""))
- for member in game().profile.crew:
+ for member in game().crew.members():
   var id=str(member.crewId)
   if not game().crew.unlocked(game(),id):continue
   var available=game().hyperspace.Permission.crew_available(game(),id)
