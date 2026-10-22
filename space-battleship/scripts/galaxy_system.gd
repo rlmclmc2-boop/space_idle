@@ -37,7 +37,6 @@ func load_state(g, raw: Dictionary) -> void:
 		elapsed_visible[key]=false
 	effect_generation+=1
 	effects.invalidate()
-	refresh_unlocks(g)
 
 func conquered(g) -> int:
 	var count := 0

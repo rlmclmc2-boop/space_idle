@@ -78,6 +78,16 @@ func _initialize() -> void:
 	check(not game.profile.has("crew") and not game.profile.has("crewEquipment"),"Profile no longer owns crew state")
 	check(game.start_planet_exploration("1","engineer"),"Begin an ordinary trip before persistence");game.advance_planets(0.25)
 	check(not game.profile.has("planets") and game.planet_progress("1").is_read_only(),"Planet state has a single owner and read-only view")
+	check(game.stat_cache_enabled,"Real persistence enables contribution caches")
+	var base_capacity = game.reactor_capacity()
+	var rng:=RandomNumberGenerator.new();rng.seed=234
+	var drone:=preload("res://scripts/drone_rewards.gd").create_drone(rng,game.hyperspace.config,"save-storage","white","laser",5,"1")
+	drone.affixes=[];drone.hanging_slots=4;drone.hangings=[]
+	preload("res://scripts/drone_inventory.gd").insert(game.profile.hyperspace.inventory,drone,game.hyperspace.config)
+	game.profile.hyperspace.hanging_modules.extra_storage={"unlocked":true,"level":2,"exp":0.0}
+	check(game.hyperspace.set_equipped(game,[drone.id]) and game.hyperspace.attach_hangings(game,drone.id,["extra_storage"]),"Equip valid storage hanging before disk save")
+	var capacity = game.reactor_capacity()
+	check(capacity>base_capacity and game.set_reactor_allocation("weapons",capacity),"Persist allocation above capacity without storage")
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -99,6 +109,9 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var restored := BattleGame.new(db, true)
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
+	check(restored.stat_cache_enabled and float(restored.hyperspace_totals().hangings.get("extra_storage",0))>0,"Reopen/recovery builds enabled cache from restored hanging")
+	check(restored.reactor.allocations()==saved.reactorAllocation and restored.reactor.allocation("weapons")==restored.reactor_capacity(),"Reopen/recovery preserves above-base allocation before crew scheduling")
+	check(restored.crew.allocation_dependencies==restored.crew.reactor_allocation_state(restored,"navigator"),"Crew schedule captures final restored capacity and allocation")
 	check(restored.equipment.selected_ship()==saved.selectedShip and restored.module_entry("weapons",4).level==4 and restored.module_entry("weapons",4).key=="missile" and restored.equipment.save_data().equipmentSwitchUntil==saved.equipmentSwitchUntil,"Disk reopen/recovery preserves hull, dormant investment and switch deadline")
 	check(restored.enhancement_level()==30 and restored.enhancement_order("weapons")==["critical","repeat","proficiency"] and restored.enhancement_branch_choice("weapons","critical",3)=="B" and restored.enhancement_growth.attacks()==9007199254740993 and restored.enhancement_growth.hits()==9007199254740995,"Reopen/recovery preserves shared enhancement and exact history without JSON rounding")
 	check(restored.crew.save_data().crew==saved.crew and restored.crew.entry(restored,"navigator").level==2 and restored.crew.entry(restored,"navigator").exp==7,"Reopen/recovery keeps complete crew assignment, mode, growth and remainder")

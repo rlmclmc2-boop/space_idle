@@ -192,6 +192,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	galaxy.load_state(self,{})
 	crew.reset(self)
 	planets.reset(self)
+	galaxy.refresh_unlocks(self)
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
@@ -366,16 +367,11 @@ func load_progress_data(raw: Dictionary) -> void:
 		return
 	var signals_were_blocked := is_blocking_signals()
 	set_block_signals(true)
-	invalidate_stat_cache()
 	login_chrono_particles = 0.0
 	manual_hyperspace.reset_for_load(self)
 	profile = fresh_profile()
-	reset_equipment()
-	enhancement_growth.reset()
-	research.reset()
 	resource_samples.clear()
 	pending_unlocks.clear()
-	reactor.reset(db.config)
 	var interval_value = raw.get("saveIntervalMinutes", 1)
 	var interval := parse_save_interval(str(interval_value))
 	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
@@ -420,7 +416,27 @@ func load_progress_data(raw: Dictionary) -> void:
 			if key is String and EQUIPMENT.has(key):
 				var id := db.unlock_id("equipment", key)
 				if not id.is_empty() and not profile.grantedUnlocks.has(id):profile.grantedUnlocks.append(id)
-	rebuild_unlocks()
+	# Install every validated domain before any contribution, capacity or schedule reads.
+	equipment.install_snapshot(raw,db)
+	profile.productionElapsed = float(raw.productionElapsed)
+	enhancement_growth.install_snapshot(raw)
+	load_hightech(raw)
+	crew.install_snapshot(raw,db)
+	planets.install_snapshot(raw,db)
+	reactor.install_snapshot(raw,db.config)
+	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
+	galaxy.load_state(self,raw.galaxies)
+	rebuild_unlock_gates()
+	profile.hightechOrder = hightech_slots()
+	galaxy.refresh_unlocks(self)
+	invalidate_stat_cache()
+	# Reconcile against restored contributions; only then establish derived schedules.
+	var installed_reactor_revision := reactor.revision
+	reactor.reconcile_capacity(reactor_capacity())
+	if reactor.revision != installed_reactor_revision:invalidate_stat_cache()
+	economy.accrue_chrono(0.0, chrono_capacity())
+	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
+	crew.reset_schedule(self)
 	load_journey(raw.get("journey", {}))
 	# Old saves knew ownership but not notification history. Preserve their pending
 	# pages; all other previously owned unlocks have already been experienced.
@@ -447,23 +463,6 @@ func load_progress_data(raw: Dictionary) -> void:
 			profile.guardStage = int(guard_stage)
 			profile.guardIndex = int(saved_index)
 			profile.guardDistance = float(saved_distance)
-	equipment.install_snapshot(raw,db)
-	# Switch deadlines and production time belong to the same time domain.
-	profile.productionElapsed = float(raw.productionElapsed)
-	enhancement_growth.install_snapshot(raw)
-	invalidate_stat_cache()
-	load_hightech(raw)
-	profile.hightechOrder = hightech_slots()
-	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
-	crew.install_snapshot(raw,db)
-	crew.reset_schedule(self)
-	planets.install_snapshot(raw,db)
-	galaxy.refresh_unlocks(self)
-	economy.accrue_chrono(0.0, chrono_capacity())
-	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
-	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
-	# Capacity needs the restored crew, planets, galaxies and drone contributions.
-	load_reactor(raw)
 	invalidate_tutorial_unlocks()
 	set_block_signals(signals_were_blocked)
 
@@ -561,7 +560,6 @@ func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
 
 func load_hightech(raw: Dictionary) -> void:
-	invalidate_stat_cache()
 	research.install_snapshot(raw,db.data.ai_tech_tree)
 	for field in ["productionElapsed", "hightechSavedAt"]:
 		if nonnegative_number(raw.get(field)):profile[field] = float(raw[field])
@@ -579,7 +577,7 @@ func read_ai_tech_completion() -> bool:
 	save_dirty = true
 	return true
 
-func rebuild_unlocks() -> void:
+func rebuild_unlock_gates() -> void:
 	invalidate_tutorial_unlocks()
 	profile.highestLevel = 1
 	for n in profile.cleared:
@@ -589,6 +587,9 @@ func rebuild_unlocks() -> void:
 	for key in EQUIPMENT:
 		if content_unlocked("equipment", key) and not profile.unlocked.has(key):
 			profile.unlocked.append(key)
+
+func rebuild_unlocks() -> void:
+	rebuild_unlock_gates()
 	ensure_loadout()
 	profile.hightechOrder = hightech_slots()
 	event.emit("unlocks_changed",{})
@@ -1133,11 +1134,6 @@ func equalize_reactor_allocation() -> bool:
 	event.emit("equipment_stats",{"category":"defence"})
 	event.emit("reactor_changed", {"equalized":true})
 	return true
-
-func load_reactor(raw: Dictionary) -> void:
-	if not reactor.install_snapshot(raw, db.config):return
-	reactor.reconcile_capacity(reactor_capacity())
-	invalidate_stat_cache()
 
 func hightech_level(key: String) -> int:
 	return research.level(self,key)
