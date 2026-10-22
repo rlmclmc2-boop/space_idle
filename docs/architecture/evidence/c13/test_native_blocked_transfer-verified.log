@@ -1,0 +1,31 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:119)
+       [1] _tick_logical_step (res://scripts/game.gd:2675)
+       [2] tick (res://scripts/game.gd:2637)
+       [3] tick (res://scripts/presented_battle_game.gd:80)
+       [4] run (res://test_native_blocked_transfer.gd:59)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:119)
+       [1] _tick_logical_step (res://scripts/game.gd:2675)
+       [2] tick (res://scripts/game.gd:2637)
+       [3] tick (res://scripts/presented_battle_game.gd:80)
+       [4] consume_external_time (res://scripts/game.gd:604)
+       [5] run (res://test_native_blocked_transfer.gd:66)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:119)
+       [1] _tick_logical_step (res://scripts/game.gd:2675)
+       [2] tick (res://scripts/game.gd:2637)
+       [3] tick (res://scripts/presented_battle_game.gd:80)
+       [4] consume_external_time (res://scripts/game.gd:604)
+       [5] run (res://test_native_blocked_transfer.gd:71)
+EXPECTED_BLOCKED_TRANSFER_PROOF {"checks":34,"failures":0,"remaining_preserved":true}

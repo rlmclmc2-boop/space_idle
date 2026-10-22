@@ -1,0 +1,142 @@
+{
+  "runtime_sha": "57d04033d323981aa62ae06e70c1fc1f2f9fcc7d",
+  "branch": "impl/domain-architecture-20261022",
+  "base_runtime": "ddcd667eda1e13bd5dcc5b3ace5b28ed95700ba4",
+  "source_hash_encoding": "SHA256 of LF-normalized Git blobs; each compared with the actual isolated runtime file",
+  "sources": {
+    "space-battleship/scripts/balance_game.gd": "ef7bfbcdd769557edf3f6e0baa080c2e9ef590c631236df2949c6449545e56e7",
+    "space-battleship/scripts/battle_slice_runtime.gd": "04de3798aa727acd7ca0516ab7563e337b9fe8f86e3e251bf64e8e10566e4f51",
+    "space-battleship/scripts/battlefield.gd": "369dd65b02cce4a8fb4d3a318b4346c78abc120afa06b6c1af0f85ba1c190d42",
+    "space-battleship/scripts/encounter_presentation.gd": "b349b6c65b62013e4ff140ffec166c8a921f114c4c3b6574619e6dd9c151164b",
+    "space-battleship/scripts/galaxy_panel.gd": "9d927b01ae0b12a41c223fa569c6c727207c38ecfe0a44552fd589aedb901929",
+    "space-battleship/scripts/galaxy_runtime.gd": "b62e12152e626eb4eb895de3bf97c05bc8644dd2ca8e025915fc0f31a9aab102",
+    "space-battleship/scripts/galaxy_system.gd": "5c3360bc15538da25698783b1d2af9e0a4590ce019997124316ff4857617401e",
+    "space-battleship/scripts/game.gd": "da27e68aa37a6fb9607dcafe941d85749cd7681dead6e85429b05a8fc1b6ca47",
+    "space-battleship/scripts/hyperspace_manual_session.gd": "aa850c8a34bcdf6da567a3638d12783bcde7e8b197435dfeb69e209ce290aef9",
+    "space-battleship/scripts/main.gd": "788f56b5b44d2174286f9cd429f9cba7b278d5899133009af8b9c69afbb6efd8",
+    "test/test_chrono_ui.gd": "24afb85a6bf41081285992d061f2db60d625b9141627cc02a199f0cb69a5c196",
+    "test/test_departure_batch_debt.gd": "ab09bbce0bd3566d077cc25a9d6c2031e2c89c464a43b7724e921d5aab49fe21",
+    "test/test_galaxy.gd": "cad82d9e2192052ae8adfe7d2c9df1b05d8ee3f12845d5271c57211997b6f25e",
+    "test/test_hyperspace_departure_gate.gd": "1fc6f2f4353fdce1959005614acfc73f09bbafd6e45bae9f37cd2ea10d468021",
+    "test/test_native_blocked_transfer.gd": "cf7d1bf397b9a9b089fa2438a60c68052b58f8b8e05e665f5b2b075b3b0cc42a",
+    "test/test_pause_key_focus.gd": "8a880682a148b60ae1acbc84db83358ca9aae50f2a529e7c72320ceecdef5f25",
+    "test/test_time_steps.gd": "71c6e16f3990559bc3603ba8ff931b24c3f344771a1a94917e145c1043d27050",
+    "test/test_native_galaxy_refit.gd": "78581c2966bd145d8ef4fa269849d05cba78bd621e50b5615c06045c59264218",
+    "test/test_native_execution_handoff.gd": "cf16e7961dd9b371dadeb22198a6136751bc894c68e80468c57a531e6fdd64f6",
+    "test/test_ordinary_entry.gd": "275b1becf3676cee99bc4e0df21808574eb7c6bac02d8b175e36ebdaa52a4473"
+  },
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "gpu": "RTX 2060 / OpenGL 3.3 / NVIDIA 610.88",
+  "runner": "Existing test/run.py prepared test/work/test_time_steps-pqw_i813, then reused that imported area for the listed existing fixtures. APPDATA/LOCALAPPDATA remained inside its userdata folder. Native galaxy parent copied to its existing res:// path. No new runner/project.",
+  "results": [
+    {
+      "test": "test_time_steps.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 28.72,
+      "log": "test_time_steps-verified.log",
+      "checks": 199,
+      "failures": 0
+    },
+    {
+      "test": "test_departure_batch_debt.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 9.17,
+      "log": "test_departure_batch_debt-verified.log",
+      "checks": 10,
+      "failures": 0
+    },
+    {
+      "test": "test_native_blocked_transfer.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 14.6,
+      "log": "test_native_blocked_transfer-verified.log",
+      "checks": 34,
+      "failures": 0
+    },
+    {
+      "test": "test_galaxy.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 6.63,
+      "log": "test_galaxy-verified.log",
+      "checks": 2356,
+      "failures": 0
+    },
+    {
+      "test": "test_native_galaxy_refit.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 13.11,
+      "log": "test_native_galaxy_refit-verified.log",
+      "checks": 253,
+      "failures": 0
+    },
+    {
+      "test": "test_chrono_ui.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 15.9,
+      "log": "test_chrono_ui-verified.log",
+      "checks": 30,
+      "failures": 0
+    },
+    {
+      "test": "test_hyperspace_departure_gate.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 25.27,
+      "log": "test_hyperspace_departure_gate-verified.log",
+      "checks": 36,
+      "failures": 0
+    },
+    {
+      "test": "test_pause_key_focus.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 21.12,
+      "log": "test_pause_key_focus-verified.log",
+      "checks": 18,
+      "failures": 0
+    },
+    {
+      "test": "test_ordinary_entry.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "seconds": 34.32,
+      "log": "test_ordinary_entry-verified.log",
+      "checks": 10,
+      "failures": 0
+    }
+  ],
+  "checks": 2946,
+  "failures": 0,
+  "limitations": [
+    "All GPU fixtures disable save; this candidate did not rerun disk save processes. C12 disk evidence remains bound to ddcd667e. Current snapshot install/reset and pending galaxy work are checked here; full official-entry persistence/performance remain pending.",
+    "These process durations are test execution durations, not product frame-performance measurements. Galaxy geometric assertions account for most check count.",
+    "Known Windows system certificate warning in all nine logs. Native blocked-transfer fixture deliberately injects transfer refusal and produces three matching native boundary push_error messages; no SCRIPT ERROR or object/resource exit warning.",
+    "Initial fixture/type/page-count failures were repaired before these final runs, not counted as passes. No legacy profile/API suites or unrelated full suites rerun.",
+    "Visible and hidden galaxy work now both use existing visible_tick=1s; hidden_tick=10s is no longer consumed by business code. Increased settlement/copy cost still requires full product performance review."
+  ],
+  "artifacts": {
+    "chrono-x5.png": "8c97af9d9982b3777251c1edf2105d7c905de7d4bd8a358439690a10f17857e1",
+    "entry-false-end.png": "72044c23eaa24abfc0b75e5850a7ab7bdfa983905ff714aa1deada6f5f862a21",
+    "entry-true-end.png": "73ad699346162e7e91bba204b5e7434115f1bfac86b282c59462a825937e84b0",
+    "ordinary-entry.json": "bc84db5d4fc7b2973802f0b4ab91d2bd800370edfabd92402e04bd02795a227f",
+    "return-check.json": "4ab98dcb876f6fa0fcf12b4f72ad20f6b19d3fbfdc83c09dfce492a7c2017278",
+    "return-complete.png": "468c6e8b90293b5ab4094a05cf96ae0985fd9063cfe8484bada07836cec87140",
+    "return-middle.png": "dc9655c9d00e6788c995c3f27a7ecfece35a745d743c41706fd029e44f1945c2",
+    "test_chrono_ui-verified.log": "dba58e5a709cee3f399e20791cae35d027ea635700cd49a3f8345ad8cc03f11f",
+    "test_departure_batch_debt-verified.log": "410d1a65e0555b9858cea1583930633de283a2502258d2911bdf605bfa7ae258",
+    "test_galaxy-verified.log": "5ded8ea81d5cc104597f5e731af22e7f7f7f4bd9756fcb47a72d55e6e0d77c03",
+    "test_hyperspace_departure_gate-verified.log": "5ea03da97f1e4a9c8d280071320b3d91f914790ee4e7f9b6a71fb56b260547a6",
+    "test_native_blocked_transfer-verified.log": "e53087943a877caa6821ab0cf320cf3843b2b0ca042a86cf103164b67b7d39ee",
+    "test_native_galaxy_refit-verified.log": "92477d89786fcb25bbb791bcf0c75a337eb3e94441fafd425fe325a715e39428",
+    "test_ordinary_entry-verified.log": "3785e49fccd476d7c03aec44634b30d810dc7d90217feea63f4340d464bc5718",
+    "test_pause_key_focus-verified.log": "2224c624df6004783b9f9106507d76424ae035775cc44554262ec05974725e91",
+    "test_time_steps-verified.log": "9aa9111b3667d30a6fd51e896c09fc767b661461cd3648739195f61029f44cbf"
+  }
+}
