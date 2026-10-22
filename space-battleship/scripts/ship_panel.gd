@@ -61,7 +61,7 @@ var mount_lists: Dictionary = {}
 
 func setup(owner_ui: Node) -> void:
 	host = owner_ui
-	candidate = str(host.game.profile.selectedShip)
+	candidate = str(host.game.equipment.selected_ship())
 	var shader := Shader.new()
 	shader.code = "shader_type canvas_item; void fragment() { vec4 pixel = texture(TEXTURE, UV); COLOR = vec4(vec3(0.16, 0.22, 0.28), pixel.a); }"
 	silhouette = ShaderMaterial.new()
@@ -157,7 +157,7 @@ func setup(owner_ui: Node) -> void:
 	skin(confirm,true)
 	confirm.add_theme_font_size_override("font_size",17)
 	confirm.pressed.connect(func():
-		if candidate==str(host.game.profile.selectedShip):open_module("weapons_0")
+		if candidate==str(host.game.equipment.selected_ship()):open_module("weapons_0")
 		else:host.game.switch_ship(candidate)
 		refresh())
 	add_child(confirm)
@@ -166,7 +166,7 @@ func setup(owner_ui: Node) -> void:
 	refresh()
 
 func open_module(id: String) -> void:
-	if candidate!=str(host.game.profile.selectedShip):return
+	if candidate!=str(host.game.equipment.selected_ship()):return
 	host.equipment_tabs.current_tab=0
 	# TabContainer visibility is committed after its tab signal/input callback.
 	# Refresh first once visible so a newly expanded slot exists before selection.
@@ -175,7 +175,7 @@ func open_module(id: String) -> void:
 
 func refresh() -> void:
 	if not is_visible_in_tree():return
-	var current := str(host.game.profile.selectedShip)
+	var current := str(host.game.equipment.selected_ship())
 	for key in choices:
 		var row: Dictionary = host.db.ship(key)
 		var text: String = UIText.data_text("ship",key,"des")+"\n"+UIText.t("ship.refit.capacity",{"weapons":str(int(row.weaponSlots)),"defence":str(int(row.defenseSlots))})

@@ -141,8 +141,8 @@ func _ready() -> void:
 	hyperspace_visual=preload("res://scripts/hyperspace_drone_visual.gd").new()
 	ship_view.world.add_child(hyperspace_visual)
 	hyperspace_visual.sync(game.profile.hyperspace.inventory)
-	ship_view.set_hull(str(game.profile.selectedShip))
-	current_hull = str(game.profile.selectedShip)
+	ship_view.set_hull(str(game.equipment.selected_ship()))
+	current_hull = str(game.equipment.selected_ship())
 	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	pulse_layer = Node2D.new()
 	pulse_layer.name = "BattleFeedback"
@@ -305,7 +305,7 @@ func _numeric_launch_origin(shot:Dictionary)->Vector2:
 
 
 func _set_reference_dimensions() -> void:
-	var key := str(game.profile.selectedShip)
+	var key := str(game.equipment.selected_ship())
 	var art := ship_visual_entry(key)
 	if float(art.get("static_height",0.0))>0.0:
 		# The approved lineup authors relative hull size independently of the
@@ -315,7 +315,7 @@ func _set_reference_dimensions() -> void:
 		reference_offset=Vector2.ZERO
 		return
 	# Match the existing hull's opaque footprint, not its transparent source canvas.
-	var image := ship_geometry_texture(str(game.profile.selectedShip)).get_image()
+	var image := ship_geometry_texture(str(game.equipment.selected_ship())).get_image()
 	var rect := image.get_used_rect()
 	var factor: float = float(battle_visual.player_core_scale)*player_art_scale()
 	reference_height = float(rect.size.y)*factor
@@ -323,7 +323,7 @@ func _set_reference_dimensions() -> void:
 	# Reserve 10% side margin for ordinary idle yaw; diagnostic rear angles do not widen gameplay aim.
 	reference_height = minf(reference_height,BATTLE_VIEW_SIZE.x*0.90*ship_view.model_span/ship_view.formation_width)
 	# Reduce only the large own-ship classes; tiny frigates keep their legibility.
-	reference_height *= 0.74 if str(game.profile.selectedShip)=="Heavy_Battleship" else 0.85 if str(game.profile.selectedShip)=="Battleship" else 1.0
+	reference_height *= 0.74 if str(game.equipment.selected_ship())=="Heavy_Battleship" else 0.85 if str(game.equipment.selected_ship())=="Battleship" else 1.0
 	stable_center_ready=false
 	reference_offset = Vector2.ZERO # The modular hull origin is its own center, not the PNG canvas center.
 
@@ -350,8 +350,8 @@ func before_logical_game_tick(dt:float) -> void:
 	# as X1 presentation does after spawning; lazy render visits must not set age.
 	for enemy in game.enemies:enemy_pose(enemy)
 	if is_instance_valid(ship_view):
-		if current_hull != str(game.profile.selectedShip):
-			current_hull=str(game.profile.selectedShip)
+		if current_hull != str(game.equipment.selected_ship()):
+			current_hull=str(game.equipment.selected_ship())
 			ship_view.set_hull(current_hull);_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 		demo_time+=dt
@@ -513,8 +513,8 @@ func _process_battlefield(delta: float) -> void:
 		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
 		hyperspace_visual.animated=game.speed < 10.0
-		if current_hull != str(game.profile.selectedShip):
-			current_hull = str(game.profile.selectedShip)
+		if current_hull != str(game.equipment.selected_ship()):
+			current_hull = str(game.equipment.selected_ship())
 			if not ship_view.set_hull(current_hull):
 				prototype_enabled = false
 				ship_view.set_rendering(false)

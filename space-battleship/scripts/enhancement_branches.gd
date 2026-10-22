@@ -31,14 +31,16 @@ func a_count(g,entry: Dictionary,effect: String) -> int:
 
 func weapon(g,index: int) -> Dictionary:
  var entry: Dictionary=g.combat_entry(index)
- if not weapons.has(index) or not is_same(weapons[index].entry,entry):
+ if not weapons.has(index) or not g.same_module(weapons[index].entry,entry):
   weapons[index]={"entry":entry,"target":{},"dwell":0.0,"next":0,"stacks":0,"stack_time":0.0}
+ weapons[index].entry=entry
  return weapons[index]
 
 func defense(g,index: int) -> Dictionary:
  var entry: Dictionary=g.slot_entry("defence",index)
- if not defenses.has(index) or not is_same(defenses[index].entry,entry):
+ if not defenses.has(index) or not g.same_module(defenses[index].entry,entry):
   defenses[index]={"entry":entry,"cover_elapsed":0.0,"cover_time":0.0,"cover":0.0,"resistance_type":0,"resistance_time":0.0,"lockout":0.0}
+ defenses[index].entry=entry
  return defenses[index]
 
 func reconcile(g) -> void:
@@ -118,7 +120,7 @@ func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={},include
  var result = 1.0+float(a_count(g,entry,"proficiency"))*g.enhancement_parameter("proficiency_a_damage_bonus")
  if not include_timed_buffs:return result
  var owner: Dictionary=entry if original_entry.is_empty() else original_entry
- var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,owner))
+ var index: int=g.combat_weapon_entries().find_custom(func(candidate):return g.same_module(candidate,owner))
  if index<0:return result
  var data:=weapon(g,index)
  if active(g,entry,"proficiency",1,"B"):
@@ -141,7 +143,7 @@ func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -
  var row: Dictionary=g.combat_equipment_row(str(entry.key),int(entry.level))
  var rate: float=float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
  if g.has_enhancement_effect(entry,"critical"):rate+=g.enhancement_parameter("base_critical_rate")
- var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,entry))
+ var index: int=g.combat_weapon_entries().find_custom(func(candidate):return g.same_module(candidate,entry))
  if include_timed_buffs and index>=0 and active(g,entry,"critical",2,"B"):rate+=int(weapon(g,index).stacks)*g.enhancement_parameter("critical_b2_probability")
  return clampf(rate,0,1)
 

@@ -186,7 +186,7 @@ func validate_next() -> void:
 		var row = players[int(job.index)]
 		var valid: bool = row is Dictionary and player_validator.validate_record(row)
 		player_errors[int(job.index)]="" if valid else "invalid_player_loadout"
-		var profile: Dictionary=player_validator.rules.profile.duplicate(true) if valid else {}
+		var profile: Dictionary=player_validator.rules.portable_save_data() if valid else {}
 		if valid and int(config.get("module_delta",0))>0:
 			profile=PlayerGenerator.upgraded_profile(source,row,profile,int(config.module_delta))
 			if profile.has("error"):

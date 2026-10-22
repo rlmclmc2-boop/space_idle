@@ -106,9 +106,9 @@ func weapon_key(shot: Dictionary) -> String:
 	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))
 
 func turret_angle(index: int) -> float:
-	if turret_ship!=str(game.profile.selectedShip) or not turret_visuals.has(index):return 0.0
+	if turret_ship!=str(game.equipment.selected_ship()) or not turret_visuals.has(index):return 0.0
 	var pose: Dictionary = turret_visuals[index]
-	return float(pose.angle) if is_same(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
+	return float(pose.angle) if game.same_module(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
 	return visual_config.get("ships",{}).get(ship_key,{})
@@ -133,12 +133,12 @@ func weapon_visual_role(index: int) -> String:
 
 func weapon_visual_angle(index: int) -> float:
 	var role := weapon_visual_role(index)
-	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.profile.selectedShip),index).get("rotation_limit",0)))
+	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.equipment.selected_ship()),index).get("rotation_limit",0)))
 	return clampf(turret_angle(index),-limit,limit)*(1.0 if role=="main" else 0.2 if role=="secondary" else 0.0)
 
 func player_weapon_components() -> Array:
 	if battle_draw_active:return player_components
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var entries := game.weapon_entries()
 	var signature := ship_key
 	for entry in entries:signature += "|"+str(entry.get("key",""))
@@ -204,12 +204,12 @@ func enemy_recognition_mounts(enemy:Dictionary)->Array:
 	return enemy_appearance(enemy).mounts
 
 func turret_pose(index: int) -> Dictionary:
-	if turret_ship!=str(game.profile.selectedShip):
+	if turret_ship!=str(game.equipment.selected_ship()):
 		turret_visuals.clear()
 		fleet_angles_dirty=true
-		turret_ship = str(game.profile.selectedShip)
+		turret_ship = str(game.equipment.selected_ship())
 	var entry := game.slot_entry("weapons",index)
-	if not turret_visuals.has(index) or not is_same(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
+	if not turret_visuals.has(index) or not game.same_module(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
 		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
 		fleet_angles_dirty=true
 	return turret_visuals[index]
@@ -348,7 +348,7 @@ func advance_turrets(dt: float) -> void:
 		pose.target = target
 		var desired := 0.0
 		if not target.is_empty():
-			var pivot := player_render_position()+player_mount_center(str(game.profile.selectedShip),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
+			var pivot := player_render_position()+player_mount_center(str(game.equipment.selected_ship()),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
 			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
 			var target_slot := int(target.get("slot",-1))
 			var target_position: Vector2
@@ -386,20 +386,20 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	var index := shot_mount(shot)
 	if index>=0:return turret_muzzle(index)
 	var source := Vector2(game.player.x,game.player.y)
-	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.profile.selectedShip)))
+	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.equipment.selected_ship())))
 
 func player_base_art_scale_for(ship_key: String) -> float:
 	var entry := ship_visual_entry(ship_key)
 	return float(entry.get("display_scale",minf(SHIP_VISUALS.scale_for(db.ship(ship_key)),0.18)))*SHIP_VISUALS.player_display_multiplier()
 
 func player_base_art_scale() -> float:
-	return player_base_art_scale_for(str(game.profile.selectedShip))
+	return player_base_art_scale_for(str(game.equipment.selected_ship()))
 
 func player_art_scale_for(ship_key: String) -> float:
 	return player_base_art_scale_for(ship_key)*float(db.config.get("playerVisualScale"+ship_key,1.0))
 
 func player_art_scale() -> float:
-	return player_art_scale_for(str(game.profile.selectedShip))
+	return player_art_scale_for(str(game.equipment.selected_ship()))
 
 func enemy_config_visual_scale(size: int) -> float:
 	return float(db.config.get("enemyVisualScaleSize"+str(clampi(size,1,6)),1.0))
@@ -541,9 +541,9 @@ func prepare(owner,simulation:BattleGame)->void:
 	game=simulation;db=simulation.db
 	# The fixture/UI may have changed loadout since the last native pose.
 	# Complete this main-thread descriptor boundary before capturing ownership.
-	owner.ship_view.set_hull(str(game.profile.selectedShip))
+	owner.ship_view.set_hull(str(game.equipment.selected_ship()))
 	owner.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
-	owner.current_hull=str(game.profile.selectedShip)
+	owner.current_hull=str(game.equipment.selected_ship())
 	owner._set_reference_dimensions()
 	owner.hyperspace_visual.sync(game.profile.hyperspace.inventory)
 	battle_visual=owner.battle_visual.duplicate(true)
@@ -584,7 +584,7 @@ func prepare(owner,simulation:BattleGame)->void:
 	fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
 	fleet_pose.prepare(owner.ship_view)
 	fleet_pose.manifest=fleet_pose.manifest.duplicate(true)
-	fleet_pose.configure(str(game.profile.selectedShip),game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+	fleet_pose.configure(str(game.equipment.selected_ship()),game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
 	# Capture every authored hull's footprint before worker admission. Runtime
 	# ship commands choose immutable descriptors; they never instantiate/read Nodes.
 	for key in fleet_pose.manifest.hulls:
@@ -612,7 +612,7 @@ func prepare(owner,simulation:BattleGame)->void:
 		anchor_y=minf(anchor_y,1132.0-owner.BATTLE_ORIGIN.y-float(battle_visual.player_hud_gap)-tail-absf(float(battle_visual.player_idle_y)))
 		anchor_y=minf(anchor_y,BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
 		prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
-	current_hull=str(game.profile.selectedShip)
+	current_hull=str(game.equipment.selected_ship())
 	# Ownership handoff begins at the exact existing logical pose, including
 	# startup steps. Descriptors alone do not reproduce accumulated orbit time.
 	fleet_pose.orbit_elapsed=owner.ship_view.orbit_elapsed
@@ -698,7 +698,7 @@ func geometry_from_descriptor(descriptor:Dictionary,width:float,mounts:Array,rep
 	return enemy_recognition.geometry_from_profile(int(descriptor.identity),descriptor.profile,width,mounts,repair,cache,scale_value,large)
 
 func sync_hull()->void:
-	var key=str(game.profile.selectedShip)
+	var key=str(game.equipment.selected_ship())
 	if key==current_hull:return
 	assert(prepared_hulls.has(key),"Hull has no main-thread compiled descriptors")
 	current_hull=key;reference_height=prepared_hulls[key].height

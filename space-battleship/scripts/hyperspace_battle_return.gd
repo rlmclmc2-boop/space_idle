@@ -18,7 +18,7 @@ func encode(value:Variant)->Variant:
 		var node:Dictionary={"type":"dict" if value is Dictionary else "array","items":[]}
 		if value is Dictionary:
 			for binding in bindings:
-				if is_same(value,binding.entry):node.binding={"kind":binding.kind,"index":binding.index,"key":str(value.key)};break
+				if BattleGame.same_module(value,binding.entry):node.binding={"kind":binding.kind,"index":binding.index,"key":str(value.key)};break
 			for key in value:
 				# Handoff already exported scalar motion. This retired lease only
 				# keeps existing display consumers alive; it is not saveable state.

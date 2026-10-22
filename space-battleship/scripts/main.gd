@@ -1245,9 +1245,9 @@ func weapon_sparks(pos: Vector2, count: int, force: float, direction := Vector2.
 		particles.append({"pos":pos,"vel":direction.rotated(randf_range(-0.65,0.65))*randf_range(force*0.3,force),"color":ORANGE,"life":randf_range(0.12,0.22),"size":randf_range(5,11),"spark":true})
 
 func turret_angle(index: int) -> float:
-	if turret_ship!=str(game.profile.selectedShip) or not turret_visuals.has(index):return 0.0
+	if turret_ship!=str(game.equipment.selected_ship()) or not turret_visuals.has(index):return 0.0
 	var pose: Dictionary = turret_visuals[index]
-	return float(pose.angle) if is_same(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
+	return float(pose.angle) if game.same_module(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
 	return visual_config.get("ships",{}).get(ship_key,{})
@@ -1293,12 +1293,12 @@ func weapon_visual_role(index: int) -> String:
 
 func weapon_visual_angle(index: int) -> float:
 	var role := weapon_visual_role(index)
-	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.profile.selectedShip),index).get("rotation_limit",0)))
+	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.equipment.selected_ship()),index).get("rotation_limit",0)))
 	return clampf(turret_angle(index),-limit,limit)*(1.0 if role=="main" else 0.2 if role=="secondary" else 0.0)
 
 func player_weapon_components() -> Array:
 	if battle_draw_active:return player_components
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var entries := game.weapon_entries()
 	var signature := ship_key
 	for entry in entries:signature += "|"+str(entry.get("key",""))
@@ -1364,16 +1364,16 @@ func enemy_attack_types(enemy: Dictionary) -> Array:
 	return pose.attack_types
 
 func turret_pose(index: int) -> Dictionary:
-	if turret_ship!=str(game.profile.selectedShip):
+	if turret_ship!=str(game.equipment.selected_ship()):
 		turret_visuals.clear()
-		turret_ship = str(game.profile.selectedShip)
+		turret_ship = str(game.equipment.selected_ship())
 	var entry := game.slot_entry("weapons",index)
-	if not turret_visuals.has(index) or not is_same(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
+	if not turret_visuals.has(index) or not game.same_module(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
 		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
 	return turret_visuals[index]
 
 func turret_muzzle(index: int) -> Vector2:
-	var key := str(game.profile.selectedShip)
+	var key := str(game.equipment.selected_ship())
 	var scale_value := player_art_scale()
 	var component = player_component_for_slot(index)
 	var owner: int = component.owner_slot if component!=null else index
@@ -1497,7 +1497,7 @@ func advance_turrets(dt: float) -> void:
 		pose.target = target
 		var desired := 0.0
 		if not target.is_empty():
-			var pivot := player_render_position()+player_mount_center(str(game.profile.selectedShip),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
+			var pivot := player_render_position()+player_mount_center(str(game.equipment.selected_ship()),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
 			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
 			var target_slot := int(target.get("slot",-1))
 			var target_position: Vector2
@@ -1533,26 +1533,26 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	var index := shot_mount(shot)
 	if index>=0:return turret_muzzle(index)
 	var source := Vector2(game.player.x,game.player.y)
-	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.profile.selectedShip)))
+	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.equipment.selected_ship())))
 
 func player_base_art_scale_for(ship_key: String) -> float:
 	var entry := ship_visual_entry(ship_key)
 	return float(entry.get("display_scale",minf(SHIP_VISUALS.scale_for(db.ship(ship_key)),0.18)))*SHIP_VISUALS.player_display_multiplier()
 
 func player_base_art_scale() -> float:
-	return player_base_art_scale_for(str(game.profile.selectedShip))
+	return player_base_art_scale_for(str(game.equipment.selected_ship()))
 
 func player_art_scale_for(ship_key: String) -> float:
 	return player_base_art_scale_for(ship_key)*float(db.config.get("playerVisualScale"+ship_key,1.0))
 
 func player_art_scale() -> float:
-	return player_art_scale_for(str(game.profile.selectedShip))
+	return player_art_scale_for(str(game.equipment.selected_ship()))
 
 func player_idle_angle() -> float:
 	return deg_to_rad(float(battle_visual.player_idle_rotation))*sin(fx_time*TAU/6.3)
 
 func player_visible_tail() -> float:
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var texture_path := str(ship_visual_entry(ship_key).get("geometry_texture",ship_visual_entry(ship_key).get("texture","")))
 	if texture_path.is_empty():return SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
 	if not hull_visible_bottoms.has(texture_path):
@@ -1573,7 +1573,7 @@ func player_visible_tail() -> float:
 	return (float(hull_visible_bottoms[texture_path])-SHIP_ART_CANVAS.y*0.5)*float(battle_visual.player_core_scale)*player_art_scale()
 
 func player_visible_nose() -> float:
-	var ship_entry := ship_visual_entry(str(game.profile.selectedShip))
+	var ship_entry := ship_visual_entry(str(game.equipment.selected_ship()))
 	var texture_path := str(ship_entry.get("geometry_texture",ship_entry.get("texture","")))
 	if texture_path.is_empty():return -SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
 	if not hull_visible_tops.has(texture_path):
@@ -2572,7 +2572,7 @@ func refresh_equipment_effects(tech: String) -> void:
 	if tech == "weapon_accuracy":categories = ["weapons"]
 	elif tech == "equipment_reinforcement":categories = ["defence"]
 	for category in categories:
-		for index in game.profile.loadout[category].size():
+		for index in game.module_entries(category).size():
 			slots.append(game.slot_id(category,index))
 	if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(slots)
 
@@ -2612,7 +2612,7 @@ func refresh_tab_visibility() -> void:
 func refresh_structure() -> void:
 	if not is_instance_valid(equipment_tabs):
 		return
-	if not ui_state_changed(equipment_tabs,[game.profile.loadout,game.profile.unlocked,game.profile.cleared,game.profile.selectedShip]):
+	if not ui_state_changed(equipment_tabs,[game.equipment.revision,game.profile.unlocked,game.profile.cleared,game.equipment.selected_ship()]):
 		return
 	equipment_panel.refresh()
 	if is_instance_valid(crew_panel):crew_panel.invalidate()
@@ -2839,7 +2839,7 @@ func refresh_draw_layers(dt: float) -> void:
 		stars_layer.queue_redraw()
 	# Animation is isolated to the battlefield; stationary UI/backgrounds retain draw commands.
 	if battle_layer.visible:
-		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
+		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.equipment.selected_ship(),game.equipment.revision,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
 		if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
 			battle_layer.queue_redraw()
 	if drop_layer.visible!=battle_layer.visible:drop_layer.visible=battle_layer.visible
@@ -3607,8 +3607,8 @@ func draw_engine_wake(position: Vector2) -> void:
 		draw_surface.draw_line(point,point+Vector2(0,5.0),Color(CYAN,fade),1.0,true)
 
 func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shield: bool) -> void:
-	if not hostile and not ship_visual_entry(str(game.profile.selectedShip)).is_empty():
-		var ship_key := str(game.profile.selectedShip)
+	if not hostile and not ship_visual_entry(str(game.equipment.selected_ship())).is_empty():
+		var ship_key := str(game.equipment.selected_ship())
 		scale_value = player_art_scale()
 		var hull_angle := -PI/2+player_idle_angle()
 		draw_player_weapon_components(ship_key,pos,scale_value,hull_angle,true)
@@ -3846,7 +3846,7 @@ func confirm_unequip(category: String, index: int) -> void:
 	var entry := game.slot_entry(category,index).duplicate()
 	if entry.is_empty() or str(entry.key).is_empty():
 		return
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var dialog := ConfirmationDialog.new()
 	dialog.title = UIText.t("main.confirm_unequip.text_01")
 	dialog.dialog_text = UIText.t("main.confirm_unequip.text_02", {"key":"%s" % (NAMES[str(entry.key)]), "level":"%d" % (int(entry.level))})
@@ -3855,7 +3855,7 @@ func confirm_unequip(category: String, index: int) -> void:
 	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)
 	dialog.confirmed.connect(func():
-		if str(game.profile.selectedShip) == ship_key and game.slot_entry(category,index) == entry:
+		if str(game.equipment.selected_ship()) == ship_key and game.slot_entry(category,index) == entry:
 			if game.unequip_slot(category,index):
 				refresh_structure()
 		dialog.queue_free())

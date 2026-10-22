@@ -1,7 +1,7 @@
 extends RefCounted
 ## Never accept caller-supplied crew levels, hull capacity, or sealed thresholds.
 static func hull_capacity(g,c: Dictionary) -> int:
-	return int(c.hull_capacities.get(str(g.profile.selectedShip),0))
+	return int(c.hull_capacities.get(str(g.equipment.selected_ship()),0))
 
 static func planet_for_level(data: Dictionary,level: int) -> String:
 	var selected:="";var selected_stage:=-1;var first:="";var first_stage:=2147483647

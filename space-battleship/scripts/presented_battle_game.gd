@@ -164,7 +164,7 @@ func tick_projectiles(dt:float)->void:
 	for packet in missile_queue.duplicate():
 		if float(packet.due)>motion_clock+0.000000001:continue
 		missile_queue.erase(packet)
-		if not is_same(packet.source,player) or not is_same(combat_entry(int(packet.mount)),packet.entry) or str(packet.entry.key)!="missile" or not player_alive():
+		if not is_same(packet.source,player) or not same_module(combat_entry(int(packet.mount)),packet.entry) or str(packet.entry.key)!="missile" or not player_alive():
 			cancelled_ejections+=1;continue
 		if not missile_target_live(packet.target):
 			packet.target=missile_retarget_candidate(int(packet.weapon.dmgtype))

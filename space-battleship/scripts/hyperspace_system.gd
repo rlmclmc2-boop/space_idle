@@ -78,14 +78,14 @@ func snapshot(g) -> Dictionary:
 func publish(g,next: Dictionary,kind: String,wallet: Dictionary={},wallet_revision: int=-1) -> bool:
 	if not wallet.is_empty() and (wallet_revision != g.economy.material_revision or not Economy.valid_material_wallet(wallet,g.economy.material_wallet().materials.keys())):return false
 	var refit: bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
-	if (refit or kind=="hull_capacity_changed") and not g.native_before_configuration_change():return false
+	if refit and not g.native_before_configuration_change():return false
 	if not wallet.is_empty() and wallet_revision != g.economy.material_revision:return false
 	if refit:g.capture_refit_health()
 	var previous_capacity=g.reactor_capacity() if refit else 0
 	# No callbacks or fallible operations between wallet and business state installation.
 	if not wallet.is_empty():g.economy.install_material_wallet(wallet)
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
-	if refit or kind=="hull_capacity_changed":g.invalidate_stat_cache()
+	if refit:g.invalidate_stat_cache()
 	if refit:
 		var capacity=g.reactor_capacity()
 		g.reactor.reconcile_capacity(capacity)
@@ -493,9 +493,16 @@ func apply_preset(g,index: int) -> bool:
 	next.inventory.equipped=ids;next.inventory.generation+=1
 	return publish(g,next,"preset_applied")
 
-func fit_hull(g) -> void:
-	var maximum:=Permission.hull_capacity(g,config)
-	if g.profile.hyperspace.inventory.equipped.size()<=maximum:return
-	var next: Dictionary=g.profile.hyperspace.duplicate(true)
-	next.inventory.equipped=next.inventory.equipped.slice(0,maximum);next.inventory.generation+=1
-	publish(g,next,"hull_capacity_changed")
+func prepare_hull_fit(g,ship:String)->Dictionary:
+	var old:Dictionary=g.profile.hyperspace
+	var next:Dictionary=old.duplicate(true)
+	var maximum:int=int(config.hull_capacities.get(ship,0))
+	var changed:bool=next.inventory.equipped.size()>maximum
+	if changed:next.inventory.equipped=next.inventory.equipped.slice(0,maximum);next.inventory.generation+=1
+	return {"state":next,"changed":changed,"round":old.round_id,"generation":old.inventory.generation}
+
+func hull_fit_current(g,plan:Dictionary)->bool:
+	return g.profile.hyperspace.round_id==plan.round and g.profile.hyperspace.inventory.generation==plan.generation
+
+func commit_hull_fit(g,plan:Dictionary)->void:
+	if plan.changed:g.profile.hyperspace=plan.state;last_error=""

@@ -166,6 +166,34 @@ func commit_research_resources(next: Dictionary, expected_revision: int) -> bool
 		revision += 1
 	return true
 
+func equipment_balances(material: String) -> Dictionary:
+	var result := resources()
+	result[material] = balance(material)
+	return result
+
+static func prepare_equipment_balances(available: Dictionary, costs: Dictionary, material: String) -> Dictionary:
+	var next := available.duplicate(true)
+	for id in costs:
+		if id == material:
+			if not exact_amount(costs[id]) or int(next.get(id,0)) < int(costs[id]):return {}
+		elif id not in ["1","2"] or not N.valid(costs[id]) or N.compare(next.get(id,0),costs[id]) < 0:return {}
+	for id in costs:next[id] = int(next[id])-int(costs[id]) if id == material else N.subtract(next[id],costs[id])
+	return next
+
+func equipment_proposal_current(next: Dictionary, material: String, expected_revision: int) -> bool:
+	if revision != expected_revision or next.size()!=3 or not _materials.has(material) or not exact_amount(next.get(material)) or int(next[material]) > int(_materials[material]):return false
+	for id in ["1","2"]:
+		if not N.valid(next.get(id)) or N.compare(next[id],_balances[id]) > 0:return false
+	return true
+
+func commit_equipment_balances(next: Dictionary, material: String, expected_revision: int) -> bool:
+	if not equipment_proposal_current(next,material,expected_revision):return false
+	for id in ["1","2"]:_balances[id] = _copy(next[id])
+	if int(next[material]) != int(_materials[material]):material_revision += 1
+	_materials[material] = int(next[material])
+	revision += 1;resource_revision += 1
+	return true
+
 func accrue_chrono(amount: float, capacity: float) -> void:
 	_balances.chrono = minf(capacity, float(_balances.chrono) + amount)
 	revision += 1

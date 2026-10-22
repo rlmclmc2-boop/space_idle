@@ -651,7 +651,7 @@ func refresh_total() -> void:
 		var heading: String = UIText.t("weapon.tab" if category=="weapons" else "defense.tab")+"  "+counts[category]
 		if overflow>0:heading+=" · "+UIText.t("equipment.overflow",{"count":str(overflow)})
 		host.set_ui_value(section_labels[category],"text",heading)
-	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.profile.selectedShip),"des")+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
+	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.equipment.selected_ship()),"des")+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
 
 func select_item(key: String) -> void:
 	if not items.has(key):return

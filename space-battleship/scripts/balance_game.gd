@@ -166,7 +166,7 @@ func advance_jewel_repair(dt: float) -> bool:
 
 func repair_entry_index(entry: Dictionary) -> int:
 	for index in repair_entries.size():
-		if is_same(repair_entries[index],entry):return index
+		if same_module(repair_entries[index],entry):return index
 	repair_entries.append(entry)
 	return repair_entries.size()-1
 
@@ -179,7 +179,7 @@ func jewel_effects(entry: Dictionary) -> Array:
 func tick_jewel_effects(entry: Dictionary) -> Array:
 	if not tick_effects_active:return super.jewel_effects(entry)
 	for index in tick_effect_entries.size():
-		if is_same(tick_effect_entries[index],entry):return tick_effect_values[index].duplicate(true)
+		if same_module(tick_effect_entries[index],entry):return tick_effect_values[index].duplicate(true)
 	var value := super.jewel_effects(entry)
 	tick_effect_entries.append(entry)
 	tick_effect_values.append(value)
