@@ -1,0 +1,33 @@
+{
+  "runtime_sha": "28647422cddd30e1827e5d135228d58ca5f4a91e",
+  "counts": {
+    "manual": 27,
+    "layers": 238,
+    "save-write": 34,
+    "save-reopen": 27,
+    "save-latest": 14,
+    "save-recovery": 16,
+    "departure": 22,
+    "total": 378
+  },
+  "result": "All seven processes exited 0; zero assertion failures; no SCRIPT ERROR. Final source compared byte-for-byte after LF normalization to isolated tested source.",
+  "source_hash_basis": "Git blobs (LF normalization)",
+  "source_sha256": {
+    "space-battleship/scripts/game.gd": "3caace218d62410a696c9f390df23a90b2f013b2cd7c0265aa4a656bfcc207f1",
+    "space-battleship/scripts/hyperspace_manual_session.gd": "45ce5030b9651b2f2cf89a3e8b8676902cb886b10a06aaf054e21b3fb475150d",
+    "space-battleship/scripts/hyperspace_return_target.gd": "17b1bb406017d36c257d7346ce251f133f077fb4915fc3a14f941f78356b7f5a",
+    "space-battleship/scripts/hyperspace_permissions.gd": "b5cc0afd02e0db1b12d30db6432e2fa7764bd964b8f18639bcb63d9cdf21bfec",
+    "space-battleship/scripts/hyperspace_state.gd": "51be8f595e3afb9901ecca8d3b3a1d165be4562941886db2efbb9d3b8ad48c52",
+    "space-battleship/scripts/hyperspace_system.gd": "609b6d754b2fb39df1714a7476e02749aff1ad5f7c1391b2bb5bc6f593d0833c",
+    "space-battleship/scripts/native_execution_session.gd": "6c1f130c9ff701d8f5cb2cb620027d455fc3d5daa4049637a000b68792700393",
+    "space-battleship/scripts/presented_battle_game.gd": "56edace313105d9231e0d71cabcec394b437c17e7b9891b090c6abdd5898153c",
+    "test/test_hyperspace_manual.gd": "c13af06ac9f0f346fe1a7f0fa3875b868ed6a5ee0221968f2c126ed49bbd2f53",
+    "test/test_hyperspace_layers.gd": "5b1c11f594d803d11417ea4deb7ff7361ca1ea8ec0b9ac45bd1a6474f52261af",
+    "test/test_save_boundaries.gd": "9b56f43432a27be39e1459d2eddce5757fdde76a44dec88915d5316d2225f864",
+    "test/test_hyperspace_departure_gate.gd": "81ffc724ef5d49e6515d302fde1b493c5ed638def7e244a61878914b64d53b14"
+  },
+  "native_runtime_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "validation": "Existing test/run.py isolated project reused; headless logic bounded 45 seconds/process; actual main.tscn departure bounded 55 seconds, RTX 2060/OpenGL, save disabled only for UI. Four independent persistence processes enable the native writer lock and stat cache.",
+  "warnings": "System certificate-store warning remains. layers exits with 57 ObjectDB instances and 26 resources in use; no such leak warning in the other six processes. No full product or performance acceptance.",
+  "remaining": "Hyperspace durable state still uses profile; migrate domain ownership next. Historical half-scene/legacy-save test fixtures were not run and are not PASS evidence."
+}
