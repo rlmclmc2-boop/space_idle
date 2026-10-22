@@ -129,7 +129,7 @@ func run():
   var switch_cpu_us=Time.get_ticks_usec()-switch_started
   await process_frame
   var switch_frame_us=Time.get_ticks_usec()-switch_started
-  var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[]
+  var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[];var live_enemies=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
   var count=int(OS.get_environment("PERF_FRAMES")) if not OS.get_environment("PERF_FRAMES").is_empty() else 60
@@ -147,10 +147,10 @@ func run():
     frames.append(Time.get_ticks_usec()-start);cpu.append(scene.last_process_us if realtime else elapsed)
     calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
     primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
-    projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size())
+    projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size());live_enemies.append(g.enemies.size())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
-  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw
