@@ -41,6 +41,7 @@ def main():
     parser.add_argument('--instrument', action='store_true')
     parser.add_argument('--pages', default='0,4,1,2,6,8')
     parser.add_argument('--frames', type=int, default=60)
+    parser.add_argument('--galaxy-work', choices=('complete', 'idle', 'active'), default='complete', help='Same valid developing city with no crew or one actual assigned crew')
     parser.add_argument('--galaxy-steady', action='store_true', help='Settle presentation-only traffic staggering on page 8')
     args = parser.parse_args()
     assert 1 <= args.frames <= 600
@@ -84,6 +85,9 @@ def main():
             'galaxy_map': ['_process', 'refresh', 'asset', 'select', 'build_city', 'refresh_city_routes'],
             'galaxy_panel': ['refresh', 'refresh_detail'],
             'galaxy_city_structure': ['configure'],
+            'galaxy_runtime': ['prepare_advance', 'advance', 'flush_pending', 'publish'],
+            'galaxy_system': ['preview_advance', 'prepare_region', 'commit_region', 'prepare_income'],
+            'galaxy_region': ['predict_advance', 'commit_prediction', 'advance', 'sync_map', 'view', 'revision_due'],
             'galaxy_city_modules': ['bake'],
             'attribute_projection': ['configuration_inputs', 'stat_inputs', 'slot', 'stat', 'jewel_equipment_stat'],
             'compiled_combat_rules': ['compile'],
@@ -103,7 +107,7 @@ def main():
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
-    env.update(PERF_CHECK_PAGES=str(int(args.check_pages)), PERF_ENEMIES=str(args.enemies), PERF_REACTOR_LEVEL=str(args.reactor_level), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    env.update(PERF_GALAXY_WORK=args.galaxy_work, PERF_CHECK_PAGES=str(int(args.check_pages)), PERF_ENEMIES=str(args.enemies), PERF_REACTOR_LEVEL=str(args.reactor_level), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     startup = None
