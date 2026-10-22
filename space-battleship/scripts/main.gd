@@ -379,7 +379,10 @@ func _ready() -> void:
 			game.profile.cleared = [1,2]
 			game.rebuild_unlocks()
 			game.start(3, false)
-			game.economy.install_snapshot({"resources":{"1":5000.0,"2":100.0},"jewelFragments":0.0,"chronoParticles":0.0})
+			var capture_economy := game.economy.save_data()
+			capture_economy.resources={"1":5000.0,"2":100.0}
+			capture_economy.jewelFragments=0.0;capture_economy.chronoParticles=0.0
+			game.economy.install_snapshot(capture_economy)
 		build_ui()
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
