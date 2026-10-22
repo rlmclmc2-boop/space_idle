@@ -1,0 +1,11 @@
+{
+ "checks": 7,
+ "failures": 0,
+ "native": false,
+ "phase": "product-claimed-reopen",
+ "production_time": 199.600000000051,
+ "receipt_status": "",
+ "saving": true,
+ "startup_error": "",
+ "writer": true
+}

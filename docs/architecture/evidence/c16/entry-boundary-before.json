@@ -1,0 +1,67 @@
+{
+  "records": [
+    {
+      "slot": 0,
+      "uid": 27,
+      "centre": "(284.6453, 65.0)",
+      "parts": [
+        {
+          "bounds": "[P: (249.6846, 14.17658), S: (69.92148, 101.6468)]",
+          "kind": "body/protection"
+        },
+        {
+          "bounds": "[P: (257.4493, 5.186063), S: (54.39209, 9.896044)]",
+          "kind": "health"
+        }
+      ]
+    },
+    {
+      "slot": 1,
+      "uid": 28,
+      "centre": "(225.5032, 289.6082)",
+      "parts": [
+        {
+          "bounds": "[P: (195.9425, 246.8719), S: (59.12138, 85.47246)]",
+          "kind": "body/protection"
+        },
+        {
+          "bounds": "[P: (208.6577, 237.8719), S: (33.69096, 9.861511)]",
+          "kind": "health"
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "uid": 29,
+      "centre": "(346.3356, 289.6082)",
+      "parts": [
+        {
+          "bounds": "[P: (319.4609, 250.8898), S: (53.74945, 77.43681)]",
+          "kind": "body/protection"
+        },
+        {
+          "bounds": "[P: (329.4901, 241.8898), S: (33.69095, 9.84433)]",
+          "kind": "health"
+        }
+      ]
+    }
+  ],
+  "rejection": {
+    "errors": [
+      "slot 0 health sample 0.00 crosses display boundary"
+    ],
+    "point": 1,
+    "reason": "formation_invalid",
+    "round_id": 1,
+    "route": "alpha",
+    "run_id": 1,
+    "stage": 1,
+    "uids": [
+      27,
+      28,
+      29
+    ]
+  },
+  "source_runtime": "0a16af68653cf992b693dc98f9f8d55c390b79c9",
+  "note": "Extracted from the initial product diagnostic before the final fixture seed/assertion corrections. Does not claim a final-fixture before/after rerun."
+}

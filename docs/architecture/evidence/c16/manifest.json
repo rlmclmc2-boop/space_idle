@@ -1,0 +1,78 @@
+{
+  "runtime_sha": "faf36d9da2feb9b99ab9f3b691c4edc6b37cfc51",
+  "branch": "impl/domain-architecture-20261022",
+  "sources": {
+    "space-battleship/scripts/enemy_fixed_layout.gd": "f63a053bbfe73cc931646a8dfc9af482d24fb8d88cc71e4c35214a3a17d056f8",
+    "space-battleship/scripts/main.gd": "d6c3697a72d309af83683c0a75164a888087754b0c6684fabe1c1e5c660d15c4",
+    "space-battleship/scripts/battlefield.gd": "369dd65b02cce4a8fb4d3a318b4346c78abc120afa06b6c1af0f85ba1c190d42",
+    "space-battleship/scripts/game.gd": "f2f452342b45a04199e1b3ec779edf99d33bec8b101debbc290e3617652c7742",
+    "space-battleship/scripts/progress_writer.gd": "1a2ae2908845f575faad543ddac3fabb103e6dfa3cf790cc44ebbe53a55ccaba",
+    "test/test_ordinary_entry.gd": "ef1a803bb0fcd63d18f095ff5dbabf43846b90e5a60532b09aea4199928008b3"
+  },
+  "source_hash_encoding": "SHA256 of LF Git blobs compared with actual isolated files",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "gpu": "RTX 2060 / OpenGL 3.3 / NVIDIA 610.88",
+  "runner": "Existing ordinary_entry fixture in test/run.py imported area; original main.tscn, original battlefield constructor, save enabled, real writer lock, caches enabled, native auto selection, original save button signals; isolated product-final APPDATA/LOCALAPPDATA reused only across the three new processes. Fourth process is the original save-disabled ordinary-entry regression.",
+  "results": [
+    {
+      "phase": "product-write",
+      "exit": 0,
+      "seconds": 46.27,
+      "log": "product-write-c16.log",
+      "script_errors": 0,
+      "checks": 25,
+      "failures": 0
+    },
+    {
+      "phase": "product-reopen",
+      "exit": 0,
+      "seconds": 11.44,
+      "log": "product-reopen-c16.log",
+      "script_errors": 0,
+      "checks": 8,
+      "failures": 0
+    },
+    {
+      "phase": "product-claimed-reopen",
+      "exit": 0,
+      "seconds": 11.69,
+      "log": "product-claimed-reopen-c16.log",
+      "script_errors": 0,
+      "checks": 7,
+      "failures": 0
+    },
+    {
+      "phase": "ordinary",
+      "exit": 0,
+      "seconds": 17.97,
+      "log": "ordinary-c16.log",
+      "script_errors": 0,
+      "checks": 10,
+      "failures": 0
+    }
+  ],
+  "checks": 50,
+  "failures": 0,
+  "limitations": [
+    "The authored acceptance setup grants cleared-stage unlocks, finite economy budget and exact materials. Purchases, assignment, research, external time and manual alpha-1 battle/reward are real commands. No claim of playing 60 stages. The automatic-income timer starts near its existing 30-second deadline; amount, movement and collection remain configured.",
+    "Actual ten-wave manual challenge completed after 157.600000000018 game seconds; no forced victory, actor kill or injected reward. Remaining mainline actors are cleared and its start restored normally.",
+    "Snapshot comparison normalizes both sides through the existing JSON numeric encoding and compares every domain value; chrono is separately checked for bounded offline accrual. Earlier text-only numeric-spelling mismatches were fixture errors, not lost save data.",
+    "Initial diagnostic upgrade lacked required evolution materials; automatic-income check ignored its 30-second interval, travel and concurrent spending. Setup corrected without weakening production validators. Initial entry-distance implementation recursed through the position-dependent width getter; fixed-width getter now directly uses its actual layout width. Failed and timed-out trials are not passes.",
+    "All four final processes have the known certificate warning; no SCRIPT ERROR, resource/object/RID exit warnings.",
+    "This verifies the candidate original main scene. tools/play_main.py requires main==origin/main and was not bypassed. No player save files were touched. Whole rendered performance and final dual audit remain pending."
+  ],
+  "artifacts": {
+    "entry-boundary-before.json": "2a908d87b9329695aaf0e7a3479cec1c0be169b630b88ac16de3381690492d93",
+    "ordinary-c16.log": "b6da13db3d31013a1908f4d0810f0e500c58171a69178f83b0c523f42f8ec7c7",
+    "product-claimed-reopen-c16.log": "d359ed1555a332e4dcea0861962502ddc850b1180be9abca7c7713d5748bb0cb",
+    "product-claimed-reopen.json": "03ad601a86f0bf2993037cc0b8f8643bc0eaaa7488db6c4280ed9e06bec39bf7",
+    "product-claimed-reopen.png": "9f4d8607b52782eca42802d319905b580f33befedd6ddc4b2b219e7d7437d44c",
+    "product-reopen-c16.log": "e365a9e4f0fdf03244e7e725cf1858accb023396c8b3fb9ed27a2458ac95aca9",
+    "product-reopen.json": "fed44ae8ba01343dc6b6af9c05b31029026f19d5a990f0e4bedffd9af796a19f",
+    "product-reopen.png": "99cf698749109ad114ba4d094bc4aaacab1d3da6a895bcec12279a4e6b2c2e9b",
+    "product-write-c16.log": "dbaaba7efc9c23e285087ed3226c0f17358cf6626941614aeaedd6a6a42ec8a0",
+    "product-write.json": "41497abd0ddf9ae75f654e12b223a39329e2aea783b97a66ed2ddbe68adba02f",
+    "product-write.png": "4fd3473abe0eb0675f35e939776360f24e0c03b73df31338e547ea0bc2060b1f"
+  }
+}
