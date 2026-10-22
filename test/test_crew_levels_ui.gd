@@ -1,6 +1,8 @@
 extends SceneTree
+var checks := 0
 var failures := 0
 func check(ok: bool, message: String) -> void:
+	checks+=1
 	if not ok:failures+=1;printerr(message)
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
@@ -65,7 +67,7 @@ func run() -> void:
 	check(panel.level_effect_label.text.begins_with("测试效果") and panel.level_effect_label.text.contains("{unrecognized}"),"Changed des immediately supplies display")
 	await RenderingServer.frame_post_draw
 	view.get_texture().get_image().save_png("res://../crew-level-unlocked.png")
-	print("crew level UI failures: ",failures)
+	print("Crew level UI: %d checks, %d failures" % [checks,failures])
 	view.queue_free()
 	await process_frame
 	quit(1 if failures else 0)

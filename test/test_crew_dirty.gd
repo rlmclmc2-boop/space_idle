@@ -28,27 +28,31 @@ func check(ok: bool, label: String) -> void:
 	checks+=1
 	if not ok:failures+=1;printerr(label)
 
+func fund(g: BattleGame, resources: Dictionary, fragments := -1.0) -> void:
+	var snapshot:=g.economy.save_data();snapshot.resources={"1":0.0,"2":0.0};snapshot.resources.merge(resources,true)
+	if fragments>=0:snapshot.jewelFragments=fragments
+	assert(g.economy.install_snapshot(snapshot))
 func fixture(budget := 0.0) -> ObservedGame:
 	var g := ObservedGame.new(ShipDatabase.new(),false)
 	g.profile.cleared=range(1,101)
 	g.rebuild_unlocks()
-	g.profile.resources={"1":budget,"2":budget}
-	g.profile.jewelFragments=budget
+	fund(g,{"1":budget,"2":budget},budget)
 	var jobs := [["equipment_upgrade","equipment"],["hightech_scientists","hightech"],["jewel_auto","jewels"],["reactor_upgrade","reactor"]]
 	for i in jobs.size():
-		var id: String = g.profile.crew[i].crewId
+		var id: String = g.crew.members()[i].crewId
 		check(g.assign_crew(id,jobs[i][0],jobs[i][1]),"assign "+jobs[i][0])
-		if i<2:check(g.crew.set_upgrade_mode(g,id,"1"),"+1 mode")
+		if i<2:check(g.set_crew_upgrade_mode(id,"1"),"+1 mode")
 	return g
 
 func compare_state(g, reference, label: String) -> void:
-	for key in ["resources","loadout","scientists","scientistAssignments","enhancementLevel","jewelFragments","reactorLevel","reactorAllocation"]:
-		check(g.profile[key]==reference.profile[key],label+" "+key)
+	var actual: Dictionary=g.portable_save_data();var expected: Dictionary=reference.portable_save_data()
+	for key in ["resources","loadout","enhancementLevel","jewelFragments","reactorLevel","reactorAllocation"]:
+		check(actual[key]==expected[key],label+" "+key)
 	check(g.player.armour==reference.player.armour and g.player.shield==reference.player.shield,label+" health")
 
 func reference_second(g) -> void:
 	# Original periodic business calls, in configuration crew order.
-	for item in g.profile.crew:
+	for item in g.crew.members():
 		match item.assignmentType:
 			"equipment_upgrade":g.crew.auto_upgrade(g,item)
 			"hightech_scientists":g.crew.auto_scientists(g,item)
@@ -70,11 +74,11 @@ func _initialize() -> void:
 	var constrained := fixture()
 	var constrained_reference := fixture()
 	var funds: Dictionary=constrained.slot_upgrade_cost("weapons",0)
-	constrained.profile.resources=funds.duplicate()
-	constrained_reference.profile.resources=funds.duplicate()
+	fund(constrained,funds.duplicate())
+	fund(constrained_reference,funds.duplicate())
 	constrained.crew.timers.clear()
 	constrained.crew.intervals.clear()
-	for i in range(3,-1,-1):constrained.crew.invalidate_member(constrained,constrained.profile.crew[i])
+	for i in range(3,-1,-1):constrained.crew.invalidate_member(constrained,constrained.crew.members()[i])
 	constrained.crew.advance(constrained,1)
 	reference_second(constrained_reference)
 	compare_state(constrained,constrained_reference,"constrained balance/order")
@@ -130,21 +134,21 @@ func _initialize() -> void:
 	check(locked.crew.timers.is_empty() and locked.crew.allocation_timers.is_empty(),"unavailable assignments consume pending work once")
 	locked.profile.cleared=range(1,101)
 	locked.rebuild_unlocks()
-	locked.profile.resources["2"]=1e7
+	locked.economy.credit("2",1e7)
 	locked.crew.advance(locked,1)
-	check(locked.profile.reactorLevel==int(locked.db.config.reactorInitialLevel)+1,"unlock reactivates retained assignment")
-	var first: Dictionary=idle.crew.entry(idle,str(idle.profile.crew[0].crewId))
-	idle.profile.resources["1"]=1e7
+	check(locked.reactor.level()==int(locked.db.config.reactorInitialLevel)+1,"unlock reactivates retained assignment")
+	var first: Dictionary=idle.crew.entry(idle,str(idle.crew.members()[0].crewId))
+	idle.economy.credit("1",1e7)
 	idle.event.emit("galaxy_income",{"id":"1","amount":1e7})
 	idle.crew.advance(idle,0.6)
-	idle.profile.resources["2"]=1e7
+	idle.economy.credit("2",1e7)
 	idle.resources_changed(["2"])
 	idle.crew.advance(idle,0.39)
 	check(idle.attempts.equipment==1,"income merge keeps first fixed deadline")
 	idle.crew.advance(idle,0.01)
 	check(idle.attempts.equipment==2 and idle.slot_entry("weapons",0).level==2,"first deadline sees all arrivals")
 	idle.crew.advance(idle,0.5)
-	idle.crew.set_upgrade_mode(idle,str(first.crewId),"10")
+	idle.set_crew_upgrade_mode(str(first.crewId),"10")
 	idle.crew.advance(idle,0.5)
 	check(idle.slot_entry("weapons",0).level==12,"mode edit does not postpone pending deadline")
 	var before: Dictionary=idle.profile.duplicate(true)
@@ -153,30 +157,30 @@ func _initialize() -> void:
 	check(idle.profile==before,"pause freezes pending work and economy")
 	idle.paused=false
 	idle.profile.highestLevel=int(idle.hyperspace.config.unlock_stage)
-	idle.profile.hyperspace.materials[idle.db.evolution_material_id()]=10000
+	idle.economy.credit(idle.db.evolution_material_id(),10000)
 	idle.crew.advance(idle,10)
 	check(idle.slot_entry("weapons",0).level==22,"large step attempts once")
 	idle.crew.advance(idle,0.1)
 	check(idle.slot_entry("weapons",0).level==22,"large-step overrun discarded")
-	idle.crew.load_state(idle,idle.profile.crew.duplicate(true))
+	assert(idle.crew.install_snapshot(idle.crew.save_data(),idle.db));idle.crew.reset_schedule(idle)
 	idle.crew.advance(idle,0.9)
 	check(idle.slot_entry("weapons",0).level==22,"load resets elapsed clock")
 	idle.crew.advance(idle,0.1)
 	check(idle.slot_entry("weapons",0).level==32,"load schedules current assignment")
 	var refund := fixture()
 	refund.crew.advance(refund,2)
-	refund.refund_equipment(refund.module_cost_key("weapons"),2)
-	check(refund.crew.timers.has(refund.profile.crew[0].crewId),"refund wakes equipment purchase")
+	refund.economy.credit("1",refund.slot_upgrade_cost("weapons",0)["1"]);refund.resources_changed(["1"])
+	check(refund.crew.timers.has(refund.crew.members()[0].crewId),"collected income wakes equipment purchase")
 	refund.crew.advance(refund,1)
-	check(refund.slot_entry("weapons",0).level==2,"refunded resources are spendable at next deadline")
-	refund.assign_crew(str(refund.profile.crew[0].crewId),"","")
+	check(refund.slot_entry("weapons",0).level==2,"collected resources are spendable at next deadline")
+	refund.assign_crew(str(refund.crew.members()[0].crewId),"","")
 	refund.crew.advance(refund,2)
-	check(not refund.crew.timers.has(refund.profile.crew[0].crewId),"unassign cancels pending work")
+	check(not refund.crew.timers.has(refund.crew.members()[0].crewId),"unassign cancels pending work")
 	# A shared exploration payout that adds XP only changes no purchase dependency.
 	var xp_only := fixture()
 	xp_only.crew.advance(xp_only,1)
 	var xp_attempts: Dictionary=xp_only.attempts.duplicate()
-	var xp_member: Dictionary=xp_only.profile.crew[0]
+	var xp_member: Dictionary=xp_only.crew.members()[0]
 	var xp_level: int=xp_member.level
 	xp_only.add_crew_exp(str(xp_member.crewId),1)
 	check(xp_member.level==xp_level,"XP fixture stays below next level")
@@ -185,7 +189,7 @@ func _initialize() -> void:
 	# A saved level-zero assignment can be retained while its crew unlock is unavailable.
 	# Restoring just that unlock leaves energy capacity and module targets unchanged.
 	var reenabled := fixture()
-	var reactor_member: Dictionary=reenabled.profile.crew[3]
+	var reactor_member: Dictionary=reenabled.crew.members()[3]
 	var gate: String=reenabled.db.data.crew[reactor_member.crewId].unlockId
 	var old_gate_level: int=reenabled.db.data.unlock[gate].level
 	reenabled.db.data.unlock[gate].level=99999

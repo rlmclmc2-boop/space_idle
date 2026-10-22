@@ -1,0 +1,48 @@
+{
+  "runtime_sha": "ccf124816e040a246b493e43653237c279510988",
+  "result": {
+    "growth_and_commit": 87,
+    "reactor_automation": 17,
+    "dirty_schedule": 130,
+    "save_processes": [
+      23,
+      16,
+      6,
+      8
+    ],
+    "gpu_ui": 13,
+    "total": 300,
+    "failures": 0
+  },
+  "execution": "Existing test/run.py isolated project reused; fixtures each launched with a 40/45 second process bound. Save phases write/reopen/latest/recovery share a separate isolated APPDATA. GPU UI uses RTX 2060/OpenGL, persistence disabled in that UI fixture. No personal save access.",
+  "sha256": {
+    "space-battleship/scripts/crew_panel.gd": "36306cf26b5dbd4c71d7997695136e678ece0d84fc7c207ffeb115692850abd5",
+    "space-battleship/scripts/crew_system.gd": "d5ab0faa3c8dedf3cbd740b7b8bc4049dfe4495c1eee7c94059feffc576e013d",
+    "space-battleship/scripts/galaxy_panel.gd": "1ec58b1ccbdb2e94cd57a2317c29e37253caac06bb928a35f87614b7e0086ce7",
+    "space-battleship/scripts/galaxy_system.gd": "335fc7aed968dd56be6f7cdf01da672beba9954453837e7c838597e8c6f534ec",
+    "space-battleship/scripts/game.gd": "fd5c785d2388202b7d84e19a7b3887667c9f10a574501e5d4a697dc4f89b0d2a",
+    "space-battleship/scripts/hyperspace_commands.gd": "81668081ed2f4aa59cf7986ff378bb490da3c8a3d0e3d4b1d2733d1debf80ef4",
+    "space-battleship/scripts/hyperspace_route_ui.gd": "74d3fdc8c4de518a264c32de0c65258418b32920d4b97289e342586584548987",
+    "space-battleship/scripts/main.gd": "37fb03f3ff44aaa0f71609f89fa805134e45f1e6e509aab5a77920df9b2c2406",
+    "space-battleship/scripts/planet_buildings.gd": "86f801828f9a5e852c5a3d0c4723d8e3312ca03c2219dc35de8a58cf0eee0826",
+    "space-battleship/scripts/planet_panel.gd": "27457dcc32fa3881bc2dcca6208240acec727636f80fefaf38bd3efc315d2df7",
+    "space-battleship/scripts/save_transfer.gd": "0f3cb5c30ee0e78f5f4433fd544b8667cc46de750dda07b87d13eb0624c09fe9",
+    "test/test_crew_levels.gd": "a14a4d5ce1e8dd150e822afcb17464d69d2806e6a6028fca1d11514115beba97",
+    "test/test_crew_reactor.gd": "c7ef3863af86dd1eaa55f8334d0245898e0095db1374cdc40695d17d9f11228e",
+    "test/test_crew_dirty.gd": "1a2fa9e710e55863026d64ea8f3ea0b0037403cfb859f383c90b1e185082843f",
+    "test/test_crew_levels_ui.gd": "2fcb1ab6dc979590e33e1b15d6c049ddfd9303d40dc540a7ba396c751d12daff",
+    "test/test_save_boundaries.gd": "c4d65de3386b22f1f5d0a4aaa74a01f4446983d4983d232a51c7f1e15dc9c961",
+    "docs/architecture/evidence/c6/crew-growth.log": "5a861e6c236cef38c56ae8b777c3cfa53e7e41984d7442c00bdaba775cec8bdb",
+    "docs/architecture/evidence/c6/crew-reactor.log": "ce5670f62141513811372a8fc4f44d3f29fb44df95e2c567a74cca8b6a0b1020",
+    "docs/architecture/evidence/c6/crew-schedule.log": "f004c9bf6537925d7ea850309eef943664746a5057761dc4a64ff91e30464370",
+    "docs/architecture/evidence/c6/crew-ui.log": "798bed99476d796aabb2a2604fe598017733179e0c92f5df43b2e7242268824d",
+    "docs/architecture/evidence/c6/crew-ui.png": "0aa07b5baa63c8edeac15a4e237fac39f5c4a5d25b1c63c3999a952da12a3657",
+    "docs/architecture/evidence/c6/save-latest.log": "4048eba405d60f89cdbfcb0b0fa05d874586bb4b04852fa5ece6a2b5dc937597",
+    "docs/architecture/evidence/c6/save-recovery.log": "2fd81692d07edd640a546e06d5c8888a85f885c2a50215e72f888cbb8c961625",
+    "docs/architecture/evidence/c6/save-reopen.log": "e482835c23c8de84abbf3e5173431cdd3f14f4fe0955876521582cc45da63d80",
+    "docs/architecture/evidence/c6/save-write.log": "3adf34114d58e9ee66251397c5209fa96ec7853aefcf83289f32fc62d3af63d3"
+  },
+  "godot_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "limitations": "Focused closure only, not stage 1 or full product acceptance; planet and galaxy ownership remain pending. Native rejection uses existing configuration hook in a fixture, not a claim of new native crew coverage."
+}

@@ -73,6 +73,9 @@ func _initialize() -> void:
 	var history:=game.enhancement_growth.save_data();history.enhancementAttacks="9007199254740993";history.enhancementHits="9007199254740995"
 	check(game.enhancement_growth.install_snapshot(history),"Exact history fixture exceeds JSON double integer precision")
 	check(preload("res://scripts/native_execution_compiler.gd").new().compile(game,"native_low_contract").error=="unsupported_native_counter","History beyond native exact range is rejected before double conversion")
+	check(game.assign_crew("navigator","reactor_upgrade","reactor") and game.set_crew_upgrade_mode("navigator","10"),"Crew assignment and selected purchase amount commit before save")
+	check(game.add_crew_exp("navigator",game.crew.required_exp(game,0)+game.crew.required_exp(game,1)+7),"Crew earns multiple levels and remainder before save")
+	check(not game.profile.has("crew") and not game.profile.has("crewEquipment"),"Profile no longer owns crew state")
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -90,11 +93,13 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	# JSON numbers are doubles; this fixture's small integer allocations are exact.
 	for key in saved.reactorAllocation:saved.reactorAllocation[key] = int(saved.reactorAllocation[key])
 	for key in saved.aiTechInput:saved.aiTechInput[key] = int(saved.aiTechInput[key])
+	for member in saved.crew:member.level=int(member.level)
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var restored := BattleGame.new(db, true)
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
 	check(restored.equipment.selected_ship()==saved.selectedShip and restored.module_entry("weapons",4).level==4 and restored.module_entry("weapons",4).key=="missile" and restored.equipment.save_data().equipmentSwitchUntil==saved.equipmentSwitchUntil,"Disk reopen/recovery preserves hull, dormant investment and switch deadline")
 	check(restored.enhancement_level()==30 and restored.enhancement_order("weapons")==["critical","repeat","proficiency"] and restored.enhancement_branch_choice("weapons","critical",3)=="B" and restored.enhancement_growth.attacks()==9007199254740993 and restored.enhancement_growth.hits()==9007199254740995,"Reopen/recovery preserves shared enhancement and exact history without JSON rounding")
+	check(restored.crew.save_data().crew==saved.crew and restored.crew.entry(restored,"navigator").level==2 and restored.crew.entry(restored,"navigator").exp==7,"Reopen/recovery keeps complete crew assignment, mode, growth and remainder")
 	if phase == "latest":
 		check(restored.economy.resources() == saved.latest, "Second real process reopen selects latest commit")
 		var damaged := FileAccess.open(BattleGame.SAVE_PATH, FileAccess.WRITE)
@@ -127,6 +132,9 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var invalid_growth:=unchanged.duplicate(true);invalid_growth.enhancementOrder.weapons=["critical","critical","repeat"];invalid_growth.resources["1"]=999
 	restored.load_progress_data(invalid_growth)
 	check(restored.enhancement_order("weapons")==unchanged.enhancementOrder.weapons and restored.economy.resources()==saved.resources,"Invalid enhancement rejects the whole save before balance installation")
+	var invalid_crew:=unchanged.duplicate(true);invalid_crew.crew[0].assignmentType="missing_job";invalid_crew.resources["1"]=999
+	restored.load_progress_data(invalid_crew)
+	check(restored.crew.entry(restored,"navigator").assignmentType=="reactor_upgrade" and restored.economy.resources()==saved.resources,"Invalid crew rejects entire snapshot before any installation")
 	restored.hyperspace.last_error = ""
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH + ".tmp")
 	restored.economy.credit("1", 7)
