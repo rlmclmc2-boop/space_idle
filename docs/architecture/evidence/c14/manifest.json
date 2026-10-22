@@ -1,0 +1,104 @@
+{
+  "runtime_sha": "6745273802020bd90254103d725e08fa94f27736",
+  "branch": "impl/domain-architecture-20261022",
+  "includes_time_fix": "bacfb5eb8a6889ff5755a7f709185e38df5876a5",
+  "sources": {
+    "space-battleship/scripts/attack_birth_configuration.gd": "87b919a678b7d0a959945ba0bca40bce0389cd2313b8bc7620ea370d4e7e006d",
+    "space-battleship/scripts/game.gd": "f01419d894ed2dc2bd0eccd35176e5fb5d76b61330a5b1db46437d7dc149edf9",
+    "space-battleship/scripts/native_execution_compiler.gd": "83c40563ff58beb301a2e2f193fbe2691cacbdcb8a1a9d396f5044e2e27377c5",
+    "space-battleship/scripts/enhancement_branches.gd": "7906adeb400a913239c599034f9e0c0be10a8d4b8c2323d5bba7788fd2e772e3",
+    "space-battleship/scripts/drone_combat_effects.gd": "0a5d865d8a1c926297705bc0ebd38f102fc1ecf524bece9158fa7b89c10962fc",
+    "space-battleship/scripts/presented_battle_game.gd": "18d00507c038fbcbd693314b106e0a1a6a99a8de38388e07934e5c5cb195b3cf",
+    "space-battleship/scripts/native_execution_session.gd": "6c1f130c9ff701d8f5cb2cb620027d455fc3d5daa4049637a000b68792700393",
+    "space-battleship/scripts/native_execution_handoff.gd": "819d2fe40d85a19797a4be1bd9c79743c14d059f1315955f1f050228e5179f54",
+    "space-battleship/scripts/compiled_combat_rules.gd": "623742774a62dee710b5498bf28293d5236f35ab8f769caefb18edc086b40f31",
+    "test/test_stable_compiled_rules.gd": "b2a9030c9f51c497949d948c0f7bfa44c51822ee60a74c5c57511093f10722dc",
+    "test/test_enhancement_branch_attacks.gd": "247dd8078c00bccd3b6394ada1aee37fe1338d8208a3059385528a61d4ee0f80",
+    "test/test_native_laser_charge.gd": "2d236583c4f497d34c530af3b7d21dca2f45078530284dc8e1fcde67d57f0643",
+    "test/test_native_numeric_upgrade.gd": "7c3d5f297c0e1d77a23bc9896b057b4b6db12c7d4e8bab67d463ce66d53c2191",
+    "test/test_native_galaxy_refit.gd": "78581c2966bd145d8ef4fa269849d05cba78bd621e50b5615c06045c59264218",
+    "test/test_ordinary_entry.gd": "275b1becf3676cee99bc4e0df21808574eb7c6bac02d8b175e36ebdaa52a4473",
+    "test/test_native_execution_handoff.gd": "cf16e7961dd9b371dadeb22198a6136751bc894c68e80468c57a531e6fdd64f6"
+  },
+  "source_hash_encoding": "SHA256 of LF Git blobs, compared with actual isolated files",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "gpu": "RTX 2060 / OpenGL 3.3 / NVIDIA 610.88",
+  "runner": "Reused the existing test/run.py imported area test_departure_batch_debt-_8odqazj. Only changed scripts and the existing charge fixture were recopied. Existing handoff parent placed at its required res:// path. APPDATA/LOCALAPPDATA remain isolated.",
+  "results": [
+    {
+      "test": "test_stable_compiled_rules.gd",
+      "exit": 0,
+      "seconds": 3.92,
+      "script_errors": 0,
+      "log": "test_stable_compiled_rules-c14.log",
+      "checks": 260,
+      "failures": 0
+    },
+    {
+      "test": "test_enhancement_branch_attacks.gd",
+      "exit": 0,
+      "seconds": 9.94,
+      "script_errors": 0,
+      "log": "test_enhancement_branch_attacks-c14.log",
+      "checks": 59,
+      "failures": 0
+    },
+    {
+      "test": "test_native_laser_charge.gd",
+      "exit": 0,
+      "seconds": 6.5,
+      "script_errors": 0,
+      "log": "test_native_laser_charge-c14.log",
+      "checks": 121,
+      "failures": 0
+    },
+    {
+      "test": "test_native_numeric_upgrade.gd",
+      "exit": 0,
+      "seconds": 24.66,
+      "script_errors": 0,
+      "log": "test_native_numeric_upgrade-c14.log",
+      "checks": 112,
+      "failures": 0
+    },
+    {
+      "test": "test_native_galaxy_refit.gd",
+      "exit": 0,
+      "seconds": 14.28,
+      "script_errors": 0,
+      "log": "test_native_galaxy_refit-c14.log",
+      "checks": 253,
+      "failures": 0
+    },
+    {
+      "test": "test_ordinary_entry.gd",
+      "exit": 0,
+      "seconds": 30.39,
+      "script_errors": 0,
+      "log": "test_ordinary_entry-c14.log",
+      "checks": 10,
+      "failures": 0
+    }
+  ],
+  "checks": 815,
+  "failures": 0,
+  "limitations": [
+    "GPU ordinary-entry disables save; no official-entry persistence or full-frame performance acceptance is claimed. Test process durations are not frame costs.",
+    "Initial mixed indentation prevented script parsing; corrected before final runs. The old charge fixture needed a complete current warehouse/equipment/sealed snapshot and current numeric batch API. Initial failed runs are not counted as passes; production validators were not weakened.",
+    "All six final processes retain the known Windows certificate warning. No SCRIPT ERROR or object/resource exit warning.",
+    "Active unsupported branches and legends, manual hyperspace mode, pending unsupported drone state and scalar/counter bounds remain refused. The new birth query allocates a configuration dictionary on script attacks; full performance remains unmeasured.",
+    "Time-fix regression evidence remains bound to bacfb5eb; this cumulative candidate reran only the six listed fixtures."
+  ],
+  "artifacts": {
+    "entry-false-end.png": "a4c1d08da335a2db80b2f0c413540705dc078d629b132a58b47f09f8dd535a49",
+    "entry-true-end.png": "df573285285a9d7c8d2fe815249ac4ceeeda77bd676aa022d6594b336c8e74b8",
+    "ordinary-entry.json": "bc84db5d4fc7b2973802f0b4ab91d2bd800370edfabd92402e04bd02795a227f",
+    "test_enhancement_branch_attacks-c14.log": "340eb44862a1999eeeee2516f1fb6a719999ff2959b4814729d94292916d25bf",
+    "test_native_galaxy_refit-c14.log": "e6c0b2402396b93eb977f41575534b02849c9a965738b170326fa15d4e53f488",
+    "test_native_laser_charge-c14.log": "02b65c23961c6f0e8f513aeead264841ac0292ca0f5a6582bb07075c191d3947",
+    "test_native_numeric_upgrade-c14.log": "02e39fa872fa931f00f25ee9bc5c52aa934050b77974e23c51151ec826da5045",
+    "test_ordinary_entry-c14.log": "b6da13db3d31013a1908f4d0810f0e500c58171a69178f83b0c523f42f8ec7c7",
+    "test_stable_compiled_rules-c14.log": "45baa8efebaa018ed2baf95a358ed36863fe45627b9c083043d617a02608447f"
+  }
+}
