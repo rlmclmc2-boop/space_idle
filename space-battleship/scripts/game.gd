@@ -182,14 +182,30 @@ var _legacy_combat_end:=0.0
 func economy_time() -> float:
 	return Time.get_unix_time_from_system()
 
-func _init(database: ShipDatabase, persist := true) -> void:
+var _validated_pack_context:Dictionary={}
+
+func _pack_context()->Dictionary:
+	# Closed inputs of C.pack_valid, route prepare/configure and reward bind.
+	# Update this list if those validators gain another database dependency.
+	var entity=preload("res://scripts/hyperspace_entity_validation.gd")
+	var schema:Dictionary=entity.definition()
+	var names:Array=["hyperspace_config.json","hyperspace_entity_schema.json","space_enemy_candidates.json","space_enemy_routes.json","space_enemy_reward_recipes.json","space_enemy_reward_catalog.json","space_enemy_reward_sources.json","space_enemy_reward_early_frozen.json"]
+	for name in schema.get("frozen_inputs",{}):
+		if not names.has(name):names.append(name)
+	var files:Dictionary={}
+	for name in names:files[name]=FileAccess.get_file_as_bytes("res://data/"+str(name))
+	return {"db":[db.equipment,db.enemies,db.groups,db.levels,db.data.get("resources",{}),db.data.get("enemy_weapon_base",{})],"config":hyperspace.config,"schema":schema,"files":files}
+
+func _init(database: ShipDatabase, persist := true, capture_validation_context:=true) -> void:
 	event.connect(_compiled_configuration_event)
 	db = database
 	progress_writer.validation_db = db
+	var pack_context:Dictionary=_pack_context().duplicate(true) if capture_validation_context else {}
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
 		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
 		push_error(startup_error)
 		return
+	if capture_validation_context and pack_context==_pack_context():_validated_pack_context=pack_context
 	speed = default_speed()
 	save_enabled = persist
 	if persist and not progress_writer.acquire_owner():
@@ -2930,7 +2946,7 @@ func purchase_save_preflight(resources:Dictionary,material:int,weapon_levels:Dic
 					found=true
 					break
 			if found:break
-	var validation:Dictionary=preload("res://scripts/save_transfer.gd").new().prepare_data(saved,db)
+	var validation:Dictionary=preload("res://scripts/save_transfer.gd").new().prepare_data(saved,db,self,true)
 	return validation.get("error","format").is_empty()
 
 func _commit_slot_quote(category: String, index: int, levels: int, costs: Dictionary) -> bool:
@@ -2941,7 +2957,8 @@ func _commit_slot_quote(category: String, index: int, levels: int, costs: Dictio
 	var original_owner:Dictionary=profile
 	var original_level:int=int(entry.level)
 	var original_signature:Dictionary=_max_signature(category,index)
-	if save_enabled or native_execution!=null:
+	var aggregate_preflight:bool=native_execution!=null and not native_upgrade_batch.is_empty() and native_upgrade_batch.planned.get(slot_id(category,index),{}).get("levels",-1)==levels and native_upgrade_batch.planned.get(slot_id(category,index),{}).get("before",-1)==original_level
+	if (save_enabled or native_execution!=null) and not aggregate_preflight:
 		var predicted:Dictionary=profile.resources.duplicate(true)
 		var material:Variant=_currency_material_integer(profile.hyperspace.materials.get(db.evolution_material_id(),0))
 		if material==null:return false

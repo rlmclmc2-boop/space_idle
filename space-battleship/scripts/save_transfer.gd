@@ -207,7 +207,11 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
 
 static func clean(value: Variant, spec: Variant) -> Variant:
  # Strip unrelated/unknown fields rather than transporting local metadata.
- if spec is String:return value.duplicate(true) if value is Dictionary or value is Array else value
+ if spec is String:
+  if spec=="wallet":
+   var amount=preload("res://scripts/currency_ledger.gd").decode(value)
+   if amount.status=="ok":return preload("res://scripts/currency_ledger.gd").encode(amount.value)
+  return value.duplicate(true) if value is Dictionary or value is Array else value
  if spec is Array:
   return value.map(func(item):return clean(item,spec[0])) if not spec.is_empty() else []
  var result := {}
@@ -273,7 +277,7 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
  if not restore_legacy_reactor_integers(source,decoded.data):return {"error":"format"}
  return prepare_data(decoded.data,db)
 
-func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
+func prepare_data(raw: Dictionary, db: ShipDatabase, validation_source:RefCounted=null, preflight_only:=false) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
@@ -281,8 +285,10 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
   var allowed:=String(db.config.reactorModules).split(",")
   for key in raw.reactorAllocation:
    if key not in allowed:return {"error":"format"}
- if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
- if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
+ var same_pack:bool=validation_source is BattleGame and is_same(validation_source.db,db) and not validation_source._validated_pack_context.is_empty() and validation_source._validated_pack_context==validation_source._pack_context()
+ var hyperspace_config:Dictionary=validation_source.hyperspace.config if same_pack else preload("res://scripts/hyperspace_config.gd").load_config() if raw.has("hyperspace") else {}
+ if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace_config,db.levels.size()):return {"error":"format"}
+ if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,hyperspace_config):return {"error":"format"}
  for key in raw.get("galaxies",{}):
   var region: Dictionary=raw.galaxies[key]
   if region.get("version",0)>3:return {"error":"format"}
@@ -293,7 +299,15 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
    if build.galaxy_key==key:builds[build.key]=build
   if not blueprint_valid(region,builds):return {"error":"format"}
  # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
- var candidate:=BattleGame.new(db,false)
+ # Transaction preflight needs the same schema/semantic rejection, but not
+ # a new loader instance or its preview metadata. Reuse only a successful
+ # live pack proof bound to every current database/config input and file byte.
+ if same_pack:
+  if preflight_only:return {"error":""}
+  var current_quality:=structure_quality(raw)
+  return {"error":"","data":clean(raw,schema()),"stage":validation_source.profile.highestLevel,"ship":validation_source.profile.selectedShip,"quality":current_quality.quality,"quality_rank":current_quality.quality_rank}
+ var candidate:=BattleGame.new(db,false,false)
+ if not candidate.startup_error.is_empty():return {"error":"format"}
  candidate.load_progress_data(clean(raw,schema()))
  candidate.reset_player()
  var quality:=structure_quality(raw)
