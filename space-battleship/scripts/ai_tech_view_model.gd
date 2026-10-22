@@ -15,7 +15,7 @@ static func display_id(model_id: String) -> String:
 
 static func duration(seconds: float) -> String:
 	if not is_finite(seconds):return UIText.t("ai_tech.view.duration_overflow")
-	if seconds >= 9.0e18:return UIText.t("ai_tech.view.duration_scientific", {"value_1":"%.2e" % (seconds)})
+	if seconds >= 9.0e18:return UIText.t("ai_tech.view.duration_scientific", {"value_1":String.num_scientific(seconds)})
 	if seconds < 1.0:return UIText.t("ai_tech.view.duration_subsecond")
 	if seconds < 60.0:return UIText.t("ai_tech.view.duration_seconds", {"value_1":"%d" % (int(ceilf(seconds)))})
 	if seconds < 3600.0:return UIText.t("ai_tech.view.duration_minutes", {"value_1":"%d" % (int(seconds/60.0)), "value_2":"%d" % (int(ceilf(fmod(seconds,60.0))))})
