@@ -1202,15 +1202,6 @@ func description_number(value) -> String:
 	# Formula literals must retain float precision; compact notation is for the final text only.
 	return "%.1f" % value if absf(value)>=9e18 else NUMBER_FORMAT.precise(value)
 
-func hightech_description(key: String, now := -1.0) -> String:
-	if effective_hightech_level(key)==0:
-		return UIText.t("system.hightech_description.text_01")
-	var row: Dictionary = db.data.hightech[key]
-	if key == JEWEL_FURNACE:
-		var peak := furnace_income_peak(now,true)
-		return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),peak,peak)
-	return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
-
 func ui_description(text_key: String, row: Dictionary, level: int, minute_income = 0.0, excluded_income = 0.0) -> String:
 	var values := {}
 	var formulas := UIText.formulas(text_key)
@@ -1576,9 +1567,6 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 			total = N.add(total,sample.get("production_base",sample.amount) if exclude_furnace else sample.amount)
 	return total
 
-func furnace_income_peak(now := -1.0, jewel := false) -> float:
-	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(production_minute_total("jewel" if jewel else "1",now)))
-
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
 	if not raw is String:
@@ -1619,42 +1607,6 @@ func advance_auto_gen(dt: float) -> void:
 		var base_amount := ceilf(float(settings.amount) * ratio("resRatio"))
 		var amount = N.ceiling(N.multiply(base_amount,1.0+float(hyperspace_totals().hangings.get("resource_collector",0))))
 		drops.append({"uid":uid,"x":rng.randf_range(70.0,BATTLE_SIZE.x-70.0),"y":0.0,"age":0.0,"id":settings.resource_id,"amount":amount,"speed":settings.speed,"auto_gen":true,"production_base":base_amount})
-
-func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
-	for drop in drops.duplicate():
-		if drop.get("hightech", false):
-			drop.age += dt
-			if float(drop.age) >= 10.0:
-				collect(drop, false)
-	for key in [FURNACE,JEWEL_FURNACE]:
-		if effective_hightech_level(key) <= 0 or not db.data.get("hightech", {}).has(key):
-			continue
-		var jewel_furnace: bool = key == JEWEL_FURNACE
-		var elapsed_field := "jewelFurnaceElapsed" if jewel_furnace else "furnaceElapsed"
-		var row: Dictionary = db.data.hightech[key]
-		var target_type := "smelting" if jewel_furnace else "production"
-		var interval := float(row.para1) / (1.0 + crew.get_modifier(self,target_type,key,"SPEED"))
-		if interval <= 0 or not is_finite(interval):
-			continue
-		var elapsed := float(profile.get(elapsed_field,0.0)) + dt
-		var count := floorf(elapsed / interval)
-		profile[elapsed_field] = fposmod(elapsed, interval)
-		# Skip expired blocks, with work bounded by the 10-second visible window.
-		var visible := mini(int(count), int(ceilf(10.0 / interval)))
-		for i in range(visible):
-			var age := float(profile[elapsed_field]) + i * interval
-			if age >= 10.0:
-				break
-			uid += 1
-			var produced_at := end_time - age * wall_per_step
-			var income := furnace_income_peak(produced_at,jewel_furnace)
-			profile["jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"] = income
-			var amount := ceilf(income * float(row.para2) * effective_hightech_level(key) * (1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY")) * (1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0))))
-			var block := {"uid":uid,"x":rng.randf_range(70,BATTLE_SIZE.x-70),"y":rng.randf_range(250,480),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
-			if jewel_furnace:
-				block.jewel = true
-				block.jewelRatio = 1.0
-			drops.append(block)
 
 func max_shield() -> Variant:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
@@ -2455,7 +2407,6 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	economy.credit(str(drop.id), amount)
 	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	record_research_income(str(drop.id))
-	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
 	info.amount = amount
