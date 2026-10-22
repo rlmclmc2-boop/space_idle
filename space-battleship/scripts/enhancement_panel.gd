@@ -232,36 +232,11 @@ func effect_name(kind: String) -> String:
 	return UIText.t("enhance.effect."+kind) if not kind.is_empty() else UIText.t("enhance.effect.pending")
 
 func effect_description(kind: String) -> String:
-	if game.has_method("enhancement_effect_runtime"):
-		return runtime_effect_description(kind)
-	var level := game.enhancement_effective_level()
-	match kind:
-		"proficiency","adaptation":
-			var count := game.enhancement_growth.history(kind)
-			var coefficient := parameter("proficiency_growth" if kind=="proficiency" else "adaptation_growth")
-			var round_scale := parameter("bonus_round_scale")
-			var bonus := roundf(coefficient*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*round_scale)/round_scale
-			return UIText.t("enhance.description."+kind,{"bonus":FORMAT.percentage(bonus*100),"count":FORMAT.compact(count)})
-		"repeat":
-			return UIText.t("enhance.description.repeat",{"chance":FORMAT.percentage(parameter("repeat_probability")*100),"delay":display(parameter("repeat_delay")),"bonus":FORMAT.percentage(100.0+parameter("repeat_growth")*level*100)})
-		"critical":
-			return UIText.t("enhance.description.critical",{"chance":FORMAT.percentage(parameter("base_critical_rate")*100),"multiplier":FORMAT.percentage(N.multiply(parameter("base_critical_multiplier")+parameter("critical_growth")*level,100.0))})
-		"delayed_damage":
-			var duration := parameter("deferred_duration")
-			var interval := parameter("deferred_interval")
-			var ticks := ceili(duration/interval-0.000000001)
-			return UIText.t("enhance.description.delayed_damage",{"fraction":FORMAT.percentage(game.enhancement_deferred_fraction()*100),"duration":display(duration),"interval":display(interval),"ticks":ticks,"chance":FORMAT.percentage(parameter("deferred_clear_probability")*100)})
-		"memory_material":
-			return UIText.t("enhance.description.memory_material",{"interval":display(parameter("memory_interval")),"recovery":FORMAT.percentage(parameter("memory_heal_fraction")*level*100),"cap":FORMAT.percentage(parameter("memory_buffer_fraction")*level*100)})
-	return UIText.t("enhance.description.pending")
-
-func runtime_effect_description(kind: String) -> String:
-	var values: Dictionary = game.call("enhancement_effect_runtime",kind)
+	var values: Dictionary = game.enhancement_effect_runtime(kind)
 	match kind:
 		"proficiency","adaptation":
 			var count := int(values.get("history",0))
-			var bonus := roundf(float(values.growth)*game.enhancement_effective_level()*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
-			return UIText.t("enhance.description."+kind+".runtime",{"count":FORMAT.compact(count),"bonus":FORMAT.percentage(bonus*100),"branch":FORMAT.percentage(values.branch_bonus_percent)})
+			return UIText.t("enhance.description."+kind+".runtime",{"count":FORMAT.compact(count),"bonus":FORMAT.percentage(values.history_bonus_percent),"branch":FORMAT.percentage(values.branch_bonus_percent)})
 		"repeat":
 			return UIText.t("enhance.description.repeat.runtime",{"chance":FORMAT.percentage(values.probability_percent),"delay":display(values.delay),"bonus":FORMAT.percentage(100.0+float(values.damage_percent))})
 		"critical":
@@ -289,12 +264,9 @@ func effect_overview_text(key: String, value: Variant, unit := "%") -> String:
 
 func effect_overview(kind: String) -> String:
 	var runtime: Dictionary = game.enhancement_effect_runtime(kind)
-	var level := int(runtime.effective_level)
 	match kind:
 		"proficiency","adaptation":
-			var count := int(runtime.history)
-			var bonus := roundf(float(runtime.growth)*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*parameter("bonus_round_scale"))/parameter("bonus_round_scale")
-			return effect_overview_text("enhance.overview."+kind,bonus*100)
+			return effect_overview_text("enhance.overview."+kind,runtime.history_bonus_percent)
 		"repeat":
 			return PARAMETER_TEXT.render("enhance.overview.repeat",{"chance":FORMAT.percentage(runtime.probability_percent),"multiplier":FORMAT.percentage(100.0+float(runtime.damage_percent))},{"chance":{"role":"effect","unit":"%"},"multiplier":{"role":"effect","unit":"%"}})
 		"critical":

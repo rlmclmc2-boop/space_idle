@@ -3067,6 +3067,7 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 		"proficiency","adaptation":
 			result.growth=enhancement_parameter(effect+"_growth") if active_level>0 else 0.0
 			result.history=enhancement_growth.history(effect)
+			result.history_bonus_percent=enhancement_growth.history_bonus(db,effect,active_level,float(result.growth))*100.0
 			result.branch_bonus_percent=enhancement_branches.a_count(self,sample,effect)*enhancement_parameter("proficiency_a_damage_bonus" if effect=="proficiency" else "adaptation_a_capacity_bonus")*100.0
 		"repeat":
 			result.probability_percent=enhancement_branches.repeat_probability(self,sample)*100.0

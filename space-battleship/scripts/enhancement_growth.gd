@@ -136,8 +136,10 @@ static func effect(db,kind:String,index:int,level:int)->Dictionary:
 		"memory_material":value.p2=parameter(db,"memory_heal_fraction");value.p4=parameter(db,"memory_buffer_fraction")
 	return value
 func history_multiplier(db,kind:String,level:int,growth:float)->float:
+	return 1.0+history_bonus(db,kind,level,growth)
+func history_bonus(db,kind:String,level:int,growth:float)->float:
 	var count:=maxi(1,history(kind));var scale:=parameter(db,"bonus_round_scale")
-	return 1.0+roundf(growth*level*log(float(count))/log(parameter(db,"counter_log_base"))*scale)/scale
+	return roundf(growth*level*log(float(count))/log(parameter(db,"counter_log_base"))*scale)/scale
 static func deferred_fraction(db,level:int)->float:
 	if level<=0:return 0.0
 	var scale:=parameter(db,"deferred_percent_scale")
