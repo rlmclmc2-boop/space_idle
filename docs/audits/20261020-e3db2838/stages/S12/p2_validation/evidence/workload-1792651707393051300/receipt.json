@@ -1,0 +1,11 @@
+{
+  "status": "FAIL",
+  "exit_code": 1,
+  "timed_out": true,
+  "seconds": 45.09399999980815,
+  "measurement": [],
+  "own_child_peak_rss_bytes": 866582528,
+  "memory_sampling_ok": true,
+  "stdout_sha256": "1793c70b198456cf3ad66983962c0fc582ce5c17d44f674aa0a4d15e047f3209",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
