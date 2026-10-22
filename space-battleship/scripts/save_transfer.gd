@@ -150,7 +150,7 @@ static func schema() -> Dictionary:
  var blueprint := {"layout_version":"i","core_id":"s","units":"s","core":node,"nodes":[node],"edges":[edge]}
  var slot := {"id":"n","node_id":"s","world_pos":"p","unlock_progress":"n","status":"s","type":"s","level":"i","work":"n","construction":"n","upgrade_progress":"n","visual_seed":"i","planned_type":"s","parent_id":"i"}
  var galaxy := {"version":"i","status":"s","explore_work":"n","upgrade_work":"n","slot_seed":"i","build_elapsed":"n","bag":["s"],"rounds":"i","special_due":"b","rng_state":"s","map_rng_state":"s","owned":"s","blueprint":blueprint,"slots":[slot],"pending_online_time":"n","pending_crew_count":"i"}
- var result := {"version":"i","resources":{"*":"g"},"selectedShip":"s","loadout":{"*": [{"key":"s","level":"i"}]},"unlocked":["s"],"levels":{"*":"n"},"planets":{"*":planet},"galaxies":{"*":galaxy},"crew":[{"crewId":"s","level":"i","exp":"n","assignmentType":"s","targetId":"s","upgradeMode":"s","equipmentSlots":["empty"]}],"crewEquipment":{},"jewels":[],"jewelFragments":"currency","saveIntervalMinutes":"interval","onboarding":{"version":"i","intro":"b","equipped":"b","upgraded":"b","completed":"b","dismissed":"b","retreatSeen":"b","pickupSeen":"b"},"journey":{"stage":"n","groupIndex":"n","state":"n","distance":"n","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"]},"enhancementOrder":{"*": ["s"]},"enhancementBranches":{"*":{"*":{"*":"s"}}}}
+ var result := {"version":"i","resources":{"*":"wallet"},"selectedShip":"s","loadout":{"*": [{"key":"s","level":"i"}]},"unlocked":["s"],"levels":{"*":"n"},"planets":{"*":planet},"galaxies":{"*":galaxy},"crew":[{"crewId":"s","level":"i","exp":"n","assignmentType":"s","targetId":"s","upgradeMode":"s","equipmentSlots":["empty"]}],"crewEquipment":{},"jewels":[],"jewelFragments":"currency","saveIntervalMinutes":"interval","onboarding":{"version":"i","intro":"b","equipped":"b","upgraded":"b","completed":"b","dismissed":"b","retreatSeen":"b","pickupSeen":"b"},"journey":{"stage":"n","groupIndex":"n","state":"n","distance":"n","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"]},"enhancementOrder":{"*": ["s"]},"enhancementBranches":{"*":{"*":{"*":"s"}}}}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","jewelFurnaceElapsed","jewelFurnaceIncomePeak","chronoParticles","chronoSavedAt","hightechSavedAt","furnaceElapsed","furnaceIncomePeak","guardDeath","loopLevel","guardStage","guardIndex","guardDistance","reactorLevel"]:result[key]="n"
  for key in ["cleared","bossSeen"]:result[key]=["n"]
  for key in ["grantedUnlocks","seenUnlocks","readUnlocks","hightechOrder"]:result[key]=["s"]
@@ -185,6 +185,7 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
    "n":return (value is int or value is float) and is_finite(float(value))
    "i":return (value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)) and absf(float(value))<9.22e18
    "g":return GrowthNumber.valid(value)
+   "wallet":return preload("res://scripts/currency_storage.gd").valid_resource(value)
    "r":return ReactorInt.valid(value) or ((value is int or value is float) and is_finite(float(value)) and value>=0 and value==floorf(float(value)) and float(value)<9223372036854775808.0)
    "currency":return GrowthNumber.valid(value) or (value is Dictionary and value.values().all(func(n):return GrowthNumber.valid(n)))
    "interval":return BattleGame.parse_save_interval(str(value))>0 and (value is String or value is int or value is float)
@@ -263,11 +264,11 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
  var bytes:=file.get_buffer(file.get_length())
  if file.get_error()!=OK:return {"error":"read"}
  file.close()
- var parser:=JSON.new()
  var source:=bytes.get_string_from_utf8()
- if parser.parse(source)!=OK or not parser.data is Dictionary:return {"error":"format"}
- if not restore_legacy_reactor_integers(source,parser.data):return {"error":"format"}
- return prepare_data(parser.data,db)
+ var decoded=preload("res://scripts/currency_storage.gd").parse_source(source)
+ if decoded.status!="ok":return {"error":"format"}
+ if not restore_legacy_reactor_integers(source,decoded.data):return {"error":"format"}
+ return prepare_data(decoded.data,db)
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}

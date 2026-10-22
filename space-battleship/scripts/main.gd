@@ -911,6 +911,10 @@ func on_event(kind: String, info: Dictionary) -> void:
 			refresh_save_status()
 
 func number(value) -> String:
+	if game.Currency.storage_valid(value):
+		var decoded=game.Currency.decode(value)
+		var finite=game.Currency.finite_research_balance(decoded.value,1.7976931348623157e308)
+		return NUMBER_FORMAT.compact(finite.amount) if finite.status=="ok" else game.Currency.text(decoded.value)
 	# Quantities use K/M/B/T; stage identifiers and levels use exact integers.
 	return NUMBER_FORMAT.compact(value)
 

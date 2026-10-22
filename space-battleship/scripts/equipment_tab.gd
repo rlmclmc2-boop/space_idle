@@ -532,7 +532,7 @@ func refresh_slots(changed: Array) -> void:
 			update_card_cost(items[id],quotes)
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
-	observed_resources = host.game.profile.resources.duplicate()
+	observed_resources = host.game.profile.resources.duplicate(true)
 	refresh_total()
 	refresh_new_weapon()
 	if structure_changed:layout_contents()
@@ -621,7 +621,7 @@ func refresh_stats() -> void:
 	if selected_changed:refresh_detail(selected_preview)
 
 func refresh_affordability() -> void:
-	observed_resources = host.game.profile.resources.duplicate()
+	observed_resources = host.game.profile.resources.duplicate(true)
 	var changed := false
 	var quotes := {}
 	for id in items:

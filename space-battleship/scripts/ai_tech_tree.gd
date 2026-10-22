@@ -100,7 +100,7 @@ static func snapshot(game) -> Dictionary:
 	var acceleration := research_speed(game)
 	for resource_id in ["1", "2"]:
 		var amount := int(game.profile.aiTechInput.get(resource_id, 0))
-		var affordable := amount == 0 or N.compare(game.profile.resources.get(resource_id, 0), 0) > 0
+		var affordable: bool = amount == 0 or game.currency_compare_resource(resource_id,0).order > 0
 		var factor := input_factor(amount) if affordable else 1.0
 		inputs[resource_id] = {"amount":amount,"factor":factor,"shortage":amount > 0 and not affordable}
 		acceleration *= factor
@@ -142,10 +142,17 @@ static func advance(game, dt: float) -> void:
 		var factors := {}
 		for resource_id in ["1", "2"]:
 			var amount := int(game.profile.aiTechInput.get(resource_id, 0))
-			if amount <= 0 or N.compare(game.profile.resources.get(resource_id,0),0) <= 0:continue
-			var balance = game.profile.resources.get(resource_id,0)
-			if N.compare(balance,float(amount)*remaining) < 0:
-				step = minf(step,float(balance)/float(amount))
+			if amount <= 0:continue
+			var available=game.currency_compare_resource(resource_id,0)
+			if available.status!="ok":return
+			if available.order<=0:continue
+			var balance=game.currency_balance(resource_id)
+			var needed=game.currency_compare_resource(resource_id,float(amount)*remaining)
+			if needed.status!="ok":return
+			if needed.order<0:
+				var finite=game.Currency.finite_research_balance(balance.value,float(amount)*remaining)
+				if finite.status!="ok":return
+				step=minf(step,finite.amount/float(amount))
 			factors[resource_id] = amount
 			speed *= input_factor(amount)
 		var cost := required(game,id)
@@ -166,14 +173,15 @@ static func advance(game, dt: float) -> void:
 			if not game.native_before_configuration_change():break
 		if step <= 0.0000000001:
 			for resource_id in factors:
-				if N.compare(game.profile.resources.get(resource_id,0),float(factors[resource_id])*0.0000000001) < 0:
-					game.profile.resources[resource_id] = 0.0
+				var order=game.currency_compare_resource(resource_id,float(factors[resource_id])*0.0000000001)
+				if order.status!="ok":return
+				if order.order<0:
+					if not game.currency_initialize_resource(resource_id,0.0):return
 			continue
-		for resource_id in factors:
-			var expense := float(factors[resource_id])*step
-			var next_balance = N.subtract(game.profile.resources.get(resource_id,0),expense)
-			game.profile.resources[resource_id] = next_balance if N.compare(next_balance,0) > 0 else 0.0
-			paid[resource_id] = true
+		var expenses:Dictionary={}
+		for resource_id in factors:expenses[resource_id]=float(factors[resource_id])*step
+		if not expenses.is_empty() and game.currency_research_pay(expenses).status!="committed":return
+		for resource_id in factors:paid[resource_id]=true
 		game.profile.aiTechProgress[id] = progress + step*speed
 		remaining -= step
 		changed = true

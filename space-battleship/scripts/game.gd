@@ -18,6 +18,23 @@ const SAVE_VERSION := 5
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
+const Currency = preload("res://scripts/currency_ledger.gd")
+const CurrencyHost = preload("res://scripts/currency_host.gd")
+const Price = preload("res://scripts/equipment_price.gd")
+const CurrencyInt = preload("res://scripts/currency_integer.gd")
+const EquipmentMax = preload("res://scripts/equipment_max_query.gd")
+var equipment_queries := EquipmentMax.new()
+var _max_bindings: Dictionary = {}
+
+class PurchaseOutcome extends RefCounted:
+	var status: String
+	var changed_slots: Array
+	func _init(state: String, slots: Array = []) -> void:
+		status = state
+		changed_slots = slots.duplicate()
+var currency_host := CurrencyHost.new()
+var _currency_profile: Dictionary = {}
+var price_engine := Price.new()
 const AITech = preload("res://scripts/ai_tech_tree.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
@@ -421,7 +438,7 @@ func load_progress_data(raw: Dictionary) -> void:
 				profile.bossSeen.append(int(n))
 	for id in ["1", "2"]:
 		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
-		if N.valid(value):
+		if Currency.decode(value).status == "ok":
 			# Restoring a balance must not mint the remainder of a fractional unit.
 			profile.resources[id] = ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
 	profile.loop = false
@@ -924,16 +941,8 @@ func slot_upgrade_cost(category: String, index: int, levels := 1) -> Dictionary:
 	return {} if entry.is_empty() else upgrade_costs_for_level(module_cost_key(category), int(entry.level), levels)
 
 func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictionary:
-	var cached:Dictionary=max_upgrade_quote_cache.get(str([key,current]),{})
-	if not cached.is_empty() and int(cached.amount)==levels and cached.signature==upgrade_quote_signature(key):return cached.costs.duplicate()
-	var total := {}
-	if levels <= 0 or current + levels > db.max_equipment_level(key):
-		return total
-	for level in range(current + 1, current + levels + 1):
-		var cost := upgrade_cost_for_level(key, level)
-		for id in cost:
-			total[id] = float(total.get(id, 0)) + float(cost[id])
-	return total
+	var quoted: Price.Costs = price_engine.sum_costs(db,key,current,levels)
+	return quoted.amounts if quoted.status=="ok" else {}
 
 func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry := slot_entry(category, index)
@@ -942,32 +951,125 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var costs := slot_upgrade_cost(category, index, levels)
 	return can_afford_upgrade_costs(costs)
 
+func _bind_currency_owner() -> void:
+	if not is_same(_currency_profile, profile):
+		_currency_profile = profile
+		currency_host.bind(profile)
+
+func currency_balance(id: String) -> Currency.Outcome:
+	return Currency.decode(profile.resources.get(id, 0))
+
+func currency_compare_resource(id: String, amount: Variant) -> Currency.Comparison:
+	var balance: Currency.Outcome = currency_balance(id)
+	var cost: Currency.Outcome = Currency.decode(amount)
+	if balance.status != "ok" or cost.status != "ok":
+		return Currency.Comparison.new("invalid_value")
+	return Currency.compare(balance.value, cost.value)
+
+func currency_income(id: String, source_amount: Variant) -> CurrencyHost.Receipt:
+	var incoming: Currency.Outcome = Currency.from_generated_income(source_amount)
+	if incoming.status != "ok":
+		return CurrencyHost.Receipt.new(incoming.status)
+	_bind_currency_owner()
+	var plan: CurrencyHost.Plan = currency_host.prepare(profile, {id:Currency.encode(incoming.value)}, {}, true)
+	return currency_host.commit(plan, profile, {}) if plan.status == "ready" else CurrencyHost.Receipt.new(plan.status)
+
+func currency_initialize_resource(id: String, amount: Variant) -> bool:
+	var decoded: Currency.Outcome = Currency.decode(amount)
+	if decoded.status != "ok" or not profile.resources.has(id):
+		return false
+	var replacement: Dictionary = profile.resources.duplicate(true)
+	replacement[id] = Currency.encode(decoded.value)
+	profile.resources = replacement
+	_bind_currency_owner()
+	currency_host.invalidate()
+	return true
+
+func currency_research_pay(expenses: Dictionary) -> CurrencyHost.Receipt:
+	var costs := {}
+	for id in expenses:
+		var balance: Currency.Outcome = currency_balance(id)
+		var expense: Currency.Outcome = Currency.decode(expenses[id])
+		if balance.status != "ok" or expense.status != "ok":
+			return CurrencyHost.Receipt.new("invalid_value")
+		var order: Currency.Comparison = Currency.compare(balance.value, expense.value)
+		if order.status != "ok":
+			return CurrencyHost.Receipt.new(order.status)
+		# Preserve the research business rule that a rounded final micro-step
+		# may consume the remainder; the ledger itself never clamps subtraction.
+		costs[id] = Currency.encode(balance.value if order.order <= 0 else expense.value)
+	_bind_currency_owner()
+	var plan: CurrencyHost.Plan = currency_host.prepare(profile, costs, {})
+	return currency_host.commit(plan, profile, {}) if plan.status == "ready" else CurrencyHost.Receipt.new(plan.status)
+
 func upgrade_currency(id: String) -> Variant:
 	return profile.hyperspace.materials.get(id,0) if id==db.evolution_material_id() else profile.resources.get(id,0)
+
+func _currency_material_integer(raw: Variant) -> Variant:
+	if not (raw is int or raw is float) or not is_finite(float(raw)) or raw < 0 or float(raw) != floorf(float(raw)):
+		return null
+	var exact: Variant = CurrencyInt.command_floor(raw)
+	return null if exact == null or CurrencyInt.compare(exact,CurrencyInt.make(CurrencyInt.MAX_INT)) > 0 else int(CurrencyInt.digits(exact))
 
 func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	if costs.is_empty():
 		return false
 	for id in costs:
 		if id==db.evolution_material_id() and not hyperspace.is_unlocked(self):return false
-		if not is_finite(float(costs[id])) or N.compare(upgrade_currency(id),costs[id])<0:
-			return false
+		if id == db.evolution_material_id():
+			var due: Variant = _currency_material_integer(costs[id])
+			var have: Variant = _currency_material_integer(profile.hyperspace.materials.get(id,0))
+			if due == null or have == null or have < due:
+				return false
+		else:
+			var order: Currency.Comparison = currency_compare_resource(str(id), costs[id])
+			if order.status != "ok" or order.order < 0:
+				return false
 	return true
 
 func resources_changed(ids: Array) -> void:
 	event.emit("resources_changed",{"ids":ids})
 
-func refund_equipment(key: String, level: int) -> void:
-	var refunded := {}
-	for target_level in range(2, level + 1):
-		for id in upgrade_cost_for_level(key, target_level):
-			var amount=upgrade_cost_for_level(key,target_level)[id]
-			if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.add(upgrade_currency(id),amount)
-			else:profile.resources[id]=N.add(upgrade_currency(id),amount)
-			refunded[id]=true
-	if not refunded.is_empty():
-		resources_changed(refunded.keys().filter(func(id):return id!=db.evolution_material_id()))
-		if refunded.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
+func _refund_entries(entries: Array) -> CurrencyHost.Receipt:
+	var resources:Dictionary={}
+	var material:Variant=0
+	var notices:Array=[]
+	var material_id:String=db.evolution_material_id()
+	for entry in entries:
+		var level:int=int(entry.level)
+		if level<=1:continue
+		var quoted:Price.Costs=price_engine.sum_costs(db,str(entry.key),1,level-1)
+		if quoted.status!="ok":return CurrencyHost.Receipt.new(quoted.status)
+		var ids:Array=[]
+		for id in quoted.amounts:
+			if id==material_id:
+				material=CurrencyInt.add(material,quoted.amounts[id])
+			else:
+				var before:Currency.Outcome=Currency.decode(resources.get(id,0))
+				var amount:Currency.Outcome=Currency.decode(quoted.amounts[id])
+				var combined:Currency.Outcome=Currency.add(before.value,amount.value)
+				if combined.status!="ok":return CurrencyHost.Receipt.new(combined.status)
+				resources[id]=Currency.encode(combined.value)
+				ids.append(id)
+		notices.append({"ids":ids,"material":quoted.amounts.has(material_id)})
+	var stored_material:Variant=_currency_material_integer(profile.hyperspace.materials.get(material_id,0))
+	if stored_material==null:return CurrencyHost.Receipt.new("invalid_material")
+	var new_material:Variant=CurrencyInt.add(stored_material,material)
+	if CurrencyInt.compare(new_material,CurrencyInt.make(CurrencyInt.MAX_INT))>0:return CurrencyHost.Receipt.new("material_transport")
+	if notices.is_empty():return CurrencyHost.Receipt.new("no_change")
+	_bind_currency_owner()
+	var plan:CurrencyHost.Plan=currency_host.prepare(profile,resources,{},true)
+	if plan.status!="ready":return CurrencyHost.Receipt.new(plan.status)
+	var receipt:CurrencyHost.Receipt=currency_host.commit(plan,profile,{})
+	if receipt.status!="committed":return receipt
+	profile.hyperspace.materials[material_id]=int(CurrencyInt.digits(new_material))
+	for notice in notices:
+		if not notice.ids.is_empty():resources_changed(notice.ids)
+		if notice.material:event.emit("hyperspace_changed",{"reason":"equipment_refund"})
+	return receipt
+
+func refund_equipment(key: String, level: int) -> CurrencyHost.Receipt:
+	return _refund_entries([{"key":key,"level":level}])
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -1090,11 +1192,12 @@ func unequip_slot(category: String, index: int) -> bool:
 	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
 
-func refund_all_equipment() -> void:
-	# Retained for explicit legacy callers; normal refit never refunds module growth.
+func refund_all_equipment() -> CurrencyHost.Receipt:
+	var entries:Array=[]
 	for category in ["weapons","defence"]:
 		for entry in loadout_entries(category):
-			if not str(entry.key).is_empty():refund_equipment(str(entry.key),int(entry.level))
+			if not str(entry.key).is_empty():entries.append(entry.duplicate(true))
+	return _refund_entries(entries)
 
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
@@ -2701,11 +2804,11 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 		return
 	if drop.get("hightech", false) and not manual and not force and float(drop.get("age",0)) < 10.0:
 		return
-	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
-	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
+	if currency_income(str(drop.id), amount).status != "committed":return
+	drops.erase(drop)
 	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	AITech.record_income(self,str(drop.id))
 	profile.furnaceIncomePeak = furnace_income_peak()
@@ -2751,13 +2854,8 @@ func clear_level() -> void:
 		event.emit("unlock", {"items":pending_unlocks.duplicate(), "equipment":pending_unlocks.filter(func(id):return db.data.unlock[id].type == "equipment")})
 
 func upgrade_cost_for_level(key: String, level: int) -> Dictionary:
-	if _upgrade_batch and _upgrade_costs.get(key,{}).has(level):
-		return _upgrade_costs[key][level]
-	var cost := db.equipment_cost(key,level)
-	if _upgrade_batch:
-		if not _upgrade_costs.has(key):_upgrade_costs[key]={}
-		_upgrade_costs[key][level]=cost
-	return cost
+	var quoted: Price.Costs = price_engine.costs_for_level(db,key,level)
+	return quoted.amounts if quoted.status=="ok" else {}
 
 func upgrade_cost(key: String, levels := 1) -> Dictionary:
 	var entry := first_equipment_entry(key)
@@ -2834,11 +2932,14 @@ func upgrade(key: String, levels := 1) -> bool:
 	return upgrade_slot(category, index, levels)
 
 func upgrade_slot(category: String, index: int, levels := 1) -> bool:
-	if not can_upgrade_slot(category, index, levels):
-		return false
-	var entry = slot_entry(category, index)
-	var key = str(entry.key)
-	var costs = slot_upgrade_cost(category, index, levels)
+	if not can_upgrade_slot(category, index, levels):return false
+	return _commit_slot_quote(category,index,levels,slot_upgrade_cost(category,index,levels))
+
+func _commit_slot_quote(category: String, index: int, levels: int, costs: Dictionary) -> bool:
+	var entry:Dictionary=slot_entry(category,index)
+	if entry.is_empty() or levels<1 or int(entry.level)<1 or levels>9223372036854775807-int(entry.level):return false
+	if not can_afford_upgrade_costs(costs):return false
+	var key:String=str(entry.key)
 	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
 	if batch_update:
 		var expected:Dictionary=native_upgrade_batch.planned.get(slot_id(category,index),{})
@@ -2850,9 +2951,15 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
 		if not native_updated and not native_before_configuration_change():return false
 	native_numeric_update=native_updated
+	var resource_costs:Dictionary={}
 	for id in costs:
-		if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.subtract(upgrade_currency(id),costs[id])
-		else:profile.resources[id]=N.subtract(upgrade_currency(id),costs[id])
+		if id!=db.evolution_material_id():resource_costs[id]=costs[id]
+	_bind_currency_owner()
+	var dependencies:Dictionary={"category":category,"index":index,"level":int(entry.level),"key":str(entry.key)}
+	var debit:CurrencyHost.Plan=currency_host.prepare(profile,resource_costs,dependencies)
+	if debit.status!="ready":return false
+	if currency_host.commit(debit,profile,dependencies).status!="committed":return false
+	if costs.has(db.evolution_material_id()):profile.hyperspace.materials[db.evolution_material_id()]-=int(costs[db.evolution_material_id()])
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
 	resources_changed(costs.keys().filter(func(id):return id!=db.evolution_material_id()))
@@ -2901,6 +3008,67 @@ func upgrade_equipment_batch(mode: String) -> bool:
 func upgrade_max(key: String) -> bool:
 	var levels := max_upgrade_amount(key)
 	return levels > 0 and upgrade(key, levels)
+
+func _max_signature(category: String, index: int) -> Dictionary:
+	var entry: Dictionary = slot_entry(category,index)
+	var key: String = module_cost_key(category)
+	return {"category":category,"index":index,"slot_key":entry.get("key",""),"start":entry.get("level",0),"cost_key":key,"rows":db.equipment.get(key,[]).duplicate(true),"evolution":db.data.equipment_evolution.duplicate(true),"material_unlocked":hyperspace.is_unlocked(self)}
+
+func _max_supported(signature: Dictionary) -> bool:
+	if signature.cost_key not in EQUIPMENT or signature.rows.size()!=1:return false
+	var row: Dictionary = signature.rows[0]
+	var growth: Variant = row.get("cost_multi_1",row.get("costMulti_1"))
+	var evo: Dictionary = signature.evolution
+	return row.get("cost_1")==50 and growth==0.2 and row.get("res_1")==1 and row.get("cost_2")==null and row.get("res_2")==null and evo.get("interval")==20 and evo.get("material_cost_per_tier")==10 and str(evo.get("material_id"))=="degenerate_matter"
+
+func request_max_upgrade_slot(category: String, index: int) -> EquipmentMax.Outcome:
+	var signature: Dictionary = _max_signature(category,index)
+	var start: Variant = signature.start
+	var material: Variant = _currency_material_integer(profile.hyperspace.materials.get(db.evolution_material_id(),0))
+	if not start is int or start<1 or material==null:
+		var failed:=EquipmentMax.Outcome.new("error",0)
+		failed.reason="integer_transport"
+		return failed
+	var inputs: Dictionary = {"start":start,"max_count":9223372036854775807-start,"wallet":profile.resources.get("1",0),"material":material if signature.material_unlocked else 0,"supported":_max_supported(signature),"price_signature":{"cost_key":signature.cost_key,"rows":signature.rows,"evolution":signature.evolution}}
+	var outcome: EquipmentMax.Outcome = equipment_queries.request(inputs)
+	_max_bindings[outcome.request_id]={"profile":profile,"signature":signature,"consumed":false}
+	return outcome
+
+func poll_max_upgrade(request_id: int) -> EquipmentMax.Outcome:
+	if not _max_bindings.has(request_id):
+		return EquipmentMax.Outcome.new("error",request_id)
+	var binding: Dictionary = _max_bindings[request_id]
+	if binding.consumed or not is_same(binding.profile,profile) or binding.signature != _max_signature(str(binding.signature.category),int(binding.signature.index)):
+		equipment_queries.cancel(request_id)
+		var stale:=EquipmentMax.Outcome.new("stale",request_id)
+		stale.reason="dependency_changed"
+		return stale
+	return equipment_queries.poll(request_id)
+
+func cancel_max_upgrade(request_id: int) -> void:
+	equipment_queries.cancel(request_id)
+	_max_bindings.erase(request_id)
+
+func process_equipment_queries() -> void:
+	equipment_queries.pump()
+
+func confirm_max_upgrade(request_id: int, fingerprint: String) -> PurchaseOutcome:
+	var outcome: EquipmentMax.Outcome = poll_max_upgrade(request_id)
+	if outcome.status!="complete":return PurchaseOutcome.new("stale" if outcome.status=="stale" else "rejected")
+	var quote: Dictionary = equipment_queries.confirmed_content(request_id,fingerprint)
+	if quote.is_empty() or int(quote.count)<=0:return PurchaseOutcome.new("rejected")
+	var binding: Dictionary = _max_bindings[request_id]
+	# A new current-wallet ticket uses exactly the confirmed content. An old
+	# wallet-bound ticket is never revived after a credit, debit or ABA.
+	binding.consumed=true
+	var category: String = binding.signature.category
+	var index: int = int(binding.signature.index)
+	var costs: Dictionary = quote.resource_debit.duplicate(true)
+	if int(quote.material_debit)>0:costs[db.evolution_material_id()]=int(quote.material_debit)
+	var committed: bool = _commit_slot_quote(category,index,int(quote.count),costs)
+	equipment_queries.forget(request_id)
+	return PurchaseOutcome.new("committed",[slot_id(category,index)]) if committed else PurchaseOutcome.new("rejected")
+
 
 func leave(next: State) -> void:
 	if manual_hyperspace.active:manual_hyperspace.finish(self,false,"user_exit")

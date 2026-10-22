@@ -8,6 +8,9 @@ var elapsed_crew := {}
 var visible_key := ""
 var effect_generation := 0
 var income_elapsed := 0.0
+# Generated source receipts; remove each only after its own exact credit.
+var _income_due: Array = []
+var _delivering_income := false
 var native_prepared := false
 var native_refit:Dictionary={}
 
@@ -21,6 +24,7 @@ func load_state(g, raw: Dictionary) -> void:
 	elapsed_visible.clear()
 	elapsed_crew.clear()
 	income_elapsed=0
+	_income_due.clear()
 	g.profile.galaxies={}
 	for key in g.db.data.get("galaxy",{}):
 		var definition: Dictionary=g.db.data.galaxy[key]
@@ -127,22 +131,35 @@ func prepare_region_refit(g,key:String,dt:float,count:int)->bool:
 	native_refit={"key":key,"dt":dt,"count":count,"region":predicted,"plan":plan,"session":session}
 	return true
 
+func deliver_income(g) -> bool:
+	if _delivering_income:return false
+	_delivering_income=true
+	while not _income_due.is_empty():
+		var source:Dictionary=_income_due[0]
+		if g.currency_income(source.id,source.amount).status!="committed":
+			_delivering_income=false
+			return false
+		_income_due.pop_front()
+		g.resource_samples.append({"time":source.time,"production_time":source.production_time,"id":source.id,"amount":source.amount,"origin":"galaxy"})
+		g.event.emit("galaxy_income",{"id":source.id,"amount":source.amount})
+	_delivering_income=false
+	return true
+
 func advance(g, dt: float) -> void:
 	if dt<=0 or g.paused or regions.is_empty():return
 	if not prepare_native_advance(g,dt):return
 	native_prepared=false
 	# Unlock checks run at the same bounded online cadence, never from UI reads.
 	income_elapsed+=dt
-	if income_elapsed>=setting(g,"income_interval"):
+	if _income_due.is_empty() and income_elapsed>=setting(g,"income_interval"):
 		refresh_unlocks(g)
 		var rates: Dictionary=effects.rates(g,self)
 		for pair in [["iron",str(int(setting(g,"iron_resource_id")))],["uranium",str(int(g.db.config.reactorUraniumId))]]:
 			var amount=g.N.multiply(rates[pair[0]],income_elapsed)
 			if g.N.compare(amount,0)>0:
-				g.profile.resources[pair[1]]=g.N.add(g.profile.resources.get(pair[1],0),amount)
-				g.resource_samples.append({"time":g.economy_time(),"production_time":g.production_time(),"id":pair[1],"amount":amount,"origin":"galaxy"})
-				g.event.emit("galaxy_income",{"id":pair[1],"amount":amount})
+				_income_due.append({"id":str(pair[1]),"amount":amount,"time":g.economy_time(),"production_time":g.production_time()})
 		income_elapsed=0
+	if not deliver_income(g):return
 	for key in regions:
 		var region=regions[key]
 		if not region.state.status in ["exploring","developing"]:continue

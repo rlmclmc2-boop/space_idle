@@ -115,7 +115,7 @@ func equipment_combat_growth(base: float, multiplier: float, level: int) -> Vari
 
 func max_equipment_level(key: String) -> int:
 	# Integer storage boundary only; legacy row count is not a gameplay cap.
-	return 2147483647 if equipment.has(key) else 1
+	return 9223372036854775807 if equipment.has(key) else 1
 
 func weapon_motion_value(key: String, fallback: float) -> float:
 	return float(data.get("weapon_motion",{}).get(key,{}).get("value",fallback))
