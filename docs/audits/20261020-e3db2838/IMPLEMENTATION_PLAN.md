@@ -20,7 +20,7 @@ The [cold-process source and input freeze](stages/S12/P1_EXIT_COLD_FREEZE.json) 
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**当前权威：** S00—S11 已关闭；S12/P1 审计原型未通过、旧运行实现暂停。用户已允许极端 MAX 估算数量，适用 [P0/P1 极端 MAX 修订](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md)，优先于旧契约的极端精确累计前置绑定。旧失败历史保留；极端 MAX 总费用近似及旧退款差额已批准，执行 MAX-APPROX-v1 的确定性切换与12%费用界。本次仅契约修订，待 dot 回读；main 仍为 `31e79337741bf9860d69fff21dae6be994dacd00`，无产品接入授权。既有 [场景](stages/S12/P1_SCENARIOS_V3_AUTHORITY.md)、[原始证据](stages/S12/P1_EXPLORATORY_EVIDENCE.md) 和 [可行性记录](stages/S12/P1_FEASIBILITY_AND_GAPS.md) 按该修订解释，不构成 PASS。
+**Current authority:** S00-S11 are closed. S12/P1 has a [limited same-object dual PASS for the audit-only finite prototype](stages/S12/P1_EXIT_DUAL_REVIEW.md) at evidence `163ad3dba4131036446faaa37a6073b513fb3be1`. S12/A07 remains open; the prior runtime candidate is paused, and P2 plus a new implementation thread await user approval. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. The [extreme-MAX policy amendment](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md) remains approved; [first frozen FAIL](stages/S12/P1_EXIT_COLD_RESULT.md) and older performance failures remain historical. This P1 verdict does not validate real Godot/native/save/UI integration or authorize main merge.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -754,22 +754,26 @@ integration: N/A
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T09:30:26Z", next_stage_allowed: true}
 ```
 
-### S12 current: extreme MAX contract amendment; P1 not passed
+### S12 current: P1 audit-prototype limited dual PASS; S12/A07 open
 
 ```yaml
 stage: S12
-status: contract_review
+status: awaiting_decision
 p0: extreme_max_quantity_and_fee_policy_approved
-p1: exploratory_not_passed
-implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
-implementation_state: paused
+p1: audit_only_finite_exit_limited_dual_pass
+p1_reviewed_evidence_sha: 163ad3dba4131036446faaa37a6073b513fb3be1
+p1_review_record: stages/S12/P1_EXIT_DUAL_REVIEW.md
+p2: not_started_pending_user_approval
+prior_runtime_implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
+prior_runtime_implementation_state: paused
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
 runtime_final_sha: N/A
 reuse_reference_sha: 2a6119564e1cffc07bf0b833c3118b97faf6d728
 reuse_reference_approved: false
 evidence_branch: audit/code-review-e3db2838-20261020
-evidence_entry: stages/S12/P0_CONTRACT_P1_GATE.md
-next_action: dot_reviews_MAX_APPROX_v1_then_hands_audit_only_implementation_to_original_sol
+evidence_entry: stages/S12/P1_EXIT_DUAL_REVIEW.md
+next_action: await_user_approval_for_p2_and_new_implementation_thread
+closure: open
 ```
 
 The entries below are historical candidate records, not current approval or execution instructions. This contract supersedes their scope proposals; it does not change their historical evidence or verdicts.
@@ -778,11 +782,11 @@ The entries below are historical candidate records, not current approval or exec
 
 **2026-10-21 S12 sparse runtime update:** the audit-only sparse core and Git-byte index at `c7cac7d6c242b2abd8656f92ee64fe8fe623b706` received a limited same-object dual PASS as an integration input. Runtime candidate `42cc37c6d3470ab2e195df9c302de617a7402fa6` replaces the one-base blocker with sparse wallet wiring. Its probes, operation-budget boundary, and outstanding full review are in `stages/S12/SPARSE_RUNTIME_EVIDENCE.md`. S12/A07 remain open; main stays `31e79337741bf9860d69fff21dae6be994dacd00`; S13-S24 remain not_started.
 
-**2026-10-21 S12 correction after dual FAIL:** dot and original astra both rejected the prior full runtime/evidence pair `42cc37c6d3470ab2e195df9c302de617a7402fa6` / `79bead0bd6be8124eb94067141ccfc07b02ef3be`. Runtime `68205410956f555e021eb955095769e7a3896df5` addresses the reactor x10, jewel pickup, atomic refund, resumable MAX/cashflow, native save preflight, Windows parse/startup, and status/index findings. `stages/S12/CANDIDATE_6820541.md` is the current complete evidence entry. This is a review candidate, not a PASS, approval, main merge, or S13 start. The four user-authorized obsolete remote branches named in the Current stage record were deleted and their absence verified remotely.
-parent_review: PENDING
-astra_review: PENDING
-integration: PENDING
-closure: open
+**2026-10-21 S12 correction after dual FAIL:** dot and original astra both rejected the prior full runtime/evidence pair `42cc37c6d3470ab2e195df9c302de617a7402fa6` / `79bead0bd6be8124eb94067141ccfc07b02ef3be`. Runtime `68205410956f555e021eb955095769e7a3896df5` addresses the reactor x10, jewel pickup, atomic refund, resumable MAX/cashflow, native save preflight, Windows parse/startup, and status/index findings. `stages/S12/CANDIDATE_6820541.md` is the historical candidate evidence entry. This is a review candidate, not a PASS, approval, main merge, or S13 start. The four user-authorized obsolete remote branches named in the Current stage record were deleted and their absence verified remotely.
+```yaml
+historical_runtime_candidate_parent_review: PENDING
+historical_runtime_candidate_astra_review: PENDING
+historical_runtime_candidate_integration: PENDING
 ```
 
 **S12 P0 性能预登记补充：** dot 已通过 `3a6b0bdaca320d771736f9f10f33c91e2ac7bc5c` 契约方向；原 astra 接受 [P1 固定性能目标与配置冻结要求](stages/S12/P1_PERFORMANCE_PREREGISTRATION.md)。4 ms工作片段/账本操作、100 ms取消、普通至50000档2秒及十亿档10秒、每场景10次冷运行。尚未执行原型；超目标保持未通过，不放宽门槛。
