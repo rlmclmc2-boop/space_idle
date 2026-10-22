@@ -33,7 +33,7 @@ func _initialize() -> void:
 		return
 	var game := BattleGame.new(db, true)
 	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
-	game.profile.cleared = [1,3,4]
+	game.profile.cleared = range(1,60)
 	game.rebuild_unlocks()
 	game.economy.credit("2", 10000.0)
 	game.economy.credit_fragments(123.45)
@@ -64,6 +64,10 @@ func _initialize() -> void:
 	game.economy.credit("1",100)
 	check(game.select_tech("weapon_accuracy") and game.set_tech_input("1",10),"Start research with paid input before disk save")
 	game.advance_hightech(1.0)
+	game.economy.credit("1",100000.0)
+	check(game.switch_ship("Heavy_Battleship") and game.upgrade_slot("weapons",4,3),"Prepare invested dormant module")
+	check(game.equip_slot("weapons",4,"missile") and game.switch_ship("Frigate"),"Store switch deadline on dormant module")
+	check(not game.profile.has("loadout") and not game.profile.has("selectedShip") and not game.profile.has("equipmentSwitchUntil"),"Profile no longer owns equipment or switch deadlines")
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -84,6 +88,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var restored := BattleGame.new(db, true)
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
+	check(restored.equipment.selected_ship()==saved.selectedShip and restored.module_entry("weapons",4).level==4 and restored.module_entry("weapons",4).key=="missile" and restored.equipment.save_data().equipmentSwitchUntil==saved.equipmentSwitchUntil,"Disk reopen/recovery preserves hull, dormant investment and switch deadline")
 	if phase == "latest":
 		check(restored.economy.resources() == saved.latest, "Second real process reopen selects latest commit")
 		var damaged := FileAccess.open(BattleGame.SAVE_PATH, FileAccess.WRITE)
@@ -109,6 +114,10 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	bad.reactorAllocation.weapons = -1
 	restored.load_progress_data(bad)
 	check(restored.reactor.allocations() == saved.reactorAllocation and restored.economy.resources() == saved.resources, "Invalid allocation cannot install resources first")
+	var bad_equipment:=unchanged.duplicate(true)
+	bad_equipment.loadout.weapons[0].level=-1;bad_equipment.resources["1"]=999
+	restored.load_progress_data(bad_equipment)
+	check(restored.module_entry("weapons",0).level==unchanged.loadout.weapons[0].level and restored.economy.resources()==saved.resources,"Invalid equipment rejects the whole snapshot before any balance install")
 	restored.hyperspace.last_error = ""
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH + ".tmp")
 	restored.economy.credit("1", 7)

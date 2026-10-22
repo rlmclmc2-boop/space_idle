@@ -19,8 +19,9 @@ func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=fals
 	db.ships[db.ships.keys()[0]].defenseSlots=4
 	var g=SharedCommandGame.new(db,false) if shared_command else preload("res://scripts/presented_battle_game.gd").new(db,false)
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();fund(g,{"1":1e30,"2":1e30})
-	g.profile.loadout.weapons[0].key=key
-	g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1},{"key":"shield","level":1},{"key":"armour","level":1}]
+	var equipment=g.equipment.save_data();equipment.loadout.weapons[0].key=key
+	equipment.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1},{"key":"shield","level":1},{"key":"armour","level":1}]
+	check(g.equipment.install_snapshot(equipment,db),"Equipment fixture validates")
 	if beam_chain:
 		g.profile.enhancementLevel=40;g.profile.cleared=range(1,61);g.profile.highestLevel=61
 		g.rebuild_unlocks();g.set_enhancement_branch("weapons","repeat",1,"B")
@@ -133,7 +134,8 @@ func run()->void:
 	check(not g.start(0,false) and g.native_execution==owner,"invalid start retains current owner")
 	g.begin_retreat()
 	g=fixture("laser");g.native_before_configuration_change();g.projectile_clear();g.missile_queue.clear();g.jewel_repeats.clear()
-	g.profile.loadout.weapons=[{"key":"laser","level":2},{"key":"laser","level":9},{"key":"missile","level":20}]
+	var drone_equipment=g.equipment.save_data();drone_equipment.loadout.weapons=[{"key":"laser","level":2},{"key":"laser","level":9},{"key":"missile","level":20}]
+	check(g.equipment.install_snapshot(drone_equipment,g.db),"Drone host fixture validates")
 	var drone={"id":"main_max","weapon":"laser","ultimate":false,"blue_source_bonus":false,"legendary":false,"origin_quality":"blue","level":1,"affixes":[],"hangings":[]}
 	g.profile.hyperspace.inventory.drones[drone.id]=drone;g.profile.hyperspace.inventory.equipped=[drone.id]
 	g.invalidate_stat_cache();g.reset_player();g.native_handoff_count=0
@@ -161,11 +163,11 @@ func run()->void:
 		var quote=g.slot_upgrade_cost("weapons",0,1)
 		fund(g,{"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5})
 		var legacy=preload("res://scripts/presented_battle_game.gd").new(g.db,false)
-		legacy.profile=g.profile.duplicate(true);legacy.research.install_snapshot(g.research.save_data(),g.db.data.ai_tech_tree);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
+		legacy.profile=g.profile.duplicate(true);legacy.equipment.install_snapshot(g.equipment.save_data(),g.db);legacy.research.install_snapshot(g.research.save_data(),g.db.data.ai_tech_tree);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
 		legacy.enable_compiled_combat_rules();legacy.invalidate_stat_cache()
 		var expected_ok=legacy.upgrade_equipment_batch(mode)
 		var actual_ok=g.upgrade_equipment_batch(mode)
-		check(actual_ok==expected_ok and g.profile.loadout==legacy.profile.loadout and g.economy.resources()==legacy.economy.resources(),"main ordered partial-budget batch preserved: "+mode)
+		check(actual_ok==expected_ok and g.equipment.save_data()==legacy.equipment.save_data() and g.economy.resources()==legacy.economy.resources(),"main ordered partial-budget batch preserved: "+mode)
 		check(N.compare(g.player.armour,legacy.player.armour)==0 and N.compare(g.player.shield,legacy.player.shield)==0,"main sequential defence deltas preserved: "+mode)
 		check(g.native_execution==owner and g.native_handoff_count==0,"one prepared batch retains native owner: "+mode)
 		g.begin_retreat()
@@ -173,9 +175,9 @@ func run()->void:
 	check(not g.upgrade_equipment_batch("1") and g.native_execution==owner and g.native_handoff_count==0,"unaffordable batch leaves native owner intact")
 	g.begin_retreat()
 	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
-	var batch_profile=g.profile.duplicate(true)
+	var batch_profile=g.equipment.save_data()
 	var batch_resources=g.economy.save_data()
-	check(not g.upgrade_equipment_batch("1") and g.profile==batch_profile and g.economy.save_data()==batch_resources,"failed whole-batch validation spends nothing and runs no purchase")
+	check(not g.upgrade_equipment_batch("1") and g.equipment.save_data()==batch_profile and g.economy.save_data()==batch_resources,"failed whole-batch validation spends nothing and runs no purchase")
 	g.begin_retreat()
 	print("NATIVE NUMERIC UPGRADE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

@@ -23,9 +23,13 @@ func points(scene)->Dictionary:
  return out
 func run()->void:
  for native in [false,true]:
-  var scene=load("res://main.tscn").instantiate();scene.set_script(UI);scene.automation_args=["--capture"];scene.music_on=false
+  var scene=load("res://main.tscn").instantiate();scene.set_script(UI);scene.automation_args=["--capture","--capture-all"];scene.music_on=false
   root.add_child(scene);current_scene=scene;scene.set_process(false);scene.automation_args=[]
-  var g=scene.game;g.save_enabled=false;g.profile.onboarding.completed=true;scene.beginner_guide.hide();g.pending_unlocks.clear();g.profile.loadout.weapons=[];g.invalidate_stat_cache()
+  var g=scene.game
+  check(g.economy.balance("1")==5000.0 and g.economy.balance("2")==100.0,"capture-all installs the complete economy snapshot")
+  g.save_enabled=false;g.profile.onboarding.completed=true;scene.beginner_guide.hide();g.pending_unlocks.clear();var equipment=g.equipment.save_data()
+  for entry in equipment.loadout.weapons:entry.key=""
+  g.equipment.install_snapshot(equipment,g.db);g.invalidate_stat_cache()
   check(g.start(1,false),"real first-stage travel starts")
   g.native_execution_auto=native
   g.distance=float(g.db.levels[0].groups[0].position)*float(g.db.levels[0].length)-0.1

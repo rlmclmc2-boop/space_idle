@@ -1,0 +1,159 @@
+{
+  "runtime_commit": "f04d88f524af7dabaa5711680903c39b109b3e70",
+  "capture_fix_commit": "af016fb2b71f8ef1e8d1ecb3a3aa4d03050b60b4",
+  "branch": "impl/domain-architecture-20261022",
+  "scope": "Equipment ownership, ordered upgrade commits, joint hull/drone refits and current-format persistence",
+  "sha256_basis": "Canonical Git blob bytes and LF-normalized fixture/log text; binary bytes for image/runtime",
+  "sources": {
+    "space-battleship/scripts/balance_game.gd": {
+      "git_blob": "0850bc934b17675cae5e40857b09febcb33eec25",
+      "sha256": "883e8d23becdb92786a0c844fc048f8f935f2dabf870813e4a86f3e0644b28a1"
+    },
+    "space-battleship/scripts/battlefield.gd": {
+      "git_blob": "75057bf2adfaa96348af2fc2088848836bb9e5bb",
+      "sha256": "3874b85f8971f0681fdb18e83a0b9f7a0aed6d809c19c0c750df8e7179d36aba"
+    },
+    "space-battleship/scripts/economy_state.gd": {
+      "git_blob": "2afac3970111cb91ad413387777110c9a223ca4c",
+      "sha256": "2bb7e4f63b732de057c6a987a2853c8ad1634087244297f0f387a3c5b17983f5"
+    },
+    "space-battleship/scripts/enhancement_branches.gd": {
+      "git_blob": "c73f9ce12796675113888dacc632f3310fd571e6",
+      "sha256": "d9c0d455f169f68fc9bf093966972307ab12fd4cf4618eb48257a069217c69fe"
+    },
+    "space-battleship/scripts/equipment_state.gd": {
+      "git_blob": "933dddc272b62902ac547fe1d2eba08262053357",
+      "sha256": "a426df1841f3b842007d6b41d2956515f1dd8b63086e89e08e1095c1de4e0a4b"
+    },
+    "space-battleship/scripts/equipment_tab.gd": {
+      "git_blob": "5caf72687c12a6ce1d8210bd6dff7abc00940f8b",
+      "sha256": "8318872a053de9927fc0103de3759be6b190a8eb46139c869c05516b038c1866"
+    },
+    "space-battleship/scripts/fleet_battle_runner.gd": {
+      "git_blob": "7d3390162f18245608faac1341b54f45ca69c993",
+      "sha256": "c2ff0d925aa736020047b1b234b5e72e47cc933cee723b289e12fe21bb5986aa"
+    },
+    "space-battleship/scripts/game.gd": {
+      "git_blob": "f8d3380d6d868449c38a0fa22dd0fb6c887b34ed",
+      "sha256": "3399b8c12bda1a41a08d4f1f7a0cf5eaa7407a1959172ee1973fae2ca848af30"
+    },
+    "space-battleship/scripts/hyperspace_battle_return.gd": {
+      "git_blob": "fbe442415b6d6f921502794b7ca0d679a49ae06b",
+      "sha256": "bff0357e4bf86ed6008cd68a89c01cf6e627b4bae07389a7991c091ab302147b"
+    },
+    "space-battleship/scripts/hyperspace_equipment_ui.gd": {
+      "git_blob": "e22b974fcf8caa259b5b6580a82305906948715b",
+      "sha256": "0ae8fdff239d2e7fc4b2da43a5ef659778c4c65e2860a52a40e3dd4fbb4a4b02"
+    },
+    "space-battleship/scripts/hyperspace_permissions.gd": {
+      "git_blob": "819203098361e32c44006c1e3b314b01539974ac",
+      "sha256": "ed8b0ba9790542c5fa68a42fc73f8a35c4a5cf059055b23a272ac31da614416e"
+    },
+    "space-battleship/scripts/hyperspace_system.gd": {
+      "git_blob": "b028f5c744c4d3f029b82eb3fab4703b57e8fdad",
+      "sha256": "d960bc87fc007bcac457caaf5b24278b659b7131b6d4590f688d2d9c6265ac76"
+    },
+    "space-battleship/scripts/main.gd": {
+      "git_blob": "cf5c9a278c0c4523a8b367f589737e0198812554",
+      "sha256": "19f3411782e149d0dbf2c94cfca543038c309ece8c2a974e952389d11eb3403d"
+    },
+    "space-battleship/scripts/native_execution_session.gd": {
+      "git_blob": "47043a944ef85ca29a088bdb45d3bf986b661f63",
+      "sha256": "c2ed7dd13010af0931410a02f520a620db9b19fbc383b3861aa3be3352161319"
+    },
+    "space-battleship/scripts/player_loadout_generator.gd": {
+      "git_blob": "737b578468f566957cbd414cde0b03e847082603",
+      "sha256": "fcca5e2c7935599c492405a95514364cc2ef42955c639cfc379de7b9e0f38d88"
+    },
+    "space-battleship/scripts/presented_battle_game.gd": {
+      "git_blob": "3e8cc135d93d6c5a4243b737fb2345d2ad8031c1",
+      "sha256": "56edace313105d9231e0d71cabcec394b437c17e7b9891b090c6abdd5898153c"
+    },
+    "space-battleship/scripts/save_transfer.gd": {
+      "git_blob": "df47da37d4d1394b6b9aebaf6e8daf234107dd04",
+      "sha256": "78670789260d2f83e517430b88e7f9e8de0a02cb617fde3e1251ab64978aabaa"
+    },
+    "space-battleship/scripts/ship_panel.gd": {
+      "git_blob": "21a24f7bdb53c696343be010f30c5ea715066615",
+      "sha256": "e212782557e268bab48d029e41c0b514b21adf4225992f41f7cd19c16e0a7fb9"
+    },
+    "space-battleship/scripts/simulation_geometry_authority.gd": {
+      "git_blob": "5dd2099d145372d7ae2e71657aad98d34aa02cd9",
+      "sha256": "9be90582e6c45b9a1a52666fb92a452a2dae00d6d40e9945dda563b30c2f23bd"
+    }
+  },
+  "fixtures": {
+    "test/test_module_refit.gd": {
+      "sha256": "4c5849f23f984cef03c905dd252e42a9bdea2fd4d104b1207862f9bec6a0d37b"
+    },
+    "test/test_native_numeric_upgrade.gd": {
+      "sha256": "f9ccac1ea7cf0378d35e0216b9924a53c69637fb0a176e208e17bad195565fb5"
+    },
+    "test/test_save_boundaries.gd": {
+      "sha256": "628e4a8abe09a42ebc7608103b42340fe45fec0e32d7c43a73c5725b449cd7f0"
+    },
+    "test/test_ordinary_entry.gd": {
+      "sha256": "d0733dce778bb36ad8a2055131d153fd52b0678468812f2bc2b9c0e8ed346d5c"
+    }
+  },
+  "evidence": {
+    "entry-native.png": {
+      "sha256": "36801f356272173d6a006bfb98aaef487f4a38af4ee27b97c160534f7ab99b57"
+    },
+    "entry.log": {
+      "sha256": "b6da13db3d31013a1908f4d0810f0e500c58171a69178f83b0c523f42f8ec7c7"
+    },
+    "generator-attempt.log": {
+      "sha256": "b628837dbe04e80974e66b2bf2d39f8e736d3795717ac6aca229053dfb88a456"
+    },
+    "latest.log": {
+      "sha256": "e8ae1869da57febe78d39169322e6767014d77c5620d6ae32e4dc6a4978cc357"
+    },
+    "native.log": {
+      "sha256": "8212ed0ab588fccb1162403a8b2a4e2b79d38bc2514e18bbfedf643445e5b4f6"
+    },
+    "recovery.log": {
+      "sha256": "4048eba405d60f89cdbfcb0b0fa05d874586bb4b04852fa5ece6a2b5dc937597"
+    },
+    "refit.log": {
+      "sha256": "7ac34ee39c2ef8f27cc4978c35293ba2089a55298cd9ffc898dec5dfa8facfda"
+    },
+    "reopen.log": {
+      "sha256": "062e21ea5f33bfe13da436180e02c13b860403abd2a60bf77dcc07d565450085"
+    },
+    "write.log": {
+      "sha256": "850fab88fadd620ff64370b825b36f771073e998ca87e3afd861260a9e18148a"
+    }
+  },
+  "checks": {
+    "module_refit_and_adapter": 63,
+    "native_numeric_upgrade": 110,
+    "save_write": 17,
+    "save_reopen": 12,
+    "save_latest": 4,
+    "save_recovery": 6,
+    "ordinary_entry": 10
+  },
+  "candidate_checks": 222,
+  "candidate_failures": 0,
+  "additional_attempt": {
+    "script": "test_player_loadout_generator.gd",
+    "result": "Three assertions failed (selected-ship count and two old hard-coded starter attributes); stopped by 45-second process timeout. No full-suite PASS claimed. Narrow changed adapter checks are included in module_refit.",
+    "fixture_sha256": "f893f5a2dcefcaee53a17bfc1dd586467bfbf2328033612c7ff42d3d673468f7"
+  },
+  "engine": {
+    "version": "4.7.2.stable.official.ed1daf0bf",
+    "sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424"
+  },
+  "native": {
+    "sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  },
+  "limitations": [
+    "Stage 1 incomplete; enhancement, crew, planet, galaxy and remaining hyperspace ownership pending",
+    "Ordinary entry fixture disables saving; real disk checks use the separate four-process save fixture",
+    "Not full product or complete-picture performance acceptance",
+    "Existing native structural-refit handoff remains; this candidate removes its duplicate numeric purchase planner only",
+    "C2 material evidence remains tied to 580aea8e; C3 research evidence remains tied to c7d91ec6; neither whole suite repeated here",
+    "System certificate-store warning remains; no script errors in the 222 passing checks"
+  ]
+}
