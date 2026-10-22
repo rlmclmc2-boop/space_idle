@@ -19,3 +19,5 @@
 船员运行候选 ccf124816e040a246b493e43653237c279510988：状态/保存/准备提交归船员域，Game 联合结算共享经验与派遣；300 项必要检查通过。下一精确范围：game.gd 星球函数、planet_buildings.gd、planet_buffs.gd、保存验证及其 UI/native 直接消费者。继续迁移星球，再接星系；不合 main。
 
 星球运行候选 e1a1d9b7ac7a124763e1805d3d7d8e808ff9cd83：探索/建筑/征服退出 profile，当前快照严格安装，993 项相关验证通过。用户更新：不要求现有存档连续性，可新档，不为旧记录加兼容；改造后持久化可靠性仍必须保证，不删除个人存档。下一精确范围：galaxy_system.gd、galaxy_region.gd、galaxy_effect_aggregator.gd、Game/native 直接接线与既有星系专项。
+
+加载顺序修订 46bdab29035abd4c8c95fc08472a279a9ab6f21b：所有领域安装后才建立贡献、协调容量和船员调度；extra_storage +反应炉岗位+超基础容量分配的真实四进程保存验证 71 项通过。强化修订和船员获双审局部通过，星球修订待复核；继续既定星系范围，不合 main。

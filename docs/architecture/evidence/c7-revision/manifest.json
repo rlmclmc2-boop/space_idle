@@ -1,0 +1,25 @@
+{
+  "runtime_sha": "46bdab29035abd4c8c95fc08472a279a9ab6f21b",
+  "result": {
+    "save_processes": [
+      28,
+      21,
+      10,
+      12
+    ],
+    "total": 71,
+    "failures": 0
+  },
+  "execution": "Existing test/run.py test_save_boundaries.gd --headless; four separate Godot 4.7.2 processes, isolated APPDATA, real native writer lock and persist=true/stat_cache_enabled=true. Valid extra_storage level 2, reactor_upgrade crew, allocation above unboosted capacity. No unrelated suites rerun.",
+  "sha256": {
+    "space-battleship/scripts/game.gd": "4fa0e7143787368d40868104b467ee836204616e47038eb4dd24c1b18dc172c5",
+    "space-battleship/scripts/galaxy_system.gd": "fd6ef8405184a1da6caee2c3cc5d657c67cc98d2dc18c0c53d75a998d494b470",
+    "test/test_save_boundaries.gd": "eb643b13b95d1f9d2288f704e0538c2ea71eefc96ace05d67976a5a783941ce5",
+    "docs/architecture/evidence/c7-revision/save-latest.log": "943a4d797d134624549babb6ee80732c69de72d6d572d88786864b4276c61ead",
+    "docs/architecture/evidence/c7-revision/save-recovery.log": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db",
+    "docs/architecture/evidence/c7-revision/save-reopen.log": "95663f8010536fdf92a7b95352f5b989355c73ab56351fa9f60a6a356860c521",
+    "docs/architecture/evidence/c7-revision/save-write.log": "b6b49d98725bd789a75d99ad72a8c67272cad2e5ebe5e023866babff0133192c"
+  },
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "limitations": "Load-order revision only, not stage 1 or full product acceptance. Known system certificate warning; no script errors. Personal saves untouched."
+}
