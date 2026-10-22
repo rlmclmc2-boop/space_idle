@@ -15,11 +15,12 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+import sys
 
 from saved_game_perf import MODULES, instrument
 
 ROOT = Path(__file__).resolve().parent.parent
-PARTS = ('scripts', 'data', 'assets', 'addons', 'dev', 'project.godot', 'main.tscn')
+PARTS = ('scripts', 'shaders', 'tools', 'data', 'config_excel', 'assets', 'addons', 'dev', 'project.godot', 'main.tscn')
 
 
 def main():
@@ -61,6 +62,14 @@ def main():
             shutil.copytree(origin, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.blend', '*.blend1', '__pycache__'))
         else:
             shutil.copy2(origin, target)
+    # Same verified native runtime and writer-lock capability as test/run.py.
+    sys.path.insert(0, str(ROOT / 'tools'))
+    from play_main import verified_bundle, DESCRIPTOR
+    bundle, _, _ = verified_bundle(ROOT)
+    (project / 'bin').mkdir(exist_ok=True)
+    shutil.copy2(bundle, project / 'bin/space_native.dll')
+    (project / 'space_native.gdextension').write_text(DESCRIPTOR, encoding='utf-8')
+    shutil.copy2(ROOT / '太空战舰.xlsx', area / '太空战舰.xlsx')
     shutil.copy2(ROOT / 'test/whole_game_perf.gd', project / 'probe.gd')
     shutil.copy2(ROOT / 'test/fixtures/galaxy_1_complete.json', project / 'galaxy_fixture.json')
     (project / '.runtime').mkdir(exist_ok=True)
@@ -87,11 +96,16 @@ def main():
     env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
+    startup = None
+    if os.name == 'nt':
+        startup = subprocess.STARTUPINFO()
+        startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startup.wShowWindow = 0
     with (area / (args.label + '-import.log')).open('w', encoding='utf-8') as log:
-        subprocess.run([*engine, '--headless', '--editor', '--import', '--quit'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180, check=True)
+        subprocess.run([*engine, '--headless', '--editor', '--import', '--quit'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180, check=True, startupinfo=startup)
     log_path = area / (args.label + '.log')
     with log_path.open('w', encoding='utf-8') as log:
-        result = subprocess.run([*engine, *(['--headless'] if args.headless else []), '--audio-driver', 'Dummy', '--resolution', '1373x883', '--disable-vsync', '--script', 'res://probe.gd'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180)
+        result = subprocess.run([*engine, *(['--headless'] if args.headless else []), '--audio-driver', 'Dummy', '--resolution', '1373x883', '--disable-vsync', '--script', 'res://probe.gd'], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=180, startupinfo=startup)
     text = log_path.read_text(encoding='utf-8', errors='replace')
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
@@ -99,7 +113,8 @@ def main():
     report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, 'exit': result.returncode, 'environment': environment, 'rows': rows}
     (area / (args.label + '.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print('Exit:', result.returncode, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
-    if result.returncode or len(rows) != expected or 'SCRIPT ERROR' in text or 'ERROR:' in text:
+    unexpected_errors = [line for line in text.splitlines() if 'ERROR:' in line and line != 'ERROR: Failed to read the root certificate store.']
+    if result.returncode or len(rows) != expected or 'SCRIPT ERROR' in text or unexpected_errors:
         print(text[-4000:])
         return 1
     return 0

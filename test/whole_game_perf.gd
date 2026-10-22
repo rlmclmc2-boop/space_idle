@@ -42,33 +42,59 @@ func run():
  if is_instance_valid(scene.beginner_guide):scene.beginner_guide.hide()
  g.profile.cleared=range(1,101);g.profile.highestLevel=101
  g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
- for p in g.profile.planets.values():p.conquered=true
- g.rebuild_unlocks();g.pending_unlocks.clear();g.galaxy.refresh_unlocks(g)
- g.profile.scientists=49
- for key in g.db.data.hightech:
-  g.profile.scientistAssignments[key]=11
-  g.profile.techPoints[key]=g.hightech_required(key)*0.45
  var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://galaxy_fixture.json"))
- g.galaxy.load_state(g,{"galaxy_1":fixture.save})
- if OS.get_environment("PERF_RICH")=="1":
-  g.profile.selectedShip="Heavy_Battleship"
-  var balance=float(OS.get_environment("PERF_BALANCE")) if not OS.get_environment("PERF_BALANCE").is_empty() else 1e80
-  g.profile.resources={"1":balance,"2":balance}
-  g.profile.jewelFragments=1e40;g.profile.enhancementLevel=30
-  g.profile.enhancementAttacks=1000000;g.profile.enhancementHits=1000000
-  g.profile.loadout={"weapons":[],"defence":[]}
-  for key in ["laser","missile","cannon","longLaser","laser","missile","cannon","longLaser"]:g.profile.loadout.weapons.append({"key":key,"level":150})
-  for key in ["shield","armour","shield","armour"]:g.profile.loadout.defence.append({"key":key,"level":150})
-  for crew in g.profile.crew:crew.level=103;crew.exp=13159583000.0
-  for key in g.db.data.hightech:g.profile.hightechLevels[key]=303
-  g.planet_buildings.sync(g,"1")
-  for item in g.profile.planets["1"].buildings.values():item.status="built"
-  g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT;g.spawn_group()
+ var rich:=OS.get_environment("PERF_RICH")=="1"
+ var balance:=float(OS.get_environment("PERF_BALANCE")) if not OS.get_environment("PERF_BALANCE").is_empty() else 1e80
+ var owned:bool=g.get("equipment")!=null
+ var ship:="Heavy_Battleship" if rich else "Frigate"
+ var loadout:Dictionary={"weapons":[],"defence":[]}
+ for i in int(g.db.ship(ship).weaponSlots):loadout.weapons.append({"key":["laser","missile","cannon","longLaser"][i%4],"level":150 if rich else 1})
+ for i in int(g.db.ship(ship).defenseSlots):loadout.defence.append({"key":"armour" if i%2==0 else "shield","level":150 if rich else 1})
+ if owned:
+  var equipment:Dictionary=g.equipment.save_data();equipment.selectedShip=ship;equipment.loadout=loadout
+  assert(g.equipment.install_snapshot(equipment,g.db))
+  var wallet:Dictionary=g.economy.save_data();wallet.resources={"1":balance,"2":balance};wallet.jewelFragments=1e40
+  assert(g.economy.install_snapshot(wallet))
+  var growth:Dictionary=g.enhancement_growth.save_data();growth.enhancementLevel=30 if rich else 0;growth.enhancementAttacks=1000000;growth.enhancementHits=1000000
+  assert(g.enhancement_growth.install_snapshot(growth))
+  var crew:Dictionary=g.crew.save_data()
+  if rich:
+   for member in crew.crew:member.level=103;member.exp=13159583000.0
+  assert(g.crew.install_snapshot(crew,g.db))
+  var planets:Dictionary=g.planets.save_data();planets.merge(crew)
+  for planet in planets.planets.values():planet.conquered=true
+  if rich:
+   for item in planets.planets["1"].buildings.values():item.status="built"
+  assert(g.planets.install_snapshot(planets,g.db))
+  var research:Dictionary=g.research.save_data()
+  for key in g.db.data.ai_tech_tree:research.aiTechLevels[key]=30 if rich else 0
+  assert(g.research.install_snapshot(research,g.db.data.ai_tech_tree))
+  var galaxy:Dictionary=g.galaxy.save_data();galaxy.galaxies.galaxy_1=fixture.save.duplicate(true)
+  galaxy.galaxies.galaxy_1.pending_online_time=0.0;galaxy.galaxies.galaxy_1.pending_crew_count=0
+  assert(g.galaxy.install_snapshot(galaxy,g.db))
+  g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g);g.notify_configuration_changed();g.crew.reset_schedule(g)
+ else:
+  # The main baseline owns the same authored values in its former profile.
+  # This adapter is confined to the before/after fixture, not save compatibility.
+  g.profile.selectedShip=ship;g.profile.loadout=loadout;g.profile.resources={"1":balance,"2":balance};g.profile.jewelFragments=1e40
+  g.profile.enhancementLevel=30 if rich else 0;g.profile.enhancementAttacks=1000000;g.profile.enhancementHits=1000000
+  if rich:
+   for member in g.profile.crew:member.level=103;member.exp=13159583000.0
+  for planet in g.profile.planets.values():planet.conquered=true
+  if rich:
+   g.planet_buildings.sync(g,"1")
+   for item in g.profile.planets["1"].buildings.values():item.status="built"
+  for key in g.db.data.ai_tech_tree:g.profile.aiTechLevels[key]=30 if rich else 0
+  g.rebuild_unlocks();g.galaxy.load_state(g,{"galaxy_1":fixture.save});g.galaxy.refresh_unlocks(g);g.invalidate_stat_cache()
+ g.pending_unlocks.clear();g.native_execution_auto=false;g.reset_player()
+ if rich:
+  g.assign_crew("navigator","galaxy_explore","galaxy_2")
+  g.state=BattleGame.State.COMBAT;g.spawn_group()
   var template=g.enemies[0].duplicate(true);g.enemies.clear()
   for i in 3:
-   var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=200+80*i;enemy.y=230-2*i;enemy.hp=1e100;enemy.max_hp=1e100
+   var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=200+80*i;enemy.y=230-2*i;enemy.hp=1e50;enemy.max_hp=1e50
    g.enemies.append(enemy)
- g.invalidate_stat_cache()
+  g.native_execution_auto=true;g.admit_native_compiled_execution("native_rich15_layer2")
  scene.refresh_structure();scene.refresh_tab_visibility()
  print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"resolution":str(root.size),"cap":Engine.max_fps,"low_processor":OS.low_processor_usage_mode}))
  var realtime=OS.get_environment("PERF_REALTIME")=="1"
@@ -100,7 +126,8 @@ func run():
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1":
-    g.profile.resources["1"]*=1.0000000001;g.profile.resources["2"]*=1.0000000001
+    if owned:g.economy.credit_many({"1":balance*1e-10,"2":balance*1e-10})
+    else:g.profile.resources["1"]+=balance*1e-10;g.profile.resources["2"]+=balance*1e-10
    if not realtime:scene._process(1.0/60.0)
    var elapsed=Time.get_ticks_usec()-start
    await process_frame
@@ -111,13 +138,15 @@ func run():
     projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
-  var row={"page":page,"scenario":scenario_index,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw
    root.get_texture().get_image().save_png("res://.runtime/page-%d.png" % page)
  FileAccess.open("res://.runtime/whole-perf.json",FileAccess.WRITE).store_string(JSON.stringify(results," "))
  scene.set_process(false)
+ if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
+ if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
  scene.game.launch_provider=Callable();scene.game.target_provider=Callable()
  scene.queue_free();await process_frame;await process_frame
  Engine.remove_meta("saved_perf")
