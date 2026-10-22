@@ -93,13 +93,18 @@ func platform(key:String,at:Vector3,used:Array,rotation_y:=0.0) -> Node3D:
 
 func anchor(key:String,side:Vector3) -> Marker3D:return ports[key+"/"+str(side)]
 
-func bridge(a:Marker3D,b:Marker3D) -> void:
+func bridge(a:Marker3D,b:Marker3D,reused_mesh:Mesh=null) -> void:
 	var start:=a.global_position;var finish:=b.global_position
 	var direction:Vector3=(finish-start).normalized()
 	assert(a.global_basis.z.dot(direction)>0.999 and b.global_basis.z.dot(-direction)>0.999,"Bridge must mate to opposed outward sockets")
 	assert(absf(start.y-finish.y)<0.001,"Adapters must supply common service height")
 	var span:=start.distance_to(finish)
 	var node:=Node3D.new();node.name="ServiceBridge";add_child(node);node.global_position=(start+finish)*0.5;node.global_basis=Basis(Vector3.UP,atan2(direction.x,direction.z))
+	connections.append({"a":a,"b":b,"mesh":node,"span":span})
+	if reused_mesh!=null:
+		var body:=MeshInstance3D.new();body.name="StaticStructure";body.mesh=reused_mesh;body.material_override=material
+		body.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF;node.add_child(body)
+		return
 	# Hollow service volume; roof/floor/side skins stop exactly at socket planes.
 	box(node,Vector3(0,-0.79,0),Vector3(4.8,0.22,span),HULL)
 	for sign in [-1,1]:box(node,Vector3(sign*2.28,0,0),Vector3(0.24,1.36,span),HULL)
@@ -111,7 +116,6 @@ func bridge(a:Marker3D,b:Marker3D) -> void:
 		for z in [-span*0.23,span*0.23]:
 			box(node,Vector3(0,0.925,z),Vector3(4.2,0.045,0.085),EDGE)
 			for sign in [-1,1]:box(node,Vector3(sign*2.48,-0.05,z),Vector3(0.34,1.7,0.4),EDGE)
-	connections.append({"a":a,"b":b,"mesh":node,"span":span})
 
 func elbow(at:Vector3) -> Node3D:
 	var node:=Node3D.new();node.name="ElbowJunction";add_child(node);node.position=at

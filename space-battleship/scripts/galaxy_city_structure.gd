@@ -8,6 +8,7 @@ var mount_paths := {}
 var mount_cache := {}
 var rebuild_count := 0
 var platform_templates := {}
+var bridge_meshes := {}
 
 func configure(value) -> void:
 	layout=value
@@ -26,8 +27,15 @@ func configure(value) -> void:
 		platform_nodes.append(base)
 	for edge in layout.links:
 		var side:Vector3=(layout.point(edge[1])-layout.point(edge[0])).normalized()
-		bridge(anchor(layout.key(edge[0]),side),anchor(layout.key(edge[1]),-side))
-		var body:Node3D=connections[-1].mesh;bake(body);bridge_nodes.append(body)
+		var a:=anchor(layout.key(edge[0]),side);var b:=anchor(layout.key(edge[1]),-side)
+		var span:=a.global_position.distance_to(b.global_position)
+		# Equal spans have identical local bridge geometry. Keep each connection's
+		# real socket checks and placement; reuse only its finished static mesh.
+		bridge(a,b,bridge_meshes.get(span))
+		var body:Node3D=connections[-1].mesh
+		if not bridge_meshes.has(span):
+			bake(body);bridge_meshes[span]=body.get_node("StaticStructure").mesh
+		bridge_nodes.append(body)
 	rebuild_count+=1
 
 func platform_instance(key:String,at:Vector3,used:Array) -> Node3D:
