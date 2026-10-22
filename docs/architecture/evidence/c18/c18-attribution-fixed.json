@@ -1,0 +1,1913 @@
+{
+  "options": {
+    "label": "c18-attribution-fixed",
+    "godot": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+    "ref": "2908c768",
+    "reuse": "test\\work\\whole-perf-w20smxs9",
+    "headless": false,
+    "rich": true,
+    "enemies": 15,
+    "reactor_level": 1,
+    "balance": 1e+80,
+    "capture": false,
+    "max_quote": false,
+    "realtime": false,
+    "instrument": true,
+    "pages": "0,6,8,0,6,8",
+    "frames": 120,
+    "galaxy_steady": false
+  },
+  "exit": 0,
+  "environment": [
+    {
+      "adapter": "NVIDIA GeForce RTX 2060",
+      "cap": 0,
+      "display": "Windows",
+      "engine": "4.7.2-stable (official)",
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(1373, 883)",
+      "vendor": "NVIDIA"
+    }
+  ],
+  "rows": [
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 362.0,
+        "mean": 358.583333333333,
+        "p50": 361.0,
+        "p95": 362.0,
+        "p99": 362.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 120105,
+        "mean": 8881.45833333333,
+        "p50": 7919,
+        "p95": 10453,
+        "p99": 12492
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 7034,
+        "mean": 4243.91666666667,
+        "p50": 4300,
+        "p95": 5784,
+        "p99": 5964
+      },
+      "memory": 270383180,
+      "memory_delta": 707453,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 0,
+      "primitives": {
+        "max": 30018.0,
+        "mean": 24651.75,
+        "p50": 24452.0,
+        "p95": 29322.0,
+        "p99": 30016.0
+      },
+      "projectiles": {
+        "max": 27,
+        "mean": 16.5916666666667,
+        "p50": 17,
+        "p95": 27,
+        "p99": 27
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "switch_cpu_us": 408,
+      "switch_frame_us": 200513,
+      "switch_timings": {
+        "attribute_projection.configuration_inputs": [
+          7,
+          22,
+          8
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          3,
+          158,
+          67
+        ],
+        "attribute_projection.slot": [
+          22,
+          32,
+          4
+        ],
+        "attribute_projection.stat": [
+          4,
+          52,
+          18
+        ],
+        "attribute_projection.stat_inputs": [
+          7,
+          63,
+          20
+        ],
+        "battlefield._draw_muzzle_cues": [
+          1,
+          70,
+          70
+        ],
+        "battlefield.draw_battle": [
+          1,
+          43091,
+          43091
+        ],
+        "battlefield.draw_vertical_battle_hud": [
+          1,
+          2972,
+          2972
+        ],
+        "compiled_combat_rules.compile": [
+          18,
+          43,
+          4
+        ],
+        "game.enhancement_effects": [
+          3,
+          41,
+          19
+        ],
+        "game.enhancement_module_protection_capacity": [
+          3,
+          377,
+          255
+        ],
+        "game.enhancement_protection_status": [
+          1,
+          526,
+          526
+        ],
+        "game.jewel_equipment_stat": [
+          3,
+          166,
+          71
+        ],
+        "game.stat": [
+          4,
+          60,
+          21
+        ],
+        "main.draw_battle": [
+          1,
+          43078,
+          43078
+        ],
+        "main.draw_stars": [
+          1,
+          650,
+          650
+        ],
+        "main.refresh_system_nav": [
+          1,
+          396,
+          396
+        ],
+        "main.select_system": [
+          1,
+          404,
+          404
+        ]
+      },
+      "timings": {
+        "attribute_projection.configuration_inputs": [
+          910,
+          2666,
+          11
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          244,
+          14213,
+          134
+        ],
+        "attribute_projection.slot": [
+          2286,
+          3250,
+          13
+        ],
+        "attribute_projection.stat": [
+          520,
+          12306,
+          203
+        ],
+        "attribute_projection.stat_inputs": [
+          910,
+          6456,
+          21
+        ],
+        "battlefield._draw_muzzle_cues": [
+          120,
+          7893,
+          133
+        ],
+        "battlefield._process": [
+          120,
+          503695,
+          6984
+        ],
+        "battlefield.draw_battle": [
+          120,
+          153103,
+          1998
+        ],
+        "battlefield.draw_vertical_battle_hud": [
+          10,
+          9463,
+          1053
+        ],
+        "compiled_combat_rules.compile": [
+          1358,
+          3297,
+          8
+        ],
+        "crew_system.advance": [
+          120,
+          288,
+          3
+        ],
+        "equipment_tab.refresh_affordability": [
+          120,
+          81519,
+          1125
+        ],
+        "equipment_tab.refresh_stats": [
+          120,
+          8602,
+          835
+        ],
+        "equipment_tab.update_card_cost": [
+          960,
+          20026,
+          123
+        ],
+        "game.advance_auto_gen": [
+          120,
+          1798,
+          27
+        ],
+        "game.advance_hightech": [
+          120,
+          485,
+          7
+        ],
+        "game.advance_planets": [
+          120,
+          1809,
+          26
+        ],
+        "game.can_upgrade_slot": [
+          960,
+          24576,
+          141
+        ],
+        "game.enhancement_effects": [
+          254,
+          2967,
+          26
+        ],
+        "game.enhancement_module_protection_capacity": [
+          390,
+          13727,
+          261
+        ],
+        "game.enhancement_protection_status": [
+          130,
+          34097,
+          655
+        ],
+        "game.jewel_equipment_stat": [
+          244,
+          14840,
+          140
+        ],
+        "game.stat": [
+          520,
+          13415,
+          208
+        ],
+        "game.tick": [
+          120,
+          34076,
+          1515
+        ],
+        "main.advance_projectile_visuals": [
+          120,
+          4477,
+          99
+        ],
+        "main.draw_battle": [
+          120,
+          152068,
+          1988
+        ],
+        "main.draw_stars": [
+          120,
+          984,
+          26
+        ],
+        "main.flush_damage_numbers": [
+          120,
+          3742,
+          198
+        ],
+        "main.on_event": [
+          28,
+          404,
+          19
+        ],
+        "main.queue_damage_number": [
+          48,
+          602,
+          19
+        ],
+        "main.refresh_draw_layers": [
+          120,
+          70243,
+          1306
+        ],
+        "main.refresh_navigation": [
+          120,
+          7375,
+          100
+        ],
+        "main.refresh_visible_cards": [
+          120,
+          104650,
+          1711
+        ],
+        "main.sync_beam_visuals": [
+          120,
+          413,
+          8
+        ],
+        "presented_ship_view.set_loadout": [
+          120,
+          5983,
+          262
+        ]
+      },
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 360.0,
+        "mean": 339.133333333333,
+        "p50": 336.0,
+        "p95": 356.0,
+        "p99": 360.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 31565,
+        "mean": 6214.925,
+        "p50": 5777,
+        "p95": 7770,
+        "p99": 9861
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 5045,
+        "mean": 2570.1,
+        "p50": 2373,
+        "p95": 3665,
+        "p99": 4661
+      },
+      "memory": 278308145,
+      "memory_delta": 80486,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "primitives": {
+        "max": 40167.0,
+        "mean": 34716.6833333333,
+        "p50": 34067.0,
+        "p95": 39087.0,
+        "p99": 39598.0
+      },
+      "projectiles": {
+        "max": 30,
+        "mean": 20.35,
+        "p50": 21,
+        "p95": 27,
+        "p99": 30
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 1,
+      "switch_cpu_us": 175696,
+      "switch_frame_us": 1106318,
+      "switch_timings": {
+        "main.refresh_system_nav": [
+          1,
+          1194,
+          1194
+        ],
+        "main.refresh_visible_cards": [
+          1,
+          90,
+          90
+        ],
+        "main.select_system": [
+          1,
+          175692,
+          175692
+        ],
+        "planet_buildings.preview": [
+          1,
+          24,
+          24
+        ],
+        "planet_panel._apply_selection": [
+          1,
+          2678,
+          2678
+        ],
+        "planet_panel.add_card": [
+          6,
+          162669,
+          52146
+        ],
+        "planet_panel.refresh": [
+          1,
+          173032,
+          173032
+        ],
+        "planet_panel.refresh_card": [
+          6,
+          7245,
+          7073
+        ],
+        "reactor_panel.refresh": [
+          1,
+          31,
+          31
+        ]
+      },
+      "timings": {
+        "attribute_projection.configuration_inputs": [
+          840,
+          2488,
+          10
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          216,
+          12209,
+          134
+        ],
+        "attribute_projection.slot": [
+          2064,
+          3106,
+          16
+        ],
+        "attribute_projection.stat": [
+          480,
+          15002,
+          306
+        ],
+        "attribute_projection.stat_inputs": [
+          840,
+          5989,
+          21
+        ],
+        "battlefield._draw_muzzle_cues": [
+          120,
+          11237,
+          182
+        ],
+        "battlefield._process": [
+          120,
+          303006,
+          4974
+        ],
+        "battlefield.draw_battle": [
+          120,
+          130172,
+          1740
+        ],
+        "compiled_combat_rules.compile": [
+          1224,
+          3004,
+          5
+        ],
+        "crew_system.advance": [
+          120,
+          254,
+          4
+        ],
+        "game.advance_auto_gen": [
+          120,
+          1680,
+          23
+        ],
+        "game.advance_hightech": [
+          120,
+          453,
+          6
+        ],
+        "game.advance_planets": [
+          120,
+          1621,
+          24
+        ],
+        "game.enhancement_effects": [
+          216,
+          2629,
+          27
+        ],
+        "game.enhancement_module_protection_capacity": [
+          360,
+          16180,
+          334
+        ],
+        "game.enhancement_protection_status": [
+          120,
+          34694,
+          795
+        ],
+        "game.jewel_equipment_stat": [
+          216,
+          12788,
+          139
+        ],
+        "game.stat": [
+          480,
+          16074,
+          311
+        ],
+        "game.tick": [
+          120,
+          36100,
+          1637
+        ],
+        "main.advance_projectile_visuals": [
+          120,
+          5071,
+          92
+        ],
+        "main.draw_battle": [
+          120,
+          129202,
+          1727
+        ],
+        "main.draw_stars": [
+          120,
+          884,
+          19
+        ],
+        "main.flush_damage_numbers": [
+          120,
+          4274,
+          158
+        ],
+        "main.on_event": [
+          39,
+          251,
+          10
+        ],
+        "main.queue_damage_number": [
+          76,
+          994,
+          22
+        ],
+        "main.refresh_draw_layers": [
+          120,
+          76029,
+          1644
+        ],
+        "main.refresh_navigation": [
+          120,
+          7099,
+          100
+        ],
+        "main.refresh_visible_cards": [
+          120,
+          6572,
+          111
+        ],
+        "main.sync_beam_visuals": [
+          120,
+          377,
+          5
+        ],
+        "presented_ship_view.set_loadout": [
+          120,
+          5380,
+          73
+        ]
+      },
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 621.0,
+        "mean": 614.75,
+        "p50": 615.0,
+        "p95": 621.0,
+        "p99": 621.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 9526,
+        "mean": 6343.83333333333,
+        "p50": 6272,
+        "p95": 7384,
+        "p99": 7752
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 3617,
+        "mean": 2522.51666666667,
+        "p50": 2382,
+        "p95": 3347,
+        "p99": 3593
+      },
+      "memory": 284576100,
+      "memory_delta": 59746,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "primitives": {
+        "max": 144799.0,
+        "mean": 140373.633333333,
+        "p50": 139778.0,
+        "p95": 144329.0,
+        "p99": 144797.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 21.5833333333333,
+        "p50": 22,
+        "p95": 29,
+        "p99": 32
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 2,
+      "switch_cpu_us": 218732,
+      "switch_frame_us": 3317932,
+      "switch_timings": {
+        "galaxy_map._process": [
+          1,
+          151,
+          151
+        ],
+        "galaxy_map.asset": [
+          67,
+          66260,
+          16918
+        ],
+        "galaxy_map.refresh": [
+          3,
+          46097,
+          46095
+        ],
+        "galaxy_map.refresh_city_routes": [
+          1,
+          38,
+          38
+        ],
+        "galaxy_map.select": [
+          1,
+          169685,
+          169685
+        ],
+        "galaxy_panel.refresh": [
+          1,
+          169937,
+          169937
+        ],
+        "galaxy_panel.refresh_detail": [
+          1,
+          4,
+          4
+        ],
+        "main.refresh_system_nav": [
+          1,
+          1237,
+          1237
+        ],
+        "main.refresh_visible_cards": [
+          1,
+          10,
+          10
+        ],
+        "main.select_system": [
+          1,
+          218723,
+          218723
+        ],
+        "reactor_panel.refresh": [
+          1,
+          31,
+          31
+        ]
+      },
+      "timings": {
+        "attribute_projection.configuration_inputs": [
+          840,
+          2436,
+          10
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          216,
+          11832,
+          97
+        ],
+        "attribute_projection.slot": [
+          2064,
+          3027,
+          11
+        ],
+        "attribute_projection.stat": [
+          480,
+          14676,
+          206
+        ],
+        "attribute_projection.stat_inputs": [
+          840,
+          5859,
+          22
+        ],
+        "battlefield._draw_muzzle_cues": [
+          120,
+          10261,
+          140
+        ],
+        "battlefield._process": [
+          120,
+          297243,
+          3572
+        ],
+        "battlefield.draw_battle": [
+          120,
+          130368,
+          1851
+        ],
+        "compiled_combat_rules.compile": [
+          1224,
+          2909,
+          5
+        ],
+        "crew_system.advance": [
+          120,
+          261,
+          3
+        ],
+        "galaxy_map._process": [
+          120,
+          10796,
+          160
+        ],
+        "galaxy_map.refresh": [
+          2,
+          94,
+          51
+        ],
+        "galaxy_map.select": [
+          2,
+          3,
+          2
+        ],
+        "galaxy_panel.refresh": [
+          2,
+          403,
+          211
+        ],
+        "galaxy_panel.refresh_detail": [
+          2,
+          8,
+          4
+        ],
+        "game.advance_auto_gen": [
+          120,
+          1704,
+          21
+        ],
+        "game.advance_hightech": [
+          120,
+          453,
+          6
+        ],
+        "game.advance_planets": [
+          120,
+          1694,
+          22
+        ],
+        "game.enhancement_effects": [
+          216,
+          2523,
+          20
+        ],
+        "game.enhancement_module_protection_capacity": [
+          360,
+          15698,
+          207
+        ],
+        "game.enhancement_protection_status": [
+          120,
+          33964,
+          495
+        ],
+        "game.jewel_equipment_stat": [
+          216,
+          12385,
+          101
+        ],
+        "game.stat": [
+          480,
+          15710,
+          210
+        ],
+        "game.tick": [
+          120,
+          36770,
+          1514
+        ],
+        "main.advance_projectile_visuals": [
+          120,
+          5279,
+          79
+        ],
+        "main.draw_battle": [
+          120,
+          129382,
+          1838
+        ],
+        "main.draw_stars": [
+          120,
+          899,
+          17
+        ],
+        "main.flush_damage_numbers": [
+          120,
+          4076,
+          158
+        ],
+        "main.on_event": [
+          40,
+          261,
+          9
+        ],
+        "main.queue_damage_number": [
+          80,
+          1027,
+          18
+        ],
+        "main.refresh_draw_layers": [
+          120,
+          74621,
+          1042
+        ],
+        "main.refresh_navigation": [
+          120,
+          7209,
+          101
+        ],
+        "main.refresh_visible_cards": [
+          120,
+          1464,
+          223
+        ],
+        "main.sync_beam_visuals": [
+          120,
+          381,
+          6
+        ],
+        "presented_ship_view.set_loadout": [
+          120,
+          5580,
+          84
+        ]
+      },
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 318,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 377.0,
+        "mean": 369.875,
+        "p50": 370.0,
+        "p95": 376.0,
+        "p99": 376.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 8703,
+        "mean": 6798.28333333333,
+        "p50": 6653,
+        "p95": 8368,
+        "p99": 8501
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 5193,
+        "mean": 3371.51666666667,
+        "p50": 3076,
+        "p95": 4278,
+        "p99": 5156
+      },
+      "memory": 284712688,
+      "memory_delta": 69808,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 0,
+      "primitives": {
+        "max": 30603.0,
+        "mean": 26043.9416666667,
+        "p50": 25263.0,
+        "p95": 29920.0,
+        "p99": 30603.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 21.575,
+        "p50": 21,
+        "p95": 29,
+        "p99": 32
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 3,
+      "switch_cpu_us": 6576,
+      "switch_frame_us": 11129,
+      "switch_timings": {
+        "attribute_projection.jewel_equipment_stat": [
+          8,
+          572,
+          108
+        ],
+        "attribute_projection.slot": [
+          74,
+          91,
+          4
+        ],
+        "compiled_combat_rules.compile": [
+          69,
+          153,
+          6
+        ],
+        "equipment_tab.equipment_item": [
+          8,
+          2892,
+          517
+        ],
+        "equipment_tab.refresh": [
+          1,
+          3629,
+          3629
+        ],
+        "equipment_tab.refresh_detail": [
+          1,
+          4,
+          4
+        ],
+        "equipment_tab.refresh_stats": [
+          1,
+          3,
+          3
+        ],
+        "equipment_tab.update_card_cost": [
+          8,
+          175,
+          67
+        ],
+        "galaxy_map.refresh": [
+          1,
+          60,
+          60
+        ],
+        "game.can_upgrade_slot": [
+          8,
+          241,
+          42
+        ],
+        "game.enhancement_effects": [
+          13,
+          155,
+          20
+        ],
+        "game.jewel_equipment_stat": [
+          8,
+          598,
+          114
+        ],
+        "main.refresh_system_nav": [
+          1,
+          1221,
+          1221
+        ],
+        "main.refresh_visible_cards": [
+          1,
+          3806,
+          3806
+        ],
+        "main.select_system": [
+          1,
+          6571,
+          6571
+        ],
+        "reactor_panel.refresh": [
+          1,
+          28,
+          28
+        ]
+      },
+      "timings": {
+        "attribute_projection.configuration_inputs": [
+          840,
+          2367,
+          9
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          349,
+          20009,
+          203
+        ],
+        "attribute_projection.slot": [
+          2621,
+          3650,
+          14
+        ],
+        "attribute_projection.stat": [
+          480,
+          13774,
+          303
+        ],
+        "attribute_projection.stat_inputs": [
+          840,
+          5804,
+          17
+        ],
+        "battlefield._draw_muzzle_cues": [
+          120,
+          11061,
+          215
+        ],
+        "battlefield._process": [
+          120,
+          399330,
+          5153
+        ],
+        "battlefield.draw_battle": [
+          120,
+          130355,
+          1276
+        ],
+        "compiled_combat_rules.compile": [
+          1823,
+          4231,
+          8
+        ],
+        "crew_system.advance": [
+          120,
+          260,
+          3
+        ],
+        "equipment_tab.refresh_affordability": [
+          120,
+          79075,
+          788
+        ],
+        "equipment_tab.refresh_stats": [
+          120,
+          12978,
+          800
+        ],
+        "equipment_tab.update_card_cost": [
+          960,
+          19178,
+          115
+        ],
+        "game.advance_auto_gen": [
+          120,
+          1681,
+          20
+        ],
+        "game.advance_hightech": [
+          120,
+          448,
+          6
+        ],
+        "game.advance_planets": [
+          120,
+          1674,
+          17
+        ],
+        "game.can_upgrade_slot": [
+          960,
+          23806,
+          47
+        ],
+        "game.enhancement_effects": [
+          374,
+          4245,
+          24
+        ],
+        "game.enhancement_module_protection_capacity": [
+          360,
+          15739,
+          259
+        ],
+        "game.enhancement_protection_status": [
+          120,
+          33676,
+          556
+        ],
+        "game.jewel_equipment_stat": [
+          349,
+          20876,
+          206
+        ],
+        "game.stat": [
+          480,
+          14802,
+          307
+        ],
+        "game.tick": [
+          120,
+          37121,
+          1515
+        ],
+        "main.advance_projectile_visuals": [
+          120,
+          5246,
+          89
+        ],
+        "main.draw_battle": [
+          120,
+          129373,
+          1265
+        ],
+        "main.draw_stars": [
+          120,
+          891,
+          10
+        ],
+        "main.flush_damage_numbers": [
+          120,
+          3830,
+          152
+        ],
+        "main.on_event": [
+          41,
+          524,
+          20
+        ],
+        "main.queue_damage_number": [
+          79,
+          1014,
+          23
+        ],
+        "main.refresh_draw_layers": [
+          120,
+          73019,
+          1243
+        ],
+        "main.refresh_navigation": [
+          120,
+          6674,
+          75
+        ],
+        "main.refresh_visible_cards": [
+          120,
+          105597,
+          1578
+        ],
+        "main.sync_beam_visuals": [
+          120,
+          370,
+          5
+        ],
+        "presented_ship_view.set_loadout": [
+          120,
+          5654,
+          156
+        ]
+      },
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 318,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 366.0,
+        "mean": 342.033333333333,
+        "p50": 339.0,
+        "p95": 361.0,
+        "p99": 365.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 8292,
+        "mean": 6035.61666666667,
+        "p50": 6042,
+        "p95": 7223,
+        "p99": 7781
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 3835,
+        "mean": 2553.4,
+        "p50": 2430,
+        "p95": 3281,
+        "p99": 3618
+      },
+      "memory": 284689094,
+      "memory_delta": 48854,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "primitives": {
+        "max": 40659.0,
+        "mean": 34945.0,
+        "p50": 34314.0,
+        "p95": 39439.0,
+        "p99": 39590.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 21.5666666666667,
+        "p50": 22,
+        "p95": 28,
+        "p99": 32
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 4,
+      "switch_cpu_us": 3322,
+      "switch_frame_us": 7243,
+      "switch_timings": {
+        "main.refresh_system_nav": [
+          1,
+          1267,
+          1267
+        ],
+        "main.refresh_visible_cards": [
+          1,
+          16,
+          16
+        ],
+        "main.select_system": [
+          1,
+          3317,
+          3317
+        ],
+        "planet_buildings.preview": [
+          1,
+          22,
+          22
+        ],
+        "planet_panel._apply_selection": [
+          1,
+          20,
+          20
+        ],
+        "planet_panel.refresh": [
+          1,
+          1375,
+          1375
+        ],
+        "planet_panel.refresh_card": [
+          6,
+          1078,
+          941
+        ],
+        "reactor_panel.refresh": [
+          1,
+          35,
+          35
+        ]
+      },
+      "timings": {
+        "attribute_projection.configuration_inputs": [
+          840,
+          2448,
+          10
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          216,
+          11828,
+          108
+        ],
+        "attribute_projection.slot": [
+          2064,
+          3041,
+          20
+        ],
+        "attribute_projection.stat": [
+          480,
+          14649,
+          211
+        ],
+        "attribute_projection.stat_inputs": [
+          840,
+          5876,
+          20
+        ],
+        "battlefield._draw_muzzle_cues": [
+          120,
+          11652,
+          197
+        ],
+        "battlefield._process": [
+          120,
+          301007,
+          3792
+        ],
+        "battlefield.draw_battle": [
+          120,
+          128588,
+          1249
+        ],
+        "compiled_combat_rules.compile": [
+          1224,
+          2915,
+          9
+        ],
+        "crew_system.advance": [
+          120,
+          265,
+          4
+        ],
+        "game.advance_auto_gen": [
+          120,
+          1696,
+          47
+        ],
+        "game.advance_hightech": [
+          120,
+          449,
+          6
+        ],
+        "game.advance_planets": [
+          120,
+          1646,
+          23
+        ],
+        "game.enhancement_effects": [
+          216,
+          2518,
+          18
+        ],
+        "game.enhancement_module_protection_capacity": [
+          360,
+          15689,
+          206
+        ],
+        "game.enhancement_protection_status": [
+          120,
+          33782,
+          515
+        ],
+        "game.jewel_equipment_stat": [
+          216,
+          12375,
+          113
+        ],
+        "game.stat": [
+          480,
+          15682,
+          214
+        ],
+        "game.tick": [
+          120,
+          36996,
+          1677
+        ],
+        "main.advance_projectile_visuals": [
+          120,
+          5222,
+          86
+        ],
+        "main.draw_battle": [
+          120,
+          127641,
+          1239
+        ],
+        "main.draw_stars": [
+          120,
+          862,
+          11
+        ],
+        "main.flush_damage_numbers": [
+          120,
+          4022,
+          128
+        ],
+        "main.on_event": [
+          41,
+          260,
+          7
+        ],
+        "main.queue_damage_number": [
+          82,
+          1102,
+          71
+        ],
+        "main.refresh_draw_layers": [
+          120,
+          74177,
+          1041
+        ],
+        "main.refresh_navigation": [
+          120,
+          6964,
+          101
+        ],
+        "main.refresh_visible_cards": [
+          120,
+          6501,
+          113
+        ],
+        "main.sync_beam_visuals": [
+          120,
+          374,
+          5
+        ],
+        "presented_ship_view.set_loadout": [
+          120,
+          5392,
+          74
+        ]
+      },
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 318,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 627.0,
+        "mean": 616.375,
+        "p50": 617.0,
+        "p95": 626.0,
+        "p99": 627.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 8763,
+        "mean": 6707.18333333333,
+        "p50": 6638,
+        "p95": 8046,
+        "p99": 8476
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 4044,
+        "mean": 2679.2,
+        "p50": 2524,
+        "p95": 3570,
+        "p99": 3816
+      },
+      "memory": 284798034,
+      "memory_delta": 89760,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "primitives": {
+        "max": 144618.0,
+        "mean": 140399.233333333,
+        "p50": 139902.0,
+        "p95": 144452.0,
+        "p99": 144587.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 21.5666666666667,
+        "p50": 23,
+        "p95": 28,
+        "p99": 32
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 5,
+      "switch_cpu_us": 2158,
+      "switch_frame_us": 5935,
+      "switch_timings": {
+        "galaxy_map._process": [
+          1,
+          87,
+          87
+        ],
+        "galaxy_map.refresh": [
+          2,
+          83,
+          82
+        ],
+        "galaxy_map.select": [
+          1,
+          1,
+          1
+        ],
+        "galaxy_panel.refresh": [
+          1,
+          174,
+          174
+        ],
+        "galaxy_panel.refresh_detail": [
+          1,
+          3,
+          3
+        ],
+        "main.refresh_system_nav": [
+          1,
+          1271,
+          1271
+        ],
+        "main.refresh_visible_cards": [
+          1,
+          8,
+          8
+        ],
+        "main.select_system": [
+          1,
+          2150,
+          2150
+        ],
+        "reactor_panel.refresh": [
+          1,
+          28,
+          28
+        ]
+      },
+      "timings": {
+        "attribute_projection.configuration_inputs": [
+          840,
+          2608,
+          10
+        ],
+        "attribute_projection.jewel_equipment_stat": [
+          216,
+          12106,
+          105
+        ],
+        "attribute_projection.slot": [
+          2064,
+          3159,
+          13
+        ],
+        "attribute_projection.stat": [
+          480,
+          15306,
+          228
+        ],
+        "attribute_projection.stat_inputs": [
+          840,
+          6226,
+          21
+        ],
+        "battlefield._draw_muzzle_cues": [
+          120,
+          10662,
+          166
+        ],
+        "battlefield._process": [
+          120,
+          315478,
+          3996
+        ],
+        "battlefield.draw_battle": [
+          120,
+          137319,
+          1616
+        ],
+        "compiled_combat_rules.compile": [
+          1224,
+          2961,
+          7
+        ],
+        "crew_system.advance": [
+          120,
+          289,
+          5
+        ],
+        "galaxy_map._process": [
+          120,
+          12858,
+          533
+        ],
+        "galaxy_map.refresh": [
+          2,
+          101,
+          51
+        ],
+        "galaxy_map.select": [
+          2,
+          3,
+          2
+        ],
+        "galaxy_panel.refresh": [
+          2,
+          429,
+          218
+        ],
+        "galaxy_panel.refresh_detail": [
+          2,
+          8,
+          4
+        ],
+        "game.advance_auto_gen": [
+          120,
+          1839,
+          22
+        ],
+        "game.advance_hightech": [
+          120,
+          485,
+          6
+        ],
+        "game.advance_planets": [
+          120,
+          1804,
+          22
+        ],
+        "game.enhancement_effects": [
+          216,
+          2590,
+          23
+        ],
+        "game.enhancement_module_protection_capacity": [
+          360,
+          16126,
+          236
+        ],
+        "game.enhancement_protection_status": [
+          120,
+          35446,
+          543
+        ],
+        "game.jewel_equipment_stat": [
+          216,
+          12646,
+          110
+        ],
+        "game.stat": [
+          480,
+          16411,
+          234
+        ],
+        "game.tick": [
+          120,
+          38540,
+          1605
+        ],
+        "main.advance_projectile_visuals": [
+          120,
+          5657,
+          83
+        ],
+        "main.draw_battle": [
+          120,
+          136246,
+          1603
+        ],
+        "main.draw_stars": [
+          120,
+          985,
+          14
+        ],
+        "main.flush_damage_numbers": [
+          120,
+          4102,
+          155
+        ],
+        "main.on_event": [
+          39,
+          267,
+          12
+        ],
+        "main.queue_damage_number": [
+          78,
+          1028,
+          27
+        ],
+        "main.refresh_draw_layers": [
+          120,
+          78114,
+          1117
+        ],
+        "main.refresh_navigation": [
+          120,
+          7925,
+          131
+        ],
+        "main.refresh_visible_cards": [
+          120,
+          1648,
+          231
+        ],
+        "main.sync_beam_visuals": [
+          120,
+          418,
+          5
+        ],
+        "presented_ship_view.set_loadout": [
+          120,
+          5831,
+          74
+        ]
+      },
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 323,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    }
+  ]
+}

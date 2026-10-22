@@ -1,0 +1,80 @@
+{
+  "candidate_runtime": "35a8f02ceae487966b16e452543b9947745281ad",
+  "branch": "impl/domain-architecture-20261022",
+  "baseline_runtime": "2908c76861a9ed72a0d5ab229f8be54e8479e7fa",
+  "source_sha256_git_lf": {
+    "space-battleship/scripts/equipment_tab.gd": "c77e30a493eb084b82e0f941505960d718d25cd48ff58bbcc90301b7471848e5",
+    "space-battleship/scripts/planet_panel.gd": "105d273bae8178a26a5e17ec80343272571ced7c0bd2f4e7fbeeda4c3c5bad05",
+    "space-battleship/scripts/galaxy_map.gd": "ab50a05580571f45c60ebe78e282bb222554bea6f9be3166036469dc0ac34b4c",
+    "space-battleship/scripts/galaxy_city_structure.gd": "faa43c4a183e968c604de294611414687a223edf455eae25ca02f1767fb2f96d",
+    "test/whole_game_perf.gd": "af8c31f0d7e0ee3a1bf2f1c99e6bed4972a9041262a34a01606f6bf7c8b912b8",
+    "test/whole_game_perf.py": "8d88281587e8cb52c2ba520e40603ef6189833c8e29cf238770b31e48e260056",
+    "test/test_galaxy_ui.gd": "3b42180d59e7cf2367a4cf7e549d6d9827f0bbdb8a2e96cb3c8ef8f8e542ce43",
+    "test/fixtures/galaxy_1_complete.json": "13d2df9c972565a1168edf1ce1f15ab28d2f61b33eec609f71d8ce136202f312"
+  },
+  "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "accepted_runs": [
+    {
+      "report": "c18-baseline-final.json",
+      "runtime": "2908c76861a9ed72a0d5ab229f8be54e8479e7fa",
+      "fixture": "36927b73f75176d6ff9701b9990a427fd9b296da",
+      "fixture_sha256_git_lf": {
+        "test/whole_game_perf.gd": "77c2049b3727d87b322439c75c23a9e83c28b67829ac9adc90948efef8a7cf91",
+        "test/whole_game_perf.py": "8d88281587e8cb52c2ba520e40603ef6189833c8e29cf238770b31e48e260056"
+      },
+      "notes": "Before has no post-timing checks; same timed scenario as candidate."
+    },
+    {
+      "report": "c18-final-candidate.json",
+      "runtime": "35a8f02ceae487966b16e452543b9947745281ad",
+      "fixture": "35a8f02ceae487966b16e452543b9947745281ad",
+      "checks": 34,
+      "failures": 0
+    },
+    {
+      "log": "galaxy-ui-test.log",
+      "runtime": "042220e933f4124c23931161b3a819a335a2a14d",
+      "fixture": "36927b73f75176d6ff9701b9990a427fd9b296da",
+      "fixture_sha256_git_lf": "3b42180d59e7cf2367a4cf7e549d6d9827f0bbdb8a2e96cb3c8ef8f8e542ce43",
+      "checks": 904,
+      "failures": 0,
+      "scope": "30 platforms, service sockets, five building levels, four orientations, 750 roof samples, paused/hidden rendering lifecycle. Functional evidence, not FPS measurement."
+    }
+  ],
+  "attribution_only": [
+    {
+      "report": "c18-attribution-fixed.json",
+      "runtime": "2908c76861a9ed72a0d5ab229f8be54e8479e7fa",
+      "fixture": "uncommitted scoped instrumentation; no exact fixture commit retained; not counted as final validation or a frame-performance comparison",
+      "findings": "equipment.refresh_affordability dominates page-specific steady cost; planet.add_card and galaxy.select dominate first switches."
+    }
+  ],
+  "excluded_attempts": [
+    "First instrumentation mixed tabs/spaces in copied compiled_combat_rules; fixed only in isolated instrument output. No production parse issue.",
+    "First post-timing interaction check referenced nonexistent galaxy_2; it stopped before reporting checks. Replaced with an unsaved fresh view of the actual galaxy_1 definition. That run is not counted as a pass."
+  ],
+  "limitations": [
+    "First planet and galaxy selection still takes about 120/137 ms; product hitch not fully closed. Main already had comparable first-load costs before this architecture work.",
+    "Steady galaxy page P95 does not consistently improve; no whole-product performance pass.",
+    "The existing rich fixture attempts galaxy_2, which is absent in current configuration. Assignment returns false; these samples do not validate active galaxy copy/settlement cost.",
+    "Short fixed-step GPU samples are not a long soak or all configurations.",
+    "Current-format product saving/reopening evidence remains C16 at faf36d9da2feb9b99ab9f3b691c4edc6b37cfc51; it was not rerun here.",
+    "Reactor capacity/allocation precision or level limits remain unchanged pending user decision. Exact arbitrary-level cost and low-price arbitrary-config summation remain unresolved."
+  ],
+  "review_status": "C15/C16 specified closures and C17 two production fixes have limited dual approval. C18 awaits review; no main merge.",
+  "artifact_sha256_git_blob": {
+    "before-page-0.png": "dc6be6022ce4c835921afd947dca02f48e50edc7ea405dcf9463ee3d5a8ff82a",
+    "before-page-6.png": "70a329678711efa68f947e14dd724bf2b81c6ade73efa2b7f11c8f9051539da5",
+    "before-page-8.png": "36da02cce2255bc0937b860eb95447c049e653272e432bebe19f5723a6875602",
+    "c18-attribution-fixed.json": "efd56b69e7540b5b690c185838586ddbd769a733aeee1a3fdff3f1cdcb163c36",
+    "c18-baseline-final.json": "019e162d5104c1b3c78c3773de8d7d3016ddc159695e3bdd03eeb986f22bcd4b",
+    "c18-baseline-final.log": "fb81b511a50afa199813bd33c0edc8ced9ca90ce4cbe43191066338632280e55",
+    "c18-final-candidate.json": "b426a6021321c0cc09ed7ab2c047392b2691800e9f54839bc785160bc785d920",
+    "c18-final-candidate.log": "5a0e03fb6474915b4c74697d3dba11de2ea12e23616a8583b1c64ab9a85f3868",
+    "comparison.json": "2d91198d93e81d595bbbca7af6ede13d898c8df7b74199c67a07733f53ad2526",
+    "galaxy-ui-test.log": "a07a41390206f10c51dc49cf64cce162f1a3851ad265f66c11768653ef7fb4cb",
+    "page-0.png": "f8d1ba2a266e61859a72a83db82127159028212c58e7a6cf333877c44fbc9517",
+    "page-6.png": "5b1385581f5da69b138480b4fde6b7da36b24c7391b83055321a8ed3ee6661d2",
+    "page-8.png": "b0a8abbdccf3294e1fd34da4853ce08d3a0e1b502551080570a85d14fcd7211a"
+  }
+}

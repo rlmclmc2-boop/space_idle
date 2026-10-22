@@ -1,0 +1,693 @@
+{
+  "options": {
+    "label": "c18-final-candidate",
+    "godot": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+    "ref": null,
+    "reuse": "test\\work\\whole-perf-w20smxs9",
+    "headless": false,
+    "rich": true,
+    "enemies": 15,
+    "reactor_level": 1,
+    "balance": 1e+80,
+    "check_pages": true,
+    "capture": true,
+    "max_quote": false,
+    "realtime": false,
+    "instrument": false,
+    "pages": "0,6,8,0,6,8",
+    "frames": 300,
+    "galaxy_steady": false
+  },
+  "exit": 0,
+  "environment": [
+    {
+      "adapter": "NVIDIA GeForce RTX 2060",
+      "cap": 0,
+      "display": "Windows",
+      "engine": "4.7.2-stable (official)",
+      "galaxy_assignment": false,
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(1373, 883)",
+      "vendor": "NVIDIA"
+    }
+  ],
+  "rows": [
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 374.0,
+        "mean": 362.623333333333,
+        "p50": 362.0,
+        "p95": 370.0,
+        "p99": 374.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 46692,
+        "mean": 6666.94333333333,
+        "p50": 6049,
+        "p95": 9658,
+        "p99": 12938
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 8342,
+        "mean": 3047.59333333333,
+        "p50": 2667,
+        "p95": 5306,
+        "p99": 6536
+      },
+      "memory": 270088972,
+      "memory_delta": 766474,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 1,
+      "owned_domains": true,
+      "page": 0,
+      "primitives": {
+        "max": 30587.0,
+        "mean": 25378.22,
+        "p50": 25014.0,
+        "p95": 29685.0,
+        "p99": 30018.0
+      },
+      "projectiles": {
+        "max": 30,
+        "mean": 18.87,
+        "p50": 21,
+        "p95": 27,
+        "p99": 29
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "switch_cpu_us": 426,
+      "switch_frame_us": 196534,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 365.0,
+        "mean": 340.83,
+        "p50": 337.0,
+        "p95": 359.0,
+        "p99": 362.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 8366,
+        "mean": 5790.55,
+        "p50": 5715,
+        "p95": 6954,
+        "p99": 7601
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 4093,
+        "mean": 2389.44666666667,
+        "p50": 2271,
+        "p95": 3211,
+        "p99": 3515
+      },
+      "memory": 274111126,
+      "memory_delta": 138608,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "primitives": {
+        "max": 40641.0,
+        "mean": 34893.53,
+        "p50": 34139.0,
+        "p95": 39098.0,
+        "p99": 40073.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 21.3033333333333,
+        "p50": 21,
+        "p95": 28,
+        "p99": 32
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 1,
+      "switch_cpu_us": 119926,
+      "switch_frame_us": 129386,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 624.0,
+        "mean": 616.056666666667,
+        "p50": 617.0,
+        "p95": 622.0,
+        "p99": 624.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 11155,
+        "mean": 6347.46,
+        "p50": 6241,
+        "p95": 7775,
+        "p99": 9182
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 5536,
+        "mean": 2450.31666666667,
+        "p50": 2326,
+        "p95": 3326,
+        "p99": 3990
+      },
+      "memory": 280322341,
+      "memory_delta": 82432,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "primitives": {
+        "max": 145039.0,
+        "mean": 140283.073333333,
+        "p50": 139719.0,
+        "p95": 144163.0,
+        "p99": 144503.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.74,
+        "p50": 21,
+        "p95": 27,
+        "p99": 31
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 2,
+      "switch_cpu_us": 136975,
+      "switch_frame_us": 145232,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 328,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 378.0,
+        "mean": 365.826666666667,
+        "p50": 366.0,
+        "p95": 377.0,
+        "p99": 378.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 9587,
+        "mean": 6055.35,
+        "p50": 5946,
+        "p95": 7522,
+        "p99": 8883
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 5018,
+        "mean": 2715.90333333333,
+        "p50": 2543,
+        "p95": 3615,
+        "p99": 4698
+      },
+      "memory": 280408305,
+      "memory_delta": 68812,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 0,
+      "primitives": {
+        "max": 30569.0,
+        "mean": 25895.2233333333,
+        "p50": 25183.0,
+        "p95": 29920.0,
+        "p99": 30529.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.6433333333333,
+        "p50": 21,
+        "p95": 28,
+        "p99": 30
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 3,
+      "switch_cpu_us": 6265,
+      "switch_frame_us": 7972,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 328,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 362.0,
+        "mean": 336.986666666667,
+        "p50": 333.0,
+        "p95": 355.0,
+        "p99": 357.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 8617,
+        "mean": 5660.10666666667,
+        "p50": 5596,
+        "p95": 6942,
+        "p99": 7615
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 3698,
+        "mean": 2342.23,
+        "p50": 2204,
+        "p95": 3068,
+        "p99": 3529
+      },
+      "memory": 280358515,
+      "memory_delta": 52482,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "primitives": {
+        "max": 39815.0,
+        "mean": 34657.2933333333,
+        "p50": 33991.0,
+        "p95": 38774.0,
+        "p99": 39654.0
+      },
+      "projectiles": {
+        "max": 31,
+        "mean": 20.1733333333333,
+        "p50": 21,
+        "p95": 27,
+        "p99": 31
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 4,
+      "switch_cpu_us": 3084,
+      "switch_frame_us": 4869,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 328,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 642.0,
+        "mean": 628.093333333333,
+        "p50": 628.0,
+        "p95": 635.0,
+        "p99": 635.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 8873,
+        "mean": 6343.62,
+        "p50": 6244,
+        "p95": 7924,
+        "p99": 8528
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "main_us": {
+        "max": 4267,
+        "mean": 2452.57666666667,
+        "p50": 2298,
+        "p95": 3412,
+        "p99": 4086
+      },
+      "memory": 280495949,
+      "memory_delta": 126614,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "primitives": {
+        "max": 145823.0,
+        "mean": 140804.256666667,
+        "p50": 140087.0,
+        "p95": 144679.0,
+        "p99": 145362.0
+      },
+      "projectiles": {
+        "max": 30,
+        "mean": 20.2633333333333,
+        "p50": 21,
+        "p95": 27,
+        "p99": 30
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 5,
+      "switch_cpu_us": 2171,
+      "switch_frame_us": 3396,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Planets/@Node@2078/@SubViewport@2079",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 338,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1597/Galaxy/@PanelContainer@2150/@VBoxContainer@2151/@PanelContainer@2244/@Control@2245/@Control@2246/@SubViewport@2248",
+          "size": "(815, 558)"
+        }
+      ]
+    }
+  ],
+  "page_checks": [
+    [
+      {
+        "label": "Only the visited planet owns detail controls; all six navigation entries exist",
+        "ok": true
+      },
+      {
+        "label": "Planet 1 real selection signal builds its current content",
+        "ok": true
+      },
+      {
+        "label": "Planet 1 has exactly one visible stage",
+        "ok": true
+      },
+      {
+        "label": "Planet 2 real selection signal builds its current content",
+        "ok": true
+      },
+      {
+        "label": "Planet 2 has exactly one visible stage",
+        "ok": true
+      },
+      {
+        "label": "Unvisited planet retains pending presentation events",
+        "ok": true
+      },
+      {
+        "label": "Planet 3 real selection signal builds its current content",
+        "ok": true
+      },
+      {
+        "label": "Planet 3 has exactly one visible stage",
+        "ok": true
+      },
+      {
+        "label": "Planet 4 real selection signal builds its current content",
+        "ok": true
+      },
+      {
+        "label": "Planet 4 has exactly one visible stage",
+        "ok": true
+      },
+      {
+        "label": "Planet 5 real selection signal builds its current content",
+        "ok": true
+      },
+      {
+        "label": "Planet 5 has exactly one visible stage",
+        "ok": true
+      },
+      {
+        "label": "Planet 6 real selection signal builds its current content",
+        "ok": true
+      },
+      {
+        "label": "Planet 6 has exactly one visible stage",
+        "ok": true
+      },
+      {
+        "label": "Planet 1 reuses visited controls",
+        "ok": true
+      },
+      {
+        "label": "Planet 2 reuses visited controls",
+        "ok": true
+      },
+      {
+        "label": "Planet 3 reuses visited controls",
+        "ok": true
+      },
+      {
+        "label": "Planet 4 reuses visited controls",
+        "ok": true
+      },
+      {
+        "label": "Planet 5 reuses visited controls",
+        "ok": true
+      },
+      {
+        "label": "Planet 6 reuses visited controls",
+        "ok": true
+      },
+      {
+        "label": "Page construction and switching leave owned planet/crew state unchanged",
+        "ok": true
+      },
+      {
+        "label": "Galaxy complete full R8 mask equals its authoritative cells",
+        "ok": true
+      },
+      {
+        "label": "Galaxy complete stable refresh preserves static geometry",
+        "ok": true
+      },
+      {
+        "label": "Galaxy fresh full R8 mask equals its authoritative cells",
+        "ok": true
+      },
+      {
+        "label": "Galaxy fresh stable refresh preserves static geometry",
+        "ok": true
+      },
+      {
+        "label": "Zero-budget fixture installs through economy",
+        "ok": true
+      },
+      {
+        "label": "Cards immediately disable purchases after budget depletion",
+        "ok": true
+      },
+      {
+        "label": "Affordable-only filter hides a depleted module",
+        "ok": true
+      },
+      {
+        "label": "Exact one-level budget installs",
+        "ok": true
+      },
+      {
+        "label": "Amount action resamples resource filters before the next frame",
+        "ok": true
+      },
+      {
+        "label": "One-level affordability matches the domain quote",
+        "ok": true
+      },
+      {
+        "label": "Ten-level button and one-level filter retain distinct affordability",
+        "ok": true
+      },
+      {
+        "label": "MAX uses the same exact budget and domain count",
+        "ok": true
+      },
+      {
+        "label": "Actual card signal purchases its quoted MAX level",
+        "ok": true
+      }
+    ]
+  ]
+}
