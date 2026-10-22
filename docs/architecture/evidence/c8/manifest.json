@@ -1,0 +1,43 @@
+{
+  "runtime_sha": "f94a3434be882e11596e8b7637e2d54af980a96d",
+  "result": {
+    "galaxy_algorithm_and_state": 2356,
+    "native_refit_and_rejection": 253,
+    "save_processes": [
+      30,
+      24,
+      12,
+      14
+    ],
+    "gpu_ui": 904,
+    "total": 3593,
+    "failures": 0
+  },
+  "execution": "Existing test/run.py imported isolated project reused. Existing galaxy/native/save fixtures run with 45-second process bounds; four persistence processes use separate isolated APPDATA, real native lock and enabled caches. Existing GPU UI fixture runs hidden with RTX 2060/OpenGL, 55-second bound, disables persistence. No new executor or test project.",
+  "sha256": {
+    "space-battleship/dev/cosmic_city_block/preview.gd": "0a14ec2a5c9ee8f7848990e273b266c03afd55c534b7c7ab9a00b1962330ef56",
+    "space-battleship/dev/cosmic_city_individual/preview.gd": "e7c059b03737706d84dc844ac97618d907f7e1a5742f4d06fd5c165ae6ce4643",
+    "space-battleship/scripts/galaxy_layout.gd": "45582e8384ae2076d6db7a4d9f5bc42bff159158d69b814fffdd333b93a5b2cc",
+    "space-battleship/scripts/galaxy_region.gd": "61967bc059bf888ccda389a02f16aa0304cb5fc312779d660a1a3a8c83925dbe",
+    "space-battleship/scripts/galaxy_runtime.gd": "94895567e1bc3dbaaee911712702af283207ad2b8037750dc3f471002df64d49",
+    "space-battleship/scripts/galaxy_system.gd": "8ca2cf1a3adc262c26aa9691211ce805ee1543a315b9d8899717759757b32f3e",
+    "space-battleship/scripts/game.gd": "cefca6cc27396acc441aacf80af0d68497221a13e712c193b9aab848790a04ae",
+    "space-battleship/scripts/save_transfer.gd": "6e77e7a61dfe185d96f1c357759d640f7f74ec0f04b37b45d78beb46fd6e5b92",
+    "test/fixtures/galaxy_1_complete.json": "13d2df9c972565a1168edf1ce1f15ab28d2f61b33eec609f71d8ce136202f312",
+    "test/test_galaxy.gd": "5feb8c61f34409b5012382ac908a107dde53c63b00bbd2b61c78912119f8bb26",
+    "test/test_galaxy_ui.gd": "da525215bca37b08b1d2537f2b8ed4e2da6e8ca2ea3baf8e4a463e0b9c7654ae",
+    "test/test_native_galaxy_refit.gd": "d215ae31184ecd6d3bd9ec6d885b1f0785401c25d502ede7496afb4db664b1c3",
+    "test/test_save_boundaries.gd": "b99e5d6e468ddd90e4e0c86466d33945735a05d9a0a7980625bf91de2175469d",
+    "docs/architecture/evidence/c8/galaxy-complete-ui.png": "50394762606fef5999b944b864efcba0b4c6320469602541bec79bc316911ec2",
+    "docs/architecture/evidence/c8/galaxy-construction-ui.png": "116e9f14e31cb6682f8a3110bb4f24e62dc322326885abe5f191b3a913fb113f",
+    "docs/architecture/evidence/c8/galaxy-native.log": "92477d89786fcb25bbb791bcf0c75a337eb3e94441fafd425fe325a715e39428",
+    "docs/architecture/evidence/c8/galaxy-save-latest.log": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db",
+    "docs/architecture/evidence/c8/galaxy-save-recovery.log": "a1bf58857547d9f6a740dd14b3cb0d7d8da5a109ee1a5585450d4f39e4ec2d01",
+    "docs/architecture/evidence/c8/galaxy-save-reopen.log": "1773c2cb6c2d497cb21f085f31d1a720514db1507c146c3ed69727d17c85cd49",
+    "docs/architecture/evidence/c8/galaxy-save-write.log": "0caae575c7046a2e235fcfe54d3eeae8661b615970d54cb7c5e0095cef1924f0",
+    "docs/architecture/evidence/c8/galaxy-ui.log": "7760af6c0b9a7e7d6c23103f7fb4d384a1b4ce05f7daec22a9076425bfcf434f",
+    "docs/architecture/evidence/c8/galaxy.log": "5ded8ea81d5cc104597f5e731af22e7f7f7f4bd9756fcb47a72d55e6e0d77c03"
+  },
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "limitations": "Current save format v8; no old-save continuity. Existing visible/hidden batching retained for later unified-time phase. Native coverage/range protections retained; no kernel change. UI FPS tail is not a benchmark and UI persistence is disabled. Full real-product performance/save reopening acceptance and remaining architecture phases pending. Known system root certificate warning; final logs have no script errors."
+}
