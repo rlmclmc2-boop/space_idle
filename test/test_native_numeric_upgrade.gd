@@ -14,8 +14,11 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=false):
 	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0
+	# This fixture explicitly exercises three host slots followed by one drone.
+	db.ships[db.ships.keys()[0]].weaponSlots=3
+	db.ships[db.ships.keys()[0]].defenseSlots=4
 	var g=SharedCommandGame.new(db,false) if shared_command else preload("res://scripts/presented_battle_game.gd").new(db,false)
-	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.profile.resources={"1":1e30,"2":1e30}
+	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();fund(g,{"1":1e30,"2":1e30})
 	g.profile.loadout.weapons[0].key=key
 	g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1},{"key":"shield","level":1},{"key":"armour","level":1}]
 	if beam_chain:
@@ -34,12 +37,18 @@ func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=fals
 	check(g.admit_native_compiled_execution("native_low_contract"),"fixture native admission")
 	g.tick(1.0/60.0)
 	return g
+
+func fund(game: BattleGame, resources: Dictionary) -> void:
+	var snapshot := game.economy.save_data()
+	snapshot.resources = resources.duplicate(true)
+	check(game.economy.install_snapshot(snapshot), "Fixture funds are valid")
+
 func _initialize()->void:call_deferred("run")
 func run()->void:
 	var g=fixture("missile",true);var owner=g.native_execution;var core=owner.kernel
 	var old=core.export_handoff();var born=old.flights[0].snapshot;var position=g.projectile_position(g.projectiles[0]);var rng_state=g.rng.state
 	check(old.ejections.size()>0,"upgrade fixture has committed pending missile tubes")
-	var cost=g.slot_upgrade_cost("weapons",0,1);var balance=g.profile.resources.duplicate(true)
+	var cost=g.slot_upgrade_cost("weapons",0,1);var balance=g.economy.resources().duplicate(true)
 	var old_cd=float(old.cooldowns[0].remaining)
 	check(g.upgrade_slot("weapons",0,1),"ordinary numeric upgrade succeeds")
 	var after=core.export_handoff()
@@ -48,7 +57,7 @@ func run()->void:
 	check(after.cooldowns[0].remaining==old_cd and after.ejections.size()==old.ejections.size() and after.repeats.size()==old.repeats.size(),"upgrade keeps deadlines and pending queues")
 	check(after.flights[0].snapshot.damage==born.damage and after.flights[0].snapshot.weapon==born.weapon,"active attack birth values stay frozen")
 	check(after.ejections[0].snapshot.damage==born.damage and after.ejections[0].snapshot.weapon==born.weapon,"pending attack birth values stay frozen")
-	check(cost.keys().all(func(id):return N.compare(g.profile.resources[id],N.subtract(balance[id],cost[id]))==0),"upgrade spends original cost once")
+	check(cost.keys().all(func(id):return N.compare(g.economy.balance(id),N.subtract(balance[id],cost[id]))==0),"upgrade spends original cost once")
 	var first_id=int(born.id);var newer=false
 	for i in 300:
 		g.tick(1.0/60.0)
@@ -93,7 +102,7 @@ func run()->void:
 	check(bought-levels==3*(g.loadout_entries("weapons")+g.loadout_entries("defence")).size() and g.native_execution==owner and g.native_handoff_count==0,"three main batch sweeps keep native residence")
 	check(is_equal_approx(g.production_time()-clock,3.0) and is_equal_approx(g.motion_clock-motion,3.0),"shared economy and native logic advance exactly once")
 	g.begin_retreat()
-	g=fixture("missile",true);g.profile.jewelFragments=1e30
+	g=fixture("missile",true);g.economy.credit_fragments(1e30)
 	check(g.upgrade_enhancement(1)==1 and g.native_execution==null and g.native_handoff_count==1,"shared enhancement buys once after whole-owner handoff")
 	g.begin_retreat()
 	g=fixture("missile",true)
@@ -113,14 +122,14 @@ func run()->void:
 	check(g.upgrade_slot("weapons",0,1) and g.native_execution==owner and g.native_handoff_count==0,"armed enemy default factor does not reject ordinary upgrade")
 	g.begin_retreat()
 	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
-	var tech=BattleGame.DENSE_ARMOUR;g.profile.techPoints[tech]=g.hightech_required(tech)*10.0
-	var points_before=g.profile.techPoints[tech];var tech_level=g.hightech_level(tech)
-	g.advance_hightech_bulk(tech,0.0)
-	check(g.profile.techPoints[tech]==points_before and g.hightech_level(tech)==tech_level,"failed bulk research handoff spends no points or level")
-	var reactor_level=g.profile.reactorLevel;var uranium=g.profile.resources["2"]
-	check(not g.upgrade_reactor(1) and g.profile.reactorLevel==reactor_level and N.compare(g.profile.resources["2"],uranium)==0,"failed reactor handoff spends no resources or level")
+	var tech="singularity";g.profile.aiTechActive=tech;g.profile.aiTechProgress[tech]=preload("res://scripts/ai_tech_tree.gd").required(g,tech)-0.5
+	var points_before=g.profile.aiTechProgress[tech];var tech_level=g.hightech_level(tech)
+	g.advance_hightech(1.0)
+	check(g.profile.aiTechProgress[tech]==points_before and g.hightech_level(tech)==tech_level,"failed research completion handoff spends no progress or level")
+	var reactor_level=g.reactor.level();var uranium=g.economy.balance("2")
+	check(not g.upgrade_reactor(1) and g.reactor.level()==reactor_level and N.compare(g.economy.balance("2"),uranium)==0,"failed reactor handoff spends no resources or level")
 	g.begin_retreat()
-	g=fixture("laser");owner=g.native_execution
+	g=fixture("laser",true);owner=g.native_execution
 	check(not g.start(0,false) and g.native_execution==owner,"invalid start retains current owner")
 	g.begin_retreat()
 	g=fixture("laser");g.native_before_configuration_change();g.projectile_clear();g.missile_queue.clear();g.jewel_repeats.clear()
@@ -150,22 +159,23 @@ func run()->void:
 	for mode in ["1","10","max"]:
 		g=fixture("missile",true);owner=g.native_execution;g.enable_compiled_combat_rules()
 		var quote=g.slot_upgrade_cost("weapons",0,1)
-		g.profile.resources={"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5}
-		var legacy=preload("res://scripts/presented_battle_game.gd").new(ShipDatabase.new(),false)
-		legacy.profile=g.profile.duplicate(true);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
+		fund(g,{"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5})
+		var legacy=preload("res://scripts/presented_battle_game.gd").new(g.db,false)
+		legacy.profile=g.profile.duplicate(true);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
 		legacy.enable_compiled_combat_rules();legacy.invalidate_stat_cache()
 		var expected_ok=legacy.upgrade_equipment_batch(mode)
 		var actual_ok=g.upgrade_equipment_batch(mode)
-		check(actual_ok==expected_ok and g.profile.loadout==legacy.profile.loadout and g.profile.resources==legacy.profile.resources,"main ordered partial-budget batch preserved: "+mode)
+		check(actual_ok==expected_ok and g.profile.loadout==legacy.profile.loadout and g.economy.resources()==legacy.economy.resources(),"main ordered partial-budget batch preserved: "+mode)
 		check(N.compare(g.player.armour,legacy.player.armour)==0 and N.compare(g.player.shield,legacy.player.shield)==0,"main sequential defence deltas preserved: "+mode)
 		check(g.native_execution==owner and g.native_handoff_count==0,"one prepared batch retains native owner: "+mode)
 		g.begin_retreat()
-	g=fixture("missile",true);owner=g.native_execution;g.profile.resources={"1":0.0,"2":0.0}
+	g=fixture("missile",true);owner=g.native_execution;fund(g,{"1":0.0,"2":0.0})
 	check(not g.upgrade_equipment_batch("1") and g.native_execution==owner and g.native_handoff_count==0,"unaffordable batch leaves native owner intact")
 	g.begin_retreat()
 	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
 	var batch_profile=g.profile.duplicate(true)
-	check(not g.upgrade_equipment_batch("1") and g.profile==batch_profile,"failed whole-batch validation spends nothing and runs no purchase")
+	var batch_resources=g.economy.save_data()
+	check(not g.upgrade_equipment_batch("1") and g.profile==batch_profile and g.economy.save_data()==batch_resources,"failed whole-batch validation spends nothing and runs no purchase")
 	g.begin_retreat()
 	print("NATIVE NUMERIC UPGRADE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)

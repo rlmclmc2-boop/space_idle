@@ -9,6 +9,12 @@ func check(condition: bool, label: String) -> void:
 		failures += 1
 		printerr("FAIL: ", label)
 
+
+func fund(game: BattleGame, resources: Dictionary) -> void:
+	var snapshot := game.economy.save_data()
+	snapshot.resources = resources.duplicate(true)
+	check(game.economy.install_snapshot(snapshot), "Fixture funds are valid")
+
 func _initialize() -> void:
 	call_deferred("run")
 
@@ -30,17 +36,17 @@ func run() -> void:
 	g.tick(2.0)
 	check(is_equal_approx(generated.y, 80.0), "Generated resource flies down at configured speed")
 	g.drops.clear()
-	g.profile.resources["2"] = 0
+	g.economy.debit({"2":g.economy.balance("2")})
 	generated.x = 500
 	generated.y = 405
 	g.drops.append(generated)
 	g.collect_near(Vector2(500, 405))
-	check(g.profile.resources["2"] == 13 and g.drops.is_empty(), "Mouse crossing collects generated resource in full")
+	check(g.economy.balance("2") == 13 and g.drops.is_empty(), "Mouse crossing collects generated resource in full")
 	var passed_ship := {"uid":999,"x":g.player.x,"y":g.player.y-1.0,"age":0.0,"id":"2","amount":13.0,"speed":40.0,"auto_gen":true}
 	g.drops.append(passed_ship)
-	g.profile.resources["2"] = 0
+	g.economy.debit({"2":g.economy.balance("2")})
 	g.tick(0.1)
-	check(g.profile.resources["2"] == 7 and g.drops.is_empty(), "Reaching ship applies automatic pickup loss")
+	check(g.economy.balance("2") == 7 and g.drops.is_empty(), "Reaching ship applies automatic pickup loss")
 	var timed := {"uid":1000,"x":g.player.x,"y":100.0,"age":float(db.defaults.autoCollectDelay),"id":"2","amount":13.0,"speed":1.0,"auto_gen":true}
 	g.drops.append(timed)
 	g.tick(0.1)

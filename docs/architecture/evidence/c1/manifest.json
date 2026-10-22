@@ -1,0 +1,138 @@
+{
+  "runtime_commit": "28d9a6e7adde0f18d92377e17b844200c32bee98",
+  "baseline": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "captured_utc": "2026-10-22T12:32:15.549196+00:00",
+  "engine": "Godot 4.7.2 official ed1daf0bf Windows x64",
+  "renderer": "OpenGL 3.3 NVIDIA RTX 2060 / 610.88",
+  "native_modified": false,
+  "runtime_sources": {
+    "space-battleship/scripts/ai_tech_tree.gd": {
+      "git_blob": "b854f1d6c94d0275889a4dfb74c2a9b168f72829",
+      "sha256": "cb34b2d6775a3bdc3b6a23f6c22fff5d76df83b57e8bbde1f853fee08569f4dd"
+    },
+    "space-battleship/scripts/balance_autoplayer.gd": {
+      "git_blob": "63a7922924a2b7b83aa9079ac04183dcc363fbc9",
+      "sha256": "14dbcbc2c59fb30f7d7d29064cbd55a73fcc8eaa9e866150ce6284527a87500b"
+    },
+    "space-battleship/scripts/balance_game.gd": {
+      "git_blob": "c232ffd3575bffd3e3de8bf32e1379b5c156c30e",
+      "sha256": "1836eba27ff9f819da44f44e920dc95aedbc9dbe9a14504a611f1ecabc28115b"
+    },
+    "space-battleship/scripts/balance_metrics.gd": {
+      "git_blob": "93db993e48bcbf00de725421f0f52b14eac8737c",
+      "sha256": "95a2fd2e4a761ea476f1597e02cc0fe2ec060af3222195c43c5447a5ed2634f6"
+    },
+    "space-battleship/scripts/balance_timeline.gd": {
+      "git_blob": "d32c658b3c5d830d99906b50aac41f1e1dac4206",
+      "sha256": "cd5cd633c531b9af10fa52352eac725d6036b91cc4a2692ca81de69f0e27f649"
+    },
+    "space-battleship/scripts/chrono_panel.gd": {
+      "git_blob": "0a71834c3766600dd2a13e212f182f6c8680f4e7",
+      "sha256": "2f09d341234022f714cab9deabae69988685beb2c71f4e7e8bb99ae8595bb608"
+    },
+    "space-battleship/scripts/crew_system.gd": {
+      "git_blob": "c4fd06322ecdfb04c53704f5463f6fad0f032530",
+      "sha256": "fa8fb3d966bd93bfff73d0051aa66205d82fa9439a70ecf02cbd0e3ed1eb2ca7"
+    },
+    "space-battleship/scripts/economy_state.gd": {
+      "git_blob": "efd5c08eb1eccdebed7bed25cbd5c6ca949ccc31",
+      "sha256": "a83926520149748a695004cb0112613a909fd1e0b48233d47e7b5cf445675620"
+    },
+    "space-battleship/scripts/enhancement_panel.gd": {
+      "git_blob": "feaf45c28658beac7a28df647497bdf52ce3d797",
+      "sha256": "9076e13ff2662a90f615d2b9f1afa322def65b1e5c3fdebe8758b4d566d266f8"
+    },
+    "space-battleship/scripts/equipment_tab.gd": {
+      "git_blob": "8c831004e1429bb19e9d0291f8f5ce0ef20401db",
+      "sha256": "083f76400e9b8b39c51672492e7a6c79e7f4a445292ebbb357c044ef22b45c11"
+    },
+    "space-battleship/scripts/galaxy_system.gd": {
+      "git_blob": "a28fe5f4241952db6058cac2787f1ca4ee2dc285",
+      "sha256": "f5c00072339e8c989b08fce670d62b4c8473ee44a70f86992cf4f3ca138eb6fd"
+    },
+    "space-battleship/scripts/game.gd": {
+      "git_blob": "58975338936c5430298ad66fc81ddf6800809b85",
+      "sha256": "abe5a8354dc9c7798ac82161fd88a2272699bb10c3a2155e4d95a18725088d9e"
+    },
+    "space-battleship/scripts/hyperspace_system.gd": {
+      "git_blob": "aa374c5de3fdd33d32fcd0ffa1089b808a1df46e",
+      "sha256": "b3ed7a23cca98940275582d8a82dd24964a162e3c337ace87e661b24bd894d56"
+    },
+    "space-battleship/scripts/main.gd": {
+      "git_blob": "a7f79dcac16dea29b05078f6533b3ed9c841f28d",
+      "sha256": "0a3bdbcc6afb22cbdf0a663d1b8314a857524ff8922f27f7150ad90764a3dce4"
+    },
+    "space-battleship/scripts/native_execution_session.gd": {
+      "git_blob": "cfec7499af68cc008f0a096e8f3c7bd6b2dffdd5",
+      "sha256": "243aca2ebbd8727622aaafffe19b276cdce9a162bc73c1ffe531bc5fb9799848"
+    },
+    "space-battleship/scripts/player_loadout_generator.gd": {
+      "git_blob": "aa659217562cf1e015d8766259bc9ffa8b69a2fa",
+      "sha256": "756a7b003aa4d58b05eda4e832e5e354e7ec9477fb2cba2ad737dd41250318a2"
+    },
+    "space-battleship/scripts/progress_writer.gd": {
+      "git_blob": "5165a20c36337b9f8e49fc8d3b9be63e2c84861e",
+      "sha256": "1a2ae2908845f575faad543ddac3fabb103e6dfa3cf790cc44ebbe53a55ccaba"
+    },
+    "space-battleship/scripts/reactor_panel.gd": {
+      "git_blob": "6bfe95324457fadeaa7cdc113577a9915807a15e",
+      "sha256": "5d604b1ee13a45a00d7d379c16f55e92b04c27710c8dc4c5b5f7a110837efb59"
+    },
+    "space-battleship/scripts/reactor_state.gd": {
+      "git_blob": "c73c3a2717fb08e2b666d38e338516b2145db6ed",
+      "sha256": "a5594c89c656f288142a9b439a861b330ca78ac1b4b7c1717a0c6505fad79f27"
+    },
+    "space-battleship/scripts/save_transfer.gd": {
+      "git_blob": "d260ec209f87b49b1103608cb960af3d79a57561",
+      "sha256": "a6fb3bd809715cd46fd4528ddc8e2d8f75124c0ea7f5f0cef2ad07543dd74f47"
+    }
+  },
+  "evidence": {
+    "candidate-test_ai_tech_tree.gd.log": {
+      "sha256": "e024b5739b2c51a6ca6855289f2fe5774411374d006548025f0643ce4f5dd120",
+      "bytes": 235
+    },
+    "candidate-test_auto_gen_resources.gd.log": {
+      "sha256": "3554c932464d79167ac67dcc33e1bcde20cc53c725ef71e1a416896aaa8995ac",
+      "bytes": 238
+    },
+    "candidate-test_reactor.gd.log": {
+      "sha256": "dcf789344979f633ec53f0ffdd28dbd7412cd9f2b080a108f663798f93ede36e",
+      "bytes": 221
+    },
+    "entry-native.png": {
+      "sha256": "2c958612b221ffce410ad0430cc1b356974ba5d182e616766a09c9b678c68c1c",
+      "bytes": 473436
+    },
+    "final-latest.log": {
+      "sha256": "cdc4d777cfa7567f9a901c375f2ac6012f06fb2d4c0561f4a201e8da702feba1",
+      "bytes": 239
+    },
+    "final-recovery.log": {
+      "sha256": "8640d460b47c5d26498e1f9c03bbceecbb8f0974050c0fd9c1b7f2ef03ec844c",
+      "bytes": 239
+    },
+    "final-reopen.log": {
+      "sha256": "1c4d5b63857c089300c0d09ce4eb8ab11cdf875ff63375bfeaaf87e0e7d2291d",
+      "bytes": 239
+    },
+    "final-write.log": {
+      "sha256": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db",
+      "bytes": 240
+    },
+    "native-result.log": {
+      "sha256": "8cb6d6b35a77973d782236d02184e488584b1d5a7a87b54d2ecdfbc945a2d78d",
+      "bytes": 247
+    },
+    "ordinary-entry.log": {
+      "sha256": "29b8d95146466197b8908bc7b791e64868786b1e3d5ee5e085212c63b14d8f0b",
+      "bytes": 333
+    },
+    "storage-roundtrip.log": {
+      "sha256": "f87c037f178ddd67ab3053872ad6f785daf6d322edebacf3ea559a06754c069f",
+      "bytes": 243
+    }
+  },
+  "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424"
+}

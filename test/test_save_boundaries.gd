@@ -1,22 +1,8 @@
 extends SceneTree
 
-class LoadOrderGame extends BattleGame:
-	var boundaries: Array[String] = []
-	func load_progress() -> void:
-		boundaries.append("load")
-		super.load_progress()
-	func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
-		boundaries.append("research")
-		super.advance_hightech(dt,real_dt,end_time)
-	func save_progress() -> void:
-		boundaries.append("save")
-		super.save_progress()
-	func reset_player() -> void:
-		boundaries.append("player")
-		super.reset_player()
-
 var checks := 0
 var failures := 0
+var observed: Array = []
 
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -24,82 +10,102 @@ func check(ok: bool, label: String) -> void:
 		failures += 1
 		printerr("FAIL: ",label)
 
-func write_save(raw: Dictionary) -> void:
-	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
-	file.store_string(JSON.stringify(raw))
+func observe(kind: String, _payload: Dictionary, game: BattleGame) -> void:
+	if kind == "resources_changed":observed.append(game.portable_save_data())
+
+func finish() -> void:
+	print("Save boundaries: %d checks, %d failures" % [checks, failures])
+	quit(1 if failures else 0)
+
+func remember(data: Dictionary) -> void:
+	var file := FileAccess.open("user://expected.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
 	file.close()
 
 func _initialize() -> void:
+	var area := ProjectSettings.globalize_path("res://../userdata").simplify_path().replace("\\", "/")
+	check(OS.get_user_data_dir().replace("\\", "/").begins_with(area), "Uses isolated player data")
 	var db := ShipDatabase.new()
 	db.config.offlineMax = 0
-	write_save({"version":BattleGame.SAVE_VERSION,"resources":{"1":123.5,"2":-4}})
-	var loaded := BattleGame.new(db,true)
-	check(loaded.profile.resources=={"1":123.5,"2":0.0},"Fractional save remains exact and negative resource clamps")
-	check(loaded.profile.version==BattleGame.SAVE_VERSION and loaded.slot_entry("weapons",0).level==1,"Missing fields retain current version and default equipment")
-	check(not loaded.profile.has("levels"),"Compatibility levels never enter runtime")
-	var again := BattleGame.new(db,true)
-	check(again.profile.resources==loaded.profile.resources and again.profile.loadout==loaded.profile.loadout,"Repeated load does not round or migrate again")
-	loaded.profile.resources["1"] = 321
-	loaded.save_progress()
-	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(saved.resources["1"]==321 and saved.version==BattleGame.SAVE_VERSION,"Temporary save replaces existing target")
-	check(not FileAccess.file_exists(BattleGame.SAVE_PATH+".tmp"),"Successful rename leaves no temporary file")
-	# Fail opening the temp file with an isolated directory, never a player path.
+	var phase := OS.get_cmdline_user_args()[0] if not OS.get_cmdline_user_args().is_empty() else "write"
+	if phase != "write":
+		reopen(db, phase)
+		return
+	var game := BattleGame.new(db, true)
+	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
+	game.profile.cleared = [1]
+	game.rebuild_unlocks()
+	game.economy.credit("2", 10000.0)
+	game.economy.credit_fragments(123.45)
+	var before = game.economy.balance("2")
+	var quoted = game.reactor_upgrade_cost()
+	var observer := observe.bind(game)
+	game.event.connect(observer)
+	check(game.upgrade_reactor(1), "Reactor purchase commits")
+	game.event.disconnect(observer)
+	check(observed.size() == 1 and observed[0].reactorLevel == 2 and observed[0].resources["2"] == before - quoted, "Notification and save snapshot see the complete purchase")
+	check(not FileAccess.file_exists(BattleGame.SAVE_PATH), "Purchase does not write a partial save")
+	check(game.set_reactor_allocation("weapons", 31), "Allocate reactor before save")
+	var detached := game.economy.resources()
+	detached["2"] = 0
+	var detached_reactor := game.reactor.allocations()
+	detached_reactor.weapons = 0
+	check(game.economy.balance("2") == before - quoted and game.reactor.allocation("weapons") == 31, "Read views cannot mutate authoritative domains")
+	check(not game.profile.has("resources") and not game.profile.has("reactorLevel") and not game.profile.has("reactorAllocation") and not game.profile.has("jewelFragments") and not game.profile.has("chronoParticles"), "Profile no longer owns migrated state")
+	var rejected := game.portable_save_data()
+	rejected.resources["2"] = -1
+	var prior := game.portable_save_data()
+	game.load_progress_data(rejected)
+	check(game.economy.save_data().resources == prior.resources and game.reactor.level() == prior.reactorLevel, "Invalid load leaves both domains unchanged")
+	game.hyperspace.last_error = ""
+	game.save_progress()
+	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
-	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH+".tmp")
-	var errors: Array = []
-	loaded.event.connect(func(kind,_payload):
-		if kind=="save_error": errors.append(kind))
-	loaded.profile.resources["1"] = 999
-	loaded.save_progress()
-	check(loaded.save_dirty,"Failed save retains dirty state for retry")
-	check(errors==["save_error"],"Temporary open failure emits one save_error")
-	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Temporary open failure preserves previous save bytes")
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
-	# A directory at the target isolates rename failure from temporary-file open.
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH)
-	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH)
-	loaded.save_progress()
-	check(errors==["save_error","save_error"],"Rename failure emits one additional save_error")
-	check(DirAccess.dir_exists_absolute(BattleGame.SAVE_PATH),"Rename failure does not destroy the obstructing target")
-	check(FileAccess.file_exists(BattleGame.SAVE_PATH+".tmp"),"Observed rename failure retains temporary data; not an atomicity guarantee")
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH)
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
-	# Loading may credit particles, but must discard the retired charge state.
-	db.config.offlineMax = 1.0/3600.0
-	var seed := BattleGame.new(db,false)
-	seed.profile.cleared = [1]
-	seed.profile.resources = {"1":0.0,"2":0.0}
-	seed.profile.hightechSavedAt = Time.get_unix_time_from_system()-100
-	seed.profile.chronoSavedAt = Time.get_unix_time_from_system()-100
-	seed.profile.offlineSavedAt = floorf(Time.get_unix_time_from_system())-100
-	seed.profile.offlineRates = {"1":0.0,"2":10.0}
-	var old_save := seed.profile.duplicate(true)
-	old_save.charge = {"攻击充能":{"level":99,"active":true}}
-	write_save(old_save)
-	var before_load := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
-	var settled := LoadOrderGame.new(db,true)
-	check(settled.boundaries==["load","player"],"Load settles in memory without an implicit save before resetting player")
-	check(settled.profile.chronoParticles==1 and settled.profile.resources["2"]==0,"Offline time credits only particles")
-	check(not settled.profile.has("charge"),"Old charge state is discarded")
-	var disk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==before_load,"Loading leaves the existing save bytes unchanged")
-	settled.save_progress()
-	disk=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(disk.resources==settled.profile.resources and disk.chronoParticles==1 and not disk.has("charge"),"Explicit save persists particle credit and removes old charge")
-	# The saved timestamp prevents repeated particle credit.
-	var repeated := BattleGame.new(db,true)
-	check(repeated.profile.resources==settled.profile.resources and repeated.profile.chronoParticles==settled.profile.chronoParticles,"Immediate repeat cannot reclaim offline particle credit")
-	var immediate := LoadOrderGame.new(db,false)
-	immediate.save_enabled = true
-	immediate.profile.cleared = [1]
-	immediate.profile.resources["2"] = 1000.0
-	immediate.boundaries.clear()
-	var upgrade_cost := immediate.reactor_upgrade_cost(1)
-	check(immediate.upgrade_reactor(1),"Reactor upgrade succeeds")
-	check(immediate.boundaries.count("save")==0 and immediate.save_dirty,"Reactor upgrade marks dirty without an implicit save")
-	immediate.save_progress()
-	var upgraded: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(upgraded.reactorLevel==2 and upgraded.resources["2"]==1000.0-upgrade_cost,"Saved reactor level and uranium match")
-	print("Save boundaries: %d checks, %d failures" % [checks,failures])
-	quit(1 if failures else 0)
+	var saved: Dictionary = JSON.parse_string(original)
+	var transfer := preload("res://scripts/save_transfer.gd").new()
+	check(transfer.prepare_data(saved, db).error == "", "Written current format passes pure validation")
+	var sparse := saved.duplicate(true)
+	sparse.erase("reactorAllocation")
+	check(not transfer.prepare_data(sparse, db).error.is_empty(), "Incomplete current state is rejected")
+	remember(saved)
+	finish()
+
+func reopen(db: ShipDatabase, phase: String) -> void:
+	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("user://expected.json"))
+	# JSON numbers are doubles; this fixture's small integer allocations are exact.
+	for key in saved.reactorAllocation:saved.reactorAllocation[key] = int(saved.reactorAllocation[key])
+	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
+	var restored := BattleGame.new(db, true)
+	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
+	if phase == "latest":
+		check(restored.economy.resources() == saved.latest, "Second real process reopen selects latest commit")
+		var damaged := FileAccess.open(BattleGame.SAVE_PATH, FileAccess.WRITE)
+		damaged.store_string("{broken")
+		damaged.close()
+		finish()
+		return
+	if phase == "recovery":
+		check(restored.economy.resources() == saved.resources, "Corrupt primary recovers complete backup")
+		check(original == "{broken", "Recovery read preserves rejected primary bytes")
+		restored.save_progress()
+		check(restored.last_save_error == OK and FileAccess.get_file_as_string(BattleGame.SAVE_PATH + ".rejected") == "{broken", "Recovery write retains rejected bytes")
+		finish()
+		return
+	check(restored.economy.resources() == saved.resources and restored.economy.balance("jewel") == saved.jewelFragments and restored.reactor.level() == saved.reactorLevel and restored.reactor.allocations() == saved.reactorAllocation, "Save/reopen preserves balances, reactor level and allocations")
+	var unchanged := restored.portable_save_data()
+	var bad := unchanged.duplicate(true)
+	bad.reactorAllocation.weapons = -1
+	restored.load_progress_data(bad)
+	check(restored.reactor.allocations() == saved.reactorAllocation and restored.economy.resources() == saved.resources, "Invalid allocation cannot install resources first")
+	restored.hyperspace.last_error = ""
+	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH + ".tmp")
+	restored.economy.credit("1", 7)
+	restored.save_progress()
+	check(restored.last_save_error != OK and restored.save_dirty, "Failed write retains dirty state")
+	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH) == original, "Failed write preserves the committed bytes")
+	DirAccess.remove_absolute(BattleGame.SAVE_PATH + ".tmp")
+	restored.save_progress()
+	check(restored.last_save_error == OK and FileAccess.file_exists(BattleGame.SAVE_PATH + ".bak"), "Retry keeps the prior valid recovery copy")
+	saved.latest = restored.economy.resources()
+	remember(saved)
+	finish()

@@ -18,6 +18,12 @@ func unlock_factory(game: BattleGame) -> void:
 	game.profile.cleared = [3,4]
 	game.rebuild_unlocks()
 
+
+func fund(game: BattleGame, resources: Dictionary) -> void:
+	var snapshot := game.economy.save_data()
+	snapshot.resources = resources.duplicate(true)
+	check(game.economy.install_snapshot(snapshot), "Fixture funds are valid")
+
 func _initialize() -> void:
 	call_deferred("run")
 
@@ -60,17 +66,17 @@ func run() -> void:
 	check(g.select_tech("weapon_accuracy") and g.select_tech("singularity") and near(float(g.profile.aiTechProgress.singularity),saved_singularity), "switch preserves independent progress")
 	var paid := BattleGame.new(db,false)
 	unlock_factory(paid)
-	paid.profile.resources = {"1":100.0,"2":10.0}
+	fund(paid,{"1":100.0,"2":10.0})
 	paid.set_tech_input("1",100)
 	paid.set_tech_input("2",10)
 	paid.select_tech("weapon_accuracy")
 	paid.advance_hightech(1.0)
 	check(near(float(paid.profile.aiTechProgress.weapon_accuracy),1.5*1.25), "iron and uranium factors multiply")
-	check(near(float(paid.profile.resources["1"]),0.0) and near(float(paid.profile.resources["2"]),0.0), "both currencies paid without debt")
-	paid.profile.resources["2"] = 20.0
+	check(near(float(paid.economy.balance("1")),0.0) and near(float(paid.economy.balance("2")),0.0), "both currencies paid without debt")
+	paid.economy.credit("2",20.0)
 	paid.advance_hightech(1.0)
 	check(near(float(paid.profile.aiTechProgress.weapon_accuracy),1.5*1.25+1.25), "one shortage keeps the other acceleration")
-	paid.profile.resources["1"] = 100.0
+	paid.economy.credit("1",100.0)
 	paid.advance_hightech(1.0)
 	check(near(float(paid.profile.aiTechProgress.weapon_accuracy),1.5*1.25+1.25+1.5*1.25), "configured input resumes after balance recovers")
 	var gate := BattleGame.new(db,false)

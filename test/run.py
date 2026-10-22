@@ -34,6 +34,14 @@ def main():
                         ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*", "*.blend", "*.blend1"))
     for name in ("project.godot", "main.tscn", "level_editor.tscn"):
         shutil.copy2(source / name, game / name)
+    # Persistence fixtures need the same OS writer lock as the player entry.
+    # Reuse its verified bundled runtime; specialized native tests may replace it.
+    sys.path.insert(0, str(workspace / "tools"))
+    from play_main import verified_bundle, DESCRIPTOR
+    native_bundle, _, _ = verified_bundle(workspace)
+    (game / "bin").mkdir(exist_ok=True)
+    shutil.copy2(native_bundle, game / "bin/space_native.dll")
+    (game / "space_native.gdextension").write_text(DESCRIPTOR, encoding="utf-8")
     shutil.copy2(workspace / "太空战舰.xlsx", area / "太空战舰.xlsx")
     isolated_tests = area / "test"
     isolated_tests.mkdir()
@@ -112,7 +120,14 @@ def main():
             return code
         return run([godot, *(["--headless"] if args.headless else []), "--path", str(game),
                     "--script", str(isolated_tests / args.test), "--", str(fixture)], "test")
-    return run([godot, *(["--headless"] if args.headless else []), "--path", str(game), "--script", str(isolated_tests / args.test)], "test")
+    command = [godot, *(["--headless"] if args.headless else []), "--path", str(game), "--script", str(isolated_tests / args.test)]
+    if args.test == "test_save_boundaries.gd":
+        for phase in ("write", "reopen", "latest", "recovery"):
+            code = run([*command, "--", phase], "test-" + phase)
+            if code:
+                return code
+        return 0
+    return run(command, "test")
 
 
 if __name__ == "__main__":

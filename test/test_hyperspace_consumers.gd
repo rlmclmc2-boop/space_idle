@@ -16,7 +16,7 @@ func _initialize() -> void:
 	for key in g.hyperspace.config.hanging_modules:g.profile.hyperspace.hanging_modules[key]={"unlocked":true,"level":2,"exp":0.0}
 	for growth in [0.1,0.2]:
 		g.hyperspace.attach_hangings(g,drone.id,[])
-		var energy:=g.reactor_energy();var chrono:=g.chrono_capacity()
+		var energy=g.reactor_energy();var chrono:=g.chrono_capacity()
 		check(chrono>0,"nonzero live chrono capacity fixture")
 		g.hyperspace.config.hanging_modules.extra_storage.effect_growth=growth
 		check(g.hyperspace.attach_hangings(g,drone.id,["extra_storage"]),"storage attaches")
@@ -26,10 +26,15 @@ func _initialize() -> void:
 		var modules:=g.reactor_available_modules()
 		check(not modules.is_empty(),"reactor allocation fixture unlocked")
 		check(g.set_reactor_allocation(modules[0],g.reactor_capacity()),"boosted reactor energy can be allocated")
+		var saved := g.portable_save_data()
+		var restored := BattleGame.new(db,false)
+		restored.hyperspace.configure(g.hyperspace.config)
+		restored.load_progress_data(saved)
+		check(restored.hyperspace.last_error.is_empty() and restored.reactor.allocations()==g.reactor.allocations() and restored.reactor_capacity()==g.reactor_capacity(),"load installs storage contributions before reconciling reactor allocation")
 		g.hyperspace.attach_hangings(g,drone.id,[])
 		check(g.reactor_allocated()<=g.reactor_capacity() and g.reactor_capacity()==floori(energy),"removing storage reconciles allocations to reduced capacity")
 		check(g.chrono_capacity()==chrono,"detach leaves chrono limit unchanged")
-	for key in g.reactor_modules():g.profile.reactorAllocation[key]=0
+	for key in g.reactor_modules():g.set_reactor_allocation(key,0)
 	g.invalidate_stat_cache()
 	check(g.select_tech("singularity"),"current AI research starts")
 	var base_rate: float=g.tech_tree_snapshot().speed
