@@ -1,8 +1,10 @@
 extends SceneTree
 
 var failures := 0
+var checks := 0
 
 func check(value: bool, label: String) -> void:
+	checks+=1
 	if not value:
 		failures += 1
 		printerr("FAIL: ",label)
@@ -50,7 +52,7 @@ func run() -> void:
 	var raw := {"reactorLevel":2,"reactorAllocation":{"weapons":90,"defence":90,"smelting":90,"condensation":0},"charge":{"攻击充能":{"level":999}}}
 	for key in game.reactor_modules():
 		if not raw.reactorAllocation.has(key):raw.reactorAllocation[key] = 0
-	game.load_reactor(raw)
+	check(game.reactor.install_snapshot(raw,db.config),"current reactor snapshot installs");game.invalidate_stat_cache();game.reactor.reconcile_capacity(game.reactor_capacity())
 	check(game.reactor.level() == 2 and game.reactor_allocated() <= game.reactor_capacity() and int(game.reactor.allocations().weapons) == 90,"Loaded allocation is integer and clamped")
 	check(not game.profile.has("charge"),"Legacy charge state ignored")
 	var batch := BattleGame.new(db,false)
@@ -75,5 +77,5 @@ func run() -> void:
 	check(iron.size()==1 and uranium.size()==1,"Both enemy drops generated")
 	if iron.size()==1 and uranium.size()==1:
 		check(float(iron[0].amount)>100.0 and float(uranium[0].amount)==100.0,"Smelting boosts only enemy iron")
-	print("reactor failures: ",failures)
+	print("REACTOR ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)

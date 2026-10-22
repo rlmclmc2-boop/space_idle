@@ -79,7 +79,9 @@ func set_readout(label: Label, value: String) -> void:
 func energy_text(value: Variant) -> String:
 	# Keep modest pools exact: generic two-significant-digit compact formatting
 	# otherwise turns capacity 207 into 200 and makes shares appear incorrect.
-	if value is Dictionary:return N.text(value)
+	if value is Dictionary:
+		if value.has("i") and value.i.length()<=18:return value.i
+		return N.text(N.from_integer(value) if value.has("i") else value)
 	if absf(value)<1000000.0:return ("%.1f" % value).trim_suffix(".0")
 	return NumberFormat.compact(value)
 
@@ -545,10 +547,10 @@ func refresh() -> void:
 		host.set_ui_value(slider,"max_value",capacity if not large else 1)
 		host.set_ui_value(slider,"value",amount if not large else 0)
 		if not controls.exact_input.has_focus():controls.exact_input.text=ReactorInt.digits(amount)
-		var power_ratio: float=N.ratio(amount,ReactorInt.maximum(1,capacity))
+		var power_ratio: float=N.ratio(N.from_integer(amount),N.from_integer(ReactorInt.maximum(1,capacity)))
 		var effective_ratio=game.reactor_effective_ratio(key)
-		var free_energy=N.multiply(capacity,free_ratio if enabled else 0.0)
-		var effective_energy=N.add(amount,free_energy)
+		var free_energy=N.multiply(N.from_integer(capacity),free_ratio if enabled else 0.0)
+		var effective_energy=N.add(N.from_integer(amount),free_energy)
 		var visual_ratio := (1.0 if effective_ratio is Dictionary else clampf(effective_ratio,0.0,1.0)) if N.compare(effective_energy,0)>0 else 0.0
 		controls.track.set_ratio(power_ratio)
 		controls.branch.set_ratio(visual_ratio)
@@ -558,7 +560,7 @@ func refresh() -> void:
 		update_supply_display(controls,manual_percent,power_ratio,free_ratio if enabled else 0.0)
 		host.set_ui_value(controls.steps[0],"disabled",ReactorInt.compare(amount,0)<=0 or not enabled)
 		host.set_ui_value(controls.steps[1],"disabled",ReactorInt.compare(allocated,capacity)>=0 or not enabled)
-		controls.track.set_available_ratio(N.ratio(controls.input.available_max,ReactorInt.maximum(1,capacity)))
+		controls.track.set_available_ratio(N.ratio(N.from_integer(controls.input.available_max),N.from_integer(ReactorInt.maximum(1,capacity))))
 		controls.scene_fx.set_ratio(visual_ratio)
 		var shade := 0.58 if not enabled else 0.32 if visual_ratio == 0 else 0.08*(1.0-sqrt(visual_ratio))
 		host.set_ui_value(controls.dimmer,"color",Color(0.0,0.015,0.03,shade))
@@ -582,5 +584,5 @@ func refresh() -> void:
 	if host.ui_state_changed(allocation_label,[capacity,allocated]):
 		set_readout(allocation_label,UIText.t("reactor.allocated",{"allocated":energy_text(allocated),"total":energy_text(capacity)}))
 		set_readout(remaining_label,UIText.t("reactor.remaining",{"energy":energy_text(ReactorInt.subtract(capacity,allocated))}))
-		total_track.set_ratio(N.ratio(allocated,ReactorInt.maximum(1,capacity)))
+		total_track.set_ratio(N.ratio(N.from_integer(allocated),N.from_integer(ReactorInt.maximum(1,capacity))))
 	refreshing = false

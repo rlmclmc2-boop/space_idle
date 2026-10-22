@@ -2,7 +2,6 @@ extends RefCounted
 ## Owns every spendable balance: resources, fragments, chrono and exact materials. No signals or game access:
 ## callers finish the other business state before publishing a notification.
 const N = preload("res://scripts/growth_number.gd")
-const Integer = preload("res://scripts/reactor_integer.gd")
 const IDS := ["1", "2", "jewel", "chrono"]
 var _balances := {"1":0.0, "2":0.0, "jewel":0.0, "chrono":0.0}
 const MATERIAL_LIMIT := 9000000000000000
@@ -27,7 +26,7 @@ func reset(resources: Dictionary, config: Dictionary) -> void:
 	var wallet := {"materials":{}, "ultimate_cores":0}
 	for route in config.routes.values():wallet.materials[route.material] = 0
 	install_material_wallet(wallet)
-	_balances = {"1":_copy(resources["1"]), "2":_copy(resources["2"]), "jewel":0.0, "chrono":0.0}
+	_balances = {"1":N.normalize(resources["1"]), "2":N.normalize(resources["2"]), "jewel":0.0, "chrono":0.0}
 	revision += 1
 	resource_revision += 1
 
@@ -92,15 +91,13 @@ static func valid_snapshot(raw: Dictionary) -> bool:
 func install_snapshot(raw: Dictionary) -> bool:
 	if not valid_snapshot(raw):return false
 	if not install_material_wallet({"materials":raw.materials, "ultimate_cores":raw.ultimateCores}):return false
-	_balances = {"1":_copy(raw.resources["1"]), "2":_copy(raw.resources["2"]), "jewel":_copy(raw.jewelFragments), "chrono":float(raw.chronoParticles)}
+	_balances = {"1":N.normalize(raw.resources["1"]), "2":N.normalize(raw.resources["2"]), "jewel":N.normalize(raw.jewelFragments), "chrono":float(raw.chronoParticles)}
 	revision += 1
 	resource_revision += 1
 	return true
 
 func save_data() -> Dictionary:
 	var result := resources()
-	for id in result:
-		if result[id] is int and result[id] > 9007199254740991:result[id] = Integer.encode(result[id])
 	return {"resources":result, "jewelFragments":balance("jewel"), "chronoParticles":balance("chrono"), "materials":_materials.duplicate(), "ultimateCores":_cores}
 
 func credit(id: String, amount: Variant) -> bool:
@@ -208,32 +205,3 @@ func consume_chrono(seconds: float, per_second: float) -> float:
 func reset_run_fragments() -> void:
 	_balances.jewel = 0.0
 	revision += 1
-
-# These preserve the accepted main arithmetic until the bounded resource
-# representation is migrated. Materials are deliberately not routed through it.
-static func exact_budget(budget: Variant) -> bool:
-	return (budget is Dictionary and budget.has("i")) or (budget is int and budget > 9007199254740991)
-
-static func reactor_affordable(cost: Variant, budget: Variant) -> bool:
-	if cost is float and not exact_budget(budget):return N.compare(cost, budget) <= 0
-	var exact_balance = Integer.from_growth(budget)
-	var exact_cost = Integer.from_growth(cost)
-	if budget is Dictionary and budget.has("m") and exact_cost != null:
-		return Integer.compare_legacy_growth_to_integer(budget, exact_cost) >= 0
-	return Integer.compare(exact_balance, exact_cost) >= 0 if exact_balance != null and exact_cost != null else N.compare(budget, cost) >= 0
-
-static func reactor_remainder(budget: Variant, cost: Variant) -> Variant:
-	if cost is float and not exact_budget(budget):return N.subtract(budget, cost)
-	var exact_cost = Integer.from_growth(cost)
-	var exact_balance = Integer.from_growth(budget)
-	if exact_cost != null and exact_balance == null and budget is Dictionary and budget.has("m"):
-		exact_balance = Integer.nearby_legacy_integer(budget, exact_cost)
-	if exact_balance != null and exact_cost != null:return Integer.subtract(exact_balance, exact_cost)
-	return N.subtract(budget, cost)
-
-func debit_reactor(id: String, cost: Variant) -> bool:
-	if id not in ["1", "2"] or not N.valid(cost) or not reactor_affordable(cost, _balances[id]):return false
-	_balances[id] = reactor_remainder(_balances[id], cost)
-	revision += 1
-	resource_revision += 1
-	return true

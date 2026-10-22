@@ -3,7 +3,6 @@ extends RefCounted
 ## domain never switches a combat backend, clears global caches or emits events.
 const N = preload("res://scripts/growth_number.gd")
 const Integer = preload("res://scripts/reactor_integer.gd")
-const Economy = preload("res://scripts/economy_state.gd")
 var _level := 1
 var _allocation: Dictionary = {}
 var revision := 0
@@ -71,7 +70,7 @@ func capacity(config: Dictionary, contributions: Array) -> Variant:
 func upgrade_cost(config: Dictionary, at_level := -1) -> Variant:
 	var actual := _level if at_level < 0 else at_level
 	var ordinary := float(config.reactorUpgradeBase) * pow(float(config.reactorUpgradeGrowth), actual - 1)
-	return ceilf(ordinary) if is_finite(ordinary) else Integer.formula_ceil([float(config.reactorUpgradeBase)], float(config.reactorUpgradeGrowth), actual - 1)
+	return ceilf(ordinary) if is_finite(ordinary) else N.ceiling(N.multiply(float(config.reactorUpgradeBase),N.power(float(config.reactorUpgradeGrowth),actual-1)))
 
 func allocated() -> Variant:
 	var total: Variant = 0
@@ -79,7 +78,7 @@ func allocated() -> Variant:
 	return total
 
 func effective_ratio(key: String, capacity: Variant, free_ratio: float) -> Variant:
-	return N.add(N.ratio(allocation(key), Integer.maximum(1, capacity)), free_ratio)
+	return N.add(N.ratio(N.from_integer(allocation(key)), N.from_integer(Integer.maximum(1, capacity))), free_ratio)
 
 func multiplier(key: String, capacity: Variant, free_ratio: float, config: Dictionary) -> Variant:
 	var manual = allocation(key)
@@ -88,39 +87,53 @@ func multiplier(key: String, capacity: Variant, free_ratio: float, config: Dicti
 		var boost := pow(ordinary, float(config.reactorBoostExponent)) if ordinary > 0 else 0.0
 		var bonus := 1.0 + boost / float(config.reactorPercentScale)
 		if is_finite(bonus):return bonus
-	var assigned = N.add(manual, N.multiply(capacity, free_ratio))
+	var assigned = N.add(N.from_integer(manual), N.multiply(N.from_integer(capacity), free_ratio))
 	return N.add(1.0, N.divide(N.power(assigned, float(config.reactorBoostExponent)), float(config.reactorPercentScale))) if N.compare(assigned, 0) > 0 else 1.0
 
+# Below binary64's integral precision boundary each single-level ceil remains
+# meaningful. Above it, the geometric tail has no representable fractional unit.
+func purchase_cost(amount: int, config: Dictionary) -> Variant:
+	if amount<=0:return 0.0
+	var total:Variant=0.0
+	var offset:=0
+	while offset<amount:
+		var cost:Variant=upgrade_cost(config,_level+offset)
+		if N.compare(cost,9007199254740992.0)>=0:
+			return N.add(total,N.multiply(cost,geometric_sum(float(config.reactorUpgradeGrowth),amount-offset)))
+		total=N.add(total,cost);offset+=1
+	return total
+
+static func geometric_sum(growth:float,count:int)->Variant:
+	# Sum 1+g+...+g^(count-1) by doubling, without a cancellation-prone g^n-1
+	# or a loop proportional to a potentially huge MAX purchase count.
+	var total:Variant=0.0;var factor:Variant=1.0
+	var block_sum:Variant=1.0;var block_factor:Variant=growth
+	while count>0:
+		if count%2==1:total=N.add(total,N.multiply(factor,block_sum));factor=N.multiply(factor,block_factor)
+		count/=2
+		if count>0:block_sum=N.multiply(block_sum,N.add(1.0,block_factor));block_factor=N.multiply(block_factor,block_factor)
+	return total
+
 func purchase_quote(amount: int, budget: Variant, config: Dictionary) -> Dictionary:
-	if amount <= 0 or _level > 9223372036854775807 - amount:return {}
-	var total: Variant = 0 if Economy.exact_budget(budget) else 0.0
-	var cursor: Array = []
-	for offset in amount:
-		var at_level := _level + offset
-		var cost: Variant = upgrade_cost(config, at_level) if cursor.is_empty() else Integer.cursor_ceil(cursor)
-		if cost is Dictionary and cursor.is_empty():cursor = Integer.cost_cursor(float(config.reactorUpgradeBase), float(config.reactorUpgradeGrowth), at_level - 1)
-		var exact = Integer.from_growth(cost)
-		if exact == null or Integer.compare(exact, 0) <= 0:return {}
-		if total is float and cost is float and is_finite(total + cost):total += cost
-		else:total = Integer.add(Integer.from_growth(total), exact)
-		if not Economy.reactor_affordable(total, budget):return {}
-		if not cursor.is_empty():cursor = Integer.advance_cursor(cursor, float(config.reactorUpgradeGrowth))
-	return {"revision":revision, "before":_level, "amount":amount, "cost":total}
+	if amount <= 0 or _level > 9223372036854775807 - amount or not N.valid(budget):return {}
+	var cost:Variant=purchase_cost(amount,config)
+	if not N.valid(cost) or N.compare(cost,0)<=0 or N.compare(cost,budget)>0:return {}
+	return {"revision":revision,"before":_level,"amount":amount,"cost":cost}
 
 func max_upgrades(budget: Variant, config: Dictionary) -> int:
-	var at_level := _level
-	var count := 0
-	var cursor: Array = []
-	while at_level < 9223372036854775807:
-		var cost: Variant = upgrade_cost(config, at_level) if cursor.is_empty() else Integer.cursor_ceil(cursor)
-		if cost is Dictionary and cursor.is_empty():cursor = Integer.cost_cursor(float(config.reactorUpgradeBase), float(config.reactorUpgradeGrowth), at_level - 1)
-		var exact = Integer.from_growth(cost)
-		if exact == null or Integer.compare(exact, 0) <= 0 or not Economy.reactor_affordable(cost, budget):break
-		budget = Economy.reactor_remainder(budget, cost)
-		at_level += 1
-		count += 1
-		if not cursor.is_empty():cursor = Integer.advance_cursor(cursor, float(config.reactorUpgradeGrowth))
-	return count
+	if not N.valid(budget):return 0
+	var room:int=9223372036854775807-_level
+	if room==0:return 0
+	var low:=0;var high:=1
+	while not purchase_quote(high,budget,config).is_empty():
+		low=high
+		if high==room:return high
+		high=room if high>room/2 else high*2
+	while high-low>1:
+		var middle:int=low+(high-low)/2
+		if purchase_quote(middle,budget,config).is_empty():high=middle
+		else:low=middle
+	return low
 
 func purchase_matches(quote: Dictionary) -> bool:
 	return not quote.is_empty() and quote.revision == revision and quote.before == _level

@@ -13,7 +13,7 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 9
+const SAVE_VERSION := 10
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const EnhancementGrowth=preload("res://scripts/enhancement_growth.gd")
 var enhancement_growth:=EnhancementGrowth.new()
@@ -1099,7 +1099,7 @@ func upgrade_reactor(amount: int) -> bool:
 	if quote.is_empty():return false
 	if not native_before_configuration_change():return false
 	if not reactor.purchase_matches(quote):return false
-	if not economy.debit_reactor(id, quote.cost):return false
+	if not economy.debit({id:quote.cost}):return false
 	# No callbacks or fallible work between the two authoritative commits.
 	reactor.commit_purchase(quote)
 	invalidate_stat_cache()
@@ -2905,7 +2905,6 @@ func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 	var result=N.multiply(amount,factor)
 	if not N.valid(result):return 0.0
 	if result is Dictionary:
-		if result.has("i"):return result
 		# GrowthNumber only keeps a mantissa/exponent outside the float domain;
 		# sub-cent underflow is zero, while a huge amount has no visible cents.
 		return 0.0 if float(result.e)<-2.0 else result

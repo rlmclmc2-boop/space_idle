@@ -1,6 +1,6 @@
 class_name ReactorInteger
 extends RefCounted
-## Exact, nonnegative decimal integers used only by the reactor and its receipts.
+## Exact, nonnegative decimal integers for reactor capacity and allocation.
 ## Ordinary values remain Godot ints. The tagged form survives JSON unchanged.
 const MAX_INT := "9223372036854775807"
 
@@ -120,53 +120,6 @@ static func decimal_factor(value: float) -> Array:
 	var raw := coefficient.replace(".","")
 	return [make(raw),fractional-power]
 
-static func from_growth(value: Variant) -> Variant:
-	if valid(value):return value
-	if value is float and is_finite(value) and value>=0.0 and value==floorf(value):return float_floor(value)
-	# Legacy {m,e} values remain in GrowthNumber's domain. Expanding an arbitrary
-	# valid exponent into decimal digits can allocate unbounded memory and also
-	# changes the legacy value's arithmetic type outside reactor transactions.
-	return null
-
-static func compare_legacy_growth_to_integer(value: Dictionary,integer: Variant) -> int:
-	# Compare an old {m,e} wallet with an integer quote without expanding e zeros.
-	var part:=decimal_factor(float(value.m))
-	var coefficient:=digits(part[0])
-	var target:=digits(integer)
-	var shift: float=float(value.e)-float(part[1])
-	if shift>=0.0:
-		var length: float=float(coefficient.length())+shift
-		if length!=float(target.length()):return 1 if length>target.length() else -1
-		var prefix:=target.substr(0,coefficient.length())
-		var compared:=_cmp_digits(coefficient,prefix)
-		if compared!=0:return compared
-		return 0 if target.substr(coefficient.length()).lstrip("0")=="" else -1
-	var integral_length: float=float(coefficient.length())+shift
-	if integral_length<=0.0:return -1 if target!="0" else 1
-	var whole:=coefficient.substr(0,int(integral_length))
-	var compared:=_cmp_digits(whole,target)
-	if compared!=0:return compared
-	return 0 if coefficient.substr(int(integral_length)).lstrip("0")=="" else 1
-
-static func nearby_legacy_integer(value: Dictionary,integer: Variant) -> Variant:
-	# Only materialize a legacy wallet when its decimal size is close to an
-	# already materialized quote. A distant exponent stays in GrowthNumber.
-	var part:=decimal_factor(float(value.m))
-	var coefficient:=digits(part[0])
-	var shift: float=float(value.e)-float(part[1])
-	var length: float=float(coefficient.length())+shift
-	var quote_length:=digits(integer).length()
-	# A difference larger than the coefficient's own decimal precision cannot
-	# cause a near-cost cancellation. This also bounds materialization by the
-	# size of the quote plus the already present coefficient.
-	if not is_finite(length) or length<float(quote_length) or length>float(quote_length+coefficient.length()):return null
-	if shift>=0.0:
-		return make(coefficient+"0".repeat(int(shift)))
-	if length<=0.0:return null
-	var cut:=int(length)
-	if coefficient.substr(cut).lstrip("0")!="":return null
-	return make(coefficient.substr(0,cut))
-
 static func to_float(value: Variant) -> float:
 	var s := digits(value)
 	return float(s) if s.length()<300 else float(s.substr(0,17))*pow(10.0,s.length()-17)
@@ -196,16 +149,3 @@ static func _integral(product: Array,up: bool) -> Variant:
 
 static func formula_floor(factors: Array,growth: float,exponent: int) -> Variant:
 	return _integral(_decimal_product(factors,growth,exponent),false)
-
-static func formula_ceil(factors: Array,growth: float,exponent: int) -> Variant:
-	return _integral(_decimal_product(factors,growth,exponent),true)
-
-static func cost_cursor(base: float,growth: float,exponent: int) -> Array:
-	return _decimal_product([base],growth,exponent)
-
-static func cursor_ceil(cursor: Array) -> Variant:
-	return _integral(cursor,true)
-
-static func advance_cursor(cursor: Array,growth: float) -> Array:
-	var factor := decimal_factor(growth)
-	return [multiply(cursor[0],factor[0]),int(cursor[1])+int(factor[1])]

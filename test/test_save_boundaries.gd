@@ -105,6 +105,7 @@ func _initialize() -> void:
 	check(game.start_hyperspace_idle("beta"),"Keep another background receipt for reopen")
 	idle=game.hyperspace.state.idle
 	check(game.hyperspace_runtime.complete(game,int(idle.round_id),int(idle.run_id),true),"Next pending reward coexists with previous unread claim")
+	check(game.economy.credit_many({"1":{"m":4.2,"e":700.0},"2":{"m":3.14,"e":320.0},"jewel":{"m":2.2,"e":410.0}}),"Current format stores finite large ordinary balances")
 	game.hyperspace.add_online_time(0.125)
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
@@ -131,6 +132,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	check(restored.hyperspace.state.active.is_empty() and restored.hyperspace.state.idle==saved.hyperspace.idle and restored.hyperspace.state.random_state==saved.hyperspace.random_state,"Interrupted manual receipt settles while pending reward and reward RNG survive")
 	check(restored.hyperspace.state.pending_time==0.125 and not restored.profile.has("hyperspace") and not restored.profile.has("hyperspaceReceipt"),"Current disk format preserves pending clock only in hyperspace owner")
 	check(restored.hyperspace.receipt_marker()==saved.hyperspaceReceipt and restored.hyperspace.receipt_marker().unread,"Claimed unread receipt persists independently of pending reward and UI")
+	check(restored.economy.balance("1")==saved.resources["1"] and restored.economy.balance("2")==saved.resources["2"] and restored.economy.balance("jewel")==saved.jewelFragments,"Scientific ordinary wallet survives real reopen alongside exact materials and history")
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
 	check(restored.galaxy.pending("galaxy_1")==0.25 and restored.galaxy.pending_crew("galaxy_1")==1 and restored.galaxy.income_time()==0.25,"Reopen/recovery preserves both pending online work and unclaimed income time")
 	check(restored.galaxy.regions.galaxy_1.state.build_elapsed==0.0 and str(restored.galaxy.regions.galaxy_1.random.state)==saved.galaxies.galaxy_1.rng_state,"Reopen/recovery neither settles pending work nor advances galaxy RNG")

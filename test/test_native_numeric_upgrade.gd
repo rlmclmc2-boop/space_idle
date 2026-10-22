@@ -138,8 +138,9 @@ func run()->void:
 	g=fixture("laser");g.native_before_configuration_change();g.projectile_clear();g.missile_queue.clear();g.jewel_repeats.clear()
 	var drone_equipment=g.equipment.save_data();drone_equipment.loadout.weapons=[{"key":"laser","level":2},{"key":"laser","level":9},{"key":"missile","level":20}]
 	check(g.equipment.install_snapshot(drone_equipment,g.db),"Drone host fixture validates")
-	var drone={"id":"main_max","weapon":"laser","ultimate":false,"blue_source_bonus":false,"legendary":false,"origin_quality":"blue","level":1,"affixes":[],"hangings":[]}
-	g.profile.hyperspace.inventory.drones[drone.id]=drone;g.profile.hyperspace.inventory.equipped=[drone.id]
+	var drone_rng:=RandomNumberGenerator.new();drone_rng.seed=123
+	var drone:Dictionary=preload("res://scripts/drone_rewards.gd").create_drone(drone_rng,g.hyperspace.config,"main_max","blue","laser",1,"1");drone.blue_source_bonus=false;drone.affixes=[];drone.hangings=[]
+	var hyperspace:Dictionary=g.hyperspace.save_data();hyperspace.hyperspace.inventory.drones[drone.id]=drone;hyperspace.hyperspace.inventory.warehouse=[drone.id];hyperspace.hyperspace.inventory.equipped=[drone.id];check(g.hyperspace.install_snapshot(hyperspace,g.db),"drone fixture installs into owner")
 	g.invalidate_stat_cache();g.reset_player();g.native_handoff_count=0
 	var bonus=int(g.hyperspace.config.weapon_level_bonuses.blue)
 	check(int(g.combat_entry(3).level)==9+bonus,"drone inherits same-weapon maximum, ignores stronger different weapon")
@@ -157,8 +158,8 @@ func run()->void:
 	check(actual.damage==g.equipment_stat("laser",10+bonus) and actual.damage==compiled.weapons[3].damage,"kernel next-birth damage equals canonical Game after batch")
 	g.begin_retreat()
 	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
-	var inventory_before=g.profile.hyperspace.duplicate(true)
-	check(not g.hyperspace.set_equipped(g,[]) and g.profile.hyperspace==inventory_before,"failed structural drone handoff leaves configuration unchanged")
+	var inventory_before=g.hyperspace.state.duplicate(true)
+	check(not g.hyperspace_runtime.set_equipped(g,[]) and g.hyperspace.state==inventory_before,"failed structural drone handoff leaves configuration unchanged")
 	g.begin_retreat()
 	for mode in ["1","10","max"]:
 		g=fixture("missile",true);owner=g.native_execution;g.enable_compiled_combat_rules()

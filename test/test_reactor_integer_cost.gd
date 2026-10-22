@@ -22,13 +22,26 @@ func run()->void:
  for level in range(1,101):
   var c:float=g.reactor_upgrade_cost(level)
   check(c==ceilf(c),"integer quote at level "+str(level))
- g.profile.reactorLevel=2
- g.profile.resources["2"]=13
+ var reactor:Dictionary=g.reactor.save_data();reactor.reactorLevel=2;check(g.reactor.install_snapshot(reactor,g.db.config),"reactor price fixture installs")
+ g.economy.credit("2",13)
  check(not g.upgrade_reactor(1),"13 cannot buy cost14")
- g.profile.resources["2"]=50
+ g.economy.credit("2",37)
  check(g.reactor_max_upgrades()==2,"max quote agrees with per-level rounding")
  check(g.upgrade_reactor(2),"batch upgrade accepted")
- check(GrowthNumber.compare(g.profile.resources["2"],17)==0,"batch debits14+19 leaving17")
- check(g.profile.reactorLevel==4,"batch raises two levels")
+ check(GrowthNumber.compare(g.economy.balance("2"),17)==0,"batch debits14+19 leaving17")
+ check(g.reactor.level()==4,"batch raises two levels")
+ scene.refresh_tab_visibility();scene.select_system(2)
+ await process_frame;await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png("res://.runtime/reactor-finite-cost.png")
+ reactor=g.reactor.save_data();reactor.reactorLevel=2400
+ check(g.reactor.install_snapshot(reactor,g.db.config),"high-price reactor fixture installs")
+ g.invalidate_stat_cache();g.economy.credit("2",GrowthNumber.multiply(g.reactor_upgrade_cost(),10.0))
+ var huge_cost=g.reactor_upgrade_cost();var huge_before=g.economy.balance("2")
+ check(huge_cost is Dictionary and GrowthNumber.valid(huge_cost),"overflowing ordinary power has finite single-level price")
+ check(g.upgrade_reactor(1) and g.reactor.level()==2401 and GrowthNumber.compare(g.economy.balance("2"),GrowthNumber.subtract(huge_before,huge_cost))==0,"real high-price purchase debits the quoted representation")
+ scene.reactor_panel.refresh();scene._process(0.0)
+ check(GrowthNumber.valid(g.reactor_multiplier("weapons")),"exact large capacity projects into finite effects")
+ await process_frame;await RenderingServer.frame_post_draw
+ root.get_texture().get_image().save_png("res://.runtime/reactor-high-cost.png")
  print("reactor integer cost: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)
