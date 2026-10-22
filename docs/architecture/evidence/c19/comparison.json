@@ -1,0 +1,627 @@
+{
+  "runtime_and_fixture": "559c980e94d0f4c8ca93275f41aa39bfd10f084d",
+  "production_code_unchanged_from": "35a8f02ceae487966b16e452543b9947745281ad",
+  "conditions": {
+    "engine": {
+      "adapter": "NVIDIA GeForce RTX 2060",
+      "cap": 0,
+      "display": "Windows",
+      "engine": "4.7.2-stable (official)",
+      "galaxy_assignment": true,
+      "galaxy_initial": {
+        "active_upgrade_work": 1786.5,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 2,
+        "game_time": 0.12,
+        "income_events": 0,
+        "level_total": 120,
+        "settlements": 0,
+        "status": "developing",
+        "upgrade_work": 1786.5
+      },
+      "galaxy_work": "active",
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(1373, 883)",
+      "vendor": "NVIDIA"
+    },
+    "pages": [
+      0,
+      8
+    ],
+    "warmup_frames_per_page": 15,
+    "measured_frames_per_page": 600,
+    "fixed_step": "1/60",
+    "save_enabled": false,
+    "instrumented": false,
+    "paired_difference": "Navigator unassigned versus actually assigned to galaxy_1. Both start from the same valid developing 30-building city, level four; two upgrades are near production completion boundaries."
+  },
+  "rows": [
+    {
+      "page": 0,
+      "idle": {
+        "frames_us": {
+          "max": 43872,
+          "mean": 6432.29333333333,
+          "p50": 6042,
+          "p95": 8831,
+          "p99": 10614
+        },
+        "main_us": {
+          "max": 6100,
+          "mean": 2906.12833333333,
+          "p50": 2604,
+          "p95": 4789,
+          "p99": 5382
+        },
+        "galaxy_before": {
+          "active_upgrade_work": 1786.5,
+          "building_revision": 0,
+          "crew": {
+            "assignment": "",
+            "id": "navigator",
+            "target": ""
+          },
+          "crew_count": 0,
+          "effect_generation": 2,
+          "game_time": 0.37,
+          "income_events": 0,
+          "level_total": 120,
+          "settlements": 0,
+          "status": "developing",
+          "upgrade_work": 1786.5
+        },
+        "galaxy_after": {
+          "active_upgrade_work": 1786.5,
+          "building_revision": 0,
+          "crew": {
+            "assignment": "",
+            "id": "navigator",
+            "target": ""
+          },
+          "crew_count": 0,
+          "effect_generation": 2,
+          "game_time": 10.3700000000001,
+          "income_events": 0,
+          "level_total": 120,
+          "settlements": 0,
+          "status": "developing",
+          "upgrade_work": 1786.5
+        },
+        "native_frames": 600,
+        "live_enemies": {
+          "max": 15,
+          "mean": 15.0,
+          "p50": 15,
+          "p95": 15,
+          "p99": 15
+        }
+      },
+      "active": {
+        "frames_us": {
+          "max": 44259,
+          "mean": 6457.38333333333,
+          "p50": 6079,
+          "p95": 8478,
+          "p99": 10739
+        },
+        "main_us": {
+          "max": 18677,
+          "mean": 2978.345,
+          "p50": 2667,
+          "p95": 4788,
+          "p99": 5948
+        },
+        "galaxy_before": {
+          "active_upgrade_work": 1786.5,
+          "building_revision": 0,
+          "crew": {
+            "assignment": "galaxy_explore",
+            "id": "navigator",
+            "target": "galaxy_1"
+          },
+          "crew_count": 1,
+          "effect_generation": 2,
+          "game_time": 0.37,
+          "income_events": 0,
+          "level_total": 120,
+          "settlements": 0,
+          "status": "developing",
+          "upgrade_work": 1786.5
+        },
+        "galaxy_after": {
+          "active_upgrade_work": 901.5,
+          "building_revision": 2,
+          "crew": {
+            "assignment": "galaxy_explore",
+            "id": "navigator",
+            "target": "galaxy_1"
+          },
+          "crew_count": 1,
+          "effect_generation": 4,
+          "game_time": 10.3700000000001,
+          "income_events": 0,
+          "level_total": 121,
+          "settlements": 10,
+          "status": "developing",
+          "upgrade_work": 1801.5
+        },
+        "native_frames": 600,
+        "live_enemies": {
+          "max": 15,
+          "mean": 15.0,
+          "p50": 15,
+          "p95": 15,
+          "p99": 15
+        },
+        "settlement_samples": [
+          {
+            "commits": 1,
+            "cpu_us": 6425,
+            "frame": 44,
+            "frame_us": 10739,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5512,
+            "frame": 104,
+            "frame_us": 9715,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5890,
+            "frame": 164,
+            "frame_us": 9339,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 18516,
+            "frame": 224,
+            "frame_us": 24576,
+            "refitted": true
+          },
+          {
+            "commits": 1,
+            "cpu_us": 18677,
+            "frame": 284,
+            "frame_us": 22169,
+            "refitted": true
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5827,
+            "frame": 344,
+            "frame_us": 9307,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5760,
+            "frame": 404,
+            "frame_us": 9336,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5683,
+            "frame": 464,
+            "frame_us": 9090,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5948,
+            "frame": 524,
+            "frame_us": 9376,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 4997,
+            "frame": 584,
+            "frame_us": 8195,
+            "refitted": false
+          }
+        ]
+      }
+    },
+    {
+      "page": 8,
+      "idle": {
+        "frames_us": {
+          "max": 10175,
+          "mean": 6236.93,
+          "p50": 6145,
+          "p95": 7441,
+          "p99": 8585
+        },
+        "main_us": {
+          "max": 5195,
+          "mean": 2390.03,
+          "p50": 2288,
+          "p95": 3183,
+          "p99": 3857
+        },
+        "galaxy_before": {
+          "active_upgrade_work": 1786.5,
+          "building_revision": 0,
+          "crew": {
+            "assignment": "",
+            "id": "navigator",
+            "target": ""
+          },
+          "crew_count": 0,
+          "effect_generation": 2,
+          "game_time": 10.6200000000001,
+          "income_events": 0,
+          "level_total": 120,
+          "settlements": 0,
+          "status": "developing",
+          "upgrade_work": 1786.5
+        },
+        "galaxy_after": {
+          "active_upgrade_work": 1786.5,
+          "building_revision": 0,
+          "crew": {
+            "assignment": "",
+            "id": "navigator",
+            "target": ""
+          },
+          "crew_count": 0,
+          "effect_generation": 2,
+          "game_time": 20.6200000000001,
+          "income_events": 0,
+          "level_total": 120,
+          "settlements": 0,
+          "status": "developing",
+          "upgrade_work": 1786.5
+        },
+        "native_frames": 600,
+        "live_enemies": {
+          "max": 15,
+          "mean": 15.0,
+          "p50": 15,
+          "p95": 15,
+          "p99": 15
+        }
+      },
+      "active": {
+        "frames_us": {
+          "max": 27301,
+          "mean": 6505.44,
+          "p50": 6286,
+          "p95": 7989,
+          "p99": 10241
+        },
+        "main_us": {
+          "max": 23022,
+          "mean": 2561.545,
+          "p50": 2342,
+          "p95": 3333,
+          "p99": 5897
+        },
+        "galaxy_before": {
+          "active_upgrade_work": 901.5,
+          "building_revision": 2,
+          "crew": {
+            "assignment": "galaxy_explore",
+            "id": "navigator",
+            "target": "galaxy_1"
+          },
+          "crew_count": 1,
+          "effect_generation": 4,
+          "game_time": 10.6200000000001,
+          "income_events": 0,
+          "level_total": 121,
+          "settlements": 10,
+          "status": "developing",
+          "upgrade_work": 1801.5
+        },
+        "galaxy_after": {
+          "active_upgrade_work": 16.5,
+          "building_revision": 4,
+          "crew": {
+            "assignment": "galaxy_explore",
+            "id": "navigator",
+            "target": "galaxy_1"
+          },
+          "crew_count": 1,
+          "effect_generation": 6,
+          "game_time": 20.6200000000001,
+          "income_events": 0,
+          "level_total": 122,
+          "settlements": 20,
+          "status": "developing",
+          "upgrade_work": 1816.5
+        },
+        "native_frames": 600,
+        "live_enemies": {
+          "max": 15,
+          "mean": 15.0,
+          "p50": 15,
+          "p95": 15,
+          "p99": 15
+        },
+        "settlement_samples": [
+          {
+            "commits": 1,
+            "cpu_us": 6231,
+            "frame": 29,
+            "frame_us": 10388,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5647,
+            "frame": 89,
+            "frame_us": 9432,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5726,
+            "frame": 149,
+            "frame_us": 9707,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 23022,
+            "frame": 209,
+            "frame_us": 27301,
+            "refitted": true
+          },
+          {
+            "commits": 1,
+            "cpu_us": 17327,
+            "frame": 269,
+            "frame_us": 21414,
+            "refitted": true
+          },
+          {
+            "commits": 1,
+            "cpu_us": 6053,
+            "frame": 329,
+            "frame_us": 10241,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 8429,
+            "frame": 389,
+            "frame_us": 14338,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5794,
+            "frame": 449,
+            "frame_us": 10121,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5200,
+            "frame": 509,
+            "frame_us": 8887,
+            "refitted": false
+          },
+          {
+            "commits": 1,
+            "cpu_us": 5897,
+            "frame": 569,
+            "frame_us": 9984,
+            "refitted": false
+          }
+        ]
+      }
+    }
+  ],
+  "attribution": {
+    "0": {
+      "galaxy_region.advance": {
+        "calls": 12,
+        "total_us": 1582,
+        "max_us": 211,
+        "mean_us": 131.83333333333334
+      },
+      "galaxy_region.commit_prediction": {
+        "calls": 10,
+        "total_us": 1857,
+        "max_us": 196,
+        "mean_us": 185.7
+      },
+      "galaxy_region.predict_advance": {
+        "calls": 12,
+        "total_us": 5312,
+        "max_us": 676,
+        "mean_us": 442.6666666666667
+      },
+      "galaxy_region.revision_due": {
+        "calls": 600,
+        "total_us": 1082,
+        "max_us": 50,
+        "mean_us": 1.8033333333333332
+      },
+      "galaxy_region.sync_map": {
+        "calls": 10,
+        "total_us": 223,
+        "max_us": 24,
+        "mean_us": 22.3
+      },
+      "galaxy_region.view": {
+        "calls": 1217,
+        "total_us": 13861,
+        "max_us": 663,
+        "mean_us": 11.389482333607232
+      },
+      "galaxy_runtime.advance": {
+        "calls": 600,
+        "total_us": 38128,
+        "max_us": 3336,
+        "mean_us": 63.54666666666667
+      },
+      "galaxy_runtime.flush_pending": {
+        "calls": 10,
+        "total_us": 18085,
+        "max_us": 3296,
+        "mean_us": 1808.5
+      },
+      "galaxy_runtime.prepare_advance": {
+        "calls": 1800,
+        "total_us": 45086,
+        "max_us": 8288,
+        "mean_us": 25.047777777777778
+      },
+      "galaxy_runtime.publish": {
+        "calls": 10,
+        "total_us": 1015,
+        "max_us": 227,
+        "mean_us": 101.5
+      },
+      "galaxy_system.commit_region": {
+        "calls": 10,
+        "total_us": 1914,
+        "max_us": 202,
+        "mean_us": 191.4
+      },
+      "galaxy_system.prepare_income": {
+        "calls": 1,
+        "total_us": 21,
+        "max_us": 21,
+        "mean_us": 21.0
+      },
+      "galaxy_system.prepare_region": {
+        "calls": 12,
+        "total_us": 12608,
+        "max_us": 1338,
+        "mean_us": 1050.6666666666667
+      },
+      "galaxy_system.preview_advance": {
+        "calls": 600,
+        "total_us": 25030,
+        "max_us": 711,
+        "mean_us": 41.71666666666667
+      }
+    },
+    "8": {
+      "galaxy_map._process": {
+        "calls": 600,
+        "total_us": 68224,
+        "max_us": 535,
+        "mean_us": 113.70666666666666
+      },
+      "galaxy_map.asset": {
+        "calls": 1,
+        "total_us": 4485,
+        "max_us": 4485,
+        "mean_us": 4485.0
+      },
+      "galaxy_map.refresh": {
+        "calls": 20,
+        "total_us": 6667,
+        "max_us": 5410,
+        "mean_us": 333.35
+      },
+      "galaxy_map.select": {
+        "calls": 20,
+        "total_us": 23,
+        "max_us": 2,
+        "mean_us": 1.15
+      },
+      "galaxy_region.advance": {
+        "calls": 12,
+        "total_us": 1490,
+        "max_us": 128,
+        "mean_us": 124.16666666666667
+      },
+      "galaxy_region.commit_prediction": {
+        "calls": 10,
+        "total_us": 1851,
+        "max_us": 218,
+        "mean_us": 185.1
+      },
+      "galaxy_region.predict_advance": {
+        "calls": 12,
+        "total_us": 5102,
+        "max_us": 507,
+        "mean_us": 425.1666666666667
+      },
+      "galaxy_region.revision_due": {
+        "calls": 600,
+        "total_us": 1101,
+        "max_us": 39,
+        "mean_us": 1.835
+      },
+      "galaxy_region.sync_map": {
+        "calls": 10,
+        "total_us": 230,
+        "max_us": 28,
+        "mean_us": 23.0
+      },
+      "galaxy_region.view": {
+        "calls": 1967,
+        "total_us": 14420,
+        "max_us": 912,
+        "mean_us": 7.330960854092527
+      },
+      "galaxy_runtime.advance": {
+        "calls": 600,
+        "total_us": 54262,
+        "max_us": 9681,
+        "mean_us": 90.43666666666667
+      },
+      "galaxy_runtime.flush_pending": {
+        "calls": 10,
+        "total_us": 32754,
+        "max_us": 9641,
+        "mean_us": 3275.4
+      },
+      "galaxy_runtime.prepare_advance": {
+        "calls": 1800,
+        "total_us": 42236,
+        "max_us": 7961,
+        "mean_us": 23.464444444444446
+      },
+      "galaxy_runtime.publish": {
+        "calls": 10,
+        "total_us": 15353,
+        "max_us": 6527,
+        "mean_us": 1535.3
+      },
+      "galaxy_system.commit_region": {
+        "calls": 10,
+        "total_us": 1907,
+        "max_us": 225,
+        "mean_us": 190.7
+      },
+      "galaxy_system.prepare_income": {
+        "calls": 1,
+        "total_us": 23,
+        "max_us": 23,
+        "mean_us": 23.0
+      },
+      "galaxy_system.prepare_region": {
+        "calls": 12,
+        "total_us": 12322,
+        "max_us": 1113,
+        "mean_us": 1026.8333333333333
+      },
+      "galaxy_system.preview_advance": {
+        "calls": 600,
+        "total_us": 22214,
+        "max_us": 168,
+        "mean_us": 37.02333333333333
+      }
+    }
+  }
+}

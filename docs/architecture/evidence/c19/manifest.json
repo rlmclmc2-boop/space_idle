@@ -1,0 +1,79 @@
+{
+  "runtime_and_fixture": "559c980e94d0f4c8ca93275f41aa39bfd10f084d",
+  "branch": "impl/domain-architecture-20261022",
+  "production_code_unchanged_from": "35a8f02ceae487966b16e452543b9947745281ad",
+  "source_sha256_git_lf": {
+    "test/whole_game_perf.py": "a788c65c24badf5819aa58cb48c45542cb17ae266148914c128117c65d1819ac",
+    "test/whole_game_perf.gd": "943bd99a4335904dfafd1d42ad70c84d530c2d5c1bcb724893b55d0e74d86f78",
+    "test/saved_game_perf.py": "d556ddab1b24df6a66544191a2a93f1c7e647b5c6b26e72058d13169d6737ef0",
+    "test/fixtures/galaxy_1_complete.json": "13d2df9c972565a1168edf1ce1f15ab28d2f61b33eec609f71d8ce136202f312",
+    "space-battleship/scripts/galaxy_system.gd": "5c3360bc15538da25698783b1d2af9e0a4590ce019997124316ff4857617401e",
+    "space-battleship/scripts/galaxy_region.gd": "61967bc059bf888ccda389a02f16aa0304cb5fc312779d660a1a3a8c83925dbe",
+    "space-battleship/scripts/galaxy_runtime.gd": "b62e12152e626eb4eb895de3bf97c05bc8644dd2ca8e025915fc0f31a9aab102",
+    "space-battleship/scripts/native_execution_session.gd": "6c1f130c9ff701d8f5cb2cb620027d455fc3d5daa4049637a000b68792700393",
+    "space-battleship/scripts/native_execution_compiler.gd": "87612baf90312e760a716c3dafa59be85c2a6c1b58f9dc3822c454de523d62df",
+    "space-battleship/data/game_data.json": "fd9507a476d6164fd5f1dac9250923d9b0450f2450c22004b52be2def9bd2609"
+  },
+  "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "runs": [
+    {
+      "report": "c19-idle.json",
+      "kind": "uninstrumented no-crew control",
+      "checks": "No assignment, no work commits or progression; 600 native frames and 15 living enemies on each page."
+    },
+    {
+      "report": "c19-active.json",
+      "kind": "uninstrumented active work",
+      "checks": 3,
+      "failures": 0,
+      "assignment": "navigator / galaxy_explore / galaxy_1",
+      "settlements": 20,
+      "upgrade_work": [
+        1786.5,
+        1816.5
+      ],
+      "building_level_total": [
+        120,
+        122
+      ],
+      "native_frames": [
+        600,
+        600
+      ]
+    },
+    {
+      "report": "c19-active-attribution-final.json",
+      "kind": "instrumented attribution only",
+      "checks": 3,
+      "failures": 0,
+      "notes": "Timing wrappers affect cost. Use for call attribution, never as the before/after frame comparison. predict_advance includes copying and advance; prepare_region includes read-only projection, not pure copy timing."
+    }
+  ],
+  "authored_fixture": "Use existing galaxy_1_complete.json and actual production definition; convert all 30 buildings to legal level-four developing state, with two upgrade works scheduled near 4/14 seconds at the production per-crew power. Install through current snapshot validation, then assign navigator through Game.assign_crew. No config, formula, cadence or backend guard changes.",
+  "boundary_notes": [
+    "Four effect_generation changes occur: two completed upgrades and two selections of the next upgrade. settlement_samples.refitted records this domain generation change; it is not a native-kernel invocation counter.",
+    "The first two completed buildings are crystal_refinery (gem_fragment) and interstellar_refinery (iron_auto_ratio). No resource income events occur in this fixture; resource receipt correctness is not claimed.",
+    "Initial ordinary-frame maximum around 44 ms appears in both idle and active runs; do not attribute that maximum to galaxy settlement."
+  ],
+  "excluded_attempts": [
+    "First new probe failed to parse an inferred frame_us type before scene execution. Explicit int fixed the fixture; production code was unchanged."
+  ],
+  "remaining": [
+    "This measures a developing complete-layout city with active upgrades; expanding-map construction, more crew, other speeds and long sessions are not covered.",
+    "Active work and replica cost now have real samples; overall performance is not accepted. Four uninstrumented boundary frames are about 21-27 ms.",
+    "Initial page hitches and previously measured galaxy revisit variability remain; no broad refactor based on these short samples.",
+    "C16 save/reopen and C18 geometry checks were not rerun. Their original revision ownership remains.",
+    "Reactor capacity/allocation precision and level range are unchanged pending user decision."
+  ],
+  "review_status": "C18 production changes and their evidence have limited dual approval. This C19 measurement handoff awaits review. Main not merged.",
+  "artifact_sha256_git_blob": {
+    "active-galaxy.png": "a49dcdca053b5dc3bdcbb664695d65c588fb559dd0417f83f8649c01972ce0b7",
+    "c19-active-attribution-final.json": "f0444920ada7b08b492ff1a8d842fc9f41cc16a4ded24769ad88bd068c92029a",
+    "c19-active-attribution-final.log": "cccd04111d23917aa3f0e603ebf04c9b6724eb22f63855c521d281d113038df4",
+    "c19-active.json": "20eebd9c9bf0bd502aef70bffe0f1d5e20adb51e4ec2e7c90688465f6cc0d3b7",
+    "c19-active.log": "227e53642c410fc7ac323920b8fdb6b22908c9b0305d25aa7c1b5e65c4b7381c",
+    "c19-idle.json": "4d67b0a1066ad1dc51d782fc163f8f1c90baa93b533ccb5d626b0e6450345d58",
+    "c19-idle.log": "311ddd6c1fdc7aab7e91c5b3c5ef5887ac16e328f24e9a5dd6a30606ad921742",
+    "comparison.json": "dd23ee245341f0c38fd8963f0faf9ad0eca37b5736224b8ba6b21c2359ad8a39"
+  }
+}
