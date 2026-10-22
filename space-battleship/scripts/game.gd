@@ -13,7 +13,7 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 7
+const SAVE_VERSION := 8
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const EnhancementGrowth=preload("res://scripts/enhancement_growth.gd")
 var enhancement_growth:=EnhancementGrowth.new()
@@ -38,6 +38,7 @@ var planets:=PlanetState.new()
 var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
 var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
 var galaxy := preload("res://scripts/galaxy_system.gd").new()
+var galaxy_runtime := preload("res://scripts/galaxy_runtime.gd").new()
 var hyperspace := preload("res://scripts/hyperspace_system.gd").new()
 const FURNACE := "超时空炼铁炉"
 const JEWEL_FURNACE := "宝石熔炼炉"
@@ -189,10 +190,10 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	economy.reset({"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))},hyperspace.config)
 	reactor.reset(db.config)
 	crew.attach(self)
-	galaxy.load_state(self,{})
+	galaxy.reset(db)
 	crew.reset(self)
 	planets.reset(self)
-	galaxy.refresh_unlocks(self)
+	galaxy_runtime.refresh_unlocks(self)
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
@@ -425,10 +426,11 @@ func load_progress_data(raw: Dictionary) -> void:
 	planets.install_snapshot(raw,db)
 	reactor.install_snapshot(raw,db.config)
 	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
-	galaxy.load_state(self,raw.galaxies)
+	galaxy.install_snapshot(raw,db)
+	galaxy_runtime.reset()
 	rebuild_unlock_gates()
 	profile.hightechOrder = hightech_slots()
-	galaxy.refresh_unlocks(self)
+	galaxy_runtime.refresh_unlocks(self)
 	invalidate_stat_cache()
 	# Reconcile against restored contributions; only then establish derived schedules.
 	var installed_reactor_revision := reactor.revision
@@ -667,7 +669,7 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 	saved.merge(crew.save_data(), true)
 	saved.merge(planets.save_data(), true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
-	saved.galaxies=galaxy.save_data()
+	saved.merge(galaxy.save_data(),true)
 	saved.grantedUnlocks = granted_unlocks()
 	if state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR, State.RETREAT]:
 		# Retreat resumes at its destination, never at the defeated encounter.
@@ -1401,7 +1403,6 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	# Prepare the complete replacement before changing any authoritative state.
 	var next := fresh_profile()
 	next.hyperspace=next_hyperspace
-	next.galaxies = profile.get("galaxies",{})
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
 	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
@@ -1490,8 +1491,8 @@ func assign_crew(crew_id: String, assignment_type: String, target_id: String, up
 	var previous: Dictionary=plan.changes[0].previous
 	if plan.configuration:
 		# Earned time belongs to the previous assignment and is settled before transfer.
-		if previous.assignmentType=="galaxy_explore" and not galaxy.flush_pending(self,str(previous.targetId)):return false
-		if assignment_type=="galaxy_explore" and not galaxy.flush_pending(self,target_id):return false
+		if previous.assignmentType=="galaxy_explore" and not galaxy_runtime.flush_pending(self,str(previous.targetId)):return false
+		if assignment_type=="galaxy_explore" and not galaxy_runtime.flush_pending(self,target_id):return false
 		if not crew.proposal_current(plan) or not crew.can_assign(self,crew_id,assignment_type,target_id):return false
 		capture_refit_health()
 	crew.commit(plan)
@@ -2631,7 +2632,7 @@ func advance_enemy_shields(dt: float) -> void:
 func prepare_logical_step(dt:float)->bool:
 	if native_execution!=null and native_execution.advance_blocked:
 		native_step_phase="blocked";paused=true;return false
-	if galaxy.prepare_native_advance(self,dt):return true
+	if galaxy_runtime.prepare_advance(self,dt):return true
 	native_step_phase="blocked";paused=true
 	return false
 
@@ -4134,7 +4135,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 	hyperspace.advance(self,dt)
 	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
-	galaxy.advance(self,dt)
+	galaxy_runtime.advance(self,dt)
 	if native_step_phase=="blocked":return
 	crew.advance(self,dt)
 	advance_auto_gen(dt)

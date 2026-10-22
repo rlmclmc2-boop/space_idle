@@ -8,6 +8,26 @@ var checks := 0
 func check(ok: bool,label: String) -> void:
 	checks+=1
 	if not ok:failures+=1;printerr(label)
+func apply_region_fixture(g,raw:Dictionary)->void:
+	raw=raw.duplicate(true)
+	var target=g.galaxy.regions.galaxy_1
+	if raw.status in ["exploring","developing","complete"]:
+		var built:bool=raw.slots.all(func(slot):return slot.status in ["active","upgrading"])
+		var complete:bool=raw.slots.all(func(slot):return slot.status=="active" and slot.level==int(target.builds[slot.type].max_lv))
+		raw.status="complete" if complete else "developing" if built else "exploring"
+	raw.explore_work=0.0
+	for slot in raw.slots:raw.explore_work+=float(slot.work)
+	var snapshot:Dictionary=g.galaxy.save_data()
+	snapshot.galaxies.galaxy_1=raw.duplicate(true)
+	snapshot.galaxies.galaxy_1.pending_online_time=0.0;snapshot.galaxies.galaxy_1.pending_crew_count=0
+	check(preload("res://scripts/galaxy_system.gd").valid_snapshot(snapshot,g.db),"Art fixture is a valid current galaxy snapshot")
+	var region=g.galaxy.regions.galaxy_1
+	var next=preload("res://scripts/galaxy_region.gd").new()
+	next.setup(region.row,region.builds,region.chunk_size,snapshot.galaxies.galaxy_1)
+	next.building_revision=region.building_revision+1
+	g.galaxy.commit_region({"key":"galaxy_1","region":next,"refitted":true})
+	g.invalidate_stat_cache()
+
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
 	var viewport: Viewport=root
@@ -31,9 +51,11 @@ func run() -> void:
 	g.profile.cleared=range(1,int(g.db.data.unlock["feature/galaxy"].level)+1)
 	g.profile.highestLevel=int(g.db.data.unlock["feature/galaxy"].level)+1
 	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
-	for progress in g.profile.planets.values():progress.conquered=true
+	var planets:Dictionary=g.planets.save_data();planets.merge(g.crew.save_data())
+	for progress in planets.planets.values():progress.conquered=true
+	check(g.planets.install_snapshot(planets,g.db),"UI planet fixture installs")
 	g.rebuild_unlocks()
-	g.galaxy.refresh_unlocks(g)
+	g.galaxy_runtime.refresh_unlocks(g)
 	scene.refresh_structure()
 	scene.refresh_tab_visibility()
 	print("GALAXY UI SETUP status=",g.galaxy.regions.galaxy_1.state.status," hidden=",scene.equipment_tabs.is_tab_hidden(8))
@@ -71,7 +93,7 @@ func run() -> void:
 	for id in gates:g.db.data.crew[id].unlockId=gates[id]
 
 	var region=g.galaxy.regions.galaxy_1
-	g.galaxy.advance(g,1)
+	g.galaxy_runtime.advance(g,1)
 	panel.refresh()
 	var map=panel.map
 	var previous_count := -1
@@ -126,9 +148,9 @@ func run() -> void:
 	var ticks: int=map.visual_ticks
 	var updates: int=map.draw_updates
 	var work: float=region.state.build_elapsed
-	g.galaxy.advance(g,9)
+	g.galaxy_runtime.advance(g,9)
 	check(region.state.build_elapsed==work,"Hidden online batch waits")
-	g.galaxy.advance(g,1)
+	g.galaxy_runtime.advance(g,1)
 	check(region.state.build_elapsed!=work or region.occupied_count>0,"Hidden batch advances construction dispatch")
 	await process_frame
 	await process_frame
@@ -147,7 +169,7 @@ func run() -> void:
 	var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://../test/fixtures/galaxy_1_complete.json"))
 	check(fixture is Dictionary,"Logic-owned full-build fixture is available")
 	if not fixture is Dictionary:quit(1);return
-	g.galaxy.load_state(g,{"galaxy_1":fixture.save})
+	apply_region_fixture(g,fixture.save)
 	region=g.galaxy.regions.galaxy_1
 	var saved_before: String=JSON.stringify(region.blueprint)
 	map.zoom=1.0;map.pan=Vector2.ZERO
@@ -263,24 +285,25 @@ func run() -> void:
 	check(map.slot_nodes[id].get_node("Building").get_instance_id()==cached_node and map.draw_updates==cached_updates,"Unchanged refresh reuses model and static mesh")
 	var unrelated_model: int=map.slot_nodes[3].get_node("Building").get_instance_id()
 	var route_mesh: Mesh=map.city.hub.get_node("StaticStructure").mesh
-	region.slots[2].level=4;region.building_revision+=1
+	var visual:Dictionary=region.save_data();visual.slots[2].level=4;apply_region_fixture(g,visual)
 	panel.refresh()
 	check(map.draw_updates==cached_updates+1 and map.slot_nodes[3].get_node("Building").get_instance_id()==unrelated_model,"Single level change updates only its building")
 	check(map.city.hub.get_node("StaticStructure").mesh==route_mesh,"Level-only change preserves static transit mesh")
-	region.slots[2].level=5;region.building_revision+=1;panel.refresh()
+	visual=region.save_data();visual.slots[2].level=5;apply_region_fixture(g,visual);panel.refresh()
 	# A legal outward construction state: first layer complete, one nearest second-layer node busy.
-	for slot in region.slots:
+	visual=region.save_data()
+	for slot in visual.slots:
 		slot.level=1 if int(slot.id)<4 else 0
 		slot.status="active" if int(slot.id)<4 else "empty"
 		slot.work=region.work_cost() if int(slot.id)<4 else 0.0
 		slot.construction=0.0
 		slot.upgrade_progress=0.0
-	region.state.status="exploring"
-	region.slots[4].status="constructing";region.slots[4].level=1
-	region.slots[4].work=region.work_cost()*0.42
-	region.slots[4].construction=float(region.row.construction_time)
-	region.refresh_counts();region.building_revision+=1
-	g.galaxy.effect_generation+=1
+	visual.status="exploring"
+	visual.slots[4].status="constructing";visual.slots[4].level=1
+	visual.slots[4].work=region.work_cost()*0.42
+	visual.slots[4].construction=float(region.row.construction_time)
+	visual.explore_work=region.work_cost()*4.42
+	apply_region_fixture(g,visual)
 	map.zoom=1.45;map.pan=Vector2.ZERO;map.layout()
 	panel.detail_slot=4;map.selected_slot=4;map.hover_slot=-1;map.update_highlight();panel.refresh()
 	await create_timer(1.2).timeout
@@ -306,17 +329,19 @@ func run() -> void:
 	for edge_id in map.transit.active_edges:
 		check(region.slots[edge_id].status in ["active","upgrading"],"Normal traffic never uses unfinished child connection")
 	var held_height: float=map.construction[4].height
-	g.galaxy.advance(g,1);panel.refresh()
+	g.galaxy_runtime.advance(g,1);panel.refresh()
 	check(is_equal_approx(map.construction[4].height,held_height),"Unassigned construction reveal remains stationary")
 	await capture(viewport,"galaxy-unassigned-ui.png")
 	await crew_click(viewport,panel,button)
 	panel.refresh()
 	# Upgrade state is tested only after all functional buildings exist, matching logic.
-	for slot in region.slots:
+	visual=region.save_data()
+	for slot in visual.slots:
 		slot.level=4;slot.status="active";slot.work=region.work_cost();slot.construction=0.0
-	region.state.status="developing"
-	region.slots[2].status="upgrading";region.slots[2].upgrade_progress=region.upgrade_cost(region.slots[2])*0.35
-	region.refresh_counts();region.building_revision+=1;g.galaxy.effect_generation+=1
+	visual.status="developing"
+	visual.slots[2].status="upgrading";visual.slots[2].upgrade_progress=region.upgrade_cost(visual.slots[2])*0.35
+	visual.explore_work=float(region.row.explore_work_total)
+	apply_region_fixture(g,visual)
 	map.zoom=1.55;map.pan=Vector2.ZERO;map.layout();panel.detail_slot=2;panel.refresh()
 	await capture(viewport,"galaxy-upgrade-ui.png")
 	check(map.construction[2].ring.visible and map.slot_nodes[2].get_node("Building").visible,"Upgrade retains existing structure and progress feedback")
@@ -331,7 +356,7 @@ func run() -> void:
 	if OS.get_environment("GALAXY_RECORD_SECONDS").to_float()>0 and failures==0:
 		await record_construction(viewport,scene,panel,fixture,OS.get_environment("GALAXY_RECORD_SECONDS").to_float())
 	if OS.get_environment("GALAXY_CAPTURE_HOLD")=="1":
-		g.galaxy.load_state(g,{"galaxy_1":fixture.save})
+		apply_region_fixture(g,fixture.save)
 		panel.detail_slot=-1
 		scene.select_system(8);panel.refresh()
 		await create_timer(1.2).timeout
@@ -377,7 +402,7 @@ func paused_lifecycle(viewport: Viewport,scene,panel) -> void:
 	# Only galaxy_1 is configured. Exercise region replacement with a detached
 	# empty region, without inventing a playable galaxy or editing profile data.
 	var original=map.region
-	var saved: String=JSON.stringify(game.profile.galaxies)
+	var saved: String=JSON.stringify(game.galaxy.save_data())
 	var replacement=preload("res://scripts/galaxy_region.gd").new()
 	replacement.setup(original.row,original.builds,original.chunk_size)
 	var previous: PackedByteArray=map.view.get_texture().get_image().get_data()
@@ -395,7 +420,7 @@ func paused_lifecycle(viewport: Viewport,scene,panel) -> void:
 	var stationary: PackedByteArray=map.view.get_texture().get_image().get_data()
 	for _i in 3:await process_frame
 	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED and map.view.get_texture().get_image().get_data()==stationary and map.visual_ticks==ticks,"No-change paused frames remain dormant and identical")
-	check(JSON.stringify(game.profile.galaxies)==saved,"Detached region presentation does not mutate game profile")
+	check(JSON.stringify(game.galaxy.save_data())==saved,"Detached region presentation does not mutate galaxy state")
 	print("GALAXY PAUSED LIFECYCLE visual_ticks_delta=",map.visual_ticks-ticks)
 
 func capture(viewport: Viewport,filename: String) -> void:
@@ -444,21 +469,22 @@ func crew_click(viewport: Viewport,panel,button: Button) -> void:
 func record_construction(viewport: Viewport,scene,panel,fixture: Dictionary,seconds: float) -> void:
 	if DisplayServer.get_name()=="headless":push_error("Real-time recording requires the native game viewport");return
 	var g=scene.game
-	g.galaxy.load_state(g,{"galaxy_1":fixture.save})
+	apply_region_fixture(g,fixture.save)
 	var region=g.galaxy.regions.galaxy_1
-	for slot in region.slots:
+	var visual:Dictionary=region.save_data()
+	for slot in visual.slots:
 		var built: bool=OS.get_environment("GALAXY_CITY_RECORD")=="1" or int(slot.id)<15
 		slot.status="active" if built else "empty"
 		slot.level=(1+int(slot.id)%5 if OS.get_environment("GALAXY_CITY_RECORD")=="1" else 1) if built else 0
 		slot.work=region.work_cost() if built else 0.0
 		slot.construction=0.0;slot.upgrade_progress=0.0
 	if OS.get_environment("GALAXY_CITY_RECORD")!="1":
-		region.slots[15].status="constructing";region.slots[15].level=1
-		region.slots[15].work=region.work_cost()*0.425
-		region.slots[15].construction=float(region.row.construction_time)
-	region.state.status="exploring"
-	region.state.explore_work=region.work_cost()*15.425
-	region.refresh_counts();region.building_revision+=1;g.galaxy.effect_generation+=1
+		visual.slots[15].status="constructing";visual.slots[15].level=1
+		visual.slots[15].work=region.work_cost()*0.425
+		visual.slots[15].construction=float(region.row.construction_time)
+	visual.status="exploring"
+	visual.explore_work=region.work_cost()*15.425
+	apply_region_fixture(g,visual)
 	panel.detail_slot=-1 if OS.get_environment("GALAXY_CITY_RECORD")=="1" else 15
 	scene.select_system(8);panel.refresh()
 	panel.map.zoom=1.0;panel.map.pan=Vector2.ZERO;panel.map.layout()
@@ -514,8 +540,9 @@ func validate_city(scene,panel) -> void:
 	var representatives:={}
 	for slot in region.slots:representatives[str(slot.planned_type)]=int(slot.id)
 	for level in range(1,6):
-		for slot in region.slots:slot.level=level
-		region.building_revision+=1;g.galaxy.effect_generation+=1;panel.refresh()
+		var visual:Dictionary=region.save_data()
+		for slot in visual.slots:slot.level=level
+		apply_region_fixture(g,visual);panel.refresh()
 		var roofs_ok:=0
 		for slot in region.slots:
 			var id:int=int(slot.id);var node:Node3D=map.slot_nodes[id];var bounds:Array=map.asset_bounds[map.visual_path(slot)]

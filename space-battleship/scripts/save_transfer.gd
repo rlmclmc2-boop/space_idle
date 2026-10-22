@@ -1,13 +1,12 @@
 extends RefCounted
 ## Desktop portable progress, validated before any live state or file replacement.
 const Writer := preload("res://scripts/progress_writer.gd")
-const Layout := preload("res://scripts/galaxy_layout.gd")
 const ReactorInt := preload("res://scripts/reactor_integer.gd")
 const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
 const SUPPORTED_VERSIONS := [BattleGame.SAVE_VERSION]
 # Complete current-format fields; legacy saves are explicitly unsupported.
-const CURRENT_FIELDS := ["version","resources","materials","ultimateCores","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
+const CURRENT_FIELDS := ["version","resources","materials","ultimateCores","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","galaxyIncomeElapsed","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
 static func structure_quality(raw: Dictionary) -> Dictionary:
  var slots = raw.get("loadout")
  if raw.get("version") == BattleGame.SAVE_VERSION and slots is Dictionary and slots.has("weapons") and slots.has("defence") and CURRENT_FIELDS.all(func(key):return raw.has(key)):
@@ -37,6 +36,7 @@ static func schema() -> Dictionary:
  result.aiIncomePeak={"*":"g"}
  result.aiTechCompletionUnread="b"
  result.productionElapsed="n"
+ result.galaxyIncomeElapsed="n"
  result.equipmentSwitchUntil={"*":"n"}
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
@@ -88,50 +88,6 @@ static func clean(value: Variant, spec: Variant) -> Variant:
   elif spec.has("*"):result[key]=clean(value[key],spec["*"])
  return result
 
-static func blueprint_valid(raw: Dictionary, builds: Dictionary) -> bool:
- if not raw.has("blueprint"):return true
- var plan: Dictionary=raw.blueprint
- if plan.get("layout_version")!=Layout.VERSION or plan.get("core_id")!="core" or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
- var nodes: Array=plan.nodes
- if nodes.is_empty() or nodes.size()>10000 or plan.edges.size()!=nodes.size():return false
- var identities := {}
- var connections := {}
- for i in range(-1,nodes.size()):
-  var node: Dictionary=plan.core if i<0 else nodes[i]
-  for key in ["id","parent_id","depth","node_id","type","world_pos","footprint","rotation_y","connections","requires"]:
-   if not node.has(key):return false
-  if int(node.id)!=i or node.node_id!=("core" if i<0 else "node_%03d"%i):return false
-  if node.footprint[0]<=0 or node.footprint[1]<=0:return false
-  if i<0:
-   if node.type!="core" or node.get("planned_type","core")!="core" or node.parent_id!=-1 or node.depth!=0 or not node.requires.is_empty():return false
-  else:
-   if not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i:return false
-   for type in [node.type,node.get("planned_type",node.type)]:
-    if not str(type).is_empty() and not builds.has(type):return false
-   if not str(node.type).is_empty() and not str(node.get("planned_type","")).is_empty() and node.type!=node.planned_type:return false
-   var parent: Dictionary=plan.core if int(node.parent_id)<0 else nodes[int(node.parent_id)]
-   if node.depth!=parent.depth+1 or node.requires!=[parent.node_id]:return false
-  identities[node.node_id]=node
-  connections[node.node_id]=[]
- var destinations := {}
- for edge in plan.edges:
-  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width") or edge.width<=0:return false
-  if not identities.has(edge.from) or not identities.has(edge.to) or edge.to=="core" or destinations.has(edge.to):return false
-  if identities[edge.to].requires!=[edge.from]:return false
-  destinations[edge.to]=true
-  connections[edge.from].append(edge.to);connections[edge.to].append(edge.from)
- for id in identities:
-  var expected: Array=connections[id]
-  var actual: Array=identities[id].connections
-  if actual.size()!=expected.size() or not expected.all(func(ref):return actual.has(ref)):return false
- for i in raw.get("slots",[]).size():
-  var slot: Dictionary=raw.slots[i]
-  if i>=nodes.size() or slot.get("id",i)!=i or slot.get("node_id",nodes[i].node_id)!=nodes[i].node_id:return false
-  for type in [slot.get("type",""),slot.get("planned_type","")]:
-   if not str(type).is_empty() and not builds.has(type):return false
-  if not str(nodes[i].type).is_empty() and not str(slot.get("type","")).is_empty() and nodes[i].type!=slot.type:return false
- return true
-
 func prepare(path: String, db: ShipDatabase) -> Dictionary:
  var file:=FileAccess.open(path,FileAccess.READ)
  if file==null:return {"error":"read"}
@@ -165,15 +121,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
    if key not in allowed:return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
- for key in raw.get("galaxies",{}):
-  var region: Dictionary=raw.galaxies[key]
-  if region.get("version",0)>3:return {"error":"format"}
-  # Older galaxy saves regenerate their layout; preserve that migration path.
-  if region.get("version",0)<3:continue
-  var builds := {}
-  for build in db.data.get("galaxy_build",{}).values():
-   if build.galaxy_key==key:builds[build.key]=build
-  if not blueprint_valid(region,builds):return {"error":"format"}
+ if not preload("res://scripts/galaxy_system.gd").valid_snapshot(raw,db):return {"error":"galaxies"}
  var quality:=structure_quality(raw)
  return {"error":"","data":clean(raw,schema()),"stage":int(raw.highestLevel),"ship":str(raw.selectedShip),"quality":quality.quality,"quality_rank":quality.quality_rank}
 

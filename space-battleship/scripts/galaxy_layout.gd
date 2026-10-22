@@ -37,3 +37,61 @@ static func generate(count: int, seed_value: int) -> Dictionary:
 		var end := b-direction*float(node.footprint[0])*0.5
 		edges.append({"from":parent_id,"to":node.node_id,"width":2.0,"path":[[start.x,start.y],[end.x,end.y]]})
 	return {"layout_version":VERSION,"core_id":"core","units":"godot_world_xz","core":core,"nodes":nodes,"edges":edges}
+
+static func number(value:Variant)->bool:return (value is int or value is float) and is_finite(float(value))
+static func integer(value:Variant)->bool:return number(value) and float(value)==floorf(float(value)) and absf(float(value))<9.22e18
+static func point(value:Variant)->bool:return value is Array and value.size()==2 and value.all(number)
+
+static func valid_snapshot(raw: Dictionary, builds: Dictionary) -> bool:
+	if not raw.get("blueprint") is Dictionary:return false
+	var plan: Dictionary=raw.blueprint
+	if plan.get("units")!="godot_world_xz":return false
+	if plan.get("layout_version")!=VERSION or plan.get("core_id")!="core" or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
+	var nodes: Array=plan.nodes
+	if nodes.is_empty() or nodes.size()>10000 or plan.edges.size()!=nodes.size():return false
+	var identities := {}
+	var connections := {}
+	for i in range(-1,nodes.size()):
+		if i>=0 and not nodes[i] is Dictionary:return false
+		var node: Dictionary=plan.core if i<0 else nodes[i]
+		for key in ["id","parent_id","depth","node_id","type","world_pos","footprint","rotation_y","connections","requires"]:
+			if not node.has(key):return false
+		for key in ["id","parent_id","depth"]:
+			if not integer(node[key]):return false
+		for key in ["node_id","type"]:
+			if not node[key] is String:return false
+		if not point(node.world_pos) or not point(node.footprint) or not number(node.rotation_y):return false
+		if not node.connections is Array or not node.requires is Array or not node.connections.all(func(v):return v is String) or not node.requires.all(func(v):return v is String):return false
+		if i>=0 and (not integer(node.get("visual_seed")) or not node.get("planned_type") is String):return false
+		if int(node.id)!=i or node.node_id!=("core" if i<0 else "node_%03d"%i):return false
+		if node.footprint[0]<=0 or node.footprint[1]<=0:return false
+		if i<0:
+			if node.type!="core" or node.get("planned_type","core")!="core" or node.parent_id!=-1 or node.depth!=0 or not node.requires.is_empty():return false
+		else:
+			if not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i:return false
+			for type in [node.type,node.get("planned_type",node.type)]:
+				if not str(type).is_empty() and not builds.has(type):return false
+			if not str(node.type).is_empty() and not str(node.get("planned_type","")).is_empty() and node.type!=node.planned_type:return false
+			var parent: Dictionary=plan.core if int(node.parent_id)<0 else nodes[int(node.parent_id)]
+			if node.depth!=parent.depth+1 or node.requires!=[parent.node_id]:return false
+		identities[node.node_id]=node
+		connections[node.node_id]=[]
+	var destinations := {}
+	for edge in plan.edges:
+		if not edge is Dictionary or not edge.get("path") is Array or not edge.path.all(point) or not number(edge.get("width")):return false
+		if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width") or edge.width<=0:return false
+		if not identities.has(edge.from) or not identities.has(edge.to) or edge.to=="core" or destinations.has(edge.to):return false
+		if identities[edge.to].requires!=[edge.from]:return false
+		destinations[edge.to]=true
+		connections[edge.from].append(edge.to);connections[edge.to].append(edge.from)
+	for id in identities:
+		var expected: Array=connections[id]
+		var actual: Array=identities[id].connections
+		if actual.size()!=expected.size() or not expected.all(func(ref):return actual.has(ref)):return false
+	for i in raw.get("slots",[]).size():
+		var slot: Dictionary=raw.slots[i]
+		if i>=nodes.size() or slot.get("id",i)!=i or slot.get("node_id",nodes[i].node_id)!=nodes[i].node_id:return false
+		for type in [slot.get("type",""),slot.get("planned_type","")]:
+			if not str(type).is_empty() and not builds.has(type):return false
+		if not str(nodes[i].type).is_empty() and not str(slot.get("type","")).is_empty() and nodes[i].type!=slot.type:return false
+	return true

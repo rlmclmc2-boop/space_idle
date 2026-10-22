@@ -13,33 +13,44 @@ class ChangedDuringShared extends "res://scripts/presented_battle_game.gd":
 		later_shared+=1;super.advance_auto_gen(dt)
 class RefusedLater extends "res://scripts/native_execution_session.gd":
 	var refuse:=true
+	var refuse_preparation:=false
+	func prepare_galaxy_refit(g,values:Dictionary)->Dictionary:return {} if refuse_preparation else super.prepare_galaxy_refit(g,values)
 	func handoff_to_legacy(g:RefCounted,reason:String)->bool:return false if refuse else super.handoff_to_legacy(g,reason)
 func refit_fixture(key:String="missile",effect:String="equipment_value",shared_change:bool=false):
 	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0
+	# Preserve this fixture's four-layer refit coverage with an explicit test hull.
+	db.ships.Heavy_Battleship.defenseSlots=4
 	var g=ChangedDuringShared.new(db,false) if shared_change else preload("res://scripts/presented_battle_game.gd").new(db,false)
-	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.profile.resources={"1":1e30,"2":1e30}
-	g.profile.loadout.weapons[0].key=key
-	g.profile.loadout.defence=[{"key":"shield","level":10},{"key":"armour","level":10},{"key":"shield","level":10},{"key":"armour","level":10}]
-	if true:
-		g.profile.enhancementLevel=40;g.profile.cleared=range(1,61);g.profile.highestLevel=61
-		g.rebuild_unlocks();g.set_enhancement_branch("weapons","repeat",1,"B")
-		if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.economy.credit_many({"1":1e30,"2":1e30})
+	var equipment:Dictionary=g.equipment.save_data();equipment.selectedShip="Heavy_Battleship"
+	equipment.loadout=preload("res://scripts/equipment_state.gd").empty_loadout(db,equipment.selectedShip)
+	equipment.loadout.weapons[0].key=key
+	equipment.loadout.defence=[{"key":"shield","level":10},{"key":"armour","level":10},{"key":"shield","level":10},{"key":"armour","level":10}]
+	check(g.equipment.install_snapshot(equipment,db),"Current native equipment fixture installs")
+	var enhancement:Dictionary=g.enhancement_growth.save_data();enhancement.enhancementLevel=40
+	check(g.enhancement_growth.install_snapshot(enhancement),"Current native enhancement fixture installs")
+	g.set_enhancement_branch("weapons","repeat",1,"B")
+	if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
 	g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
 	g.enemies.assign([{"uid":100,"slot":4,"x":286.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0},{"uid":101,"slot":3,"x":240.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
 	g.cooldowns[g.slot_id("weapons",0)]=0.0
-	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.galaxy.refresh_unlocks(g)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g)
 	check(g.assign_crew("navigator","galaxy_explore","galaxy_1"),"galaxy assignment before admission")
 	var region=g.galaxy.regions.galaxy_1
 	var chosen=""
 	for build in region.builds.values():
 		if build.effect_type==effect:chosen=build.key;break
 	check(not chosen.is_empty(),"real effect building exists")
-	var slot:Dictionary=region.slots[0]
+	var galaxy:Dictionary=g.galaxy.save_data();var saved:Dictionary=galaxy.galaxies.galaxy_1
+	var slot:Dictionary=saved.slots[0]
 	slot.type=chosen;slot.planned_type=chosen;slot.status="constructing";slot.level=1;slot.work=region.work_cost();slot.construction=0.01
-	region.state.explore_work=region.work_cost();region.refresh_counts();region.sync_map()
-	g.galaxy.elapsed_crew.galaxy_1=1
+	saved.blueprint.nodes[0].type=chosen;saved.blueprint.nodes[0].planned_type=chosen
+	saved.explore_work=region.work_cost()
+	check(g.galaxy.install_snapshot(galaxy,db),"Native boundary fixture installs complete galaxy state")
 	g.enemies[0].drops=[{"resourceId":1,"chance":1.0,"amount":100000.0}]
-	g.profile.reactorLevel=20;g.profile.planets["1"].conquered=true;g.profile.selectedShip="Heavy_Battleship"
+	var reactor:Dictionary=g.reactor.save_data();reactor.reactorLevel=20;check(g.reactor.install_snapshot(reactor,db.config),"Reactor fixture installs")
+	var planets:Dictionary=g.planets.save_data();planets.merge(g.crew.save_data());planets.planets["1"].conquered=true;check(g.planets.install_snapshot(planets,db),"Planet contribution fixture installs")
 	g.invalidate_stat_cache();g.reset_player()
 	g.player.armour*=0.6;g.player.shield*=0.6;g.sync_jewel_defence_damage()
 	# Deliberately uneven damage: preserving prior loss would fail the refit
@@ -68,12 +79,13 @@ func run()->void:
 		var shots=g.projectiles.duplicate();var health=g.player.duplicate();var old_max={"armour":g.stat("armour"),"shield":g.stat("shield")}
 		var notices=[];g.event.connect(func(kind,info):
 			if kind in ["galaxy_changed","equipment_stats","reactor_changed"]:notices.append(kind))
-		g.galaxy.elapsed.galaxy_1=10.0-1.0/60.0
+		g.galaxy.add_pending("galaxy_1",10.0-1.0/60.0-g.galaxy.pending("galaxy_1"))
 		check(g.prepare_logical_step(1.0/60.0),key+" preflight")
-		check(g.native_execution==owner and not g.galaxy.native_refit.is_empty(),key+" supported boundary retains native")
-		if g.galaxy.native_refit.is_empty():quit(1);return
+		check(g.native_execution==owner and not g.galaxy_runtime.native_refit.is_empty(),key+" supported boundary retains native")
+		if g.galaxy_runtime.native_refit.is_empty():quit(1);return
 		check(k.export_handoff()==before and g.rng.state==rng and region.random.state==galaxy_rng and region.save_data()==region_before,key+" prediction and validation pure")
-		check(g.galaxy.advance_region(g,"galaxy_1",10.0,false),key+" commit")
+		g.galaxy.add_pending("galaxy_1",10.0-g.galaxy.pending("galaxy_1"))
+		check(g.galaxy_runtime.flush_pending(g,"galaxy_1"),key+" commit")
 		check(g.native_execution==owner and g.native_handoff_count==0 and region.slots[0].status=="active",key+" actual completion remains native")
 		var after=k.export_handoff().duplicate(true)
 		for field in ["clock","revision","cooldowns","ejections","repeats","deferred","defence_time","defence_times","memory_elapsed","deferred_elapsed","attack_counter","incoming_counter","projectile_serial","attack_serial","instance_serial"]:
@@ -95,9 +107,9 @@ func run()->void:
 		var invalid=preload("res://scripts/native_execution_compiler.gd").new().compile(g,owner.execution_scope)
 		invalid.refit_token=k.refit_token()
 		check(k.can_refit_configuration(invalid),key+" valid descriptor and current token accepted before field rejection")
-		invalid.player.armour=0.0
-		check(not k.can_refit_configuration(invalid) and not k.refit_configuration(invalid) and k.export_handoff()==after,key+" zero armour rejects without mutation")
-		invalid.player.armour=g.player.armour;invalid.weapons[0].entry.level+=1
+		invalid.player.armour=0.0;invalid.player.shield=0.0
+		check(not k.can_refit_configuration(invalid) and not k.refit_configuration(invalid) and k.export_handoff()==after,key+" zero total health rejects without mutation")
+		invalid.player.armour=g.player.armour;invalid.player.shield=g.player.shield;invalid.weapons[0].entry.level+=1
 		check(not k.can_refit_configuration(invalid) and not k.refit_configuration(invalid) and k.export_handoff()==after,key+" shape change rejects without mutation")
 		var low=owner.prepare_galaxy_refit(g,{"equipment_value":0.000001,"charge_max":g.galaxy.multiplier("charge_max")})
 		check(not low.is_empty(),key+" smaller numeric refit accepted")
@@ -111,7 +123,8 @@ func run()->void:
 		g.begin_retreat()
 	var g=refit_fixture("missile","charge_max");var owner=g.native_execution;var region=g.galaxy.regions.galaxy_1
 	var old_drop:Dictionary=owner.kernel.enemy_views()[0].compiled_drops[0].duplicate()
-	check(g.galaxy.advance_region(g,"galaxy_1",10.0,false),"charge completion commit")
+	g.galaxy.add_pending("galaxy_1",10.0-g.galaxy.pending("galaxy_1"))
+	check(g.galaxy_runtime.flush_pending(g,"galaxy_1"),"charge completion commit")
 	check(g.native_execution==owner,"charge completion keeps native")
 	var current=preload("res://scripts/native_execution_compiler.gd").new().compile(g,owner.execution_scope)
 	check(owner.kernel.enemy_views()[0].compiled_drops==current.enemies[0].compiled_drops,"compiled drops match new live reactor configuration")
@@ -120,6 +133,14 @@ func run()->void:
 	var drops=owner.kernel.take_feedback().filter(func(row):return int(row.kind)==7 and int(row.shot.get("id",-1))==1)
 	check(not drops.is_empty(),"death emits resource drop after refit")
 	if not drops.is_empty():check(drops[0].shot.amount==current.enemies[0].compiled_drops[0].amount,"death uses updated resource amount")
+	g.begin_retreat()
+	g=refit_fixture();owner=g.native_execution
+	var initial_refusal=RefusedLater.new()
+	for field in ["kernel","actor_rows","actor_by_uid","execution_scope","weapons","production_seconds","ticks"]:initial_refusal.set(field,owner.get(field))
+	initial_refusal.refuse_preparation=true;g.native_execution=initial_refusal
+	var refused_galaxy:Dictionary=g.galaxy.save_data();var refused_wallet:Dictionary=g.economy.save_data();var refused_clock:float=g.production_time()
+	check(not g.prepare_logical_step(10.0),"Refused preparation and handoff reject before shared work")
+	check(g.galaxy.save_data()==refused_galaxy and g.economy.save_data()==refused_wallet and g.production_time()==refused_clock,"Initial refusal leaves galaxy, wallet and clock unchanged")
 	g.begin_retreat()
 	# A numeric purchase between preflight and the region commit keeps shape,
 	# but invalidates old health, factors and drops. It must never be overwritten.
@@ -131,7 +152,7 @@ func run()->void:
 	check(not owner.commit_galaxy_refit(g,plan) and owner.kernel.export_handoff()==updated,"old plan rejected without overwriting accepted numeric update")
 	g.begin_retreat()
 	g=refit_fixture("missile","equipment_value",true);owner=g.native_execution
-	g.galaxy.elapsed.galaxy_1=10.0-1.0/60.0
+	g.galaxy.add_pending("galaxy_1",10.0-1.0/60.0-g.galaxy.pending("galaxy_1"))
 	check(g.prepare_logical_step(1.0/60.0),"stale plan fallback preflight")
 	g.mutation_due=true;g.tick(1.0/60.0)
 	check(g.mutation_ok and g.native_execution==null and g.native_handoff_count==1,"stale plan safely transfers updated state once")
@@ -141,14 +162,14 @@ func run()->void:
 	var refused=RefusedLater.new()
 	for field in ["kernel","actor_rows","actor_by_uid","execution_scope","weapons","production_seconds","ticks"]:refused.set(field,owner.get(field))
 	g.native_execution=refused;owner=refused
-	g.galaxy.elapsed.galaxy_1=10.0-1.0/60.0
+	g.galaxy.add_pending("galaxy_1",10.0-1.0/60.0-g.galaxy.pending("galaxy_1"))
 	var before_region=g.galaxy.regions.galaxy_1.save_data().duplicate(true)
-	check(g.prepare_logical_step(1.0/60.0) and not g.galaxy.native_refit.is_empty(),"late failure starts with a valid plan")
+	check(g.prepare_logical_step(1.0/60.0) and not g.galaxy_runtime.native_refit.is_empty(),"late failure starts with a valid plan")
 	g.mutation_due=true;g.later_shared=0
 	g.tick(1.0/60.0)
 	check(g.mutation_ok and owner.advance_blocked and g.paused and g.native_step_phase=="blocked","stale commit plus refused transfer explicitly blocks")
 	check(owner.kernel.export_handoff()==g.mutation_state and g.later_shared==0,"late failure executes neither remaining economy nor combat")
-	check(g.galaxy.regions.galaxy_1.save_data()==before_region and is_equal_approx(g.galaxy.elapsed.galaxy_1,10.0),"late failure preserves all unconsumed region work")
+	check(g.galaxy.regions.galaxy_1.save_data()==before_region and is_equal_approx(g.galaxy.pending("galaxy_1"),10.0),"late failure preserves all unconsumed region work")
 	refused.refuse=false
 	check(not owner.handoff_to_legacy(g,"retry") and g.native_execution==owner,"blocked partial shared step permits cancellation only, never later handoff")
 	var clock=g.production_time();g.paused=false

@@ -16,7 +16,10 @@ func run() -> void:
 	for progress in g.profile.planets.values():progress.conquered=true
 	g.rebuild_unlocks();g.galaxy.refresh_unlocks(g)
 	var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://../test/fixtures/galaxy_1_complete.json"))
-	g.galaxy.load_state(g,{"galaxy_1":fixture.save})
+	var snapshot:=g.galaxy.save_data()
+	snapshot.galaxies.galaxy_1=fixture.save.duplicate(true)
+	snapshot.galaxies.galaxy_1.pending_online_time=0.0;snapshot.galaxies.galaxy_1.pending_crew_count=0
+	g.galaxy.install_snapshot(snapshot,g.db)
 	var region=g.galaxy.regions.galaxy_1
 	for slot in region.slots:
 		slot.level=3 if int(slot.id)<3 else 0

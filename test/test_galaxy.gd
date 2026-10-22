@@ -9,8 +9,8 @@ func fixture(db, width := 20, count := 4):
 	var row: Dictionary=db.data.galaxy.galaxy_1.duplicate(true)
 	row.merge({"map_w":width,"map_h":width,"start_w":2,"start_h":2,"building_slot_count":count,"explore_work_total":100.0,"explore_power_base":1.0,"explore_power_per_crew":1.0,"build_interval":2.0,"construction_time":2.0,"upgrade_power_base":1.0,"upgrade_power_per_crew":1.0,"upgrade_cost_lv2":4.0,"upgrade_cost_lv3":4.0,"upgrade_cost_lv4":4.0,"upgrade_cost_lv5":4.0,"concurrent_upgrade_count":2},true)
 	var r=Region.new()
-	r.setup(row,db.data.galaxy_build,8)
-	r.state.status="exploring"
+	r.setup(row,preload("res://scripts/galaxy_system.gd").building_definitions(db,"galaxy_1"),8)
+	r.unlock();r.start()
 	return r
 func _initialize() -> void:
 	var db := ShipDatabase.new()
@@ -18,16 +18,21 @@ func _initialize() -> void:
 	var r=g.galaxy.regions.galaxy_1
 	check(r.cells.size()==40000 and r.owned_count==100 and r.slots.size()==30,"Compact map and independent 30 slots")
 	g.profile.cleared=range(1,int(db.data.unlock["feature/galaxy"].level))
-	for id in ["1","2","3","4","5"]:g.profile.planets[id].conquered=true
+	var planet_save:=g.planets.save_data();planet_save.merge(g.crew.save_data())
+	for id in ["1","2","3","4","5"]:planet_save.planets[id].conquered=true
+	check(g.planets.install_snapshot(planet_save,db),"Planet gate fixture installs")
 	g.galaxy.refresh_unlocks(g)
 	check(not g.galaxy.available(),"Before clear60 first galaxy remains locked")
-	for progress in g.profile.planets.values():progress.conquered=false
+	for progress in planet_save.planets.values():progress.conquered=false
+	check(g.planets.install_snapshot(planet_save,db),"Planet gate fixture installs")
 	g.profile.cleared.append(int(db.data.unlock["feature/galaxy"].level))
 	g.rebuild_unlocks()
 	g.galaxy.refresh_unlocks(g)
 	check(r.state.status=="available","Clear60 opens first galaxy with zero conquered planets")
 	var gated := BattleGame.new(db,false)
-	for p in gated.profile.planets.values():p.conquered=true
+	var gated_planets:=gated.planets.save_data();gated_planets.merge(gated.crew.save_data())
+	for p in gated_planets.planets.values():p.conquered=true
+	check(gated.planets.install_snapshot(gated_planets,db),"Locked planet gate fixture installs")
 	gated.galaxy.refresh_unlocks(gated)
 	check(not gated.galaxy.available(),"Configured level gate retained")
 	check(g.assign_crew("navigator","galaxy_explore","galaxy_1") and r.state.status=="exploring","Existing crew starts Galaxy")
@@ -75,9 +80,11 @@ func _initialize() -> void:
 	a.advance(100,0)
 	check(a.save_data()==paused,"Recall immediately pauses partial construction")
 	a.advance(1,2)
-	check(current.work==5.0,"Redispatch continues same node and multi-crew work rate")
+	check(a.slots[int(current.id)].work==5.0,"Redispatch continues same node and multi-crew work rate")
 	var stalled=fixture(db)
-	for node in stalled.blueprint.nodes:node.requires=["node_999"]
+	var stalled_save:Dictionary=stalled.save_data()
+	for node in stalled_save.blueprint.nodes:node.requires=["node_999"]
+	stalled.setup(stalled.row,stalled.builds,8,stalled_save)
 	var rng_before: int=stalled.random.state
 	stalled.advance(100,1)
 	check(stalled.occupied_count==0 and stalled.random.state==rng_before,"No candidates exits without consuming RNG or type bag")
@@ -113,49 +120,68 @@ func _initialize() -> void:
 	for _i in 60:stepped.advance(1,1,true)
 	check(is_equal_approx(batch.state.explore_work,stepped.state.explore_work) and batch.slots==stepped.slots,"Visible and hidden event timing agree")
 	var legacy := {"status":"complete","explore_work":50.0,"slots":[{"status":"core","level":0},{"type":"colony_ring","level":5,"construction":0.0}]}
-	var migrated=Region.new();migrated.setup(development.row,development.builds,8,legacy)
-	check(migrated.occupied_count==1 and migrated.slots[0].level==5 and migrated.state.explore_work==50.0,"Legacy known buildings and earned work retained")
+	check(not Region.valid_snapshot(legacy,development.row,development.builds,4),"Current galaxy format rejects incomplete legacy state")
 	# A save contains pending ONLINE game time, never a wall-clock catch-up.
-	g.galaxy.elapsed.galaxy_1=0.0
-	g.galaxy.advance(g,1.0)
-	check(g.galaxy.elapsed.galaxy_1==1.0,"Hidden batching retains earned game time")
+	g.galaxy_runtime.advance(g,1.0)
+	check(g.galaxy.pending("galaxy_1")==1.0,"Hidden batching retains earned game time")
 	var pending_save: Dictionary=g.galaxy.save_data()
-	g.galaxy.load_state(g,pending_save)
-	check(g.galaxy.elapsed.galaxy_1==1.0,"Saving preserves pending online time without advancing it")
+	check(g.galaxy.install_snapshot(pending_save,db),"Current pending snapshot installs")
+	check(g.galaxy.pending("galaxy_1")==1.0,"Saving preserves pending online time without advancing it")
 	check(g.assign_crew("navigator","",""),"Recall assigned crew")
-	check(g.galaxy.elapsed.galaxy_1==0.0 and g.galaxy.regions.galaxy_1.state.build_elapsed==1.0,"Recall flushes old batch with old crew")
+	check(g.galaxy.pending("galaxy_1")==0.0 and g.galaxy.regions.galaxy_1.state.build_elapsed==1.0,"Recall flushes old batch with old crew")
 	var zero_save: Dictionary=g.galaxy.save_data()
-	g.galaxy.advance(g,20.0)
-	check(g.galaxy.save_data()==zero_save,"No-crew scheduler accrues no construction time")
+	g.galaxy_runtime.advance(g,20.0)
+	check(g.galaxy.save_data().galaxies==zero_save.galaxies,"No-crew scheduler accrues no construction time")
 	g.assign_crew("navigator","galaxy_explore","galaxy_1")
 	g.paused=true
-	g.galaxy.advance(g,100.0)
-	check(g.galaxy.elapsed.galaxy_1==0.0,"Pause does not advance game clock")
+	g.galaxy_runtime.advance(g,100.0)
+	check(g.galaxy.pending("galaxy_1")==0.0,"Pause does not advance game clock")
 	g.paused=false
+	var map_snapshots:Array=[];var live_region=g.galaxy.regions.galaxy_1
+	var on_cell=func(_id):map_snapshots.append(g.galaxy.save_data())
+	live_region.cell_claimed.connect(on_cell)
+	g.galaxy_runtime.advance(g,20.0);live_region.cell_claimed.disconnect(on_cell)
+	check(not map_snapshots.is_empty() and map_snapshots.all(func(value):return value.galaxies.galaxy_1.pending_online_time==0.0 and value.galaxies.galaxy_1.owned==g.galaxy.save_data().galaxies.galaxy_1.owned),"Map callbacks see consumed work and complete painted map")
 	# Art fixture uses the live configuration, same saved blueprint, no player data.
 	var full=Region.new()
 	full.setup(r.row,r.builds,8)
-	full.state.status="exploring"
+	full.unlock();full.start()
 	full.advance(1000000,1)
 	check(full.state.status=="complete" and full.slots.size()==30,"Live first galaxy fully built fixture")
 	var file := FileAccess.open("res://.runtime/galaxy_1_complete.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify({"snapshot":full.layout_snapshot(),"save":full.save_data()},"  "))
 	file.close()
-	g.galaxy.regions.galaxy_1=development
-	g.galaxy.effect_generation+=1
+	db.data.galaxy.galaxy_1=development.row
+	var projected:=g.galaxy.save_data()
+	projected.galaxies.galaxy_1=development.save_data()
+	projected.galaxies.galaxy_1.pending_online_time=0.0;projected.galaxies.galaxy_1.pending_crew_count=0
+	check(g.galaxy.install_snapshot(projected,db),"Completed region installs into galaxy owner")
 	var sum_levels := 0
 	for slot in development.slots:
 		if slot.type=="colony_ring":sum_levels+=slot.level
 	check(is_equal_approx(g.galaxy.multiplier("crew_exp"),1+0.1*sum_levels),"Sole aggregator projects base times levels")
-	development.slots[0].type="interstellar_refinery"
-	development.slots[1].type="heavy_element_refinery"
-	g.galaxy.effect_generation+=1
+	for i in 2:
+		var type:String=["interstellar_refinery","heavy_element_refinery"][i]
+		projected.galaxies.galaxy_1.slots[i].type=type;projected.galaxies.galaxy_1.slots[i].planned_type=type
+		projected.galaxies.galaxy_1.blueprint.nodes[i].type=type;projected.galaxies.galaxy_1.blueprint.nodes[i].planned_type=type
+	check(g.galaxy.install_snapshot(projected,db),"Income fixture uses complete validated blueprint")
 	g.resource_samples=[{"time":g.economy_time(),"id":"1","amount":200.0,"production_base":100.0,"origin":"drop"},{"time":g.economy_time(),"id":"1","amount":9000.0,"origin":"galaxy"},{"time":g.economy_time(),"id":"2","amount":80.0,"origin":"drop"},{"time":g.economy_time(),"id":"2","amount":9000.0,"origin":"furnace"}]
 	var rates: Dictionary=g.galaxy.effects.rates(g,g.galaxy)
 	check(is_equal_approx(float(rates.iron),100*g.galaxy.effects.totals.iron_auto_ratio),"Existing iron valid-income samples exclude automation")
 	check(is_equal_approx(float(rates.uranium),80*g.galaxy.effects.totals.uranium_auto_ratio),"Uranium excludes automation")
 	var serialized: Dictionary=g.galaxy.save_data()
-	g.galaxy.load_state(g,serialized)
+	check(g.galaxy.install_snapshot(serialized,db),"Current galaxy snapshot reloads")
 	check(g.galaxy.regions.galaxy_1.state.explore_work==100,"Loading never catches up wall time")
+	check(not g.profile.has("galaxies") and g.galaxy.regions.is_read_only() and g.galaxy.regions.galaxy_1.state.is_read_only() and g.galaxy.regions.galaxy_1.slots[0].is_read_only(),"Galaxy state has one owner and read-only projections")
+	var stable:=g.galaxy.save_data();var invalid:=stable.duplicate(true);invalid.galaxies.galaxy_1.slots[0].work=-1.0
+	check(not g.galaxy.install_snapshot(invalid,db) and g.galaxy.save_data()==stable,"Invalid region rejects without partial install")
+	var observed:Array=[];var observer=func(kind,_info):
+		if kind=="galaxy_income":observed.append({"wallet":g.economy.resources(),"galaxy":g.galaxy.save_data()})
+	g.event.connect(observer)
+	var before:=g.economy.resources();var duration:float=g.galaxy.setting(g,"income_interval")
+	var total_time:float=g.galaxy.income_time()+duration
+	g.galaxy_runtime.advance(g,duration);g.event.disconnect(observer)
+	check(observed.size()==2 and observed.all(func(v):return v.wallet==g.economy.resources() and v.galaxy.galaxyIncomeElapsed==0.0),"Both incomes and consumed time commit before notification")
+	check(is_equal_approx(g.economy.balance("1")-before["1"],rates.iron*total_time) and is_equal_approx(g.economy.balance("2")-before["2"],rates.uranium*total_time),"Income quote matches both credits")
 	print("GALAXY checks=",checks," failures=",failures)
 	quit(1 if failures else 0)

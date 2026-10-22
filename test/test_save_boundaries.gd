@@ -33,7 +33,7 @@ func _initialize() -> void:
 		return
 	var game := BattleGame.new(db, true)
 	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
-	game.profile.cleared = range(1,60)
+	game.profile.cleared = range(1,61)
 	game.rebuild_unlocks()
 	game.economy.credit("2", 10000.0)
 	game.economy.credit_fragments(123.45)
@@ -78,6 +78,10 @@ func _initialize() -> void:
 	check(not game.profile.has("crew") and not game.profile.has("crewEquipment"),"Profile no longer owns crew state")
 	check(game.start_planet_exploration("1","engineer"),"Begin an ordinary trip before persistence");game.advance_planets(0.25)
 	check(not game.profile.has("planets") and game.planet_progress("1").is_read_only(),"Planet state has a single owner and read-only view")
+	game.galaxy_runtime.refresh_unlocks(game)
+	check(game.assign_crew("researcher","galaxy_explore","galaxy_1"),"Dispatch galaxy crew before saving pending work")
+	game.galaxy_runtime.advance(game,0.25)
+	check(game.galaxy.pending("galaxy_1")==0.25 and game.galaxy.income_time()==0.25 and not game.profile.has("galaxies"),"Galaxy owner keeps online work and income time before save")
 	check(game.stat_cache_enabled,"Real persistence enables contribution caches")
 	var base_capacity = game.reactor_capacity()
 	var rng:=RandomNumberGenerator.new();rng.seed=234
@@ -109,6 +113,8 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var restored := BattleGame.new(db, true)
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
+	check(restored.galaxy.pending("galaxy_1")==0.25 and restored.galaxy.pending_crew("galaxy_1")==1 and restored.galaxy.income_time()==0.25,"Reopen/recovery preserves both pending online work and unclaimed income time")
+	check(restored.galaxy.regions.galaxy_1.state.build_elapsed==0.0 and str(restored.galaxy.regions.galaxy_1.random.state)==saved.galaxies.galaxy_1.rng_state,"Reopen/recovery neither settles pending work nor advances galaxy RNG")
 	check(restored.stat_cache_enabled and float(restored.hyperspace_totals().hangings.get("extra_storage",0))>0,"Reopen/recovery builds enabled cache from restored hanging")
 	check(restored.reactor.allocations()==saved.reactorAllocation and restored.reactor.allocation("weapons")==restored.reactor_capacity(),"Reopen/recovery preserves above-base allocation before crew scheduling")
 	check(restored.crew.allocation_dependencies==restored.crew.reactor_allocation_state(restored,"navigator"),"Crew schedule captures final restored capacity and allocation")
@@ -141,6 +147,9 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	bad.reactorAllocation.weapons = -1
 	restored.load_progress_data(bad)
 	check(restored.reactor.allocations() == saved.reactorAllocation and restored.economy.resources() == saved.resources, "Invalid allocation cannot install resources first")
+	var bad_galaxy:=unchanged.duplicate(true);bad_galaxy.galaxies.galaxy_1.slots[0].work=-1.0;bad_galaxy.resources["1"]=999
+	restored.load_progress_data(bad_galaxy)
+	check(restored.galaxy.pending("galaxy_1")==0.25 and restored.economy.resources()==saved.resources,"Invalid galaxy rejects before installing any domain")
 	var bad_equipment:=unchanged.duplicate(true)
 	bad_equipment.loadout.weapons[0].level=-1;bad_equipment.resources["1"]=999
 	restored.load_progress_data(bad_equipment)

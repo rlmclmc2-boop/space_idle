@@ -1,13 +1,41 @@
 extends RefCounted
-## Work owns progress; map cells and macro slots never derive durations.
+## Work owns progress; map cells and macro _slots never derive durations.
 signal cell_claimed(cell: int)
 const SAVE_VERSION := 3
 const Layout := preload("res://scripts/galaxy_layout.gd")
-var blueprint := {}
+var _blueprint := {}
 var row: Dictionary
 var builds: Dictionary
-var state: Dictionary
-var slots: Array = []
+var _state: Dictionary
+var _slots: Array = []
+var state_revision:=0
+var _view:Dictionary={}
+var state:Dictionary:
+	get:return view()
+var slots:Array:
+	get:return view().get("slots",[])
+var blueprint:Dictionary:
+	get:return view().get("blueprint",{})
+
+static func freeze(value:Variant)->void:
+	if value is Dictionary:
+		for child in value.values():freeze(child)
+		value.make_read_only()
+	elif value is Array:
+		for child in value:freeze(child)
+		value.make_read_only()
+func view()->Dictionary:
+	if _view.is_empty():
+		_view=_state.duplicate(true);freeze(_view)
+	return _view
+func changed()->void:
+	state_revision+=1;_view={}
+func unlock()->bool:
+	if _state.status!="locked":return false
+	_state.status="available";changed();return true
+func start()->bool:
+	if _state.status!="available":return false
+	_state.status="exploring";changed();return true
 var cells := PackedByteArray()
 var frontier: Array[int] = []
 var frontier_index := {}
@@ -24,7 +52,7 @@ var compressed_revision := -1
 var compressed_map := ""
 
 func setup(definition: Dictionary, definitions: Dictionary, chunk: int, saved: Dictionary = {}) -> void:
-	slots.clear()
+	_slots.clear()
 	frontier.clear()
 	frontier_index.clear()
 	dirty_chunks.clear()
@@ -36,72 +64,37 @@ func setup(definition: Dictionary, definitions: Dictionary, chunk: int, saved: D
 	map_random.seed=int(row.slot_seed)+193
 	if saved.has("rng_state"):random.state=int(str(saved.rng_state))
 	if saved.has("map_rng_state"):map_random.state=int(str(saved.map_rng_state))
-	state={"version":SAVE_VERSION,"status":str(saved.get("status","locked")),"explore_work":0.0,"upgrade_work":maxf(0,float(saved.get("upgrade_work",0))),"slot_seed":int(saved.get("slot_seed",row.slot_seed)),"build_elapsed":clampf(float(saved.get("build_elapsed",0)),0,float(row.build_interval)),"bag":[],"rounds":maxi(0,int(saved.get("rounds",0))),"special_due":bool(saved.get("special_due",false))}
-	if not state.status in ["locked","available","exploring","developing","complete"]:state.status="locked"
-	if saved.get("bag") is Array:
-		for key in saved.bag:
-			if builds.has(str(key)) and builds[str(key)].group=="normal" and not state.bag.has(str(key)):state.bag.append(str(key))
-	cells.resize(int(row.map_w)*int(row.map_h))
-	cells.fill(0)
-	if saved.get("owned","") is String and not str(saved.get("owned","")).is_empty():
-		var decoded := Marshalls.base64_to_raw(saved.owned).decompress(cells.size(),FileAccess.COMPRESSION_DEFLATE)
-		if decoded.size()==cells.size():
-			cells=decoded
-			for id in cells.size():cells[id]=1 if cells[id]!=0 else 0
-	for y in range((int(row.map_h)-int(row.start_h))/2,(int(row.map_h)+int(row.start_h))/2):
-		for x in range((int(row.map_w)-int(row.start_w))/2,(int(row.map_w)+int(row.start_w))/2):cells[y*int(row.map_w)+x]=1
-	owned_count=cells.count(1)
-	var initial := int(row.start_w)*int(row.start_h)
-	var old_fraction := clampf(float(owned_count-initial)/maxi(1,cells.size()-initial),0,1)
-	state.explore_work=clampf(float(saved.get("explore_work",old_fraction*float(row.explore_work_total))),0,float(row.explore_work_total))
-	for id in cells.size():
-		if cells[id]!=0 and has_unowned_neighbor(id):add_frontier(id)
-	blueprint=Layout.generate(int(row.building_slot_count),int(state.slot_seed))
-	if int(saved.get("version",0))>=SAVE_VERSION and saved.get("blueprint") is Dictionary:
-		blueprint=saved.blueprint.duplicate(true)
-		blueprint.layout_version=int(blueprint.layout_version)
-		for plan in [blueprint.core]+blueprint.nodes:
+	if saved.is_empty():
+		_state={"version":SAVE_VERSION,"status":"locked","explore_work":0.0,"upgrade_work":0.0,"slot_seed":int(row.slot_seed),"build_elapsed":0.0,"bag":[],"rounds":0,"special_due":false}
+		_blueprint=Layout.generate(int(row.building_slot_count),int(_state.slot_seed))
+		for id in _blueprint.nodes.size():
+			var plan:Dictionary=_blueprint.nodes[id]
+			var type:=next_build_type()
+			plan.type=type;plan.planned_type=type
+			_slots.append({"id":id,"node_id":plan.node_id,"world_pos":plan.world_pos.duplicate(),"unlock_progress":0.0,"status":"empty","type":type,"level":0,"work":0.0,"construction":0.0,"upgrade_progress":0.0,"visual_seed":plan.visual_seed,"planned_type":type,"parent_id":plan.parent_id})
+		_state.blueprint=_blueprint;_state.slots=_slots
+	else:
+		_state=saved.duplicate(true)
+		for field in ["owned","rng_state","map_rng_state","pending_online_time","pending_crew_count"]:_state.erase(field)
+		for field in ["version","slot_seed","rounds"]:_state[field]=int(_state[field])
+		_blueprint=_state.blueprint;_slots=_state.slots
+		_blueprint.layout_version=int(_blueprint.layout_version)
+		for plan in [_blueprint.core]+_blueprint.nodes:
 			for field in ["id","parent_id","depth","visual_seed"]:
 				if plan.has(field):plan[field]=int(plan[field])
-	var incoming: Array=saved.get("slots",[]) if saved.get("slots",[]) is Array else []
-	if int(saved.get("version",0))<2:incoming=incoming.filter(func(slot):return slot is Dictionary and builds.has(str(slot.get("type",""))))
-	for id in blueprint.nodes.size():
-		var plan: Dictionary=blueprint.nodes[id]
-		var slot := {"id":id,"node_id":plan.node_id,"world_pos":plan.world_pos.duplicate(),"unlock_progress":0.0,"status":"empty","type":str(plan.type),"level":0,"work":0.0,"construction":0.0,"upgrade_progress":0.0,"visual_seed":plan.visual_seed}
-		if id<incoming.size() and incoming[id] is Dictionary:
-			var raw: Dictionary=incoming[id]
-			if builds.has(str(raw.get("type",""))):
-				slot.type=str(raw.type)
-				slot.level=clampi(int(raw.get("level",1)),0,int(builds[slot.type].max_lv))
-				slot.construction=clampf(float(raw.get("construction",0)),0,float(row.construction_time))
-				slot.status="constructing" if slot.construction>0 or raw.get("status")=="constructing" else "active"
-				if raw.get("status")=="empty":slot.status="empty";slot.level=0
-				if raw.get("status")=="upgrading" and slot.level<int(builds[slot.type].max_lv):
-					slot.status="upgrading"
-					slot.upgrade_progress=clampf(float(raw.get("upgrade_progress",0)),0,upgrade_cost(slot))
-				slot.work=clampf(float(raw.get("work",work_cost() if slot.status!="empty" else 0.0)),0,work_cost())
-		if slot.type.is_empty():slot.type=next_build_type()
-		plan.type=slot.type
-		plan.planned_type=slot.type
-		slot.planned_type=slot.type
-		slot.parent_id=plan.parent_id
-		slots.append(slot)
-	# Legacy exploration becomes prepaid node work, without changing buildings/effects.
-	if int(saved.get("version",0))<SAVE_VERSION:
-		var prepaid := float(state.explore_work)
-		for slot in slots:
-			if slot.status!="empty":continue
-			slot.work=minf(work_cost(),prepaid)
-			prepaid=maxf(0.0,prepaid-float(slot.work))
-	state.blueprint=blueprint
-	state.slots=slots
-	sync_map()
-	refresh_counts()
-	if state.status in ["exploring","developing","complete"]:
-		state.status="developing" if progress()>=1 else "exploring"
-		if is_complete():state.status="complete"
+		for slot in _slots:
+			for field in ["id","level","visual_seed","parent_id"]:slot[field]=int(slot[field])
+	cells.resize(int(row.map_w)*int(row.map_h));cells.fill(0)
+	if not saved.is_empty():cells=Marshalls.base64_to_raw(saved.owned).decompress(cells.size(),FileAccess.COMPRESSION_DEFLATE)
+	else:
+		for y in range((int(row.map_h)-int(row.start_h))/2,(int(row.map_h)+int(row.start_h))/2):
+			for x in range((int(row.map_w)-int(row.start_w))/2,(int(row.map_w)+int(row.start_w))/2):cells[y*int(row.map_w)+x]=1
+	owned_count=cells.count(1)
+	for id in cells.size():
+		if cells[id]!=0 and has_unowned_neighbor(id):add_frontier(id)
+	refresh_counts();changed()
 
-func work_cost() -> float:return float(row.explore_work_total)/maxi(1,blueprint.get("nodes",[]).size())
+func work_cost() -> float:return float(row.explore_work_total)/maxi(1,_blueprint.get("nodes",[]).size())
 func node_progress(slot: Dictionary) -> float:
 	if slot.status in ["active","upgrading"]:return 1.0
 	if slot.status=="empty":return 0.0
@@ -109,32 +102,32 @@ func node_progress(slot: Dictionary) -> float:
 	return clampf((float(slot.work)+float(row.construction_time)-float(slot.construction))/maxf(0.001,total),0,1)
 func progress() -> float:
 	var total := 0.0
-	for slot in slots:total+=node_progress(slot)
-	return total/maxi(1,slots.size())
+	for slot in _slots:total+=node_progress(slot)
+	return total/maxi(1,_slots.size())
 func layout_snapshot() -> Dictionary:
-	var result := blueprint.duplicate(true)
+	var result := _blueprint.duplicate(true)
 	result.building_revision=building_revision
 	result.core.merge({"status":"active","level":1,"progress":1.0})
-	for i in slots.size():
-		var slot: Dictionary=slots[i]
+	for i in _slots.size():
+		var slot: Dictionary=_slots[i]
 		result.nodes[i].merge({"status":slot.status,"level":slot.level,"progress":node_progress(slot),"upgrade_progress":float(slot.upgrade_progress)/maxf(0.001,upgrade_cost(slot))})
 	return result
 func map_full() -> bool:return owned_count==cells.size()
 func slot_unlocked(slot: Dictionary) -> bool:
-	for prerequisite in blueprint.nodes[int(slot.id)].requires:
+	for prerequisite in _blueprint.nodes[int(slot.id)].requires:
 		if prerequisite=="core":continue
 		var index := int(str(prerequisite).trim_prefix("node_"))
-		if index<0 or index>=slots.size() or not slots[index].status in ["active","upgrading"]:return false
+		if index<0 or index>=_slots.size() or not _slots[index].status in ["active","upgrading"]:return false
 	return true
 func upgrade_cost(slot: Dictionary) -> float:return float(row.get("upgrade_cost_lv%d"%(int(slot.level)+1),0))
 func refresh_counts() -> void:
 	occupied_count=0
 	max_level_count=0
-	for slot in slots:
+	for slot in _slots:
 		if slot.status=="empty":continue
 		occupied_count+=1
 		if slot.status=="active" and slot.level>=int(builds[slot.type].max_lv):max_level_count+=1
-func is_complete() -> bool:return progress()>=1 and occupied_count==slots.size() and max_level_count==slots.size()
+func is_complete() -> bool:return progress()>=1 and occupied_count==_slots.size() and max_level_count==_slots.size()
 func adjacent(id: int) -> Array[int]:
 	var result: Array[int]=[]
 	var width := int(row.map_w)
@@ -169,40 +162,43 @@ func paint(id: int) -> void:
 		if cells[other]!=0 and not has_unowned_neighbor(other):remove_frontier(other)
 	var width := int(row.map_w)
 	dirty_chunks[(id/width/chunk_size)*ceili(float(width)/chunk_size)+(id%width/chunk_size)]=true
-	cell_claimed.emit(id)
 func sync_map() -> void:
+	var claimed:Array[int]=[]
 	var initial := int(row.start_w)*int(row.start_h)
 	var target := initial+floori((cells.size()-initial)*progress())
 	while owned_count<target and not frontier.is_empty():
 		var source: int=frontier[map_random.randi_range(0,frontier.size()-1)]
 		var choices := adjacent(source).filter(func(id):return cells[id]==0)
 		if choices.is_empty():remove_frontier(source)
-		else:paint(choices[map_random.randi_range(0,choices.size()-1)])
+		else:
+			var id:int=choices[map_random.randi_range(0,choices.size()-1)]
+			paint(id);claimed.append(id)
+	for id in claimed:cell_claimed.emit(id)
 func next_build_type() -> String:
-	if state.special_due:
-		state.special_due=false
+	if _state.special_due:
+		_state.special_due=false
 		var special := builds.keys().filter(func(key):return builds[key].group=="special")
 		return str(special[random.randi_range(0,special.size()-1)]) if not special.is_empty() else ""
-	if state.bag.is_empty():
-		state.bag=builds.keys().filter(func(key):return builds[key].group=="normal")
-		for i in range(state.bag.size()-1,0,-1):
+	if _state.bag.is_empty():
+		_state.bag=builds.keys().filter(func(key):return builds[key].group=="normal")
+		for i in range(_state.bag.size()-1,0,-1):
 			var j := random.randi_range(0,i)
-			var swap=state.bag[i]
-			state.bag[i]=state.bag[j]
-			state.bag[j]=swap
-	if state.bag.is_empty():return ""
-	var result := str(state.bag.pop_back())
-	if state.bag.is_empty():
-		state.rounds+=1
-		if int(state.rounds)%int(row.special_cycle)==0:state.special_due=true
+			var swap=_state.bag[i]
+			_state.bag[i]=_state.bag[j]
+			_state.bag[j]=swap
+	if _state.bag.is_empty():return ""
+	var result := str(_state.bag.pop_back())
+	if _state.bag.is_empty():
+		_state.rounds+=1
+		if int(_state.rounds)%int(row.special_cycle)==0:_state.special_due=true
 	return result
 func build_attempt() -> bool:
-	if slots.any(func(slot):return slot.status=="constructing"):return false
-	var candidates := slots.filter(func(slot):return slot.status=="empty" and slot_unlocked(slot) and builds.has(slot.type))
+	if _slots.any(func(slot):return slot.status=="constructing"):return false
+	var candidates := _slots.filter(func(slot):return slot.status=="empty" and slot_unlocked(slot) and builds.has(slot.type))
 	if candidates.is_empty():return false
-	var nearest := int(blueprint.nodes[int(candidates[0].id)].depth)
-	for candidate in candidates:nearest=mini(nearest,int(blueprint.nodes[int(candidate.id)].depth))
-	candidates=candidates.filter(func(slot):return int(blueprint.nodes[int(slot.id)].depth)==nearest)
+	var nearest := int(_blueprint.nodes[int(candidates[0].id)].depth)
+	for candidate in candidates:nearest=mini(nearest,int(_blueprint.nodes[int(candidate.id)].depth))
+	candidates=candidates.filter(func(slot):return int(_blueprint.nodes[int(slot.id)].depth)==nearest)
 	var slot: Dictionary=candidates[random.randi_range(0,candidates.size()-1)]
 	slot.level=1
 	slot.construction=float(row.construction_time)
@@ -211,9 +207,9 @@ func build_attempt() -> bool:
 	refresh_counts()
 	return true
 func select_upgrades() -> Array:
-	var active := slots.filter(func(slot):return slot.status=="upgrading")
-	if state.status!="developing":return []
-	var candidates := slots.filter(func(slot):return slot.status=="active" and slot.level<int(builds[slot.type].max_lv))
+	var active := _slots.filter(func(slot):return slot.status=="upgrading")
+	if _state.status!="developing":return []
+	var candidates := _slots.filter(func(slot):return slot.status=="active" and slot.level<int(builds[slot.type].max_lv))
 	while active.size()<int(row.concurrent_upgrade_count) and not candidates.is_empty():
 		var index := random.randi_range(0,candidates.size()-1)
 		var slot: Dictionary=candidates[index]
@@ -225,15 +221,15 @@ func select_upgrades() -> Array:
 # Read-only first-boundary check. Before the first revision, only work/time can
 # change; no random choice, map paint or refit is needed to locate that boundary.
 func revision_due(elapsed: float, crew_count: int) -> bool:
-	if elapsed<=0 or crew_count<=0 or not state.status in ["exploring","developing"]:return false
-	var construction := slots.filter(func(slot):return slot.status=="constructing")
-	if construction.is_empty() and occupied_count<slots.size():
-		if float(state.build_elapsed)+elapsed+0.0000001<float(row.build_interval):return false
+	if elapsed<=0 or crew_count<=0 or not _state.status in ["exploring","developing"]:return false
+	var construction := _slots.filter(func(slot):return slot.status=="constructing")
+	if construction.is_empty() and occupied_count<_slots.size():
+		if float(_state.build_elapsed)+elapsed+0.0000001<float(row.build_interval):return false
 		# advance() stops if no eligible next building exists.
-		return slots.any(func(slot):return slot.status=="empty" and slot_unlocked(slot) and builds.has(slot.type))
-	var developing:bool=state.status=="developing" or progress()>=1
-	var upgrading := slots.filter(func(slot):return slot.status=="upgrading") if developing else []
-	if developing and upgrading.size()<int(row.concurrent_upgrade_count) and slots.any(func(slot):return slot.status=="active" and slot.level<int(builds[slot.type].max_lv)):return true
+		return _slots.any(func(slot):return slot.status=="empty" and slot_unlocked(slot) and builds.has(slot.type))
+	var developing:bool=_state.status=="developing" or progress()>=1
+	var upgrading := _slots.filter(func(slot):return slot.status=="upgrading") if developing else []
+	if developing and upgrading.size()<int(row.concurrent_upgrade_count) and _slots.any(func(slot):return slot.status=="active" and slot.level<int(builds[slot.type].max_lv)):return true
 	var power:=float(row.explore_power_base)+crew_count*float(row.explore_power_per_crew)
 	if not construction.is_empty():
 		var current:Dictionary=construction[0]
@@ -250,36 +246,36 @@ func revision_due(elapsed: float, crew_count: int) -> bool:
 # and run once, after the refit is committed.
 func predict_advance(dt:float, count:int):
 	var next=get_script().new()
-	next.row=row;next.builds=builds;next.blueprint=blueprint
-	next.state=state.duplicate(true);next.slots=next.state.slots
+	next.row=row;next.builds=builds;next._blueprint=_blueprint
+	next._state=_state.duplicate(true);next._slots=next._state.slots;next._blueprint=next._state.blueprint
 	next.building_revision=building_revision;next.random.state=random.state
 	next.refresh_counts()
 	next.advance(dt,count,false,false)
 	return next
 
 func commit_prediction(next)->void:
-	for key in next.state:
-		if key not in ["slots","blueprint"]:state[key]=next.state[key]
-	for i in slots.size():slots[i].merge(next.slots[i],true)
+	for key in next._state:
+		if key not in ["slots","blueprint"]:_state[key]=next._state[key]
+	for i in _slots.size():_slots[i].merge(next._slots[i],true)
 	building_revision=next.building_revision;random.state=next.random.state
-	refresh_counts()
+	refresh_counts();changed()
 
 func advance(elapsed: float, crew_count: int, _visible: bool=false, paint_map:bool=true) -> void:
-	if elapsed<=0 or crew_count<=0 or not state.status in ["exploring","developing"]:return
+	if elapsed<=0 or crew_count<=0 or not _state.status in ["exploring","developing"]:return
 	var remaining := elapsed
 	var power := float(row.explore_power_base)+crew_count*float(row.explore_power_per_crew)
 	var upgrade_power := float(row.upgrade_power_base)+crew_count*float(row.upgrade_power_per_crew)
-	while remaining>0.0000001 and state.status!="complete":
-		if progress()>=1:state.status="developing"
-		var construction := slots.filter(func(slot):return slot.status=="constructing")
-		if construction.is_empty() and occupied_count<slots.size():
-			var delay := minf(remaining,maxf(0.0,float(row.build_interval)-float(state.build_elapsed)))
-			state.build_elapsed+=delay
+	while remaining>0.0000001 and _state.status!="complete":
+		if progress()>=1:_state.status="developing"
+		var construction := _slots.filter(func(slot):return slot.status=="constructing")
+		if construction.is_empty() and occupied_count<_slots.size():
+			var delay := minf(remaining,maxf(0.0,float(row.build_interval)-float(_state.build_elapsed)))
+			_state.build_elapsed+=delay
 			remaining-=delay
-			if float(state.build_elapsed)+0.0000001<float(row.build_interval):break
+			if float(_state.build_elapsed)+0.0000001<float(row.build_interval):break
 			if not build_attempt():break
-			state.build_elapsed=0.0
-			construction=slots.filter(func(slot):return slot.status=="constructing")
+			_state.build_elapsed=0.0
+			construction=_slots.filter(func(slot):return slot.status=="constructing")
 		var upgrading := select_upgrades()
 		var share := upgrade_power/maxi(1,upgrading.size())
 		var step := remaining
@@ -297,27 +293,86 @@ func advance(elapsed: float, crew_count: int, _visible: bool=false, paint_map:bo
 			if doing_work:
 				var amount := minf(power*step,work_cost()-float(current.work))
 				current.work+=amount
-				state.explore_work=minf(float(row.explore_work_total),float(state.explore_work)+amount)
+				_state.explore_work=minf(float(row.explore_work_total),float(_state.explore_work)+amount)
 			else:current.construction=maxf(0,float(current.construction)-step)
 			if float(current.work)+0.0000001>=work_cost() and float(current.construction)<0.0000001:
 				current.work=work_cost();current.construction=0.0;current.status="active";building_revision+=1
 		for slot in upgrading:
 			var amount := minf(share*step,upgrade_cost(slot)-float(slot.upgrade_progress))
 			slot.upgrade_progress+=amount
-			state.upgrade_work+=amount
+			_state.upgrade_work+=amount
 			if float(slot.upgrade_progress)+0.0000001>=upgrade_cost(slot):
 				slot.level+=1;slot.upgrade_progress=0.0;slot.status="active";building_revision+=1
 		remaining-=step
 		refresh_counts()
-		if progress()>=1:state.status="developing"
-		if is_complete():state.status="complete"
+		if progress()>=1:_state.status="developing"
+		if is_complete():_state.status="complete"
+	changed()
 	if paint_map:sync_map()
 func save_data() -> Dictionary:
 	if compressed_revision!=revision:
 		compressed_map=Marshalls.raw_to_base64(cells.compress(FileAccess.COMPRESSION_DEFLATE))
 		compressed_revision=revision
-	var result := state.duplicate(true)
+	var result := _state.duplicate(true)
 	result.owned=compressed_map
 	result.rng_state=str(random.state)
 	result.map_rng_state=str(map_random.state)
 	return result
+
+static func valid_snapshot(raw:Dictionary,definition:Dictionary,definitions:Dictionary,max_crew:int)->bool:
+	for key in ["version","status","explore_work","upgrade_work","slot_seed","build_elapsed","bag","rounds","special_due","rng_state","map_rng_state","owned","blueprint","slots","pending_online_time","pending_crew_count"]:
+		if not raw.has(key):return false
+	if raw.version!=SAVE_VERSION or raw.status not in ["locked","available","exploring","developing","complete"]:return false
+	for key in ["explore_work","upgrade_work","build_elapsed","pending_online_time"]:
+		if not Layout.number(raw[key]) or raw[key]<0:return false
+	if raw.explore_work>float(definition.explore_work_total) or raw.build_elapsed>float(definition.build_interval):return false
+	for key in ["slot_seed","rounds","pending_crew_count"]:
+		if not Layout.integer(raw[key]):return false
+	if raw.rounds<0 or raw.pending_crew_count<0 or raw.pending_crew_count>max_crew or (raw.pending_online_time>0 and raw.pending_crew_count==0):return false
+	if not raw.special_due is bool or not raw.bag is Array:return false
+	var seen:Dictionary={}
+	for key in raw.bag:
+		if not key is String or seen.has(key) or not definitions.has(key) or definitions[key].group!="normal":return false
+		seen[key]=true
+	for key in ["rng_state","map_rng_state"]:
+		if not raw[key] is String or not raw[key].is_valid_int() or str(int(raw[key]))!=raw[key]:return false
+	if not raw.slots is Array or raw.slots.size()!=int(definition.building_slot_count):return false
+	if not raw.get("blueprint") is Dictionary or not raw.blueprint.get("nodes") is Array or raw.blueprint.nodes.size()!=raw.slots.size():return false
+	var cost:=float(definition.explore_work_total)/maxi(1,raw.slots.size())
+	for i in raw.slots.size():
+		var slot=raw.slots[i]
+		if not slot is Dictionary:return false
+		for field in ["id","node_id","world_pos","unlock_progress","status","type","level","work","construction","upgrade_progress","visual_seed","planned_type","parent_id"]:
+			if not slot.has(field):return false
+		if not slot.node_id is String or not Layout.point(slot.world_pos):return false
+		for field in ["id","level","visual_seed","parent_id"]:
+			if not Layout.integer(slot.get(field)):return false
+		if slot.id!=i or not slot.get("type") is String or not definitions.has(slot.type) or slot.get("planned_type")!=slot.type:return false
+		if slot.get("status") not in ["empty","constructing","active","upgrading"]:return false
+		for field in ["unlock_progress","work","construction","upgrade_progress"]:
+			if not Layout.number(slot.get(field)) or slot[field]<0:return false
+		if (slot.work>cost and not is_equal_approx(slot.work,cost)) or slot.construction>float(definition.construction_time) or slot.level<0 or slot.level>int(definitions[slot.type].max_lv):return false
+		if slot.status=="empty" and (slot.level!=0 or slot.work!=0 or slot.construction!=0 or slot.upgrade_progress!=0):return false
+		if slot.status!="empty" and slot.level<1:return false
+		if slot.status in ["active","upgrading"] and (not is_equal_approx(slot.work,cost) or slot.construction!=0):return false
+		if slot.status=="upgrading" and (slot.level>=int(definitions[slot.type].max_lv) or slot.upgrade_progress>float(definition.get("upgrade_cost_lv%d"%(int(slot.level)+1),0))):return false
+		if slot.status!="upgrading" and slot.upgrade_progress!=0:return false
+		var node=raw.blueprint.nodes[i]
+		if not node is Dictionary or slot.get("world_pos")!=node.get("world_pos") or slot.parent_id!=node.get("parent_id") or slot.visual_seed!=node.get("visual_seed"):return false
+	var built:bool=raw.slots.all(func(slot):return slot.status in ["active","upgrading"])
+	var complete:bool=raw.slots.all(func(slot):return slot.status=="active" and slot.level==int(definitions[slot.type].max_lv))
+	if raw.status=="complete" and not complete:return false
+	if raw.status=="developing" and (not built or complete):return false
+	if raw.status in ["locked","available"] and raw.slots.any(func(slot):return slot.status!="empty"):return false
+	var work:=0.0
+	for slot in raw.slots:work+=float(slot.work)
+	if not is_equal_approx(work,float(raw.explore_work)):return false
+	if not Layout.valid_snapshot(raw,definitions):return false
+	if not raw.owned is String or raw.owned.is_empty():return false
+	var map_size:=int(definition.map_w)*int(definition.map_h)
+	var decoded:=Marshalls.base64_to_raw(raw.owned).decompress(map_size,FileAccess.COMPRESSION_DEFLATE)
+	if decoded.size()!=map_size or decoded.count(0)+decoded.count(1)!=map_size:return false
+	for y in range((int(definition.map_h)-int(definition.start_h))/2,(int(definition.map_h)+int(definition.start_h))/2):
+		for x in range((int(definition.map_w)-int(definition.start_w))/2,(int(definition.map_w)+int(definition.start_w))/2):
+			if decoded[y*int(definition.map_w)+x]!=1:return false
+	return true
