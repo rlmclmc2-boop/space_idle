@@ -69,3 +69,4 @@ func _run()->void:
 	await process_frame
 	print("P2_UI_COMPLETE checks=",checks)
 	quit(0)
+

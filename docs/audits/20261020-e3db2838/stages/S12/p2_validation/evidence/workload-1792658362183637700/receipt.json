@@ -1,0 +1,36 @@
+{
+  "status": "FAIL",
+  "exit_code": 1,
+  "timed_out": false,
+  "seconds": 21.95300000021234,
+  "measurement": [
+    {
+      "duration_us": 12262355,
+      "economy_step_max_us": 10231,
+      "failure": "",
+      "frames": 600,
+      "heartbeat_max_us": 458632,
+      "initial_requests": 2,
+      "ordinary_load_us": 453201,
+      "portable_bytes": 47117,
+      "portable_export_us": 16806,
+      "portable_load_us": 236220,
+      "query_status_counts": {
+        "complete": 2
+      },
+      "requests": 2,
+      "requests_per_second": 0.163100807308221,
+      "resource_components": 2,
+      "save_bytes": 46583,
+      "save_max_us": 446245,
+      "saves": 5,
+      "status": "FAIL",
+      "ui_open_preparation_us": 7527,
+      "ui_step_max_us": 10921
+    }
+  ],
+  "own_child_peak_rss_bytes": 918347776,
+  "memory_sampling_ok": true,
+  "stdout_sha256": "a1e49b7732474db0dc13ed4be75b828629c3d93a9e39193aaa8b5d1031c2cdf1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

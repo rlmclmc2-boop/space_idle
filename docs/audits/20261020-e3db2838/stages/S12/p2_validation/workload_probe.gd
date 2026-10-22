@@ -2,8 +2,12 @@ extends SceneTree
 const Transfer=preload("res://scripts/save_transfer.gd")
 const Writer=preload("res://scripts/progress_writer.gd")
 var failure:=""
+var trace_enabled:=false
+func stamp(frame:int,phase:String)->void:
+	if trace_enabled:print("P2_TRACE ",JSON.stringify({"frame":frame,"phase":phase,"at_us":Time.get_ticks_usec()}))
 func _initialize()->void:
 	Engine.max_fps=60
+	trace_enabled=OS.get_cmdline_user_args().has("--trace")
 	call_deferred("_run")
 func _run()->void:
 	print("P2_WORKLOAD_STEP begin")
@@ -44,15 +48,20 @@ func _run()->void:
 	var previous:int=Time.get_ticks_usec()
 	var saves:=0
 	for frame in 600:
+		stamp(frame,"await_begin")
 		await process_frame
+		stamp(frame,"await_end")
 		if frame%120==0 or frame<4:print("P2_WORKLOAD_STEP frame ",frame)
 		var now:int=Time.get_ticks_usec()
 		heartbeat=maxi(heartbeat,now-previous);previous=now
 		var work:int=Time.get_ticks_usec()
+		stamp(frame,"credit_begin")
 		if g.currency_income("1",1).status!="committed":failure="credit"
 		if frame<4:print("P2_WORKLOAD_STEP credit ",frame)
+		stamp(frame,"research_begin")
 		g.AITech.advance(g,1.0/60.0)
 		if frame<4:print("P2_WORKLOAD_STEP research ",frame)
+		stamp(frame,"research_end")
 		if frame%30==0:
 			var drop:Dictionary={"id":"1","amount":3.0,"production_base":3.0,"age":1.0}
 			g.drops.append(drop);g.collect(drop,true)
@@ -62,15 +71,18 @@ func _run()->void:
 			if not g.galaxy.deliver_income(g):failure="galaxy receipt"
 		economy_max=maxi(economy_max,Time.get_ticks_usec()-work)
 		work=Time.get_ticks_usec()
+		stamp(frame,"main_begin")
 		actor._process(1.0/60.0)
 		if frame<4:print("P2_WORKLOAD_STEP main ",frame)
+		stamp(frame,"panel_begin")
 		panel.refresh_pending()
+		stamp(frame,"panel_end")
 		if frame<4:print("P2_WORKLOAD_STEP panel ",frame)
 		ui_max=maxi(ui_max,Time.get_ticks_usec()-work)
 		if frame%120==0:
-			print("P2_WORKLOAD_STEP save begin ",frame)
+			stamp(frame,"save_begin")
 			work=Time.get_ticks_usec();g.save_progress()
-			print("P2_WORKLOAD_STEP save end ",frame)
+			stamp(frame,"save_end")
 			save_max=maxi(save_max,Time.get_ticks_usec()-work);saves+=1
 			if g.last_save_error!=OK:failure="save"
 	var transfer:=Transfer.new()
@@ -87,7 +99,7 @@ func _run()->void:
 	for job in g.equipment_queries._jobs.values():counts[job.status]=int(counts.get(job.status,0))+1
 	var duration:int=Time.get_ticks_usec()-start
 	var passed:bool=failure.is_empty() and export_error==OK and portable.error.is_empty() and disk.status=="loaded" and heartbeat<=50000 and g.equipment_queries._next_id-1==requests_after_open
-	print("P2_WORKLOAD_RESULT ",JSON.stringify({"status":"PASS" if passed else "FAIL","failure":failure,"frames":600,"duration_us":duration,"ui_open_preparation_us":preparation_us,"ui_step_max_us":ui_max,"economy_step_max_us":economy_max,"heartbeat_max_us":heartbeat,"save_max_us":save_max,"saves":saves,"portable_export_us":export_us,"portable_load_us":portable_load_us,"ordinary_load_us":ordinary_load_us,"save_bytes":FileAccess.get_file_as_bytes(g.progress_writer.path).size(),"portable_bytes":FileAccess.get_file_as_bytes("user://p2-workload-portable.json").size(),"requests":g.equipment_queries._next_id-1,"initial_requests":requests_after_open,"requests_per_second":float(g.equipment_queries._next_id-1)/(float(duration)/1e6),"query_status_counts":counts,"resource_blocks":g.profile.resources["1"].get("blocks",[]).size()}))
+	print("P2_WORKLOAD_RESULT ",JSON.stringify({"status":"PASS" if passed else "FAIL","failure":failure,"frames":600,"duration_us":duration,"ui_open_preparation_us":preparation_us,"ui_step_max_us":ui_max,"economy_step_max_us":economy_max,"heartbeat_max_us":heartbeat,"save_max_us":save_max,"saves":saves,"portable_export_us":export_us,"portable_load_us":portable_load_us,"ordinary_load_us":ordinary_load_us,"save_bytes":FileAccess.get_file_as_bytes(g.progress_writer.path).size(),"portable_bytes":FileAccess.get_file_as_bytes("user://p2-workload-portable.json").size(),"requests":g.equipment_queries._next_id-1,"initial_requests":requests_after_open,"requests_per_second":float(g.equipment_queries._next_id-1)/(float(duration)/1e6),"query_status_counts":counts,"resource_components":2 if g.profile.resources["1"].get("currency_version")==2 else 0}))
 	g.shutdown_equipment_queries()
 	actor.queue_free()
 	await process_frame

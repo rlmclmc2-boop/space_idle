@@ -1,0 +1,34 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+P2_WORKLOAD_STEP begin
+P2_WORKLOAD_STEP DLL
+P2_WORKLOAD_STEP scene
+P2_WORKLOAD_STEP ready
+P2_WORKLOAD_STEP UI
+P2_WORKLOAD_STEP requested
+P2_WORKLOAD_STEP frame 0
+P2_WORKLOAD_STEP credit 0
+P2_WORKLOAD_STEP research 0
+P2_WORKLOAD_STEP main 0
+P2_WORKLOAD_STEP panel 0
+P2_WORKLOAD_STEP frame 1
+P2_WORKLOAD_STEP credit 1
+P2_WORKLOAD_STEP research 1
+P2_WORKLOAD_STEP main 1
+P2_WORKLOAD_STEP panel 1
+P2_WORKLOAD_STEP frame 2
+P2_WORKLOAD_STEP credit 2
+P2_WORKLOAD_STEP research 2
+P2_WORKLOAD_STEP main 2
+P2_WORKLOAD_STEP panel 2
+P2_WORKLOAD_STEP frame 3
+P2_WORKLOAD_STEP credit 3
+P2_WORKLOAD_STEP research 3
+P2_WORKLOAD_STEP main 3
+P2_WORKLOAD_STEP panel 3
+P2_WORKLOAD_STEP frame 120
+P2_WORKLOAD_STEP frame 240
+P2_WORKLOAD_STEP frame 360
+P2_WORKLOAD_STEP frame 480
+P2_WORKLOAD_RESULT {"duration_us":22421659,"economy_step_max_us":12936,"failure":"","frames":600,"heartbeat_max_us":553408,"initial_requests":2,"ordinary_load_us":478330,"portable_bytes":47479,"portable_export_us":12476,"portable_load_us":235741,"query_status_counts":{"complete":2},"requests":2,"requests_per_second":0.089199465570322,"resource_blocks":13,"save_bytes":47124,"save_max_us":517096,"saves":5,"status":"FAIL","ui_open_preparation_us":4592,"ui_step_max_us":42528}
+P2_WORKLOAD_COMPLETE

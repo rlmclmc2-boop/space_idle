@@ -1,0 +1,34 @@
+[
+  {
+    "kind": "original_rule_refund",
+    "start": 1,
+    "count": 257,
+    "relative_error": "0.000001996698351823074579425752167956572001376655042188722501",
+    "material_exact": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "original_rule_refund",
+    "start": 1,
+    "count": 47959,
+    "relative_error": "0.000001993855495601255582677305227934057372938163151802155876",
+    "material_exact": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "original_rule_refund",
+    "start": 1000000000,
+    "count": 1000,
+    "relative_error": "0.000001994433694533179870906482051644105445335592968639399241",
+    "material_exact": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "original_rule_refund",
+    "start": 10000000000000000,
+    "count": 1000,
+    "relative_error": "0.000002001197977725022363296959097321559300945376788338255412",
+    "material_exact": true,
+    "status": "PASS"
+  }
+]

@@ -19,7 +19,7 @@ func _run()->void:
 	g.state=g.State.RETREAT
 	g.profile.resources["1"]={"m":1.0,"e":3800.0}
 	g.profile.highestLevel=int(g.hyperspace.config.unlock_stage)
-	g.profile.hyperspace.materials[db.evolution_material_id()]=1000
+	g.profile.hyperspace.materials[db.evolution_material_id()]=9007199254740993
 	check(g.currency_income("1",0.5).status=="committed","chain sparse fractional credit")
 	var original:Dictionary=g.profile.resources.duplicate(true)
 	var writer=g.progress_writer
@@ -29,13 +29,26 @@ func _run()->void:
 	g.save_progress()
 	check(g.last_save_error==OK,"full sparse ordinary save")
 	var disk:Dictionary=Writer.read_progress_result(writer.path,db)
-	check(disk.status=="loaded" and disk.data.hyperspace.materials[db.evolution_material_id()]==1000,"ordinary material token (high-int64 boundary remains blocked)")
+	check(disk.status=="loaded" and disk.data.hyperspace.materials[db.evolution_material_id()]==9007199254740993,"ordinary high-int64 material token")
 	check(L.compare(L.decode(original["1"]).value,L.decode(disk.data.resources["1"]).value).order==0,"ordinary distant fractional low bit")
+	var restored:=BattleGame.new(db,false)
+	restored.load_progress_data(disk.data)
+	check(restored.profile.hyperspace.materials[db.evolution_material_id()]==9007199254740993,"real Game high material reload")
+	for invalid_material in [-1,0.5,9223372036854775808.0,"9007199254740993",{"currency_version":1,"blocks":[]}]:
+		var invalid_state:Dictionary=g.profile.hyperspace.duplicate(true)
+		invalid_state.materials[db.evolution_material_id()]=invalid_material
+		check(not preload("res://scripts/hyperspace_state.gd").valid(invalid_state,g.hyperspace.config,db.levels.size()),"material invalid type/range rejected")
+	g.profile.hyperspace.materials[db.evolution_material_id()]=9223372036854775807
+	g.save_progress()
+	var endpoint:Dictionary=Writer.read_progress_result(writer.path,db)
+	check(g.last_save_error==OK and endpoint.status=="loaded" and endpoint.data.hyperspace.materials[db.evolution_material_id()]==9223372036854775807,"int64 maximum material disk roundtrip")
+	g.profile.hyperspace.materials[db.evolution_material_id()]=9007199254740993
+
 	var transfer:=Transfer.new()
 	var portable_path:String=ProjectSettings.globalize_path("user://p2-portable.json")
 	check(transfer.export_progress(g,portable_path)==OK,"portable export")
 	var candidate:Dictionary=transfer.prepare(portable_path,db)
-	check(candidate.error.is_empty() and candidate.data.hyperspace.materials[db.evolution_material_id()]==1000,"portable candidate exact material")
+	check(candidate.error.is_empty() and candidate.data.hyperspace.materials[db.evolution_material_id()]==9007199254740993,"portable candidate exact material")
 	check(L.compare(L.decode(original["1"]).value,L.decode(candidate.data.resources["1"]).value).order==0,"portable sparse low bit")
 	check(g.currency_initialize_resource("1",123),"controlled change before import")
 	g.save_progress()

@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "encoded_MAX_U",
+    "start": 1,
+    "count": 47959,
+    "conservative": true,
+    "representation_relative_error": "1.43857931788285257204091156409405807633700922071713E-9",
+    "U_over_original_cost": "1.04991157312340643891989268915386464052525016838874334517037",
+    "encoded_certificate": true,
+    "status": "PASS"
+  },
+  {
+    "kind": "encoded_MAX_U",
+    "start": 10000000000000000,
+    "count": 36899,
+    "conservative": true,
+    "representation_relative_error": "4.34907096942544194114222618812836846336082814336820E-9",
+    "U_over_original_cost": "1.05362589486108299269564115994375846570226508495846570637185",
+    "encoded_certificate": true,
+    "status": "PASS"
+  }
+]

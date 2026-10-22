@@ -1,0 +1,5 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+P2_DEFENCE_DIAGNOSTIC committed slots=["weapons_0", "defence_0"] prefix={ "armour": 1200.0, "triggered": true } handoff=false player=1200.0
+P2_NATIVE_TIMING {"install_total_us":377,"max_commit_us":37767,"normal_batch_us":38837,"preflight_total_us":61475,"prepare_total_us":67507}
+P2_NATIVE_COMPLETE checks=37 installs=2 source_DLL=4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f

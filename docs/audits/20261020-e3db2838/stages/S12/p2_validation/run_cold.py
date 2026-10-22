@@ -3,21 +3,23 @@ import hashlib,json,os,subprocess,time,sys
 root=Path(__file__).resolve().parent
 repo=root.parent/'p2-runtime'
 project=root/'game-project'
-target='15e9f764c7c14d30ff81004092c09a75caaef814'
-paths=subprocess.check_output(['git','ls-tree','-r','--name-only',target,'space-battleship/scripts'],cwd=repo,text=True).splitlines()
+target='062168c31017a53686da53488cfeefef473b542b'
+import io,tarfile
 hashes={}
-for path in paths:
-    data=subprocess.check_output(['git','show',target+':'+path],cwd=repo)
-    destination=project/Path(path).relative_to('space-battleship')
-    destination.parent.mkdir(parents=True,exist_ok=True)
-    destination.write_bytes(data)
-    hashes[path]=hashlib.sha256(data).hexdigest()
+archive=subprocess.check_output(['git','archive',target,'space-battleship/scripts'],cwd=repo)
+with tarfile.open(fileobj=io.BytesIO(archive)) as bundle:
+    for entry in bundle.getmembers():
+        if not entry.isfile():continue
+        destination=project/Path(entry.name).relative_to('space-battleship')
+        assert destination.resolve().is_relative_to(project.resolve())
+        data=bundle.extractfile(entry).read();destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(data)
+        hashes[entry.name]=hashlib.sha256(data).hexdigest()
 probe=(root/'cold_game_probe.gd').read_bytes()
 (project/'cold_game_probe.gd').write_bytes(probe)
 suite=root/'evidence'/('cold-'+str(time.time_ns()))
 suite.mkdir(parents=True)
-engine=r'D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64_console.exe'
-freeze={'runtime_sha':target,'runtime_tree':'6c1cbe1e4021766967cce7686f385d70234b4c71','source_sha256':hashes,'probe_sha256':hashlib.sha256(probe).hexdigest(),'engine_sha256':hashlib.sha256(Path(engine).read_bytes()).hexdigest(),'inputs':{'start':1,'material':9007199254740991,'exact256':{'v':1,'i':'55916713612491779479035'},'middle':{'m':1,'e':3800},'far':{'m':1,'e':1000000000},'cancel':'far; cancel during bound at candidate>=32768'},'rounds':10,'gates':{'query_frame_total_us':4000,'heartbeat_us':50000,'actual_cancel_us':100000,'total_time':'report only'},'overlay':'isolated APPDATA/LOCALAPPDATA; public CA project override; audit probe only'}
+engine=r'D:\CodexTools\godot-4.7.2-stable\Godot_v4.7.2-stable_win64.exe'
+freeze={'runtime_sha':target,'runtime_tree':'8fa63c6767a6f37befb23fc7b9e18e2b48ce55f4','source_sha256':hashes,'probe_sha256':hashlib.sha256(probe).hexdigest(),'engine_sha256':hashlib.sha256(Path(engine).read_bytes()).hexdigest(),'inputs':{'start':1,'material':9007199254740991,'exact256':{'v':1,'i':'55916713612491779479035'},'middle':{'m':1,'e':3800},'far':{'m':1,'e':1000000000},'cancel':'far; cancel during bound at candidate>=32768'},'rounds':10,'gates':{'query_frame_total_us':4000,'heartbeat_us':50000,'actual_cancel_us':100000,'total_time':'report only'},'overlay':'isolated APPDATA/LOCALAPPDATA; public CA project override; audit probe only'}
 (suite/'freeze.json').write_text(json.dumps(freeze,indent=2),encoding='utf-8')
 print(str(suite),flush=True)
 rows=[]

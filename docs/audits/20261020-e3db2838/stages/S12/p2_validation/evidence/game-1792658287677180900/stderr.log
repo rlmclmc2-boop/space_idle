@@ -1,0 +1,6 @@
+P2_FAIL defence prefix transfers on callback invalidation
+SCRIPT ERROR: Assertion failed: defence prefix transfers on callback invalidation
+   at: check (res://native_probe.gd:46)
+   GDScript backtrace (most recent call first):
+       [0] check (res://native_probe.gd:46)
+       [1] _run (res://native_probe.gd:131)
