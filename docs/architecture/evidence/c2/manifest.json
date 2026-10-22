@@ -1,0 +1,84 @@
+{
+  "runtime_commit": "580aea8eae92a70567ed9dec466fee89cee23d20",
+  "parent_runtime_commit": "28d9a6e7adde0f18d92377e17b844200c32bee98",
+  "scope": "Exact material ownership, concrete cross-domain commit and v7 save",
+  "sha256_basis": "Canonical Git blob bytes, normalized LF text",
+  "sources": {
+    "space-battleship/scripts/drone_forge.gd": {
+      "git_blob": "88881cbb23b6a58d78a6d6efa48580c0795cfb60",
+      "sha256": "9092e8be800f91888e3e97f69f3b3f474d14a86782eb88747c79582ac2bbd675"
+    },
+    "space-battleship/scripts/economy_state.gd": {
+      "git_blob": "b5dd6c2654ebf176e0dd4c32845f029c0c27616c",
+      "sha256": "a000e87ba047f8b8ab26d71d3a0afe5352261d20de7fa58503cc6c543fb5b677"
+    },
+    "space-battleship/scripts/game.gd": {
+      "git_blob": "87a2e95cbf5b02fbf9e5bed9dfe0878147fba4f8",
+      "sha256": "aca2020dbb0c10c957ad503945942df1e5c700598eda8cf9a58e854f6f25fcef"
+    },
+    "space-battleship/scripts/hyperspace_commands.gd": {
+      "git_blob": "ae86c25130c62f8b89274a161babcfd06ee72c9e",
+      "sha256": "1d3793b9dba6db9f3702d758d83b35cb1a7aba26e0946307e1e6d8cfe556096f"
+    },
+    "space-battleship/scripts/hyperspace_material_exchange_ui.gd": {
+      "git_blob": "5297868a47cc8274eab8c2c4f3afd7c58a98f9a2",
+      "sha256": "2a51f82fdb10f568f15b30cf848d1f6d8e0bcaf727c1e5af4f9a980bc12963f1"
+    },
+    "space-battleship/scripts/hyperspace_reforge_dialog.gd": {
+      "git_blob": "65a960599e0f3285e8afa5c517d2f2f9a2bad05e",
+      "sha256": "da915a60f296703332c4963f09e6f03450ad01c46308b9ab589189f65db062b1"
+    },
+    "space-battleship/scripts/hyperspace_state.gd": {
+      "git_blob": "29211910138bb90c05e93836f3a3fd29df330254",
+      "sha256": "8b26dc4d0a215f25d92f25ff362f37db03e7ac46e754072d80c0349d375d48b9"
+    },
+    "space-battleship/scripts/hyperspace_system.gd": {
+      "git_blob": "e3ca42032a530b5bf610c4fb47e4dfa2fcf41111",
+      "sha256": "d891127632ec3f52c437d8753b6f6a77e263e59ce694d45021f9ab3bfff30a26"
+    },
+    "space-battleship/scripts/save_transfer.gd": {
+      "git_blob": "7aacadd262d23cce5f7a9b6f4de6216b7b9445aa",
+      "sha256": "1ace7d63c6548973683e8f12180121a61c1ce14d0587c61f803fe0d534e40a45"
+    }
+  },
+  "evidence": {
+    "material.log": {
+      "sha256": "99920851ae41aee2ea94a50dd6e278daa2c07237cfe13832fa11736d2304b8db"
+    },
+    "exchange.log": {
+      "sha256": "ba11c1cdf9c6ca4a1182f8ce0ddb0b002f75471bef84483849768af534d4df34"
+    },
+    "write.log": {
+      "sha256": "bcc9ac06f8c40e1dcb6e7f4e2528f22ec29b63e8ab4053fb64a9fe856fa3603f"
+    },
+    "reopen.log": {
+      "sha256": "88321799ad892993036a7c28fa6b9d1d1fe0e95ead45481ec33ce4ade5ac9cee"
+    },
+    "latest.log": {
+      "sha256": "ab297c1bab54b569336ec16fbd289969a2d6ceda6ce11161d44790dece1665bc"
+    },
+    "recovery.log": {
+      "sha256": "c620522d39ded660c6b0dd0c5d24fc7f5d8ab6602c2813f7fb1491001477eb77"
+    }
+  },
+  "checks": {
+    "material": 68,
+    "exchange": 19,
+    "save_write": 13,
+    "save_reopen": 9,
+    "save_latest": 3,
+    "save_recovery": 5
+  },
+  "failures": 0,
+  "limitations": [
+    "Not full product acceptance",
+    "No overall native performance acceptance",
+    "Hyperspace non-wallet state and other growth domains still pending"
+  ],
+  "engine": {
+    "sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424"
+  },
+  "native": {
+    "sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  }
+}
