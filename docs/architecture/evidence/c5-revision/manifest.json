@@ -1,0 +1,18 @@
+{
+  "runtime_sha": "5ac08cdad818c175a537c3147b905e0198be4552",
+  "scope": "History contribution query, overview and detail formatting; removes duplicated formula and obsolete fallback; no gameplay value change",
+  "result": {
+    "checks": 141,
+    "failures": 0,
+    "fixture": "test/test_enhancement_summary.gd"
+  },
+  "command": "python test/run.py test_enhancement_summary.gd --godot D:/放置/space-battleship/engine/Godot_v4.7.2-stable_win64.exe --headless --timeout 180",
+  "sha256_lf": {
+    "space-battleship/scripts/enhancement_growth.gd": "b3cd75e2b372b47e251eed255ef13de7fe82cc107b556428786e8f299e210010",
+    "space-battleship/scripts/enhancement_panel.gd": "fdb024032740101e63ffaa4692c080af7ff7ee716d5f56b4fe1e2742a837580d",
+    "space-battleship/scripts/game.gd": "4aae74250a3d171257b924eaceb4ae8a785725fc4bcf98ec3de24b3e568e947f",
+    "test/test_enhancement_summary.gd": "121315257da3c1ac975c20b360ae549de65928d8dbe5d2919290285ba4400d3d",
+    "docs/architecture/evidence/c5-revision/summary.log": "0a6758a6743d30121e83be1781b6285eb6d6614cd5fd38853c13298d361d2e12"
+  },
+  "limitations": "Only affected summary fixture rerun; prior c5 evidence remains bound to e83ef208. Full product acceptance pending."
+}

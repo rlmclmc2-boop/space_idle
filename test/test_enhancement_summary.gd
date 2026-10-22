@@ -6,6 +6,9 @@ const SHELL := preload("res://scripts/shell_presentation.gd")
 var checks := 0
 var failures := 0
 var evidence: Array=[]
+func install_growth(g: BattleGame, fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.enhancement_growth.save_data();snapshot.merge(fields,true)
+	assert(g.enhancement_growth.install_snapshot(snapshot));g.invalidate_stat_cache()
 func _initialize() -> void:call_deferred("run")
 func check_summary(panel, label: RichTextLabel, probability: float, description: String) -> void:
 	label.text=panel.effect_overview("delayed_damage")
@@ -23,6 +26,12 @@ func check_overview(panel, label: RichTextLabel, kind: String, active: bool, tit
 		"proficiency","adaptation":
 			var bonus:=roundf(g.enhancement_parameter(kind+"_growth")*level*log(1000.0)/log(g.enhancement_parameter("counter_log_base"))*g.enhancement_parameter("bonus_round_scale"))/g.enhancement_parameter("bonus_round_scale")
 			args={"value":FORMAT.percentage(bonus*100)}
+			var description: String=panel.effect_description(kind)
+			var expected_description:=UIText.t("enhance.description."+kind+".runtime",{"count":FORMAT.compact(1000),"bonus":FORMAT.percentage(bonus*100),"branch":FORMAT.percentage(0)})
+			checks+=1
+			if description!=expected_description:failures+=1;printerr("FAIL: ",title," detail ",kind," ",description)
+			checks+=1
+			if not is_equal_approx(float(g.enhancement_effect_runtime(kind).history_bonus_percent),bonus*100):failures+=1;printerr("FAIL: runtime history contribution ",kind)
 		"repeat":args={"chance":FORMAT.percentage(g.enhancement_parameter("repeat_probability")*100 if active else 0),"multiplier":FORMAT.percentage(100+g.enhancement_parameter("repeat_growth")*level*100)}
 		"critical":args={"chance":FORMAT.percentage(g.enhancement_parameter("base_critical_rate")*100 if active else 0),"multiplier":FORMAT.percentage((g.enhancement_parameter("base_critical_multiplier")+g.enhancement_parameter("critical_growth")*level)*100 if active else 100)}
 		"memory_material":args={"value":FORMAT.percentage(g.enhancement_parameter("memory_heal_fraction")*level*100/g.enhancement_parameter("memory_interval"))}
@@ -38,7 +47,7 @@ func check_overview(panel, label: RichTextLabel, kind: String, active: bool, tit
 	if actual!=expected:failures+=1;printerr("FAIL: ",title," ",kind," actual=",actual," expected=",expected)
 func gate_texts(panel, label: RichTextLabel) -> void:
 	var g: BattleGame=panel.game
-	g.profile.enhancementAttacks=1000;g.profile.enhancementHits=1000
+	install_growth(g,{"enhancementAttacks":1000,"enhancementHits":1000})
 	for variant in 2:
 		if variant==1:
 			g.db.data.enhance_config.threshold_1.value=2;g.db.data.enhance_config.threshold_2.value=7;g.db.data.enhance_config.threshold_3.value=13
@@ -46,29 +55,29 @@ func gate_texts(panel, label: RichTextLabel) -> void:
 		for category in ["weapons","defence"]:
 			for kind in g.default_enhancement_order()[category]:
 				var order: Array=g.default_enhancement_order()[category].duplicate();order.erase(kind);order.append(kind)
-				g.profile.enhancementOrder[category]=order
-				g.profile.enhancementBranches=g.default_enhancement_branches()
+				var orders: Dictionary=g.enhancement_growth.save_data().enhancementOrder;orders[category]=order;install_growth(g,{"enhancementOrder":orders})
+				install_growth(g,{"enhancementBranches":g.default_enhancement_branches()})
 				var threshold: int=g.enhancement_effect_threshold(2)
 				for spec in [[false,50,false],[true,0,false],[true,1,false],[true,threshold-1,false],[true,threshold,true]]:
 					g.profile.grantedUnlocks=[g.db.unlock_id("feature","jewels")] if spec[0] else []
-					g.profile.cleared=[];g.rebuild_unlocks();g.profile.enhancementLevel=spec[1]
+					g.profile.cleared=[];g.rebuild_unlocks();install_growth(g,{"enhancementLevel":spec[1]})
 					check_overview(panel,label,kind,spec[2],"config%d unlocked%s level%d last-position"%[variant,spec[0],spec[1]])
-				order.erase(kind);order.push_front(kind);g.profile.enhancementOrder[category]=order
-				g.profile.enhancementLevel=g.enhancement_effect_threshold(0)
+				order.erase(kind);order.push_front(kind);orders[category]=order;install_growth(g,{"enhancementOrder":orders})
+				install_growth(g,{"enhancementLevel":g.enhancement_effect_threshold(0)})
 				check_overview(panel,label,kind,true,"config%d reordered active first-position"%variant)
 				if kind=="adaptation":
-					order.erase(kind);order.insert(1,kind);g.profile.enhancementOrder[category]=order
+					order.erase(kind);order.insert(1,kind);orders[category]=order;install_growth(g,{"enhancementOrder":orders})
 					var middle_gate: int=g.enhancement_effect_threshold(1)
 					for spec in [[1,false],[middle_gate,true]]:
-						g.profile.enhancementLevel=spec[0]
+						install_growth(g,{"enhancementLevel":spec[0]})
 						check_overview(panel,label,kind,spec[1],"config%d adaptation second-position level%d"%[variant,spec[0]])
 func run() -> void:
 	var db:=ShipDatabase.new()
 	var game:=BattleGame.new(db,false)
 	game.profile.cleared=range(1,61);game.profile.highestLevel=61;game.rebuild_unlocks()
-	game.profile.enhancementLevel=int(db.data.enhance_config.branch_threshold_3.value)+int(db.data.enhance_config.threshold_3.value)
-	game.profile.loadout={"weapons":[{"key":"laser","level":int(db.data.enhance_config.threshold_3.value)}],"defence":[{"key":"armour","level":int(db.data.enhance_config.threshold_3.value)}]}
-	game.reset_player()
+	install_growth(game,{"enhancementLevel":int(db.data.enhance_config.branch_threshold_3.value)+int(db.data.enhance_config.threshold_3.value)})
+	var equipment_snapshot: Dictionary=game.equipment.save_data();equipment_snapshot.loadout={"weapons":[{"key":"laser","level":int(db.data.enhance_config.threshold_3.value)}],"defence":[{"key":"armour","level":int(db.data.enhance_config.threshold_3.value)}]}
+	assert(game.equipment.install_snapshot(equipment_snapshot,db));game.reset_player()
 	var panel:=PANEL.new();panel.game=game
 	var label:=RICH.create_label(root,Rect2(0,0,568,48),20,SHELL.face(500),SHELL.NAVY)
 	check_summary(panel,label,float(db.data.enhance_config.deferred_clear_probability.value),"Normal buffer displays configured removal probability")
@@ -76,21 +85,25 @@ func run() -> void:
 	check_summary(panel,label,0.0,"Stable buffer displays no removal chance")
 	game.set_enhancement_branch("defence","delayed_damage",3,"B")
 	check_summary(panel,label,float(db.data.enhance_config.deferred_b3_forced_probability.value),"Fixed removal overrides no-removal and displays actual probability")
-	game.profile.enhancementOrder.defence=["delayed_damage","memory_material","adaptation"]
-	game.profile.enhancementBranches=game.default_enhancement_branches()
-	game.profile.enhancementBranches.defence.delayed_damage={"2":"B","3":"B"}
+	var growth_snapshot: Dictionary=game.enhancement_growth.save_data()
+	growth_snapshot.enhancementOrder.defence=["delayed_damage","memory_material","adaptation"]
+	growth_snapshot.enhancementBranches=game.default_enhancement_branches()
+	growth_snapshot.enhancementBranches.defence.delayed_damage={"2":"B","3":"B"}
+	install_growth(game,growth_snapshot)
 	for node in [2,3]:
 		var gate: int=game.enhancement_branch_threshold(node,"defence","delayed_damage")
 		for level in [gate-1,gate]:
-			game.profile.enhancementLevel=level
+			install_growth(game,{"enhancementLevel":level})
 			var chance: float=game.enhancement_parameter("deferred_clear_probability") if level<game.enhancement_branch_threshold(2,"defence","delayed_damage") else 0.0
 			if level>=game.enhancement_branch_threshold(3,"defence","delayed_damage"):chance=game.enhancement_parameter("deferred_b3_forced_probability")
 			check_summary(panel,label,chance,"Deferred branch boundary level"+str(level))
-	game.profile.enhancementOrder.weapons=["critical","repeat","proficiency"]
-	game.profile.enhancementBranches.weapons.critical={"3":"B"}
+	growth_snapshot=game.enhancement_growth.save_data()
+	growth_snapshot.enhancementOrder.weapons=["critical","repeat","proficiency"]
+	growth_snapshot.enhancementBranches.weapons.critical={"3":"B"}
+	install_growth(game,growth_snapshot)
 	var critical_gate: int=game.enhancement_branch_threshold(3,"weapons","critical")
 	for level in [critical_gate-1,critical_gate]:
-		game.profile.enhancementLevel=level
+		install_growth(game,{"enhancementLevel":level})
 		var args: Dictionary={"chance":FORMAT.percentage(game.enhancement_parameter("critical_b3_guaranteed_rate" if level>=critical_gate else "base_critical_rate")*100),"multiplier":FORMAT.percentage((game.enhancement_parameter("base_critical_multiplier")+game.enhancement_parameter("critical_growth")*level)*100)}
 		if level>=critical_gate:args.underlying=FORMAT.percentage(game.enhancement_parameter("base_critical_rate")*100)
 		label.text=panel.effect_overview("critical")
