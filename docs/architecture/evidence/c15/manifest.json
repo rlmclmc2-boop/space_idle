@@ -1,0 +1,63 @@
+{
+  "runtime_sha": "0a16af68653cf992b693dc98f9f8d55c390b79c9",
+  "branch": "impl/domain-architecture-20261022",
+  "sources": {
+    "space-battleship/scripts/attribute_projection.gd": "e3b9ef54e795f42984ca5d7836275d7d1b21b26b33fb6c1ac2302035dd680526",
+    "space-battleship/scripts/battle_rewards.gd": "8a7658737daa9054c8c62562d64da74e671054571ccc75aabde79218441c8530",
+    "space-battleship/scripts/enhancement_branches.gd": "2113e65f375e6c93409282191e5b06090773b3e24222dd1689cd7c31252634dc",
+    "space-battleship/scripts/game.gd": "f2f452342b45a04199e1b3ec779edf99d33bec8b101debbc290e3617652c7742",
+    "space-battleship/scripts/native_execution_compiler.gd": "87612baf90312e760a716c3dafa59be85c2a6c1b58f9dc3822c454de523d62df",
+    "test/test_native_numeric_upgrade.gd": "5d563b685829a31731b9c7467b85f6ed3136380174a9ece7dce55cc65fbbdc15",
+    "space-battleship/scripts/native_execution_session.gd": "6c1f130c9ff701d8f5cb2cb620027d455fc3d5daa4049637a000b68792700393",
+    "space-battleship/scripts/native_execution_handoff.gd": "819d2fe40d85a19797a4be1bd9c79743c14d059f1315955f1f050228e5179f54",
+    "test/test_stable_compiled_rules.gd": "b2a9030c9f51c497949d948c0f7bfa44c51822ee60a74c5c57511093f10722dc",
+    "test/test_native_galaxy_refit.gd": "78581c2966bd145d8ef4fa269849d05cba78bd621e50b5615c06045c59264218",
+    "test/test_native_execution_handoff.gd": "cf16e7961dd9b371dadeb22198a6136751bc894c68e80468c57a531e6fdd64f6"
+  },
+  "source_hash_encoding": "SHA256 of LF Git blobs, compared with actual isolated files",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "godot": "4.7.2.stable.official.ed1daf0bf",
+  "runner": "Existing test/run.py imported area test_native_numeric_upgrade-aigmbs14; original fixtures, headless, isolated APPDATA/LOCALAPPDATA. Existing handoff parent copied to its required res:// path.",
+  "results": [
+    {
+      "test": "test_native_numeric_upgrade.gd",
+      "exit": 0,
+      "script_errors": 0,
+      "checks": 146,
+      "failures": 0,
+      "log": "test_native_numeric_upgrade-c15.log"
+    },
+    {
+      "test": "test_stable_compiled_rules.gd",
+      "exit": 0,
+      "seconds": 2.39,
+      "script_errors": 0,
+      "checks": 260,
+      "failures": 0,
+      "log": "test_stable_compiled_rules-c15.log"
+    },
+    {
+      "test": "test_native_galaxy_refit.gd",
+      "exit": 0,
+      "seconds": 6.81,
+      "script_errors": 0,
+      "checks": 253,
+      "failures": 0,
+      "log": "test_native_galaxy_refit-c15.log"
+    }
+  ],
+  "checks": 659,
+  "failures": 0,
+  "limitations": [
+    "Only the three listed fixtures ran on this runtime. Previous time/birth evidence retains its original runtime binding.",
+    "Actual script/native repair and collected iron/uranium drops compared; preparation alone is not counted as collection. Reward test wallet is reset after reactor purchases so credited values measurably change balances.",
+    "All three final processes retain the known certificate warning; no SCRIPT ERROR or object/resource exit warnings.",
+    "No GPU full-frame performance or original product-scene persistence acceptance in this candidate. Domain copies, projection checks and exact reactor capacity/allocation costs remain unmeasured.",
+    "Existing concrete synchronous numeric commit, galaxy refit token and native handoff ownership flows were inspected/retested, not replaced or claimed as new implementations."
+  ],
+  "artifacts": {
+    "test_native_galaxy_refit-c15.log": "e6c0b2402396b93eb977f41575534b02849c9a965738b170326fa15d4e53f488",
+    "test_native_numeric_upgrade-c15.log": "6927b75699ace8dca4bc840434db1957b220fd04c933a63c5ea41627a500a117",
+    "test_stable_compiled_rules-c15.log": "45baa8efebaa018ed2baf95a358ed36863fe45627b9c083043d617a02608447f"
+  }
+}
