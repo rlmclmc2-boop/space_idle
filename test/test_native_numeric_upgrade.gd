@@ -12,7 +12,7 @@ var failures:=0
 func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;printerr("FAIL: ",label)
-func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=false):
+func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=false,admit:bool=true):
 	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0
 	# This fixture explicitly exercises three host slots followed by one drone.
 	db.ships[db.ships.keys()[0]].weaponSlots=3
@@ -32,6 +32,7 @@ func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=fals
 		var hurt_key=str(g.slot_entry("defence",0).key)
 		g.player[hurt_key]=N.subtract(g.player[hurt_key],1.0);g.jewel_defence_damage[0]=1.0
 	g.cooldowns[g.slot_id("weapons",0)]=0.0
+	if not admit:return g
 	var desc=preload("res://scripts/native_execution_compiler.gd").new().compile(g,"native_low_contract")
 	if desc.has("error"):printerr("ADMISSION: ",desc)
 
@@ -182,5 +183,50 @@ func run()->void:
 	var batch_resources=g.economy.save_data()
 	check(not g.upgrade_equipment_batch("1") and g.equipment.save_data()==batch_profile and g.economy.save_data()==batch_resources,"failed whole-batch validation spends nothing and runs no purchase")
 	g.begin_retreat()
+	check_memory_and_rewards()
 	print("NATIVE NUMERIC UPGRADE: ",checks," checks, ",failures," failures")
 	quit(1 if failures else 0)
+
+func check_memory_and_rewards()->void:
+	var recovered:Array=[];var collected:Array=[]
+	for native in [false,true]:
+		var g=fixture("laser",false,false,false)
+		g.profile.cleared=range(1,61);g.rebuild_unlocks()
+		var growth:Dictionary=g.enhancement_growth.save_data();growth.enhancementLevel=40
+		check(g.enhancement_growth.install_snapshot(growth),"Memory settlement growth fixture installs")
+		g.configuration_committed();g.reset_player();g.enable_compiled_combat_rules()
+		g.player.armour=N.subtract(g.player.armour,5.0);g.sync_jewel_defence_damage()
+		for index in g.combat_weapon_entries().size():g.cooldowns[g.slot_id("weapons",index)]=999.0
+		var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(g,"native_low_contract")
+		check(not descriptor.has("error"),"Memory settlement configuration compiles")
+		for index in g.defense_entries().size():
+			var runtime:Dictionary=g.enhancement_effect_runtime("memory_material",g.slot_entry("defence",index))
+			check(is_equal_approx(float(runtime.heal_percent)/100.0,float(descriptor.defences[index].memory_heal)) and is_equal_approx(float(runtime.capacity_percent)/100.0,float(descriptor.defences[index].memory_cap)),"Displayed memory contribution matches native configuration")
+		if native:check(g.admit_native_compiled_execution("native_low_contract"),"Memory settlement native owner admits")
+		for step in 120:g.tick(g.LOGICAL_STEP)
+		check(N.compare(g.player.armour,g.stat("armour"))==0 and g.enhancement_buffers.values().any(func(value):return N.compare(value,0)>0),"Actual memory pulses heal loss and charge overflow")
+		recovered.append({"armour":g.player.armour,"shield":g.player.shield,"buffers":g.enhancement_buffers.duplicate(true),"loss":g.jewel_defence_damage.duplicate(true)})
+		if native:check(g.native_execution!=null and g.native_handoff_count==0,"Memory pulses keep native residence")
+		g.begin_retreat()
+		g=fixture("laser",true,false,false)
+		check(g.upgrade_reactor(2) and g.set_reactor_allocation("smelting",3),"Real reactor contribution installed before reward preparation")
+		for enemy in g.enemies:
+			enemy.jewelDropRolls=0;enemy.res_ratio=1.25;enemy.jewelIron=0.35
+			enemy.drops=[{"resourceId":1,"amount":3.2,"chance":1.0},{"resourceId":2,"amount":7.7,"chance":1.0}]
+		fund(g,{"1":0.0,"2":0.0})
+		var wallet:Dictionary=g.economy.resources();var target:Dictionary=g.enemies[0]
+		if native:
+			check(g.admit_native_compiled_execution("native_low_contract"),"Reward-bearing actual native configuration admits")
+			check(g.native_execution.kernel.hit_handle(g.native_execution.kernel.actor_handle(int(target.uid)),1e12,1),"Native hit settles one actual kill")
+			g.native_execution.consume_feedback(g)
+		else:g.hit_enemy(target,1e12,1)
+		var rewards:Array=[]
+		for drop in g.drops.duplicate():
+			if drop.has("jewel"):continue
+			rewards.append({"id":drop.id,"amount":drop.amount,"base":drop.production_base})
+			g.collect(drop,true)
+		check(rewards.size()==2 and g.drops.is_empty() and N.compare(g.economy.balance("1"),0)>0 and N.compare(g.economy.balance("2"),0)>0,"Actual kill publishes and credits both resource rewards")
+		collected.append({"drops":rewards,"iron":N.subtract(g.economy.balance("1"),wallet["1"]),"uranium":N.subtract(g.economy.balance("2"),wallet["2"])})
+		g.begin_retreat()
+	check(recovered[0]==recovered[1],"Script and resident native memory settlement produce the same health, module loss and buffers")
+	check(collected[0]==collected[1],"Script and resident native kills produce and credit identical prepared resource rewards")

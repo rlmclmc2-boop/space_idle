@@ -188,7 +188,7 @@ func reactor_contributions(g,galaxy_charge = -1.0) -> Array:
 
 func memory_capacity(g,entry:Dictionary,effects:Array,maximum:Variant)->Variant:
 	for effect in effects:
-		if effect.kind=="memory_material":return N.multiply(maximum,float(effect.p4)*int(effect.level)*g.enhancement_branches.memory_cap_multiplier(g,entry))
+		if effect.kind=="memory_material":return N.multiply(maximum,g.enhancement_branches.memory_capacity_fraction(g,entry,effect))
 	return 0.0
 
 func reactor_energy(g,level := -1, galaxy_charge := -1.0) -> Variant:

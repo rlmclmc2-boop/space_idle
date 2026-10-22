@@ -23,6 +23,7 @@ const AITech = preload("res://scripts/ai_tech_tree.gd")
 var research := AITech.new()
 const EquipmentState=preload("res://scripts/equipment_state.gd")
 var equipment := EquipmentState.new()
+const BattleRewards=preload("res://scripts/battle_rewards.gd")
 const AttackBirth=preload("res://scripts/attack_birth_configuration.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
@@ -2369,11 +2370,8 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		for drop in enemy.drops:
 			if rng.randf() < float(drop.chance):
 				uid += 1
-				var multiplier = reactor_multiplier("smelting") if int(drop.resourceId) == 1 else 1.0
-				var drop_factor=N.multiply(float(enemy.res_ratio),multiplier)
-				var base_amount = N.ceiling(N.multiply(N.multiply(drop.amount,drop_factor),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
-				var drop_amount = N.ceiling(N.multiply(base_amount,planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base_amount
-				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(int(drop.resourceId)),"amount":drop_amount,"production_base":base_amount})
+				var reward:=BattleRewards.resource_drop(self,enemy,drop)
+				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(reward.resource),"amount":reward.amount,"production_base":reward.base})
 
 		if CombatContext.can_trigger(context) and float(enemy.get("jewelExplosion", 0)) > 0:
 			for adjacent in enemies.duplicate():
@@ -3042,9 +3040,10 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 			result.underlying_probability_percent=enhancement_branches.underlying_critical_rate(self,sample)*100.0 if not sample.is_empty() else 0.0
 		"memory_material":
 			result.interval=enhancement_parameter("memory_interval")
-			result.heal_percent=enhancement_parameter("memory_heal_fraction")*active_level*enhancement_branches.memory_heal_multiplier(self,sample)*100.0
-			result.charge_percent=enhancement_parameter("memory_heal_fraction")*active_level*enhancement_branches.memory_charge_multiplier(self,sample)*100.0
-			result.capacity_percent=enhancement_parameter("memory_buffer_fraction")*active_level*enhancement_branches.memory_cap_multiplier(self,sample)*100.0
+			var memory:=EnhancementGrowth.effect(db,"memory_material",0,active_level)
+			result.heal_percent=enhancement_branches.memory_healing_fraction(self,sample,memory)*100.0
+			result.charge_percent=enhancement_branches.memory_charge_fraction(self,sample,memory)*100.0
+			result.capacity_percent=enhancement_branches.memory_capacity_fraction(self,sample,memory)*100.0
 		"delayed_damage":
 			result.fraction_percent=enhancement_deferred_fraction(active_level)*100.0;result.duration=enhancement_parameter("deferred_duration");result.interval=enhancement_parameter("deferred_interval")
 			result.probability_percent=enhancement_branches.clear_probability(self)*100.0;result.underlying_probability_percent=enhancement_branches.clear_underlying_probability(self)*100.0
@@ -3946,7 +3945,7 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 			if ticks<=0:continue
 			var effect := memory_effect(entry)
 			if effect.is_empty():continue
-			var healing = N.multiply(maximum,float(effect.p2)*int(effect.level)*ticks*enhancement_branches.memory_heal_multiplier(self,entry))
+			var healing = N.multiply(maximum,enhancement_branches.memory_healing_fraction(self,entry,effect,ticks))
 			var recovered = N.minimum(jewel_defence_damage.get(index,0),healing)
 			jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)
 			player[key]=N.minimum(capacities[key].total,N.add(player[key],recovered))

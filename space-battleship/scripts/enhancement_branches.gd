@@ -158,6 +158,15 @@ func resistance(g,entry: Dictionary,base: float) -> float:
  if base>0 and active(g,entry,"adaptation",3,"B"):base+=g.enhancement_parameter("adaptation_b3_resistance_bonus")
  return clampf(base,0,1)
 
+func memory_healing_fraction(g,entry:Dictionary,effect:Dictionary,ticks:int=1)->float:
+ return float(effect.p2)*int(effect.level)*ticks*memory_heal_multiplier(g,entry)
+
+func memory_charge_fraction(g,entry:Dictionary,effect:Dictionary)->float:
+ return float(effect.p2)*int(effect.level)*memory_charge_multiplier(g,entry)
+
+func memory_capacity_fraction(g,entry:Dictionary,effect:Dictionary)->float:
+ return float(effect.p4)*int(effect.level)*memory_cap_multiplier(g,entry)
+
 func memory_cap_multiplier(g,entry: Dictionary) -> float:
  var multiplier: float=1.0+a_count(g,entry,"memory_material")*g.enhancement_parameter("memory_a_bonus")
  if active(g,entry,"memory_material",3,"B"):

@@ -1,8 +1,8 @@
 extends RefCounted
 ## Validate and compile the supported live configuration for the resident kernel.
 ## Shared birth rules stay authoritative; unsupported active capabilities reject.
+const BattleRewards=preload("res://scripts/battle_rewards.gd")
 const AttackBirth=preload("res://scripts/attack_birth_configuration.gd")
-const N=preload("res://scripts/growth_number.gd")
 const KEYS=["laser","cannon","missile","longLaser"]
 const ALLOWED_BRANCHES={"proficiency":{"2":"B"},"repeat":{"1":"B","3":"B"},"critical":{}}
 func native_scalar(value:Variant)->bool:
@@ -126,10 +126,7 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 		if (not enemy.get("drops",[]).is_empty() and not native_scalar(enemy.get("res_ratio"))) or (not enemy.get("equipment",[]).is_empty() and not native_scalar(enemy.get("dmgMultiple"))):return {"error":"unsupported_native_scalar:enemy"}
 		for drop in enemy.get("drops",[]):
 			if typeof(drop)!=TYPE_DICTIONARY or not native_integer(drop.get("resourceId")) or not native_scalar(drop.get("chance")):return {"error":"unsupported_native_scalar:drop"}
-			var multiplier=g.reactor_multiplier("smelting",float(galaxy_values.get("charge_max",-1.0))) if int(drop.resourceId)==1 else 1.0
-			var base=N.ceiling(N.multiply(N.multiply(drop.amount,N.multiply(float(enemy.res_ratio),multiplier)),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
-			var amount=N.ceiling(N.multiply(base,g.planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base
-			view.compiled_drops.append({"resource":int(drop.resourceId),"chance":float(drop.chance),"base":base,"amount":amount})
+			view.compiled_drops.append(BattleRewards.resource_drop(g,enemy,drop,float(galaxy_values.get("charge_max",-1.0))))
 		enemies.append(view)
 	var endless_slot:int=g.endless_source_slot(weapon_levels)
 	for index in g.combat_weapon_entries().size():
@@ -172,7 +169,7 @@ func compile(g,scope:String,upgrade:Dictionary={},galaxy_values:Dictionary={})->
 			if effect.kind=="adaptation" and not native_fields(effect,["p2","level"]):return {"error":"unsupported_native_scalar:adaptation"}
 			if effect.kind=="memory_material" and (not native_fields(effect,["p2","p4"]) or not native_integer(effect.get("level"))):return {"error":"unsupported_native_scalar:memory"}
 			if effect.kind=="adaptation":defence_growth=float(effect.p2);effect_level=float(effect.level)
-			if effect.kind=="memory_material":memory_heal=float(effect.p2)*int(effect.level);memory_cap=float(effect.p4)*int(effect.level)
+			if effect.kind=="memory_material":memory_heal=g.enhancement_branches.memory_healing_fraction(g,entry,effect);memory_cap=g.enhancement_branches.memory_capacity_fraction(g,entry,effect)
 			if effect.kind=="delayed_damage":deferred=g.enhancement_deferred_fraction()
 		if not native_integer(entry.get("level")):return {"error":"unsupported_native_scalar:defence_level"}
 		if not native_scalar(g.jewel_defence_times.get(index,g.since_hit)):return {"error":"unsupported_native_scalar:defence_time"}
