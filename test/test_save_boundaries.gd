@@ -76,6 +76,8 @@ func _initialize() -> void:
 	check(game.assign_crew("navigator","reactor_upgrade","reactor") and game.set_crew_upgrade_mode("navigator","10"),"Crew assignment and selected purchase amount commit before save")
 	check(game.add_crew_exp("navigator",game.crew.required_exp(game,0)+game.crew.required_exp(game,1)+7),"Crew earns multiple levels and remainder before save")
 	check(not game.profile.has("crew") and not game.profile.has("crewEquipment"),"Profile no longer owns crew state")
+	check(game.start_planet_exploration("1","engineer"),"Begin an ordinary trip before persistence");game.advance_planets(0.25)
+	check(not game.profile.has("planets") and game.planet_progress("1").is_read_only(),"Planet state has a single owner and read-only view")
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -100,6 +102,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	check(restored.equipment.selected_ship()==saved.selectedShip and restored.module_entry("weapons",4).level==4 and restored.module_entry("weapons",4).key=="missile" and restored.equipment.save_data().equipmentSwitchUntil==saved.equipmentSwitchUntil,"Disk reopen/recovery preserves hull, dormant investment and switch deadline")
 	check(restored.enhancement_level()==30 and restored.enhancement_order("weapons")==["critical","repeat","proficiency"] and restored.enhancement_branch_choice("weapons","critical",3)=="B" and restored.enhancement_growth.attacks()==9007199254740993 and restored.enhancement_growth.hits()==9007199254740995,"Reopen/recovery preserves shared enhancement and exact history without JSON rounding")
 	check(restored.crew.save_data().crew==saved.crew and restored.crew.entry(restored,"navigator").level==2 and restored.crew.entry(restored,"navigator").exp==7,"Reopen/recovery keeps complete crew assignment, mode, growth and remainder")
+	check(restored.planets.save_data().planets==saved.planets and restored.planet_progress("1").crewId=="engineer" and restored.planet_progress("1").elapsed==0.25,"Reopen/recovery preserves active exploration without offline completion")
 	if phase == "latest":
 		check(restored.economy.resources() == saved.latest, "Second real process reopen selects latest commit")
 		var damaged := FileAccess.open(BattleGame.SAVE_PATH, FileAccess.WRITE)
@@ -135,6 +138,9 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var invalid_crew:=unchanged.duplicate(true);invalid_crew.crew[0].assignmentType="missing_job";invalid_crew.resources["1"]=999
 	restored.load_progress_data(invalid_crew)
 	check(restored.crew.entry(restored,"navigator").assignmentType=="reactor_upgrade" and restored.economy.resources()==saved.resources,"Invalid crew rejects entire snapshot before any installation")
+	var invalid_planet:=unchanged.duplicate(true);invalid_planet.planets["1"].crewId="navigator";invalid_planet.resources["1"]=999
+	restored.load_progress_data(invalid_planet)
+	check(restored.planet_progress("1").crewId=="engineer" and restored.economy.resources()==saved.resources,"Conflicting crew occupation rejects the entire save before installation")
 	restored.hyperspace.last_error = ""
 	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH + ".tmp")
 	restored.economy.credit("1", 7)

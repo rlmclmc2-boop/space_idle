@@ -1,5 +1,9 @@
 extends SceneTree
 
+class BlockedGame extends BattleGame:
+	var reject_change:=false
+	func native_before_configuration_change() -> bool:
+		return false if reject_change else super.native_before_configuration_change()
 var checks := 0
 var failures := 0
 
@@ -9,10 +13,15 @@ func check(ok: bool, label: String) -> void:
 		failures += 1
 		printerr(label)
 
+func set_degree(g: BattleGame,id: String,value) -> void:
+	var snapshot:=g.portable_save_data();snapshot.planets[id].degree=value
+	check(g.planets.install_snapshot(snapshot,g.db),"Current planet fixture installs");g.invalidate_stat_cache()
 func _initialize() -> void:
 	var db := ShipDatabase.new()
 	# This scenario exercises the duration curve independently of live balance edits.
 	db.data.planet["1"].baseTime = 100
+	db.data.planet["1"].minTime = 5
+	for index in range(29,34):db.levels[index].planetExpRatio=[1.0,1.2,1.44,1.73,2.08][index-29]
 	db.config.offlineMax = 0
 	var g := BattleGame.new(db, false)
 	var id := "1"
@@ -47,17 +56,18 @@ func _initialize() -> void:
 	check(is_equal_approx(g.jewel_equipment_stat(weapon), before), "Exploration alone does not improve weapon")
 	for key in baseline:
 		check(is_equal_approx(g.jewel_equipment_stat({"key":key, "level":1, "sockets":[]}), float(baseline[key])), "No inherent exploration bonus on " + key)
-	g.profile.planets[id].degree = 4
+	set_degree(g,id,4)
 	check(is_equal_approx(g.planet_equipment_multiplier(), 1.0), "Degree alone grants no multiplier")
-	g.profile.planets[id].degree = 100000000
+	set_degree(g,id,100000000)
 	check(is_equal_approx(g.planet_duration(id), 5.0), "Duration floors at configured five seconds")
-	check(is_equal_approx(g.planet_duration_from({"baseTime":100,"minTime":8},1e100),8.0),"Duration floor follows per-planet configuration")
-	check(is_equal_approx(g.planet_duration_from({"baseTime":100},1e100),5.0),"Missing duration floor uses safe default")
-	g.profile.planets[id].degree = 1
+	check(is_equal_approx(preload("res://scripts/planet_state.gd").duration({"baseTime":100,"minTime":8},1e100),8.0),"Duration floor follows per-planet configuration")
+	check(is_equal_approx(preload("res://scripts/planet_state.gd").duration({"baseTime":100},1e100),5.0),"Missing duration floor uses safe default")
+	set_degree(g,id,1)
 	g.profile.highestLevel = 31
 	check(is_equal_approx(g.planet_exp_multiplier(), 1.2), "Next level experience coefficient")
 	check(g.start_planet_exploration(id, "navigator"), "Crew can explore again")
 	g.advance_planets(10.0)
+	check(g.progress_writer.acquire_owner(),"Acquire isolated real save writer")
 	g.save_enabled = true
 	g.save_progress()
 	var restored := BattleGame.new(db, false)
@@ -74,5 +84,46 @@ func _initialize() -> void:
 	check(g.start_planet_exploration(id,"engineer"),"Idle crew starts integer reward check")
 	g.advance_planets(g.planet_duration(id))
 	check(g.crew.entry(g,"engineer").level==1 and is_equal_approx(g.crew.entry(g,"engineer").exp,24) and is_equal_approx(emitted_reward[0],124),"Credited and emitted experience match integer preview")
+	construction_boundaries()
 	print("PLANET: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
+
+func construction_boundaries() -> void:
+	var db:=ShipDatabase.new()
+	for gate in db.data.unlock.values():gate.level=0
+	db.data.planet_build.station.unlock_explore=1;db.data.planet_build.station.build_explore=2
+	db.data.planet_build.shipyard.unlock_explore=1;db.data.planet_build.shipyard.build_explore=2;db.data.planet_build.shipyard.extra_crew=1
+	var g:=BlockedGame.new(db,false)
+	var row: Dictionary=g.planet_buildings.rows(g,"1").filter(func(value):return value.type=="shipyard")[0]
+	check(not g.profile.has("planets") and g.planets.all().is_read_only() and g.planet_progress("1").buildings.is_read_only(),"Planet owner exposes immutable state")
+	check(g.start_planet_exploration("1","navigator"),"Dispatch first construction trip");g.advance_planets(g.planet_duration("1"))
+	check(g.planet_buildings.state(g,"1","station").status=="building" and g.planet_buildings.state(g,"1","station").build_progress==0,"Threshold trip unlocks without backfilling construction")
+	check(g.assign_planet_builder("1",str(row.id),"engineer"),"Assign builder through current game command")
+	check(not g.start_planet_exploration("1","engineer") and not g.assign_crew("engineer","reactor_upgrade","reactor"),"Building occupation excludes other jobs")
+	for i in 2:
+		check(g.start_planet_exploration("1","navigator"),"Dispatch staffed construction trip");g.advance_planets(g.planet_duration("1"))
+	check(g.planet_buildings.state(g,"1","station").status=="ready" and g.planet_buildings.state(g,"1",str(row.id)).status=="ready" and g.crew_exploration("engineer")=="","Ready buildings release builders without automatic activation")
+	g.reject_change=true
+	var before:=g.planets.save_data()
+	check(not g.activate_planet_building("1","station") and g.planets.save_data()==before,"Failed native preparation preserves activation and auto preference")
+	g.reject_change=false
+	check(g.activate_planet_building("1","station") and g.planet_progress("1").auto_explore and g.planet_progress("1").crewId=="","Activation enables preference without silently dispatching")
+	check(g.start_planet_exploration("1","navigator"),"Dispatch automatic trip");g.advance_planets(g.planet_duration("1"))
+	check(g.planet_progress("1").crewId=="navigator","Automatic trip retains assigned explorer")
+	check(g.set_planet_auto("1",false),"Turn auto off while trip is in flight");g.advance_planets(g.planet_duration("1"))
+	check(g.planet_progress("1").crewId=="" and not g.planet_progress("1").auto_explore,"Current trip finishes and stops with the chosen preference")
+	var stale:=g.planets.prepare_start(g,"1","navigator");g.start_planet_exploration("1","engineer")
+	check(not g.planets.proposal_current(stale),"Intervening occupation invalidates prepared planet command")
+	g.cancel_planet_exploration("1")
+	check(g.activate_planet_building("1",str(row.id)),"Activate completed shipyard")
+	g.start_planet_exploration("1","navigator");g.advance_planets(0.25)
+	before=g.planets.save_data();var crew_before:=g.crew.save_data();var wallet_before:=g.economy.save_data()
+	g.reject_change=true
+	check(not g.reforge_planet("1") and g.planets.save_data()==before and g.crew.save_data()==crew_before and g.economy.save_data()==wallet_before,"Rejected reforge preparation leaves all growth and wallet state intact")
+	g.reject_change=false
+	var observed: Array=[]
+	var observer:=func(kind,_payload):
+		if kind=="planet_reforged":observed.append(g.portable_save_data())
+	g.event.connect(observer);check(g.reforge_planet("1"),"Reforge commits permanent conquest and new run");g.event.disconnect(observer)
+	check(observed.size()==1 and observed[0].planets["1"].conquered and observed[0].planets["1"].crewId=="navigator" and observed[0].planets["1"].elapsed==0.25 and observed[0].crew==crew_before.crew,"Reforge notification sees conquest, retained trip and all crew together")
+	check(not g.reforge_planet("1"),"Conquest remains once per planet")

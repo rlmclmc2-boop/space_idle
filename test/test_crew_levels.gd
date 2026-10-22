@@ -109,9 +109,9 @@ func run_boundaries() -> void:
 	var rewards: Dictionary={}
 	for member in g.crew.members():rewards[member.crewId]=g.planet_exp_reward("1")
 	var expected:=g.crew.prepare_experience(g,rewards)
-	var previous_planets: Dictionary=g.profile.planets.duplicate(true);before=g.crew.save_data()
+	var previous_planets: Dictionary=g.planets.save_data().planets;before=g.crew.save_data()
 	g.reject_change=true;g.advance_planets(g.planet_duration("1"))
-	check(g.profile.planets==previous_planets and g.crew.save_data()==before,"Rejected payout preserves trip, construction and every crew member")
+	check(g.planets.all()==previous_planets and g.crew.save_data()==before,"Rejected payout preserves trip, construction and every crew member")
 	g.reject_change=false
 	var observed: Array=[]
 	var observer:=func(kind,_payload):

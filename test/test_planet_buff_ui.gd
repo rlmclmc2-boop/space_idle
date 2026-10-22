@@ -6,6 +6,12 @@ func check(ok: bool, label: String) -> void:
 	if not ok:
 		failures+=1
 		printerr(label)
+func update_planet(g,id: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid planet fixture installs");g.invalidate_stat_cache()
+func update_building(g,id: String,key: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].buildings[key].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid building fixture installs");g.invalidate_stat_cache()
 func _initialize() -> void:
 	call_deferred("run")
 func capture(viewport: SubViewport, name: String) -> void:
@@ -30,8 +36,8 @@ func run() -> void:
 	for gate in g.db.data.unlock.values():
 		if gate.type in ["planet","crew"]:g.profile.grantedUnlocks.append(gate.name)
 	g.rebuild_unlocks();g.pending_unlocks.clear()
-	g.load_planets({})
-	g.profile.planets["1"].conquered=true
+	g.planets.reset(g)
+	update_planet(g,"1",{"conquered":true})
 	for key in g.db.data.hightech:g.profile.hightechLevels[key]=1
 	scene.refresh_tab_visibility()
 	scene.equipment_panel.refresh()
@@ -77,7 +83,7 @@ func run() -> void:
 	g.db.data.planet_buff["3"].value=.25
 	scene.reactor_panel.refresh()
 	check(controls.share.text=="占用100%（免费+25%）" and controls.scene_fx.ratio==1 and is_equal_approx(g.reactor_effective_ratio("weapons"),1.25),"Configurable free charge has no 110 percent cap: "+controls.share.text+" / "+str(g.reactor_effective_ratio("weapons")))
-	g.profile.planets["1"].conquered=false
+	update_planet(g,"1",{"conquered":false})
 	scene.reactor_panel.refresh()
 	scene.select_system(0)
 	await process_frame

@@ -4,6 +4,12 @@ var failures := 0
 func check(ok: bool, label: String) -> void:
 	checks += 1
 	if not ok:failures += 1;printerr(label)
+func update_planet(g,id: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid planet fixture installs");g.invalidate_stat_cache()
+func update_building(g,id: String,key: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].buildings[key].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid building fixture installs");g.invalidate_stat_cache()
 func make_game(db):
 	var g := BattleGame.new(db,false)
 	g.profile.cleared = range(1,61)
@@ -13,7 +19,7 @@ func complete_shipyard(g, id: String) -> void:
 	# Building identity is table-driven: later planets may migrate a legacy ID.
 	for row in g.planet_buildings.rows(g,id):
 		if str(row.type)=="shipyard":
-			g.profile.planets[id].buildings[str(row.id)].status="built"
+			update_building(g,id,str(row.id),{"status":"built"})
 			return
 	check(false,"Configured shipyard exists for " + id)
 func total_exp(g, member: Dictionary) -> float:
@@ -33,12 +39,12 @@ func _initialize() -> void:
 	db.data.unlock[locked_gate].level=61
 	db.data.unlock[locked_gate].mode="cleared"
 	var shared = make_game(db)
-	shared.profile.planets["1"].conquered=true
+	update_planet(shared,"1",{"conquered":true})
 	var shared_reward: float = shared.planet_exp_reward("1")
 	check(not shared.crew.unlocked(shared,locked_id),"Fixture includes a locked crew")
 	check(not shared.add_crew_exp(locked_id,shared_reward),"Direct XP also rejects locked crew")
 	trip(shared,"1")
-	for member in shared.profile.crew:
+	for member in shared.crew.members():
 		var expected: float = shared_reward if shared.crew.unlocked(shared,member.crewId) else 0.0
 		check(is_equal_approx(total_exp(shared,member),expected),"Sharing pays unlocked crew only, once: "+str(member.crewId))
 	shared.profile.cleared.append(61)
@@ -50,23 +56,23 @@ func _initialize() -> void:
 		var id := str(index+1)
 		var g = make_game(db)
 		# Later planets are unlocked by prior conquest, not just combat stage.
-		for previous in range(1,index+1):g.profile.planets[str(previous)].conquered=true
+		for previous in range(1,index+1):update_planet(g,str(previous),{"conquered":true})
 		g.rebuild_unlocks()
 		var start := int(db.data.planet[id].reforgeStartLevel)
 		check(g.planet_reforge_start(id)==start, "Configured initial start " + id)
 		var amount: float = g.planet_exp_reward(id)
 		trip(g,id)
-		for member in g.profile.crew:
+		for member in g.crew.members():
 			check(is_equal_approx(total_exp(g,member),amount if member.crewId=="navigator" else 0.0), "Before conquest explorer only " + str(member.crewId))
 		complete_shipyard(g,id)
-		g.profile.planets[id].auto_explore = true
+		update_planet(g,id,{"auto_explore":true})
 		var historical: int = g.profile.highestLevel
 		var multiplier: float = g.planet_exp_multiplier()
-		var resources: Dictionary = g.profile.resources.duplicate()
+		var resources: Dictionary = g.economy.resources().duplicate()
 		var old_unlocks: Array = g.available_unlocks()
 		check(g.reforge_planet(id), "Conquest " + id)
 		check(g.stage==start and g.profile.highestLevel==g.stage and g.profile.cleared==range(1,g.stage), "Starts at table stage, earlier stages skipped")
-		check(g.profile.resources==resources, "Skipped stages grant no resources")
+		check(g.economy.resources()==resources, "Skipped stages grant no resources")
 		check(g.profile.lifetime_max_stage==historical and g.planet_exp_multiplier()==multiplier, "Historical XP retained")
 		check(g.planet_progress(id).auto_explore and g.planet_progress(id).crewId=="", "Reforge retains auto preference without dispatch")
 		check(g.pending_unlocks.is_empty(), "Reforge has no repeated notices")
@@ -74,11 +80,12 @@ func _initialize() -> void:
 			check(g.profile.seenUnlocks.has(gate), "Old notice history retained " + gate)
 			if int(db.data.unlock[gate].level)<=g.stage:check(g.unlock_available(gate), "Old starting-stage unlock restored " + gate)
 		var before := {}
-		for member in g.profile.crew:before[member.crewId]=total_exp(g,member)
+		for member in g.crew.members():before[member.crewId]=total_exp(g,member)
 		trip(g,id)
-		for member in g.profile.crew:
+		for member in g.crew.members():
 			var expected: float = amount if g.crew.unlocked(g,member.crewId) else 0.0
 			check(is_equal_approx(total_exp(g,member)-before[member.crewId],expected), "Conquest pays unlocked crew exactly once " + str(member.crewId))
+		check(g.progress_writer.acquire_owner(),"Acquire isolated real writer")
 		g.save_enabled = true
 		g.save_progress()
 		var restored := BattleGame.new(db,false)
@@ -86,7 +93,8 @@ func _initialize() -> void:
 		restored.resume_progress()
 		check(restored.stage==g.stage and restored.planet_exp_multiplier()==multiplier, "Starting stage and historical XP survive reload")
 		check(restored.profile.seenUnlocks==g.profile.seenUnlocks, "Notification history survives reload")
-		for member in restored.profile.crew:check(is_equal_approx(total_exp(restored,member),total_exp(g,g.crew.entry(g,member.crewId))), "No offline XP catch-up")
+		for member in restored.crew.members():check(is_equal_approx(total_exp(restored,member),total_exp(g,g.crew.entry(g,member.crewId))), "No offline XP catch-up")
+		g.save_enabled=false;g.progress_writer=preload("res://scripts/progress_writer.gd").new()
 		# Previously granted later unlocks activate again, silently.
 		for stage in range(g.stage,61):
 			g.stage=stage
@@ -109,21 +117,11 @@ func _initialize() -> void:
 	g.profile.cleared=range(1,64)
 	g.rebuild_unlocks()
 	check(g.profile.lifetime_max_stage==64 and g.planet_exp_multiplier()==float(db.levels[63].planetExpRatio), "New best stage raises historical XP")
-	# Legacy migration uses saved highest stage while preserving pending first notices.
-	var raw = g.profile.duplicate(true)
-	raw.erase("seenUnlocks")
-	raw.erase("lifetime_max_stage")
-	raw.journey={"stage":63,"groupIndex":db.levels[62].groups.size(),"distance":0,"state":int(BattleGame.State.LEVEL_CLEAR),"pendingUnlocks":["test_future"]}
-	var f=FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
-	f.store_string(JSON.stringify(raw));f.close()
-	var legacy := BattleGame.new(db,false)
-	legacy.load_progress()
-	check(legacy.profile.lifetime_max_stage==64, "Legacy peak migrates from saved highest stage")
-	check(not legacy.profile.seenUnlocks.has("test_future"), "Legacy pending notice excluded from experienced history")
-	legacy.resume_progress()
-	check(legacy.pending_unlocks.has("test_future"), "Legacy pending first notice is not dropped")
-	legacy.acknowledge_unlocks()
-	check(legacy.profile.seenUnlocks.has("test_future"), "Legacy notice acknowledgement recorded")
+	# Current format must reject an incomplete progression snapshot intact.
+	var raw: Dictionary=g.portable_save_data();raw.erase("lifetime_max_stage")
+	var before_crew: Dictionary=g.crew.save_data();var before_planets: Dictionary=g.planets.save_data()
+	g.load_progress_data(raw)
+	check(g.crew.save_data()==before_crew and g.planets.save_data()==before_planets and not g.hyperspace.last_error.is_empty(),"Incomplete save cannot reset permanent conquest or crew")
 	db.data=original
 	print("CONQUEST PROGRESS: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)

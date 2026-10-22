@@ -1,0 +1,42 @@
+{
+  "runtime_sha": "e1a1d9b7ac7a124763e1805d3d7d8e808ff9cd83",
+  "result": {
+    "exploration_construction": 59,
+    "six_planet_conquest": 756,
+    "shared_experience": 87,
+    "save_processes": [
+      25,
+      18,
+      7,
+      9
+    ],
+    "gpu_ui": 32,
+    "total": 993,
+    "failures": 0
+  },
+  "execution": "Existing test/run.py isolated project reused with bounded 45-second Godot processes; real save phases have separate isolated APPDATA; GPU RTX 2060/OpenGL UI fixture disables persistence. Native-preparation rejection uses a fixture override.",
+  "sha256": {
+    "space-battleship/scripts/crew_panel.gd": "ee366536ae9f558a8930ce20889af4d24924946865751d0a1a867dc6ff696624",
+    "space-battleship/scripts/galaxy_system.gd": "c7397e9b615eca4419ca6fb441c9b7dbe8ea79f459d8612679f4cdcb2032aea4",
+    "space-battleship/scripts/game.gd": "76938374599b5fb7b76c256dc0cc80ff544376f2506d55d3673d77ee1fa20f8a",
+    "space-battleship/scripts/planet_buildings.gd": "6085f7ea975798edae256198d17b2f65b75fc50e8623c3af8351be0e2994cef5",
+    "space-battleship/scripts/planet_panel.gd": "ca75d263be86aa062527bef13685b2dbda158b5ca1a79db392890b9f744aa8c5",
+    "space-battleship/scripts/planet_state.gd": "7cf9172f4f27c6b3d02ca73d353c5778ad652a936bd4ef6d6673074c82382102",
+    "space-battleship/scripts/save_transfer.gd": "6e6153d5351af5b94d6cc8566b06fdef6f4b1cd862a40252d62333eb7cd8dfcf",
+    "test/test_planet.gd": "9876c4391d58a34ec8e5f221522187c54ceaa00db57c76a880cca5fec1575671",
+    "test/test_planet_conquest_progress.gd": "9b154e945a2046a03f5e745e7d9a9251b839c1aaf4b5a7b7c7c2cd651886aaaf",
+    "test/test_crew_levels.gd": "90e06357d329d976d0bbc48aa15d7d84cb30ee167f7e515b1b551b00c51d12b0",
+    "test/test_planet_buff_ui.gd": "3756a95f4425033df4ab438c7540fd5f6132b24d297c836733be78309b39ea6d",
+    "test/test_save_boundaries.gd": "c6a7c7c03e0592b445f3d3f700546f9045a2b81cb8142e1c59d3266eff86e667",
+    "docs/architecture/evidence/c7/conquest.log": "fc1cf6d1f9ab40868b054eb242e7bf7e8e8da7e744475c377b79276080262b02",
+    "docs/architecture/evidence/c7/planet-ui.log": "0d945ef48f6976e084d072e48cb4b15ee635660018f7f327c56ffed76664904c",
+    "docs/architecture/evidence/c7/planet-ui.png": "6628eb7ce4c66c3100f51fb0a29e5a905deab2ac0676d709d3c961c0b68ffaef",
+    "docs/architecture/evidence/c7/planet.log": "827e62dd610c62193860d92560349aaf13b883f22ad79ff8919cad7d5351eec3",
+    "docs/architecture/evidence/c7/save-latest.log": "883e50507dd6ef28c1d44595904c150b3eff972857de665b0f7c8f26887b2700",
+    "docs/architecture/evidence/c7/save-recovery.log": "88321799ad892993036a7c28fa6b9d1d1fe0e95ead45481ec33ce4ade5ac9cee",
+    "docs/architecture/evidence/c7/save-reopen.log": "d83515d471bc0e33ba3074b30999ce3e8de8746b78be71c0953b85d5fa0f47dd",
+    "docs/architecture/evidence/c7/save-write.log": "b034e2f23da93463640683c09c165d706c3d32c91f73ae1f007a856855e0f79d",
+    "docs/architecture/evidence/c7/shared-experience.log": "5a861e6c236cef38c56ae8b777c3cfa53e7e41984d7442c00bdaba775cec8bdb"
+  },
+  "limitations": "Planet ownership candidate, not stage 1 or full product acceptance. Galaxy ownership/native hot path consolidation pending. Old continuity not required; no personal saves touched."
+}
