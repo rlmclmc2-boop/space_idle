@@ -33,6 +33,8 @@ var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
 var combat_sources_dirty:=true
+const PlanetState=preload("res://scripts/planet_state.gd")
+var planets:=PlanetState.new()
 var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
 var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
 var galaxy := preload("res://scripts/galaxy_system.gd").new()
@@ -189,7 +191,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	crew.attach(self)
 	galaxy.load_state(self,{})
 	crew.reset(self)
-	load_planets({})
+	planets.reset(self)
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
@@ -381,9 +383,6 @@ func load_progress_data(raw: Dictionary) -> void:
 	var saved_at = raw.get("hightechSavedAt", 0.0)
 	if (saved_at is int or saved_at is float) and is_finite(float(saved_at)) and saved_at > 0:
 		last_successful_save_at = float(saved_at)
-	# Legacy identities are accepted only at the save migration boundary.
-	if int(raw.get("version",0))<3:
-		raw = migrate_planet_ids(raw)
 	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false, "retreatSeen":true, "pickupSeen":true}
 	if raw.get("onboarding") is Dictionary:
@@ -458,7 +457,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
 	crew.install_snapshot(raw,db)
 	crew.reset_schedule(self)
-	load_planets(raw.get("planets", {}))
+	planets.install_snapshot(raw,db)
 	galaxy.refresh_unlocks(self)
 	economy.accrue_chrono(0.0, chrono_capacity())
 	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
@@ -665,6 +664,7 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 	saved.merge(enhancement_growth.save_data(), true)
 	saved.merge(reactor.save_data(), true)
 	saved.merge(crew.save_data(), true)
+	saved.merge(planets.save_data(), true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
 	saved.grantedUnlocks = granted_unlocks()
@@ -1339,21 +1339,19 @@ func planet_unlocked(id: String) -> bool:
 	return not row.is_empty() and planet_buffs.allows_planet(self, id) and unlock_available(str(row.get("unlockId", "")))
 
 func planet_progress(id: String) -> Dictionary:
-	return profile.get("planets", {}).get(id, {})
+	return planets.progress(id)
 
 func crew_exploration(crew_id: String) -> String:
 	return planet_buildings.occupied(self,crew_id)
 
 func planet_duration(id: String) -> float:
-	return planet_duration_from(planet_row(id), planet_progress(id).get("degree", 0))
+	return PlanetState.duration(planet_row(id), planet_progress(id).get("degree", 0))
 
 func planet_exp_multiplier() -> float:
-	var level := clampi(maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel)), 1, db.levels.size())
-	return float(db.levels[level - 1].get("planetExpRatio", 0)) if level > 0 else 0.0
+	return PlanetState.experience_multiplier(db,int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel))
 
 func planet_exp_reward(id: String) -> float:
-	if not crew.levels_unlocked(self):return 0.0
-	return roundf(float(planet_row(id).get("baseExp", 0)) * planet_exp_multiplier() * galaxy.multiplier("crew_exp"))
+	return PlanetState.experience_reward(db,id,crew.levels_unlocked(self),int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel),galaxy.multiplier("crew_exp"))
 
 func planet_equipment_multiplier() -> Variant:
 	if not stat_cache_enabled:return planet_buildings.multiplier(self,"equipment")
@@ -1367,105 +1365,46 @@ func planet_resource_multiplier() -> Variant:
 		stat_cache.planet_refinery = N.multiply(planet_buildings.multiplier(self,"refinery"),1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
 	return stat_cache.planet_refinery
 
-func migrate_planet_ids(raw: Dictionary) -> Dictionary:
-	var migrated := raw.duplicate(true)
-	var aliases := {"first":"1"}
-	var planets: Dictionary = migrated.get("planets",{}) if migrated.get("planets") is Dictionary else {}
-	for old in aliases:
-		if planets.has(old):
-			if not planets.has(aliases[old]):planets[aliases[old]]=planets[old]
-			planets.erase(old)
-	for field in ["grantedUnlocks"]:
-		if migrated.get(field) is Array:
-			for i in migrated[field].size():
-				if migrated[field][i]=="planet/first":migrated[field][i]="planet/1"
-	if migrated.get("journey") is Dictionary and migrated.journey.get("pendingUnlocks") is Array:
-		for i in migrated.journey.pendingUnlocks.size():
-			if migrated.journey.pendingUnlocks[i]=="planet/first":migrated.journey.pendingUnlocks[i]="planet/1"
-	migrated.planets=planets
-	migrated.version=SAVE_VERSION
-	return migrated
-
-func load_planets(raw) -> void:
-	invalidate_tutorial_unlocks()
-	invalidate_stat_cache()
-	profile.planets = {}
-	var pending := {}
-	for id in db.data.get("planet", {}):
-		var item = raw.get(id, {}) if raw is Dictionary else {}
-		if not item is Dictionary:item = {}
-		var progress: Dictionary = item.duplicate(true)
-		progress.degree = item.get("degree",0) if N.valid(item.get("degree",0)) else 0.0
-		progress.unlocked = item.get("unlocked",false)==true or unlock_available(str(planet_row(str(id)).get("unlockId","")))
-		progress.conquered = item.get("conquered",false)==true
-		progress.auto_explore = item.get("auto_explore",false)==true
-		progress.crewId = ""
-		progress.elapsed = 0.0
-		progress.buildings = item.get("buildings",{}).duplicate(true) if item.get("buildings") is Dictionary else {}
-		for key in progress.buildings.keys():
-			var building = progress.buildings[key]
-			if not building is Dictionary:
-				progress.buildings.erase(key)
-				continue
-			building.status = str(building.get("status","locked"))
-			if building.status not in ["locked","building","ready","built"]:building.status="locked"
-			building.build_progress = building.get("build_progress",0) if N.valid(building.get("build_progress",0)) else 0
-			building.crew = []
-		profile.planets[id] = progress
-		pending[id] = item
-		planet_buildings.sync(self,str(id))
-	# Restore all occupation through a single capacity check; duplicates stay idle.
-	for id in pending:
-		var item: Dictionary=pending[id]
-		var progress: Dictionary=profile.planets[id]
-		var crew_id := str(item.get("crewId",""))
-		if planet_unlocked(str(id)) and idle_planet_crew(crew_id):
-			progress.crewId=crew_id
-			progress.elapsed=minf(float(item.get("elapsed",0)),planet_duration(str(id))) if nonnegative_number(item.get("elapsed")) else 0.0
-		for row in planet_buildings.rows(self,str(id)):
-			var building: Dictionary=progress.buildings[str(row.id)]
-			var old = item.get("buildings",{}).get(str(row.id),item.get("buildings",{}).get(str(row.get("previous_id","")),{})) if item.get("buildings") is Dictionary else {}
-			if building.status!="building" or not old is Dictionary or not old.get("crew") is Array:continue
-			for member_id in old.crew:
-				if building.crew.size()<int(row.extra_crew) and idle_planet_crew(str(member_id)):building.crew.append(str(member_id))
-		# Missing preference inherits the unlocked default; explicit false is a choice.
-		if not item.has("auto_explore"):progress.auto_explore = planet_buildings.built(self,str(id),"auto_explore")
-		# Keep the player's preference even when no crew/facility is available.
-		# Actual continuation checks facility availability in advance_planets.
-
 func idle_planet_crew(id: String) -> bool:
 	var member := crew.entry(self,id)
 	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty() and preload("res://scripts/hyperspace_permissions.gd").reserved_crew(profile.hyperspace)!=id
 
-func planet_duration_from(row: Dictionary, degree) -> float:
-	var base := float(row.get("baseTime",0))
-	var minimum := float(row.get("minTime",5.0))
-	if not is_finite(minimum) or minimum <= 0.0:minimum = 5.0
-	return maxf(minimum,N.ratio(base*base,N.add(base,degree))) if base>0 else 0.0
+func commit_planet_command(plan: Dictionary,payload: Dictionary) -> bool:
+	if not planets.proposal_current(plan):return false
+	if plan.configuration and not native_before_configuration_change():return false
+	if not planets.proposal_current(plan):return false
+	planets.commit(plan)
+	if plan.configuration:invalidate_tutorial_unlocks();invalidate_stat_cache()
+	save_dirty=true;event.emit("planet_changed",payload)
+	return true
 
 func set_planet_auto(id: String, enabled: bool) -> bool:
-	if not planet_buildings.built(self,id,"auto_explore"):return false
-	profile.planets[id].auto_explore=enabled
-	save_dirty = true
-	event.emit("planet_changed",{"id":id})
-	return true
+	return commit_planet_command(planets.prepare_auto(self,id,enabled),{"id":id})
+
+func activate_planet_building(id: String, building_id: String) -> bool:
+	return commit_planet_command(planets.prepare_activation(self,id,building_id),{"id":id,"activated":building_id})
+
+func assign_planet_builder(id: String, building_id: String, crew_id: String) -> bool:
+	return commit_planet_command(planets.prepare_builder(self,id,building_id,crew_id),{"id":id})
 
 func can_reforge_planet(id: String) -> bool:
 	if manual_hyperspace.active:return false
 	return planet_unlocked(id) and not planet_progress(id).get("conquered",false) and planet_buildings.built(self,id,"shipyard")
 
 func planet_reforge_start(id: String) -> int:
-	return clampi(int(planet_row(id).get("reforgeStartLevel",1)),1,maxi(1,db.levels.size()))
+	return PlanetState.reforge_start(db,id)
 
 func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
 	if not can_reforge_planet(id):return false
+	if not native_before_configuration_change():return false
+	var planet_plan:=planets.prepare_conquest(self,id)
+	if planet_plan.is_empty():return false
 	var next_hyperspace:=hyperspace.reforge_state(self,keep_drones,claim_stages)
 	if next_hyperspace.is_empty():return false
 	var start_level := planet_reforge_start(id)
 	# Prepare the complete replacement before changing any authoritative state.
 	var next := fresh_profile()
 	next.hyperspace=next_hyperspace
-	next.planets = profile.planets.duplicate(true)
 	next.galaxies = profile.get("galaxies",{})
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
@@ -1482,16 +1421,11 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	# derive their availability from this new run's progression as usual.
 	next.cleared = range(1,start_level)
 	next.bossSeen = next.cleared.duplicate()
-	for planet_id in next.planets:
-		next.planets[planet_id].unlocked = planet_unlocked(str(planet_id))
-		# Reforge keeps the planet's current exploration assignment and elapsed work.
-		# The crew and planet progress are permanent state, so an in-flight trip
-		# must continue after the run is rebuilt.
-	next.planets[id].conquered=true
 	next.lifetime_max_stage=maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel))
 	# Ordinary reserves survive reforge; only run fragments/reactor reset.
 	next.productionElapsed=production_time()
 	profile=next
+	planets.commit(planet_plan)
 	reset_equipment()
 	enhancement_growth.reset()
 	research.reset()
@@ -1524,51 +1458,34 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	return true
 
 func start_planet_exploration(id: String, crew_id: String) -> bool:
-	if not planet_unlocked(id) or planet_progress(id).is_empty() or not planet_progress(id).crewId.is_empty():return false
-	if not idle_planet_crew(crew_id):return false
-	planet_buildings.sync(self,id)
-	profile.planets[id].unlocked=true
-	profile.planets[id].crewId = crew_id
-	profile.planets[id].elapsed = 0.0
-	save_dirty = true
-	event.emit("planet_changed", {"id":id, "crewId":crew_id})
-	return true
+	return commit_planet_command(planets.prepare_start(self,id,crew_id),{"id":id,"crewId":crew_id})
 
 func cancel_planet_exploration(id: String) -> bool:
-	if planet_progress(id).is_empty() or str(planet_progress(id).crewId).is_empty():return false
-	profile.planets[id].crewId = ""
-	profile.planets[id].elapsed = 0.0
-	save_dirty = true
-	event.emit("planet_changed", {"id":id})
-	return true
+	return commit_planet_command(planets.prepare_cancel(id),{"id":id})
 
 func advance_planets(dt: float) -> void:
 	if dt<=0 or not is_finite(dt):return
-	for id in profile.planets:
-		var progress: Dictionary=profile.planets[id]
-		if str(progress.crewId).is_empty():continue
-		var elapsed:=float(progress.elapsed)+dt
-		if elapsed<planet_duration(str(id)):
-			progress.elapsed=elapsed;continue
-		var member_id:=str(progress.crewId)
-		var next:=planet_buildings.prepare_completion(self,str(id))
-		next.crewId=member_id if progress.get("auto_explore",false) and planet_buildings.built(self,str(id),"auto_explore") else ""
-		next.elapsed=0.0
+	for id in planets.all():
+		var planet_plan:=planets.prepare_step(self,str(id),dt)
+		if planet_plan.is_empty():continue
+		if not planet_plan.completed:
+			planets.commit(planet_plan);continue
 		var reward:=planet_exp_reward(str(id));var rewards: Dictionary={}
 		if reward>0:
 			if planet_buffs.shares_experience(self,str(id)):
 				for member in crew.members():rewards[member.crewId]=reward
-			else:rewards[member_id]=reward
-		var plan:=crew.prepare_experience(self,rewards)
-		if not prepare_crew_commit(plan):return
-		# Completed construction, released/continuing assignment and every XP payout
-		# become visible together. No save/notification suppression is needed.
-		profile.planets[id]=next;crew.commit(plan)
+			else:rewards[planet_plan.crew_id]=reward
+		var crew_plan:=crew.prepare_experience(self,rewards)
+		if not crew.proposal_current(crew_plan):return
+		if (planet_plan.configuration or crew_plan.configuration) and not native_before_configuration_change():return
+		if not planets.proposal_current(planet_plan) or not crew.proposal_current(crew_plan):return
+		capture_refit_health()
+		planets.commit(planet_plan);crew.commit(crew_plan)
 		invalidate_stat_cache();save_dirty=true
 		planet_crew_payout_active=true
-		notify_crew_changes(plan.changes)
+		notify_crew_changes(crew_plan.changes)
 		planet_crew_payout_active=false
-		event.emit("planet_changed",{"id":id,"crewId":member_id,"reward":reward})
+		event.emit("planet_changed",{"id":id,"crewId":planet_plan.crew_id,"reward":reward})
 
 func assign_crew(crew_id: String, assignment_type: String, target_id: String, upgrade_mode := "") -> bool:
 	var plan:=crew.prepare_assignment(self,crew_id,assignment_type,target_id,upgrade_mode)

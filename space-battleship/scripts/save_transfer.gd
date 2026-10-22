@@ -156,6 +156,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not preload("res://scripts/equipment_state.gd").valid_snapshot(raw,db):return {"error":"equipment"}
  if not preload("res://scripts/ai_tech_tree.gd").valid_snapshot(raw,db.data.ai_tech_tree):return {"error":"research"}
  if not preload("res://scripts/crew_system.gd").valid_snapshot(raw,db):return {"error":"crew"}
+ if not preload("res://scripts/planet_state.gd").valid_snapshot(raw,db):return {"error":"planets"}
  if not preload("res://scripts/reactor_state.gd").valid_snapshot(raw,db.config):return {"error":"reactor"}
  if not db.ships.has(str(raw.selectedShip)) or int(raw.highestLevel)<1 or int(raw.highestLevel)>db.levels.size():return {"error":"progress"}
  if raw.get("reactorAllocation") is Dictionary:

@@ -781,12 +781,12 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 	var g=host.game
 	var state: Dictionary=g.planet_buildings.state(g,id,building_id)
 	if state.get("status", "") == "ready":
-		g.planet_buildings.activate(g, id, building_id)
+		g.activate_planet_building( id, building_id)
 		return
 	var builders: Array=state.get("crew",[])
 	var row: Dictionary=g.db.data.planet_build[building_id]
 	if builders.size()>=int(row.extra_crew):
-		g.planet_buildings.assign(g,id,building_id,str(builders.back()))
+		g.assign_planet_builder(id,building_id,str(builders.back()))
 		return
 	# Explicit selection; never silently occupy the first available crew member.
 	var anchor: Button = anchor_override if anchor_override != null else cards[id].facility_buttons[building_id].assign
@@ -804,7 +804,7 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 		ids.append(str(member_id))
 		popup.add_item(UIText.t("planet.recall_builder",{"name":g.crew.definitions(g)[member_id].name}))
 		if popup.item_count == 5:five_rows_height = popup.get_contents_minimum_size().y
-	popup.id_pressed.connect(func(index):g.planet_buildings.assign(g,id,building_id,ids[index]))
+	popup.id_pressed.connect(func(index):g.assign_planet_builder(id,building_id,ids[index]))
 	popup.popup_hide.connect(popup.queue_free)
 	anchor.visibility_changed.connect(popup.hide)
 	# Use the same screen transform for the button and playable viewport, including

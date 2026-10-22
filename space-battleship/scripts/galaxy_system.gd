@@ -41,7 +41,7 @@ func load_state(g, raw: Dictionary) -> void:
 
 func conquered(g) -> int:
 	var count := 0
-	for progress in g.profile.get("planets",{}).values():
+	for progress in g.planets.all().values():
 		if progress.get("conquered",false):count+=1
 	return count
 

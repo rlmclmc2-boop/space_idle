@@ -265,8 +265,8 @@ func refresh_exploration_sample() -> void:
 	if dirty:
 		refresh()
 		return
-	for planet_id in host.game.profile.planets:
-		var crew_id: String=str(host.game.profile.planets[planet_id].get("crewId",""))
+	for planet_id in host.game.planets.all():
+		var crew_id: String=str(host.game.planets.progress(str(planet_id)).get("crewId",""))
 		if crew_id.is_empty():continue
 		var remaining:=exploration_remaining(str(planet_id))
 		if exploration_samples.get(crew_id,-1)==remaining:continue
