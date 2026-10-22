@@ -1,0 +1,8 @@
+config_version=5
+[application]
+config/name="S12 P2 isolated core"
+[rendering]
+renderer/rendering_method="gl_compatibility"
+
+[network]
+tls/certificate_bundle_override="res://ca-bundle.crt"

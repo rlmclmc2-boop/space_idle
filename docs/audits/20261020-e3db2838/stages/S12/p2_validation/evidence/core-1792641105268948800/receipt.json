@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+    "--headless",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation",
+    "--script",
+    "core_probe.gd"
+  ],
+  "exit_code": 0,
+  "seconds": 0.5470000000204891,
+  "appdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\evidence\\core-1792641105268948800\\Roaming",
+  "localappdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\evidence\\core-1792641105268948800\\Local",
+  "source_sha256": {
+    "currency_integer.gd": "322710590c6d28dc58425a690c8a9db2a1362a962b9a07ba703655969794ea97",
+    "currency_ledger.gd": "2299d2c4d2a17e6720584a05640d7e771c02ce6326ba3dc4bc7fef897ca5510f",
+    "currency_host.gd": "4cb267ba361fdc7edf7a2d8e1875f91ceb9b15fb2200a831fc9de898cced0036",
+    "equipment_price.gd": "12c31a046125d010e34ae81dd8c5416f752520e31cc098ba2c5aa356e7d1f892",
+    "currency_storage.gd": "72c804a338f9e7e67e1dd7fcf9e939b77cacd7b00c91c46a8203f12c23cc2d4f",
+    "equipment_price_bounds.gd": "44860278aa51582798d14d9571e1cfa684206aecdd7edc2374411a30464019c5",
+    "equipment_max_query.gd": "f0ca148f96238f716e94e7868bae5cf85c64fe76fe2e8e940e5a55b82eae4eaf"
+  },
+  "stdout_sha256": "7d227acb6945bf4b52e73152c13a0725760b9152805d760feae73d4fe0a0f1da",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

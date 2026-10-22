@@ -1,0 +1,18 @@
+# P2 first vertical checkpoint — WIP, integration incomplete
+
+Runtime branch `s12/p2-integration`, checkpoint `3beca1caed869e87d191eb1f1198c7bc419d390b`, tree `139b5e441ad217f46209f454417d5a13b8ad0c79`. Local checkpoint `c03b6fc81d4ed34d4a8c78de9f352dcccb88d6c9` has the identical tree; the remote commit was created through the GitHub connector. Main is unchanged. This is not a frozen final candidate or a runtime PASS.
+
+Implemented first paths: resource-only typed ledger/CW1 decoder, arbitrary-position integer core, host-owned prepared data and single-use tickets; legacy/current resource and exact material/level JSON tokens; exact single-level prices; purchase/refund resource boundaries, real fractional research, source income/collection, ordinary/portable loading; a read-only fixed-budget MAX worker and Game request/poll/confirm path. No global GrowthNumber expansion.
+
+The attached smoke checks have three separate scopes:
+- `core-1792641105268948800`: 42 checks, including far legacy exponent plus one low unit, encoded alias isolation, fractional/subnormal finite conversion, stale/repeated ticket rejection, P1 low-price overflow counterexamples and integer tokens.
+- `core-1792641196181436600`: exact-256 budget from the original pinned Godot per-level price export (sum 55916713612491779479035), middle result 47959, isolated public-quote alias and active-bound cancellation. Main poll maximum 78 us; observed heartbeat maximum 16685 us. This single smoke is not the frozen ten-process matrix or full cumulative query preparation measurement.
+- `game-1792641108694173000`: real BattleGame x10/insufficient purchase, refund/material-overflow atomicity, source/drop and galaxy retry behavior, fractional research and the two no-op thresholds, CW1 portable/load, plus a real MAX request while income continues, confirmed-fee debit and duplicate confirmation rejection. Its raw check counter includes repeated per-frame assertions, not that many independent cases.
+
+Raw stdout/stderr and receipts are under `p2_validation/evidence/`; probe/runner sources are beside them. Runners require the recorded Windows Godot 4.7.2 location and public CA bundle installed with Git. Resource/source and isolated user paths are in each receipt. No personal save was loaded.
+
+Evidence limitation: this development checkpoint is not a final same-byte certification. `progress_writer.gd` in the materialized Game run retained working-copy CRLF, while its committed Git blob is LF; the other 14 changed files' raw hashes match. Earlier development runs also exposed parser/type failures; those were fixed, and an early import fixture omitted five `dev/toon_ship` dependencies before the fixture was corrected. One diagnostic check-only invocation omitted the APPDATA override and failed to create its log directory; it did not instantiate the game or load a save. The later Game runner now hashes the materialized project, rather than mutable source files after execution. Final review must use a separately frozen candidate and exact Git-byte materialization; these exploratory checks do not replace it.
+
+Still open: all synchronous MAX wrapper/UI/crew/batch consumers must migrate together; only single-slot Game request/confirmation is in this checkpoint. Native aggregate and actual DLL acceptance, reactor shared-wallet/analysis consumers, producer receipt save/replacement boundaries, full UI interaction/render, complete ordinary/backup/import tests, representation extremes and actual-load/cold scheduling matrix remain unverified or unfinished. New UI work after this checkpoint is not represented by its SHA.
+
+Continue within the same P2 thread and approved whitelist; do not merge main or call this checkpoint product approval.
