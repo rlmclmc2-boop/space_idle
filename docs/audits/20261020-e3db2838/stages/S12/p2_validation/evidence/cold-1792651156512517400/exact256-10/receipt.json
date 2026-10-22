@@ -1,0 +1,37 @@
+{
+  "scenario": "exact256",
+  "iteration": 10,
+  "status": "PASS",
+  "exit_code": 0,
+  "seconds": 2.2189999998081475,
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+    "--headless",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\game-project",
+    "--script",
+    "cold_game_probe.gd",
+    "--",
+    "exact256"
+  ],
+  "appdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\evidence\\cold-1792651156512517400\\exact256-10\\Roaming",
+  "localappdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\evidence\\cold-1792651156512517400\\exact256-10\\Local",
+  "measurement": [
+    {
+      "cancel_actual_stop_us": 0,
+      "count": 256,
+      "elapsed_us": 101165,
+      "failure": "",
+      "frames": 9,
+      "heartbeat_max_us": 16678,
+      "income_max_us": 374,
+      "outcome": "complete",
+      "query_frame_work_max_us": 177,
+      "reason": "",
+      "scenario": "exact256",
+      "status": "PASS"
+    }
+  ],
+  "stdout_sha256": "14a5f00792dc6e005b67c199e2f023311960f1337c2cce1c4a4a7b5e6a0a99e4",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

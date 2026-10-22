@@ -1,0 +1,4 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+P2_COLD_RESULT {"cancel_actual_stop_us":0,"count":47959,"elapsed_us":1034534,"failure":"","frames":65,"heartbeat_max_us":16764,"income_max_us":565,"outcome":"complete","query_frame_work_max_us":174,"reason":"","scenario":"middle","status":"PASS"}
+P2_COLD_COMPLETE

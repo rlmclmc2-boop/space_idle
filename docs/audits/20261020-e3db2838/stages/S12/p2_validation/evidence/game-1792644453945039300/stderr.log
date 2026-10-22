@@ -1,0 +1,10 @@
+P2_FAIL ordinary exact material token
+SCRIPT ERROR: Assertion failed: ordinary exact material token
+   at: check (res://chain_probe.gd:11)
+   GDScript backtrace (most recent call first):
+       [0] check (res://chain_probe.gd:11)
+       [1] _run (res://chain_probe.gd:32)
+SCRIPT ERROR: Invalid access to property or key 'resources' on a base object of type 'Nil'.
+   at: _run (res://chain_probe.gd:33)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://chain_probe.gd:33)

@@ -1,0 +1,37 @@
+{
+  "scenario": "cancel",
+  "iteration": 5,
+  "status": "PASS",
+  "exit_code": 0,
+  "seconds": 2.5,
+  "command": [
+    "D:\\CodexTools\\godot-4.7.2-stable\\Godot_v4.7.2-stable_win64_console.exe",
+    "--headless",
+    "--path",
+    "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\game-project",
+    "--script",
+    "cold_game_probe.gd",
+    "--",
+    "cancel"
+  ],
+  "appdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\evidence\\cold-1792651156512517400\\cancel-05\\Roaming",
+  "localappdata": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task\\p2-validation\\evidence\\cold-1792651156512517400\\cancel-05\\Local",
+  "measurement": [
+    {
+      "cancel_actual_stop_us": 19791,
+      "count": 0,
+      "elapsed_us": 367850,
+      "failure": "",
+      "frames": 25,
+      "heartbeat_max_us": 18494,
+      "income_max_us": 625,
+      "outcome": "cancelled",
+      "query_frame_work_max_us": 203,
+      "reason": "",
+      "scenario": "cancel",
+      "status": "PASS"
+    }
+  ],
+  "stdout_sha256": "da2e4204359cea2ead7576e0125ac328162ef72c8fc5cfaec3d728449fe0e041",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -127,6 +127,40 @@ func _run()->void:
 	var spent:L.Outcome=L.subtract(max_before,balance(max_game,"1"))
 	check(L.compare(spent.value,actual_fee.value).order==0,"real MAX debit equals shown fee")
 	check(max_game.confirm_max_upgrade(request.request_id,request.fingerprint).status!="committed","real MAX duplicate confirm refused")
+	var batch_game:=BattleGame.new(db,false)
+	for ship in db.ships:
+		if int(db.ships[ship].weaponSlots)>=3:
+			batch_game.profile.selectedShip=ship
+			break
+	var slots:Array=[]
+	for index in 3:
+		var entry:Dictionary=batch_game.profile.loadout.weapons[0].duplicate(true)
+		entry.key="laser";entry.level=50 if index==1 else 1
+		slots.append(entry)
+	batch_game.profile.loadout.weapons=slots
+	batch_game.state=batch_game.State.RETREAT
+	batch_game.profile.resources["1"]=180.0
+	var batch_events:Array=[]
+	batch_game.event.connect(func(kind,payload):batch_events.append({"kind":kind,"payload":payload.duplicate(true)}))
+	var bought=batch_game.upgrade_equipment_batch("1")
+	check(bought.status=="committed" and bought.changed_slots==["weapons_0","weapons_2"],"ordered ordinary batch skips middle and continues")
+	check(L.compare(balance(batch_game,"1"),val(50)).order==0,"batch exact sequential remaining budget")
+	check(batch_events[-1].kind=="upgrades_completed" and batch_events[-1].payload.slots==bought.changed_slots,"batch final event actual slots")
+	var batch_before:Dictionary=batch_game.profile.duplicate(true)
+	check(batch_game.upgrade_equipment_batch("10").status=="rejected" and batch_game.profile==batch_before,"ordinary batch no success returns rejected")
+	batch_game.profile.resources["1"]=1000.0
+	for entry in batch_game.profile.loadout.weapons:entry.level=1
+	var batch_request=batch_game.upgrade_equipment_batch("max")
+	check(batch_request.status=="pending","MAX batch typed pending")
+	var pending_snapshot:Dictionary=batch_game.profile.duplicate(true)
+	while batch_request.status=="pending":
+		await process_frame
+		batch_request=batch_game.poll_upgrade_batch(batch_request.request_id)
+		check(batch_game.profile==pending_snapshot,"MAX batch calculation readonly")
+	check(batch_request.status=="complete" and batch_request.planned_slots.size()==1 and batch_request.planned_slots[0].levels==8,"MAX batch fixed sequential snapshot remainder")
+	var batch_receipt=batch_game.confirm_upgrade_batch(batch_request.request_id,batch_request.quote_fingerprint)
+	check(batch_receipt.status=="committed" and batch_receipt.changed_slots==["weapons_0"],"MAX batch one shared completed plan")
+	check(L.compare(balance(batch_game,"1"),val(15)).order==0,"MAX batch same quoted debit")
 	print("P2_GAME_COMPLETE checks=",checks)
 	quit(0)
 
