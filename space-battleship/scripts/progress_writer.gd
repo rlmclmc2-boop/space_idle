@@ -204,10 +204,9 @@ static func _check_progress_file(path: String, db: ShipDatabase = null) -> Dicti
 	var parser := JSON.new()
 	var source:=FileAccess.get_file_as_string(path)
 	if parser.parse(source) != OK or not parser.data is Dictionary:return {"error":"format"}
-	if not load("res://scripts/save_transfer.gd").restore_legacy_reactor_integers(source,parser.data):return {"error":"format"}
 	var data = parser.data
 	var database := db if db != null else ShipDatabase.new()
-	# Runtime load uses the same shape, semantic and legacy migration rules as import.
+	# Disk load and portable import use the same current-format domain validation.
 	return load("res://scripts/save_transfer.gd").new().prepare_disk_data(data, database)
 
 static func _read_progress_file(path: String, db: ShipDatabase = null) -> Variant:

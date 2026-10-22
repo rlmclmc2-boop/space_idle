@@ -100,7 +100,7 @@ static func snapshot(game) -> Dictionary:
 	var acceleration := research_speed(game)
 	for resource_id in ["1", "2"]:
 		var amount := int(game.profile.aiTechInput.get(resource_id, 0))
-		var affordable := amount == 0 or N.compare(game.profile.resources.get(resource_id, 0), 0) > 0
+		var affordable := amount == 0 or N.compare(game.economy.balance(resource_id), 0) > 0
 		var factor := input_factor(amount) if affordable else 1.0
 		inputs[resource_id] = {"amount":amount,"factor":factor,"shortage":amount > 0 and not affordable}
 		acceleration *= factor
@@ -142,8 +142,8 @@ static func advance(game, dt: float) -> void:
 		var factors := {}
 		for resource_id in ["1", "2"]:
 			var amount := int(game.profile.aiTechInput.get(resource_id, 0))
-			if amount <= 0 or N.compare(game.profile.resources.get(resource_id,0),0) <= 0:continue
-			var balance = game.profile.resources.get(resource_id,0)
+			if amount <= 0 or N.compare(game.economy.balance(resource_id),0) <= 0:continue
+			var balance = game.economy.balance(resource_id)
 			if N.compare(balance,float(amount)*remaining) < 0:
 				step = minf(step,float(balance)/float(amount))
 			factors[resource_id] = amount
@@ -166,14 +166,14 @@ static func advance(game, dt: float) -> void:
 			if not game.native_before_configuration_change():break
 		if step <= 0.0000000001:
 			for resource_id in factors:
-				if N.compare(game.profile.resources.get(resource_id,0),float(factors[resource_id])*0.0000000001) < 0:
-					game.profile.resources[resource_id] = 0.0
+				if N.compare(game.economy.balance(resource_id),float(factors[resource_id])*0.0000000001) < 0:
+					game.economy.debit({resource_id:game.economy.balance(resource_id)})
 			continue
+		var expenses := {}
 		for resource_id in factors:
-			var expense := float(factors[resource_id])*step
-			var next_balance = N.subtract(game.profile.resources.get(resource_id,0),expense)
-			game.profile.resources[resource_id] = next_balance if N.compare(next_balance,0) > 0 else 0.0
-			paid[resource_id] = true
+			expenses[resource_id] = N.minimum(game.economy.balance(resource_id), float(factors[resource_id])*step)
+		if not game.economy.debit(expenses):break
+		for resource_id in expenses:paid[resource_id] = true
 		game.profile.aiTechProgress[id] = progress + step*speed
 		remaining -= step
 		changed = true

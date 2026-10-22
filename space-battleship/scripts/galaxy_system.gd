@@ -139,7 +139,7 @@ func advance(g, dt: float) -> void:
 		for pair in [["iron",str(int(setting(g,"iron_resource_id")))],["uranium",str(int(g.db.config.reactorUraniumId))]]:
 			var amount=g.N.multiply(rates[pair[0]],income_elapsed)
 			if g.N.compare(amount,0)>0:
-				g.profile.resources[pair[1]]=g.N.add(g.profile.resources.get(pair[1],0),amount)
+				g.economy.credit(str(pair[1]), amount)
 				g.resource_samples.append({"time":g.economy_time(),"production_time":g.production_time(),"id":pair[1],"amount":amount,"origin":"galaxy"})
 				g.event.emit("galaxy_income",{"id":pair[1],"amount":amount})
 		income_elapsed=0

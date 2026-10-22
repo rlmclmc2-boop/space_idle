@@ -442,7 +442,7 @@ func refresh_pending(delta := 0.0) -> void:
 	if delta<=0.0 or refresh_elapsed+0.000000001>=1.0:refresh()
 
 func step_allocation(key: String, direction: int) -> void:
-	var current=host.game.profile.reactorAllocation.get(key,0)
+	var current=host.game.reactor.allocation(key)
 	var step: int=int(host.db.config.reactorAllocationStep)
 	change_allocation(ReactorInt.add(current,step) if direction>0 else ReactorInt.subtract(current,ReactorInt.minimum(current,step)),key)
 
@@ -504,7 +504,7 @@ func refresh() -> void:
 	sync_module_visibility(game)
 	var capacity=game.reactor_capacity()
 	var allocated=game.reactor_allocated()
-	var available = game.profile.resources.get(str(int(host.db.config.reactorUraniumId)),0)
+	var available = game.economy.balance(str(int(host.db.config.reactorUraniumId)))
 	var reactor_enabled: bool = game.reactor_unlocked()
 	var free_ratio: float = game.charge_free_ratio()
 	# The visual source follows real effective module supply, including free power.
@@ -514,16 +514,16 @@ func refresh() -> void:
 	source_strength=(1.0 if source_strength is Dictionary else clampf(source_strength,0.0,1.0)) if ReactorInt.compare(capacity,0)>0 else 0.0
 	# Each control owns only its display dependencies. Hidden changes are caught
 	# on reveal; direct input and income refresh immediately without a timer.
-	if host.ui_state_changed(level_label,[game.profile.reactorLevel,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
-		host.set_ui_value(level_label,"text",UIText.t("reactor.level",{"level":str(int(game.profile.reactorLevel))}))
-		host.set_ui_value(next_label,"text",UIText.t("reactor.next_level",{"level":str(int(game.profile.reactorLevel)+1)}))
+	if host.ui_state_changed(level_label,[game.reactor.level(),host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
+		host.set_ui_value(level_label,"text",UIText.t("reactor.level",{"level":str(int(game.reactor.level()))}))
+		host.set_ui_value(next_label,"text",UIText.t("reactor.next_level",{"level":str(int(game.reactor.level())+1)}))
 		host.set_ui_value(cost_label,"text",UIText.t("reactor.cost",{"cost":host.number(game.reactor_upgrade_cost())}))
 	if host.ui_state_changed(energy_label,[capacity]):
 		host.set_ui_value(energy_label,"text",UIText.t("reactor.energy",{"energy":energy_text(capacity)}))
 		set_readout(capacity_label,energy_label.text)
 	if host.ui_state_changed(uranium_label,[available]):
 		host.set_ui_value(uranium_label,"text",UIText.t("reactor.uranium",{"uranium":host.number(available)}))
-	if host.ui_state_changed(upgrade_buttons.MAX,[game.profile.reactorLevel,available,reactor_enabled,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
+	if host.ui_state_changed(upgrade_buttons.MAX,[game.reactor.level(),available,reactor_enabled,host.db.config.reactorUpgradeBase,host.db.config.reactorUpgradeGrowth]):
 		var max_count: int = game.reactor_max_upgrades()
 		host.set_ui_value(equalize_button,"disabled",not reactor_enabled)
 		for mode in upgrade_buttons:
@@ -535,7 +535,7 @@ func refresh() -> void:
 		var slider: HSlider = controls.slider
 		var unlocked: bool = game.reactor_module_unlocked(key)
 		var enabled: bool = unlocked and reactor_enabled
-		var amount=game.profile.reactorAllocation.get(key,0) if unlocked else 0
+		var amount=game.reactor.allocation(key) if unlocked else 0
 		if not host.ui_state_changed(controls.row,[capacity,allocated,unlocked,reactor_enabled,amount,free_ratio,source_strength,host.db.config.reactorBoostExponent,host.db.config.reactorPercentScale,host.db.unlock_row("reactor_module",key).get("level",0)]):continue
 		var large: bool=capacity is Dictionary or amount is Dictionary
 		host.set_ui_value(slider,"editable",enabled and not large)

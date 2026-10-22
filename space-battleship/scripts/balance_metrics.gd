@@ -43,7 +43,7 @@ var blocked_marked := false
 
 func initialize(game: BattleGame) -> void:
 	for key in BattleGame.WEAPON_KEYS:damage[key] = 0.0
-	for id in game.profile.resources:
+	for id in game.economy.resources():
 		income[id] = 0.0
 		spending[id] = 0.0
 	income.jewel_fragments = 0.0
@@ -110,9 +110,9 @@ func sample(game: BattleGame, seconds: float, affordable: bool) -> void:
 		timeline.record("RESOURCE_BLOCKED",time,game.stage,{"seconds":unaffordable_seconds})
 		blocked_marked = true
 	elif affordable:blocked_marked = false
-	for id in game.profile.resources:
+	for id in game.economy.resources():
 		var rate := float(income.get(id,0))/maxf(time/60.0,1.0)
-		if rate > 0 and float(game.profile.resources[id]) > rate*THRESHOLDS.surplus_minutes:
+		if rate > 0 and float(game.economy.balance(id)) > rate*THRESHOLDS.surplus_minutes:
 			add(overflow_seconds,str(id),seconds)
 		else:overflow_seconds[id] = 0.0
 		longest_overflow[id] = maxf(float(longest_overflow.get(id,0)),float(overflow_seconds[id]))
@@ -151,8 +151,8 @@ func report(game: BattleGame) -> Dictionary:
 	if longest_unaffordable >= THRESHOLDS.idle_seconds:warnings.append({"code":"unaffordable","value":longest_unaffordable})
 	for id in longest_overflow:
 		if longest_overflow[id] >= THRESHOLDS.idle_seconds:warnings.append({"code":"resource_surplus","key":id,"value":longest_overflow[id]})
-	var balance: Dictionary = game.profile.resources.duplicate()
-	balance.jewel_fragments = float(game.profile.jewelFragments)
+	var balance: Dictionary = game.economy.resources().duplicate()
+	balance.jewel_fragments = float(game.economy.balance("jewel"))
 	return {"game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
 		"dps":total/maxf(time,0.000001),"combat_dps":total/maxf(combat_seconds,0.000001),"combat_seconds":combat_seconds,
 		"damage":damage.duplicate(),"weapon_damage_share":shares,"ttk":ttk,"kills":kills,

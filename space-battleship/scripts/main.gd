@@ -379,8 +379,7 @@ func _ready() -> void:
 			game.profile.cleared = [1,2]
 			game.rebuild_unlocks()
 			game.start(3, false)
-			game.profile.resources["1"] = 5000.0
-			game.profile.resources["2"] = 100.0
+			game.economy.install_snapshot({"resources":{"1":5000.0,"2":100.0},"jewelFragments":0.0,"chronoParticles":0.0})
 		build_ui()
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
@@ -496,7 +495,7 @@ func _process(delta: float) -> void:
 		wave_hint = maxf(0,wave_hint-dt)
 		var boosted := game.chrono_affordable_seconds(dt)
 		advance_game_time(boosted * game.speed)
-		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.profile.chronoParticles <= 0):
+		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.economy.balance("chrono") <= 0):
 			game.speed = game.default_speed()
 			advance_game_time((dt - boosted) * game.speed)
 		if battle_transition_blocked():return
@@ -929,7 +928,7 @@ func prune_resource_samples(now: float) -> void:
 
 func resource_display(id: String, now := -1.0) -> String:
 	if not resource_rate_mode:
-		return number(game.profile.jewelFragments if id=="jewel" else game.profile.resources[id])
+		return number(game.economy.balance("jewel") if id=="jewel" else game.economy.balance(id))
 	if now < 0:
 		now = Time.get_unix_time_from_system()
 	prune_resource_samples(now)

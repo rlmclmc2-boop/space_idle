@@ -82,7 +82,7 @@ func act(game: BattleGame, elapsed: float) -> bool:
 				var cost := 0.0
 				var costs := game.slot_upgrade_cost(category,index)
 				for id in costs:
-					cost += float(costs[id])/maxf(float(game.profile.resources.get(id,0)),1.0)
+					cost += float(costs[id])/maxf(float(game.economy.balance(id)),1.0)
 				var before: float = game.jewel_equipment_stat(entry)
 				var gain := maxf(0,game.jewel_equipment_stat(entry,int(entry.level)+1)-before)/maxf(before,1.0)
 				if gain <= 0:continue
@@ -118,5 +118,5 @@ func buy_scientist(game: BattleGame, fraction: float) -> void:
 	var purchase := game.scientist_purchase(1)
 	var cheap := int(purchase.count)>0
 	for id in purchase.costs:
-		if float(purchase.costs[id]) > float(game.profile.resources.get(id,0))*fraction:cheap = false
+		if float(purchase.costs[id]) > float(game.economy.balance(id))*fraction:cheap = false
 	if cheap:game.generate_scientist()

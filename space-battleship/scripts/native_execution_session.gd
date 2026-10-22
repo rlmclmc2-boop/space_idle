@@ -301,7 +301,7 @@ func configuration_changed()->void:
 	paused_by_configuration=true
 
 func prepare_numeric_batch(game,mode:String)->Dictionary:
-	var wallet:Dictionary=game.profile.resources.duplicate()
+	var wallet:Dictionary=game.economy.resources().duplicate()
 	wallet[game.db.evolution_material_id()]=game.upgrade_currency(game.db.evolution_material_id())
 	var weapon_levels:Dictionary={};var defence_levels:Dictionary={};var planned:Dictionary={}
 	var player:Dictionary=game.player.duplicate(true)
