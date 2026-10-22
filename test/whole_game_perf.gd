@@ -175,7 +175,7 @@ func run():
    var elapsed=Time.get_ticks_usec()-start
    await process_frame
    if i>=15:
-    var frame_us:=Time.get_ticks_usec()-start
+    var frame_us:int=Time.get_ticks_usec()-start
     var cpu_us:int=scene.last_process_us if realtime else elapsed
     frames.append(frame_us);cpu.append(cpu_us)
     native_frames+=int(g.native_execution!=null)
