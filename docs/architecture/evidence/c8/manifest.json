@@ -30,14 +30,15 @@
     "test/test_save_boundaries.gd": "b99e5d6e468ddd90e4e0c86466d33945735a05d9a0a7980625bf91de2175469d",
     "docs/architecture/evidence/c8/galaxy-complete-ui.png": "50394762606fef5999b944b864efcba0b4c6320469602541bec79bc316911ec2",
     "docs/architecture/evidence/c8/galaxy-construction-ui.png": "116e9f14e31cb6682f8a3110bb4f24e62dc322326885abe5f191b3a913fb113f",
-    "docs/architecture/evidence/c8/galaxy-native.log": "92477d89786fcb25bbb791bcf0c75a337eb3e94441fafd425fe325a715e39428",
-    "docs/architecture/evidence/c8/galaxy-save-latest.log": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db",
-    "docs/architecture/evidence/c8/galaxy-save-recovery.log": "a1bf58857547d9f6a740dd14b3cb0d7d8da5a109ee1a5585450d4f39e4ec2d01",
-    "docs/architecture/evidence/c8/galaxy-save-reopen.log": "1773c2cb6c2d497cb21f085f31d1a720514db1507c146c3ed69727d17c85cd49",
-    "docs/architecture/evidence/c8/galaxy-save-write.log": "0caae575c7046a2e235fcfe54d3eeae8661b615970d54cb7c5e0095cef1924f0",
-    "docs/architecture/evidence/c8/galaxy-ui.log": "7760af6c0b9a7e7d6c23103f7fb4d384a1b4ce05f7daec22a9076425bfcf434f",
-    "docs/architecture/evidence/c8/galaxy.log": "5ded8ea81d5cc104597f5e731af22e7f7f7f4bd9756fcb47a72d55e6e0d77c03"
+    "docs/architecture/evidence/c8/galaxy-native.log": "e6c0b2402396b93eb977f41575534b02849c9a965738b170326fa15d4e53f488",
+    "docs/architecture/evidence/c8/galaxy-save-latest.log": "062e21ea5f33bfe13da436180e02c13b860403abd2a60bf77dcc07d565450085",
+    "docs/architecture/evidence/c8/galaxy-save-recovery.log": "ca697f7101214703529998b9bbd2106a88242babf6fe95cd49a62aced6319b05",
+    "docs/architecture/evidence/c8/galaxy-save-reopen.log": "fbb747e1235742b6ddf39f922948bb951ce0e70c864f7c8236ad589310a58f4e",
+    "docs/architecture/evidence/c8/galaxy-save-write.log": "fc69b643a203ed94099e81ba244cc9903fd2958304810a826e6a5e2cc7ef875f",
+    "docs/architecture/evidence/c8/galaxy-ui.log": "5a2cb912a0d45177829f197385b7d35a16b48c7412db470c448a808b688d9fcb",
+    "docs/architecture/evidence/c8/galaxy.log": "7ccf6d1855bb949410486f02b56bdc3741f4c857300d6697748abf68263df1f0"
   },
   "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
-  "limitations": "Current save format v8; no old-save continuity. Existing visible/hidden batching retained for later unified-time phase. Native coverage/range protections retained; no kernel change. UI FPS tail is not a benchmark and UI persistence is disabled. Full real-product performance/save reopening acceptance and remaining architecture phases pending. Known system root certificate warning; final logs have no script errors."
+  "limitations": "Current save format v8; no old-save continuity. Existing visible/hidden batching retained for later unified-time phase. Native coverage/range protections retained; no kernel change. UI FPS tail is not a benchmark and UI persistence is disabled. Full real-product performance/save reopening acceptance and remaining architecture phases pending. Known system root certificate warning; final logs have no script errors.",
+  "hash_basis": "SHA-256 of committed Git blobs. Git normalizes tracked text/log line endings to LF; prior Windows working-file CRLF hashes were replaced after verifying that line endings were the only difference. Runtime and test results unchanged."
 }

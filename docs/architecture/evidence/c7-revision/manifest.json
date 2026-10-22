@@ -12,14 +12,15 @@
   },
   "execution": "Existing test/run.py test_save_boundaries.gd --headless; four separate Godot 4.7.2 processes, isolated APPDATA, real native writer lock and persist=true/stat_cache_enabled=true. Valid extra_storage level 2, reactor_upgrade crew, allocation above unboosted capacity. No unrelated suites rerun.",
   "sha256": {
-    "space-battleship/scripts/game.gd": "4fa0e7143787368d40868104b467ee836204616e47038eb4dd24c1b18dc172c5",
-    "space-battleship/scripts/galaxy_system.gd": "fd6ef8405184a1da6caee2c3cc5d657c67cc98d2dc18c0c53d75a998d494b470",
-    "test/test_save_boundaries.gd": "eb643b13b95d1f9d2288f704e0538c2ea71eefc96ace05d67976a5a783941ce5",
-    "docs/architecture/evidence/c7-revision/save-latest.log": "943a4d797d134624549babb6ee80732c69de72d6d572d88786864b4276c61ead",
-    "docs/architecture/evidence/c7-revision/save-recovery.log": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db",
-    "docs/architecture/evidence/c7-revision/save-reopen.log": "95663f8010536fdf92a7b95352f5b989355c73ab56351fa9f60a6a356860c521",
-    "docs/architecture/evidence/c7-revision/save-write.log": "b6b49d98725bd789a75d99ad72a8c67272cad2e5ebe5e023866babff0133192c"
+    "space-battleship/scripts/game.gd": "2eb3420273fdbf8f839b27e828c79b21f6084728db58a0754707d2786a2a8a39",
+    "space-battleship/scripts/galaxy_system.gd": "be3284595c60bfccb97070fa2d1a964e8462f3a64eb0fcdfb4206a32dc15b748",
+    "test/test_save_boundaries.gd": "04f3ce4bd277ac479c69de9c2961b668567d8d3432c8b1c6edcb89b8ff784565",
+    "docs/architecture/evidence/c7-revision/save-latest.log": "66e64266da734004d03a2e8955d2422196220803503dcf8ccbc6c23579e56afc",
+    "docs/architecture/evidence/c7-revision/save-recovery.log": "062e21ea5f33bfe13da436180e02c13b860403abd2a60bf77dcc07d565450085",
+    "docs/architecture/evidence/c7-revision/save-reopen.log": "b12644e159ce82d1737b944a43d676975bef2d6dbd5b4adcd5cbc20b0088e28f",
+    "docs/architecture/evidence/c7-revision/save-write.log": "1936a0fc419eb4f950b6379b57715cd3b77350dd8237fab62fedc42fee590f87"
   },
   "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
-  "limitations": "Load-order revision only, not stage 1 or full product acceptance. Known system certificate warning; no script errors. Personal saves untouched."
+  "limitations": "Load-order revision only, not stage 1 or full product acceptance. Known system certificate warning; no script errors. Personal saves untouched.",
+  "hash_basis": "SHA-256 of committed Git blobs. Git normalizes tracked text/log line endings to LF; prior Windows working-file CRLF hashes were replaced after verifying that line endings were the only difference. Runtime and test results unchanged."
 }
