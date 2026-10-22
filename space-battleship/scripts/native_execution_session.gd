@@ -300,28 +300,57 @@ func configuration_changed()->void:
 	# replace this pause with explicit typed configuration commands.
 	paused_by_configuration=true
 
-func prepare_numeric_batch(game,mode:String)->Dictionary:
-	var wallet:Dictionary=game.profile.resources.duplicate()
-	wallet[game.db.evolution_material_id()]=game.upgrade_currency(game.db.evolution_material_id())
+func prepare_numeric_batch(game,mode:String,completed_plan:Array=[])->Dictionary:
+	# Prediction consumes the same completed prices/counts as the game command.
+	# No synchronous MAX query, float wallet projection or independent reprice.
+	if completed_plan.is_empty():return {"error":"completed_plan_required"}
+	var currency=preload("res://scripts/currency_ledger.gd")
+	var wallet:Dictionary=game.profile.resources.duplicate(true)
+	var material_id:String=game.db.evolution_material_id()
+	var material:Variant=game._currency_material_integer(game.upgrade_currency(material_id))
+	if material==null:return {}
 	var weapon_levels:Dictionary={};var defence_levels:Dictionary={};var planned:Dictionary={}
 	var player:Dictionary=game.player.duplicate(true)
-	for category in ["weapons","defence"]:
-		for index in game.loadout_entries(category).size():
-			var levels:int=game.max_upgrade_amount_slot(category,index,wallet) if mode=="max" else int(mode)
-			if levels<=0:continue
-			var costs:Dictionary=game.slot_upgrade_cost(category,index,levels)
-			if costs.is_empty():continue
-			if not costs.keys().all(func(id):return (id!=game.db.evolution_material_id() or game.hyperspace.is_unlocked(game)) and is_finite(float(costs[id])) and game.N.compare(wallet.get(id,0),costs[id])>=0):continue
-			for id in costs:wallet[id]=game.N.subtract(wallet.get(id,0),costs[id])
-			var entry:Dictionary=game.slot_entry(category,index)
-			var projected=entry.duplicate();projected.level=int(entry.level)+levels
-			planned[game.slot_id(category,index)]={"levels":levels,"before":int(entry.level)}
-			if category=="weapons":weapon_levels[index]=int(projected.level)
+	for quote in completed_plan:
+		var category:String=quote.category
+		var index:int=int(quote.index)
+		var levels:int=int(quote.levels)
+		var entry:Dictionary=game.slot_entry(category,index)
+		if entry.is_empty() or levels<=0 or int(entry.level)!=int(quote.before):return {}
+		if levels>9223372036854775807-int(entry.level):return {}
+		var costs:Dictionary=quote.costs
+		if costs.is_empty():continue
+		var after:Dictionary=wallet.duplicate(true)
+		var after_material:Variant=material
+		var affordable:=true
+		for id in costs:
+			if id==material_id:
+				var due:Variant=game._currency_material_integer(costs[id])
+				if due==null or not game.hyperspace.is_unlocked(game) or material<due:
+					affordable=false;break
+				after_material=material-due
 			else:
-				defence_levels[index]=int(projected.level)
-				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
-					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
+				var before=currency.decode(wallet.get(id,0))
+				var cost=currency.decode(costs[id])
+				if before.status!="ok" or cost.status!="ok":
+					affordable=false;break
+				var remaining=currency.subtract(before.value,cost.value)
+				if remaining.status!="ok":
+					affordable=false;break
+				after[id]=currency.encode(remaining.value)
+		if not affordable:continue
+		wallet=after
+		material=after_material
+		var projected:Dictionary=entry.duplicate(true)
+		projected.level=int(entry.level)+levels
+		planned[game.slot_id(category,index)]={"levels":levels,"before":int(entry.level)}
+		if category=="weapons":weapon_levels[index]=int(projected.level)
+		else:
+			defence_levels[index]=int(projected.level)
+			if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
+				player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
 	if planned.is_empty():return {"skip":true}
+	if not game.purchase_save_preflight(wallet,int(material),weapon_levels,defence_levels):return {"error":"save_preflight"}
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
 	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	descriptor.player=player

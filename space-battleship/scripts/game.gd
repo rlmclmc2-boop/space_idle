@@ -34,6 +34,7 @@ class PurchaseOutcome extends RefCounted:
 		changed_slots = slots.duplicate()
 var currency_host := CurrencyHost.new()
 var _currency_profile: Dictionary = {}
+var _currency_epoch := 0
 var price_engine := Price.new()
 const AITech = preload("res://scripts/ai_tech_tree.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
@@ -42,7 +43,6 @@ const RailGeometry=preload("res://scripts/rail_geometry.gd")
 var rail_geometry_provider:=Callable()
 var rail_target_point_provider:=Callable()
 var player_launch_payload: Dictionary={}
-var max_upgrade_quote_cache:Dictionary={}
 var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new()
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
@@ -394,6 +394,9 @@ func load_progress() -> void:
 	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
+	_currency_epoch += 1
+	currency_host.invalidate()
+	if galaxy.has_pending_income():return
 	# Also used on an isolated fresh game to validate portable imports.
 	# Reject a future/corrupt subsystem before changing any authoritative balance.
 	var validation_db=manual_hyperspace.base_db if manual_hyperspace.active else db
@@ -731,6 +734,10 @@ func save_progress() -> void:
 	# Called only by the real-time deadline or explicit manual save.
 	if not save_enabled:return
 	save_dirty = true
+	if not galaxy.deliver_income(self):
+		last_save_error=ERR_BUSY
+		event.emit("save_error",{"error":last_save_error})
+		return
 	var saved := _build_save_data()
 	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t").to_utf8_buffer())
 	if last_save_error != OK:
@@ -1366,24 +1373,19 @@ func reactor_multiplier(key: String, galaxy_charge := -1.0) -> Variant:
 	return N.add(1.0,N.divide(N.power(allocation,float(db.config.reactorBoostExponent)),float(db.config.reactorPercentScale))) if N.compare(allocation,0)>0 else 1.0
 
 func reactor_affordable(cost: Variant,budget: Variant) -> bool:
-	if cost is float and not reactor_exact_budget(budget):
-		return N.compare(cost,budget)<=0
-	var exact_budget=ReactorInt.from_growth(budget)
-	var exact_cost=ReactorInt.from_growth(cost)
-	if budget is Dictionary and budget.has("m") and exact_cost!=null:
-		return ReactorInt.compare_legacy_growth_to_integer(budget,exact_cost)>=0
-	return ReactorInt.compare(exact_budget,exact_cost)>=0 if exact_budget!=null and exact_cost!=null else N.compare(budget,cost)>=0
+	var available:Currency.Outcome=Currency.decode(budget)
+	var due:Currency.Outcome=Currency.decode(cost)
+	return available.status=="ok" and due.status=="ok" and Currency.compare(available.value,due.value).order>=0
 
 func reactor_exact_budget(budget: Variant) -> bool:
-	return (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
+	return Currency.storage_valid(budget) or (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
 
 func reactor_debit_budget(budget: Variant,cost: Variant) -> Variant:
-	var exact_cost=ReactorInt.from_growth(cost)
-	var exact_budget=ReactorInt.from_growth(budget)
-	if exact_cost!=null and exact_budget==null and budget is Dictionary and budget.has("m"):
-		exact_budget=ReactorInt.nearby_legacy_integer(budget,exact_cost)
-	if exact_budget!=null and exact_cost!=null:return ReactorInt.subtract(exact_budget,exact_cost)
-	return N.subtract(budget,cost)
+	var available:Currency.Outcome=Currency.decode(budget)
+	var due:Currency.Outcome=Currency.decode(cost)
+	if available.status!="ok" or due.status!="ok":return null
+	var remaining:Currency.Outcome=Currency.subtract(available.value,due.value)
+	return Currency.encode(remaining.value) if remaining.status=="ok" else null
 
 func reactor_max_upgrades() -> int:
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
@@ -1395,7 +1397,7 @@ func reactor_max_upgrades() -> int:
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
 		var exact_cost=ReactorInt.from_growth(cost)
 		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(cost,budget):break
-		budget = N.subtract(budget,cost) if cost is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,cost)
+		budget = reactor_debit_budget(budget,cost)
 		level += 1
 		count += 1
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
@@ -1403,13 +1405,16 @@ func reactor_max_upgrades() -> int:
 
 func upgrade_reactor(amount: int) -> bool:
 	if not reactor_unlocked() or amount <= 0:return false
+	if int(profile.reactorLevel)<1 or amount>9223372036854775807-int(profile.reactorLevel):return false
 	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
+	var reactor_start:int=int(profile.reactorLevel)
+	var reactor_owner:Dictionary=profile
 	# Exact-tag budgets debit the exact sum of the same per-level quotes.
 	# Ordinary budgets retain the historical float accumulation order.
 	var total: Variant=0 if reactor_exact_budget(budget) else 0.0
 	var cursor: Array=[]
 	for offset in amount:
-		var quote_level: int=int(profile.reactorLevel)+offset
+		var quote_level: int=reactor_start+offset
 		var cost: Variant=reactor_upgrade_cost(quote_level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
 		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),quote_level-1)
 		var exact=ReactorInt.from_growth(cost)
@@ -1421,7 +1426,12 @@ func upgrade_reactor(amount: int) -> bool:
 		if not reactor_affordable(total,budget):return false
 		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
 	if not native_before_configuration_change():return false
-	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,total)
+	if not is_same(reactor_owner,profile) or int(profile.reactorLevel)!=reactor_start:return false
+	var uranium_id:String=str(int(db.config.reactorUraniumId))
+	_bind_currency_owner()
+	var dependency:Dictionary={"reactor_level":profile.reactorLevel}
+	var debit:CurrencyHost.Plan=currency_host.prepare(profile,{uranium_id:total},dependency)
+	if debit.status!="ready" or currency_host.commit(debit,profile,dependency).status!="committed":return false
 	profile.reactorLevel += amount
 	invalidate_stat_cache()
 	resources_changed([str(int(db.config.reactorUraniumId))])
@@ -1781,6 +1791,7 @@ func planet_reforge_start(id: String) -> int:
 
 func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
 	if not can_reforge_planet(id):return false
+	if not galaxy.deliver_income(self):return false
 	var next_hyperspace:=hyperspace.reforge_state(self,keep_drones,claim_stages)
 	if next_hyperspace.is_empty():return false
 	var start_level := planet_reforge_start(id)
@@ -2876,50 +2887,14 @@ func can_upgrade_amount(key: String, levels: int) -> bool:
 func can_upgrade(key: String, levels := 1) -> bool:
 	return can_upgrade_amount(key, levels)
 
-func max_upgrade_amount(key: String) -> int:
-	var entry := first_equipment_entry(key)
-	if entry.is_empty():
-		return 0
-	return max_upgrade_amount_slot("weapons" if WEAPON_KEYS.has(key) else "defence", (weapon_entries() if WEAPON_KEYS.has(key) else defense_entries()).find(entry))
+func max_upgrade_amount(key: String) -> EquipmentMax.Outcome:
+	var entry:Dictionary=first_equipment_entry(key)
+	if entry.is_empty():return EquipmentMax.Outcome.new("error",0)
+	var category:String="weapons" if WEAPON_KEYS.has(key) else "defence"
+	return request_max_upgrade_slot(category,loadout_entries(category).find(entry))
 
-func upgrade_quote_signature(key:String)->Array:
-	# Value copies catch purchases, load/config replacement, and in-place edits.
-	# Separate from combat stat invalidation: attack counters do not change prices.
-	return [profile.resources.duplicate(true),profile.hyperspace.materials.duplicate(true),profile.highestLevel,db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
-
-func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={}) -> int:
-	var entry := slot_entry(category,index)
-	var key := module_cost_key(category)
-	if entry.is_empty():
-		return 0
-	var current := int(entry.level)
-	var cache_key:String=str([key,current])
-	var signature:Array=upgrade_quote_signature(key)
-	var cached:Dictionary=max_upgrade_quote_cache.get(cache_key,{})
-	if budget.is_empty() and not cached.is_empty() and cached.signature==signature:return int(cached.amount)
-	var available: Dictionary = (profile.resources if budget.is_empty() else budget).duplicate()
-	if not available.has(db.evolution_material_id()):available[db.evolution_material_id()]=upgrade_currency(db.evolution_material_id())
-	var total:Dictionary={}
-	var amount := 0
-	var level := current + 1
-	while level <= db.max_equipment_level(key):
-		var costs := upgrade_cost_for_level(key, level)
-		var affordable := true
-		for id in costs:
-			if (id==db.evolution_material_id() and not hyperspace.is_unlocked(self)) or not is_finite(float(costs[id])) or N.compare(available.get(id,0),costs[id])<0:
-				affordable = false
-				break
-		if not affordable:
-			break
-		for id in costs:
-			available[id] = N.subtract(available.get(id,0),costs[id])
-			total[id]=float(total.get(id,0))+float(costs[id])
-		amount += 1
-		level += 1
-	if budget.is_empty():
-		if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
-		max_upgrade_quote_cache[cache_key]={"signature":signature,"amount":amount,"costs":total}
-	return amount
+func max_upgrade_amount_slot(category: String, index: int) -> EquipmentMax.Outcome:
+	return request_max_upgrade_slot(category,index)
 
 func upgrade(key: String, levels := 1) -> bool:
 	var category := "weapons" if WEAPON_KEYS.has(key) else "defence"
@@ -2935,11 +2910,53 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	if not can_upgrade_slot(category, index, levels):return false
 	return _commit_slot_quote(category,index,levels,slot_upgrade_cost(category,index,levels))
 
+
+func purchase_save_preflight(resources:Dictionary,material:int,weapon_levels:Dictionary,defence_levels:Dictionary)->bool:
+	var saved:Dictionary=portable_save_data()
+	saved.resources=resources.duplicate(true)
+	saved.hyperspace=saved.hyperspace.duplicate(true)
+	saved.hyperspace.materials[db.evolution_material_id()]=material
+	for pair in [["weapons",weapon_levels],["defence",defence_levels]]:
+		for index in pair[1]:
+			if int(index)<0 or int(index)>=saved.loadout[pair[0]].size():return false
+			saved.loadout[pair[0]][int(index)].level=int(pair[1][index])
+	saved.levels={}
+	for key in EQUIPMENT:
+		saved.levels[key]=1
+		var found:=false
+		for category in ["weapons","defence"]:
+			for entry in saved.loadout[category]:
+				if str(entry.key)==key:
+					saved.levels[key]=int(entry.level)
+					found=true
+					break
+			if found:break
+	var validation:Dictionary=preload("res://scripts/save_transfer.gd").new().prepare_data(saved,db)
+	return validation.get("error","format").is_empty()
+
 func _commit_slot_quote(category: String, index: int, levels: int, costs: Dictionary) -> bool:
 	var entry:Dictionary=slot_entry(category,index)
 	if entry.is_empty() or levels<1 or int(entry.level)<1 or levels>9223372036854775807-int(entry.level):return false
 	if not can_afford_upgrade_costs(costs):return false
 	var key:String=str(entry.key)
+	var original_owner:Dictionary=profile
+	var original_level:int=int(entry.level)
+	var original_signature:Dictionary=_max_signature(category,index)
+	if save_enabled or native_execution!=null:
+		var predicted:Dictionary=profile.resources.duplicate(true)
+		var material:Variant=_currency_material_integer(profile.hyperspace.materials.get(db.evolution_material_id(),0))
+		if material==null:return false
+		for id in costs:
+			if id==db.evolution_material_id():material-=int(costs[id])
+			else:
+				var before:Currency.Outcome=Currency.decode(predicted.get(id,0))
+				var expense:Currency.Outcome=Currency.decode(costs[id])
+				var after:Currency.Outcome=Currency.subtract(before.value,expense.value)
+				if after.status!="ok":return false
+				predicted[id]=Currency.encode(after.value)
+		var weapon_levels:Dictionary={index:original_level+levels} if category=="weapons" else {}
+		var defence_levels:Dictionary={index:original_level+levels} if category=="defence" else {}
+		if not purchase_save_preflight(predicted,int(material),weapon_levels,defence_levels):return false
 	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
 	if batch_update:
 		var expected:Dictionary=native_upgrade_batch.planned.get(slot_id(category,index),{})
@@ -2951,6 +2968,9 @@ func _commit_slot_quote(category: String, index: int, levels: int, costs: Dictio
 		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
 		if not native_updated and not native_before_configuration_change():return false
 	native_numeric_update=native_updated
+	if not is_same(original_owner,profile) or int(slot_entry(category,index).get("level",0))!=original_level or original_signature!=_max_signature(category,index) or not can_afford_upgrade_costs(costs):
+		native_numeric_update=false
+		return false
 	var resource_costs:Dictionary={}
 	for id in costs:
 		if id!=db.evolution_material_id():resource_costs[id]=costs[id]
@@ -2979,35 +2999,190 @@ func _commit_slot_quote(category: String, index: int, levels: int, costs: Dictio
 	event.emit("upgrade", {"key":key,"slot":slot_id(category,index),"levels":levels,"cost":costs,"batch":_upgrade_batch})
 	return true
 
-func upgrade_equipment_batch(mode: String) -> bool:
-	if _upgrade_batch:return false
-	if native_execution!=null:
-		native_upgrade_batch=native_execution.prepare_numeric_batch(self,mode)
-		if native_upgrade_batch.get("skip",false):native_upgrade_batch={};return false
-		if native_upgrade_batch.is_empty() and not native_before_configuration_change():return false
-	_upgrade_batch=true
+class BatchOutcome extends RefCounted:
+	var status:String
+	var request_id:int=0
+	var quote_fingerprint:String=""
+	var planned_slots:Array=[]
+	var changed_slots:Array=[]
+	var reason:String=""
+	func _init(state:String,id:int=0)->void:
+		status=state
+		request_id=id
+
+var _batch_requests:Dictionary={}
+var _next_batch_request:=1
+
+func _batch_outcome(id:int,job:Dictionary)->BatchOutcome:
+	var out:=BatchOutcome.new(str(job.status),id)
+	out.quote_fingerprint=str(job.get("fingerprint",""))
+	out.planned_slots=job.get("plans",[]).duplicate(true)
+	out.changed_slots=job.get("changed",[]).duplicate()
+	out.reason=str(job.get("reason",""))
+	return out
+
+func upgrade_equipment_batch(mode:String)->BatchOutcome:
+	if mode not in ["1","10","max"] or _upgrade_batch:
+		return BatchOutcome.new("rejected")
+	var plans:Array=[]
+	var signatures:Array=[]
 	for category in ["weapons","defence"]:
 		for index in loadout_entries(category).size():
-			var amount: int=max_upgrade_amount_slot(category,index) if mode=="max" else int(mode)
-			if amount>0:upgrade_slot(category,index,amount)
+			signatures.append(_max_signature(category,index))
+			if mode!="max":
+				var costs:Dictionary=slot_upgrade_cost(category,index,int(mode))
+				plans.append({"category":category,"index":index,"before":int(slot_entry(category,index).get("level",0)),"levels":int(mode),"costs":costs})
+	if mode!="max":
+		return _commit_equipment_plans(plans,signatures,profile,_currency_epoch)
+	var material:Variant=_currency_material_integer(profile.hyperspace.materials.get(db.evolution_material_id(),0))
+	if material==null:return BatchOutcome.new("error")
+	var id:int=_next_batch_request
+	_next_batch_request+=1
+	var job:Dictionary={"status":"pending","profile":profile,"epoch":_currency_epoch,"signatures":signatures,"wallet":profile.resources.duplicate(true),"material":material,"slot":0,"active":0,"plans":[],"changed":[]}
+	_batch_requests[id]=job
+	return _batch_outcome(id,job)
+
+func _pump_batch_requests()->void:
+	for id in _batch_requests.keys():
+		var job:Dictionary=_batch_requests[id]
+		if job.status!="pending":continue
+		if not is_same(job.profile,profile) or job.epoch!=_currency_epoch:
+			if int(job.active)>0:equipment_queries.cancel(int(job.active))
+			job.status="stale"
+			continue
+		var position:int=int(job.slot)
+		if position>=job.signatures.size():
+			job.status="complete"
+			job.fingerprint=JSON.stringify(job.plans).sha256_text()
+			continue
+		var signature:Dictionary=job.signatures[position]
+		if signature!=_max_signature(str(signature.category),int(signature.index)):
+			if int(job.active)>0:equipment_queries.cancel(int(job.active))
+			job.status="stale"
+			continue
+		if int(job.active)==0:
+			var start:int=int(signature.start)
+			if start<1:
+				job.status="error";job.reason="level_transport";continue
+			var inputs:Dictionary={"start":start,"max_count":9223372036854775807-start,"wallet":job.wallet.get("1",0),"material":int(job.material) if signature.material_unlocked else 0,"supported":_max_supported(signature),"price_signature":{"cost_key":signature.cost_key,"rows":signature.rows,"evolution":signature.evolution}}
+			var queued:EquipmentMax.Outcome=equipment_queries.request(inputs)
+			job.active=queued.request_id
+		var out:EquipmentMax.Outcome=equipment_queries.poll(int(job.active))
+		if out.status=="pending":continue
+		if out.status!="complete":
+			job.status=out.status;job.reason=out.reason;continue
+		var costs:Dictionary=out.quote.resource_debit.duplicate(true)
+		if int(out.quote.material_debit)>0:costs[db.evolution_material_id()]=int(out.quote.material_debit)
+		if int(out.quote.count)>0:
+			for resource_id in out.quote.resource_debit:
+				var before:Currency.Outcome=Currency.decode(job.wallet.get(resource_id,0))
+				var due:Currency.Outcome=Currency.decode(out.quote.resource_debit[resource_id])
+				var remaining:Currency.Outcome=Currency.subtract(before.value,due.value)
+				if remaining.status!="ok":
+					job.status="error";job.reason="virtual_budget";break
+				job.wallet[resource_id]=Currency.encode(remaining.value)
+			if job.status!="pending":continue
+			job.material-=int(out.quote.material_debit)
+			job.plans.append({"category":signature.category,"index":signature.index,"before":int(signature.start),"levels":int(out.quote.count),"costs":costs,"mode":out.quote.mode,"certificate":out.quote.bound_certificate})
+		equipment_queries.forget(int(job.active))
+		job.active=0
+		job.slot=position+1
+
+func poll_upgrade_batch(request_id:int)->BatchOutcome:
+	process_equipment_queries()
+	return _batch_outcome(request_id,_batch_requests[request_id]) if _batch_requests.has(request_id) else BatchOutcome.new("error",request_id)
+
+func cancel_upgrade_batch(request_id:int)->void:
+	if not _batch_requests.has(request_id):return
+	var job:Dictionary=_batch_requests[request_id]
+	if int(job.active)>0:equipment_queries.forget(int(job.active))
+	_batch_requests.erase(request_id)
+
+func confirm_upgrade_batch(request_id:int,fingerprint:String)->BatchOutcome:
+	var out:BatchOutcome=poll_upgrade_batch(request_id)
+	if out.status!="complete" or out.quote_fingerprint!=fingerprint:return BatchOutcome.new("stale",request_id)
+	var job:Dictionary=_batch_requests[request_id]
+	if not is_same(job.profile,profile) or job.epoch!=_currency_epoch:return BatchOutcome.new("stale",request_id)
+	job.status="confirming"
+	var result:BatchOutcome=_commit_equipment_plans(job.plans,job.signatures,job.profile,int(job.epoch))
+	result.request_id=request_id
+	_batch_requests.erase(request_id)
+	return result
+
+func _commit_equipment_plans(plans:Array,signatures:Array,owner:Dictionary,epoch:int)->BatchOutcome:
+	if _upgrade_batch or not is_same(owner,profile) or epoch!=_currency_epoch:return BatchOutcome.new("stale")
+	if plans.is_empty():return BatchOutcome.new("rejected")
+	for signature in signatures:
+		if signature!=_max_signature(str(signature.category),int(signature.index)):return BatchOutcome.new("stale")
+	if native_execution!=null:
+		native_upgrade_batch=native_execution.prepare_numeric_batch(self,"quoted",plans)
+		if native_upgrade_batch.get("error","")=="save_preflight":
+			native_upgrade_batch={}
+			var rejected:=BatchOutcome.new("rejected")
+			rejected.reason="save_preflight"
+			return rejected
+		if native_upgrade_batch.get("skip",false):
+			native_upgrade_batch={};return BatchOutcome.new("rejected")
+		if native_upgrade_batch.has("error"):native_upgrade_batch={}
+		if native_upgrade_batch.is_empty() and not native_before_configuration_change():return BatchOutcome.new("rejected")
+	_upgrade_batch=true
+	var failed_handoff:=false
+	var expected_signatures:Array=signatures.duplicate(true)
+	for plan in plans:
+		if not is_same(owner,profile) or epoch!=_currency_epoch:
+			native_upgrade_batch={}
+			failed_handoff=native_execution!=null
+			break
+		var matching:=true
+		for signature in signatures:
+			if signature.category==plan.category and int(signature.index)==int(plan.index):
+				matching=signature==_max_signature(str(plan.category),int(plan.index))
+				break
+		var success:bool=matching and _commit_slot_quote(str(plan.category),int(plan.index),int(plan.levels),plan.costs)
+		if success:
+			for signature in expected_signatures:
+				if signature.category==plan.category and int(signature.index)==int(plan.index):signature.start+=int(plan.levels)
+		var prediction_valid:bool=is_same(owner,profile) and epoch==_currency_epoch
+		for signature in expected_signatures:
+			if signature!=_max_signature(str(signature.category),int(signature.index)):prediction_valid=false
+		if not prediction_valid and (not is_same(owner,profile) or epoch!=_currency_epoch):
+			native_upgrade_batch={}
+			failed_handoff=native_execution!=null
+			break
+		if (not success or not prediction_valid) and not native_upgrade_batch.is_empty():
+			native_upgrade_batch={}
+			if not native_before_configuration_change():
+				failed_handoff=true
+				break
+	if not native_upgrade_batch.is_empty():
+		if native_upgrade_batch.planned.size()!=_upgrade_slots.size() or not _upgrade_slots.all(func(slot):return native_upgrade_batch.planned.has(slot)):
+			native_upgrade_batch={}
+			if not native_before_configuration_change():failed_handoff=true
 	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
 	if native_execution!=null and not native_upgrade_batch.is_empty():
 		if not native_execution.commit_numeric_batch(self,native_upgrade_batch):
-			push_error("prevalidated native batch changed during synchronous commit")
-			native_before_configuration_change()
+			if not native_before_configuration_change():failed_handoff=true
 	native_upgrade_batch={}
+	if failed_handoff and native_execution!=null:
+		# A successful prefix changed live configuration. The old kernel cannot
+		# advance until an explicit successful transfer resolves that mismatch.
+		native_execution.advance_blocked=true
+		paused=true
+		native_step_phase="blocked"
 	_upgrade_batch=false
 	_upgrade_costs.clear()
-	var changed := _upgrade_slots
-	_upgrade_slots=[]
+	var changed:Array=_upgrade_slots.duplicate()
+	_upgrade_slots.clear()
 	if not changed.is_empty():
-		save_dirty = true
+		save_dirty=true
 		event.emit("upgrades_completed",{"slots":changed})
-	return not changed.is_empty()
+	var result:=BatchOutcome.new("committed" if not changed.is_empty() else "rejected")
+	result.changed_slots=changed
+	if failed_handoff:result.reason="native_handoff_failed"
+	return result
 
-func upgrade_max(key: String) -> bool:
-	var levels := max_upgrade_amount(key)
-	return levels > 0 and upgrade(key, levels)
+func upgrade_max(key: String) -> EquipmentMax.Outcome:
+	return max_upgrade_amount(key)
 
 func _max_signature(category: String, index: int) -> Dictionary:
 	var entry: Dictionary = slot_entry(category,index)
@@ -3031,14 +3206,14 @@ func request_max_upgrade_slot(category: String, index: int) -> EquipmentMax.Outc
 		return failed
 	var inputs: Dictionary = {"start":start,"max_count":9223372036854775807-start,"wallet":profile.resources.get("1",0),"material":material if signature.material_unlocked else 0,"supported":_max_supported(signature),"price_signature":{"cost_key":signature.cost_key,"rows":signature.rows,"evolution":signature.evolution}}
 	var outcome: EquipmentMax.Outcome = equipment_queries.request(inputs)
-	_max_bindings[outcome.request_id]={"profile":profile,"signature":signature,"consumed":false}
+	_max_bindings[outcome.request_id]={"profile":profile,"signature":signature,"consumed":false,"epoch":_currency_epoch}
 	return outcome
 
 func poll_max_upgrade(request_id: int) -> EquipmentMax.Outcome:
 	if not _max_bindings.has(request_id):
 		return EquipmentMax.Outcome.new("error",request_id)
 	var binding: Dictionary = _max_bindings[request_id]
-	if binding.consumed or not is_same(binding.profile,profile) or binding.signature != _max_signature(str(binding.signature.category),int(binding.signature.index)):
+	if binding.consumed or binding.epoch!=_currency_epoch or not is_same(binding.profile,profile) or binding.signature != _max_signature(str(binding.signature.category),int(binding.signature.index)):
 		equipment_queries.cancel(request_id)
 		var stale:=EquipmentMax.Outcome.new("stale",request_id)
 		stale.reason="dependency_changed"
@@ -3046,11 +3221,21 @@ func poll_max_upgrade(request_id: int) -> EquipmentMax.Outcome:
 	return equipment_queries.poll(request_id)
 
 func cancel_max_upgrade(request_id: int) -> void:
-	equipment_queries.cancel(request_id)
+	equipment_queries.forget(request_id)
 	_max_bindings.erase(request_id)
 
 func process_equipment_queries() -> void:
 	equipment_queries.pump()
+	_pump_batch_requests()
+
+func shutdown_equipment_queries() -> void:
+	equipment_queries.shutdown()
+	_batch_requests.clear()
+	_max_bindings.clear()
+
+func _notification(what:int) -> void:
+	if what==NOTIFICATION_PREDELETE and equipment_queries!=null:
+		equipment_queries.shutdown()
 
 func confirm_max_upgrade(request_id: int, fingerprint: String) -> PurchaseOutcome:
 	var outcome: EquipmentMax.Outcome = poll_max_upgrade(request_id)
@@ -3067,6 +3252,7 @@ func confirm_max_upgrade(request_id: int, fingerprint: String) -> PurchaseOutcom
 	if int(quote.material_debit)>0:costs[db.evolution_material_id()]=int(quote.material_debit)
 	var committed: bool = _commit_slot_quote(category,index,int(quote.count),costs)
 	equipment_queries.forget(request_id)
+	_max_bindings.erase(request_id)
 	return PurchaseOutcome.new("committed",[slot_id(category,index)]) if committed else PurchaseOutcome.new("rejected")
 
 

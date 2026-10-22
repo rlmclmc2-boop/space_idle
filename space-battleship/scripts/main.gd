@@ -379,8 +379,8 @@ func _ready() -> void:
 			game.profile.cleared = [1,2]
 			game.rebuild_unlocks()
 			game.start(3, false)
-			game.profile.resources["1"] = 5000.0
-			game.profile.resources["2"] = 100.0
+			game.currency_initialize_resource("1",5000.0)
+			game.currency_initialize_resource("2",100.0)
 		build_ui()
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
@@ -464,6 +464,7 @@ func _notification(what: int) -> void:
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
+	game.process_equipment_queries()
 	if fixed_enemy_layout and battle_slice_runtime==null:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	advance_unlock_notice()
 	game.check_timed_save()
@@ -913,7 +914,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 func number(value) -> String:
 	if game.Currency.storage_valid(value):
 		var decoded=game.Currency.decode(value)
-		var finite=game.Currency.finite_research_balance(decoded.value,1.7976931348623157e308)
+		var finite=game.Currency.analysis_value(value)
 		return NUMBER_FORMAT.compact(finite.amount) if finite.status=="ok" else game.Currency.text(decoded.value)
 	# Quantities use K/M/B/T; stage identifiers and levels use exact integers.
 	return NUMBER_FORMAT.compact(value)
@@ -3917,6 +3918,7 @@ func attach_native_display()->bool:
 	return false
 
 func _exit_tree()->void:
+	if game!=null:game.shutdown_equipment_queries()
 	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	if battle_slice_runtime!=null:
 		if battle_slice_runtime.close():battle_slice_runtime=null

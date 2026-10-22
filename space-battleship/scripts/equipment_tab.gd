@@ -35,6 +35,7 @@ var footer: Panel
 var footer_title: Label
 var footer_buttons: Dictionary = {}
 var upgrade_amount := 1
+var _max_ui_requests: Dictionary = {}
 var amount_buttons: Array[Button] = []
 var picker_open := false
 var pending_key := ""
@@ -287,6 +288,8 @@ func layout_contents() -> void:
 	detail_scroll.size = Vector2(574,height-278)
 
 func set_upgrade_amount(amount: int) -> void:
+	for request_id in _max_ui_requests.values():host.game.cancel_max_upgrade(int(request_id))
+	_max_ui_requests.clear()
 	upgrade_amount = amount
 	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount,true)
 	var quotes := {}
@@ -300,6 +303,9 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 		item.costs = {}
 		item.direct_upgradeable = false
 		return
+	if upgrade_amount==0:
+		_update_max_card(item)
+		return
 	# Module prices depend on category and level, not installed weapon type.
 	# Share only within this synchronous refresh; no quote survives a purchase,
 	# balance/config change, another refresh or a frame boundary.
@@ -310,18 +316,107 @@ func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 		item.costs = quotes[quote_key].costs
 		item.direct_upgradeable = quotes[quote_key].available
 		return
-	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
+	var count: int = upgrade_amount
 	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
 	item.cost = host.cost_text(costs)
 	item.costs = costs
 	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
 	quotes[quote_key] = {"cost":item.cost,"costs":costs,"available":item.direct_upgradeable}
 
+
+func _max_item_id(item: Dictionary) -> String:
+	return str(item.category)+":"+str(item.index)
+
+func _max_preview(item: Dictionary, create := true):
+	var id: String = _max_item_id(item)
+	if not _max_ui_requests.has(id):
+		if not create:return null
+		var started=host.game.request_max_upgrade_slot(str(item.category),int(item.index))
+		_max_ui_requests[id]=started.request_id
+	return host.game.poll_max_upgrade(int(_max_ui_requests[id]))
+
+func _max_costs(outcome) -> Dictionary:
+	var costs: Dictionary = outcome.quote.resource_debit.duplicate(true)
+	if int(outcome.quote.material_debit)>0:costs[host.db.evolution_material_id()]=int(outcome.quote.material_debit)
+	return costs
+
+func _max_notice(outcome) -> String:
+	var approximate: bool = str(outcome.quote.mode)!="exact"
+	var notice: String = ("极端 MAX：约可购买 " if approximate else "本次预算可购买 ")+str(outcome.quote.count)+" 级；本次扣费 "+host.cost_text(_max_costs(outcome))
+	if approximate:
+		notice+="。总费用为保守估算，至多高于逐级费用12%（另有整数取整尾差）；退款按原等级规则，可能有差额。"
+	notice+="\n本次按请求时预算计算；点 MAX 可重新取样预算。\n完整费用："
+	for id in outcome.quote.resource_debit:
+		var decoded=host.game.Currency.decode(outcome.quote.resource_debit[id])
+		notice+="\n"+str(id)+": "+host.game.Currency.exact_text(decoded.value)
+	notice+="\n材料："+str(outcome.quote.material_debit)
+	return notice
+
+func _update_max_card(item: Dictionary) -> void:
+	var outcome=_max_preview(item)
+	item.max_status=outcome.status
+	item.direct_upgradeable=false
+	item.costs={}
+	if outcome.status=="pending":
+		item.cost="计算 MAX…"
+	elif outcome.status=="complete":
+		item.costs=_max_costs(outcome)
+		item.cost=("约 " if outcome.quote.mode!="exact" else "")+str(outcome.quote.count)+" 级 · "+host.cost_text(item.costs)
+		item.direct_upgradeable=int(outcome.quote.count)>0 and host.game.can_afford_upgrade_costs(item.costs)
+	else:
+		item.cost="报价已失效；点 MAX 重新计算"
+	var id: String = module_card_id(item.category,item.index)
+	if cards.has(id):
+		cards[id].tooltip_text=_max_notice(outcome) if outcome.status=="complete" else item.cost
+
+func _activate_max(item: Dictionary) -> void:
+	var id: String = _max_item_id(item)
+	if not _max_ui_requests.has(id):
+		_max_preview(item)
+		host.toast("正在计算 MAX；完成后请确认本次报价")
+		return
+	var outcome=_max_preview(item)
+	if outcome.status=="pending":return
+	if outcome.status!="complete" or int(outcome.quote.count)<=0:
+		host.game.cancel_max_upgrade(int(_max_ui_requests[id]))
+		_max_ui_requests.erase(id)
+		_max_preview(item)
+		host.toast("正在按当前预算重新计算 MAX")
+		return
+	var dialog:=ConfirmationDialog.new()
+	dialog.title="确认本次 MAX 报价"
+	dialog.exclusive=true
+	var scroll:=ScrollContainer.new()
+	scroll.custom_minimum_size=Vector2(720,340)
+	dialog.add_child(scroll)
+	var notice:=Label.new()
+	notice.text=_max_notice(outcome)
+	notice.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	notice.custom_minimum_size.x=700
+	notice.size_flags_horizontal=Control.SIZE_EXPAND_FILL
+	scroll.add_child(notice)
+	host.add_child(dialog)
+	dialog.confirmed.connect(func():
+		var receipt=host.game.confirm_max_upgrade(outcome.request_id,outcome.fingerprint)
+		if int(_max_ui_requests.get(id,-1))==outcome.request_id:_max_ui_requests.erase(id)
+		if receipt.status!="committed":host.toast("报价已失效或余额不足，请重新计算")
+		refresh(module_card_id(item.category,item.index))
+		dialog.queue_free()
+	,CONNECT_ONE_SHOT)
+	dialog.canceled.connect(func():
+		host.game.cancel_max_upgrade(outcome.request_id)
+		if int(_max_ui_requests.get(id,-1))==outcome.request_id:_max_ui_requests.erase(id)
+		dialog.queue_free()
+	,CONNECT_ONE_SHOT)
+	dialog.popup_centered(Vector2i(760,440))
+
 func upgrade_card(id: String) -> void:
 	if not items.has(id):return
 	var item: Dictionary = items[id]
-	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
-	if count>0:host.game.upgrade_slot(item.category,item.index,count)
+	if upgrade_amount==0:
+		_activate_max(item)
+	else:
+		host.game.upgrade_slot(item.category,item.index,upgrade_amount)
 	refresh(id)
 
 func show_inspector() -> void:
@@ -501,6 +596,10 @@ func refresh_slots(changed: Array) -> void:
 	for id in items.keys():
 		var item:Dictionary=items[id]
 		if not host.game.module_entry(item.category,item.index).is_empty():continue
+		var max_id:String=_max_item_id(item)
+		if _max_ui_requests.has(max_id):
+			host.game.cancel_max_upgrade(int(_max_ui_requests[max_id]))
+			_max_ui_requests.erase(max_id)
 		if cards.has(id):
 			var card:Control=cards[id]
 			card.get_parent().remove_child(card);card.queue_free();cards.erase(id)
@@ -542,6 +641,15 @@ func refresh_slots(changed: Array) -> void:
 
 func refresh_pending() -> void:
 	if not is_visible_in_tree():return
+	for id in items:
+		var item:Dictionary=items[id]
+		if not _max_ui_requests.has(_max_item_id(item)):continue
+		var outcome=_max_preview(item,false)
+		if outcome==null:continue
+		if upgrade_amount==0 and item.get("max_status","")!=outcome.status:
+			_update_max_card(item)
+			cards[id].refresh(item,selected==id)
+		if id==selected:refresh_affordability_detail()
 	refresh_new_weapon()
 	if dirty:
 		refresh()
@@ -695,14 +803,25 @@ func apply_filters() -> void:
 	host.set_ui_value(section_labels.weapons,"visible",category_filter!=2)
 	host.set_ui_value(section_labels.defence,"visible",category_filter!=1)
 
+
+func _refresh_max_button(item: Dictionary) -> void:
+	var outcome=_max_preview(item,false)
+	var pending: bool=outcome!=null and outcome.status=="pending"
+	host.set_ui_value(detail.max,"visible",true)
+	host.set_ui_value(detail.max,"disabled",item.locked or pending)
+	host.set_ui_value(detail.max,"text","MAX 计算中…" if pending else ("查看 MAX 报价" if outcome!=null and outcome.status=="complete" and int(outcome.quote.count)>0 else "计算 MAX"))
+	if outcome!=null and outcome.status=="complete":
+		host.set_ui_value(detail.max,"tooltip_text",_max_notice(outcome))
+
 func refresh_affordability_detail() -> void:
 	if not items.has(selected):return
 	if not detail_frame.is_visible_in_tree():
 		detail_dirty=true
 		return
 	var item: Dictionary = items[selected]
-	for action in ["upgrade","ten","max"]:
+	for action in ["upgrade","ten"]:
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(item.category,item.index,10 if action=="ten" else 1))
+	_refresh_max_button(item)
 
 func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	if not items.has(selected):return
@@ -741,9 +860,10 @@ func refresh_detail(next_projection: Dictionary = {}, force := false) -> void:
 	host.set_ui_value(detail.primary,"tooltip_text",host.equipment_expected_details(entry,item.projection,true))
 	host.set_ui_value(detail.status,"text",(UIText.t("ui.equipment_tab.message_01", {"value_1":"%d" % (int(item.get("refit_remaining",0)))})) if int(item.get("refit_remaining",0))>0 else UIText.t("equipment.fixed_armour") if item.get("refit_fixed",false) else UIText.t("equipment.state."+item.status)+(" · "+UIText.t("equipment.state.upgradeable") if item.upgradeable else ""))
 	host.set_ui_value(detail.status,"modulate",Color("687781") if item.locked else NAVY)
-	for action in ["upgrade","ten","max"]:
+	for action in ["upgrade","ten"]:
 		host.set_ui_value(detail[action],"visible",true)
 		host.set_ui_value(detail[action],"disabled",not host.game.can_upgrade_slot(category,selected_slot,10 if action=="ten" else 1))
+	_refresh_max_button(item)
 	host.set_ui_value(detail.equip,"visible",not picker_open)
 	host.set_ui_value(detail.remove,"visible",not key.is_empty())
 	host.set_ui_value(detail.remove,"disabled",item.locked or item.get("refit_locked",false))
@@ -803,7 +923,7 @@ func act(action: String) -> void:
 	match action:
 		"upgrade","ten","max":
 			var amount := 10 if action=="ten" else 1
-			if action=="max":amount=host.game.max_upgrade_amount_slot(category,selected_slot)
-			host.game.upgrade_slot(category,selected_slot,amount)
+			if action=="max":_activate_max(items[selected])
+			else:host.game.upgrade_slot(category,selected_slot,amount)
 		"remove":host.game.unequip_slot(category,selected_slot)
 	refresh(selected)

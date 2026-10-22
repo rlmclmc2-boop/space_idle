@@ -266,8 +266,17 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 		for index in range(game.profile.loadout[category].size()):
 			if str(game.profile.loadout[category][index].get("key"," ")).strip_edges().is_empty():continue
 			var costs: Dictionary=game.slot_upgrade_cost(category,index,delta)
-			if costs.is_empty():return {"error":"level_cap"}
-			for id in costs:game.profile.resources[id]=maxf(float(game.profile.resources.get(id,0)),float(costs[id]))
+			if costs.is_empty():return {"error":"price_or_level_transport"}
+			for id in costs:
+				if id==database.evolution_material_id():
+					var due:Variant=game._currency_material_integer(costs[id])
+					var current:Variant=game._currency_material_integer(game.profile.hyperspace.materials.get(id,0))
+					if due==null or current==null:return {"error":"material_transport"}
+					game.profile.hyperspace.materials[id]=maxi(current,due)
+				else:
+					var comparison=game.currency_compare_resource(str(id),costs[id])
+					if comparison.status!="ok":return {"error":"invalid_resource"}
+					if comparison.order<0 and not game.currency_initialize_resource(str(id),costs[id]):return {"error":"resource_transport"}
 			if not game.upgrade_slot(category,index,delta):return {"error":"upgrade_failed"}
 	return game.profile.duplicate(true)
 

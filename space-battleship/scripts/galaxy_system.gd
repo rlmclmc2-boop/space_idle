@@ -131,6 +131,9 @@ func prepare_region_refit(g,key:String,dt:float,count:int)->bool:
 	native_refit={"key":key,"dt":dt,"count":count,"region":predicted,"plan":plan,"session":session}
 	return true
 
+func has_pending_income() -> bool:
+	return _delivering_income or not _income_due.is_empty()
+
 func deliver_income(g) -> bool:
 	if _delivering_income:return false
 	_delivering_income=true

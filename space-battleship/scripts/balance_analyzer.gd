@@ -1,5 +1,6 @@
 class_name BalanceAnalyzer
 extends RefCounted
+const Wallet=preload("res://scripts/currency_ledger.gd")
 ## Diagnostic evidence, not a global balance score. All thresholds live here.
 const THRESHOLDS := {"weapon_share":0.70,"weak_share":0.03,"minimum_usage":0.10,"ttk_low":0.5,"ttk_wall":8.0,
 	"sustained_seconds":120.0,"idle_seconds":300.0,"upgrade_fast":2.0,"surplus_minutes":30.0,"resource_share":0.80,
@@ -11,6 +12,8 @@ static func issue(code: String, severity: String, time: float, stage: int, evide
 	return {"code":code,"severity":severity,"time":time,"start_time":time if start < 0 else start,"stage":stage,"evidence":evidence}
 
 static func analyze_run(report: Dictionary) -> Dictionary:
+	if report.get("projection_status","ok")!="ok":
+		return {"status":"out_of_domain","warnings":[issue("currency_projection_out_of_domain","HIGH",float(report.game_seconds),int(report.final_stage),{"errors":report.get("projection_errors",[])})],"timeline_issues":[],"thresholds":THRESHOLDS.duplicate()}
 	var warnings := []
 	var time := float(report.game_seconds)
 	for key in report.weapon_damage_share:
@@ -67,7 +70,13 @@ static func analyze_timeline(points: Array) -> Array:
 		sustained(tracker,result,"upgrades_too_fast",point.upgrade_interval != null and float(point.upgrade_interval) < THRESHOLDS.upgrade_fast and int(point.upgrades) > 1,point,{"upgrade_interval":point.upgrade_interval},"LOW",THRESHOLDS.sustained_seconds)
 		sustained(tracker,result,"growth_vacuum",float(point.growth_idle) >= THRESHOLDS.idle_seconds,point,{"growth_idle":point.growth_idle},"HIGH",float(point.window_seconds))
 		for id in point.resource_balance:
-			var balance := float(point.resource_balance[id])
+			var projected=Wallet.analysis_value(point.resource_balance[id])
+			if projected.status!="ok":
+				if not tracker.has("projection/"+str(id)):
+					result.append(issue("currency_projection_out_of_domain","HIGH",time,int(point.stage),{"resource":id}))
+					tracker["projection/"+str(id)]=true
+				continue
+			var balance:float=projected.amount
 			var income := float(point.resource_income.get(id,0))
 			# A zero locked resource is not enough evidence of an economic bottleneck.
 			var resource_active := income > 0 or float(previous.get("resource_income",{}).get(id,0)) > 0

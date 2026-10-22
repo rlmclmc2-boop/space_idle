@@ -1,4 +1,6 @@
 extends RefCounted
+const Wallet=preload("res://scripts/currency_ledger.gd")
+var last_error:=""
 ## Replace this object to experiment with policies; all actions use BattleGame APIs.
 const DECISION_SECONDS := 1.0
 const MAX_PURCHASES := 12
@@ -27,6 +29,13 @@ func weapon_value(game: BattleGame, key: String, level: int) -> float:
 	return value
 
 func act(game: BattleGame, elapsed: float) -> bool:
+	last_error=""
+	for id in game.profile.resources:
+		var projected=Wallet.analysis_value(game.profile.resources[id])
+		if projected.status!="ok":
+			last_error="currency_projection_out_of_domain"
+			if "metrics" in game and game.metrics!=null:game.metrics.record_projection_error("policy",str(id),projected.status)
+			return false
 	for notification in clampi(unlock_acknowledgements_per_visit,0,32):
 		if game.pending_unlocks.is_empty():break
 		game.acknowledge_unlocks()
@@ -82,7 +91,13 @@ func act(game: BattleGame, elapsed: float) -> bool:
 				var cost := 0.0
 				var costs := game.slot_upgrade_cost(category,index)
 				for id in costs:
-					cost += float(costs[id])/maxf(float(game.profile.resources.get(id,0)),1.0)
+					var quoted=Wallet.analysis_value(costs[id])
+					var budget=Wallet.analysis_value(game.profile.resources.get(id,0))
+					if quoted.status!="ok" or budget.status!="ok":
+						last_error="currency_projection_out_of_domain"
+						if "metrics" in game and game.metrics!=null:game.metrics.record_projection_error("policy_cost",str(id),"out_of_domain")
+						return false
+					cost += quoted.amount/maxf(budget.amount,1.0)
 				var before: float = game.jewel_equipment_stat(entry)
 				var gain := maxf(0,game.jewel_equipment_stat(entry,int(entry.level)+1)-before)/maxf(before,1.0)
 				if gain <= 0:continue
@@ -118,5 +133,7 @@ func buy_scientist(game: BattleGame, fraction: float) -> void:
 	var purchase := game.scientist_purchase(1)
 	var cheap := int(purchase.count)>0
 	for id in purchase.costs:
-		if float(purchase.costs[id]) > float(game.profile.resources.get(id,0))*fraction:cheap = false
+		var quoted=Wallet.analysis_value(purchase.costs[id])
+		var budget=Wallet.analysis_value(game.profile.resources.get(id,0))
+		if quoted.status!="ok" or budget.status!="ok" or quoted.amount>budget.amount*fraction:cheap=false
 	if cheap:game.generate_scientist()

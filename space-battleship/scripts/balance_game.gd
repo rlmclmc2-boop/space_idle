@@ -279,20 +279,23 @@ func begin_retreat() -> void:
 	super.begin_retreat()
 
 func generate_scientist(amount := 1) -> bool:
-	var before: Dictionary = profile.resources.duplicate()
-	var previous_count:int=int(profile.scientists)
+	var before: Dictionary = profile.resources.duplicate(true)
+	var previous_count:int=int(profile.get("scientists",0))
 	var result := super.generate_scientist(amount)
 	if result and metrics != null:
-		for id in before:before[id] = float(before[id])-float(profile.resources[id])
+		for id in before:
+			var old:Currency.Outcome=Currency.decode(before[id])
+			var current:Currency.Outcome=Currency.decode(profile.resources[id])
+			var spent:Currency.Outcome=Currency.subtract(old.value,current.value)
+			if spent.status!="ok":return result
+			before[id]=Currency.encode(spent.value)
 		metrics.spend("scientists",before)
 		metrics.use("scientists",int(profile.scientists)-previous_count)
 	return result
 
 func upgrade_reactor(amount: int) -> bool:
-	var before := float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))
 	var result := super.upgrade_reactor(amount)
 	if result and metrics != null:
-		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))})
 		metrics.use("reactor_levels",amount)
 	return result
 

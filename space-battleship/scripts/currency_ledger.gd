@@ -149,6 +149,27 @@ static func text(value: Value) -> String:
 	var exponent: String = _signed_integer(("-" if highest.begins_with("-") else "") + I.digits(magnitude), str(int(front[1])))
 	return "%.2fe%s" % [front[0], exponent if exponent.begins_with("-") else "+" + exponent]
 
+static func exact_text(value: Value) -> String:
+	if not _checked(value):return "invalid"
+	if value._terms.is_empty():return "0"
+	var terms:=PackedStringArray()
+	for index in range(value._terms.size()-1,-1,-1):
+		var term:Dictionary=value._terms[index]
+		var exponent:String=_signed_integer(str(term.p),str(term.p))
+		exponent=_signed_integer(exponent,exponent)
+		var body:String=str(absi(int(term.d)))
+		if exponent!="0":body+=" × 10^("+exponent+")"
+		terms.append(("- " if int(term.d)<0 else ("+ " if not terms.is_empty() else ""))+body)
+	return " ".join(terms)
+
+static func analysis_value(raw: Variant) -> FiniteProjection:
+	var decoded: Outcome = decode(raw)
+	if decoded.status!="ok":return FiniteProjection.new(decoded.status)
+	var projected: FiniteProjection = finite_research_balance(decoded.value,1.7976931348623157e308)
+	if projected.status=="ok" and projected.amount==0.0 and compare(decoded.value,decode(0).value).order>0:
+		return FiniteProjection.new("out_of_domain")
+	return projected if projected.status=="ok" else FiniteProjection.new("out_of_domain")
+
 static func _position_valid(s:String)->bool:
 	if s.is_empty() or s=="-0":return false
 	var start:=1 if s.begins_with("-") else 0

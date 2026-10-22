@@ -10,6 +10,7 @@ var _jobs:Dictionary={}
 var _queue:Array=[]
 var _thread:Thread
 var _active:=0
+var _closed:=false
 var _cancelled_id:=0
 var _mutex:=Mutex.new()
 var _phase:="idle"
@@ -29,6 +30,7 @@ class Outcome extends RefCounted:
 		request_id=id
 
 func request(inputs:Dictionary)->Outcome:
+	if _closed:return Outcome.new("error",0)
 	var id:int=_next_id
 	_next_id+=1
 	_jobs[id]={"inputs":inputs.duplicate(true),"status":"pending","result":{}}
@@ -54,10 +56,14 @@ func _cancelled(id:int)->bool:
 	return stopped
 
 func pump()->void:
+	if _closed:return
 	if _thread!=null and not _thread.is_alive():
 		var result:Dictionary=_thread.wait_to_finish()
-		_jobs[_active].result=result
-		_jobs[_active].status=str(result.status)
+		if bool(_jobs[_active].get("discard",false)):
+			_jobs.erase(_active)
+		else:
+			_jobs[_active].result=result
+			_jobs[_active].status=str(result.status)
 		_thread=null
 		_active=0
 	if _thread==null and not _queue.is_empty():
@@ -96,11 +102,28 @@ func confirmed_content(id:int,fingerprint:String)->Dictionary:
 func forget(id:int)->void:
 	cancel(id)
 	if id!=_active:_jobs.erase(id)
+	elif _jobs.has(id):_jobs[id].discard=true
+
+func shutdown()->void:
+	_closed=true
+	for id in _queue:
+		if _jobs.has(id):_jobs[id].status="cancelled"
+	_queue.clear()
+	if _thread!=null:
+		cancel(_active)
+		_thread.wait_to_finish()
+		_thread=null
+	_active=0
+	_jobs.clear()
+	_cursors.clear()
 
 func _notification(what:int)->void:
 	if what==NOTIFICATION_PREDELETE and _thread!=null:
-		cancel(_active)
+		_mutex.lock()
+		_cancelled_id=_active
+		_mutex.unlock()
 		_thread.wait_to_finish()
+		_thread=null
 
 func _material(start:int,count:int)->Variant:
 	var last:int=(start+count)/20

@@ -8,6 +8,7 @@ var allocation_timers: Dictionary = {}
 var allocation_intervals: Dictionary = {}
 var allocation_dependencies: Array = []
 var game_ref: WeakRef
+var _pending_upgrades: Dictionary = {}
 const PURCHASE_JOBS := ["equipment_upgrade","hightech_scientists","jewel_auto","reactor_upgrade"]
 
 func _init() -> void:
@@ -32,6 +33,8 @@ func attach(g) -> void:
 	g.event.connect(on_event)
 
 func reset_schedule(g) -> void:
+	for pending in _pending_upgrades.values():g.cancel_upgrade_batch(int(pending.request_id))
+	_pending_upgrades.clear()
 	timers.clear()
 	intervals.clear()
 	allocation_timers.clear()
@@ -46,6 +49,7 @@ func invalidate_jobs(g, jobs: Array) -> void:
 
 func invalidate_member(g, item: Dictionary) -> void:
 	if not PURCHASE_JOBS.has(str(item.assignmentType)):return
+	if _pending_upgrades.has(str(item.crewId)):return
 	# First change fixes the deadline. Later changes merge without postponing it.
 	if timers.has(item.crewId):return
 	var row: Dictionary = assignments(g).get(item.assignmentType,{})
@@ -330,6 +334,7 @@ func get_modifier(g, target_type: String, target_id: String, effect_type: String
 
 func advance(g, dt: float) -> void:
 	if g.paused or dt<=0 or not is_finite(dt):return
+	_finish_pending_upgrades(g)
 	# Only pending work advances; passive jobs have no scheduler work.
 	var allocation_due: Array = []
 	for id in allocation_timers:
@@ -350,17 +355,44 @@ func advance(g, dt: float) -> void:
 		timers.erase(id)
 		intervals.erase(id)
 		var row: Dictionary = assignments(g).get(item.get("assignmentType",""),{})
-		if supported(row) and active(g,item) and handlers[str(row.targetType)+":"+str(row.effectType)].call(g,item):
+		if not supported(row) or not active(g,item):continue
+		if str(row.targetType)=="equipment" and str(row.effectType)=="AUTO_UPGRADE":
+			var outcome=auto_upgrade(g,item)
+			if outcome.status=="pending":
+				_pending_upgrades[id]={"request_id":outcome.request_id,"profile":g.profile,"intent":_upgrade_intent(item)}
+			elif outcome.status=="committed" and not outcome.changed_slots.is_empty():
+				invalidate_member(g,item)
+		elif handlers[str(row.targetType)+":"+str(row.effectType)].call(g,item):
 			invalidate_member(g,item)
 	for id in allocation_due:
 		if allocation_timers.has(id):run_reactor_allocation(g,entry(g,str(id)))
 
+
+func _upgrade_intent(item:Dictionary)->Array:
+	return [str(item.get("crewId","")),str(item.get("assignmentType","")),str(item.get("targetId","")),str(item.get("upgradeMode",""))]
+
+func _finish_pending_upgrades(g)->void:
+	for id in _pending_upgrades.keys():
+		var pending:Dictionary=_pending_upgrades[id]
+		var member:Dictionary=entry(g,str(id))
+		if member.is_empty() or not is_same(pending.profile,g.profile) or pending.intent!=_upgrade_intent(member) or not active(g,member):
+			g.cancel_upgrade_batch(int(pending.request_id))
+			_pending_upgrades.erase(id)
+			continue
+		var outcome=g.poll_upgrade_batch(int(pending.request_id))
+		if outcome.status=="pending":continue
+		if outcome.status=="complete":
+			outcome=g.confirm_upgrade_batch(outcome.request_id,outcome.quote_fingerprint)
+		g.cancel_upgrade_batch(int(pending.request_id))
+		_pending_upgrades.erase(id)
+		if outcome.status=="committed" and not outcome.changed_slots.is_empty():invalidate_member(g,member)
+
 func passive(_g, _item: Dictionary) -> bool:
 	return false
 
-func auto_upgrade(g, item: Dictionary) -> bool:
+func auto_upgrade(g, item: Dictionary):
 	var mode := str(item.get("upgradeMode",""))
-	if not upgrade_modes(g).has(mode):return false
+	if not upgrade_modes(g).has(mode):return g.BatchOutcome.new("rejected")
 	# Match manual module upgrades. Each later module sees the remaining resources.
 	return g.upgrade_equipment_batch(mode)
 

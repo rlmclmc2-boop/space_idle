@@ -41,6 +41,8 @@ class TokenReader extends RefCounted:
 			return "material"
 		if path.size() == 4 and path[0] == "loadout" and path[1] in ["weapons","defence"] and path[3] == "level":
 			return "level"
+		if path.size() == 2 and path[0] == "levels":
+			return "level"
 		return ""
 	func _guard_duplicate(path: Array, key: String) -> bool:
 		return (path.is_empty() and key in ["resources","hyperspace","loadout"]) or path == ["resources"] or path == ["hyperspace","materials"] or (path == ["hyperspace"] and key == "materials") or (path.size() == 3 and path[0] == "loadout" and key == "level")
@@ -128,4 +130,10 @@ static func parse_source(source: String) -> Outcome:
 
 static func valid_resource(raw: Variant) -> bool:
 	return Ledger.decode(raw).status == "ok"
+
+static func valid_int64(raw: Variant, minimum: int = 0) -> bool:
+	if not (raw is int or raw is float) or not is_finite(float(raw)) or raw < minimum or float(raw) != floorf(float(raw)):
+		return false
+	var exact: Variant = I.command_floor(raw)
+	return exact != null and I.compare(exact,I.make(I.MAX_INT))<=0
 

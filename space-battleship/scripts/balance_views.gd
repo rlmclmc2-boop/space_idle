@@ -1,4 +1,5 @@
 extends RefCounted
+const Wallet=preload("res://scripts/currency_ledger.gd")
 ## Tables retain their items/cells. Owners invalidate only tabs whose data changed.
 const LIMIT := 2000
 var writes := 0
@@ -83,7 +84,7 @@ func timeline(report: Dictionary, index: int) -> void:
 	if index >= 0 and index < report.runs.size():
 		var run: Dictionary = report.runs[index]
 		for point in run.timeline.samples:
-			rows.append([clock_text(point.game_time),point.stage,point.dps,point.enemy_hp,point.normal_ttk,point.resource_income,point.resource_balance,point.upgrade_interval,point.player_survivability,point.weapon_damage_share,point.growth_idle,point.marks])
+			rows.append([clock_text(point.game_time),point.stage,point.dps,point.enemy_hp,point.normal_ttk,point.resource_income,_balance_values(point.resource_balance),point.upgrade_interval,point.player_survivability,point.weapon_damage_share,point.growth_idle,point.marks])
 		for event in run.timeline.events:events.append([clock_text(event.time),event.stage,event.kind,event.count,event.data])
 	fill("timeline",rows)
 	fill("events",events)
@@ -96,3 +97,13 @@ func diagnosis(report: Dictionary, index: int) -> void:
 	for warning in report.get("comparison",{}).get("warnings",[]):rows.append([warning.severity,"—","—","—",UIText.t(ISSUE_TEXT[warning.code]),warning.evidence])
 	for warning in report.get("strategy_warnings",[]):rows.append([warning.severity,"—","—","—",UIText.t("lab.v2.strategy_dominance"),warning])
 	fill("diagnosis",rows)
+
+func _balance_values(values:Dictionary)->Dictionary:
+	var projected:Dictionary={}
+	for id in values:
+		var finite=Wallet.analysis_value(values[id])
+		if finite.status=="ok":projected[id]=finite.amount
+		else:
+			var exact=Wallet.decode(values[id])
+			projected[id]="超出分析数值范围："+Wallet.text(exact.value) if exact.status=="ok" else "无效资源值"
+	return projected

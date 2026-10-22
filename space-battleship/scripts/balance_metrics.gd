@@ -1,4 +1,7 @@
 extends RefCounted
+const Wallet=preload("res://scripts/currency_ledger.gd")
+var projection_errors:Array=[]
+var uranium_resource_id:="2"
 const Timeline := preload("res://scripts/balance_timeline.gd")
 ## Lab-only cumulative statistics. Enemy records live only until death/retreat.
 const THRESHOLDS := {"dominance":0.70,"unused":0.01,"ttk_low":0.25,"ttk_high":60.0,"idle_seconds":300.0,"surplus_minutes":30.0}
@@ -42,6 +45,7 @@ var spawn_hp := 0.0
 var blocked_marked := false
 
 func initialize(game: BattleGame) -> void:
+	uranium_resource_id=str(int(game.db.config.reactorUraniumId))
 	for key in BattleGame.WEAPON_KEYS:damage[key] = 0.0
 	for id in game.profile.resources:
 		income[id] = 0.0
@@ -70,8 +74,12 @@ func use(key: String, count := 1) -> void:
 func spend(system: String, costs: Dictionary) -> void:
 	if not spending_by_system.has(system):spending_by_system[system] = {}
 	for id in costs:
-		add(spending,str(id),float(costs[id]))
-		add(spending_by_system[system],str(id),float(costs[id]))
+		var projected=Wallet.analysis_value(costs[id])
+		if projected.status!="ok":
+			record_projection_error("spend",str(id),projected.status)
+			continue
+		add(spending,str(id),projected.amount)
+		add(spending_by_system[system],str(id),projected.amount)
 
 func upgraded(count: int) -> void:
 	if upgrades > 0:
@@ -82,7 +90,11 @@ func upgraded(count: int) -> void:
 	upgrades += count
 
 func on_event(kind: String, payload: Dictionary) -> void:
-	if kind == "collect":add(income,str(payload.id),float(payload.amount))
+	if kind == "collect":
+		var projected=Wallet.analysis_value(payload.amount)
+		if projected.status=="ok":add(income,str(payload.id),projected.amount)
+		else:record_projection_error("income",str(payload.id),projected.status)
+	elif kind=="reactor_changed":spend("reactor",{uranium_resource_id:payload.cost})
 	elif kind == "upgrade":
 		spend("weapons" if str(payload.slot).begins_with("weapons") else "defence",payload.cost)
 		upgraded(int(payload.levels))
@@ -112,7 +124,11 @@ func sample(game: BattleGame, seconds: float, affordable: bool) -> void:
 	elif affordable:blocked_marked = false
 	for id in game.profile.resources:
 		var rate := float(income.get(id,0))/maxf(time/60.0,1.0)
-		if rate > 0 and float(game.profile.resources[id]) > rate*THRESHOLDS.surplus_minutes:
+		var projected=Wallet.analysis_value(game.profile.resources[id])
+		if projected.status!="ok":
+			record_projection_error("balance",str(id),projected.status)
+			continue
+		if rate > 0 and projected.amount > rate*THRESHOLDS.surplus_minutes:
 			add(overflow_seconds,str(id),seconds)
 		else:overflow_seconds[id] = 0.0
 		longest_overflow[id] = maxf(float(longest_overflow.get(id,0)),float(overflow_seconds[id]))
@@ -151,9 +167,9 @@ func report(game: BattleGame) -> Dictionary:
 	if longest_unaffordable >= THRESHOLDS.idle_seconds:warnings.append({"code":"unaffordable","value":longest_unaffordable})
 	for id in longest_overflow:
 		if longest_overflow[id] >= THRESHOLDS.idle_seconds:warnings.append({"code":"resource_surplus","key":id,"value":longest_overflow[id]})
-	var balance: Dictionary = game.profile.resources.duplicate()
+	var balance: Dictionary = game.profile.resources.duplicate(true)
 	balance.jewel_fragments = float(game.profile.jewelFragments)
-	return {"game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
+	return {"projection_status":"ok" if projection_errors.is_empty() else "out_of_domain","projection_errors":projection_errors.duplicate(true),"game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
 		"dps":total/maxf(time,0.000001),"combat_dps":total/maxf(combat_seconds,0.000001),"combat_seconds":combat_seconds,
 		"damage":damage.duplicate(),"weapon_damage_share":shares,"ttk":ttk,"kills":kills,
 		"boss_ttk":boss_ttk_sum/boss_kills if boss_kills > 0 else null,"boss_kills":boss_kills,"unfinished_enemies":born.size(),
@@ -163,3 +179,7 @@ func report(game: BattleGame) -> Dictionary:
 		"upgrades":upgrades,"upgrade_interval":interval_sum/interval_count if interval_count > 0 else null,"longest_upgrade_gap":gap,
 		"system_uses":uses.duplicate(),"system_unused_seconds":system_unused_for,"equipment_utilization":utilization,"equipment_unused_seconds":unused_for,
 		"unlocked":Array(game.profile.unlocked),"timeline":timeline.report(time),"anomalies":warnings,"thresholds":THRESHOLDS.duplicate()}
+
+func record_projection_error(where:String,id:String,status:String)->void:
+	var error:Dictionary={"where":where,"resource":id,"status":status}
+	if not projection_errors.has(error):projection_errors.append(error)
