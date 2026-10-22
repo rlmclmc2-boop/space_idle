@@ -148,10 +148,12 @@ func run() -> void:
 	var ticks: int=map.visual_ticks
 	var updates: int=map.draw_updates
 	var work: float=region.state.build_elapsed
-	g.galaxy_runtime.advance(g,9)
-	check(region.state.build_elapsed==work,"Hidden online batch waits")
 	g.galaxy_runtime.advance(g,1)
-	check(region.state.build_elapsed!=work or region.occupied_count>0,"Hidden batch advances construction dispatch")
+	region=g.galaxy.regions.galaxy_1
+	check(region.state.build_elapsed!=work or region.occupied_count>0,"Hidden presentation retains the normal one-second domain cadence")
+	g.galaxy_runtime.advance(g,9)
+	region=g.galaxy.regions.galaxy_1
+	check(region.state.build_elapsed!=work or region.occupied_count>0,"Further hidden work advances construction dispatch")
 	await process_frame
 	await process_frame
 	check(map.visual_ticks==ticks and map.draw_updates==updates and not map.is_processing(),"Hidden zero visual work")
