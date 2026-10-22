@@ -1,6 +1,6 @@
 # 唯一实施入口：串行修复与架构收敛
 
-**Current S12/P1 record:** dot and replacement astra gave [limited same-object dual PASS](stages/S12/P1_EXIT_DUAL_REVIEW.md) to the audit-prototype finite exit at evidence `163ad3dba4131036446faaa37a6073b513fb3be1`. This closes only P1 prototype prerequisites. S12/A07 remains open; P2 product integration and a new implementation thread await user approval. No main merge is authorized.
+**Current S12/P1 record:** dot and replacement astra gave [limited same-object dual PASS](stages/S12/P1_EXIT_DUAL_REVIEW.md) to the audit-prototype finite exit at evidence `163ad3dba4131036446faaa37a6073b513fb3be1`. This closes only P1 prototype prerequisites. S12/A07 remains open. P2 product integration is authorized in replacement implementation thread `01a1617d-d01d-72c6-bfa2-02e5704b50f4`; dot and existing astra both PASSed the same [P2 plan and wiring prerequisites](stages/S12/P2_INTEGRATION_PLAN.md) at `595dd155b8327442e9fc54b28cb94c1a4ee7bc93`. Runtime implementation may proceed in that scope; no runtime or main-merge PASS is implied.
 
 **S12/P1 research micro-step correction (limited dual PASS on `163ad3d`):** [threshold repair](stages/S12/P1_RESEARCH_THRESHOLD_REPAIR.md) closes two Python finite-host no-op counterexamples from the same-object review. The Godot freeze-2 query bytes and 40-process raw evidence are unchanged; those measurements are reused only for scheduling, not for Python research semantics. This correction was reviewed as part of the limited P1 audit exit; S12 remains open.
 
@@ -20,7 +20,7 @@ The [cold-process source and input freeze](stages/S12/P1_EXIT_COLD_FREEZE.json) 
 
 方案日期：2026-10-20。依据：[缺陷审计 A01—A08](REPORT.md)、[架构补审 AR01—AR07](ARCHITECTURE_REVIEW.md)，审计基线 `e3db28386fd0d402f2dc6ae2b2ac4ab7f81674b3`，已交付审计提交 `6303395d5e5e07318797022bb4eed116758a52b5`。
 
-**Current authority:** S00-S11 are closed. S12/P1 has a [limited same-object dual PASS for the audit-only finite prototype](stages/S12/P1_EXIT_DUAL_REVIEW.md) at evidence `163ad3dba4131036446faaa37a6073b513fb3be1`. S12/A07 remains open; the prior runtime candidate is paused, and P2 plus a new implementation thread await user approval. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. The [extreme-MAX policy amendment](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md) remains approved; [first frozen FAIL](stages/S12/P1_EXIT_COLD_RESULT.md) and older performance failures remain historical. This P1 verdict does not validate real Godot/native/save/UI integration or authorize main merge.
+**Current authority:** S00-S11 are closed. S12/P1 has a [limited same-object dual PASS for the audit-only finite prototype](stages/S12/P1_EXIT_DUAL_REVIEW.md) at evidence `163ad3dba4131036446faaa37a6073b513fb3be1`. S12/A07 remains open; the prior runtime candidate is paused. User approved replacement/P2; parent and existing astra gave same-object plan PASS at `595dd155b8327442e9fc54b28cb94c1a4ee7bc93`. Thread `01a1617d-d01d-72c6-bfa2-02e5704b50f4` now implements the approved P2 scope. Main remains `31e79337741bf9860d69fff21dae6be994dacd00`. The [extreme-MAX policy amendment](stages/S12/P0_P1_EXTREME_MAX_AMENDMENT.md) remains approved; [first frozen FAIL](stages/S12/P1_EXIT_COLD_RESULT.md) and older performance failures remain historical. This P1 verdict does not validate real Godot/native/save/UI integration or authorize main merge.
 
 原定 **北京时间 2026-10-21 11:00（UTC 03:00）** 的整体报告已交付。下一次整体报告按用户最新要求定于 **北京时间 2026-10-21 18:00（UTC 10:00）**；报告须交付准确的整体状态、已经合入内容、双审证据、未完成和阻塞项，不承诺所有规划阶段此前完成。报告时间不是跳过验证、把 blocked 当通过、提前合并或降低双审要求的理由。
 
@@ -754,16 +754,24 @@ integration: N/A
 closure: {state: closed, parent_closed_stage: true, implementation_thread_closed: true, archived_at_utc: "2026-10-21T09:30:26Z", next_stage_allowed: true}
 ```
 
-### S12 current: P1 audit-prototype limited dual PASS; S12/A07 open
+### S12 current: P2 implementation authorized; P1 limited evidence preserved
 
 ```yaml
 stage: S12
-status: awaiting_decision
+status: in_progress
 p0: extreme_max_quantity_and_fee_policy_approved
 p1: audit_only_finite_exit_limited_dual_pass
 p1_reviewed_evidence_sha: 163ad3dba4131036446faaa37a6073b513fb3be1
 p1_review_record: stages/S12/P1_EXIT_DUAL_REVIEW.md
-p2: not_started_pending_user_approval
+p2: in_progress_authorized
+implementation_thread_id: 01a1617d-d01d-72c6-bfa2-02e5704b50f4
+p2_plan_sha: 595dd155b8327442e9fc54b28cb94c1a4ee7bc93
+p2_plan_parent_review: PASS
+p2_plan_astra_review: PASS
+p2_plan_entry: stages/S12/P2_INTEGRATION_PLAN.md
+p2_wiring_entry: stages/S12/P2_WIRING_PREREQUISITES.md
+p2_runtime_review: PENDING
+p2_authority_source: parent delegation after same-object plan dual PASS, 2026-10-22
 prior_runtime_implementation_thread_id: 01a15dcd-a9fa-76f2-a28f-312cf153a002
 prior_runtime_implementation_state: paused
 base_main_sha: 31e79337741bf9860d69fff21dae6be994dacd00
@@ -772,7 +780,7 @@ reuse_reference_sha: 2a6119564e1cffc07bf0b833c3118b97faf6d728
 reuse_reference_approved: false
 evidence_branch: audit/code-review-e3db2838-20261020
 evidence_entry: stages/S12/P1_EXIT_DUAL_REVIEW.md
-next_action: await_user_approval_for_p2_and_new_implementation_thread
+next_action: implement_narrow_interfaces_then_vertical_wiring_then_integrated_validation_in_same_thread
 closure: open
 ```
 
