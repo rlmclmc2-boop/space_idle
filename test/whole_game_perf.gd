@@ -19,6 +19,7 @@ class Meter extends RefCounted:
   times[key][0]+=1;times[key][1]+=us;times[key][2]=max(times[key][2],us)
 var meter=Meter.new()
 var results=[]
+var page_checks:Array=[]
 func _initialize():
  Engine.set_meta("saved_perf",meter)
  call_deferred("run")
@@ -95,8 +96,9 @@ func run():
  var allocation_started:=Time.get_ticks_usec()
  if reactor_level>1:assert(g.set_reactor_allocation("smelting",g.reactor_capacity()))
  var allocation_command_us:=Time.get_ticks_usec()-allocation_started
+ var galaxy_assignment:=false
  if rich:
-  g.assign_crew("navigator","galaxy_explore","galaxy_2")
+  galaxy_assignment=g.assign_crew("navigator","galaxy_explore","galaxy_2")
   g.state=BattleGame.State.COMBAT;g.spawn_group()
   var template=g.enemies[0].duplicate(true);g.enemies.clear()
   var slots:Array=[]
@@ -108,7 +110,7 @@ func run():
    g.enemies.append(enemy)
   g.native_execution_auto=true;g.admit_native_compiled_execution("native_rich15_layer2")
  scene.refresh_structure();scene.refresh_tab_visibility()
- print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"resolution":str(root.size),"cap":Engine.max_fps,"low_processor":OS.low_processor_usage_mode}))
+ print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"resolution":str(root.size),"cap":Engine.max_fps,"low_processor":OS.low_processor_usage_mode,"galaxy_assignment":galaxy_assignment}))
  var realtime=OS.get_environment("PERF_REALTIME")=="1"
  scene.set_process(realtime)
  var scenarios=[0,4,1,2,6,8]
@@ -121,6 +123,7 @@ func run():
  var scenario_index=-1
  for page in scenarios:
   scenario_index+=1
+  meter.times.clear();meter.enabled=true
   var switch_started=Time.get_ticks_usec()
   scene.select_system(page)
   if page==8 and OS.get_environment("PERF_GALAXY_STEADY")=="1":
@@ -129,6 +132,8 @@ func run():
   var switch_cpu_us=Time.get_ticks_usec()-switch_started
   await process_frame
   var switch_frame_us=Time.get_ticks_usec()-switch_started
+  meter.enabled=false
+  var switch_timings=meter.times.duplicate(true)
   var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[];var live_enemies=[]
   var memory=0;var nodes=0;var resources=0
   meter.enabled=false;meter.times.clear()
@@ -150,16 +155,81 @@ func run():
     projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size());live_enemies.append(g.enemies.size())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
-  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_timings":switch_timings,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw
    root.get_texture().get_image().save_png("res://.runtime/page-%d.png" % page)
  FileAccess.open("res://.runtime/whole-perf.json",FileAccess.WRITE).store_string(JSON.stringify(results," "))
+ if OS.get_environment("PERF_CHECK_PAGES")=="1":await check_pages(scene)
  scene.set_process(false)
  if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
  if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
  scene.game.launch_provider=Callable();scene.game.target_provider=Callable()
  scene.queue_free();await process_frame;await process_frame
  Engine.remove_meta("saved_perf")
- quit()
+ quit(1 if page_checks.any(func(item):return not item.ok) else 0)
+
+func page_check(ok:bool,label:String)->void:
+ page_checks.append({"ok":ok,"label":label})
+ if not ok:printerr("PAGE CHECK FAILED: ",label)
+func check_pages(scene)->void:
+ # Run only after the timed frames; mutations here never enter comparisons.
+ var g=scene.game
+ g.paused=true
+ scene.select_system(6)
+ var panel=scene.planet_panel
+ page_check(panel.cards.size()==6 and panel.cards.values().filter(func(card):return card.has("visual")).size()==1,"Only the visited planet owns detail controls; all six navigation entries exist")
+ var planets=g.planets.save_data();var crew=g.crew.save_data()
+ panel._append_log("2","C18 pending event")
+ var identities:Dictionary={}
+ for id in panel.cards:
+  panel.cards[id].list_button.pressed.emit()
+  await process_frame
+  var card:Dictionary=panel.cards[id]
+  page_check(panel.selected_planet_id==id and card.visual.planet_id==id and card.stage.is_visible_in_tree(),"Planet "+id+" real selection signal builds its current content")
+  page_check(panel.cards.values().filter(func(item):return item.has("stage") and item.stage.is_visible_in_tree()).size()==1,"Planet "+id+" has exactly one visible stage")
+  if id=="2":page_check(card.log_label.text.contains("C18 pending event"),"Unvisited planet retains pending presentation events")
+  identities[id]=card.stage.get_instance_id()
+ scene.select_system(0);scene.select_system(6)
+ for id in panel.cards:
+  panel.cards[id].list_button.pressed.emit()
+  page_check(panel.cards[id].stage.get_instance_id()==identities[id],"Planet "+id+" reuses visited controls")
+ page_check(g.planets.save_data()==planets and g.crew.save_data()==crew,"Page construction and switching leave owned planet/crew state unchanged")
+ scene.select_system(8)
+ var map=scene.galaxy_panel.map
+ var complete=g.galaxy.regions.galaxy_1
+ var fresh=preload("res://scripts/galaxy_region.gd").new()
+ fresh.setup(complete.row,complete.builds,complete.chunk_size)
+ for region in [complete,fresh]:
+  var key:String="complete" if region==complete else "fresh"
+  map.select(region)
+  var bytes:PackedByteArray=map.fog_image.get_data();var equal:bool=bytes.size()==region.cells.size()
+  for index in bytes.size():
+   if bytes[index]!=(255 if region.cells[index]!=0 else 0):equal=false;break
+  page_check(equal,"Galaxy "+key+" full R8 mask equals its authoritative cells")
+  var builds:int=map.city.rebuild_count
+  map.refresh();map.sync_visibility()
+  page_check(map.city.rebuild_count==builds,"Galaxy "+key+" stable refresh preserves static geometry")
+ scene.select_system(0)
+ var equipment=scene.equipment_panel
+ var wallet:Dictionary=g.economy.save_data()
+ wallet.resources={"1":0.0,"2":0.0}
+ page_check(g.economy.install_snapshot(wallet),"Zero-budget fixture installs through economy")
+ equipment.refresh_pending()
+ page_check(equipment.items.values().all(func(item):return not item.upgradeable and not item.direct_upgradeable),"Cards immediately disable purchases after budget depletion")
+ var quote:Dictionary=g.slot_upgrade_cost("weapons",0,1)
+ for id in quote:
+  if wallet.resources.has(str(id)):wallet.resources[str(id)]=quote[id]
+  else:wallet.materials[str(id)]=quote[id]
+ page_check(g.economy.install_snapshot(wallet),"Exact one-level budget installs")
+ equipment.set_upgrade_amount(1);equipment.refresh_pending()
+ page_check(equipment.items.weapons_0.upgradeable and equipment.items.weapons_0.direct_upgradeable,"One-level affordability matches the domain quote")
+ equipment.set_upgrade_amount(10)
+ page_check(equipment.items.weapons_0.upgradeable and not equipment.items.weapons_0.direct_upgradeable,"Ten-level button and one-level filter retain distinct affordability")
+ equipment.set_upgrade_amount(0)
+ page_check(equipment.items.weapons_0.direct_upgradeable and g.max_upgrade_amount_slot("weapons",0)==1,"MAX uses the same exact budget and domain count")
+ var level:int=g.slot_entry("weapons",0).level
+ equipment.cards.weapons_0.upgrade_button.pressed.emit()
+ page_check(g.slot_entry("weapons",0).level==level+1,"Actual card signal purchases its quoted MAX level")
+ print("CHECKS ",JSON.stringify(page_checks))

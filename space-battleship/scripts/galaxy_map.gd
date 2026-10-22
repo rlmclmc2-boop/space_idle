@@ -179,8 +179,9 @@ func share_materials(node: Node) -> void:
 			if (key.begins_with("Core") or key.begins_with("GalaxyToon")) and mat is StandardMaterial3D:
 				# Soft baked occlusion fits the rounded core; avoid jagged self-shadows.
 				node.cast_shadow=GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				var colors=node.mesh.surface_get_arrays(index)[Mesh.ARRAY_COLOR]
-				if colors is PackedColorArray and not colors.is_empty() and not mat.vertex_color_use_as_albedo:mat.vertex_color_use_as_albedo=true
+				if not mat.vertex_color_use_as_albedo:
+					var colors=node.mesh.surface_get_arrays(index)[Mesh.ARRAY_COLOR]
+					if colors is PackedColorArray and not colors.is_empty():mat.vertex_color_use_as_albedo=true
 			if not material_cache.has(key):material_cache[key]=mat
 			node.set_surface_override_material(index,material_cache[key])
 	for child in node.get_children():share_materials(child)
@@ -220,9 +221,11 @@ func select(value) -> void:
 	core.scale=Vector3.ONE*1.2
 	models.add_child(core)
 	core.position=city_layout.core_offset
-	fog_image=Image.create(int(region.row.map_w),int(region.row.map_h),false,Image.FORMAT_R8)
-	for y in fog_image.get_height():
-		for x in fog_image.get_width():fog_image.set_pixel(x,y,Color(float(region.cells[y*int(region.row.map_w)+x]),0,0))
+	# Build the same R8 mask in one upload; no per-pixel Image/Color calls.
+	var fog_bytes: PackedByteArray = region.cells.duplicate()
+	for index in fog_bytes.size():fog_bytes[index]=255 if fog_bytes[index]!=0 else 0
+	fog_image=Image.create_from_data(int(region.row.map_w),int(region.row.map_h),false,Image.FORMAT_R8,fog_bytes)
+	region.dirty_chunks.clear() # The full mask already includes every dirty chunk.
 	fog_texture=ImageTexture.create_from_image(fog_image)
 	space_material.set_shader_parameter("explored",fog_texture)
 	for slot in region.slots:

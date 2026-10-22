@@ -26,7 +26,7 @@ func apply_region_fixture(g,raw:Dictionary)->void:
 	next.setup(region.row,region.builds,region.chunk_size,snapshot.galaxies.galaxy_1)
 	next.building_revision=region.building_revision+1
 	g.galaxy.commit_region({"key":"galaxy_1","region":next,"refitted":true})
-	g.invalidate_stat_cache()
+	g.notify_configuration_changed()
 
 func _initialize() -> void:call_deferred("run")
 func run() -> void:

@@ -7,6 +7,7 @@ var mounts := {}
 var mount_paths := {}
 var mount_cache := {}
 var rebuild_count := 0
+var platform_templates := {}
 
 func configure(value) -> void:
 	layout=value
@@ -20,14 +21,39 @@ func configure(value) -> void:
 			if not edge.has(id):continue
 			var other:int=edge[1] if edge[0]==id else edge[0]
 			used.append((layout.point(other)-layout.point(id)).normalized())
-		var base:=deck(layout.key(id),layout.point(id),Vector2(16,16),used)
+		var base:=platform_instance(layout.key(id),layout.point(id),used)
 		base.set_meta("slot_id",id)
-		maintenance_hatch(base,Vector3(5.8,0,5.8));bake(base);platform_nodes.append(base)
+		platform_nodes.append(base)
 	for edge in layout.links:
 		var side:Vector3=(layout.point(edge[1])-layout.point(edge[0])).normalized()
 		bridge(anchor(layout.key(edge[0]),side),anchor(layout.key(edge[1]),-side))
 		var body:Node3D=connections[-1].mesh;bake(body);bridge_nodes.append(body)
 	rebuild_count+=1
+
+func platform_instance(key:String,at:Vector3,used:Array) -> Node3D:
+	# The authored 16x16 deck varies only by its four service openings.
+	# Reuse its baked mesh and exact socket hierarchy, not temporary primitives.
+	var mask:=0
+	var sides:=[Vector3.RIGHT,Vector3.LEFT,Vector3.FORWARD,Vector3.BACK]
+	for index in sides.size():
+		if used.has(sides[index]):mask|=1<<index
+	if platform_templates.has(mask):
+		var template:Dictionary=platform_templates[mask]
+		var node:Node3D=template.scene.instantiate()
+		node.name=key;node.position=at;add_child(node)
+		for side in used:ports[key+"/"+str(side)]=node.get_node(template.sockets[side])
+		return node
+	var node:=deck(key,at,Vector2(16,16),used)
+	maintenance_hatch(node,Vector3(5.8,0,5.8));bake(node)
+	var sockets:Dictionary={}
+	for side in used:sockets[side]=node.get_path_to(anchor(key,side))
+	var pending:Array[Node]=[node]
+	while not pending.is_empty():
+		var parent:Node=pending.pop_back()
+		for child in parent.get_children():child.owner=node;pending.append(child)
+	var packed:=PackedScene.new()
+	if packed.pack(node)==OK:platform_templates[mask]={"scene":packed,"sockets":sockets}
+	return node
 
 func update_mount(id:int,path:String,node:Node3D,bounds:Array,family:String) -> void:
 	if mount_paths.get(id,"")==path:return

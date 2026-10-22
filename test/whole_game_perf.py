@@ -34,6 +34,7 @@ def main():
     parser.add_argument('--enemies', type=int, default=3, choices=(3, 15))
     parser.add_argument('--reactor-level', type=int, default=1)
     parser.add_argument('--balance', type=float, default=1e80)
+    parser.add_argument('--check-pages', action='store_true', help='Check affected page interactions after all measurements')
     parser.add_argument('--capture', action='store_true', help='Capture after measurement; readback excluded from timings')
     parser.add_argument('--max', action='store_true', dest='max_quote')
     parser.add_argument('--realtime', action='store_true')
@@ -80,22 +81,29 @@ def main():
             'battlefield': ['_process', 'draw_battle', 'draw_vertical_battle_hud', '_draw_muzzle_cues'],
             'presented_ship_view': ['set_loadout', 'set_pose', 'apply_parameters', 'set_hull'],
             'presented_battle_game': ['tick', 'tick_projectiles'],
-            'galaxy_map': ['_process', 'refresh', 'asset'],
+            'galaxy_map': ['_process', 'refresh', 'asset', 'select', 'build_city', 'refresh_city_routes'],
+            'galaxy_panel': ['refresh', 'refresh_detail'],
+            'galaxy_city_structure': ['configure'],
+            'galaxy_city_modules': ['bake'],
+            'attribute_projection': ['configuration_inputs', 'stat_inputs', 'slot', 'stat', 'jewel_equipment_stat'],
+            'compiled_combat_rules': ['compile'],
             'enhancement_panel': ['refresh'],
         })
         MODULES['game'] += ['enhancement_protection_status', 'enhancement_module_protection_capacity',
                             'enhancement_effects', 'max_upgrade_amount_slot', 'can_upgrade_slot']
-        MODULES['equipment_tab'] += ['refresh_affordability', 'update_card_cost']
+        MODULES['equipment_tab'] += ['refresh_affordability', 'update_card_cost', 'equipment_item']
+        MODULES['planet_panel'] += ['add_card', 'ensure_card_content', 'refresh_card', '_apply_selection']
+        MODULES['main'] += ['select_system']
         for module in MODULES:
             path = project / 'scripts' / (module + '.gd')
             # Module-specific names preserve superclass dispatch in the real scene.
             code = instrument(path.read_text(encoding='utf-8').replace('->void', '-> void'), module)
-            path.write_text(code.replace('_perf_original_', '_perf_' + module + '_original_'), encoding='utf-8')
+            path.write_text(code.replace('_perf_original_', '_perf_' + module + '_original_').expandtabs(1), encoding='utf-8')
     env = os.environ.copy()
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
-    env.update(PERF_ENEMIES=str(args.enemies), PERF_REACTOR_LEVEL=str(args.reactor_level), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    env.update(PERF_CHECK_PAGES=str(int(args.check_pages)), PERF_ENEMIES=str(args.enemies), PERF_REACTOR_LEVEL=str(args.reactor_level), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     startup = None
@@ -112,7 +120,7 @@ def main():
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
     expected = 1 if args.max_quote else len(args.pages.split(','))
-    report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, 'exit': result.returncode, 'environment': environment, 'rows': rows}
+    report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, 'exit': result.returncode, 'environment': environment, 'rows': rows, 'page_checks': [json.loads(line[7:]) for line in text.splitlines() if line.startswith('CHECKS ')]}
     (area / (args.label + '.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print('Exit:', result.returncode, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
     unexpected_errors = [line for line in text.splitlines() if 'ERROR:' in line and line != 'ERROR: Failed to read the root certificate store.']
