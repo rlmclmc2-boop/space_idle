@@ -49,15 +49,13 @@ func reconcile(g) -> void:
  var common_count: int=g.shared_enhancement_effect_count()
  var weapon_entries: Array=g.combat_weapon_entries()
  var defense_entries: Array=g.defense_entries()
- var defense_order: Array=g.profile.enhancementOrder.get("defence",[])
  var defense_effects={}
  for effect in ["adaptation","memory_material","delayed_damage"]:
-  var rank: int=defense_order.find(effect)
+  var rank: int=g.enhancement_growth.order_position("defence",effect)
   defense_effects[effect]=rank>=0 and rank<common_count
  var weapon_ready={}
- var weapon_order: Array=g.profile.enhancementOrder.get("weapons",[])
- var proficiency_index:=weapon_order.find("proficiency")
- var critical_index:=weapon_order.find("critical")
+ var proficiency_index:int=g.enhancement_growth.order_position("weapons","proficiency")
+ var critical_index:int=g.enhancement_growth.order_position("weapons","critical")
  if not weapons.is_empty():
   for pair in [["proficiency",1],["critical",1],["critical",2]]:
    weapon_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("weapons",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("weapons",pair[0],pair[1])

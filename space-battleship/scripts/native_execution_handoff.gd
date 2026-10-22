@@ -145,7 +145,7 @@ func commit_views(game)->void:
 	game.enhancement_memory_due_pending=false;game.enhancement_deferred_due_pending=false
 	game._mark_enhancement_due(game.enhancement_parameter("memory_interval"),game.enhancement_parameter("deferred_interval"))
 	game.enemy_shield_time=float(state.clock);game.motion_clock=float(state.clock)
-	game.profile.enhancementAttacks=int(state.attack_counter);game.profile.enhancementHits=int(state.incoming_counter)
+	game.commit_enhancement_counters(int(state.attack_counter),int(state.incoming_counter),false)
 	game.projectile_serial=int(state.projectile_serial);game.main_attack_serial=int(state.attack_serial);game.attack_instance_serial=int(state.instance_serial);game.uid=int(state.drop_uid);game.rng=state.rng
 	game.cooldowns=cooldowns
 	for index in enemy_cooldowns.size():game.enemies[index].cooldowns=enemy_cooldowns[index]

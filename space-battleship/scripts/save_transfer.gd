@@ -40,6 +40,7 @@ static func schema() -> Dictionary:
  result.equipmentSwitchUntil={"*":"n"}
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
+ result.enhancementAttacks="counter";result.enhancementHits="counter"
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s","production_time":"n"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
@@ -53,6 +54,7 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
  if depth>48:return false
  if spec is String:
   match spec:
+   "counter":return preload("res://scripts/enhancement_growth.gd").valid_counter(value)
    "filter_value":return value is String or ((value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)))
    "s":return value is String
    "b":return value is bool
@@ -150,6 +152,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not preload("res://scripts/economy_state.gd").valid_snapshot(raw):return {"error":"economy"}
  var material_keys: Array=preload("res://scripts/hyperspace_config.gd").load_config().routes.values().map(func(route):return str(route.material))
  if not preload("res://scripts/economy_state.gd").valid_material_wallet({"materials":raw.materials,"ultimate_cores":raw.ultimateCores},material_keys):return {"error":"materials"}
+ if not preload("res://scripts/enhancement_growth.gd").valid_snapshot(raw):return {"error":"enhancement"}
  if not preload("res://scripts/equipment_state.gd").valid_snapshot(raw,db):return {"error":"equipment"}
  if not preload("res://scripts/ai_tech_tree.gd").valid_snapshot(raw,db.data.ai_tech_tree):return {"error":"research"}
  if not preload("res://scripts/reactor_state.gd").valid_snapshot(raw,db.config):return {"error":"reactor"}

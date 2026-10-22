@@ -122,15 +122,7 @@ func advance(game:RefCounted,dt:float)->bool:
 	game.native_step_phase="native_done";game.native_step_remaining=0.0
 	production_seconds+=dt
 	var values:Dictionary=kernel.metrics()
-	var attacks=int(values.attack_counter);var incoming=int(values.incoming_counter)
-	if attacks!=int(game.profile.enhancementAttacks):
-		game.profile.enhancementAttacks=attacks
-		for key in game.WEAPON_KEYS:game.invalidate_equipment_counter(key)
-		game.event.emit("equipment_stats",{"category":"weapons","counter_only":true})
-	if incoming!=int(game.profile.enhancementHits):
-		game.profile.enhancementHits=incoming
-		for key in game.DEFENSE_KEYS:game.invalidate_equipment_counter(key)
-		game.event.emit("equipment_stats",{"category":"defence","counter_only":true})
+	game.commit_enhancement_counters(int(values.attack_counter),int(values.incoming_counter))
 	game.uid=int(values.drop_uid);game.enemy_shield_time=float(values.clock)
 	game.enhancement_defense_time=float(values.defence_time);game.enhancement_memory_elapsed=float(values.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(values.deferred_elapsed);game.enhancement_deferred_tick=int(values.deferred_tick)

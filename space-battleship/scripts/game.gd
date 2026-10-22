@@ -15,7 +15,8 @@ const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser
 const SAVE_PATH := "user://progress.json"
 const SAVE_VERSION := 7
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
-const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
+const EnhancementGrowth=preload("res://scripts/enhancement_growth.gd")
+var enhancement_growth:=EnhancementGrowth.new()
 const N = preload("res://scripts/growth_number.gd")
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
@@ -181,6 +182,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	rng.randomize()
 	profile = fresh_profile()
 	reset_equipment()
+	enhancement_growth.reset()
 	research.reset()
 	economy.reset({"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))},hyperspace.config)
 	reactor.reset(db.config)
@@ -208,12 +210,6 @@ func fresh_profile() -> Dictionary:
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false, "pickupSeen":false}
 	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
-	profile.enhancementVersion = 1
-	profile.enhancementLevel = 0
-	profile.enhancementOrder = default_enhancement_order()
-	profile.enhancementBranches = default_enhancement_branches()
-	profile.enhancementAttacks = 0
-	profile.enhancementHits = 0
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
 	profile.readUnlocks = []
@@ -373,6 +369,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	manual_hyperspace.reset_for_load(self)
 	profile = fresh_profile()
 	reset_equipment()
+	enhancement_growth.reset()
 	research.reset()
 	resource_samples.clear()
 	pending_unlocks.clear()
@@ -454,7 +451,8 @@ func load_progress_data(raw: Dictionary) -> void:
 	equipment.install_snapshot(raw,db)
 	# Switch deadlines and production time belong to the same time domain.
 	profile.productionElapsed = float(raw.productionElapsed)
-	load_jewels(raw)
+	enhancement_growth.install_snapshot(raw)
+	invalidate_stat_cache()
 	load_hightech(raw)
 	profile.hightechOrder = hightech_slots()
 	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
@@ -663,6 +661,7 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 	saved.merge(economy.save_data(), true)
 	saved.merge(research.save_data(), true)
 	saved.merge(equipment.save_data(), true)
+	saved.merge(enhancement_growth.save_data(), true)
 	saved.merge(reactor.save_data(), true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
@@ -1477,6 +1476,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.productionElapsed=production_time()
 	profile=next
 	reset_equipment()
+	enhancement_growth.reset()
 	research.reset()
 	economy.reset_run_fragments()
 	var empty_wallet := economy.material_wallet()
@@ -2920,38 +2920,6 @@ func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
 func jewels_unlocked() -> bool:
 	return content_unlocked("feature", "jewels")
 
-func load_jewels(raw: Dictionary) -> void:
-	# Enhancement schema v1 replaces bag, sockets and per-module history once.
-	# Legacy saves retain only their existing fragment balance, with no refund.
-	invalidate_stat_cache()
-	profile.jewels = []
-	profile.enhancementVersion = 1
-	profile.enhancementLevel = 0
-	profile.enhancementOrder = default_enhancement_order()
-	profile.enhancementBranches = default_enhancement_branches()
-	profile.enhancementAttacks = 0
-	profile.enhancementHits = 0
-	if int(raw.get("enhancementVersion",0)) == 1 or raw.has("enhancementLevel"):
-		for field in ["enhancementLevel", "enhancementAttacks", "enhancementHits"]:
-			var value = raw.get(field,0)
-			if nonnegative_number(value) and float(value)==floorf(float(value)) and float(value)<9223372036854775807.0 and (field!="enhancementLevel" or float(value)<=ENHANCEMENT_LEVEL_LIMIT):
-				profile[field] = int(value)
-		var orders = raw.get("enhancementOrder",{})
-		if orders is Dictionary:
-			for category in ["weapons","defence"]:
-				if valid_enhancement_order(category,orders.get(category)):profile.enhancementOrder[category]=orders[category].duplicate()
-		var branches = raw.get("enhancementBranches",{})
-		if branches is Dictionary:
-			for category in default_enhancement_order():
-				var effects = branches.get(category,{})
-				if not effects is Dictionary:continue
-				for effect in default_enhancement_order()[category]:
-					var nodes = effects.get(effect,{})
-					if not nodes is Dictionary:continue
-					for node in ["1","2","3"]:
-						if nodes.get(node,"") in ["A","B"]:profile.enhancementBranches[category][effect][node]=nodes[node]
-
-
 func jewel_ratio() -> float:
 	var value = db.levels[clampi(stage-1,0,db.levels.size()-1)].get("jewelRatio",1.0)
 	return float(value) if nonnegative_number(value) else 1.0
@@ -3006,41 +2974,35 @@ func jewel_kill_drop(enemy: Dictionary) -> void:
 		drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+65,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
 
 func default_enhancement_order() -> Dictionary:
-	return {"weapons":["proficiency","repeat","critical"],"defence":["adaptation","memory_material","delayed_damage"]}
+	return EnhancementGrowth.default_order()
 
 func default_enhancement_branches() -> Dictionary:
-	var result := {}
-	for category in default_enhancement_order():
-		result[category]={}
-		for effect in default_enhancement_order()[category]:result[category][effect]={}
-	return result
+	return EnhancementGrowth.default_branches()
 
 func enhancement_effect_threshold(index: int) -> int:
-	return int(enhancement_parameter("threshold_%d" % (index+1))) if index in [0,1,2] else -1
+	return EnhancementGrowth.effect_threshold(db,index)
 
 func enhancement_branch_threshold(node: int, category: String, effect: String) -> int:
-	if node not in [1,2,3]:return -1
-	var index: int=profile.enhancementOrder.get(category,[]).find(effect)
-	if index<0:return -1
-	return int(enhancement_parameter("branch_threshold_%d" % node)+enhancement_parameter("branch_position_offset_%d" % (index+1)))
+	return enhancement_growth.branch_threshold(db,node,category,effect)
 
 func valid_enhancement_branch(category: String, effect: String, node: int) -> bool:
-	return default_enhancement_order().has(category) and default_enhancement_order()[category].has(effect) and node in [1,2,3]
+	return EnhancementGrowth.valid_branch(category,effect,node)
 
 func enhancement_branch_unlocked(category: String, effect: String, node: int) -> bool:
-	return enhancement_unlocked() and valid_enhancement_branch(category,effect,node) and enhancement_effective_level()>=enhancement_branch_threshold(node,category,effect)
+	return enhancement_growth.branch_unlocked(db,category,effect,node,enhancement_effective_level(),enhancement_unlocked())
 
 func enhancement_branch_choices(category: String, effect: String) -> Dictionary:
-	return profile.enhancementBranches.get(category,{}).get(effect,{}).duplicate()
+	return enhancement_growth.branch_choices(category,effect)
 
 func enhancement_branch_choice(category: String, effect: String, node: int) -> String:
-	return str(profile.enhancementBranches.get(category,{}).get(effect,{}).get(str(node),""))
+	return enhancement_growth.branch_choice(category,effect,node)
 
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
 	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
 	if enhancement_branch_choice(category,effect,node)==choice:return true
-	if not native_before_configuration_change():return false
-	profile.enhancementBranches[category][effect][str(node)]=choice
+	var plan:=enhancement_growth.prepare_branch(db,category,effect,node,choice,enhancement_effective_level(),enhancement_unlocked())
+	if plan.is_empty() or not native_before_configuration_change() or not enhancement_growth.proposal_current(plan):return false
+	enhancement_growth.commit_configuration(plan)
 	# Selection invalidates projections and only the removed branch's transient buffs.
 	invalidate_stat_cache()
 	enhancement_branches.reconcile(self)
@@ -3104,7 +3066,7 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 	match effect:
 		"proficiency","adaptation":
 			result.growth=enhancement_parameter(effect+"_growth") if active_level>0 else 0.0
-			result.history=int(profile.enhancementAttacks if effect=="proficiency" else profile.enhancementHits)
+			result.history=enhancement_growth.history(effect)
 			result.branch_bonus_percent=enhancement_branches.a_count(self,sample,effect)*enhancement_parameter("proficiency_a_damage_bonus" if effect=="proficiency" else "adaptation_a_capacity_bonus")*100.0
 		"repeat":
 			result.probability_percent=enhancement_branches.repeat_probability(self,sample)*100.0
@@ -3135,7 +3097,7 @@ func enhancement_unlocked() -> bool:
 	return jewels_unlocked()
 
 func enhancement_level() -> int:
-	return int(profile.enhancementLevel)
+	return enhancement_growth.level()
 
 func enhancement_level_bonus() -> int:
 	return gem_drop_level_bonus()
@@ -3144,72 +3106,51 @@ func enhancement_effective_level() -> int:
 	return enhancement_level() + enhancement_level_bonus()
 
 func enhancement_level_limit() -> int:
-	return ENHANCEMENT_LEVEL_LIMIT
+	return EnhancementGrowth.LEVEL_LIMIT
 
 func enhancement_at_limit() -> bool:
 	return enhancement_level()>=enhancement_level_limit()
 
 func enhancement_cost(target_level := -1) -> Variant:
-	var target := enhancement_level()+1 if target_level<0 else target_level
-	if target<1:return 0.0
-	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.power(enhancement_parameter("cost_growth"),target-1)))
+	return enhancement_growth.cost(db,target_level)
 
 func can_upgrade_enhancement() -> bool:
 	return enhancement_unlocked() and not enhancement_at_limit() and N.compare(economy.balance("jewel"),enhancement_cost())>=0
 
 func enhancement_purchase_cost(count: int) -> Variant:
-	if count<=0:return 0.0
-	var first = enhancement_cost()
-	if count==1:return first
-	var growth := enhancement_parameter("cost_growth")
-	# Integer authored growth means every level costs whole fragments. Sum the
-	# next count levels geometrically, without subtracting large prefix sums or
-	# traversing levels. GrowthNumber keeps overflowing powers JSON-safe.
-	var factor = float(count) if growth==1.0 else N.divide(N.subtract(N.power(growth,count),1.0),growth-1.0)
-	return N.ceiling(N.multiply(first,factor))
+	return enhancement_growth.purchase_cost(db,count)
 
 func enhancement_max_upgrades(limit := -1) -> int:
-	if not enhancement_unlocked():return 0
-	var low := 0
-	var high := enhancement_level_limit()-enhancement_level()
-	if limit>=0:high=mini(high,limit)
-	while low<high:
-		var middle := low+int((high-low+1)/2)
-		if N.compare(economy.balance("jewel"),enhancement_purchase_cost(middle))>=0:low=middle
-		else:high=middle-1
-	return low
+	return enhancement_growth.max_upgrades(db,economy.balance("jewel"),limit) if enhancement_unlocked() else 0
 
 func upgrade_enhancement(count := 1) -> int:
 	if count==0 or not enhancement_unlocked():return 0
-	var purchased := enhancement_max_upgrades(count)
-	if purchased>0:
-		if not native_before_configuration_change():return 0
-		if not economy.debit({"jewel":enhancement_purchase_cost(purchased)}):return 0
-		profile.enhancementLevel+=purchased
-		invalidate_stat_cache()
-		sync_enhancement_buffers()
-		save_dirty = true
-		event.emit("enhancement_changed", {"purchased":purchased})
-		event.emit("jewels_changed", {"slot":"","slots":[]})
-		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
-	return purchased
+	var plan:=enhancement_growth.prepare_upgrade(db,economy.balance("jewel"),count)
+	if plan.is_empty():return 0
+	var wallet_revision:=economy.revision
+	if not native_before_configuration_change():return 0
+	if wallet_revision!=economy.revision or not enhancement_growth.proposal_current(plan):return 0
+	# The quoted expense and growth are committed without intervening callbacks.
+	if not economy.debit({"jewel":plan.cost}):return 0
+	enhancement_growth.commit_configuration(plan)
+	invalidate_stat_cache();sync_enhancement_buffers();save_dirty=true
+	event.emit("enhancement_changed", {"purchased":plan.purchased})
+	event.emit("jewels_changed", {"slot":"","slots":[]})
+	for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+	return int(plan.purchased)
 
 func enhancement_order(category: String) -> Array:
-	return profile.enhancementOrder.get(category,[]).duplicate()
+	return enhancement_growth.order(category)
 
 func valid_enhancement_order(category: String, value: Variant) -> bool:
-	if not value is Array or value.size()!=3 or not default_enhancement_order().has(category):return false
-	var remaining: Array = default_enhancement_order()[category].duplicate()
-	for kind in value:
-		if not kind is String or not remaining.has(kind):return false
-		remaining.erase(kind)
-	return remaining.is_empty()
+	return EnhancementGrowth.valid_order(category,value)
 
 func set_enhancement_order(category: String, order: Array) -> bool:
 	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return false
 	if enhancement_order(category)==order:return true
-	if not native_before_configuration_change():return false
-	profile.enhancementOrder[category]=order.duplicate()
+	var plan:=enhancement_growth.prepare_order(category,order)
+	if plan.is_empty() or not native_before_configuration_change() or not enhancement_growth.proposal_current(plan):return false
+	enhancement_growth.commit_configuration(plan)
 	invalidate_stat_cache()
 	enhancement_branches.reconcile(self)
 	sync_enhancement_buffers()
@@ -3229,22 +3170,26 @@ func available_effect_count(entry: Dictionary) -> int:
 
 func shared_enhancement_effect_count() -> int:
 	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.effect_count
-	if not enhancement_unlocked():return 0
-	var count := 0
-	var shared_level := enhancement_effective_level()
-	for index in 3:
-		if shared_level>=enhancement_effect_threshold(index):count+=1
-	return count
+	return EnhancementGrowth.effect_count(db,enhancement_effective_level(),enhancement_unlocked())
 
 func record_enhancement_attack() -> void:
-	profile.enhancementAttacks += 1
+	enhancement_growth.record_attack();save_dirty=true
 	for key in WEAPON_KEYS:invalidate_equipment_counter(key)
 	event.emit("equipment_stats",{"category":"weapons"})
 
 func record_enhancement_hit() -> void:
-	profile.enhancementHits += 1
+	enhancement_growth.record_hit();save_dirty=true
 	for key in DEFENSE_KEYS:invalidate_equipment_counter(key)
 	event.emit("equipment_stats",{"category":"defence"})
+
+func commit_enhancement_counters(attacks:int,hits:int,notify:bool=true)->void:
+	var changed:=enhancement_growth.commit_combat_counters(attacks,hits)
+	if changed.is_empty():return
+	save_dirty=true
+	for category in changed:
+		for key in (WEAPON_KEYS if category=="weapons" else DEFENSE_KEYS):invalidate_equipment_counter(key)
+	if notify:
+		for category in changed:event.emit("equipment_stats",{"category":category,"counter_only":true})
 
 func enhancement_currency_changed() -> void:
 	save_dirty = true
@@ -3266,18 +3211,7 @@ func enhancement_effects(entry: Dictionary) -> Array:
 	return result
 
 func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
-	var effect := {"kind":kind,"level":level,"threshold":enhancement_effect_threshold(i),"p2":0.0,"p4":0.0,"p5":0.0}
-	match kind:
-		"proficiency","adaptation":effect.p2=enhancement_parameter(kind+"_growth")
-		"repeat":
-			effect.p2=enhancement_parameter("repeat_probability")
-			effect.p4=enhancement_parameter("repeat_growth")
-		"critical":effect.p4=enhancement_parameter("critical_growth")
-		"delayed_damage":effect.p2=enhancement_deferred_fraction()
-		"memory_material":
-			effect.p2=enhancement_parameter("memory_heal_fraction")
-			effect.p4=enhancement_parameter("memory_buffer_fraction")
-	return effect
+	return EnhancementGrowth.effect(db,kind,i,level)
 
 func active_enhancement_effect_count(entry: Dictionary) -> int:
 	return available_effect_count(entry)
@@ -3289,10 +3223,8 @@ func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
 	var count := active_enhancement_effect_count(entry)
 	if count<=0:return -1
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
-	var order: Array = profile.enhancementOrder.get(category,[])
-	for i in count:
-		if str(order[i])==kind:return i
-	return -1
+	var position:=enhancement_growth.order_position(category,kind)
+	return position if position>=0 and position<count else -1
 
 func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
 	return _enhancement_effect_index(entry,kind)>=0
@@ -3310,9 +3242,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 		projected.level=level
 	for effect in (jewel_effects(projected) if effects == null else effects):
 		if effect.kind in ["proficiency", "adaptation"]:
-			var count := maxi(1, int(profile.get("enhancementAttacks" if effect.kind == "proficiency" else "enhancementHits", 0)))
-			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(enhancement_parameter("counter_log_base")) * enhancement_parameter("bonus_round_scale")) / enhancement_parameter("bonus_round_scale")
-			value = N.ceiling(N.multiply(value,1.0+bonus))
+			value = N.ceiling(N.multiply(value,enhancement_growth.history_multiplier(db,effect.kind,int(effect.level),float(effect.p2))))
 	value=N.multiply(value,enhancement_branches.weapon_multiplier(self,projected,entry,include_timed_buffs) if WEAPON_KEYS.has(str(entry.key)) else enhancement_branches.capacity_multiplier(self,projected))
 	var crew_bonus: float
 	if stat_cache_enabled and stat_cache.has("crew_equipment"):
@@ -3917,13 +3847,7 @@ func jewel_hit_player(raw, type: int) -> void:
 		begin_retreat()
 
 func enhancement_deferred_fraction(level := -1) -> float:
-	if not enhancement_unlocked():return 0.0
-	var current := enhancement_effective_level() if level<0 else level
-	if current<=0:return 0.0
-	var scale := enhancement_parameter("deferred_percent_scale")
-	# Computing the complement with ceil avoids rounding high finite levels to 100%.
-	var remaining := maxf(1.0,ceilf(scale/(1.0+enhancement_parameter("deferred_curve_coefficient")*current)))
-	return maxf(0.0,(scale-remaining)/scale)
+	return EnhancementGrowth.deferred_fraction(db,enhancement_effective_level() if level<0 else level) if enhancement_unlocked() else 0.0
 
 func enhancement_deferred_total() -> Variant:
 	var total = 0.0

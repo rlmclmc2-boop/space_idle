@@ -237,7 +237,7 @@ func effect_description(kind: String) -> String:
 	var level := game.enhancement_effective_level()
 	match kind:
 		"proficiency","adaptation":
-			var count := int(game.profile.get("enhancementAttacks" if kind=="proficiency" else "enhancementHits",0))
+			var count := game.enhancement_growth.history(kind)
 			var coefficient := parameter("proficiency_growth" if kind=="proficiency" else "adaptation_growth")
 			var round_scale := parameter("bonus_round_scale")
 			var bonus := roundf(coefficient*level*log(float(maxi(1,count)))/log(parameter("counter_log_base"))*round_scale)/round_scale
@@ -351,7 +351,7 @@ func refresh() -> void:
 	host.set_ui_value(rule_label,"text",UIText.t("enhance.overview.thresholds",{"first":threshold_level(0),"second":threshold_level(1),"third":threshold_level(2)}))
 	refresh_branches()
 	refresh_effect_details()
-	host.set_ui_value(level_label,"tooltip_text",UIText.t("enhance.history",{"attacks":FORMAT.compact(game.profile.get("enhancementAttacks",0)),"hits":FORMAT.compact(game.profile.get("enhancementHits",0))}))
+	host.set_ui_value(level_label,"tooltip_text",UIText.t("enhance.history",{"attacks":FORMAT.compact(game.enhancement_growth.attacks()),"hits":FORMAT.compact(game.enhancement_growth.hits())}))
 
 func effect_details_text(kind: String) -> String:
 	var text := effect_description(kind)
