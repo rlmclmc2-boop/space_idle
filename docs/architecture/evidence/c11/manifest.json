@@ -1,0 +1,40 @@
+{
+  "runtime_sha": "9b779670f0d9f0a58438e719b284af9fdbb1f02f",
+  "counts": {
+    "numbers": 157,
+    "reactor": 33,
+    "native-upgrade": 112,
+    "auto-income": 6,
+    "research": 76,
+    "save-write": 40,
+    "save-reopen": 31,
+    "save-latest": 17,
+    "save-recovery": 19,
+    "reactor-ui": 114,
+    "total": 605
+  },
+  "result": "Ten final processes exited 0, zero failed assertions, no SCRIPT ERROR. Changed source and fixtures match the reused isolated project after LF normalization.",
+  "source_hash_basis": "Git blobs (LF normalization)",
+  "source_sha256": {
+    "space-battleship/scripts/economy_state.gd": "563076995bf72db13d23856a72d4d891dacf808e97f1f4156207b85cd45c3071",
+    "space-battleship/scripts/game.gd": "2b89c204da0412b48d119b618310ee0bf1758c0e9f4ffda7322b9ed338d7e023",
+    "space-battleship/scripts/growth_number.gd": "62819fbb32112f6b543b4de8c9dad9335686fbccc05208ebd74f1580825e4686",
+    "space-battleship/scripts/reactor_integer.gd": "41dfe745b30c93807072439f4d38f4445e805f8ad2fd810b0ce4d2e0060b542f",
+    "space-battleship/scripts/reactor_panel.gd": "f485e4386786239e6151e3744217cdbf76320603a4074a689fa3d1aed4ce9fab",
+    "space-battleship/scripts/reactor_state.gd": "8367cd4ea92197586d58acc2f374207f9591ea37c8da89c325982890a866eba1",
+    "test/test_large_numbers.gd": "51bad8f49e57a17dee5d888be71e2569385ade19a539dd4b7e7c71f1e39da3c0",
+    "test/test_native_numeric_upgrade.gd": "85e2815c40b4ffc26a6609adebd22298e02b48dfa6b8f235632b8d19d011aae3",
+    "test/test_reactor.gd": "de244dcca09d4c67135d6c45080aabe51ae5c96e24908692ed5b546e90df12cb",
+    "test/test_reactor_integer_cost.gd": "d34976db1a665a38a5b7b957282bd3e932fc1b6b7352c69010c30bc9441c2bbf",
+    "test/test_save_boundaries.gd": "619746c390d4112615038ed992d70dbb863e9bb0c8aa79162dbeba52caa19789",
+    "test/test_auto_gen_resources.gd": "6d553a27e1cfcebca1978450b0d513707e87dcc325c6c98d0999cf42f7bda8ec",
+    "test/test_ai_tech_tree.gd": "86b215191b18751ce10f2e0ff53124b189897484cb78110dac3a58138cc4e609"
+  },
+  "native_runtime_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "validation": "Existing test/run.py isolated project reused. Native upgrade, ordinary income/consumption, current v10 four-process disk persistence, actual main.tscn reactor price UI at levels 4 and 2401. GPU fixture disables save; four disk processes enable writer lock and contribution cache.",
+  "quote_timing": "Seven quote/MAX sample sizes through 1,000,000,000 levels plus boundary checks took 39,003 microseconds in the final number process. This is query-only evidence, not an actual billion-level purchase or whole-product performance benchmark. Actual GPU purchase covers reactor level 2400 to 2401.",
+  "numerical_contract": "Binary64 ordinary balances and finite mantissa/exponent growth, no decimal expansion; subprecision credits/debits can leave the represented value unchanged. Materials/cores keep exact bounded integers; enhancement history keeps int64 decimal serialization; reactor capacity/allocation retains existing integer rules and an explicit projection into growth/ratio calculations.",
+  "warnings": "System certificate-store warning remains. Research fixture exits with 51 ObjectDB instances/23 resources in use; the other nine final processes have no such exit warning.",
+  "corrections": "Initial positive-range sample 1e-320 was parsed by the GDScript literal parser as zero and removed from that nonzero fixture. Native fixture initially used an incomplete hand-written drone; now the existing production generator creates a full valid fixture. GPU snapshot uses the actual scene refresh after a command so header and domain panel agree. No production snapshot validation weakened.",
+  "remaining": "Input-version contribution caching, single attribute composition and rounding, external time/visibility semantics, native convergence, full-state copy costs, retained high-level integer capacity/allocation costs, and formal whole-product rendered performance/save-reopen acceptance."
+}

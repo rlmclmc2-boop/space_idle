@@ -31,3 +31,5 @@
 异空间持有权候选 82c0059d22013e463f815efc0b38d099ebbb8142：状态/时钟/库存/领奖未读退出 profile；具体准备、版本复核、经济/native 协调提交和当前保存闭合，500 项必要检查通过。75d6e4c1、28647422 已获双审局部通过。本候选待审；下一精确范围为 economy_state.gd/growth_number.gd 及普通资源算术直接消费者，继续已批准有限精度与属性/时间阶段；材料整数不扩大近似。正式产品性能仍待验收，不合 main。
 
 下一数值闭环已定位：GrowthNumber 算术遇到 {i} 会转入 ReactorInteger 逐位运算；经济另有 exact_budget/reactor_affordable/reactor_remainder，反应炉价格/MAX 维护逐位成本 cursor。需统一普通资源与价格路径；材料/核心、强化历史和反应炉分配整数具有不同职责，不能随资源近似一并改掉。当前仅完成直接依赖核查，尚未提交该数值改动。
+
+有限精度运行候选 9b779670f0d9f0a58438e719b284af9fdbb1f02f：普通资源退出逐位整数和特殊反应炉钱包分支，批量/MAX 共用有限报价，保存 v10；材料/核心、强化历史及容量/分配整数边界保留，605 项必要验证通过。82c0059d 已获双审局部一致通过，本候选待审。下一精确范围为 game.gd stat/equipment_stat/invalidate_stat_cache、直接贡献聚合器、各领域贡献版本与 native 配置消费者，再接 tick/advance_shared_clock_and_economy 及主场景外部时钟；整体产品与性能未验收，不合 main。
