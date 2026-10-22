@@ -17,6 +17,9 @@
 
 ## 2. 必要消费者及实现边界
 
+方案修订（回应父级与现有 astra 对 0da6d6d6 的意见）：准确源码读写/调用点、支持域与异步迁移协议集中于 [P2_WIRING_PREREQUISITES.md](P2_WIRING_PREREQUISITES.md)。按同线程内“窄接口与清单→逐段纵向接入→整体验收”推进，仍不得开始运行修改，直到双方通过修订。
+
+
 按一条纵向资源链串行完成，允许多次提交，但不以局部通过关闭 P2。以下定位均基于 main 的 Git 对象，不取本地修改版。
 
 | 消费者 | 接入与必须保留的行为 |
@@ -30,20 +33,20 @@
 | _build_save_data/_compose_save_data、progress_writer、SaveTransfer candidate Game | 普通/备份/portable/导入同一资源专用 schema；失败不修改 live、不覆盖有效恢复材料，材料 int64 高位完整往返。 |
 | equipment_tab、main、reactor_panel；balance autoplay/game/metrics/timeline/analyzer/views | UI 观察深快照和缓存失效；显示/分析有限投影标识超域，永不回写交易。timeline 复制结果的下游同步适配；有限原域无退化，完整模拟器扩域不在本阶段。 |
 
-资源公开写入只允许“初始化/合法加载与替换、购买与反应炉扣费、整体退款、科研扣费/既有微量清零、原收入入账”这几类受控入口；实施证据逐一列出准确文件/符号/写点及旁路扫描结果。typed 对象只在瞬态 owner 内，profile/JSON 保留独立规范值；不宣称 GDScript 能强制私有不可变。plan 持有钱包、材料、槽等级、完整配置/解锁及 owner 身份/代次，提交同步重验，事件回调后重验后续槽。
+资源公开写入只允许“初始化/合法加载与替换（含生成器及capture的受控合成初始化）、购买与反应炉扣费、整体退款、科研扣费/既有微量清零、原收入入账”这几类受控入口；实施证据逐一列出准确文件/符号/写点及旁路扫描结果。typed 对象只在瞬态 owner 内，profile/JSON 保留独立规范值；不宣称 GDScript 能强制私有不可变。plan 持有钱包、材料、槽等级、完整配置/解锁及 owner 身份/代次，提交同步重验，事件回调后重验后续槽。
 
-MAX 接入 [六行支持族](P1_PARAM_MAIN_FAMILY.md) 及冻结 256/257 调度规则：普通精确前缀、极端有证书的同报价 U 扣款、材料仍精确。其他配置保留可行的精确路径；尚不支持的组合显式报错、零写入并列为未解决项，不能据此关闭 P2 或暗设等级上限。UI 区分 pending/complete/stale/cancelled/error，查询不会自动购买；点击提交重验同一报价。极端 UI 显示近似数量、实际费用、12%及整数尾差界和旧规则退款差额提示，并可查看完整费用。
+MAX 接入 [六行支持族](P1_PARAM_MAIN_FAMILY.md) 及冻结 256/257 调度规则：普通精确前缀、极端有证书的同报价 U 扣款、材料仍精确。其他配置保留可行的精确路径；尚不支持的组合显式报错、零写入并列为未解决项，不能据此关闭 P2 或暗设等级上限。UI 区分 pending/complete/stale/cancelled/error，查询不会自动购买；点击确认同一报价内容。异步返回typed outcome，不以int/bool承载pending；固定请求预算完成MAX，价格游标不因收入重启；钱包变化废弃旧提交票，确认时用已显示内容建立当前绑定的新票，禁止重报价/扩大购买。快照预算与新票是P2待审协议，不冒称P1已验证；详情见前置清单B/C。极端 UI 显示近似数量、实际费用、12%及整数尾差界和旧规则退款差额提示，并可查看完整费用。
 
-兼容提案：资源字段继续接受合法旧数值、m/e、v1；候选 v2/v3 和 P1 v4 仅走资源专用严格解析与无损规范转换，非法形状明确拒绝，不静默归零。非钱包字段不因本次扩大接受域。实施前将各编码实际支持域、超出原型 int64 块位置的合法旧指数样例冻结成表；任何合法旧值无法无损接入即阻断，不把原型表示限制变成游戏限制。自身新增保存格式必须全链重载。
+编码与整数边界按 [P2 接线前置清单 A](P2_WIRING_PREREQUISITES.md) 分别冻结：main 合法历史资源值必须兼容；未合 main 的候选钱包 v2/v3、原型 v4 仅是内部资产，不自动新增历史支持义务。顶层存档版本 2/3/4/5 与钱包编码版本分开。新存储 CW1 提案、等级/材料/JSON 边界、P1 未证明范围与安全失败均见该表，不能用整数溢出或新增上限关闭缺口。
 
 不恢复全局 GrowthNumber v3、cashflow_pending/multiply 业务系统、预览推进交易、炉时钟/start/leave 改造、峰值/碎片扩域、全 native 内核或模拟器数值重写；不改玩法、配置、收入公式、材料域或退款公式。若证明必须超出这些边界，先交具体调用/输入反例，由父级与 astra 调整范围，停在相关接线之前。
 
 ## 3. 文件白名单（拟供双审批准）
 
-本轮实际变更仅本文件。获准实施后，运行候选从 main 基线建立独立短期分支/干净目录，不在 D:/放置 切换或清理。下列均以 `space-battleship/scripts/` 为前缀，非要求全部修改：
+初版仅新增本方案；本次修订仅修改本方案并新增上述接线前置清单。获准实施后，运行候选从 main 基线建立独立短期分支/干净目录，不在 D:/放置 切换或清理。下列均以 `space-battleship/scripts/` 为前缀，非要求全部修改：
 
 - 新增窄接口：`currency_integer.gd`、`currency_ledger.gd`、`currency_host.gd`、`currency_storage.gd`、`equipment_price.gd`、`equipment_price_bounds.gd`、`equipment_max_query.gd`：提取价格、稀疏账本、转换、MAX 与 owner；禁止顺带替换全局 N。
-- 权威链：`game.gd`、`ai_tech_tree.gd`、`galaxy_system.gd`。
+- 权威链：`game.gd`、`ai_tech_tree.gd`、`galaxy_system.gd`；补 `crew_system.gd`（MAX pending/最终回执与唯一生产batch调用方）、`database.gd`（既有2^31-1查询哨兵及等级checked边界的最小适配，非数值公式改动）。
 - native 适配：`native_execution_session.gd`、`native_execution_compiler.gd`、`native_execution_handoff.gd`；只接描述符/交接，暂不允许 C++/DLL源码协议变更。
 - 保存/复制：`save_transfer.gd`、`progress_writer.gd`、`player_loadout_generator.gd`、`fleet_battle_runner.gd`。
 - 显示/分析：`equipment_tab.gd`、`main.gd`、`reactor_panel.gd`、`balance_autoplayer.gd`、`balance_game.gd`、`balance_metrics.gd`、`balance_timeline.gd`、`balance_analyzer.gd`、`balance_views.gd`；仅资源编码适配，不重构算法。
