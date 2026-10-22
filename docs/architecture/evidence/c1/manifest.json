@@ -89,50 +89,62 @@
   },
   "evidence": {
     "candidate-test_ai_tech_tree.gd.log": {
-      "sha256": "e024b5739b2c51a6ca6855289f2fe5774411374d006548025f0643ce4f5dd120",
-      "bytes": 235
+      "sha256": "33b4ca7fde207f7085c630850b777905deb1d84abaef869029a6311068c7c085",
+      "bytes": 230,
+      "captured_sha256": "e024b5739b2c51a6ca6855289f2fe5774411374d006548025f0643ce4f5dd120"
     },
     "candidate-test_auto_gen_resources.gd.log": {
-      "sha256": "3554c932464d79167ac67dcc33e1bcde20cc53c725ef71e1a416896aaa8995ac",
-      "bytes": 238
+      "sha256": "18432a025bff0c55695ae7e7d1517cf9d06c629e85ba1d2f03c30da689e8759c",
+      "bytes": 233,
+      "captured_sha256": "3554c932464d79167ac67dcc33e1bcde20cc53c725ef71e1a416896aaa8995ac"
     },
     "candidate-test_reactor.gd.log": {
-      "sha256": "dcf789344979f633ec53f0ffdd28dbd7412cd9f2b080a108f663798f93ede36e",
-      "bytes": 221
+      "sha256": "24cd6d8bfe1a8e993b4fde1bd9cc6b733f987ec70a40259b2807cc1690ac3eda",
+      "bytes": 216,
+      "captured_sha256": "dcf789344979f633ec53f0ffdd28dbd7412cd9f2b080a108f663798f93ede36e"
     },
     "entry-native.png": {
       "sha256": "2c958612b221ffce410ad0430cc1b356974ba5d182e616766a09c9b678c68c1c",
-      "bytes": 473436
+      "bytes": 473436,
+      "captured_sha256": "2c958612b221ffce410ad0430cc1b356974ba5d182e616766a09c9b678c68c1c"
     },
     "final-latest.log": {
-      "sha256": "cdc4d777cfa7567f9a901c375f2ac6012f06fb2d4c0561f4a201e8da702feba1",
-      "bytes": 239
+      "sha256": "ab297c1bab54b569336ec16fbd289969a2d6ceda6ce11161d44790dece1665bc",
+      "bytes": 234,
+      "captured_sha256": "cdc4d777cfa7567f9a901c375f2ac6012f06fb2d4c0561f4a201e8da702feba1"
     },
     "final-recovery.log": {
-      "sha256": "8640d460b47c5d26498e1f9c03bbceecbb8f0974050c0fd9c1b7f2ef03ec844c",
-      "bytes": 239
+      "sha256": "c620522d39ded660c6b0dd0c5d24fc7f5d8ab6602c2813f7fb1491001477eb77",
+      "bytes": 234,
+      "captured_sha256": "8640d460b47c5d26498e1f9c03bbceecbb8f0974050c0fd9c1b7f2ef03ec844c"
     },
     "final-reopen.log": {
-      "sha256": "1c4d5b63857c089300c0d09ce4eb8ab11cdf875ff63375bfeaaf87e0e7d2291d",
-      "bytes": 239
+      "sha256": "883e50507dd6ef28c1d44595904c150b3eff972857de665b0f7c8f26887b2700",
+      "bytes": 234,
+      "captured_sha256": "1c4d5b63857c089300c0d09ce4eb8ab11cdf875ff63375bfeaaf87e0e7d2291d"
     },
     "final-write.log": {
-      "sha256": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db",
-      "bytes": 240
+      "sha256": "062e21ea5f33bfe13da436180e02c13b860403abd2a60bf77dcc07d565450085",
+      "bytes": 235,
+      "captured_sha256": "899fb9fd7d5673a7742d02a3512c49a59323c9af37c8eef1693e0ad7d70209db"
     },
     "native-result.log": {
-      "sha256": "8cb6d6b35a77973d782236d02184e488584b1d5a7a87b54d2ecdfbc945a2d78d",
-      "bytes": 247
+      "sha256": "4a5ff66b88910ff49120809c4f981e44ae1f1425f6c4b45b56678eeabda2daef",
+      "bytes": 242,
+      "captured_sha256": "8cb6d6b35a77973d782236d02184e488584b1d5a7a87b54d2ecdfbc945a2d78d"
     },
     "ordinary-entry.log": {
-      "sha256": "29b8d95146466197b8908bc7b791e64868786b1e3d5ee5e085212c63b14d8f0b",
-      "bytes": 333
+      "sha256": "400f774ca043031a5f1c563bd98dac72dbb8dc2f0f94696cc9d810627261e39e",
+      "bytes": 327,
+      "captured_sha256": "29b8d95146466197b8908bc7b791e64868786b1e3d5ee5e085212c63b14d8f0b"
     },
     "storage-roundtrip.log": {
-      "sha256": "f87c037f178ddd67ab3053872ad6f785daf6d322edebacf3ea559a06754c069f",
-      "bytes": 243
+      "sha256": "31abc8bfe066772a60e457c7bdfda129f8184a2bbbd602b8573db108a4dec2c1",
+      "bytes": 238,
+      "captured_sha256": "f87c037f178ddd67ab3053872ad6f785daf6d322edebacf3ea559a06754c069f"
     }
   },
   "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
-  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424"
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "evidence_hash_basis": "Committed Git blob bytes; text logs are normalized to LF by Git."
 }
