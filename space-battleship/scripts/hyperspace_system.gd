@@ -1,6 +1,7 @@
 extends RefCounted
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
-## Commands mutate one profile namespace; no battle, ordinary economy, or save IO.
+## Domain commands prepare their result and exact wallet before a joint commit.
+const Economy=preload("res://scripts/economy_state.gd")
 const C=preload("res://scripts/hyperspace_config.gd")
 const S=preload("res://scripts/hyperspace_state.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
@@ -51,7 +52,7 @@ func load_state(g,raw: Variant) -> bool:
 	if raw==null:g.profile.hyperspace=fresh();return true
 	if not raw is Dictionary or not S.valid(raw,config,g.db.levels.size()):
 		last_error="invalid_hyperspace_save";return false
-	g.profile.hyperspace=S.migrate(raw,config)
+	g.profile.hyperspace=raw.duplicate(true)
 	var receipt: Dictionary=g.profile.hyperspace.active
 	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":
 		if not receipt.get("return_state",{}).is_empty():g.manual_hyperspace.loaded_return={"journey":receipt.return_journey.duplicate(true),"state":receipt.return_state.duplicate(true)}
@@ -65,6 +66,7 @@ func load_state(g,raw: Variant) -> bool:
 
 func snapshot(g) -> Dictionary:
 	var result: Dictionary=g.profile.hyperspace.duplicate(true)
+	result.merge(g.economy.material_wallet())
 	result.hull_capacity=Permission.hull_capacity(g,config)
 	result.auto.crew_level=Permission.crew_level(g,str(result.auto.crew_id))
 	result.next_command={"round_id":result.round_id,"command_seq":result.command_seq}
@@ -73,11 +75,15 @@ func snapshot(g) -> Dictionary:
 	result.manual_error=g.manual_hyperspace.last_error
 	return result
 
-func publish(g,next: Dictionary,kind: String) -> bool:
+func publish(g,next: Dictionary,kind: String,wallet: Dictionary={},wallet_revision: int=-1) -> bool:
+	if not wallet.is_empty() and (wallet_revision != g.economy.material_revision or not Economy.valid_material_wallet(wallet,g.economy.material_wallet().materials.keys())):return false
 	var refit: bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
 	if (refit or kind=="hull_capacity_changed") and not g.native_before_configuration_change():return false
+	if not wallet.is_empty() and wallet_revision != g.economy.material_revision:return false
 	if refit:g.capture_refit_health()
 	var previous_capacity=g.reactor_capacity() if refit else 0
+	# No callbacks or fallible operations between wallet and business state installation.
+	if not wallet.is_empty():g.economy.install_material_wallet(wallet)
 	g.profile.hyperspace=next;g.save_dirty=true;last_error=""
 	if refit or kind=="hull_capacity_changed":g.invalidate_stat_cache()
 	if refit:
@@ -195,14 +201,14 @@ func claim(g,round_id: int,run_id: int) -> bool:
 	if not a.reward.drone.is_empty():
 		if not Bag.insert(next.inventory,a.reward.drone,config):return false
 		if a.reward.drone.legendary and not next.legendary_seen.has(a.reward.drone.legendary_effect.effect_id):next.legendary_seen.append(a.reward.drone.legendary_effect.effect_id)
-	for key in a.reward.materials:
-		var amount:=int(next.materials[key])+int(a.reward.materials[key])
-		if not C.integer(amount):return false
-		next.materials[key]=amount
-	next.ultimate_cores+=int(a.reward.ultimate_cores)
+	var wallet: Dictionary=g.economy.material_wallet()
+	var wallet_revision: int=g.economy.material_revision
+	var gains: Dictionary=a.reward.materials.duplicate()
+	gains.ultimate_cores=int(a.reward.ultimate_cores)
+	if not Economy.material_credit(wallet,gains):return false
 	if not Rewards.credit_modules(next,config,a.reward.hanging_rewards):return false
 	next.settled_run=maxi(int(next.settled_run),run_id);next[slot]={};next.blocked=not Bag.has_space(next.inventory,config)
-	return publish(g,next,"claimed")
+	return publish(g,next,"claimed",wallet,wallet_revision)
 
 func start_idle(g,route:String)->bool:
 	if g.profile.hyperspace.auto.enabled:return false
@@ -271,11 +277,11 @@ func advance(g,dt:float)->void:
 
 func material_exchange_quote(g,source:String,target:String,amount:Variant)->Dictionary:
 	var s:Dictionary=g.profile.hyperspace
-	var result:Dictionary={"error":"","source":source,"target":target,"amount":0,"source_owned":int(s.materials.get(source,0)),"target_owned":int(s.materials.get(target,0)),"cost":{},"received":{},"max_receive":0,"request":{}}
+	var result:Dictionary={"error":"","source":source,"target":target,"amount":0,"source_owned":int(g.economy.balance(source)),"target_owned":int(g.economy.balance(target)),"cost":{},"received":{},"max_receive":0,"request":{}}
 	var keys:Array=config.routes.values().map(func(route):return str(route.material))
 	if source not in keys or target not in keys:result.error="invalid_material";return result
 	if source==target:result.error="same_material";return result
-	var limit:=9000000000000000
+	var limit:=Economy.MATERIAL_LIMIT
 	result.max_receive=mini(int(result.source_owned)/2,limit-1-int(result.target_owned))
 	if not C.integer(amount) or amount<=0 or amount>limit/2:result.error="invalid_amount";return result
 	var count:=int(amount);var debit:=count*2
@@ -297,11 +303,14 @@ func exchange_materials(g,request:Dictionary)->Dictionary:
 	var quote:=material_exchange_quote(g,request.source,request.target,request.amount)
 	if not quote.error.is_empty():return Forge.error(quote.error)
 	var next:Dictionary=s.duplicate(true)
-	next.materials[request.source]-=int(quote.cost[request.source]);next.materials[request.target]+=int(request.amount)
-	var result:Dictionary={"error":"","applied":true,"operation":"material_exchange","source":request.source,"target":request.target,"amount":int(request.amount),"cost":quote.cost,"received":quote.received,"source_after":int(next.materials[request.source]),"target_after":int(next.materials[request.target])}
+	var wallet: Dictionary=g.economy.material_wallet()
+	var wallet_revision: int=g.economy.material_revision
+	if not Economy.material_debit(wallet,quote.cost) or not Economy.material_credit(wallet,quote.received):return Forge.error("invalid_wallet")
+	var result:Dictionary={"error":"","applied":true,"operation":"material_exchange","source":request.source,"target":request.target,"amount":int(request.amount),"cost":quote.cost,"received":quote.received,"source_after":int(wallet.materials[request.source]),"target_after":int(wallet.materials[request.target])}
 	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
 	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
-	publish(g,next,"materials_exchanged");return result
+	if not publish(g,next,"materials_exchanged",wallet,wallet_revision):return Forge.error("wallet_changed")
+	return result
 
 func equipment_constraints(g,ids: Array,bag: Dictionary={},ordinary: Variant=null) -> bool:
 	if bag.is_empty():bag=g.profile.hyperspace.inventory
@@ -423,17 +432,19 @@ func forge(g,request: Dictionary) -> Dictionary:
 		return Forge.restore_result(s.last_command.result_json) if fingerprint==s.last_command.fingerprint else Forge.error("command_conflict")
 	if request.get("command_seq")!=s.command_seq:return Forge.error("stale_command")
 	var next: Dictionary=s.duplicate(true)
-	var result:=Forge.plan(next,config,request,g)
+	var wallet: Dictionary=g.economy.material_wallet()
+	var wallet_revision: int=g.economy.material_revision
+	var result:=Forge.plan(next,wallet,config,request,g)
 	if not result.error.is_empty():return result
 	next.last_command={"seq":int(s.command_seq),"fingerprint":fingerprint,"result_json":JSON.stringify(result,"",true,true)};next.command_seq+=1
 	if not S.valid(next,config,g.db.levels.size()):return Forge.error("invalid_result")
 	if not equipment_constraints(g,next.inventory.equipped,next.inventory):return Forge.error("equipment_constraint")
-	if not publish(g,next,"forge_"+str(request.operation)):return Forge.error("native_handoff_failed")
+	if not publish(g,next,"forge_"+str(request.operation),wallet,wallet_revision):return Forge.error("native_handoff_failed")
 	return result
 
 func preview_forge(g,request: Dictionary) -> Dictionary:
 	var next: Dictionary=g.profile.hyperspace.duplicate(true)
-	var result:=Forge.plan(next,config,request,g)
+	var result:=Forge.plan(next,g.economy.material_wallet(),config,request,g)
 	return {"error":result.error,"cost":result.get("cost",{}),"draws":result.get("draws",0),"revision":g.profile.hyperspace.inventory.drones.get(request.get("drone_id"),{}).get("forge_revision",0)}
 
 func attach_hangings(g,id: String,keys: Array) -> bool:

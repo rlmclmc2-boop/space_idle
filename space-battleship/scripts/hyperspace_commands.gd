@@ -91,7 +91,7 @@ func refresh_materials(quoted: Dictionary={}) -> void:
  var keys:Dictionary=costs if not costs.is_empty() else h().config.forge_costs.get(op,{})
  var stocks:Array[String]=[];missing_material=""
  for key in material_rows:
-  var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
+  var available=int(game().economy.balance(key))
   if key!="ultimate_cores" or available>0 or keys.has(key):stocks.append(t("material_owned",{"material":t(key),"owned":str(available)}))
   panel.put(material_rows[key],"visible",keys.has(key))
   if not keys.has(key):continue
@@ -176,7 +176,7 @@ func request(requested_operation:String="") -> Dictionary:
 func cost_text(cost: Dictionary) -> String:
  var values: Array[String]=[]
  for key in cost:
-  var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
+  var available=int(game().economy.balance(key))
   values.append(t("cost_item",{"material":t(str(key)),"cost":str(int(cost[key])),"available":str(available)}))
  return " · ".join(values) if not values.is_empty() else t("no_cost")
 func error_text(error: String) -> String:

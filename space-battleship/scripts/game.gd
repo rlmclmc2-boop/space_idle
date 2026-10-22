@@ -13,7 +13,7 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 6
+const SAVE_VERSION := 7
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
@@ -182,7 +182,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
-	economy.install_snapshot({"resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))},"jewelFragments":0.0,"chronoParticles":0.0})
+	economy.reset({"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))},hyperspace.config)
 	reactor.reset(db.config)
 	crew.attach(self)
 	galaxy.load_state(self,{})
@@ -932,7 +932,7 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	return can_afford_upgrade_costs(costs)
 
 func upgrade_currency(id: String) -> Variant:
-	return profile.hyperspace.materials.get(id,0) if id==db.evolution_material_id() else economy.balance(id)
+	return economy.balance(id)
 
 func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	if costs.is_empty():
@@ -941,22 +941,10 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 		if id==db.evolution_material_id() and not hyperspace.is_unlocked(self):return false
 		if not is_finite(float(costs[id])) or N.compare(upgrade_currency(id),costs[id])<0:
 			return false
-	return true
+	return economy.can_pay(costs)
 
 func resources_changed(ids: Array) -> void:
 	event.emit("resources_changed",{"ids":ids})
-
-func refund_equipment(key: String, level: int) -> void:
-	var refunded := {}
-	for target_level in range(2, level + 1):
-		for id in upgrade_cost_for_level(key, target_level):
-			var amount=upgrade_cost_for_level(key,target_level)[id]
-			if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.add(upgrade_currency(id),amount)
-			else:economy.credit(str(id), amount)
-			refunded[id]=true
-	if not refunded.is_empty():
-		resources_changed(refunded.keys().filter(func(id):return id!=db.evolution_material_id()))
-		if refunded.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -1078,12 +1066,6 @@ func unequip_slot(category: String, index: int) -> bool:
 	save_dirty = true
 	event.emit("module_changed",{"slot":slot_id(category,index)})
 	return true
-
-func refund_all_equipment() -> void:
-	# Retained for explicit legacy callers; normal refit never refunds module growth.
-	for category in ["weapons","defence"]:
-		for entry in loadout_entries(category):
-			if not str(entry.key).is_empty():refund_equipment(str(entry.key),int(entry.level))
 
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
@@ -1611,6 +1593,10 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	next.productionElapsed=production_time()
 	profile=next
 	economy.reset_run_fragments()
+	var empty_wallet := economy.material_wallet()
+	for material in empty_wallet.materials:empty_wallet.materials[material]=0
+	empty_wallet.ultimate_cores=0
+	economy.install_material_wallet(empty_wallet)
 	reactor.reset(db.config)
 	invalidate_tutorial_unlocks()
 	manual_hyperspace.cancel_queue(self,"round_changed")
@@ -2682,7 +2668,7 @@ func max_upgrade_amount(key: String) -> int:
 
 func upgrade_quote_signature(key:String)->Array:
 	# Ordinary balances have one owner/version; chrono/fragments do not alter this quote.
-	return [economy.resource_revision,profile.hyperspace.materials.duplicate(true),profile.highestLevel,db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
+	return [economy.resource_revision,economy.material_revision,profile.highestLevel,db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
 
 func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={}) -> int:
 	var entry := slot_entry(category,index)
@@ -2745,10 +2731,7 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
 		if not native_updated and not native_before_configuration_change():return false
 	native_numeric_update=native_updated
-	var resource_costs: Dictionary = costs.duplicate(true)
-	resource_costs.erase(db.evolution_material_id())
-	if not economy.debit(resource_costs):return false
-	if costs.has(db.evolution_material_id()):profile.hyperspace.materials[db.evolution_material_id()]=N.subtract(upgrade_currency(db.evolution_material_id()),costs[db.evolution_material_id()])
+	if not economy.debit(costs):native_numeric_update=false;return false
 	var before = jewel_equipment_stat(entry)
 	profile.loadout[category][index].level = int(entry.level) + levels
 	invalidate_stat_cache()

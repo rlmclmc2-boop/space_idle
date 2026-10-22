@@ -1,5 +1,6 @@
 extends RefCounted
 ## Pure command planning on a private working copy. Caller commits cost/RNG/result together.
+const Economy=preload("res://scripts/economy_state.gd")
 const C=preload("res://scripts/hyperspace_config.gd")
 const R=preload("res://scripts/hyperspace_random.gd")
 const Rewards=preload("res://scripts/drone_rewards.gd")
@@ -16,18 +17,6 @@ static func eligible_indices(d: Dictionary,c: Dictionary,apply_omen: bool=false)
 		indices=indices.filter(func(i):return int(d.affixes[i].tier)==worst)
 	return indices
 
-static func can_pay(s: Dictionary,cost: Dictionary) -> bool:
-	for key in cost:
-		if not C.integer(cost[key]) or cost[key]<0:return false
-		var available: int=int(s.ultimate_cores) if key=="ultimate_cores" else int(s.materials.get(key,0))
-		if available<int(cost[key]):return false
-	return true
-
-static func debit(s: Dictionary,cost: Dictionary) -> void:
-	for key in cost:
-		if key=="ultimate_cores":s.ultimate_cores-=int(cost[key])
-		else:s.materials[key]-=int(cost[key])
-
 static func restore_result(encoded: String) -> Dictionary:
 	var result: Dictionary=JSON.parse_string(encoded)
 	for key in ["draws","index"]:
@@ -41,7 +30,7 @@ static func restore_result(encoded: String) -> Dictionary:
 static func error(reason: String) -> Dictionary:
 	return {"error":reason,"applied":false}
 
-static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionary:
+static func plan(s: Dictionary,wallet: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionary:
 	var op:=str(request.get("operation",""));var id:=str(request.get("drone_id",""))
 	var args: Dictionary=request.get("args",{}) if request.get("args",{}) is Dictionary else {}
 	if not s.inventory.drones.has(id) or s.inventory.sealed.has(id):return error("unavailable_drone")
@@ -147,7 +136,7 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 			d.ultimate=false # Keep the original extra affix for a future ultimate conversion.
 		"dismantle":
 			var drops:=Rewards.dismantle(d,c,rng)
-			for key in drops.materials:s.materials[key]+=int(drops.materials[key])
+			if not Economy.material_credit(wallet,drops.materials):return error("material_limit")
 			var module_outcomes: Dictionary={}
 			if not Rewards.credit_modules(s,c,drops.hanging_rewards,module_outcomes):return error("module_value_limit")
 			Bag.remove(s.inventory,id);Bag.organize(s.inventory,c)
@@ -155,13 +144,13 @@ static func plan(s: Dictionary,c: Dictionary,request: Dictionary,g) -> Dictionar
 		_:return error("unknown_operation")
 	# Scale after the complete base formula; cores retain their authored units.
 	for key in cost:
-		if key in s.materials:cost[key]=float(cost[key])*float(c.get("material_unit_scale",10))
+		if key in wallet.materials:cost[key]=float(cost[key])*float(c.get("material_unit_scale",10))
 	for key in cost:
 		if not C.integer(cost[key]) or cost[key]<0 or float(cost[key])>=9223372036854775808.0:return error("cost_limit")
 		# Initial commit and cached retry must expose the same integral cost schema.
 		cost[key]=int(cost[key])
-	if not can_pay(s,cost):return {"error":"insufficient_materials","applied":false,"cost":cost,"draws":draws}
-	debit(s,cost)
+	if not Economy.material_can_pay(wallet,cost):return {"error":"insufficient_materials","applied":false,"cost":cost,"draws":draws}
+	Economy.material_debit(wallet,cost)
 	d.forge_rng_state=str(rng.state)
 	d.forge_revision+=draws
 	s.inventory.generation+=1

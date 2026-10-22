@@ -75,7 +75,7 @@ func refresh_quote(clear_feedback=false) -> void:
  quote={"error":"unavailable"}
  if game().has_method("hyperspace_material_exchange_quote"):
   quote=game().hyperspace_material_exchange_quote(from,to,int(amount.value))
- var balances:Dictionary=game().profile.hyperspace.materials
+ var balances:Dictionary=game().economy.material_wallet().materials
  panel.put(source_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("source_owned",balances.get(from,0))))}))
  panel.put(target_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("target_owned",balances.get(to,0))))}))
  var has_amount=not quote.get("cost",{}).is_empty() and not quote.get("received",{}).is_empty()

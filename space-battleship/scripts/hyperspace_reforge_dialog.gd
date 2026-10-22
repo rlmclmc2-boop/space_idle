@@ -68,8 +68,8 @@ func setup(g,id:String,rewards:String)->void:
  game.event.connect(on_game_event)
  refresh_summary()
 func has_hyperspace_progress(s:Dictionary)->bool:
- if not s.history.is_empty() or not s.active.is_empty() or bool(s.auto.enabled) or int(s.ultimate_cores)>0:return true
- if s.materials.values().any(func(value):return int(value)>0):return true
+ if not s.history.is_empty() or not s.active.is_empty() or bool(s.auto.enabled) or int(game.economy.balance("ultimate_cores"))>0:return true
+ if game.economy.material_wallet().materials.values().any(func(value):return int(value)>0):return true
  return s.hanging_modules.values().any(func(module):return bool(module.unlocked) or int(module.level)>0 or float(module.exp)>0)
 func make_label(parent:Node,value:String)->Label:
  var result=Label.new();result.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART;result.text=value;result.size_flags_horizontal=Control.SIZE_EXPAND_FILL;parent.add_child(result);return result

@@ -7,7 +7,7 @@ const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
 const SUPPORTED_VERSIONS := [BattleGame.SAVE_VERSION]
 # Complete current-format fields; legacy saves are explicitly unsupported.
-const CURRENT_FIELDS := ["version","resources","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
+const CURRENT_FIELDS := ["version","resources","materials","ultimateCores","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
 static func structure_quality(raw: Dictionary) -> Dictionary:
  var slots = raw.get("loadout")
  if raw.get("version") == BattleGame.SAVE_VERSION and slots is Dictionary and slots.has("weapons") and slots.has("defence") and CURRENT_FIELDS.all(func(key):return raw.has(key)):
@@ -43,6 +43,8 @@ static func schema() -> Dictionary:
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s","production_time":"n"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
+ result.materials={"*":"i"}
+ result.ultimateCores="i"
  result.hyperspace=preload("res://scripts/hyperspace_state.gd").schema()
  result.hyperspaceReceipt={"round":"i","run":"i","drone_id":"s","unread":"b"}
  return result
@@ -146,6 +148,8 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not shape(raw,schema()):return {"error":"format"}
  if structure_quality(raw).quality_rank != 3:return {"error":"incomplete"}
  if not preload("res://scripts/economy_state.gd").valid_snapshot(raw):return {"error":"economy"}
+ var material_keys: Array=preload("res://scripts/hyperspace_config.gd").load_config().routes.values().map(func(route):return str(route.material))
+ if not preload("res://scripts/economy_state.gd").valid_material_wallet({"materials":raw.materials,"ultimate_cores":raw.ultimateCores},material_keys):return {"error":"materials"}
  if not preload("res://scripts/reactor_state.gd").valid_snapshot(raw,db.config):return {"error":"reactor"}
  if not db.ships.has(str(raw.selectedShip)) or int(raw.highestLevel)<1 or int(raw.highestLevel)>db.levels.size():return {"error":"progress"}
  if raw.get("reactorAllocation") is Dictionary:
