@@ -19,6 +19,7 @@ const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
 const N = preload("res://scripts/growth_number.gd")
 const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
+var research := AITech.new()
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
 const RailGeometry=preload("res://scripts/rail_geometry.gd")
@@ -182,6 +183,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
+	research.reset()
 	economy.reset({"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))},hyperspace.config)
 	reactor.reset(db.config)
 	crew.attach(self)
@@ -198,8 +200,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 
 func fresh_profile() -> Dictionary:
 	var selected := first_ship()
-	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "aiTechLevels":{}, "aiTechProgress":{}, "aiTechActive":"", "aiTechInput":{"1":0,"2":0}, "aiIncomePeak":{"1":0.0,"2":0.0,"jewel":0.0}, "hightechSavedAt":Time.get_unix_time_from_system()}
-	profile.aiTechCompletionUnread = false
+	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "hightechSavedAt":Time.get_unix_time_from_system()}
 	profile.equipmentSwitchUntil = {}
 	# The retired page still reads these inert values until the new art page lands.
 	profile.scientists = 0
@@ -391,6 +392,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	login_chrono_particles = 0.0
 	manual_hyperspace.reset_for_load(self)
 	profile = fresh_profile()
+	research.reset()
 	resource_samples.clear()
 	pending_unlocks.clear()
 	reactor.reset(db.config)
@@ -605,28 +607,9 @@ func nonnegative_number(value) -> bool:
 
 func load_hightech(raw: Dictionary) -> void:
 	invalidate_stat_cache()
-	profile.aiTechCompletionUnread = raw.get("aiTechCompletionUnread",false) == true
+	research.install_snapshot(raw,db.data.ai_tech_tree)
 	for field in ["productionElapsed", "hightechSavedAt"]:
-		if nonnegative_number(raw.get(field)):
-			profile[field] = float(raw[field])
-	if raw.get("aiTechLevels") is Dictionary:
-		for key in db.data.ai_tech_tree:
-			var value = raw.aiTechLevels.get(key, 0)
-			if nonnegative_number(value) and float(value) == floorf(float(value)) and float(value) <= 9007199254740991.0:
-				profile.aiTechLevels[key] = int(value)
-	if raw.get("aiTechProgress") is Dictionary:
-		for key in db.data.ai_tech_tree:
-			var value = raw.aiTechProgress.get(key, 0)
-			if nonnegative_number(value) and float(value) < AITech.required(self,key):profile.aiTechProgress[key] = float(value)
-	if raw.get("aiTechInput") is Dictionary:
-		for id in ["1", "2"]:
-			var value = raw.aiTechInput.get(id, 0)
-			if nonnegative_number(value) and float(value) == floorf(float(value)) and float(value) <= 9007199254740991.0:profile.aiTechInput[id] = int(value)
-	if raw.get("aiIncomePeak") is Dictionary:
-		for id in ["1", "2", "jewel"]:
-			if N.valid(raw.aiIncomePeak.get(id)):profile.aiIncomePeak[id] = raw.aiIncomePeak[id]
-	var selected := str(raw.get("aiTechActive", ""))
-	if selected.is_empty() or bool(AITech.eligibility(self,selected).ok):profile.aiTechActive = selected
+		if nonnegative_number(raw.get(field)):profile[field] = float(raw[field])
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
 			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and (float(sample.time) > float(profile.hightechSavedAt) - 60.0 or (nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time() and float(sample.production_time)>production_time()-60.0)):
@@ -637,8 +620,7 @@ func load_hightech(raw: Dictionary) -> void:
 				resource_samples.append(restored)
 
 func read_ai_tech_completion() -> bool:
-	if not bool(profile.aiTechCompletionUnread):return false
-	profile.aiTechCompletionUnread = false
+	if not research.read_completion():return false
 	save_dirty = true
 	return true
 
@@ -743,6 +725,7 @@ func portable_save_data() -> Dictionary:
 func _compose_save_data(saved: Dictionary) -> Dictionary:
 	for retired in ["scientists","scientistAssignments","techPoints","hightechLevels","hightechOrder","hightechDrops"]:saved.erase(retired)
 	saved.merge(economy.save_data(), true)
+	saved.merge(research.save_data(), true)
 	saved.merge(reactor.save_data(), true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.galaxies=galaxy.save_data()
@@ -1149,7 +1132,7 @@ func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
 	# Virtual level bonuses keep ordinary growth, but only paid slot levels grant evolution.
 	if effective_level!=level:
 		value=N.multiply(value,N.divide(db.evolution_factor(level),db.evolution_factor(effective_level)))
-	var tech_factor = AITech.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")
+	var tech_factor = research.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")
 	if N.compare(tech_factor,1.0) != 0:
 		value = N.ceiling(N.multiply(value,tech_factor))
 	var reactor_bonus: Variant=reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
@@ -1261,23 +1244,29 @@ func load_reactor(raw: Dictionary) -> void:
 	invalidate_stat_cache()
 
 func hightech_level(key: String) -> int:
-	return AITech.level(self,key)
+	return research.level(self,key)
 
 func hightech_unlocked(key: String) -> bool:
 	if db.data.get("hightech", {}).has(key):return content_unlocked("hightech",key)
-	return bool(AITech.eligibility(self,key).ok)
+	return bool(research.eligibility(self,key).ok)
 
 func ai_tech_factory_unlocked() -> bool:
 	return content_unlocked("hightech",FURNACE)
 
 func tech_tree_snapshot() -> Dictionary:
-	return AITech.snapshot(self)
+	return research.snapshot(self)
 
 func select_tech(id: String) -> bool:
-	return AITech.select(self,id)
+	if not research.select(self,id):return false
+	save_dirty = true
+	event.emit("tech_tree_changed",{"reason":"selection","id":id})
+	return true
 
 func set_tech_input(resource_id: String, amount: int) -> bool:
-	return AITech.set_input(self,resource_id,amount)
+	if not research.set_input(self,resource_id,amount):return false
+	save_dirty = true
+	event.emit("tech_tree_changed",{"reason":"input","resource":resource_id})
+	return true
 
 func hightech_slots() -> Array:
 	var unlocked: Array = db.data.get("hightech", {}).keys().filter(func(key):return hightech_unlocked(key))
@@ -1422,7 +1411,7 @@ func idle_scientists() -> int:
 	return 0
 
 func can_research(key: String) -> bool:
-	return bool(AITech.eligibility(self,key).ok)
+	return bool(research.eligibility(self,key).ok)
 
 func assign_scientist(_key: String, _delta: int) -> bool:
 	return false
@@ -1592,6 +1581,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	# Ordinary reserves survive reforge; only run fragments/reactor reset.
 	next.productionElapsed=production_time()
 	profile=next
+	research.reset()
 	economy.reset_run_fragments()
 	var empty_wallet := economy.material_wallet()
 	for material in empty_wallet.materials:empty_wallet.materials[material]=0
@@ -1680,8 +1670,33 @@ func research_rate(_key: String, _crew_effects: Dictionary = {}) -> float:
 func active_research(_rates: Dictionary = {}) -> Array:
 	return []
 
+func record_research_income(id: String) -> void:
+	var proposal := research.income_peak_proposal(self,id)
+	if proposal.is_empty():return
+	if proposal.affects_combat and not native_before_configuration_change():return
+	if not research.commit_income_peak(proposal):return
+	save_dirty = true
+	if proposal.affects_combat:
+		invalidate_stat_cache()
+		event.emit("tech_tree_changed",{"reason":"income_peak","id":id})
+
 func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
-	AITech.advance(self,dt)
+	var proposal := research.prepare_advance(self,dt)
+	if proposal.is_empty():return
+	if proposal.completed and not native_before_configuration_change():return
+	if not research.proposal_current(proposal):return
+	if not economy.commit_research_resources(proposal.resources,proposal.resource_revision):return
+	research.commit_advance(proposal)
+	save_dirty = true
+	if proposal.completed:
+		invalidate_stat_cache()
+		event.emit("hightech_complete",{"key":proposal.id})
+	elif proposal.stopped:event.emit("tech_tree_changed",{"reason":"prerequisite_stopped","id":proposal.id})
+	var now_ms := Time.get_ticks_msec()
+	if not proposal.paid.is_empty() and now_ms-ai_tech_last_resource_notice_ms>=250:
+		ai_tech_last_resource_notice_ms=now_ms
+		resources_changed(proposal.paid)
+
 func production_time() -> float:
 	return float(profile.get("productionElapsed",0.0))
 
@@ -2586,10 +2601,10 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
-	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
+	amount = N.ceiling(N.multiply(amount,research.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
 	economy.credit(str(drop.id), amount)
 	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
-	AITech.record_income(self,str(drop.id))
+	record_research_income(str(drop.id))
 	profile.furnaceIncomePeak = furnace_income_peak()
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
@@ -3121,12 +3136,12 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Var
 	var reactor_bonus=reactor_multiplier("condensation") if source=="drop" else 1.0
 	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" else 1.0
 	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor)
-	var earned = N.multiply(jewel_fragment_amount(input,ratio),AITech.income_factor(self,"fragment_income"))
+	var earned = N.multiply(jewel_fragment_amount(input,ratio),research.income_factor(self,"fragment_income"))
 	economy.credit_fragments(earned)
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and N.compare(earned,0) > 0:
 		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
-		AITech.record_income(self,"jewel")
+		record_research_income("jewel")
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
 

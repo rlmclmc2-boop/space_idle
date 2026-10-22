@@ -2491,7 +2491,7 @@ func refresh_planet_activation_badge() -> void:
 func refresh_ai_tech_completion_badge() -> void:
 	if system_nav_buttons.size() <= 1:return
 	var dot := system_nav_buttons[1].get_node_or_null("ActivationBadge")
-	if is_instance_valid(dot):set_ui_value(dot,"visible",bool(game.profile.aiTechCompletionUnread))
+	if is_instance_valid(dot):set_ui_value(dot,"visible",game.research.completion_unread())
 
 func unread_hyperspace_reward() -> bool:
 	return is_instance_valid(hyperspace_panel) and bool(hyperspace_panel.reward_feedback.unread)
@@ -3885,7 +3885,7 @@ func ai_tech_page_snapshot() -> Dictionary:
 
 func on_ai_tech_research_requested(display_id: String) -> void:
 	var model_id := AI_TECH_VIEW.model_id(display_id)
-	game.select_tech("" if str(game.profile.aiTechActive)==model_id else model_id)
+	game.select_tech("" if game.research.selected()==model_id else model_id)
 	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
 func on_ai_tech_investment_requested(resource_id: String, amount: int) -> void:

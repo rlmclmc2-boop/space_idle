@@ -150,6 +150,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not preload("res://scripts/economy_state.gd").valid_snapshot(raw):return {"error":"economy"}
  var material_keys: Array=preload("res://scripts/hyperspace_config.gd").load_config().routes.values().map(func(route):return str(route.material))
  if not preload("res://scripts/economy_state.gd").valid_material_wallet({"materials":raw.materials,"ultimate_cores":raw.ultimateCores},material_keys):return {"error":"materials"}
+ if not preload("res://scripts/ai_tech_tree.gd").valid_snapshot(raw,db.data.ai_tech_tree):return {"error":"research"}
  if not preload("res://scripts/reactor_state.gd").valid_snapshot(raw,db.config):return {"error":"reactor"}
  if not db.ships.has(str(raw.selectedShip)) or int(raw.highestLevel)<1 or int(raw.highestLevel)>db.levels.size():return {"error":"progress"}
  if raw.get("reactorAllocation") is Dictionary:

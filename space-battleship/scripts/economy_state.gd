@@ -149,6 +149,23 @@ func debit(costs: Dictionary) -> bool:
 	if costs.has("1") or costs.has("2"):resource_revision += 1
 	return true
 
+static func prepare_research_resources(available: Dictionary, expenses: Dictionary) -> Dictionary:
+	var next := available.duplicate(true)
+	for id in expenses:
+		if id not in ["1","2"] or not N.valid(expenses[id]) or N.compare(next[id],expenses[id]) < 0:return {}
+	for id in expenses:next[id] = N.subtract(next[id],expenses[id])
+	return next
+
+func commit_research_resources(next: Dictionary, expected_revision: int) -> bool:
+	if expected_revision != resource_revision or next.size()!=2:return false
+	for id in ["1","2"]:
+		if not N.valid(next.get(id)) or N.compare(next[id],_balances[id]) > 0:return false
+	if next != resources():
+		for id in ["1","2"]:_balances[id] = _copy(next[id])
+		resource_revision += 1
+		revision += 1
+	return true
+
 func accrue_chrono(amount: float, capacity: float) -> void:
 	_balances.chrono = minf(capacity, float(_balances.chrono) + amount)
 	revision += 1
