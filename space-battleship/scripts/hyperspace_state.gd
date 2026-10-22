@@ -102,3 +102,6 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 			if not valid_reward(a.reward,a.route,c):return false
 			if not a.reward.drone.is_empty() and (a.reward.drone.level!=a.level or a.reward.drone.id!="space:%d:%d"%[int(a.round_id),int(a.run_id)]):return false
 	return s.get("material_unit_version") == MATERIAL_UNIT_VERSION
+
+static func valid_marker(value:Variant)->bool:
+	return value is Dictionary and value.size()==4 and C.integer(value.get("round")) and value.round>=0 and C.integer(value.get("run")) and value.run>=0 and value.get("drone_id") is String and value.get("unread") is bool

@@ -119,6 +119,7 @@ func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
   var allowed:=String(db.config.reactorModules).split(",")
   for key in raw.reactorAllocation:
    if key not in allowed:return {"error":"format"}
+ if not preload("res://scripts/hyperspace_state.gd").valid_marker(raw.get("hyperspaceReceipt")):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
  if not preload("res://scripts/galaxy_system.gd").valid_snapshot(raw,db):return {"error":"galaxies"}

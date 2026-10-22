@@ -29,6 +29,7 @@ const RailGeometry=preload("res://scripts/rail_geometry.gd")
 var rail_geometry_provider:=Callable()
 var rail_target_point_provider:=Callable()
 var player_launch_payload: Dictionary={}
+var hyperspace_runtime:=preload("res://scripts/hyperspace_runtime.gd").new()
 var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new()
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
 var combat_sources: Array=[]
@@ -213,14 +214,12 @@ func fresh_profile() -> Dictionary:
 	# Initial availability also belongs to unlock; startEquip only selects loadout.
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false, "pickupSeen":false}
-	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
 	profile.readUnlocks = []
 	profile.jewelFurnaceElapsed = 0.0
 	profile.jewelFurnaceIncomePeak = 0.0
-	profile.hyperspace = hyperspace.fresh()
 	return profile
 
 func first_ship() -> String:
@@ -397,11 +396,6 @@ func load_progress_data(raw: Dictionary) -> void:
 			profile.onboarding[key] = raw.onboarding.get(key, false) == true
 		profile.onboarding.retreatSeen = raw.onboarding.get("retreatSeen",profile.onboarding.completed) == true
 		profile.onboarding.pickupSeen = raw.onboarding.get("pickupSeen",profile.onboarding.completed) == true
-	# Optional UI-only receipt metadata. Legacy/invalid markers remain quiet.
-	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
-	var receipt = raw.get("hyperspaceReceipt",{})
-	if receipt is Dictionary and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("round")) and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("run")) and receipt.round>=0 and receipt.run>=0 and receipt.get("drone_id") is String and receipt.get("unread") is bool:
-		profile.hyperspaceReceipt = {"round":int(receipt.round),"run":int(receipt.run),"drone_id":str(receipt.drone_id),"unread":bool(receipt.unread)}
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
@@ -435,9 +429,10 @@ func load_progress_data(raw: Dictionary) -> void:
 	crew.install_snapshot(raw,db)
 	planets.install_snapshot(raw,db)
 	reactor.install_snapshot(raw,db.config)
-	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
+	hyperspace.install_snapshot(raw,db) # No offline energy/work accrual.
 	galaxy.install_snapshot(raw,db)
 	galaxy_runtime.reset()
+	hyperspace_runtime.reset();hyperspace_runtime.settle_interrupted(self)
 	rebuild_unlock_gates()
 	profile.hightechOrder = hightech_slots()
 	galaxy_runtime.refresh_unlocks(self)
@@ -674,6 +669,7 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 	saved.merge(reactor.save_data(), true)
 	saved.merge(crew.save_data(), true)
 	saved.merge(planets.save_data(), true)
+	saved.merge(hyperspace.save_data(),true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
 	saved.merge(galaxy.save_data(),true)
 	saved.grantedUnlocks = granted_unlocks()
@@ -719,19 +715,18 @@ func weapon_entries() -> Array:
 	return loadout_entries("weapons")
 
 func combat_weapon_entries() -> Array:
-	if not profile.has("hyperspace") or profile.hyperspace.inventory.equipped.is_empty():return weapon_entries()
+	if hyperspace.state.inventory.equipped.is_empty():return weapon_entries()
 	if not combat_sources_dirty:return combat_sources
 	var previous: Dictionary={}
 	for entry in combat_sources:
 		if entry.has("drone_id"):previous[entry.drone_id]=entry
 	combat_sources=weapon_entries().duplicate()
-	if profile.has("hyperspace"):
-		for id in profile.hyperspace.inventory.equipped:
-			if profile.hyperspace.inventory.sealed.has(id) or drone_combat.disabled.has(id):continue
-			var d: Dictionary=profile.hyperspace.inventory.drones[id]
-			var projected:=drone_weapon_entry(d)
-			var old: Dictionary=previous.get(id,{})
-			combat_sources.append(old if old.get("key")==projected.key and old.get("level")==projected.level else projected)
+	for id in hyperspace.state.inventory.equipped:
+		if hyperspace.state.inventory.sealed.has(id) or drone_combat.disabled.has(id):continue
+		var d: Dictionary=hyperspace.state.inventory.drones[id]
+		var projected:=drone_weapon_entry(d)
+		var old: Dictionary=previous.get(id,{})
+		combat_sources.append(old if old.get("key")==projected.key and old.get("level")==projected.level else projected)
 	combat_sources_dirty=false
 	return combat_sources
 
@@ -746,7 +741,7 @@ func drone_weapon_entry(d: Dictionary, weapon_levels:Dictionary={}) -> Dictionar
 func projected_combat_entry(index:int,weapon_levels:Dictionary={}) -> Dictionary:
 	var entry:Dictionary=combat_entry(index)
 	if entry.has("drone_id"):
-		return drone_weapon_entry(profile.hyperspace.inventory.drones[entry.drone_id],weapon_levels)
+		return drone_weapon_entry(hyperspace.state.inventory.drones[entry.drone_id],weapon_levels)
 	if weapon_levels.has(index):
 		entry=entry.duplicate();entry.level=int(weapon_levels[index])
 	return entry
@@ -982,7 +977,7 @@ func commit_loadout_change(ship: String, choices: Dictionary, hull_change: bool)
 	apply_refit_health()
 	save_dirty=true
 	if capacity!=previous_capacity:event.emit("reactor_changed",{"capacity":capacity})
-	if drone_plan.changed:event.emit("hyperspace_changed",{"reason":"hull_capacity_changed","round_id":profile.hyperspace.round_id})
+	if drone_plan.changed:event.emit("hyperspace_changed",{"reason":"hull_capacity_changed","round_id":hyperspace.state.round_id})
 	if hull_change:event.emit("ship_changed",{"key":ship})
 	else:
 		for changed in plan.changed:event.emit("module_changed",{"slot":slot_id(changed.category,int(changed.index))})
@@ -1371,7 +1366,7 @@ func planet_resource_multiplier() -> Variant:
 
 func idle_planet_crew(id: String) -> bool:
 	var member := crew.entry(self,id)
-	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty() and preload("res://scripts/hyperspace_permissions.gd").reserved_crew(profile.hyperspace)!=id
+	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty() and preload("res://scripts/hyperspace_permissions.gd").reserved_crew(hyperspace.state)!=id
 
 func commit_planet_command(plan: Dictionary,payload: Dictionary) -> bool:
 	if not planets.proposal_current(plan):return false
@@ -1403,12 +1398,11 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	if not native_before_configuration_change():return false
 	var planet_plan:=planets.prepare_conquest(self,id)
 	if planet_plan.is_empty():return false
-	var next_hyperspace:=hyperspace.reforge_state(self,keep_drones,claim_stages)
-	if next_hyperspace.is_empty():return false
+	var hyperspace_plan:=hyperspace.prepare_reforge(self,keep_drones,claim_stages)
+	if hyperspace_plan.is_empty():return false
 	var start_level := planet_reforge_start(id)
 	# Prepare the complete replacement before changing any authoritative state.
 	var next := fresh_profile()
-	next.hyperspace=next_hyperspace
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
 	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
@@ -1428,6 +1422,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	# Ordinary reserves survive reforge; only run fragments/reactor reset.
 	next.productionElapsed=production_time()
 	profile=next
+	hyperspace.commit(hyperspace_plan)
 	planets.commit(planet_plan)
 	reset_equipment()
 	enhancement_growth.reset()
@@ -1440,7 +1435,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	reactor.reset(db.config)
 	invalidate_tutorial_unlocks()
 	manual_hyperspace.cancel_queue(self,"round_changed")
-	hyperspace.scheduler.reset()
+	hyperspace_runtime.reset()
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
 	resource_samples.clear()
@@ -1788,13 +1783,13 @@ func hyperspace_route_view(route:String,crew_id:String="")->Dictionary:
 	return hyperspace.route_view(self,route,crew_id)
 
 func start_hyperspace_idle(route:String)->bool:
-	return hyperspace.start_idle(self,route)
+	return hyperspace_runtime.start_idle(self,route)
 
 func set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool:
-	return hyperspace.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
+	return hyperspace_runtime.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
 
 func stop_hyperspace_idle(route:String)->bool:
-	return hyperspace.stop_idle(self,route)
+	return hyperspace_runtime.stop_idle(self,route)
 
 func start_hyperspace_challenge(route:String)->bool:
 	return manual_hyperspace.start(self,route,hyperspace.current_layer(self,route)+1)
@@ -1803,18 +1798,18 @@ func exit_hyperspace_challenge()->bool:
 	return manual_hyperspace.finish(self,false,"user_exit")
 
 func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
-	if round_id>=0 and run_id>=0:return hyperspace.claim(self,round_id,run_id)
+	if round_id>=0 and run_id>=0:return hyperspace_runtime.claim(self,round_id,run_id)
 	var claimed:=false
 	for slot in ["active","idle"]:
-		var receipt:Dictionary=profile.hyperspace[slot]
-		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
+		var receipt:Dictionary=hyperspace.state[slot]
+		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace_runtime.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
 	return claimed
 
 func hyperspace_material_exchange_quote(source:String,target:String,amount:Variant)->Dictionary:
 	return hyperspace.material_exchange_quote(self,source,target,amount)
 
 func exchange_hyperspace_materials(request:Dictionary)->Dictionary:
-	return hyperspace.exchange_materials(self,request)
+	return hyperspace_runtime.exchange_materials(self,request)
 
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
@@ -4147,9 +4142,9 @@ func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
 
 
 func advance_shared_clock_and_economy(dt:float)->void:
-	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
+	if manual_hyperspace.active:hyperspace.advance_manual(dt)
 	profile.productionElapsed=production_time()+dt
-	hyperspace.advance(self,dt)
+	hyperspace_runtime.advance(self,dt)
 	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
 	galaxy_runtime.advance(self,dt)

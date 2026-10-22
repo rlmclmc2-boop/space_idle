@@ -7,8 +7,7 @@ static func affix_value(a: Dictionary,d: Dictionary,c: Dictionary) -> float:
 	return float(a.value)*(pow(1.0+float(c.amplification_rate),int(d.level)-int(c.amplification_start_level)) if c.affixes[a.key].amplified else 1.0)
 static func project(g) -> Dictionary:
 	var result:=empty()
-	if not g.profile.has("hyperspace"):return result
-	var s: Dictionary=g.profile.hyperspace;var c: Dictionary=g.hyperspace.config
+	var s: Dictionary=g.hyperspace.state;var c: Dictionary=g.hyperspace.config
 	for id in s.inventory.equipped:
 		if s.inventory.sealed.has(id) or g.drone_combat.disabled.has(id):continue
 		var d: Dictionary=s.inventory.drones[id]

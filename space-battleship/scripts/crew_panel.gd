@@ -276,7 +276,7 @@ func refresh_exploration_sample() -> void:
 		if selected==crew_id:refresh_detail_status(item)
 
 func hyperspace_reserved(id: String) -> bool:
-	return not id.is_empty() and SPACE_PERMISSION.reserved_crew(host.game.profile.hyperspace)==id
+	return not id.is_empty() and SPACE_PERMISSION.reserved_crew(host.game.hyperspace.state)==id
 
 func refresh_row(item: Dictionary) -> void:
 	var g=host.game

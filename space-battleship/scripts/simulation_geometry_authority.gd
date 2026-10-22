@@ -545,7 +545,7 @@ func prepare(owner,simulation:BattleGame)->void:
 	owner.ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	owner.current_hull=str(game.equipment.selected_ship())
 	owner._set_reference_dimensions()
-	owner.hyperspace_visual.sync(game.profile.hyperspace.inventory)
+	owner.hyperspace_visual.sync(game.hyperspace.state.inventory)
 	battle_visual=owner.battle_visual.duplicate(true)
 	visual_config=owner.visual_config.duplicate(true)
 	player_anchor=owner.player_render_position()
@@ -584,7 +584,7 @@ func prepare(owner,simulation:BattleGame)->void:
 	fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
 	fleet_pose.prepare(owner.ship_view)
 	fleet_pose.manifest=fleet_pose.manifest.duplicate(true)
-	fleet_pose.configure(str(game.equipment.selected_ship()),game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+	fleet_pose.configure(str(game.equipment.selected_ship()),game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 	# Capture every authored hull's footprint before worker admission. Runtime
 	# ship commands choose immutable descriptors; they never instantiate/read Nodes.
 	for key in fleet_pose.manifest.hulls:
@@ -704,7 +704,7 @@ func sync_hull()->void:
 	current_hull=key;reference_height=prepared_hulls[key].height
 	player_anchor=Vector2(game.player.x,prepared_hulls[key].anchor_y)
 	fleet_pose.configuration_dirty=true
-	fleet_pose.configure(key,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+	fleet_pose.configure(key,game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 
 func refresh_target_geometry()->void:
 	# One boundary scan. Include exact identity, entry progress and actual movement;
@@ -739,7 +739,7 @@ func before_tick(dt:float)->void:
 	if battle_read_model_enabled:battle_read_model.begin()
 	for enemy in game.enemies:enemy_pose(enemy)
 	sync_hull()
-	fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+	fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 	demo_time+=dt
 	fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,dt)
 	fx_time+=dt
@@ -780,7 +780,7 @@ func sync_fleet_angles()->void:
 
 func ensure_fleet_geometry()->void:
 	if fleet_pose.configuration_dirty:
-		fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.profile.hyperspace.inventory)
+		fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 		fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,0.0)
 		fleet_angles_dirty=true
 	if fleet_angles_dirty:sync_fleet_angles()

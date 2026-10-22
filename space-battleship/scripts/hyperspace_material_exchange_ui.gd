@@ -112,6 +112,6 @@ func commit() -> void:
 func on_event(kind:String,payload:Dictionary) -> void:
  if dialog==null or not dialog.visible:return
  if kind not in ["hyperspace_changed","state","hyperspace_rebuild"]:return
- if not bool(game().profile.hyperspace.unlocked_drones) or str(payload.get("reason","")) in ["reforge","inventory_reset"]:
+ if not bool(game().hyperspace.state.unlocked_drones) or str(payload.get("reason","")) in ["reforge","inventory_reset"]:
   pending_request={};confirmation.hide();dialog.hide();return
  refresh_quote()

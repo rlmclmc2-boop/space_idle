@@ -140,7 +140,7 @@ func _ready() -> void:
 	battle_clip.move_child(ship_view,battle_layer.get_index())
 	hyperspace_visual=preload("res://scripts/hyperspace_drone_visual.gd").new()
 	ship_view.world.add_child(hyperspace_visual)
-	hyperspace_visual.sync(game.profile.hyperspace.inventory)
+	hyperspace_visual.sync(game.hyperspace.state.inventory)
 	ship_view.set_hull(str(game.equipment.selected_ship()))
 	current_hull = str(game.equipment.selected_ship())
 	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
@@ -358,7 +358,7 @@ func before_logical_game_tick(dt:float) -> void:
 		var aim:Vector2=player_render_position()+Vector2(0,-450)
 		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
 		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
-		hyperspace_visual.sync(game.profile.hyperspace.inventory)
+		hyperspace_visual.sync(game.hyperspace.state.inventory)
 		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
 	shield_before_hit=game.player.shield
 	fx_time+=dt
@@ -510,7 +510,7 @@ func _process_battlefield(delta: float) -> void:
 	if is_instance_valid(ship_view):ship_view.restore_canonical_display()
 	if is_instance_valid(hyperspace_visual):hyperspace_visual.restore_canonical_display()
 	if is_instance_valid(ship_view):
-		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
+		if hyperspace_visual.sync(game.hyperspace.state.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
 		hyperspace_visual.animated=game.speed < 10.0
 		if current_hull != str(game.equipment.selected_ship()):
@@ -1103,7 +1103,7 @@ func draw_background()->void:
 func draw_vertical_battle_hud()->void:
 	battle_panel(BATTLE_HEADER_RECT)
 	draw_surface.draw_rect(Rect2(44,115,4,24),BATTLE_TEAL)
-	var route := str(game.profile.hyperspace.active.get("route","")) if game.manual_hyperspace.active else ""
+	var route := str(game.hyperspace.state.active.get("route","")) if game.manual_hyperspace.active else ""
 	var title := UIText.t("hyperspace."+route) if not route.is_empty() else UIText.t("battle.stage",{"stage":str(int(game.stage))})
 	text_at(title,Vector2(60,134),18 if not route.is_empty() else 23,BATTLE_CREAM)
 	var state_key:="hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"

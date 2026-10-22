@@ -2,7 +2,6 @@ extends RefCounted
 ## UI receipt only. Never generates, settles, equips, or changes a reward.
 var panel
 var pending: Dictionary={}
-var pending_receipts:Dictionary={}
 var latest: Dictionary={}
 var first_drone=false
 var notice: AcceptDialog
@@ -14,7 +13,7 @@ var unread=false
 var receipt_marker:Dictionary={}
 func setup(owner) -> void:
  panel=owner
- var s:Dictionary=panel.host.game.profile.hyperspace
+ var s:Dictionary=panel.host.game.hyperspace.state
  first_drone=not bool(s.unlocked_drones)
  if s.active.get("status","")=="completed_pending":pending=s.active.reward.duplicate(true)
  elif not s.inventory.warehouse.is_empty():
@@ -30,30 +29,30 @@ func build(parent:Node) -> void:
  if not latest.is_empty():show_receipt()
 func on_event(kind:String,payload:Dictionary) -> void:
  if kind in ["state","hyperspace_rebuild"]:
-  if receipt_marker!=panel.host.game.profile.get("hyperspaceReceipt",{}):
+  if receipt_marker!=panel.host.game.hyperspace.receipt_marker():
    restore_read_state();show_receipt()
   else:remember_pending(true)
   return
  if kind!="hyperspace_changed":return
  var reason=str(payload.get("reason",""))
- var s:Dictionary=panel.host.game.profile.hyperspace
+ var s:Dictionary=panel.host.game.hyperspace.state
  if reason=="completed_pending":remember_pending()
  elif reason=="claimed":
-  var received=take_claimed_reward()
+  var received:Dictionary=payload.get("reward",{}).duplicate(true)
   if received.is_empty():return
   latest=received;pending={}
   var has_drone=show_receipt()
-  unread=true
-  save_read_state()
+  receipt_marker=payload.receipt.duplicate()
+  unread=bool(receipt_marker.unread)
   if has_drone and first_drone:
    first_drone=false;queued_notice=true;show_first_drone.call_deferred()
  elif reason=="reforge" or reason=="inventory_reset":
-  pending={};pending_receipts={};latest={};unread=false;save_read_state();panel.put(card,"visible",false);sync_receipt_area()
+  pending={};latest={};unread=false;receipt_marker=panel.host.game.hyperspace.receipt_marker().duplicate();panel.put(card,"visible",false);sync_receipt_area()
 func restore_read_state() -> void:
- var g=panel.host.game;var s:Dictionary=g.profile.hyperspace
+ var g=panel.host.game;var s:Dictionary=g.hyperspace.state
  first_drone=not bool(s.unlocked_drones)
- receipt_marker=g.profile.get("hyperspaceReceipt",{}).duplicate(true)
- unread=bool(receipt_marker.get("unread",false)) and int(receipt_marker.get("round",0))==int(s.round_id) and int(receipt_marker.get("run",0))==int(s.settled_run)
+ receipt_marker=g.hyperspace.receipt_marker().duplicate(true)
+ unread=bool(receipt_marker.get("unread",false)) and int(receipt_marker.get("round",0))==int(s.round_id)
  latest={};pending={}
  if unread:
   var id=str(receipt_marker.get("drone_id",""))
@@ -65,29 +64,16 @@ func restore_read_state() -> void:
 func receipt_key(receipt:Dictionary) -> String:
  return str(receipt.get("round_id",-1))+":"+str(receipt.get("run_id",-1))
 func remember_pending(reset=false) -> void:
- if reset:pending_receipts={};pending={}
- var s:Dictionary=panel.host.game.profile.hyperspace
+ if reset:pending={}
+ var s:Dictionary=panel.host.game.hyperspace.state
  for slot in ["active","idle"]:
   var receipt:Dictionary=s.get(slot,{})
   if receipt.get("status","")=="completed_pending":
    pending=receipt.get("reward",{}).duplicate(true)
-   pending_receipts[receipt_key(receipt)]=pending
-func take_claimed_reward() -> Dictionary:
- # Core emits claimed after removing one receipt; match its identity, never assume active owns it.
- var live:Array[String]=[]
- var s:Dictionary=panel.host.game.profile.hyperspace
- for slot in ["active","idle"]:
-  var receipt:Dictionary=s.get(slot,{})
-  if not receipt.is_empty():live.append(receipt_key(receipt))
- for key in pending_receipts.keys():
-  if not live.has(str(key)):
-   var reward:Dictionary=pending_receipts[key];pending_receipts.erase(key);return reward
- return {}
 func save_read_state() -> void:
- var g=panel.host.game;var s:Dictionary=g.profile.hyperspace
- receipt_marker={"round":int(s.round_id),"run":int(s.settled_run),"drone_id":str(latest.get("drone",{}).get("id","")),"unread":unread}
- g.profile.hyperspaceReceipt=receipt_marker.duplicate(true)
- g.save_progress()
+ var g=panel.host.game
+ if not unread and g.hyperspace.acknowledge_receipt(int(receipt_marker.get("round",0)),int(receipt_marker.get("run",0))):g.save_progress()
+ receipt_marker=g.hyperspace.receipt_marker().duplicate()
 func nav_key() -> String:
  return "reward_nav_drone" if not latest.get("drone",{}).is_empty() else "reward_nav_received"
 func sync_receipt_area() -> void:
@@ -104,7 +90,7 @@ func show_receipt() -> bool:
  if latest.is_empty():
   panel.put(card,"visible",false);sync_receipt_area();return false
  var drone:Dictionary=latest.get("drone",{})
- var has_drone=not drone.is_empty() and panel.host.game.profile.hyperspace.inventory.drones.has(str(drone.id))
+ var has_drone=not drone.is_empty() and panel.host.game.hyperspace.state.inventory.drones.has(str(drone.id))
  summary.text=panel.t("reward_drone_received",{"weapon":panel.t(str(drone.weapon)),"level":str(int(drone.level)),"quality":panel.quality_caption(drone)}) if has_drone else panel.t("reward_materials_received")
  var gains:Array[String]=[]
  for key in latest.get("materials",{}):
@@ -125,7 +111,7 @@ func show_first_drone() -> void:
  notice.popup_centered(Vector2i(560,280))
 func view_drone() -> void:
  var id=str(latest.get("drone",{}).get("id",""))
- var s:Dictionary=panel.host.game.profile.hyperspace
+ var s:Dictionary=panel.host.game.hyperspace.state
  if id.is_empty() or not s.inventory.drones.has(id):return
  panel.host.select_system(9)
  panel.selected_id=id

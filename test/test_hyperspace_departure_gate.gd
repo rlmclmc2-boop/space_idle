@@ -79,6 +79,41 @@ func run()->void:
  scene._process(0.0)
  check(g.exit_hyperspace_challenge(),"manual exit from paused origin")
  check(not g.paused and g.group_index==0 and g.distance==0,"return follows normal fresh-start pause semantics")
+ # Reuse the actual panel for the migrated claim, equipment and forge paths.
+ while scene.battle_transition_blocked():scene._process(0.1)
+ g.paused=true;scene.refresh_tab_visibility();scene.select_system(9)
+ var p=scene.hyperspace_panel;var feedback=p.reward_feedback
+ check(g.start_hyperspace_challenge("alpha"),"panel reward uses real challenge receipt")
+ g.hyperspace.advance_manual(2.0);check(g.manual_hyperspace.finish(g,true),"challenge freezes real pending reward")
+ var hs:Dictionary=g.hyperspace.save_data();var receipt:Dictionary=hs.hyperspace.active
+ var drone_rng:=RandomNumberGenerator.new();drone_rng.seed=419
+ var d:Dictionary=preload("res://scripts/drone_rewards.gd").create_drone(drone_rng,g.hyperspace.config,"space:%d:%d"%[int(receipt.round_id),int(receipt.run_id)],"blue","laser",1,"1")
+ d.affixes=[]
+ receipt.reward.drone=d
+ check(g.hyperspace.install_snapshot(hs,g.db),"valid deterministic drone fixture installs into pending receipt")
+ var before:Dictionary=g.hyperspace.save_data();var before_wallet:Dictionary=g.economy.save_data()
+ feedback.on_event("hyperspace_changed",{"reason":"completed_pending"})
+ check(g.hyperspace.save_data()==before and g.economy.save_data()==before_wallet,"pending panel feedback cannot settle or write gameplay")
+ check(g.claim_hyperspace(int(receipt.round_id),int(receipt.run_id)),"actual panel observes domain reward claim")
+ check(feedback.latest.drone.id==d.id and feedback.card.visible and feedback.unread and g.hyperspace.receipt_marker().drone_id==d.id,"receipt payload and unread marker match committed reward")
+ await process_frame
+ check(feedback.notice!=null and feedback.notice.visible,"first reward retains actionable notice")
+ feedback.view_drone();feedback.notice.hide();p.toggle_equipped()
+ check(g.hyperspace.state.inventory.equipped==[d.id] and g.combat_weapon_entries().any(func(entry):return entry.get("drone_id","")==d.id),"real equipment control updates combat projection")
+ check(p.selected_id==d.id and p.section_index==1,"reward action opens the claimed drone")
+ p.select_section(2);p.commands.select_operation("add_affix")
+ var request:Dictionary=p.commands.request();var quote:Dictionary=g.hyperspace.preview_forge(g,request)
+ check(quote.error=="insufficient_materials" or quote.error=="","actual forge selection has a payable domain quote")
+ check(g.economy.credit_many(quote.cost),"fund exact displayed forge price")
+ p.commands.preview();var seq:int=g.hyperspace.state.command_seq;var count:int=g.hyperspace.state.inventory.drones[d.id].affixes.size()
+ var paid_before:Dictionary=g.economy.material_wallet()
+ p.commands.execute_quote()
+ check(g.hyperspace.state.command_seq==seq+1 and g.hyperspace.state.inventory.drones[d.id].affixes.size()==count+1 and p.commands.result_scroll.visible,"actual forge control pays and shows the committed random result")
+ for key in quote.cost:check(g.economy.balance(key)==int(paid_before.materials[key])-int(quote.cost[key]),"actual forge debits the exact displayed material quote")
+ await capture(scene,"forge-owner")
+ p.select_section(1);p.dirty=true;p.refresh();feedback.mark_viewed()
+ check(not g.hyperspace.receipt_marker().unread,"viewing the reward acknowledges only its domain marker")
+ await capture(scene,"equipment-owner")
  var file=FileAccess.open("res://.runtime/return-check.json",FileAccess.WRITE);file.store_string(JSON.stringify({"checks":checks,"failures":failures,"frames":rows},"\t"));file.close()
  if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
  scene.queue_free();await process_frame

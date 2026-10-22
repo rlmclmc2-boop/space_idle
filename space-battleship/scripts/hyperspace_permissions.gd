@@ -36,7 +36,7 @@ static func reserved_crew(s: Dictionary) -> String:
 static func crew_available(g,id: String) -> bool:
 	var entry: Dictionary=g.crew.entry(g,id)
 	if entry.is_empty() or not g.crew.unlocked(g,id) or not str(entry.assignmentType).is_empty() or not g.crew_exploration(id).is_empty() or not g.planet_buildings.occupied(g,id).is_empty():return false
-	var current:=reserved_crew(g.profile.hyperspace)
+	var current:=reserved_crew(g.hyperspace.state)
 	return current.is_empty() or current==id
 
 static func crew_level(g,id: String) -> int:

@@ -18,10 +18,10 @@ var show_hyperspace:=false
 var show_drones:=false
 var zero_confirmation:ConfirmationDialog
 func setup(g,id:String,rewards:String)->void:
- game=g;planet_id=id;round_id=int(g.profile.hyperspace.round_id)
- var bag:Dictionary=g.profile.hyperspace.inventory
- show_drones=bool(g.profile.hyperspace.unlocked_drones) or not bag.drones.is_empty()
- show_hyperspace=g.hyperspace.is_unlocked(g) or show_drones or has_hyperspace_progress(g.profile.hyperspace)
+ game=g;planet_id=id;round_id=int(g.hyperspace.state.round_id)
+ var bag:Dictionary=g.hyperspace.state.inventory
+ show_drones=bool(g.hyperspace.state.unlocked_drones) or not bag.drones.is_empty()
+ show_hyperspace=g.hyperspace.is_unlocked(g) or show_drones or has_hyperspace_progress(g.hyperspace.state)
  generation=int(bag.generation)
  capacity=Bag.retention_capacity(bag,g.hyperspace.config)+int(g.hyperspace.config.retention_capacity_gain)
  title=Text.t("planet.reforge");dialog_text="";min_size=Vector2i(650,370);size=Vector2i(740,500);dialog_hide_on_ok=false;wrap_controls=false
@@ -79,7 +79,7 @@ func on_choice(on:bool,id:String)->void:
  refresh_summary()
 func on_game_event(kind:String,_info:Dictionary)->void:
  if kind in ["hyperspace_changed","planet_reforged"]:
-  if int(game.profile.hyperspace.round_id)!=round_id or int(game.profile.hyperspace.inventory.generation)!=generation:
+  if int(game.hyperspace.state.round_id)!=round_id or int(game.hyperspace.state.inventory.generation)!=generation:
    stale=true;refresh_summary()
 func refresh_summary()->void:
  summary.visible=show_drones
@@ -88,7 +88,7 @@ func refresh_summary()->void:
  get_ok_button().disabled=stale or selected.size()>capacity
 func commit(allow_zero:=false)->void:
  # Recheck the snapshot and current permission before the authoritative transaction.
- if int(game.profile.hyperspace.round_id)!=round_id or int(game.profile.hyperspace.inventory.generation)!=generation:
+ if int(game.hyperspace.state.round_id)!=round_id or int(game.hyperspace.state.inventory.generation)!=generation:
   stale=true;refresh_summary();return
  if selected.size()>capacity or not game.can_reforge_planet(planet_id):
   feedback.text=Text.t("planet.reforge_failed");return

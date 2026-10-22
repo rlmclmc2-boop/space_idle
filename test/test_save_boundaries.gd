@@ -87,18 +87,25 @@ func _initialize() -> void:
 	var rng:=RandomNumberGenerator.new();rng.seed=234
 	var drone:=preload("res://scripts/drone_rewards.gd").create_drone(rng,game.hyperspace.config,"save-storage","white","laser",5,"1")
 	drone.affixes=[];drone.hanging_slots=4;drone.hangings=[]
-	preload("res://scripts/drone_inventory.gd").insert(game.profile.hyperspace.inventory,drone,game.hyperspace.config)
-	game.profile.hyperspace.hanging_modules.extra_storage={"unlocked":true,"level":2,"exp":0.0}
-	check(game.hyperspace.set_equipped(game,[drone.id]) and game.hyperspace.attach_hangings(game,drone.id,["extra_storage"]),"Equip valid storage hanging before disk save")
+	var hs:Dictionary=game.hyperspace.save_data()
+	preload("res://scripts/drone_inventory.gd").insert(hs.hyperspace.inventory,drone,game.hyperspace.config)
+	hs.hyperspace.hanging_modules.extra_storage={"unlocked":true,"level":2,"exp":0.0}
+	check(game.hyperspace.install_snapshot(hs,db),"storage fixture installs")
+	check(game.hyperspace_runtime.set_equipped(game,[drone.id]) and game.hyperspace_runtime.attach_hangings(game,drone.id,["extra_storage"]),"Equip valid storage hanging before disk save")
 	var capacity = game.reactor_capacity()
 	check(capacity>base_capacity and game.set_reactor_allocation("weapons",capacity),"Persist allocation above capacity without storage")
 	check(game.start(14,false),"Start original stage before challenge save")
 	game.spawn_group();game.player.armour=1.0
 	check(game.start_hyperspace_challenge("alpha"),"Save during a real manual challenge")
-	game.profile.hyperspace.history.beta={"1":3.0}
+	hs=game.hyperspace.save_data();hs.hyperspace.history.beta={"1":3.0};check(game.hyperspace.install_snapshot(hs,db),"background history fixture installs")
 	check(game.start_hyperspace_idle("beta"),"Prepare simultaneous background reward")
-	var idle:Dictionary=game.profile.hyperspace.idle
-	check(game.hyperspace.complete(game,int(idle.round_id),int(idle.run_id),true),"Background result freezes before file commit")
+	var idle:Dictionary=game.hyperspace.state.idle
+	check(game.hyperspace_runtime.complete(game,int(idle.round_id),int(idle.run_id),true),"Background result freezes before file commit")
+	check(game.claim_hyperspace(int(idle.round_id),int(idle.run_id)) and game.hyperspace.receipt_marker().unread,"Claim records unread reward before any panel exists")
+	check(game.start_hyperspace_idle("beta"),"Keep another background receipt for reopen")
+	idle=game.hyperspace.state.idle
+	check(game.hyperspace_runtime.complete(game,int(idle.round_id),int(idle.run_id),true),"Next pending reward coexists with previous unread claim")
+	game.hyperspace.add_online_time(0.125)
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -121,7 +128,9 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var restored := BattleGame.new(db, true)
 	restored.resume_progress()
 	check(restored.stage==14 and restored.state==restored.State.TRAVEL and restored.distance==0 and restored.group_index==0 and restored.enemies.is_empty() and restored.player.armour==restored.stat("armour"),"Real reopen/recovery starts the return stage with fresh health and no old battle")
-	check(restored.profile.hyperspace.active.is_empty() and restored.profile.hyperspace.idle==saved.hyperspace.idle and restored.profile.hyperspace.random_state==saved.hyperspace.random_state,"Interrupted manual receipt settles while pending reward and reward RNG survive")
+	check(restored.hyperspace.state.active.is_empty() and restored.hyperspace.state.idle==saved.hyperspace.idle and restored.hyperspace.state.random_state==saved.hyperspace.random_state,"Interrupted manual receipt settles while pending reward and reward RNG survive")
+	check(restored.hyperspace.state.pending_time==0.125 and not restored.profile.has("hyperspace") and not restored.profile.has("hyperspaceReceipt"),"Current disk format preserves pending clock only in hyperspace owner")
+	check(restored.hyperspace.receipt_marker()==saved.hyperspaceReceipt and restored.hyperspace.receipt_marker().unread,"Claimed unread receipt persists independently of pending reward and UI")
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
 	check(restored.galaxy.pending("galaxy_1")==0.25 and restored.galaxy.pending_crew("galaxy_1")==1 and restored.galaxy.income_time()==0.25,"Reopen/recovery preserves both pending online work and unclaimed income time")
 	check(restored.galaxy.regions.galaxy_1.state.build_elapsed==0.0 and str(restored.galaxy.regions.galaxy_1.random.state)==saved.galaxies.galaxy_1.rng_state,"Reopen/recovery neither settles pending work nor advances galaxy RNG")
@@ -140,13 +149,13 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 		finish()
 		return
 	if phase == "recovery":
-		check(restored.economy.resources() == saved.resources and restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.profile.hyperspace.last_command==saved.hyperspace.last_command and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy, "Corrupt primary recovers complete backup including exact wallet and command receipt")
+		check(restored.economy.resources() == saved.resources and restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.hyperspace.state.last_command==saved.hyperspace.last_command and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy, "Corrupt primary recovers complete backup including exact wallet and command receipt")
 		check(original == "{broken", "Recovery read preserves rejected primary bytes")
 		restored.save_progress()
 		check(restored.last_save_error == OK and FileAccess.get_file_as_string(BattleGame.SAVE_PATH + ".rejected") == "{broken", "Recovery write retains rejected bytes")
 		finish()
 		return
-	check(restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.economy.balance("ultimate_cores")==11 and not restored.profile.hyperspace.has("materials"),"Real reopen restores exact integer wallet into economic authority")
+	check(restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.economy.balance("ultimate_cores")==int(saved.ultimateCores) and not restored.hyperspace.state.has("materials"),"Real reopen restores exact integer wallet into economic authority")
 	check(restored.economy.resources() == saved.resources and restored.economy.balance("jewel") == saved.jewelFragments and restored.reactor.level() == saved.reactorLevel and restored.reactor.allocations() == saved.reactorAllocation, "Save/reopen preserves balances, reactor level and allocations")
 	check(restored.research.selected()==saved.aiTechActive and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy and restored.research.save_data().aiTechInput==saved.aiTechInput and not restored.profile.has("aiTechProgress"),"Real reopen restores selected research, paid progress and input to its owner")
 	var wallet_before:=restored.economy.material_wallet()
@@ -159,7 +168,10 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	check(restored.reactor.allocations() == saved.reactorAllocation and restored.economy.resources() == saved.resources, "Invalid allocation cannot install resources first")
 	var bad_target:=saved.duplicate(true);bad_target.erase("latest");bad_target.hyperspace.active.return_target.stage=99999;bad_target.resources["1"]=999
 	restored.load_progress_data(bad_target)
-	check(restored.economy.resources()==saved.resources and restored.profile.hyperspace.active.is_empty(),"Invalid return destination rejects before installing any domain")
+	check(restored.economy.resources()==saved.resources and restored.hyperspace.state.active.is_empty(),"Invalid return destination rejects before installing any domain")
+	var bad_marker:=unchanged.duplicate(true);bad_marker.hyperspaceReceipt.unread=1;bad_marker.resources["1"]=999
+	restored.load_progress_data(bad_marker)
+	check(restored.economy.resources()==saved.resources and restored.hyperspace.receipt_marker()==unchanged.hyperspaceReceipt,"Invalid reward marker rejects before any domain install")
 	var bad_galaxy:=unchanged.duplicate(true);bad_galaxy.galaxies.galaxy_1.slots[0].work=-1.0;bad_galaxy.resources["1"]=999
 	restored.load_progress_data(bad_galaxy)
 	check(restored.galaxy.pending("galaxy_1")==0.25 and restored.economy.resources()==saved.resources,"Invalid galaxy rejects before installing any domain")

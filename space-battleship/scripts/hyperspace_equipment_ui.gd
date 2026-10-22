@@ -19,7 +19,7 @@ func build(parent:Node) -> void:
  capacity_hint=panel.label(parent,"",18)
  feedback=panel.label(parent,"",21)
 func refresh() -> void:
- var g=panel.host.game;var bag:Dictionary=g.profile.hyperspace.inventory
+ var g=panel.host.game;var bag:Dictionary=g.hyperspace.state.inventory
  var cap=mini(int(panel.hull_capacity_provider.call()),int(g.hyperspace.config.maximum_equipped))
  panel.put(heading,"text",panel.t("slots_heading",{"used":str(bag.equipped.size()),"capacity":str(cap)}))
  for i in slots.size():
@@ -48,19 +48,19 @@ static func next_hull(g,capacity:int) -> Dictionary:
   elif locked.is_empty() or int(candidate.level)<int(locked.level):locked=candidate
  return available if not available.is_empty() else locked
 func select_slot(index:int) -> void:
- var ids:Array=panel.host.game.profile.hyperspace.inventory.equipped
+ var ids:Array=panel.host.game.hyperspace.state.inventory.equipped
  if index>=ids.size():return
  panel.selected_id=str(ids[index]);panel.refresh_details()
 func activate() -> void:
- var g=panel.host.game;var bag:Dictionary=g.profile.hyperspace.inventory
+ var g=panel.host.game;var bag:Dictionary=g.hyperspace.state.inventory
  var id=panel.selected_id
  if not bag.drones.has(id):return
  if bag.equipped.has(id):
-  var result:Dictionary=g.hyperspace.unequip_drone(g,id)
+  var result:Dictionary=g.hyperspace_runtime.unequip_drone(g,id)
   show_result(bool(result.ok),str(result.reason));return
  var cap=mini(int(panel.hull_capacity_provider.call()),int(g.hyperspace.config.maximum_equipped))
  if bag.equipped.size()<cap:
-  var result:Dictionary=g.hyperspace.equip_drone(g,id)
+  var result:Dictionary=g.hyperspace_runtime.equip_drone(g,id)
   show_result(bool(result.ok),str(result.reason));return
  if bag.equipped.size()==1:replace(id,str(bag.equipped[0]));return
  if bag.equipped.is_empty():show_result(false);return

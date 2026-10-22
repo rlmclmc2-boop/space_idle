@@ -67,7 +67,7 @@ func toggle(value:bool)->void:
 		return
 	if value:
 		source_names.clear()
-		var inventory:Dictionary=host.game.profile.hyperspace.inventory
+		var inventory:Dictionary=host.game.hyperspace.state.inventory
 		for index in inventory.equipped.size():
 			var id:String=inventory.equipped[index]
 			if not id.is_empty():source_names["drone:"+id]=t("drone",{"slot":str(index+1)})
@@ -104,7 +104,7 @@ func refresh()->void:
 			name=t("module",{"slot":str(int(source.trim_prefix("module:"))+1)})
 		elif source.begins_with("drone:"):
 			if not source_names.has(source):
-				var slot:int=host.game.profile.hyperspace.inventory.equipped.find(source.trim_prefix("drone:"))+1
+				var slot:int=host.game.hyperspace.state.inventory.equipped.find(source.trim_prefix("drone:"))+1
 				source_names[source]=t("drone",{"slot":str(slot) if slot>0 else t("unknown_slot")})
 			name=source_names[source]
 		lines.append(t("row",{"source":name,"dps":NumberFormat.damage(row.dps),"damage":NumberFormat.damage(row.damage)}))

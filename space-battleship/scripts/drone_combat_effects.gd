@@ -22,7 +22,7 @@ func restore_rebuild(g) -> void:
 	g.event.emit("hyperspace_rebuild",{"restored":true,"stacks":0})
 	for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
 func effect(g,key: String) -> Dictionary:
-	if g.profile.hyperspace.inventory.equipped.is_empty():return {}
+	if g.hyperspace.state.inventory.equipped.is_empty():return {}
 	return g.hyperspace_totals().legendary.get(key,{})
 func weapon_multiplier(g,key: String) -> float:
 	var multiplier:=1.0
@@ -74,9 +74,9 @@ func incoming(g,raw,context: Dictionary) -> Dictionary:
 	var master:=effect(g,"drone_master")
 	if not master.is_empty():
 		var quality_ratio:=0.0
-		for id in g.profile.hyperspace.inventory.equipped:
+		for id in g.hyperspace.state.inventory.equipped:
 			if disabled.has(id):continue
-			var d: Dictionary=g.profile.hyperspace.inventory.drones[id]
+			var d: Dictionary=g.hyperspace.state.inventory.drones[id]
 			var q: String="ultimate" if d.ultimate else "legendary" if d.legendary else d.origin_quality
 			quality_ratio=maxf(quality_ratio,float(master.constants.quality_ratios[q]))
 		raw=N.multiply(raw,1.0-float(master.parameters.maximum_reduction)*quality_ratio/float(master.constants.quality_ratios.ultimate))
@@ -84,11 +84,11 @@ func incoming(g,raw,context: Dictionary) -> Dictionary:
 func try_rebuild(g) -> bool:
 	var rebuild:=effect(g,"drone_rebuild")
 	if rebuild.is_empty() or rebuild_stacks>=int(rebuild.constants.maximum_stacks):return false
-	var ids: Array=g.profile.hyperspace.inventory.equipped.filter(func(id):return not disabled.has(id) and not g.profile.hyperspace.inventory.sealed.has(id))
+	var ids: Array=g.hyperspace.state.inventory.equipped.filter(func(id):return not disabled.has(id) and not g.hyperspace.state.inventory.sealed.has(id))
 	if ids.is_empty():return false
 	var rank: Dictionary={"white":0,"blue":1,"gold":2,"legendary":3,"ultimate":4}
 	ids.sort_custom(func(a,b):
-		var da: Dictionary=g.profile.hyperspace.inventory.drones[a];var db: Dictionary=g.profile.hyperspace.inventory.drones[b]
+		var da: Dictionary=g.hyperspace.state.inventory.drones[a];var db: Dictionary=g.hyperspace.state.inventory.drones[b]
 		var qa: String="ultimate" if da.ultimate else "legendary" if da.legendary else da.origin_quality
 		var qb: String="ultimate" if db.ultimate else "legendary" if db.legendary else db.origin_quality
 		return str(a)<str(b) if rank[qa]==rank[qb] else rank[qa]<rank[qb])
@@ -136,6 +136,6 @@ func advance_incoming(g,dt: float) -> void:
 			var damage=N.multiply(black_hole_damage,float(black.parameters.damage_multiplier));black_hole_damage=0.0
 			var context:=CC.derive(CC.root(0,"legendary:black_hole",""),"black_hole")
 			for target in g.enemies.duplicate():
-				if N.compare(damage,0)>0 and N.compare(target.hp,0)>0:g.hit_enemy(target,damage,int(g.db.equip(str(g.profile.hyperspace.inventory.drones[black.drone_id].weapon),1).dmgtype),[],false,context)
+				if N.compare(damage,0)>0 and N.compare(target.hp,0)>0:g.hit_enemy(target,damage,int(g.db.equip(str(g.hyperspace.state.inventory.drones[black.drone_id].weapon),1).dmgtype),[],false,context)
 			g.event.emit("hyperspace_black_hole",{"active":false})
 			if g._legacy_defence_stopped():return

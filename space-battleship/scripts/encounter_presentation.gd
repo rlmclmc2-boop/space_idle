@@ -18,7 +18,7 @@ var return_success := false
 var clear_age := 2.0
 
 func sync(game,delta:float) -> bool:
-	var next_route := str(game.profile.hyperspace.active.get("route","")) if game.manual_hyperspace.active else ""
+	var next_route := str(game.hyperspace.state.active.get("route","")) if game.manual_hyperspace.active else ""
 	var changed := next_route!=route
 	if changed:
 		departure=next_route.is_empty()

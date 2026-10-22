@@ -57,7 +57,7 @@ func reason(code:String) -> String:
  if code=="other_route":return t("layer_reason_other_route")
  if code=="max_layer":return t("layer_reason_max_layer")
  if code=="challenge_busy":
-  var receipt:Dictionary=game().profile.hyperspace.get("active",{})
+  var receipt:Dictionary=game().hyperspace.state.get("active",{})
   if receipt.get("status","")=="completed_pending":return t("layer_reason_challenge_pending",{"route":t(str(receipt.get("route","")))})
  if code in ["no_record","record","no_best_time","not_cleared","no_cleared_layer","no_history","invalid_record"]:return t("layer_reason_record")
  if code in ["busy","active","challenge_active","idle_active","background_active","auto_enabled","background_busy","challenge_busy"]:return t("layer_reason_busy")
@@ -73,7 +73,7 @@ func tick(delta:float) -> void:
  if elapsed<0.2:return
  elapsed=0.0;refresh()
 func refresh_route_markers() -> void:
- var state:Dictionary=game().profile.hyperspace
+ var state:Dictionary=game().hyperspace.state
  var background:Dictionary=state.get("idle",{})
  var challenge:Dictionary=state.get("active",{})
  for index in panel.routes.size():
@@ -153,7 +153,7 @@ func show_crew() -> void:
   crew_enable=panel.button(body,"layer_crew_start",start_crew)
   crew_choice.item_selected.connect(func(_index):refresh_crew())
  crew_choice.clear()
- var reserved=str(game().profile.hyperspace.auto.get("crew_id",""))
+ var reserved=str(game().hyperspace.state.auto.get("crew_id",""))
  for member in game().crew.members():
   var id=str(member.crewId)
   if not game().crew.unlocked(game(),id):continue

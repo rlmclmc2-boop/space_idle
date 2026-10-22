@@ -75,7 +75,7 @@ func dispatch_queued(g)->bool:
 		var ending=finishing;finishing={}
 		return finish(g,bool(ending.success),str(ending.reason))
 	if queued.is_empty():return false
-	if int(queued.round)!=int(g.profile.hyperspace.round_id):cancel_queue(g,"round_changed");return false
+	if int(queued.round)!=int(g.hyperspace.state.round_id):cancel_queue(g,"round_changed");return false
 	var choice=queued;queued={}
 	if not start(g,str(choice.route),int(choice.level)):
 		queue_error=last_error if not last_error.is_empty() else "setup_failed";g.event.emit("hyperspace_queue",{"status":"rejected","reason":queue_error});return false
@@ -86,9 +86,9 @@ func reset_for_load(g)->void:
 	active=false;initializing=false;base_db=null;return_target={};finishing={};transitioning=false;last_result={}
 func start(g,route: String,level: int) -> bool:
 	last_error=""
-	if transitioning or active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level):return false
+	if transitioning or active or not queued.is_empty() or not g.hyperspace.state.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level):return false
 	if g.logical_step_active:
-		queued={"route":route,"level":level,"round":int(g.profile.hyperspace.round_id)}
+		queued={"route":route,"level":level,"round":int(g.hyperspace.state.round_id)}
 		return true
 	if g.native_step_phase=="blocked":last_error="incomplete_logical_step";return false
 	if g.N.compare(g.stat("armour"),0)<=0:return false
@@ -105,7 +105,7 @@ func start(g,route: String,level: int) -> bool:
 	# cancels the native owner and clears combat directly, without cold handoff.
 	g.settle_drops()
 	var signals_were_blocked:bool=g.is_blocking_signals();g.set_block_signals(true)
-	var receipt:Dictionary=g.hyperspace.start(g,route,level,"manual","",point)
+	var receipt:Dictionary=g.hyperspace_runtime.start(g,route,level,"manual","",point)
 	if receipt.is_empty():
 		g.set_block_signals(signals_were_blocked);transitioning=false;return false
 	base_db=g.db;return_target=point;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
@@ -120,14 +120,14 @@ func start(g,route: String,level: int) -> bool:
 func publish_transition(g,entered:bool,success:bool,kind:String,route:String="",level:int=0)->void:
 	transitioning=true
 	g.event.emit("prototype_missile_reset",{})
-	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":int(g.profile.hyperspace.round_id)})
+	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":int(g.hyperspace.state.round_id)})
 	g.event.emit("state",{"state":g.state})
 	g.event.emit("hyperspace_manual",{"active":entered,"success":success,"route":route,"level":level})
 	transitioning=false
 func reject_formation(g,errors:Array) -> bool:
 	if not active:return false
 	last_error="formation_invalid"
-	last_rejection={"reason":last_error,"stage":g.stage,"point":g.group_index,"route":g.profile.hyperspace.active.get("route",""),"run_id":run_id,"round_id":round_id,"errors":errors.duplicate(true),"uids":g.enemies.map(func(enemy):return int(enemy.uid))}
+	last_rejection={"reason":last_error,"stage":g.stage,"point":g.group_index,"route":g.hyperspace.state.active.get("route",""),"run_id":run_id,"round_id":round_id,"errors":errors.duplicate(true),"uids":g.enemies.map(func(enemy):return int(enemy.uid))}
 	g.event.emit("encounter_rejected",last_rejection.duplicate(true))
 	return finish(g,false,last_error)
 func finish(g,success: bool,reason: String="failed") -> bool:
@@ -138,17 +138,17 @@ func finish(g,success: bool,reason: String="failed") -> bool:
 	if g.native_step_phase=="blocked":last_error="incomplete_logical_step";return false
 	transitioning=true
 	g.settle_drops()
-	var receipt:Dictionary=g.profile.hyperspace.active.duplicate(true)
-	var energy_before:float=float(g.profile.hyperspace.energy)
+	var receipt:Dictionary=g.hyperspace.state.active.duplicate(true)
+	var energy_before:float=float(g.hyperspace.state.energy)
 	var end_point:int=clampi(g.group_index,1,10)
 	var elapsed:float=float(receipt.get("work",0))
 	var signals_were_blocked:bool=g.is_blocking_signals();g.set_block_signals(true)
-	if not g.hyperspace.complete(g,round_id,run_id,success,{},elapsed,success):
+	if not g.hyperspace_runtime.complete(g,round_id,run_id,success,{},elapsed,success):
 		g.set_block_signals(signals_were_blocked);transitioning=false;return false
 	active=false;g.db=base_db
 	var point:Dictionary=return_target
 	return_target={};base_db=null;finishing={}
-	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.profile.hyperspace.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.guard_index)+1 if point.loop else 0}
+	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.hyperspace.state.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.guard_index)+1 if point.loop else 0}
 	# A normal fresh sortie owns all health/cooldown initialization. Guard mode
 	# reopens its selected encounter, never the previous actors or their damage.
 	var started:bool=g.start(int(point.stage),bool(point.loop))

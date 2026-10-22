@@ -133,7 +133,7 @@ func setup(owner) -> void:
  refresh_manual_status()
  crew_adapter=route_ui.show_crew
  hull_capacity_provider=func():return host.game.hyperspace.Permission.hull_capacity(host.game,host.game.hyperspace.config)
- preset_adapter=func(index):host.game.hyperspace.apply_preset(host.game,index)
+ preset_adapter=func(index):host.game.hyperspace_runtime.apply_preset(host.game,index)
  affix_catalog_provider=func():return host.game.hyperspace.config.affixes.keys()
  theme=preload("res://scripts/dialog_presentation.gd").theme();add_theme_font_override("font",host.font)
  var panel=PanelContainer.new();panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -164,7 +164,7 @@ func setup(owner) -> void:
  select_section(0);set_process(true);refresh()
 func select_section(index: int) -> void:
  section_index=clampi(index,0,3)
- if section_index>1 and host!=null and not bool(host.game.profile.hyperspace.unlocked_drones):section_index=0
+ if section_index>1 and host!=null and not bool(host.game.hyperspace.state.unlocked_drones):section_index=0
  for i in 4:
   put(sections[i],"visible",i==section_index)
   skin_selection(section_buttons[i],i==section_index)
@@ -221,7 +221,7 @@ func build_inventory(parent: Node) -> void:
  label(detail,t("selected_heading"),25)
  var title_row=row(detail);detail_icon=thumbnail(title_row,90);detail_title=label(title_row,t("none_selected"),24);detail_title.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var actions=GridContainer.new();actions.columns=2;actions.add_theme_constant_override("h_separation",8);actions.add_theme_constant_override("v_separation",8);detail.add_child(actions)
- equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
+ equip=button(actions,"equip",toggle_equipped);favorite=button(actions,"favorite_action",toggle_favorite);unseal=button(actions,"unseal",func():host.game.hyperspace_runtime.claim_sealed(host.game,selected_id));button(actions,"section_forge",func():select_section(2));module_manage=button(actions,"module_manage",commands.show_modules);module_manage.disabled=true
  scroll=ScrollContainer.new();scroll.size_flags_vertical=Control.SIZE_EXPAND_FILL;scroll.horizontal_scroll_mode=ScrollContainer.SCROLL_MODE_DISABLED;detail.add_child(scroll)
  details=label(scroll,t("choose"),21);details.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  totals_summary=label(detail,"",19);button(detail,"totals_manage",commands.show_totals)
@@ -234,10 +234,10 @@ func build_rules(parent: Node) -> void:
  label(parent,t("presets"),25)
  for index in 3:
   var pr=row(parent);var name_field=LineEdit.new();name_field.placeholder_text=t("preset_name");name_field.max_length=96;input_skin(name_field);name_field.size_flags_horizontal=Control.SIZE_EXPAND_FILL;pr.add_child(name_field);preset_names.append(name_field)
-  button(pr,"save_preset",func():host.game.hyperspace.set_preset(host.game,index,name_field.text,bag.equipped))
+  button(pr,"save_preset",func():host.game.hyperspace_runtime.set_preset(host.game,index,name_field.text,bag.equipped))
   var apply=button(pr,"apply_preset",func():
    if preset_adapter.is_valid():preset_adapter.call(index))
-  preset_apply.append(apply);button(pr,"clear_preset",func():host.game.hyperspace.clear_preset(host.game,index))
+  preset_apply.append(apply);button(pr,"clear_preset",func():host.game.hyperspace_runtime.clear_preset(host.game,index))
  label(parent,t("filter"),25);label(parent,t("filter_domain_hint"),20)
  var modes=row(parent);filter_mode=option(modes);filter_mode.add_item(t("filter_and"));filter_mode.add_item(t("filter_or"));string_button=button(modes,"string_tools",show_strings)
  var policy=row(parent);filter_enabled=CheckBox.new();filter_enabled.text=t("filter_auto");policy.add_child(filter_enabled);checkbox_skin(filter_enabled);filter_action=option(policy)
@@ -255,7 +255,7 @@ func build_rules(parent: Node) -> void:
  var rule_actions=row(parent);button(rule_actions,"filter_preview",build_filter_draft);filter_save=button(rule_actions,"filter_save",save_filter);filter_result=label(parent,t("rule_none"),22)
  string_dialog=AcceptDialog.new();string_dialog.title=t("string_title");string_dialog.min_size=Vector2i(750,480);string_dialog.size=Vector2i(860,520);add_child(string_dialog);preload("res://scripts/dialog_presentation.gd").dialog(string_dialog)
  var dialog_content=VBoxContainer.new();string_dialog.add_child(dialog_content);dialog_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT);dialog_content.offset_left=20;dialog_content.offset_right=-20;dialog_content.offset_top=20;dialog_content.offset_bottom=-60
- filter_text=TextEdit.new();input_skin(filter_text);filter_text.size_flags_vertical=Control.SIZE_EXPAND_FILL;filter_text.text=Codec.export_string(host.game.profile.hyperspace.filter,host.game.hyperspace.config);dialog_content.add_child(filter_text)
+ filter_text=TextEdit.new();input_skin(filter_text);filter_text.size_flags_vertical=Control.SIZE_EXPAND_FILL;filter_text.text=Codec.export_string(host.game.hyperspace.state.filter,host.game.hyperspace.config);dialog_content.add_child(filter_text)
  var actions=row(dialog_content);button(actions,"string_import",import_filter_draft);button(actions,"string_copy",func():
   var parsed=Codec.import_string(filter_text.text,host.game.hyperspace.config)
   if valid_draft(parsed):DisplayServer.clipboard_set(filter_text.text))
@@ -295,7 +295,7 @@ func import_filter_draft() -> void:
 func save_filter() -> void:
  build_filter_draft()
  var rule=Codec.import_string(filter_text.text,host.game.hyperspace.config)
- if valid_draft(rule) and host.game.hyperspace.set_filter(host.game,rule):filter_result.text=t("filter_saved")+"\n"+filter_policy_summary(rule)
+ if valid_draft(rule) and host.game.hyperspace_runtime.set_filter(host.game,rule):filter_result.text=t("filter_saved")+"\n"+filter_policy_summary(rule)
  else:filter_result.text=t("command_failed")
 func on_event(kind: String,_payload: Dictionary) -> void:
  reward_feedback.on_event(kind,_payload)
@@ -314,7 +314,7 @@ func _process(_delta: float) -> void:
  if section_index==0:route_ui.tick(_delta)
 func refresh() -> void:
  if host==null or not is_visible_in_tree():return
- var s: Dictionary=host.game.profile.hyperspace
+ var s: Dictionary=host.game.hyperspace.state
  for i in [2,3]:put(section_buttons[i],"visible",bool(s.unlocked_drones))
  if section_index>1 and not bool(s.unlocked_drones):select_section(0);return
  if generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty():
@@ -466,13 +466,13 @@ func toggle_favorite() -> void:
  var ids: Array=bag.favorites.duplicate()
  if ids.has(selected_id):ids.erase(selected_id)
  else:ids.append(selected_id)
- host.game.hyperspace.set_favorites(host.game,ids)
+ host.game.hyperspace_runtime.set_favorites(host.game,ids)
 func claim() -> void:
  if host.game.has_method("claim_hyperspace"):
   host.game.claim_hyperspace();dirty=true;route_ui.refresh()
 func refresh_manual_status(include_inventory:=true) -> void:
  # A route load/reload or inventory generation boundary may refresh this snapshot; progress never does.
- var g=host.game;var s:Dictionary=g.profile.hyperspace
+ var g=host.game;var s:Dictionary=g.hyperspace.state
  manual_projection={"manual_ready":g.manual_hyperspace.production_accepted,"manual_error":g.manual_hyperspace.last_error}
  if include_inventory and (generation!=int(s.inventory.generation) or round_id!=int(s.round_id) or bag.is_empty()):
   bag=s.inventory.duplicate(true);manual_snapshot_reads+=1
@@ -497,7 +497,7 @@ func build_filter_draft() -> void:
   if kind=="none":continue
   if kind=="affix":conditions.append({"field":kind,"key":condition_values[i].get_item_metadata(condition_values[i].selected),"tier":condition_tiers[i].selected+1})
   else:conditions.append({"field":kind,"value":int(condition_levels[i].value) if kind=="minimum_level" else condition_values[i].get_item_metadata(condition_values[i].selected)})
- var rule={"version":host.game.profile.hyperspace.filter.version,"enabled":filter_enabled.button_pressed,"mode":"all" if filter_mode.selected==0 else "any","action":filter_action.get_item_metadata(filter_action.selected),"conditions":conditions}
+ var rule={"version":host.game.hyperspace.state.filter.version,"enabled":filter_enabled.button_pressed,"mode":"all" if filter_mode.selected==0 else "any","action":filter_action.get_item_metadata(filter_action.selected),"conditions":conditions}
  filter_text.text=Codec.export_string(rule,host.game.hyperspace.config);preview_filter()
 func input_skin(field: Control) -> void:
  field.add_theme_color_override("font_color",Color("243d50"))

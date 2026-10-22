@@ -721,7 +721,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 	enemy_entry_distance_time = -INF
 	match kind:
 		"hyperspace_changed":
-			var s: Dictionary=game.profile.hyperspace
+			var s: Dictionary=game.hyperspace.state
 			var signature := str([preload("res://scripts/hyperspace_permissions.gd").reserved_crew(s),s.auto.enabled,s.active.get("mode",""),s.active.get("status",""),s.blocked])
 			if signature!=crew_hyperspace_signature:
 				crew_hyperspace_signature=signature
@@ -2502,7 +2502,7 @@ func unread_hyperspace_reward() -> bool:
 func refresh_hyperspace_badge() -> void:
 	if system_nav_buttons.size()<=9:return
 	var dot=system_nav_buttons[9].get_node_or_null("ActivationBadge")
-	var s:Dictionary=game.profile.hyperspace
+	var s:Dictionary=game.hyperspace.state
 	var unread=unread_hyperspace_reward()
 	if is_instance_valid(dot):set_ui_value(dot,"visible",unread or (bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
 	set_ui_value(system_nav_buttons[9],"text",hyperspace_panel.t(hyperspace_panel.reward_feedback.nav_key()) if unread else UIText.t(SYSTEM_TITLES[9]))
