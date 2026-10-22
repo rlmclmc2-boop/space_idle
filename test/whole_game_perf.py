@@ -91,6 +91,7 @@ def main():
             'galaxy_city_modules': ['bake'],
             'attribute_projection': ['configuration_inputs', 'stat_inputs', 'slot', 'stat', 'jewel_equipment_stat'],
             'compiled_combat_rules': ['compile'],
+            'native_execution_session': ['prepare_galaxy_refit', 'commit_galaxy_refit'],
             'enhancement_panel': ['refresh'],
         })
         MODULES['game'] += ['enhancement_protection_status', 'enhancement_module_protection_capacity',

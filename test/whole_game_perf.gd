@@ -167,6 +167,8 @@ func run():
     meter.enabled=true;memory=OS.get_static_memory_usage();nodes=get_node_count();resources=Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)
    var settlements_before:=galaxy_settlements
    var effects_before:int=g.galaxy.effect_generation if owned else 0
+   var building_before:int=g.galaxy.regions.galaxy_1.building_revision if owned else 0
+   var combat_before:Variant=g.galaxy.get("combat_generation") if owned else null
    var start=Time.get_ticks_usec()
    if OS.get_environment("PERF_RICH")=="1":
     if owned:g.economy.credit_many({"1":balance*1e-10,"2":balance*1e-10})
@@ -179,7 +181,7 @@ func run():
     var cpu_us:int=scene.last_process_us if realtime else elapsed
     frames.append(frame_us);cpu.append(cpu_us)
     native_frames+=int(g.native_execution!=null)
-    if galaxy_settlements>settlements_before:settlement_samples.append({"frame":i-15,"cpu_us":cpu_us,"frame_us":frame_us,"commits":galaxy_settlements-settlements_before,"refitted":owned and g.galaxy.effect_generation!=effects_before})
+    if galaxy_settlements>settlements_before:settlement_samples.append({"frame":i-15,"cpu_us":cpu_us,"frame_us":frame_us,"commits":galaxy_settlements-settlements_before,"building_changed":owned and g.galaxy.regions.galaxy_1.building_revision!=building_before,"effects_changed":owned and g.galaxy.effect_generation!=effects_before,"combat_changed":combat_before!=null and g.galaxy.get("combat_generation")!=combat_before})
     calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
     primitives.append(Performance.get_monitor(Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME))
     projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size());live_enemies.append(g.enemies.size())

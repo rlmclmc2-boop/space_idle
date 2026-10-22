@@ -16,7 +16,7 @@ class RefusedLater extends "res://scripts/native_execution_session.gd":
 	var refuse_preparation:=false
 	func prepare_galaxy_refit(g,values:Dictionary)->Dictionary:return {} if refuse_preparation else super.prepare_galaxy_refit(g,values)
 	func handoff_to_legacy(g:RefCounted,reason:String)->bool:return false if refuse else super.handoff_to_legacy(g,reason)
-func refit_fixture(key:String="missile",effect:String="equipment_value",shared_change:bool=false):
+func refit_fixture(key:String="missile",effect:String="equipment_value",shared_change:bool=false,selection:bool=false):
 	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0
 	# Preserve this fixture's four-layer refit coverage with an explicit test hull.
 	db.ships.Heavy_Battleship.defenseSlots=4
@@ -47,6 +47,11 @@ func refit_fixture(key:String="missile",effect:String="equipment_value",shared_c
 	slot.type=chosen;slot.planned_type=chosen;slot.status="constructing";slot.level=1;slot.work=region.work_cost();slot.construction=0.01
 	saved.blueprint.nodes[0].type=chosen;saved.blueprint.nodes[0].planned_type=chosen
 	saved.explore_work=region.work_cost()
+	if selection:
+		saved.status="developing";saved.explore_work=region.row.explore_work_total
+		for item in saved.slots:item.status="active";item.level=1;item.work=region.work_cost();item.construction=0.0
+		var cells:=PackedByteArray();cells.resize(int(region.row.map_w)*int(region.row.map_h));cells.fill(1)
+		saved.owned=Marshalls.raw_to_base64(cells.compress(FileAccess.COMPRESSION_DEFLATE))
 	check(g.galaxy.install_snapshot(galaxy,db),"Native boundary fixture installs complete galaxy state")
 	g.enemies[0].drops=[{"resourceId":1,"chance":1.0,"amount":100000.0}]
 	var reactor:Dictionary=g.reactor.save_data();reactor.reactorLevel=20;check(g.reactor.install_snapshot(reactor,db.config),"Reactor fixture installs")
@@ -71,6 +76,38 @@ func refit_fixture(key:String="missile",effect:String="equipment_value",shared_c
 	return g
 
 func run()->void:
+	# Real noncombat contributions and active->upgrading selections preserve all
+	# combat state, even when the session would refuse a descriptor or handoff.
+	for effect in ["gem_fragment","crew_exp","iron_auto_ratio","uranium_auto_ratio","selection"]:
+		var selection:bool=effect=="selection"
+		var g=refit_fixture("missile","equipment_value" if selection else effect,false,selection)
+		var owner=g.native_execution;var refused=RefusedLater.new()
+		for field in ["kernel","actor_rows","actor_by_uid","execution_scope","weapons","production_seconds","ticks"]:refused.set(field,owner.get(field))
+		refused.refuse_preparation=true;g.native_execution=refused;owner=refused
+		var region=g.galaxy.regions.galaxy_1
+		var before:Dictionary=owner.kernel.export_handoff().duplicate(true)
+		var inputs:Array=g.attributes.configuration_inputs(g)
+		var stat=g.stat("armour");var builds:Dictionary=g.attributes.builds.duplicate()
+		var generation:int=g.galaxy.effect_generation
+		var effects:Dictionary=g.galaxy.effects.region_effects(region)
+		var notices=[];g.event.connect(func(kind,info):
+			if kind in ["galaxy_changed","equipment_stats","reactor_changed"]:notices.append(kind))
+		g.galaxy.add_pending("galaxy_1",1.0-1.0/60.0-g.galaxy.pending("galaxy_1"))
+		check(g.prepare_logical_step(1.0/60.0),effect+" preflight needs no native configuration")
+		check(not g.galaxy_runtime.native_refit.is_empty() and g.galaxy_runtime.native_refit.plan.is_empty(),effect+" prepared region without descriptor")
+		g.galaxy.add_pending("galaxy_1",1.0-g.galaxy.pending("galaxy_1"))
+		check(g.galaxy_runtime.flush_pending(g,"galaxy_1"),effect+" actual boundary commits")
+		check(g.native_execution==owner and g.native_handoff_count==0 and owner.kernel.export_handoff()==before,effect+" keeps exact live native state")
+		check(g.attributes.configuration_inputs(g)==inputs and g.stat("armour")==stat and g.attributes.builds==builds,effect+" combat cache remains valid")
+		check(notices==["galaxy_changed"],effect+" only galaxy notification after complete commit")
+		if selection:
+			check(region.slots.any(func(item):return item.status=="upgrading") and g.galaxy.effect_generation==generation,"selection progresses without invalidating any contribution")
+			check(g.galaxy.effects.region_effects(region)==effects,"selection leaves exact contributions unchanged")
+		else:
+			check(region.slots[0].status=="active" and g.galaxy.effect_generation==generation+1,effect+" contribution installed at completion")
+			g.galaxy.effects.refresh(g.galaxy)
+			check(g.galaxy.effects.totals[effect]>effects[effect],effect+" noncombat cache reflects new contribution")
+		g.begin_retreat()
 	for key in ["laser","cannon","missile","longLaser"]:
 		var g=refit_fixture(key);var owner=g.native_execution;var k=owner.kernel
 		var region=g.galaxy.regions.galaxy_1

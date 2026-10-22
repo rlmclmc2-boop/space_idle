@@ -11,7 +11,7 @@ var _configuration_version=0
 var _sources:Array=[]
 var _source_inputs:Array=[]
 func configuration_inputs(g)->Array:
-	return [g.db.get_instance_id(),g.configuration_revision,g.unlock_revision,g.equipment.contribution_revision,g.reactor.revision,g.research.contribution_revision,g.crew.contribution_revision,g.planets.contribution_revision,g.galaxy.effect_generation,g.hyperspace.contribution_revision,g.drone_combat.contribution_revision,g.enhancement_growth.configuration_revision]
+	return [g.db.get_instance_id(),g.configuration_revision,g.unlock_revision,g.equipment.contribution_revision,g.reactor.revision,g.research.contribution_revision,g.crew.contribution_revision,g.planets.contribution_revision,g.galaxy.combat_generation,g.hyperspace.contribution_revision,g.drone_combat.contribution_revision,g.enhancement_growth.configuration_revision]
 func configuration_version(g)->int:
 	var inputs=configuration_inputs(g)
 	if inputs!=_configuration_inputs:_configuration_inputs=inputs;_configuration_version+=1
@@ -70,7 +70,7 @@ func stat(g,key: String) -> Variant:
 	return total
 
 func equipment_stat(g,key: String, level: int, galaxy_charge = -1.0) -> Variant:
-	var item=slot("equipment_bases",[g.db.get_instance_id(),g.configuration_revision,g.unlock_revision,g.research.contribution_revision,g.reactor.revision,g.crew.contribution_revision,g.galaxy.effect_generation,g.planets.contribution_revision,g.hyperspace.contribution_revision,g.drone_combat.contribution_revision],galaxy_charge<0)
+	var item=slot("equipment_bases",[g.db.get_instance_id(),g.configuration_revision,g.unlock_revision,g.research.contribution_revision,g.reactor.revision,g.crew.contribution_revision,g.galaxy.combat_generation,g.planets.contribution_revision,g.hyperspace.contribution_revision,g.drone_combat.contribution_revision],galaxy_charge<0)
 	if not item.has("levels"):item.levels={}
 	var levels:Dictionary=item.levels.get(key,{})
 	if levels.has(level):return levels[level]

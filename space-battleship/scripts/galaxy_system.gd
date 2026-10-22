@@ -7,6 +7,7 @@ var _elapsed:Dictionary={}
 var _elapsed_crew:Dictionary={}
 var _income_elapsed:=0.0
 var effect_generation:=0
+var combat_generation:=0
 var revision:=0
 var regions:Dictionary:
 	get:return _regions
@@ -30,7 +31,7 @@ func _install(db,raw:Dictionary,income:float)->void:
 		_regions[key]=region
 		_elapsed[key]=float(saved.get("pending_online_time",0.0))
 		_elapsed_crew[key]=int(saved.get("pending_crew_count",0))
-	_regions.make_read_only();revision+=1;effect_generation+=1;effects.invalidate()
+	_regions.make_read_only();revision+=1;effect_generation+=1;combat_generation+=1;effects.invalidate()
 func reset(db)->void:_install(db,{},0.0)
 func install_snapshot(raw:Dictionary,db)->bool:
 	if not valid_snapshot(raw,db):return false
@@ -127,13 +128,21 @@ func pending_due(g,key:String)->bool:return pending(key)>=work_interval(g)
 func prepare_region(key:String,dt:float,count:int)->Dictionary:
 	var region=_regions[key]
 	var next=region.predict_advance(dt,count)
-	return {"key":key,"dt":dt,"count":count,"source_revision":region.state_revision,"region":next,"refitted":next.building_revision!=region.building_revision,"completed":next.state.status=="complete" and region.state.status!="complete"}
+	var changed:=false
+	var refitted:=false
+	if next.building_revision!=region.building_revision:
+		var before:Dictionary=effects.region_effects(region)
+		var after:Dictionary=effects.region_effects(next)
+		changed=before!=after
+		refitted=before.equipment_value!=after.equipment_value or before.charge_max!=after.charge_max
+	return {"key":key,"dt":dt,"count":count,"source_revision":region.state_revision,"region":next,"effects_changed":changed,"refitted":refitted,"completed":next.state.status=="complete" and region.state.status!="complete"}
 func region_current(plan:Dictionary)->bool:
 	return _regions.has(plan.key) and _regions[plan.key].state_revision==plan.source_revision and is_equal_approx(pending(plan.key),plan.dt) and pending_crew(plan.key)==plan.count
 func commit_region(plan:Dictionary)->void:
 	_regions[plan.key].commit_prediction(plan.region)
 	_elapsed[plan.key]=0.0;revision+=1
-	if plan.refitted:effect_generation+=1
+	if plan.effects_changed:effect_generation+=1
+	if plan.refitted:combat_generation+=1
 func save_data()->Dictionary:
 	var result:Dictionary={}
 	for key in _regions:

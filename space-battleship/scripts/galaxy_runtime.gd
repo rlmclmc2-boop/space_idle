@@ -17,6 +17,9 @@ func prepare_advance(g,dt:float)->bool:
 	native_prepared=true;return true
 func prepare_refit(g,proposal:Dictionary)->bool:
 	var session=g.native_execution
+	# A building selection or a noncombat contribution needs no native descriptor.
+	if not proposal.refitted:
+		native_refit={"proposal":proposal,"plan":{},"session":session};return true
 	var plan:Dictionary=session.prepare_galaxy_refit(g,g.galaxy.effects.projected_multipliers(g.galaxy,proposal.key,proposal.region)) if session.has_method("prepare_galaxy_refit") else {}
 	if plan.is_empty():return session.handoff_to_legacy(g,"galaxy_configuration")
 	native_refit={"proposal":proposal,"plan":plan,"session":session};return true
@@ -45,11 +48,13 @@ func advance(g,dt:float)->void:
 		if g.galaxy.pending_due(g,key) and not flush_pending(g,key):return
 func flush_pending(g,key:String)->bool:
 	if not g.galaxy.regions.has(key) or g.galaxy.pending(key)<=0:return true
-	var proposal:Dictionary=g.galaxy.prepare_region(key,g.galaxy.pending(key),g.galaxy.pending_crew(key))
+	# Reuse only this session's prediction for the exact work still pending.
+	var ready:bool=not native_refit.is_empty() and native_refit.session==g.native_execution and native_refit.proposal.key==key and g.galaxy.region_current(native_refit.proposal)
+	var proposal:Dictionary=native_refit.proposal if ready else g.galaxy.prepare_region(key,g.galaxy.pending(key),g.galaxy.pending_crew(key))
 	if g.native_execution!=null and proposal.refitted:
 		if native_refit.is_empty() and not prepare_refit(g,proposal):return block(g)
 		if g.native_execution!=null:
-			var ready:bool=not native_refit.is_empty() and native_refit.session==g.native_execution and native_refit.proposal.key==key and g.galaxy.region_current(native_refit.proposal)
+			ready=not native_refit.is_empty() and native_refit.session==g.native_execution and native_refit.proposal.key==key and g.galaxy.region_current(native_refit.proposal)
 			if ready and not g.native_execution.paused_by_configuration and g.native_execution.commit_galaxy_refit(g,native_refit.plan):
 				proposal=native_refit.proposal
 				g.galaxy.commit_region(proposal);native_refit={}
