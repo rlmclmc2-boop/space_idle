@@ -1,0 +1,142 @@
+{
+  "candidate_sha": "2c3feb0d1145d7de00352a03d059b1e3618087db",
+  "branch": "impl/domain-architecture-20261022",
+  "baseline_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "product_source_changes": [
+    "461a34dd0c44c87bee4870c11999b0d5475ff082",
+    "281dec1f718717f7bd8ddaaa0f78227dd76e3874"
+  ],
+  "candidate_sources": {
+    "space-battleship/scripts/game.gd": "c377abba74cef33e4cb474887d546e388f34268c3b6f08cdb9e46134995ba097",
+    "space-battleship/scripts/ai_tech_view_model.gd": "870fbc6b4a78c6f0c6f8f66c241b007430e96561015ad0e525ee5bcff285ca1b",
+    "space-battleship/scripts/main.gd": "d6c3697a72d309af83683c0a75164a888087754b0c6684fabe1c1e5c660d15c4",
+    "space-battleship/scripts/enemy_fixed_layout.gd": "f63a053bbfe73cc931646a8dfc9af482d24fb8d88cc71e4c35214a3a17d056f8",
+    "space-battleship/scripts/attribute_projection.gd": "e3b9ef54e795f42984ca5d7836275d7d1b21b26b33fb6c1ac2302035dd680526",
+    "space-battleship/scripts/reactor_state.gd": "8367cd4ea92197586d58acc2f374207f9591ea37c8da89c325982890a866eba1",
+    "space-battleship/scripts/reactor_integer.gd": "41dfe745b30c93807072439f4d38f4445e805f8ad2fd810b0ce4d2e0060b542f",
+    "space-battleship/scripts/galaxy_runtime.gd": "b62e12152e626eb4eb895de3bf97c05bc8644dd2ca8e025915fc0f31a9aab102",
+    "space-battleship/scripts/native_execution_compiler.gd": "87612baf90312e760a716c3dafa59be85c2a6c1b58f9dc3822c454de523d62df",
+    "test/whole_game_perf.gd": "a0ada49ff5a50b7fe7a2b9d66cf92ec42b573381be08c1f4d035c995c41cac2b",
+    "test/whole_game_perf.py": "6d98ef14e8d284a34868ab6f31253e7e063f2eeaba59e0849f7187c95f7338f5"
+  },
+  "candidate_source_hash_encoding": "SHA256 LF Git blobs; compared with final dense run actual isolated files. Earlier runs retain their own runtime and fixture SHAs.",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "environment": "Godot4.7.2 ed1daf0bf, RTX2060, OpenGL3.3, NVIDIA610.88,1373x883, uncapped and vsync off; existing whole_game_perf, sequential GPU processes, no instrumentation.",
+  "sampling": "Each page:15 warm-up frames then300 measured frames; fixed1/60 simulation, actual frame boundary/render wall time plus separate Main._process CPU. Screenshot readback occurs after each measurement. This is not a claim of live user FPS or a long soak.",
+  "runs": [
+    {
+      "label": "main-full",
+      "runtime_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+      "fixture_sha": "c751e1aa58bbd9c9a09a2fe8e2350ede77349708",
+      "frame_samples": 3000,
+      "rows": 10,
+      "engine_exit": 0,
+      "accepted": false,
+      "runtime_errors": 6,
+      "fixture_sources": {
+        "test/whole_game_perf.py": "27c0e8a246da363abc257757f1b47a37198caa73b6269bc7c2d462ea993cf814",
+        "test/whole_game_perf.gd": "4879f5493c7a0058c55b7900e1c4991ac8386821d63d4321cb4d590b8fc271c9"
+      }
+    },
+    {
+      "label": "current-full",
+      "runtime_sha": "461a34dd0c44c87bee4870c11999b0d5475ff082",
+      "fixture_sha": "c751e1aa58bbd9c9a09a2fe8e2350ede77349708",
+      "frame_samples": 3000,
+      "rows": 10,
+      "engine_exit": 0,
+      "accepted": true,
+      "runtime_errors": 0,
+      "fixture_sources": {
+        "test/whole_game_perf.py": "27c0e8a246da363abc257757f1b47a37198caa73b6269bc7c2d462ea993cf814",
+        "test/whole_game_perf.gd": "4879f5493c7a0058c55b7900e1c4991ac8386821d63d4321cb4d590b8fc271c9"
+      }
+    },
+    {
+      "label": "current-dense-high",
+      "runtime_sha": "779d2428733e5ff5dd1237e9615ee8c7337c98b8",
+      "fixture_sha": "779d2428733e5ff5dd1237e9615ee8c7337c98b8",
+      "frame_samples": 900,
+      "rows": 3,
+      "engine_exit": 0,
+      "accepted": false,
+      "runtime_errors": 16,
+      "fixture_sources": {
+        "test/whole_game_perf.py": "6d98ef14e8d284a34868ab6f31253e7e063f2eeaba59e0849f7187c95f7338f5",
+        "test/whole_game_perf.gd": "fbb36fbbcbbb9dd2f142b9e068b2ea61289005d1e81894ad9122589ddcae6797"
+      }
+    },
+    {
+      "label": "current-dense-high-fixed",
+      "runtime_sha": "281dec1f718717f7bd8ddaaa0f78227dd76e3874",
+      "fixture_sha": "779d2428733e5ff5dd1237e9615ee8c7337c98b8",
+      "frame_samples": 900,
+      "rows": 3,
+      "engine_exit": 0,
+      "accepted": true,
+      "runtime_errors": 0,
+      "fixture_sources": {
+        "test/whole_game_perf.py": "6d98ef14e8d284a34868ab6f31253e7e063f2eeaba59e0849f7187c95f7338f5",
+        "test/whole_game_perf.gd": "fbb36fbbcbbb9dd2f142b9e068b2ea61289005d1e81894ad9122589ddcae6797"
+      }
+    },
+    {
+      "label": "main-dense",
+      "runtime_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+      "fixture_sha": "2c3feb0d1145d7de00352a03d059b1e3618087db",
+      "frame_samples": 600,
+      "rows": 2,
+      "engine_exit": 0,
+      "accepted": true,
+      "runtime_errors": 0,
+      "fixture_sources": {
+        "test/whole_game_perf.py": "6d98ef14e8d284a34868ab6f31253e7e063f2eeaba59e0849f7187c95f7338f5",
+        "test/whole_game_perf.gd": "a0ada49ff5a50b7fe7a2b9d66cf92ec42b573381be08c1f4d035c995c41cac2b"
+      }
+    },
+    {
+      "label": "current-dense",
+      "runtime_sha": "2c3feb0d1145d7de00352a03d059b1e3618087db",
+      "fixture_sha": "2c3feb0d1145d7de00352a03d059b1e3618087db",
+      "frame_samples": 600,
+      "rows": 2,
+      "engine_exit": 0,
+      "accepted": true,
+      "runtime_errors": 0,
+      "fixture_sources": {
+        "test/whole_game_perf.py": "6d98ef14e8d284a34868ab6f31253e7e063f2eeaba59e0849f7187c95f7338f5",
+        "test/whole_game_perf.gd": "a0ada49ff5a50b7fe7a2b9d66cf92ec42b573381be08c1f4d035c995c41cac2b"
+      }
+    }
+  ],
+  "limits": [
+    "Full-page comparison uses an authored three-enemy heavy hull with5 weapon/3 defence slots,level150,growth30,current research30,crew103 and the existing completed galaxy1 fixture. Native is active on the first8 pages; both baseline/candidate hand off on the final2. Different simulation history across visible-galaxy rules prevents bit-for-bit replay claims.",
+    "Full baseline has6 duration formatter errors on research page; its overall run is NOT accepted. Other page metrics remain contextual measurements, not a passing baseline suite. Candidate scientific formatter resolves the6 errors.",
+    "Initial high-reactor run has16 obsolete furnace-peak float-conversion errors; NOT accepted. Removing its retired write and uncalled production/description chain is verified by the final high run with zero errors. Live AI-tree income peak continues through its existing domain command.",
+    "High case seeds15 enemies and reactor2400, performs a real full smelting allocation (0.337ms), runs script fallback and actual kills/rewards. It is NOT a stationary15-enemy sample; live density changes. Separate normal15-enemy comparison records exactly15 throughout and retains native.",
+    "Full candidate equipment P95 6.257ms vs5.388ms baseline; dense equipment10.074ms vs9.671ms and galaxy7.946ms vs7.225ms. No blanket speedup/no-regression claim. First-page P99 up to27.472ms; planet and galaxy page switches172.771/221.102ms remain visible costs.",
+    "High reactor2400 capacity is displayed around1.11e425; no arbitrary-level performance guarantee. At level1e9, configured base100/growth1.5 needs at least176091261 decimal digits even before larger temporary exact products. No billion-level purchase was run or claimed. Exact allocation/capacity still needs a bounded numeric contract decision; material/core integers remain exact.",
+    "Low-price per-level summation with arbitrary growth configuration remains unbounded by these samples. Only current production configuration and listed fixtures measured.",
+    "All final candidate runs retain known certificate warning but no SCRIPT ERROR or object/resource exit warnings. Main-player launcher still requires approved main; it was not bypassed. Performance fixtures disable saving; real save/reopen evidence remains separately bound to faf36d9d in c16.",
+    "An initial smoke probe overlapped non-performance work and is not used as final comparison evidence. No new project or runner was created."
+  ],
+  "artifacts": {
+    "comparison.json": "51dd4e818e407527393b3dbf5045680c7c2551501e2848966cf8d422c624d02a",
+    "current-dense-high-fixed.json": "72b0460f4001baecc4fcc5b6a9017ceefef7f918258a422efe7d44c60871f068",
+    "current-dense-high-fixed.log": "1e56e5f8747b05b1d937155c8513935e26b755cf9c9ac92a2810b08581aa937a",
+    "current-dense-high.json": "ef877deb0103d85a4a1176b4657db37ca1fc2b54e6ea78d3427a212b56e1ecb2",
+    "current-dense-high.log": "2e8ba94d7240e5a7954d7f723841323cd2d0312eb18eac144335076c6be89ad3",
+    "current-dense.json": "f11fa4864492d08dfde893fe291e4e3ed67510964ecd2c1fe186762727e0609e",
+    "current-dense.log": "a86ef7f552090f65c0c9a308263ebc0fa8a6b66917d85051ff56513c2fcd5229",
+    "current-full.json": "82e8b56476f4673900ffb5d4da52580f2b7063b7be4275df6c642799b44f890f",
+    "current-full.log": "ac4979f4723f7e459d5d6e76754d72aee4408ff2497018fd54ff9a3ea82c5fb5",
+    "galaxy-page.png": "84d746734111c1fde01f6dbb2f2bf8c64e601caf138e5257b4148da0959f0570",
+    "main-dense.json": "d23a96d39e4eb6c476eaeee3faa5710b60c4eb2b64356fe63fa519c79a4a0987",
+    "main-dense.log": "bc492e9eb29e72dd7c9f839021408189db0d329d234e624606fb710dc706834d",
+    "main-full.json": "c281ee4636a507b062e5eda31cc7e160a063d678c4344f52b46b92e024c00e28",
+    "main-full.log": "cf2f2d9e5dd11c780cb42ad155764fa627614152a06ea47e74754deb351e9fa0",
+    "native-fleet-15.png": "e21570cf4b4456b4bc7c52e5f94ab63d97c16d174480ba3aad7e1282a2de28a6",
+    "reactor-2400.png": "92f9b530ad5e43d30453c2a9744373de052ec01c1e4c293ab6eabeb8ae4d87c2",
+    "research-page.png": "dde8365ab16520807786d1fc98d7faad4857931597a1da62a3a5c3173c82c357"
+  }
+}
