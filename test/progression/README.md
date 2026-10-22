@@ -6,6 +6,8 @@ Earlier basic-BattleGame results and all pre-hook formal+scene results remain ap
 
 Experimental branch only. Source baseline: main b3767d1452ab0a4c100f3bc4f26d51c7113a6c0f plus enemy-pair candidate 04a5a307bcef9325efa9026e1ca94affa577e10d. The inherited 6/32 loss-to-win changes remain unresolved baseline evidence; paired copies are not equivalent difficulty.
 
+Retired scientist-purchase probes and their `--scientist-batch` / `--scientist-max` switches have been removed. Historical measurements below remain evidence, not current purchase checks. Current AI research checks are listed in [the AI-tech guide](../guides/ai-tech.md).
+
 ## Independent reproduction
 
 Requires Python 3 and Godot 4.6.3 (official 7d41c59c4); package builder uses standard library only. Default builds copy reachable rule scripts and JSON. Formal scene acceptance requires `--scene`, which also includes authored scene/assets dependencies. Neither build includes engine, credentials or player saves. Configuration edits require openpyxl 3.1.5 and the formal import command below.
@@ -139,7 +141,7 @@ Native scene reserve fixture (seed1701, starter slot structure, missile13/armour
 
 Native full-scene comparison from legal30 for900s passes full every-second projectile/queue/drop/resource/growth signatures. Optional `--ui-refresh-seconds 1` refreshes display cards/navigation once per simulated second, retaining every1/60 game, pose, turret, event and VFX step; fresh900 and late30/120 comparison with native every-frame display both pass. Display throttling is a diagnostic setting, not a player-progress shortcut or UI acceptance claim. Default remains every-frame.
 
-Sparse v7 counts two retreats across visits: v6 loses the first retreat when resetting the counter after each visit; actual frozen-v6 controlled case does not farm, v7 does. Diagnostic restore offsets this marker against new metrics, retaining unhandled losses. `--policy-ref REF` builder option explicitly freezes one compatible policy and records its Git provenance; it is not default-strategy acceptance. Optional `--scientist-batch` uses the real +10 button after teaching when its full cost fits the same10% reserve budget, otherwise+1; controlled actual visit buys10 in one action. It is a declared alternative test strategy; no numerical source changes.
+Sparse v7 counts two retreats across visits: v6 loses the first retreat when resetting the counter after each visit; actual frozen-v6 controlled case does not farm, v7 does. Diagnostic restore offsets this marker against new metrics, retaining unhandled losses. `--policy-ref REF` builder option explicitly freezes one compatible policy and records its Git provenance; it is not default-strategy acceptance.
 
 Old v14 no-forge/old enhancement policy was stopped after5.606h observed at34 to prioritize the stronger growth counterfactual; its manifest/save/trajectory and partial scope remain archived. This is not12h stall proof. Current forge/noforge/preparation segments and parent full run remain pending.
 

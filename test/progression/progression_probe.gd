@@ -116,12 +116,6 @@ func run() -> void:
 		policy.fixed_weapon_key=str(options.get("fixed_weapon",""))
 	elif int(options.get("fixed_weapon_from_stage",0))>0:
 		printerr("Frozen policy does not support a fixed stage weapon study");quit(2);return
-	if policy.get("scientist_batch_mode")!=null:policy.scientist_batch_mode=bool(options.get("scientist_batch",false))
-	elif bool(options.get("scientist_batch",false)):
-		printerr("Frozen policy does not support scientist-batch assumption");quit(2);return
-	if policy.get("scientist_max_mode")!=null:policy.scientist_max_mode=bool(options.get("scientist_max",false))
-	elif bool(options.get("scientist_max",false)):
-		printerr("Frozen policy does not support scientist MAX assumption");quit(2);return
 	if policy.get("fixed_farm_stage")!=null:policy.fixed_farm_stage=int(options.get("fixed_farm_stage",0))
 	elif int(options.get("fixed_farm_stage",0))>0:
 		printerr("Frozen policy does not support fixed earned farm stage study");quit(2);return

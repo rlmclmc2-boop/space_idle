@@ -11,8 +11,6 @@ var fixed_weapon_stage_seen := false
 var thematic := false
 var allow_reforge := true
 var use_bulk := false
-var scientist_batch_mode := false
-var scientist_max_mode := false
 var recovering := false
 var recovery_end_stage := 0
 var farm := {}
@@ -83,23 +81,6 @@ func recall_conquered_for_preparation(g:BattleGame,planet_id:String,building_id:
 				record(g,"reassign_growth_for_preparation",{"crew":member.crewId,"previous":previous,"target_planet":planet_id,"building":building_id,"tradeoff":"old growth assignment stops; same existing crew, fixed jewel/reactor/science/equipment priority"})
 				return true
 	return false
-func buy_scientist(g:BattleGame,fraction:float)->void:
-	# Independent sensitivity assumption: existing MAX button, no hidden buys.
-	# It may spend most uranium; measure progression AND construction blocking.
-	if scientist_max_mode and g.stage>=6:
-		var purchase:Dictionary=g.scientist_purchase(-1)
-		if int(purchase.count)>0 and g.generate_scientist(-1):
-			record(g,"scientist_max",{"amount":purchase.count,"costs":purchase.costs,"assumption":"one actual MAX click per sparse visit; no reserve cap"})
-		return
-	# Optional sparse-visit assumption: existing +10 button, same reserve cap.
-	if scientist_batch_mode and g.stage>=6:
-		var purchase:Dictionary=g.scientist_purchase(10)
-		var cheap:bool=int(purchase.count)==10
-		for id in purchase.costs:
-			if float(purchase.costs[id])>float(g.profile.resources.get(id,0))*fraction:cheap=false
-		if cheap and g.generate_scientist(10):
-			record(g,"scientist_batch",{"amount":10,"reserve_fraction":fraction});return
-	super.buy_scientist(g,fraction)
 func act(g: BattleGame, elapsed: float) -> bool:
 	# One visit may read several already queued notifications, each via the
 	# actual one-page API. Legacy limit1 keeps the old act ordering exactly.
