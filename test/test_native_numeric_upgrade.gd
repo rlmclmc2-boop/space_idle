@@ -122,10 +122,10 @@ func run()->void:
 	check(g.upgrade_slot("weapons",0,1) and g.native_execution==owner and g.native_handoff_count==0,"armed enemy default factor does not reject ordinary upgrade")
 	g.begin_retreat()
 	g=fixture("missile",true);owner=g.native_execution;owner.kernel.cancel()
-	var tech="singularity";g.profile.aiTechActive=tech;g.profile.aiTechProgress[tech]=preload("res://scripts/ai_tech_tree.gd").required(g,tech)-0.5
-	var points_before=g.profile.aiTechProgress[tech];var tech_level=g.hightech_level(tech)
+	var tech="singularity";var research=g.research.save_data();research.aiTechActive=tech;research.aiTechProgress[tech]=g.research.required(g,tech)-0.5;g.research.install_snapshot(research,g.db.data.ai_tech_tree)
+	var points_before=g.research.progress(tech);var tech_level=g.hightech_level(tech)
 	g.advance_hightech(1.0)
-	check(g.profile.aiTechProgress[tech]==points_before and g.hightech_level(tech)==tech_level,"failed research completion handoff spends no progress or level")
+	check(g.research.progress(tech)==points_before and g.hightech_level(tech)==tech_level,"failed research completion handoff spends no progress or level")
 	var reactor_level=g.reactor.level();var uranium=g.economy.balance("2")
 	check(not g.upgrade_reactor(1) and g.reactor.level()==reactor_level and N.compare(g.economy.balance("2"),uranium)==0,"failed reactor handoff spends no resources or level")
 	g.begin_retreat()
@@ -161,7 +161,7 @@ func run()->void:
 		var quote=g.slot_upgrade_cost("weapons",0,1)
 		fund(g,{"1":float(quote.get("1",0))*2.5,"2":float(quote.get("2",0))*2.5})
 		var legacy=preload("res://scripts/presented_battle_game.gd").new(g.db,false)
-		legacy.profile=g.profile.duplicate(true);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
+		legacy.profile=g.profile.duplicate(true);legacy.research.install_snapshot(g.research.save_data(),g.db.data.ai_tech_tree);legacy.economy.install_snapshot(g.economy.save_data());legacy.reactor.install_snapshot(g.reactor.save_data(),g.db.config);legacy.player=g.player.duplicate(true);legacy.state=g.State.COMBAT
 		legacy.enable_compiled_combat_rules();legacy.invalidate_stat_cache()
 		var expected_ok=legacy.upgrade_equipment_batch(mode)
 		var actual_ok=g.upgrade_equipment_batch(mode)

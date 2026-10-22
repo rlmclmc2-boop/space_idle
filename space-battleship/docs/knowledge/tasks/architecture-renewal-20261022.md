@@ -5,3 +5,5 @@
 扩读理由：需要确定实际写入者和提交边界；精确范围为 scripts/game.gd 的资源、成长和保存函数，直接调用的领域脚本，scripts/save_transfer.gd、progress_writer.gd，以及对应现有专项夹具。战斗和 native 在后续阶段按实际依赖扩读。
 
 进度：首候选 28d9a6e7 的普通余额/反应炉/保存获双审局部通过。材料闭环运行候选 580aea8e 已提交；下一步迁移 ai_tech_tree.gd、game.gd 研究接口、main.gd 研究通知消费者和对应现有专项。未开展整体产品验收、不合 main。
+
+科研闭环运行候选 c7d91ec6：等级/进度/投入/峰值/未读退出 profile，准备研究切片后由 Game 联合经济提交，保存验证后安装。相关验证通过。阶段 1 仍进行；下一闭环为装备状态、跨域换装/舰体提交，优先读取 game.gd 的 module/slot/loadout 与对应现有专项。

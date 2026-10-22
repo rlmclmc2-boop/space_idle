@@ -33,7 +33,7 @@ func _initialize() -> void:
 		return
 	var game := BattleGame.new(db, true)
 	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
-	game.profile.cleared = [1]
+	game.profile.cleared = [1,3,4]
 	game.rebuild_unlocks()
 	game.economy.credit("2", 10000.0)
 	game.economy.credit_fragments(123.45)
@@ -61,6 +61,9 @@ func _initialize() -> void:
 	game.hyperspace.last_error = ""
 	var exchange:=game.hyperspace_material_exchange_quote("degenerate_matter","antiproton",7)
 	check(game.exchange_hyperspace_materials(exchange.request).error=="","Commit exchange receipt before real disk write")
+	game.economy.credit("1",100)
+	check(game.select_tech("weapon_accuracy") and game.set_tech_input("1",10),"Start research with paid input before disk save")
+	game.advance_hightech(1.0)
 	game.save_progress()
 	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
@@ -77,6 +80,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("user://expected.json"))
 	# JSON numbers are doubles; this fixture's small integer allocations are exact.
 	for key in saved.reactorAllocation:saved.reactorAllocation[key] = int(saved.reactorAllocation[key])
+	for key in saved.aiTechInput:saved.aiTechInput[key] = int(saved.aiTechInput[key])
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var restored := BattleGame.new(db, true)
 	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
@@ -88,7 +92,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 		finish()
 		return
 	if phase == "recovery":
-		check(restored.economy.resources() == saved.resources and restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.profile.hyperspace.last_command==saved.hyperspace.last_command, "Corrupt primary recovers complete backup including exact wallet and command receipt")
+		check(restored.economy.resources() == saved.resources and restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.profile.hyperspace.last_command==saved.hyperspace.last_command and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy, "Corrupt primary recovers complete backup including exact wallet and command receipt")
 		check(original == "{broken", "Recovery read preserves rejected primary bytes")
 		restored.save_progress()
 		check(restored.last_save_error == OK and FileAccess.get_file_as_string(BattleGame.SAVE_PATH + ".rejected") == "{broken", "Recovery write retains rejected bytes")
@@ -96,6 +100,7 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 		return
 	check(restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.economy.balance("ultimate_cores")==11 and not restored.profile.hyperspace.has("materials"),"Real reopen restores exact integer wallet into economic authority")
 	check(restored.economy.resources() == saved.resources and restored.economy.balance("jewel") == saved.jewelFragments and restored.reactor.level() == saved.reactorLevel and restored.reactor.allocations() == saved.reactorAllocation, "Save/reopen preserves balances, reactor level and allocations")
+	check(restored.research.selected()==saved.aiTechActive and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy and restored.research.save_data().aiTechInput==saved.aiTechInput and not restored.profile.has("aiTechProgress"),"Real reopen restores selected research, paid progress and input to its owner")
 	var wallet_before:=restored.economy.material_wallet()
 	var retry:=restored.exchange_hyperspace_materials({"round_id":1,"command_seq":1,"source":"degenerate_matter","target":"antiproton","amount":7})
 	check(retry.error=="" and retry.amount==7 and restored.economy.material_wallet()==wallet_before,"Reopened exchange retries cached receipt without a second debit")

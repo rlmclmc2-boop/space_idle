@@ -1,0 +1,77 @@
+{
+  "runtime_commit": "c7d91ec6d0788f2f63b7507cfbabe9cde4dccef5",
+  "parent_runtime_commit": "580aea8eae92a70567ed9dec466fee89cee23d20",
+  "scope": "Research ownership, committed paid intervals and current-format save",
+  "sha256_basis": "Canonical Git blob bytes, normalized LF text",
+  "sources": {
+    "space-battleship/scripts/ai_tech_tree.gd": {
+      "git_blob": "393f42b9c769af80a9a0c40cb230d2099d574c6c",
+      "sha256": "d338fe91a760f5a4d7baa52866da1bff6bf978fd3adcc93c20cbfcb1aa61c048"
+    },
+    "space-battleship/scripts/economy_state.gd": {
+      "git_blob": "db090a9f87c7c918eff4a247304e4bef588ff862",
+      "sha256": "d27051b35558e95eb0b526f7d38bf362413a6fd0f705ae65283c50ce2df5133f"
+    },
+    "space-battleship/scripts/game.gd": {
+      "git_blob": "bb6d790d8036b0f5e5e12a5728942a140b4866e3",
+      "sha256": "caa41d3acb5ebaceb2cbf17d65372b0d8bd0883952dcdc566dc86146c8b5e7c8"
+    },
+    "space-battleship/scripts/main.gd": {
+      "git_blob": "43149cfd065a5f2b64012621906c6e0f9c5983ff",
+      "sha256": "782e1fd40f3e11d69747b56177cf2dad014249a8b596c6a49ac45e024a0f03a3"
+    },
+    "space-battleship/scripts/save_transfer.gd": {
+      "git_blob": "759fd6065b2cf35d389c34f9bc4a2ec647f11326",
+      "sha256": "27a1068f9704ef2fd7e1a4fb54f52afd61f479e404152d53552f72de084d279e"
+    }
+  },
+  "evidence": {
+    "research.log": {
+      "sha256": "c6bced9d0684ea4d146a02c0e3c276a06624ec3805f01bb02b65fde42330988d"
+    },
+    "income.log": {
+      "sha256": "18432a025bff0c55695ae7e7d1517cf9d06c629e85ba1d2f03c30da689e8759c"
+    },
+    "native.log": {
+      "sha256": "4a5ff66b88910ff49120809c4f981e44ae1f1425f6c4b45b56678eeabda2daef"
+    },
+    "contributions.log": {
+      "sha256": "31abc8bfe066772a60e457c7bdfda129f8184a2bbbd602b8573db108a4dec2c1"
+    },
+    "write.log": {
+      "sha256": "ca697f7101214703529998b9bbd2106a88242babf6fe95cd49a62aced6319b05"
+    },
+    "reopen.log": {
+      "sha256": "66e64266da734004d03a2e8955d2422196220803503dcf8ccbc6c23579e56afc"
+    },
+    "latest.log": {
+      "sha256": "ab297c1bab54b569336ec16fbd289969a2d6ceda6ce11161d44790dece1665bc"
+    },
+    "recovery.log": {
+      "sha256": "c620522d39ded660c6b0dd0c5d24fc7f5d8ab6602c2813f7fb1491001477eb77"
+    }
+  },
+  "checks": {
+    "research": 76,
+    "income": 6,
+    "native": 91,
+    "contributions": 32,
+    "save_write": 14,
+    "save_reopen": 10,
+    "save_latest": 3,
+    "save_recovery": 5
+  },
+  "failures": 0,
+  "limitations": [
+    "Stage 1 incomplete",
+    "Not full product acceptance",
+    "No overall native performance acceptance",
+    "Equipment, crew, planet, galaxy and remaining hyperspace ownership pending"
+  ],
+  "engine": {
+    "sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424"
+  },
+  "native": {
+    "sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+  }
+}
