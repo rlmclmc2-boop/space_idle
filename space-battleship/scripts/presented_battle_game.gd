@@ -74,10 +74,12 @@ func _init(database:ShipDatabase,persist:=true)->void:
 
 	if ClassDB.class_exists("SpaceCombatPresentation"):combat_presentation=ClassDB.instantiate("SpaceCombatPresentation")
 
-func tick(dt:float)->void:
+# Game.tick owns the complete logical boundary and dispatches session commands
+# only after all missile-deadline subdivisions have settled.
+func _tick_logical_step(dt:float)->void:
 	if paused:return
 	if native_execution!=null:
-		super.tick(dt)
+		super._tick_logical_step(dt)
 		return
 	var remaining:=maxf(0.0,dt)
 	while remaining>0.000000001:
@@ -89,7 +91,7 @@ func tick(dt:float)->void:
 		var boss_survivors:Variant=[]
 		if state==State.COMBAT and is_boss_encounter():
 			boss_survivors=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead))
-		super.tick(step)
+		super._tick_logical_step(step)
 		if state==State.LEVEL_CLEAR:
 			for shot in boss_survivors:
 				if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
