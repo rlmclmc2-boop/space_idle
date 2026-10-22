@@ -45,6 +45,8 @@ func run():
  var fixture=JSON.parse_string(FileAccess.get_file_as_string("res://galaxy_fixture.json"))
  var rich:=OS.get_environment("PERF_RICH")=="1"
  var balance:=float(OS.get_environment("PERF_BALANCE")) if not OS.get_environment("PERF_BALANCE").is_empty() else 1e80
+ var reactor_level:=int(OS.get_environment("PERF_REACTOR_LEVEL"))
+ var enemy_count:=int(OS.get_environment("PERF_ENEMIES"))
  var owned:bool=g.get("equipment")!=null
  var ship:="Heavy_Battleship" if rich else "Frigate"
  var loadout:Dictionary={"weapons":[],"defence":[]}
@@ -72,6 +74,8 @@ func run():
   var galaxy:Dictionary=g.galaxy.save_data();galaxy.galaxies.galaxy_1=fixture.save.duplicate(true)
   galaxy.galaxies.galaxy_1.pending_online_time=0.0;galaxy.galaxies.galaxy_1.pending_crew_count=0
   assert(g.galaxy.install_snapshot(galaxy,g.db))
+  var reactor:Dictionary=g.reactor.save_data();reactor.reactorLevel=reactor_level
+  assert(g.reactor.install_snapshot(reactor,g.db.config))
   g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g);g.notify_configuration_changed();g.crew.reset_schedule(g)
  else:
   # The main baseline owns the same authored values in its former profile.
@@ -85,14 +89,22 @@ func run():
    g.planet_buildings.sync(g,"1")
    for item in g.profile.planets["1"].buildings.values():item.status="built"
   for key in g.db.data.ai_tech_tree:g.profile.aiTechLevels[key]=30 if rich else 0
+  g.profile.reactorLevel=reactor_level
   g.rebuild_unlocks();g.galaxy.load_state(g,{"galaxy_1":fixture.save});g.galaxy.refresh_unlocks(g);g.invalidate_stat_cache()
  g.pending_unlocks.clear();g.native_execution_auto=false;g.reset_player()
+ var allocation_started:=Time.get_ticks_usec()
+ if reactor_level>1:assert(g.set_reactor_allocation("smelting",g.reactor_capacity()))
+ var allocation_command_us:=Time.get_ticks_usec()-allocation_started
  if rich:
   g.assign_crew("navigator","galaxy_explore","galaxy_2")
   g.state=BattleGame.State.COMBAT;g.spawn_group()
   var template=g.enemies[0].duplicate(true);g.enemies.clear()
-  for i in 3:
-   var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=200+80*i;enemy.y=230-2*i;enemy.hp=1e50;enemy.max_hp=1e50
+  var slots:Array=[]
+  for i in enemy_count:slots.append(template.id)
+  var formation:Dictionary=preload("res://scripts/enemy_formation.gd").positions(slots,g.db.enemies)
+  for i in enemy_count:
+   var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=formation[i].x;enemy.y=formation[i].y;enemy.formation_count=enemy_count;enemy.formation_columns=5
+   enemy.hp=1e300 if reactor_level>1 else 1e50;enemy.max_hp=enemy.hp
    g.enemies.append(enemy)
   g.native_execution_auto=true;g.admit_native_compiled_execution("native_rich15_layer2")
  scene.refresh_structure();scene.refresh_tab_visibility()
@@ -138,7 +150,7 @@ func run():
     projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
-  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var row={"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw

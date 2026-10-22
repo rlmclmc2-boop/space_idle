@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--reuse', type=Path, help='Reuse this runner\'s isolated import cache')
     parser.add_argument('--headless', action='store_true')
     parser.add_argument('--rich', action='store_true')
+    parser.add_argument('--enemies', type=int, default=3, choices=(3, 15))
+    parser.add_argument('--reactor-level', type=int, default=1)
     parser.add_argument('--balance', type=float, default=1e80)
     parser.add_argument('--capture', action='store_true', help='Capture after measurement; readback excluded from timings')
     parser.add_argument('--max', action='store_true', dest='max_quote')
@@ -93,7 +95,7 @@ def main():
     for key, folder in [('XDG_DATA_HOME', 'data'), ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'), ('APPDATA', 'roaming'), ('LOCALAPPDATA', 'local')]:
         env[key] = str(area / 'userdata' / folder)
         Path(env[key]).mkdir(parents=True, exist_ok=True)
-    env.update(PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
+    env.update(PERF_ENEMIES=str(args.enemies), PERF_REACTOR_LEVEL=str(args.reactor_level), PERF_BALANCE=str(args.balance), PERF_CAPTURE=str(int(args.capture)), PERF_RICH=str(int(args.rich)), PERF_MAX=str(int(args.max_quote)), PERF_REALTIME=str(int(args.realtime)), PERF_PAGES=args.pages, PERF_FRAMES=str(args.frames), PERF_GALAXY_STEADY=str(int(args.galaxy_steady)))
     print('Evidence:', area, flush=True)
     engine = [args.godot, '--path', str(project)]
     startup = None
