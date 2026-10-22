@@ -1,6 +1,6 @@
 extends RefCounted
 ## Route IDs are injected from the final encounter owner, never borrowed from mainline.
-const Return=preload("res://scripts/hyperspace_main_return.gd")
+const Target=preload("res://scripts/hyperspace_return_target.gd")
 const View=preload("res://scripts/hyperspace_encounter_database.gd")
 const RewardBinding=preload("res://scripts/hyperspace_reward_binding.gd")
 var reward_binder:RefCounted
@@ -9,7 +9,7 @@ var route_ids: Dictionary={}
 var registry: Dictionary={}
 var production_accepted:=false
 var base_db: ShipDatabase
-var return_journey: Dictionary={}
+var return_target: Dictionary={}
 var round_id:=0
 var run_id:=0
 var active:=false
@@ -17,8 +17,8 @@ var initializing:=false
 var last_error:=""
 var queued:Dictionary={}
 var queue_error:=""
-var return_state:Dictionary={}
-var loaded_return:Dictionary={}
+var finishing:Dictionary={}
+var transitioning:=false
 var last_result:Dictionary={}
 var last_rejection:Dictionary={}
 func load_production(g,binding: Variant=null,candidate: Variant=null) -> bool:
@@ -69,56 +69,61 @@ func request(g,route:String,level:int)->bool:
 func cancel_queue(g,reason:String="")->bool:
 	if queued.is_empty():return false
 	queued={};queue_error=reason;g.event.emit("hyperspace_queue",{"status":"cancelled","reason":reason});return true
-func boundary_reason(g)->String:
-	if active:return "busy"
-	if g.profile.loop:return "guard"
-	if not g.pending_unlocks.is_empty():return "unlock"
-	if g.state not in [g.State.MAIN_MENU,g.State.LEVEL_SELECT,g.State.TRAVEL,g.State.LEVEL_CLEAR,g.State.UPGRADE]:return "battle"
-	for enemy in g.enemies:
-		if g.N.compare(enemy.hp,0)>0:return "battle"
-	var has_projectiles:bool=int(g.native_execution.kernel.metrics().active_flights)>0 if g.native_execution!=null else not g.projectiles.is_empty()
-	if has_projectiles or (g.get("missile_queue") is Array and not g.get("missile_queue").is_empty()) or not g.jewel_repeats.is_empty() or not g.drone_combat.delayed.is_empty():return "projectiles"
-	return ""
 func dispatch_queued(g)->bool:
+	if g.logical_step_active or g.native_step_phase=="blocked" or transitioning:return false
+	if not finishing.is_empty():
+		var ending=finishing;finishing={}
+		return finish(g,bool(ending.success),str(ending.reason))
 	if queued.is_empty():return false
 	if int(queued.round)!=int(g.profile.hyperspace.round_id):cancel_queue(g,"round_changed");return false
-	if not production_accepted or not route_ids.has(queued.route) or not g.hyperspace.eligible_level(g,str(queued.route),int(queued.level)):cancel_queue(g,"unavailable");return false
-	if not g.profile.hyperspace.active.is_empty():cancel_queue(g,"busy");return false
-	if float(g.profile.hyperspace.energy)<float(g.hyperspace.config.ticket):cancel_queue(g,"energy");return false
-	if not boundary_reason(g).is_empty():return false
-	var choice=queued.duplicate();queued={}
+	var choice=queued;queued={}
 	if not start(g,str(choice.route),int(choice.level)):
 		queue_error=last_error if not last_error.is_empty() else "setup_failed";g.event.emit("hyperspace_queue",{"status":"rejected","reason":queue_error});return false
 	queue_error="";g.event.emit("hyperspace_queue",{"status":"dispatched"});return true
 func reset_for_load(g)->void:
 	cancel_queue(g,"reload")
 	if active:g.db=base_db
-	active=false;initializing=false;base_db=null;return_journey={};return_state={};loaded_return={};last_result={}
+	active=false;initializing=false;base_db=null;return_target={};finishing={};transitioning=false;last_result={}
 func start(g,route: String,level: int) -> bool:
 	last_error=""
-	if active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level) or g.N.compare(g.stat("armour"),0)<=0:return false
+	if transitioning or active or not queued.is_empty() or not g.profile.hyperspace.active.is_empty() or not route_ids.has(route) or not g.hyperspace.eligible_level(g,route,level):return false
+	if g.logical_step_active:
+		queued={"route":route,"level":level,"round":int(g.profile.hyperspace.round_id)}
+		return true
+	if g.native_step_phase=="blocked":last_error="incomplete_logical_step";return false
+	if g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
 		bound_registry=reward_binder.bind(g.db,registry,level,RewardBinding.latest_cleared_level(g))
 		if bound_registry.is_empty():last_error=reward_binder.last_error;production_accepted=false;return false
 		production_accepted=true
-	# Return receipts require the complete legacy actor graph, not native
-	# presentation rows. Failed cold transfer must not settle/spend/start.
-	if not g.native_before_configuration_change():last_error="native_transfer_failed";return false
-	# Existing earned drops settle by their ordinary rule, before freezing the main run.
+	var point:Dictionary=Target.destination(g)
+	if not Target.binding_valid(point,g.profile,g.db.data):last_error="invalid_return_target";return false
+	var view:=View.new();view.configure(g.db,level,route_ids[route],bound_registry)
+	transitioning=true
+	# At a completed logical boundary, existing drops settle normally. start()
+	# cancels the native owner and clears combat directly, without cold handoff.
 	g.settle_drops()
-	var point=Return.journey(g);var frozen=Return.capture(g)
-	if not Return.valid(frozen,point,g.db.levels.size()):last_error="invalid_main_return";return false
-	frozen.run_resources=g.run_resources.duplicate(true)
-	var receipt: Dictionary=g.hyperspace.start(g,route,level,"manual","",{"journey":point,"state":frozen})
-	if receipt.is_empty():return false
-	base_db=g.db;return_journey=point;return_state=frozen;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
-	var view:=View.new();view.configure(base_db,level,route_ids[route],bound_registry)
+	var signals_were_blocked:bool=g.is_blocking_signals();g.set_block_signals(true)
+	var receipt:Dictionary=g.hyperspace.start(g,route,level,"manual","",point)
+	if receipt.is_empty():
+		g.set_block_signals(signals_were_blocked);transitioning=false;return false
+	base_db=g.db;return_target=point;round_id=int(receipt.round_id);run_id=int(receipt.run_id)
 	g.db=view;active=true;initializing=true
-	var started: bool=g.start(level,false)
+	var started:bool=g.start(level,false)
 	initializing=false
+	g.set_block_signals(signals_were_blocked)
+	transitioning=false
 	if not started:finish(g,false,"setup_failed");return false
-	g.event.emit("hyperspace_manual",{"active":true,"route":route,"level":level});return true
+	publish_transition(g,true,false,"started",route,level)
+	return true
+func publish_transition(g,entered:bool,success:bool,kind:String,route:String="",level:int=0)->void:
+	transitioning=true
+	g.event.emit("prototype_missile_reset",{})
+	g.event.emit("hyperspace_changed",{"reason":kind,"round_id":int(g.profile.hyperspace.round_id)})
+	g.event.emit("state",{"state":g.state})
+	g.event.emit("hyperspace_manual",{"active":entered,"success":success,"route":route,"level":level})
+	transitioning=false
 func reject_formation(g,errors:Array) -> bool:
 	if not active:return false
 	last_error="formation_invalid"
@@ -126,21 +131,36 @@ func reject_formation(g,errors:Array) -> bool:
 	g.event.emit("encounter_rejected",last_rejection.duplicate(true))
 	return finish(g,false,last_error)
 func finish(g,success: bool,reason: String="failed") -> bool:
-	if not active:return false
+	if not active or transitioning:return false
+	if g.logical_step_active:
+		if finishing.is_empty():finishing={"success":success,"reason":reason}
+		return true
+	if g.native_step_phase=="blocked":last_error="incomplete_logical_step";return false
+	transitioning=true
 	g.settle_drops()
 	var receipt:Dictionary=g.profile.hyperspace.active.duplicate(true)
 	var energy_before:float=float(g.profile.hyperspace.energy)
 	var end_point:int=clampi(g.group_index,1,10)
-	var elapsed: float=float(receipt.get("work",0))
-	if not g.hyperspace.complete(g,round_id,run_id,success,{},elapsed,success):return false
+	var elapsed:float=float(receipt.get("work",0))
+	var signals_were_blocked:bool=g.is_blocking_signals();g.set_block_signals(true)
+	if not g.hyperspace.complete(g,round_id,run_id,success,{},elapsed,success):
+		g.set_block_signals(signals_were_blocked);transitioning=false;return false
 	active=false;g.db=base_db
-	var point=return_journey;var frozen=return_state
-	return_journey={};return_state={};base_db=null
-	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.profile.hyperspace.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.groupIndex)}
-	Return.restore(g,frozen,point)
-	# A pending reward no longer owns a suspended main state after it has returned.
-	if not g.profile.hyperspace.active.is_empty():
-		g.profile.hyperspace.active.return_journey={};g.profile.hyperspace.active.return_state={}
-	g.event.emit("hyperspace_manual",{"active":false,"success":success});return true
+	var point:Dictionary=return_target
+	return_target={};base_db=null;finishing={}
+	last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"success" if success else reason,"elapsed":elapsed,"end_point":end_point,"refund":maxf(0,float(g.profile.hyperspace.energy)-energy_before),"return_stage":int(point.stage),"return_point":int(point.guard_index)+1 if point.loop else 0}
+	# A normal fresh sortie owns all health/cooldown initialization. Guard mode
+	# reopens its selected encounter, never the previous actors or their damage.
+	var started:bool=g.start(int(point.stage),bool(point.loop))
+	if not started:
+		g.reset_sortie(int(point.stage),bool(point.loop));g.change_state(g.State.LEVEL_SELECT)
+	if started and point.loop:
+		g.profile.guardStage=int(point.stage);g.profile.guardIndex=int(point.guard_index)
+		g.profile.guardDistance=Target.checkpoint(point,g.db).distance
+		g.resume_guard();g.respawn_guard()
+	g.set_block_signals(signals_were_blocked)
+	transitioning=false
+	publish_transition(g,false,success,"completed_pending" if success else "refunded")
+	return true
 func positions(g,slots: Array,explicit: Variant) -> Dictionary:
 	return preload("res://scripts/enemy_formation.gd").new().call("positions",slots,g.db.enemies,explicit)

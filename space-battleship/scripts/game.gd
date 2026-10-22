@@ -13,7 +13,7 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 8
+const SAVE_VERSION := 9
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const EnhancementGrowth=preload("res://scripts/enhancement_growth.gd")
 var enhancement_growth:=EnhancementGrowth.new()
@@ -81,6 +81,7 @@ var native_numeric_update:=false
 var native_execution_scope:=""
 var native_wave_waiting:=false
 var native_step_phase:="idle"
+var logical_step_active:=false
 var native_step_remaining:=0.0
 var native_cancelled_step:=0.0
 var native_handoff_count:=0
@@ -366,6 +367,15 @@ func load_progress_data(raw: Dictionary) -> void:
 	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,validation_db.levels.size()) or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,validation_db.data,hyperspace.config)):
 		hyperspace.last_error="invalid_hyperspace_save"
 		return
+	# The challenge receipt is the sole saved return destination. Derive an
+	# ordinary fresh journey only after complete validation, before installation.
+	var interrupted:Dictionary=raw.hyperspace.active
+	if not interrupted.is_empty() and interrupted.status=="started":
+		var target:Dictionary=interrupted.return_target
+		raw.journey=preload("res://scripts/hyperspace_return_target.gd").checkpoint(target,validation_db)
+		raw.loop=target.loop
+		if target.loop:
+			raw.guardStage=int(target.stage);raw.guardIndex=int(target.guard_index);raw.guardDistance=raw.journey.distance
 	var signals_were_blocked := is_blocking_signals()
 	set_block_signals(true)
 	login_chrono_particles = 0.0
@@ -493,10 +503,6 @@ func load_journey(value) -> void:
 				profile.journey.pendingUnlocks.append(key)
 
 func resume_progress() -> void:
-	if not manual_hyperspace.loaded_return.is_empty():
-		var recovered=manual_hyperspace.loaded_return;manual_hyperspace.loaded_return={};profile.erase("journey")
-		preload("res://scripts/hyperspace_main_return.gd").restore(self,recovered.state,recovered.journey)
-		return
 	var checkpoint: Dictionary = profile.get("journey", {})
 	profile.erase("journey")
 	if not checkpoint.is_empty():
@@ -676,7 +682,7 @@ func _compose_save_data(saved: Dictionary) -> Dictionary:
 		saved.journey = {"stage":stage, "distance":retreat_target if state == State.RETREAT else distance, "groupIndex":group_index, "state":int(state), "guardArrived":guard_arrived, "retreatBossPending":retreat_boss_pending}
 		saved.journey.pendingUnlocks = pending_unlocks.duplicate()
 	if manual_hyperspace.active:
-		saved.journey=manual_hyperspace.return_journey.duplicate(true);saved.journey.erase("loop");saved.loop=manual_hyperspace.return_journey.loop
+		saved.erase("journey");saved.loop=manual_hyperspace.return_target.loop
 	saved.jewels = [] # Retired field stays empty for old save readers.
 	saved.levels = {}
 	for key in EQUIPMENT:
@@ -1715,6 +1721,7 @@ func select_loop_level(level: int) -> bool:
 	return start(level, false)
 
 func toggle_loop() -> void:
+	if manual_hyperspace.active:return
 	if profile.loop:
 		profile.loop = false
 		guard_elapsed = 0
@@ -1824,30 +1831,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if N.compare(stat("armour"),0)<=0 and N.compare(stat("shield"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_defence"})
 		return false
-	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
-		native_execution_requested=false
-	settle_drops()
-	drone_combat.reset();invalidate_stat_cache()
-	stage = level
-	distance = 0
-	group_index = 0
-	guard_index = -1
-	guard_elapsed = 0
-	guard_engaged = false
-	guard_arrived = false
-	retreat_boss_pending = false
-	enemies.clear()
-	projectiles.clear()
-	cooldowns.clear()
-	pending_unlocks.clear()
-	reset_player()
-	paused = false
-	profile.loop = loop_mode
-	if loop_mode:
-		guard_index = int(profile.get("guardIndex", 0))
-	run_resources = {"1":0.0,"2":0.0}
-	change_state(State.TRAVEL)
+	reset_sortie(level,loop_mode)
 	if not checkpoint.is_empty():
 		distance = float(checkpoint.distance)
 		group_index = int(checkpoint.groupIndex)
@@ -1869,6 +1853,33 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 			change_state(State.RETREAT)
 	save_dirty = true
 	return true
+
+func reset_sortie(level:int,loop_mode:bool)->void:
+	if native_execution!=null:
+		native_execution.cancel(self);native_execution=null
+	native_execution_requested=false;native_wave_waiting=false
+	settle_drops()
+	drone_combat.reset();invalidate_stat_cache()
+	stage = level
+	distance = 0
+	group_index = 0
+	guard_index = -1
+	guard_elapsed = 0
+	guard_engaged = false
+	guard_arrived = false
+	retreat_boss_pending = false
+	enemies.clear()
+	projectiles.clear()
+	cooldowns.clear()
+	pending_unlocks.clear()
+	reset_player()
+	paused = false
+	profile.loop = loop_mode
+	if loop_mode:
+		guard_index = int(profile.get("guardIndex", 0))
+	run_resources = {"1":0.0,"2":0.0}
+	change_state(State.TRAVEL)
+	save_dirty=true
 
 func is_active() -> bool:
 	return state in [State.TRAVEL, State.COMBAT] and player_alive()
@@ -2637,6 +2648,13 @@ func prepare_logical_step(dt:float)->bool:
 	return false
 
 func tick(dt: float) -> void:
+	if logical_step_active:return
+	logical_step_active=true
+	_tick_logical_step(dt)
+	logical_step_active=false
+	if native_step_phase!="blocked":manual_hyperspace.dispatch_queued(self)
+
+func _tick_logical_step(dt: float) -> void:
 	if paused:return
 	if native_execution!=null and native_execution.advance_blocked:
 		paused=true
@@ -4129,7 +4147,6 @@ func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
 
 
 func advance_shared_clock_and_economy(dt:float)->void:
-	manual_hyperspace.dispatch_queued(self)
 	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
 	profile.productionElapsed=production_time()+dt
 	hyperspace.advance(self,dt)

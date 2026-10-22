@@ -55,7 +55,6 @@ func load_state(g,raw: Variant) -> bool:
 	g.profile.hyperspace=raw.duplicate(true)
 	var receipt: Dictionary=g.profile.hyperspace.active
 	if not receipt.is_empty() and receipt.mode=="manual" and receipt.status=="started":
-		if not receipt.get("return_state",{}).is_empty():g.manual_hyperspace.loaded_return={"journey":receipt.return_journey.duplicate(true),"state":receipt.return_state.duplicate(true)}
 		var energy_before:float=float(g.profile.hyperspace.energy)
 		var refunded:bool=complete(g,int(receipt.round_id),int(receipt.run_id),false)
 		var actual_refund:float=float(g.profile.hyperspace.energy)-energy_before
@@ -137,7 +136,7 @@ func receipt_slot(s:Dictionary,round_id:int,run_id:int)->String:
 		if not a.is_empty() and int(a.round_id)==round_id and int(a.run_id)==run_id:return slot
 	return ""
 
-func start(g,route:String,level:int,mode:String,crew_id:String="",main_return:Dictionary={})->Dictionary:
+func start(g,route:String,level:int,mode:String,crew_id:String="",return_target:Dictionary={})->Dictionary:
 	var s:Dictionary=g.profile.hyperspace
 	var slot:="active" if mode=="manual" else "idle"
 	if mode not in ["manual","idle","auto"] or not is_unlocked(g) or not config.routes.has(route) or not s[slot].is_empty() or not generation_ready():return {}
@@ -145,17 +144,19 @@ func start(g,route:String,level:int,mode:String,crew_id:String="",main_return:Di
 	if mode=="manual":
 		if not eligible_level(g,route,level):return {}
 	elif level!=current_layer(g,route) or best_x1(g,route,level)<=0 or not Bag.has_space(s.inventory,config):return {}
-	if not main_return.is_empty() and (mode!="manual" or not main_return.get("journey") is Dictionary or not main_return.get("state") is Dictionary or not preload("res://scripts/hyperspace_main_return.gd").valid(main_return.state,main_return.journey,g.db.levels.size())):return {}
+	if mode=="manual":
+		if return_target.is_empty():return_target=preload("res://scripts/hyperspace_return_target.gd").destination(g)
+		if not preload("res://scripts/hyperspace_return_target.gd").binding_valid(return_target,g.profile,g.db.data):return {}
+	elif not return_target.is_empty():return {}
 	if mode=="auto" and not Permission.crew_available(g,crew_id):return {}
 	if mode!="manual":duration=idle_duration(g,best_x1(g,route,level),crew_id if mode=="auto" else "")
 	if mode!="manual" and (not is_finite(duration) or duration<=0):return {}
 	var next:Dictionary=s.duplicate(true)
-	var receipt:Dictionary={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_journey":main_return.get("journey",{}).duplicate(true),"ticket":0.0,"duration":duration,"work":0.0,"reward":{}}
+	var receipt:Dictionary={"round_id":int(s.round_id),"run_id":int(s.next_run),"status":"started","mode":mode,"route":route,"level":level,"crew_id":crew_id if mode=="auto" else "","return_target":return_target.duplicate(true),"ticket":0.0,"duration":duration,"work":0.0,"reward":{}}
 	receipt.merge(luck_snapshot(g,route))
 	var private_rng:=RandomNumberGenerator.new()
 	private_rng.seed=(str(s.random_state)+"|"+route+"|"+str(s.round_id)+"|"+str(s.next_run)).hash()
 	receipt.luck_state=str(private_rng.state)
-	if not main_return.is_empty():receipt.return_state=main_return.state.duplicate(true)
 	next[slot]=receipt;next.next_run+=1;next.blocked=false;publish(g,next,"started")
 	return receipt.duplicate(true)
 
@@ -182,7 +183,7 @@ func complete(g,round_id: int,run_id: int,success: bool,reward: Dictionary={},x1
 		frozen.hanging_rewards=dismantled.hanging_rewards;frozen.drone={}
 	if not S.valid_reward(frozen,str(a.route),config):last_error="invalid_reward";return false
 	if record_x1 and (a.mode!="manual" or not C.number(x1_seconds) or x1_seconds<=0):return false
-	next[slot].status="completed_pending";next[slot].reward=frozen;next.unlocked_drones=true
+	next[slot].status="completed_pending";next[slot].reward=frozen;next[slot].return_target={};next.unlocked_drones=true
 	if record_x1:
 		var history: Dictionary=next.history.get(a.route,{})
 		var old:=float(history.get(str(int(a.level)),0.0))

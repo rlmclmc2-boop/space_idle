@@ -28,7 +28,9 @@ func run()->void:
  var scene=load("res://main.tscn").instantiate();scene.set_script(UI);scene.automation_args=["--capture"];scene.music_on=false
  root.add_child(scene);current_scene=scene;scene.set_process(false);scene.automation_args=[]
  var g=scene.game;g.save_enabled=false;g.profile.cleared=range(1,41);g.rebuild_unlocks();g.pending_unlocks.clear();g.profile.onboarding.completed=true;scene.beginner_guide.hide()
- g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.profile.loadout.defence=[{"key":"armour","level":1},{"key":"shield","level":1}];g.invalidate_stat_cache()
+ g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
+ var equipment:Dictionary=g.equipment.save_data();equipment.loadout.defence=[{"key":"armour","level":1},{"key":"shield","level":1}]
+ check(g.equipment.install_snapshot(equipment,g.db),"current defense fixture installs");g.invalidate_stat_cache()
  check(g.start(1,false),"mainline started")
  g.distance=float(g.db.levels[0].groups[0].position)*float(g.db.levels[0].length)-0.1
  check(g.load_hyperspace_routes(),"production routes loaded")
@@ -36,51 +38,47 @@ func run()->void:
  if not g.manual_hyperspace.active:quit(1);return
  scene._process(0.0)
  for i in 20:scene.encounter_presentation.sync(g,0.1)
- check(g.exit_hyperspace_challenge(),"normal manual exit restores saved mainline")
+ check(g.exit_hyperspace_challenge(),"normal manual exit starts fresh mainline")
  check(scene.battle_transition_blocked(),"departure owns a finite presentation gate")
  var clock=g.production_time();var distance=g.distance;var rng=g.rng.state
  await capture(scene,"start")
  for i in 8:scene._process(0.1)
- check(g.production_time()==clock and g.distance==distance and g.rng.state==rng and g.enemies.is_empty(),"restored main battle does not advance or spawn during exit")
+ check(g.production_time()==clock and g.distance==distance and g.rng.state==rng and g.enemies.is_empty(),"fresh main battle does not advance or spawn during exit")
  check(not scene.ship_view.visible and scene.ship_view.viewport.render_target_update_mode==SubViewport.UPDATE_DISABLED and not scene.retained_contacts.visible and not scene.pulse_layer.visible,"actual scene owners hidden and viewport stopped")
  await capture(scene,"middle")
  var steps=0
  while scene.battle_transition_blocked() and steps<30:scene._process(0.1);steps+=1
  check(not scene.battle_transition_blocked() and g.production_time()==clock,"animation ends without consuming old battle time")
- g.native_execution_auto=true;scene._process(1.0/60.0)
- check(g.enemies.size()>0 and scene.ship_view.visible,"old encounter may spawn and render only after exit")
- check(g.native_execution!=null,"normal restored encounter can admit native execution")
+ g.native_execution_auto=true
+ for i in 600:
+  if g.native_execution!=null:break
+  scene._process(1.0/60.0)
+ check(g.enemies.size()>0 and scene.ship_view.visible,"new encounter spawns and renders after fresh travel")
+ check(g.native_execution!=null,"normal new encounter can admit native execution")
  await capture(scene,"complete")
- # Preserve real nonempty native-born flights through manual entry/return.
+ # Native flights are abandoned without cold handoff or half-scene serialization.
  for i in 180:
   if not g.projectiles.is_empty():break
   scene._process(1.0/60.0)
  check(not g.projectiles.is_empty(),"real in-flight mainline projectiles exist before manual entry")
- if g.native_execution!=null:check(g.native_execution.handoff_to_legacy(g,"return_residual_check"),"real residual native handoff succeeds")
- g.native_execution_auto=false
- if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.request_legacy_display()
- var actors=preload("res://scripts/hyperspace_battle_return.gd")
- var residual=actors.capture(g);var residual_count=g.projectiles.size()
- check(not residual.is_empty(),"residual graph excludes retired display leases but retains scalar state")
- check(g.start_hyperspace("alpha",g.hyperspace.current_layer(g,"alpha")+1),"manual entry freezes nonempty residuals")
+ var handoffs:int=g.native_handoff_count
+ check(g.start_hyperspace("alpha",g.hyperspace.current_layer(g,"alpha")+1),"manual entry discards nonempty residuals")
+ check(g.native_handoff_count==handoffs and g.projectiles.is_empty() and g.missile_queue.is_empty(),"actual entry cancels native flights without legacy transfer")
  scene._process(0.0)
  for i in 20:scene.encounter_presentation.sync(g,0.1)
- check(g.exit_hyperspace_challenge(),"manual return restores nonempty residuals")
- check(g.projectiles.size()==residual_count and actors.capture(g)==residual,"residual projectiles and shared actor graph restore exactly")
+ check(g.exit_hyperspace_challenge(),"manual exit starts another fresh sortie")
+ check(g.projectiles.is_empty() and g.enemies.is_empty() and g.group_index==0 and g.distance==0,"no residual actors or projectiles return")
  for i in 8:scene._process(0.1)
- check(scene.battle_transition_blocked() and actors.capture(g)==residual,"nonempty old flights cannot advance during departure")
- check(not scene.pulse_layer.visible and not scene.ship_view.visible,"restored live flights are not rendered during departure")
+ check(scene.battle_transition_blocked() and g.projectiles.is_empty(),"old flights cannot resume during departure")
+ check(not scene.pulse_layer.visible and not scene.ship_view.visible,"departure hides actual presentation owners")
  while scene.battle_transition_blocked():scene._process(0.1)
  scene._process(1.0/60.0)
- check(actors.capture(g)!=residual,"restored flight simulation resumes after departure")
- # A paused mainline battle must restore without forcing an unpause or hanging the gate.
+ check(g.distance>0 and g.group_index==0,"fresh travel begins after departure")
  g.paused=true
- var paused_actors=preload("res://scripts/hyperspace_battle_return.gd").capture(g)
- check(g.start_hyperspace("alpha",g.hyperspace.current_layer(g,"alpha")+1),"manual entry from paused native main battle")
+ check(g.start_hyperspace("alpha",g.hyperspace.current_layer(g,"alpha")+1),"manual entry from paused mainline")
  scene._process(0.0)
- check(g.exit_hyperspace_challenge(),"manual exit restores paused main battle")
- check(g.paused and not scene.battle_transition_blocked(),"paused return does not unpause or deadlock departure")
- check(preload("res://scripts/hyperspace_battle_return.gd").capture(g)==paused_actors,"restored actors and in-flight carriers retain their serialized state")
+ check(g.exit_hyperspace_challenge(),"manual exit from paused origin")
+ check(not g.paused and g.group_index==0 and g.distance==0,"return follows normal fresh-start pause semantics")
  var file=FileAccess.open("res://.runtime/return-check.json",FileAccess.WRITE);file.store_string(JSON.stringify({"checks":checks,"failures":failures,"frames":rows},"\t"));file.close()
  if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
  scene.queue_free();await process_frame

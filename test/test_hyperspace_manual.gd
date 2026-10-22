@@ -27,7 +27,7 @@ func _initialize() -> void:
 	for kind in ["lifeRatio","atkRatio","resRatio"]:check(g.db.ratio(5,0,kind)==original[kind] and g.db.ratio(5,9,kind)==original[kind],"selected stage ratio constant without enemy tier increment")
 	check(not g.start(6,false),"ordinary stage switch cannot replace active space battle")
 	var saved: Dictionary=g.portable_save_data()
-	check(saved.journey.stage==1 and saved.journey.state==g.State.MAIN_MENU and Transfer.new().prepare_data(saved,db).error=="","manual save keeps original journey and valid transaction")
+	check(not saved.has("journey") and saved.hyperspace.active.return_target=={"stage":1,"loop":false,"guard_index":0} and Transfer.new().prepare_data(saved,db).error=="","manual save stores fresh return destination and valid transaction")
 	var reloaded:=opened(db);reloaded.load_progress_data(saved)
 	check(reloaded.profile.hyperspace.active.is_empty() and reloaded.profile.hyperspace.energy==energy,"interrupted manual session refunds once without offline work")
 	g.profile.hyperspace.active.work=1.0
@@ -35,7 +35,7 @@ func _initialize() -> void:
 		g.spawn_group()
 		check(g.enemies.size()==1 and g.enemies[0].combat_tier==("normal" if layer<4 else "elite" if layer<8 else "boss" if layer==8 else "ultimate"),"actual ten layer spawn fixture")
 		g.hit_enemy(g.enemies[0],1e30,0,[],false,CC.root(layer+1,"fixture","laser"));g.tick(0.001)
-	check(not g.manual_hyperspace.active and is_same(g.db,base) and g.state==g.State.MAIN_MENU,"success returns original battle context")
+	check(not g.manual_hyperspace.active and is_same(g.db,base) and g.state==g.State.TRAVEL and g.group_index==0 and g.distance==0,"success starts a fresh sortie at the original stage")
 	check(g.profile.cleared==before and g.profile.highestLevel==8 and g.profile.bossSeen==bosses,"space victory cannot clear or advance mainline")
 	check(g.profile.hyperspace.active.status=="completed_pending" and g.hyperspace.best_x1(g,"alpha",5)>0,"success freezes reward and genuine game-time X1")
 	var receipt: Dictionary=g.profile.hyperspace.active.duplicate(true)

@@ -4,7 +4,7 @@ const Bag=preload("res://scripts/drone_inventory.gd")
 const R=preload("res://scripts/hyperspace_random.gd")
 const Filter=preload("res://scripts/hyperspace_filter.gd")
 const Rewards=preload("res://scripts/drone_rewards.gd")
-const VERSION:=6
+const VERSION:=7
 const MATERIAL_UNIT_VERSION:=2
 
 static func fresh(c: Dictionary) -> Dictionary:
@@ -14,7 +14,7 @@ static func schema() -> Dictionary:
 	var affix: Dictionary={"key":"s","tier":"i","value":"n","locked":"b"}
 	var drone: Dictionary={"id":"s","origin_quality":"s","weapon":"s","level":"i","planet_id":"s","hanging_slots":"i","preserved_hanging_slots":"i","omen":"b","forge_revision":"i","forge_rng_state":"s","legendary":"b","ultimate":"b","blue_source_bonus":"b","legendary_effect":{"effect_id":"s","parameters":{"*":"n"}},"ultimate_affix":affix,"affixes":[affix],"hangings":["s"]}
 	var reward: Dictionary={"drone":drone,"materials":{"*":"i"},"ultimate_cores":"i","hanging_rewards":{"*":"i"}}
-	var receipt:Dictionary={"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","crew_snapshot":"s","luck":"n","crew_luck":"n","permanent_luck":"n","luck_state":"s","return_state":preload("res://scripts/hyperspace_main_return.gd").schema(),"return_journey":{"stage":"i","distance":"n","groupIndex":"i","state":"i","guardArrived":"b","retreatBossPending":"b","pendingUnlocks":["s"],"loop":"b"},"ticket":"n","duration":"n","work":"n","reward":reward}
+	var receipt:Dictionary={"round_id":"i","run_id":"i","status":"s","mode":"s","route":"s","level":"i","crew_id":"s","crew_snapshot":"s","luck":"n","crew_luck":"n","permanent_luck":"n","luck_state":"s","return_target":preload("res://scripts/hyperspace_return_target.gd").schema(),"ticket":"n","duration":"n","work":"n","reward":reward}
 	return {"version":"i","material_unit_version":"i","round_id":"i","next_run":"i","settled_run":"i","energy":"n","pending_time":"n","late_supply_work":"n","history":{"*":{"*":"n"}},"inventory":{"drones":{"*":drone},"warehouse":["s"],"overflow":["s"],"equipped":["s"],"favorites":["s"],"presets":[{"name":"s","drone_ids":["s"],"hanging_loadouts":{"*":["s"]}}],"sealed":{"*":"i"},"reforge_count":"i","generation":"i"},"active":receipt,"idle":receipt,"auto":{"enabled":"b","route":"s","level":"i","crew_id":"s"},"unlocked_drones":"b","blocked":"b","hanging_modules":{"*":{"unlocked":"b","level":"i","exp":"n"}},"random_state":"s","command_seq":"i","last_command":{"seq":"i","fingerprint":"s","result_json":"s"},"filter":{"version":"i","enabled":"b","mode":"s","action":"s","conditions":[{"field":"s","value":"filter_value","key":"s","tier":"i"}]},"legendary_seen":["s"],"legendary_collection":["s"]}
 
 static func valid_reward(reward: Dictionary,route: String,c: Dictionary) -> bool:
@@ -86,10 +86,10 @@ static func valid(s: Dictionary,c: Dictionary,max_stage: int) -> bool:
 		if a.get("mode") not in (["manual"] if slot=="active" else ["idle","auto"]):return false
 		for key in ["ticket","duration","work"]:
 			if not C.number(a.get(key)) or a[key]<0:return false
-		if not a.get("return_journey") is Dictionary:return false
-		if a.has("return_state"):
-			if not a.return_state is Dictionary or (a.mode=="manual" and a.status=="started" and a.return_state.is_empty()):return false
-			if not a.return_state.is_empty() and (a.mode!="manual" or a.status!="started" or not preload("res://scripts/hyperspace_main_return.gd").valid(a.return_state,a.return_journey,max_stage)):return false
+		if not a.get("return_target") is Dictionary:return false
+		if a.mode=="manual" and a.status=="started":
+			if not preload("res://scripts/hyperspace_return_target.gd").valid(a.return_target,max_stage):return false
+		elif not a.return_target.is_empty():return false
 		if not a.get("crew_id") is String or (a.mode=="auto" and a.crew_id.is_empty()):return false
 		if not a.get("crew_snapshot") is String or not R.valid_state(a.get("luck_state")):return false
 		for key in ["luck","crew_luck","permanent_luck"]:
