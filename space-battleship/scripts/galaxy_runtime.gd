@@ -39,11 +39,8 @@ func advance(g,dt:float)->void:
 		if not region.state.status in ["exploring","developing"]:continue
 		var count:int=g.galaxy.crew_count(g,key)
 		if count!=g.galaxy.pending_crew(key) and not flush_pending(g,key):return
-		var visible:bool=key==g.galaxy.visible_key
-		if count<=0:g.galaxy.set_pending_context(key,count,visible);continue
-		if visible!=g.galaxy.pending_visible(key) and g.galaxy.pending(key)>0:
-			if not flush_pending(g,key):return
-		g.galaxy.set_pending_context(key,count,visible)
+		g.galaxy.set_pending_context(key,count)
+		if count<=0:continue
 		g.galaxy.add_pending(key,dt)
 		if g.galaxy.pending_due(g,key) and not flush_pending(g,key):return
 func flush_pending(g,key:String)->bool:

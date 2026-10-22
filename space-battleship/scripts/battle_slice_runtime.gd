@@ -25,7 +25,6 @@ var scene
 var game:BattleGame
 var geometry=Geometry.new()
 var view=View.new()
-var remainder:float=0.0
 var logical_steps:int=0
 var frame:Dictionary={}
 var previous:Dictionary={}
@@ -38,8 +37,6 @@ var detach_requested:=false
 func install(root)->void:
 	scene=root;game=root.game
 	root.fixed_enemy_layout=true
-	remainder=root.game_time_remainder
-	root.time_step_game_id=game.get_instance_id()
 	# A native owner may be selected inside an already-started legacy frame.
 	# End that frame publication before display consumers use the new view.
 	root.battle_read_model.end()
@@ -64,43 +61,22 @@ func sync_screen_scale(value:float)->bool:
 	scene.battle_layer.queue_redraw();scene.battle_hud_layer.queue_redraw()
 	scene.pulse_layer.queue_redraw()
 	return true
-func advance(seconds:float)->void:
-	if scene.battle_transition_blocked():return
+func before_tick(dt:float)->void:
 	advancing=true
-	if game.native_cancelled_step>0:
-		remainder=maxf(0.0,remainder-game.native_cancelled_step);game.native_cancelled_step=0.0
-	remainder+=seconds
-	const STEP=1.0/60.0
-	while remainder+0.0000000001>=STEP:
-		# Return can begin inside the preceding substep. Keep unconsumed debt,
-		# but do not prepare geometry or tick the restored mainline during departure.
-		if scene.battle_transition_blocked():
-			advancing=false;scene.game_time_remainder=remainder
-			return
-		if not game.prepare_logical_step(STEP):
-			advancing=false;scene.game_time_remainder=remainder
-			return
-		geometry.before_tick(STEP)
-		scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
-		scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
-		if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
-		scene.shield_before_hit=game.player.shield
-		game.tick(STEP)
-		if game.native_step_phase=="blocked":
-			advancing=false;scene.game_time_remainder=remainder
-			return
+	geometry.before_tick(dt)
+	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
+	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
+	if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
+	scene.shield_before_hit=game.player.shield
+func after_tick(completed:bool)->bool:
+	if completed:
 		geometry.after_tick()
-		logical_steps+=1;remainder=maxf(0,remainder-STEP)
-		if detach_requested:
-			advancing=false
-			if not close():return
-			scene.battle_slice_runtime=null
-			scene.game_time_remainder=remainder
-			scene.advance_game_time(0.0)
-			return
-	snapshot()
-	scene.game_time_remainder=remainder
+		logical_steps+=1
 	advancing=false
+	if detach_requested:
+		if not close():return false
+		scene.battle_slice_runtime=null
+	return true
 func snapshot()->void:
 	geometry.sync_fixed_layout()
 	var membership:Dictionary={}
@@ -302,7 +278,7 @@ func request_legacy_display()->void:
 	detach_requested=true
 	if not advancing:
 		if not close():return
-		scene.battle_slice_runtime=null;scene.game_time_remainder=remainder
+		scene.battle_slice_runtime=null
 func close()->bool:
 	if not started:return true
 	if not scene.prepare_native_laser_display(true):return false

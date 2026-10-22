@@ -90,6 +90,12 @@ var cooldowns: Dictionary = {}
 var since_hit := 100.0
 var paused := false
 var speed := 1.0
+const LOGICAL_STEP := 1.0/60.0
+const RETURN_DEPARTURE_SECONDS := 1.6
+var game_time_remainder := 0.0
+var departure_remaining := 0.0
+var application_focused := true
+var external_time_active := false
 var clear_timer := 0.0
 var guard_index := -1
 var guard_elapsed := 0.0
@@ -380,6 +386,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	set_block_signals(true)
 	login_chrono_particles = 0.0
 	manual_hyperspace.reset_for_load(self)
+	game_time_remainder=0.0;departure_remaining=0.0;resource_prune_elapsed=0.0
 	profile = fresh_profile()
 	resource_samples.clear()
 	pending_unlocks.clear()
@@ -552,14 +559,63 @@ func accrue_chrono_particles(saved_at: Variant, now: float) -> float:
 	economy.accrue_chrono(gained, chrono_capacity())
 	return gained
 
-func chrono_affordable_seconds(real_dt: float) -> float:
-	var cost := chrono_cost(speed)
-	if cost < 0:
-		speed = default_speed()
-		return real_dt
-	if cost == 0:
-		return real_dt
-	return economy.consume_chrono(real_dt, cost)
+func set_application_focused(focused:bool)->void:
+	if application_focused==focused:return
+	application_focused=focused
+	speed=default_speed()
+
+func begin_return_departure()->void:
+	departure_remaining=RETURN_DEPARTURE_SECONDS
+
+func consume_external_time(real_dt:float,presentation:Variant=null)->void:
+	# Sole live wall-time consumer. tick() remains the domain's logical algorithm
+	# for internal event subdivision and deterministic offline analysis.
+	if external_time_active or not is_finite(real_dt) or real_dt<0:return
+	check_timed_save()
+	if paused:return
+	external_time_active=true
+	if departure_remaining>0:
+		var held:=minf(real_dt,departure_remaining)
+		departure_remaining=maxf(0.0,departure_remaining-held)
+		if departure_remaining<0.0000000001:departure_remaining=0.0
+		real_dt=maxf(0.0,real_dt-held)
+		if departure_remaining>0 or real_dt<0.0000000001:
+			external_time_active=false;return
+	if presentation!=null and not presentation.prepare_time_frame():
+		# Preserve the existing native materialization guard; a failed preparation
+		# must neither spend particles nor silently accumulate more unpaid work.
+		paused=true;external_time_active=false;return
+	if not application_focused:speed=default_speed()
+	var cost:=chrono_cost(speed)
+	if cost<0:speed=default_speed();cost=chrono_cost(speed)
+	var boosted:=economy.consume_chrono(real_dt,cost)
+	var budget:=boosted*speed
+	if boosted<real_dt or (cost>0 and economy.balance("chrono")<=0):
+		speed=default_speed()
+		budget+=(real_dt-boosted)*speed
+	advance_resource_history_clock(real_dt)
+	if native_cancelled_step>0:
+		game_time_remainder=maxf(0.0,game_time_remainder-native_cancelled_step)
+		native_cancelled_step=0.0
+	game_time_remainder+=budget
+	while game_time_remainder+0.0000000001>=LOGICAL_STEP and not paused and departure_remaining<=0:
+		if not prepare_logical_step(LOGICAL_STEP):break
+		if presentation!=null:presentation.before_time_step(LOGICAL_STEP)
+		tick(LOGICAL_STEP)
+		var completed:=native_step_phase!="blocked"
+		var ready:=true if presentation==null else bool(presentation.after_time_step(completed))
+		if not completed:break
+		game_time_remainder=maxf(0.0,game_time_remainder-LOGICAL_STEP)
+		if not ready:paused=true;break
+	if presentation!=null:presentation.publish_time_frame()
+	external_time_active=false
+
+func advance_resource_history_clock(seconds:float)->void:
+	resource_prune_elapsed+=seconds
+	if resource_prune_elapsed>=5.0:
+		resource_prune_elapsed=fmod(resource_prune_elapsed,5.0)
+		prune_resource_samples(economy_time())
+
 
 func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
@@ -1378,6 +1434,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	speed=default_speed()
 	auto_gen_elapsed=0.0
 	resource_prune_elapsed=0.0
+	game_time_remainder=0.0;departure_remaining=0.0
 	rebuild_unlocks()
 	reset_player()
 	var persist := save_enabled
@@ -1783,6 +1840,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	return true
 
 func reset_sortie(level:int,loop_mode:bool)->void:
+	departure_remaining=0.0
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
 	native_execution_requested=false;native_wave_waiting=false
@@ -4012,11 +4070,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 	if native_step_phase=="blocked":return
 	crew.advance(self,dt)
 	advance_auto_gen(dt)
-	advance_hightech(dt, dt / maxf(speed, 0.001))
-	resource_prune_elapsed += dt / maxf(speed, 0.001)
-	if resource_prune_elapsed >= 5.0:
-		resource_prune_elapsed = 0
-		prune_resource_samples(economy_time())
+	advance_hightech(dt)
 	for drop in drops.duplicate():
 		if drop.get("hightech", false) or drop.get("auto_gen", false):
 			continue

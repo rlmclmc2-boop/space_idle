@@ -158,6 +158,7 @@ func finish(g,success: bool,reason: String="failed") -> bool:
 		g.profile.guardStage=int(point.stage);g.profile.guardIndex=int(point.guard_index)
 		g.profile.guardDistance=Target.checkpoint(point,g.db).distance
 		g.resume_guard();g.respawn_guard()
+	g.begin_return_departure()
 	g.set_block_signals(signals_were_blocked)
 	transitioning=false
 	publish_transition(g,false,success,"completed_pending" if success else "refunded")

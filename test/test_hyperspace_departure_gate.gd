@@ -3,8 +3,9 @@ class UI extends "res://scripts/battlefield.gd":
  func show_qa_tools()->void:pass
  func show_chrono_login_report()->void:pass
  func create_battle_game(_persist:bool)->BattleGame:
+  db.ships.Frigate.defenseSlots=2
   var g=preload("res://scripts/presented_battle_game.gd").new(db,false)
-  g.stat_cache_enabled=true;g.invalidate_stat_cache()
+  g.stat_cache_enabled=true;g.configuration_committed()
   db=g.db;g.native_execution_auto=false
   g.launch_provider=_prototype_launch_pose;g.drone_launch_provider=_prototype_drone_launch_pose
   g.target_provider=_prototype_target_point;g.rail_geometry_provider=_rail_geometry;g.rail_target_point_provider=entity_render_position
@@ -30,7 +31,7 @@ func run()->void:
  var g=scene.game;g.save_enabled=false;g.profile.cleared=range(1,41);g.rebuild_unlocks();g.pending_unlocks.clear();g.profile.onboarding.completed=true;scene.beginner_guide.hide()
  g.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
  var equipment:Dictionary=g.equipment.save_data();equipment.loadout.defence=[{"key":"armour","level":1},{"key":"shield","level":1}]
- check(g.equipment.install_snapshot(equipment,g.db),"current defense fixture installs");g.invalidate_stat_cache()
+ check(g.equipment.install_snapshot(equipment,g.db),"current defense fixture installs");g.configuration_committed()
  check(g.start(1,false),"mainline started")
  g.distance=float(g.db.levels[0].groups[0].position)*float(g.db.levels[0].length)-0.1
  check(g.load_hyperspace_routes(),"production routes loaded")

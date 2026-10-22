@@ -132,8 +132,7 @@ var pickup_preview_cache: Dictionary = {}
 var pickup_preview_order: Array[int] = []
 var pickup_preview_builds := 0
 var clock := 0.0
-var game_time_remainder := 0.0
-var time_step_game_id := 0
+var time_step_slice:RefCounted
 var star_travel := 0.0
 var star_streak := 0.0
 # Immutable star seeds own this geometry until the scene is freed.
@@ -181,7 +180,6 @@ var planet_panel: Control
 var chrono_panel: Control
 var galaxy_panel: Control
 var hyperspace_panel: Control
-var background_unfocused := false
 var equipment_page := 0
 var equipment_tabs: TabContainer
 var system_nav: Panel
@@ -457,18 +455,15 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:space_pause_held = false
 	if game == null:
 		return
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not background_unfocused:
-		background_unfocused = true
-		game.speed = game.default_speed()
-	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and background_unfocused:
-		background_unfocused = false
-		game.speed = game.default_speed()
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		game.set_application_focused(false)
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		game.set_application_focused(true)
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
 	if fixed_enemy_layout and battle_slice_runtime==null:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	advance_unlock_notice()
-	game.check_timed_save()
 	var tech_now_ms := Time.get_ticks_msec()
 	if tech_now_ms-tech_ui_last_refresh_ms >= 250 and is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree():
 		tech_ui_last_refresh_ms = tech_now_ms
@@ -478,15 +473,12 @@ func _process(delta: float) -> void:
 			if is_instance_valid(voice) and voice.playing:voice.stop()
 	else:
 		update_railgun_audio()
-	# Freeze the live scene while the independent lab window owns focus.
-	if is_instance_valid(balance_lab) and balance_lab.visible:return
 	if ui_rebuild_pending and not get_viewport().gui_is_dragging():
 		ui_rebuild_pending = false
 		build_ui()
 	if battle_slice_runtime!=null:battle_slice_runtime.sync_screen_scale(enemy_recognition_screen_scale())
 	sync_accelerated_visual_mode()
-	if not prepare_native_laser_display():return
-	var dt := maxf(0,delta)
+	var dt := maxf(0,delta) if is_finite(delta) else 0.0
 	clock += dt
 	for id in resource_pickup_totals.keys():
 		if clock-float(resource_pickup_totals[id].last)>=1.2:resource_pickup_totals.erase(id)
@@ -496,11 +488,8 @@ func _process(delta: float) -> void:
 			fx_time += dt
 			advance_turrets(dt)
 		wave_hint = maxf(0,wave_hint-dt)
-		var boosted := game.chrono_affordable_seconds(dt)
-		advance_game_time(boosted * game.speed)
-		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.economy.balance("chrono") <= 0):
-			game.speed = game.default_speed()
-			advance_game_time((dt - boosted) * game.speed)
+	game.consume_external_time(dt,self)
+	if not game.paused:
 		if battle_transition_blocked():return
 		if not accelerated_visual_mode:
 			sync_beam_visuals()
@@ -540,30 +529,23 @@ func _process(delta: float) -> void:
 func battle_transition_blocked() -> bool:
 	return false
 
-func advance_game_time(seconds: float) -> void:
-	if battle_transition_blocked():return
-	if battle_slice_runtime!=null:battle_slice_runtime.advance(seconds);return
-	if game == null or not is_finite(seconds) or seconds < 0:return
-	var instance := game.get_instance_id()
-	if instance != time_step_game_id:
-		time_step_game_id = instance
-		game_time_remainder = 0.0
-	# Carry frame tails: X1 and boosts share the same game-time tick sequence
-	# at every render rate. At most one fixed step remains pending on screen.
-	if game.native_cancelled_step>0:
-		game_time_remainder=maxf(0.0,game_time_remainder-game.native_cancelled_step)
-		game.native_cancelled_step=0.0
-	game_time_remainder += seconds
-	const STEP := 1.0/60.0
-	while game_time_remainder + 0.0000000001 >= STEP:
-		if battle_transition_blocked():return
-		if attach_native_display():
-			battle_slice_runtime.advance(0.0);return
-		if not game.prepare_logical_step(STEP):return
-		before_logical_game_tick(STEP)
-		game.tick(STEP)
-		if game.native_step_phase=="blocked":return
-		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
+func prepare_time_frame()->bool:
+	attach_native_display()
+	return prepare_native_laser_display()
+
+func before_time_step(dt:float)->void:
+	attach_native_display()
+	time_step_slice=battle_slice_runtime
+	if time_step_slice!=null:time_step_slice.before_tick(dt)
+	else:before_logical_game_tick(dt)
+
+func after_time_step(completed:bool)->bool:
+	var ready:=true if time_step_slice==null else bool(time_step_slice.after_tick(completed))
+	time_step_slice=null
+	return ready
+
+func publish_time_frame()->void:
+	if battle_slice_runtime!=null:battle_slice_runtime.snapshot()
 
 func uses_logical_battle_pose() -> bool:
 	return false

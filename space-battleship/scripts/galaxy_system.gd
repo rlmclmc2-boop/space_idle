@@ -4,17 +4,14 @@ const Region := preload("res://scripts/galaxy_region.gd")
 var effects := preload("res://scripts/galaxy_effect_aggregator.gd").new()
 var _regions:Dictionary={}
 var _elapsed:Dictionary={}
-var _elapsed_visible:Dictionary={}
 var _elapsed_crew:Dictionary={}
 var _income_elapsed:=0.0
-var visible_key:=""
 var effect_generation:=0
 var revision:=0
 var regions:Dictionary:
 	get:return _regions
 func pending(key:String)->float:return float(_elapsed.get(key,0.0))
 func pending_crew(key:String)->int:return int(_elapsed_crew.get(key,0))
-func pending_visible(key:String)->bool:return bool(_elapsed_visible.get(key,false))
 func income_time()->float:return _income_elapsed
 func setting(g,key:String)->float:return float(g.db.data.galaxy_config[key].value)
 
@@ -25,7 +22,7 @@ static func building_definitions(db,key:String)->Dictionary:
 	return result
 
 func _install(db,raw:Dictionary,income:float)->void:
-	_regions={};_elapsed={};_elapsed_visible={};_elapsed_crew={};_income_elapsed=income
+	_regions={};_elapsed={};_elapsed_crew={};_income_elapsed=income
 	for key in db.data.get("galaxy",{}):
 		var saved:Dictionary=raw.get(key,{})
 		var region:=Region.new()
@@ -33,7 +30,6 @@ func _install(db,raw:Dictionary,income:float)->void:
 		_regions[key]=region
 		_elapsed[key]=float(saved.get("pending_online_time",0.0))
 		_elapsed_crew[key]=int(saved.get("pending_crew_count",0))
-		_elapsed_visible[key]=false
 	_regions.make_read_only();revision+=1;effect_generation+=1;effects.invalidate()
 func reset(db)->void:_install(db,{},0.0)
 func install_snapshot(raw:Dictionary,db)->bool:
@@ -86,9 +82,10 @@ func crew_count(g, key: String) -> int:
 		if member.assignmentType=="galaxy_explore" and member.targetId==key and g.crew.unlocked(g,member.crewId):count+=1
 	return count
 
-func set_visible(key: String) -> void:
-	if key==visible_key:return
-	visible_key=key
+func work_interval(g)->float:
+	# The existing visible cadence is the sole online work cadence. The slower
+	# hidden-page batching setting no longer controls any business settlement.
+	return setting(g,"visible_tick")
 
 func preview_advance(g,dt:float)->Dictionary:
 	var candidate:Dictionary={}
@@ -100,18 +97,12 @@ func preview_advance(g,dt:float)->Dictionary:
 		# Pending work keeps the crew count under which it accrued.
 		if count!=int(_elapsed_crew[key]) and pending>0:return {"boundary":"crew_change"}
 		if count<=0:continue
-		var visible:bool=key==visible_key
-		var settled:=0.0
-		if visible!=bool(_elapsed_visible[key]) and pending>0:
-			settled=pending;pending=0.0
 		pending+=dt
-		if pending>=setting(g,"visible_tick" if visible else "hidden_tick"):settled+=pending
-		# A switch may flush old time and then consume a due new batch. Check
-		# their combined work so the second part cannot cross an unseen boundary.
+		var settled:=pending if pending>=work_interval(g) else 0.0
 		if region.revision_due(settled,count):
 			# Keep this command to one exact region settlement. Multiple revisions
 			# inside that settlement are already owned by Region.advance().
-			if not candidate.is_empty() or (visible!=bool(_elapsed_visible[key]) and float(_elapsed[key])>0):
+			if not candidate.is_empty():
 				return {"boundary":"compound"}
 			candidate={"key":key,"dt":settled,"count":count}
 	return candidate
@@ -128,10 +119,11 @@ func prepare_income(g)->Dictionary:
 	return {"revision":revision,"gains":gains,"seconds":_income_elapsed}
 func income_current(plan:Dictionary)->bool:return plan.revision==revision and plan.seconds==_income_elapsed
 func commit_income(_plan:Dictionary)->void:_income_elapsed=0.0;revision+=1
-func set_pending_context(key:String,count:int,visible:bool)->void:
-	_elapsed_crew[key]=count;_elapsed_visible[key]=visible;revision+=1
+func set_pending_context(key:String,count:int)->void:
+	if pending_crew(key)==count:return
+	_elapsed_crew[key]=count;revision+=1
 func add_pending(key:String,dt:float)->void:_elapsed[key]+=dt;revision+=1
-func pending_due(g,key:String)->bool:return pending(key)>=setting(g,"visible_tick" if pending_visible(key) else "hidden_tick")
+func pending_due(g,key:String)->bool:return pending(key)>=work_interval(g)
 func prepare_region(key:String,dt:float,count:int)->Dictionary:
 	var region=_regions[key]
 	var next=region.predict_advance(dt,count)

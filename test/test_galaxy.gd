@@ -122,13 +122,13 @@ func _initialize() -> void:
 	var legacy := {"status":"complete","explore_work":50.0,"slots":[{"status":"core","level":0},{"type":"colony_ring","level":5,"construction":0.0}]}
 	check(not Region.valid_snapshot(legacy,development.row,development.builds,4),"Current galaxy format rejects incomplete legacy state")
 	# A save contains pending ONLINE game time, never a wall-clock catch-up.
-	g.galaxy_runtime.advance(g,1.0)
-	check(g.galaxy.pending("galaxy_1")==1.0,"Hidden batching retains earned game time")
+	g.galaxy_runtime.advance(g,0.5)
+	check(g.galaxy.pending("galaxy_1")==0.5,"Sub-interval batching retains earned game time")
 	var pending_save: Dictionary=g.galaxy.save_data()
 	check(g.galaxy.install_snapshot(pending_save,db),"Current pending snapshot installs")
-	check(g.galaxy.pending("galaxy_1")==1.0,"Saving preserves pending online time without advancing it")
+	check(g.galaxy.pending("galaxy_1")==0.5,"Saving preserves pending online time without advancing it")
 	check(g.assign_crew("navigator","",""),"Recall assigned crew")
-	check(g.galaxy.pending("galaxy_1")==0.0 and g.galaxy.regions.galaxy_1.state.build_elapsed==1.0,"Recall flushes old batch with old crew")
+	check(g.galaxy.pending("galaxy_1")==0.0 and g.galaxy.regions.galaxy_1.state.build_elapsed==0.5,"Recall flushes old batch with old crew")
 	var zero_save: Dictionary=g.galaxy.save_data()
 	g.galaxy_runtime.advance(g,20.0)
 	check(g.galaxy.save_data().galaxies==zero_save.galaxies,"No-crew scheduler accrues no construction time")

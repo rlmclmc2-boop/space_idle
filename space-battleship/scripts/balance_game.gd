@@ -209,6 +209,8 @@ func save_progress() -> void:
 func tick(dt: float) -> void:
 	if paused:return
 	simulated_time += dt
+	# This independent analysis clock substitutes for live wall time.
+	advance_resource_history_clock(dt)
 	if metrics != null:
 		metrics.time = simulated_time
 		if state == State.COMBAT:metrics.combat_seconds += dt

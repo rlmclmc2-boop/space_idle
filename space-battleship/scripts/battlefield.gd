@@ -365,7 +365,7 @@ func before_logical_game_tick(dt:float) -> void:
 	advance_turrets(dt)
 
 func battle_transition_blocked() -> bool:
-	return encounter_presentation.departure_active()
+	return game!=null and game.departure_remaining>0
 
 func hold_departure_scene() -> void:
 	# Hide and stop actual render owners; no overlay conceals an advancing battle.
@@ -487,11 +487,6 @@ func _battlefield_motion_flight_shift(shot:Dictionary,visual:Dictionary)->Vector
 	return next*progress
 
 func _process(delta: float) -> void:
-	if battle_transition_blocked():
-		hold_departure_scene()
-		encounter_presentation.sync(game,minf(delta,0.1))
-		stars_layer.queue_redraw();battle_layer.queue_redraw()
-		return
 	# End the batch even when the presentation exits early. Each fixed logical
 	# step changes fx_time, so accelerated combat never reuses an older limit.
 	enemy_entry_batch_active=true
@@ -518,7 +513,6 @@ func _process_battlefield(delta: float) -> void:
 			if not ship_view.set_hull(current_hull):
 				prototype_enabled = false
 				ship_view.set_rendering(false)
-				return
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	battlefield_motion_logical_phase=true
