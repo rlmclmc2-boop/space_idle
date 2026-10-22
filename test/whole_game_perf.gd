@@ -218,11 +218,15 @@ func check_pages(scene)->void:
  page_check(g.economy.install_snapshot(wallet),"Zero-budget fixture installs through economy")
  equipment.refresh_pending()
  page_check(equipment.items.values().all(func(item):return not item.upgradeable and not item.direct_upgradeable),"Cards immediately disable purchases after budget depletion")
+ equipment.status_filter=2;equipment.apply_filters()
+ page_check(not equipment.cards.weapons_0.visible,"Affordable-only filter hides a depleted module")
  var quote:Dictionary=g.slot_upgrade_cost("weapons",0,1)
  for id in quote:
   if wallet.resources.has(str(id)):wallet.resources[str(id)]=quote[id]
   else:wallet.materials[str(id)]=quote[id]
  page_check(g.economy.install_snapshot(wallet),"Exact one-level budget installs")
+ equipment.set_upgrade_amount(10)
+ page_check(equipment.cards.weapons_0.visible and equipment.items.weapons_0.upgradeable and not equipment.items.weapons_0.direct_upgradeable,"Amount action resamples resource filters before the next frame")
  equipment.set_upgrade_amount(1);equipment.refresh_pending()
  page_check(equipment.items.weapons_0.upgradeable and equipment.items.weapons_0.direct_upgradeable,"One-level affordability matches the domain quote")
  equipment.set_upgrade_amount(10)

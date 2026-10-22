@@ -289,10 +289,7 @@ func layout_contents() -> void:
 func set_upgrade_amount(amount: int) -> void:
 	upgrade_amount = amount
 	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount,true)
-	var quotes := {}
-	for id in items:
-		update_card_cost(items[id],quotes)
-		cards[id].refresh(items[id],selected==id)
+	refresh_affordability()
 
 func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
 	var entry: Dictionary = host.game.slot_entry(item.category,item.index)
