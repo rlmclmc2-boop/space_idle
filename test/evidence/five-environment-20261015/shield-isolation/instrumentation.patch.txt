@@ -1,3 +1,0 @@
-	ship_view.shield.visible = shield_enabled and GrowthNumber.compare(game.player.shield,0)>0
-	ship_view.shield_material.set_shader_parameter("impact_strength",maxf(0.0,1.0-(fx_time-player_hit_at)/0.38))
-# wrapped with Time.get_ticks_usec and two additive counters; QA only
