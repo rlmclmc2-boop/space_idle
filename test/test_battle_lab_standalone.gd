@@ -9,13 +9,26 @@ func run() -> void:
 	root.add_child(entry)
 	await process_frame
 	var panel=entry.panel
-	check(panel.tabs.get_tab_count()>=2 and panel.visible and panel.tabs.get_tab_title(0)==UIText.t("fleet.enemy_tab") and panel.tabs.get_tab_title(1)==UIText.t("auto_level.title"),"enemy fleets and automatic levels remain available")
+	check(panel.tabs.get_tab_count()==3 and panel.visible and panel.tabs.get_tab_title(0)==UIText.t("fleet.enemy_tab") and panel.tabs.get_tab_title(1)==UIText.t("auto_level.title") and panel.tabs.get_tab_title(2)==UIText.t("cycle_level.title"),"current three tool pages remain available")
 	check(not panel.database.data.is_empty(),"source database loaded")
+	check(panel.database.mon_source_error.is_empty(),"external enemy workbook accepted: "+panel.database.mon_source_error)
+	if not panel.database.mon_source_error.is_empty():
+		entry.queue_free()
+		await process_frame
+		print("BATTLE LAB STANDALONE failures=",failures)
+		quit(1)
+		return
 	panel.inputs.count.value=2
 	panel.inputs.min_count.value=1
 	panel.inputs.max_count.value=2
 	panel.generate()
 	check(panel.rows.size()==2,"enemy fleets generated")
+	if panel.rows.size()!=2:
+		entry.queue_free()
+		await process_frame
+		print("BATTLE LAB STANDALONE failures=",failures)
+		quit(1)
+		return
 	var large_id: String=""
 	var small_id: String=""
 	for id in panel.database.enemies:
