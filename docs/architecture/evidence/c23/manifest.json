@@ -31,16 +31,16 @@
     "Pre-final display preparation still had 155 / 98-106 ms GPU first-draw spikes; excluded as accepted outcomes"
   ],
   "shader_reference": "https://docs.godotengine.org/en/stable/tutorials/performance/pipeline_compilations.html",
-  "files_sha256": {
+  "files_sha256_git_blob": {
     "after-page-8.png": "a92dcf0685621837adea848d5b250dce0da8a827c275c6fe666594f16ba55e64",
     "before-page-8.png": "24cb22b2e593e2d6bdf111f25954acf8469c7877562901139e072b136319ed4f",
-    "c23-after.json": "0fadacb7a288a02f3cc4bc573225574f902bb15c6233e95b45de001421983662",
-    "c23-after.log": "14f57e29d0abd789ef0682e52d8f1ad65329c8a3066f68c5056a2eee25252a8a",
-    "c23-before.json": "044bb01ac3db8a1f72b973534a7be923da4d5264168ea9f7437b459c2263c8ca",
-    "c23-before.log": "5221be383eb30d43e737b3b890b81d03232175f07256cd014d88f1013eafa919",
-    "comparison.json": "d3a3a73052067c0bae6a338f761ec828bee2c1fb692901015e026b26482a1d5e",
+    "c23-after.json": "9fda334b019b769de766294b2096503b1db178e0c332ca6bc66bb0268def3e15",
+    "c23-after.log": "fee457ea6a960cb48f613fd5b4c7c376e495936a61da7ea3e78d33269152ec1a",
+    "c23-before.json": "50ed8f98499ae1dd096dc88f93791db18eca92fcdaa65cbe2e0f3634ad95ba56",
+    "c23-before.log": "b5533a542aecf6cb33f88960b6e5b816d3a19520ddb054536423b32de0217d91",
+    "comparison.json": "dcfa8c0504fba0510971d689a78c4d111a43b4aba32e4cc5e89dad7bb0fac984",
     "galaxy-loading-ready.png": "b07f6e627dbaa86299dfdd9a3ed66bcf10ad9ae52881e009672919aae51379e7",
     "galaxy-loading-shell.png": "a295eb8d8b037f6c8449918a5f6895da36dc21320a85aeb06d2ae6fd015d767c",
-    "galaxy-ui.log": "5244e3f10789f0c6beb4cead24f024bbc505cdbe914190acb3a37e345fd70da7"
+    "galaxy-ui.log": "97c526e9b0f8eea24ebeca87cd2549189ebf41ac9d3e7af43a4f47d01f5c98be"
   }
 }
