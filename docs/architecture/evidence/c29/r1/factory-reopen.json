@@ -1,0 +1,287 @@
+{
+ "checks": 8,
+ "crew": {
+  "crew": [
+   {
+    "assignmentType": "",
+    "crewId": "navigator",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 2,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "engineer",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "researcher",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_04",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_05",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_06",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_07",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_08",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_09",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_10",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_11",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_12",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_13",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_14",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_15",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_16",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_17",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_18",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_19",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   },
+   {
+    "assignmentType": "",
+    "crewId": "crew_20",
+    "equipmentSlots": [
+     null,
+     null
+    ],
+    "exp": 0.0,
+    "level": 0,
+    "targetId": "",
+    "upgradeMode": "1"
+   }
+  ],
+  "crewEquipment": {}
+ },
+ "failures": 0,
+ "header": {
+  "iron": "3.01e+406",
+  "uranium": "6K"
+ },
+ "phase": "factory-reopen",
+ "research": {
+  "aiIncomePeak": {
+   "1": {
+    "e": 404.0,
+    "m": 5.01
+   },
+   "2": 100.0,
+   "jewel": 0.0
+  },
+  "aiTechActive": "",
+  "aiTechAutoElapsed": 0.0,
+  "aiTechAutoRatios": {
+   "1": 0.025,
+   "2": 0.001
+  },
+  "aiTechCompletionUnread": false,
+  "aiTechInput": {
+   "1": {
+    "e": 401.0,
+    "m": 1.0
+   },
+   "2": 1.0
+  },
+  "aiTechLevels": {
+   "singularity": 1
+  },
+  "aiTechProgress": {
+   "equipment_reinforcement": 10.379547126889248,
+   "singularity": 0.0
+  }
+ },
+ "saving": true,
+ "writer": true
+}

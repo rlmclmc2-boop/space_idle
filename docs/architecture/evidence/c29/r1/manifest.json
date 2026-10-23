@@ -1,0 +1,42 @@
+{
+  "candidate": "5ea23d598b980978f0894f2b2569ff4a56484c47",
+  "previous_candidate": "e9347c682cd8ad0f6a7c0ece3cf69d703c056e59",
+  "base_main": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+  "changes": [
+    "Research duration remains GrowthNumber from divide through compare; float conversion no longer precedes selection. Display uses existing approximate duration labels.",
+    "Already-completed ordering adjustment retained: research advances before ordinary pickup as before, automatic input refresh follows all ordinary receipts in that shared step. Removed obsolete research-step split. No receipt replay/compensation or new settlement mechanism.",
+    "Original-main assertions of same-source input quantities use shared compare."
+  ],
+  "scope_decision": "User accepted possible boundary omissions and withdrew that blocker after the ordering adjustment was already implemented. No further precision or boundary work pursued.",
+  "results": {
+    "research_checks": 125,
+    "research_failures": 0,
+    "main_write_checks": 20,
+    "main_reopen_checks": 8,
+    "main_failures": 0,
+    "restored_domain_mismatches": []
+  },
+  "commands": [
+    "python test/run.py test_ai_tech_tree.gd --godot <Godot 4.7.2> --headless --timeout 180",
+    "Reuse the same imported isolated project; fresh userdata/factory-r1 slot; Godot --path <project> --script <existing test/test_ordinary_entry.gd> -- factory-write, then factory-reopen"
+  ],
+  "limits": [
+    "Existing sandbox root certificate warning and research ObjectDB/resource exit warnings remain.",
+    "Crew and broader C29 evidence retains its original e9347c68 attribution; no unrelated test or performance rerun.",
+    "Main unchanged; dual review and later authorized merge/release remain pending."
+  ],
+  "executed_source_sha256": {
+    "space-battleship/scripts/ai_tech_tree.gd": "e51d7697828e246c98e515472424523e82a99e29e5076436bba37c06977ee8ca",
+    "space-battleship/scripts/ai_tech_view_model.gd": "7a42d417457dc5270df4cce5a82c0ccb5a7c2e2378d5e9571f027ccd3a7db927",
+    "space-battleship/scripts/game.gd": "0eb98b0f9fd888afa69c62add5bd41d533af9abec8aaf00055f56bcb8cb502e9",
+    "test/test_ai_tech_tree.gd": "34c6382af8b40531cbda41de2245ba8152304481f40abd81d678e3b5f30cd394",
+    "test/test_ordinary_entry.gd": "b29bd844b943c48009e8f972538210cd1d8de25879189138d1320d90d719c99e"
+  },
+  "files": {
+    "factory-reopen.json": "9f5e66b74e77eeabe471951fe54aa01353cd9bb5262725432a906c2c27804d2f",
+    "factory-reopen.log": "be782b5426d21208ddca0e28340bdc2c0b3106baf37db7e02f858dd8674138d2",
+    "factory-write.json": "7f332e0c8c88ad592e1b04563f9c1e589773fdbab529a80e44e569de32e0e3ae",
+    "factory-write.log": "aa77a201c1cf428e97ce6f4083edf3c967337d98f7c02d0cf6d8647faa3d8f7c",
+    "research.log": "adf02613f6f785d4852c058e3b4b4b38236ebe20a9a99b6b8b204d2eb17d7ec9"
+  }
+}
