@@ -20,6 +20,6 @@ func _ready() -> void:
 		else:open_batch(args[0])
 
 func open_batch(path: String) -> void:
-	panel.tabs.current_tab=3
-	panel.analysis_section.path_input.text=path if DirAccess.dir_exists_absolute(path) else path.get_base_dir()
-	panel.analysis_section.load_results()
+	# The current F9 window exposes generation, not the retired analysis page.
+	# Keep old launch/drop inputs explicit instead of dereferencing a missing UI.
+	push_warning("Batch analysis is not available in this window: "+path)

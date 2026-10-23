@@ -321,7 +321,7 @@ func build_levels() -> void:
 	var group_by_index: Dictionary={}
 	for row in ordered:
 		group_id+=1
-		var group: Dictionary=row.enemy_group.duplicate(true)
+		var group: Dictionary=EnemyGenerator.runtime_group(row.enemy_group)
 		var name: String=MonGroupXlsx.group_name_from_slots(group.slots,mon_names)
 		var prefix:=fitting_weapon_prefix(row.best_loadouts)
 		if not prefix.is_empty():name=prefix+"-"+name

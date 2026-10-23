@@ -1,4 +1,4 @@
-"""Build the portable battle simulation lab from an explicit dependency allowlist."""
+"""Build the portable lab from its entrypoint closure and explicit dynamic data."""
 import argparse
 import filecmp
 import json
@@ -7,26 +7,27 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+from script_dependencies import closure
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "tools/analyzer_required_data.json"
-SCRIPT_REF = re.compile(r'res://scripts/([^"\']+\.gd)')
-DATA_REF = re.compile(r'res://data/([^"\']+\.json)')
 
 
 def required_files() -> dict:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    scripts = set(manifest["scripts"])
+    if manifest.get('version') != 2 or 'scripts' in manifest:
+        raise ValueError('Analyzer manifest must use version 2 entrypoint-derived scripts')
+    entries = json.loads((ROOT / 'tools/supported_entrypoints.json').read_text(encoding='utf-8'))
+    portable = entries['entries']['portable_lab']
+    reached, references = closure(ROOT, portable['roots'], portable['resource_aliases'])
+    manifest['scripts'] = sorted(name.removeprefix('scripts/') for name in reached if name.startswith('scripts/'))
+    unexpected = reached - {'scripts/' + name for name in manifest['scripts']} - set(portable['roots']) - set(portable['resource_aliases'].values())
+    if unexpected:
+        raise ValueError(f'Unpackaged scene/resource dependencies: {sorted(unexpected)}')
     data = set(manifest["data"])
-    for name in scripts:
-        source = ROOT / "scripts" / name
-        if not source.is_file():
-            raise FileNotFoundError(source)
-        contents = source.read_text(encoding="utf-8")
-        missing_scripts = set(SCRIPT_REF.findall(contents)) - scripts
-        missing_data = set(DATA_REF.findall(contents)) - data
-        if missing_scripts or missing_data:
-            raise ValueError(f"Unlisted analyzer dependency in {name}: scripts={sorted(missing_scripts)}, data={sorted(missing_data)}")
+    allowed = {'data/' + name for name in data} | set(manifest['assets']) | set(manifest['workbooks']) | set(manifest['runtime_paths'])
+    if references - allowed:
+        raise ValueError(f'Undeclared analyzer resource references: {sorted(references - allowed)}')
     if set(manifest["dynamic_data"]) - data:
         raise ValueError("Dynamic analyzer data must also be in the data allowlist")
     config_source = (ROOT / "scripts/hyperspace_config.gd").read_text(encoding="utf-8")
@@ -49,9 +50,6 @@ def required_files() -> dict:
     source_mon = ROOT / manifest["external_workbooks"]["source_mon"]
     if not source_mon.is_file():
         raise FileNotFoundError(source_mon)
-    entry = (ROOT / "tools/result_analyzer/entry.gd").read_text(encoding="utf-8")
-    if set(SCRIPT_REF.findall(entry)) - scripts:
-        raise ValueError("Analyzer entry script has an unlisted script dependency")
     return manifest
 
 
@@ -81,6 +79,9 @@ def build(output: Path, engine: Path | None = None) -> None:
     marker = output / "analyzer-package.json"
     if output.exists() and any(output.iterdir()) and not marker.is_file():
         raise ValueError("Nonempty output is not an analyzer package")
+    # A package is an exact closure, not an overlay retaining retired scripts.
+    if output.exists() and any(output.iterdir()):
+        raise ValueError("Use a new empty output directory for an exact analyzer package")
     manifest = required_files()
     engine = (engine or ROOT / "engine/Godot_v4.7.2-stable_win64.exe").resolve()
     if not engine.is_file():
@@ -88,12 +89,13 @@ def build(output: Path, engine: Path | None = None) -> None:
     output.mkdir(parents=True, exist_ok=True)
     marker.write_text(json.dumps({"tool": "battle-simulation-lab", "version": 2,
                                   "source_mon": str((ROOT / "config_excel/mon.xlsx").resolve())}), encoding="utf-8")
-    shutil.copy2(MANIFEST, output / "analyzer_required_data.json")
+    (output / 'analyzer_required_data.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     for folder in ("scripts", "data", "assets/fonts", "config_excel", "runtime", "results"):
         (output / folder).mkdir(parents=True, exist_ok=True)
     # Generated CSV/PNG output is data, not an editor asset to reimport.
     (output / "results/.gdignore").touch()
     for name in manifest["scripts"]:
+        (output / 'scripts' / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / "scripts" / name, output / "scripts" / name)
     for name in manifest["data"]:
         if name == "game_data.json":
@@ -106,6 +108,7 @@ def build(output: Path, engine: Path | None = None) -> None:
     names = {"equipment": {k: rows[0].get("name", "") for k, rows in data["equipment"].items() if rows}}
     (output / "data/analysis_display_names.json").write_text(json.dumps(names, ensure_ascii=False), encoding="utf-8")
     for name in manifest["assets"] + manifest["workbooks"]:
+        (output / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / name, output / name)
     for name in ("project.godot", "main.tscn", "entry.gd", "start.bat", "周期关卡工具.cmd"):
         shutil.copy2(ROOT / "tools/result_analyzer" / name, output / name)
@@ -113,10 +116,9 @@ def build(output: Path, engine: Path | None = None) -> None:
     if not runtime.exists() or not filecmp.cmp(engine, runtime, shallow=False):
         shutil.copy2(engine, runtime)
     (output / "使用说明.txt").write_text(
-        "双击 start.bat 启动。在敌舰群窗口的“周期关卡”页，选择已有 generated_levels.json，设置周期并预览，随后导出 Excel。\n"
-        "依次生成双方组合后，在批量战斗页开始测试；批次写入本目录的 results 文件夹。\n"
-        "战斗结束后，在结果分析页点“分析当前批次”，或选择旧批次目录；数据不足可直接在该页定向复测并合并结果。\n"
-        "六个分析文件写回所选批次目录；生成关卡与补测写入批次下的 generated_levels。运行时直接读取相邻 space-battleship/config_excel/mon.xlsx，请保留两者的相对位置；无需启动游戏、Python 或安装 Godot。不会读取游戏存档。\n", encoding="utf-8")
+        "双击 start.bat 启动。敌舰群页生成组合，自动关卡页从当前组合生成关卡并导出 Excel；周期关卡页可读取 generated_levels.json。\n"
+        "结果写入本目录的 results 文件夹。当前窗口没有独立批量战斗或结果分析页。\n"
+        "运行时读取 analyzer-package.json 中记录的 mon.xlsx 来源；请保留该文件。无需启动游戏、Python 或安装 Godot，不读取游戏存档。\n", encoding="utf-8")
     # Import only this independent project; never touch player directories.
     env = os.environ.copy()
     env["APPDATA"] = str(output / ".build-user/roaming")

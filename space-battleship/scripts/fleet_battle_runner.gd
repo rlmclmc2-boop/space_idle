@@ -249,6 +249,11 @@ func begin_battle() -> void:
 		return
 	var started := Time.get_ticks_usec()
 	game = PlayerGenerator.start_validated_battle(database,enemy,player,current.seed,config.mode,profiles[player_index],float(config.get("power_multiplier",1.0)))
+	if not game.startup_error.is_empty():
+		var startup_error:=game.startup_error
+		release_game()
+		finish_battle("error",startup_error)
+		return
 	game.skip_empty_batch_research=true
 	metrics = Metrics.new()
 	metrics.timeline.configure(config.max_seconds,config.max_seconds,2,8)

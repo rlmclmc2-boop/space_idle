@@ -37,14 +37,15 @@ func options_error(options: Dictionary) -> String:
 			if not key is String or not db.ships.has(key):return "invalid_input"
 	return ""
 
-func configure(options: Dictionary) -> void:
-	rules = BattleGame.new(db, false)
-	apply_progress(rules, int(options.cleared_through))
+func configure(options: Dictionary) -> String:
 	ships.clear()
 	weapons.clear()
 	defences.clear()
 	equipment_stats.clear()
 	reference = {"burst":0.0,"sustained":0.0,"attack_rate":0.0,"survival":0.0}
+	rules = BattleGame.new(db, false)
+	if not rules.startup_error.is_empty():return rules.startup_error
+	apply_progress(rules, int(options.cleared_through))
 	for key in db.ships:
 		# Missing whitelist preserves replay compatibility with older records.
 		if options.has("available_ships") and not options.available_ships.has(key):continue
@@ -76,6 +77,7 @@ func configure(options: Dictionary) -> void:
 			for metric in ["burst","sustained","attack_rate"]:reference[metric] = maxf(reference[metric],stats[metric])
 		else:reference.survival = maxf(reference.survival,value)
 		equipment_stats[key] = stats
+	return ""
 
 static func apply_progress(game: BattleGame, cleared_through: int) -> void:
 	game.profile.cleared = []
@@ -90,7 +92,8 @@ func generate(options: Dictionary) -> Dictionary:
 	if not invalid.is_empty():
 		result.status = invalid
 		return result
-	configure(options)
+	var startup:=configure(options)
+	if not startup.is_empty():result.status=startup;return result
 	if ships.is_empty() or weapons.is_empty() or not defences.has("armour"):
 		result.status = "no_legal_loadouts"
 		return result
@@ -187,7 +190,8 @@ func generate_canonical(options: Dictionary,max_loadouts: int) -> Dictionary:
 	request.count=max_loadouts
 	var invalid:=options_error(request)
 	if not invalid.is_empty() or max_loadouts<1:return {"results":[],"status":"invalid_input"}
-	configure(request)
+	var startup:=configure(request)
+	if not startup.is_empty():result.status=startup;return result
 	if ships.is_empty() or weapons.is_empty() or not defences.has("armour"):return {"results":[],"status":"no_legal_loadouts"}
 	var buckets: Dictionary={"mono":[],"same_role":[],"synergy":[],"balanced":[]}
 	var seen: Dictionary={}
@@ -258,6 +262,7 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 	if delta<0:return {"error":"invalid_level"}
 	if delta==0:return base_profile.duplicate(true)
 	var game:=BattleGame.new(database,false)
+	if not game.startup_error.is_empty():return {"error":game.startup_error}
 	game.load_progress_data(base_profile)
 	game.equipment.install_snapshot({"selectedShip":record.ship,"loadout":record.equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},database)
 	game.configuration_committed()
@@ -277,11 +282,13 @@ func replay(record: Dictionary) -> Dictionary:
 	var options: Dictionary = record.get("generation_options",{})
 	if str(record.get("generation_type","")).begins_with("canonical_"):
 		var canonical:=generate_canonical(options,int(options.get("count",0)))
+		if canonical.status!="complete":return {"error":canonical.status}
 		for row in canonical.results:
 			if row.loadout_id==record.get("loadout_id"):return row
 		return {"error":"invalid_input"}
 	if not options_error(options).is_empty() or not policy.modes.has(record.get("generation_type","")):return {"error":"invalid_input"}
-	configure(options)
+	var startup:=configure(options)
+	if not startup.is_empty():return {"error":startup}
 	var candidate := sample(int(record.seed),record.generation_type,options)
 	if candidate.is_empty():return {"error":"no_legal_loadouts"}
 	var result := describe(candidate.ship,candidate.equipment)
@@ -332,16 +339,21 @@ func create_battle(matchup: Dictionary) -> Dictionary:
 	private_db.config = private_db.data.config
 	private_db.defaults = private_db.data.defaults
 	private_db.ships = private_db.data.ship
-	return {"game":start_validated_battle(private_db,enemy_fleet,player_loadout,int(matchup.get("seed",0)))}
+	var game:=start_validated_battle(private_db,enemy_fleet,player_loadout,int(matchup.get("seed",0)))
+	if not game.startup_error.is_empty():return {"error":game.startup_error}
+	return {"game":game}
 
 static func start_validated_battle(private_db: ShipDatabase, enemy_fleet: Dictionary, player_loadout: Dictionary, battle_seed: int, mode := "exact", prepared_profile: Dictionary = {}, power_multiplier := 1.0) -> BattleGame:
 	# Only callers that validated both immutable input records may use this helper.
 	# A serial runner can reuse its private database; each game still owns fresh state.
 	var group_id := str(int(private_db.levels[0].groups[0].id))
-	private_db.groups[group_id] = enemy_fleet.duplicate(true)
+	# Generated formation_positions describe the analysis preview, not authored
+	# runtime coordinates. Match the slot-only group used by the level exporter.
+	private_db.groups[group_id] = EnemySimulator.runtime_group(enemy_fleet)
 	private_db.levels[0].groups = [{"id":int(group_id),"position":0.0}]
 	for ratio in ["lifeRatio","atkRatio","resRatio"]:private_db.levels[0][ratio] = 1.0
 	var game = preload("res://scripts/balance_game.gd").new(private_db)
+	if not game.startup_error.is_empty():return game
 	game.simulation_mode = mode
 	game.player_power_multiplier = power_multiplier
 	if prepared_profile.is_empty():apply_progress(game,int(player_loadout.generation_options.cleared_through))
