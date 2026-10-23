@@ -1,4 +1,7 @@
 extends RefCounted
+const N=preload("res://scripts/growth_number.gd")
+var execution_capture:RefCounted
+var execution_identity:Dictionary={}
 ## Generated records use the durable equipment schema and BattleGame rules.
 ## One save-disabled, scene-free rules object per generation context; never ticked.
 const POLICY_PATH := "res://data/enemy_fleet_analysis.json"
@@ -16,7 +19,9 @@ var reference := {}
 func _init(database: ShipDatabase) -> void:
 	db = database
 	policy = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text(POLICY_PATH)).player
-	fingerprint = JSON.stringify({"data":db.data,"policy":policy}).sha256_text()
+	execution_capture=preload("res://scripts/execution_identity.gd").new()
+	execution_identity=execution_capture.capture(db,["res://scripts/player_loadout_generator.gd"],"player_generation",{},policy)
+	fingerprint=execution_identity.batch_sha256
 
 func default_options() -> Dictionary:
 	var result: Dictionary = policy.defaults.duplicate(true)
@@ -65,17 +70,17 @@ func configure(options: Dictionary) -> String:
 		var stats := {"value":value,"burst":0.0,"sustained":0.0,"attack_rate":0.0,"multi_target":0.0}
 		if weapons.has(key) and float(row.cd)>0:
 			var critical := rules.jewel_critical(entry)
-			var expected:Variant = value * (1.0 + critical.x * (critical.y - 1.0))
+			var expected:Variant = N.multiply(value,1.0 + critical.x * (critical.y - 1.0))
 			var salvo := int(row.para1) if key == "missile" else 1
-			stats.burst = expected * salvo
+			stats.burst = N.multiply(expected,salvo)
 			stats.attack_rate = 1.0 / float(row.cd)
-			stats.sustained = stats.burst * stats.attack_rate
+			stats.sustained = N.multiply(stats.burst,stats.attack_rate)
 			if key == "longLaser":
-				stats.sustained *= rules.long_laser_multiplier(row,maxf(0,float(row.para1)))
-				stats.burst *= rules.long_laser_multiplier(row,0)
+				stats.sustained = N.multiply(stats.sustained,rules.long_laser_multiplier(row,maxf(0,float(row.para1))))
+				stats.burst = N.multiply(stats.burst,rules.long_laser_multiplier(row,0))
 			stats.multi_target = 1.0 if salvo>1 else 0.0
-			for metric in ["burst","sustained","attack_rate"]:reference[metric] = maxf(reference[metric],stats[metric])
-		else:reference.survival = maxf(reference.survival,value)
+			for metric in ["burst","sustained","attack_rate"]:reference[metric] = N.maximum(reference[metric],stats[metric])
+		else:reference.survival = N.maximum(reference.survival,value)
 		equipment_stats[key] = stats
 	return ""
 
@@ -160,11 +165,12 @@ func describe(ship: String, equipment: Dictionary) -> Dictionary:
 	var counts := {}
 	for entry in equipment.weapons:
 		counts[entry.key] = int(counts.get(entry.key,0))+1
-		for key in ["burst","sustained","attack_rate","multi_target"]:stats[key] += float(equipment_stats[entry.key][key])
+		for key in ["burst","sustained"]:stats[key]=N.add(stats[key],equipment_stats[entry.key][key])
+		for key in ["attack_rate","multi_target"]:stats[key] += float(equipment_stats[entry.key][key])
 	var scores := {}
 	for key in ["burst","sustained","attack_rate"]:
-		scores[key] = clampf(stats[key] / equipment.weapons.size() / maxf(reference[key],0.000001),0,1)
-	scores.survival = clampf((stats.armour+stats.shield)/equipment.defence.size()/maxf(reference.survival,0.000001),0,1)
+		scores[key] = clampf(N.ratio(N.divide(stats[key],equipment.weapons.size()),N.maximum(reference[key],0.000001)),0,1)
+	scores.survival = clampf(N.ratio(N.divide(N.add(stats.armour,stats.shield),equipment.defence.size()),N.maximum(reference.survival,0.000001)),0,1)
 	scores.single_target = 1.0-stats.multi_target/equipment.weapons.size()
 	scores.multi_target = 1.0-scores.single_target
 	scores.aoe = 0.0
@@ -178,8 +184,8 @@ func describe(ship: String, equipment: Dictionary) -> Dictionary:
 func weapon_role(key: String) -> String:
 	var stats: Dictionary=equipment_stats[key]
 	if float(stats.multi_target)>0:return "multi_target"
-	var burst:=float(stats.burst)/maxf(float(reference.burst),0.000001)
-	var sustained:=float(stats.sustained)/maxf(float(reference.sustained),0.000001)
+	var burst:=N.ratio(stats.burst,N.maximum(reference.burst,0.000001))
+	var sustained:=N.ratio(stats.sustained,N.maximum(reference.sustained,0.000001))
 	if burst>sustained*1.2:return "burst"
 	if sustained>burst*1.2:return "sustained"
 	return "rapid" if float(stats.attack_rate)/maxf(float(reference.attack_rate),0.000001)>=0.7 else "general"

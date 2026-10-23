@@ -4,6 +4,10 @@ const Runner := preload("res://scripts/fleet_battle_runner.gd")
 const EnemyGenerator := preload("res://scripts/enemy_fleet_simulator.gd")
 const PlayerGenerator := preload("res://scripts/player_loadout_generator.gd")
 const MonGroupXlsx := preload("res://scripts/mon_group_xlsx.gd")
+var source_database:ShipDatabase
+var execution_capture:RefCounted
+var execution_identity:Dictionary={}
+var execution_batches:Array=[]
 var database: ShipDatabase
 var policy: Dictionary
 var runner: RefCounted
@@ -26,6 +30,7 @@ var error := ""
 var current: Dictionary={}
 
 func _init(source: ShipDatabase) -> void:
+	source_database=source
 	database=source
 	policy=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/auto_level_generation.json"))
 
@@ -53,6 +58,12 @@ func start(directory: String,options: Dictionary={}) -> String:
 	if busy():return "already_running"
 	status="idle"
 	error=""
+	database=preload("res://scripts/balance_database.gd").new()
+	database.data=source_database.data.duplicate(true)
+	for field in ["equipment","enemies","groups","levels","config","defaults"]:database.set(field,database.data[field])
+	database.ships=database.data.ship
+	database.input_origin=source_database.input_origin.duplicate(true)
+	execution_batches=[]
 	var mon_table: Dictionary=MonGroupXlsx.read_mon_names()
 	if mon_table.has("error"):return fail(str(mon_table.error))
 	mon_names=mon_table.names
@@ -86,6 +97,10 @@ func start(directory: String,options: Dictionary={}) -> String:
 	var loaded=JSON.parse_string(FileAccess.get_file_as_string(source_directory.path_join("inputs.json")))
 	if not loaded is Dictionary or not loaded.get("enemy_fleets") is Array:return fail("invalid_batch")
 	inputs=loaded
+	if inputs.has("replay_inputs"):
+		var restored:Variant=Marshalls.base64_to_variant(str(inputs.replay_inputs))
+		if not restored is Array or restored.size()!=2 or not restored[0] is Array or not restored[1] is Array:return fail("invalid_replay_inputs")
+		inputs.enemy_fleets=restored[0];inputs.player_loadouts=restored[1]
 	if str(inputs.get("data_sha256",""))!=JSON.stringify(database.data).sha256_text():return fail("config_mismatch")
 	var enemy_maker:=EnemyGenerator.new(database)
 	for row in inputs.enemy_fleets:
@@ -119,12 +134,19 @@ func start(directory: String,options: Dictionary={}) -> String:
 	candidates=inputs.enemy_fleets.duplicate(true)
 	if not candidates.any(func(row):return final_wave_eligible(row)):return fail("no_final_wave_candidate")
 	output_directory=source_directory.path_join("generated_levels")
+	execution_capture=preload("res://scripts/execution_identity.gd").new()
+	execution_identity=execution_capture.capture(database,["res://scripts/fleet_level_generator.gd"],"fleet_level_generation",{"source_sha256":preload("res://scripts/execution_identity.gd").content_digest(inputs)},policy)
 	read_existing_pairs()
 	status="running"
 	advance()
 	return error
 
 func read_existing_pairs() -> void:
+	var probe=Runner.new(database)
+	var expected:Dictionary=probe.capture_identity(database,inputs.enemy_fleets,inputs.get("player_loadouts",[]),{"mode":"fast","max_seconds":policy.max_seconds})
+	var compatibility:Dictionary=preload("res://scripts/execution_identity.gd").compare(inputs.get("execution_identity",{}),expected,"retest")
+	if not compatibility.compatible:return
+	execution_batches.append(inputs.execution_identity.duplicate(true))
 	var source_players: Array=inputs.get("player_loadouts",[])
 	var lookup: Dictionary={}
 	for index in range(source_players.size()):
@@ -205,6 +227,7 @@ func process(budget_usec := -1) -> void:
 	if not busy() or runner==null:return
 	if runner.busy():runner.process(budget_usec)
 	if runner.busy():return
+	execution_batches.append(runner.execution_identity.duplicate(true))
 	spent+=runner.completed
 	var aggregate: Dictionary=runner.aggregate
 	var test: Dictionary={"module_delta":module_delta,"tests":int(aggregate.battle_count),"wins":int(aggregate.wins),"win_rate":aggregate.win_rate,"battle_time":aggregate.avg_battle_time,"remaining_hp":aggregate.avg_player_hp_ratio,"source":runner.directory,"stable_stopped":runner.sampling.stable_count}
@@ -462,7 +485,7 @@ func write_output() -> void:
 	if file==null:error="output_error";status="error";return
 	var groups: Dictionary={}
 	for group in group_rows:groups[str(group.enemy_group)]=group.group_data.duplicate(true)
-	file.store_string(JSON.stringify({"schema_version":2,"source_batch":source_directory,"source_simulation_id":source_directory.get_file(),"data_sha256":str(inputs.get("data_sha256","")),"config":policy,"status":status,"supplement_battles":spent,"candidate_count":candidates.size(),"canonical_loadouts":loadouts,"evaluated":evaluated,"groups":groups,"levels":levels},"  "))
+	file.store_string(JSON.stringify({"execution_identity":execution_identity,"execution_batches":execution_batches,"schema_version":2,"source_batch":source_directory,"source_simulation_id":source_directory.get_file(),"data_sha256":str(inputs.get("data_sha256","")),"config":policy,"status":status,"supplement_battles":spent,"candidate_count":candidates.size(),"canonical_loadouts":loadouts,"evaluated":evaluated,"groups":groups,"levels":levels},"  ",true,true))
 	file.flush()
 	if file.get_error()!=OK:error="output_error";status="error"
 

@@ -223,6 +223,20 @@ func run() -> void:
 	while followup.busy() and Time.get_ticks_msec()<deadline:followup.process(10000)
 	var merged:Dictionary=preload("res://scripts/fleet_batch_retest.gd").combine(fleet.directory,followup.directory)
 	check(merged.has("directory"),"actual F9 merge accepts compatible batches")
+	var large_generator_db:=ShipDatabase.new()
+	for rows in large_generator_db.equipment.values():
+		for large_source_row in rows:
+			if large_source_row.get("dmg")!=null and large_source_row.get("dmgMulti")!=null:large_source_row.dmg=1e300;large_source_row.dmgMulti=10.0
+	large_generator_db.equipment.armour[0].para1=1e300
+	large_generator_db.equipment.armour[0].para2=10.0
+	var large_generator=preload("res://scripts/player_loadout_generator.gd").new(large_generator_db)
+	var large_options:Dictionary=large_generator.default_options();large_options.count=1;large_options.module_level=100
+	var large_generated:Dictionary=large_generator.generate(large_options)
+	check(large_generated.status=="complete" and large_generated.results.size()==1,"player generator supports large quantities through shared number arithmetic")
+	if not large_generated.results.is_empty():check(GrowthNumber.compare(large_generated.results[0].stats.burst,1e300)>0 and is_finite(large_generated.results[0].feature_scores.burst),"large generated score remains a finite ratio")
+	for unsupported_row in large_generator_db.enemies.values():unsupported_row.shield=huge
+	var unsupported_generator=preload("res://scripts/enemy_fleet_simulator.gd").new(large_generator_db)
+	check(unsupported_generator.error=="unsupported_enemy_analysis_scalar:shield","static enemy analysis refuses unsupported source before float conversion")
 	var timings := []
 	for database in [original,cached]:
 		var started := Time.get_ticks_usec()

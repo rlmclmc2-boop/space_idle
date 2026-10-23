@@ -80,6 +80,7 @@ func run() -> void:
 	check(levels.generator.source_directory.begins_with(ProjectSettings.globalize_path("res://results")),"run contained in portable results")
 	check(FileAccess.file_exists(levels.generator.source_directory.path_join("inputs.json")),"source fleets saved for replay")
 	check(FileAccess.file_exists(levels.generator.output_directory.path_join("generated_levels.json")),"level evidence saved")
+	check(levels.generator.execution_identity.get("status")=="known" and not levels.generator.execution_batches.is_empty(),"portable generation binds actual rule and battle identities")
 	check(FileAccess.file_exists(levels.generator.output_directory.path_join("monGroup.xlsx")),"Excel output saved")
 	for row in levels.generator.group_rows:
 		check(not row.group_data.has("formation_positions"),"export uses runtime groups, not preview coordinates")
@@ -99,6 +100,18 @@ func run() -> void:
 	FileAccess.open(template_path,FileAccess.WRITE).store_buffer(template_bytes)
 	check(cycle_error.is_empty() and FileAccess.file_exists(cycle_output),"Cycle export uses the captured template after source replacement")
 	check(not FileAccess.file_exists("res://config_excel/mon.xlsx"),"Portable runtime needs no mutable source workbook")
+	var cycle_panel=panel.tabs.get_child(2)
+	var group_id:String=str(panel.database.groups.keys()[0])
+	var cycle_source:Dictionary={"levels":[{"enemy_id":"identity_fixture","enemy_group":int(group_id),"group_data":panel.database.groups[group_id],"composition":{},"loadout_results":[{"weapons":["laser"],"required_level":0}]}]}
+	var cycle_config:Dictionary={"level_count":1,"battle_points_per_level":1,"small_cycle":1,"large_cycle":1,"strength_tolerance":0,"fleet_reuse_limit":1,"recent_fleet_window":0,"similarity_window":0,"seed":1,"strength_pattern":[0],"weapon_pattern":[cycle_panel.maker.weapon_kind(["laser"])],"battle_point_offsets":[0]}
+	var cycle_result:Dictionary=cycle_panel.maker.generate(cycle_config,cycle_source)
+	check(not cycle_result.has("error") and cycle_result.execution_identity.status=="known" and cycle_result.source_execution_identity.status=="unknown","cycle result captures current execution without inventing old source identity")
+	if not cycle_result.has("error"):
+		cycle_panel.result=cycle_result
+		var export_path:=ProjectSettings.globalize_path("res://results/cycle-identity.xlsx")
+		cycle_panel.export_excel(export_path)
+		var export_identity:Variant=JSON.parse_string(FileAccess.get_file_as_string(export_path+".execution.json"))
+		check(export_identity is Dictionary and export_identity.workbook_sha256==FileAccess.get_sha256(export_path) and export_identity.execution_identity.batch_sha256==cycle_result.execution_identity.batch_sha256,"actual cycle export retains workbook-linked execution identity")
 	verify_startup_rejection(panel.database,small)
 	print("BATTLE LAB STANDALONE failures=",failures)
 	entry.queue_free()

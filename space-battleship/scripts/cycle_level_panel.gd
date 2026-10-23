@@ -261,4 +261,12 @@ func choose_export() -> void:
 func export_excel(path: String) -> void:
 	var target: String=path if path.to_lower().ends_with(".xlsx") else path+".xlsx"
 	var failure: String=LevelXlsx.export_levels(result.levels,target,database.groups)
+	if failure.is_empty():
+		var identity_file:=FileAccess.open(target+".execution.json",FileAccess.WRITE)
+		if identity_file==null:failure="execution_metadata_write_failed"
+		else:
+			identity_file.store_string(JSON.stringify({"workbook_sha256":FileAccess.get_sha256(target),"execution_identity":result.get("execution_identity",{"status":"unknown"}),"source_execution_identity":result.get("source_execution_identity",{"status":"unknown"})},"  ",true,true))
+			identity_file.flush()
+			if identity_file.get_error()!=OK:failure="execution_metadata_write_failed"
+
 	status_label.text=UIText.t("cycle_level.error",{"reason":failure}) if not failure.is_empty() else UIText.t("cycle_level.exported",{"path":target})

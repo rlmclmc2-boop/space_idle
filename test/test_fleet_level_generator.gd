@@ -11,10 +11,12 @@ func check(ok: bool,label: String) -> void:
 func _initialize() -> void:call_deferred("run")
 func save(path: String,value: Variant) -> void:
 	var file:=FileAccess.open(path,FileAccess.WRITE)
-	file.store_string(JSON.stringify(value))
-func fixture(path: String,db: ShipDatabase,enemy: Dictionary,player: Dictionary,wins: int) -> void:
+	file.store_string(JSON.stringify(value,"",true,true))
+func fixture(path: String,db: ShipDatabase,enemy: Dictionary,player: Dictionary,wins: int,max_seconds:=120) -> void:
 	DirAccess.make_dir_recursive_absolute(path)
-	save(path.path_join("inputs.json"),{"enemy_fleets":[enemy],"player_loadouts":[player],"data_sha256":JSON.stringify(db.data).sha256_text(),"config":{"power_multiplier":1.0,"module_delta":0}})
+	var probe:=Runner.new(db)
+	var identity:Dictionary=probe.capture_identity(db,[enemy],[player],{"mode":"fast","max_seconds":max_seconds})
+	save(path.path_join("inputs.json"),{"execution_identity":identity,"replay_inputs":Marshalls.variant_to_base64([[enemy],[player]]),"enemy_fleets":[enemy],"player_loadouts":[player],"data_sha256":JSON.stringify(db.data).sha256_text(),"config":{"power_multiplier":1.0,"module_delta":0}})
 	save(path.path_join("summary.json"),{"status":"completed","completed_count":3,"aggregate":{"battle_count":3}})
 	var file:=FileAccess.open(path.path_join("pairs.jsonl"),FileAccess.WRITE)
 	file.store_line(JSON.stringify({"enemy_index":0,"player_index":0,"battle_count":3,"wins":wins,"avg_battle_time":12.0,"avg_player_hp_ratio":0.5,"errors":0,"timeouts":0}))
@@ -61,6 +63,11 @@ func run() -> void:
 	var generator:=Generator.new(db)
 	check(generator.start(path,{"max_loadouts":1,"max_level":1,"max_total_battles":3,"coarse_runs":3,"max_per_level":3,"seed":42})=="","all-fleet level analysis starts")
 	check(generator.status=="completed" and generator.spent==0,"compatible +0 result reused")
+	check(generator.execution_identity.status=="known" and generator.execution_batches.size()==1,"generated levels retain generation and reused battle identities")
+	var unknown:=Generator.new(db)
+	unknown.inputs=generator.inputs.duplicate(true);unknown.inputs.erase("execution_identity")
+	unknown.read_existing_pairs()
+	check(unknown.previous_pairs.is_empty(),"unknown previous batch is not reused")
 	check(generator.candidates.size()==1 and generator.levels.size()==1,"every enemy retained as level")
 	if not generator.levels.is_empty():
 		var stage: Dictionary=generator.levels[0]
@@ -98,6 +105,7 @@ func run() -> void:
 	var capped:=Generator.new(db)
 	check(capped.start(weak_path,{"max_loadouts":1,"max_level":0,"max_total_battles":3,"coarse_runs":3,"max_per_level":3,"seed":42})=="","capped search starts")
 	check(capped.status=="completed" and capped.levels.size()==1 and capped.levels[0].loadout_results[0].status=="unbeatable","unbeatable fleet still retained")
+	fixture(weak_path,db,enemy,player,0,30)
 	var searched:=Generator.new(db)
 	check(searched.start(weak_path,{"max_loadouts":1,"max_level":1,"max_total_battles":3,"coarse_runs":3,"max_per_level":3,"max_seconds":30,"seed":42})=="","next module level starts")
 	var deadline:=Time.get_ticks_msec()+30000

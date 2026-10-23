@@ -4,6 +4,9 @@ extends RefCounted
 var retained_scripts: Array[Script] = []
 var value: Dictionary = {}
 
+static func content_digest(data:Variant) -> String:
+	return JSON.stringify(data,"",true,true).sha256_text()
+
 static func digest(data: Variant) -> String:
 	return JSON.stringify(canonical(data),"",true,true).sha256_text()
 
@@ -29,8 +32,9 @@ func capture(database, roots: Array, model: String, parameters: Dictionary, poli
 	var sources: Dictionary={}
 	var text_by_path: Dictionary={}
 	var missing: Array=[]
+	var script_root := "res://"+"scripts/" # Introspection prefix, not a concrete resource.
 	var paths := RegEx.new()
-	paths.compile("res://scripts/[A-Za-z0-9_]+\\.gd")
+	paths.compile(script_root+"[A-Za-z0-9_]+\\.gd")
 	var globals: Array=ProjectSettings.get_global_class_list()
 	while not pending.is_empty():
 		var path: String=str(pending.pop_back())
@@ -45,7 +49,7 @@ func capture(database, roots: Array, model: String, parameters: Dictionary, poli
 		if base!=null and not base.resource_path.is_empty():pending.append(base.resource_path)
 		for matched in paths.search_all(source):pending.append(matched.get_string())
 		for entry in globals:
-			if str(entry.path).begins_with("res://scripts/") and source.contains(str(entry["class"])):pending.append(entry.path)
+			if str(entry.path).begins_with(script_root) and source.contains(str(entry["class"])):pending.append(entry.path)
 	var snapshot=preload("res://scripts/configuration_snapshot.gd").active()
 	var auxiliary:Dictionary={}
 	for name in snapshot.members():
@@ -57,9 +61,9 @@ func capture(database, roots: Array, model: String, parameters: Dictionary, poli
 	value={"version":1,"status":"known" if missing.is_empty() else "unknown","missing_sources":missing,
 		"model":model,"capability_version":preload("res://scripts/execution_contract.gd").VERSION,
 		"numeric_version":preload("res://scripts/execution_contract.gd").NUMERIC_VERSION,
-		"rules_sha256":digest(sources),"rules":sources,"data_sha256":digest(database.data),
+		"rules_sha256":digest(sources),"rules":sources,"data_sha256":content_digest(database.data),
 		"auxiliary_sha256":digest(auxiliary),"auxiliary":auxiliary,"input_origin":database.input_origin.duplicate(true),
-		"engine":Engine.get_version_info().string,"native":"not_used",
+		"engine":{"version":Engine.get_version_info().string,"binary_sha256":FileAccess.get_sha256(OS.get_executable_path())},"native":"not_used",
 		"parameters":canonical(parameters),"policy_sha256":digest(policy)}
 	value.batch_sha256=digest(value)
 	return value.duplicate(true)

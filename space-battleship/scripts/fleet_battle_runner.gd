@@ -52,6 +52,15 @@ func _init(database_source: ShipDatabase) -> void:
 static func empty_aggregate() -> Dictionary:
 	return {"attempted_count":0,"battle_count":0,"wins":0,"errors":0,"timeouts":0,"stopped":0,"win_rate":null,"avg_battle_time":null,"avg_player_hp_ratio":null,"avg_enemy_hp_ratio":null}
 
+func capture_identity(input_db:ShipDatabase,enemy_rows:Array,player_rows:Array,options:Dictionary) -> Dictionary:
+	var settings:Dictionary=policy.defaults.duplicate(true)
+	settings.merge(options,true)
+	execution_capture=Identity.new()
+	var execution_parameters:Dictionary={"step_seconds":STEP,"max_seconds":settings.max_seconds,"power_multiplier":settings.get("power_multiplier",1.0),"module_delta":settings.get("module_delta",0),"seed":settings.seed,"sampling":settings.duplicate(true),"selected_inputs_sha256":Identity.content_digest([enemy_rows,player_rows])}
+	execution_parameters.sampling.erase("source_execution_identity")
+	execution_parameters.sampling.erase("replay_inputs")
+	return execution_capture.capture(input_db,["res://scripts/fleet_battle_runner.gd"],"BalanceGame/"+str(settings.mode),execution_parameters,policy)
+
 func busy() -> bool:return status in ["validating","running"]
 
 func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> String:
@@ -80,6 +89,7 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 		# Standard Variant serialization retains the original batch inputs for replay.
 		# Public JSON arrays remain readable views, never an alternate numeric ledger.
 		enemy_rows=restored[0];player_rows=restored[1]
+		request.erase("replay_inputs")
 	if enemy_rows.is_empty() or player_rows.is_empty():return "empty_selection"
 	if not request.get("focus_pairs",[]) is Array:return "invalid_input"
 	for focus in request.get("focus_pairs",[]):
@@ -135,11 +145,7 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 	for field in ["equipment","enemies","groups","levels","config","defaults"]:validation_source.set(field,validation_source.data[field])
 	validation_source.ships=validation_source.data.ship
 	validation_source.input_origin=source.input_origin.duplicate(true)
-	execution_capture=Identity.new()
-	var execution_parameters:Dictionary={"step_seconds":STEP,"max_seconds":config.max_seconds,"power_multiplier":config.get("power_multiplier",1.0),"module_delta":config.get("module_delta",0),"seed":config.seed,"sampling":config.duplicate(true),"selected_inputs_sha256":Identity.digest([enemies,players])}
-	execution_parameters.sampling.erase("source_execution_identity")
-	execution_parameters.sampling.erase("replay_inputs")
-	execution_identity=execution_capture.capture(validation_source,["res://scripts/fleet_battle_runner.gd"],"BalanceGame/"+str(config.mode),execution_parameters,policy)
+	execution_identity=capture_identity(validation_source,enemies,players,config)
 	if config.get("retest_saved_inputs",false):
 		var compatibility:Dictionary=Identity.compare(config.get("source_execution_identity",{}),execution_identity,"retest")
 		if not compatibility.compatible:
