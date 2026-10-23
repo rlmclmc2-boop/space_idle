@@ -91,9 +91,9 @@ Required next work, before claiming closure:
 Only an EARLY intermediate time tree passed AI tech 142/0 (`test/work/test_ai_tech_tree-1fnha6j9/test.log`); subsequent domain and consumer edits were not imported or tested. Do not attribute that pass to the final WIP. No final WIP correctness, syntax or performance claim. No main merge; independent high remains parent-coordinated.
 
 
-## Current continuation — 2026-10-24, from 6abcea2f (validation in progress)
+## Current continuation — 2026-10-24, from 6abcea2f (reviewable candidate; compaction handoff)
 
-Same branch and same task; local isolated checkout is `task-4/s2`. Git acquisition was resolved from the preceding task's object store; HEAD was checked against the exact requested commit. No original player checkout, save or main branch was changed. Remote branch readback still showed 6abcea2f before delivery. Independent high remains parent-coordinated; no reviewer task was opened.
+Same branch and same task; local isolated checkout is `task-4/s2`. Git acquisition was resolved from the preceding task's object store; HEAD was checked against the exact requested commit. No original player checkout, save or main branch was changed. Production checkpoint fba8ff01b891339ce253160c2c7b6a141cded5df has been pushed to this branch. Independent high remains parent-coordinated; no reviewer task was opened.
 
 Final numeric direction: **all project large-number algorithms reuse GrowthNumber; precision-external small amounts are discarded, without exact differences, tail compensation, or a special precision ledger.** Fragment credit now uses the same N.add path as other resources, removing the extra 0.01 balance snap. Income queries continue N.add/N.divide on computed earned receipts, never reconstructing credit by subtracting large balances. Source qualification and existing windows are unchanged. Exact bounded integer material quantities remain the existing material domain contract, not a new large-number accounting mechanism.
 
@@ -115,12 +115,36 @@ Final numeric direction: **all project large-number algorithms reuse GrowthNumbe
 
 Native failure basis: `combat_execution_kernel.h::advance` has its only false return before mutation (`can_advance`); the rest completes and returns true. The real-kernel blocked-transfer test compares full export and RNG before/after refused advance, and checks reserved plus undispatched budget. Successful native advance sets combat_done before notifications; handoff continues only unconsumed work.
 
-### Validation status and evidence (to finalize before delivery)
+### Final validation and Git handoff
 
-Use Godot 4.7.2, isolated test projects/user directories. The existing runner's imported project `test/work/test_time_steps-ak2cifhs` was reused for focused reruns by copying changed scripts/tests and invoking the same Godot script entry with isolated APPDATA/LOCALAPPDATA. Raw failures were retained; no old failure is treated as a pass.
+Runtime checkpoint: `fba8ff01b891339ce253160c2c7b6a141cded5df`; scripts tree: `92344cc228dd124c2321fd4ac99584107f227e4c`. This final handoff changes documentation/evidence only. Raw logs, screenshots, source hashes and earlier unsuccessful attempts are in repository-root `test/evidence/architecture-s2-step-boundaries/`. `validation-manifest.json` records the runtime checkpoint and confirms no script differences between the final original-main test project and the candidate.
 
-Passing results so far: time steps 237/0 (current battlefield fixture, old assertions retained); commit boundary 82/0 (income atomicity, snapshot gates, invalidated context, second planet, second region, second combat subdivision); Hyperspace material economy 144/0; save boundaries 31/0; AI tech 142/0; native blocked transfer 38/0; native Galaxy boundary 137/0; native Galaxy refit 301/0; native handoff 55/0. Final affected reruns and performance are in progress.
+Godot 4.7.2 was run with isolated projects and user directories. The existing runner's imported project `test/work/test_time_steps-ak2cifhs` was reused for focused reruns by copying changed scripts/tests and invoking the same Godot script entry with isolated APPDATA/LOCALAPPDATA. Final results:
 
-The real original-main rendering workflow passed all 8 phases, 128 checks total, with empty reopened-domain mismatch lists. Product save and factory reopen images were inspected. A final affected-tree rendering run is pending. Certificate-store and ObjectDB/resource exit warnings are retained in raw evidence. The first performance attempts exposed stale synthetic geometry initialization; fixture preparation was repaired, without changing production rendering. One baseline attempt then emitted a DummyMesh RID exit leak; it is not recorded as a clean performance pass. Final comparison must run serially after correctness tests finish, using equal engine, configuration, seed, frame count and workload.
+| Existing test | Checks | Failures |
+|---|---:|---:|
+| time steps | 237 | 0 |
+| commit boundary | 82 | 0 |
+| Hyperspace material economy | 144 | 0 |
+| save boundaries | 31 | 0 |
+| AI tech tree | 142 | 0 |
+| native blocked transfer | 38 | 0 |
+| native Galaxy boundary | 137 | 0 |
+| native Galaxy refit | 303 | 0 |
+| native execution handoff | 55 | 0 |
+| original-main rendering, eight phases | 128 | 0 |
 
-No S2 acceptance or main merge is claimed by this interim record. Frozen context/cancellation intentionally requires stopping that session; no new abandonment/recovery policy is introduced.
+The time test uses the current battlefield fixture and retains old assertions. Boundary coverage includes income preparation failure, blocked-context invalidation, snapshot/reentry gates, second planet, second region, second combat subdivision and speed/RNG continuity. Current data has one region, so the second-region failure test clones configuration explicitly. Original-main checks have empty reopened-domain mismatch lists; product-save and factory-reopen screenshots are retained. Prior successful rendering screenshots were inspected; the final rerun's screenshots are also included.
+
+Certificate-store and ObjectDB/resource exit warnings remain visible in logs. Native blocked-transfer emits expected refusal errors. Earlier failed attempts are preserved under `attempts/`: removed-field fixtures, reused isolated save state, save isolation-root assertion, missing synthetic geometry and a preliminary DummyMesh RID exit warning. They are not counted as passes. The final save test used fresh storage under the runner's required userdata root. The performance fixture now admits synthetic geometry through the existing geometry authority and publishes its snapshot; production rendering was unchanged.
+
+Final performance ran serially after correctness work, through the existing `whole_game_perf.py`, with identical Godot, configuration, seed 1701, rich workload, headless pages 0/8 and 300 frames per page. Baseline is S1 `c3cdf98e5e6fdd8b0e2dba507d840b796ead0bc7`; candidate is the runtime checkpoint above. Both driver and engine exited 0 and produced both rows. Evidence names are `s2-final-before` and `s2-final-after`.
+
+| Page | Baseline mean CPU us | Candidate mean CPU us | Mean change | Baseline p95 us | Candidate p95 us |
+|---|---:|---:|---:|---:|---:|
+| 0 | 2377.13 | 2471.29 | +3.96% | 3193 | 3229 |
+| 8 | 2197.92 | 2207.64 | +0.44% | 3021 | 2977 |
+
+This is a short headless CPU comparison, not an FPS or broad performance guarantee. Page preparation is outside the measured window. Preliminary overlapping/failed attempts are not used for this comparison.
+
+**Stop condition reached: context compaction.** Per user instruction, finish this Git handoff and stop implementation. The production candidate and evidence are reviewable, but no S2 acceptance or main merge is claimed. Remaining work belongs to the parent's existing independent high review: assess the candidate and responsibility exits, request any necessary remediation, then decide acceptance. No known failing required test remains in the final runs. Frozen context/cancellation intentionally requires stopping that session; no abandonment/recovery policy, cross-process ledger or undecided gameplay change was added. The project-wide large-number ruling above is final and must not be reopened as an unanswered income-precision question.

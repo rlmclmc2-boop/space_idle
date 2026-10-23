@@ -1,0 +1,53 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:117)
+       [1] _tick_combat_step (res://scripts/game.gd:2586)
+       [2] _tick_logical_step (res://scripts/game.gd:2565)
+       [3] tick (res://scripts/game.gd:2532)
+       [4] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_native_blocked_transfer.gd:59)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:117)
+       [1] _tick_combat_step (res://scripts/game.gd:2586)
+       [2] _tick_logical_step (res://scripts/game.gd:2565)
+       [3] tick (res://scripts/game.gd:2532)
+       [4] _dispatch_reserved_step (res://scripts/game.gd:607)
+       [5] consume_external_time (res://scripts/game.gd:591)
+       [6] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_native_blocked_transfer.gd:66)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:117)
+       [1] _tick_combat_step (res://scripts/game.gd:2586)
+       [2] _tick_logical_step (res://scripts/game.gd:2565)
+       [3] tick (res://scripts/game.gd:2532)
+       [4] _dispatch_reserved_step (res://scripts/game.gd:607)
+       [5] consume_external_time (res://scripts/game.gd:591)
+       [6] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_native_blocked_transfer.gd:71)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:117)
+       [1] _tick_combat_step (res://scripts/game.gd:2586)
+       [2] _tick_logical_step (res://scripts/game.gd:2565)
+       [3] tick (res://scripts/game.gd:2532)
+       [4] _dispatch_reserved_step (res://scripts/game.gd:607)
+       [5] consume_external_time (res://scripts/game.gd:591)
+       [6] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_native_blocked_transfer.gd:93)
+ERROR: Native numeric boundary could not transfer its untouched combat step
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] advance (res://scripts/native_execution_session.gd:117)
+       [1] _tick_combat_step (res://scripts/game.gd:2586)
+       [2] _tick_logical_step (res://scripts/game.gd:2565)
+       [3] tick (res://scripts/game.gd:2532)
+       [4] _dispatch_reserved_step (res://scripts/game.gd:607)
+       [5] consume_external_time (res://scripts/game.gd:591)
+       [6] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_native_blocked_transfer.gd:93)
+EXPECTED_BLOCKED_TRANSFER_PROOF {"checks":38,"failures":0,"remaining_preserved":true}

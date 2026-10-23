@@ -1,0 +1,543 @@
+{
+  "options": {
+    "label": "s2-final-before",
+    "godot": "D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe",
+    "ref": "c3cdf98e5e6fdd8b0e2dba507d840b796ead0bc7",
+    "reuse": "test\\work\\whole-perf-up3whh6x",
+    "headless": true,
+    "rich": true,
+    "enemies": 3,
+    "reactor_level": 1,
+    "balance": 1e+80,
+    "check_pages": false,
+    "capture": false,
+    "max_quote": false,
+    "realtime": false,
+    "instrument": false,
+    "pages": "0,8",
+    "frames": 300,
+    "galaxy_work": "complete",
+    "galaxy_steady": false
+  },
+  "exit": 0,
+  "environment": [
+    {
+      "adapter": "",
+      "cap": 0,
+      "display": "headless",
+      "engine": "4.7.2-stable (official)",
+      "galaxy_assignment": false,
+      "galaxy_initial": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 0.116666666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_work": "complete",
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(960, 540)",
+      "vendor": ""
+    }
+  ],
+  "rows": [
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 6942,
+        "mean": 6885.05,
+        "p50": 6886,
+        "p95": 6917,
+        "p99": 6927
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 5.36666666666665,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 0.366666666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 3,
+        "mean": 3.0,
+        "p50": 3,
+        "p95": 3,
+        "p99": 3
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 4049,
+        "mean": 2377.13333333333,
+        "p50": 2282,
+        "p95": 3193,
+        "p99": 3672
+      },
+      "memory": 644273489,
+      "memory_delta": 742596,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 300,
+      "node_delta": 1,
+      "owned_domains": true,
+      "page": 0,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 3,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 11,
+        "mean": 6.04333333333333,
+        "p50": 6,
+        "p95": 10,
+        "p99": 11
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "settlement_samples": [],
+      "switch_cpu_us": 473,
+      "switch_frame_us": 145016,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(113, 125)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 6941,
+        "mean": 6881.51666666667,
+        "p50": 6882,
+        "p95": 6917,
+        "p99": 6929
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 11.1166666666668,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 6.11666666666665,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 3,
+        "mean": 3.0,
+        "p50": 3,
+        "p95": 3,
+        "p99": 3
+      },
+      "loading_shell_visible": true,
+      "main_us": {
+        "max": 3578,
+        "mean": 2197.92333333333,
+        "p50": 2134,
+        "p95": 3021,
+        "p99": 3354
+      },
+      "memory": 660264479,
+      "memory_delta": 98068,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 300,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "preparation_frames_us": [
+        3417,
+        13597,
+        9684,
+        8596,
+        9178,
+        8028,
+        8033,
+        8137,
+        7614,
+        6844,
+        6581,
+        5540,
+        2647,
+        5965,
+        6891,
+        6900,
+        6880,
+        6902,
+        6875,
+        6878,
+        6902,
+        6882,
+        7200,
+        6836,
+        6643,
+        6906,
+        6884,
+        6898,
+        6887,
+        6893
+      ],
+      "preparation_game_seconds": 0.499999999999998,
+      "preparation_stages": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "preparation_timings": {},
+      "preparation_us": 214372,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 14,
+        "mean": 8.12,
+        "p50": 8,
+        "p95": 13,
+        "p99": 13
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 1,
+      "settlement_samples": [],
+      "switch_cpu_us": 3811,
+      "switch_frame_us": 8961,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(498, 342)"
+        }
+      ]
+    }
+  ],
+  "page_checks": []
+}

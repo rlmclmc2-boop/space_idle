@@ -1,0 +1,11 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+FAIL: Start research with paid input before disk save
+FAIL: Begin an ordinary trip before persistence
+FAIL: Galaxy owner keeps online work and income time before save
+FAIL: Persist allocation above capacity without storage
+FAIL: Prepare simultaneous background reward
+FAIL: Background result freezes before file commit
+Save boundaries: 31 checks, 6 failures
