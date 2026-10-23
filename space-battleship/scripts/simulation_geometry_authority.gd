@@ -1,4 +1,5 @@
 extends RefCounted
+const GEOMETRY_RULES=preload("res://scripts/geometry_rules.gd")
 ## Prototype simulation-owned mathematical geometry. No active scene objects.
 const FIXED_LAYOUT=preload("res://scripts/enemy_fixed_layout.gd")
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
@@ -100,73 +101,37 @@ var battle_read_model=preload("res://scripts/battle_read_model.gd").new()
 var battle_read_model_enabled:=true
 
 func weapon_visual_key(key:String)->String:
-	return str(ENEMY_VISUAL_ALIASES.get(key,key.replace("-mon", "").replace("_mon", "")))
+	return GEOMETRY_RULES.weapon_visual_key(self, key)
 
 func weapon_key(shot: Dictionary) -> String:
-	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))
+	return GEOMETRY_RULES.weapon_key(self, shot)
 
 func turret_angle(index: int) -> float:
-	if turret_ship!=str(game.equipment.selected_ship()) or not turret_visuals.has(index):return 0.0
-	var pose: Dictionary = turret_visuals[index]
-	return float(pose.angle) if game.same_module(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
+	return GEOMETRY_RULES.turret_angle(self, index)
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
-	return visual_config.get("ships",{}).get(ship_key,{})
+	return GEOMETRY_RULES.ship_visual_entry(self, ship_key)
 
 func weapon_visual_profile(key: String) -> Dictionary:
-	return visual_config.get("weapons",{}).get(weapon_visual_key(key),{})
+	return GEOMETRY_RULES.weapon_visual_profile(self, key)
 
 func slot_hardpoint_index(ship_key: String, index: int) -> int:
-	var ship := ship_visual_entry(ship_key)
-	var mapping: Array = ship.get("slot_map",[])
-	var points: Array = ship.get("hardpoints",[])
-	if points.is_empty():return -1
-	return clampi(int(mapping[index]) if index<mapping.size() else posmod(index,points.size()),0,points.size()-1)
+	return GEOMETRY_RULES.slot_hardpoint_index(self, ship_key,index)
 
 func hardpoint_for_slot(ship_key: String, index: int) -> Dictionary:
-	var point := slot_hardpoint_index(ship_key,index)
-	return ship_visual_entry(ship_key).get("hardpoints",[])[point] if point>=0 else {}
+	return GEOMETRY_RULES.hardpoint_for_slot(self, ship_key,index)
 
 func weapon_visual_role(index: int) -> String:
-	var component = player_component_for_slot(index)
-	return component.mode() if component!=null else "embedded"
+	return GEOMETRY_RULES.weapon_visual_role(self, index)
 
 func weapon_visual_angle(index: int) -> float:
-	var role := weapon_visual_role(index)
-	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.equipment.selected_ship()),index).get("rotation_limit",0)))
-	return clampf(turret_angle(index),-limit,limit)*(1.0 if role=="main" else 0.2 if role=="secondary" else 0.0)
+	return GEOMETRY_RULES.weapon_visual_angle(self, index)
 
 func player_weapon_components() -> Array:
-	if battle_draw_active:return player_components
-	var ship_key := str(game.equipment.selected_ship())
-	var entries := game.weapon_entries()
-	var signature := ship_key
-	for entry in entries:signature += "|"+str(entry.get("key",""))
-	if signature==player_components_signature:return player_components
-	player_components_signature=signature
-	player_components=compose_weapon_components(ship_key,entries,"ally")
-	return player_components
+	return GEOMETRY_RULES.player_weapon_components(self)
 
 func compose_weapon_components(ship_key: String, entries: Array, faction: String) -> Array:
-	var components: Array = []
-	var ship := ship_visual_entry(ship_key)
-	var points: Array = ship.get("hardpoints",[])
-	for point_index in points.size():
-		var point: Dictionary = points[point_index]
-		var bound: Array[int] = []
-		var owner := -1
-		for index in entries.size():
-			if slot_hardpoint_index(ship_key,index)!=point_index:continue
-			bound.append(index)
-			var profile := weapon_visual_profile(str(entries[index].get("key","")))
-			if profile.is_empty() or not point.get("allowed_weapon_visual_class",[]).has(profile.get("visual_class","")):continue
-			if owner<0 or (str(weapon_visual_profile(str(entries[owner].get("key",""))).get("visual_class",""))=="missile" and str(profile.get("visual_class",""))!="missile"):
-				owner=index
-		if owner>=0:
-			var component=WEAPON_VISUAL.new(point,weapon_visual_profile(str(entries[owner].key)),bound,owner,faction)
-			if faction=="enemy":component.damage_type=int(db.enemy_weapon(str(entries[owner].key)).get("dmgtype",0))
-			components.append(component)
-	return components
+	return GEOMETRY_RULES.compose_weapon_components(self, ship_key,entries,faction)
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.components(enemy)
@@ -218,9 +183,7 @@ func turret_muzzle(index:int)->Vector2:
 	return launch_pose(index,Vector2.ZERO,0).position
 
 func player_component_for_slot(index: int):
-	for component in player_weapon_components():
-		if component.slots.has(index):return component
-	return null
+	return GEOMETRY_RULES.player_component_for_slot(self, index)
 
 func shot_mount(shot: Dictionary) -> int:
 	if shot.hostile:return -1
@@ -273,46 +236,16 @@ func execution_enemy_port_offset(enemy:Dictionary,index:int,render_position:Vect
 	return enemy_port_offset(enemy,index,render_position)
 
 func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> Vector2:
-	var component=enemy_component_for_slot(enemy,index)
-	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
-	# Unknown external configurations keep the previous logical mount fallback.
-	var point:=hardpoint_for_slot(enemy_ship_key(enemy),index)
-	if point.is_empty():return Vector2.ZERO
-	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
-	var width:=enemy_render_width_at_y(enemy,position.y)
-	var angle:=float(enemy_pose(enemy).rotation)
-	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
-	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
-	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
+	return GEOMETRY_RULES.enemy_port_offset(self, enemy,index,render_position)
 
 func enemy_weapon_angle(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> float:
-	var component = enemy_component_for_slot(enemy,index)
-	if component==null:return 0.0
-	var role: String = component.mode()
-	if role!="main" and role!="secondary":return 0.0
-	var pose_angle := enemy_render_angle(enemy)
-	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
-	var desired := wrapf((player_render_position()-position).angle()-PI/2-pose_angle,-PI,PI)
-	var limit := deg_to_rad(float(component.hardpoint.get("rotation_limit",0)))
-	return clampf(desired,-limit,limit)*(1.0 if role=="main" else 0.2)
+	return GEOMETRY_RULES.enemy_weapon_angle(self, enemy,index,render_position)
 
 func enemy_component_for_slot(enemy: Dictionary, index: int):
-	for component in enemy_weapon_components(enemy):
-		if component.slots.has(index):return component
-	return null
+	return GEOMETRY_RULES.enemy_component_for_slot(self, enemy,index)
 
 func enemy_shot_mount(enemy: Dictionary, shot: Dictionary) -> int:
-	if is_same(enemy,shot.get("source",{})) and shot.has("mount"):return int(shot.mount)
-	var origin := game.projectile_position(shot)
-	var best := 0
-	var distance := INF
-	for index in enemy.equipment.size():
-		var logical := Vector2(enemy.x,enemy.y)+game.enemy_weapon_offset(enemy,index)
-		var candidate := logical.distance_squared_to(origin)
-		if candidate<distance:
-			distance = candidate
-			best = index
-	return best
+	return GEOMETRY_RULES.enemy_shot_mount(self, enemy,shot)
 
 func advance_turrets(dt: float) -> void:
 	if game.paused:return
@@ -389,25 +322,22 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.equipment.selected_ship())))
 
 func player_base_art_scale_for(ship_key: String) -> float:
-	var entry := ship_visual_entry(ship_key)
-	return float(entry.get("display_scale",minf(SHIP_VISUALS.scale_for(db.ship(ship_key)),0.18)))*SHIP_VISUALS.player_display_multiplier()
+	return GEOMETRY_RULES.player_base_art_scale_for(self, ship_key)
 
 func player_base_art_scale() -> float:
-	return player_base_art_scale_for(str(game.equipment.selected_ship()))
+	return GEOMETRY_RULES.player_base_art_scale(self)
 
 func player_art_scale_for(ship_key: String) -> float:
-	return player_base_art_scale_for(ship_key)*float(db.config.get("playerVisualScale"+ship_key,1.0))
+	return GEOMETRY_RULES.player_art_scale_for(self, ship_key)
 
 func player_art_scale() -> float:
-	return player_art_scale_for(str(game.equipment.selected_ship()))
+	return GEOMETRY_RULES.player_art_scale(self)
 
 func enemy_config_visual_scale(size: int) -> float:
-	return float(db.config.get("enemyVisualScaleSize"+str(clampi(size,1,6)),1.0))
+	return GEOMETRY_RULES.enemy_config_visual_scale(self, size)
 
 func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) -> Vector2:
-	var scale_offset := maxf(0.0,enemy_config_visual_scale(size)-1.0)*35.0
-	if columns==5:return BattleGame.enemy_slot_position(slot,columns)+Vector2(0,scale_offset)
-	return Vector2(BattleGame.enemy_slot_position(slot).x,(130.0 if large else 120.0)+scale_offset)
+	return GEOMETRY_RULES.enemy_formation_anchor(self, slot,large,size,columns)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
 	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
@@ -482,43 +412,17 @@ func _source_enemy_render_position(enemy:Dictionary)->Vector2:
 	return point
 
 func entity_render_position(entity: Dictionary) -> Vector2:
-	if is_same(entity,game.player):return player_render_position()
-	if entity.has("slot"):return enemy_render_position(entity)
-	return battle_point(Vector2(entity.x,entity.y))
+	return GEOMETRY_RULES.entity_render_position(self, entity)
 
 func battle_point(point: Vector2) -> Vector2:
-	# Presentation only: open the engagement corridor without stretching hulls or FX.
-	return Vector2(point.x,point.y+smoothstep(220.0,420.0,point.y)*220.0)
+	return GEOMETRY_RULES.battle_point(self, point)
 
 func enemy_drop_anchor(enemy: Dictionary) -> Vector2:
-	var position:=enemy_render_position(enemy)
-	return position+Vector2(0,enemy_render_width_at_y(enemy,position.y)+12.0)
+	return GEOMETRY_RULES.enemy_drop_anchor(self, enemy)
 
 func battle_logical_point(point: Vector2) -> Vector2:
-	# In these affine regions all original comparisons take the same branch.
-	# Preserve the finite-bisection midpoint bias, rather than replacing it
-	# with the mathematical inverse and moving missile collision coordinates.
-	if point.y>=-512.0 and point.y<=220.0:
-		return Vector2(point.x,point.y-BATTLE_LINEAR_INVERSE_OFFSET)
-	if point.y>=640.0 and point.y<=2048.0:
-		return Vector2(point.x,point.y-220.0+BATTLE_LINEAR_INVERSE_OFFSET)
-	if game.combat_presentation!=null:return game.combat_presentation.battle_logical_point(point)
-	var low := point.y-220.0
-	var high := point.y
-	for iteration in BATTLE_INVERSE_STEPS:
-		var middle := (low+high)*0.5
-		if battle_point(Vector2(0,middle)).y<point.y:low=middle
-		else:high=middle
-	return Vector2(point.x,(low+high)*0.5)
+	return GEOMETRY_RULES.battle_logical_point(self, point)
 
-func beam_style(shot: Dictionary) -> Dictionary:
-	var weapon: Dictionary = game.db.enemy_weapon(shot.entry.name) if shot.hostile else shot.weapon # Match damage source.
-	var multiplier := game.long_laser_multiplier(weapon,maxf(0,float(shot.elapsed)-maxf(0,float(shot.charge))))
-	var power := clampf((multiplier-1.0)/(float(weapon.para2)-1.0),0,1) if float(weapon.para2)>1 else 1.0
-	var first_hit := float(shot.charge) if float(shot.charge)>=0 else float(shot.weapon.cd)
-	var since_tick := float(shot.elapsed)-(first_hit+(int(shot.ticks)-1)*float(shot.weapon.cd))
-	var pulse := maxf(0,1.0-since_tick/minf(0.12,float(shot.weapon.cd)*0.6)) if int(shot.ticks)>0 else 0.0
-	return {"power":power,"width":lerpf(1.2,2.8,power)+pulse*0.6,"glow":0.05+power*0.045+pulse*0.2,"pulse":pulse}
 
 func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Dictionary:
 	var texture := ship_hull_texture(enemy_ship_key(enemy))
