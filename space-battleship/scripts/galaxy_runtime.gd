@@ -47,6 +47,7 @@ func advance(g,dt:float)->void:
 		g.galaxy.add_pending(key,dt)
 		if g.galaxy.pending_due(g,key) and not flush_pending(g,key):return
 func flush_pending(g,key:String)->bool:
+	if g.commit_effects.active:return false
 	if not g.galaxy.regions.has(key) or g.galaxy.pending(key)<=0:return true
 	# Reuse only this session's prediction for the exact work still pending.
 	var ready:bool=not native_refit.is_empty() and native_refit.session==g.native_execution and native_refit.proposal.key==key and g.galaxy.region_current(native_refit.proposal)
@@ -55,27 +56,33 @@ func flush_pending(g,key:String)->bool:
 		if native_refit.is_empty() and not prepare_refit(g,proposal):return block(g)
 		if g.native_execution!=null:
 			ready=not native_refit.is_empty() and native_refit.session==g.native_execution and native_refit.proposal.key==key and g.galaxy.region_current(native_refit.proposal)
-			if ready and not g.native_execution.paused_by_configuration and g.native_execution.commit_galaxy_refit(g,native_refit.plan):
-				proposal=native_refit.proposal
-				g.galaxy.commit_region(proposal);native_refit={}
-				g.configuration_committed(true)
-				g.enhancement_branches.reconcile(g)
-				publish(g,proposal);return true
+			if ready and not g.native_execution.paused_by_configuration:
+				if not g.commit_effects.begin(g):return false
+				if g.native_execution.commit_galaxy_refit(g,native_refit.plan):
+					proposal=native_refit.proposal
+					g.galaxy.commit_region(proposal);native_refit={}
+					g.configuration_committed(true)
+					g.enhancement_branches.reconcile(g)
+					publish(g,proposal);return true
+				g.commit_effects.abort("native_refit")
 			if not g.native_execution.handoff_to_legacy(g,"galaxy_configuration"):return block(g)
 	native_refit={}
 	if not g.galaxy.region_current(proposal):return false
+	if not g.commit_effects.begin(g):return false
 	if proposal.refitted:g.capture_refit_health()
 	g.galaxy.commit_region(proposal)
 	if proposal.refitted:g.configuration_committed();g.apply_refit_health()
 	publish(g,proposal);return true
 func publish(g,proposal:Dictionary)->void:
 	# Pending work was consumed before map callbacks, saves and business notifications.
+	assert(g.commit_effects.active,"Galaxy publication follows its guarded installation")
 	if proposal.completed:g.invalidate_tutorial_unlocks()
-	g.galaxy.regions[proposal.key].sync_map()
+	var notices:Array=[]
 	if proposal.refitted:
-		for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
-		g.event.emit("reactor_changed",{})
-	g.save_dirty=true;g.event.emit("galaxy_changed",{"key":proposal.key})
+		for category in ["weapons","defence"]:notices.append({"kind":"equipment_stats","payload":{"category":category}})
+		notices.append({"kind":"reactor_changed","payload":{}})
+	notices.append({"kind":"galaxy_changed","payload":{"key":proposal.key}})
+	g.commit_effects.finish(g,["galaxy"],[],[],{"reactor_allocation_changed":proposal.refitted},notices,func():g.galaxy.regions[proposal.key].sync_map())
 	if proposal.completed:refresh_unlocks(g)
 func block(g)->bool:
 	g.native_execution.galaxy_refit_blocked=true

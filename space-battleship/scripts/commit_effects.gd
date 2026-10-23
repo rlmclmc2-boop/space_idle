@@ -45,7 +45,7 @@ func settle_progress(g, configuration: bool, defence: Dictionary) -> void:
 	g.configuration_committed()
 	if defence.keys().any(func(key):return N.compare(defence[key],g.stat(key))!=0):g.apply_refit_health()
 
-func finish(g, domains: Array, resources: Array, slots: Array, facts: Dictionary, notices: Array) -> Dictionary:
+func finish(g, domains: Array, resources: Array, slots: Array, facts: Dictionary, notices: Array, publish_auxiliary:Callable=Callable()) -> Dictionary:
 	assert(active)
 	if g.reactor.revision!=_reactor_revision:
 		domains=domains.duplicate()
@@ -56,6 +56,8 @@ func finish(g, domains: Array, resources: Array, slots: Array, facts: Dictionary
 	g.save_dirty=true
 	# Business consumers see the complete commit before any UI observer runs.
 	g.crew.on_committed(g,result)
+	# Region map signals are UI notifications too: publish only after scheduling.
+	if publish_auxiliary.is_valid():publish_auxiliary.call()
 	for notice in notices:
 		var payload: Dictionary=notice.payload.duplicate(true)
 		# Mixed migrated/unmigrated resource/reactor events retain a narrow bridge.
