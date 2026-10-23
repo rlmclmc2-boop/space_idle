@@ -1,0 +1,67 @@
+{
+  "base": "d71bd1d26d9d3a5005a891b684de531966fdab1c",
+  "count": 980,
+  "bytes": 29016062,
+  "groups": {
+    "test/evidence/five-environment-20261015/": {
+      "count": 447,
+      "bytes": 9263755
+    },
+    "test/evidence/battle-dps-20261016/": {
+      "count": 374,
+      "bytes": 9766420
+    },
+    "test/evidence/single-slot-20261016/": {
+      "count": 24,
+      "bytes": 127901
+    },
+    "test/evidence/player-entry-native-20261016/": {
+      "count": 6,
+      "bytes": 8635
+    },
+    "test/evidence/enemy-intel-hitch-20261016/": {
+      "count": 8,
+      "bytes": 317159
+    },
+    "test/evidence/enemy-intel-final-perf-20261016/": {
+      "count": 36,
+      "bytes": 1681950
+    },
+    "test/evidence/enemy-intel-time-text-20261016/": {
+      "count": 3,
+      "bytes": 1841
+    },
+    "test/evidence/stage4-7-evolution-final-20261017/": {
+      "count": 68,
+      "bytes": 1348384
+    },
+    "test/artifacts/": {
+      "count": 10,
+      "bytes": 6474259
+    },
+    "test/capture_approved_first_three.gd": {
+      "count": 1,
+      "bytes": 2484
+    },
+    "test/test_performance.py": {
+      "count": 1,
+      "bytes": 5815
+    },
+    "test/phase9_probe.gd": {
+      "count": 1,
+      "bytes": 6264
+    },
+    "test/test_crew.gd": {
+      "count": 1,
+      "bytes": 11195
+    }
+  },
+  "exact_deletion_set_verified": true,
+  "baseline_files_retained": 19,
+  "external_references": {
+    "baseline_consumers": "retained unchanged",
+    "historical_json_inventories": "retained unchanged; snapshots of historical state, not runtime consumers",
+    "crew_performance_guides": "obsolete recommendations removed",
+    "stage4_7_summary": "fixed d71bd1d historical link"
+  }
+}
