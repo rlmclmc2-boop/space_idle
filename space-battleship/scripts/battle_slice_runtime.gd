@@ -45,7 +45,10 @@ func install(root)->void:
 func sync_screen_scale(value:float)->bool:
 	var scale_changed:bool=geometry.sync_screen_scale(value)
 	var layout_changed:bool=geometry.sync_fixed_layout()
-	if not scale_changed and not layout_changed:return false
+	# The paused external-time path does not publish. A configuration commit
+	# must still reach the frame before the display applies its new members.
+	var inventory_changed:bool=int(frame.get("inventory_generation",-1))!=int(game.hyperspace.state.inventory.get("generation",-1))
+	if not scale_changed and not layout_changed and not inventory_changed and not geometry.fleet_configuration_pending():return false
 	snapshot()
 	scene.paused_presentation_signature=""
 	# A zero-step/paused frame may keep the normal draw signature unchanged.

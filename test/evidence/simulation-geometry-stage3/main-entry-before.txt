@@ -1,0 +1,26 @@
+Artifacts: C:\Users\Administrator\Documents\Codex\2026-10-23\task-3\stage3-local\test\work\test_ordinary_entry-wgkieqhw
+Godot import completed.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PRODUCT_CHALLENGE {"active":false,"enemies":[],"point":0,"result":{"elapsed":157.600000000018,"end_point":10,"level":1,"reason":"success","refund":0.0,"return_point":0,"return_stage":1,"route":"alpha"},"state":2}
+PRODUCT_ENTRY product-write 26 checks 0 failures
+
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PRODUCT_RESTORED {"domains":["crew","enhancement","equipment","galaxy","hyperspace","planets","reactor","research","time","wallet"],"mismatches":[]}
+SCRIPT ERROR: Assertion failed: Missing drone geometry descriptor
+   at: apply_geometry_frame (res://scripts/hyperspace_drone_visual.gd:131)
+   GDScript backtrace (most recent call first):
+       [0] apply_geometry_frame (res://scripts/hyperspace_drone_visual.gd:131)
+       [1] apply_nodes (res://scripts/battle_slice_runtime.gd:114)
+       [2] _process_battlefield (res://scripts/battlefield.gd:502)
+       [3] _process (res://scripts/battlefield.gd:430)
+       [4] product_capture (C:/Users/Administrator/Documents/Codex/2026-10-23/task-3/stage3-local/test/work/test_ordinary_entry-wgkieqhw/test/test_ordinary_entry.gd:48)
+       [5] claim_and_forge (C:/Users/Administrator/Documents/Codex/2026-10-23/task-3/stage3-local/test/work/test_ordinary_entry-wgkieqhw/test/test_ordinary_entry.gd:281)
+PRODUCT_ENTRY product-reopen 18 checks 0 failures

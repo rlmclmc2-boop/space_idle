@@ -27,3 +27,14 @@ Lifecycle coverage: stale pose discard; capture initialization; unchanged author
 The first resumed probe failed on obsolete direct mutation of read-only inventory and nonexistent hyperspace.set_equipped; [failure evidence](lifecycle-resume-before.txt) is retained. Fixture corrected without weakening gameplay assertions. Earlier checkpoint/extraction evidence is historical, not final acceptance.
 
 Successful runs emitted the pre-existing Windows certificate-store diagnostic. No parser/script error or assertion failure appeared in successful logs. These finite checks do not claim visual-quality/performance acceptance. No personal saves, original dirty checkout, assets, tables, native binary or Library changed. No new suite or audit layer.
+
+
+## Formal reopen follow-up
+
+7e14abf8 passed parent/high review, but the filtered delivery object 39728cb0 was NOT merged: the rendered ordinary-entry acceptance passed product-write (26 checks) and then raised Missing drone geometry descriptor during product-reopen after claim/equip/forge while paused. See main-entry-before.txt. Assertion failure took precedence over the test's own zero-failure count.
+
+Root cause: hyperspace inventory commands commit a new inventory generation, while geometry previously relied on ordinary configuration events to set configuration_dirty. Paused consume_external_time returns before frame publication. Display sync rebuilt the equipped drone nodes, but the numeric fleet/published drones dictionary could still describe the prior membership.
+
+Fix: the authority checks the committed inventory generation when ensuring fleet configuration, including launch queries and logical-step preparation. Fleet publications carry the generation actually compiled. The existing slice display-preparation boundary checks both pending numeric configuration and the published generation; it republishes before applying nodes even when paused/zero-step, including if an earlier numerical query already consumed the pending configuration. No simulation time is advanced by this refresh. Missing-descriptor assertions remain unchanged; no scene-query fallback, new test entry, or main push.
+
+Final verification: unchanged test/run.py test_ordinary_entry.gd --scenario game rendered acceptance PASSED (exit 0): import completed; product-write 26/0, product-reopen 18/0, product-claimed-reopen 7/0; restored domains report no mismatches. See [main-entry-fixed.txt](main-entry-fixed.txt). No parser/script errors or assertions; only the existing certificate-store diagnostic. The updated candidate requires parent/high review again.

@@ -7,3 +7,5 @@ Lifecycle: 36/0 failures. Coordinate inverse: 10,015/0. Seating: 90/0.
 No original checkout/save/config/asset/native binary edits, Library, added suite or audit thread.
 Evidence: test/evidence/simulation-geometry-stage3/RESULTS.md at repository root.
 Next: parent/high review via docs/REFACTOR_STAGE3_NEXT.md; no independent main merge.
+
+Formal reopen follow-up: paused/zero-step inventory generations now invalidate numerical configuration and stale publications. Unchanged rendered ordinary-entry game workflow passed 51 checks across three processes. Correction awaits renewed parent/high review; main remains unchanged.

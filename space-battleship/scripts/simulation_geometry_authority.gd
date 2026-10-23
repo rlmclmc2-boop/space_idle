@@ -768,7 +768,7 @@ func before_tick(dt:float)->void:
 	if battle_read_model_enabled:battle_read_model.begin()
 	for enemy in game.enemies:enemy_pose(enemy)
 	sync_hull()
-	fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
+	ensure_fleet_geometry()
 	demo_time+=dt
 	fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,dt)
 	fx_time+=dt
@@ -807,8 +807,15 @@ func sync_fleet_angles()->void:
 	fleet_pose.set_slot_angles(angles)
 	fleet_angles_dirty=false
 
+func fleet_configuration_pending()->bool:
+	return fleet_pose.configuration_dirty or int(fleet_pose.configured_bag.get("generation",-1))!=int(game.hyperspace.state.inventory.get("generation",-1))
+
 func ensure_fleet_geometry()->void:
-	if fleet_pose.configuration_dirty:
+	# Inventory commands/load can change membership while paused, without a
+	# logical step or one of the ordinary equipment events. Compile that exact
+	# committed inventory before publishing a frame or answering a launch query.
+	if fleet_configuration_pending():
+		fleet_pose.configuration_dirty=true
 		fleet_pose.configure(current_hull,game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 		fleet_pose.pose_base(player_render_position(),reference_height,0.0,demo_time,false,0.0)
 		fleet_angles_dirty=true
@@ -948,7 +955,7 @@ func display_frame(enemies:Array,with_fleet:bool=true)->Dictionary:
 			for drone in fleet_pose.drones:drones[str(drone.id)]=drone.transform
 			fleet_display_arrays={"pivots":pivots,"carriers":carriers,"drones":drones}
 			fleet_display_revision=fleet_geometry_revision
-		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":fleet_display_arrays.pivots,"carriers":fleet_display_arrays.carriers,"drones":fleet_display_arrays.drones,"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
+		result.fleet={"hull":current_hull,"ship":fleet_pose.ship_transform,"pivots":fleet_display_arrays.pivots,"carriers":fleet_display_arrays.carriers,"drones":fleet_display_arrays.drones,"inventory_generation":int(fleet_pose.configured_bag.get("generation",-1)),"rendered_position":fleet_pose.rendered_position,"rendered_height":fleet_pose.rendered_height,"orbit_center":fleet_pose.orbit_center,"orbit_elapsed":fleet_pose.orbit_elapsed,"elapsed":fleet_pose.elapsed}
 	return result
 
 func display_shape(enemy:Dictionary,width:float,frozen_pose:Dictionary={})->String:

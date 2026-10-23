@@ -7,3 +7,5 @@ Completed the bounded continuation: Main/Battlefield fallback removal, static_he
 Existing lifecycle probe passed 36 checks; coordinate inverse passed 10,015 checks; seating passed 90 samples. See [results](../../../test/evidence/simulation-geometry-stage3/RESULTS.md).
 
 Next: review this Git candidate. No extra audit thread, new suite, visual/performance/precision work, save/config/assets changes or main merge. No test process remains running at delivery.
+
+Follow-up: the filtered delivery was withheld after formal reopen exposed stale paused drone membership. The candidate now recompiles changed inventory generation and republishes before applying display nodes, without weakening the descriptor assertion. Unchanged rendered ordinary-entry acceptance passed 26+18+7 checks (0 failures). See RESULTS.md formal reopen follow-up. Re-review this correction before any filtered main delivery.
