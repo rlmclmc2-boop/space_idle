@@ -3,34 +3,53 @@ extends RefCounted
 const Economy=preload("res://scripts/economy_state.gd")
 const Forge=preload("res://scripts/drone_forge.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
+const Result=preload("res://scripts/command_result.gd")
 var advancing:=false
 func commit(g,plan:Dictionary)->bool:
-	if not g.hyperspace.proposal_current(g,plan):return false
+	return Result.succeeded(commit_result(g,plan))
+
+func commit_result(g,plan:Dictionary)->Dictionary:
+	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
+	if not g.hyperspace.proposal_current(g,plan):return Result.make("rejected","stale_hyperspace")
+	plan=plan.duplicate(true)
+	Result.freeze(plan)
 	var wallet:Dictionary=plan.wallet
-	if not wallet.is_empty() and (plan.wallet_revision!=g.economy.material_revision or not Economy.valid_material_wallet(wallet,g.economy.material_wallet().materials.keys())):return false
+	var previous_wallet:Dictionary=g.economy.material_wallet()
+	if not wallet.is_empty() and (plan.wallet_revision!=g.economy.material_revision or not Economy.valid_material_wallet(wallet,previous_wallet.materials.keys())):return Result.make("rejected","stale_material_wallet")
 	var kind:String=plan.kind
 	var refit:bool=kind in ["equipment_changed","hangings_changed","preset_applied","claimed"] or kind.begins_with("forge_")
-	if refit and not g.native_before_configuration_change():return false
+	var configuration_before:Array=g.attributes.configuration_inputs(g)
+	if refit and not g.native_before_configuration_change():return Result.make("blocked","native_handoff")
 	# A native handoff can notify observers. Recheck all prepared inputs afterwards.
-	if not g.hyperspace.proposal_current(g,plan) or (not wallet.is_empty() and plan.wallet_revision!=g.economy.material_revision):return false
+	if not g.hyperspace.proposal_current(g,plan):return Result.make("rejected","stale_hyperspace")
+	if not wallet.is_empty() and plan.wallet_revision!=g.economy.material_revision:return Result.make("rejected","stale_material_wallet")
+	if configuration_before!=g.attributes.configuration_inputs(g):return Result.make("rejected","stale_configuration")
+	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
 	if refit:g.capture_refit_health()
 	var previous_capacity=g.reactor_capacity() if refit else 0
-	var credited: Array = []
+	var credited:Array=[];var changed_resources:Array=[];var domains:Array=["hyperspace"];var notices:Array=[]
 	if not wallet.is_empty():
 		for id in wallet.materials:
-			if int(wallet.materials[id]) > int(g.economy.balance(id)):credited.append(id)
-		g.economy.install_material_wallet(wallet)
-	g.hyperspace.commit(plan);g.save_dirty=true
+			if int(wallet.materials[id])!=int(previous_wallet.materials[id]):changed_resources.append(id)
+			if int(wallet.materials[id])>int(previous_wallet.materials[id]):credited.append(id)
+		if int(wallet.ultimate_cores)!=int(previous_wallet.ultimate_cores):changed_resources.append("ultimate_cores")
+		# All failure checks precede this synchronous pair of installations.
+		var installed:bool=g.economy.install_material_wallet(wallet)
+		assert(installed,"Validated material wallet must install without callbacks")
+		if not changed_resources.is_empty():domains.append("economy")
+	g.hyperspace.commit(plan)
+	var capacity_changed:=false
 	if refit:
-		g.configuration_committed()
 		var capacity=g.reactor_capacity()
-		g.reactor.reconcile_capacity(capacity);g.apply_refit_health()
-		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
+		g.reactor.reconcile_capacity(capacity)
+		g.configuration_committed();g.apply_refit_health()
+		capacity_changed=capacity!=previous_capacity
+		if capacity_changed:notices.append({"kind":"reactor_changed","payload":{"capacity":capacity}})
 	var payload:Dictionary={"reason":kind,"round_id":int(g.hyperspace.state.round_id)}
 	if plan.has("reward"):payload.reward=plan.reward.duplicate(true);payload.receipt=g.hyperspace.receipt_marker().duplicate()
-	if not credited.is_empty():g.resources_changed(credited)
-	g.event.emit("hyperspace_changed",payload)
-	return true
+	if not credited.is_empty():notices.append({"kind":"resources_changed","payload":{"ids":credited}})
+	notices.append({"kind":"hyperspace_changed","payload":payload})
+	return g.commit_effects.finish(g,domains,changed_resources,[],{"reactor_allocation_changed":capacity_changed},notices)
 func start(g,route:String,level:int,mode:String,crew_id:String="",return_target:Dictionary={})->Dictionary:
 	var plan:Dictionary=g.hyperspace.prepare_start(g,route,level,mode,crew_id,return_target)
 	return plan.result.duplicate(true) if commit(g,plan) else {}
