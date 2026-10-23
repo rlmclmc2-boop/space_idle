@@ -19,6 +19,7 @@ var modules: Array[Dictionary] = []
 var loadout_signature := ""
 var hull_key := ""
 var hull_config: Dictionary = {}
+var fleet_static = preload("res://scripts/fleet_static_descriptors.gd").new()
 var manifest: Dictionary = {}
 var approved_hull_art: Dictionary = {}
 var static_weapon_art: Dictionary = {}
@@ -68,10 +69,6 @@ var display_base_carrier_transforms: Array[Transform3D] = []
 
 
 func _ready() -> void:
-	manifest = JSON.parse_string(FileAccess.get_file_as_string("res://dev/toon_ship/hybrid_manifest.json"))
-	static_weapon_art = JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
-	var visual_rows: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
-	if visual_rows is Dictionary: approved_hull_art = visual_rows.get("ships",{})
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	viewport = SubViewport.new()
 	viewport.name = "ShipViewport"
@@ -90,6 +87,10 @@ func _ready() -> void:
 	add_child(output)
 	world = Node3D.new()
 	viewport.add_child(world)
+	fleet_static.prepare(world)
+	manifest = fleet_static.manifest
+	static_weapon_art = fleet_static.presentation_art
+	approved_hull_art = fleet_static.approved_hull_art
 	var environment_node := WorldEnvironment.new()
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_COLOR
@@ -237,26 +238,17 @@ func set_hull(key: String) -> bool:
 
 
 func _install_approved_hull_art(key: String) -> bool:
-	var row: Dictionary = approved_hull_art.get(key,{})
-	var path := str(row.get("texture",""))
-	if not path.begins_with("res://assets/ships/approved_fleet_20261018/player/") and not path.begins_with("res://assets/ships/fleet_20261019/player/"):
-		return false
-	var texture := load(path) as Texture2D
-	if texture == null:return false
-	var image := texture.get_image()
-	var opaque := image.get_used_rect()
-	if opaque.size.x<=0 or opaque.size.y<=0:return false
+	if not fleet_static.approved.has(key):return false
+	var art: Dictionary = fleet_static.approved[key]
+	var texture := load(str(approved_hull_art[key].texture)) as Texture2D
 	# Preserve the imported assembly, sockets, turrets, exhausts and shield.
 	_hide_imported_hull_meshes(ship)
 	var plane := MeshInstance3D.new()
 	plane.name = "ApprovedHullArt"
 	var mesh := PlaneMesh.new()
-	var pixels_per_model := model_span/float(opaque.size.y)
-	mesh.size = Vector2(texture.get_width(),texture.get_height())*pixels_per_model
+	mesh.size = art.mesh_size
 	plane.mesh = mesh
-	var body_center := preload("res://scripts/ship_geometry_convention.gd").body_center(hull_config)
-	var offset := (Vector2(opaque.position)+Vector2(opaque.size)*0.5)-Vector2(texture.get_size())*0.5
-	plane.position = body_center+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model)
+	plane.position = art.base_position
 	plane.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var material := StandardMaterial3D.new()
 	material.albedo_texture = texture
@@ -267,7 +259,7 @@ func _install_approved_hull_art(key: String) -> bool:
 	plane.material_override = material
 	ship.add_child(plane)
 	approved_body_plane = plane
-	approved_body_bounds = Rect2(opaque)
+	approved_body_bounds = art.opaque
 	approved_body_position = plane.position
 	return true
 
@@ -382,9 +374,11 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			"muzzle2":node.find_child("Muzzle02",true,false)})
 		modules.back().pivot_rest_position=modules.back().pivot.position
 		if item.key=="missile":
-			# Visible LaunchOpening front face in polish_weapons.py, Blender Y -> -Z.
-			for socket in [modules.back().muzzle,modules.back().muzzle2]:
-				if socket!=null:socket.position.z=-0.495
+			# Apply the same authored socket correction captured for logical queries.
+			var sockets: Array = fleet_static.weapons[item.key].sockets
+			for index in sockets.size():
+				var socket: Node3D = modules.back().muzzle if index == 0 else modules.back().muzzle2
+				socket.transform = sockets[index].back()
 		_install_materials(node,"weapon")
 		modules.back().visual_ports=_install_static_weapon_art(node,str(item.key))
 	_fit_approved_weapon_mounts()

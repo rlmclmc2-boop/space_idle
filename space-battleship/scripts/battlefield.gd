@@ -141,6 +141,7 @@ func _ready() -> void:
 	battle_clip.add_child(ship_view)
 	battle_clip.move_child(ship_view,battle_layer.get_index())
 	hyperspace_visual=preload("res://scripts/hyperspace_drone_visual.gd").new()
+	hyperspace_visual.socket_descriptors=ship_view.fleet_static.drone_sockets
 	ship_view.world.add_child(hyperspace_visual)
 	hyperspace_visual.sync(game.hyperspace.state.inventory)
 	ship_view.set_hull(str(game.equipment.selected_ship()))

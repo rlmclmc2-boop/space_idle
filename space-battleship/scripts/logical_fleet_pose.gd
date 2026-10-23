@@ -6,7 +6,6 @@ extends RefCounted
 const VIEW = preload("res://scripts/presented_ship_view.gd")
 const LAYOUT = preload("res://dev/toon_ship/hybrid_layout.gd")
 const DRONES = preload("res://scripts/hyperspace_drone_visual.gd")
-const APPEARANCE = preload("res://scripts/hyperspace_appearance.gd")
 const GEOMETRY = preload("res://scripts/ship_geometry_convention.gd")
 var manifest: Dictionary
 var hulls: Dictionary = {}
@@ -38,68 +37,20 @@ var configured_capacity:=0
 var configured_bag:Dictionary={}
 
 func prepare(view) -> void:
-	manifest = view.manifest
-	presentation_art = view.static_weapon_art
+	# Read the same startup descriptor as the view; capture only instance camera
+	# state here. Live initial fleet poses remain in capture_preparation.
+	var data = view.fleet_static
+	manifest = data.manifest
+	hulls = data.hulls
+	approved = data.approved
+	weapons = data.weapons
+	presentation_art = data.presentation_art
+	drone_sockets = data.drone_sockets
+	carrier_mount = data.carrier_mount
 	presentation_muzzle_cache.clear()
 	size = view.size
 	camera_transform = view.camera.get_camera_transform()
 	projection = view.camera.get_camera_projection()
-	# Temporary invisible native instances reproduce imported transforms and the
-	# authored drone socket installation. No instance survives this preparation.
-	for key in manifest.hulls:
-		var root = (load(str(manifest.hulls[key].path)) as PackedScene).instantiate()
-		var mounts: Array = []
-		for index in int(manifest.hulls[key].hull_mount_budget):
-			mounts.append(_chain(root.find_child("WeaponMount%02d" % (index+1),true,false),root))
-		hulls[key] = mounts
-		root.free()
-	for key in view.approved_hull_art:
-		if not manifest.hulls.has(key):continue
-		var row:Dictionary=view.approved_hull_art[key]
-		var texture:=load(str(row.get("texture",""))) as Texture2D
-		if texture==null:continue
-		var opaque_pixels:=texture.get_image().get_used_rect()
-		var opaque:=Rect2(opaque_pixels)
-		if opaque.size.y<=0:continue
-		var texture_size:=texture.get_size()
-		var pixels_per_model:float=float(manifest.hulls[key].model_span)/opaque.size.y
-		var offset:=(Vector2(opaque_pixels.position)+Vector2(opaque_pixels.size)*0.5)-texture_size*0.5
-		approved[key]={"opaque":opaque,"mesh_size":texture_size*pixels_per_model,
-			"base_position":GEOMETRY.body_center(manifest.hulls[key])+Vector3(-offset.x*pixels_per_model,0.05,-offset.y*pixels_per_model),
-			"hardpoints":row.hardpoints,"weapon_scale":float(row.get("weapon_scale",1.0))}
-	var carrier = (load(str(manifest.drone.path)) as PackedScene).instantiate()
-	carrier_mount = _chain(carrier.find_child("WeaponMount01",true,false),carrier)
-	carrier.free()
-	for key in {"laser":"pulse_laser","missile":"missile","cannon":"cannon","longLaser":"long_laser"}:
-		var name: String = {"laser":"pulse_laser","missile":"missile","cannon":"cannon","longLaser":"long_laser"}[key]
-		var root = (load("res://assets/ships/player/toon_v1/weapons/"+name+".glb") as PackedScene).instantiate()
-		root.transform = Transform3D.IDENTITY
-		var pivot: Node3D = root.find_child("TurretPivot",true,false)
-		var sockets: Array = []
-		for socket_name in ["Muzzle","Muzzle02"]:
-			var socket: Node3D = root.find_child(socket_name,true,false)
-			if socket != null:
-				if key == "missile": socket.position.z = -0.495
-				sockets.append(_chain(socket,pivot))
-		weapons[key] = {"pivot_chain":_chain(pivot,root),"pivot_euler":pivot.rotation,"pivot_scale":pivot.scale,"sockets":sockets}
-		root.free()
-		var drone: Node3D = APPEARANCE.scene(key).instantiate()
-		drone.visible = false
-		view.world.add_child(drone)
-		var installer = DRONES.new()
-		installer.install_muzzles(drone,"descriptor",key)
-		var points: Array = []
-		for socket in installer.muzzles.descriptor: points.append(socket.transform)
-		drone_sockets[key] = {"root":drone.transform,"points":points}
-		installer.free()
-		drone.free()
-
-func _chain(node: Node3D, root: Node3D) -> Array:
-	var result: Array = []
-	while node != root:
-		result.push_front(node.transform)
-		node = node.get_parent() as Node3D
-	return result
 
 func _global(root: Transform3D, chain: Array) -> Transform3D:
 	for transform in chain: root = root * transform
