@@ -3,6 +3,15 @@ extends Control
 signal slot_selected(id: int)
 const BUILDING_SCALE := 1.4
 var region
+var preparing := false
+var prepare_stage := 0
+var prepare_index := 0
+var prepare_after_frame := 0
+var pending_scenes := {}
+var presented_assets := {}
+var core_warmup:Array=[]
+var core_meshes:Array=[]
+var loading := Label.new()
 var city_layout := preload("res://scripts/galaxy_city_layout.gd").new()
 var city := preload("res://scripts/galaxy_city_structure.gd").new()
 var settings := {}
@@ -42,7 +51,7 @@ var crew_count := 0:
 	set(value):
 		if crew_count==value:return
 		crew_count=value
-		if is_inside_tree() and region!=null:update_explorers()
+		if is_inside_tree() and region!=null and not preparing:update_explorers()
 var zoom := 1.0
 var pan := Vector2.ZERO
 var dragging := false
@@ -65,6 +74,14 @@ func _ready() -> void:
 	container.expand_mode=TextureRect.EXPAND_IGNORE_SIZE
 	container.stretch_mode=TextureRect.STRETCH_SCALE
 	add_child(container)
+	loading.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	loading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	loading.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	loading.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
+	loading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	loading.add_theme_color_override("font_color",Color("adc2cb"))
+	loading.add_theme_font_size_override("font_size",22)
+	loading.hide();add_child(loading)
 	view.own_world_3d=true
 	view.handle_input_locally=false
 	view.msaa_3d=Viewport.MSAA_4X
@@ -191,6 +208,7 @@ func setting(key: String, default: float) -> float:return float(settings.get(key
 func select(value) -> void:
 	if region==value:return
 	region=value
+	preparing=false;core_warmup.clear();core_meshes.clear();loading.hide();container.show()
 	for child in models.get_children():child.free()
 	for pool in [transports,explorers,pulses]:
 		for item in pool:item.node.free()
@@ -212,15 +230,115 @@ func select(value) -> void:
 	pan=Vector2.ZERO
 	if region==null:
 		city.visible=false
+		sync_visibility()
 		return
 	city.visible=true
-	city_layout.configure(region)
-	city.configure(city_layout)
-	rng.seed=int(region.row.slot_seed)+12345
+	preparing=true;prepare_stage=0;prepare_index=0
+	prepare_after_frame=Engine.get_process_frames()+1
+	loading.text="正在准备星系地图\n舰队与建设继续运行，可随时切换页面"
+	loading.show();container.hide()
+	sync_visibility()
+
+# These stages belong only to this map's view lifecycle. Domain time and state
+# never wait for them. Hidden work pauses; returning keeps finished resources.
+func resource_ready(path:String) -> bool:
+	var uri:=path if path.begins_with("res://") else "res://"+path
+	if scene_cache.has(uri):return true
+	if not pending_scenes.has(uri):
+		if path.is_empty() or not ResourceLoader.exists(uri,"PackedScene"):
+			scene_cache[uri]=null;return true
+		var error:=ResourceLoader.load_threaded_request(uri,"PackedScene")
+		if error!=OK and error!=ERR_BUSY:scene_cache[uri]=null;return true
+		pending_scenes[uri]=true
+	var status:=ResourceLoader.load_threaded_get_status(uri)
+	if status==ResourceLoader.THREAD_LOAD_IN_PROGRESS:return false
+	scene_cache[uri]=ResourceLoader.load_threaded_get(uri) if status==ResourceLoader.THREAD_LOAD_LOADED else null
+	pending_scenes.erase(uri)
+	return true
+
+func prepare_frame() -> void:
+	if Engine.get_process_frames()<=prepare_after_frame:return
+	var started:=Time.get_ticks_usec()
+	while preparing and Time.get_ticks_usec()-started<4000:
+		if not prepare_part():break
+
+func prepare_part() -> bool:
+	match prepare_stage:
+		0:
+			resource_ready(str(region.row.core_asset))
+			resource_ready("assets/galaxy/v3/ships/transport_shuttle.glb")
+			for slot in region.slots:
+				if slot.status!="empty":resource_ready(visual_path(slot))
+			city_layout.configure(region);layout();city.begin_configure(city_layout)
+			rng.seed=int(region.row.slot_seed)+12345
+			prepare_stage=1
+		1:
+			city.bake(city.hub);prepare_stage=2
+		2:
+			var ids:Array=city_layout.positions.keys()
+			if prepare_index<ids.size():city.prepare_platform(ids[prepare_index]);prepare_index+=1
+			else:prepare_stage=3;prepare_index=0
+		3:
+			if prepare_index<city_layout.links.size():city.prepare_bridge(city_layout.links[prepare_index]);prepare_index+=1
+			else:city.rebuild_count+=1;prepare_stage=4;prepare_index=0
+		4:
+			loading.text="正在装配星系设施\n舰队与建设继续运行，可随时切换页面"
+			if not resource_ready(str(region.row.core_asset)) or not resource_ready("assets/galaxy/v3/ships/transport_shuttle.glb"):return false
+			prepare_core();prepare_stage=7 if not core_warmup.is_empty() else 5
+			return false
+		7:
+			# Compatibility compiles shaders on first draw, not on resource load.
+			# Draw the actual core geometry with one of its original materials per
+			# frame behind the shell, then restore every instance before revealing it.
+			if prepare_index<core_warmup.size():
+				if prepare_index>0:core_warmup[prepare_index-1].node.visible=false
+				var item:Dictionary=core_warmup[prepare_index]
+				item.node.material_override=item.material;item.node.visible=true
+				prepare_index+=1
+			else:
+				for item in core_meshes:item.node.material_override=item.override;item.node.visible=item.visible
+				core_warmup.clear();core_meshes.clear();presented_assets[str(region.row.core_asset)]=true
+				prepare_index=0;prepare_stage=5
+			return false
+		5:
+			if prepare_index<region.slots.size():prepare_slot(region.slots[prepare_index]);prepare_index+=1
+			else:prepare_stage=6;prepare_index=0
+		6:
+			if prepare_index<region.slots.size():
+				var slot:Dictionary=region.slots[prepare_index]
+				if slot.status!="empty" and not resource_ready(visual_path(slot)):return false
+				var path:=visual_path(slot) if slot.status!="empty" else "empty"
+				var first_draw:bool=path!="empty" and not presented_assets.has(path)
+				refresh_slot(slot);prepare_index+=1
+				if first_draw:
+					presented_assets[path]=true
+					return false # A new model's GPU upload is not in the CPU time budget.
+			else:
+				# State may have changed while hidden or during resource preparation.
+				# Reconcile only changed slots against the current live view.
+				for index in region.slots.size():
+					var slot:Dictionary=region.slots[index]
+					var path:=visual_path(slot) if slot.status!="empty" else "empty"
+					if slot_snapshots.get(int(slot.id),[])!=[str(slot.status),int(slot.level),path]:
+						prepare_index=index;return true
+				preparing=false;finish_selection();loading.hide();container.show()
+	return true
+
+func prepare_core() -> void:
 	core=asset(str(region.row.core_asset))
 	core.scale=Vector3.ONE*1.2
 	models.add_child(core)
 	core.position=city_layout.core_offset
+	if not presented_assets.has(str(region.row.core_asset)):
+		var pairs:Dictionary={}
+		for mesh in core.find_children("*","MeshInstance3D",true,false):
+			core_meshes.append({"node":mesh,"visible":mesh.visible,"override":mesh.material_override})
+			for surface in mesh.mesh.get_surface_count():
+				var mat:Material=mesh.get_active_material(surface)
+				if mat==null:continue
+				var key:=str(mesh.mesh.get_rid())+str(mat.get_rid())
+				if not pairs.has(key):pairs[key]=true;core_warmup.append({"node":mesh,"material":mat})
+			mesh.visible=false
 	# Build the same R8 mask in one upload; no per-pixel Image/Color calls.
 	var fog_bytes: PackedByteArray = region.cells.duplicate()
 	for index in fog_bytes.size():fog_bytes[index]=255 if fog_bytes[index]!=0 else 0
@@ -228,39 +346,73 @@ func select(value) -> void:
 	region.dirty_chunks.clear() # The full mask already includes every dirty chunk.
 	fog_texture=ImageTexture.create_from_image(fog_image)
 	space_material.set_shader_parameter("explored",fog_texture)
-	for slot in region.slots:
-		var node := Node3D.new()
-		node.name="Slot%d"%int(slot.id)
-		node.position=city_layout.positions[int(slot.id)]
-		node.rotation.y=float(region.blueprint.nodes[int(slot.id)].rotation_y)
-		models.add_child(node)
-		slot_nodes[int(slot.id)]=node
-		var footprint := ring(5.7,planned_material)
-		footprint.name="SurveyFootprint"
-		footprint.position.y=0.04
-		node.add_child(footprint)
-		var scaffold := Node3D.new()
-		scaffold.name="Scaffold"
-		node.add_child(scaffold)
-		var foundation := ring(6.7,amber)
-		foundation.position.y=0.2
-		scaffold.add_child(foundation)
-		var upper := ring(6.7,frame_material)
-		scaffold.add_child(upper)
-		var posts: Array[MeshInstance3D]=[]
-		for corner in 4:
-			var post := MeshInstance3D.new()
-			var beam := BoxMesh.new()
-			beam.size=Vector3(0.14,1,0.14)
-			post.mesh=beam
-			post.material_override=frame_material
-			post.position=Vector3(cos(corner*PI/2+PI/4)*6.7,0.5,sin(corner*PI/2+PI/4)*6.7)
-			scaffold.add_child(post)
-			posts.append(post)
-		var drone := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
-		drone.scale=Vector3.ONE*0.46
-		scaffold.add_child(drone)
-		construction[int(slot.id)]={"ring":scaffold,"drone":drone,"upper":upper,"posts":posts,"height":-1.0,"flash":0.0,"level":int(slot.level)}
+
+func prepare_slot(slot:Dictionary) -> void:
+	var node := Node3D.new()
+	node.name="Slot%d"%int(slot.id)
+	node.position=city_layout.positions[int(slot.id)]
+	node.rotation.y=float(region.blueprint.nodes[int(slot.id)].rotation_y)
+	models.add_child(node)
+	slot_nodes[int(slot.id)]=node
+	var footprint := ring(5.7,planned_material)
+	footprint.name="SurveyFootprint"
+	footprint.position.y=0.04
+	node.add_child(footprint)
+	var scaffold := Node3D.new()
+	scaffold.name="Scaffold"
+	node.add_child(scaffold)
+	var foundation := ring(6.7,amber)
+	foundation.position.y=0.2
+	scaffold.add_child(foundation)
+	var upper := ring(6.7,frame_material)
+	scaffold.add_child(upper)
+	var posts: Array[MeshInstance3D]=[]
+	for corner in 4:
+		var post := MeshInstance3D.new()
+		var beam := BoxMesh.new()
+		beam.size=Vector3(0.14,1,0.14)
+		post.mesh=beam
+		post.material_override=frame_material
+		post.position=Vector3(cos(corner*PI/2+PI/4)*6.7,0.5,sin(corner*PI/2+PI/4)*6.7)
+		scaffold.add_child(post)
+		posts.append(post)
+	var drone := asset("assets/galaxy/v3/ships/transport_shuttle.glb")
+	drone.scale=Vector3.ONE*0.46
+	scaffold.add_child(drone)
+	construction[int(slot.id)]={"ring":scaffold,"drone":drone,"upper":upper,"posts":posts,"height":-1.0,"flash":0.0,"level":int(slot.level)}
+
+func refresh_slot(slot:Dictionary) -> Node3D:
+	var id := int(slot.id)
+	var node: Node3D=slot_nodes[id]
+	var path := visual_path(slot) if slot.status!="empty" else "empty"
+	var snapshot := [str(slot.status),int(slot.level),path]
+	var changed: bool=slot_snapshots.get(id,[])!=snapshot
+	if model_paths.get(id)!=path:
+		var old=node.get_node_or_null("Building")
+		if old!=null:old.free()
+		if path!="empty":
+			var model := asset(path)
+			model.name="Building"
+			model.scale=Vector3.ONE*BUILDING_SCALE
+			node.add_child(model)
+		model_paths[id]=path
+	var building=node.get_node_or_null("Building")
+	if changed:
+		update_construction_route(id)
+		city.update_mount(id,path,node,asset_bounds.get(path,[10,6,10]),str(slot.planned_type))
+		if int(construction[id].level)<int(slot.level):construction[id].flash=0.55
+		construction[id].level=int(slot.level)
+		construction[id].height=-1.0
+		if building!=null:set_construction_material(building,slot.status=="constructing")
+		node.get_node("SurveyFootprint").visible=slot.status=="empty"
+		construction[id].ring.visible=slot.status in ["constructing","upgrading"]
+		if slot.status=="upgrading":construction[id].upper.position.y=0.4
+		for post in construction[id].posts:post.visible=slot.status!="upgrading"
+		slot_snapshots[id]=snapshot
+		draw_updates+=1
+	return building
+
+func finish_selection() -> void:
 	for _i in int(setting("max_visual_pulses",4)):
 		var pulse := MeshInstance3D.new()
 		var mesh := SphereMesh.new()
@@ -280,12 +432,12 @@ func set_running(value: bool) -> void:
 	running=value
 	sync_visibility()
 func sync_visibility() -> void:
-	var active := is_visible_in_tree() and running and region!=null
+	var active := is_visible_in_tree() and (running or preparing) and region!=null
 	set_process(active)
 	view.render_target_update_mode=SubViewport.UPDATE_ALWAYS if active else SubViewport.UPDATE_DISABLED
 	world.process_mode=Node.PROCESS_MODE_INHERIT if active else Node.PROCESS_MODE_DISABLED
 	if not is_visible_in_tree():clear_hover()
-	elif region!=null:
+	elif region!=null and not preparing:
 		refresh()
 		request_visual_frame()
 func layout() -> void:
@@ -366,7 +518,7 @@ func refresh_construction() -> void:
 		draw_updates+=1
 
 func refresh() -> void:
-	if region==null or not is_visible_in_tree():return
+	if preparing or region==null or not is_visible_in_tree():return
 	if not region.dirty_chunks.is_empty():
 		var width := ceili(float(region.row.map_w)/region.chunk_size)
 		for id in region.dirty_chunks:
@@ -383,34 +535,7 @@ func refresh() -> void:
 		if core_ring is Node3D:activity.append(core_ring)
 		var next_lane_states: Array=[]
 		for slot in region.slots:
-			var id := int(slot.id)
-			var node: Node3D=slot_nodes[id]
-			var path := visual_path(slot) if slot.status!="empty" else "empty"
-			var snapshot := [str(slot.status),int(slot.level),path]
-			var changed: bool=slot_snapshots.get(id,[])!=snapshot
-			if model_paths.get(id)!=path:
-				var old=node.get_node_or_null("Building")
-				if old!=null:old.free()
-				if path!="empty":
-					var model := asset(path)
-					model.name="Building"
-					model.scale=Vector3.ONE*BUILDING_SCALE
-					node.add_child(model)
-				model_paths[id]=path
-			var building=node.get_node_or_null("Building")
-			if changed:
-				update_construction_route(id)
-				city.update_mount(id,path,node,asset_bounds.get(path,[10,6,10]),str(slot.planned_type))
-				if int(construction[id].level)<int(slot.level):construction[id].flash=0.55
-				construction[id].level=int(slot.level)
-				construction[id].height=-1.0
-				if building!=null:set_construction_material(building,slot.status=="constructing")
-				node.get_node("SurveyFootprint").visible=slot.status=="empty"
-				construction[id].ring.visible=slot.status in ["constructing","upgrading"]
-				if slot.status=="upgrading":construction[id].upper.position.y=0.4
-				for post in construction[id].posts:post.visible=slot.status!="upgrading"
-				slot_snapshots[id]=snapshot
-				draw_updates+=1
+			var building := refresh_slot(slot)
 			if building!=null:
 				var part=building.find_child("ActivityRing",true,false)
 				if part is Node3D and slot.status!="constructing":activity.append(part)
@@ -506,6 +631,9 @@ func update_explorers() -> void:
 		item.duration=maxf(3.0,item.curve.get_baked_length()/4.0)
 		item.phase=0.0
 func _process(dt: float) -> void:
+	if preparing:
+		if is_visible_in_tree():prepare_frame()
+		return
 	if not running or not is_visible_in_tree() or region==null:return
 	visual_ticks+=1
 	visual_clock+=dt
@@ -585,7 +713,7 @@ func pick(position_in_control: Vector2) -> int:
 
 func request_visual_frame() -> void:
 	# Paused input still needs one image, without restarting animation.
-	if not running and is_visible_in_tree() and region!=null:
+	if not preparing and not running and is_visible_in_tree() and region!=null:
 		view.render_target_update_mode=SubViewport.UPDATE_ONCE
 		await RenderingServer.frame_post_draw
 		if not running:view.render_target_update_mode=SubViewport.UPDATE_DISABLED
@@ -603,7 +731,7 @@ func update_highlight() -> void:
 	request_visual_frame()
 	slot_selected.emit(id)
 func _gui_input(input: InputEvent) -> void:
-	if region==null:return
+	if preparing or region==null:return
 	if input is InputEventMouseButton:
 		if input.button_index==MOUSE_BUTTON_LEFT:
 			dragging=input.pressed

@@ -63,6 +63,7 @@ func run() -> void:
 	await process_frame
 	await process_frame
 	var panel=scene.galaxy_panel
+	await wait_map(panel.map)
 	panel.refresh()
 	check(scene.battle_layer.modulate.r<1,"Galaxy softens battle visuals")
 	var button: Button=panel.crew_rows.navigator
@@ -173,6 +174,7 @@ func run() -> void:
 	if not fixture is Dictionary:quit(1);return
 	apply_region_fixture(g,fixture.save)
 	region=g.galaxy.regions.galaxy_1
+	await loading_lifecycle(viewport,scene,panel,fixture.save)
 	var saved_before: String=JSON.stringify(region.blueprint)
 	map.zoom=1.0;map.pan=Vector2.ZERO
 	panel.refresh()
@@ -409,14 +411,16 @@ func paused_lifecycle(viewport: Viewport,scene,panel) -> void:
 	replacement.setup(original.row,original.builds,original.chunk_size)
 	var previous: PackedByteArray=map.view.get_texture().get_image().get_data()
 	map.select(replacement)
-	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused region replacement retains its requested frame through visibility sync")
+	check(map.preparing and map.loading.visible,"Paused replacement displays its loading shell")
+	await wait_map(map)
 	await process_frame;await process_frame;await RenderingServer.frame_post_draw
 	map.view.get_texture().get_image().save_png("res://../galaxy-paused-replacement-map.png")
 	check(map.view.get_texture().get_image().get_data()!=previous,"Paused replacement framebuffer displays the new empty region")
 	check(map.view.render_target_update_mode==SubViewport.UPDATE_DISABLED and not map.is_processing() and map.visual_ticks==ticks,"Paused replacement renders once and stays dormant")
 	var empty_frame: PackedByteArray=map.view.get_texture().get_image().get_data()
 	map.select(original)
-	check(map.view.render_target_update_mode==SubViewport.UPDATE_ONCE,"Paused return to original region requests a fresh image")
+	check(map.preparing and map.loading.visible,"Paused return prepares a fresh image")
+	await wait_map(map)
 	await capture(viewport,"galaxy-paused-region-restored-ui.png")
 	check(map.region==original and map.view.get_texture().get_image().get_data()!=empty_frame,"Paused return replaces the empty framebuffer with the original region")
 	var stationary: PackedByteArray=map.view.get_texture().get_image().get_data()
@@ -596,3 +600,38 @@ func validate_city_clearance(map) -> void:
 				var point:Vector3=link.mesh.global_transform*Vector3(side,0,float(link.span)*(step/20.0-0.5))
 				for rectangle in rectangles:clear=clear and not rectangle.grow(-0.001).has_point(Vector2(point.x,point.z))
 		check(clear,"Complete bridge width remains outside platform interiors until its socket plane")
+
+func wait_map(map)->void:
+	for frame in 600:
+		if not map.preparing:return
+		await process_frame
+	check(false,"Map preparation completes")
+
+func loading_lifecycle(viewport,scene,panel,original:Dictionary)->void:
+	var map=panel.map;var g=scene.game;var region=g.galaxy.regions.galaxy_1
+	map.select(null);map.select(region);panel.refresh()
+	check(map.preparing and map.loading.visible and not map.container.visible,"Loading shell appears synchronously before actual preparation")
+	await process_frame;await RenderingServer.frame_post_draw
+	viewport.get_texture().get_image().save_png("res://../galaxy-loading-shell.png")
+	for frame in 600:
+		if map.prepare_stage>=2:break
+		await process_frame
+	var preparing_hub:int=map.city.hub.get_instance_id()
+	scene.select_system(0)
+	var stage:int=map.prepare_stage;var index:int=map.prepare_index;var before:float=g.production_time()
+	for frame in 3:
+		scene._process(1.0/60.0);await process_frame
+	check(not panel.is_visible_in_tree() and stage==map.prepare_stage and index==map.prepare_index,"Leaving the page responds and pauses unfinished presentation")
+	check(g.production_time()>before,"Game clock continues while the unfinished page is hidden")
+	var changed:Dictionary=original.duplicate(true);changed.slots[2].level=4;apply_region_fixture(g,changed)
+	scene.select_system(8);panel.refresh()
+	await wait_map(map)
+	check(map.city.hub.get_instance_id()==preparing_hub,"Resume retains the already prepared city hub")
+	check(map.core.find_children("*","MeshInstance3D",true,false).all(func(mesh):return mesh.material_override==null),"Core shader preparation restores original per-surface materials")
+	check(map.slot_snapshots[2][1]==4 and map.model_paths[2]==map.visual_path(region.slots[2]),"Ready content reconciles domain changes made during preparation")
+	var node_id:int=map.slot_nodes[2].get_instance_id();var rebuilds:int=map.city.rebuild_count
+	scene.select_system(0);await process_frame;scene.select_system(8);await process_frame
+	check(not map.preparing and map.slot_nodes[2].get_instance_id()==node_id and map.city.rebuild_count==rebuilds,"Returning to prepared content reuses nodes and city structure")
+	apply_region_fixture(g,original);panel.refresh()
+	await RenderingServer.frame_post_draw
+	viewport.get_texture().get_image().save_png("res://../galaxy-loading-ready.png")

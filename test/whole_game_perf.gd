@@ -156,6 +156,23 @@ func run():
   var switch_frame_us=Time.get_ticks_usec()-switch_started
   meter.enabled=false
   var switch_timings=meter.times.duplicate(true)
+  meter.times.clear();meter.enabled=true
+  var preparation_stages:Array=[]
+  var preparation_frames:Array=[]
+  var preparation_time_before:float=g.production_time()
+  var preparation_started:=Time.get_ticks_usec()
+  var shell_visible:bool=page==8 and scene.galaxy_panel.map.get("preparing")==true and scene.galaxy_panel.map.loading.visible
+  if page==8:
+   while scene.galaxy_panel.map.get("preparing")==true and preparation_frames.size()<600:
+    preparation_stages.append(scene.galaxy_panel.map.prepare_stage)
+    var began:=Time.get_ticks_usec()
+    if not realtime:scene._process(1.0/60.0)
+    await process_frame
+    preparation_frames.append(Time.get_ticks_usec()-began)
+   page_check(scene.galaxy_panel.map.get("preparing")!=true,"Galaxy content reaches ready through bounded view preparation")
+  var preparation_timings=meter.times.duplicate(true);meter.enabled=false
+  var preparation_us:=Time.get_ticks_usec()-preparation_started
+  var preparation_game_seconds:float=g.production_time()-preparation_time_before
   var frames=[];var cpu=[];var calls=[];var primitives=[];var projectiles=[];var queue=[];var live_enemies=[]
   var memory=0;var nodes=0;var resources=0
   var galaxy_before:Dictionary={};var settlement_samples:Array=[];var native_frames:=0
@@ -187,7 +204,7 @@ func run():
     projectiles.append(g.projectiles.size());queue.append(g.missile_queue.size());live_enemies.append(g.enemies.size())
   meter.enabled=false
   var viewport_rows=[];views(root,viewport_rows)
-  var row={"galaxy_before":galaxy_before,"galaxy_after":galaxy_progress(g),"settlement_samples":settlement_samples,"native_frames":native_frames,"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_timings":switch_timings,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
+  var row={"preparation_stages":preparation_stages,"preparation_timings":preparation_timings,"loading_shell_visible":shell_visible,"preparation_us":preparation_us,"preparation_frames_us":preparation_frames,"preparation_game_seconds":preparation_game_seconds,"galaxy_before":galaxy_before,"galaxy_after":galaxy_progress(g),"settlement_samples":settlement_samples,"native_frames":native_frames,"page":page,"scenario":scenario_index,"native":g.native_execution!=null,"owned_domains":owned,"enemies":enemy_count,"reactor_level":reactor_level,"allocation_command_us":allocation_command_us,"switch_cpu_us":switch_cpu_us,"switch_timings":switch_timings,"switch_frame_us":switch_frame_us,"frames_us":stats(frames),"main_us":stats(cpu),"calls":stats(calls),"primitives":stats(primitives),"projectiles":stats(projectiles),"missile_queue":stats(queue),"live_enemies":stats(live_enemies),"memory":OS.get_static_memory_usage(),"memory_delta":OS.get_static_memory_usage()-memory,"node_delta":get_node_count()-nodes,"resources_delta":Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT)-resources,"timings":meter.times.duplicate(true),"views":viewport_rows}
   results.append(row);print("ROW ",JSON.stringify(row))
   if OS.get_environment("PERF_CAPTURE")=="1" and DisplayServer.get_name()!="headless":
    await RenderingServer.frame_post_draw

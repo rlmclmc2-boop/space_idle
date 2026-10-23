@@ -82,7 +82,7 @@ def main():
             'battlefield': ['_process', 'draw_battle', 'draw_vertical_battle_hud', '_draw_muzzle_cues'],
             'presented_ship_view': ['set_loadout', 'set_pose', 'apply_parameters', 'set_hull'],
             'presented_battle_game': ['tick', 'tick_projectiles'],
-            'galaxy_map': ['_process', 'refresh', 'asset', 'select', 'build_city', 'refresh_city_routes'],
+            'galaxy_map': ['_process', 'refresh', 'asset', 'select', 'build_city', 'refresh_city_routes', 'prepare_frame', 'prepare_core', 'prepare_slot', 'refresh_slot'],
             'galaxy_panel': ['refresh', 'refresh_detail'],
             'galaxy_city_structure': ['configure'],
             'galaxy_runtime': ['prepare_advance', 'advance', 'flush_pending', 'publish'],

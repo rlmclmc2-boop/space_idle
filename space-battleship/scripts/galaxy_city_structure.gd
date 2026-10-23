@@ -11,32 +11,37 @@ var platform_templates := {}
 var bridge_meshes := {}
 
 func configure(value) -> void:
+	begin_configure(value)
+	bake(hub)
+	for id in layout.positions:prepare_platform(id)
+	for edge in layout.links:prepare_bridge(edge)
+	rebuild_count+=1
+
+func begin_configure(value) -> void:
 	layout=value
 	for child in get_children():child.free()
 	ports.clear();connections.clear();platform_nodes.clear();bridge_nodes.clear();mounts.clear();mount_paths.clear()
 	hub=deck("Hub",Vector3.ZERO,Vector2(38,38),[Vector3.RIGHT,Vector3.LEFT,Vector3.FORWARD,Vector3.BACK],11.1)
-	bake(hub)
-	for id in layout.positions:
-		var used:Array=[]
-		for edge in layout.links:
-			if not edge.has(id):continue
-			var other:int=edge[1] if edge[0]==id else edge[0]
-			used.append((layout.point(other)-layout.point(id)).normalized())
-		var base:=platform_instance(layout.key(id),layout.point(id),used)
-		base.set_meta("slot_id",id)
-		platform_nodes.append(base)
+
+func prepare_platform(id:int) -> void:
+	var used:Array=[]
 	for edge in layout.links:
-		var side:Vector3=(layout.point(edge[1])-layout.point(edge[0])).normalized()
-		var a:=anchor(layout.key(edge[0]),side);var b:=anchor(layout.key(edge[1]),-side)
-		var span:=a.global_position.distance_to(b.global_position)
-		# Equal spans have identical local bridge geometry. Keep each connection's
-		# real socket checks and placement; reuse only its finished static mesh.
-		bridge(a,b,bridge_meshes.get(span))
-		var body:Node3D=connections[-1].mesh
-		if not bridge_meshes.has(span):
-			bake(body);bridge_meshes[span]=body.get_node("StaticStructure").mesh
-		bridge_nodes.append(body)
-	rebuild_count+=1
+		if not edge.has(id):continue
+		var other:int=edge[1] if edge[0]==id else edge[0]
+		used.append((layout.point(other)-layout.point(id)).normalized())
+	var base:=platform_instance(layout.key(id),layout.point(id),used)
+	base.set_meta("slot_id",id)
+	platform_nodes.append(base)
+
+func prepare_bridge(edge:Array) -> void:
+	var side:Vector3=(layout.point(edge[1])-layout.point(edge[0])).normalized()
+	var a:=anchor(layout.key(edge[0]),side);var b:=anchor(layout.key(edge[1]),-side)
+	var span:=a.global_position.distance_to(b.global_position)
+	bridge(a,b,bridge_meshes.get(span))
+	var body:Node3D=connections[-1].mesh
+	if not bridge_meshes.has(span):
+		bake(body);bridge_meshes[span]=body.get_node("StaticStructure").mesh
+	bridge_nodes.append(body)
 
 func platform_instance(key:String,at:Vector3,used:Array) -> Node3D:
 	# The authored 16x16 deck varies only by its four service openings.
