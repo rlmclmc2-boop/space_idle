@@ -1,0 +1,794 @@
+{
+  "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "runtime_candidate_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525",
+  "prior_full_game_runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
+  "purpose": "Reviewable production-only delta; no main branch update or integration performed. Full audit branch must not be merged wholesale to obtain this filtered tree.",
+  "included": [
+    {
+      "status": "M",
+      "path": "space-battleship/dev/cosmic_city_block/preview.gd",
+      "base_blob": "aaf7b6e2e0a2f2ddba206aa98480563fac16bbf2",
+      "candidate_blob": "2ca0473bbf7fa613127a7f503dc2a26bc62735a9",
+      "insertions": 15,
+      "deletions": 6,
+      "role": "existing_preview_consumer"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/dev/cosmic_city_individual/preview.gd",
+      "base_blob": "a1b98c2027c4c0ee1751a13750747d7744b351e6",
+      "candidate_blob": "817fa13f3093bf70b0d3830ee4a43a107ccdeff7",
+      "insertions": 14,
+      "deletions": 6,
+      "role": "existing_preview_consumer"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/ai_tech_tree.gd",
+      "base_blob": "c1ba4bb40f64c5c663d5bd2cb075b56e00182053",
+      "candidate_blob": "f4a7b68c268715411a476549b492fff116c2054a",
+      "insertions": 169,
+      "deletions": 99,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/ai_tech_view_model.gd",
+      "base_blob": "a407f8abc7b0af0b0925393c1c3bf32293840f38",
+      "candidate_blob": "13078d6e4a6b459fdc7f1e8d8d0f6285d01b5792",
+      "insertions": 1,
+      "deletions": 1,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/attack_birth_configuration.gd",
+      "base_blob": null,
+      "candidate_blob": "55c730a3cb4b7f888b6010f98989f7afc632564b",
+      "insertions": 25,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/attribute_projection.gd",
+      "base_blob": null,
+      "candidate_blob": "da35a63940bb0418e29f0e9442903a8cf4e0a4e6",
+      "insertions": 206,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/balance_autoplayer.gd",
+      "base_blob": "a7c30cbfa139841243a86e07f6df266d5f7d53a0",
+      "candidate_blob": "63a7922924a2b7b83aa9079ac04183dcc363fbc9",
+      "insertions": 2,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/balance_game.gd",
+      "base_blob": "b033d37b8207fbe3cda08cf4e42bcad68c0a830c",
+      "candidate_blob": "4cba98311a141b23b745bad85e4eb647aa9b2579",
+      "insertions": 10,
+      "deletions": 8,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/balance_metrics.gd",
+      "base_blob": "7b1ebd3abccabba3fc3bbd6e4dad9423aad3e2bd",
+      "candidate_blob": "93db993e48bcbf00de725421f0f52b14eac8737c",
+      "insertions": 5,
+      "deletions": 5,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/balance_timeline.gd",
+      "base_blob": "2efd886543a6317dedfe273731928c9f9647d4ec",
+      "candidate_blob": "d32c658b3c5d830d99906b50aac41f1e1dac4206",
+      "insertions": 2,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/battle_damage_stats_ui.gd",
+      "base_blob": "03d2388428b336bf039fd0b0a8fbacdadc4ecaa9",
+      "candidate_blob": "ec9a45d6b62fd668403f126474a2d6b23cd14de0",
+      "insertions": 2,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/battle_rewards.gd",
+      "base_blob": null,
+      "candidate_blob": "b40596fe230c08d1606edb99945f6addebeeb89b",
+      "insertions": 11,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/battle_slice_runtime.gd",
+      "base_blob": "52296a05a76ec210d123e5857a4b5db38bddab9d",
+      "candidate_blob": "06c10ef7bbf618a7452ce9e5f71384448cc9dcb8",
+      "insertions": 14,
+      "deletions": 38,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/battlefield.gd",
+      "base_blob": "b96573c2418aa1466563d44f552baf6294a3382c",
+      "candidate_blob": "77a76e9ffe26a4aa719e1d50467e359fc25b9931",
+      "insertions": 14,
+      "deletions": 20,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/chrono_panel.gd",
+      "base_blob": "fea5fd4a5ae18673efae7151ea1b4edb42a86ccb",
+      "candidate_blob": "0a71834c3766600dd2a13e212f182f6c8680f4e7",
+      "insertions": 1,
+      "deletions": 1,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/compiled_combat_rules.gd",
+      "base_blob": "ad6ca58fa22a1434621a4ce9a279ddadc0c5a9b0",
+      "candidate_blob": "780756c5092cfa123852aa58d7ac2a6249f5936f",
+      "insertions": 5,
+      "deletions": 4,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/crew_panel.gd",
+      "base_blob": "c6dfd4bc55ecd385d0b576cfb935497c033c4534",
+      "candidate_blob": "b782da501fc98e418f49dee1d2f79b326db90215",
+      "insertions": 6,
+      "deletions": 6,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/crew_system.gd",
+      "base_blob": "6811342413dde8aba0d25e6b0ab80fc87da70d95",
+      "candidate_blob": "6e487e3627b1f1b1ecb355bd8a71fcfbb11536f5",
+      "insertions": 140,
+      "deletions": 108,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/drone_combat_effects.gd",
+      "base_blob": "01d8ef96be023472162b46652b3e69bc935acc8e",
+      "candidate_blob": "a3d9a8e78e1752cbf90a50409fb049ac134a8197",
+      "insertions": 16,
+      "deletions": 12,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/drone_effect_aggregator.gd",
+      "base_blob": "000416995c64e66e90c344b45ff3910ea2eeebd3",
+      "candidate_blob": "c3f393e8d4efdfef520959dcbabb8345b38b2352",
+      "insertions": 1,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/drone_forge.gd",
+      "base_blob": "631903952ba559abe5275f2c014013d340c70250",
+      "candidate_blob": "88881cbb23b6a58d78a6d6efa48580c0795cfb60",
+      "insertions": 6,
+      "deletions": 17,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/economy_state.gd",
+      "base_blob": null,
+      "candidate_blob": "89b4a56aa4d97461f83daf409ea89b3f5a1d3635",
+      "insertions": 207,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/encounter_presentation.gd",
+      "base_blob": "db37398d6f6f7198309d13d12c5be1b48e2992d6",
+      "candidate_blob": "b47fa89639b81e1c3d9498780193a225a24494bd",
+      "insertions": 7,
+      "deletions": 6,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/enemy_fixed_layout.gd",
+      "base_blob": "ff6db9e03405836cf7d177ee52894bfe7749cbd2",
+      "candidate_blob": "55d16849dab540d8dc0a46522de93a7a359aa046",
+      "insertions": 20,
+      "deletions": 1,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/enhancement_branches.gd",
+      "base_blob": "37b3719eba9f06586228572491250a9714cd7661",
+      "candidate_blob": "50f8143929ea282bf1851118536c40cb21976135",
+      "insertions": 30,
+      "deletions": 13,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/enhancement_growth.gd",
+      "base_blob": null,
+      "candidate_blob": "bafd391dcd1b89590de49075db253a15b15da668",
+      "insertions": 147,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/enhancement_panel.gd",
+      "base_blob": "ce38077d5feea19026a9b3e4d1b1aa04a7925bcb",
+      "candidate_blob": "0f580972b8c566cb8572645e0644828ebcc5d121",
+      "insertions": 5,
+      "deletions": 33,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/equipment_state.gd",
+      "base_blob": null,
+      "candidate_blob": "d831a1c3fbece4661d2bb38fed95587efa02b3be",
+      "insertions": 169,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/equipment_tab.gd",
+      "base_blob": "33df5dc7a20338c98009fe91d48ed68497f031e8",
+      "candidate_blob": "46b9fd8caf67b5e76db436acc4b401dbf9a63d3b",
+      "insertions": 28,
+      "deletions": 33,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/fleet_battle_runner.gd",
+      "base_blob": "fb449fd54697e0db6ca58ad1678ef2d96dea75cc",
+      "candidate_blob": "7d3390162f18245608faac1341b54f45ca69c993",
+      "insertions": 1,
+      "deletions": 1,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_city_modules.gd",
+      "base_blob": "21b5b7eaa52f593eb2b5ad769393f2a80f285dd5",
+      "candidate_blob": "258e41fd8d605c8f1263e2791050baaf8e5fad4d",
+      "insertions": 6,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_city_structure.gd",
+      "base_blob": "144a022401b13899661d3a88f6f3fc1633f1425e",
+      "candidate_blob": "c45920ef6a2aa19f3a78bf6dad83cfa3a8c926b6",
+      "insertions": 53,
+      "deletions": 14,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_effect_aggregator.gd",
+      "base_blob": "ca5ab3220f515d65a924b21d2da102e301ac7a68",
+      "candidate_blob": "aeb3bad5f78499723e6dd50a01f54372aac1fbc2",
+      "insertions": 12,
+      "deletions": 12,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_layout.gd",
+      "base_blob": "adc6aa008e913ce63fe64c232a79a6ec754bddc7",
+      "candidate_blob": "7e1c47872e1439c1f41d2d8dcf1366e63be2a9b1",
+      "insertions": 58,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_map.gd",
+      "base_blob": "8778f77342088ec3f27d134e88e088412119671a",
+      "candidate_blob": "0081dc967e7df3f014124687ef330ff482623b41",
+      "insertions": 206,
+      "deletions": 75,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_panel.gd",
+      "base_blob": "cbcb0e564184e92018ae687071cce5f198438fc1",
+      "candidate_blob": "cac7162c9a0474fbabb2fe18324d5e5ad0a2ae37",
+      "insertions": 4,
+      "deletions": 6,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_region.gd",
+      "base_blob": "a259e67612af45f457d8b12d3f2b42a0076e4263",
+      "candidate_blob": "ca4e9a1fbb687c35cdb283e889f8dd670974bd6b",
+      "insertions": 183,
+      "deletions": 128,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/galaxy_runtime.gd",
+      "base_blob": null,
+      "candidate_blob": "d84b4db884a4b8a67e894197ba322ca2495c27c6",
+      "insertions": 83,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/galaxy_system.gd",
+      "base_blob": "7ab2399fee40132df8103820d3a65f40a82f0734",
+      "candidate_blob": "98269b2ba825e6fb9c423106d06d9e12ae932d40",
+      "insertions": 106,
+      "deletions": 177,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/game.gd",
+      "base_blob": "30a1089efde391719c78826ac05ffffddf41ddc2",
+      "candidate_blob": "15f9ce6eedbd37d83651bd83f8b46c69a9239c8d",
+      "insertions": 634,
+      "deletions": 1163,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/growth_number.gd",
+      "base_blob": "7c900b7cbc8c2de6e07ecacdaa567c6a08e68344",
+      "candidate_blob": "1041fa2bd0ecb0911e9c0e5d0a013eede4c91bcd",
+      "insertions": 37,
+      "deletions": 26,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "D",
+      "path": "space-battleship/scripts/hyperspace_battle_return.gd",
+      "base_blob": "74f4cf7da5825f6e9f301b0ddc3169b144ef49b0",
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 157,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_commands.gd",
+      "base_blob": "570cb39981bfb0e38c295bf8d6a440aefbdbff7e",
+      "candidate_blob": "da4e8bf2e70b5b80cf9b873ab7d708185679d865",
+      "insertions": 25,
+      "deletions": 25,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_equipment_ui.gd",
+      "base_blob": "68115a7179a9450ff014ff0f9a160f9fafde6722",
+      "candidate_blob": "825c6a28cc622403a72c04a13b91fcf443989771",
+      "insertions": 6,
+      "deletions": 6,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "D",
+      "path": "space-battleship/scripts/hyperspace_main_return.gd",
+      "base_blob": "53b94be629fceab3ab86b7c3473f6014a67776bd",
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 128,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "D",
+      "path": "space-battleship/scripts/hyperspace_main_return.gd.uid",
+      "base_blob": "79467b69fe90a8f13e6374b9785a547ad27116e1",
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 1,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_manual_session.gd",
+      "base_blob": "286f7f7b96412b60a44eac0019088276dda9db3b",
+      "candidate_blob": "385811845839fdff0ca9551149dd3fcb781b035a",
+      "insertions": 70,
+      "deletions": 49,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_material_exchange_ui.gd",
+      "base_blob": "db40f2816ef04a1baf401db4b766941d0f61e8cd",
+      "candidate_blob": "d7ecf4e24fd2dd43026bcac27c5686ac25b761ad",
+      "insertions": 2,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_panel.gd",
+      "base_blob": "8b3fffa18a67d480021a4e15efcf2c0d46d21e75",
+      "candidate_blob": "dc0c52603c08f877c0caab742edab42e3ec63aba",
+      "insertions": 11,
+      "deletions": 11,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_permissions.gd",
+      "base_blob": "34da8cebea165848d7aa1d47bea8fdcbaa9ab414",
+      "candidate_blob": "c0e2b360205844867432ce347f21e8e43d3d005e",
+      "insertions": 3,
+      "deletions": 3,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_reforge_dialog.gd",
+      "base_blob": "7eb3d3f259b840c8b03c676f3e2ecbd0cb21288c",
+      "candidate_blob": "0ce329930f95a8c22f10f7fc8592538d5e1343a8",
+      "insertions": 8,
+      "deletions": 8,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/hyperspace_return_target.gd",
+      "base_blob": null,
+      "candidate_blob": "aa2f548cc6af9f419599d90928bab1c5d99f2e5b",
+      "insertions": 17,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_reward_feedback.gd",
+      "base_blob": "de6a9907b5416e268ec3ac27fec5910a3e694818",
+      "candidate_blob": "dbbb6d09c4668fa0b93e7c119c005cbda69f641a",
+      "insertions": 17,
+      "deletions": 31,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_route_ui.gd",
+      "base_blob": "416ac63c96379c850d27d1a1d27c36a2c0ad95da",
+      "candidate_blob": "ad972e273da18ff4c4579e679fa8517468645bdc",
+      "insertions": 4,
+      "deletions": 4,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/hyperspace_runtime.gd",
+      "base_blob": null,
+      "candidate_blob": "b3d1e34137eb3eeb4867cad321e898984036f2e5",
+      "insertions": 131,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_scheduler.gd",
+      "base_blob": "9e200905e4598a4d2150a7e67f11576f10632a57",
+      "candidate_blob": "2656405b72ab0f3c0afcf4b55fc6d58dc89a6a33",
+      "insertions": 0,
+      "deletions": 39,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_state.gd",
+      "base_blob": "457b6f8922efb2a8e027c806edb9cd1c8e36f817",
+      "candidate_blob": "bab97ada61008cb005d046ef37cc93f286fe8fc0",
+      "insertions": 25,
+      "deletions": 103,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/hyperspace_system.gd",
+      "base_blob": "86efc8270a3ae35a097531cfe2abfd76e1daa5d6",
+      "candidate_blob": "774676be5e46c83fbac31626c0299601385b74fe",
+      "insertions": 287,
+      "deletions": 228,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/main.gd",
+      "base_blob": "b3d2662215467e96dc3c6956db644c1849f9e885",
+      "candidate_blob": "22d5fe9b8feef6461f09abfb8c4569d1237b5457",
+      "insertions": 60,
+      "deletions": 74,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/native_execution_compiler.gd",
+      "base_blob": "0abdd38806fe2fa07abb59c6a4046dc1acaa727b",
+      "candidate_blob": "0d90541ac16d62b352723e23f99954cab713edfc",
+      "insertions": 28,
+      "deletions": 34,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/native_execution_handoff.gd",
+      "base_blob": "414cfdeb8bd188d233a69061a6066b3889f762c4",
+      "candidate_blob": "eea525d8d1b6ce9b23726a37b9768ba4af719b45",
+      "insertions": 1,
+      "deletions": 1,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/native_execution_session.gd",
+      "base_blob": "17d3e415bb3d8b488e32e31e066a4745c55961e7",
+      "candidate_blob": "cb4b5262beeb89b683dfdd595027cd6cca44e80d",
+      "insertions": 10,
+      "deletions": 49,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/planet_buildings.gd",
+      "base_blob": "37a8367726b695c8561326e115f40b4b5f4ce108",
+      "candidate_blob": "32febca54d6cde317dce26da0943d5a6ab4de452",
+      "insertions": 20,
+      "deletions": 55,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/planet_panel.gd",
+      "base_blob": "f432a5f5df08d779ee4ff9ae1821d381ce9f0bd9",
+      "candidate_blob": "6bb5f6ae3874f69fd67695eb38dbfb63309c4428",
+      "insertions": 26,
+      "deletions": 18,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/planet_state.gd",
+      "base_blob": null,
+      "candidate_blob": "c421a6b5cc270111a5a2c10a1f50a1165f542c59",
+      "insertions": 151,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/planet_visual.gd",
+      "base_blob": "422fffe9bcc5b686168278fa3757ed7db3863478",
+      "candidate_blob": "bd752f844bfcd72ec5635295a4bde52bc335b223",
+      "insertions": 57,
+      "deletions": 4,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/player_loadout_generator.gd",
+      "base_blob": "2a32568ee59249ba29aaa2a0c92e6a2b1f62dba1",
+      "candidate_blob": "3fb62ff6213b4d6bdad9900376cbb4618a0b46bc",
+      "insertions": 13,
+      "deletions": 13,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/presented_battle_game.gd",
+      "base_blob": "55d372887e066f3a511abf4387e57a9e727750f3",
+      "candidate_blob": "c100107c3918c510d6582f6a4f2ea0b2e9bae2fa",
+      "insertions": 6,
+      "deletions": 4,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/progress_writer.gd",
+      "base_blob": "364d8fc768c88a1f4b0641f2e8d12730dc3e7114",
+      "candidate_blob": "5165a20c36337b9f8e49fc8d3b9be63e2c84861e",
+      "insertions": 1,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "D",
+      "path": "space-battleship/scripts/reactor_integer.gd",
+      "base_blob": "45b806e2d9fa914a906fd5bbebd3847114e73a5e",
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 211,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/reactor_panel.gd",
+      "base_blob": "fe862edebb3ed6448f7dd7fe5539af62b3e837af",
+      "candidate_blob": "07ba5532554b131d95668ffc274c8374401ed71f",
+      "insertions": 39,
+      "deletions": 35,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "A",
+      "path": "space-battleship/scripts/reactor_state.gd",
+      "base_blob": null,
+      "candidate_blob": "0a7edaa97abced1b3fdfb96ae17a5eddb9988773",
+      "insertions": 185,
+      "deletions": 0,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/rotating_planet.gd",
+      "base_blob": "37c39eb6cb909db49d3c080813a3cc4ee92405e5",
+      "candidate_blob": "a44030c4b215ec90b22a3f3b42ae2a21f8852135",
+      "insertions": 9,
+      "deletions": 2,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/save_transfer.gd",
+      "base_blob": "749c4267eb44c83fdfe6b3298e559c054780d794",
+      "candidate_blob": "399e4b699a6c46163e01a001b87f895b7def95e6",
+      "insertions": 33,
+      "deletions": 220,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/ship_panel.gd",
+      "base_blob": "4dcc836eab9dc62c3625e9b40330c85f6ab17a4b",
+      "candidate_blob": "21a24f7bdb53c696343be010f30c5ea715066615",
+      "insertions": 4,
+      "deletions": 4,
+      "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/simulation_geometry_authority.gd",
+      "base_blob": "47dd5d3691fc70505e82a489711dbce51ef022d8",
+      "candidate_blob": "b3f887bf6dd697720a528677f0ea9d790d3e5fd7",
+      "insertions": 20,
+      "deletions": 20,
+      "role": "runtime_or_associated_metadata"
+    }
+  ],
+  "counts": {
+    "runtime_paths": 74,
+    "existing_preview_paths": 2,
+    "total_paths": 76,
+    "statuses": {
+      "M": 61,
+      "A": 11,
+      "D": 4
+    },
+    "insertions": 3930,
+    "deletions": 3570
+  },
+  "delta_verification": {
+    "method": "git diff --binary --full-index base candidate -- included paths; git apply --cached --check and apply using an isolated GIT_INDEX_FILE initialized from exact base; write-tree and compare changed paths. No checkout/ref/main/working-file changes.",
+    "patch_sha256": "efc4e3e3dd24cda3ad842e9264fc98f4f73a79be4cf226a1d7058548d9824d0f",
+    "prepared_tree": "2696dde6bc4c26fef4142785bf8f6b208295686e",
+    "changed_paths_exactly_match_manifest": true,
+    "index_purpose": "Static Git delivery validation only; not a new game/test run."
+  },
+  "excluded_from_production_delta": {
+    "test_paths": [
+      "test/fixtures/galaxy_1_complete.json",
+      "test/run.py",
+      "test/test_ai_tech_tree.gd",
+      "test/test_auto_gen_resources.gd",
+      "test/test_chrono_ui.gd",
+      "test/test_crew_dirty.gd",
+      "test/test_crew_levels.gd",
+      "test/test_crew_levels_ui.gd",
+      "test/test_crew_reactor.gd",
+      "test/test_departure_batch_debt.gd",
+      "test/test_enhancement_branch_attacks.gd",
+      "test/test_enhancement_cost.gd",
+      "test/test_enhancement_summary.gd",
+      "test/test_galaxy.gd",
+      "test/test_galaxy_ui.gd",
+      "test/test_hyperspace_consumers.gd",
+      "test/test_hyperspace_departure_gate.gd",
+      "test/test_hyperspace_exchange.gd",
+      "test/test_hyperspace_layers.gd",
+      "test/test_hyperspace_manual.gd",
+      "test/test_hyperspace_material_economy.gd",
+      "test/test_large_numbers.gd",
+      "test/test_module_refit.gd",
+      "test/test_native_blocked_transfer.gd",
+      "test/test_native_galaxy_refit.gd",
+      "test/test_native_laser_charge.gd",
+      "test/test_native_numeric_upgrade.gd",
+      "test/test_ordinary_entry.gd",
+      "test/test_pause_key_focus.gd",
+      "test/test_planet.gd",
+      "test/test_planet_buff_ui.gd",
+      "test/test_planet_conquest_progress.gd",
+      "test/test_reactor.gd",
+      "test/test_reactor_integer_cost.gd",
+      "test/test_save_boundaries.gd",
+      "test/test_shared_enhancement_ranks.gd",
+      "test/test_stable_compiled_rules.gd",
+      "test/test_stat_snapshot.gd",
+      "test/test_time_steps.gd",
+      "test/whole_game_perf.gd",
+      "test/whole_game_perf.py"
+    ],
+    "documentation_paths": [
+      "docs/architecture/**",
+      "space-battleship/docs/knowledge/TASKS.md",
+      "space-battleship/docs/knowledge/tasks/architecture-renewal-20261022.md"
+    ],
+    "temporary_artifacts": [
+      "test/work/**",
+      "**/.godot/**",
+      "**/.runtime/**",
+      "isolated userdata, captures/import logs and temporary index outside this audit evidence"
+    ],
+    "note": "Existing main tests are not deleted. The 41 changed tests/runner/fixture files are audit/validation adapters, not product runtime dependencies; they remain available on the implementation branch. Their exclusion does not claim old main tests are compatible with new contracts. No blanket test cleanup is part of this delivery."
+  },
+  "unchanged_runtime_inputs": [
+    "space-battleship/main.tscn",
+    "space-battleship/project.godot",
+    "space-battleship/assets/**",
+    "space-battleship/data/**",
+    "space-battleship/shaders/**",
+    "space-battleship/config_excel/**",
+    "space-battleship/addons/native_battle/src/**",
+    "tools/player_runtime/space_native.dll",
+    "tools/play_main.py",
+    "太空战舰.xlsx",
+    "space-battleship/evidence/new-hull-hardpoints/native-validation-hashes.json"
+  ],
+  "style_visual_verification": {
+    "source_change": "planet_visual.gd: loading font color #243d50 -> #e9f2f2; exactly one changed production line after prior full-game candidate.",
+    "capture": "evidence/c26/loading-prompt.png",
+    "capture_sha256": "1e2077f956aa6e45e0cc2d503e6934cf6f69d14ff0aa7bfe91128fb83166ff7f",
+    "entry": "Existing test/test_ordinary_entry.gd run_planet_loading preamble and product_capture; isolated copy stops immediately after shell screenshot, check callbacks disabled. No tracked test changes or new test/runner.",
+    "result": "Actual original main-scene screenshot inspected: both prompt lines legible on dark backdrop. Process exited 0, only known system-certificate warning.",
+    "full_suite_rerun": false
+  },
+  "review_status": {
+    "820262e6": "Parent reports dot/astra agreement on main architecture, C24 loading logic and C25 functional persistence closure.",
+    "current_style_and_delivery": "Pending dual review. No main merge authorized or performed.",
+    "performance": "Not comprehensively at target; retained C23/C24 peaks and long-duration limitations. No new timing claim from a color-only change."
+  }
+}
