@@ -1,0 +1,212 @@
+{
+  "baseline_runtime_sha": "fc7782154505df5c9151d31ddf04e180187c949c",
+  "runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
+  "units": "microseconds except preparation_game_seconds",
+  "rows": {
+    "before": [
+      {
+        "page": 0,
+        "switch_cpu_us": 443,
+        "switch_frame_us": 206778,
+        "preparation_frames_us": [],
+        "preparation_us": 4,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 48235,
+          "mean": 7740.87666666667,
+          "p50": 7145,
+          "p95": 10411,
+          "p99": 14047
+        },
+        "main_us": {
+          "max": 7165,
+          "mean": 3528.98333333333,
+          "p50": 3142,
+          "p95": 5480,
+          "p99": 6611
+        }
+      },
+      {
+        "page": 6,
+        "switch_cpu_us": 130027,
+        "switch_frame_us": 141382,
+        "preparation_frames_us": [],
+        "preparation_us": 64,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 15604,
+          "mean": 6893.87333333333,
+          "p50": 6699,
+          "p95": 8790,
+          "p99": 10898
+        },
+        "main_us": {
+          "max": 6753,
+          "mean": 2835.26333333333,
+          "p50": 2679,
+          "p95": 3874,
+          "p99": 4717
+        }
+      },
+      {
+        "page": 0,
+        "switch_cpu_us": 7445,
+        "switch_frame_us": 9494,
+        "preparation_frames_us": [],
+        "preparation_us": 3,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 12458,
+          "mean": 6378.44333333333,
+          "p50": 6289,
+          "p95": 8016,
+          "p99": 9278
+        },
+        "main_us": {
+          "max": 6135,
+          "mean": 2862.53,
+          "p50": 2750,
+          "p95": 4005,
+          "p99": 4873
+        }
+      },
+      {
+        "page": 6,
+        "switch_cpu_us": 3407,
+        "switch_frame_us": 5093,
+        "preparation_frames_us": [],
+        "preparation_us": 27,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 8807,
+          "mean": 5813.95,
+          "p50": 5730,
+          "p95": 7068,
+          "p99": 8177
+        },
+        "main_us": {
+          "max": 4285,
+          "mean": 2412.5,
+          "p50": 2285,
+          "p95": 3212,
+          "p99": 3923
+        }
+      }
+    ],
+    "after": [
+      {
+        "page": 0,
+        "switch_cpu_us": 395,
+        "switch_frame_us": 198223,
+        "preparation_frames_us": [],
+        "preparation_us": 3,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 43853,
+          "mean": 6463.62,
+          "p50": 5941,
+          "p95": 8472,
+          "p99": 13120
+        },
+        "main_us": {
+          "max": 5870,
+          "mean": 2933.24,
+          "p50": 2672,
+          "p95": 4621,
+          "p99": 5370
+        }
+      },
+      {
+        "page": 6,
+        "switch_cpu_us": 35211,
+        "switch_frame_us": 50536,
+        "preparation_frames_us": [
+          6572,
+          8252,
+          58473,
+          12064,
+          5656,
+          6574,
+          5826,
+          5402,
+          6359,
+          10705
+        ],
+        "preparation_us": 126052,
+        "preparation_game_seconds": 0.166666666666666,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 10402,
+          "mean": 6082.36,
+          "p50": 5895,
+          "p95": 7763,
+          "p99": 9108
+        },
+        "main_us": {
+          "max": 4579,
+          "mean": 2505.21,
+          "p50": 2394,
+          "p95": 3479,
+          "p99": 4428
+        }
+      },
+      {
+        "page": 0,
+        "switch_cpu_us": 6001,
+        "switch_frame_us": 7849,
+        "preparation_frames_us": [],
+        "preparation_us": 3,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 10135,
+          "mean": 6365.91,
+          "p50": 6281,
+          "p95": 7866,
+          "p99": 8690
+        },
+        "main_us": {
+          "max": 4837,
+          "mean": 2841.51,
+          "p50": 2691,
+          "p95": 3903,
+          "p99": 4725
+        }
+      },
+      {
+        "page": 6,
+        "switch_cpu_us": 3074,
+        "switch_frame_us": 4689,
+        "preparation_frames_us": [],
+        "preparation_us": 21,
+        "preparation_game_seconds": 0.0,
+        "native_frames": 300,
+        "frames_us": {
+          "max": 10066,
+          "mean": 6027.44666666667,
+          "p50": 5922,
+          "p95": 7600,
+          "p99": 9277
+        },
+        "main_us": {
+          "max": 5027,
+          "mean": 2493.24666666667,
+          "p50": 2404,
+          "p95": 3500,
+          "p99": 4000
+        }
+      }
+    ]
+  },
+  "notes": [
+    "Both runs: rich complete galaxy, no assigned worker; this comparison does not revalidate active galaxy settlement. C19/C20 retain their original source attribution.",
+    "Same original whole_game_perf entry, pages 0,6,0,6, 300 frames per page, 15 live native enemies, 1373x883, RTX2060/OpenGL. No attribution instrumentation.",
+    "New resource preparation spans real rendered frames and advances game time. Steady windows are shifted; no sustained-frame performance pass is claimed.",
+    "First shell frame still 50.536 ms and maximum subsequent preparation frame 58.473 ms; no strict frame-time cap. Initial equipment page first-draw intervals about 198-207 ms remain outside this planet-change claim."
+  ]
+}

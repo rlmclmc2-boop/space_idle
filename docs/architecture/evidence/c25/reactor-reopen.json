@@ -1,0 +1,12 @@
+{
+ "checks": 8,
+ "failures": 0,
+ "header_values": {
+  "iron": "0",
+  "uranium": "1.63e+130333770"
+ },
+ "native": false,
+ "phase": "reactor-reopen",
+ "saving": true,
+ "version": 11
+}

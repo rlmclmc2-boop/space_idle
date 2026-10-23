@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+REACTOR_PRODUCT reactor-write 25 checks 0 failures {"capacity":{"e":176091261.0,"m":2.55778340873895},"checks":25,"cores":4321,"effect":{"e":140873006.0,"m":2.53407243371943},"failures":0,"header_values":{"iron":"0","uranium":"1.63e+130333770"},"materials":{"antiproton":12345,"degenerate_matter":0,"glueball":0,"zero_point_energy":0},"native":false,"phase":"reactor-write","purchase_ms":0.625,"reactor":{"reactorAllocation":{"condensation":{"e":176091260.0,"m":6.39445852184737},"defence":{"e":176091260.0,"m":6.39445852184737},"smelting":{"e":176091260.0,"m":6.39445852184737},"weapons":{"e":176091260.0,"m":3.19722926092368}},"reactorLevel":1000000003},"saving":true,"uranium":{"e":130333770.0,"m":1.62781721443327},"version":11}

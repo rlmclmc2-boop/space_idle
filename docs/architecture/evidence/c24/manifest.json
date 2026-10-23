@@ -1,0 +1,49 @@
+{
+  "runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
+  "baseline_runtime_sha": "fc7782154505df5c9151d31ddf04e180187c949c",
+  "scope": "Direct planet imagery loading, final frozen candidate; no further optimization",
+  "source_verification": "../c25/source-verification.json",
+  "validation": {
+    "entry": "test/whole_game_perf.py / test/whole_game_perf.gd",
+    "frames_per_row": 300,
+    "rows_each": 4,
+    "enemies": 15,
+    "galaxy_work": "complete, no assigned crew",
+    "loading_lifecycle": "C25 planet-loading: 16 checks, 0 failures, same frozen runtime"
+  },
+  "baseline_fixture_note": "Before uses the same planet-loading wait and clock measurements; a later unnecessary null-icon guard in the pending-image predicate was removed before final after run. No async planet path exists on baseline. Both raw reports retain options. Do not claim byte-identical before/after observation fixtures.",
+  "metrics_ms": {
+    "first_click_cpu_before": 130.027,
+    "first_click_cpu_after": 35.211,
+    "first_shell_frame_before": 141.382,
+    "first_shell_frame_after": 50.536,
+    "preparation_after_shell": 126.052,
+    "preparation_frame_max": 58.473,
+    "revisit_click_cpu": 3.074,
+    "revisit_frame": 4.689
+  },
+  "limitations": [
+    "58.473 ms maximum preparation frame; remaining first shell frame 50.536 ms. Not all loading work fits a 60 FPS frame.",
+    "C25 shell screenshot shows low-contrast loading text over the dark image background. Controls and shell are visible; loading-message readability is not accepted as complete. Preserved frozen candidate for dual review; no unrequested new optimization round.",
+    "Short, authored scenario on one GPU; no long-duration or arbitrary configuration coverage.",
+    "Full candidate pending dot/astra review, no main merge."
+  ],
+  "files_sha256_git_blob": {
+    "after-page-6.png": "637efd47e5fe8efde0ff698186c9f6e2b5ea853a236138c871e5586f3361a1d7",
+    "before-page-6.png": "b2990bdf90a2eb5bb660c25870b151649b4089091ff4bb9636cc1917b168261c",
+    "c24-after.json": "5c420589c9d7b4bf595698fe450ed4d7f5636b32e431eed7b46efb8c61a39030",
+    "c24-after.log": "b4e683b6c836334ca890da59d0f0070118dcddd5d3b3c3f733730146148db26b",
+    "c24-before.json": "bbd1102b61ff3771a0cb3603f15a70f7b767c5826a580b3ba61c7f39a830339b",
+    "c24-before.log": "5794c813e66b76b01a5186cce8b1ddabd7e1884e90c5497aeaee1f908cb01394",
+    "comparison.json": "a47d7dd9bc60d3d354f2cc5cef07f9507e12869fdb40b59755052be0072c9e92"
+  },
+  "visual_inspection": {
+    "completed": [
+      "before-page-6.png",
+      "after-page-6.png"
+    ],
+    "findings": [
+      "Final planet imagery, facilities, controls and battle presentation present in both full-frame images. Animated positions differ; not a pixel-equivalence assertion."
+    ]
+  }
+}

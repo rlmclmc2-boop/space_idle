@@ -1,0 +1,591 @@
+{
+  "options": {
+    "label": "c24-after",
+    "godot": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+    "ref": null,
+    "reuse": "test\\work\\whole-perf-3j_8vayx",
+    "headless": false,
+    "rich": true,
+    "enemies": 15,
+    "reactor_level": 1,
+    "balance": 1e+80,
+    "check_pages": false,
+    "capture": true,
+    "max_quote": false,
+    "realtime": false,
+    "instrument": false,
+    "pages": "0,6,0,6",
+    "frames": 300,
+    "galaxy_work": "complete",
+    "galaxy_steady": false
+  },
+  "exit": 0,
+  "environment": [
+    {
+      "adapter": "NVIDIA GeForce RTX 2060",
+      "cap": 0,
+      "display": "Windows",
+      "engine": "4.7.2-stable (official)",
+      "galaxy_assignment": false,
+      "galaxy_initial": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 0.12,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_work": "complete",
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(1373, 883)",
+      "vendor": "NVIDIA"
+    }
+  ],
+  "rows": [
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 374.0,
+        "mean": 362.623333333333,
+        "p50": 362.0,
+        "p95": 370.0,
+        "p99": 374.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 43853,
+        "mean": 6463.62,
+        "p50": 5941,
+        "p95": 8472,
+        "p99": 13120
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 5.36999999999999,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 0.37,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 5870,
+        "mean": 2933.24,
+        "p50": 2672,
+        "p95": 4621,
+        "p99": 5370
+      },
+      "memory": 270204107,
+      "memory_delta": 768178,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 300,
+      "node_delta": 1,
+      "owned_domains": true,
+      "page": 0,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 3,
+      "primitives": {
+        "max": 30587.0,
+        "mean": 25378.22,
+        "p50": 25014.0,
+        "p95": 29685.0,
+        "p99": 30018.0
+      },
+      "projectiles": {
+        "max": 30,
+        "mean": 18.87,
+        "p50": 21,
+        "p95": 27,
+        "p99": 29
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "settlement_samples": [],
+      "switch_cpu_us": 395,
+      "switch_frame_us": 198223,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 365.0,
+        "mean": 341.086666666667,
+        "p50": 337.0,
+        "p95": 359.0,
+        "p99": 364.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 10402,
+        "mean": 6082.36,
+        "p50": 5895,
+        "p95": 7763,
+        "p99": 9108
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 10.7866666666668,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 5.78666666666665,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": true,
+      "main_us": {
+        "max": 4579,
+        "mean": 2505.21,
+        "p50": 2394,
+        "p95": 3479,
+        "p99": 4428
+      },
+      "memory": 274804667,
+      "memory_delta": 121318,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 300,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "preparation_frames_us": [
+        6572,
+        8252,
+        58473,
+        12064,
+        5656,
+        6574,
+        5826,
+        5402,
+        6359,
+        10705
+      ],
+      "preparation_game_seconds": 0.166666666666666,
+      "preparation_stages": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "preparation_timings": {},
+      "preparation_us": 126052,
+      "primitives": {
+        "max": 40641.0,
+        "mean": 34914.6433333333,
+        "p50": 34139.0,
+        "p95": 39118.0,
+        "p99": 40073.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 21.27,
+        "p50": 21,
+        "p95": 28,
+        "p99": 32
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 1,
+      "settlement_samples": [],
+      "switch_cpu_us": 35211,
+      "switch_frame_us": 50536,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 375.0,
+        "mean": 366.396666666667,
+        "p50": 366.0,
+        "p95": 372.0,
+        "p99": 375.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 10135,
+        "mean": 6365.91,
+        "p50": 6281,
+        "p95": 7866,
+        "p99": 8690
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 16.036666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 11.0366666666668,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 4837,
+        "mean": 2841.51,
+        "p50": 2691,
+        "p95": 3903,
+        "p99": 4725
+      },
+      "memory": 274730279,
+      "memory_delta": 38512,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 300,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 0,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 3,
+      "primitives": {
+        "max": 30533.0,
+        "mean": 25865.5366666667,
+        "p50": 25182.0,
+        "p95": 29786.0,
+        "p99": 30199.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.6566666666667,
+        "p50": 21,
+        "p95": 27,
+        "p99": 31
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 2,
+      "settlement_samples": [],
+      "switch_cpu_us": 6001,
+      "switch_frame_us": 7849,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 1,
+      "calls": {
+        "max": 363.0,
+        "mean": 337.67,
+        "p50": 334.0,
+        "p95": 355.0,
+        "p99": 363.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 10066,
+        "mean": 6027.44666666667,
+        "p50": 5922,
+        "p95": 7600,
+        "p99": 9277
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 21.2866666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 16.286666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 5027,
+        "mean": 2493.24666666667,
+        "p50": 2404,
+        "p95": 3500,
+        "p99": 4000
+      },
+      "memory": 274820387,
+      "memory_delta": 68280,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 300,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 21,
+      "primitives": {
+        "max": 40131.0,
+        "mean": 34764.0366666667,
+        "p50": 34067.0,
+        "p95": 38953.0,
+        "p99": 39757.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.6433333333333,
+        "p50": 21,
+        "p95": 28,
+        "p99": 30
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 3,
+      "settlement_samples": [],
+      "switch_cpu_us": 3074,
+      "switch_frame_us": 4689,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 20,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(185, 203)"
+        }
+      ]
+    }
+  ],
+  "page_checks": []
+}

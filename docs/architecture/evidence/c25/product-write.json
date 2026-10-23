@@ -1,0 +1,15 @@
+{
+ "checks": 25,
+ "failures": 0,
+ "header_values": {
+  "iron": "90No",
+  "uranium": "3.79No"
+ },
+ "native": false,
+ "phase": "product-write",
+ "production_time": 198.10000000005,
+ "receipt_status": "completed_pending",
+ "saving": true,
+ "startup_error": "",
+ "writer": true
+}

@@ -1,0 +1,53 @@
+{
+ "capacity": {
+  "e": 176091261.0,
+  "m": 2.5577834087389464
+ },
+ "checks": 25,
+ "cores": 4321,
+ "effect": {
+  "e": 140873006.0,
+  "m": 2.5340724337194285
+ },
+ "failures": 0,
+ "header_values": {
+  "iron": "0",
+  "uranium": "1.63e+130333770"
+ },
+ "materials": {
+  "antiproton": 12345,
+  "degenerate_matter": 0,
+  "glueball": 0,
+  "zero_point_energy": 0
+ },
+ "native": false,
+ "phase": "reactor-write",
+ "purchase_ms": 0.625,
+ "reactor": {
+  "reactorAllocation": {
+   "condensation": {
+    "e": 176091260.0,
+    "m": 6.3944585218473655
+   },
+   "defence": {
+    "e": 176091260.0,
+    "m": 6.3944585218473655
+   },
+   "smelting": {
+    "e": 176091260.0,
+    "m": 6.3944585218473655
+   },
+   "weapons": {
+    "e": 176091260.0,
+    "m": 3.1972292609236828
+   }
+  },
+  "reactorLevel": 1000000003
+ },
+ "saving": true,
+ "uranium": {
+  "e": 130333770.0,
+  "m": 1.6278172144332745
+ },
+ "version": 11
+}

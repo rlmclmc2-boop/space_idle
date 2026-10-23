@@ -1,0 +1,114 @@
+{
+  "runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
+  "scope": "One final original-main-scene six-process acceptance after C24. Completed before reconnect; no rerun during packaging.",
+  "entry": "test/test_ordinary_entry.gd",
+  "main_scene": "space-battleship/main.tscn",
+  "save_version": 11,
+  "phases": {
+    "planet-loading": {
+      "checks": 16,
+      "failures": 0
+    },
+    "product-write": {
+      "checks": 25,
+      "failures": 0
+    },
+    "product-reopen": {
+      "checks": 8,
+      "failures": 0
+    },
+    "product-claimed-reopen": {
+      "checks": 7,
+      "failures": 0
+    },
+    "reactor-write": {
+      "checks": 25,
+      "failures": 0
+    },
+    "reactor-reopen": {
+      "checks": 8,
+      "failures": 0
+    }
+  },
+  "total_checks": 89,
+  "total_failures": 0,
+  "saving_enabled_all_phases": true,
+  "writer_lock_and_stat_cache": "Original constructors and writer; product phases explicitly assert writer ownership and enabled stat cache. No replacement main script or --capture mode.",
+  "restored_domains": [
+    "crew",
+    "enhancement",
+    "equipment",
+    "galaxy",
+    "hyperspace",
+    "planets",
+    "reactor",
+    "research",
+    "time",
+    "wallet"
+  ],
+  "restored_mismatches": [],
+  "challenge": {
+    "route": "alpha",
+    "reason": "success",
+    "end_point": 10,
+    "elapsed_game_seconds": 157.600000000018,
+    "return_stage": 1,
+    "return_point": 0,
+    "reward": "saved pending, claimed once after reopen, duplicate rejected before and after second reopen"
+  },
+  "reactor": {
+    "purchase_levels": 1000000000,
+    "restored_level": 1000000003,
+    "purchase_call_only_ms": 0.625,
+    "header_uranium_write_and_reopen": "1.63e+130333770",
+    "materials_antiproton": 12345,
+    "cores": 4321,
+    "backend": "script, native numeric range protection preserved"
+  },
+  "visual_inspection": {
+    "completed": [
+      "product-write.png",
+      "product-reopen.png",
+      "product-claimed-reopen.png",
+      "reactor-write.png",
+      "reactor-reopen.png",
+      "planet-loading-shell.png",
+      "planet-loading-ready.png"
+    ],
+    "findings": [
+      "Real header refresh shows the current large uranium balance in both reactor captures.",
+      "Save page, restored equipment, planet controls and loaded globe are present.",
+      "Loading text on the dark planet backdrop has poor contrast; explicitly retained as a visual limitation, not claimed as readable."
+    ]
+  },
+  "limitations": [
+    "Authored unlocks, wallet budget, near-due auto-income timer, and finite processing increments through real scene._process; not a manual 60-stage playthrough or uncontrolled real-time soak.",
+    "Signals and actual domain commands exercise controls; no physical keyboard/mouse latency measurement.",
+    "Ordinary product and huge reactor scenarios use the script backend; native full-screen performance evidence comes from C24 and earlier exact commits, not these six checks.",
+    "Known engine root-certificate-store error present; no script or exit-resource errors in these six final logs.",
+    "Current v11 saves only; no old-format continuity requirement; personal saves untouched.",
+    "No overall dual-review approval or merge permission."
+  ],
+  "files_sha256_git_blob": {
+    "planet-loading-ready.png": "aea0ac89f73865cc688951f86fe1b03fc63406a5e04eafe4c9d5e51482a64d3f",
+    "planet-loading-shell.png": "8d308c21a0bbe88cfdb24a262107b375fe7fdae467359fa4a79ff392fdc7325b",
+    "planet-loading.json": "4bc643899acfccdb8db4654304112a55d219998352687f218b3e00fc7c6ae564",
+    "planet-loading.log": "529a0efc65723a2a96bb4e5300115bd2ec2de8d77bed2b4dacbdb9ebdcfe3579",
+    "product-claimed-reopen.json": "2eb07d9aff89846951d9289b1a8d1e7ab1e8bfecd158637d2df9e331778455ab",
+    "product-claimed-reopen.log": "d359ed1555a332e4dcea0861962502ddc850b1180be9abca7c7713d5748bb0cb",
+    "product-claimed-reopen.png": "90e75886afcfe62a1dfab9a37c0a78374e8bb0fd4973f7dfd033b655764bfb44",
+    "product-reopen.json": "0c02a8c9abbf3185e2a5d71595a0b7969e8674c8dff91889894d2705d1b10955",
+    "product-reopen.log": "e365a9e4f0fdf03244e7e725cf1858accb023396c8b3fb9ed27a2458ac95aca9",
+    "product-reopen.png": "4b1fe99f218875c6802e079282a137a3cda0902d8290d43af3506a4bc05d4e8d",
+    "product-write.json": "2c7586125e677c6d5c78d9d26fb283e37c5b44eca54b407410ed260453eff7d0",
+    "product-write.log": "dbaaba7efc9c23e285087ed3226c0f17358cf6626941614aeaedd6a6a42ec8a0",
+    "product-write.png": "ecd22f5249e30bba841f90e212695a9a18557dfba6917d4cff0b820fd212384a",
+    "reactor-reopen.json": "03e4b4d68e7bdf7c51ff50028f5a654189bddb70c9c90dab98f437f548d58c18",
+    "reactor-reopen.log": "50a7591efebc3aecd7fc4485031267b2a80dba8f2b9c1828746ab551780e9398",
+    "reactor-reopen.png": "e14c14b2e74491f129ef0d621f7835ae171efa76fa0788b00f975514895efa94",
+    "reactor-write.json": "3066bd1f1eeb534258fdae9e6896032e5dcdc92703edfc528f1e5d98100d4116",
+    "reactor-write.log": "f304aaffa42fb540ecc882a5af9fffad0f77da60eefb5bc2fc3f8bf74a36f767",
+    "reactor-write.png": "c428f2fa97ae2555647d1cd7e465e59b066f8e07aa2d89e79d915cd3b7de76e5",
+    "source-verification.json": "46a7752925de3335835036d28373d1eea39623e7021088457017a098a584d67d"
+  }
+}
