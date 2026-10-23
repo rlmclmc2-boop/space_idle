@@ -1,5 +1,6 @@
 class_name BalanceAnalyzer
 extends RefCounted
+const N = preload("res://scripts/growth_number.gd")
 ## Diagnostic evidence, not a global balance score. All thresholds live here.
 const THRESHOLDS := {"weapon_share":0.70,"weak_share":0.03,"minimum_usage":0.10,"ttk_low":0.5,"ttk_wall":8.0,
 	"sustained_seconds":120.0,"idle_seconds":300.0,"upgrade_fast":2.0,"surplus_minutes":30.0,"resource_share":0.80,
@@ -25,7 +26,7 @@ static func analyze_run(report: Dictionary) -> Dictionary:
 	for system in report.resources.system_share:
 		for id in report.resources.system_share[system]:
 			var share := float(report.resources.system_share[system][id])
-			if share > THRESHOLDS.resource_share and float(report.resources.spending.get(id,0)) > 0:
+			if share > THRESHOLDS.resource_share and N.compare(report.resources.spending.get(id,0),0)>0:
 				warnings.append(issue("spending_concentration","MEDIUM",time,report.final_stage,{"system":system,"resource":id,"share":share,"paid":report.resources.spending[id]}))
 	var timeline: Dictionary = report.get("timeline",{})
 	var points: Array = timeline.get("samples",[])
@@ -62,25 +63,25 @@ static func analyze_timeline(points: Array) -> Array:
 		var combat := float(point.combat_seconds)
 		var normal_ttk: Variant = point.normal_ttk
 		sustained(tracker,result,"ttk_wall",normal_ttk != null and float(normal_ttk) > THRESHOLDS.ttk_wall,point,{"normal_ttk":normal_ttk,"threshold":THRESHOLDS.ttk_wall},"HIGH",THRESHOLDS.sustained_seconds)
-		sustained(tracker,result,"defence_low_value",combat > 0 and float(point.player_survivability.received_per_combat_second) < THRESHOLDS.damage_low,point,{"received_per_combat_second":point.player_survivability.received_per_combat_second},"LOW",THRESHOLDS.idle_seconds)
+		sustained(tracker,result,"defence_low_value",combat > 0 and N.compare(point.player_survivability.received_per_combat_second,THRESHOLDS.damage_low)<0,point,{"received_per_combat_second":point.player_survivability.received_per_combat_second},"LOW",THRESHOLDS.idle_seconds)
 		sustained(tracker,result,"growth_stalled",float(point.upgrade_idle) >= THRESHOLDS.sustained_seconds,point,{"upgrade_idle":point.upgrade_idle},"HIGH",THRESHOLDS.sustained_seconds)
 		sustained(tracker,result,"upgrades_too_fast",point.upgrade_interval != null and float(point.upgrade_interval) < THRESHOLDS.upgrade_fast and int(point.upgrades) > 1,point,{"upgrade_interval":point.upgrade_interval},"LOW",THRESHOLDS.sustained_seconds)
 		sustained(tracker,result,"growth_vacuum",float(point.growth_idle) >= THRESHOLDS.idle_seconds,point,{"growth_idle":point.growth_idle},"HIGH",float(point.window_seconds))
 		for id in point.resource_balance:
-			var balance := float(point.resource_balance[id])
-			var income := float(point.resource_income.get(id,0))
+			var balance: Variant = point.resource_balance[id]
+			var income: Variant = point.resource_income.get(id,0)
 			# A zero locked resource is not enough evidence of an economic bottleneck.
-			var resource_active := income > 0 or float(previous.get("resource_income",{}).get(id,0)) > 0
+			var resource_active := N.compare(income,0)>0 or N.compare(previous.get("resource_income",{}).get(id,0),0)>0
 			if resource_active:tracker["observed/"+id] = true
-			sustained(tracker,result,"resource_zero",balance <= 0 and tracker.has("observed/"+id),point,{"resource":id,"balance":balance},"HIGH",THRESHOLDS.sustained_seconds,id)
-			sustained(tracker,result,"resource_hoarding",income > 0 and balance > income*THRESHOLDS.surplus_minutes,point,{"resource":id,"balance":balance,"per_minute":income},"MEDIUM",THRESHOLDS.idle_seconds,id)
+			sustained(tracker,result,"resource_zero",N.compare(balance,0)<=0 and tracker.has("observed/"+id),point,{"resource":id,"balance":balance},"HIGH",THRESHOLDS.sustained_seconds,id)
+			sustained(tracker,result,"resource_hoarding",N.compare(income,0)>0 and N.compare(balance,N.multiply(income,THRESHOLDS.surplus_minutes))>0,point,{"resource":id,"balance":balance,"per_minute":income},"MEDIUM",THRESHOLDS.idle_seconds,id)
 		if int(point.deaths) >= THRESHOLDS.death_burst and float(point.deaths)/float(point.window_seconds) >= float(THRESHOLDS.death_burst)/THRESHOLDS.death_window:
 			result.append(issue("death_burst","HIGH",time,point.stage,{"deaths":point.deaths,"seconds":point.window_seconds},time-float(point.window_seconds)))
-		if not previous.is_empty() and float(previous.dps) > 0 and int(point.kills) >= 3 and int(previous.kills) >= 3:
-			var ratio := float(point.dps)/float(previous.dps)
-			if ratio >= THRESHOLDS.dps_spike:result.append(issue("dps_breakthrough","HIGH",time,point.stage,{"before":previous.dps,"current":point.dps,"ratio":ratio},previous.game_time))
-		if float(point.dps) > 0 and combat > 0:
-			if growth_anchor.is_empty() or float(point.dps) > float(growth_anchor.dps)*(1.0+THRESHOLDS.dps_flat_gain):
+		if not previous.is_empty() and N.compare(previous.dps,0)>0 and int(point.kills) >= 3 and int(previous.kills) >= 3:
+			var ratio: Variant = N.divide(point.dps,previous.dps)
+			if N.compare(ratio,THRESHOLDS.dps_spike)>=0:result.append(issue("dps_breakthrough","HIGH",time,point.stage,{"before":previous.dps,"current":point.dps,"ratio":ratio},previous.game_time))
+		if N.compare(point.dps,0)>0 and combat > 0:
+			if growth_anchor.is_empty() or N.compare(point.dps,N.multiply(growth_anchor.dps,1.0+THRESHOLDS.dps_flat_gain))>0:
 				growth_anchor = point
 				flat_reported = false
 			elif time-float(growth_anchor.game_time) >= THRESHOLDS.idle_seconds and not flat_reported:

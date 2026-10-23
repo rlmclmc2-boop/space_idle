@@ -49,10 +49,10 @@ func initialize(game: BattleGame) -> void:
 		spending[id] = 0.0
 	income.jewel_fragments = 0.0
 	spending.jewel_fragments = 0.0
-	for system in ["weapons","defence","scientists","reactor","jewels"]:
+	for system in ["weapons","defence","research","reactor","jewels"]:
 		spending_by_system[system] = {}
 		for id in spending:spending_by_system[system][id] = 0.0
-	for key in ["upgrade","research","scientists","reactor_levels","jewel_pickup","enhancement_levels","equipment_equip","ship_switch"]:uses[key] = 0
+	for key in ["upgrade","research","reactor_levels","jewel_pickup","enhancement_levels","equipment_equip","ship_switch"]:uses[key] = 0
 	min_health = game.player.armour
 	min_shield = game.player.shield
 	current_stage = game.stage
@@ -64,7 +64,7 @@ func add(target: Dictionary, key: String, amount: Variant) -> void:
 func use(key: String, count := 1) -> void:
 	add(uses,key,count)
 	last_used[key] = time
-	var decisions := {"upgrade":"UPGRADE","equipment_equip":"EQUIP","ship_switch":"EQUIP","scientists":"PURCHASE","reactor_levels":"REACTOR_UPGRADE","enhancement_levels":"ENHANCEMENT_UPGRADE"}
+	var decisions := {"upgrade":"UPGRADE","equipment_equip":"EQUIP","ship_switch":"EQUIP","reactor_levels":"REACTOR_UPGRADE","enhancement_levels":"ENHANCEMENT_UPGRADE"}
 	if count > 0 and decisions.has(key):timeline.record(decisions[key],time,current_stage,{"system":key,"count":count},true)
 	if count > 0 and key in ["upgrade","research","reactor_levels","enhancement_levels"]:timeline.growth(time)
 
@@ -144,7 +144,7 @@ func report(game: BattleGame) -> Dictionary:
 	if time >= THRESHOLDS.idle_seconds:
 		for key in utilization:
 			if utilization[key] < THRESHOLDS.unused:warnings.append({"code":"equipment_unused","key":key,"value":utilization[key],"unlocked":game.profile.unlocked.has(key)})
-		for system in ["upgrade","research","scientists","reactor_levels","jewel_pickup","enhancement_levels"]:
+		for system in ["upgrade","research","reactor_levels","jewel_pickup","enhancement_levels"]:
 			if uses.get(system,0) == 0:warnings.append({"code":"system_unused","key":system})
 	if ttk != null and (ttk < THRESHOLDS.ttk_low or ttk > THRESHOLDS.ttk_high):warnings.append({"code":"ttk_outside_range","value":ttk})
 	var gap := maxf(longest_upgrade_gap,time-last_upgrade)
@@ -154,7 +154,7 @@ func report(game: BattleGame) -> Dictionary:
 		if longest_overflow[id] >= THRESHOLDS.idle_seconds:warnings.append({"code":"resource_surplus","key":id,"value":longest_overflow[id]})
 	var balance: Dictionary = game.economy.resources().duplicate()
 	balance.jewel_fragments = game.economy.balance("jewel")
-	return {"game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
+	return {"damage_basis":"enemy_hp_removed_excluding_shield","game_seconds":time,"final_stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
 		"dps":N.divide(total,maxf(time,0.000001)),"combat_dps":N.divide(total,maxf(combat_seconds,0.000001)),"combat_seconds":combat_seconds,
 		"damage":damage.duplicate(),"weapon_damage_share":shares,"ttk":ttk,"kills":kills,
 		"boss_ttk":boss_ttk_sum/boss_kills if boss_kills > 0 else null,"boss_kills":boss_kills,"unfinished_enemies":born.size(),

@@ -268,15 +268,15 @@ func concise_report() -> String:
 		var values := PackedStringArray([UIText.t("lab.no_scan") if point.parameter == null else str(point.parameter)])
 		for key in ["final_stage","ttk","first_death_seconds","upgrade_interval","resource_surplus"]:
 			var value: Variant = point_summary[key].mean
-			values.append("—" if value == null else "%.3f" % float(value))
+			values.append("—" if value == null else Views.value(value))
 		lines.append(" | ".join(values))
 	for index in mini(runner.reports.size(),20):
 		var report: Dictionary = runner.reports[index]
-		lines.append(UIText.t("lab.run_summary",{"run":str(index+1),"seed":str(report.seed),"dps":"%.3f" % report.dps,"deaths":str(report.defence.deaths),"upgrades":str(report.upgrades),"warnings":str(report.anomalies.size())}))
+		lines.append(UIText.t("lab.run_summary",{"run":str(index+1),"seed":str(report.seed),"dps":Views.value(report.dps),"deaths":str(report.defence.deaths),"upgrades":str(report.upgrades),"warnings":str(report.anomalies.size())}))
 		for anomaly in report.anomalies:
 			var values := {}
 			if anomaly.has("key"):values.key = str(anomaly.key)
-			if anomaly.has("value"):values.value = "%.3f" % float(anomaly.value)
+			if anomaly.has("value"):values.value = Views.value(anomaly.value)
 			lines.append("  "+UIText.t(WARNING_TEXT[anomaly.code],values))
 	if runner.reports.size() > 20:lines.append(UIText.t("lab.more_runs"))
 	return "\n".join(lines)

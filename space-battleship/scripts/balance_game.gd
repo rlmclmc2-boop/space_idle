@@ -1,5 +1,17 @@
 extends BattleGame
 ## No save/load, scene tree, particles, audio or wall-clock economics in the lab.
+# Observe the existing commit result; UI resource notifications are throttled.
+# The proposal's validated wallet is the committed target, so later UI callbacks
+# cannot contaminate this cost with an unrelated wallet mutation.
+class ResearchMetrics extends "res://scripts/progress_runtime.gd":
+	func commit_research_advance_result(g,proposal:Dictionary)->Dictionary:
+		var costs:Dictionary={}
+		if g.metrics!=null:
+			for id in proposal.get("paid",[]):costs[id]=N.subtract(g.economy.balance(id),proposal.resources[id])
+		var result:Dictionary=super.commit_research_advance_result(g,proposal)
+		if result.status=="committed" and g.metrics!=null:g.metrics.spend("research",costs)
+		return result
+
 var metrics = null
 var simulated_time := 0.0
 var source_weapon := "unknown"
@@ -170,6 +182,7 @@ func _init(database: ShipDatabase) -> void:
 	super(database,false)
 	if not startup_error.is_empty():return
 	profile.hightechSavedAt = 0.0
+	progress_runtime = ResearchMetrics.new()
 	event.connect(observe)
 
 func create_load_candidate(database:ShipDatabase)->BattleGame:
