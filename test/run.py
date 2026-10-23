@@ -118,6 +118,10 @@ def main():
             shutil.copy2(path, isolated_tests / path.name)
     if args.test in {"test_galaxy_ui.gd", "one_times_ablation.gd"}:
         shutil.copytree(tests / "fixtures", isolated_tests / "fixtures")
+    if args.test == "test_analyzer_dependencies.py":
+        # The entrypoint contract includes guide locations, not only code roots.
+        shutil.copytree(tests / "guides", isolated_tests / "guides")
+        shutil.copy2(tests / "README.md", isolated_tests / "README.md")
     (game / ".runtime").mkdir()
     if args.test == "test_progression_scene_equivalence.gd":
         (game / "qa").mkdir()

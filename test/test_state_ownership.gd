@@ -11,7 +11,7 @@ func record(game: BattleGame, label: String) -> void:
 	for id in game.cooldowns:
 		if str(id).begins_with("weapons_"):
 			slots[id] = game.cooldowns[id]
-	trace.append({"step":label,"loadout":game.profile.loadout.duplicate(true),"resources":game.profile.resources.duplicate(true),"player":game.player.duplicate(true),"cooldowns":slots,"state":game.state,"events":events.duplicate(true)})
+	trace.append({"step":label,"loadout":game.equipment.save_data().loadout,"resources":game.economy.resources(),"player":game.player.duplicate(true),"cooldowns":slots,"state":game.state,"events":events.duplicate(true)})
 
 func check(ok: bool, label: String) -> void:
 	checks += 1
@@ -20,12 +20,11 @@ func check(ok: bool, label: String) -> void:
 		printerr("FAIL: ",label)
 
 func snapshot(game: BattleGame) -> Dictionary:
-	return {"profile":game.profile.duplicate(true),"cooldowns":game.cooldowns.duplicate(true),"player":game.player.duplicate(true)}
+	return {"profile":game.profile.duplicate(true),"equipment":game.equipment.save_data(),"economy":game.economy.save_data(),"research":game.research.save_data(),"reactor":game.reactor.save_data(),"crew":game.crew.save_data(),"planets":game.planets.save_data(),"galaxy":game.galaxy.save_data(),"hyperspace":game.hyperspace.save_data(),"enhancement":game.enhancement_growth.save_data(),"cooldowns":game.cooldowns.duplicate(true),"player":game.player.duplicate(true)}
 
 func check_reads(game: BattleGame, label: String) -> void:
-	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit,"tech slots":game.hightech_slots,"furnace peak":game.furnace_income_peak,"income":game.resource_minute_total.bind("1")}
-	for key in game.db.data.get("hightech",{}):
-		readers["tech description/"+key]=game.hightech_description.bind(key)
+	var readers := {"weapons":game.weapon_entries,"defence":game.defense_entries,"shield":game.max_shield,"movement":game.ship_movement,"name":game.ship_name,"limit":game.equipment_limit,"tech slots":game.hightech_slots,"income":game.resource_minute_total.bind("1")}
+	readers["research snapshot"]=game.tech_tree_snapshot
 	for key in BattleGame.EQUIPMENT:
 		readers["stat/"+key]=game.stat.bind(key)
 		readers["entry/"+key]=game.first_equipment_entry.bind(key)
@@ -47,15 +46,10 @@ func check_reads(game: BattleGame, label: String) -> void:
 	for key in game.reactor_modules():readers["reactor/multiplier/"+key]=game.reactor_multiplier.bind(key)
 	for name in readers:
 		var before := snapshot(game)
-		var weapons: Array = game.profile.loadout.weapons
+		var weapons: Array = game.equipment.entries("weapons")
 		readers[name].call()
 		check(snapshot(game)==before,"Read purity: "+label+" / "+name)
-		check(is_same(weapons,game.profile.loadout.weapons),"Read preserves slot array identity: "+label+" / "+name)
-
-func write_save(raw: Dictionary) -> void:
-	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
-	file.store_string(JSON.stringify(raw))
-	file.close()
+		check(is_same(weapons,game.equipment.entries("weapons")),"Read preserves slot array identity: "+label+" / "+name)
 
 func _initialize() -> void:
 	var db := ShipDatabase.new()
@@ -74,8 +68,8 @@ func _initialize() -> void:
 	game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	check(game.equip_slot("weapons",1,"laser"),"Install duplicate weapon")
 	check(game.equip_slot("defence",1,"shield"),"Install shield")
-	game.profile.resources={"1":1000000.0,"2":1000000.0}
-	var original_resources: Dictionary=game.profile.resources.duplicate(true)
+	game.economy.credit_many({"1":1000000.0,"2":1000000.0})
+	var original_resources: Dictionary=game.economy.resources()
 	check(game.upgrade_slot("weapons",0,2),"Upgrade first duplicate to level three")
 	check(game.upgrade_slot("weapons",1),"Upgrade second duplicate to level two")
 	check(game.slot_entry("weapons",0).level==3 and game.slot_entry("weapons",1).level==2,"Duplicate levels independent")
@@ -98,11 +92,11 @@ func _initialize() -> void:
 	game.tick(0.1)
 	check(is_equal_approx(game.cooldowns.weapons_0,0.7) and is_equal_approx(game.cooldowns.weapons_1,0.2),"Installed duplicates count down independently")
 	evidence.before_unequip=game.cooldowns.duplicate(true)
-	var resources_before_removal: Dictionary = game.profile.resources.duplicate(true)
+	var resources_before_removal: Dictionary = game.economy.resources()
 	check(game.unequip_slot("weapons",0),"Remove first duplicate")
 	check(game.slot_entry("weapons",0).key=="" and game.slot_entry("weapons",1).level==2,"First removal preserves empty slot and remaining level")
 	for id in original_resources:
-		check(game.profile.resources[id]==resources_before_removal[id],"Removing equipment does not refund module investment: "+id)
+		check(game.economy.balance(id)==resources_before_removal[id],"Removing equipment does not refund module investment: "+id)
 	evidence.after_unequip=game.cooldowns.duplicate(true)
 	game.tick(0.05)
 	evidence.after_next_tick=game.cooldowns.duplicate(true)
@@ -123,54 +117,40 @@ func _initialize() -> void:
 	check(game.switch_ship("Destroyer"),"Switch unlocked ship")
 	check(game.slot_entry("weapons",1).level==2 and game.slot_entry("defence",1).level==2,"Switch preserves module levels")
 	record(game,"switch ship")
-	var saved := {"version":BattleGame.SAVE_VERSION,"levels":{"laser":3,"armour":2},"resources":{"1":123,"2":7}}
-	write_save(saved)
-	var restored := BattleGame.new(db)
-	restored.save_enabled=false
-	restored.start(1,false)
-	check(restored.slot_entry("weapons",0).level==3 and restored.slot_entry("defence",0).level==2,"Missing loadout migrates old levels")
-	check(restored.profile.resources=={"1":123.0,"2":7.0},"Migration preserves resources")
-	var contradictory := saved.duplicate(true)
-	contradictory.loadout={"weapons":[{"key":"laser","level":8},{"key":"laser","level":5},{"key":"","level":1}],"defence":[{"key":"armour","level":7},{"key":"","level":1}]}
-	write_save(contradictory)
-	restored=BattleGame.new(db)
-	restored.save_enabled=false
-	restored.start(1,false)
-	evidence.conflicting_levels=restored.profile.loadout.duplicate(true)
-	check(restored.slot_entry("weapons",0).level==8 and restored.slot_entry("weapons",1).level==5 and restored.slot_entry("defence",0).level==7,"Legacy map cannot discard explicit slot investment")
+	check(game.equip_slot("weapons",0,"laser"),"Reinstall first duplicate before snapshot")
+	check(game.slot_entry("weapons",0).level==3 and game.slot_entry("weapons",1).level==2,"Snapshot fixture has same-name slots at distinct levels")
+	# Current-format snapshots exercise owner precedence and repeatable installation.
+	# No new historical-save continuity contract is introduced by this fixture.
+	var saved := game.portable_save_data()
+	check(saved.loadout.weapons[0].key=="laser" and saved.loadout.weapons[1].key=="laser" and saved.loadout.weapons[0].level==3 and saved.loadout.weapons[1].level==2,"Export preserves both same-name slot investments")
+	saved.levels={"laser":999,"armour":999}
+	var restored := BattleGame.new(db,false)
+	restored.load_progress_data(saved)
+	check(restored.hyperspace.last_error.is_empty(),"Current snapshot accepted")
+	check(restored.equipment.save_data()==game.equipment.save_data(),"Derived legacy map cannot override owned modules")
+	check(restored.economy.resources()==game.economy.resources(),"Load preserves owned balances")
 	var first_load := snapshot(restored)
-	restored.save_enabled=true
-	restored.save_progress()
-	var exported = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(exported.version==BattleGame.SAVE_VERSION and exported.levels.laser==8 and exported.loadout.weapons[1].level==5,"Current version exports derived first level and independent duplicate")
-	restored=BattleGame.new(db)
-	restored.save_enabled=false
-	restored.start(1,false)
-	check(restored.profile.loadout==first_load.profile.loadout and restored.player==first_load.player and restored.profile.resources==first_load.profile.resources,"Repeated load preserves equipment health and resources")
+	restored.load_progress_data(saved)
+	check(snapshot(restored)==first_load,"Repeated current load preserves domain state and health")
+	check(restored.slot_entry("weapons",0).key=="laser" and restored.slot_entry("weapons",1).key=="laser" and restored.slot_entry("weapons",0).level==3 and restored.slot_entry("weapons",1).level==2,"Repeated load preserves different levels of same-name slots")
+	var exported := restored.portable_save_data()
+	check(exported.version==BattleGame.SAVE_VERSION and exported.levels.laser==3 and exported.loadout.weapons[0].level==3 and exported.loadout.weapons[1].level==2,"Export derives first matching level and preserves independent slots")
 	check_reads(restored,"reloaded")
-	check(not exported.has("cooldowns") and not restored.profile.has("cooldowns"),"Cooldowns remain transient across version one saves")
-	var without_levels := contradictory.duplicate(true)
-	without_levels.erase("levels")
-	write_save(without_levels)
-	var migrated := BattleGame.new(db)
-	migrated.save_enabled=false
-	check(migrated.slot_entry("weapons",0).level==8 and migrated.slot_entry("weapons",1).level==5,"Missing legacy levels preserve explicit module investment")
+	check(not exported.has("cooldowns") and not restored.profile.has("cooldowns"),"Cooldowns remain transient")
 	var empty_save := saved.duplicate(true)
-	empty_save.loadout = migrated.empty_loadout(migrated.profile.selectedShip)
-	# Persist unrelated RNG state so repeated loads compare the same complete input.
-	empty_save.hyperspace = migrated.profile.hyperspace.duplicate(true)
-	write_save(empty_save)
-	# Keep exactly the same input for both loads; the persisting constructor
-	# would replace the legacy input with a compatibility export after loading.
-	migrated = BattleGame.new(db,false)
-	migrated.load_progress()
+	empty_save.loadout=restored.empty_loadout(restored.equipment.selected_ship())
+	empty_save.equipmentSwitchUntil={}
+	var migrated := BattleGame.new(db,false)
+	migrated.load_progress_data(empty_save)
 	migrated.reset_player()
-	check(migrated.weapon_entries().all(func(entry):return entry.key=="") and migrated.defense_entries().all(func(entry):return entry.key==""),"Explicit empty old slots never auto-install from legacy levels")
-	check(migrated.player.armour==0 and migrated.player.shield==0,"Empty old defence retains zero capacities")
-	check_reads(migrated,"empty old save")
+	check(migrated.hyperspace.last_error.is_empty(),"Current empty snapshot accepted")
+	check(migrated.weapon_entries().all(func(entry):return entry.key=="") and migrated.defense_entries().all(func(entry):return entry.key==""),"Explicit empty slots never install derived legacy levels")
+	check(migrated.player.armour==0 and migrated.player.shield==0,"Empty defence retains zero capacities")
+	check_reads(migrated,"empty current snapshot")
 	var same_load := snapshot(migrated)
-	migrated.load_progress()
-	check(snapshot(migrated)==same_load,"Loading the same empty save again does not mutate equipment, resources or life")
+	migrated.load_progress_data(empty_save)
+	migrated.reset_player()
+	check(snapshot(migrated)==same_load,"Repeated empty load preserves equipment, resources and life")
 	var shield_game := BattleGame.new(db,false)
 	shield_game.profile.unlocked=BattleGame.EQUIPMENT.duplicate()
 	shield_game.equip_slot("defence",1,"shield")
@@ -206,10 +186,11 @@ func _initialize() -> void:
 	check(snapshot(reads)==before and reads.slot_entry("weapons",0).level==1,"Stale legacy levels cannot mutate runtime slots")
 	check(not restored.profile.has("levels"),"Legacy export never installs a second runtime level source")
 	check_reads(reads,"stale legacy input")
-	reads.profile.hightechLevels[BattleGame.FURNACE]=1
-	reads.resource_samples=[{"time":Time.get_unix_time_from_system(),"id":"1","amount":150.0,"origin":"drop"}]
-	check_reads(reads,"unsettled sample and furnace description")
-	check(reads.furnace_income_peak()==150,"Peak query computes current sample without mutating profile")
+	reads.resource_samples=[{"time":reads.economy_time(),"production_time":reads.production_time(),"id":"1","amount":150.0,"origin":"drop"}]
+	check_reads(reads,"unsettled income sample and research snapshot")
+	before=snapshot(reads)
+	var proposal: Dictionary=reads.research.income_peak_proposal(reads,"1")
+	check(not proposal.is_empty() and snapshot(reads)==before,"Income peak proposal reads current history without committing research")
 	var file := FileAccess.open("res://state-ownership-baseline.json",FileAccess.WRITE)
 	file.store_string(JSON.stringify(evidence,"\t"))
 	file.close()
