@@ -66,36 +66,60 @@ func settle_interrupted(g)->void:
 func reset()->void:advancing=false
 func advance(g,dt:float)->void:
 	if advancing or not is_finite(dt) or dt<=0 or g.paused or not g.hyperspace.is_unlocked(g):return
+	if not g.step_progress.active:
+		g.step_progress.begin(dt);g.step_progress.open_substep(dt)
+		g.step_progress.phase="shared";g.step_progress.stage=2;g.step_progress.scope="hyperspace"
+	if g.step_progress.scope=="hyperspace" and g.step_progress.accepted:drain(g);return
 	advancing=true
 	g.hyperspace.add_online_time(dt);g.save_dirty=true
+	g.step_progress.accepted=true
 	_advance(g)
 	advancing=false
+	if g.step_progress.scope=="hyperspace" and g.step_progress.reason.is_empty():g.step_progress.finish()
+func drain(g)->void:
+	if advancing or g.paused or not g.hyperspace.is_unlocked(g):return
+	advancing=true;_advance(g);advancing=false
+	if g.step_progress.scope=="hyperspace" and g.step_progress.reason.is_empty():g.step_progress.finish()
+func online_commit(g,plan:Dictionary)->bool:
+	# An unavailable command retains its existing inactive/capacity policy.
+	# A valid proposal blocked during handoff is different: its time is retained.
+	if not plan.has("next"):return false
+	var result:=commit_result(g,plan)
+	if not Result.succeeded(result):g.block_step(str(result.reason));return false
+	return true
+func inactive_work(g,c:Dictionary,blocked:=false)->void:
+	if g.step_progress.reason.is_empty():g.hyperspace.advance_online_work(c,float(g.hyperspace.state.pending_time),false,blocked)
 func _advance(g)->void:
 	var owner=g.hyperspace
 	var c:Dictionary=owner.online_config(g)
-	var completions:=0
+	var tracked:bool=g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==2
+	var completions:int=int(g.step_progress.detail.get("completions",0)) if tracked else 0
 	while float(owner.state.pending_time)>0.000000001:
 		var s:Dictionary=owner.state
 		for slot in ["active","idle"]:
 			var pending:Dictionary=s[slot]
 			if pending.get("status","")=="completed_pending":
-				if not claim(g,int(pending.round_id),int(pending.run_id)):
-					owner.advance_online_work(c,float(owner.state.pending_time),false,not Bag.has_space(owner.state.inventory,c));return
+				if not online_commit(g,owner.prepare_claim(g,int(pending.round_id),int(pending.run_id))):
+					inactive_work(g,c,not Bag.has_space(owner.state.inventory,c));return
 				s=owner.state
+		if tracked and g.step_progress.detail.get("once_completed",false) and s.idle.is_empty():inactive_work(g,c);return
+		if completions>=int(c.completion_budget):return
 		if s.idle.is_empty():
 			if not owner.auto_eligible(g) or not Bag.has_space(s.inventory,c):
 				owner.advance_online_work(c,float(s.pending_time),false,s.auto.enabled and not Bag.has_space(s.inventory,c));return
-			if not start_auto(g):owner.advance_online_work(c,float(owner.state.pending_time));return
+			if not online_commit(g,owner.prepare_start_auto(g)):inactive_work(g,c);return
 			s=owner.state
 		var a:Dictionary=s.idle
 		var once:bool=a.mode=="idle"
 		var step:=minf(float(s.pending_time),maxf(0.0,float(a.duration)-float(a.work)))
 		owner.advance_online_work(c,step,true)
 		if float(owner.state.idle.work)+0.000000001<float(a.duration):return
-		if not complete_auto(g):owner.advance_online_work(c,float(owner.state.pending_time));return
+		if tracked:g.step_progress.detail.once_completed=once
+		if not online_commit(g,owner.prepare_complete_auto(g)):inactive_work(g,c);return
 		completions+=1
-		if not claim(g,int(a.round_id),int(a.run_id)):
-			owner.advance_online_work(c,float(owner.state.pending_time),false,not Bag.has_space(owner.state.inventory,c));return
+		if tracked:g.step_progress.detail.completions=completions
+		if not online_commit(g,owner.prepare_claim(g,int(a.round_id),int(a.run_id))):
+			inactive_work(g,c,not Bag.has_space(owner.state.inventory,c));return
 		if once:owner.advance_online_work(c,float(owner.state.pending_time));return
 		if not Bag.has_space(owner.state.inventory,c):owner.advance_online_work(c,float(owner.state.pending_time),false,true);return
 		# Unconsumed online time stays in the owner before every notification and

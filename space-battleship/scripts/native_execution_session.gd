@@ -110,7 +110,7 @@ func handoff_to_legacy(game:RefCounted,reason:String)->bool:
 	return true
 
 func advance(game:RefCounted,dt:float)->bool:
-	if kernel==null:return false
+	if kernel==null:game.block_step("native_kernel_missing");return false
 	if not kernel.advance(dt):
 		if not handoff_to_legacy(game,"numeric_range"):
 			advance_blocked=true;game.block_step("native_handoff")
@@ -259,7 +259,7 @@ func cancel(game:RefCounted)->void:
 	if game.damage_stats.enabled:
 		for row in kernel.take_damage_stats():
 			game.damage_stats.record(str(row.source),game.N.add(row.shield,row.health))
-	if game.step_progress.active:
+	if game.step_progress.active and game.step_progress.phase!="combat_done":
 		game.step_progress.freeze("cancel_incomplete_step");game.paused=true;return
 	var released:Dictionary=kernel.exit_state()
 	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)

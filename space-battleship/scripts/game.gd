@@ -97,6 +97,7 @@ const RETURN_DEPARTURE_SECONDS := 1.6
 var departure_remaining := 0.0
 var application_focused := true
 var external_time_active := false
+var boundary_save_pending:=false
 var clear_timer := 0.0
 var guard_index := -1
 var guard_elapsed := 0.0
@@ -342,6 +343,7 @@ static func same_module(a: Dictionary,b: Dictionary) -> bool:
 	return EquipmentState.same_source(a,b)
 
 func load_progress() -> void:
+	if not snapshot_ready():return
 	var result := progress_writer.read_progress_result(SAVE_PATH, db)
 	if result.status == "loaded":
 		load_progress_data(result.data)
@@ -363,6 +365,7 @@ func load_progress() -> void:
 	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
+	if not snapshot_ready():hyperspace.last_error="incomplete_logical_step";return
 	var source_db = manual_hyperspace.base_db if manual_hyperspace.active else db
 	var prepared: Dictionary = load("res://scripts/save_transfer.gd").new().prepare_data(raw, source_db)
 	if not prepared.error.is_empty():
@@ -591,6 +594,11 @@ func consume_external_time(real_dt:float,presentation:Variant=null)->void:
 	external_time_active=false
 
 func _dispatch_reserved_step(presentation:Variant)->void:
+	if step_progress.phase=="prepare" and step_progress.substep==0.0:
+		logical_step_active=true
+		var ready:=prepare_logical_step(step_progress.duration)
+		logical_step_active=false
+		if not ready:return
 	if not step_progress.before_presented:
 		step_progress.before_presented=true
 		if presentation!=null:presentation.before_time_step(step_progress.duration)
@@ -684,6 +692,8 @@ func check_timed_save() -> void:
 func save_progress() -> void:
 	# Called only by the real-time deadline or explicit manual save.
 	if not save_enabled:return
+	if not snapshot_ready():boundary_save_pending=true;return
+	boundary_save_pending=false
 	save_dirty = true
 	var saved := _build_save_data()
 	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t",true,true).to_utf8_buffer())
@@ -695,10 +705,12 @@ func save_progress() -> void:
 	event.emit("save_success", {"at":last_successful_save_at})
 
 func _build_save_data() -> Dictionary:
+	if not snapshot_ready():return {}
 	prune_resource_samples(Time.get_unix_time_from_system())
 	return portable_save_data()
 
 func portable_save_data() -> Dictionary:
+	if not snapshot_ready():return {}
 	# Export and import backup must leave unsaved runtime progress unchanged.
 	var saved := profile.duplicate(true)
 	var now := Time.get_unix_time_from_system()
@@ -710,6 +722,7 @@ func portable_save_data() -> Dictionary:
 	return _compose_save_data(saved)
 
 func _compose_save_data(saved: Dictionary) -> Dictionary:
+	if not snapshot_ready():return {}
 	for retired in ["scientists","scientistAssignments","techPoints","hightechLevels","hightechOrder","hightechDrops"]:saved.erase(retired)
 	saved.merge(economy.save_data(), true)
 	saved.merge(research.save_data(), true)
@@ -1370,7 +1383,12 @@ func cancel_planet_exploration(id: String) -> bool:
 	return progress_runtime.commit_planet_command(self,planets.prepare_cancel(id),{"id":id})
 
 func advance_planets(dt: float) -> void:
+	if commit_effects.active:return
+	if not step_progress.active:
+		if not step_progress.begin(dt):return
+		step_progress.open_substep(dt);step_progress.phase="shared";step_progress.stage=4;step_progress.scope="planets"
 	progress_runtime.advance_planets(self,dt)
+	if step_progress.scope=="planets" and step_progress.reason.is_empty():step_progress.finish()
 
 func assign_crew(crew_id: String, assignment_type: String, target_id: String, upgrade_mode := "") -> bool:
 	return progress_runtime.assign_crew(self,crew_id,assignment_type,target_id,upgrade_mode)
@@ -1399,7 +1417,12 @@ func record_research_income(id: String) -> void:
 	progress_runtime.record_research_income(self,id)
 
 func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
+	if commit_effects.active:return
+	if not step_progress.active:
+		if not step_progress.begin(dt):return
+		step_progress.open_substep(dt);step_progress.phase="shared";step_progress.stage=8;step_progress.scope="research"
 	progress_runtime.advance_hightech(self,dt)
+	if step_progress.scope=="research" and step_progress.reason.is_empty():step_progress.finish()
 
 func refresh_factory_inputs(dt: float) -> void:
 	progress_runtime.refresh_factory_inputs(self,dt)
@@ -2455,13 +2478,21 @@ func tick(dt: float) -> void:
 	logical_step_active=true
 	_tick_logical_step(step_progress.duration)
 	logical_step_active=false
-	if not step_progress.active:manual_hyperspace.dispatch_queued(self)
+	if not step_progress.active:
+		manual_hyperspace.dispatch_queued(self)
+		if boundary_save_pending:save_progress()
 
 func next_substep_size(remaining:float)->float:return remaining
 func begin_substep()->void:pass
 func finish_substep()->void:pass
 
 func _tick_logical_step(_dt:float)->void:
+	match step_progress.scope:
+		"shared":advance_shared_clock_and_economy(step_progress.substep);return
+		"galaxy":galaxy_runtime.advance(self,step_progress.substep);return
+		"hyperspace":hyperspace_runtime.drain(self);return
+		"planets":advance_planets(step_progress.substep);return
+		"research":advance_hightech(step_progress.substep);return
 	while step_progress.completed+0.000000001<step_progress.duration and not paused:
 		if step_progress.substep==0.0:
 			step_progress.open_substep(next_substep_size(step_progress.duration-step_progress.completed))
@@ -3880,7 +3911,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 	if commit_effects.active or not is_finite(dt) or dt<=0:return
 	var standalone:bool=not step_progress.active
 	if standalone:
-		step_progress.begin(dt);step_progress.open_substep(dt);step_progress.phase="shared"
+		step_progress.begin(dt);step_progress.open_substep(dt);step_progress.phase="shared";step_progress.scope="shared"
 	while step_progress.stage<11:
 		var current:int=step_progress.stage
 		match current:
@@ -3891,6 +3922,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 				if not step_progress.accepted:
 					step_progress.accepted=true
 					hyperspace_runtime.advance(self,dt)
+				else:hyperspace_runtime.drain(self)
 			3:
 				if native_execution==null:enhancement_branches.advance_weapons(self,dt)
 			4:advance_planets(dt)
@@ -3912,7 +3944,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 				step_progress.next_stage();refresh_factory_inputs(dt)
 		if not step_progress.reason.is_empty():return
 		if step_progress.stage==current:step_progress.next_stage()
-	if standalone:step_progress.finish()
+	if step_progress.scope=="shared":step_progress.finish()
 
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():

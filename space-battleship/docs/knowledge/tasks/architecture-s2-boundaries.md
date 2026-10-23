@@ -70,3 +70,22 @@ Still outstanding for full S2: collection/fragment/peak joint receipt completion
 Original-main validation completed on the runtime tree committed as 7359286e: 128 checks, zero failures across all eight phases (16/26/18/7/25/8/20/8), with no domain differences after reopening. Product-save and factory-reopen screenshots were inspected. Raw completed test logs are in `test/evidence/architecture-s2-cold-income/`; earlier cold-command tests preceded the income extraction, while AI tech and original-main ran with the extraction installed. No standalone stale UI fixture or legacy time test is represented as passed.
 
 Concrete gameplay question submitted, answer still pending: `Economy.credit_fragments` snaps the balance to 0.01 but `settle_jewel_fragments` records the unrounded earned value in income history. A computed 0.0101 can therefore credit only 0.01 while contributing 0.0101 to history/peak. Moving to actual balance deltas would alter peak/auto-input values (and very-large-balance absorption), so this continuation preserves existing values pending user decision. Proposed choice is actual credited delta, but no approval is inferred. Other S2 work is independent of this decision.
+
+
+## Compaction handoff: shared-step WIP (2026-10-24)
+
+Implementation stopped on context compaction as explicitly required. This branch is `work/architecture-s2-step-wip-20261024`, separate from the reviewable cold-command candidate. Its history starts with d83155a7 and includes 26517f23 (the Galaxy review correction, equivalent to candidate b59ed5cc). The current handoff commit preserves subsequent incomplete work; it is NOT merge-ready or S2 acceptance.
+
+Parent clarification supersedes the preceding proposed income choice: preserve computed effective earned amount, do not replace it with floating balance delta (large balances can absorb small credits), and do not expand precision mechanisms around the 0.0001 difference. No income rule change was made.
+
+StepProgress now replaces production `game_time_remainder`, `native_step_phase`, `native_step_remaining`, `native_cancelled_step` and native `blocked_shared_step`. It owns paid budget segments, one reserved interval, shared/combat phases, substep and stable item cursors, and blocked/frozen context. Presented substeps and native completion retirement use this record. Shared order is preserved. Galaxy, planet, research and Hyperspace paths have partial acceptance/retirement markers; direct domain calls use scopes on the same record. Save/export/import/load/capture and BalanceGame consumers have initial complete-step gates. These are implementation intentions, not verified guarantees.
+
+Required next work, before claiming closure:
+- Audit cancellation, retreat, start/reset and native ownership release: some callers can clear a session after cancel freezes an incomplete interval. Prove failed native advance has no partial kernel mutation.
+- Close direct domain retry scope/context validation and reason clearing, especially Hyperspace and planets/research. Review Galaxy block assumptions, native cache context and callback-mutated region references.
+- Complete ordinary collection/fragment/peak atomic receipt boundaries and remaining crew UI business bridges. Preserve computed-earned semantics.
+- Audit snapshot/tool/lifecycle consumers and all partial shared/combat failure paths (including jewel repair); no hidden discard, replay or double charge.
+- Migrate existing tests that still refer to removed fields. `test_time_steps.gd` has pre-existing Runtime.detach_requested and screen_mount_for_slot fixture failures; repair current production seams without deleting assertions. GameProbe must retire the real StepProgress path. Adapt native blocked-transfer cancellation assertions to retained/frozen work, not old discard compensation. Include reserved interval plus undispatched segments in conservation assertions.
+- Run targeted shared/native/failure/snapshot tests, then required performance comparison. No expanded testing or standalone reviewer was started.
+
+Only an EARLY intermediate time tree passed AI tech 142/0 (`test/work/test_ai_tech_tree-1fnha6j9/test.log`); subsequent domain and consumer edits were not imported or tested. Do not attribute that pass to the final WIP. No final WIP correctness, syntax or performance claim. No main merge; independent high remains parent-coordinated.

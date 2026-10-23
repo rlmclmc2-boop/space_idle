@@ -3769,12 +3769,14 @@ func _geometry_source():
 	return simulation_geometry_authority
 
 func prepare_capture_battle()->void:
+	if not game.snapshot_ready():return
 	assert(simulation_geometry_authority.prepared)
 	if automation_args.has("--capture"):
 		game.start(1, false)
 		game.distance = 99.8
 		game.consume_external_time(0.02,self)
 		game.consume_external_time(0.1,self)
+		if not game.snapshot_ready():return
 		if automation_args.has("--capture-unlock"):
 			game.clear_level()
 		if automation_args.has("--capture-all"):

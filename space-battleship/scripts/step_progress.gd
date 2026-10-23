@@ -14,6 +14,8 @@ var stage:=0
 var items:Array=[]
 var item:=0
 var accepted:=false
+var detail:Dictionary={}
+var scope:="all"
 var motion_end:=0.0
 var motion_set:=false
 var boss_survivors:Array=[]
@@ -36,7 +38,7 @@ func accept(seconds:float,multiplier:float,cost:float)->void:
 func begin(dt:float,paid:=false)->bool:
 	if active or not is_finite(dt) or dt<=0:return false
 	if paid and available()+0.0000000001<dt:return false
-	active=true;identity=next_step;next_step+=1;duration=dt;completed=0.0
+	active=true;identity=next_step;next_step+=1;duration=dt;completed=0.0;scope="all"
 	phase="prepare";reason="";frozen=false;blocked_context=[];before_presented=false
 	source_segments=[]
 	if paid:
@@ -51,11 +53,11 @@ func begin(dt:float,paid:=false)->bool:
 
 func open_substep(dt:float)->void:
 	assert(active and substep==0.0)
-	substep=dt;phase="prepare";stage=0;items=[];item=0;accepted=false
+	substep=dt;phase="prepare";stage=0;items=[];item=0;accepted=false;detail={}
 	motion_set=false;boss_survivors=[]
 
 func next_stage()->void:
-	stage+=1;items=[];item=0;accepted=false
+	stage+=1;items=[];item=0;accepted=false;detail={}
 
 func retire_item(expected_stage:int)->void:
 	if active and phase=="shared" and stage==expected_stage:item+=1
@@ -66,13 +68,13 @@ func retire_substep()->void:
 func finish()->void:
 	assert(active and not frozen)
 	active=false;duration=0.0;completed=0.0;substep=0.0;phase="idle";stage=0
-	items=[];item=0;accepted=false;source_segments=[];blocked_context=[];reason="";boss_survivors=[]
+	items=[];item=0;accepted=false;source_segments=[];blocked_context=[];reason="";boss_survivors=[];detail={};scope="all"
 
 func block(message:String,context:Array=[])->void:
 	reason=message;blocked_context=context.duplicate()
 
 func freeze(message:String)->void:
-	frozen=true;reason=message
+	active=true;frozen=true;reason=message
 
 func reset()->void:
 	assert(not active,"An incomplete step cannot be discarded by lifecycle replacement")

@@ -59,6 +59,7 @@ func commit_planet_command_result(g,plan: Dictionary,payload: Dictionary) -> Dic
 	return g.commit_effects.finish(g,["planets"],[],[],{"reactor_allocation_changed":plan.configuration},[{"kind":"planet_changed","payload":payload}])
 
 func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
+	if not g.snapshot_ready():return false
 	if g.commit_effects.active:return false
 	if not g.can_reforge_planet(id):return false
 	if not g.native_before_configuration_change() or not g.can_reforge_planet(id):return false
@@ -260,11 +261,20 @@ func record_research_income_result(g,id: String) -> Dictionary:
 
 func advance_hightech(g,dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 	if g.commit_effects.active or dt<=0.0 or not is_finite(dt):return
+	var tracked:bool=g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==8
+	if tracked and g.step_progress.accepted:
+		if g.step_progress.item==1:
+			var continued:=continue_research_result(g)
+			if not Result.succeeded(continued):g.block_step(str(continued.reason))
+		return
 	var proposal: Dictionary= g.research.prepare_advance(g,dt)
 	var result:=commit_research_advance_result(g,proposal)
+	if not Result.succeeded(result):g.block_step(str(result.reason));return
 	if result.status!="committed":return
 	# Continuation follows the fully published interval; no time or fee is replayed.
-	if proposal.completed:continue_research(g)
+	if proposal.completed:
+		var continued:=continue_research_result(g)
+		if not Result.succeeded(continued):g.block_step(str(continued.reason))
 
 func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
@@ -276,6 +286,7 @@ func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 		if not g.commit_effects.begin_progress():return Result.make("blocked","commit_in_progress")
 		if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return g.commit_effects.abort("stale_research_wallet","rejected")
 		g.research.commit_advance(proposal)
+		retire_research_interval(g,false)
 		var mask:int=(1 if proposal.paid.has("1") else 0)+(2 if proposal.paid.has("2") else 0)
 		var progress_now_ms:=Time.get_ticks_msec()
 		var notify_resources:bool=mask!=0 and progress_now_ms-g.ai_tech_last_resource_notice_ms>=250
@@ -290,6 +301,7 @@ func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
 	if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return g.commit_effects.abort("stale_research_wallet","rejected")
 	g.research.commit_advance(proposal)
+	retire_research_interval(g,proposal.completed)
 	var notices:Array=[]
 	if proposal.completed:
 		g.configuration_committed()
@@ -332,10 +344,17 @@ func crew_effect_notices(g,changes: Array) -> Array:
 	return notices
 
 func continue_research(g) -> void:
+	continue_research_result(g)
+
+func retire_research_interval(g,completed:bool)->void:
+	if g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==8:
+		g.step_progress.accepted=true;g.step_progress.item=1 if completed else 2
+
+func continue_research_result(g)->Dictionary:
 	# Only completion continues research; assignment/load preserve manual pause.
-	if not g.crew.factory_active(g) or not g.research.selected().is_empty():return
+	if not g.crew.factory_active(g) or not g.research.selected().is_empty():return NO_CHANGE
 	var next: String=g.research.shortest_available(g)
-	if not next.is_empty():select_tech(g,next)
+	return select_tech_result(g,next) if not next.is_empty() else NO_CHANGE
 
 func clear_runtime(g) -> void:
 	g.crew.clear_schedule()
@@ -345,6 +364,7 @@ func clear_runtime(g) -> void:
 	g.income_history.clear();g.pending_unlocks.clear()
 
 func install_loaded_domains(g, raw: Dictionary) -> void:
+	if not g.snapshot_ready():return
 	g.economy.install_snapshot(raw)
 	g.equipment.install_snapshot(raw,g.db)
 	g.profile.productionElapsed=float(raw.productionElapsed)
