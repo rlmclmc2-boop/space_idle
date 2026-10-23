@@ -1,7 +1,7 @@
-"""Phase 8 characterization: isolated inputs, exact errors and file side effects.
+"""Published configuration boundaries: isolated inputs and real public consumers.
 
 Run only through test/run.py. No production defaults or validators are patched.
-Fault injection records existing behavior, including unsafe historical outcomes.
+Fault injection verifies current publication/recovery, not retired direct writers.
 """
 from contextlib import ExitStack
 import io
@@ -22,10 +22,11 @@ import import_workbook as full
 
 AREA = ROOT.parent / 'phase8-matrix'
 AREA.mkdir(exist_ok=True)
-originals = {str(p.relative_to(ROOT)): p.read_bytes()
-             for p in (ROOT / 'config_excel').iterdir() if p.is_file() and not p.name.startswith('~$')}
-originals['data/game_data.json'] = (ROOT / 'data/game_data.json').read_bytes()
-originals['data/space_enemy_reward_sources.json'] = (ROOT / 'data/space_enemy_reward_sources.json').read_bytes()
+originals = {p.relative_to(ROOT).as_posix():p.read_bytes()
+             for folder in ('data','config_excel') for p in (ROOT/folder).rglob('*') if p.is_file()}
+originals['configuration_manifest.json']=(ROOT/'configuration_manifest.json').read_bytes()
+originals['.configuration-lock']=b''
+
 checks = 0
 
 
@@ -164,26 +165,20 @@ def run_case(case, entry):
     before = snapshot(root)
     before_times = {str(p.relative_to(root)): p.stat().st_mtime_ns for p in root.rglob('*') if p.is_file()}
     stage = 'import' if entry == 'incremental' else 'construct'
-    parsed = []
-    real_reader = cw.read_changed_file
-    def reader(path, name, raw, **kwargs):
-        parsed.append(name)
-        return real_reader(path, name, raw, **kwargs)
-    with patch.object(cw, 'read_changed_file', reader), patch.object(le, 'read_changed_file', reader), \
-         patch.object(cw.uuid, 'uuid4', return_value=SimpleNamespace(hex='matrix')):
-        try:
-            if entry == 'incremental':
-                result = cw.incremental_import(root / 'config_excel', root / 'data/game_data.json')
+    try:
+        if entry == 'incremental':
+            result = cw.incremental_import(root/'config_excel',root/'data/game_data.json')
+        else:
+            store=le.Store(root);stage='load';request=store.load()
+            if entry=='store_load':result=request
             else:
-                store = le.Store(root)
-                stage = 'load'; request = store.load()
-                if entry == 'store_load': result = request
-                else:
-                    stage = 'save' if entry == 'store_save' else 'validate'
-                    result = store.execute(request, entry == 'store_save')
-            outcome = {'accepted': True, 'stage': stage, 'returned': result}
-        except Exception as error:
-            outcome = {'accepted': False, 'stage': stage, 'error_type': type(error).__name__, 'error': str(error)}
+                stage='save' if entry=='store_save' else 'validate'
+                result=store.execute(request,entry=='store_save')
+        outcome={'accepted':True,'stage':stage,'returned':result}
+    except Exception as error:
+        outcome={'accepted':False,'stage':stage,'error_type':type(error).__name__,'error':str(error)}
+    parsed=[]
+    if outcome['accepted'] and entry=='incremental':parsed=outcome['returned'].get('parsed',[])
     after = snapshot(root)
     if case == 'valid':
         check(outcome['accepted'], 'valid input must succeed: ' + entry + ': ' + str(outcome))
@@ -198,76 +193,14 @@ def run_case(case, entry):
     return json.loads(json.dumps(outcome, ensure_ascii=False).replace(str(root).replace('\\','\\\\'), '<CASE>'))
 
 
-def transaction_case(entry, fault):
-    root = fresh('fault-' + entry + '-' + fault)
-    target = root / 'data/game_data.json'
-    store = le.Store(root)
-    request = store.load()
-    request['tables']['mon']['rows'][0]['health'] += 1
-    before = snapshot(root)
-    calls, external, external_hashes = [], [], {}
-    real_replace, real_write = cw.os.replace, Path.write_bytes
-    real_reader = cw.read_changed_file
-    fired = False
-    def reader(path, name, raw, **kwargs):
-        nonlocal fired
-        result = real_reader(path, name, raw, **kwargs)
-        if not fired and fault.startswith('concurrent_'):
-            fired = True
-            changed = {'source': store.paths['mon'], 'manifest': store.manifest, 'target': target}[fault.removeprefix('concurrent_')]
-            if fault == 'concurrent_target':
-                data = json.loads(changed.read_text(encoding='utf-8'))
-                data['external_writer_sentinel'] = True
-                write_json(changed, data)
-            else:
-                changed.write_bytes(changed.read_bytes() + b'\n')
-            key = str(changed.relative_to(root)).replace('\\','/')
-            external.append(key)
-            external_hashes[key] = cw.sha(changed.read_bytes())
-        return result
-    def replace(src, dst):
-        nonlocal fired
-        dst = Path(dst); calls.append(str(dst.relative_to(root)).replace('\\','/'))
-        if fault in ('replace_failure', 'rollback_failure') and dst == target.with_name('.import_state.json'):
-            fired = True; raise OSError('injected commit failure')
-        if fault == 'rollback_failure' and fired and dst == target:
-            raise OSError('injected rollback failure')
-        return real_replace(src, dst)
-    def write(path, raw):
-        if fault == 'stage_failure' and path.suffix == '.tmp':
-            raise OSError('injected staging failure')
-        return real_write(path, raw)
-    with ExitStack() as stack:
-        for mod in (cw, le): stack.enter_context(patch.object(mod, 'read_changed_file', reader))
-        stack.enter_context(patch.object(cw.os, 'replace', replace))
-        stack.enter_context(patch.object(Path, 'write_bytes', write))
-        stack.enter_context(patch.object(cw.uuid, 'uuid4', return_value=SimpleNamespace(hex='matrix')))
-        try:
-            result = cw.incremental_import(store.directory,target) if entry == 'incremental' else store.execute(request,entry=='store_save')
-            outcome = {'accepted':True,'message':result.get('message')}
-        except Exception as error:
-            outcome = {'accepted':False,'error_type':type(error).__name__,'error':str(error)}
-    after = snapshot(root)
-    outcome.update(case=fault,entry=entry,files=delta(before,after),external_mutations=external,replace_order=calls,
-                   external_bytes_preserved={k:after.get(k)==v for k,v in external_hashes.items()},
-                   temporary_files=sorted(str(p.relative_to(root)) for p in root.rglob('*.tmp')))
-    check(not outcome['temporary_files'], 'temporary cleanup: '+entry+'/'+fault)
-    if fault in ('stage_failure','replace_failure') and entry != 'store_validate':
-        check(not outcome['accepted'] and before==after,'successful rollback restores every file')
-    if entry == 'incremental' and fault in ('concurrent_manifest', 'concurrent_target'):
-        check(not outcome['accepted'], 'concurrent import input/output change must reject')
-        check(all(outcome['external_bytes_preserved'].values()), 'concurrent writer bytes preserved')
-        check(set(outcome['files']) == set(external), 'concurrency rejection writes no importer output')
-    if fault == 'rollback_failure' and entry != 'store_validate':
-        check(outcome.get('error_type')=='RuntimeError' and before!=after,'characterize existing rollback failure; NOT atomicity certification')
-    return json.loads(json.dumps(outcome,ensure_ascii=False).replace(str(root).replace('\\','\\\\'),'<CASE>'))
-
-
 def projection_and_excel():
     root = fresh('projection')
     target = root/'data/game_data.json'
     data = json.loads(target.read_text(encoding='utf-8'))
-    data['phase8_sentinel']={'unknown':[1,2]}; write_json(target,data)
+    data['phase8_sentinel']={'unknown':[1,2]}
+    import config_snapshot as protocol
+    current=protocol.Store(root).capture();files=dict(current.files);files['data/game_data.json']=full.encode(data)
+    protocol.Store(root).publish(current,files,lambda _:None)
     cw.incremental_import(root/'config_excel',target)
     before = json.loads(target.read_text(encoding='utf-8'))
     xml_cell(root,'mon','health',321)
@@ -278,6 +211,8 @@ def projection_and_excel():
     state = json.loads(target.with_name('.import_state.json').read_text(encoding='utf-8'))
     check(state['version']==cw.CACHE_VERSION and state['target_hash']==cw.sha(target.read_bytes()),'cache and target hash')
     store=le.Store(root)
+    store.paths=le.PreparedStore(root).paths
+    store.directory=root/'config_excel'
     check(state['hashes']=={n:cw.sha(p.read_bytes()) for n,p in store.paths.items()},'source hashes')
     request=store.load(); old={p:p.read_bytes() for p in [*store.paths.values(),target,target.with_name('.import_state.json')]}
     # Level ratios are protected, so exercise formula evaluation on editable health cells.
@@ -453,6 +388,47 @@ def generation_protocol():
         store.capture_publication()
         check(store.capture().identity==published.identity,'Explicit publisher completes source transaction recovery')
 
+        # Attempt real external writes exactly while rollback holds the verified
+        # source handle. Both replacement and in-place edits must be excluded.
+        from contextlib import contextmanager
+        original_stream=protocol.stable_external_stream
+        attempts=[]
+        @contextmanager
+        def observed_stream(path,*args,**kwargs):
+            with original_stream(path,*args,**kwargs) as stream:
+                if Path(path)==source and (root/protocol.JOURNAL).exists():
+                    code="import sys,os; p=sys.argv[1]; denied=0\nfor action in (lambda:open(p,'wb'),lambda:os.unlink(p)):\n try:action()\n except PermissionError:denied+=1\nsys.exit(0 if denied==2 else 9)"
+                    result=subprocess.run([sys.executable,'-c',code,str(source)],capture_output=True,timeout=15)
+                    attempts.append(result.returncode)
+                yield stream
+        fired=False
+        def fail_once(a,b):
+            nonlocal fired
+            if Path(b)==root/protocol.MANIFEST and not fired:
+                fired=True;raise OSError('one failed installation')
+            return original_replace(a,b)
+        with patch.object(protocol,'stable_external_stream',observed_stream),patch.object(protocol.os,'replace',fail_once):
+            try:store.publish(published,dict(published.files),validate,inputs={member:b'updated'},source_updates={member:b'rollback'})
+            except OSError:pass
+            else:raise AssertionError('Injected publication did not fail')
+        check(attempts==[0] and source.read_bytes()==b'updated','Recovery holds source identity through verified restore; real external edits/deletes denied')
+        fired=False
+        with patch.object(protocol.os,'replace',fail_once):
+            try:store.publish(published,dict(published.files),validate,inputs={member:b'updated'},source_updates={'config_excel/new.xlsx':b'created'})
+            except OSError:pass
+            else:raise AssertionError('New source failure did not occur')
+        check(not (root/'config_excel/new.xlsx').exists() and not (root/protocol.JOURNAL).exists(),'New source rollback deletes via its still-exclusive verified handle')
+        # Both actual CLIs must expose the protocol exception and real recovery target.
+        cli_root=AREA/'recovery-cli';cli_root.mkdir()
+        shutil.copytree(ROOT/'tools',cli_root/'tools',ignore=shutil.ignore_patterns('__pycache__'))
+        (cli_root/'config_excel').mkdir();(cli_root/'data').mkdir()
+        journal=cli_root/protocol.JOURNAL
+        journal.write_bytes(protocol.encoded({'source_conflict':'config_excel/mon.xlsx'}))
+        for tool,args in [('config_workbooks.py',['import']),('level_editor_store.py',['load'])]:
+            result=subprocess.run([sys.executable,'-X','utf8',str(cli_root/'tools'/tool),*args],capture_output=True,text=True,encoding='utf-8',timeout=30)
+            message=json.loads(result.stdout)
+            check(result.returncode==1 and message['recovery_required'] and message['recovery_path']==str(journal) and 'source conflict' in message['message'],'Real CLI retains recovery location and reason: '+tool)
+
 
 
 def powershell_lock_protocol(root, protocol):
@@ -573,23 +549,18 @@ def native_lock_protocol(root, protocol):
 
 def main():
     generation_protocol()
+    print(f"CONFIGURATION_PROTOCOL {checks} assertions passed",flush=True)
+    published_editor_protocol()
+    print(f"CONFIGURATION_PUBLICATION cumulative {checks} assertions passed",flush=True)
     matrix=[]
     for case in CASES:
         for entry in ('incremental','store_load','store_validate','store_save'):
             matrix.append(run_case(case,entry))
         print('Recorded',case,flush=True)
-    faults=[transaction_case(entry,fault) for entry in ('incremental','store_validate','store_save')
-            for fault in ('stage_failure','replace_failure','rollback_failure','concurrent_source','concurrent_manifest','concurrent_target')]
     projection_and_excel()
-    report={'code_sha256':{n:cw.sha((ROOT/'tools'/n).read_bytes()) for n in ('config_workbooks.py','level_editor_store.py','import_workbook.py')},
-            'matrix':matrix,'faults':faults,'assertions':checks}
+    report={'matrix':matrix,'assertions':checks}
     (AREA/'INPUT_MATRIX.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
-    rows=['# INPUT_MATRIX','', '| Case | Entry | Result / stage | Error | Changed files |','|---|---|---|---|---|']
-    for r in matrix+faults:
-        error=(r.get('error_type','')+': '+r.get('error','')).replace('|','\\|').replace('\n',' ')
-        rows.append('| '+r['case']+' | '+r['entry']+' | '+('ACCEPT' if r['accepted'] else 'REJECT')+' / '+r.get('stage','fault')+' | '+error+' | '+', '.join(r['files'])+' |')
-    (AREA/'INPUT_MATRIX.md').write_text('\n'.join(rows)+'\n',encoding='utf-8')
-    print(f'Phase 8: {len(matrix)} input outcomes, {len(faults)} fault outcomes, {checks} assertions passed. Evidence: {AREA}',flush=True)
+    print(f'Configuration boundaries: {len(matrix)} input outcomes, {checks} assertions passed. Evidence: {AREA}',flush=True)
 
 
 if __name__=='__main__': main()

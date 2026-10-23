@@ -1,4 +1,6 @@
 """Exercise source editing only in test/run.py's isolated workspace."""
+import shutil
+import tempfile
 import copy
 import json
 from pathlib import Path
@@ -15,12 +17,24 @@ from config_workbooks import incremental_import
 
 class EditorTests(unittest.TestCase):
     def setUp(self):
-        self.store = Store(ROOT)
-        self.original = {p: p.read_bytes() for p in [*self.store.paths.values(), self.store.target, self.store.manifest]}
+        assert ROOT.parent.parent.name == 'work', 'Use test/run.py'
+        self.area = tempfile.TemporaryDirectory(dir=ROOT.parent)
+        root = Path(self.area.name)
+        for folder in ('data', 'config_excel'):
+            shutil.copytree(ROOT/folder, root/folder)
+        shutil.copy2(ROOT/'configuration_manifest.json', root/'configuration_manifest.json')
+        self.store = Store(root)
+        # Test-only observations; the public Store never exposes loose-file authority.
+        self.store.directory = root/'config_excel'
+        self.store.target = root/'data/game_data.json'
+        self.store.manifest = root/'configuration_manifest.json'
+        self.store.paths = {name:root/'config_excel'/f'{name}.xlsx' for name in ('mon','monGroup','level')}
+        self.original = {p: p.read_bytes() for folder in ('data','config_excel') for p in (root/folder).rglob('*') if p.is_file()}
+        self.original[self.store.manifest] = self.store.manifest.read_bytes()
         self.request = self.store.load()
 
     def tearDown(self):
-        for path, raw in self.original.items(): path.write_bytes(raw)
+        self.area.cleanup()
 
     def test_roundtrip_and_incremental(self):
         r = self.request
@@ -62,7 +76,8 @@ class EditorTests(unittest.TestCase):
         p = self.store.target
         p.write_bytes(p.read_bytes() + b'\n')
         changed = p.read_bytes()
-        with self.assertRaisesRegex(ValueError, '修改'): self.store.execute(self.request, True)
+        from config_snapshot import RecoveryRequired
+        with self.assertRaises(RecoveryRequired): self.store.execute(self.request, True)
         self.assertEqual(p.read_bytes(), changed)
 
     def test_save_level_without_dimension(self):
@@ -95,7 +110,7 @@ class EditorTests(unittest.TestCase):
             last_row = len(request['tables']['level']['rows']) + 3
             self.assertEqual(dimension.get('ref'), f'A1:{last_column}{last_row}')
 
-    def test_ratios_are_preserved_without_validation(self):
+    def test_invalid_source_ratios_reject_complete_publication(self):
         from lxml import etree as ET
         from config_workbooks import Q, sheet_parts
         import io
@@ -116,14 +131,16 @@ class EditorTests(unittest.TestCase):
         path.write_bytes(output.getvalue())
         request = self.store.load()
         request['tables']['level']['rows'][0]['length'] = 1234
-        self.store.execute(request)
-        self.store.execute(request, True)
+        before = {p:p.read_bytes() for p in self.original}
+        with self.assertRaises(ValueError): self.store.execute(request)
+        with self.assertRaises(ValueError): self.store.execute(request, True)
+        for p,raw in before.items(): self.assertEqual(p.read_bytes(),raw)
         with zipfile.ZipFile(path) as archive:
             cells = {c.get('r'): c for c in ET.fromstring(archive.read(part)).iter(Q+'c')}
             for address, raw in expected.items(): self.assertEqual(ET.tostring(cells[address]), raw)
         from import_workbook import validate_projection
         data = json.loads(self.store.target.read_text(encoding='utf-8'))
-        with self.assertRaises(ValueError): validate_projection(data)
+        validate_projection(data) # Previously committed valid runtime remains usable.
 
     def test_bad_inputs_do_not_write(self):
         changes = [
@@ -169,8 +186,12 @@ class EditorTests(unittest.TestCase):
     def test_failed_commit_rolls_back(self):
         import config_workbooks
         real_replace = config_workbooks.os.replace
+        fired = False
         def fail_target(source, target):
-            if Path(target) == self.store.target: raise OSError('simulated locked JSON')
+            nonlocal fired
+            if Path(target) == self.store.target and not fired:
+                fired = True
+                raise OSError('simulated locked JSON')
             real_replace(source, target)
         self.request['tables']['mon']['rows'][0]['health'] = 200
         with patch.object(config_workbooks.os, 'replace', side_effect=fail_target):

@@ -398,7 +398,7 @@ def main():
         result = {"ok":False,"action":args.action,"message":str(error),
                   "recovery_required": isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired))}
         if isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired)):
-            result.update(recovery_path=getattr(error,"recovery_path",".configuration-transaction.json"), rollback_failed=getattr(error,"rollback_failed",[]))
+            result.update(recovery_path=(getattr(error,"recovery_path",None) or str(ROOT/".configuration-transaction.json")), rollback_failed=getattr(error,"rollback_failed",[]))
         print(json.dumps(result, ensure_ascii=True))
         return 1
     # ASCII transport avoids Windows OS.execute code-page corruption; JSON restores Unicode.

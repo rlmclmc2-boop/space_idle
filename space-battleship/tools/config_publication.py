@@ -21,11 +21,15 @@ def relocate_metadata(root, before, after):
     data=json.loads(target.read_bytes())
     if 'source_files' in data:
         data['source_files']={k:str(after/'config_excel'/Path(v).name) for k,v in data['source_files'].items()}
-        target.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        target.write_bytes((json.dumps(data,ensure_ascii=False,indent=2)+'\n').encode('utf-8'))
     state=root/'data/.import_state.json'
     if state.exists():
         value=json.loads(state.read_bytes());value['directory']=str(after/'config_excel')
-        value['target_hash']=digest(target.read_bytes());state.write_bytes(encoded(value))
+        value['target_hash']=digest(target.read_bytes())
+        cache=value.get('entity_cache',{})
+        if 'dependencies' in cache:
+            cache['dependencies']={str(after/'data'/Path(name).name):sha for name,sha in cache['dependencies'].items()}
+        state.write_bytes(encoded(value))
 
 
 def validate_complete(root, project_sources=True):

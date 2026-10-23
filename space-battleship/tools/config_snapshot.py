@@ -21,7 +21,11 @@ JOURNAL = '.configuration-transaction.json'
 LOCK = '.configuration-lock'
 
 class Busy(RuntimeError): pass
-class RecoveryRequired(RuntimeError): pass
+class RecoveryRequired(RuntimeError):
+    def __init__(self,message,recovery_path=None,rollback_failed=()):
+        super().__init__(message)
+        self.recovery_path=recovery_path
+        self.rollback_failed=list(rollback_failed)
 class Stale(RuntimeError): pass
 
 
@@ -55,7 +59,7 @@ def exclusive(path):
 
 
 @contextmanager
-def stable_external_stream(path, writable=False, create_new=False):
+def stable_external_stream(path, writable=False, create_new=False, delete=False):
     """Capture external inputs through handles excluding writes and replacement."""
     if os.name != 'nt': raise Busy('External workbook requires a stable frozen input on this platform')
     import msvcrt
@@ -65,11 +69,24 @@ def stable_external_stream(path, writable=False, create_new=False):
                        ctypes.c_void_p, ctypes.c_uint32, ctypes.c_uint32, ctypes.c_void_p]
     create.restype = ctypes.c_void_p
     access, share = (0xC0000000, 0) if writable else (0x80000000, 1)
+    if delete:access |= 0x10000
     handle = create(str(Path(path).resolve()), access, share, None, 1 if create_new else 3, 0x80, None)
     if handle == ctypes.c_void_p(-1).value: raise Busy(str(path))
     with os.fdopen(msvcrt.open_osfhandle(handle, os.O_RDWR if writable else os.O_RDONLY),
                    'r+b' if writable else 'rb') as stream:
         yield stream
+
+
+def remove_held_file(stream):
+    """Delete the very file whose identity was checked, without releasing its lease."""
+    import msvcrt
+    kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+    dispose=kernel.SetFileInformationByHandle
+    dispose.argtypes=[ctypes.c_void_p,ctypes.c_int,ctypes.c_void_p,ctypes.c_uint32]
+    dispose.restype=ctypes.c_int
+    flag=ctypes.c_int(1) # FILE_DISPOSITION_INFO.DeleteFile
+    if not dispose(msvcrt.get_osfhandle(stream.fileno()),4,ctypes.byref(flag),ctypes.sizeof(flag)):
+        raise ctypes.WinError(ctypes.get_last_error())
 
 
 def stable_external_bytes(path):
@@ -181,6 +198,12 @@ class Store:
         finally: temp.unlink(missing_ok=True)
 
     def _recover(self):
+        try:return self._recover_locked()
+        except RecoveryRequired as error:
+            if error.recovery_path is None:error.recovery_path=str(self.root/JOURNAL)
+            raise
+
+    def _recover_locked(self):
         journal = self.root / JOURNAL
         if not journal.exists(): return
         state = json.loads(journal.read_bytes())
@@ -199,27 +222,44 @@ class Store:
                 raise RecoveryRequired('Committed generation cannot be verified')
         elif state['state'] in ('installing', 'recovery_required'):
             try:
-                # Restore every original, including targets replaced just before a crash.
-                for name, entry in state['originals'].items():
-                    target = self.path(name)
-                    if name in state.get('source_targets', {}) and target.exists():
-                        actual=digest(stable_external_bytes(target))
-                        allowed={state['source_targets'][name]}
+                with ExitStack() as leases:
+                    sources={}
+                    # Acquire all source leases first; verify and restore through
+                    # those same handles, retained through generation verification.
+                    for name,wanted in state.get('source_targets',{}).items():
+                        entry=state['originals'][name];target=self.path(name)
+                        if not target.exists():
+                            if entry is not None:raise RecoveryRequired('Original source is missing: '+name)
+                            continue
+                        stream=leases.enter_context(stable_external_stream(target,True,delete=entry is None))
+                        actual=digest(stream.read());allowed={wanted}
                         if entry is not None:allowed.add(entry['sha256'])
-                        if actual not in allowed:
-                            raise RecoveryRequired('External source changed or incomplete; retain for recovery: '+name)
-                    if entry is None: target.unlink(missing_ok=True)
-                    else:
-                        saved = recovery / entry['file']
-                        raw = saved.read_bytes()
-                        if digest(raw) != entry['sha256']: raise RecoveryRequired('Recovery backup mismatch')
-                        self._atomic(target, raw)
-                if state['previous'] is not None and self._capture().identity != state['previous']:
-                    raise RecoveryRequired('Restored generation cannot be verified')
+                        if actual not in allowed:raise RecoveryRequired('External source changed or incomplete: '+name)
+                        sources[name]=stream
+                    for name,entry in state['originals'].items():
+                        target=self.path(name)
+                        raw=None
+                        if entry is not None:
+                            raw=(recovery/entry['file']).read_bytes()
+                            if digest(raw)!=entry['sha256']:raise RecoveryRequired('Recovery backup mismatch: '+name)
+                        if name in sources:
+                            stream=sources[name]
+                            if entry is None:remove_held_file(stream)
+                            else:
+                                stream.seek(0);stream.write(raw);stream.truncate();stream.flush();os.fsync(stream.fileno())
+                                stream.seek(0)
+                                if stream.read()!=raw:raise RecoveryRequired('Source restore readback mismatch: '+name)
+                        elif name in state.get('source_targets',{}):
+                            continue # Missing newly created target; do not delete a later arrival.
+                        elif entry is None:target.unlink(missing_ok=True)
+                        else:self._atomic(target,raw)
+                    if state['previous'] is not None and self._capture().identity != state['previous']:
+                        raise RecoveryRequired('Restored generation cannot be verified')
             except Exception as error:
-                state['state'] = 'recovery_required'
-                self._atomic(journal, encoded(state))
-                raise RecoveryRequired('Configuration recovery retained: ' + str(recovery)) from error
+                state['state']='recovery_required'
+                self._atomic(journal,encoded(state))
+                raise RecoveryRequired('Configuration recovery retained: '+str(error),str(recovery),
+                                       [str(self.path(name)) for name in state.get('source_targets',{})]) from error
         else: raise RecoveryRequired('Unknown configuration transaction state')
         journal.unlink()
         shutil.rmtree(recovery)
@@ -285,6 +325,10 @@ class Store:
                         if self.path(name).exists():raise Stale('New workbook already exists: '+name)
                 except BaseException:
                     source_leases.close();raise
+                # A verified no-op keeps file identities/mtimes; still rechecks the
+                # current generation and every held source before returning.
+                if expected is not None and manifest==expected.manifest and not source_updates:
+                    return expected
                 originals = {}
                 for index, name in enumerate(staged):
                     target = self.path(name)

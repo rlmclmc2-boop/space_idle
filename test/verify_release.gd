@@ -86,7 +86,10 @@ func verify() -> void:
 	main.beep(440.0)
 	check(main.audio.stream is AudioStreamWAV and main.audio.stream.data.size() == 1100, "Procedural audio unavailable")
 	main.sound_on = false
-	check(main.visual_config.get("ships",{}).size() == 11 and main.visual_config.get("weapons",{}).size() == 4, "Missing bundled visual profiles")
+	var published_visuals:Dictionary = load("res://scripts/configuration_snapshot.gd").active().json("res://data/ship_weapon_visuals.json")
+	check(not published_visuals.get("ships",{}).is_empty() and not published_visuals.get("weapons",{}).is_empty() and main.visual_config.get("ships",{}).keys() == published_visuals.ships.keys() and main.visual_config.get("weapons",{}) == published_visuals.weapons, "Missing or mismatched published visual profiles")
+	for ship_id in published_visuals.get("ships",{}):
+		check(main.visual_config.ships[ship_id].get("texture") == published_visuals.ships[ship_id].get("texture"), "Published ship texture mismatch: "+str(ship_id))
 	for id in main.db.data.get("jewel", {}):
 		var path = str(main.db.jewel(str(id)).get("image", "res://assets/jewels/%s.svg" % id))
 		check(ResourceLoader.exists(path) and load(path) is Texture2D, "Missing jewel texture: " + path)

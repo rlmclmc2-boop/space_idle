@@ -48,7 +48,7 @@ def completed(output, test, phase):
         # Exact existing terminal summaries, keyed to their entry; no generic "passed".
         summaries = {
             "test_ai_tech_tree_config.py": r"AI_TECH_CONFIG=PASS rows=8",
-            "test_config_input_matrix.py": r"Phase 8: [1-9]\d* input outcomes, [1-9]\d* fault outcomes, [1-9]\d* assertions passed\. Evidence: .+",
+            "test_config_input_matrix.py": r"Configuration boundaries: [1-9]\d* input outcomes, [1-9]\d* assertions passed\. Evidence: .+",
             "test_enemy_attack_pairs.py": re.escape("Attack pairs: current authored pairs, four source projections, legacy metadata and malformed/Lv1-order cases passed"),
             "test_enemy_intel_import.py": re.escape("Enemy intel import: full data valid; current opening mechanism mismatches and visual mismatch rejected; native reactive constants and integer-ms durations match"),
             "test_enemy_shield_schema.py": re.escape("Enemy shield schema: authored data, omitted legacy fields and 6 invalid cases passed"),
