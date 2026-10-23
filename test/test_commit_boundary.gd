@@ -46,6 +46,13 @@ class SecondRegionFailure extends "res://scripts/galaxy_runtime.gd":
 		if key==refused_key:return false
 		return super.flush_pending(g,key)
 
+class GalaxyPreparationFailure extends "res://scripts/galaxy_runtime.gd":
+	var refuse:=true
+	var durations:Array=[]
+	func prepare_advance(g,dt:float)->bool:
+		durations.append(dt)
+		return false if refuse else super.prepare_advance(g,dt)
+
 class SecondCombatFailure extends "res://scripts/presented_battle_game.gd":
 	var executed:=0
 	var refuse:=true
@@ -207,10 +214,12 @@ func _initialize()->void:
 	cold_growth_commands()
 	income_receipts()
 	derived_income_peak()
+	timed_resource_pickup()
 	shared_income_failure()
 	combat_income_failure()
 	partial_domain_failure()
 	partial_region_failure()
+	galaxy_preparation_retry()
 	print("COMMIT BOUNDARY: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
@@ -379,3 +388,26 @@ func partial_region_failure()->void:
 	check(g.paused and g.step_progress.item==1 and owner.pending(keys[0])==0 and is_equal_approx(owner.pending(keys[1]),dt),"second region failure retains its accepted time after first commit")
 	runtime.refused_key="";g.paused=false;runtime.advance(g,999.0)
 	check(not g.step_progress.active and owner.regions[keys[0]].save_data()==first and owner.income_time()==income and owner.pending(keys[1])==0,"region retry drains accepted work without replaying income or first region")
+
+func galaxy_preparation_retry()->void:
+	var g:=fixture();g.galaxy_runtime.refresh_unlocks(g)
+	var runtime:=GalaxyPreparationFailure.new();g.galaxy_runtime=runtime
+	var before:float=g.galaxy.income_time()
+	runtime.advance(g,0.1)
+	check(g.step_progress.active and not g.step_progress.accepted and g.galaxy.income_time()==before,"Galaxy preparation refusal retains an unaccepted interval")
+	g.paused=false;runtime.refuse=false;runtime.advance(g,0.2)
+	check(runtime.durations==[0.1,0.1] and is_equal_approx(g.galaxy.income_time()-before,0.1) and not g.step_progress.active,"Galaxy direct retry prepares and credits only the original 0.1 seconds")
+
+
+func timed_resource_pickup()->void:
+	var g:=OrderedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.start(1,false)
+	g.db.config.autoGenRes="1,1,120,100000"
+	g.advance_auto_gen(1.0)
+	check(g.drops.size()==1 and g.drops[0].get("auto_gen",false),"Configured top timer produces an actual resource block")
+	g.db.config.autoGenRes="";g.advance_auto_gen(1.0)
+	var rows:Array=g.income_history.records()
+	check(g.drops.is_empty() and rows.size()==1 and rows[0].origin=="drop","Top block automatically collects as native battlefield pickup")
+	if rows.is_empty():return
+	check(g.income_history.peak_total("1",g.economy_time())==rows[0].amount and g.income_history.production_total("1",g.production_time(),g.economy_time(),g.production_time())==rows[0].production_base,"Unification and Galaxy both include the top block with their existing amount bases")
+	check(g.research.save_data().aiIncomePeak["1"]==N.divide(rows[0].amount,60.0),"Top block commits the actual unification peak")

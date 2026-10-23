@@ -1,0 +1,21 @@
+{
+  "base_commit": "98402f1a16def13e98515ceb8401da8a2a92d05e",
+  "engine": "Godot 4.7.2",
+  "source_sha256": {
+    "space-battleship/scripts/game.gd": "47140bdf2ba0101c65dc10720a87a3aed62bfce6f8c8cbd43af8415b82b9d89a",
+    "space-battleship/scripts/crew_system.gd": "8aa97262c3913eb4dd1acd8a0a6e6db805a5973bab358a37b51a26299661ae51",
+    "space-battleship/scripts/galaxy_runtime.gd": "63249690af45979fb9ddb7106ccf53c0ff42c74b96260115ff8c4c86d6397e0c",
+    "space-battleship/scripts/hyperspace_runtime.gd": "61186254033addeee7f9f931e1f1205c95a0046780d96ac0721d608c553f6824",
+    "space-battleship/scripts/income_history.gd": "d30cc874cbe3a302880c99e3eb0539f5532db5aa3fb8cc3da4031ef3ad23e05b",
+    "test/test_commit_boundary.gd": "7c822a4e39fbdc1eba8c27847a93e0f8b07ca5310bdc48d24bc3d7cae90f2180",
+    "test/test_crew_dirty.gd": "d927f68da8618ba21b117f29dddeb932871d8b740076d236ba898abf015ecf84",
+    "test/test_hyperspace_material_economy.gd": "fe173babd11f2c3d4e3861746e7733454b6e3822c3d4cbb022f59c80ff198365",
+    "test/test_ai_tech_tree.gd": "1bda90d672bf00d049de891e6f9f412744f92d5a40f0105b4bb4d7ddf3416ce9"
+  },
+  "final_log_sha256": {
+    "resume-final-test_ai_tech_tree.gd.log": "237d23eb953f8343034c952f1de214fd91cac94f30577bf49a17de5c861db1eb",
+    "resume-final-test_commit_boundary.gd.log": "98c6549e730d9b83c08d39ea2ecf8f7bc5059f91f81050b07ece5e4bc120ff57",
+    "resume-final-test_crew_dirty.gd.log": "ac9cb02310923154bc946da30a55c5bb821941b1082a2cb29c4f699945b9f0ed",
+    "resume-final-test_hyperspace_material_economy.gd.log": "55fdae18a5a813a0bc7fd79f7728f324e178d7b5f36ffc9575ebc28a70c2b203"
+  }
+}

@@ -10,6 +10,11 @@ class CallbackGame extends BattleGame:
 		if before_change.is_valid():
 			var callback:=before_change;before_change=Callable();callback.call()
 		return true
+class CompletionFailure extends "res://scripts/hyperspace_runtime.gd":
+	var refuse_kind:="claimed"
+	func commit_result(g,plan:Dictionary)->Dictionary:
+		if plan.get("kind","")==refuse_kind:return Result.make("blocked","test_handoff")
+		return super.commit_result(g,plan)
 class TrackedCrew extends "res://scripts/crew_system.gd":
 	var commits:=0
 	var last:Dictionary={}
@@ -206,6 +211,7 @@ func _initialize()->void:
 	exchange_boundaries()
 	consumer_boundaries()
 	completion_boundaries()
+	exact_duration_retry(db)
 	print("MATERIAL_ECONOMY: ",checks," checks ",failures," failures; formula and committed ownership boundaries")
 	quit(1 if failures else 0)
 
@@ -334,3 +340,22 @@ func consumer_boundaries() -> void:
 	var online: Dictionary=g.hyperspace.online_config(g)
 	check(is_equal_approx(online.energy_cap,float(g.hyperspace.config.energy_cap)) and is_equal_approx(online.energy_rate,float(g.hyperspace.config.energy_rate)),"material module does not modify energy rate or cap")
 	check(is_equal_approx(online.exploration_material_multiplier,1.21),"hyperspace charge now targets exploration material income")
+
+
+func exact_duration_retry(db)->void:
+	for kind in ["claimed","completed_pending"]:
+		var g=fixture(db);var runtime:=CompletionFailure.new();runtime.refuse_kind=kind;g.hyperspace_runtime=runtime
+		var hs:Dictionary=g.hyperspace.save_data();hs.hyperspace.next_run=2
+		hs.hyperspace.idle={"round_id":1,"run_id":1,"status":"started","mode":"idle","route":"alpha","level":5,"crew_id":"","crew_snapshot":"","luck":0.0,"crew_luck":0.0,"permanent_luck":0.0,"luck_state":"0","return_target":{},"ticket":0.0,"duration":3.0,"work":0.0,"reward":{}}
+		check(g.hyperspace.install_snapshot(hs,db),"Exact-duration current receipt fixture installs "+kind)
+		runtime.advance(g,3.0)
+		check(g.paused and g.step_progress.active and g.hyperspace.state.pending_time==0.0 and g.hyperspace.state.idle.work==3.0,"Exact-duration commit refusal retains operation with zero remaining time "+kind)
+		check(g.portable_save_data().is_empty(),"Blocked zero-time completion gates snapshot "+kind)
+		var rng_state:String=g.hyperspace.state.random_state
+		g.paused=false;runtime.drain(g)
+		check(g.step_progress.active and g.paused and g.hyperspace.state.random_state==rng_state,"Repeated refused drain preserves receipt/RNG and snapshot gate "+kind)
+		runtime.refuse_kind="";g.paused=false;runtime.drain(g)
+		check(not g.step_progress.active and g.hyperspace.state.idle.is_empty() and g.hyperspace.state.settled_run==1 and g.hyperspace.state.pending_time==0.0,"Zero-time drain retries outstanding completion/claim before retiring step "+kind)
+		var wallet:Dictionary=g.economy.material_wallet();var state:Dictionary=g.hyperspace.save_data()
+		runtime.drain(g)
+		check(g.economy.material_wallet()==wallet and g.hyperspace.save_data()==state and not g.portable_save_data().is_empty(),"Repeated drain cannot credit or advance RNG twice "+kind)

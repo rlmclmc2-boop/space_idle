@@ -20,6 +20,9 @@ class ReadyGame extends BattleGame:
 		if not crew.members().is_empty() and planets.all().size()!=db.data.planet.size():early_target_read=true
 		return super.loadout_entries(category)
 
+class RefusedNumeric extends RefCounted:
+	func prepare_numeric_batch(_g,_plan,_health)->Dictionary:return {}
+
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -85,6 +88,7 @@ func _initialize()->void:
 	coordination_boundaries()
 	material_wakeup()
 	binding_boundaries()
+	blocked_jobs()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
@@ -243,3 +247,41 @@ func binding_boundaries()->void:
 	check(g.crew.install_snapshot(raw,db) and not g.crew.can_assign(g,other.crewId,"stage4_research","hightech",true),"Runtime cannot exceed an existing occupant's capacity")
 	raw.crew.pop_back()
 	check(not g.crew.valid_snapshot(raw,db),"New definitions still require complete snapshots without backfill")
+
+
+func blocked_jobs()->void:
+	for job in ["equipment_upgrade","reactor_upgrade","jewel_auto"]:
+		var g:=CallbackGame.new(ShipDatabase.new(),false)
+		g.profile.cleared=range(1,101);g.rebuild_unlocks()
+		g.economy.credit("1",1e20);g.economy.credit("2",1e20);g.economy.credit("jewel",1e20)
+		var target:String="equipment" if job=="equipment_upgrade" else "reactor" if job=="reactor_upgrade" else "jewels"
+		check(g.assign_crew("navigator",job,target),"Blocked job fixture assignment "+job)
+		var before:=g.economy.save_data();var growth:Array=[g.slot_entry("weapons",0).level,g.reactor.level(),g.enhancement_level()]
+		g.accept_change=false
+		if job=="equipment_upgrade":g.native_execution=RefusedNumeric.new()
+		g.crew.advance(g,10.0)
+		check(g.paused and g.step_progress.active and g.step_progress.stage==6 and g.step_progress.item==0 and g.crew.timers.has("navigator"),"Native refusal retains due purchase position and timer "+job)
+		check(g.economy.save_data()==before and g.portable_save_data().is_empty(),"Blocked purchase spends nothing and gates snapshots "+job)
+		g.accept_change=true;g.native_execution=null;g.paused=false;g.crew.advance(g,100.0)
+		var after:Array=[g.slot_entry("weapons",0).level,g.reactor.level(),g.enhancement_level()]
+		check(not g.step_progress.active and after!=growth,"Retained purchase executes after refusal clears "+job)
+		g.crew.advance(g,0.001)
+		check(after==[g.slot_entry("weapons",0).level,g.reactor.level(),g.enhancement_level()],"Retry duration does not replay long-frame overrun "+job)
+	# Purchase commits, but its immediate capacity split refuses handoff.
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.economy.credit("2",1e20)
+	g.assign_crew("navigator","reactor_upgrade","reactor")
+	var before_level:=g.reactor.level()
+	var reject_split:=func(kind,_payload):
+		if kind=="reactor_changed":g.accept_change=false
+	g.event.connect(reject_split);g.crew.advance(g,1.0);g.event.disconnect(reject_split)
+	var paid:=g.economy.save_data()
+	check(g.paused and g.reactor.level()==before_level+1 and g.step_progress.items[g.step_progress.item].kind=="allocation","Committed reactor purchase retires before blocked allocation")
+	g.accept_change=true;g.paused=false;g.crew.advance(g,100.0)
+	check(not g.step_progress.active and g.reactor.level()==before_level+1 and g.economy.save_data()==paid and g.reactor_allocated()==g.reactor_capacity(),"Allocation resumes without another purchase or debit")
+	# An independently due allocation also survives a refusal.
+	g.set_reactor_allocation("weapons",0);g.crew.timers.clear();g.crew.intervals.clear()
+	g.accept_change=false;g.crew.advance(g,1.0)
+	check(g.paused and g.crew.allocation_timers.has("navigator") and g.step_progress.active,"Standalone allocation deadline remains due after refusal")
+	g.accept_change=true;g.paused=false;g.crew.advance(g,2.0)
+	check(not g.step_progress.active and g.reactor_allocated()==g.reactor_capacity() and g.reactor.level()==before_level+1,"Standalone allocation resumes at its retained operation")

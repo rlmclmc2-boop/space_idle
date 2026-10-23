@@ -2301,7 +2301,7 @@ func commit_income_receipt(id:String,earned:Variant,source:String,notices:Array,
 	if commit_effects.active:return R.make("blocked","commit_in_progress")
 	if not N.valid(earned):return R.make("rejected","invalid_income")
 	var qualified:bool=source in ["drop","furnace"] and (id!="jewel" or N.compare(earned,0)>0)
-	var peak:Dictionary=research.income_peak_proposal(self,id,earned) if qualified and income_history.peak_eligible(source) else {}
+	var peak:Dictionary=research.income_peak_proposal(self,id,earned) if qualified and income_history.native_pickup_eligible(source) else {}
 	var context:=continuation_context()
 	var original:Dictionary=drop.duplicate(true)
 	if not peak.is_empty() and peak.affects_combat and not native_before_configuration_change():return R.make("blocked","native_handoff")
@@ -2432,8 +2432,11 @@ func upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	return not plan.is_empty() and commit_equipment_upgrades(plan,false)
 
 func upgrade_equipment_batch(mode: String) -> bool:
+	return CommandResult.succeeded(upgrade_equipment_batch_result(mode))
+
+func upgrade_equipment_batch_result(mode:String)->Dictionary:
 	var plan:=equipment.prepare_upgrades(db,economy.equipment_balances(db.evolution_material_id()),hyperspace.is_unlocked(self),mode)
-	return not plan.is_empty() and commit_equipment_upgrades(plan,true)
+	return CommandResult.make("rejected","upgrade_unavailable") if plan.is_empty() else commit_equipment_upgrades_result(plan,true)
 
 func projected_upgrade_health(plan: Dictionary) -> Dictionary:
 	var result:=player.duplicate(true)
@@ -2551,6 +2554,7 @@ func _tick_logical_step(_dt:float)->void:
 		"hyperspace":hyperspace_runtime.drain(self);return
 		"planets":advance_planets(step_progress.substep);return
 		"research":advance_hightech(step_progress.substep);return
+		"crew":crew.advance(self,step_progress.substep);return
 	while step_progress.completed+0.000000001<step_progress.duration and not paused:
 		if step_progress.substep==0.0:
 			step_progress.open_substep(next_substep_size(step_progress.duration-step_progress.completed))

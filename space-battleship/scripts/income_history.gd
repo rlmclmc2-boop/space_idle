@@ -40,14 +40,15 @@ func display_total(id:String,at:float)->Variant:
 		if sample.id==id and float(sample.time)>at-60.0 and float(sample.time)<=at:total=N.add(total,sample.amount)
 	return total
 
-# Derived receipts (furnace/Galaxy) cannot feed the production income peak.
+# Enemy drops and top timed resource blocks share origin=drop.
+# Unification and Galaxy use this one source predicate; derived receipts do not qualify.
 # Keep the peak's existing wall clock and credited-amount basis.
-func peak_eligible(source:String)->bool:return source=="drop"
+func native_pickup_eligible(source:String)->bool:return source=="drop"
 
 func peak_total(id:String,wall_now:float)->Variant:
 	var total:Variant=0.0
 	for sample in _samples:
-		if not peak_eligible(str(sample.get("origin","unknown"))) or str(sample.id)!=id:continue
+		if not native_pickup_eligible(str(sample.get("origin","unknown"))) or str(sample.id)!=id:continue
 		if float(sample.time)>wall_now-60.0 and float(sample.time)<=wall_now:total=N.add(total,sample.amount)
 	return total
 
@@ -62,7 +63,7 @@ func research_total(id:String,at:float)->Variant:
 func production_total(id:String,at:float,wall_now:float,production_now:float)->Variant:
 	var total:Variant=0.0
 	for sample in _samples:
-		if sample.get("origin","drop")!="drop" or str(sample.id)!=id:continue
+		if not native_pickup_eligible(str(sample.get("origin","unknown"))) or str(sample.id)!=id:continue
 		var stamp:=float(sample.get("production_time",production_now-(wall_now-float(sample.time))))
 		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.get("production_base",sample.amount))
 	return total
@@ -70,6 +71,6 @@ func production_total(id:String,at:float,wall_now:float,production_now:float)->V
 func wall_production_total(id:String,at:float)->Variant:
 	var total:Variant=0.0
 	for sample in _samples:
-		if sample.get("origin","drop")!="drop" or sample.id!=id:continue
+		if not native_pickup_eligible(str(sample.get("origin","unknown"))) or sample.id!=id:continue
 		if float(sample.time)>at-60.0 and float(sample.time)<=at:total=N.add(total,sample.get("production_base",sample.amount))
 	return total

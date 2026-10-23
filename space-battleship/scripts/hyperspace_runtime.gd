@@ -99,7 +99,9 @@ func _advance(g)->void:
 	var c:Dictionary=owner.online_config(g)
 	var tracked:bool=g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==2
 	var completions:int=int(g.step_progress.detail.get("completions",0)) if tracked else 0
-	while float(owner.state.pending_time)>0.000000001:
+	# Finishing/claiming is an operation, not a positive time balance. A failed
+	# commit at the exact duration must still retry after all time was consumed.
+	while true:
 		var s:Dictionary=owner.state
 		for slot in ["active","idle"]:
 			var pending:Dictionary=s[slot]
@@ -107,6 +109,8 @@ func _advance(g)->void:
 				if not online_commit(g,owner.prepare_claim(g,int(pending.round_id),int(pending.run_id))):
 					inactive_work(g,c,not Bag.has_space(owner.state.inventory,c));return
 				s=owner.state
+		var completion_due:bool=not s.idle.is_empty() and s.idle.get("status","")=="started" and float(s.idle.work)+0.000000001>=float(s.idle.duration)
+		if float(s.pending_time)<=0.000000001 and not completion_due:return
 		if tracked and g.step_progress.detail.get("once_completed",false) and s.idle.is_empty():inactive_work(g,c);return
 		if completions>=int(c.completion_budget):return
 		if s.idle.is_empty():

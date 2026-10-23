@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SCRIPT ERROR: Parse Error: Cannot infer the type of "elapsed" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://scripts/crew_system.gd:364)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+   at: GDScript::reload (res://scripts/game.gd:0)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+   at: GDScript::reload (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_crew_dirty.gd:0)
+ERROR: Failed to load script "C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_crew_dirty.gd" with error "Compilation failed".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+SCRIPT ERROR: Invalid call. Nonexistent function 'new' in base 'GDScript'.
+   at: BattleGame.@implicit_new (res://scripts/game.gd:68)
+   GDScript backtrace (most recent call first):
+       [0] @implicit_new (res://scripts/game.gd:68)
+       [1] _initialize (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_crew_dirty.gd:38)
+SCRIPT ERROR: Invalid assignment of property or key 'validation_db' with value of type 'RefCounted (ShipDatabase)' on a base object of type 'Nil'.
+   at: BattleGame._init (res://scripts/game.gd:183)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:183)
+       [1] _initialize (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_crew_dirty.gd:38)
+SCRIPT ERROR: Invalid call. Nonexistent function 'available_targets' in base 'Nil'.
+   at: _initialize (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_crew_dirty.gd:39)
+   GDScript backtrace (most recent call first):
+       [0] _initialize (C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/test_time_steps-ak2cifhs/test/test_crew_dirty.gd:39)

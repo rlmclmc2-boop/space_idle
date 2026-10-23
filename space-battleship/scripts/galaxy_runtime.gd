@@ -40,6 +40,7 @@ func advance(g,dt:float)->void:
 	if not step.blocked_context.is_empty() and step.blocked_context!=g.continuation_context():
 		step.freeze("galaxy_context_changed");g.paused=true;return
 	step.reason="";step.blocked_context=[]
+	dt=step.substep
 	if not step.accepted:
 		if not prepare_advance(g,dt):g.block_step("galaxy_preparation");return
 		native_prepared=false
