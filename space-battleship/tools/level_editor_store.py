@@ -1,3 +1,4 @@
+from config_snapshot import RecoveryRequired as ConfigurationRecoveryRequired
 """Level editor source transaction. Uses the existing XLSX projection contract."""
 from ui_text import t as ui_text
 import argparse
@@ -269,9 +270,9 @@ def main():
         result = store.load() if args.action == 'load' else store.execute(json.loads(args.request.read_text(encoding='utf-8')), args.action == 'save')
         print(json.dumps({'ok': True, **result}, ensure_ascii=True, allow_nan=False))
     except Exception as error:
-        result = {'ok': False, 'message': str(error), 'recovery_required': isinstance(error, RecoveryRequired)}
-        if isinstance(error, RecoveryRequired):
-            result.update(recovery_path=error.recovery_path, rollback_failed=error.rollback_failed)
+        result = {'ok': False, 'message': str(error), 'recovery_required': isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired))}
+        if isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired)):
+            result.update(recovery_path=getattr(error,"recovery_path",".configuration-transaction.json"), rollback_failed=getattr(error,"rollback_failed",[]))
         print(json.dumps(result, ensure_ascii=True))
         return 1
     return 0

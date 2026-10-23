@@ -64,7 +64,11 @@ def worker(root,action,request):
         result=cw._prepare_sync_workbooks(root/'external.xlsx',root/'config_excel')
     elif action=='full':
         from import_workbook import _prepare_full_import
-        _prepare_full_import(root/'external.xlsx',root/'data/game_data.json')
+        mainline=_prepare_full_import(root/'external.xlsx',root/'data/game_data.json')
+        from hyperspace_entities import read_bundle
+        projected,_=read_bundle({name:(root/'config_excel'/name).read_bytes() for name in ('hyperspace_config.xlsx','hyperspace_enemies.xlsx')},mainline,root/'data')
+        for name,value in projected.items():
+            (root/'data'/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
         result={'ok':True,'action':'full'}
     elif action=='load':
         result=le.PreparedStore(root).load()
@@ -74,7 +78,7 @@ def worker(root,action,request):
         files,warnings=store.prepare(request)
         for path,raw in files.items():path.write_bytes(raw)
         result={'warnings':warnings}
-    if action!='load':validate_complete(root,action not in ('split','full'))
+    if action!='load':validate_complete(root,action!='split')
     return result
 
 
@@ -97,14 +101,14 @@ def execute(root,action,request=None,source=None):
         if external is not None:(prepared/'external.xlsx').write_bytes(external)
         control=Path(temporary)/'request.json';control.write_bytes(encoded({'action':action,'request':request}))
         result_path=Path(temporary)/'result.json'
-        child=subprocess.run([sys.executable,str(prepared/'tools/config_publication.py'),str(control),str(result_path)],
+        child=subprocess.run([sys.executable,'-X','utf8',str(prepared/'tools/config_publication.py'),str(control),str(result_path)],
                              cwd=prepared,capture_output=True,text=True,encoding='utf-8',timeout=180)
         if child.returncode:
             raise ValueError(child.stderr.strip() or child.stdout.strip() or 'Configuration preparation failed')
         result=json.loads(result_path.read_bytes())
         if action=='load':return {**result,'snapshot':identity}
         if action!='initialize':relocate_metadata(prepared,prepared,root)
-        files=json_files(prepared)
+        files={name:raw.replace(b"\r\n",b"\n") for name,raw in json_files(prepared).items()}
         if action=='split':
             path=prepared/'config_excel/.split_manifest.json';mapping=json.loads(path.read_bytes())
             mapping.update(source=str(Path(source).resolve()),source_sha256=digest(external))
@@ -128,7 +132,8 @@ def execute(root,action,request=None,source=None):
                 'files':[{'target':str(root/name),'original':name,'sha256':digest(raw)} for name,raw in originals.items()]}))
             result['backup']=str(backup)
         published=store.publish(expected,files,lambda _:None,inputs=inputs,source_updates=updates,
-                                initial_files=original if expected is None else None)
+                                initial_files=original if expected is None else None,
+                                external_inputs=[{"path":str(Path(source).resolve()),"sha256":digest(external),"size":len(external),"model":"frozen_selection"}] if external is not None else None)
         result['generation']=published.identity
         if action=='save':return {**execute(root,'load'),**result}
         return result

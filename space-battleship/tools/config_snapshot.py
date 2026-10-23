@@ -143,7 +143,7 @@ class Store:
 
     def capture(self):
         with exclusive(self.root / LOCK):
-            self._recover()
+            if (self.root/JOURNAL).exists():raise RecoveryRequired('Configuration publication unresolved; run publisher recovery')
             return self._capture()
 
     def capture_publication(self, initialize=False):
@@ -224,7 +224,7 @@ class Store:
         journal.unlink()
         shutil.rmtree(recovery)
 
-    def publish(self, expected, files, validate, *, inputs=None, source_updates=None, initial_files=None):
+    def publish(self, expected, files, validate, *, inputs=None, source_updates=None, initial_files=None, external_inputs=None):
         """Publish a complete candidate; validate must check the whole candidate.
 
         expected=None is an explicit initial publication. Ordinary capture never
@@ -244,7 +244,9 @@ class Store:
             self.member(name)
             if not isinstance(raw, bytes): raise TypeError('Configuration payload must be bytes')
         validate(MappingProxyType(files))  # expensive parsing happens before locking
-        manifest = self.manifest(files, {**inputs, **source_updates} if inputs or source_updates else None)
+        manifest_value=json.loads(self.manifest(files, {**inputs, **source_updates} if inputs or source_updates else None))
+        if external_inputs is not None:manifest_value["external_inputs"]=external_inputs
+        manifest=encoded(manifest_value)
         if expected is not None and not set(expected.files).issubset(files):
             raise ValueError('Publication cannot silently remove generation members')
         recovery = self.root / '.runtime/config-transactions' / uuid.uuid4().hex

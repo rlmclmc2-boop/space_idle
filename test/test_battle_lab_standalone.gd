@@ -16,7 +16,7 @@ func run() -> void:
 	var panel=entry.panel
 	check(panel.tabs.get_tab_count()==3 and panel.visible and panel.tabs.get_tab_title(0)==UIText.t("fleet.enemy_tab") and panel.tabs.get_tab_title(1)==UIText.t("auto_level.title") and panel.tabs.get_tab_title(2)==UIText.t("cycle_level.title"),"current three tool pages remain available")
 	check(not panel.database.data.is_empty(),"source database loaded")
-	check(panel.database.mon_source_error.is_empty(),"external enemy workbook accepted: "+panel.database.mon_source_error)
+	check(panel.database.mon_source_error.is_empty(),"packaged enemy workbook accepted: "+panel.database.mon_source_error)
 	if not panel.database.mon_source_error.is_empty():
 		entry.queue_free()
 		await process_frame
@@ -27,7 +27,7 @@ func run() -> void:
 	var expected_path:=OS.get_environment("SPACE_MON_PROJECTION")
 	if not expected_path.is_empty():
 		var expected=JSON.parse_string(FileAccess.get_file_as_string(expected_path))
-		check(expected is Dictionary and panel.database.enemies==expected,"external workbook projection equals official importer for every row and field")
+		check(expected is Dictionary and panel.database.enemies==expected,"packaged workbook projection equals official importer for every row and field")
 		print("STANDALONE projection comparison failures=",failures)
 	var large_id: String=""
 	var small_id: String=""
@@ -72,6 +72,7 @@ func run() -> void:
 	var deadline:=Time.get_ticks_msec()+30000
 	while levels.generator.busy() and Time.get_ticks_msec()<deadline:levels.generator.process(20000)
 	levels.refresh()
+	print("STANDALONE_GENERATION ",JSON.stringify({"status":levels.generator.status,"error":levels.generator.error,"evaluated":levels.generator.evaluated.size(),"levels":levels.generator.levels.size()}))
 	check(levels.generator.status=="completed" and levels.generator.evaluated.size()==panel.rows.size() and levels.generator.levels.size()==1,"current fleets become one multi-wave level")
 	if levels.generator.levels.size()==1:
 		var stage: Dictionary=levels.generator.levels[0]
@@ -89,6 +90,15 @@ func run() -> void:
 	for check_box in levels.ship_checks.values():
 		if check_box.button_pressed:selected_ship_count+=1
 	check(selected_ship_count>=1,"ship selection retained on level page")
+	# Existing capture remains authoritative if package files change afterwards.
+	var template_path:="res://config_excel/published/level.xlsx"
+	var template_bytes:=FileAccess.get_file_as_bytes(template_path)
+	FileAccess.open(template_path,FileAccess.WRITE).store_string("injected later replacement")
+	var cycle_output:=ProjectSettings.globalize_path("res://results/cycle-snapshot.xlsx")
+	var cycle_error:String=preload("res://scripts/cycle_level_xlsx.gd").export_levels([{"level_id":1,"battle_points":[{"mon_group_id":int(panel.database.groups.keys()[0])}]}],cycle_output,panel.database.groups)
+	FileAccess.open(template_path,FileAccess.WRITE).store_buffer(template_bytes)
+	check(cycle_error.is_empty() and FileAccess.file_exists(cycle_output),"Cycle export uses the captured template after source replacement")
+	check(not FileAccess.file_exists("res://config_excel/mon.xlsx"),"Portable runtime needs no mutable source workbook")
 	verify_startup_rejection(panel.database,small)
 	print("BATTLE LAB STANDALONE failures=",failures)
 	entry.queue_free()

@@ -161,19 +161,15 @@ try {
             throw "Missing or changed staged player file: $relative"
         }
     }
-    New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
+    . (Join-Path $PSScriptRoot 'configuration_snapshot.ps1')
+    $configuration = Get-ConfigurationSnapshot $project
     foreach ($dataFile in $requiredData) {
-        $source = Join-Path $project "data/$dataFile"
-        if (!(Test-Path -LiteralPath $source -PathType Leaf)) { throw "Missing required player data: $source" }
-        Copy-Item -LiteralPath $source -Destination (Join-Path $staging 'data')
+        if (!$configuration.ContainsKey("data/$dataFile")) { throw "Published configuration missing required player data: $dataFile" }
     }
-    foreach ($dataFile in $requiredData) {
-        $staged = Join-Path $staging "data/$dataFile"
-        if (!(Test-Path -LiteralPath $staged -PathType Leaf)) { throw "Missing staged player data: $staged" }
-        if ((Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash -ne
-            (Get-FileHash -LiteralPath (Join-Path $project "data/$dataFile") -Algorithm SHA256).Hash) {
-            throw "Staged player data differs from source: $dataFile"
-        }
+    foreach ($name in $configuration.Keys) {
+        $destination = Join-Path $staging $name
+        New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
+        [IO.File]::WriteAllBytes($destination,$configuration[$name])
     }
     $nativeHash = (Get-FileHash -LiteralPath (Join-Path $project 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
     $presetPath = Join-Path $project 'export_presets.cfg'

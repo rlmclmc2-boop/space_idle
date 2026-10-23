@@ -1,3 +1,4 @@
+from config_snapshot import RecoveryRequired as ConfigurationRecoveryRequired
 """Synchronize single-sheet XLSX files and incrementally rebuild game configuration.
 
 Split at the OOXML package level: retain cell formulas, cached values, styles,
@@ -395,9 +396,9 @@ def main():
         else:result = sync_workbooks(args.source, args.directory) if args.action == "split" else incremental_import(args.directory, args.target)
     except Exception as error:
         result = {"ok":False,"action":args.action,"message":str(error),
-                  "recovery_required": isinstance(error, RecoveryRequired)}
-        if isinstance(error, RecoveryRequired):
-            result.update(recovery_path=error.recovery_path, rollback_failed=error.rollback_failed)
+                  "recovery_required": isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired))}
+        if isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired)):
+            result.update(recovery_path=getattr(error,"recovery_path",".configuration-transaction.json"), rollback_failed=getattr(error,"rollback_failed",[]))
         print(json.dumps(result, ensure_ascii=True))
         return 1
     # ASCII transport avoids Windows OS.execute code-page corruption; JSON restores Unicode.

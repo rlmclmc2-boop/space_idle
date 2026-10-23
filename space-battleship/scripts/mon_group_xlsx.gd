@@ -204,7 +204,7 @@ static func export_groups(levels: Array,output_path: String,known_enemies: Dicti
 		var lineup := "{%s}" % ",".join(members)
 		rows.append('<row r="%d" spans="1:3"><c r="A%d"><v>%d</v></c><c r="B%d" t="inlineStr"><is><t xml:space="preserve">%s</t></is></c><c r="C%d" t="inlineStr"><is><t xml:space="preserve">%s</t></is></c></row>' % [number,number,id,number,title.xml_escape(),number,lineup.xml_escape()])
 	var reader := ZIPReader.new()
-	if reader.open(TEMPLATE)!=OK:return "missing_template"
+	if reader.open(preload("res://scripts/configuration_snapshot.gd").active().workbook_path(TEMPLATE))!=OK:return "missing_template"
 	var sheet_path: String=""
 	for member in reader.get_files():
 		if member.begins_with("xl/worksheets/") and member.ends_with(".xml") and not member.contains("/_rels/"):

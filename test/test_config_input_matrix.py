@@ -338,6 +338,31 @@ def published_editor_protocol():
         except protocol.Busy:pass
         else:raise AssertionError('Editor captured workbook while external writer held it')
     check(protocol.Store(root).capture().identity==current.identity,'Editable sources do not invalidate committed JSON readers')
+    import openpyxl
+    complete=AREA/'valid-current-master.xlsx'
+    book=openpyxl.Workbook(write_only=True)
+    captured=protocol.Store(root).capture_publication()[2]
+    paths=le.PreparedStore(root).paths
+    for name,path in paths.items():
+        source_book=openpyxl.load_workbook(io.BytesIO(captured[path.relative_to(root).as_posix()]),read_only=True,data_only=True)
+        sheet=book.create_sheet(name)
+        for row in source_book[name].iter_rows(values_only=True):sheet.append(row)
+        source_book.close()
+    book.save(complete)
+    full.full_import(complete,root/'data/game_data.json')
+    current=protocol.Store(root).capture()
+    check(json.loads(current.manifest)['external_inputs'][0]['sha256']==protocol.digest(complete.read_bytes()),'Full import publishes a validated frozen external selection')
+    master=ROOT.parent/'太空战舰.xlsx'
+    cw.sync_workbooks(master,root/'config_excel')
+    split=protocol.Store(root).capture()
+    check(split.files['data/game_data.json']==current.files['data/game_data.json'],'Split preserves runtime values until explicit import')
+    check(split.files['config_excel/published/mon.xlsx']==current.files['config_excel/published/mon.xlsx'],'Split cannot silently replace a running template generation')
+    before={name:raw for name,raw in split.files.items()}
+    try:full.full_import(master,root/'data/game_data.json')
+    except ValueError:pass
+    else:raise AssertionError('Historical aggregate unexpectedly passed current validators')
+    check(dict(protocol.Store(root).capture().files)==before,'Rejected full import preserves the published configuration')
+
 
 
 def generation_protocol():
@@ -373,7 +398,11 @@ def generation_protocol():
         '\nc.os.replace=crash;s.publish(old,{"data/a.json":b"{\\\"value\\\":5}","data/b.json":b"{\\\"value\\\":6}"},lambda f:None)',
         str(ROOT/'tools'), str(root)], capture_output=True, timeout=15)
     check(crash.returncode == 79 and (root/protocol.JOURNAL).exists(), 'Actual process death retains installing journal')
-    check(store.capture().identity == second.identity and not (root/protocol.JOURNAL).exists(), 'Next lock holder recovers complete prior generation')
+    try:store.capture()
+    except protocol.RecoveryRequired:pass
+    else:raise AssertionError('Ordinary reader accepted interrupted publication')
+    store.capture_publication()
+    check(store.capture().identity == second.identity and not (root/protocol.JOURNAL).exists(), 'Explicit publisher recovers complete prior generation')
     original_replace = protocol.os.replace
     def fail_both(source, destination):
         if str(destination).endswith('b.json'): raise OSError('injected install/rollback refusal')
@@ -384,7 +413,8 @@ def generation_protocol():
         else: raise AssertionError('Rollback refusal was not retained')
     journal = json.loads((root/protocol.JOURNAL).read_bytes())
     check(journal['state']=='recovery_required' and (root/journal['recovery']).is_dir(), 'Failed rollback retains journal and original bytes')
-    check(store.capture().identity==second.identity, 'Next uncontended holder completes retained rollback')
+    store.capture_publication()
+    check(store.capture().identity==second.identity, 'Next publisher completes retained rollback')
     with protocol.exclusive(root/protocol.LOCK):
         try: protocol.Store(root/'data/..').capture()
         except protocol.Busy: pass
@@ -407,6 +437,22 @@ def generation_protocol():
             except protocol.Busy: pass
             else: raise AssertionError('Workbook writer handle was not excluded')
         check(protocol.stable_external_bytes(workbook)==b'frozen workbook bytes', 'External workbook captures only after writer releases')
+        directory=root/'config_excel';directory.mkdir(exist_ok=True)
+        member='config_excel/source.xlsx';source=root/member;source.write_bytes(b'original')
+        prior=store.capture()
+        published=store.publish(prior,dict(prior.files),validate,inputs={member:b'original'},source_updates={member:b'updated'})
+        check(source.read_bytes()==b'updated','Source update writes through exclusive stable handle')
+        def fail_manifest(a,b):
+            if Path(b)==root/protocol.MANIFEST:raise OSError('injected manifest refusal')
+            return original_replace(a,b)
+        with patch.object(protocol.os,'replace',fail_manifest):
+            try:store.publish(published,dict(published.files),validate,inputs={member:b'updated'},source_updates={member:b'next'})
+            except protocol.RecoveryRequired:pass
+            else:raise AssertionError('Failed source publication accepted')
+        check(source.read_bytes()==b'updated','Rollback restores edited workbook from retained original')
+        store.capture_publication()
+        check(store.capture().identity==published.identity,'Explicit publisher completes source transaction recovery')
+
 
 
 def powershell_lock_protocol(root, protocol):
