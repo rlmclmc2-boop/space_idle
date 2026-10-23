@@ -188,7 +188,8 @@ func _commit_import(game: BattleGame, raw: Dictionary, previous_snapshot:Diction
    error=write_file(backup+("/original-progress.json" if suffix.is_empty() else "/original-recovery.json"),bytes)
    if error!=OK:return {"error":error}
  var installed:Dictionary=prepared.data
- error=game.progress_writer.write_import_stage(incoming,JSON.stringify(clean(installed,schema()),"\t",true,true).to_utf8_buffer())
+ var payload:=JSON.stringify(clean(installed,schema()),"\t",true,true)
+ error=game.progress_writer.write_import_stage(incoming,payload.to_utf8_buffer())
  if error!=OK:return {"error":error}
  var had_primary:=FileAccess.file_exists(primary)
  if had_primary:
@@ -199,7 +200,7 @@ func _commit_import(game: BattleGame, raw: Dictionary, previous_snapshot:Diction
   var restored:Error=rename(previous,primary) if had_primary else OK
   if restored==OK:DirAccess.remove_absolute(incoming)
   return {"error":error,"backup":backup,"recovery_required":restored!=OK}
- return {"error":OK,"backup":backup,"primary":primary,"had_primary":had_primary}
+ return {"error":OK,"backup":backup,"primary":primary,"had_primary":had_primary,"target_identity":payload.sha256_text()}
 
 func rollback(transaction: Dictionary) -> Error:
  if not _transaction_owns_progress(transaction):return ERR_ALREADY_IN_USE

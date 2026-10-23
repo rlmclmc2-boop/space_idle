@@ -383,6 +383,21 @@ func check_replacement_lifecycle(scene):
 	scene=current_scene;scene.set_process(false);scene.game.paused=true
 	check(scene.presentation_ready and scene.game.lifecycle==lifecycle and lifecycle.ready() and scene.game.progress_writer==g.progress_writer,"New main binds the transferred writer before lifecycle completion")
 	check(scene.game.economy.balance("1")==12345.0 and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Only successful new main retires previous import")
+	var saved_primary:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+	tx=lifecycle.import_progress(scene.game,raw,service)
+	var target_bytes:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+	FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE).store_string("{broken")
+	error=reload_current_scene();check(error==OK,"Corrupted import reload request accepted")
+	lifecycle.watch_scene(self);await scene_changed
+	scene=current_scene;scene.set_process(false)
+	check(scene.game.installed_progress.get("source")==".import-prev" and lifecycle.reason=="import_target_not_installed" and not scene.product_ready,"Fallback installation cannot acknowledge imported target")
+	check(FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH+".import-prev")==saved_primary and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)=="{broken" and not scene.game.snapshot_ready(),"Rejected import retains both old authority and damaged target, blocks saves")
+	# Restore this test's injected corruption, then perform a real replacement again.
+	FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE).store_buffer(target_bytes)
+	error=reload_current_scene();check(error==OK,"Reload restored test target")
+	lifecycle.watch_scene(self);await scene_changed
+	scene=current_scene;scene.set_process(false);scene.game.paused=true
+	check(lifecycle.ready() and scene.product_ready,"Actual matching target can complete after fixture repair")
 	var clear:Dictionary=lifecycle.restart(scene.game,true,service)
 	check(clear.error==OK and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Clear restart stages previous primary instead of deleting it early")
 	error=reload_current_scene();check(error==OK,"Clear reload request accepted")

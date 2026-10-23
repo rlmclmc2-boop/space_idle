@@ -352,12 +352,15 @@ func empty_loadout(key: String) -> Dictionary:
 static func same_module(a: Dictionary,b: Dictionary) -> bool:
 	return EquipmentState.same_source(a,b)
 
+var installed_progress:Dictionary={}
+
 func load_progress() -> void:
 	if not snapshot_ready():return
 	var result := progress_writer.read_progress_result(SAVE_PATH, db)
 	if result.status == "loaded":
 		load_progress_data(result.data)
 		if hyperspace.last_error.is_empty():
+			installed_progress={"source":result.source,"identity":result.identity}
 			if not progress_writer.owns_progress() or preload("res://scripts/product_lifecycle.gd").pending!=null:return
 			if preload("res://scripts/product_lifecycle.gd").constructing_scene:
 				lifecycle.recovery=result;return

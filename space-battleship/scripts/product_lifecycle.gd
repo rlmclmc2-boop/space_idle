@@ -60,6 +60,9 @@ func watch_scene(tree: SceneTree) -> void:
    fail("scene_not_ready",source)
   elif installed==null or installed.get_ref()!=scene.game or not scene.game.startup_error.is_empty():
    fail("replacement_not_installed",source)
+  elif operation=="import" and not import_target_installed(scene.game):
+   fail("import_target_not_installed",str(scene.game.installed_progress.get("source","unknown")))
+   scene.product_ready=false;scene.set_process(false);scene.set_process_unhandled_input(false)
   else:
    var error: Error=transfer.finish_restart(transaction) if operation=="clear" else (transfer.finish(transaction) if operation=="import" else OK)
    if error!=OK:fail("import_finalization_failed",source)
@@ -68,6 +71,14 @@ func watch_scene(tree: SceneTree) -> void:
     if operation=="import":scene.save_transfer_message(UIText.t("save.import_success",{"backup":str(transaction.get("backup","disk"))+"/current-progress.json"}))
     pending=null;transaction={};writer=null;transfer=null;previous=null;installed=null
  ,CONNECT_ONE_SHOT)
+
+func import_target_installed(g)->bool:
+ var expected:String=str(transaction.get("target_identity",""))
+ var actual:Dictionary=g.installed_progress
+ if expected.is_empty() or actual.get("source","unknown")!="" or actual.get("identity","")!=expected:return false
+ # The bytes actually installed and the retained primary must both be this target.
+ var checked:Dictionary=writer._check_progress_file(str(transaction.primary),g.db)
+ return checked.error.is_empty() and checked.get("identity","") == expected
 
 func reload_failed(error: Error) -> Dictionary:
  var rollback_error: Error=transfer.rollback_restart(transaction) if operation=="clear" else (transfer.rollback(transaction) if operation=="import" else OK)

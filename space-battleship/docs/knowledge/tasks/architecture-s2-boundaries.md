@@ -278,3 +278,10 @@ Parent resumed from 822fc4c8 and assigned 70964137 to the existing high. This re
 Next continuation should rerun this isolated import with an explicitly persisted exit/timeout result, then prove Python-held/Godot-blocked and Godot-held/Python-blocked using the existing SpaceSaveLock. Parse the inactive GDScript capture prototype and prove captured generation stability before connecting consumers. Review its dictionary size access and next-holder recovery behavior rather than assuming it is ready. Edited workbook publication input capture, all configuration consumers, in-memory session bindings and reforge remain open as listed above. No new blocker denial, production change, main merge or additional reviewer occurred.
 
 Context compaction has now occurred in this resumed interval. Per the handoff agreement, record this state in Git and stop; a further parent continuation can resume the same task.
+
+
+### S3 import target provenance fix
+
+Parent resumed from 20b21c59 and superseded compression-only stopping: checkpoint briefly and continue the existing task. High P1 fixed: disk selection now carries the digest of the exact parsed source; Game records the actually installed source/digest after successful application. Import transaction records its target digest. Lifecycle acknowledges only primary selection matching that target and a still-valid matching primary on disk. Fallback or changed target enters recovery_required, retains transaction/old copy/damaged bytes, disables product readiness and processing, and cannot report import success. This is retention, not a new automatic recovery policy.
+
+Existing actual-main planet workflow test_ordinary_entry-h8e3xduo passed 31 checks / 0 failures, including corrupted target -> .import-prev fallback, retained evidence and blocked snapshot, then fixture repair and actual matching reload; original clear/reload-readiness cases remain covered. This is a targeted run, not a complete S3 pass. No main change. Cross-language lock and stable capture validation plus remaining consumers/session/reforge remain open.
