@@ -310,7 +310,122 @@ def projection_and_excel():
     check(snapshot(root)==before and not target.with_suffix('.json.tmp').exists(),'full-import failure preserves output')
 
 
+def generation_protocol():
+    import os
+    import subprocess
+    import config_snapshot as protocol
+    root = AREA / 'generation-protocol'
+    root.mkdir(exist_ok=True)
+    store = protocol.Store(root)
+    try: store.capture()
+    except FileNotFoundError: pass
+    else: raise AssertionError('Reader must not initialize loose files')
+    def validate(files):
+        for name, payload in files.items():
+            if name.endswith('.json'): assert json.loads(payload)['value'] >= 0
+    first = store.publish(None, {'data/a.json': b'{"value":1}', 'data/b.json': b'{"value":2}'}, validate)
+    check(store.capture().identity == first.identity, 'Whole published generation captures')
+    with protocol.exclusive(root / protocol.LOCK):
+        result = subprocess.run([sys.executable, '-c',
+            'import sys;sys.path.insert(0,sys.argv[1]);import config_snapshot as c;'
+            '\ntry:c.Store(sys.argv[2]).capture()\nexcept c.Busy:sys.exit(23)', str(ROOT/'tools'), str(root)], timeout=15)
+        check(result.returncode == 23, 'Second process cannot capture during writer lock')
+    second = store.publish(first, {'data/a.json': b'{"value":3}', 'data/b.json': b'{"value":4}'}, validate)
+    check(first.files['data/a.json'] == b'{"value":1}', 'Captured bytes remain frozen after later publication')
+    try: store.publish(first, dict(first.files), validate)
+    except protocol.Stale: pass
+    else: raise AssertionError('Stale publisher accepted')
+    check(store.capture().identity == second.identity, 'Stale refusal preserves generation')
+    crash = subprocess.run([sys.executable, '-c',
+        'import sys,os;sys.path.insert(0,sys.argv[1]);import config_snapshot as c;'
+        's=c.Store(sys.argv[2]);old=s.capture();replace=os.replace;'
+        '\ndef crash(a,b):\n replace(a,b)\n if str(b).endswith("a.json"):os._exit(79)'
+        '\nc.os.replace=crash;s.publish(old,{"data/a.json":b"{\\\"value\\\":5}","data/b.json":b"{\\\"value\\\":6}"},lambda f:None)',
+        str(ROOT/'tools'), str(root)], capture_output=True, timeout=15)
+    check(crash.returncode == 79 and (root/protocol.JOURNAL).exists(), 'Actual process death retains installing journal')
+    check(store.capture().identity == second.identity and not (root/protocol.JOURNAL).exists(), 'Next lock holder recovers complete prior generation')
+    original_replace = protocol.os.replace
+    def fail_both(source, destination):
+        if str(destination).endswith('b.json'): raise OSError('injected install/rollback refusal')
+        return original_replace(source, destination)
+    with patch.object(protocol.os, 'replace', fail_both):
+        try: store.publish(second, {'data/a.json': b'{"value":7}', 'data/b.json': b'{"value":8}'}, validate)
+        except protocol.RecoveryRequired: pass
+        else: raise AssertionError('Rollback refusal was not retained')
+    journal = json.loads((root/protocol.JOURNAL).read_bytes())
+    check(journal['state']=='recovery_required' and (root/journal['recovery']).is_dir(), 'Failed rollback retains journal and original bytes')
+    check(store.capture().identity==second.identity, 'Next uncontended holder completes retained rollback')
+    with protocol.exclusive(root/protocol.LOCK):
+        try: protocol.Store(root/'data/..').capture()
+        except protocol.Busy: pass
+        else: raise AssertionError('Root alias escaped mutual exclusion')
+    def outside_lock(files):
+        with protocol.exclusive(root/protocol.LOCK): validate(files)
+    second = store.publish(second, dict(second.files), outside_lock)
+    check(store.capture().identity==second.identity, 'Candidate parsing does not hold the publication lock')
+    native_lock_protocol(root, protocol)
+    (root/'data/a.json').write_bytes(b'{"value":9}')
+    try: store.capture()
+    except protocol.RecoveryRequired: pass
+    else: raise AssertionError('Mixed/out-of-protocol generation accepted')
+    (root/'data/a.json').write_bytes(second.files['data/a.json'])
+    if os.name == 'nt':
+        workbook = root/'external.xlsx';workbook.write_bytes(b'frozen workbook bytes')
+        with protocol.exclusive(workbook):
+            try: protocol.stable_external_bytes(workbook)
+            except protocol.Busy: pass
+            else: raise AssertionError('Workbook writer handle was not excluded')
+        check(protocol.stable_external_bytes(workbook)==b'frozen workbook bytes', 'External workbook captures only after writer releases')
+
+
+def native_lock_protocol(root, protocol):
+    import os
+    import subprocess
+    import time
+    engine = os.environ.get('SPACE_BATTLESHIP_TEST_GODOT')
+    bundle = ROOT/'bin/space_native.dll'
+    if not engine or not bundle.is_file():
+        print('CONFIG_NATIVE_LOCK: not run (runtime unavailable)', flush=True)
+        return
+    project = AREA/'native-lock'
+    (project/'bin').mkdir(parents=True, exist_ok=True)
+    shutil.copy2(bundle, project/'bin/space_native.dll')
+    shutil.copy2(ROOT/'space_native.gdextension', project/'space_native.gdextension')
+    (project/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Config lock fixture"\n', encoding='utf-8')
+    script = project/'lock.gd'
+    script.write_text('extends SceneTree\nvar lease:RefCounted\nvar marker:String\n'
+        'func _initialize():\n var args=OS.get_cmdline_user_args()\n lease=ClassDB.instantiate("SpaceSaveLock")\n'
+        ' if not lease.acquire(args[0]):print("CONFIG_LOCK_BUSY");quit(23);return\n'
+        ' print("CONFIG_LOCK_OWNED")\n'
+        ' if args.size()==1:quit(0);return\n marker=args[1]\n FileAccess.open(marker,FileAccess.WRITE).store_string("held")\n'
+        'func _process(_delta):\n if not marker.is_empty() and FileAccess.file_exists(marker+".release"):quit(0)\n return false\n', encoding='utf-8')
+    imported = subprocess.run([engine,'--headless','--editor','--import','--quit','--path',str(project)],capture_output=True,timeout=45)
+    check(imported.returncode==0, 'Minimal native lock fixture imports')
+    cmd=[engine,'--headless','--path',str(project),'--script',str(script),'--',str(root/protocol.LOCK)]
+    with protocol.exclusive(root/protocol.LOCK):
+        blocked=subprocess.run(cmd,capture_output=True,timeout=15)
+        check(blocked.returncode==23 and b'CONFIG_LOCK_BUSY' in blocked.stdout, 'Godot observes Python root lock')
+    available=subprocess.run(cmd,capture_output=True,timeout=15)
+    check(available.returncode==0 and b'CONFIG_LOCK_OWNED' in available.stdout, 'Godot acquires after Python releases')
+    marker=project/'held'
+    child=subprocess.Popen(cmd+[str(marker)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    try:
+        deadline=time.monotonic()+15
+        while not marker.exists() and child.poll() is None and time.monotonic()<deadline:time.sleep(.05)
+        check(marker.exists(), 'Native holder confirms acquisition')
+        try: protocol.Store(root).capture()
+        except protocol.Busy: pass
+        else: raise AssertionError('Python bypassed native root ownership')
+        Path(str(marker)+'.release').touch()
+        output=child.communicate(timeout=15)[0]
+        check(child.returncode==0 and b'CONFIG_LOCK_OWNED' in output, 'Native release completes')
+    finally:
+        if child.poll() is None:child.kill();child.wait()
+    print('CONFIG_NATIVE_LOCK: passed both directions',flush=True)
+
+
 def main():
+    generation_protocol()
     matrix=[]
     for case in CASES:
         for entry in ('incremental','store_load','store_validate','store_save'):
