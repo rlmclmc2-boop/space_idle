@@ -72,6 +72,24 @@ static func ensure(host,enemy:Dictionary,pose:Dictionary)->Dictionary:
 	layout.entry_distance=maxf(0.0,float(visual.enemy_entry_distance))
 	return layout
 
+static func explicit_entry_distance(host)->float:
+	# Fit only the transient approach to the actual meters/protection envelope.
+	# Resident authored coordinates, fixed model size and gameplay never move.
+	var owner:Dictionary=host.enemy_pose(host.game.enemies[0])
+	var signature:Array=[host.fixed_layout_revision,host.enemy_recognition_screen_scale()]
+	if owner.get("explicit_entry_signature",[])==signature:return float(owner.explicit_entry_distance)
+	var distance:=maxf(0.0,float(host.battle_visual.enemy_entry_distance))
+	for member in host.game.enemies:
+		if not member.get("explicit_formation",false):continue
+		var member_pose:Dictionary=host.enemy_pose(member)
+		var layout:=ensure(host,member,member_pose)
+		var target:Vector2=member_pose.target+Vector2(member.x,member.y)-member_pose.logical_position
+		target.y=minf(target.y,floorf(float(layout.frontline)))
+		for part in preload("res://scripts/explicit_formation_geometry.gd").swept_parts(host,member,target):
+			for point in part.polygon:distance=minf(distance,maxf(0.0,float(point.y)-6.25))
+	owner.explicit_entry_signature=signature;owner.explicit_entry_distance=distance
+	return distance
+
 static func position(host,enemy:Dictionary,pose:Dictionary)->Vector2:
 	var layout:=ensure(host,enemy,pose)
 	# The existing pose owns residence. Time matters only while entering; logical
@@ -84,7 +102,8 @@ static func position(host,enemy:Dictionary,pose:Dictionary)->Vector2:
 	var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
 	if not enemy.get("explicit_formation",false):target.y=maxf(target.y,float(layout.top))
 	target.y=minf(target.y,floorf(float(layout.frontline)))
-	var point:=target+Vector2(float(pose.entry_x)*(1.0-enter),-float(layout.entry_distance)*(1.0-enter))
+	var entry_distance:float=explicit_entry_distance(host) if enter<1.0 and enemy.get("explicit_formation",false) else float(layout.entry_distance)
+	var point:=target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))
 	if not enemy.get("explicit_formation",false):
 		point.x=clampf(point.x,54.0,host.BATTLE_VIEW_SIZE.x-54.0)
 	if enter==1.0:

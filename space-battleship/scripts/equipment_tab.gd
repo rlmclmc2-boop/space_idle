@@ -289,33 +289,30 @@ func layout_contents() -> void:
 func set_upgrade_amount(amount: int) -> void:
 	upgrade_amount = amount
 	for i in amount_buttons.size():skin_button(amount_buttons[i],[1,10,0][i]==amount,true)
-	var quotes := {}
-	for id in items:
-		update_card_cost(items[id],quotes)
-		cards[id].refresh(items[id],selected==id)
+	refresh_affordability()
 
 func update_card_cost(item: Dictionary, quotes: Dictionary = {}) -> void:
-	if item.locked:
+	var entry: Dictionary = host.game.slot_entry(item.category,item.index)
+	if item.locked or entry.is_empty():
 		item.cost = "—"
 		item.costs = {}
+		item.upgradeable = false
 		item.direct_upgradeable = false
 		return
-	# Module prices depend on category and level, not installed weapon type.
-	# Share only within this synchronous refresh; no quote survives a purchase,
-	# balance/config change, another refresh or a frame boundary.
-	var entry: Dictionary = host.game.slot_entry(item.category,item.index)
-	var quote_key := str([item.category,entry.get("level",0),upgrade_amount])
-	if quotes.has(quote_key):
-		item.cost = quotes[quote_key].cost
-		item.costs = quotes[quote_key].costs
-		item.direct_upgradeable = quotes[quote_key].available
-		return
-	var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
-	var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
-	item.cost = host.cost_text(costs)
-	item.costs = costs
-	item.direct_upgradeable = not entry.is_empty() and count>0 and host.game.can_afford_upgrade_costs(costs)
-	quotes[quote_key] = {"cost":item.cost,"costs":costs,"available":item.direct_upgradeable}
+	# Prices and affordability come from Game's economic query. Equal module
+	# levels share this synchronous read only; no quote outlives the refresh.
+	var quote_key := str([item.category,entry.level,upgrade_amount])
+	if not quotes.has(quote_key):
+		var count: int = host.game.max_upgrade_amount_slot(item.category,item.index) if upgrade_amount==0 else upgrade_amount
+		var costs: Dictionary = host.game.slot_upgrade_cost(item.category,item.index,maxi(1,count))
+		var available: bool = count>0 and host.game.can_afford_upgrade_costs(costs)
+		var one_available: bool = available if count==1 else host.game.can_upgrade_slot(item.category,item.index)
+		quotes[quote_key] = {"cost":host.cost_text(costs),"costs":costs,"available":available,"one_available":one_available}
+	var quote: Dictionary = quotes[quote_key]
+	item.cost = quote.cost
+	item.costs = quote.costs
+	item.upgradeable = quote.one_available
+	item.direct_upgradeable = quote.available
 
 func upgrade_card(id: String) -> void:
 	if not items.has(id):return
@@ -526,13 +523,10 @@ func refresh_slots(changed: Array) -> void:
 				card.pressed.connect(func():select_item(id))
 				cards[id] = card
 			if selected.is_empty():selected = id
-			# Spending resources changes affordability on other modules, but not their stats.
-			if not (changed.is_empty() or dirty or changed.has(id)):
-				items[id].upgradeable = host.game.can_upgrade_slot(category,index)
 			update_card_cost(items[id],quotes)
 			cards[id].refresh(items[id],selected==id)
 	dirty = false
-	observed_resources = host.game.profile.resources.duplicate()
+	observed_resources = host.game.economy.resources().duplicate()
 	refresh_total()
 	refresh_new_weapon()
 	if structure_changed:layout_contents()
@@ -545,7 +539,7 @@ func refresh_pending() -> void:
 	refresh_new_weapon()
 	if dirty:
 		refresh()
-	elif observed_resources!=host.game.profile.resources:
+	elif observed_resources!=host.game.economy.resources():
 		refresh_affordability()
 	refresh_stats()
 	refresh_refit_cooldowns()
@@ -621,17 +615,18 @@ func refresh_stats() -> void:
 	if selected_changed:refresh_detail(selected_preview)
 
 func refresh_affordability() -> void:
-	observed_resources = host.game.profile.resources.duplicate()
+	observed_resources = host.game.economy.resources().duplicate()
 	var changed := false
 	var quotes := {}
 	for id in items:
 		var item: Dictionary = items[id]
-		var available: bool = host.game.can_upgrade_slot(item.category,item.index)
-		if item.upgradeable!=available:
-			item.upgradeable = available
-			changed = true
+		var previous := [item.upgradeable,item.cost,item.direct_upgradeable,item.costs]
 		update_card_cost(item,quotes)
-		cards[id].refresh(item,selected==id)
+		changed = changed or previous[0]!=item.upgradeable
+		# A balance update need not recheck selectors, format labels or rebuild
+		# cost controls when the displayed quote and both actions stay the same.
+		if previous!=[item.upgradeable,item.cost,item.direct_upgradeable,item.costs]:
+			cards[id].refresh(item,selected==id)
 	if changed:
 		sort_dirty = sort_dirty or sort_mode==3
 		if sort_mode==3 or status_filter in [2,3]:apply_filters()
@@ -651,7 +646,7 @@ func refresh_total() -> void:
 		var heading: String = UIText.t("weapon.tab" if category=="weapons" else "defense.tab")+"  "+counts[category]
 		if overflow>0:heading+=" · "+UIText.t("equipment.overflow",{"count":str(overflow)})
 		host.set_ui_value(section_labels[category],"text",heading)
-	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.profile.selectedShip),"des")+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
+	host.set_ui_value(total,"text",UIText.data_text("ship",str(host.game.equipment.selected_ship()),"des")+"  ·  "+UIText.t("weapon.tab")+" "+counts.weapons+"  /  "+UIText.t("defense.tab")+" "+counts.defence)
 
 func select_item(key: String) -> void:
 	if not items.has(key):return

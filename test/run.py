@@ -17,7 +17,13 @@ def main():
     parser.add_argument("--godot", type=Path, default=workspace / "space-battleship/engine/Godot_v4.7.2-stable_win64.exe")
     parser.add_argument("--timeout", type=int, default=180, help="Timeout in seconds for each isolated process")
     parser.add_argument("--headless", action="store_true", help="Disable rendering for logic benchmarks")
+    parser.add_argument("--scenario", choices=("all", "game", "reactor", "planet"),
+                        help="Original main-scene workflow for test_ordinary_entry.gd (default: all)")
     args = parser.parse_args()
+    if args.scenario and args.test != "test_ordinary_entry.gd":
+        parser.error("--scenario belongs to test_ordinary_entry.gd")
+    if args.test == "test_ordinary_entry.gd" and args.headless:
+        parser.error("The original game workflow requires rendering; omit --headless")
     work = tests / "work"
     work.mkdir(exist_ok=True)
     area = Path(tempfile.mkdtemp(prefix=Path(args.test).stem + "-", dir=work))
@@ -34,6 +40,14 @@ def main():
                         ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*", "*.blend", "*.blend1"))
     for name in ("project.godot", "main.tscn", "level_editor.tscn"):
         shutil.copy2(source / name, game / name)
+    # Persistence fixtures need the same OS writer lock as the player entry.
+    # Reuse its verified bundled runtime; specialized native tests may replace it.
+    sys.path.insert(0, str(workspace / "tools"))
+    from play_main import verified_bundle, DESCRIPTOR
+    native_bundle, _, _ = verified_bundle(workspace)
+    (game / "bin").mkdir(exist_ok=True)
+    shutil.copy2(native_bundle, game / "bin/space_native.dll")
+    (game / "space_native.gdextension").write_text(DESCRIPTOR, encoding="utf-8")
     shutil.copy2(workspace / "太空战舰.xlsx", area / "太空战舰.xlsx")
     isolated_tests = area / "test"
     isolated_tests.mkdir()
@@ -80,7 +94,11 @@ def main():
             except subprocess.TimeoutExpired:
                 log.write(f"\nTIMEOUT: {label} exceeded {args.timeout} seconds\n")
                 code = 124
-        print((area / (label + ".log")).read_text(encoding="utf-8", errors="replace"))
+        output = (area / (label + ".log")).read_text(encoding="utf-8", errors="replace")
+        # Godot may exit zero after a script error; never report that as acceptance.
+        if code == 0 and ("SCRIPT ERROR:" in output or "Failed to load script" in output):
+            code = 1
+        print(output if code or label != "import" else "Godot import completed.")
         return code
 
     godot = str(args.godot.resolve())
@@ -112,7 +130,35 @@ def main():
             return code
         return run([godot, *(["--headless"] if args.headless else []), "--path", str(game),
                     "--script", str(isolated_tests / args.test), "--", str(fixture)], "test")
-    return run([godot, *(["--headless"] if args.headless else []), "--path", str(game), "--script", str(isolated_tests / args.test)], "test")
+    command = [godot, *(["--headless"] if args.headless else []), "--path", str(game), "--script", str(isolated_tests / args.test)]
+    if args.test == "test_ordinary_entry.gd":
+        workflows = {
+            "planet": ("planet-loading",),
+            "game": ("product-write", "product-reopen", "product-claimed-reopen"),
+            "reactor": ("reactor-write", "reactor-reopen"),
+        }
+        for name, phases in workflows.items():
+            if args.scenario not in (None, "all", name):
+                continue
+            # Separate fresh saves per workflow; restart phases share that slot.
+            for key, folder in (("APPDATA", "roaming"), ("LOCALAPPDATA", "local"),
+                                ("XDG_DATA_HOME", "data"), ("XDG_CONFIG_HOME", "config"),
+                                ("XDG_CACHE_HOME", "cache")):
+                target = area / "userdata" / name / folder
+                target.mkdir(parents=True)
+                env[key] = str(target)
+            for phase in phases:
+                code = run([*command, "--", phase], phase)
+                if code:
+                    return code
+        return 0
+    if args.test == "test_save_boundaries.gd":
+        for phase in ("write", "reopen", "latest", "recovery"):
+            code = run([*command, "--", phase], "test-" + phase)
+            if code:
+                return code
+        return 0
+    return run(command, "test")
 
 
 if __name__ == "__main__":

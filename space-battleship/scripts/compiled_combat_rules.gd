@@ -1,7 +1,8 @@
 extends RefCounted
 ## Combat configuration compiler. Runtime counters/health remain in Game.
-## Compilation occurs at explicit configuration changes, never identity-polling reads.
+## Version checks keep repeated notifications/reads from compiling unchanged inputs.
 var compiling:=false
+var inputs:Array=[]
 var builds:int=0
 var rows:Dictionary={}
 var parameters:Dictionary={}
@@ -13,9 +14,9 @@ var instance_payload_builds:int=0
 var target_priority_prepares:int=0
 func compile(g)->void:
  if compiling:return
- compiling=true
- # A public mutation may have replaced module references after its first invalidation.
- g.combat_sources_dirty=true
+ var next:Array=g.attributes.rule_inputs(g)
+ if next==inputs:return
+ inputs=next;compiling=true
  parameters={}
  for key in g.db.data.enhance_config:parameters[key]=float(g.db.data.enhance_config[key].value)
  recipes={}

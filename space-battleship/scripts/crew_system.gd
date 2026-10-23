@@ -1,5 +1,10 @@
 extends RefCounted
-## Excel owns definitions. This object owns only disposable scheduler state/handlers.
+## Owns crew growth, assignments and the event-driven job schedule. Game commits cross-domain commands.
+var revision := 0
+var contribution_revision:=0
+var _contribution_inputs:Array=[]
+var _members: Array = []
+var _entries: Dictionary = {}
 var handlers: Dictionary = {}
 var targets: Dictionary = {}
 var timers: Dictionary = {}
@@ -41,7 +46,7 @@ func reset_schedule(g) -> void:
 	invalidate_reactor_allocation(g)
 
 func invalidate_jobs(g, jobs: Array) -> void:
-	for item in g.profile.get("crew",[]):
+	for item in _members:
 		if jobs.has(str(item.assignmentType)):invalidate_member(g,item)
 
 func invalidate_member(g, item: Dictionary) -> void:
@@ -72,11 +77,11 @@ func invalidate_resources(g, ids: Array) -> void:
 
 func reactor_allocation_state(g, id: String) -> Array:
 	# Free charge affects multipliers/UI, never the ordinary energy pool or split.
-	return [id,active(g,entry(g,id)),g.reactor_capacity(),g.reactor_available_modules(),g.profile.reactorAllocation.duplicate()]
+	return [id,active(g,entry(g,id)),g.reactor_capacity(),g.reactor_available_modules(),g.reactor.allocations().duplicate()]
 
 func invalidate_reactor_allocation(g) -> void:
 	var id := ""
-	for item in g.profile.get("crew",[]):
+	for item in _members:
 		if item.assignmentType=="reactor_upgrade":id=str(item.crewId);break
 	if id.is_empty():
 		allocation_timers.clear()
@@ -167,77 +172,118 @@ func unlocked(g, id: String) -> bool:
 	var gate := str(definition.get("unlockId", ""))
 	return not definition.is_empty() and (gate.is_empty() or g.unlock_available(gate))
 
-func number(value, fallback: float) -> float:
-	return float(value) if (value is float or value is int) and is_finite(float(value)) else fallback
+func members() -> Array:
+	return _members
 
-func load_state(g, raw) -> void:
-	timers.clear()
-	var incoming := {}
-	if raw is Array:
-		for item in raw:
-			if item is Dictionary and item.get("crewId") is String and not incoming.has(item.crewId):
-				incoming[item.crewId] = item
-	g.profile.crew = []
-	g.profile.crewEquipment = {} # Reserved; no equipment instances exist in v1.
+func entry(_g, id: String) -> Dictionary:
+	return _entries.get(id,{})
+
+func save_data() -> Dictionary:
+	return {"crew":_members.duplicate(true),"crewEquipment":{}}
+
+func _install_members(items: Array) -> void:
+	var inputs:Array=[]
+	for item in items:inputs.append([item.crewId,item.level,item.assignmentType,item.targetId])
+	if inputs!=_contribution_inputs:contribution_revision+=1;_contribution_inputs=inputs
+	_members=items.duplicate(true);_entries={}
+	for item in _members:
+		item.equipmentSlots.make_read_only();item.make_read_only();_entries[item.crewId]=item
+	_members.make_read_only();_entries.make_read_only();revision+=1
+
+func reset(g) -> void:
+	var items: Array=[]
+	var modes:=upgrade_modes(g)
 	for id in definitions(g):
-		var row: Dictionary = definitions(g)[id]
-		var item: Dictionary = incoming.get(id, {})
-		var slots: Array = []
-		slots.resize(int(row.equipmentSlotCount))
-		var entry := {"crewId":id,"level":int(clampf(number(item.get("level"),0.0),0.0,9e18)),"exp":roundf(maxf(0,number(item.get("exp"),0))),"assignmentType":"","targetId":"","equipmentSlots":slots}
-		var modes := upgrade_modes(g)
-		var mode := str(item.get("upgradeMode",""))
-		entry.upgradeMode = mode if modes.has(mode) else (modes[0] if not modes.is_empty() else "")
-		g.profile.crew.append(entry)
-		gain_exp(g, id, 0, false)
-	# Assignment restoration uses the same capacity and target validation as UI actions.
-	for entry in g.profile.crew:
-		var row: Dictionary = definitions(g)[entry.crewId]
-		var item: Dictionary = incoming.get(entry.crewId, {})
-		var assignment := str(item.get("assignmentType",row.get("defaultAssignment", "")))
-		var target := str(item.get("targetId",row.get("defaultTargetId", "")))
-		# Former per-module assignments become the unified equipment-system assignment.
-		if assignment in ["weapon_upgrade","defense_upgrade"]:
-			assignment = "equipment_upgrade"
-			target = "equipment"
-		if assignment == "smelting_speed":
-			assignment = "jewel_auto"
-			target = "jewels"
-		if can_assign(g,entry.crewId,assignment,target,true):
-			entry.assignmentType = assignment
-			entry.targetId = target
-
+		var slots: Array=[];slots.resize(int(definitions(g)[id].equipmentSlotCount))
+		items.append({"crewId":id,"level":0,"exp":0.0,"assignmentType":"","targetId":"","equipmentSlots":slots,"upgradeMode":modes[0] if not modes.is_empty() else ""})
+	_install_members(items)
+	# Defaults use the same configured targets and capacity as player assignments.
+	for item in items:
+		var row: Dictionary=definitions(g)[item.crewId]
+		var assignment:=str(row.get("defaultAssignment",""));var target:=str(row.get("defaultTargetId",""))
+		if can_assign(g,str(item.crewId),assignment,target,true):
+			item.assignmentType=assignment;item.targetId=target;_install_members(items)
 	reset_schedule(g)
 
-func entry(g, id: String) -> Dictionary:
-	for item in g.profile.get("crew", []):
-		if item.crewId == id:return item
-	return {}
+static func valid_integer(value,maximum:float) -> bool:
+	return (value is int or value is float) and is_finite(float(value)) and value>=0 and value<=maximum and float(value)==floorf(float(value))
 
-func gain_exp(g, id: String, amount: float, notify := true) -> bool:
-	var item := entry(g,id)
-	if item.is_empty() or not is_finite(amount) or amount < 0:return false
-	if not levels_unlocked(g) or not unlocked(g,id):return false
-	if minf(roundf(float(item.exp))+roundf(amount),1e308)>=required_exp(g,int(item.level)) and not g.native_before_configuration_change():return false
-	g.capture_refit_health()
-	var previous := item.duplicate(true)
-	var before := [item.level,item.exp]
-	item.exp = minf(roundf(float(item.exp))+roundf(amount),1e308)
-	var multiplier: float=config_value(g,"exp_multiplier")
-	if multiplier==1.0:
-		var needed:=required_exp(g,int(item.level))
-		var levels:=int(minf(floor(float(item.exp)/needed),9e18-float(item.level)))
-		item.level+=levels
-		item.exp=maxf(0.0,float(item.exp)-float(levels)*needed)
-	else:
-		while true:
-			var needed:=required_exp(g,int(item.level))
-			if not is_finite(needed) or needed<=0 or float(item.exp)<needed:break
-			item.exp-=needed
-			item.level+=1
-	if notify and before != [item.level,item.exp]:
-		changed(g,item,previous)
+static func valid_snapshot(raw: Dictionary, db) -> bool:
+	if not raw.get("crew") is Array or not raw.get("crewEquipment") is Dictionary or not raw.crewEquipment.is_empty():return false
+	var definitions: Dictionary=db.data.get("crew",{});var assignments: Dictionary=db.data.get("crew_assignment",{})
+	if raw.crew.size()!=definitions.size():return false
+	var seen: Dictionary={};var occupied: Dictionary={};var modes: Array=[]
+	for row in assignments.values():
+		if row.get("effectType") in ["AUTO_UPGRADE","AUTO_SCIENTIST"]:
+			for mode in str(row.get("upgradeModes","")).split(",",false):
+				if not modes.has(mode.strip_edges()):modes.append(mode.strip_edges())
+	for item in raw.crew:
+		if not item is Dictionary or not item.get("crewId") is String or not definitions.has(item.crewId) or seen.has(item.crewId):return false
+		seen[item.crewId]=true
+		if not valid_integer(item.get("level"),9e18) or not valid_integer(item.get("exp"),1e308):return false
+		if not item.get("equipmentSlots") is Array or item.equipmentSlots.size()!=int(definitions[item.crewId].equipmentSlotCount) or not item.equipmentSlots.all(func(slot):return slot==null):return false
+		if not item.get("upgradeMode") is String or (not modes.has(item.upgradeMode) and not (modes.is_empty() and item.upgradeMode.is_empty())):return false
+		if not item.get("assignmentType") is String or not item.get("targetId") is String:return false
+		if item.assignmentType.is_empty():
+			if not item.targetId.is_empty():return false
+			continue
+		if not assignments.has(item.assignmentType):return false
+		var row: Dictionary=assignments[item.assignmentType];var target:=str(item.targetId);var valid:=false
+		match str(row.targetType):
+			"equipment":valid=target=="equipment" and row.effectType=="AUTO_UPGRADE"
+			"hightech":valid=(target=="hightech" or db.data.get("hightech",{}).has(target)) and row.effectType=="AUTO_SCIENTIST" and (str(row.get("targetCategory",""))!="system" or target=="hightech")
+			"jewel":valid=target=="jewels" and row.effectType=="AUTO_COMBINE"
+			"reactor":valid=target=="reactor" and row.effectType=="AUTO_REACTOR"
+			"galaxy":valid=db.data.get("galaxy",{}).has(target) and row.effectType=="EXPLORE"
+			"production","smelting":valid=db.data.get("hightech",{}).has(target) and target==("超时空炼铁炉" if row.targetType=="production" else "宝石熔炼炉") and row.effectType in ["OUTPUT","SPEED","EFFICIENCY"]
+		if not valid:return false
+		var key:=str(row.targetType)+":"+target;occupied[key]=int(occupied.get(key,0))+1
+		if occupied[key]>int(row.maxCrew):return false
 	return true
+
+func install_snapshot(raw: Dictionary, db) -> bool:
+	if not valid_snapshot(raw,db):return false
+	# Preserve configured ordering when automatic jobs compete for a balance.
+	var incoming: Dictionary={}
+	for item in raw.crew:incoming[item.crewId]=item
+	var items: Array=[]
+	for id in db.data.crew:
+		var item: Dictionary=incoming[id].duplicate(true);item.level=int(item.level);item.exp=float(item.exp);items.append(item)
+	_install_members(items)
+	return true
+
+func prepare_experience(g, rewards: Dictionary) -> Dictionary:
+	var items: Array=_members.duplicate(true);var changes: Array=[]
+	for id in rewards:
+		var amount: float=float(rewards[id])
+		if not _entries.has(id) or not is_finite(amount) or amount<0:return {}
+	for item in items:
+		if not rewards.has(item.crewId) or not levels_unlocked(g) or not unlocked(g,item.crewId):continue
+		var previous: Dictionary=item.duplicate(true)
+		item.exp=minf(roundf(float(item.exp))+roundf(float(rewards[item.crewId])),1e308)
+		var multiplier: float=config_value(g,"exp_multiplier")
+		if multiplier==1.0:
+			var needed:=required_exp(g,int(item.level))
+			var levels:=int(minf(floor(float(item.exp)/needed),9e18-float(item.level)))
+			item.level+=levels;item.exp=maxf(0.0,float(item.exp)-float(levels)*needed)
+		else:
+			while true:
+				var needed:=required_exp(g,int(item.level))
+				if not is_finite(needed) or needed<=0 or float(item.exp)<needed:break
+				item.exp-=needed;item.level+=1
+		if previous!=item:changes.append({"previous":previous,"current":item.duplicate(true)})
+	return {"revision":revision,"members":items,"changes":changes,"configuration":changes.any(func(change):return change.previous.level!=change.current.level)}
+
+func proposal_current(plan: Dictionary) -> bool:
+	return not plan.is_empty() and int(plan.revision)==revision
+
+func commit(plan: Dictionary) -> void:
+	assert(proposal_current(plan))
+	if plan.changes.is_empty():return
+	_install_members(plan.members)
+	for change in plan.changes:
+		if change.previous.assignmentType!=change.current.assignmentType or change.previous.targetId!=change.current.targetId:
+			timers.erase(change.current.crewId);intervals.erase(change.current.crewId)
 
 func available_targets(g, assignment: String, include_inactive := false) -> Array:
 	var row: Dictionary = assignments(g).get(assignment,{})
@@ -252,40 +298,35 @@ func valid_target(g, assignment: String, id: String, include_inactive := false) 
 func can_assign(g, id: String, assignment: String, target: String, restoring := false) -> bool:
 	if entry(g,id).is_empty() or (not restoring and not unlocked(g,id)):return false
 	if not assignment.is_empty() and not restoring:
-		if preload("res://scripts/hyperspace_permissions.gd").reserved_crew(g.profile.hyperspace)==id:return false
+		if preload("res://scripts/hyperspace_permissions.gd").reserved_crew(g.hyperspace.state)==id:return false
 		if not g.crew_exploration(id).is_empty():return false
 	if assignment.is_empty():return target.is_empty()
 	if not valid_target(g,assignment,target,restoring):return false
 	var count := 0
-	for item in g.profile.crew:
+	for item in _members:
 		var occupied: Dictionary=assignments(g).get(str(item.assignmentType),{})
 		if item.crewId!=id and occupied.get("targetType")==assignments(g)[assignment].targetType and item.targetId==target:count+=1
 	return count < int(assignments(g)[assignment].maxCrew)
 
-func assign(g, id: String, assignment: String, target: String, upgrade_mode := "") -> bool:
-	if not can_assign(g,id,assignment,target):return false
-	if not upgrade_mode.is_empty() and (assignment.is_empty() or not upgrade_modes(g,assignment).has(upgrade_mode)):return false
-	var item := entry(g,id)
-	if item.assignmentType==assignment and item.targetId==target:
-		return set_upgrade_mode(g,id,upgrade_mode,assignment) if not upgrade_mode.is_empty() else true
-	if not g.native_before_configuration_change():return false
-	g.capture_refit_health()
-	var previous := item.duplicate(true)
-	if item.assignmentType=="galaxy_explore":g.galaxy.flush_pending(g,str(item.targetId))
-	if assignment=="galaxy_explore":g.galaxy.flush_pending(g,target)
-	item.assignmentType=assignment
-	item.targetId=target
-	if not upgrade_mode.is_empty():item.upgradeMode=upgrade_mode
-	if assignment=="galaxy_explore":g.galaxy.start(g,target)
-	timers.erase(id)
-	intervals.erase(id)
-	changed(g,item,previous)
-	return true
+func prepare_assignment(g, id: String, assignment: String, target: String, upgrade_mode := "") -> Dictionary:
+	if not can_assign(g,id,assignment,target):return {}
+	if not upgrade_mode.is_empty() and (assignment.is_empty() or not upgrade_modes(g,assignment).has(upgrade_mode)):return {}
+	var previous:=entry(g,id);var current:=previous.duplicate(true)
+	current.assignmentType=assignment;current.targetId=target
+	if not upgrade_mode.is_empty():current.upgradeMode=upgrade_mode
+	return prepare_member(previous,current)
 
-func changed(g, item: Dictionary, previous: Dictionary) -> void:
-	g.refresh_crew_level_effects(previous,item)
-	g.save_dirty = true
-	g.event.emit("crew_changed",{"crewId":item.crewId,"previous":previous,"current":item.duplicate(true)})
+func prepare_mode(g, id: String, mode: String, assignment := "") -> Dictionary:
+	var previous:=entry(g,id)
+	if previous.is_empty() or not upgrade_modes(g,assignment).has(mode):return {}
+	var current:=previous.duplicate(true);current.upgradeMode=mode
+	return prepare_member(previous,current)
+
+func prepare_member(previous: Dictionary,current: Dictionary) -> Dictionary:
+	var items: Array=_members.duplicate(true)
+	for i in items.size():
+		if items[i].crewId==current.crewId:items[i]=current
+	return {"revision":revision,"members":items,"changes":[] if previous==current else [{"previous":previous.duplicate(true),"current":current.duplicate(true)}],"configuration":previous.assignmentType!=current.assignmentType or previous.targetId!=current.targetId}
 
 func upgrade_modes(g, assignment := "") -> Array[String]:
 	var result: Array[String] = []
@@ -296,15 +337,6 @@ func upgrade_modes(g, assignment := "") -> Array[String]:
 				var value := mode.strip_edges()
 				if not result.has(value):result.append(value)
 	return result
-
-func set_upgrade_mode(g, id: String, mode: String, assignment := "") -> bool:
-	var item := entry(g,id)
-	if item.is_empty() or not upgrade_modes(g,assignment).has(mode):return false
-	if item.upgradeMode==mode:return true
-	var previous := item.duplicate(true)
-	item.upgradeMode=mode
-	changed(g,item,previous)
-	return true
 
 func upgrade_mode_text(mode: String, effect_type := "AUTO_UPGRADE") -> String:
 	if effect_type=="AUTO_SCIENTIST":
@@ -322,7 +354,7 @@ func active(g, item: Dictionary) -> bool:
 
 func get_modifier(g, target_type: String, target_id: String, effect_type: String) -> float:
 	var total := 0.0
-	for item in g.profile.get("crew",[]):
+	for item in _members:
 		var row: Dictionary = assignments(g).get(item.assignmentType,{})
 		if row.get("targetType")==target_type and row.get("effectType")==effect_type and item.targetId==target_id and active(g,item):
 			total += effect_value(g,item)
@@ -342,7 +374,7 @@ func advance(g, dt: float) -> void:
 		else:due.append(id)
 	if due.is_empty() and allocation_due.is_empty():return
 	# Preserve configuration crew order when jobs share a resource balance.
-	for item in g.profile.get("crew",[]):
+	for item in _members:
 		var id: String = item.crewId
 		if not due.has(id):continue
 		# Clear before acting: synchronous changes can queue the following second.
@@ -432,7 +464,7 @@ func effect_text(g, item: Dictionary) -> String:
 
 func tab_badge(g, target_types: Array) -> Dictionary:
 	var lines: Array[String] = []
-	for item in g.profile.get("crew",[]):
+	for item in _members:
 		var row: Dictionary=assignments(g).get(str(item.assignmentType),{})
 		if target_types.has(str(row.get("targetType",""))) and active(g,item):
 			var effects := effect_text(g,item)
@@ -468,7 +500,7 @@ func level_effect(g, key: String, level: int) -> float:
 func system_level(g, key: String) -> int:
 	if not levels_unlocked(g):return 0
 	var target_type := str(g.db.data.crew_config[key].targetType)
-	for item in g.profile.get("crew",[]):
+	for item in _members:
 		var job: Dictionary=assignments(g).get(item.assignmentType,{})
 		if job.get("targetType")==target_type and active(g,item):return int(item.level)
 	return 0

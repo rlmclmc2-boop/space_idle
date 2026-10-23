@@ -1,5 +1,6 @@
 extends RefCounted
 ## Battle-only timers/state. No save economy or visual nodes.
+var contribution_revision:=0
 const N=preload("res://scripts/growth_number.gd")
 const CC=preload("res://scripts/combat_context.gd")
 var delayed: Array=[]
@@ -12,18 +13,23 @@ var black_hole_remaining:=0.0
 var black_hole_damage=0.0
 var missile_attacks:=0
 func reset() -> void:
+	if not disabled.is_empty() or rebuild_bonus!=0.0:contribution_revision+=1
 	delayed.clear();disabled.clear();rebuild_bonus=0.0;rebuild_stacks=0;dodge_cooldown=0.0
 	black_hole_elapsed=0.0;black_hole_remaining=0.0;black_hole_damage=0.0;missile_attacks=0
 func restore_rebuild(g) -> void:
 	if disabled.is_empty() and rebuild_stacks==0 and rebuild_bonus==0.0:return
-	disabled.clear();rebuild_stacks=0;rebuild_bonus=0.0
+	disabled.clear();rebuild_stacks=0;rebuild_bonus=0.0;contribution_revision+=1
 	# Only expire the encounter's reconstruction cost/bonus, never heal or reset other effects.
-	g.invalidate_stat_cache()
 	g.event.emit("hyperspace_rebuild",{"restored":true,"stacks":0})
 	for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
 func effect(g,key: String) -> Dictionary:
-	if g.profile.hyperspace.inventory.equipped.is_empty():return {}
+	if g.hyperspace.state.inventory.equipped.is_empty():return {}
 	return g.hyperspace_totals().legendary.get(key,{})
+func laser_charge_contribution(g,charge:Dictionary)->Dictionary:
+	var count:int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
+	var uncapped:float=float(charge.constants.bonus_per_laser)*count
+	return {"uncapped":uncapped,"multiplier":1.0+minf(float(charge.parameters.maximum_bonus),uncapped)}
+
 func weapon_multiplier(g,key: String) -> float:
 	var multiplier:=1.0
 	if key=="cannon":
@@ -33,9 +39,7 @@ func weapon_multiplier(g,key: String) -> float:
 		var scatter:=effect(g,"scatter_pulse")
 		if not scatter.is_empty() and g.targets().size()==1:multiplier*=1.0+float(scatter.parameters.single_target_bonus)
 		var charge:=effect(g,"laser_charge")
-		if not charge.is_empty():
-			var count: int=g.combat_weapon_entries().filter(func(e):return e.key=="laser").size()
-			multiplier*=1.0+minf(float(charge.parameters.maximum_bonus),float(charge.constants.bonus_per_laser)*count)
+		if not charge.is_empty():multiplier*=float(laser_charge_contribution(g,charge).multiplier)
 	return multiplier
 func absorb(g,raw,hostile: bool) -> bool:
 	if black_hole_remaining<=0:return false
@@ -74,9 +78,9 @@ func incoming(g,raw,context: Dictionary) -> Dictionary:
 	var master:=effect(g,"drone_master")
 	if not master.is_empty():
 		var quality_ratio:=0.0
-		for id in g.profile.hyperspace.inventory.equipped:
+		for id in g.hyperspace.state.inventory.equipped:
 			if disabled.has(id):continue
-			var d: Dictionary=g.profile.hyperspace.inventory.drones[id]
+			var d: Dictionary=g.hyperspace.state.inventory.drones[id]
 			var q: String="ultimate" if d.ultimate else "legendary" if d.legendary else d.origin_quality
 			quality_ratio=maxf(quality_ratio,float(master.constants.quality_ratios[q]))
 		raw=N.multiply(raw,1.0-float(master.parameters.maximum_reduction)*quality_ratio/float(master.constants.quality_ratios.ultimate))
@@ -84,16 +88,16 @@ func incoming(g,raw,context: Dictionary) -> Dictionary:
 func try_rebuild(g) -> bool:
 	var rebuild:=effect(g,"drone_rebuild")
 	if rebuild.is_empty() or rebuild_stacks>=int(rebuild.constants.maximum_stacks):return false
-	var ids: Array=g.profile.hyperspace.inventory.equipped.filter(func(id):return not disabled.has(id) and not g.profile.hyperspace.inventory.sealed.has(id))
+	var ids: Array=g.hyperspace.state.inventory.equipped.filter(func(id):return not disabled.has(id) and not g.hyperspace.state.inventory.sealed.has(id))
 	if ids.is_empty():return false
 	var rank: Dictionary={"white":0,"blue":1,"gold":2,"legendary":3,"ultimate":4}
 	ids.sort_custom(func(a,b):
-		var da: Dictionary=g.profile.hyperspace.inventory.drones[a];var db: Dictionary=g.profile.hyperspace.inventory.drones[b]
+		var da: Dictionary=g.hyperspace.state.inventory.drones[a];var db: Dictionary=g.hyperspace.state.inventory.drones[b]
 		var qa: String="ultimate" if da.ultimate else "legendary" if da.legendary else da.origin_quality
 		var qb: String="ultimate" if db.ultimate else "legendary" if db.legendary else db.origin_quality
 		return str(a)<str(b) if rank[qa]==rank[qb] else rank[qa]<rank[qb])
 	disabled.append(ids[0]);rebuild_stacks+=1;rebuild_bonus+=float(rebuild.parameters.damage_and_defence_bonus)
-	g.invalidate_stat_cache();g.player.armour=g.stat("armour");g.player.shield=g.stat("shield")
+	contribution_revision+=1;g.player.armour=g.stat("armour");g.player.shield=g.stat("shield")
 	g.jewel_defence_damage.clear();g.enhancement_deferred.clear();g.sync_jewel_defence_damage()
 	g.event.emit("hyperspace_rebuild",{"drone_id":ids[0],"stacks":rebuild_stacks});return true
 func advance(g,dt: float) -> void:
@@ -136,6 +140,6 @@ func advance_incoming(g,dt: float) -> void:
 			var damage=N.multiply(black_hole_damage,float(black.parameters.damage_multiplier));black_hole_damage=0.0
 			var context:=CC.derive(CC.root(0,"legendary:black_hole",""),"black_hole")
 			for target in g.enemies.duplicate():
-				if N.compare(damage,0)>0 and N.compare(target.hp,0)>0:g.hit_enemy(target,damage,int(g.db.equip(str(g.profile.hyperspace.inventory.drones[black.drone_id].weapon),1).dmgtype),[],false,context)
+				if N.compare(damage,0)>0 and N.compare(target.hp,0)>0:g.hit_enemy(target,damage,int(g.db.equip(str(g.hyperspace.state.inventory.drones[black.drone_id].weapon),1).dmgtype),[],false,context)
 			g.event.emit("hyperspace_black_hole",{"active":false})
 			if g._legacy_defence_stopped():return

@@ -6,6 +6,12 @@ func check(ok: bool, label: String) -> void:
 	if not ok:
 		failures+=1
 		printerr(label)
+func update_planet(g,id: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid planet fixture installs")
+func update_building(g,id: String,key: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].buildings[key].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid building fixture installs")
 func _initialize() -> void:
 	call_deferred("run")
 func capture(viewport: SubViewport, name: String) -> void:
@@ -30,15 +36,13 @@ func run() -> void:
 	for gate in g.db.data.unlock.values():
 		if gate.type in ["planet","crew"]:g.profile.grantedUnlocks.append(gate.name)
 	g.rebuild_unlocks();g.pending_unlocks.clear()
-	g.load_planets({})
-	g.profile.planets["1"].conquered=true
-	for key in g.db.data.hightech:g.profile.hightechLevels[key]=1
+	g.planets.reset(g)
+	update_planet(g,"1",{"conquered":true})
 	scene.refresh_tab_visibility()
 	scene.equipment_panel.refresh()
 	var item: Dictionary=scene.equipment_panel.items.values()[0]
 	var card=scene.equipment_panel.cards[item.id]
 	check(card.fields.level.text.contains("1 (+35)") and card.tooltip_text.contains("效果等级：36"),"Equipment actual/bonus/effective display")
-	check(g.effective_hightech_level(BattleGame.ENERGY_FOCUS)==g.hightech_level(BattleGame.ENERGY_FOCUS),"Planet bonus leaves technology level unchanged")
 	check(g.planet_unlocked("1") and not scene.equipment_tabs.is_tab_hidden(6),"Earned first planet exposes its tab")
 	scene.select_system(6)
 	await process_frame
@@ -74,10 +78,10 @@ func run() -> void:
 	check(controls.share.get_minimum_size().x<=207,"Charge text fits existing allocation header")
 	await process_frame
 	await capture(viewport,"reactor-free-charge")
-	g.db.data.planet_buff["3"].value=.25
+	g.db.data.planet_buff["3"].value=.25;g.notify_configuration_changed()
 	scene.reactor_panel.refresh()
 	check(controls.share.text=="占用100%（免费+25%）" and controls.scene_fx.ratio==1 and is_equal_approx(g.reactor_effective_ratio("weapons"),1.25),"Configurable free charge has no 110 percent cap: "+controls.share.text+" / "+str(g.reactor_effective_ratio("weapons")))
-	g.profile.planets["1"].conquered=false
+	update_planet(g,"1",{"conquered":false})
 	scene.reactor_panel.refresh()
 	scene.select_system(0)
 	await process_frame

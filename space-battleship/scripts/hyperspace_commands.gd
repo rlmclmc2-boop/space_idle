@@ -91,7 +91,7 @@ func refresh_materials(quoted: Dictionary={}) -> void:
  var keys:Dictionary=costs if not costs.is_empty() else h().config.forge_costs.get(op,{})
  var stocks:Array[String]=[];missing_material=""
  for key in material_rows:
-  var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
+  var available=int(game().economy.balance(key))
   if key!="ultimate_cores" or available>0 or keys.has(key):stocks.append(t("material_owned",{"material":t(key),"owned":str(available)}))
   panel.put(material_rows[key],"visible",keys.has(key))
   if not keys.has(key):continue
@@ -107,7 +107,7 @@ func refresh_materials(quoted: Dictionary={}) -> void:
  elif deferred_forecast:message=t("material_forecast_needed")
  elif not str(result.get("error","")).is_empty() and costs.is_empty():message=error_text(str(result.error))
  if not req.is_empty() and str(result.get("error",""))=="affix_limit":
-  var d:Dictionary=game().profile.hyperspace.inventory.drones.get(req.drone_id,{})
+  var d:Dictionary=game().hyperspace.state.inventory.drones.get(req.drone_id,{})
   if str(d.get("origin_quality",""))=="white":message=t("material_white_condition")
  panel.put(material_basis,"text",message)
  panel.put(material_route_button,"visible",not missing_material.is_empty() and missing_material!="ultimate_cores")
@@ -116,8 +116,8 @@ func explore_missing_material() -> void:
   if str(h().config.routes[key].material)==missing_material:
    panel.route=str(key);panel.select_section(0);return
 func basic_available(op:String,d:Dictionary) -> bool:
- if d.is_empty() or game().profile.hyperspace.inventory.sealed.has(str(d.id)):return false
- if op=="dismantle":return not panel.Bag.protected(game().profile.hyperspace.inventory,str(d.id))
+ if d.is_empty() or game().hyperspace.state.inventory.sealed.has(str(d.id)):return false
+ if op=="dismantle":return not panel.Bag.protected(game().hyperspace.state.inventory,str(d.id))
  if d.ultimate:return op=="restore_ultimate"
  var unlocked=d.affixes.any(func(a):return not a.locked)
  match op:
@@ -129,7 +129,7 @@ func basic_available(op:String,d:Dictionary) -> bool:
  return false
 func rebuild_choices(wanted:String="") -> void:
  if wanted.is_empty() and operation.selected>=0:wanted=str(operation.get_item_metadata(operation.selected))
- var d:Dictionary=game().profile.hyperspace.inventory.drones.get(panel.selected_id,{})
+ var d:Dictionary=game().hyperspace.state.inventory.drones.get(panel.selected_id,{})
  var choices:Array=OPERATIONS if show_advanced else ["add_affix","replace_affix","add_hanging_slot","reroll_values","modernize","restore_ultimate","dismantle"].filter(func(op):return basic_available(op,d))
  operation.clear()
  if choices.is_empty():operation.add_item(t("no_basic_operation"));operation.set_item_metadata(0,"none")
@@ -153,13 +153,13 @@ func configure_operation() -> void:
  restore_hint.visible=op=="restore_ultimate"
  var d: Dictionary=panel.bag.get("drones",{}).get(panel.selected_id,{})
  if d.is_empty():return
- var keys: Array=h().config.affixes.keys() if op=="replace_affix" else game().profile.hyperspace.legendary_collection
+ var keys: Array=h().config.affixes.keys() if op=="replace_affix" else game().hyperspace.state.legendary_collection
  for key in keys:
   var entry: Dictionary=h().config.affixes[key] if op=="replace_affix" else h().config.legendary_effects[key]
   if not entry.weapon.is_empty() and entry.weapon!=d.weapon:continue
   guarantee.add_item(panel.affix_name(key) if op=="replace_affix" else panel.effect_name(key));guarantee.set_item_metadata(guarantee.item_count-1,key)
 func request(requested_operation:String="") -> Dictionary:
- var s: Dictionary=game().profile.hyperspace;var d: Dictionary=s.inventory.drones.get(panel.selected_id,{})
+ var s: Dictionary=game().hyperspace.state;var d: Dictionary=s.inventory.drones.get(panel.selected_id,{})
  if d.is_empty():return {}
  var op=requested_operation if not requested_operation.is_empty() else str(operation.get_item_metadata(operation.selected));var args: Dictionary={}
  if op=="none":return {}
@@ -176,13 +176,13 @@ func request(requested_operation:String="") -> Dictionary:
 func cost_text(cost: Dictionary) -> String:
  var values: Array[String]=[]
  for key in cost:
-  var available=int(game().profile.hyperspace.ultimate_cores) if key=="ultimate_cores" else int(game().profile.hyperspace.materials.get(key,0))
+  var available=int(game().economy.balance(key))
   values.append(t("cost_item",{"material":t(str(key)),"cost":str(int(cost[key])),"available":str(available)}))
  return " · ".join(values) if not values.is_empty() else t("no_cost")
 func error_text(error: String) -> String:
  return t("command_error_"+error) if UIText.entries.has("hyperspace.command_error_"+error) else t("command_failed")
 func modernization_text(request_data: Dictionary) -> String:
- var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
+ var d: Dictionary=game().hyperspace.state.inventory.drones.get(request_data.drone_id,{})
  if d.is_empty():return ""
  var target: int=int(request_data.args.get("target_level",d.level))
  var projected: Dictionary=d.duplicate(true);projected.level=target
@@ -199,7 +199,7 @@ func received_materials_text(materials: Dictionary) -> String:
  for key in materials:values.append(t("reward_material_item",{"material":t(str(key)),"count":str(int(materials[key]))}))
  return " · ".join(values)
 func dismantle_preview_text(request_data: Dictionary) -> String:
- var d: Dictionary=game().profile.hyperspace.inventory.drones.get(request_data.drone_id,{})
+ var d: Dictionary=game().hyperspace.state.inventory.drones.get(request_data.drone_id,{})
  if d.is_empty():return ""
  var quality: String="legendary" if d.legendary else str(d.origin_quality)
  var copies: int=int(h().config.dismantle_amounts[quality])
@@ -235,12 +235,12 @@ func execute_quote() -> void:
  if quoted_request.is_empty():return
  # Keep the preview receipt unchanged. Never refresh command sequence under a stale quote.
  var drone_id=str(quoted_request.drone_id)
- var result: Dictionary=h().forge(game(),quoted_request)
+ var result: Dictionary=game().hyperspace_runtime.forge(game(),quoted_request)
  commit_button.disabled=true;quoted_request={};quote_label.text=t("quote_first")
  if str(result.error).is_empty() and result.get("applied",false):
   quote_label.text=received_rewards_text(result.rewards) if result.has("rewards") else t("forge_paid_summary",{"cost":cost_text(result.get("cost",{}))})
  feedback.text=error_text(result.error) if not str(result.error).is_empty() else t("forge_done") if result.get("outcome",true) else t("forge_attempt_failed")
- var current:Dictionary=game().profile.hyperspace.inventory.drones.get(drone_id,{})
+ var current:Dictionary=game().hyperspace.state.inventory.drones.get(drone_id,{})
  result_scroll.visible=str(result.error).is_empty() and result.get("applied",false) and not current.is_empty()
  if result_scroll.visible:
   panel.put(result_details,"text",t("forge_result_current")+"\n"+panel.drone_description(current))
@@ -265,8 +265,8 @@ func show_crew() -> void:
   crew_dialog=build_dialog("crew");var body=content(crew_dialog);crew_choice=panel.option(body);crew_info=dialog_label(body,"",21);var actions=panel.row(body)
   crew_enable=panel.button(actions,"auto_enable",func():set_auto(true));panel.button(actions,"auto_disable",func():set_auto(false));crew_choice.item_selected.connect(func(_n):refresh_crew())
  crew_choice.clear()
- var reserved=str(game().profile.hyperspace.auto.crew_id)
- for member in game().profile.crew:
+ var reserved=str(game().hyperspace.state.auto.crew_id)
+ for member in game().crew.members():
   if not game().crew.unlocked(game(),str(member.crewId)):continue
   var name=str(game().crew.definitions(game())[member.crewId].name)
   var available= h().Permission.crew_available(game(),str(member.crewId))
@@ -278,11 +278,11 @@ func show_crew() -> void:
 func refresh_crew() -> void:
  var id=str(crew_choice.get_item_metadata(crew_choice.selected));var lv=h().Permission.crew_level(game(),id);var best=h().best_x1(game(),panel.route,int(panel.level.value))
  var quote=h().auto_quote(best,lv);var ticket=float(quote.ticket);var duration=float(quote.duration)
- crew_info.text=t("auto_projection",{"ticket":"%.1f"%ticket,"duration":"%.1f"%duration,"status":t("auto_enabled") if game().profile.hyperspace.auto.enabled else t("auto_disabled")})
+ crew_info.text=t("auto_projection",{"ticket":"%.1f"%ticket,"duration":"%.1f"%duration,"status":t("auto_enabled") if game().hyperspace.state.auto.enabled else t("auto_disabled")})
  crew_enable.disabled=id.is_empty() or not h().Permission.crew_available(game(),id) or best<=0
 func set_auto(enabled: bool) -> void:
  var id=str(crew_choice.get_item_metadata(crew_choice.selected))
- if h().set_auto(game(),enabled,panel.route,int(panel.level.value),id):crew_dialog.hide();panel.dirty=true;panel.refresh()
+ if game().hyperspace_runtime.set_auto(game(),enabled,panel.route,int(panel.level.value),id):crew_dialog.hide();panel.dirty=true;panel.refresh()
  else:crew_info.text=t("command_failed")
 func show_modules() -> void:
  module_id=panel.selected_id
@@ -297,8 +297,8 @@ func show_modules() -> void:
  var choices=panel.box(module_scroll);choices.size_flags_horizontal=Control.SIZE_EXPAND_FILL
  var unlocked=0;var available=0;var has_zero_level=false
  for key in h().config.hanging_modules:
-  var progress:Dictionary=game().profile.hyperspace.hanging_modules[key]
-  var known:bool=progress.unlocked or int(progress.level)>0 or float(progress.exp)>0 or game().profile.hyperspace.inventory.drones.values().any(func(drone):return drone.hangings.has(key))
+  var progress:Dictionary=game().hyperspace.state.hanging_modules[key]
+  var known:bool=progress.unlocked or int(progress.level)>0 or float(progress.exp)>0 or game().hyperspace.state.inventory.drones.values().any(func(drone):return drone.hangings.has(key))
   if not known:continue
   unlocked+=int(progress.unlocked)
   var usable=bool(progress.unlocked) and int(game().profile.highestLevel)>=int(h().config.hanging_modules[key].unlock_stage)
@@ -319,7 +319,7 @@ func show_modules() -> void:
   var keys: Array=[]
   for choice in module_choices:
    if choice.button_pressed:keys.append(choice.get_meta("module_key"))
-  if h().attach_hangings(game(),module_id,keys):module_dialog.hide()
+  if game().hyperspace_runtime.attach_hangings(game(),module_id,keys):module_dialog.hide()
   else:module_dialog.title=t("module_rejected"))
  if available>0:dialog_label(body,t("module_source_hint"),18)
  if int(panel.bag.get("reforge_count",0))>0:dialog_label(body,t("reforge_module_reset"),18)
@@ -331,11 +331,11 @@ func module_effect_text(key:String,level:int) -> String:
  return t("module_effect_preview",{"effects":"、".join(effects),"current":"%.1f"%((pow(1.0+float(config.effect_growth),level)-1.0)*100.0),"next_level":str(level+1),"next":"%.1f"%((pow(1.0+float(config.effect_growth),level+1)-1.0)*100.0)})
 func refresh_module_apply() -> void:
  if not is_instance_valid(module_apply):return
- var d:Dictionary=game().profile.hyperspace.inventory.drones.get(module_id,{})
+ var d:Dictionary=game().hyperspace.state.inventory.drones.get(module_id,{})
  if d.is_empty():module_apply.disabled=true;return
  var selected=module_choices.filter(func(choice):return choice.button_pressed).size()
  var available=module_choices.any(func(choice):return choice.visible and not choice.disabled)
- module_apply.disabled=not available or int(d.hanging_slots)==0 or selected>int(d.hanging_slots) or (selected==0 and d.hangings.is_empty()) or d.ultimate or game().profile.hyperspace.inventory.sealed.has(module_id)
+ module_apply.disabled=not available or int(d.hanging_slots)==0 or selected>int(d.hanging_slots) or (selected==0 and d.hangings.is_empty()) or d.ultimate or game().hyperspace.state.inventory.sealed.has(module_id)
 
 func show_collection() -> void:
  if collection_dialog==null:collection_dialog=build_dialog("collection_manage")
@@ -343,14 +343,14 @@ func show_collection() -> void:
   if child is VBoxContainer:child.free()
  collection_choices.clear();var body=content(collection_dialog);dialog_label(body,t("collection_hint"),21)
  var sc=ScrollContainer.new();sc.size_flags_vertical=Control.SIZE_EXPAND_FILL;body.add_child(sc);var choices=panel.box(sc)
- for key in game().profile.hyperspace.legendary_seen:
-  var choice=CheckBox.new();choice.text=panel.effect_name(key);choice.button_pressed=game().profile.hyperspace.legendary_collection.has(key);choice.set_meta("effect_id",key);choices.add_child(choice);panel.checkbox_skin(choice);collection_choices.append(choice)
+ for key in game().hyperspace.state.legendary_seen:
+  var choice=CheckBox.new();choice.text=panel.effect_name(key);choice.button_pressed=game().hyperspace.state.legendary_collection.has(key);choice.set_meta("effect_id",key);choices.add_child(choice);panel.checkbox_skin(choice);collection_choices.append(choice)
  if collection_choices.is_empty():dialog_label(choices,t("collection_empty"),21)
  panel.button(body,"collection_apply",func():
   var ids: Array=[]
   for choice in collection_choices:
    if choice.button_pressed:ids.append(choice.get_meta("effect_id"))
-  if h().set_legendary_collection(game(),ids):collection_dialog.hide();configure_operation())
+  if game().hyperspace_runtime.set_legendary_collection(game(),ids):collection_dialog.hide();configure_operation())
  collection_dialog.popup_centered(Vector2i(740,490))
 
 func show_totals() -> void:
@@ -383,7 +383,7 @@ func refresh_totals() -> void:
  panel.put(totals_label,"text","\n".join(lines) if not lines.is_empty() else t("totals_empty"))
 
 func show_guide() -> void:
- if not bool(game().profile.hyperspace.unlocked_drones):return
+ if not bool(game().hyperspace.state.unlocked_drones):return
  if guide_dialog==null:
   guide_dialog=build_dialog("forge_guide");guide_dialog.size=Vector2i(740,510)
   var body=content(guide_dialog)

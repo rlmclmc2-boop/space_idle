@@ -1,105 +1,168 @@
 extends SceneTree
 
-class LoadOrderGame extends BattleGame:
-	var boundaries: Array[String] = []
-	func load_progress() -> void:
-		boundaries.append("load")
-		super.load_progress()
-	func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
-		boundaries.append("research")
-		super.advance_hightech(dt,real_dt,end_time)
-	func save_progress() -> void:
-		boundaries.append("save")
-		super.save_progress()
-	func reset_player() -> void:
-		boundaries.append("player")
-		super.reset_player()
-
 var checks := 0
 var failures := 0
-
 func check(ok: bool, label: String) -> void:
 	checks += 1
 	if not ok:
 		failures += 1
 		printerr("FAIL: ",label)
 
-func write_save(raw: Dictionary) -> void:
-	var file := FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE)
-	file.store_string(JSON.stringify(raw))
+func finish() -> void:
+	print("Save boundaries: %d checks, %d failures" % [checks, failures])
+	quit(1 if failures else 0)
+
+func remember(data: Dictionary) -> void:
+	var file := FileAccess.open("user://expected.json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(data))
 	file.close()
 
 func _initialize() -> void:
+	var area := ProjectSettings.globalize_path("res://../userdata").simplify_path().replace("\\", "/")
+	check(OS.get_user_data_dir().replace("\\", "/").begins_with(area), "Uses isolated player data")
 	var db := ShipDatabase.new()
 	db.config.offlineMax = 0
-	write_save({"version":BattleGame.SAVE_VERSION,"resources":{"1":123.5,"2":-4}})
-	var loaded := BattleGame.new(db,true)
-	check(loaded.profile.resources=={"1":123.5,"2":0.0},"Fractional save remains exact and negative resource clamps")
-	check(loaded.profile.version==BattleGame.SAVE_VERSION and loaded.slot_entry("weapons",0).level==1,"Missing fields retain current version and default equipment")
-	check(not loaded.profile.has("levels"),"Compatibility levels never enter runtime")
-	var again := BattleGame.new(db,true)
-	check(again.profile.resources==loaded.profile.resources and again.profile.loadout==loaded.profile.loadout,"Repeated load does not round or migrate again")
-	loaded.profile.resources["1"] = 321
-	loaded.save_progress()
-	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(saved.resources["1"]==321 and saved.version==BattleGame.SAVE_VERSION,"Temporary save replaces existing target")
-	check(not FileAccess.file_exists(BattleGame.SAVE_PATH+".tmp"),"Successful rename leaves no temporary file")
-	# Fail opening the temp file with an isolated directory, never a player path.
+	var phase := OS.get_cmdline_user_args()[0] if not OS.get_cmdline_user_args().is_empty() else "write"
+	if phase != "write":
+		reopen(db, phase)
+		return
+	var game := BattleGame.new(db, true)
+	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
+	game.profile.cleared = range(1,61)
+	game.rebuild_unlocks()
+	game.economy.credit("2", 10000.0)
+	game.economy.credit_fragments(123.45)
+	game.economy.credit_many({"degenerate_matter":9000000000000000-2,"ultimate_cores":11})
+	check(game.upgrade_reactor(1) and game.set_reactor_allocation("weapons",31),"Prepare reactor allocation for persistence boundary")
+	var exchange:=game.hyperspace_material_exchange_quote("degenerate_matter","antiproton",7)
+	check(game.exchange_hyperspace_materials(exchange.request).error=="","Commit exchange receipt before real disk write")
+	game.economy.credit("1",100)
+	check(game.select_tech("weapon_accuracy") and game.set_tech_input("1",10),"Start research with paid input before disk save")
+	game.advance_hightech(1.0)
+	game.economy.credit("1",100000.0)
+	check(game.switch_ship("Heavy_Battleship") and game.upgrade_slot("weapons",4,3),"Prepare invested dormant module")
+	check(game.equip_slot("weapons",4,"missile") and game.switch_ship("Frigate"),"Store switch deadline on dormant module")
+	game.economy.credit_fragments(1e12)
+	check(game.upgrade_enhancement(30)==30 and game.set_enhancement_order("weapons",["critical","repeat","proficiency"]) and game.set_enhancement_branch("weapons","critical",3,"B"),"Persist purchased enhancement, reordered effects and branch choice")
+	var history:=game.enhancement_growth.save_data();history.enhancementAttacks="9007199254740993";history.enhancementHits="9007199254740995"
+	check(game.enhancement_growth.install_snapshot(history),"Exact history fixture exceeds JSON double integer precision")
+	check(preload("res://scripts/native_execution_compiler.gd").new().compile(game,"native_low_contract").error=="unsupported_native_counter","History beyond native exact range is rejected before double conversion")
+	check(game.assign_crew("navigator","reactor_upgrade","reactor") and game.set_crew_upgrade_mode("navigator","10"),"Crew assignment and selected purchase amount commit before save")
+	check(game.add_crew_exp("navigator",game.crew.required_exp(game,0)+game.crew.required_exp(game,1)+7),"Crew earns multiple levels and remainder before save")
+	check(game.start_planet_exploration("1","engineer"),"Begin an ordinary trip before persistence");game.advance_planets(0.25)
+	game.galaxy_runtime.refresh_unlocks(game)
+	check(game.assign_crew("researcher","galaxy_explore","galaxy_1"),"Dispatch galaxy crew before saving pending work")
+	game.galaxy_runtime.advance(game,0.25)
+	check(game.galaxy.pending("galaxy_1")==0.25 and game.galaxy.income_time()==0.25 and not game.profile.has("galaxies"),"Galaxy owner keeps online work and income time before save")
+	check(game.stat_cache_enabled,"Real persistence enables contribution caches")
+	var base_capacity = game.reactor_capacity()
+	var rng:=RandomNumberGenerator.new();rng.seed=234
+	var drone:=preload("res://scripts/drone_rewards.gd").create_drone(rng,game.hyperspace.config,"save-storage","white","laser",5,"1")
+	drone.affixes=[];drone.hanging_slots=4;drone.hangings=[]
+	var hs:Dictionary=game.hyperspace.save_data()
+	preload("res://scripts/drone_inventory.gd").insert(hs.hyperspace.inventory,drone,game.hyperspace.config)
+	hs.hyperspace.hanging_modules.extra_storage={"unlocked":true,"level":2,"exp":0.0}
+	check(game.hyperspace.install_snapshot(hs,db),"storage fixture installs")
+	check(game.hyperspace_runtime.set_equipped(game,[drone.id]) and game.hyperspace_runtime.attach_hangings(game,drone.id,["extra_storage"]),"Equip valid storage hanging before disk save")
+	var capacity = game.reactor_capacity()
+	check(capacity>base_capacity and game.set_reactor_allocation("weapons",capacity),"Persist allocation above capacity without storage")
+	check(game.start(14,false),"Start original stage before challenge save")
+	game.spawn_group();game.player.armour=1.0
+	check(game.start_hyperspace_challenge("alpha"),"Save during a real manual challenge")
+	hs=game.hyperspace.save_data();hs.hyperspace.history.beta={"1":3.0};check(game.hyperspace.install_snapshot(hs,db),"background history fixture installs")
+	check(game.start_hyperspace_idle("beta"),"Prepare simultaneous background reward")
+	var idle:Dictionary=game.hyperspace.state.idle
+	check(game.hyperspace_runtime.complete(game,int(idle.round_id),int(idle.run_id),true),"Background result freezes before file commit")
+	check(game.claim_hyperspace(int(idle.round_id),int(idle.run_id)) and game.hyperspace.receipt_marker().unread,"Claim records unread reward before any panel exists")
+	check(game.start_hyperspace_idle("beta"),"Keep another background receipt for reopen")
+	idle=game.hyperspace.state.idle
+	check(game.hyperspace_runtime.complete(game,int(idle.round_id),int(idle.run_id),true),"Next pending reward coexists with previous unread claim")
+	check(game.economy.credit_many({"1":{"m":4.2,"e":700.0},"2":{"m":3.14,"e":320.0},"jewel":{"m":2.2,"e":410.0}}),"Current format stores finite large ordinary balances")
+	game.hyperspace.add_online_time(0.125)
+	game.save_progress()
+	check(game.last_save_error == OK and not game.save_dirty, "Current committed snapshot writes successfully")
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
-	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH+".tmp")
-	var errors: Array = []
-	loaded.event.connect(func(kind,_payload):
-		if kind=="save_error": errors.append(kind))
-	loaded.profile.resources["1"] = 999
-	loaded.save_progress()
-	check(loaded.save_dirty,"Failed save retains dirty state for retry")
-	check(errors==["save_error"],"Temporary open failure emits one save_error")
-	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==original,"Temporary open failure preserves previous save bytes")
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
-	# A directory at the target isolates rename failure from temporary-file open.
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH)
-	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH)
-	loaded.save_progress()
-	check(errors==["save_error","save_error"],"Rename failure emits one additional save_error")
-	check(DirAccess.dir_exists_absolute(BattleGame.SAVE_PATH),"Rename failure does not destroy the obstructing target")
-	check(FileAccess.file_exists(BattleGame.SAVE_PATH+".tmp"),"Observed rename failure retains temporary data; not an atomicity guarantee")
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH)
-	DirAccess.remove_absolute(BattleGame.SAVE_PATH+".tmp")
-	# Loading may credit particles, but must discard the retired charge state.
-	db.config.offlineMax = 1.0/3600.0
-	var seed := BattleGame.new(db,false)
-	seed.profile.cleared = [1]
-	seed.profile.resources = {"1":0.0,"2":0.0}
-	seed.profile.hightechSavedAt = Time.get_unix_time_from_system()-100
-	seed.profile.chronoSavedAt = Time.get_unix_time_from_system()-100
-	seed.profile.offlineSavedAt = floorf(Time.get_unix_time_from_system())-100
-	seed.profile.offlineRates = {"1":0.0,"2":10.0}
-	var old_save := seed.profile.duplicate(true)
-	old_save.charge = {"攻击充能":{"level":99,"active":true}}
-	write_save(old_save)
-	var before_load := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
-	var settled := LoadOrderGame.new(db,true)
-	check(settled.boundaries==["load","player"],"Load settles in memory without an implicit save before resetting player")
-	check(settled.profile.chronoParticles==1 and settled.profile.resources["2"]==0,"Offline time credits only particles")
-	check(not settled.profile.has("charge"),"Old charge state is discarded")
-	var disk: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH)==before_load,"Loading leaves the existing save bytes unchanged")
-	settled.save_progress()
-	disk=JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(disk.resources==settled.profile.resources and disk.chronoParticles==1 and not disk.has("charge"),"Explicit save persists particle credit and removes old charge")
-	# The saved timestamp prevents repeated particle credit.
-	var repeated := BattleGame.new(db,true)
-	check(repeated.profile.resources==settled.profile.resources and repeated.profile.chronoParticles==settled.profile.chronoParticles,"Immediate repeat cannot reclaim offline particle credit")
-	var immediate := LoadOrderGame.new(db,false)
-	immediate.save_enabled = true
-	immediate.profile.cleared = [1]
-	immediate.profile.resources["2"] = 1000.0
-	immediate.boundaries.clear()
-	var upgrade_cost := immediate.reactor_upgrade_cost(1)
-	check(immediate.upgrade_reactor(1),"Reactor upgrade succeeds")
-	check(immediate.boundaries.count("save")==0 and immediate.save_dirty,"Reactor upgrade marks dirty without an implicit save")
-	immediate.save_progress()
-	var upgraded: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(BattleGame.SAVE_PATH))
-	check(upgraded.reactorLevel==2 and upgraded.resources["2"]==1000.0-upgrade_cost,"Saved reactor level and uranium match")
-	print("Save boundaries: %d checks, %d failures" % [checks,failures])
-	quit(1 if failures else 0)
+	var saved: Dictionary = JSON.parse_string(original)
+	var transfer := preload("res://scripts/save_transfer.gd").new()
+	check(transfer.prepare_data(saved, db).error == "", "Written current format passes pure validation")
+	var sparse := saved.duplicate(true)
+	sparse.erase("reactorAllocation")
+	check(not transfer.prepare_data(sparse, db).error.is_empty(), "Incomplete current state is rejected")
+	remember(saved)
+	finish()
+
+func reopen(db: ShipDatabase, phase: String) -> void:
+	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("user://expected.json"))
+	# Current capacity/allocation values use the same finite representation as JSON.
+	for key in saved.aiTechInput:saved.aiTechInput[key] = int(saved.aiTechInput[key])
+	for member in saved.crew:member.level=int(member.level)
+	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
+	var restored := BattleGame.new(db, true)
+	restored.resume_progress()
+	check(restored.stage==14 and restored.state==restored.State.TRAVEL and restored.distance==0 and restored.group_index==0 and restored.enemies.is_empty() and restored.player.armour==restored.stat("armour"),"Real reopen/recovery starts the return stage with fresh health and no old battle")
+	check(restored.hyperspace.state.active.is_empty() and restored.hyperspace.state.idle==saved.hyperspace.idle and restored.hyperspace.state.random_state==saved.hyperspace.random_state,"Interrupted manual receipt settles while pending reward and reward RNG survive")
+	check(restored.hyperspace.state.pending_time==0.125 and not restored.profile.has("hyperspace") and not restored.profile.has("hyperspaceReceipt"),"Current disk format preserves pending clock only in hyperspace owner")
+	check(restored.hyperspace.receipt_marker()==saved.hyperspaceReceipt and restored.hyperspace.receipt_marker().unread,"Claimed unread receipt persists independently of pending reward and UI")
+	check(restored.economy.balance("1")==saved.resources["1"] and restored.economy.balance("2")==saved.resources["2"] and restored.economy.balance("jewel")==saved.jewelFragments,"Scientific ordinary wallet survives real reopen alongside exact materials and history")
+	check(restored.startup_error.is_empty() and restored.progress_writer.owns_progress(), "Fresh game reopens with real persistence enabled")
+	check(restored.galaxy.pending("galaxy_1")==0.25 and restored.galaxy.pending_crew("galaxy_1")==1 and restored.galaxy.income_time()==0.25,"Reopen/recovery preserves both pending online work and unclaimed income time")
+	check(restored.galaxy.regions.galaxy_1.state.build_elapsed==0.0 and str(restored.galaxy.regions.galaxy_1.random.state)==saved.galaxies.galaxy_1.rng_state,"Reopen/recovery neither settles pending work nor advances galaxy RNG")
+	check(restored.stat_cache_enabled and float(restored.hyperspace_totals().hangings.get("extra_storage",0))>0,"Reopen/recovery builds enabled cache from restored hanging")
+	check(restored.reactor.allocations()==saved.reactorAllocation and restored.reactor.allocation("weapons")==restored.reactor_capacity(),"Reopen/recovery preserves above-base allocation before crew scheduling: actual=%s saved=%s capacity=%s"%[restored.reactor.allocations(),saved.reactorAllocation,restored.reactor_capacity()])
+	check(restored.crew.allocation_dependencies==restored.crew.reactor_allocation_state(restored,"navigator"),"Crew schedule captures final restored capacity and allocation")
+	check(restored.equipment.selected_ship()==saved.selectedShip and restored.module_entry("weapons",4).level==4 and restored.module_entry("weapons",4).key=="missile" and restored.equipment.save_data().equipmentSwitchUntil==saved.equipmentSwitchUntil,"Disk reopen/recovery preserves hull, dormant investment and switch deadline")
+	check(restored.enhancement_level()==30 and restored.enhancement_order("weapons")==["critical","repeat","proficiency"] and restored.enhancement_branch_choice("weapons","critical",3)=="B" and restored.enhancement_growth.attacks()==9007199254740993 and restored.enhancement_growth.hits()==9007199254740995,"Reopen/recovery preserves shared enhancement and exact history without JSON rounding")
+	check(restored.crew.save_data().crew==saved.crew and restored.crew.entry(restored,"navigator").level==2 and restored.crew.entry(restored,"navigator").exp==7,"Reopen/recovery keeps complete crew assignment, mode, growth and remainder")
+	check(restored.planets.save_data().planets==saved.planets and restored.planet_progress("1").crewId=="engineer" and restored.planet_progress("1").elapsed==0.25,"Reopen/recovery preserves active exploration without offline completion")
+	if phase == "latest":
+		check(restored.economy.resources() == saved.latest, "Second real process reopen selects latest commit")
+		var damaged := FileAccess.open(BattleGame.SAVE_PATH, FileAccess.WRITE)
+		damaged.store_string("{broken")
+		damaged.close()
+		finish()
+		return
+	if phase == "recovery":
+		check(restored.economy.resources() == saved.resources and restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.hyperspace.state.last_command==saved.hyperspace.last_command and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy, "Corrupt primary recovers complete backup including exact wallet and command receipt")
+		check(original == "{broken", "Recovery read preserves rejected primary bytes")
+		restored.save_progress()
+		check(restored.last_save_error == OK and FileAccess.get_file_as_string(BattleGame.SAVE_PATH + ".rejected") == "{broken", "Recovery write retains rejected bytes")
+		finish()
+		return
+	check(restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.economy.balance("ultimate_cores")==int(saved.ultimateCores) and not restored.hyperspace.state.has("materials"),"Real reopen restores exact integer wallet into economic authority")
+	check(restored.research.selected()==saved.aiTechActive and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy and restored.research.save_data().aiTechInput==saved.aiTechInput and not restored.profile.has("aiTechProgress"),"Real reopen restores selected research, paid progress and input to its owner")
+	var wallet_before:=restored.economy.material_wallet()
+	var retry:=restored.exchange_hyperspace_materials({"round_id":1,"command_seq":1,"source":"degenerate_matter","target":"antiproton","amount":7})
+	check(retry.error=="" and retry.amount==7 and restored.economy.material_wallet()==wallet_before,"Reopened exchange retries cached receipt without a second debit")
+	var unchanged:=restored.portable_save_data()
+	var invalids:Array=[]
+	var bad:=unchanged.duplicate(true);bad.reactorAllocation.weapons=-1;invalids.append(bad)
+	bad=saved.duplicate(true);bad.erase("latest");bad.hyperspace.active.return_target.stage=99999;invalids.append(bad)
+	bad=unchanged.duplicate(true);bad.hyperspaceReceipt.unread=1;invalids.append(bad)
+	bad=unchanged.duplicate(true);bad.galaxies.galaxy_1.slots[0].work=-1.0;invalids.append(bad)
+	bad=unchanged.duplicate(true);bad.loadout.weapons[0].level=-1;invalids.append(bad)
+	bad=unchanged.duplicate(true);bad.enhancementOrder.weapons=["critical","critical","repeat"];invalids.append(bad)
+	bad=unchanged.duplicate(true);bad.crew[0].assignmentType="missing_job";invalids.append(bad)
+	bad=unchanged.duplicate(true);bad.planets["1"].crewId="navigator";invalids.append(bad)
+	for candidate in invalids:
+		candidate.resources["1"]=999;restored.load_progress_data(candidate)
+		check(stable_save(restored)==stable_data(unchanged),"Invalid domain rejects before installing any wallet, growth or session state")
+	restored.hyperspace.last_error = ""
+	DirAccess.make_dir_absolute(BattleGame.SAVE_PATH + ".tmp")
+	restored.economy.credit("1", 7)
+	restored.save_progress()
+	check(restored.last_save_error != OK and restored.save_dirty, "Failed write retains dirty state")
+	check(FileAccess.get_file_as_string(BattleGame.SAVE_PATH) == original, "Failed write preserves the committed bytes")
+	DirAccess.remove_absolute(BattleGame.SAVE_PATH + ".tmp")
+	restored.save_progress()
+	check(restored.last_save_error == OK and FileAccess.file_exists(BattleGame.SAVE_PATH + ".bak"), "Retry keeps the prior valid recovery copy")
+	saved.latest = restored.economy.resources()
+	remember(saved)
+	finish()
+
+func stable_save(g)->Dictionary:
+	var data:Dictionary=g.portable_save_data()
+	data.erase("chronoSavedAt");data.erase("hightechSavedAt")
+	return data
+
+func stable_data(data:Dictionary)->Dictionary:
+	var result:=data.duplicate(true);result.erase("chronoSavedAt");result.erase("hightechSavedAt");return result

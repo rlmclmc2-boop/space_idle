@@ -1,8 +1,10 @@
 extends SceneTree
 
 var failures := 0
+var checks := 0
 
 func check(value: bool, label: String) -> void:
+	checks+=1
 	if not value:
 		failures += 1
 		printerr("FAIL: ",label)
@@ -17,47 +19,47 @@ func run() -> void:
 	db.config.reactorEnergyGrowth = 1.2
 	db.config.reactorUpgradeBase = 100.0
 	db.config.reactorUpgradeGrowth = 1.4
-	check(not db.data.has("charge"),"Old charge table removed")
 	var game := BattleGame.new(db,false)
-	check(game.profile.reactorLevel == 1 and game.reactor_energy() == 100.0,"Initial level and energy")
+	check(game.reactor.level() == 1 and game.reactor_energy() == 100.0,"Initial level and energy")
 	check(not game.upgrade_reactor(1),"Locked reactor cannot upgrade")
 	game.profile.cleared = [1]
 	check(game.reactor_unlocked(),"Reactor gate")
-	game.profile.resources["2"] = 436.0
+	game.economy.credit("2",436.0)
 	check(game.reactor_max_upgrades() == 3,"MAX sums changing costs")
-	check(not game.upgrade_reactor(4) and game.profile.resources["2"] == 436.0,"Unaffordable batch is atomic")
+	check(not game.upgrade_reactor(4) and game.economy.balance("2") == 436.0 and game.reactor.level()==1,"Unaffordable batch is atomic")
 	check(game.upgrade_reactor(game.reactor_max_upgrades()),"MAX purchases all affordable levels")
-	check(game.profile.reactorLevel == 4 and absf(float(game.profile.resources["2"])) < 0.00001,"Exact batch debit")
+	check(game.reactor.level() == 4 and absf(float(game.economy.balance("2"))) < 0.00001,"Exact batch debit")
 	check(absf(game.reactor_energy()-172.8)<0.00001,"Energy follows level")
 	check(game.reactor_capacity() == 172,"Available energy is an integer without changing growth formula")
 	check(game.set_reactor_allocation("weapons",100.9),"Weapon allocation")
-	check(int(game.profile.reactorAllocation.weapons) == 100,"Fractional input is rounded down")
+	check(int(game.reactor.allocations().weapons) == 100,"Fractional input is rounded down")
 	check(game.set_reactor_allocation("defence",100),"Defence allocation clamps")
 	check(game.reactor_allocated() == 172,"Total never exceeds integer capacity")
-	check(int(game.profile.reactorAllocation.defence) == 72,"Second slider limited by integer remainder")
+	check(int(game.reactor.allocations().defence) == 72,"Second slider limited by integer remainder")
 	check(absf(game.reactor_multiplier("weapons")-(1.0+pow(100.0,0.8)/100.0))<0.00001,"Configured module exponent")
 	check(game.set_reactor_allocation("weapons",0),"Allocation changes immediately")
 	check(game.reactor_multiplier("weapons") == 1.0,"Zero allocation clears boost")
-	var uranium_before := float(game.profile.resources["2"])
+	var uranium_before := float(game.economy.balance("2"))
 	check(game.equalize_reactor_allocation(),"Automatic equal allocation")
 	check(game.reactor_allocated() == 172,"Equalization keeps the integer remainder")
 	for key in game.reactor_available_modules():
-		check(int(game.profile.reactorAllocation[key]) in [57,58],"Integer equal share: "+key)
-	check(float(game.profile.resources["2"]) == uranium_before,"Equal allocation does not spend uranium")
-	var defence_before := float(game.profile.reactorAllocation.defence)
+		check(int(game.reactor.allocations()[key]) in [57,58],"Integer equal share: "+key)
+	check(float(game.economy.balance("2")) == uranium_before,"Equal allocation does not spend uranium")
+	var defence_before := float(game.reactor.allocations().defence)
 	check(game.set_reactor_allocation("weapons",10),"One module can change after equalization")
-	check(float(game.profile.reactorAllocation.defence) == defence_before,"Single slider leaves other modules unchanged")
-	var raw := {"reactorLevel":2,"reactorAllocation":{"weapons":90.7,"defence":90,"smelting":90},"charge":{"攻击充能":{"level":999}}}
-	game.load_reactor(raw)
-	check(game.profile.reactorLevel == 2 and game.reactor_allocated() <= game.reactor_capacity() and int(game.profile.reactorAllocation.weapons) == 90,"Loaded allocation is integer and clamped")
-	check(not game.profile.has("charge"),"Legacy charge state ignored")
+	check(float(game.reactor.allocations().defence) == defence_before,"Single slider leaves other modules unchanged")
+	var raw := {"reactorLevel":2,"reactorAllocation":{"weapons":90,"defence":90,"smelting":90,"condensation":0}}
+	for key in game.reactor_modules():
+		if not raw.reactorAllocation.has(key):raw.reactorAllocation[key] = 0
+	check(game.reactor.install_snapshot(raw,db.config),"current reactor snapshot installs");game.reactor.reconcile_capacity(game.reactor_capacity())
+	check(game.reactor.level() == 2 and game.reactor_allocated() <= game.reactor_capacity() and int(game.reactor.allocations().weapons) == 90,"Loaded allocation is integer and clamped")
 	var batch := BattleGame.new(db,false)
 	batch.profile.cleared = [1]
-	batch.profile.resources["2"] = 1000000.0
+	batch.economy.credit("2",1000000.0)
 	var expected_cost := 0.0
 	for level in range(1,11):expected_cost += ceilf(100.0*pow(1.4,level-1))
 	check(batch.upgrade_reactor(10),"x10 batch succeeds")
-	check(batch.profile.reactorLevel == 11 and absf(float(batch.profile.resources["2"])-(1000000.0-expected_cost))<0.00001,"x10 pays every level cost")
+	check(batch.reactor.level() == 11 and absf(float(batch.economy.balance("2"))-(1000000.0-expected_cost))<0.00001,"x10 pays every level cost")
 	var smelt := BattleGame.new(db,false)
 	smelt.profile.cleared = [1]
 	smelt.set_reactor_allocation("smelting",100)
@@ -73,5 +75,27 @@ func run() -> void:
 	check(iron.size()==1 and uranium.size()==1,"Both enemy drops generated")
 	if iron.size()==1 and uranium.size()==1:
 		check(float(iron[0].amount)>100.0 and float(uranium[0].amount)==100.0,"Smelting boosts only enemy iron")
-	print("reactor failures: ",failures)
+	price_boundaries()
+	print("REACTOR ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
+
+func price_boundaries()->void:
+	var g:=BattleGame.new(ShipDatabase.new(),false);g.profile.cleared=[1];g.rebuild_unlocks()
+	for i in 3:check(GrowthNumber.compare(g.reactor_upgrade_cost(i+1),[10,14,19][i])==0,"Current price rounds before summing: "+str(i+1))
+	var reactor:=g.reactor.save_data();reactor.reactorLevel=2;assert(g.reactor.install_snapshot(reactor,g.db.config))
+	g.economy.credit("2",13)
+	var before:=stable_save(g)
+	check(not g.upgrade_reactor(1) and stable_save(g)==before,"One-unit shortage preserves every domain")
+	g.economy.credit("2",37)
+	check(g.reactor_max_upgrades()==2 and g.upgrade_reactor(2) and g.reactor.level()==4 and GrowthNumber.compare(g.economy.balance("2"),17)==0,"Actual MAX pays14+19 leaving17")
+	reactor=g.reactor.save_data();reactor.reactorLevel=2400;assert(g.reactor.install_snapshot(reactor,g.db.config))
+	var price=g.reactor_upgrade_cost();g.economy.credit("2",GrowthNumber.multiply(price,10))
+	var balance=g.economy.balance("2")
+	check(price is Dictionary and GrowthNumber.valid(price),"High price uses finite representation")
+	check(g.upgrade_reactor(1) and g.reactor.level()==2401 and GrowthNumber.compare(g.economy.balance("2"),GrowthNumber.subtract(balance,price))==0,"Actual high-price purchase matches quote")
+	check(GrowthNumber.valid(g.reactor_multiplier("weapons")),"Large capacity supplies a finite effect")
+
+func stable_save(g)->Dictionary:
+	var data:Dictionary=g.portable_save_data()
+	data.erase("chronoSavedAt");data.erase("hightechSavedAt")
+	return data

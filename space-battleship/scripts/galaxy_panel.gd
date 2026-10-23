@@ -67,8 +67,8 @@ func setup(owner) -> void:
 	CHROME.button_skin(start_button,true)
 	heading.add_child(start_button)
 	start_button.text=UIText.t("galaxy.start")
-	start_button.pressed.connect(func():game.galaxy.start(game,selected);refresh())
-	selector.item_selected.connect(func(index):selected=str(selector.get_item_metadata(index));detail_slot=-1;game.galaxy.set_visible(selected);refresh())
+	start_button.pressed.connect(func():game.start_galaxy(selected);refresh())
+	selector.item_selected.connect(func(index):selected=str(selector.get_item_metadata(index));detail_slot=-1;refresh())
 	var summary := GridContainer.new()
 	summary.columns=4
 	summary.add_theme_constant_override("h_separation",8)
@@ -186,9 +186,8 @@ func sync_visibility() -> void:
 		elif not is_visible_in_tree() and battle_dimmed:
 			host.battle_layer.modulate=battle_modulate
 			battle_dimmed=false
-	if is_visible_in_tree():refresh();game.galaxy.set_visible(selected)
+	if is_visible_in_tree():refresh()
 	else:
-		game.galaxy.set_visible("")
 		crew_dialog.hide();help_dialog.hide()
 	map.sync_visibility()
 func set_text(control: Control, value: String) -> void:
@@ -213,7 +212,6 @@ func refresh() -> void:
 	if not keys.has(selected):selected=str(keys[0])
 	if selector.selected!=keys.find(selected):selector.select(keys.find(selected))
 	var region=game.galaxy.regions[selected]
-	game.galaxy.set_visible(selected)
 	map.select(region)
 	map.set_running(not game.paused)
 	map.crew_count=game.galaxy.crew_count(game,selected)
@@ -273,7 +271,7 @@ func setup_crew_dialog() -> void:
 	crew_scroll.add_child(rows)
 	crew_empty.text=UIText.t("galaxy.crew_empty")
 	rows.add_child(crew_empty)
-	for member in game.profile.crew:
+	for member in game.crew.members():
 		var id := str(member.crewId)
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation",12)

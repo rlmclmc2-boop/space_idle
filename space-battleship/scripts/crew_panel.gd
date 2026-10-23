@@ -265,8 +265,8 @@ func refresh_exploration_sample() -> void:
 	if dirty:
 		refresh()
 		return
-	for planet_id in host.game.profile.planets:
-		var crew_id: String=str(host.game.profile.planets[planet_id].get("crewId",""))
+	for planet_id in host.game.planets.all():
+		var crew_id: String=str(host.game.planets.progress(str(planet_id)).get("crewId",""))
 		if crew_id.is_empty():continue
 		var remaining:=exploration_remaining(str(planet_id))
 		if exploration_samples.get(crew_id,-1)==remaining:continue
@@ -276,7 +276,7 @@ func refresh_exploration_sample() -> void:
 		if selected==crew_id:refresh_detail_status(item)
 
 func hyperspace_reserved(id: String) -> bool:
-	return not id.is_empty() and SPACE_PERMISSION.reserved_crew(host.game.profile.hyperspace)==id
+	return not id.is_empty() and SPACE_PERMISSION.reserved_crew(host.game.hyperspace.state)==id
 
 func refresh_row(item: Dictionary) -> void:
 	var g=host.game
@@ -310,7 +310,7 @@ func refresh() -> void:
 	var next_gate := -1
 	var next_number := 0
 	var ordinal := 0
-	for item in g.profile.crew:
+	for item in g.crew.members():
 		ordinal+=1
 		if not g.crew.unlocked(g,item.crewId):
 			var gate: Dictionary=g.db.data.get("unlock",{}).get(str(g.crew.definitions(g)[item.crewId].get("unlockId","")),{})
@@ -400,11 +400,11 @@ func confirm_assignment() -> void:
 	if jobs.selected<0 or target_picker.selected<0:return
 	var g=host.game
 	var mode:=draft_mode if not mode_ids.is_empty() else ""
-	if not g.crew.assign(g,selected,job_ids[jobs.selected],target_ids[target_picker.selected],mode):refresh_actions()
+	if not g.assign_crew(selected,job_ids[jobs.selected],target_ids[target_picker.selected],mode):refresh_actions()
 
 func release_assignment() -> void:
 	var g=host.game
-	if g.crew.assign(g,selected,"",""):select(selected)
+	if g.assign_crew(selected,"",""):select(selected)
 	else:refresh_actions()
 
 func refresh_selection() -> void:

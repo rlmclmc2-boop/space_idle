@@ -1,7 +1,7 @@
 extends RefCounted
 ## Never accept caller-supplied crew levels, hull capacity, or sealed thresholds.
 static func hull_capacity(g,c: Dictionary) -> int:
-	return int(c.hull_capacities.get(str(g.profile.selectedShip),0))
+	return int(c.hull_capacities.get(str(g.equipment.selected_ship()),0))
 
 static func planet_for_level(data: Dictionary,level: int) -> String:
 	var selected:="";var selected_stage:=-1;var first:="";var first_stage:=2147483647
@@ -36,7 +36,7 @@ static func reserved_crew(s: Dictionary) -> String:
 static func crew_available(g,id: String) -> bool:
 	var entry: Dictionary=g.crew.entry(g,id)
 	if entry.is_empty() or not g.crew.unlocked(g,id) or not str(entry.assignmentType).is_empty() or not g.crew_exploration(id).is_empty() or not g.planet_buildings.occupied(g,id).is_empty():return false
-	var current:=reserved_crew(g.profile.hyperspace)
+	var current:=reserved_crew(g.hyperspace.state)
 	return current.is_empty() or current==id
 
 static func crew_level(g,id: String) -> int:
@@ -46,7 +46,7 @@ static func crew_level(g,id: String) -> int:
 static func bindings_valid(profile: Dictionary,data: Dictionary,c: Dictionary) -> bool:
 	if not profile.has("hyperspace"):return true
 	var s: Dictionary=profile.hyperspace
-	if not s.active.is_empty() and not s.active.get("return_state",{}).is_empty() and not preload("res://scripts/hyperspace_main_return.gd").binding_valid(s.active.return_journey,profile,data):return false
+	if not s.active.is_empty() and s.active.status=="started" and not preload("res://scripts/hyperspace_return_target.gd").binding_valid(s.active.return_target,profile,data):return false
 	var bag: Dictionary=s.inventory
 	if bag.equipped.size()>int(c.hull_capacities.get(str(profile.get("selectedShip","")),0)):return false
 	for id in bag.drones:

@@ -13,26 +13,32 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 5
+const SAVE_VERSION := 11
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
-const ENHANCEMENT_LEVEL_LIMIT := 9007199254740991
+const EnhancementGrowth=preload("res://scripts/enhancement_growth.gd")
+var enhancement_growth:=EnhancementGrowth.new()
 const N = preload("res://scripts/growth_number.gd")
-const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
+var research := AITech.new()
+const EquipmentState=preload("res://scripts/equipment_state.gd")
+var equipment := EquipmentState.new()
+const BattleRewards=preload("res://scripts/battle_rewards.gd")
+const AttackBirth=preload("res://scripts/attack_birth_configuration.gd")
 const CombatContext=preload("res://scripts/combat_context.gd")
 const DroneEffects=preload("res://scripts/drone_effect_aggregator.gd")
 const RailGeometry=preload("res://scripts/rail_geometry.gd")
 var rail_geometry_provider:=Callable()
 var rail_target_point_provider:=Callable()
 var player_launch_payload: Dictionary={}
-var max_upgrade_quote_cache:Dictionary={}
+var hyperspace_runtime:=preload("res://scripts/hyperspace_runtime.gd").new()
 var manual_hyperspace:=preload("res://scripts/hyperspace_manual_session.gd").new()
 var drone_combat:=preload("res://scripts/drone_combat_effects.gd").new()
-var combat_sources: Array=[]
-var combat_sources_dirty:=true
+const PlanetState=preload("res://scripts/planet_state.gd")
+var planets:=PlanetState.new()
 var planet_buildings := preload("res://scripts/planet_buildings.gd").new()
 var planet_buffs := preload("res://scripts/planet_buffs.gd").new()
 var galaxy := preload("res://scripts/galaxy_system.gd").new()
+var galaxy_runtime := preload("res://scripts/galaxy_runtime.gd").new()
 var hyperspace := preload("res://scripts/hyperspace_system.gd").new()
 const FURNACE := "超时空炼铁炉"
 const JEWEL_FURNACE := "宝石熔炼炉"
@@ -54,11 +60,9 @@ static func enemy_slot_position(slot: int, columns := 10) -> Vector2:
 	return Vector2(ENEMY_LINE_LEFT + float(slot) * ENEMY_LINE_SPACING,ENEMY_LINE_Y)
 var db: ShipDatabase
 var profile: Dictionary
+var economy := preload("res://scripts/economy_state.gd").new()
+var reactor := preload("res://scripts/reactor_state.gd").new()
 var crew := preload("res://scripts/crew_system.gd").new()
-# Synchronous upgrade sweep only; released before returning to the game loop.
-var _upgrade_batch := false
-var _upgrade_slots: Array = []
-var _upgrade_costs: Dictionary = {}
 var state: State = State.MAIN_MENU
 var stage := 1
 var distance := 0.0
@@ -73,10 +77,10 @@ var projectiles: Array[Dictionary] = []
 var native_execution:RefCounted
 var native_execution_requested:=false
 var native_execution_auto:=false
-var native_numeric_update:=false
 var native_execution_scope:=""
 var native_wave_waiting:=false
 var native_step_phase:="idle"
+var logical_step_active:=false
 var native_step_remaining:=0.0
 var native_cancelled_step:=0.0
 var native_handoff_count:=0
@@ -87,6 +91,12 @@ var cooldowns: Dictionary = {}
 var since_hit := 100.0
 var paused := false
 var speed := 1.0
+const LOGICAL_STEP := 1.0/60.0
+const RETURN_DEPARTURE_SECONDS := 1.6
+var game_time_remainder := 0.0
+var departure_remaining := 0.0
+var application_focused := true
+var external_time_active := false
 var clear_timer := 0.0
 var guard_index := -1
 var guard_elapsed := 0.0
@@ -98,13 +108,15 @@ var uid := 0
 var projectile_serial := 0
 var startup_error := ""
 var save_enabled := true
-var stat_cache_enabled := false
-var stat_cache: Dictionary = {}
-var reactor_capacity_signature: Array=[]
-var reactor_capacity_cached: Variant=0
+var attributes:=preload("res://scripts/attribute_projection.gd").new()
+var stat_cache_enabled:bool:
+	get:return attributes.enabled
+	set(value):attributes.enabled=value
+var configuration_revision:=0
+var unlock_revision:=0
+var _unlock_inputs:Array=[]
+var _committed_configuration:Array=[]
 var ai_tech_last_resource_notice_ms := 0
-var stat_cache_revision := 0
-var jewel_defence_capacity_cache: Dictionary = {}
 var login_chrono_particles := 0.0
 var pending_unlocks: Array[String] = []
 # Derived tutorial projection belongs to this Game, never to UI controls.
@@ -166,7 +178,7 @@ func economy_time() -> float:
 	return Time.get_unix_time_from_system()
 
 func _init(database: ShipDatabase, persist := true) -> void:
-	event.connect(_compiled_configuration_event)
+	event.connect(_configuration_event)
 	db = database
 	progress_writer.validation_db = db
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
@@ -182,10 +194,16 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	stat_cache_enabled = persist
 	rng.randomize()
 	profile = fresh_profile()
+	reset_equipment()
+	enhancement_growth.reset()
+	research.reset()
+	economy.reset({"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))},hyperspace.config)
+	reactor.reset(db.config)
 	crew.attach(self)
-	galaxy.load_state(self,{})
-	crew.load_state(self, [])
-	load_planets({})
+	galaxy.reset(db)
+	crew.reset(self)
+	planets.reset(self)
+	galaxy_runtime.refresh_unlocks(self)
 	profile.hightechOrder = hightech_slots()
 	if persist:
 		load_progress()
@@ -195,10 +213,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	if persist:manual_hyperspace.load_production(self)
 
 func fresh_profile() -> Dictionary:
-	var selected := first_ship()
-	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "resources":{"1":ceilf(float(db.defaults.startingIron)),"2":ceilf(float(db.defaults.startingTitanium))}, "unlocked":str(db.config.startEquip).split(","), "loop":false, "selectedShip":selected, "loadout":{}, "moduleVersion":1, "aiTechLevels":{}, "aiTechProgress":{}, "aiTechActive":"", "aiTechInput":{"1":0,"2":0}, "aiIncomePeak":{"1":0.0,"2":0.0,"jewel":0.0}, "hightechSavedAt":Time.get_unix_time_from_system()}
-	profile.aiTechCompletionUnread = false
-	profile.equipmentSwitchUntil = {}
+	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "unlocked":str(db.config.startEquip).split(","), "loop":false, "hightechSavedAt":Time.get_unix_time_from_system()}
 	# The retired page still reads these inert values until the new art page lands.
 	profile.scientists = 0
 	profile.scientistAssignments = {}
@@ -206,28 +221,13 @@ func fresh_profile() -> Dictionary:
 	profile.hightechLevels = {}
 	# Initial availability also belongs to unlock; startEquip only selects loadout.
 	profile.unlocked = EQUIPMENT.filter(func(key):return db.unlock_level(key) == 0)
-	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
-	profile.loadout = default_loadout(selected, starting)
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":false, "dismissed":false, "retreatSeen":false, "pickupSeen":false}
-	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
 	profile.jewels = [] # Empty compatibility projection; no live gem inventory.
-	profile.enhancementVersion = 1
-	profile.enhancementLevel = 0
-	profile.enhancementOrder = default_enhancement_order()
-	profile.enhancementBranches = default_enhancement_branches()
-	profile.enhancementAttacks = 0
-	profile.enhancementHits = 0
 	profile.lifetime_max_stage = 1
 	profile.seenUnlocks = []
 	profile.readUnlocks = []
-	profile.jewelFragments = 0.0
 	profile.jewelFurnaceElapsed = 0.0
 	profile.jewelFurnaceIncomePeak = 0.0
-	profile.chronoParticles = 0.0
-	profile.reactorLevel = int(db.config.reactorInitialLevel)
-	profile.reactorAllocation = {}
-	for key in reactor_modules():profile.reactorAllocation[key] = 0
-	profile.hyperspace = hyperspace.fresh()
 	return profile
 
 func first_ship() -> String:
@@ -328,32 +328,18 @@ func read_tutorial_unlock(id: String) -> bool:
 	event.emit("tutorial_read", {"id":id})
 	return true
 
+func reset_equipment() -> void:
+	var starting: Array = Array(str(db.config.startEquip).split(",")).filter(func(key):return profile.unlocked.has(key))
+	equipment.reset(db,first_ship(),starting)
+
 func default_loadout(key: String, unlocked: Array) -> Dictionary:
-	var loadout := empty_loadout(key)
-	var weapons: Array = loadout.weapons
-	var defence: Array = loadout.defence
-	if not defence.is_empty():defence[0].key="armour"
-	for equip_key in unlocked:
-		if WEAPON_KEYS.has(str(equip_key)):
-			var empty := weapons.find_custom(func(entry):return str(entry.key).is_empty())
-			if empty >= 0:
-				weapons[empty].key = str(equip_key)
-		elif DEFENSE_KEYS.has(str(equip_key)):
-			if str(equip_key)=="armour" and not defence.is_empty():continue
-			var empty_defence := defence.find_custom(func(entry):return str(entry.key).is_empty())
-			if empty_defence >= 0:
-				defence[empty_defence].key = str(equip_key)
-	return loadout
+	return EquipmentState.default_loadout(db,key,unlocked)
 
 func empty_loadout(key: String) -> Dictionary:
-	var row := db.ship(key)
-	var weapons: Array = []
-	var defence: Array = []
-	for i in range(int(row.get("weaponSlots", 0))):
-		weapons.append({"key":"", "level":1})
-	for i in range(int(row.get("defenseSlots", 0))):
-		defence.append({"key":"", "level":1})
-	return {"weapons":weapons, "defence":defence}
+	return EquipmentState.empty_loadout(db,key)
+
+static func same_module(a: Dictionary,b: Dictionary) -> bool:
+	return EquipmentState.same_source(a,b)
 
 func load_progress() -> void:
 	var result := progress_writer.read_progress_result(SAVE_PATH, db)
@@ -377,16 +363,34 @@ func load_progress() -> void:
 	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
-	# Also used on an isolated fresh game to validate portable imports.
+	var source_db = manual_hyperspace.base_db if manual_hyperspace.active else db
+	var prepared: Dictionary = load("res://scripts/save_transfer.gd").new().prepare_data(raw, source_db)
+	if not prepared.error.is_empty():
+		hyperspace.last_error = "invalid_progress_save"
+		return
+	raw = prepared.data
 	# Reject a future/corrupt subsystem before changing any authoritative balance.
 	var validation_db=manual_hyperspace.base_db if manual_hyperspace.active else db
 	if raw.has("hyperspace") and (not raw.hyperspace is Dictionary or not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,hyperspace.config,validation_db.levels.size()) or not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,validation_db.data,hyperspace.config)):
 		hyperspace.last_error="invalid_hyperspace_save"
 		return
-	invalidate_stat_cache()
+	# The challenge receipt is the sole saved return destination. Derive an
+	# ordinary fresh journey only after complete validation, before installation.
+	var interrupted:Dictionary=raw.hyperspace.active
+	if not interrupted.is_empty() and interrupted.status=="started":
+		var target:Dictionary=interrupted.return_target
+		raw.journey=preload("res://scripts/hyperspace_return_target.gd").checkpoint(target,validation_db)
+		raw.loop=target.loop
+		if target.loop:
+			raw.guardStage=int(target.stage);raw.guardIndex=int(target.guard_index);raw.guardDistance=raw.journey.distance
+	var signals_were_blocked := is_blocking_signals()
+	set_block_signals(true)
 	login_chrono_particles = 0.0
-	if int(raw.get("version",0)) not in [2,3,4,SAVE_VERSION]:return
 	manual_hyperspace.reset_for_load(self)
+	game_time_remainder=0.0;departure_remaining=0.0;resource_prune_elapsed=0.0
+	profile = fresh_profile()
+	resource_samples.clear()
+	pending_unlocks.clear()
 	var interval_value = raw.get("saveIntervalMinutes", 1)
 	var interval := parse_save_interval(str(interval_value))
 	if interval_value is float and is_finite(interval_value) and interval_value >= 1 and interval_value < 9.0e18 and interval_value == floorf(interval_value):interval = int(interval_value)
@@ -394,9 +398,6 @@ func load_progress_data(raw: Dictionary) -> void:
 	var saved_at = raw.get("hightechSavedAt", 0.0)
 	if (saved_at is int or saved_at is float) and is_finite(float(saved_at)) and saved_at > 0:
 		last_successful_save_at = float(saved_at)
-	# Legacy identities are accepted only at the save migration boundary.
-	if int(raw.get("version",0))<3:
-		raw = migrate_planet_ids(raw)
 	# Old saves remain quiet; fresh profiles alone opt into first-session guidance.
 	profile.onboarding = {"version":1, "intro":false, "equipped":false, "upgraded":false, "completed":true, "dismissed":false, "retreatSeen":true, "pickupSeen":true}
 	if raw.get("onboarding") is Dictionary:
@@ -404,11 +405,6 @@ func load_progress_data(raw: Dictionary) -> void:
 			profile.onboarding[key] = raw.onboarding.get(key, false) == true
 		profile.onboarding.retreatSeen = raw.onboarding.get("retreatSeen",profile.onboarding.completed) == true
 		profile.onboarding.pickupSeen = raw.onboarding.get("pickupSeen",profile.onboarding.completed) == true
-	# Optional UI-only receipt metadata. Legacy/invalid markers remain quiet.
-	profile.hyperspaceReceipt = {"round":0,"run":0,"drone_id":"","unread":false}
-	var receipt = raw.get("hyperspaceReceipt",{})
-	if receipt is Dictionary and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("round")) and preload("res://scripts/hyperspace_config.gd").integer(receipt.get("run")) and receipt.round>=0 and receipt.run>=0 and receipt.get("drone_id") is String and receipt.get("unread") is bool:
-		profile.hyperspaceReceipt = {"round":int(receipt.round),"run":int(receipt.run),"drone_id":str(receipt.drone_id),"unread":bool(receipt.unread)}
 	profile.lifetime_max_stage = int(raw.get("lifetime_max_stage",raw.get("highestLevel",1)))
 	if raw.get("cleared") is Array:
 		for n in raw.cleared:
@@ -419,11 +415,7 @@ func load_progress_data(raw: Dictionary) -> void:
 		for n in raw.bossSeen:
 			if (n is float or n is int) and n == int(n) and n >= 1 and n <= db.levels.size() and not profile.bossSeen.has(int(n)):
 				profile.bossSeen.append(int(n))
-	for id in ["1", "2"]:
-		var value = raw.get("resources", {}).get(id, 0) if raw.get("resources") is Dictionary else 0
-		if N.valid(value):
-			# Restoring a balance must not mint the remainder of a fractional unit.
-			profile.resources[id] = ReactorInt.command_floor(value) if value is Dictionary and value.has("i") else value.duplicate(true) if value is Dictionary else float(value)
+	economy.install_snapshot(raw)
 	profile.loop = false
 	var death_mode = raw.get("guardDeath", 0)
 	profile.guardDeath = int(death_mode) if (death_mode is int or death_mode is float) and death_mode == int(death_mode) and int(death_mode) in [0,1,2] else 0
@@ -438,7 +430,30 @@ func load_progress_data(raw: Dictionary) -> void:
 			if key is String and EQUIPMENT.has(key):
 				var id := db.unlock_id("equipment", key)
 				if not id.is_empty() and not profile.grantedUnlocks.has(id):profile.grantedUnlocks.append(id)
-	rebuild_unlocks()
+	# Install every validated domain before any contribution, capacity or schedule reads.
+	equipment.install_snapshot(raw,db)
+	profile.productionElapsed = float(raw.productionElapsed)
+	enhancement_growth.install_snapshot(raw)
+	load_hightech(raw)
+	crew.install_snapshot(raw,db)
+	planets.install_snapshot(raw,db)
+	reactor.install_snapshot(raw,db.config)
+	hyperspace.install_snapshot(raw,db) # No offline energy/work accrual.
+	galaxy.install_snapshot(raw,db)
+	galaxy_runtime.reset()
+	hyperspace_runtime.reset();hyperspace_runtime.settle_interrupted(self)
+	rebuild_unlock_gates()
+	profile.hightechOrder = hightech_slots()
+	refresh_unlock_revision()
+	galaxy_runtime.refresh_unlocks(self)
+	configuration_committed()
+	# Reconcile against restored contributions; only then establish derived schedules.
+	var installed_reactor_revision := reactor.revision
+	reactor.reconcile_capacity(reactor_capacity())
+	if reactor.revision != installed_reactor_revision:configuration_committed()
+	economy.accrue_chrono(0.0, chrono_capacity())
+	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
+	crew.reset_schedule(self)
 	load_journey(raw.get("journey", {}))
 	# Old saves knew ownership but not notification history. Preserve their pending
 	# pages; all other previously owned unlocks have already been experienced.
@@ -465,46 +480,8 @@ func load_progress_data(raw: Dictionary) -> void:
 			profile.guardStage = int(guard_stage)
 			profile.guardIndex = int(saved_index)
 			profile.guardDistance = float(saved_distance)
-	var saved_ship := str(raw.get("selectedShip", first_ship()))
-	profile.selectedShip = saved_ship if ship_unlocked(saved_ship) else first_ship()
-	profile.loadout = default_loadout(profile.selectedShip, profile.unlocked)
-	if raw.get("loadout") is Dictionary:
-		profile.loadout = raw.loadout.duplicate(true)
-	ensure_loadout()
-	# Deadlines and the production clock are stored in the same time domain.
-	if nonnegative_number(raw.get("productionElapsed")):
-		profile.productionElapsed = float(raw.productionElapsed)
-	profile.equipmentSwitchUntil = {}
-	if raw.get("equipmentSwitchUntil") is Dictionary:
-		for category in ["weapons", "defence"]:
-			for index in active_slot_count(category):
-				var id := slot_id(category,index)
-				var deadline = raw.equipmentSwitchUntil.get(id)
-				if nonnegative_number(deadline) and float(deadline)>production_time():
-					profile.equipmentSwitchUntil[id] = float(deadline)
-	# Legacy name levels migrate once. Module saves use their own slot levels exclusively.
-	if int(raw.get("moduleVersion",0)) < 1:
-		for key in EQUIPMENT:
-			var entry := first_equipment_entry(key)
-			var value = raw.get("levels", {}).get(key, 1) if raw.get("levels") is Dictionary else 1
-			if not entry.is_empty():
-				var migrated := clampi(int(value),1,db.max_equipment_level(key)) if value is float or value is int else 1
-				# Keep any explicit slot investment when a legacy name-level map is older.
-				entry.level = maxi(int(entry.level),migrated)
-	profile.moduleVersion = 1
-	load_jewels(raw)
-	load_hightech(raw)
-	profile.hightechOrder = hightech_slots()
-	galaxy.load_state(self,raw.get("galaxies",{}) if raw.get("galaxies",{}) is Dictionary else {})
-	crew.load_state(self, raw.get("crew", []))
-	load_reactor(raw)
-	load_planets(raw.get("planets", {}))
-	galaxy.refresh_unlocks(self)
-	var particles = raw.get("chronoParticles", 0)
-	profile.chronoParticles = minf(float(particles), chrono_capacity()) if nonnegative_number(particles) else 0.0
-	login_chrono_particles = accrue_chrono_particles(raw.get("chronoSavedAt"), Time.get_unix_time_from_system())
-	hyperspace.load_state(self,raw.get("hyperspace")) # No offline energy/work accrual.
 	invalidate_tutorial_unlocks()
+	set_block_signals(signals_were_blocked)
 
 func load_journey(value) -> void:
 	if not value is Dictionary:
@@ -531,10 +508,6 @@ func load_journey(value) -> void:
 				profile.journey.pendingUnlocks.append(key)
 
 func resume_progress() -> void:
-	if not manual_hyperspace.loaded_return.is_empty():
-		var recovered=manual_hyperspace.loaded_return;manual_hyperspace.loaded_return={};profile.erase("journey")
-		preload("res://scripts/hyperspace_main_return.gd").restore(self,recovered.state,recovered.journey)
-		return
 	var checkpoint: Dictionary = profile.get("journey", {})
 	profile.erase("journey")
 	if not checkpoint.is_empty():
@@ -569,7 +542,7 @@ func chrono_cost(multiplier: float) -> float:
 
 func set_speed(multiplier: float) -> bool:
 	var cost := chrono_cost(multiplier)
-	if cost < 0 or (cost > 0 and float(profile.chronoParticles) <= 0):
+	if cost < 0 or (cost > 0 and float(economy.balance("chrono")) <= 0):
 		return false
 	speed = multiplier
 	return true
@@ -582,49 +555,76 @@ func accrue_chrono_particles(saved_at: Variant, now: float) -> float:
 		return 0.0
 	var seconds := clampf(floorf(now - float(saved_at)), 0.0, float(db.config.offlineMax) * 3600.0)
 	var earned := maxf(0.0, floorf(seconds * float(db.config.chronoParticlesPerSecond)))
-	var available := maxf(0.0, floorf(chrono_capacity() - float(profile.chronoParticles)))
+	var available := maxf(0.0, floorf(chrono_capacity() - float(economy.balance("chrono"))))
 	var gained := minf(earned, available)
-	profile.chronoParticles = minf(chrono_capacity(), float(profile.chronoParticles) + gained)
+	economy.accrue_chrono(gained, chrono_capacity())
 	return gained
 
-func chrono_affordable_seconds(real_dt: float) -> float:
-	var cost := chrono_cost(speed)
-	if cost < 0:
-		speed = default_speed()
-		return real_dt
-	if cost == 0:
-		return real_dt
-	var affordable := minf(real_dt, float(profile.chronoParticles) / cost)
-	profile.chronoParticles = maxf(0.0, float(profile.chronoParticles) - affordable * cost)
-	return affordable
+func set_application_focused(focused:bool)->void:
+	if application_focused==focused:return
+	application_focused=focused
+	speed=default_speed()
+
+func begin_return_departure()->void:
+	departure_remaining=RETURN_DEPARTURE_SECONDS
+
+func consume_external_time(real_dt:float,presentation:Variant=null)->void:
+	# Sole live wall-time consumer. tick() remains the domain's logical algorithm
+	# for internal event subdivision and deterministic offline analysis.
+	if external_time_active or not is_finite(real_dt) or real_dt<0:return
+	check_timed_save()
+	if paused:return
+	external_time_active=true
+	if departure_remaining>0:
+		var held:=minf(real_dt,departure_remaining)
+		departure_remaining=maxf(0.0,departure_remaining-held)
+		if departure_remaining<0.0000000001:departure_remaining=0.0
+		real_dt=maxf(0.0,real_dt-held)
+		if departure_remaining>0 or real_dt<0.0000000001:
+			external_time_active=false;return
+	if presentation!=null and not presentation.prepare_time_frame():
+		# Preserve the existing native materialization guard; a failed preparation
+		# must neither spend particles nor silently accumulate more unpaid work.
+		paused=true;external_time_active=false;return
+	if not application_focused:speed=default_speed()
+	var cost:=chrono_cost(speed)
+	if cost<0:speed=default_speed();cost=chrono_cost(speed)
+	var boosted:=economy.consume_chrono(real_dt,cost)
+	var budget:=boosted*speed
+	if boosted<real_dt or (cost>0 and economy.balance("chrono")<=0):
+		speed=default_speed()
+		budget+=(real_dt-boosted)*speed
+	advance_resource_history_clock(real_dt)
+	if native_cancelled_step>0:
+		game_time_remainder=maxf(0.0,game_time_remainder-native_cancelled_step)
+		native_cancelled_step=0.0
+	game_time_remainder+=budget
+	while game_time_remainder+0.0000000001>=LOGICAL_STEP and not paused and departure_remaining<=0:
+		if not prepare_logical_step(LOGICAL_STEP):break
+		if presentation!=null:presentation.before_time_step(LOGICAL_STEP)
+		tick(LOGICAL_STEP)
+		var completed:=native_step_phase!="blocked"
+		var ready:=true if presentation==null else bool(presentation.after_time_step(completed))
+		if not completed:break
+		game_time_remainder=maxf(0.0,game_time_remainder-LOGICAL_STEP)
+		if not ready:paused=true;break
+	if presentation!=null:presentation.publish_time_frame()
+	external_time_active=false
+
+func advance_resource_history_clock(seconds:float)->void:
+	resource_prune_elapsed+=seconds
+	if resource_prune_elapsed>=5.0:
+		resource_prune_elapsed=fmod(resource_prune_elapsed,5.0)
+		prune_resource_samples(economy_time())
+
 
 func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
 
 func load_hightech(raw: Dictionary) -> void:
-	invalidate_stat_cache()
-	profile.aiTechCompletionUnread = raw.get("aiTechCompletionUnread",false) == true
+	research.install_snapshot(raw,db.data.ai_tech_tree)
 	for field in ["productionElapsed", "hightechSavedAt"]:
-		if nonnegative_number(raw.get(field)):
-			profile[field] = float(raw[field])
-	if raw.get("aiTechLevels") is Dictionary:
-		for key in db.data.ai_tech_tree:
-			var value = raw.aiTechLevels.get(key, 0)
-			if nonnegative_number(value) and float(value) == floorf(float(value)) and float(value) <= 9007199254740991.0:
-				profile.aiTechLevels[key] = int(value)
-	if raw.get("aiTechProgress") is Dictionary:
-		for key in db.data.ai_tech_tree:
-			var value = raw.aiTechProgress.get(key, 0)
-			if nonnegative_number(value) and float(value) < AITech.required(self,key):profile.aiTechProgress[key] = float(value)
-	if raw.get("aiTechInput") is Dictionary:
-		for id in ["1", "2"]:
-			var value = raw.aiTechInput.get(id, 0)
-			if nonnegative_number(value) and float(value) == floorf(float(value)) and float(value) <= 9007199254740991.0:profile.aiTechInput[id] = int(value)
-	if raw.get("aiIncomePeak") is Dictionary:
-		for id in ["1", "2", "jewel"]:
-			if N.valid(raw.aiIncomePeak.get(id)):profile.aiIncomePeak[id] = raw.aiIncomePeak[id]
-	var selected := str(raw.get("aiTechActive", ""))
-	if selected.is_empty() or bool(AITech.eligibility(self,selected).ok):profile.aiTechActive = selected
+		if nonnegative_number(raw.get(field)):profile[field] = float(raw[field])
 	if raw.get("resourceSamples") is Array:
 		for sample in raw.resourceSamples:
 			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and (float(sample.time) > float(profile.hightechSavedAt) - 60.0 or (nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time() and float(sample.production_time)>production_time()-60.0)):
@@ -635,12 +635,11 @@ func load_hightech(raw: Dictionary) -> void:
 				resource_samples.append(restored)
 
 func read_ai_tech_completion() -> bool:
-	if not bool(profile.aiTechCompletionUnread):return false
-	profile.aiTechCompletionUnread = false
+	if not research.read_completion():return false
 	save_dirty = true
 	return true
 
-func rebuild_unlocks() -> void:
+func rebuild_unlock_gates() -> void:
 	invalidate_tutorial_unlocks()
 	profile.highestLevel = 1
 	for n in profile.cleared:
@@ -650,34 +649,17 @@ func rebuild_unlocks() -> void:
 	for key in EQUIPMENT:
 		if content_unlocked("equipment", key) and not profile.unlocked.has(key):
 			profile.unlocked.append(key)
-	if not ship_unlocked(str(profile.get("selectedShip", first_ship()))):
-		profile.selectedShip = first_ship()
+
+func rebuild_unlocks() -> void:
+	rebuild_unlock_gates()
 	ensure_loadout()
 	profile.hightechOrder = hightech_slots()
 	event.emit("unlocks_changed",{})
 
 func ensure_loadout() -> void:
-	invalidate_stat_cache()
-	var row := db.ship(str(profile.get("selectedShip", first_ship())))
-	if row.is_empty():
-		profile.selectedShip = first_ship()
-		row = db.ship(profile.selectedShip)
-	var base := default_loadout(profile.selectedShip, profile.unlocked)
-	var saved: Dictionary = profile.get("loadout", {})
-	for category in ["weapons", "defence"]:
-		var allowed: Array = WEAPON_KEYS if category == "weapons" else DEFENSE_KEYS
-		var count := int(row.get("weaponSlots", 0)) if category == "weapons" else int(row.get("defenseSlots", 0))
-		var entries: Array = saved.get(category, []) if saved.get(category, []) is Array else []
-		var normalized: Array = []
-		for i in range(maxi(count,entries.size())):
-			var entry = entries[i] if i < entries.size() and entries[i] is Dictionary else (base[category][i] if i<count else {"key":"","level":1})
-			var equip_key := str(entry.get("key", "")) if entry is Dictionary else ""
-			var level := int(entry.get("level", 1)) if entry is Dictionary and (entry.get("level", 1) is int or entry.get("level", 1) is float) else 1
-			if not equip_key.is_empty() and (not allowed.has(equip_key) or not profile.unlocked.has(equip_key)):
-				equip_key = ""
-			var normalized_entry := {"key":equip_key, "level":clampi(level, 1, 2147483647)}
-			normalized.append(normalized_entry)
-		profile.loadout[category] = normalized
+	refresh_unlock_revision()
+	equipment.reconcile(db,profile.unlocked,first_ship(),ship_unlocked(equipment.selected_ship()))
+	configuration_committed()
 
 func save_clock_seconds() -> float:
 	# Monotonic elapsed time, independent of game speed, pause and wall-clock edits.
@@ -715,7 +697,7 @@ func save_progress() -> void:
 	if not save_enabled:return
 	save_dirty = true
 	var saved := _build_save_data()
-	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t").to_utf8_buffer())
+	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t",true,true).to_utf8_buffer())
 	if last_save_error != OK:
 		event.emit("save_error", {"error":last_save_error})
 		return
@@ -724,13 +706,8 @@ func save_progress() -> void:
 	event.emit("save_success", {"at":last_successful_save_at})
 
 func _build_save_data() -> Dictionary:
-	profile.hightechOrder = hightech_slots()
-	profile.hightechSavedAt = Time.get_unix_time_from_system()
-	prune_resource_samples(float(profile.hightechSavedAt))
-	profile.resourceSamples = resource_samples
-	profile.chronoSavedAt = float(profile.hightechSavedAt)
-	profile.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false))
-	return _compose_save_data(profile.duplicate())
+	prune_resource_samples(Time.get_unix_time_from_system())
+	return portable_save_data()
 
 func portable_save_data() -> Dictionary:
 	# Export and import backup must leave unsaved runtime progress unchanged.
@@ -745,29 +722,24 @@ func portable_save_data() -> Dictionary:
 
 func _compose_save_data(saved: Dictionary) -> Dictionary:
 	for retired in ["scientists","scientistAssignments","techPoints","hightechLevels","hightechOrder","hightechDrops"]:saved.erase(retired)
-	if saved.get("reactorAllocation") is Dictionary:
-		saved.reactorAllocation=saved.reactorAllocation.duplicate(true)
-		for key in saved.reactorAllocation:saved.reactorAllocation[key]=ReactorInt.encode(saved.reactorAllocation[key])
-	if saved.get("resources") is Dictionary:
-		saved.resources=saved.resources.duplicate(true)
-		var uranium_id := str(int(db.config.reactorUraniumId))
-		var uranium = saved.resources.get(uranium_id)
-		if uranium is int and uranium>9007199254740991:
-			saved.resources[uranium_id]=ReactorInt.encode(uranium)
+	saved.merge(economy.save_data(), true)
+	saved.merge(research.save_data(), true)
+	saved.merge(equipment.save_data(), true)
+	saved.merge(enhancement_growth.save_data(), true)
+	saved.merge(reactor.save_data(), true)
+	saved.merge(crew.save_data(), true)
+	saved.merge(planets.save_data(), true)
+	saved.merge(hyperspace.save_data(),true)
 	saved.saveIntervalMinutes = str(save_interval_minutes)
-	saved.galaxies=galaxy.save_data()
+	saved.merge(galaxy.save_data(),true)
 	saved.grantedUnlocks = granted_unlocks()
 	if state in [State.TRAVEL, State.COMBAT, State.LEVEL_CLEAR, State.RETREAT]:
 		# Retreat resumes at its destination, never at the defeated encounter.
 		saved.journey = {"stage":stage, "distance":retreat_target if state == State.RETREAT else distance, "groupIndex":group_index, "state":int(state), "guardArrived":guard_arrived, "retreatBossPending":retreat_boss_pending}
 		saved.journey.pendingUnlocks = pending_unlocks.duplicate()
 	if manual_hyperspace.active:
-		saved.journey=manual_hyperspace.return_journey.duplicate(true);saved.journey.erase("loop");saved.loop=manual_hyperspace.return_journey.loop
+		saved.erase("journey");saved.loop=manual_hyperspace.return_target.loop
 	saved.jewels = [] # Retired field stays empty for old save readers.
-	saved.loadout = profile.loadout.duplicate(true)
-	for category in ["weapons", "defence"]:
-		for entry in saved.loadout[category]:
-			for field in ["sockets","attacks","hits"]:entry.erase(field)
 	saved.levels = {}
 	for key in EQUIPMENT:
 		saved.levels[key] = int(first_equipment_entry(key).get("level", 1))
@@ -781,56 +753,37 @@ func first_equipment_entry(key: String) -> Dictionary:
 	return {}
 
 func module_entries(category: String) -> Array:
-	return profile.loadout.get(category, [])
+	return equipment.entries(category)
 
 func active_slot_count(category: String, ship_key := "") -> int:
-	return int(db.ship(str(profile.selectedShip) if ship_key.is_empty() else ship_key).get("weaponSlots" if category=="weapons" else "defenseSlots",0)) if category in ["weapons","defence"] else 0
+	return int(db.ship(equipment.selected_ship() if ship_key.is_empty() else ship_key).get("weaponSlots" if category=="weapons" else "defenseSlots",0)) if category in ["weapons","defence"] else 0
 
 func module_entry(category: String, index: int) -> Dictionary:
 	var entries := module_entries(category)
 	return entries[index] if index>=0 and index<entries.size() else {}
 
 func loadout_entries(category: String) -> Array:
-	# Active view contains references to authoritative modules, never copies of entries.
-	return module_entries(category).slice(0,active_slot_count(category))
+	# Immutable active view; stable source identities survive numeric upgrades.
+	return equipment.entries(category,true)
 
 func module_cost_key(category: String) -> String:
 	# Current same-category cost curves are identical; modules retain that existing curve.
-	return "laser" if category=="weapons" else "armour"
+	return EquipmentState.cost_key(category)
 
 
 func weapon_entries() -> Array:
 	return loadout_entries("weapons")
 
 func combat_weapon_entries() -> Array:
-	if not profile.has("hyperspace") or profile.hyperspace.inventory.equipped.is_empty():return weapon_entries()
-	if not combat_sources_dirty:return combat_sources
-	var previous: Dictionary={}
-	for entry in combat_sources:
-		if entry.has("drone_id"):previous[entry.drone_id]=entry
-	combat_sources=weapon_entries()
-	if profile.has("hyperspace"):
-		for id in profile.hyperspace.inventory.equipped:
-			if profile.hyperspace.inventory.sealed.has(id) or drone_combat.disabled.has(id):continue
-			var d: Dictionary=profile.hyperspace.inventory.drones[id]
-			var projected:=drone_weapon_entry(d)
-			var old: Dictionary=previous.get(id,{})
-			combat_sources.append(old if old.get("key")==projected.key and old.get("level")==projected.level else projected)
-	combat_sources_dirty=false
-	return combat_sources
+	return attributes.combat_weapon_entries(self)
 
 func drone_weapon_entry(d: Dictionary, weapon_levels:Dictionary={}) -> Dictionary:
-	var maximum:=1
-	var entries:=module_entries("weapons")
-	for index in entries.size():
-		var entry:Dictionary=entries[index]
-		if entry.key==d.weapon:maximum=maxi(maximum,int(weapon_levels.get(index,entry.level)))
-	return {"key":d.weapon,"level":maximum+DroneEffects.weapon_bonus(d,hyperspace.config),"drone_id":str(d.id)}
+	return attributes.drone_weapon_entry(self,d,weapon_levels)
 
 func projected_combat_entry(index:int,weapon_levels:Dictionary={}) -> Dictionary:
 	var entry:Dictionary=combat_entry(index)
 	if entry.has("drone_id"):
-		return drone_weapon_entry(profile.hyperspace.inventory.drones[entry.drone_id],weapon_levels)
+		return drone_weapon_entry(hyperspace.state.inventory.drones[entry.drone_id],weapon_levels)
 	if weapon_levels.has(index):
 		entry=entry.duplicate();entry.level=int(weapon_levels[index])
 	return entry
@@ -843,16 +796,7 @@ func defense_entries() -> Array:
 	return loadout_entries("defence")
 
 func stat(key: String) -> Variant:
-	if stat_cache_enabled and stat_cache.has(key):
-		return stat_cache[key]
-	var total = 0.0
-	for category in ["weapons", "defence"]:
-		for entry in loadout_entries(category):
-			if str(entry.get("key", "")) == key:
-				total = N.add(total,jewel_equipment_stat(entry))
-	if stat_cache_enabled:
-		stat_cache[key] = total
-	return total
+	return attributes.stat(self,key)
 
 func enable_compiled_combat_rules()->void:
 	assert(compiled_combat_rules==null)
@@ -860,39 +804,40 @@ func enable_compiled_combat_rules()->void:
 	compiled_combat_rules.compile(self)
 func combat_equipment_row(key:String,level:int)->Dictionary:
 	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
 		var row:Dictionary=compiled_combat_rules.row(key,level)
 		if not row.is_empty():return row
 	return db.equip(key,level)
-func _compiled_configuration_event(kind:String,_info:Dictionary)->void:
+func _configuration_event(kind:String,_info:Dictionary)->void:
 	if kind in ["configuration_changed","progress_loaded"]:invalidate_tutorial_unlocks()
-	if compiled_combat_rules!=null and kind in ["unlocks_changed","planet_changed","planet_reforged","progress_loaded","enhancement_changed","configuration_changed"]:compiled_combat_rules.compile(self)
 func notify_configuration_changed()->void:
 	if not native_before_configuration_change():return
-	invalidate_stat_cache();event.emit("configuration_changed",{})
+	configuration_revision+=1;refresh_unlock_revision();configuration_committed();event.emit("configuration_changed",{})
 func enhancement_recipe(entry:Dictionary)->Array:
-	return compiled_combat_rules.effects(entry) if compiled_combat_rules!=null and not compiled_combat_rules.compiling else enhancement_effects(entry)
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
+		return compiled_combat_rules.effects(entry)
+	return enhancement_effects(entry)
 func enhancement_branch_active(entry:Dictionary,effect:String,node:int,choice:String)->bool:
-	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.active(entry,effect,node,choice)
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
+		return compiled_combat_rules.active(entry,effect,node,choice)
 	var category="weapons" if effect in ["proficiency","repeat","critical"] else "defence"
 	return not entry.is_empty() and enhancement_branch_choice(category,effect,node)==choice and enhancement_branch_unlocked(category,effect,node) and has_enhancement_effect(entry,effect)
 
-func invalidate_stat_cache() -> void:
-	stat_cache_revision += 1
-	if native_execution!=null and not native_numeric_update:native_execution.configuration_changed()
-	combat_sources_dirty=true
-	stat_cache.clear()
-	reactor_capacity_signature.clear()
-	jewel_defence_capacity_cache.clear()
-	if compiled_combat_rules!=null and native_upgrade_batch.is_empty():compiled_combat_rules.compile(self)
+func configuration_committed(native_updated:=false) -> void:
+	var inputs:=attributes.configuration_inputs(self)
+	if inputs==_committed_configuration:return
+	_committed_configuration=inputs
+	if native_execution!=null and not native_updated:native_execution.configuration_changed()
+	if compiled_combat_rules!=null:compiled_combat_rules.compile(self)
 
-func invalidate_equipment_counter(key: String) -> void:
-	# Attack/hit counters change only this equipment type's proficiency/adaptation.
-	# They do not alter planets, research, crew or the other defence capacity.
-	stat_cache.erase(key)
-	jewel_defence_capacity_cache.erase(key)
+func refresh_unlock_revision()->void:
+	var inputs:Array=[profile.highestLevel,profile.cleared.duplicate(),profile.get("grantedUnlocks",[]).duplicate(),profile.unlocked.duplicate()]
+	if inputs!=_unlock_inputs:_unlock_inputs=inputs;unlock_revision+=1
 
 func ship_movement() -> float:
-	return float(db.ship(str(profile.get("selectedShip", first_ship()))).get("movement", db.config.movement))
+	return float(db.ship(equipment.selected_ship()).get("movement", db.config.movement))
 
 func travel_movement() -> float:
 	var groups: Array = db.levels[stage-1].groups
@@ -902,7 +847,7 @@ func travel_movement() -> float:
 	return maxf(ship_movement(),maxf(0.0,destination-origin)/MAX_TRAVEL_SECONDS)
 
 func ship_name() -> String:
-	return UIText.data_text("ship",str(profile.get("selectedShip",first_ship())),"des")
+	return UIText.data_text("ship",equipment.selected_ship(),"des")
 
 func slot_entry(category: String, index: int) -> Dictionary:
 	var entries := loadout_entries(category)
@@ -924,16 +869,7 @@ func slot_upgrade_cost(category: String, index: int, levels := 1) -> Dictionary:
 	return {} if entry.is_empty() else upgrade_costs_for_level(module_cost_key(category), int(entry.level), levels)
 
 func upgrade_costs_for_level(key: String, current: int, levels: int) -> Dictionary:
-	var cached:Dictionary=max_upgrade_quote_cache.get(str([key,current]),{})
-	if not cached.is_empty() and int(cached.amount)==levels and cached.signature==upgrade_quote_signature(key):return cached.costs.duplicate()
-	var total := {}
-	if levels <= 0 or current + levels > db.max_equipment_level(key):
-		return total
-	for level in range(current + 1, current + levels + 1):
-		var cost := upgrade_cost_for_level(key, level)
-		for id in cost:
-			total[id] = float(total.get(id, 0)) + float(cost[id])
-	return total
+	return equipment.costs(db,key,current,levels)
 
 func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	var entry := slot_entry(category, index)
@@ -943,7 +879,7 @@ func can_upgrade_slot(category: String, index: int, levels := 1) -> bool:
 	return can_afford_upgrade_costs(costs)
 
 func upgrade_currency(id: String) -> Variant:
-	return profile.hyperspace.materials.get(id,0) if id==db.evolution_material_id() else profile.resources.get(id,0)
+	return economy.balance(id)
 
 func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	if costs.is_empty():
@@ -952,22 +888,10 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 		if id==db.evolution_material_id() and not hyperspace.is_unlocked(self):return false
 		if not is_finite(float(costs[id])) or N.compare(upgrade_currency(id),costs[id])<0:
 			return false
-	return true
+	return economy.can_pay(costs)
 
 func resources_changed(ids: Array) -> void:
 	event.emit("resources_changed",{"ids":ids})
-
-func refund_equipment(key: String, level: int) -> void:
-	var refunded := {}
-	for target_level in range(2, level + 1):
-		for id in upgrade_cost_for_level(key, target_level):
-			var amount=upgrade_cost_for_level(key,target_level)[id]
-			if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.add(upgrade_currency(id),amount)
-			else:profile.resources[id]=N.add(upgrade_currency(id),amount)
-			refunded[id]=true
-	if not refunded.is_empty():
-		resources_changed(refunded.keys().filter(func(id):return id!=db.evolution_material_id()))
-		if refunded.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_refund"})
 
 func equipment_limit() -> int:
 	return maxi(active_slot_count("weapons"),active_slot_count("defence")) # Compatibility: only physical capacity remains.
@@ -1040,107 +964,65 @@ func player_alive() -> bool:
 	return N.compare(player.get("armour",0),0)>0 or N.compare(player.get("shield",0),0)>0
 
 func equipment_switch_remaining(category: String, index: int) -> float:
-	if category not in ["weapons", "defence"] or slot_entry(category,index).is_empty():return 0.0
-	return maxf(0.0,float(profile.equipmentSwitchUntil.get(slot_id(category,index),0.0))-production_time())
+	return equipment.switch_remaining(category,index,production_time())
 
 func slot_equipment_locked(category: String, index: int) -> bool:
 	return equipment_switch_remaining(category,index)>0.0
 
-func mark_equipment_switch(category: String, index: int) -> void:
-	profile.equipmentSwitchUntil[slot_id(category,index)] = production_time()+maxf(0.0,float(db.config.equipmentSwitchCooldownSeconds))
-
 func equip_slot(category: String, index: int, key: String) -> bool:
-	if category not in ["weapons","defence"]:return false
-	var allowed: Array = WEAPON_KEYS if category=="weapons" else DEFENSE_KEYS
-	var entry := slot_entry(category,index)
-	if entry.is_empty() or not allowed.has(key) or not profile.unlocked.has(key):return false
-	if str(entry.key)==key:return true
-	if slot_equipment_locked(category,index):return false
-	if category=="weapons":
-		var requested:=weapon_entries().duplicate(true);requested[index].key=key
-		if not hyperspace.equipment_constraints(self,profile.hyperspace.inventory.equipped,{},requested):return false
-	if not native_before_configuration_change():return false
-	capture_refit_health()
-	# Replace the entry reference to invalidate old beams/repeats, keeping module assets.
-	var module := entry.duplicate(true)
-	module.key = key
-	profile.loadout[category][index] = module
-	mark_equipment_switch(category,index)
-	invalidate_stat_cache()
-	if category=="weapons":invalidate_module_attack(index)
-	apply_refit_health()
-	save_dirty = true
-	event.emit("module_changed",{"slot":slot_id(category,index)})
-	return true
+	if category not in ["weapons","defence"] or slot_entry(category,index).is_empty():return false
+	if key not in (WEAPON_KEYS if category=="weapons" else DEFENSE_KEYS) or not profile.unlocked.has(key):return false
+	if str(slot_entry(category,index).key)==key:return true
+	return commit_loadout_change(equipment.selected_ship(),{category:{index:key}},false)
 
 func unequip_slot(category: String, index: int) -> bool:
 	var entry := slot_entry(category,index)
 	if entry.is_empty() or str(entry.key).is_empty():return false
-	if slot_equipment_locked(category,index):return false
-	if not native_before_configuration_change():return false
-	capture_refit_health()
-	var module := entry.duplicate(true)
-	module.key = ""
-	profile.loadout[category][index] = module
-	mark_equipment_switch(category,index)
-	invalidate_stat_cache()
-	if category=="weapons":invalidate_module_attack(index)
-	apply_refit_health()
-	save_dirty = true
-	event.emit("module_changed",{"slot":slot_id(category,index)})
-	return true
-
-func refund_all_equipment() -> void:
-	# Retained for explicit legacy callers; normal refit never refunds module growth.
-	for category in ["weapons","defence"]:
-		for entry in loadout_entries(category):
-			if not str(entry.key).is_empty():refund_equipment(str(entry.key),int(entry.level))
+	return commit_loadout_change(equipment.selected_ship(),{category:{index:""}},false)
 
 func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
-	if key==str(profile.selectedShip) or not ship_unlocked(key):return false
+	if key==equipment.selected_ship() or not ship_unlocked(key):return false
 	if not selected_loadout.is_empty() and not valid_loadout(key,selected_loadout):return false
-	if not selected_loadout.is_empty():
-		for category in ["weapons", "defence"]:
-			for index in selected_loadout[category].size():
-				if str(slot_entry(category,index).get("key",""))!=str(selected_loadout[category][index].key) and slot_equipment_locked(category,index):return false
-	var requested_modules: Array=module_entries("weapons").slice(0,int(db.ship(key).weaponSlots)) if selected_loadout.is_empty() else selected_loadout.weapons
-	var ids: Array=profile.hyperspace.inventory.equipped.slice(0,int(hyperspace.config.hull_capacities[key]))
-	if not hyperspace.equipment_constraints(self,ids,{},requested_modules):return false
+	var choices:Dictionary={}
+	for category in selected_loadout:
+		choices[category]={}
+		for index in selected_loadout[category].size():choices[category][index]=str(selected_loadout[category][index].key)
+	return commit_loadout_change(key,choices,true)
+
+func commit_loadout_change(ship: String, choices: Dictionary, hull_change: bool) -> bool:
+	var plan := equipment.prepare_refit(db,ship,choices,production_time(),float(db.config.equipmentSwitchCooldownSeconds))
+	if plan.is_empty():return false
+	var drone_plan := hyperspace.prepare_hull_fit(self,ship)
+	var requested: Array=plan.modules.weapons.slice(0,active_slot_count("weapons",ship))
+	if not hyperspace.equipment_constraints(self,drone_plan.state.inventory.equipped,drone_plan.state.inventory,requested):return false
 	if not native_before_configuration_change():return false
+	if not equipment.proposal_current(plan) or not hyperspace.hull_fit_current(self,drone_plan):return false
 	capture_refit_health()
 	var old_weapon_count := active_slot_count("weapons")
-	profile.selectedShip = key
-	hyperspace.fit_hull(self)
-	invalidate_stat_cache()
-	for category in ["weapons","defence"]:
-		var entries := module_entries(category)
-		while entries.size()<active_slot_count(category):entries.append({"key":"","level":1})
-		if not selected_loadout.is_empty():
-			for index in active_slot_count(category):
-				var requested: String = selected_loadout[category][index].key
-				if str(entries[index].key)!=requested:
-					entries[index] = entries[index].duplicate(true)
-					entries[index].key = requested
-					mark_equipment_switch(category,index)
-					if category=="weapons":invalidate_module_attack(index)
+	var previous_capacity=reactor_capacity()
+	# Both proposals are complete. No callbacks between the two installations.
+	equipment.commit_refit(db,plan)
+	hyperspace.commit_hull_fit(self,drone_plan)
+	configuration_committed()
+	var capacity=reactor_capacity()
+	reactor.reconcile_capacity(capacity)
+	for changed in plan.changed:
+		if changed.category=="weapons":invalidate_module_attack(int(changed.index))
 	for index in range(mini(old_weapon_count,active_slot_count("weapons")),maxi(old_weapon_count,active_slot_count("weapons"))):invalidate_module_attack(index)
 	apply_refit_health()
-	save_dirty = true
-	event.emit("ship_changed",{"key":key})
+	save_dirty=true
+	if capacity!=previous_capacity:event.emit("reactor_changed",{"capacity":capacity})
+	if drone_plan.changed:event.emit("hyperspace_changed",{"reason":"hull_capacity_changed","round_id":hyperspace.state.round_id})
+	if hull_change:event.emit("ship_changed",{"key":ship})
+	else:
+		for changed in plan.changed:event.emit("module_changed",{"slot":slot_id(changed.category,int(changed.index))})
 	return true
 
 func permanent_modifiers() -> Dictionary:
-	# Same lifetime as the other stat projections: refits, unlocks, research,
-	# planet progress and crew changes invalidate them before dependent reads.
-	if not stat_cache_enabled:return planet_buffs.totals(self)
-	if not stat_cache.has("planet_modifiers"):
-		stat_cache.planet_modifiers = planet_buffs.totals(self)
-	return stat_cache.planet_modifiers
+	return attributes.permanent_modifiers(self)
 
 func hyperspace_totals() -> Dictionary:
-	if not stat_cache_enabled:return DroneEffects.project(self)
-	if not stat_cache.has("hyperspace_totals"):stat_cache.hyperspace_totals=DroneEffects.project(self)
-	return stat_cache.hyperspace_totals
+	return attributes.hyperspace_totals(self)
 
 func equipment_level_bonus() -> int:
 	return int(permanent_modifiers().equipment_level_bonus)
@@ -1166,31 +1048,7 @@ func permanent_level_tooltip(actual: int, target: String) -> String:
 	return UIText.t("planet.level_tooltip",{"actual":actual,"bonus":bonus,"effective":actual+bonus}) if bonus!=0 else ""
 
 func equipment_stat(key: String, level: int, galaxy_charge := -1.0) -> Variant:
-	# Base equipment values exclude attack/hit counters. Retain their projection
-	# across volleys; full stat invalidation covers every modifier/level change.
-	var bases: Dictionary = stat_cache.get("equipment_bases",{}) if stat_cache_enabled and galaxy_charge<0 else {}
-	var levels: Dictionary = bases.get(key,{})
-	if levels.has(level):return levels[level]
-	# Only the ordinary damage/capacity projection reads the effective level.
-	var effective_level:=effective_equipment_level(level)
-	var row := combat_equipment_row(key, effective_level)
-	var value = row.para1 if key in ["armour", "shield"] else row.dmg
-	# Virtual level bonuses keep ordinary growth, but only paid slot levels grant evolution.
-	if effective_level!=level:
-		value=N.multiply(value,N.divide(db.evolution_factor(level),db.evolution_factor(effective_level)))
-	var tech_factor = AITech.combat_factor(self,"equipment_durability" if key in ["armour", "shield"] else "weapon_damage")
-	if N.compare(tech_factor,1.0) != 0:
-		value = N.ceiling(N.multiply(value,tech_factor))
-	var reactor_bonus: Variant=reactor_multiplier("defence" if key in ["armour", "shield"] else "weapons",galaxy_charge)
-	if N.compare(reactor_bonus,1.0)!=0:
-		value = N.ceiling(N.multiply(value,reactor_bonus))
-	if stat_cache_enabled and galaxy_charge<0:
-		# Bound previews as well as equipped modules; reads never retain entries.
-		if levels.size()>=32:levels.clear()
-		levels[level]=value
-		bases[key]=levels
-		stat_cache.equipment_bases=bases
-	return value
+	return attributes.equipment_stat(self,key,level,galaxy_charge)
 
 func reactor_modules() -> PackedStringArray:
 	return str(db.config.reactorModules).split(",",false)
@@ -1206,160 +1064,68 @@ func reactor_available_modules() -> PackedStringArray:
 func reactor_unlocked() -> bool:
 	return content_unlocked("feature", "reactor")
 
+func reactor_contributions(galaxy_charge := -1.0) -> Array:
+	return attributes.reactor_contributions(self,galaxy_charge)
+
 func reactor_energy(level := -1, galaxy_charge := -1.0) -> Variant:
-	var actual := int(profile.reactorLevel) if level < 0 else level
-	var base := float(db.config.reactorEnergyBase)
-	var growth := float(db.config.reactorEnergyGrowth)
-	var crew_bonus: float=crew.system_effect(self,"charge_bonus")
-	var galaxy_bonus: float=galaxy.multiplier("charge_max") if galaxy_charge<0 else galaxy_charge
-	var extra := 1.0+float(hyperspace_totals().hangings.get("extra_storage",0))
-	var ordinary := base*pow(growth,actual-1)*crew_bonus*galaxy_bonus*extra
-	if is_finite(ordinary):return ordinary
-	return N.multiply(N.multiply(N.multiply(N.multiply(base,N.power(growth,actual-1)),crew_bonus),galaxy_bonus),extra)
+	return attributes.reactor_energy(self,level,galaxy_charge)
 
 func reactor_capacity(galaxy_charge := -1.0) -> Variant:
-	var galaxy_bonus: float=galaxy.multiplier("charge_max") if galaxy_charge<0 else galaxy_charge
-	var crew_bonus: float=crew.system_effect(self,"charge_bonus")
-	var extra: float=1.0+float(hyperspace_totals().hangings.get("extra_storage",0))
-	var signature: Array=[int(profile.reactorLevel),float(db.config.reactorEnergyBase),float(db.config.reactorEnergyGrowth),crew_bonus,galaxy_bonus,extra]
-	if signature==reactor_capacity_signature:return reactor_capacity_cached
-	var energy=reactor_energy(-1,galaxy_charge)
-	var result: Variant
-	if not energy is Dictionary and is_finite(float(energy)) and float(energy)<9223372036854775808.0:
-		result=maxi(0,int(floor(float(energy))))
-	else:
-		result=ReactorInt.formula_floor([float(db.config.reactorEnergyBase),crew_bonus,galaxy_bonus,extra],float(db.config.reactorEnergyGrowth),int(profile.reactorLevel)-1)
-	reactor_capacity_signature=signature
-	reactor_capacity_cached=result
-	return result
+	return attributes.reactor_capacity(self,galaxy_charge)
 
 func reactor_upgrade_cost(level := -1) -> Variant:
-	var actual := int(profile.reactorLevel) if level < 0 else level
-	var ordinary := float(db.config.reactorUpgradeBase)*pow(float(db.config.reactorUpgradeGrowth),actual-1)
-	if is_finite(ordinary):return ceilf(ordinary)
-	return ReactorInt.formula_ceil([float(db.config.reactorUpgradeBase)],float(db.config.reactorUpgradeGrowth),actual-1)
+	return reactor.upgrade_cost(db.config, level)
 
 func reactor_allocated() -> Variant:
-	var total: Variant=0
-	for key in reactor_modules():total = ReactorInt.add(total,profile.reactorAllocation.get(key,0))
-	return total
+	return reactor.allocated()
 
 func reactor_effective_ratio(key: String) -> Variant:
-	if not reactor_unlocked() or not reactor_module_unlocked(key):return 0.0
-	return N.add(N.ratio(profile.reactorAllocation.get(key,0),ReactorInt.maximum(1,reactor_capacity())),charge_free_ratio())
+	return attributes.reactor_effective_ratio(self,key)
 
 func reactor_multiplier(key: String, galaxy_charge := -1.0) -> Variant:
-	if not reactor_module_unlocked(key):return 1.0
-	var manual=profile.reactorAllocation.get(key,0)
-	var capacity=reactor_capacity(galaxy_charge)
-	if not manual is Dictionary and not capacity is Dictionary:
-		var ordinary := float(manual)
-		if reactor_unlocked():ordinary+=float(capacity)*charge_free_ratio()
-		var boost := pow(ordinary,float(db.config.reactorBoostExponent)) if ordinary>0 else 0.0
-		var ordinary_bonus := 1.0+boost/float(db.config.reactorPercentScale)
-		if is_finite(ordinary_bonus):return ordinary_bonus
-	var allocation=manual
-	if reactor_unlocked():allocation=N.add(allocation,N.multiply(capacity,charge_free_ratio()))
-	return N.add(1.0,N.divide(N.power(allocation,float(db.config.reactorBoostExponent)),float(db.config.reactorPercentScale))) if N.compare(allocation,0)>0 else 1.0
-
-func reactor_affordable(cost: Variant,budget: Variant) -> bool:
-	if cost is float and not reactor_exact_budget(budget):
-		return N.compare(cost,budget)<=0
-	var exact_budget=ReactorInt.from_growth(budget)
-	var exact_cost=ReactorInt.from_growth(cost)
-	if budget is Dictionary and budget.has("m") and exact_cost!=null:
-		return ReactorInt.compare_legacy_growth_to_integer(budget,exact_cost)>=0
-	return ReactorInt.compare(exact_budget,exact_cost)>=0 if exact_budget!=null and exact_cost!=null else N.compare(budget,cost)>=0
-
-func reactor_exact_budget(budget: Variant) -> bool:
-	return (budget is Dictionary and budget.has("i")) or (budget is int and budget>9007199254740991)
-
-func reactor_debit_budget(budget: Variant,cost: Variant) -> Variant:
-	var exact_cost=ReactorInt.from_growth(cost)
-	var exact_budget=ReactorInt.from_growth(budget)
-	if exact_cost!=null and exact_budget==null and budget is Dictionary and budget.has("m"):
-		exact_budget=ReactorInt.nearby_legacy_integer(budget,exact_cost)
-	if exact_budget!=null and exact_cost!=null:return ReactorInt.subtract(exact_budget,exact_cost)
-	return N.subtract(budget,cost)
+	return attributes.reactor_multiplier(self,key,galaxy_charge)
 
 func reactor_max_upgrades() -> int:
-	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
-	var level := int(profile.reactorLevel)
-	var count := 0
-	var cursor: Array=[]
-	while true:
-		var cost: Variant=reactor_upgrade_cost(level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
-		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),level-1)
-		var exact_cost=ReactorInt.from_growth(cost)
-		if exact_cost==null or ReactorInt.compare(exact_cost,0)<=0 or not reactor_affordable(cost,budget):break
-		budget = N.subtract(budget,cost) if cost is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,cost)
-		level += 1
-		count += 1
-		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
-	return count
+	return reactor.max_upgrades(economy.balance(str(int(db.config.reactorUraniumId))), db.config)
 
 func upgrade_reactor(amount: int) -> bool:
-	if not reactor_unlocked() or amount <= 0:return false
-	var budget = profile.resources.get(str(int(db.config.reactorUraniumId)),0)
-	# Exact-tag budgets debit the exact sum of the same per-level quotes.
-	# Ordinary budgets retain the historical float accumulation order.
-	var total: Variant=0 if reactor_exact_budget(budget) else 0.0
-	var cursor: Array=[]
-	for offset in amount:
-		var quote_level: int=int(profile.reactorLevel)+offset
-		var cost: Variant=reactor_upgrade_cost(quote_level) if cursor.is_empty() else ReactorInt.cursor_ceil(cursor)
-		if cost is Dictionary and cursor.is_empty():cursor=ReactorInt.cost_cursor(float(db.config.reactorUpgradeBase),float(db.config.reactorUpgradeGrowth),quote_level-1)
-		var exact=ReactorInt.from_growth(cost)
-		if exact==null or ReactorInt.compare(exact,0)<=0:return false
-		if total is float and cost is float and is_finite(total+cost):
-			total+=cost
-		else:
-			total=ReactorInt.add(ReactorInt.from_growth(total),exact)
-		if not reactor_affordable(total,budget):return false
-		if not cursor.is_empty():cursor=ReactorInt.advance_cursor(cursor,float(db.config.reactorUpgradeGrowth))
+	if not reactor_unlocked():return false
+	var id := str(int(db.config.reactorUraniumId))
+	var quote := reactor.purchase_quote(amount, economy.balance(id), db.config)
+	if quote.is_empty():return false
 	if not native_before_configuration_change():return false
-	profile.resources[str(int(db.config.reactorUraniumId))] = N.subtract(budget,total) if total is float and not reactor_exact_budget(budget) else reactor_debit_budget(budget,total)
-	profile.reactorLevel += amount
-	invalidate_stat_cache()
-	resources_changed([str(int(db.config.reactorUraniumId))])
+	if not reactor.purchase_matches(quote):return false
+	if not economy.debit({id:quote.cost}):return false
+	# No callbacks or fallible work between the two authoritative commits.
+	reactor.commit_purchase(quote)
+	configuration_committed()
 	save_dirty = true
-	event.emit("reactor_changed", {"level":profile.reactorLevel,"cost":total})
+	resources_changed([id])
+	event.emit("reactor_changed", {"level":reactor.level(),"cost":quote.cost})
 	return true
 
 func set_reactor_allocation(key: String, value: Variant) -> bool:
 	if not reactor_unlocked() or not reactor_module_unlocked(key):return false
-	var requested=ReactorInt.command_floor(value)
-	if requested==null:return false
-	var current=profile.reactorAllocation.get(key,0)
-	var allowed=ReactorInt.subtract(reactor_capacity(),ReactorInt.subtract(reactor_allocated(),current))
-	var next=ReactorInt.minimum(requested,allowed)
-	if ReactorInt.compare(next,current)==0:return false
+	var next := reactor.allocation_proposal(key, value, reactor_capacity())
+	if next.is_empty():return false
 	if not native_before_configuration_change():return false
-	profile.reactorAllocation[key] = next
-	invalidate_stat_cache()
+	reactor.commit_allocation(next)
+	configuration_committed()
 	if key == "defence":
 		player.armour = N.minimum(player.armour,stat("armour"))
 		player.shield = N.minimum(player.shield,stat("shield"))
-		event.emit("equipment_stats",{"category":"defence"})
-	elif key == "weapons":event.emit("equipment_stats",{"category":"weapons"})
 	save_dirty = true
+	if key in ["defence", "weapons"]:event.emit("equipment_stats",{"category":key})
 	event.emit("reactor_changed", {"module":key})
 	return true
 
 func equalize_reactor_allocation() -> bool:
 	if not reactor_unlocked():return false
-	var modules := reactor_available_modules()
-	if modules.is_empty():return false
-	var division := ReactorInt.div_small(reactor_capacity(),modules.size())
-	var share=division[0]
-	var remainder: int=division[1]
-	var next: Dictionary = profile.reactorAllocation.duplicate()
-	for index in modules.size():
-		next[modules[index]] = ReactorInt.add(share,1 if index < remainder else 0)
-	if next==profile.reactorAllocation:return false
+	var next := reactor.equal_allocation(reactor_available_modules(), reactor_capacity())
+	if next.is_empty():return false
 	if not native_before_configuration_change():return false
-	profile.reactorAllocation=next
-	invalidate_stat_cache()
+	reactor.commit_allocation(next)
+	configuration_committed()
 	player.armour = N.minimum(player.armour,stat("armour"))
 	player.shield = N.minimum(player.shield,stat("shield"))
 	save_dirty = true
@@ -1368,37 +1134,30 @@ func equalize_reactor_allocation() -> bool:
 	event.emit("reactor_changed", {"equalized":true})
 	return true
 
-func load_reactor(raw: Dictionary) -> void:
-	invalidate_stat_cache()
-	var level = raw.get("reactorLevel")
-	if nonnegative_number(level) and level == floorf(float(level)) and level >= int(db.config.reactorInitialLevel):profile.reactorLevel = int(level)
-	var saved = raw.get("reactorAllocation")
-	if not saved is Dictionary:return
-	for key in reactor_modules():profile.reactorAllocation[key] = 0
-	for key in reactor_modules():
-		var value = saved.get(key)
-		if reactor_module_unlocked(key):
-			var requested=ReactorInt.command_floor(value)
-			if requested!=null:profile.reactorAllocation[key] = ReactorInt.minimum(requested,ReactorInt.subtract(reactor_capacity(),reactor_allocated()))
-
 func hightech_level(key: String) -> int:
-	return AITech.level(self,key)
+	return research.level(self,key)
 
 func hightech_unlocked(key: String) -> bool:
 	if db.data.get("hightech", {}).has(key):return content_unlocked("hightech",key)
-	return bool(AITech.eligibility(self,key).ok)
+	return bool(research.eligibility(self,key).ok)
 
 func ai_tech_factory_unlocked() -> bool:
 	return content_unlocked("hightech",FURNACE)
 
 func tech_tree_snapshot() -> Dictionary:
-	return AITech.snapshot(self)
+	return research.snapshot(self)
 
 func select_tech(id: String) -> bool:
-	return AITech.select(self,id)
+	if not research.select(self,id):return false
+	save_dirty = true
+	event.emit("tech_tree_changed",{"reason":"selection","id":id})
+	return true
 
 func set_tech_input(resource_id: String, amount: int) -> bool:
-	return AITech.set_input(self,resource_id,amount)
+	if not research.set_input(self,resource_id,amount):return false
+	save_dirty = true
+	event.emit("tech_tree_changed",{"reason":"input","resource":resource_id})
+	return true
 
 func hightech_slots() -> Array:
 	var unlocked: Array = db.data.get("hightech", {}).keys().filter(func(key):return hightech_unlocked(key))
@@ -1441,15 +1200,6 @@ func description_number(value) -> String:
 	if value is Dictionary:return N.text(value)
 	# Formula literals must retain float precision; compact notation is for the final text only.
 	return "%.1f" % value if absf(value)>=9e18 else NUMBER_FORMAT.precise(value)
-
-func hightech_description(key: String, now := -1.0) -> String:
-	if effective_hightech_level(key)==0:
-		return UIText.t("system.hightech_description.text_01")
-	var row: Dictionary = db.data.hightech[key]
-	if key == JEWEL_FURNACE:
-		var peak := furnace_income_peak(now,true)
-		return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),peak,peak)
-	return ui_description(UIText.data_key("hightech",key,"description"),row,effective_hightech_level(key),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now),furnace_income_peak(now) if key==FURNACE else resource_minute_total("1",now,true))
 
 func ui_description(text_key: String, row: Dictionary, level: int, minute_income = 0.0, excluded_income = 0.0) -> String:
 	var values := {}
@@ -1543,12 +1293,29 @@ func idle_scientists() -> int:
 	return 0
 
 func can_research(key: String) -> bool:
-	return bool(AITech.eligibility(self,key).ok)
+	return bool(research.eligibility(self,key).ok)
 
 func assign_scientist(_key: String, _delta: int) -> bool:
 	return false
 func add_crew_exp(crew_id: String, amount: float) -> bool:
-	return crew.gain_exp(self,crew_id,amount)
+	if not crew.levels_unlocked(self) or not crew.unlocked(self,crew_id):return false
+	var plan:=crew.prepare_experience(self,{crew_id:amount})
+	if not prepare_crew_commit(plan):return false
+	crew.commit(plan);notify_crew_changes(plan.changes)
+	return true
+
+func prepare_crew_commit(plan: Dictionary) -> bool:
+	if not crew.proposal_current(plan):return false
+	if plan.configuration and not native_before_configuration_change():return false
+	if not crew.proposal_current(plan):return false
+	capture_refit_health()
+	return true
+
+func notify_crew_changes(changes: Array) -> void:
+	if changes.is_empty():return
+	refresh_crew_level_effects(changes)
+	save_dirty=true
+	for change in changes:event.emit("crew_changed",{"crewId":change.current.crewId,"previous":change.previous,"current":change.current})
 
 func planet_row(id: String) -> Dictionary:
 	return db.data.get("planet", {}).get(id, {})
@@ -1558,136 +1325,65 @@ func planet_unlocked(id: String) -> bool:
 	return not row.is_empty() and planet_buffs.allows_planet(self, id) and unlock_available(str(row.get("unlockId", "")))
 
 func planet_progress(id: String) -> Dictionary:
-	return profile.get("planets", {}).get(id, {})
+	return planets.progress(id)
 
 func crew_exploration(crew_id: String) -> String:
 	return planet_buildings.occupied(self,crew_id)
 
 func planet_duration(id: String) -> float:
-	return planet_duration_from(planet_row(id), planet_progress(id).get("degree", 0))
+	return PlanetState.duration(planet_row(id), planet_progress(id).get("degree", 0))
 
 func planet_exp_multiplier() -> float:
-	var level := clampi(maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel)), 1, db.levels.size())
-	return float(db.levels[level - 1].get("planetExpRatio", 0)) if level > 0 else 0.0
+	return PlanetState.experience_multiplier(db,int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel))
 
 func planet_exp_reward(id: String) -> float:
-	if not crew.levels_unlocked(self):return 0.0
-	return roundf(float(planet_row(id).get("baseExp", 0)) * planet_exp_multiplier() * galaxy.multiplier("crew_exp"))
+	return PlanetState.experience_reward(db,id,crew.levels_unlocked(self),int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel),galaxy.multiplier("crew_exp"))
 
 func planet_equipment_multiplier() -> Variant:
-	if not stat_cache_enabled:return planet_buildings.multiplier(self,"equipment")
-	if not stat_cache.has("planet_equipment"):
-		stat_cache.planet_equipment = planet_buildings.multiplier(self,"equipment")
-	return stat_cache.planet_equipment
+	return attributes.planet_equipment_multiplier(self)
 
 func planet_resource_multiplier() -> Variant:
-	if not stat_cache_enabled:return N.multiply(planet_buildings.multiplier(self,"refinery"),1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
-	if not stat_cache.has("planet_refinery"):
-		stat_cache.planet_refinery = N.multiply(planet_buildings.multiplier(self,"refinery"),1.0+float(hyperspace_totals().hangings.get("resource_collector",0)))
-	return stat_cache.planet_refinery
-
-func migrate_planet_ids(raw: Dictionary) -> Dictionary:
-	var migrated := raw.duplicate(true)
-	var aliases := {"first":"1"}
-	var planets: Dictionary = migrated.get("planets",{}) if migrated.get("planets") is Dictionary else {}
-	for old in aliases:
-		if planets.has(old):
-			if not planets.has(aliases[old]):planets[aliases[old]]=planets[old]
-			planets.erase(old)
-	for field in ["grantedUnlocks"]:
-		if migrated.get(field) is Array:
-			for i in migrated[field].size():
-				if migrated[field][i]=="planet/first":migrated[field][i]="planet/1"
-	if migrated.get("journey") is Dictionary and migrated.journey.get("pendingUnlocks") is Array:
-		for i in migrated.journey.pendingUnlocks.size():
-			if migrated.journey.pendingUnlocks[i]=="planet/first":migrated.journey.pendingUnlocks[i]="planet/1"
-	migrated.planets=planets
-	migrated.version=SAVE_VERSION
-	return migrated
-
-func load_planets(raw) -> void:
-	invalidate_tutorial_unlocks()
-	invalidate_stat_cache()
-	profile.planets = {}
-	var pending := {}
-	for id in db.data.get("planet", {}):
-		var item = raw.get(id, {}) if raw is Dictionary else {}
-		if not item is Dictionary:item = {}
-		var progress: Dictionary = item.duplicate(true)
-		progress.degree = item.get("degree",0) if N.valid(item.get("degree",0)) else 0.0
-		progress.unlocked = item.get("unlocked",false)==true or unlock_available(str(planet_row(str(id)).get("unlockId","")))
-		progress.conquered = item.get("conquered",false)==true
-		progress.auto_explore = item.get("auto_explore",false)==true
-		progress.crewId = ""
-		progress.elapsed = 0.0
-		progress.buildings = item.get("buildings",{}).duplicate(true) if item.get("buildings") is Dictionary else {}
-		for key in progress.buildings.keys():
-			var building = progress.buildings[key]
-			if not building is Dictionary:
-				progress.buildings.erase(key)
-				continue
-			building.status = str(building.get("status","locked"))
-			if building.status not in ["locked","building","ready","built"]:building.status="locked"
-			building.build_progress = building.get("build_progress",0) if N.valid(building.get("build_progress",0)) else 0
-			building.crew = []
-		profile.planets[id] = progress
-		pending[id] = item
-		planet_buildings.sync(self,str(id))
-	# Restore all occupation through a single capacity check; duplicates stay idle.
-	for id in pending:
-		var item: Dictionary=pending[id]
-		var progress: Dictionary=profile.planets[id]
-		var crew_id := str(item.get("crewId",""))
-		if planet_unlocked(str(id)) and idle_planet_crew(crew_id):
-			progress.crewId=crew_id
-			progress.elapsed=minf(float(item.get("elapsed",0)),planet_duration(str(id))) if nonnegative_number(item.get("elapsed")) else 0.0
-		for row in planet_buildings.rows(self,str(id)):
-			var building: Dictionary=progress.buildings[str(row.id)]
-			var old = item.get("buildings",{}).get(str(row.id),item.get("buildings",{}).get(str(row.get("previous_id","")),{})) if item.get("buildings") is Dictionary else {}
-			if building.status!="building" or not old is Dictionary or not old.get("crew") is Array:continue
-			for member_id in old.crew:
-				if building.crew.size()<int(row.extra_crew) and idle_planet_crew(str(member_id)):building.crew.append(str(member_id))
-		# Missing preference inherits the unlocked default; explicit false is a choice.
-		if not item.has("auto_explore"):progress.auto_explore = planet_buildings.built(self,str(id),"auto_explore")
-		# Keep the player's preference even when no crew/facility is available.
-		# Actual continuation checks facility availability in advance_planets.
+	return attributes.planet_resource_multiplier(self)
 
 func idle_planet_crew(id: String) -> bool:
 	var member := crew.entry(self,id)
-	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty() and preload("res://scripts/hyperspace_permissions.gd").reserved_crew(profile.hyperspace)!=id
+	return not member.is_empty() and crew.unlocked(self,id) and str(member.assignmentType).is_empty() and crew_exploration(id).is_empty() and preload("res://scripts/hyperspace_permissions.gd").reserved_crew(hyperspace.state)!=id
 
-func planet_duration_from(row: Dictionary, degree) -> float:
-	var base := float(row.get("baseTime",0))
-	var minimum := float(row.get("minTime",5.0))
-	if not is_finite(minimum) or minimum <= 0.0:minimum = 5.0
-	return maxf(minimum,N.ratio(base*base,N.add(base,degree))) if base>0 else 0.0
+func commit_planet_command(plan: Dictionary,payload: Dictionary) -> bool:
+	if not planets.proposal_current(plan):return false
+	if plan.configuration and not native_before_configuration_change():return false
+	if not planets.proposal_current(plan):return false
+	planets.commit(plan)
+	if plan.configuration:invalidate_tutorial_unlocks();configuration_committed()
+	save_dirty=true;event.emit("planet_changed",payload)
+	return true
 
 func set_planet_auto(id: String, enabled: bool) -> bool:
-	if not planet_buildings.built(self,id,"auto_explore"):return false
-	profile.planets[id].auto_explore=enabled
-	save_dirty = true
-	event.emit("planet_changed",{"id":id})
-	return true
+	return commit_planet_command(planets.prepare_auto(self,id,enabled),{"id":id})
+
+func activate_planet_building(id: String, building_id: String) -> bool:
+	return commit_planet_command(planets.prepare_activation(self,id,building_id),{"id":id,"activated":building_id})
+
+func assign_planet_builder(id: String, building_id: String, crew_id: String) -> bool:
+	return commit_planet_command(planets.prepare_builder(self,id,building_id,crew_id),{"id":id})
 
 func can_reforge_planet(id: String) -> bool:
 	if manual_hyperspace.active:return false
 	return planet_unlocked(id) and not planet_progress(id).get("conquered",false) and planet_buildings.built(self,id,"shipyard")
 
 func planet_reforge_start(id: String) -> int:
-	return clampi(int(planet_row(id).get("reforgeStartLevel",1)),1,maxi(1,db.levels.size()))
+	return PlanetState.reforge_start(db,id)
 
 func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
 	if not can_reforge_planet(id):return false
-	var next_hyperspace:=hyperspace.reforge_state(self,keep_drones,claim_stages)
-	if next_hyperspace.is_empty():return false
+	if not native_before_configuration_change():return false
+	var planet_plan:=planets.prepare_conquest(self,id)
+	if planet_plan.is_empty():return false
+	var hyperspace_plan:=hyperspace.prepare_reforge(self,keep_drones,claim_stages)
+	if hyperspace_plan.is_empty():return false
 	var start_level := planet_reforge_start(id)
 	# Prepare the complete replacement before changing any authoritative state.
 	var next := fresh_profile()
-	next.hyperspace=next_hyperspace
-	next.crew = profile.crew.duplicate(true)
-	next.crewEquipment = profile.get("crewEquipment",{}).duplicate(true)
-	next.planets = profile.planets.duplicate(true)
-	next.galaxies = profile.get("galaxies",{})
 	next.grantedUnlocks = []
 	next.seenUnlocks = profile.get("seenUnlocks",[]).duplicate()
 	next.readUnlocks = profile.get("readUnlocks",[]).duplicate()
@@ -1703,22 +1399,24 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	# derive their availability from this new run's progression as usual.
 	next.cleared = range(1,start_level)
 	next.bossSeen = next.cleared.duplicate()
-	for planet_id in next.planets:
-		next.planets[planet_id].unlocked = planet_unlocked(str(planet_id))
-		# Reforge keeps the planet's current exploration assignment and elapsed work.
-		# The crew and planet progress are permanent state, so an in-flight trip
-		# must continue after the run is rebuilt.
-	next.planets[id].conquered=true
 	next.lifetime_max_stage=maxi(int(profile.get("lifetime_max_stage",1)),int(profile.highestLevel))
-	# Resources are not listed for deletion; preserve their balances.
-	next.resources=profile.resources.duplicate(true)
-	# Chrono particles are a persistent reserve, independent of run progress.
-	next.chronoParticles=profile.chronoParticles
+	# Ordinary reserves survive reforge; only run fragments/reactor reset.
 	next.productionElapsed=production_time()
 	profile=next
+	hyperspace.commit(hyperspace_plan)
+	planets.commit(planet_plan)
+	reset_equipment()
+	enhancement_growth.reset()
+	research.reset()
+	economy.reset_run_fragments()
+	var empty_wallet := economy.material_wallet()
+	for material in empty_wallet.materials:empty_wallet.materials[material]=0
+	empty_wallet.ultimate_cores=0
+	economy.install_material_wallet(empty_wallet)
+	reactor.reset(db.config)
 	invalidate_tutorial_unlocks()
 	manual_hyperspace.cancel_queue(self,"round_changed")
-	hyperspace.scheduler.reset()
+	hyperspace_runtime.reset()
 	crew.reset_schedule(self)
 	pending_unlocks.clear()
 	resource_samples.clear()
@@ -1728,6 +1426,7 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	speed=default_speed()
 	auto_gen_elapsed=0.0
 	resource_prune_elapsed=0.0
+	game_time_remainder=0.0;departure_remaining=0.0
 	rebuild_unlocks()
 	reset_player()
 	var persist := save_enabled
@@ -1739,52 +1438,62 @@ func reforge_planet(id: String,keep_drones: Array=[],claim_stages: Dictionary={}
 	return true
 
 func start_planet_exploration(id: String, crew_id: String) -> bool:
-	if not planet_unlocked(id) or planet_progress(id).is_empty() or not planet_progress(id).crewId.is_empty():return false
-	if not idle_planet_crew(crew_id):return false
-	planet_buildings.sync(self,id)
-	profile.planets[id].unlocked=true
-	profile.planets[id].crewId = crew_id
-	profile.planets[id].elapsed = 0.0
-	save_dirty = true
-	event.emit("planet_changed", {"id":id, "crewId":crew_id})
-	return true
+	return commit_planet_command(planets.prepare_start(self,id,crew_id),{"id":id,"crewId":crew_id})
 
 func cancel_planet_exploration(id: String) -> bool:
-	if planet_progress(id).is_empty() or str(planet_progress(id).crewId).is_empty():return false
-	profile.planets[id].crewId = ""
-	profile.planets[id].elapsed = 0.0
-	save_dirty = true
-	event.emit("planet_changed", {"id":id})
-	return true
+	return commit_planet_command(planets.prepare_cancel(id),{"id":id})
 
 func advance_planets(dt: float) -> void:
-	if dt <= 0:return
-	for id in profile.planets:
-		var progress: Dictionary = profile.planets[id]
-		if str(progress.crewId).is_empty():continue
-		progress.elapsed += dt
-		if progress.elapsed < planet_duration(str(id)):continue
-		var member_id := str(progress.crewId)
-		planet_buildings.complete(self,str(id))
-		progress.crewId = member_id if progress.get("auto_explore",false) and planet_buildings.built(self,str(id),"auto_explore") else ""
-		progress.elapsed = 0.0
-		invalidate_stat_cache()
-		var reward := planet_exp_reward(str(id))
-		# Persist the completed trip and its entire crew payout together.
-		var persist := save_enabled
-		save_enabled = false
-		if reward > 0:
-			planet_crew_payout_active = true
+	if dt<=0 or not is_finite(dt):return
+	for id in planets.all():
+		var planet_plan:=planets.prepare_step(self,str(id),dt)
+		if planet_plan.is_empty():continue
+		if not planet_plan.completed:
+			planets.commit(planet_plan);continue
+		var reward:=planet_exp_reward(str(id));var rewards: Dictionary={}
+		if reward>0:
 			if planet_buffs.shares_experience(self,str(id)):
-				for member in profile.crew:add_crew_exp(str(member.crewId), reward)
-			else:add_crew_exp(member_id, reward)
-			planet_crew_payout_active = false
-		save_enabled = persist
-		save_dirty = true
-		event.emit("planet_changed", {"id":id, "crewId":member_id, "reward":reward})
+				for member in crew.members():rewards[member.crewId]=reward
+			else:rewards[planet_plan.crew_id]=reward
+		var crew_plan:=crew.prepare_experience(self,rewards)
+		if not crew.proposal_current(crew_plan):return
+		if (planet_plan.configuration or crew_plan.configuration) and not native_before_configuration_change():return
+		if not planets.proposal_current(planet_plan) or not crew.proposal_current(crew_plan):return
+		capture_refit_health()
+		planets.commit(planet_plan);crew.commit(crew_plan)
+		configuration_committed();save_dirty=true
+		planet_crew_payout_active=true
+		notify_crew_changes(crew_plan.changes)
+		planet_crew_payout_active=false
+		event.emit("planet_changed",{"id":id,"crewId":planet_plan.crew_id,"reward":reward})
 
-func assign_crew(crew_id: String, assignment_type: String, target_id: String) -> bool:
-	return crew.assign(self,crew_id,assignment_type,target_id)
+func assign_crew(crew_id: String, assignment_type: String, target_id: String, upgrade_mode := "") -> bool:
+	var plan:=crew.prepare_assignment(self,crew_id,assignment_type,target_id,upgrade_mode)
+	if not prepare_crew_commit(plan):return false
+	if plan.changes.is_empty():return true
+	var previous: Dictionary=plan.changes[0].previous
+	if plan.configuration:
+		# Earned time belongs to the previous assignment and is settled before transfer.
+		if previous.assignmentType=="galaxy_explore" and not galaxy_runtime.flush_pending(self,str(previous.targetId)):return false
+		if assignment_type=="galaxy_explore" and not galaxy_runtime.flush_pending(self,target_id):return false
+		if not crew.proposal_current(plan) or not crew.can_assign(self,crew_id,assignment_type,target_id):return false
+		capture_refit_health()
+	crew.commit(plan)
+	var started: bool=galaxy.start(target_id) if assignment_type=="galaxy_explore" else false
+	notify_crew_changes(plan.changes)
+	if started:event.emit("galaxy_changed",{"key":target_id})
+	return true
+
+func set_crew_upgrade_mode(crew_id: String, mode: String, assignment := "") -> bool:
+	var plan:=crew.prepare_mode(self,crew_id,mode,assignment)
+	if not crew.proposal_current(plan):return false
+	crew.commit(plan);notify_crew_changes(plan.changes)
+	return true
+
+func start_galaxy(key: String) -> bool:
+	if not galaxy.start(key):return false
+	save_dirty=true;event.emit("galaxy_changed",{"key":key})
+	return true
 
 func get_crew_modifier(target_type: String, target_id: String, effect_type: String) -> float:
 	return crew.get_modifier(self,target_type,target_id,effect_type)
@@ -1798,8 +1507,33 @@ func research_rate(_key: String, _crew_effects: Dictionary = {}) -> float:
 func active_research(_rates: Dictionary = {}) -> Array:
 	return []
 
+func record_research_income(id: String) -> void:
+	var proposal := research.income_peak_proposal(self,id)
+	if proposal.is_empty():return
+	if proposal.affects_combat and not native_before_configuration_change():return
+	if not research.commit_income_peak(proposal):return
+	save_dirty = true
+	if proposal.affects_combat:
+		configuration_committed()
+		event.emit("tech_tree_changed",{"reason":"income_peak","id":id})
+
 func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
-	AITech.advance(self,dt)
+	var proposal := research.prepare_advance(self,dt)
+	if proposal.is_empty():return
+	if proposal.completed and not native_before_configuration_change():return
+	if not research.proposal_current(proposal):return
+	if not economy.commit_research_resources(proposal.resources,proposal.resource_revision):return
+	research.commit_advance(proposal)
+	save_dirty = true
+	if proposal.completed:
+		configuration_committed()
+		event.emit("hightech_complete",{"key":proposal.id})
+	elif proposal.stopped:event.emit("tech_tree_changed",{"reason":"prerequisite_stopped","id":proposal.id})
+	var now_ms := Time.get_ticks_msec()
+	if not proposal.paid.is_empty() and now_ms-ai_tech_last_resource_notice_ms>=250:
+		ai_tech_last_resource_notice_ms=now_ms
+		resources_changed(proposal.paid)
+
 func production_time() -> float:
 	return float(profile.get("productionElapsed",0.0))
 
@@ -1831,9 +1565,6 @@ func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) ->
 		if sample.id == id and float(sample.time) > now - 60.0 and float(sample.time) <= now:
 			total = N.add(total,sample.get("production_base",sample.amount) if exclude_furnace else sample.amount)
 	return total
-
-func furnace_income_peak(now := -1.0, jewel := false) -> float:
-	return maxf(float(profile.get("jewelFurnaceIncomePeak" if jewel else "furnaceIncomePeak",0.0)),float(production_minute_total("jewel" if jewel else "1",now)))
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -1876,47 +1607,11 @@ func advance_auto_gen(dt: float) -> void:
 		var amount = N.ceiling(N.multiply(base_amount,1.0+float(hyperspace_totals().hangings.get("resource_collector",0))))
 		drops.append({"uid":uid,"x":rng.randf_range(70.0,BATTLE_SIZE.x-70.0),"y":0.0,"age":0.0,"id":settings.resource_id,"amount":amount,"speed":settings.speed,"auto_gen":true,"production_base":base_amount})
 
-func advance_furnace(dt: float, end_time: float, wall_per_step: float) -> void:
-	for drop in drops.duplicate():
-		if drop.get("hightech", false):
-			drop.age += dt
-			if float(drop.age) >= 10.0:
-				collect(drop, false)
-	for key in [FURNACE,JEWEL_FURNACE]:
-		if effective_hightech_level(key) <= 0 or not db.data.get("hightech", {}).has(key):
-			continue
-		var jewel_furnace: bool = key == JEWEL_FURNACE
-		var elapsed_field := "jewelFurnaceElapsed" if jewel_furnace else "furnaceElapsed"
-		var row: Dictionary = db.data.hightech[key]
-		var target_type := "smelting" if jewel_furnace else "production"
-		var interval := float(row.para1) / (1.0 + crew.get_modifier(self,target_type,key,"SPEED"))
-		if interval <= 0 or not is_finite(interval):
-			continue
-		var elapsed := float(profile.get(elapsed_field,0.0)) + dt
-		var count := floorf(elapsed / interval)
-		profile[elapsed_field] = fposmod(elapsed, interval)
-		# Skip expired blocks, with work bounded by the 10-second visible window.
-		var visible := mini(int(count), int(ceilf(10.0 / interval)))
-		for i in range(visible):
-			var age := float(profile[elapsed_field]) + i * interval
-			if age >= 10.0:
-				break
-			uid += 1
-			var produced_at := end_time - age * wall_per_step
-			var income := furnace_income_peak(produced_at,jewel_furnace)
-			profile["jewelFurnaceIncomePeak" if jewel_furnace else "furnaceIncomePeak"] = income
-			var amount := ceilf(income * float(row.para2) * effective_hightech_level(key) * (1.0 + crew.get_modifier(self,target_type,key,"OUTPUT") + crew.get_modifier(self,target_type,key,"EFFICIENCY")) * (1.0 if jewel_furnace else 1.0+float(hyperspace_totals().hangings.get("resource_collector",0))))
-			var block := {"uid":uid,"x":rng.randf_range(70,BATTLE_SIZE.x-70),"y":rng.randf_range(250,480),"age":age,"id":"jewel" if jewel_furnace else "1","amount":amount,"hightech":true}
-			if jewel_furnace:
-				block.jewel = true
-				block.jewelRatio = 1.0
-			drops.append(block)
-
 func max_shield() -> Variant:
 	return stat("shield") if profile.unlocked.has("shield") else 0.0
 
 func reset_player() -> void:
-	invalidate_stat_cache()
+	configuration_committed()
 	refit_health_ratios = {"armour":1.0,"shield":1.0}
 	jewel_repeats.clear()
 	jewel_defence_times.clear()
@@ -1964,6 +1659,7 @@ func select_loop_level(level: int) -> bool:
 	return start(level, false)
 
 func toggle_loop() -> void:
+	if manual_hyperspace.active:return
 	if profile.loop:
 		profile.loop = false
 		guard_elapsed = 0
@@ -2030,13 +1726,13 @@ func hyperspace_route_view(route:String,crew_id:String="")->Dictionary:
 	return hyperspace.route_view(self,route,crew_id)
 
 func start_hyperspace_idle(route:String)->bool:
-	return hyperspace.start_idle(self,route)
+	return hyperspace_runtime.start_idle(self,route)
 
 func set_hyperspace_auto(route:String,crew_id:String,enabled:bool)->bool:
-	return hyperspace.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
+	return hyperspace_runtime.set_auto(self,enabled,route,hyperspace.current_layer(self,route),crew_id)
 
 func stop_hyperspace_idle(route:String)->bool:
-	return hyperspace.stop_idle(self,route)
+	return hyperspace_runtime.stop_idle(self,route)
 
 func start_hyperspace_challenge(route:String)->bool:
 	return manual_hyperspace.start(self,route,hyperspace.current_layer(self,route)+1)
@@ -2045,18 +1741,18 @@ func exit_hyperspace_challenge()->bool:
 	return manual_hyperspace.finish(self,false,"user_exit")
 
 func claim_hyperspace(round_id:int=-1,run_id:int=-1)->bool:
-	if round_id>=0 and run_id>=0:return hyperspace.claim(self,round_id,run_id)
+	if round_id>=0 and run_id>=0:return hyperspace_runtime.claim(self,round_id,run_id)
 	var claimed:=false
 	for slot in ["active","idle"]:
-		var receipt:Dictionary=profile.hyperspace[slot]
-		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
+		var receipt:Dictionary=hyperspace.state[slot]
+		if not receipt.is_empty() and receipt.status=="completed_pending":claimed=hyperspace_runtime.claim(self,int(receipt.round_id),int(receipt.run_id)) or claimed
 	return claimed
 
 func hyperspace_material_exchange_quote(source:String,target:String,amount:Variant)->Dictionary:
 	return hyperspace.material_exchange_quote(self,source,target,amount)
 
 func exchange_hyperspace_materials(request:Dictionary)->Dictionary:
-	return hyperspace.exchange_materials(self,request)
+	return hyperspace_runtime.exchange_materials(self,request)
 
 func advance_after_clear() -> bool:
 	if state != State.LEVEL_CLEAR or not pending_unlocks.is_empty():
@@ -2073,30 +1769,7 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	if N.compare(stat("armour"),0)<=0 and N.compare(stat("shield"),0)<=0:
 		event.emit("battle_blocked",{"reason":"zero_defence"})
 		return false
-	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
-		native_execution_requested=false
-	settle_drops()
-	drone_combat.reset();invalidate_stat_cache()
-	stage = level
-	distance = 0
-	group_index = 0
-	guard_index = -1
-	guard_elapsed = 0
-	guard_engaged = false
-	guard_arrived = false
-	retreat_boss_pending = false
-	enemies.clear()
-	projectiles.clear()
-	cooldowns.clear()
-	pending_unlocks.clear()
-	reset_player()
-	paused = false
-	profile.loop = loop_mode
-	if loop_mode:
-		guard_index = int(profile.get("guardIndex", 0))
-	run_resources = {"1":0.0,"2":0.0}
-	change_state(State.TRAVEL)
+	reset_sortie(level,loop_mode)
 	if not checkpoint.is_empty():
 		distance = float(checkpoint.distance)
 		group_index = int(checkpoint.groupIndex)
@@ -2118,6 +1791,34 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 			change_state(State.RETREAT)
 	save_dirty = true
 	return true
+
+func reset_sortie(level:int,loop_mode:bool)->void:
+	departure_remaining=0.0
+	if native_execution!=null:
+		native_execution.cancel(self);native_execution=null
+	native_execution_requested=false;native_wave_waiting=false
+	settle_drops()
+	drone_combat.reset();configuration_committed()
+	stage = level
+	distance = 0
+	group_index = 0
+	guard_index = -1
+	guard_elapsed = 0
+	guard_engaged = false
+	guard_arrived = false
+	retreat_boss_pending = false
+	enemies.clear()
+	projectiles.clear()
+	cooldowns.clear()
+	pending_unlocks.clear()
+	reset_player()
+	paused = false
+	profile.loop = loop_mode
+	if loop_mode:
+		guard_index = int(profile.get("guardIndex", 0))
+	run_resources = {"1":0.0,"2":0.0}
+	change_state(State.TRAVEL)
+	save_dirty=true
 
 func is_active() -> bool:
 	return state in [State.TRAVEL, State.COMBAT] and player_alive()
@@ -2290,7 +1991,7 @@ func player_weapon_offset(index: int) -> Vector2:
 		var positions: Array=[Vector2(-60,15),Vector2(60,15),Vector2(-95,50),Vector2(95,50),Vector2(0,-60)]
 		return positions[clampi(index-weapon_entries().size(),0,4)]
 	var visuals = preload("res://scripts/ship_visuals.gd")
-	return visuals.muzzle(str(profile.selectedShip), index).rotated(-PI/2) * visuals.scale_for(db.ship(str(profile.selectedShip)))
+	return visuals.muzzle(equipment.selected_ship(), index).rotated(-PI/2) * visuals.scale_for(db.ship(equipment.selected_ship()))
 
 func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	var speed_parameter = weapon.para2 if key.begins_with("missile") else weapon.para1
@@ -2502,7 +2203,7 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
-	if not player_alive():profile.equipmentSwitchUntil.clear()
+	if not player_alive():equipment.clear_switches()
 	if native_execution!=null:
 		native_execution.cancel(self);native_execution=null
 	drone_combat.restore_rebuild(self)
@@ -2620,11 +2321,8 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 		for drop in enemy.drops:
 			if rng.randf() < float(drop.chance):
 				uid += 1
-				var multiplier = reactor_multiplier("smelting") if int(drop.resourceId) == 1 else 1.0
-				var drop_factor=N.multiply(float(enemy.res_ratio),multiplier)
-				var base_amount = N.ceiling(N.multiply(N.multiply(drop.amount,drop_factor),1.0+float(enemy.get("jewelIron",0)) if int(drop.resourceId)==1 else 1.0))
-				var drop_amount = N.ceiling(N.multiply(base_amount,planet_resource_multiplier())) if int(drop.resourceId) in [1,2] else base_amount
-				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(int(drop.resourceId)),"amount":drop_amount,"production_base":base_amount})
+				var reward:=BattleRewards.resource_drop(self,enemy,drop)
+				drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+40,"source_uid":enemy.uid,"age":0.0,"id":str(reward.resource),"amount":reward.amount,"production_base":reward.base})
 
 		if CombatContext.can_trigger(context) and float(enemy.get("jewelExplosion", 0)) > 0:
 			for adjacent in enemies.duplicate():
@@ -2704,11 +2402,10 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	drops.erase(drop)
 	# Auto-collection loss is a separate calculation on the integer drop amount.
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
-	amount = N.ceiling(N.multiply(amount,AITech.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
-	profile.resources[drop.id] = N.add(profile.resources[drop.id],amount)
+	amount = N.ceiling(N.multiply(amount,research.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
+	economy.credit(str(drop.id), amount)
 	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
-	AITech.record_income(self,str(drop.id))
-	profile.furnaceIncomePeak = furnace_income_peak()
+	record_research_income(str(drop.id))
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
 	info.amount = amount
@@ -2730,7 +2427,7 @@ func collect_near(pos: Vector2, _clicked := false, position_overrides: Dictionar
 			collect(drop, true)
 
 func clear_level() -> void:
-	profile.equipmentSwitchUntil.clear()
+	equipment.clear_switches()
 	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,true);return
@@ -2751,13 +2448,7 @@ func clear_level() -> void:
 		event.emit("unlock", {"items":pending_unlocks.duplicate(), "equipment":pending_unlocks.filter(func(id):return db.data.unlock[id].type == "equipment")})
 
 func upgrade_cost_for_level(key: String, level: int) -> Dictionary:
-	if _upgrade_batch and _upgrade_costs.get(key,{}).has(level):
-		return _upgrade_costs[key][level]
-	var cost := db.equipment_cost(key,level)
-	if _upgrade_batch:
-		if not _upgrade_costs.has(key):_upgrade_costs[key]={}
-		_upgrade_costs[key][level]=cost
-	return cost
+	return equipment.costs(db,key,level-1,1)
 
 func upgrade_cost(key: String, levels := 1) -> Dictionary:
 	var entry := first_equipment_entry(key)
@@ -2784,44 +2475,10 @@ func max_upgrade_amount(key: String) -> int:
 		return 0
 	return max_upgrade_amount_slot("weapons" if WEAPON_KEYS.has(key) else "defence", (weapon_entries() if WEAPON_KEYS.has(key) else defense_entries()).find(entry))
 
-func upgrade_quote_signature(key:String)->Array:
-	# Value copies catch purchases, load/config replacement, and in-place edits.
-	# Separate from combat stat invalidation: attack counters do not change prices.
-	return [profile.resources.duplicate(true),profile.hyperspace.materials.duplicate(true),profile.highestLevel,db.equipment.get(key,[]).duplicate(true),db.max_equipment_level(key)]
-
 func max_upgrade_amount_slot(category: String, index: int, budget:Dictionary={}) -> int:
-	var entry := slot_entry(category,index)
-	var key := module_cost_key(category)
-	if entry.is_empty():
-		return 0
-	var current := int(entry.level)
-	var cache_key:String=str([key,current])
-	var signature:Array=upgrade_quote_signature(key)
-	var cached:Dictionary=max_upgrade_quote_cache.get(cache_key,{})
-	if budget.is_empty() and not cached.is_empty() and cached.signature==signature:return int(cached.amount)
-	var available: Dictionary = (profile.resources if budget.is_empty() else budget).duplicate()
-	if not available.has(db.evolution_material_id()):available[db.evolution_material_id()]=upgrade_currency(db.evolution_material_id())
-	var total:Dictionary={}
-	var amount := 0
-	var level := current + 1
-	while level <= db.max_equipment_level(key):
-		var costs := upgrade_cost_for_level(key, level)
-		var affordable := true
-		for id in costs:
-			if (id==db.evolution_material_id() and not hyperspace.is_unlocked(self)) or not is_finite(float(costs[id])) or N.compare(available.get(id,0),costs[id])<0:
-				affordable = false
-				break
-		if not affordable:
-			break
-		for id in costs:
-			available[id] = N.subtract(available.get(id,0),costs[id])
-			total[id]=float(total.get(id,0))+float(costs[id])
-		amount += 1
-		level += 1
-	if budget.is_empty():
-		if max_upgrade_quote_cache.size()>=32 and not max_upgrade_quote_cache.has(cache_key):max_upgrade_quote_cache.clear()
-		max_upgrade_quote_cache[cache_key]={"signature":signature,"amount":amount,"costs":total}
-	return amount
+	var wallet:Dictionary=economy.equipment_balances(db.evolution_material_id()) if budget.is_empty() else budget.duplicate(true)
+	if not wallet.has(db.evolution_material_id()):wallet[db.evolution_material_id()]=economy.balance(db.evolution_material_id())
+	return int(equipment.maximum(db,category,index,wallet,hyperspace.is_unlocked(self)).amount)
 
 func upgrade(key: String, levels := 1) -> bool:
 	var category := "weapons" if WEAPON_KEYS.has(key) else "defence"
@@ -2834,69 +2491,52 @@ func upgrade(key: String, levels := 1) -> bool:
 	return upgrade_slot(category, index, levels)
 
 func upgrade_slot(category: String, index: int, levels := 1) -> bool:
-	if not can_upgrade_slot(category, index, levels):
-		return false
-	var entry = slot_entry(category, index)
-	var key = str(entry.key)
-	var costs = slot_upgrade_cost(category, index, levels)
-	var batch_update=native_execution!=null and not native_upgrade_batch.is_empty()
-	if batch_update:
-		var expected:Dictionary=native_upgrade_batch.planned.get(slot_id(category,index),{})
-		if expected.get("levels",-1)!=levels or expected.get("before",-1)!=int(entry.level):
-			if not native_before_configuration_change():return false
-			native_upgrade_batch={};batch_update=false
-	var native_updated=batch_update
-	if native_execution!=null and not batch_update:
-		native_updated=native_execution.upgrade_numeric_configuration(self,category,index,levels)
-		if not native_updated and not native_before_configuration_change():return false
-	native_numeric_update=native_updated
-	for id in costs:
-		if id==db.evolution_material_id():profile.hyperspace.materials[id]=N.subtract(upgrade_currency(id),costs[id])
-		else:profile.resources[id]=N.subtract(upgrade_currency(id),costs[id])
-	var before = jewel_equipment_stat(entry)
-	profile.loadout[category][index].level = int(entry.level) + levels
-	resources_changed(costs.keys().filter(func(id):return id!=db.evolution_material_id()))
-	if costs.has(db.evolution_material_id()):event.emit("hyperspace_changed",{"reason":"equipment_evolution"})
-	invalidate_stat_cache()
-	var after = jewel_equipment_stat(entry)
-	# Preserve existing damage and cooldowns; upgrading a weapon never heals the ship.
-	if (not native_updated or batch_update) and key == "armour" and state != State.RETREAT:
-		player.armour = N.add(player.armour,N.subtract(after,before))
-	elif (not native_updated or batch_update) and key == "shield" and state != State.RETREAT:
-		player.shield = N.add(player.shield,N.subtract(after,before))
-	native_numeric_update=false
-	if _upgrade_batch:
-		_upgrade_slots.append(slot_id(category,index))
-	else:
-		save_dirty = true
-	event.emit("upgrade", {"key":key,"slot":slot_id(category,index),"levels":levels,"cost":costs,"batch":_upgrade_batch})
-	return true
+	var plan:=equipment.prepare_upgrades(db,economy.equipment_balances(db.evolution_material_id()),hyperspace.is_unlocked(self),str(levels),{"category":category,"index":index})
+	return not plan.is_empty() and commit_equipment_upgrades(plan,false)
 
 func upgrade_equipment_batch(mode: String) -> bool:
-	if _upgrade_batch:return false
+	var plan:=equipment.prepare_upgrades(db,economy.equipment_balances(db.evolution_material_id()),hyperspace.is_unlocked(self),mode)
+	return not plan.is_empty() and commit_equipment_upgrades(plan,true)
+
+func projected_upgrade_health(plan: Dictionary) -> Dictionary:
+	var result:=player.duplicate(true)
+	for purchase in plan.purchases:
+		var key:String=purchase.before.key
+		if purchase.category=="defence" and key in ["armour","shield"] and state!=State.RETREAT:
+			result[key]=N.add(result[key],N.subtract(jewel_equipment_stat(purchase.after),jewel_equipment_stat(purchase.before)))
+	return result
+
+func commit_equipment_upgrades(plan: Dictionary, batch: bool) -> bool:
+	var balance_revision:int=economy.revision
+	var next_player:=projected_upgrade_health(plan)
+	var native_plan:Dictionary={}
 	if native_execution!=null:
-		native_upgrade_batch=native_execution.prepare_numeric_batch(self,mode)
-		if native_upgrade_batch.get("skip",false):native_upgrade_batch={};return false
-		if native_upgrade_batch.is_empty() and not native_before_configuration_change():return false
-	_upgrade_batch=true
-	for category in ["weapons","defence"]:
-		for index in loadout_entries(category).size():
-			var amount: int=max_upgrade_amount_slot(category,index) if mode=="max" else int(mode)
-			if amount>0:upgrade_slot(category,index,amount)
-	if not native_upgrade_batch.is_empty() and compiled_combat_rules!=null:compiled_combat_rules.compile(self)
-	if native_execution!=null and not native_upgrade_batch.is_empty():
-		if not native_execution.commit_numeric_batch(self,native_upgrade_batch):
-			push_error("prevalidated native batch changed during synchronous commit")
-			native_before_configuration_change()
-	native_upgrade_batch={}
-	_upgrade_batch=false
-	_upgrade_costs.clear()
-	var changed := _upgrade_slots
-	_upgrade_slots=[]
-	if not changed.is_empty():
-		save_dirty = true
-		event.emit("upgrades_completed",{"slots":changed})
-	return not changed.is_empty()
+		native_plan=native_execution.prepare_numeric_batch(self,plan,next_player)
+		if native_plan.is_empty():
+			if not native_before_configuration_change():return false
+			next_player=projected_upgrade_health(plan)
+	if not equipment.proposal_current(plan) or not economy.equipment_proposal_current(plan.wallet,db.evolution_material_id(),balance_revision):return false
+	if native_execution!=null and not native_plan.is_empty():
+		if not native_execution.commit_numeric_batch(self,native_plan):return false
+	# The staged wallet and growth use the same ordered purchase list.
+	var paid:=economy.commit_equipment_balances(plan.wallet,db.evolution_material_id(),balance_revision)
+	assert(paid,"Equipment wallet changed inside synchronous commit")
+	equipment.commit_refit(db,plan)
+	for key in ["armour","shield"]:player[key]=next_player[key]
+	configuration_committed(not native_plan.is_empty())
+	save_dirty=true
+	var changed:Array=[];var resource_ids:Array=[];var material_changed:=false
+	for purchase in plan.purchases:
+		changed.append(slot_id(purchase.category,int(purchase.index)))
+		for id in purchase.costs:
+			if id==db.evolution_material_id():material_changed=true
+			elif not resource_ids.has(id):resource_ids.append(id)
+	resources_changed(resource_ids)
+	if material_changed:event.emit("hyperspace_changed",{"reason":"equipment_evolution"})
+	for purchase in plan.purchases:
+		event.emit("upgrade",{"key":purchase.before.key,"slot":slot_id(purchase.category,int(purchase.index)),"levels":purchase.levels,"cost":purchase.costs,"batch":batch})
+	if batch:event.emit("upgrades_completed",{"slots":changed})
+	return true
 
 func upgrade_max(key: String) -> bool:
 	var levels := max_upgrade_amount(key)
@@ -2936,11 +2576,18 @@ func advance_enemy_shields(dt: float) -> void:
 func prepare_logical_step(dt:float)->bool:
 	if native_execution!=null and native_execution.advance_blocked:
 		native_step_phase="blocked";paused=true;return false
-	if galaxy.prepare_native_advance(self,dt):return true
+	if galaxy_runtime.prepare_advance(self,dt):return true
 	native_step_phase="blocked";paused=true
 	return false
 
 func tick(dt: float) -> void:
+	if logical_step_active:return
+	logical_step_active=true
+	_tick_logical_step(dt)
+	logical_step_active=false
+	if native_step_phase!="blocked":manual_hyperspace.dispatch_queued(self)
+
+func _tick_logical_step(dt: float) -> void:
 	if paused:return
 	if native_execution!=null and native_execution.advance_blocked:
 		paused=true
@@ -3182,49 +2829,6 @@ func advance_custom_projectile(_shot: Dictionary, _dt: float) -> bool:
 func jewels_unlocked() -> bool:
 	return content_unlocked("feature", "jewels")
 
-func load_jewels(raw: Dictionary) -> void:
-	# Enhancement schema v1 replaces bag, sockets and per-module history once.
-	# Legacy saves retain only their existing fragment balance, with no refund.
-	invalidate_stat_cache()
-	profile.jewels = []
-	profile.jewelFragments = 0.0
-	if N.valid(raw.get("jewelFragments")):
-		profile.jewelFragments=raw.jewelFragments.duplicate(true) if raw.jewelFragments is Dictionary else float(raw.jewelFragments)
-	elif raw.get("jewelFragments") is Dictionary:
-		for id in raw.jewelFragments:
-			if nonnegative_number(raw.jewelFragments[id]):profile.jewelFragments += float(raw.jewelFragments[id])
-	elif nonnegative_number(raw.get("jewelFragments")):
-		profile.jewelFragments = float(raw.jewelFragments)
-	profile.enhancementVersion = 1
-	profile.enhancementLevel = 0
-	profile.enhancementOrder = default_enhancement_order()
-	profile.enhancementBranches = default_enhancement_branches()
-	profile.enhancementAttacks = 0
-	profile.enhancementHits = 0
-	if int(raw.get("enhancementVersion",0)) == 1 or raw.has("enhancementLevel"):
-		for field in ["enhancementLevel", "enhancementAttacks", "enhancementHits"]:
-			var value = raw.get(field,0)
-			if nonnegative_number(value) and float(value)==floorf(float(value)) and float(value)<9223372036854775807.0 and (field!="enhancementLevel" or float(value)<=ENHANCEMENT_LEVEL_LIMIT):
-				profile[field] = int(value)
-		var orders = raw.get("enhancementOrder",{})
-		if orders is Dictionary:
-			for category in ["weapons","defence"]:
-				if valid_enhancement_order(category,orders.get(category)):profile.enhancementOrder[category]=orders[category].duplicate()
-		var branches = raw.get("enhancementBranches",{})
-		if branches is Dictionary:
-			for category in default_enhancement_order():
-				var effects = branches.get(category,{})
-				if not effects is Dictionary:continue
-				for effect in default_enhancement_order()[category]:
-					var nodes = effects.get(effect,{})
-					if not nodes is Dictionary:continue
-					for node in ["1","2","3"]:
-						if nodes.get(node,"") in ["A","B"]:profile.enhancementBranches[category][effect][node]=nodes[node]
-
-	for category in ["weapons","defence"]:
-		for entry in module_entries(category):
-			for field in ["sockets","attacks","hits"]:entry.erase(field)
-
 func jewel_ratio() -> float:
 	var value = db.levels[clampi(stage-1,0,db.levels.size()-1)].get("jewelRatio",1.0)
 	return float(value) if nonnegative_number(value) else 1.0
@@ -3239,7 +2843,6 @@ func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 	var result=N.multiply(amount,factor)
 	if not N.valid(result):return 0.0
 	if result is Dictionary:
-		if result.has("i"):return result
 		# GrowthNumber only keeps a mantissa/exponent outside the float domain;
 		# sub-cent underflow is zero, while a huge amount has no visible cents.
 		return 0.0 if float(result.e)<-2.0 else result
@@ -3250,13 +2853,12 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Var
 	var reactor_bonus=reactor_multiplier("condensation") if source=="drop" else 1.0
 	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" else 1.0
 	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor)
-	var earned = N.multiply(jewel_fragment_amount(input,ratio),AITech.income_factor(self,"fragment_income"))
-	profile.jewelFragments = N.add(profile.jewelFragments,earned)
-	if not profile.jewelFragments is Dictionary:profile.jewelFragments=snappedf(float(profile.jewelFragments),0.01)
+	var earned = N.multiply(jewel_fragment_amount(input,ratio),research.income_factor(self,"fragment_income"))
+	economy.credit_fragments(earned)
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and N.compare(earned,0) > 0:
 		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
-		AITech.record_income(self,"jewel")
+		record_research_income("jewel")
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
 
@@ -3280,43 +2882,37 @@ func jewel_kill_drop(enemy: Dictionary) -> void:
 		drops.append({"uid":uid,"x":enemy.x,"y":enemy.y+65,"age":0.0,"jewel":true,"jewelRatio":jewel_ratio(),"id":"jewel","amount":1})
 
 func default_enhancement_order() -> Dictionary:
-	return {"weapons":["proficiency","repeat","critical"],"defence":["adaptation","memory_material","delayed_damage"]}
+	return EnhancementGrowth.default_order()
 
 func default_enhancement_branches() -> Dictionary:
-	var result := {}
-	for category in default_enhancement_order():
-		result[category]={}
-		for effect in default_enhancement_order()[category]:result[category][effect]={}
-	return result
+	return EnhancementGrowth.default_branches()
 
 func enhancement_effect_threshold(index: int) -> int:
-	return int(enhancement_parameter("threshold_%d" % (index+1))) if index in [0,1,2] else -1
+	return EnhancementGrowth.effect_threshold(db,index)
 
 func enhancement_branch_threshold(node: int, category: String, effect: String) -> int:
-	if node not in [1,2,3]:return -1
-	var index: int=profile.enhancementOrder.get(category,[]).find(effect)
-	if index<0:return -1
-	return int(enhancement_parameter("branch_threshold_%d" % node)+enhancement_parameter("branch_position_offset_%d" % (index+1)))
+	return enhancement_growth.branch_threshold(db,node,category,effect)
 
 func valid_enhancement_branch(category: String, effect: String, node: int) -> bool:
-	return default_enhancement_order().has(category) and default_enhancement_order()[category].has(effect) and node in [1,2,3]
+	return EnhancementGrowth.valid_branch(category,effect,node)
 
 func enhancement_branch_unlocked(category: String, effect: String, node: int) -> bool:
-	return enhancement_unlocked() and valid_enhancement_branch(category,effect,node) and enhancement_effective_level()>=enhancement_branch_threshold(node,category,effect)
+	return enhancement_growth.branch_unlocked(db,category,effect,node,enhancement_effective_level(),enhancement_unlocked())
 
 func enhancement_branch_choices(category: String, effect: String) -> Dictionary:
-	return profile.enhancementBranches.get(category,{}).get(effect,{}).duplicate()
+	return enhancement_growth.branch_choices(category,effect)
 
 func enhancement_branch_choice(category: String, effect: String, node: int) -> String:
-	return str(profile.enhancementBranches.get(category,{}).get(effect,{}).get(str(node),""))
+	return enhancement_growth.branch_choice(category,effect,node)
 
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
 	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
 	if enhancement_branch_choice(category,effect,node)==choice:return true
-	if not native_before_configuration_change():return false
-	profile.enhancementBranches[category][effect][str(node)]=choice
+	var plan:=enhancement_growth.prepare_branch(db,category,effect,node,choice,enhancement_effective_level(),enhancement_unlocked())
+	if plan.is_empty() or not native_before_configuration_change() or not enhancement_growth.proposal_current(plan):return false
+	enhancement_growth.commit_configuration(plan)
 	# Selection invalidates projections and only the removed branch's transient buffs.
-	invalidate_stat_cache()
+	configuration_committed()
 	enhancement_branches.reconcile(self)
 	sync_enhancement_buffers()
 	if player.has("armour"):
@@ -3378,7 +2974,8 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 	match effect:
 		"proficiency","adaptation":
 			result.growth=enhancement_parameter(effect+"_growth") if active_level>0 else 0.0
-			result.history=int(profile.enhancementAttacks if effect=="proficiency" else profile.enhancementHits)
+			result.history=enhancement_growth.history(effect)
+			result.history_bonus_percent=enhancement_growth.history_bonus(db,effect,active_level,float(result.growth))*100.0
 			result.branch_bonus_percent=enhancement_branches.a_count(self,sample,effect)*enhancement_parameter("proficiency_a_damage_bonus" if effect=="proficiency" else "adaptation_a_capacity_bonus")*100.0
 		"repeat":
 			result.probability_percent=enhancement_branches.repeat_probability(self,sample)*100.0
@@ -3393,23 +2990,26 @@ func enhancement_effect_runtime(effect: String, entry: Dictionary = {}) -> Dicti
 			result.underlying_probability_percent=enhancement_branches.underlying_critical_rate(self,sample)*100.0 if not sample.is_empty() else 0.0
 		"memory_material":
 			result.interval=enhancement_parameter("memory_interval")
-			result.heal_percent=enhancement_parameter("memory_heal_fraction")*active_level*enhancement_branches.memory_heal_multiplier(self,sample)*100.0
-			result.charge_percent=enhancement_parameter("memory_heal_fraction")*active_level*enhancement_branches.memory_charge_multiplier(self,sample)*100.0
-			result.capacity_percent=enhancement_parameter("memory_buffer_fraction")*active_level*enhancement_branches.memory_cap_multiplier(self,sample)*100.0
+			var memory:=EnhancementGrowth.effect(db,"memory_material",0,active_level)
+			result.heal_percent=enhancement_branches.memory_healing_fraction(self,sample,memory)*100.0
+			result.charge_percent=enhancement_branches.memory_charge_fraction(self,sample,memory)*100.0
+			result.capacity_percent=enhancement_branches.memory_capacity_fraction(self,sample,memory)*100.0
 		"delayed_damage":
 			result.fraction_percent=enhancement_deferred_fraction(active_level)*100.0;result.duration=enhancement_parameter("deferred_duration");result.interval=enhancement_parameter("deferred_interval")
 			result.probability_percent=enhancement_branches.clear_probability(self)*100.0;result.underlying_probability_percent=enhancement_branches.clear_underlying_probability(self)*100.0
 	return result
 
 func enhancement_parameter(key: String) -> float:
-	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return float(compiled_combat_rules.parameters[key])
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
+		return float(compiled_combat_rules.parameters[key])
 	return float(db.data.enhance_config[key].value)
 
 func enhancement_unlocked() -> bool:
 	return jewels_unlocked()
 
 func enhancement_level() -> int:
-	return int(profile.enhancementLevel)
+	return enhancement_growth.level()
 
 func enhancement_level_bonus() -> int:
 	return gem_drop_level_bonus()
@@ -3418,73 +3018,52 @@ func enhancement_effective_level() -> int:
 	return enhancement_level() + enhancement_level_bonus()
 
 func enhancement_level_limit() -> int:
-	return ENHANCEMENT_LEVEL_LIMIT
+	return EnhancementGrowth.LEVEL_LIMIT
 
 func enhancement_at_limit() -> bool:
 	return enhancement_level()>=enhancement_level_limit()
 
 func enhancement_cost(target_level := -1) -> Variant:
-	var target := enhancement_level()+1 if target_level<0 else target_level
-	if target<1:return 0.0
-	return N.ceiling(N.multiply(enhancement_parameter("cost_base"),N.power(enhancement_parameter("cost_growth"),target-1)))
+	return enhancement_growth.cost(db,target_level)
 
 func can_upgrade_enhancement() -> bool:
-	return enhancement_unlocked() and not enhancement_at_limit() and N.compare(profile.jewelFragments,enhancement_cost())>=0
+	return enhancement_unlocked() and not enhancement_at_limit() and N.compare(economy.balance("jewel"),enhancement_cost())>=0
 
 func enhancement_purchase_cost(count: int) -> Variant:
-	if count<=0:return 0.0
-	var first = enhancement_cost()
-	if count==1:return first
-	var growth := enhancement_parameter("cost_growth")
-	# Integer authored growth means every level costs whole fragments. Sum the
-	# next count levels geometrically, without subtracting large prefix sums or
-	# traversing levels. GrowthNumber keeps overflowing powers JSON-safe.
-	var factor = float(count) if growth==1.0 else N.divide(N.subtract(N.power(growth,count),1.0),growth-1.0)
-	return N.ceiling(N.multiply(first,factor))
+	return enhancement_growth.purchase_cost(db,count)
 
 func enhancement_max_upgrades(limit := -1) -> int:
-	if not enhancement_unlocked():return 0
-	var low := 0
-	var high := enhancement_level_limit()-enhancement_level()
-	if limit>=0:high=mini(high,limit)
-	while low<high:
-		var middle := low+int((high-low+1)/2)
-		if N.compare(profile.jewelFragments,enhancement_purchase_cost(middle))>=0:low=middle
-		else:high=middle-1
-	return low
+	return enhancement_growth.max_upgrades(db,economy.balance("jewel"),limit) if enhancement_unlocked() else 0
 
 func upgrade_enhancement(count := 1) -> int:
 	if count==0 or not enhancement_unlocked():return 0
-	var purchased := enhancement_max_upgrades(count)
-	if purchased>0:
-		if not native_before_configuration_change():return 0
-		profile.jewelFragments=N.subtract(profile.jewelFragments,enhancement_purchase_cost(purchased))
-		profile.enhancementLevel+=purchased
-		invalidate_stat_cache()
-		sync_enhancement_buffers()
-		save_dirty = true
-		event.emit("enhancement_changed", {"purchased":purchased})
-		event.emit("jewels_changed", {"slot":"","slots":[]})
-		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
-	return purchased
+	var plan:=enhancement_growth.prepare_upgrade(db,economy.balance("jewel"),count)
+	if plan.is_empty():return 0
+	var wallet_revision:=economy.revision
+	if not native_before_configuration_change():return 0
+	if wallet_revision!=economy.revision or not enhancement_growth.proposal_current(plan):return 0
+	# The quoted expense and growth are committed without intervening callbacks.
+	if not economy.debit({"jewel":plan.cost}):return 0
+	enhancement_growth.commit_configuration(plan)
+	configuration_committed();sync_enhancement_buffers();save_dirty=true
+	event.emit("enhancement_changed", {"purchased":plan.purchased})
+	event.emit("jewels_changed", {"slot":"","slots":[]})
+	for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+	return int(plan.purchased)
 
 func enhancement_order(category: String) -> Array:
-	return profile.enhancementOrder.get(category,[]).duplicate()
+	return enhancement_growth.order(category)
 
 func valid_enhancement_order(category: String, value: Variant) -> bool:
-	if not value is Array or value.size()!=3 or not default_enhancement_order().has(category):return false
-	var remaining: Array = default_enhancement_order()[category].duplicate()
-	for kind in value:
-		if not kind is String or not remaining.has(kind):return false
-		remaining.erase(kind)
-	return remaining.is_empty()
+	return EnhancementGrowth.valid_order(category,value)
 
 func set_enhancement_order(category: String, order: Array) -> bool:
 	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return false
 	if enhancement_order(category)==order:return true
-	if not native_before_configuration_change():return false
-	profile.enhancementOrder[category]=order.duplicate()
-	invalidate_stat_cache()
+	var plan:=enhancement_growth.prepare_order(category,order)
+	if plan.is_empty() or not native_before_configuration_change() or not enhancement_growth.proposal_current(plan):return false
+	enhancement_growth.commit_configuration(plan)
+	configuration_committed()
 	enhancement_branches.reconcile(self)
 	sync_enhancement_buffers()
 	if player.has("armour"):
@@ -3502,23 +3081,25 @@ func available_effect_count(entry: Dictionary) -> int:
 	return shared_enhancement_effect_count()
 
 func shared_enhancement_effect_count() -> int:
-	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.effect_count
-	if not enhancement_unlocked():return 0
-	var count := 0
-	var shared_level := enhancement_effective_level()
-	for index in 3:
-		if shared_level>=enhancement_effect_threshold(index):count+=1
-	return count
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
+		return compiled_combat_rules.effect_count
+	return EnhancementGrowth.effect_count(db,enhancement_effective_level(),enhancement_unlocked())
 
 func record_enhancement_attack() -> void:
-	profile.enhancementAttacks += 1
-	for key in WEAPON_KEYS:invalidate_equipment_counter(key)
+	enhancement_growth.record_attack();save_dirty=true
 	event.emit("equipment_stats",{"category":"weapons"})
 
 func record_enhancement_hit() -> void:
-	profile.enhancementHits += 1
-	for key in DEFENSE_KEYS:invalidate_equipment_counter(key)
+	enhancement_growth.record_hit();save_dirty=true
 	event.emit("equipment_stats",{"category":"defence"})
+
+func commit_enhancement_counters(attacks:int,hits:int,notify:bool=true)->void:
+	var changed:=enhancement_growth.commit_combat_counters(attacks,hits)
+	if changed.is_empty():return
+	save_dirty=true
+	if notify:
+		for category in changed:event.emit("equipment_stats",{"category":category,"counter_only":true})
 
 func enhancement_currency_changed() -> void:
 	save_dirty = true
@@ -3526,6 +3107,7 @@ func enhancement_currency_changed() -> void:
 
 func enhancement_effects(entry: Dictionary) -> Array:
 	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
 		var copies:Array=[]
 		for effect in compiled_combat_rules.effects(entry):copies.append(effect.duplicate(true))
 		return copies
@@ -3540,33 +3122,22 @@ func enhancement_effects(entry: Dictionary) -> Array:
 	return result
 
 func _enhancement_effect(kind: String, i: int, level: int) -> Dictionary:
-	var effect := {"kind":kind,"level":level,"threshold":enhancement_effect_threshold(i),"p2":0.0,"p4":0.0,"p5":0.0}
-	match kind:
-		"proficiency","adaptation":effect.p2=enhancement_parameter(kind+"_growth")
-		"repeat":
-			effect.p2=enhancement_parameter("repeat_probability")
-			effect.p4=enhancement_parameter("repeat_growth")
-		"critical":effect.p4=enhancement_parameter("critical_growth")
-		"delayed_damage":effect.p2=enhancement_deferred_fraction()
-		"memory_material":
-			effect.p2=enhancement_parameter("memory_heal_fraction")
-			effect.p4=enhancement_parameter("memory_buffer_fraction")
-	return effect
+	return EnhancementGrowth.effect(db,kind,i,level)
 
 func active_enhancement_effect_count(entry: Dictionary) -> int:
 	return available_effect_count(entry)
 
 func _enhancement_effect_index(entry: Dictionary, kind: String) -> int:
-	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:return compiled_combat_rules.effect_index(entry,kind)
+	if compiled_combat_rules!=null and not compiled_combat_rules.compiling:
+		compiled_combat_rules.compile(self)
+		return compiled_combat_rules.effect_index(entry,kind)
 	# Scalar membership query; no effect payloads or retained/cross-tick cache.
 	if kind.is_empty():return -1
 	var count := active_enhancement_effect_count(entry)
 	if count<=0:return -1
 	var category := "weapons" if WEAPON_KEYS.has(str(entry.key)) else "defence"
-	var order: Array = profile.enhancementOrder.get(category,[])
-	for i in count:
-		if str(order[i])==kind:return i
-	return -1
+	var position:=enhancement_growth.order_position(category,kind)
+	return position if position>=0 and position<count else -1
 
 func has_enhancement_effect(entry: Dictionary, kind: String) -> bool:
 	return _enhancement_effect_index(entry,kind)>=0
@@ -3575,38 +3146,10 @@ func jewel_effects(entry: Dictionary) -> Array:
 	return enhancement_effects(entry)
 
 func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = null, include_timed_buffs := true, galaxy_equipment := -1.0, galaxy_charge := -1.0) -> Variant:
-	if str(entry.get("key", "")).is_empty():
-		return 0
-	var value = equipment_stat(str(entry.key), int(entry.level) if level < 0 else level,galaxy_charge)
-	var projected := entry
-	if level>=0:
-		projected=entry.duplicate()
-		projected.level=level
-	for effect in (jewel_effects(projected) if effects == null else effects):
-		if effect.kind in ["proficiency", "adaptation"]:
-			var count := maxi(1, int(profile.get("enhancementAttacks" if effect.kind == "proficiency" else "enhancementHits", 0)))
-			var bonus := roundf(float(effect.p2) * int(effect.level) * log(float(count)) / log(enhancement_parameter("counter_log_base")) * enhancement_parameter("bonus_round_scale")) / enhancement_parameter("bonus_round_scale")
-			value = N.ceiling(N.multiply(value,1.0+bonus))
-	value=N.multiply(value,enhancement_branches.weapon_multiplier(self,projected,entry,include_timed_buffs) if WEAPON_KEYS.has(str(entry.key)) else enhancement_branches.capacity_multiplier(self,projected))
-	var crew_bonus: float
-	if stat_cache_enabled and stat_cache.has("crew_equipment"):
-		crew_bonus=stat_cache.crew_equipment
-	else:
-		crew_bonus=crew.system_effect(self,"equip_bonus")
-		if stat_cache_enabled:stat_cache.crew_equipment=crew_bonus
-	var drones:=hyperspace_totals()
-	var drone_multiplier: float=float(drones.damage)*float(drones.weapon_damage.get(str(entry.key),1.0)) if WEAPON_KEYS.has(str(entry.key)) else float(drones.defence)*float(drones.get(str(entry.key),1.0))
-	return N.multiply(N.multiply(N.multiply(N.multiply(value,planet_equipment_multiplier()),crew_bonus),(galaxy.multiplier("equipment_value") if galaxy_equipment<0 else galaxy_equipment)),drone_multiplier)
+	return attributes.jewel_equipment_stat(self,entry,level,effects,include_timed_buffs,galaxy_equipment,galaxy_charge)
 
 func jewel_critical(entry: Dictionary, effects: Variant = null, include_timed_buffs := true, drone_totals: Dictionary = {}) -> Vector2:
-	var row := combat_equipment_row(str(entry.key), int(entry.level))
-	var rate := enhancement_branches.underlying_critical_rate(self,entry,include_timed_buffs)
-	if enhancement_branches.active(self,entry,"critical",3,"B"):rate=enhancement_parameter("critical_b3_guaranteed_rate")
-	var damage := enhancement_parameter("base_critical_multiplier") + float(row.get("criDmg",0))
-	for effect in (jewel_effects(entry) if effects == null else effects):
-		if effect.kind=="critical":damage+=float(effect.p4)*int(effect.level)
-	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
-	return Vector2(clampf(rate+float(drones.critical_chance),0,1),maxf(0,damage)*float(drones.critical_damage))
+	return attributes.jewel_critical(self,entry,effects,include_timed_buffs,drone_totals)
 
 func begin_enhancement_attack(index: int, target: Dictionary, derived := false, track_primary := true) -> Dictionary:
 	var context := enhancement_branches.begin_attack(self,index,target,derived,track_primary)
@@ -3631,19 +3174,10 @@ func endless_source_slot(weapon_levels:Dictionary={}) -> int:
 	return best
 
 func endless_source() -> Dictionary:
-	if stat_cache.has("hyperspace_endless_source"):return stat_cache.hyperspace_endless_source
-	var index:=endless_source_slot()
-	var best:Dictionary=weapon_entries()[index] if index>=0 else {}
-	stat_cache.hyperspace_endless_source=best;return best
+	return attributes.endless_source(self)
 
 func player_weapon_row(entry: Dictionary, drone_totals: Dictionary = {}, endless_selected:Variant=null) -> Dictionary:
-	var weapon := combat_equipment_row(str(entry.key),int(entry.level)).duplicate()
-	var drones:=hyperspace_totals() if drone_totals.is_empty() else drone_totals
-	weapon.cd=float(weapon.cd)*enhancement_branches.cooldown_multiplier(self,entry)/float(drones.attack_speed)
-	if entry.key=="longLaser":
-		var endless: Dictionary=drones.legendary.get("endless_beam",{})
-		if not endless.is_empty() and (is_same(entry,endless_source()) if endless_selected==null else bool(endless_selected)):weapon.para2=float(weapon.para2)+float(endless.parameters.maximum_multiplier_bonus)
-	return weapon
+	return attributes.player_weapon_row(self,entry,drone_totals,endless_selected)
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var entry := combat_entry(index)
@@ -3652,9 +3186,8 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 		var primary_missile: bool=entry.key=="missile" and not context.get("derived",false)
 		var wild_substitute: bool=primary_missile and drone_combat.next_is_wild(self)
 		if wild_substitute:context.derived=true
-		var effects := jewel_effects(entry)
-		if float(hyperspace_totals().repeat_chance)>0 and not effects.any(func(e):return e.kind=="repeat"):effects.append({"kind":"repeat","p4":0.0,"level":0})
-		var extra_chain:=int(hyperspace_totals().chain_count)
+		var birth:=AttackBirth.prepare(self,entry,hyperspace_totals())
+		var effects:Array=birth.effects
 		var critical := jewel_critical(entry,effects)
 		var raw = N.multiply(jewel_equipment_stat(entry,-1,effects),float(context.get("next_multiplier",1.0))*drone_combat.weapon_multiplier(self,str(entry.key)))
 		var is_critical := rng.randf() < critical.x
@@ -3667,14 +3200,7 @@ func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 		main_attack_serial+=1
 		for effect in effects:
 			effect.source=index;effect.weapon_key=str(entry.key);effect.main_attack_id=main_attack_serial
-			if enhancement_branches.active(self,entry,"proficiency",3,"B"):effect.enemy_resistance=enhancement_parameter("proficiency_b3_resistance")
-			if effect.kind=="repeat" and enhancement_branches.active(self,entry,"repeat",1,"B"):
-				effect.chain=true;effect.chain_targets=int(enhancement_parameter("repeat_b1_targets"))
-		if extra_chain>0:
-			var existing: Array=effects.filter(func(e):return e.get("chain",false))
-			if existing.is_empty():effects.append({"kind":"hyperspace_chain","chain":true,"chain_targets":extra_chain,"source":index,"weapon_key":str(entry.key),"main_attack_id":main_attack_serial})
-			else:existing[0].chain_targets=int(existing[0].get("chain_targets",0))+extra_chain
-		var secondary: bool = not context.get("derived",false) and enhancement_branches.active(self,entry,"repeat",3,"B") and rng.randf()<enhancement_parameter("repeat_b3_probability")
+		var secondary:bool=not context.get("derived",false) and birth.secondary_enabled and rng.randf()<float(birth.secondary_probability)
 		context.snapshot={"id":main_attack_serial,"damage":raw,"effects":effects,"critical":is_critical,"critical_bonus_applied":critical_bonus_applied,"secondary":secondary,"secondary_used":false,"repeats_queued":false,"repeat_plan":[] if context.get("derived",false) else plan_attack_repeats(entry,effects),"weapon":player_weapon_row(entry).duplicate(true)}
 		context.snapshot.combat_context=CombatContext.root(main_attack_serial,"drone:"+str(entry.drone_id) if entry.has("drone_id") else "module:%d"%index,str(entry.key))
 		if primary_missile:
@@ -3730,7 +3256,7 @@ func plan_attack_repeats(entry: Dictionary, effects: Array) -> Array:
 		var pending: Array=[]
 		for effect in effects:
 			if effect.kind=="repeat" and rng.randf()<enhancement_branches.repeat_probability(self,entry):
-				pending.append(1.0+float(effect.p4)*int(effect.level))
+				pending.append(enhancement_branches.repeat_multiplier(effect))
 		for i in pending.size():
 			var choice := rng.randi_range(i,pending.size()-1)
 			var value: float=pending[choice];pending[choice]=pending[i];pending[i]=value
@@ -3958,7 +3484,7 @@ func advance_jewel_repeats(dt: float) -> void:
 		jewel_repeats.erase(pending)
 		if not pending.parent_execution.is_empty() and not pending.parent_execution.launched:continue
 		var entry := combat_entry(int(pending.index))
-		if state != State.COMBAT or not is_same(entry, pending.entry) or str(entry.key).is_empty():
+		if state != State.COMBAT or not same_module(entry, pending.entry) or str(entry.key).is_empty():
 			continue
 		var weapon: Dictionary=pending.snapshot.weapon
 		if pending.has("beam"):
@@ -4017,15 +3543,12 @@ func sync_enhancement_buffers() -> void:
 	for index in enhancement_buffers.keys():
 		var entry := slot_entry("defence",int(index))
 		var owner: Dictionary=enhancement_buffer_owners.get(index,{})
-		# Cached capacity already owns the memory payload. This validation only
-		# needs membership; retain the full payload for the uncached calculation.
-		var effect := {} if stat_cache_enabled else memory_effect(entry)
-		var has_memory := _enhancement_effect_index(entry,"memory_material")>=0 if stat_cache_enabled else not effect.is_empty()
-		if entry.is_empty() or not has_memory or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):
+		var has_memory:=_enhancement_effect_index(entry,"memory_material")>=0
+		if entry.is_empty() or not has_memory or not same_module(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):
 			enhancement_buffers.erase(index)
 			enhancement_buffer_owners.erase(index)
 		else:
-			var capacity = enhancement_module_protection_capacity(int(index)) if stat_cache_enabled else N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry))
+			var capacity = enhancement_module_protection_capacity(int(index))
 			enhancement_buffers[index]=N.minimum(enhancement_buffers[index],capacity)
 
 func memory_buffer(index: int) -> Variant:
@@ -4035,7 +3558,7 @@ func memory_buffer(index: int) -> Variant:
 func enhancement_visible_buffer(index: int, capacity: Variant = null) -> Variant:
 	var entry := slot_entry("defence",index)
 	var owner: Dictionary=enhancement_buffer_owners.get(index,{})
-	if entry.is_empty() or memory_effect(entry).is_empty() or not is_same(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):return 0.0
+	if entry.is_empty() or memory_effect(entry).is_empty() or not same_module(owner.get("entry",{}),entry) or owner.get("key","")!=str(entry.key):return 0.0
 	return N.minimum(enhancement_buffers.get(index,0),enhancement_module_protection_capacity(index) if capacity == null else capacity)
 
 func enhancement_protection_current() -> Variant:
@@ -4045,18 +3568,13 @@ func enhancement_protection_current() -> Variant:
 
 func enhancement_module_protection_capacity(index: int) -> Variant:
 	var entry := slot_entry("defence",index)
-	if not stat_cache_enabled:
-		var effect := memory_effect(entry)
-		return N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)) if not effect.is_empty() else 0.0
 	var key := str(entry.get("key",""))
 	if key not in DEFENSE_KEYS:return 0.0
 	return _jewel_defence_capacity(key).protection_caps.get(index,0.0)
 
 func enhancement_protection_capacity() -> Variant:
 	var total = 0.0
-	for entry in defense_entries():
-		var effect := memory_effect(entry)
-		if not effect.is_empty():total=N.add(total,N.multiply(jewel_equipment_stat(entry),float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry)))
+	for index in defense_entries().size():total=N.add(total,enhancement_module_protection_capacity(index))
 	return total
 
 func enhancement_damage_type_mode(type: int) -> String:
@@ -4191,13 +3709,7 @@ func jewel_hit_player(raw, type: int) -> void:
 		begin_retreat()
 
 func enhancement_deferred_fraction(level := -1) -> float:
-	if not enhancement_unlocked():return 0.0
-	var current := enhancement_effective_level() if level<0 else level
-	if current<=0:return 0.0
-	var scale := enhancement_parameter("deferred_percent_scale")
-	# Computing the complement with ceil avoids rounding high finite levels to 100%.
-	var remaining := maxf(1.0,ceilf(scale/(1.0+enhancement_parameter("deferred_curve_coefficient")*current)))
-	return maxf(0.0,(scale-remaining)/scale)
+	return EnhancementGrowth.deferred_fraction(db,enhancement_effective_level() if level<0 else level) if enhancement_unlocked() else 0.0
 
 func enhancement_deferred_total() -> Variant:
 	var total = 0.0
@@ -4383,7 +3895,7 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 			if ticks<=0:continue
 			var effect := memory_effect(entry)
 			if effect.is_empty():continue
-			var healing = N.multiply(maximum,float(effect.p2)*int(effect.level)*ticks*enhancement_branches.memory_heal_multiplier(self,entry))
+			var healing = N.multiply(maximum,enhancement_branches.memory_healing_fraction(self,entry,effect,ticks))
 			var recovered = N.minimum(jewel_defence_damage.get(index,0),healing)
 			jewel_defence_damage[index]=N.subtract(jewel_defence_damage.get(index,0),recovered)
 			player[key]=N.minimum(capacities[key].total,N.add(player[key],recovered))
@@ -4396,36 +3908,7 @@ func advance_enhancement_repair_step(dt: float, ticks: int) -> void:
 	if ticks>0:enhancement_branches.recovery_pulse(self,positive_memory_recovery)
 
 func _jewel_defence_capacity(key: String) -> Dictionary:
-	# Memory capacity depends on the same equipment, counters, crew, planet and
-	# branch selections as the existing defence cache, not live buffers/timers.
-	var capacity: Dictionary = jewel_defence_capacity_cache.get(key, {}) if stat_cache_enabled else {}
-	if capacity.is_empty():
-		var indices: Array = []
-		var maxima = {}
-		var effects_by_index = {}
-		var protection_caps = {}
-		var total = 0.0
-		for index in defense_entries().size():
-			var entry = slot_entry("defence", index)
-			if entry.key != key:
-				continue
-			indices.append(index)
-			var effects = jewel_effects(entry)
-			var maximum = jewel_equipment_stat(entry, -1, effects)
-			maxima[index] = maximum
-			effects_by_index[index] = effects
-			var protection = 0.0
-			if stat_cache_enabled:
-				for effect in effects:
-					if effect.kind=="memory_material":
-						protection=N.multiply(maximum,float(effect.p4)*int(effect.level)*enhancement_branches.memory_cap_multiplier(self,entry))
-						break
-			protection_caps[index]=protection
-			total = N.add(total,maximum)
-		capacity = {"indices":indices,"maxima":maxima,"effects":effects_by_index,"total":total,"protection_caps":protection_caps}
-		if stat_cache_enabled:
-			jewel_defence_capacity_cache[key] = capacity
-	return capacity
+	return attributes._jewel_defence_capacity(self,key)
 
 func sync_jewel_defence_damage() -> Dictionary:
 	# The aggregate player health stays authoritative. This transient allocation
@@ -4452,27 +3935,22 @@ func sync_jewel_defence_damage() -> Dictionary:
 		capacities[key] = capacity
 	return capacities
 
-func refresh_crew_level_effects(previous: Dictionary, current: Dictionary) -> void:
+func refresh_crew_level_effects(changes: Array) -> void:
 	if not crew.levels_unlocked(self):return
-	if previous.get("level")==current.get("level") and previous.get("assignmentType")==current.get("assignmentType") and previous.get("targetId")==current.get("targetId"):return
-	var kinds := {}
-	for member in [previous,current]:
-		var job: Dictionary=crew.assignments(self).get(str(member.get("assignmentType","")),{})
-		kinds[str(job.get("targetType",""))]=true
-	if kinds.has("equipment"):
-		invalidate_stat_cache()
-		apply_refit_health()
+	var kinds: Dictionary={}
+	for change in changes:
+		var previous: Dictionary=change.previous;var current: Dictionary=change.current
+		if previous.level==current.level and previous.assignmentType==current.assignmentType and previous.targetId==current.targetId:continue
+		for member in [previous,current]:
+			var job: Dictionary=crew.assignments(self).get(str(member.assignmentType),{})
+			kinds[str(job.get("targetType",""))]=true
+	# Install every affected projection before the first notification.
+	if kinds.has("reactor"):reactor.reconcile_capacity(reactor_capacity())
+	if kinds.has("equipment") or kinds.has("reactor"):
+		configuration_committed();apply_refit_health()
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
 	if kinds.has("hightech"):event.emit("scientists_changed",{})
-	if kinds.has("reactor"):
-		var remaining=reactor_capacity()
-		for key in reactor_modules():
-			profile.reactorAllocation[key]=ReactorInt.minimum(profile.reactorAllocation.get(key,0),remaining)
-			remaining=ReactorInt.subtract(remaining,profile.reactorAllocation[key])
-		invalidate_stat_cache()
-		apply_refit_health()
-		event.emit("reactor_changed",{})
-		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
+	if kinds.has("reactor"):event.emit("reactor_changed",{})
 
 func native_before_configuration_change()->bool:
 	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
@@ -4525,21 +4003,16 @@ func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
 
 
 func advance_shared_clock_and_economy(dt:float)->void:
-	manual_hyperspace.dispatch_queued(self)
-	if manual_hyperspace.active and is_finite(dt) and dt>0:profile.hyperspace.active.work+=dt
+	if manual_hyperspace.active:hyperspace.advance_manual(dt)
 	profile.productionElapsed=production_time()+dt
-	hyperspace.advance(self,dt)
+	hyperspace_runtime.advance(self,dt)
 	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
 	advance_planets(dt)
-	galaxy.advance(self,dt)
+	galaxy_runtime.advance(self,dt)
 	if native_step_phase=="blocked":return
 	crew.advance(self,dt)
 	advance_auto_gen(dt)
-	advance_hightech(dt, dt / maxf(speed, 0.001))
-	resource_prune_elapsed += dt / maxf(speed, 0.001)
-	if resource_prune_elapsed >= 5.0:
-		resource_prune_elapsed = 0
-		prune_resource_samples(economy_time())
+	advance_hightech(dt)
 	for drop in drops.duplicate():
 		if drop.get("hightech", false) or drop.get("auto_gen", false):
 			continue
@@ -4550,7 +4023,7 @@ func advance_shared_clock_and_economy(dt:float)->void:
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():
 		drone_combat.restore_rebuild(self)
-		profile.equipmentSwitchUntil.clear()
+		equipment.clear_switches()
 		save_dirty = true
 		if guarding_here():
 			if guard_engaged and is_final_encounter():
@@ -4585,5 +4058,3 @@ func set_damage_stats_enabled(value:bool)->bool:
 	return true
 
 var combat_presentation:RefCounted
-
-var native_upgrade_batch:Dictionary={}

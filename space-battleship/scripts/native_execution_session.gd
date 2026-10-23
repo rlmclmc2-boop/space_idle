@@ -68,19 +68,6 @@ func admit(game:RefCounted,descriptor:Dictionary)->bool:
 	game.projectiles=kernel.presentation_projectile_rows() if kernel.has_method("presentation_projectile_rows") else kernel.projectile_views()
 	return true
 
-func upgrade_numeric_configuration(game,category:String,index:int,levels:int)->bool:
-	var entry:Dictionary=game.slot_entry(category,index)
-	var projected=entry.duplicate();projected.level=int(entry.level)+levels
-	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"category":category,"index":index,"level":projected.level})
-	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return false
-	if category=="defence" and str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
-		var difference=game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry))
-		descriptor.player[entry.key]=game.N.add(game.player[entry.key],difference)
-	if not kernel.update_configuration(descriptor):return false
-	weapons=descriptor.weapons
-	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF
-	return true
-
 func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 	if not kernel.has_method("can_refit_configuration"):return {}
 	for key in ["equipment_value","charge_max"]:
@@ -135,15 +122,7 @@ func advance(game:RefCounted,dt:float)->bool:
 	game.native_step_phase="native_done";game.native_step_remaining=0.0
 	production_seconds+=dt
 	var values:Dictionary=kernel.metrics()
-	var attacks=int(values.attack_counter);var incoming=int(values.incoming_counter)
-	if attacks!=int(game.profile.enhancementAttacks):
-		game.profile.enhancementAttacks=attacks
-		for key in game.WEAPON_KEYS:game.invalidate_equipment_counter(key)
-		game.event.emit("equipment_stats",{"category":"weapons","counter_only":true})
-	if incoming!=int(game.profile.enhancementHits):
-		game.profile.enhancementHits=incoming
-		for key in game.DEFENSE_KEYS:game.invalidate_equipment_counter(key)
-		game.event.emit("equipment_stats",{"category":"defence","counter_only":true})
+	game.commit_enhancement_counters(int(values.attack_counter),int(values.incoming_counter))
 	game.uid=int(values.drop_uid);game.enemy_shield_time=float(values.clock)
 	game.enhancement_defense_time=float(values.defence_time);game.enhancement_memory_elapsed=float(values.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(values.deferred_elapsed);game.enhancement_deferred_tick=int(values.deferred_tick)
@@ -300,40 +279,22 @@ func configuration_changed()->void:
 	# replace this pause with explicit typed configuration commands.
 	paused_by_configuration=true
 
-func prepare_numeric_batch(game,mode:String)->Dictionary:
-	var wallet:Dictionary=game.profile.resources.duplicate()
-	wallet[game.db.evolution_material_id()]=game.upgrade_currency(game.db.evolution_material_id())
-	var weapon_levels:Dictionary={};var defence_levels:Dictionary={};var planned:Dictionary={}
-	var player:Dictionary=game.player.duplicate(true)
-	for category in ["weapons","defence"]:
-		for index in game.loadout_entries(category).size():
-			var levels:int=game.max_upgrade_amount_slot(category,index,wallet) if mode=="max" else int(mode)
-			if levels<=0:continue
-			var costs:Dictionary=game.slot_upgrade_cost(category,index,levels)
-			if costs.is_empty():continue
-			if not costs.keys().all(func(id):return (id!=game.db.evolution_material_id() or game.hyperspace.is_unlocked(game)) and is_finite(float(costs[id])) and game.N.compare(wallet.get(id,0),costs[id])>=0):continue
-			for id in costs:wallet[id]=game.N.subtract(wallet.get(id,0),costs[id])
-			var entry:Dictionary=game.slot_entry(category,index)
-			var projected=entry.duplicate();projected.level=int(entry.level)+levels
-			planned[game.slot_id(category,index)]={"levels":levels,"before":int(entry.level)}
-			if category=="weapons":weapon_levels[index]=int(projected.level)
-			else:
-				defence_levels[index]=int(projected.level)
-				if str(entry.key) in ["armour","shield"] and game.state!=game.State.RETREAT:
-					player[entry.key]=game.N.add(player[entry.key],game.N.subtract(game.jewel_equipment_stat(projected),game.jewel_equipment_stat(entry)))
-	if planned.is_empty():return {"skip":true}
+func prepare_numeric_batch(game,plan:Dictionary,next_player:Dictionary)->Dictionary:
+	var weapon_levels:Dictionary={};var defence_levels:Dictionary={}
+	for purchase in plan.purchases:
+		if purchase.category=="weapons":weapon_levels[purchase.index]=int(purchase.after.level)
+		else:defence_levels[purchase.index]=int(purchase.after.level)
 	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
 	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
-	descriptor.player=player
+	descriptor.player=next_player.duplicate(true)
 	if not kernel.can_update_configuration(descriptor):return {}
-	return {"descriptor":descriptor,"planned":planned}
+	return {"descriptor":descriptor}
 
 func commit_numeric_batch(game,batch:Dictionary)->bool:
-	# Main performed its original sequential purchases and defence deltas. No
-	# combat advances inside this synchronous, prevalidated command boundary.
+	# Kernel update precedes the infallible wallet/module install. No notifications
+	# or battle time can interleave with this concrete purchase command.
 	var descriptor:Dictionary=batch.descriptor
 	if not supports_configuration(kernel,descriptor):return false
-	descriptor.player=game.player.duplicate(true)
 	if not kernel.update_configuration(descriptor):return false
 	weapons=descriptor.weapons
 	presentation_muzzles=[];geometry_muzzles=PackedVector2Array();geometry_player=Vector2.INF

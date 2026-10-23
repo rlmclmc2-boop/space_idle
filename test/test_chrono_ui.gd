@@ -24,6 +24,10 @@ func activate(window: Window, control: Control) -> void:
 		Input.parse_input_event(event)
 		await process_frame
 
+func set_chrono(g,value:float)->void:
+	var wallet:Dictionary=g.economy.save_data();wallet.chronoParticles=value
+	check(g.economy.install_snapshot(wallet),"Current chrono wallet installs")
+
 func run() -> void:
 	var scene := preload("res://scripts/main.gd").new()
 	scene.automation_args=["--capture"]
@@ -34,10 +38,10 @@ func run() -> void:
 	var equipment := scene.equipment_panel
 	var reactor := scene.reactor_panel
 	var tab := scene.chrono_panel
-	check(scene.equipment_tabs.get_tab_count()==8 and scene.equipment_tabs.get_tab_idx_from_control(tab)==7,"Chrono is the final independent page")
+	check(scene.equipment_tabs.get_tab_idx_from_control(tab)==7 and tab.get_parent()==scene.equipment_tabs,"Chrono retains its configured independent page")
 	check(tab.speed_buttons.size()==scene.game.chrono_options().size() and tab.speed_slider.tick_count==tab.speed_buttons.size(),"Slider stops and markers follow configured options")
 	await process_frame
-	scene.game.profile.chronoParticles=10
+	set_chrono(scene.game,10)
 	scene.select_system(7)
 	await process_frame
 	tab.refresh()
@@ -68,13 +72,13 @@ func run() -> void:
 	scene.game.distance=0
 	scene._process(0.1)
 	check(is_equal_approx(scene.game.distance,scene.game.ship_movement()*0.5),"Travel receives one accelerated game interval")
-	check(is_equal_approx(float(scene.game.profile.chronoParticles),9.6),"x5 consumes four particles per real second once")
+	check(is_equal_approx(float(scene.game.economy.balance("chrono")),9.6),"x5 consumes four particles per real second once")
 	check(scene.equipment_panel==equipment and scene.reactor_panel==reactor and scene.chrono_panel==tab,"Speed change retains unrelated page controls")
-	scene.game.profile.chronoParticles=0.2
+	set_chrono(scene.game,0.2)
 	scene._process(0.1)
-	check(scene.game.speed==scene.game.default_speed() and scene.game.profile.chronoParticles==0,"Insufficient particles automatically restore configured default")
+	check(scene.game.speed==scene.game.default_speed() and scene.game.economy.balance("chrono")==0,"Insufficient particles automatically restore configured default")
 	check(tab.current_label.text=="x1  -0/s" and tab.speed_slider.value==0 and tab.speed_buttons[4].disabled and tab.endurance_label.text==UIText.t("chrono.endurance_free"),"Exhaustion restores slider, rate and free duration locally")
-	scene.game.profile.chronoParticles=3
+	set_chrono(scene.game,3)
 	scene.game.set_speed(10)
 	tab.refresh()
 	check(tab.flow.is_processing(),"High multiplier animates only its slider layer")
@@ -86,21 +90,21 @@ func run() -> void:
 	scene.select_system(0)
 	check(not tab.flow.is_processing(),"Hidden page stops energy flow")
 	var hidden_text: String = tab.balance_label.text
-	scene.game.profile.chronoParticles=4
+	set_chrono(scene.game,4)
 	tab.refresh()
 	check(tab.balance_label.text==hidden_text,"Hidden page skips ordinary refresh")
 	scene.select_system(7)
 	check(tab.balance_label.text.contains("4") and tab.flow.is_processing(),"Returning to page catches up and resumes local flow")
 	scene.game.set_speed(2)
 	scene._notification(scene.NOTIFICATION_APPLICATION_FOCUS_OUT)
-	var before := float(scene.game.profile.chronoParticles)
+	var before := float(scene.game.economy.balance("chrono"))
 	var distance_before := float(scene.game.distance)
 	scene._process(0.5)
-	check(scene.background_unfocused and scene.game.speed==scene.game.default_speed() and scene.game.profile.chronoParticles==before,"Background resets multiplier and stops particle consumption")
+	check(not scene.game.application_focused and scene.game.speed==scene.game.default_speed() and scene.game.economy.balance("chrono")==before,"Background resets multiplier and stops particle consumption")
 	check(is_equal_approx(scene.game.distance-distance_before,scene.game.ship_movement()*0.5),"Background continues ordinary online travel at x1 without the foreground frame clamp")
 	scene.game.profile.chronoSavedAt=Time.get_unix_time_from_system()-10.5
 	scene._notification(scene.NOTIFICATION_APPLICATION_FOCUS_IN)
-	check(not scene.background_unfocused and scene.game.speed==scene.game.default_speed() and scene.game.profile.chronoParticles==before,"Returning from running background does not award offline particles")
+	check(scene.game.application_focused and scene.game.speed==scene.game.default_speed() and scene.game.economy.balance("chrono")==before,"Returning from running background does not award offline particles")
 	var preview := SubViewport.new()
 	preview.size=Vector2i(420,540)
 	preview.render_target_update_mode=SubViewport.UPDATE_ALWAYS

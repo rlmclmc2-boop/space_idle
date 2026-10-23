@@ -78,7 +78,7 @@ func _append_log(id: String, text: String) -> void:
 
 func _render_log(id: String) -> void:
 	var card: Dictionary = cards[id]
-	if not card.log_dirty or id != selected_planet_id or not is_visible_in_tree():return
+	if not card.log_dirty or not card.has("log_label") or id != selected_planet_id or not is_visible_in_tree():return
 	host.set_ui_value(card.log_label, "text", "\n\n".join(card.log_entries))
 	card.log_dirty = false
 
@@ -155,6 +155,7 @@ func _add_feedback(parent: Control) -> Control:
 	return overlay
 
 func _clear_feedback(card: Dictionary) -> void:
+	if not card.has("visual"):return
 	card.visual.clear_transients()
 	card.visual.select_facility("")
 	card.task_fx.clear()
@@ -193,9 +194,10 @@ func refresh() -> void:
 		if not cards.has(str(id)):add_card(str(id))
 	for id in cards.keys():
 		if not ids.has(id):
-			cards[id].root.queue_free()
-			cards[id].stage.queue_free()
-			cards[id].rail.queue_free()
+			if cards[id].has("root"):
+				cards[id].root.queue_free()
+				cards[id].stage.queue_free()
+				cards[id].rail.queue_free()
 			cards[id].list_button.queue_free()
 			cards.erase(id)
 			samples.erase(id)
@@ -240,6 +242,13 @@ func add_card(id: String) -> void:
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	list_button.add_child(icon)
 	icon.configure(id, host.game.planet_row(id))
+	# Every unlocked planet keeps its navigation and presentation history.
+	# Only a visited planet needs the full task, globe and facility controls.
+	cards[id] = {"icon":icon,"list_name":list_name,"list_degree":list_degree,"list_button":list_button,"selected":null,"log_entries":[],"log_phase":-1,"log_crew":"","log_buildings":{},"log_dirty":false}
+	_observe_log_buildings(id)
+
+func ensure_card_content(id: String) -> void:
+	if cards[id].has("visual"):return
 	var stage := _panel(Rect2(224, 20, 764, 944), Chrome.PAPER, Chrome.NAVY)
 	var visual := preload("res://scripts/planet_visual.gd").new()
 	visual.facility_renderer = facility_renderer
@@ -340,11 +349,7 @@ func add_card(id: String) -> void:
 	log_label.add_theme_font_override("font", Chrome.SHELL.face(500))
 	log_label.add_theme_constant_override("line_spacing", 4)
 	log_scroll.add_child(log_label)
-	cards[id] = {"icon":icon,"task_fx":task_fx,"task":task,"summary":summary,"task_state":task_state,"no_crew":no_crew,"list_name":list_name,"list_degree":list_degree,"rail_scroll":rail_scroll,"detail_scroll":detail_scroll,"auto":auto,"reforge":reforge,"conquered":conquered,"root":root,"stage":stage,"rail":rail,"rail_content":rail_content,"list_button":list_button,"title":title,"stage_title":stage_title,"stage_degree":stage_degree,"detail":detail,"progress":progress,"bar":bar,"picker":picker,"start":start,"cancel":cancel,"feedback":feedback,"empty_facilities":empty_facilities,"facility_buttons":{},"visual":visual,"crew_ids":[],"selected":null,"bonuses":bonuses}
-
-	# Session-only presentation history; lifecycle follows this planet card.
-	cards[id].merge({"log_label":log_label,"log_entries":[],"log_phase":-1,"log_crew":"","log_buildings":{},"log_dirty":false})
-	_observe_log_buildings(id)
+	cards[id].merge({"task_fx":task_fx,"task":task,"summary":summary,"task_state":task_state,"no_crew":no_crew,"rail_scroll":rail_scroll,"detail_scroll":detail_scroll,"auto":auto,"reforge":reforge,"conquered":conquered,"root":root,"stage":stage,"rail":rail,"rail_content":rail_content,"title":title,"stage_title":stage_title,"stage_degree":stage_degree,"detail":detail,"progress":progress,"bar":bar,"picker":picker,"start":start,"cancel":cancel,"feedback":feedback,"empty_facilities":empty_facilities,"facility_buttons":{},"visual":visual,"crew_ids":[],"bonuses":bonuses,"log_label":log_label})
 
 func bonus_text(id: String) -> String:
 	var g = host.game
@@ -509,6 +514,7 @@ func refresh_card(id: String) -> void:
 	host.set_ui_value(card.list_degree, "text", UIText.t("planet.degree", {"degree":exploration_count_text(degree)}))
 	host.set_ui_value(card.list_button, "tooltip_text", UIText.t("planet.list_entry", {"planet":name, "degree":exploration_count_text(degree)}))
 	if not selected_planet_id.is_empty() and id != selected_planet_id:return
+	ensure_card_content(id)
 	host.set_ui_value(card.title, "text", UIText.t("planet.task_heading"))
 	host.set_ui_value(card.stage_title, "text", name)
 	host.set_ui_value(card.stage_degree, "text", UIText.t("planet.degree", {"degree":exploration_count_text(degree)}))
@@ -553,7 +559,7 @@ func _refresh_task(id: String, refresh_roster := true) -> void:
 	host.set_ui_value(card.bar, "value", 100.0 if card.visual.completion_age < 0.18 else bar_value)
 	if not refresh_roster:return
 	var available: Array = []
-	for item in host.game.profile.crew:
+	for item in host.game.crew.members():
 		if not host.game.idle_planet_crew(str(item.crewId)):continue
 		available.append(item.crewId)
 	if card.crew_ids != available:
@@ -781,12 +787,12 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 	var g=host.game
 	var state: Dictionary=g.planet_buildings.state(g,id,building_id)
 	if state.get("status", "") == "ready":
-		g.planet_buildings.activate(g, id, building_id)
+		g.activate_planet_building( id, building_id)
 		return
 	var builders: Array=state.get("crew",[])
 	var row: Dictionary=g.db.data.planet_build[building_id]
 	if builders.size()>=int(row.extra_crew):
-		g.planet_buildings.assign(g,id,building_id,str(builders.back()))
+		g.assign_planet_builder(id,building_id,str(builders.back()))
 		return
 	# Explicit selection; never silently occupy the first available crew member.
 	var anchor: Button = anchor_override if anchor_override != null else cards[id].facility_buttons[building_id].assign
@@ -795,7 +801,7 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 	preload("res://scripts/dialog_presentation.gd").popup(popup)
 	var ids: Array=[]
 	var five_rows_height := 0.0
-	for member in g.profile.crew:
+	for member in g.crew.members():
 		if g.idle_planet_crew(str(member.crewId)):
 			ids.append(str(member.crewId))
 			popup.add_item(str(g.crew.definitions(g)[member.crewId].name))
@@ -804,7 +810,7 @@ func _toggle_builder(id: String, building_id: String, anchor_override: Button = 
 		ids.append(str(member_id))
 		popup.add_item(UIText.t("planet.recall_builder",{"name":g.crew.definitions(g)[member_id].name}))
 		if popup.item_count == 5:five_rows_height = popup.get_contents_minimum_size().y
-	popup.id_pressed.connect(func(index):g.planet_buildings.assign(g,id,building_id,ids[index]))
+	popup.id_pressed.connect(func(index):g.assign_planet_builder(id,building_id,ids[index]))
 	popup.popup_hide.connect(popup.queue_free)
 	anchor.visibility_changed.connect(popup.hide)
 	# Use the same screen transform for the button and playable viewport, including
@@ -842,6 +848,7 @@ func _confirm_reforge(id: String) -> void:
 func select_planet(id: String) -> void:
 	if not cards.has(id) or selected_planet_id == id:return
 	if cards.has(selected_planet_id):_clear_feedback(cards[selected_planet_id])
+	ensure_card_content(id)
 	_clear_feedback(cards[id])
 	selected_planet_id = id
 	_apply_selection()
@@ -852,9 +859,10 @@ func _apply_selection() -> void:
 	for id in cards:
 		var card: Dictionary = cards[id]
 		var selected: bool = id == selected_planet_id
-		host.set_ui_value(card.root, "visible", selected)
-		host.set_ui_value(card.stage, "visible", selected)
-		host.set_ui_value(card.rail, "visible", selected)
+		if card.has("root"):
+			host.set_ui_value(card.root, "visible", selected)
+			host.set_ui_value(card.stage, "visible", selected)
+			host.set_ui_value(card.rail, "visible", selected)
 		if card.selected != selected:
 			Chrome.button_skin(card.list_button, selected)
 			card.selected = selected
@@ -872,7 +880,7 @@ func show_completion(id: String, reward: float = -1.0) -> void:
 	host.set_ui_value(card.feedback, "modulate", Color(1, 1, 1, 0))
 
 func select_facility(planet_id: String, facility_id: String) -> void:
-	if cards.has(planet_id):cards[planet_id].visual.select_facility(facility_id)
+	if cards.has(planet_id) and cards[planet_id].has("visual"):cards[planet_id].visual.select_facility(facility_id)
 
 func crew_reward_text(amount: float) -> String:
 	var g=host.game

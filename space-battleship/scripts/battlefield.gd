@@ -140,9 +140,9 @@ func _ready() -> void:
 	battle_clip.move_child(ship_view,battle_layer.get_index())
 	hyperspace_visual=preload("res://scripts/hyperspace_drone_visual.gd").new()
 	ship_view.world.add_child(hyperspace_visual)
-	hyperspace_visual.sync(game.profile.hyperspace.inventory)
-	ship_view.set_hull(str(game.profile.selectedShip))
-	current_hull = str(game.profile.selectedShip)
+	hyperspace_visual.sync(game.hyperspace.state.inventory)
+	ship_view.set_hull(str(game.equipment.selected_ship()))
+	current_hull = str(game.equipment.selected_ship())
 	ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	pulse_layer = Node2D.new()
 	pulse_layer.name = "BattleFeedback"
@@ -305,7 +305,7 @@ func _numeric_launch_origin(shot:Dictionary)->Vector2:
 
 
 func _set_reference_dimensions() -> void:
-	var key := str(game.profile.selectedShip)
+	var key := str(game.equipment.selected_ship())
 	var art := ship_visual_entry(key)
 	if float(art.get("static_height",0.0))>0.0:
 		# The approved lineup authors relative hull size independently of the
@@ -315,7 +315,7 @@ func _set_reference_dimensions() -> void:
 		reference_offset=Vector2.ZERO
 		return
 	# Match the existing hull's opaque footprint, not its transparent source canvas.
-	var image := ship_geometry_texture(str(game.profile.selectedShip)).get_image()
+	var image := ship_geometry_texture(str(game.equipment.selected_ship())).get_image()
 	var rect := image.get_used_rect()
 	var factor: float = float(battle_visual.player_core_scale)*player_art_scale()
 	reference_height = float(rect.size.y)*factor
@@ -323,7 +323,7 @@ func _set_reference_dimensions() -> void:
 	# Reserve 10% side margin for ordinary idle yaw; diagnostic rear angles do not widen gameplay aim.
 	reference_height = minf(reference_height,BATTLE_VIEW_SIZE.x*0.90*ship_view.model_span/ship_view.formation_width)
 	# Reduce only the large own-ship classes; tiny frigates keep their legibility.
-	reference_height *= 0.74 if str(game.profile.selectedShip)=="Heavy_Battleship" else 0.85 if str(game.profile.selectedShip)=="Battleship" else 1.0
+	reference_height *= 0.74 if str(game.equipment.selected_ship())=="Heavy_Battleship" else 0.85 if str(game.equipment.selected_ship())=="Battleship" else 1.0
 	stable_center_ready=false
 	reference_offset = Vector2.ZERO # The modular hull origin is its own center, not the PNG canvas center.
 
@@ -350,22 +350,22 @@ func before_logical_game_tick(dt:float) -> void:
 	# as X1 presentation does after spawning; lazy render visits must not set age.
 	for enemy in game.enemies:enemy_pose(enemy)
 	if is_instance_valid(ship_view):
-		if current_hull != str(game.profile.selectedShip):
-			current_hull=str(game.profile.selectedShip)
+		if current_hull != str(game.equipment.selected_ship()):
+			current_hull=str(game.equipment.selected_ship())
 			ship_view.set_hull(current_hull);_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 		demo_time+=dt
 		var aim:Vector2=player_render_position()+Vector2(0,-450)
 		if not game.enemies.is_empty():aim=enemy_render_position(game.enemies[0])
 		ship_view.set_pose(player_render_position()+reference_offset,reference_height,0.0,aim,demo_time,shield_enabled,close_up,dt)
-		hyperspace_visual.sync(game.profile.hyperspace.inventory)
+		hyperspace_visual.sync(game.hyperspace.state.inventory)
 		hyperspace_visual.pose(ship_view,game.drone_combat.disabled,2.8 if close_up else 1.0)
 	shield_before_hit=game.player.shield
 	fx_time+=dt
 	advance_turrets(dt)
 
 func battle_transition_blocked() -> bool:
-	return encounter_presentation.departure_active()
+	return game!=null and game.departure_remaining>0
 
 func hold_departure_scene() -> void:
 	# Hide and stop actual render owners; no overlay conceals an advancing battle.
@@ -487,11 +487,6 @@ func _battlefield_motion_flight_shift(shot:Dictionary,visual:Dictionary)->Vector
 	return next*progress
 
 func _process(delta: float) -> void:
-	if battle_transition_blocked():
-		hold_departure_scene()
-		encounter_presentation.sync(game,minf(delta,0.1))
-		stars_layer.queue_redraw();battle_layer.queue_redraw()
-		return
 	# End the batch even when the presentation exits early. Each fixed logical
 	# step changes fx_time, so accelerated combat never reuses an older limit.
 	enemy_entry_batch_active=true
@@ -510,15 +505,14 @@ func _process_battlefield(delta: float) -> void:
 	if is_instance_valid(ship_view):ship_view.restore_canonical_display()
 	if is_instance_valid(hyperspace_visual):hyperspace_visual.restore_canonical_display()
 	if is_instance_valid(ship_view):
-		if hyperspace_visual.sync(game.profile.hyperspace.inventory):paused_presentation_signature=""
+		if hyperspace_visual.sync(game.hyperspace.state.inventory):paused_presentation_signature=""
 		ship_view.set_accelerated_quality(game.speed >= 10.0)
 		hyperspace_visual.animated=game.speed < 10.0
-		if current_hull != str(game.profile.selectedShip):
-			current_hull = str(game.profile.selectedShip)
+		if current_hull != str(game.equipment.selected_ship()):
+			current_hull = str(game.equipment.selected_ship())
 			if not ship_view.set_hull(current_hull):
 				prototype_enabled = false
 				ship_view.set_rendering(false)
-				return
 			_set_reference_dimensions()
 		ship_view.set_loadout(game.weapon_entries(),game.active_slot_count("weapons"))
 	battlefield_motion_logical_phase=true
@@ -1103,7 +1097,7 @@ func draw_background()->void:
 func draw_vertical_battle_hud()->void:
 	battle_panel(BATTLE_HEADER_RECT)
 	draw_surface.draw_rect(Rect2(44,115,4,24),BATTLE_TEAL)
-	var route := str(game.profile.hyperspace.active.get("route","")) if game.manual_hyperspace.active else ""
+	var route := str(game.hyperspace.state.active.get("route","")) if game.manual_hyperspace.active else ""
 	var title := UIText.t("hyperspace."+route) if not route.is_empty() else UIText.t("battle.stage",{"stage":str(int(game.stage))})
 	text_at(title,Vector2(60,134),18 if not route.is_empty() else 23,BATTLE_CREAM)
 	var state_key:="hud.state.retreat" if game.state==BattleGame.State.RETREAT else "hud.state.combat" if game.state==BattleGame.State.COMBAT else "hud.state.clear" if game.state==BattleGame.State.LEVEL_CLEAR else "hud.state.travel"

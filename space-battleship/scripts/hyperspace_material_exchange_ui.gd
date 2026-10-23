@@ -75,7 +75,7 @@ func refresh_quote(clear_feedback=false) -> void:
  quote={"error":"unavailable"}
  if game().has_method("hyperspace_material_exchange_quote"):
   quote=game().hyperspace_material_exchange_quote(from,to,int(amount.value))
- var balances:Dictionary=game().profile.hyperspace.materials
+ var balances:Dictionary=game().economy.material_wallet().materials
  panel.put(source_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("source_owned",balances.get(from,0))))}))
  panel.put(target_owned,"text",t("exchange_owned",{"amount":str(int(quote.get("target_owned",balances.get(to,0))))}))
  var has_amount=not quote.get("cost",{}).is_empty() and not quote.get("received",{}).is_empty()
@@ -112,6 +112,6 @@ func commit() -> void:
 func on_event(kind:String,payload:Dictionary) -> void:
  if dialog==null or not dialog.visible:return
  if kind not in ["hyperspace_changed","state","hyperspace_rebuild"]:return
- if not bool(game().profile.hyperspace.unlocked_drones) or str(payload.get("reason","")) in ["reforge","inventory_reset"]:
+ if not bool(game().hyperspace.state.unlocked_drones) or str(payload.get("reason","")) in ["reforge","inventory_reset"]:
   pending_request={};confirmation.hide();dialog.hide();return
  refresh_quote()

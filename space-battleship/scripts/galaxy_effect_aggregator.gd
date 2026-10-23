@@ -13,16 +13,22 @@ func building_detail(region, slot: Dictionary) -> Dictionary:
 func invalidate() -> void:
 	generation=-1
 
+func region_effects(region)->Dictionary:
+	var values:Dictionary={}
+	for effect in MULTIPLIERS+RESOURCES:values[effect]=0.0
+	for slot in region.slots:
+		if not slot.status in ["active","upgrading"]:continue
+		var detail:=building_detail(region,slot)
+		values[detail.type]+=detail.amount
+	for effect in MULTIPLIERS:values[effect]+=1.0
+	return values
+
 func projected_multipliers(system, key:String, predicted)->Dictionary:
 	var result:Dictionary={}
 	for effect in MULTIPLIERS:result[effect]=1.0
 	for region_key in system.regions:
 		var region=predicted if region_key==key else system.regions[region_key]
-		var values:Dictionary={}
-		for effect in MULTIPLIERS:values[effect]=1.0
-		for slot in region.slots:
-			var detail:=building_detail(region,slot)
-			if values.has(detail.type):values[detail.type]+=detail.amount
+		var values:=region_effects(region)
 		for effect in MULTIPLIERS:result[effect]*=values[effect]
 	return result
 
@@ -34,14 +40,8 @@ func refresh(system) -> void:
 	for key in RESOURCES:totals[key]=0.0
 	for key in system.regions:
 		var region=system.regions[key]
-		var effects := {}
-		for effect in MULTIPLIERS+RESOURCES:effects[effect]=0.0
-		for slot in region.slots:
-			if not slot.status in ["active","upgrading"]:continue
-			var definition: Dictionary=region.builds[slot.type]
-			effects[definition.effect_type]+=float(definition.base_effect)*int(slot.level)
+		var effects:=region_effects(region)
 		for effect in MULTIPLIERS:
-			effects[effect]+=1.0
 			totals[effect]*=effects[effect]
 		for effect in RESOURCES:totals[effect]+=effects[effect]
 		cache[key]=effects

@@ -23,6 +23,14 @@ const COMPLETION_FLASH_DURATION := 0.28
 const STELLAR_WORK_STATES := ["planet.work.spectrum", "planet.work.radiation", "planet.work.signal", "planet.work.magnetic"]
 const WORK_STATES := ["planet.work.mapping", "planet.work.surface", "planet.work.signal", "planet.work.deep"]
 
+# Resource preparation belongs to this visual, and shares the engine's resource
+# cache with the other planet thumbnails. Domain state keeps running normally.
+static var prepared_textures:Dictionary={}
+static var requested_texture_frame:=-1
+var preparing:=false
+var pending_row:Dictionary={}
+var prepare_after_frame:=0
+var loading:=Label.new()
 var facility_renderer: Node
 var icon_mode := false
 var planet_id := ""
@@ -35,7 +43,7 @@ var completion_age := 10.0
 var last_degree = 0
 var draw_calls := 0
 var frame_accumulator := 0.0
-var globe = PlanetSphere.new()
+var globe = PlanetSphere.new(true)
 var background_layer := Control.new()
 var orbit_back_layer := Control.new()
 var configured_appearance: Dictionary = {}
@@ -57,6 +65,16 @@ func _ready() -> void:
 		add_child(layer)
 	background_layer.draw.connect(_draw_background)
 	orbit_back_layer.draw.connect(_draw_back_orbits)
+	loading.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	loading.horizontal_alignment=HORIZONTAL_ALIGNMENT_CENTER
+	loading.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
+	loading.mouse_filter=Control.MOUSE_FILTER_IGNORE
+	loading.add_theme_font_size_override("font_size",23)
+	loading.add_theme_color_override("font_color",Color("e9f2f2"))
+	loading.text="正在载入星球影像\n探索与舰队继续运行"
+	loading.hide();add_child(loading)
+	visibility_changed.connect(func():set_process(preparing and is_visible_in_tree()))
+	set_process(false)
 	resized.connect(_layout_globe)
 	_layout_globe()
 
@@ -79,10 +97,39 @@ func _orbit_radius() -> float:
 	return maxf(_body_radius(), minf(size.y * 0.39, size.x * 0.285) * 0.65)
 
 func _map_texture(key: String, fallback: Texture2D) -> Texture2D:
-	var path := str(appearance.get(key, ""))
-	if path.is_empty() or not ResourceLoader.exists(path):return fallback
-	var resource = load(path)
+	var resource=prepared_textures.get(str(appearance.get(key,"")))
 	return resource if resource is Texture2D else fallback
+
+func textures_cached() -> bool:
+	for key in ["surfaceTexture","cloudTexture"]:
+		var path:=str(appearance.get(key,""))
+		if not path.is_empty() and not prepared_textures.has(path):return false
+	return true
+
+func textures_ready() -> bool:
+	var ready:=true
+	for key in ["surfaceTexture","cloudTexture"]:
+		var path:=str(appearance.get(key,""))
+		if path.is_empty() or prepared_textures.has(path):continue
+		var status:=ResourceLoader.load_threaded_get_status(path)
+		if status==ResourceLoader.THREAD_LOAD_INVALID_RESOURCE:
+			if not ResourceLoader.exists(path,"Texture2D"):
+				prepared_textures[path]=null;continue
+			if requested_texture_frame==Engine.get_process_frames():ready=false;continue
+			requested_texture_frame=Engine.get_process_frames()
+			var error:=ResourceLoader.load_threaded_request(path,"Texture2D")
+			if error!=OK and error!=ERR_BUSY:prepared_textures[path]=null;continue
+			ready=false
+		elif status==ResourceLoader.THREAD_LOAD_LOADED:prepared_textures[path]=ResourceLoader.load_threaded_get(path)
+		elif status==ResourceLoader.THREAD_LOAD_FAILED:prepared_textures[path]=null
+		else:ready=false
+	return ready
+
+func _process(_dt:float) -> void:
+	if not preparing or not is_visible_in_tree() or Engine.get_process_frames()<=prepare_after_frame:return
+	if not globe.material_ready:
+		globe.prepare_material();return
+	if textures_ready():configure(planet_id,pending_row)
 
 func _visual_value(value, fallback):
 	if value is String:
@@ -97,6 +144,11 @@ func configure(id: String, row: Dictionary) -> void:
 	appearance_source = _visual_value(appearance_source, {})
 	appearance = appearance_source if appearance_source is Dictionary else {}
 	if not appearance_initialized or appearance != configured_appearance:
+		if not globe.material_ready or not textures_cached():
+			pending_row=row.duplicate(true)
+			if not preparing:prepare_after_frame=Engine.get_process_frames()+1
+			preparing=true;globe.hide();loading.visible=not icon_mode
+			set_process(is_visible_in_tree());return
 		appearance_initialized = true
 		configured_appearance = appearance.duplicate(true)
 		# Legacy texture is a finished globe, never scroll it as an albedo map.
@@ -112,6 +164,7 @@ func configure(id: String, row: Dictionary) -> void:
 		globe.light_direction = Vector3(-0.65, -0.45, 0.62)
 		globe.apply_settings()
 		_layout_globe()
+	preparing=false;pending_row={};loading.hide();globe.show();set_process(false)
 	var facility_source = row.get("visualFacilities", [])
 	facility_source = _visual_value(facility_source, [])
 	var entries: Array = facility_source if facility_source is Array else []

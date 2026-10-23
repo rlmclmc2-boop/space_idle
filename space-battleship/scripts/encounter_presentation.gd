@@ -18,14 +18,14 @@ var return_success := false
 var clear_age := 2.0
 
 func sync(game,delta:float) -> bool:
-	var next_route := str(game.profile.hyperspace.active.get("route","")) if game.manual_hyperspace.active else ""
+	var next_route := str(game.hyperspace.state.active.get("route","")) if game.manual_hyperspace.active else ""
 	var changed := next_route!=route
 	if changed:
 		departure=next_route.is_empty()
 		route=next_route
 		transition=0.0
 		if departure:
-			# Challenge-owned transients must not follow a restored mainline scene,
+			# Challenge-owned transients must not follow the new mainline sortie,
 			# whose pause state may intentionally stop all presentation clocks.
 			leader_fall=2.0
 			clear_age=2.0
@@ -33,7 +33,7 @@ func sync(game,delta:float) -> bool:
 			scenery_route=route
 			accent={"alpha":Color("81d5da"),"beta":Color("d9a67b"),"gamma":Color("a8bacd"),"delta":Color("b1a0dc")}.get(route,Color("81d5da"))
 		elif game.paused:
-			# Returning restores the mainline pause state. Finish presentation now;
+			# If a command pauses the new sortie, finish its presentation now;
 			# never unpause gameplay just to drain a departure animation timer.
 			scenery_presence=0.0
 			scenery_route=""
@@ -56,10 +56,11 @@ func sync(game,delta:float) -> bool:
 		transition=minf(3.4 if departure else 2.0,transition+delta)
 		leader_fall=minf(2.0,leader_fall+delta)
 		clear_age=minf(2.0,clear_age+delta)
+	# The session owns departure duration, including slow or hidden frames.
+	if departure:
+		transition=maxf(transition,game.RETURN_DEPARTURE_SECONDS-game.departure_remaining)
+		scenery_presence=minf(scenery_presence,game.departure_remaining/game.RETURN_DEPARTURE_SECONDS)
 	return changed
-
-func departure_active() -> bool:
-	return departure and (transition<1.6 or scenery_presence>0.0)
 
 func is_leader(enemy:Dictionary) -> bool:
 	return int(enemy.get("uid",-2))==leader_uid

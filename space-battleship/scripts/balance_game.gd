@@ -166,7 +166,7 @@ func advance_jewel_repair(dt: float) -> bool:
 
 func repair_entry_index(entry: Dictionary) -> int:
 	for index in repair_entries.size():
-		if is_same(repair_entries[index],entry):return index
+		if same_module(repair_entries[index],entry):return index
 	repair_entries.append(entry)
 	return repair_entries.size()-1
 
@@ -179,7 +179,7 @@ func jewel_effects(entry: Dictionary) -> Array:
 func tick_jewel_effects(entry: Dictionary) -> Array:
 	if not tick_effects_active:return super.jewel_effects(entry)
 	for index in tick_effect_entries.size():
-		if is_same(tick_effect_entries[index],entry):return tick_effect_values[index].duplicate(true)
+		if same_module(tick_effect_entries[index],entry):return tick_effect_values[index].duplicate(true)
 	var value := super.jewel_effects(entry)
 	tick_effect_entries.append(entry)
 	tick_effect_values.append(value)
@@ -209,6 +209,8 @@ func save_progress() -> void:
 func tick(dt: float) -> void:
 	if paused:return
 	simulated_time += dt
+	# This independent analysis clock substitutes for live wall time.
+	advance_resource_history_clock(dt)
 	if metrics != null:
 		metrics.time = simulated_time
 		if state == State.COMBAT:metrics.combat_seconds += dt
@@ -279,29 +281,29 @@ func begin_retreat() -> void:
 	super.begin_retreat()
 
 func generate_scientist(amount := 1) -> bool:
-	var before: Dictionary = profile.resources.duplicate()
+	var before: Dictionary = economy.resources().duplicate()
 	var previous_count:int=int(profile.scientists)
 	var result := super.generate_scientist(amount)
 	if result and metrics != null:
-		for id in before:before[id] = float(before[id])-float(profile.resources[id])
+		for id in before:before[id] = float(before[id])-float(economy.balance(id))
 		metrics.spend("scientists",before)
 		metrics.use("scientists",int(profile.scientists)-previous_count)
 	return result
 
 func upgrade_reactor(amount: int) -> bool:
-	var before := float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))
+	var before := float(economy.balance(str(int(db.config.reactorUraniumId))))
 	var result := super.upgrade_reactor(amount)
 	if result and metrics != null:
-		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(profile.resources.get(str(int(db.config.reactorUraniumId)),0))})
+		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(economy.balance(str(int(db.config.reactorUraniumId))))})
 		metrics.use("reactor_levels",amount)
 	return result
 
 func upgrade_enhancement(count := 1) -> int:
-	var before := float(profile.jewelFragments)
+	var before := float(economy.balance("jewel"))
 	var purchased := super.upgrade_enhancement(count)
 	if metrics!=null and purchased>0:
 		metrics.use("enhancement_levels",purchased)
-		metrics.spend("enhancements",{"jewel_fragments":before-float(profile.jewelFragments)})
+		metrics.spend("enhancements",{"jewel_fragments":before-float(economy.balance("jewel"))})
 	return purchased
 
 func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:

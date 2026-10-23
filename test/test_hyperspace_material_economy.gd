@@ -4,6 +4,15 @@ const R=preload("res://scripts/drone_rewards.gd")
 const Forge=preload("res://scripts/drone_forge.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Transfer=preload("res://scripts/save_transfer.gd")
+class RefusedHandoff:
+	extends RefCounted
+	func handoff_to_legacy(_game,_reason)->bool:return false
+
+class ChangedWalletHandoff:
+	extends RefCounted
+	func handoff_to_legacy(game,_reason)->bool:
+		game.economy.credit("degenerate_matter",1);return true
+
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -45,10 +54,11 @@ func _initialize()->void:
 		if operation=="restore_ultimate":
 			drone.legendary=true;drone.legendary_effect=R.legendary(rng_a,c,drone.weapon);drone.ultimate=true;drone.ultimate_affix=drone.affixes[0].duplicate()
 		s.inventory.drones[drone.id]=drone;s.inventory.warehouse=[drone.id];s.history={"alpha":{"10":2.0}}
-		for key in s.materials:s.materials[key]=1000000000
-		s.ultimate_cores=100
+		var wallet:Dictionary=g.economy.material_wallet()
+		for key in wallet.materials:wallet.materials[key]=1000000000
+		wallet.ultimate_cores=100
 		var request:Dictionary={"operation":operation,"drone_id":drone.id,"args":{}}
-		var a:=Forge.plan(s.duplicate(true),original,request,g);var b:=Forge.plan(s.duplicate(true),c,request,g)
+		var a:=Forge.plan(s.duplicate(true),wallet.duplicate(true),original,request,g);var b:=Forge.plan(s.duplicate(true),wallet.duplicate(true),c,request,g)
 		check(a.error=="" and b.error=="","base and scaled forge operation available "+operation)
 		for key in a.get("cost",{}):check(b.cost[key]==a.cost[key]*(1 if key=="ultimate_cores" else 10),"complete forge formula scales material, never core "+operation+":"+key)
 	# Rounding and multiple-draw costs finish in base units before conversion.
@@ -63,29 +73,31 @@ func _initialize()->void:
 			var wanted:String=c.legendary_effects.keys().filter(func(key):return c.legendary_effects[key].weapon=="laser")[0]
 			s.legendary_collection=[wanted];args.guaranteed_effect=wanted
 		s.inventory.drones[drone.id]=drone;s.inventory.warehouse=[drone.id]
-		for key in s.materials:s.materials[key]=1000000000000
-		s.ultimate_cores=100
+		var wallet:Dictionary=g.economy.material_wallet()
+		for key in wallet.materials:wallet.materials[key]=1000000000000
+		wallet.ultimate_cores=100
 		var request:Dictionary={"operation":operation,"drone_id":drone.id,"args":args}
-		var a:=Forge.plan(s.duplicate(true),original,request,g);var b:=Forge.plan(s.duplicate(true),c,request,g)
+		var a:=Forge.plan(s.duplicate(true),wallet.duplicate(true),original,request,g);var b:=Forge.plan(s.duplicate(true),wallet.duplicate(true),c,request,g)
 		check(a.error=="" and b.error=="" and a.draws==b.draws,"complex cost keeps original forecast and draws "+operation)
 		for key in a.get("cost",{}):check(b.cost[key]==a.cost[key]*10,"complete complex base cost scales once "+operation)
 	# Guard integral conversion before it can wrap a huge positive price negative.
 	var overflow_config: Dictionary=c.duplicate(true)
 	overflow_config.forge_costs.lock_affix.glueball=1e30
-	var overflow_state: Dictionary=g.profile.hyperspace.duplicate(true)
+	var overflow_state: Dictionary=g.hyperspace.state.duplicate(true)
 	var overflow_drone:=make_drone(c)
 	overflow_state.inventory.drones[overflow_drone.id]=overflow_drone
 	overflow_state.inventory.warehouse=[overflow_drone.id]
 	var overflow_request: Dictionary={"operation":"lock_affix","drone_id":overflow_drone.id,"args":{}}
-	check(Forge.plan(overflow_state,overflow_config,overflow_request,g).error=="cost_limit","out-of-range material price is rejected before integer conversion")
+	check(Forge.plan(overflow_state,g.economy.material_wallet(),overflow_config,overflow_request,g).error=="cost_limit","out-of-range material price is rejected before integer conversion")
 	# Actual equipped same-type copies add their grown material bonus.
 	var module:=make_drone(c);module.hangings=["hyperspace_charge"];module.hanging_slots=1
-	Bag.insert(g.profile.hyperspace.inventory,module,c);g.profile.hyperspace.inventory.equipped=[module.id]
-	g.profile.hyperspace.hanging_modules.hyperspace_charge={"unlocked":true,"level":3,"exp":0.0};g.invalidate_stat_cache()
+	var hs:Dictionary=g.hyperspace.save_data()
+	Bag.insert(hs.hyperspace.inventory,module,c);hs.hyperspace.inventory.equipped=[module.id]
+	hs.hyperspace.hanging_modules.hyperspace_charge={"unlocked":true,"level":3,"exp":0.0};check(g.hyperspace.install_snapshot(hs,db),"module fixture installs")
 	var online:Dictionary=g.hyperspace.online_config(g)
 	check(absf(online.material_reward_multiplier-pow(1.1,3))<0.000000000001,"collector level3 gives 1.1 cubed exploration material")
 	check(online.energy_cap==c.energy_cap and online.energy_rate==c.energy_rate,"collector no longer changes energy")
-	var second:Dictionary=module.duplicate(true);second.id="fixture2";Bag.insert(g.profile.hyperspace.inventory,second,c);g.profile.hyperspace.inventory.equipped.append(second.id);g.invalidate_stat_cache()
+	var second:Dictionary=module.duplicate(true);second.id="fixture2";hs=g.hyperspace.save_data();Bag.insert(hs.hyperspace.inventory,second,c);hs.hyperspace.inventory.equipped.append(second.id);check(g.hyperspace.install_snapshot(hs,db),"second module fixture installs")
 	online=g.hyperspace.online_config(g)
 	check(absf(online.material_reward_multiplier-(1.0+2.0*(pow(1.1,3)-1.0)))<0.000000000001,"two collector copies add bonuses rather than multiply")
 	check(R.dismantle(module,online,rng_a).materials==R.dismantle(module,c,rng_b).materials,"collector does not boost dismantle material")
@@ -100,39 +112,168 @@ func _initialize()->void:
 	var core_base:=R.generate(state,base_forced,request,"1");var core_boosted:=R.generate(state,forced,request,"1")
 	check(core_base.error=="" and core_boosted.error=="" and core_base.reward.ultimate_cores==1 and core_boosted.reward.ultimate_cores==1,"collector never multiplies actual core reward")
 	check(core_base.reward.drone==core_boosted.reward.drone and core_base.random_state==core_boosted.random_state,"collector never changes actual drone or reward RNG")
-	# Legacy frozen settlement is converted, never regenerated.
-	var old:Dictionary=S.fresh(c);old.erase("material_unit_version");old.next_run=2;old.settled_run=0
-	for key in old.materials:old.materials[key]=11
-	var receipt:Dictionary={"round_id":1,"run_id":1,"status":"completed_pending","mode":"idle","route":"alpha","level":5,"crew_id":"","crew_snapshot":"","luck":0.0,"crew_luck":0.0,"permanent_luck":0.0,"luck_state":"0","return_journey":{},"ticket":0.0,"duration":3.0,"work":3.0,"reward":{"drone":d.duplicate(true),"materials":{"degenerate_matter":7},"ultimate_cores":1,"hanging_rewards":{"resource_collector":1}}}
-	receipt.reward.drone.id="space:1:1";old.idle=receipt;old.ultimate_cores=5
-	check(S.valid(old,c,db.levels.size()),"pre-unit v5 frozen save valid")
-	var disk_old:Dictionary=JSON.parse_string(JSON.stringify(old))
-	var migrated:=S.migrate(disk_old,c)
-	for key in old.materials:check(migrated.materials[key]==110,"existing material balance converted once "+key)
-	check(migrated.idle.reward.materials.degenerate_matter==70 and migrated.idle.reward.drone==disk_old.idle.reward.drone and migrated.idle.reward.hanging_rewards==disk_old.idle.reward.hanging_rewards and migrated.idle.reward.ultimate_cores==1 and migrated.ultimate_cores==5 and migrated.random_state==old.random_state,"frozen prize conversion keeps drone, module, core and RNG")
-	check(migrated.material_unit_version==2 and S.migrate(migrated,c)==migrated,"explicit unit marker prevents second conversion")
-	var resumed=fixture(db);check(resumed.hyperspace.load_state(resumed,old),"real load installs unit migration")
-	check(resumed.hyperspace.claim(resumed,1,1) and not resumed.hyperspace.claim(resumed,1,1) and resumed.profile.hyperspace.materials.degenerate_matter==180,"converted pending claim settles exactly once")
-	var bad:Dictionary=old.duplicate(true);bad.materials.degenerate_matter=900000000000000
-	check(not S.valid(bad,c,db.levels.size()),"migration overflow rejects instead of truncating purchasing power")
-	var legacy:Dictionary=old.duplicate(true);legacy.version=4;legacy.active=legacy.idle;legacy.active.mode="manual";legacy.active.duration=0.0;legacy.erase("idle")
-	check(S.valid(legacy,c,db.levels.size()),"legacy v4 frozen manual receipt valid")
-	var legacy_migrated:=S.migrate(JSON.parse_string(JSON.stringify(legacy)),c)
-	check(legacy_migrated.active.reward.materials.degenerate_matter==70 and legacy_migrated.history.alpha["5"]==3.0,"legacy v4 migration converts prize and preserves proven win")
-	var cached:Dictionary=old.duplicate(true);cached.command_seq=2;cached.last_command={"seq":1,"fingerprint":"unchanged","result_json":JSON.stringify({"operation":"fixture","cost":{"degenerate_matter":3,"ultimate_cores":1},"rewards":{"materials":{"antiproton":2},"modules":{"resource_collector":{"copies":1}}}})}
-	check(S.valid(cached,c,db.levels.size()),"legacy cached command valid")
-	var cached_migrated:=S.migrate(cached,c);var cached_result:Dictionary=JSON.parse_string(cached_migrated.last_command.result_json)
-	check(cached_result.cost.degenerate_matter==30 and cached_result.cost.ultimate_cores==1 and cached_result.rewards.materials.antiproton==20 and cached_result.rewards.modules.resource_collector.copies==1,"cached material result converted, cores and module experience unchanged")
-	check(cached_migrated.last_command.fingerprint==cached.last_command.fingerprint and cached_migrated.command_seq==cached.command_seq,"cache command identity remains idempotent")
-	var exchanged=fixture(db);exchanged.profile.hyperspace.erase("material_unit_version");exchanged.profile.hyperspace.materials.degenerate_matter=100
-	var exchange_quote:Dictionary=exchanged.hyperspace_material_exchange_quote("degenerate_matter","antiproton",10)
-	check(exchanged.exchange_hyperspace_materials(exchange_quote.request).error=="","pre-unit exchange cached fixture")
-	var exchange_reload=fixture(db);exchange_reload.hyperspace.load_state(exchange_reload,JSON.parse_string(JSON.stringify(exchanged.profile.hyperspace)))
-	var exchange_after:Dictionary=exchange_reload.profile.hyperspace.duplicate(true)
-	var replay:Dictionary=exchange_reload.exchange_hyperspace_materials(exchange_quote.request)
-	check(replay.error=="" and replay.amount==100 and replay.cost.degenerate_matter==200 and exchange_reload.profile.hyperspace==exchange_after,"migrated cached exchange replays converted receipt without second debit")
-	var variant:Dictionary=c.duplicate(true);variant.material_unit_scale=7
-	check(S.migrate(old,variant).materials.degenerate_matter==77,"migration uses distinct configured unit scale")
-	var pending:Dictionary=resumed.portable_save_data();check(Transfer.new().prepare_data(JSON.parse_string(JSON.stringify(pending)),db).error=="","unit-version save exports and validates after claim")
-	print("MATERIAL_ECONOMY: ",checks," checks ",failures," failures; formula and migration boundaries only")
+	# Current pending reward is credited together with its receipt, or not at all.
+	var resumed=fixture(db)
+	hs=resumed.hyperspace.save_data();hs.hyperspace.next_run=2
+	var receipt:Dictionary={"round_id":1,"run_id":1,"status":"completed_pending","mode":"idle","route":"alpha","level":5,"crew_id":"","crew_snapshot":"","luck":0.0,"crew_luck":0.0,"permanent_luck":0.0,"luck_state":"0","return_target":{},"ticket":0.0,"duration":3.0,"work":3.0,"reward":{"drone":d.duplicate(true),"materials":{"degenerate_matter":7},"ultimate_cores":1,"hanging_rewards":{"resource_collector":1}}}
+	receipt.reward.drone.id="space:1:1";hs.hyperspace.idle=receipt;check(resumed.hyperspace.install_snapshot(hs,db),"pending reward fixture installs")
+	resumed.economy.credit("degenerate_matter",9000000000000000-1)
+	var baseline:Dictionary=resumed.hyperspace.state.duplicate(true)
+	check(not resumed.hyperspace_runtime.claim(resumed,1,1) and resumed.hyperspace.state==baseline and resumed.economy.balance("ultimate_cores")==0,"overflow keeps pending receipt, inventory, modules and core unchanged")
+	resumed.economy.debit({"degenerate_matter":100})
+	var seen:Array=[]
+	resumed.event.connect(func(kind,_info):
+		if kind=="hyperspace_changed":seen.append(resumed.portable_save_data())
+	)
+	check(resumed.hyperspace_runtime.claim(resumed,1,1) and not resumed.hyperspace_runtime.claim(resumed,1,1),"current pending reward settles exactly once")
+	check(seen.size()==1 and seen[0].ultimateCores==1 and seen[0].hyperspace.idle.is_empty() and seen[0].hyperspace.inventory.drones.has("space:1:1") and seen[0].hyperspaceReceipt=={"round":1,"run":1,"drone_id":"space:1:1","unread":true},"claim notification sees earned wallet and claim fact together")
+	var pending:Dictionary=resumed.portable_save_data()
+	check(Transfer.new().prepare_data(JSON.parse_string(JSON.stringify(pending)),db).error=="","current save exports and validates after claim")
+	for invalid in [-1,0.5,9000000000000000]:
+		var bad:Dictionary=pending.duplicate(true);bad.materials.degenerate_matter=invalid
+		resumed.load_progress_data(bad)
+		check(resumed.economy.balance("degenerate_matter")==pending.materials.degenerate_matter and resumed.hyperspace.state==pending.hyperspace,"invalid material cannot install partial save "+str(invalid))
+	var forged=fixture(db)
+	var drone:=make_drone(c);hs=forged.hyperspace.save_data();Bag.insert(hs.hyperspace.inventory,drone,c);check(forged.hyperspace.install_snapshot(hs,db),"forge fixture installs")
+	var command:Dictionary={"round_id":1,"command_seq":1,"drone_id":drone.id,"operation":"add_affix","args":{},"expected_revision":0}
+	var before_state:Dictionary=forged.hyperspace.state.duplicate(true)
+	var no_funds:Dictionary=forged.hyperspace_runtime.forge(forged,command)
+	check(no_funds.error=="insufficient_materials" and forged.hyperspace.state==before_state,"failed forge leaves RNG, item and command sequence unchanged")
+	check(forged.economy.credit_many(no_funds.cost),"fund actual quote")
+	var preview:Dictionary=forged.hyperspace.preview_forge(forged,command)
+	check(forged.hyperspace.state==before_state,"forecast keeps authoritative RNG and inventory unchanged")
+	var funded:Dictionary=forged.economy.save_data()
+	forged.native_execution=RefusedHandoff.new()
+	check(forged.hyperspace_runtime.forge(forged,command).error=="native_handoff_failed" and forged.economy.save_data()==funded and forged.hyperspace.state==before_state,"refused native preparation leaves paid wallet, RNG and item untouched")
+	forged.native_execution=null
+	var proposal:Dictionary=forged.hyperspace.prepare_forge(forged,command)
+	check(proposal.has("next") and forged.hyperspace.state==before_state and forged.economy.save_data()==funded,"prepare keeps every live domain unchanged")
+	check(proposal.next.is_read_only() and proposal.next.inventory.drones[drone.id].affixes.is_read_only(),"prepared randomized state is recursively immutable")
+	forged.hyperspace.add_online_time(0.25)
+	check(not forged.hyperspace_runtime.commit(forged,proposal) and forged.economy.save_data()==funded,"stale state proposal cannot overwrite newer clock or debit")
+	proposal=forged.hyperspace.prepare_forge(forged,command)
+	forged.economy.credit("degenerate_matter",1)
+	check(not forged.hyperspace_runtime.commit(forged,proposal) and forged.hyperspace.state.command_seq==1,"stale wallet proposal cannot install random result")
+	forged.economy.debit({"degenerate_matter":1})
+	proposal=forged.hyperspace.prepare_forge(forged,command)
+	forged.add_crew_exp("navigator",1.0)
+	check(not forged.hyperspace_runtime.commit(forged,proposal) and forged.hyperspace.state.command_seq==1,"changed preparation dependency rejects before commit")
+	forged.native_execution=ChangedWalletHandoff.new()
+	check(forged.hyperspace_runtime.forge(forged,command).error=="native_handoff_failed" and forged.hyperspace.state.command_seq==1 and forged.hyperspace.state.inventory==before_state.inventory,"handoff-time wallet change is rechecked before installing RNG or item")
+	forged.native_execution=null;forged.economy.debit({"degenerate_matter":1})
+	var forged_seen:Array=[]
+	forged.event.connect(func(kind,_info):
+		if kind=="hyperspace_changed":forged_seen.append(forged.portable_save_data())
+	)
+	var committed:Dictionary=forged.hyperspace_runtime.forge(forged,command)
+	check(committed.error=="" and committed.cost==preview.cost and forged_seen.size()==1,"forge commits the same quoted price")
+	check(forged_seen[0].hyperspace.command_seq==2 and forged_seen[0].hyperspace.inventory.drones[drone.id].forge_revision>0 and forged_seen[0].materials.degenerate_matter==0,"forge notification sees price, RNG, growth and receipt together")
+	check(not forged.profile.has("hyperspace") and not forged.profile.has("hyperspaceReceipt"),"shared profile has no hyperspace or receipt write authority")
+	var view:Dictionary=forged.hyperspace.state
+	check(view.is_read_only() and view.inventory.is_read_only() and view.inventory.warehouse.is_read_only() and view.inventory.drones[drone.id].is_read_only() and forged.hyperspace.receipt_marker().is_read_only(),"published state and receipt are recursively read-only")
+	var detached_hs:Dictionary=forged.hyperspace.save_data();detached_hs.hyperspace.inventory.drones[drone.id].level=999
+	check(forged.hyperspace.state.inventory.drones[drone.id].level==5,"save copies cannot mutate owner")
+	var hull_plan:Dictionary=forged.hyperspace.prepare_hull_fit(forged,"Frigate")
+	forged.hyperspace.add_online_time(0.25)
+	check(not forged.hyperspace.hull_fit_current(forged,hull_plan) and is_same(view.inventory,forged.hyperspace.state.inventory),"clock invalidates stale hull replacement without copying inventory")
+	var wallet_after:Dictionary=forged.economy.save_data()
+	check(forged.hyperspace_runtime.forge(forged,command)==committed and forged.economy.save_data()==wallet_after,"retry returns same randomized result without second cost")
+	# Actual equipment evolution uses both balances in one debit.
+	var evolved=fixture(db);var equipment:Dictionary=evolved.equipment.save_data();equipment.loadout.weapons[0].level=19;check(evolved.equipment.install_snapshot(equipment,db),"evolution fixture installs")
+	evolved.economy.credit("1",1000000000000)
+	var upgrade:Dictionary=evolved.slot_upgrade_cost("weapons",0)
+	var original_resources:Dictionary=evolved.economy.resources()
+	check(not evolved.upgrade_slot("weapons",0) and evolved.economy.resources()==original_resources and evolved.module_entry("weapons",0).level==19,"missing integer material cannot debit resources or grow equipment")
+	var material:String=db.evolution_material_id()
+	evolved.economy.credit(material,upgrade[material])
+	check(evolved.upgrade_slot("weapons",0) and evolved.module_entry("weapons",0).level==20 and evolved.economy.balance(material)==0,"actual evolution consumes quoted material and advances equipment")
+	exchange_boundaries()
+	consumer_boundaries()
+	print("MATERIAL_ECONOMY: ",checks," checks ",failures," failures; formula and committed ownership boundaries")
 	quit(1 if failures else 0)
+
+func exchange_boundaries()->void:
+	var db:=ShipDatabase.new();var g:=BattleGame.new(db,false)
+	var keys:Array=g.economy.material_wallet().materials.keys()
+	var source:String=keys[0];var target:String=keys[1]
+	g.economy.credit_many({source:100,target:3})
+	var before:Dictionary={"hyperspace":g.hyperspace.state.duplicate(true),"wallet":g.economy.save_data()}
+	var quote:=g.hyperspace_material_exchange_quote(source,target,20)
+	check(quote.error=="" and quote.cost[source]==40 and quote.received[target]==20 and quote.max_receive==50,"exact 2:1 quotation")
+	check({"hyperspace":g.hyperspace.state.duplicate(true),"wallet":g.economy.save_data()}==before,"quote changes no state or RNG")
+	var seen:Array=[]
+	g.event.connect(func(kind,_info):
+		if kind=="hyperspace_changed":seen.append(g.portable_save_data())
+	)
+	var result:=g.exchange_hyperspace_materials(quote.request)
+	check(result.error=="" and g.economy.balance(source)==60 and g.economy.balance(target)==23,"atomic debit and credit")
+	check(seen.size()==1 and seen[0].materials[source]==60 and seen[0].materials[target]==23 and seen[0].hyperspace.command_seq==quote.request.command_seq+1,"notification snapshot sees balances and command receipt together")
+	var applied:Dictionary={"hyperspace":g.hyperspace.state.duplicate(true),"wallet":g.economy.save_data()}
+	check(g.exchange_hyperspace_materials(quote.request)==result and {"hyperspace":g.hyperspace.state.duplicate(true),"wallet":g.economy.save_data()}==applied,"duplicate confirmation returns cached result without debit")
+	check(applied.hyperspace.random_state==before.hyperspace.random_state and applied.hyperspace.inventory==before.hyperspace.inventory,"exchange consumes no exploration or private forge random state")
+	var conflict:Dictionary=quote.request.duplicate();conflict.amount=21
+	check(g.exchange_hyperspace_materials(conflict).error=="command_conflict" and {"hyperspace":g.hyperspace.state.duplicate(true),"wallet":g.economy.save_data()}==applied,"reused token with different amount rejected")
+	for amount in [0,-1,0.5,"2",9000000000000000]:check(g.hyperspace_material_exchange_quote(source,target,amount).error!="","invalid amount rejected "+str(amount))
+	check(g.hyperspace_material_exchange_quote(source,source,1).error=="same_material","same material rejected")
+	check(g.hyperspace_material_exchange_quote("ultimate_cores",target,1).error=="invalid_material","core not exchangeable")
+	check(g.hyperspace_material_exchange_quote(source,target,31).error=="insufficient_materials","insufficient funds rejected")
+	g.economy.credit(target,9000000000000000-1-int(g.economy.balance(target)))
+	check(g.hyperspace_material_exchange_quote(source,target,1).error=="material_limit","overflow rejected")
+	var unchanged:=g.economy.save_data()
+	check(not g.economy.debit({"1":1,source:0.5}) and g.economy.save_data()==unchanged,"fractional material cost rejects entire mixed debit")
+	check(not g.economy.credit_many({"1":100,target:1}) and g.economy.save_data()==unchanged,"overflow rejects entire mixed credit")
+	var copied:=g.economy.material_wallet();copied.materials[source]=0
+	check(g.economy.balance(source)==60,"Material wallet copy cannot mutate balance")
+
+func consumer_boundaries() -> void:
+	var db:=ShipDatabase.new();var g:=BattleGame.new(db,false)
+	g.profile.cleared=range(1,41);g.rebuild_unlocks();g.stat_cache_enabled=true
+	var rng:=RandomNumberGenerator.new();rng.seed=234
+	var drone:=R.create_drone(rng,g.hyperspace.config,"consumer","white","laser",5,"1")
+	drone.affixes=[];drone.hanging_slots=4;drone.hangings=[]
+	var hs:=g.hyperspace.save_data();Bag.insert(hs.hyperspace.inventory,drone,g.hyperspace.config)
+	for key in g.hyperspace.config.hanging_modules:hs.hyperspace.hanging_modules[key]={"unlocked":true,"level":2,"exp":0.0}
+	assert(g.hyperspace.install_snapshot(hs,db));check(g.hyperspace_runtime.set_equipped(g,[drone.id]),"Equip actual consumer drone")
+	for growth in [0.1,0.2]:
+		g.hyperspace_runtime.attach_hangings(g,drone.id,[])
+		var energy=g.reactor_energy();var chrono:=g.chrono_capacity()
+		check(chrono>0,"nonzero live chrono capacity fixture")
+		var config:Dictionary=g.hyperspace.config.duplicate(true);config.hanging_modules.extra_storage.effect_growth=growth;g.hyperspace.configure(config)
+		check(g.hyperspace_runtime.attach_hangings(g,drone.id,["extra_storage"]),"storage attaches")
+		var factor:=pow(1.0+growth,2)
+		check(is_equal_approx(g.reactor_energy(),energy*factor) and g.reactor_capacity()==floori(energy*factor),"storage boosts reactor total energy and integer capacity")
+		check(g.chrono_capacity()==chrono,"storage leaves offline chrono upper limit unchanged")
+		var modules:=g.reactor_available_modules()
+		check(not modules.is_empty(),"reactor allocation fixture unlocked")
+		check(g.set_reactor_allocation(modules[0],g.reactor_capacity()),"boosted reactor energy can be allocated")
+		var saved := g.portable_save_data()
+		var restored := BattleGame.new(db,false)
+		restored.hyperspace.configure(g.hyperspace.config)
+		restored.load_progress_data(saved)
+		check(restored.hyperspace.last_error.is_empty() and restored.reactor.allocations()==g.reactor.allocations() and restored.reactor_capacity()==g.reactor_capacity(),"load installs storage contributions before reconciling reactor allocation")
+		g.hyperspace_runtime.attach_hangings(g,drone.id,[])
+		check(g.reactor_allocated()<=g.reactor_capacity() and g.reactor_capacity()==floori(energy),"removing storage reconciles allocations to reduced capacity")
+		check(g.chrono_capacity()==chrono,"detach leaves chrono limit unchanged")
+	for key in g.reactor_modules():g.set_reactor_allocation(key,0)
+	g.economy.credit_many({"1":100000.0,"2":100000.0});g.set_tech_input("1",10);g.set_tech_input("2",10)
+	check(g.select_tech("singularity"),"current AI research starts")
+	var base_rate: float=g.tech_tree_snapshot().speed
+	for growth in [0.1,0.2]:
+		var config:Dictionary=g.hyperspace.config.duplicate(true);config.hanging_modules.distributed_algorithm.effect_growth=growth;g.hyperspace.configure(config)
+		check(g.hyperspace_runtime.attach_hangings(g,drone.id,["distributed_algorithm"]),"algorithm attaches")
+		var expected_rate := base_rate*pow(1.0+growth,2)
+		check(is_equal_approx(g.tech_tree_snapshot().speed,expected_rate),"algorithm changes current AI displayed speed")
+		var before_progress := g.research.progress("singularity")
+		g.advance_hightech(1.0)
+		check(is_equal_approx(g.research.progress("singularity")-before_progress,expected_rate),"algorithm changes actual AI research progress")
+		g.hyperspace_runtime.attach_hangings(g,drone.id,[])
+		check(is_equal_approx(g.tech_tree_snapshot().speed,base_rate),"detached algorithm stops accelerating AI")
+	g.hyperspace_runtime.attach_hangings(g,drone.id,["resource_collector"])
+	check(is_equal_approx(float(g.planet_resource_multiplier()),1.21),"collector targets iron uranium output")
+	g.hyperspace_runtime.attach_hangings(g,drone.id,["gem_refiner"])
+	check(is_equal_approx(g.settle_jewel_fragments(10,"furnace",1),12.1),"refiner targets gem fragment production")
+	check(g.settle_jewel_fragments(10,"refund",1)==10,"refiner never multiplies refund")
+	g.hyperspace_runtime.attach_hangings(g,drone.id,["hyperspace_charge"])
+	var online: Dictionary=g.hyperspace.online_config(g)
+	check(is_equal_approx(online.energy_cap,float(g.hyperspace.config.energy_cap)) and is_equal_approx(online.energy_rate,float(g.hyperspace.config.energy_rate)),"material module does not modify energy rate or cap")
+	check(is_equal_approx(online.exploration_material_multiplier,1.21),"hyperspace charge now targets exploration material income")

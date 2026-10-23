@@ -1,146 +1,17 @@
 extends RefCounted
 ## Desktop portable progress, validated before any live state or file replacement.
 const Writer := preload("res://scripts/progress_writer.gd")
-const Layout := preload("res://scripts/galaxy_layout.gd")
-const ReactorInt := preload("res://scripts/reactor_integer.gd")
+const Reactor := preload("res://scripts/reactor_state.gd")
 const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
-const SUPPORTED_VERSIONS := [2,3,4,BattleGame.SAVE_VERSION]
-# Unconditional top-level fields emitted by the current v5 portable/ordinary
-# writer. Conditional journey/guard fields and retired fields are not required.
-# Older v5 saves predate some of these fields and remain compatible at lower
-# recovery priority; their format has no sub-version to distinguish them from
-# a truncated current save.
-const CURRENT_V5_FIELDS := ["version","resources","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
-# v3/v4 writer baseline (4cac4e16 / cc5e4b0e). Version 2 has no matching
-# writer in this tree, so it remains compatible without a completeness claim.
-const HISTORICAL_CORE := ["version","resources","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","hightechSavedAt","furnaceElapsed","furnaceIncomePeak","grantedUnlocks","jewels","levels"]
-
+const SUPPORTED_VERSIONS := [BattleGame.SAVE_VERSION]
+# Complete current-format fields; legacy saves are explicitly unsupported.
+const CURRENT_FIELDS := ["version","resources","materials","ultimateCores","highestLevel","cleared","bossSeen","unlocked","loop","selectedShip","loadout","moduleVersion","productionElapsed","aiTechLevels","aiTechProgress","aiTechActive","aiTechInput","aiIncomePeak","aiTechCompletionUnread","equipmentSwitchUntil","hightechSavedAt","resourceSamples","chronoSavedAt","chronoParticles","reactorLevel","reactorAllocation","enhancementVersion","enhancementLevel","enhancementOrder","enhancementBranches","enhancementAttacks","enhancementHits","lifetime_max_stage","seenUnlocks","readUnlocks","jewelFragments","jewelFurnaceElapsed","jewelFurnaceIncomePeak","hyperspace","hyperspaceReceipt","onboarding","jewels","levels","galaxies","galaxyIncomeElapsed","grantedUnlocks","saveIntervalMinutes","planets","crew","crewEquipment"]
 static func structure_quality(raw: Dictionary) -> Dictionary:
- var version = raw.get("version")
- var loadout = raw.get("loadout")
- var slots_present: bool = loadout is Dictionary and loadout.has("weapons") and loadout.has("defence")
- if version==BattleGame.SAVE_VERSION and slots_present and CURRENT_V5_FIELDS.all(func(key):return raw.has(key)):
+ var slots = raw.get("loadout")
+ if raw.get("version") == BattleGame.SAVE_VERSION and slots is Dictionary and slots.has("weapons") and slots.has("defence") and CURRENT_FIELDS.all(func(key):return raw.has(key)):
   return {"quality":"complete","quality_rank":3}
- if version in [3,4,5] and slots_present and HISTORICAL_CORE.all(func(key):return raw.has(key)):
-  return {"quality":"historical_complete","quality_rank":2}
- return {"quality":"compatible_sparse","quality_rank":1}
-
-static func restore_legacy_reactor_integers(source: String,raw: Dictionary) -> bool:
- # v5 wrote integer allocations as bare JSON numbers; JSON.parse converts them
- # to binary64. Recover the original digits before semantic validation.
- if not raw.get("reactorAllocation") is Dictionary:return true
- var bodies: Array=[]
- var depth:=0;var quoted:=false;var escaped:=false;var start:=0
- for index in source.length():
-  var c:=source[index]
-  if quoted:
-   if escaped:escaped=false
-   elif c=="\\":escaped=true
-   elif c=='"':
-    quoted=false
-    if depth==1 and JSON.parse_string(source.substr(start,index-start+1))=="reactorAllocation":
-     var at:=index+1
-     while at<source.length() and source[at] in [" ","\t","\r","\n"]:at+=1
-     if at<source.length() and source[at]==":":
-      at+=1
-      while at<source.length() and source[at] in [" ","\t","\r","\n"]:at+=1
-      if at>=source.length() or source[at]!="{":return false
-      var opening:=at;var nesting:=0;var inside:=false;var slash:=false
-      while at<source.length():
-       var item:=source[at]
-       if inside:
-        if slash:slash=false
-        elif item=="\\":slash=true
-        elif item=='"':inside=false
-       elif item=='"':inside=true
-       elif item=="{":nesting+=1
-       elif item=="}":
-        nesting-=1
-        if nesting==0:break
-       at+=1
-      if nesting!=0:return false
-      bodies.append(source.substr(opening+1,at-opening-1))
-  elif c=='"':quoted=true;start=index
-  elif c=="{":depth+=1
-  elif c=="}":depth-=1
- if bodies.size()!=1:return false # Missing or duplicate top-level keys are unsafe.
- var body: String=bodies[0]
- var seen: Dictionary={}
- var at:=0
- while at<body.length():
-  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
-  if at>=body.length():break
-  if body[at]!='"':return false
-  var key_start:=at;at+=1
-  var slash:=false
-  while at<body.length():
-   if slash:slash=false
-   elif body[at]=="\\":slash=true
-   elif body[at]=='"':break
-   at+=1
-  if at>=body.length():return false
-  var key=JSON.parse_string(body.substr(key_start,at-key_start+1))
-  if not key is String or seen.has(key) or not raw.reactorAllocation.has(key):return false
-  seen[key]=true;at+=1
-  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
-  if at>=body.length() or body[at] != ":":return false
-  at+=1
-  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
-  if at>=body.length():return false
-  if body[at]=="{":
-   var nested:=0;var quoted_value:=false;slash=false
-   while at<body.length():
-    var c:=body[at]
-    if quoted_value:
-     if slash:slash=false
-     elif c=="\\":slash=true
-     elif c=='"':quoted_value=false
-    elif c=='"':quoted_value=true
-    elif c=="{":nested+=1
-    elif c=="}":
-     nested-=1
-     if nested==0:
-      at+=1
-      break
-    at+=1
-   if nested!=0 or not ReactorInt.valid(raw.reactorAllocation[key]):return false
-  else:
-   var value_start:=at
-   while at<body.length() and body[at]!=",":at+=1
-   if not (raw.reactorAllocation[key] is int or raw.reactorAllocation[key] is float) or not is_finite(float(raw.reactorAllocation[key])):return false
-   var recovered=legacy_reactor_integer_lexeme(body.substr(value_start,at-value_start).strip_edges())
-   if recovered==null:return false
-   raw.reactorAllocation[key]=recovered
-  while at<body.length() and body[at] in [" ","\t","\r","\n"]:at+=1
-  if at<body.length():
-   if body[at]!=",":return false
-   at+=1
- return true
-
-static func legacy_reactor_integer_lexeme(lexeme: String) -> Variant:
- if lexeme.begins_with("-"):
-  var absolute=legacy_reactor_integer_lexeme(lexeme.substr(1))
-  return 0 if absolute!=null and ReactorInt.compare(absolute,0)==0 else null
- var number:=RegEx.new()
- number.compile('^(0|[1-9][0-9]*)(?:\\.([0-9]+))?(?:[eE]([+-]?[0-9]+))?$')
- var match_result=number.search(lexeme)
- if match_result==null:return null
- var whole=match_result.get_string(1)
- var fractional=match_result.get_string(2)
- var exponent_text=match_result.get_string(3)
- var digits=(whole+fractional).lstrip("0")
- if digits.is_empty():return 0
- var exponent:=0
- if not exponent_text.is_empty():
-  var sign:=-1 if exponent_text[0]=="-" else 1
-  var clean=exponent_text.trim_prefix("+").trim_prefix("-").lstrip("0")
-  if clean.length()>4:return null # Such values were never finite legacy JSON numbers.
-  exponent=sign*int(clean) if not clean.is_empty() else 0
- var places=exponent-fractional.length()
- if places>=0:return ReactorInt.make(digits+"0".repeat(places))
- if -places>digits.length() or digits.substr(digits.length()+places).lstrip("0")!="":return null
- return ReactorInt.make(digits.substr(0,digits.length()+places))
+ return {"quality":"incomplete","quality_rank":0}
 
 static func schema() -> Dictionary:
  var building := {"status":"s","build_progress":"g","crew":["s"]}
@@ -165,12 +36,17 @@ static func schema() -> Dictionary:
  result.aiIncomePeak={"*":"g"}
  result.aiTechCompletionUnread="b"
  result.productionElapsed="n"
+ result.galaxyIncomeElapsed="n"
  result.equipmentSwitchUntil={"*":"n"}
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
+ result.reactorLevel="reactor_level"
+ result.enhancementAttacks="counter";result.enhancementHits="counter"
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s","production_time":"n"}]
  result.hightechDrops=[{"uid":"n","x":"n","y":"n","age":"n","id":"s","amount":"n","hightech":"b","jewel":"b","jewelRatio":"n"}]
+ result.materials={"*":"i"}
+ result.ultimateCores="i"
  result.hyperspace=preload("res://scripts/hyperspace_state.gd").schema()
  result.hyperspaceReceipt={"round":"i","run":"i","drone_id":"s","unread":"b"}
  return result
@@ -179,13 +55,15 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
  if depth>48:return false
  if spec is String:
   match spec:
+   "counter":return preload("res://scripts/enhancement_growth.gd").valid_counter(value)
    "filter_value":return value is String or ((value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)))
    "s":return value is String
    "b":return value is bool
    "n":return (value is int or value is float) and is_finite(float(value))
    "i":return (value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)) and absf(float(value))<9.22e18
    "g":return GrowthNumber.valid(value)
-   "r":return ReactorInt.valid(value) or ((value is int or value is float) and is_finite(float(value)) and value>=0 and value==floorf(float(value)) and float(value)<9223372036854775808.0)
+   "r":return Reactor.valid_allocation(value)
+   "reactor_level":return Reactor.valid_level(value)
    "currency":return GrowthNumber.valid(value) or (value is Dictionary and value.values().all(func(n):return GrowthNumber.valid(n)))
    "interval":return BattleGame.parse_save_interval(str(value))>0 and (value is String or value is int or value is float)
    "p":return value is Array and value.size()==2 and value.all(func(n):return (n is float or n is int) and is_finite(float(n)))
@@ -212,50 +90,6 @@ static func clean(value: Variant, spec: Variant) -> Variant:
   elif spec.has("*"):result[key]=clean(value[key],spec["*"])
  return result
 
-static func blueprint_valid(raw: Dictionary, builds: Dictionary) -> bool:
- if not raw.has("blueprint"):return true
- var plan: Dictionary=raw.blueprint
- if plan.get("layout_version")!=Layout.VERSION or plan.get("core_id")!="core" or not plan.get("core") is Dictionary or not plan.get("nodes") is Array or not plan.get("edges") is Array:return false
- var nodes: Array=plan.nodes
- if nodes.is_empty() or nodes.size()>10000 or plan.edges.size()!=nodes.size():return false
- var identities := {}
- var connections := {}
- for i in range(-1,nodes.size()):
-  var node: Dictionary=plan.core if i<0 else nodes[i]
-  for key in ["id","parent_id","depth","node_id","type","world_pos","footprint","rotation_y","connections","requires"]:
-   if not node.has(key):return false
-  if int(node.id)!=i or node.node_id!=("core" if i<0 else "node_%03d"%i):return false
-  if node.footprint[0]<=0 or node.footprint[1]<=0:return false
-  if i<0:
-   if node.type!="core" or node.get("planned_type","core")!="core" or node.parent_id!=-1 or node.depth!=0 or not node.requires.is_empty():return false
-  else:
-   if not node.has("visual_seed") or int(node.parent_id)<-1 or int(node.parent_id)>=i:return false
-   for type in [node.type,node.get("planned_type",node.type)]:
-    if not str(type).is_empty() and not builds.has(type):return false
-   if not str(node.type).is_empty() and not str(node.get("planned_type","")).is_empty() and node.type!=node.planned_type:return false
-   var parent: Dictionary=plan.core if int(node.parent_id)<0 else nodes[int(node.parent_id)]
-   if node.depth!=parent.depth+1 or node.requires!=[parent.node_id]:return false
-  identities[node.node_id]=node
-  connections[node.node_id]=[]
- var destinations := {}
- for edge in plan.edges:
-  if not edge.has("path") or edge.path.size()<2 or not edge.has("from") or not edge.has("to") or not edge.has("width") or edge.width<=0:return false
-  if not identities.has(edge.from) or not identities.has(edge.to) or edge.to=="core" or destinations.has(edge.to):return false
-  if identities[edge.to].requires!=[edge.from]:return false
-  destinations[edge.to]=true
-  connections[edge.from].append(edge.to);connections[edge.to].append(edge.from)
- for id in identities:
-  var expected: Array=connections[id]
-  var actual: Array=identities[id].connections
-  if actual.size()!=expected.size() or not expected.all(func(ref):return actual.has(ref)):return false
- for i in raw.get("slots",[]).size():
-  var slot: Dictionary=raw.slots[i]
-  if i>=nodes.size() or slot.get("id",i)!=i or slot.get("node_id",nodes[i].node_id)!=nodes[i].node_id:return false
-  for type in [slot.get("type",""),slot.get("planned_type","")]:
-   if not str(type).is_empty() and not builds.has(type):return false
-  if not str(nodes[i].type).is_empty() and not str(slot.get("type","")).is_empty() and nodes[i].type!=slot.type:return false
- return true
-
 func prepare(path: String, db: ShipDatabase) -> Dictionary:
  var file:=FileAccess.open(path,FileAccess.READ)
  if file==null:return {"error":"read"}
@@ -266,56 +100,41 @@ func prepare(path: String, db: ShipDatabase) -> Dictionary:
  var parser:=JSON.new()
  var source:=bytes.get_string_from_utf8()
  if parser.parse(source)!=OK or not parser.data is Dictionary:return {"error":"format"}
- if not restore_legacy_reactor_integers(source,parser.data):return {"error":"format"}
  return prepare_data(parser.data,db)
 
 func prepare_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  if not (raw.get("version") is float or raw.get("version") is int) or raw.version!=floorf(float(raw.version)) or int(raw.version) not in SUPPORTED_VERSIONS:return {"error":"version"}
  if not raw.get("resources") is Dictionary or not raw.resources.has("1") or not raw.resources.has("2") or not raw.has("highestLevel"):return {"error":"format"}
  if not shape(raw,schema()):return {"error":"format"}
+ if structure_quality(raw).quality_rank != 3:return {"error":"incomplete"}
+ if not preload("res://scripts/economy_state.gd").valid_snapshot(raw):return {"error":"economy"}
+ var material_keys: Array=preload("res://scripts/hyperspace_config.gd").load_config().routes.values().map(func(route):return str(route.material))
+ if not preload("res://scripts/economy_state.gd").valid_material_wallet({"materials":raw.materials,"ultimate_cores":raw.ultimateCores},material_keys):return {"error":"materials"}
+ if not preload("res://scripts/enhancement_growth.gd").valid_snapshot(raw):return {"error":"enhancement"}
+ if not preload("res://scripts/equipment_state.gd").valid_snapshot(raw,db):return {"error":"equipment"}
+ if not preload("res://scripts/ai_tech_tree.gd").valid_snapshot(raw,db.data.ai_tech_tree):return {"error":"research"}
+ if not preload("res://scripts/crew_system.gd").valid_snapshot(raw,db):return {"error":"crew"}
+ if not preload("res://scripts/planet_state.gd").valid_snapshot(raw,db):return {"error":"planets"}
+ if not preload("res://scripts/reactor_state.gd").valid_snapshot(raw,db.config):return {"error":"reactor"}
+ if not db.ships.has(str(raw.selectedShip)) or int(raw.highestLevel)<1 or int(raw.highestLevel)>db.levels.size():return {"error":"progress"}
  if raw.get("reactorAllocation") is Dictionary:
   var allowed:=String(db.config.reactorModules).split(",")
   for key in raw.reactorAllocation:
    if key not in allowed:return {"error":"format"}
+ if not preload("res://scripts/hyperspace_state.gd").valid_marker(raw.get("hyperspaceReceipt")):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_state.gd").valid(raw.hyperspace,preload("res://scripts/hyperspace_config.gd").load_config(),db.levels.size()):return {"error":"format"}
  if raw.has("hyperspace") and not preload("res://scripts/hyperspace_permissions.gd").bindings_valid(raw,db.data,preload("res://scripts/hyperspace_config.gd").load_config()):return {"error":"format"}
- for key in raw.get("galaxies",{}):
-  var region: Dictionary=raw.galaxies[key]
-  if region.get("version",0)>3:return {"error":"format"}
-  # Older galaxy saves regenerate their layout; preserve that migration path.
-  if region.get("version",0)<3:continue
-  var builds := {}
-  for build in db.data.get("galaxy_build",{}).values():
-   if build.galaxy_key==key:builds[build.key]=build
-  if not blueprint_valid(region,builds):return {"error":"format"}
- # Existing authority handles legacy IDs, permanent buffs, unlocks and config separation.
- var candidate:=BattleGame.new(db,false)
- candidate.load_progress_data(clean(raw,schema()))
- candidate.reset_player()
+ if not preload("res://scripts/galaxy_system.gd").valid_snapshot(raw,db):return {"error":"galaxies"}
  var quality:=structure_quality(raw)
- return {"error":"","data":clean(raw,schema()),"stage":candidate.profile.highestLevel,"ship":candidate.profile.selectedShip,"quality":quality.quality,"quality_rank":quality.quality_rank}
+ return {"error":"","data":clean(raw,schema()),"stage":int(raw.highestLevel),"ship":str(raw.selectedShip),"quality":quality.quality,"quality_rank":quality.quality_rank}
 
 func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
- # Only existing durable files receive the loader's historical defaults.
- # Portable import keeps prepare_data's strict validation unchanged.
- var quality:=structure_quality(raw)
- var migrated:=raw.duplicate(true)
- if not migrated.has("highestLevel"):migrated.highestLevel=1
- if quality.quality_rank<3 and migrated.get("resources") is Dictionary:
-  for id in ["1","2"]:
-   var amount = migrated.resources.get(id)
-   if (amount is int or amount is float) and is_finite(float(amount)) and float(amount)<0:
-    migrated.resources[id]=ceilf(float(db.defaults.startingIron if id=="1" else db.defaults.startingTitanium))
- var checked:=prepare_data(migrated,db)
- if checked.error.is_empty():
-  checked.quality=quality.quality
-  checked.quality_rank=quality.quality_rank
- return checked
+ return prepare_data(raw, db)
 
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  if Writer.is_protected_target(target,game.progress_writer.path):return ERR_INVALID_PARAMETER
- return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
+ return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
 
 func write_file(path: String, bytes: PackedByteArray) -> Error:
  var writer:=Writer.new();writer.path=path
@@ -350,7 +169,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  var backup:=ProjectSettings.globalize_path(BACKUP_ROOT)+"/%d-%d"%[int(Time.get_unix_time_from_system()),Time.get_ticks_usec()]
  var error:=DirAccess.make_dir_recursive_absolute(backup)
  if error!=OK:return {"error":error}
- error=write_file(backup+"/current-progress.json",JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
+ error=write_file(backup+"/current-progress.json",JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
  if error!=OK:return {"error":error}
  for suffix in ["", ".bak"]:
   if FileAccess.file_exists(primary+suffix):
@@ -362,13 +181,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
    error=write_file(backup+("/original-progress.json" if suffix.is_empty() else "/original-recovery.json"),bytes)
    if error!=OK:return {"error":error}
  var installed:Dictionary=prepared.data
- var active:Dictionary=installed.get("hyperspace",{}).get("active",{})
- # Current suspended receipts must survive staging: canonicalizing a refunded
- # temporary game would drop its not-yet-applied runtime return snapshot.
- if active.get("return_state",{}).is_empty():
-  var candidate:=BattleGame.new(source_db,false)
-  candidate.load_progress_data(prepared.data);candidate.reset_player();installed=candidate.portable_save_data()
- error=game.progress_writer.write_import_stage(incoming,JSON.stringify(clean(installed,schema()),"\t").to_utf8_buffer())
+ error=game.progress_writer.write_import_stage(incoming,JSON.stringify(clean(installed,schema()),"\t",true,true).to_utf8_buffer())
  if error!=OK:return {"error":error}
  var had_primary:=FileAccess.file_exists(primary)
  if had_primary:

@@ -242,7 +242,7 @@ func refresh() -> void:
 	if not is_visible_in_tree():
 		return
 	var game: BattleGame = scene.game
-	var particles := float(game.profile.chronoParticles)
+	var particles := float(game.economy.balance("chrono"))
 	var capacity := game.chrono_capacity()
 	var balance := UIText.t("chrono.balance",{"amount":str(int(floorf(particles)))})
 	if balance_label.text != balance:balance_label.text = balance

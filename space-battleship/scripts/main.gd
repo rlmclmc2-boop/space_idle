@@ -132,8 +132,7 @@ var pickup_preview_cache: Dictionary = {}
 var pickup_preview_order: Array[int] = []
 var pickup_preview_builds := 0
 var clock := 0.0
-var game_time_remainder := 0.0
-var time_step_game_id := 0
+var time_step_slice:RefCounted
 var star_travel := 0.0
 var star_streak := 0.0
 # Immutable star seeds own this geometry until the scene is freed.
@@ -181,7 +180,6 @@ var planet_panel: Control
 var chrono_panel: Control
 var galaxy_panel: Control
 var hyperspace_panel: Control
-var background_unfocused := false
 var equipment_page := 0
 var equipment_tabs: TabContainer
 var system_nav: Panel
@@ -379,8 +377,10 @@ func _ready() -> void:
 			game.profile.cleared = [1,2]
 			game.rebuild_unlocks()
 			game.start(3, false)
-			game.profile.resources["1"] = 5000.0
-			game.profile.resources["2"] = 100.0
+			var capture_economy := game.economy.save_data()
+			capture_economy.resources={"1":5000.0,"2":100.0}
+			capture_economy.jewelFragments=0.0;capture_economy.chronoParticles=0.0
+			game.economy.install_snapshot(capture_economy)
 		build_ui()
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
@@ -455,18 +455,15 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:space_pause_held = false
 	if game == null:
 		return
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and not background_unfocused:
-		background_unfocused = true
-		game.speed = game.default_speed()
-	elif what == NOTIFICATION_APPLICATION_FOCUS_IN and background_unfocused:
-		background_unfocused = false
-		game.speed = game.default_speed()
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		game.set_application_focused(false)
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		game.set_application_focused(true)
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
 	if fixed_enemy_layout and battle_slice_runtime==null:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	advance_unlock_notice()
-	game.check_timed_save()
 	var tech_now_ms := Time.get_ticks_msec()
 	if tech_now_ms-tech_ui_last_refresh_ms >= 250 and is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree():
 		tech_ui_last_refresh_ms = tech_now_ms
@@ -476,15 +473,12 @@ func _process(delta: float) -> void:
 			if is_instance_valid(voice) and voice.playing:voice.stop()
 	else:
 		update_railgun_audio()
-	# Freeze the live scene while the independent lab window owns focus.
-	if is_instance_valid(balance_lab) and balance_lab.visible:return
 	if ui_rebuild_pending and not get_viewport().gui_is_dragging():
 		ui_rebuild_pending = false
 		build_ui()
 	if battle_slice_runtime!=null:battle_slice_runtime.sync_screen_scale(enemy_recognition_screen_scale())
 	sync_accelerated_visual_mode()
-	if not prepare_native_laser_display():return
-	var dt := maxf(0,delta)
+	var dt := maxf(0,delta) if is_finite(delta) else 0.0
 	clock += dt
 	for id in resource_pickup_totals.keys():
 		if clock-float(resource_pickup_totals[id].last)>=1.2:resource_pickup_totals.erase(id)
@@ -494,11 +488,8 @@ func _process(delta: float) -> void:
 			fx_time += dt
 			advance_turrets(dt)
 		wave_hint = maxf(0,wave_hint-dt)
-		var boosted := game.chrono_affordable_seconds(dt)
-		advance_game_time(boosted * game.speed)
-		if boosted < dt or (game.chrono_cost(game.speed) > 0 and game.profile.chronoParticles <= 0):
-			game.speed = game.default_speed()
-			advance_game_time((dt - boosted) * game.speed)
+	game.consume_external_time(dt,self)
+	if not game.paused:
 		if battle_transition_blocked():return
 		if not accelerated_visual_mode:
 			sync_beam_visuals()
@@ -538,30 +529,23 @@ func _process(delta: float) -> void:
 func battle_transition_blocked() -> bool:
 	return false
 
-func advance_game_time(seconds: float) -> void:
-	if battle_transition_blocked():return
-	if battle_slice_runtime!=null:battle_slice_runtime.advance(seconds);return
-	if game == null or not is_finite(seconds) or seconds < 0:return
-	var instance := game.get_instance_id()
-	if instance != time_step_game_id:
-		time_step_game_id = instance
-		game_time_remainder = 0.0
-	# Carry frame tails: X1 and boosts share the same game-time tick sequence
-	# at every render rate. At most one fixed step remains pending on screen.
-	if game.native_cancelled_step>0:
-		game_time_remainder=maxf(0.0,game_time_remainder-game.native_cancelled_step)
-		game.native_cancelled_step=0.0
-	game_time_remainder += seconds
-	const STEP := 1.0/60.0
-	while game_time_remainder + 0.0000000001 >= STEP:
-		if battle_transition_blocked():return
-		if attach_native_display():
-			battle_slice_runtime.advance(0.0);return
-		if not game.prepare_logical_step(STEP):return
-		before_logical_game_tick(STEP)
-		game.tick(STEP)
-		if game.native_step_phase=="blocked":return
-		game_time_remainder = maxf(0.0,game_time_remainder-STEP)
+func prepare_time_frame()->bool:
+	attach_native_display()
+	return prepare_native_laser_display()
+
+func before_time_step(dt:float)->void:
+	attach_native_display()
+	time_step_slice=battle_slice_runtime
+	if time_step_slice!=null:time_step_slice.before_tick(dt)
+	else:before_logical_game_tick(dt)
+
+func after_time_step(completed:bool)->bool:
+	var ready:=true if time_step_slice==null else bool(time_step_slice.after_tick(completed))
+	time_step_slice=null
+	return ready
+
+func publish_time_frame()->void:
+	if battle_slice_runtime!=null:battle_slice_runtime.snapshot()
 
 func uses_logical_battle_pose() -> bool:
 	return false
@@ -719,7 +703,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 	enemy_entry_distance_time = -INF
 	match kind:
 		"hyperspace_changed":
-			var s: Dictionary=game.profile.hyperspace
+			var s: Dictionary=game.hyperspace.state
 			var signature := str([preload("res://scripts/hyperspace_permissions.gd").reserved_crew(s),s.auto.enabled,s.active.get("mode",""),s.active.get("status",""),s.blocked])
 			if signature!=crew_hyperspace_signature:
 				crew_hyperspace_signature=signature
@@ -929,7 +913,7 @@ func prune_resource_samples(now: float) -> void:
 
 func resource_display(id: String, now := -1.0) -> String:
 	if not resource_rate_mode:
-		return number(game.profile.jewelFragments if id=="jewel" else game.profile.resources[id])
+		return number(game.economy.balance("jewel") if id=="jewel" else game.economy.balance(id))
 	if now < 0:
 		now = Time.get_unix_time_from_system()
 	prune_resource_samples(now)
@@ -1243,9 +1227,9 @@ func weapon_sparks(pos: Vector2, count: int, force: float, direction := Vector2.
 		particles.append({"pos":pos,"vel":direction.rotated(randf_range(-0.65,0.65))*randf_range(force*0.3,force),"color":ORANGE,"life":randf_range(0.12,0.22),"size":randf_range(5,11),"spark":true})
 
 func turret_angle(index: int) -> float:
-	if turret_ship!=str(game.profile.selectedShip) or not turret_visuals.has(index):return 0.0
+	if turret_ship!=str(game.equipment.selected_ship()) or not turret_visuals.has(index):return 0.0
 	var pose: Dictionary = turret_visuals[index]
-	return float(pose.angle) if is_same(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
+	return float(pose.angle) if game.same_module(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
 	return visual_config.get("ships",{}).get(ship_key,{})
@@ -1291,12 +1275,12 @@ func weapon_visual_role(index: int) -> String:
 
 func weapon_visual_angle(index: int) -> float:
 	var role := weapon_visual_role(index)
-	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.profile.selectedShip),index).get("rotation_limit",0)))
+	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.equipment.selected_ship()),index).get("rotation_limit",0)))
 	return clampf(turret_angle(index),-limit,limit)*(1.0 if role=="main" else 0.2 if role=="secondary" else 0.0)
 
 func player_weapon_components() -> Array:
 	if battle_draw_active:return player_components
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var entries := game.weapon_entries()
 	var signature := ship_key
 	for entry in entries:signature += "|"+str(entry.get("key",""))
@@ -1362,16 +1346,16 @@ func enemy_attack_types(enemy: Dictionary) -> Array:
 	return pose.attack_types
 
 func turret_pose(index: int) -> Dictionary:
-	if turret_ship!=str(game.profile.selectedShip):
+	if turret_ship!=str(game.equipment.selected_ship()):
 		turret_visuals.clear()
-		turret_ship = str(game.profile.selectedShip)
+		turret_ship = str(game.equipment.selected_ship())
 	var entry := game.slot_entry("weapons",index)
-	if not turret_visuals.has(index) or not is_same(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
+	if not turret_visuals.has(index) or not game.same_module(turret_visuals[index].entry,entry) or turret_visuals[index].key!=str(entry.key):
 		turret_visuals[index] = {"entry":entry,"key":str(entry.key),"angle":0.0,"target":{},"recoil":0.0}
 	return turret_visuals[index]
 
 func turret_muzzle(index: int) -> Vector2:
-	var key := str(game.profile.selectedShip)
+	var key := str(game.equipment.selected_ship())
 	var scale_value := player_art_scale()
 	var component = player_component_for_slot(index)
 	var owner: int = component.owner_slot if component!=null else index
@@ -1495,7 +1479,7 @@ func advance_turrets(dt: float) -> void:
 		pose.target = target
 		var desired := 0.0
 		if not target.is_empty():
-			var pivot := player_render_position()+player_mount_center(str(game.profile.selectedShip),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
+			var pivot := player_render_position()+player_mount_center(str(game.equipment.selected_ship()),index).rotated(-PI/2+player_idle_angle())*player_art_scale()
 			var limit := deg_to_rad(float(ProjectSettings.get_setting("visuals/turret_limit_degrees",85.0)))
 			var target_slot := int(target.get("slot",-1))
 			var target_position: Vector2
@@ -1531,26 +1515,26 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	var index := shot_mount(shot)
 	if index>=0:return turret_muzzle(index)
 	var source := Vector2(game.player.x,game.player.y)
-	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.profile.selectedShip)))
+	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.equipment.selected_ship())))
 
 func player_base_art_scale_for(ship_key: String) -> float:
 	var entry := ship_visual_entry(ship_key)
 	return float(entry.get("display_scale",minf(SHIP_VISUALS.scale_for(db.ship(ship_key)),0.18)))*SHIP_VISUALS.player_display_multiplier()
 
 func player_base_art_scale() -> float:
-	return player_base_art_scale_for(str(game.profile.selectedShip))
+	return player_base_art_scale_for(str(game.equipment.selected_ship()))
 
 func player_art_scale_for(ship_key: String) -> float:
 	return player_base_art_scale_for(ship_key)*float(db.config.get("playerVisualScale"+ship_key,1.0))
 
 func player_art_scale() -> float:
-	return player_art_scale_for(str(game.profile.selectedShip))
+	return player_art_scale_for(str(game.equipment.selected_ship()))
 
 func player_idle_angle() -> float:
 	return deg_to_rad(float(battle_visual.player_idle_rotation))*sin(fx_time*TAU/6.3)
 
 func player_visible_tail() -> float:
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var texture_path := str(ship_visual_entry(ship_key).get("geometry_texture",ship_visual_entry(ship_key).get("texture","")))
 	if texture_path.is_empty():return SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
 	if not hull_visible_bottoms.has(texture_path):
@@ -1571,7 +1555,7 @@ func player_visible_tail() -> float:
 	return (float(hull_visible_bottoms[texture_path])-SHIP_ART_CANVAS.y*0.5)*float(battle_visual.player_core_scale)*player_art_scale()
 
 func player_visible_nose() -> float:
-	var ship_entry := ship_visual_entry(str(game.profile.selectedShip))
+	var ship_entry := ship_visual_entry(str(game.equipment.selected_ship()))
 	var texture_path := str(ship_entry.get("geometry_texture",ship_entry.get("texture","")))
 	if texture_path.is_empty():return -SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
 	if not hull_visible_tops.has(texture_path):
@@ -1683,6 +1667,8 @@ func enemy_display_protection_scale(enemy:Dictionary,packet:Dictionary,angle:flo
 	return minf(1.0,enemy_display_fit(half*2.0,angle,enemy_display_size(enemy)))
 
 func enemy_render_width(enemy: Dictionary) -> float:
+	if fixed_enemy_layout and simulation_geometry_view==null:
+		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 
@@ -2492,7 +2478,7 @@ func refresh_planet_activation_badge() -> void:
 func refresh_ai_tech_completion_badge() -> void:
 	if system_nav_buttons.size() <= 1:return
 	var dot := system_nav_buttons[1].get_node_or_null("ActivationBadge")
-	if is_instance_valid(dot):set_ui_value(dot,"visible",bool(game.profile.aiTechCompletionUnread))
+	if is_instance_valid(dot):set_ui_value(dot,"visible",game.research.completion_unread())
 
 func unread_hyperspace_reward() -> bool:
 	return is_instance_valid(hyperspace_panel) and bool(hyperspace_panel.reward_feedback.unread)
@@ -2500,7 +2486,7 @@ func unread_hyperspace_reward() -> bool:
 func refresh_hyperspace_badge() -> void:
 	if system_nav_buttons.size()<=9:return
 	var dot=system_nav_buttons[9].get_node_or_null("ActivationBadge")
-	var s:Dictionary=game.profile.hyperspace
+	var s:Dictionary=game.hyperspace.state
 	var unread=unread_hyperspace_reward()
 	if is_instance_valid(dot):set_ui_value(dot,"visible",unread or (bool(s.blocked) and bool(s.auto.enabled)) or s.active.get("status","")=="completed_pending")
 	set_ui_value(system_nav_buttons[9],"text",hyperspace_panel.t(hyperspace_panel.reward_feedback.nav_key()) if unread else UIText.t(SYSTEM_TITLES[9]))
@@ -2570,7 +2556,7 @@ func refresh_equipment_effects(tech: String) -> void:
 	if tech == "weapon_accuracy":categories = ["weapons"]
 	elif tech == "equipment_reinforcement":categories = ["defence"]
 	for category in categories:
-		for index in game.profile.loadout[category].size():
+		for index in game.module_entries(category).size():
 			slots.append(game.slot_id(category,index))
 	if is_instance_valid(equipment_panel):equipment_panel.refresh_slots(slots)
 
@@ -2589,7 +2575,7 @@ func refresh_tab_visibility() -> void:
 	pages.append(game.reactor_unlocked())
 	pages.append(unlocked_ship_keys().size()>1)
 	pages.append(game.enhancement_unlocked())
-	pages.append(game.profile.get("crew",[]).any(func(item):return game.crew.unlocked(game,item.crewId)))
+	pages.append(game.crew.members().any(func(item):return game.crew.unlocked(game,item.crewId)))
 	pages.append(db.data.get("planet",{}).keys().any(func(id):return game.planet_unlocked(str(id))))
 	pages.append(true)
 	pages.append(game.galaxy.available())
@@ -2610,7 +2596,7 @@ func refresh_tab_visibility() -> void:
 func refresh_structure() -> void:
 	if not is_instance_valid(equipment_tabs):
 		return
-	if not ui_state_changed(equipment_tabs,[game.profile.loadout,game.profile.unlocked,game.profile.cleared,game.profile.selectedShip]):
+	if not ui_state_changed(equipment_tabs,[game.equipment.revision,game.profile.unlocked,game.profile.cleared,game.equipment.selected_ship()]):
 		return
 	equipment_panel.refresh()
 	if is_instance_valid(crew_panel):crew_panel.invalidate()
@@ -2837,7 +2823,7 @@ func refresh_draw_layers(dt: float) -> void:
 		stars_layer.queue_redraw()
 	# Animation is isolated to the battlefield; stationary UI/backgrounds retain draw commands.
 	if battle_layer.visible:
-		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.profile.selectedShip,game.profile.loadout,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
+		var battle_changed := ui_state_changed(battle_layer,[game.state,game.paused,game.stage,game.player,game.equipment.selected_ship(),game.equipment.revision,game.stat("armour"),game.max_shield(),game.profile.unlocked,game.pending_unlocks])
 		if battle_changed or (dt>0 and (not game.paused or shake>0 or not game.drops.is_empty())):
 			battle_layer.queue_redraw()
 	if drop_layer.visible!=battle_layer.visible:drop_layer.visible=battle_layer.visible
@@ -3342,9 +3328,9 @@ func resource_hover_notices() -> Array[Dictionary]:
 func pickup_comparison(drop: Dictionary) -> String:
 	var uid := int(drop.get("uid",-1))
 	var cached: Dictionary = pickup_preview_cache.get(uid,{})
-	if cached.is_empty() or GrowthNumber.compare(cached.amount,drop.amount)!=0 or cached.get("ratio",-1)!=drop.get("jewelRatio",-1) or cached.get("stage",-1)!=game.stage or cached.get("revision",-1)!=game.stat_cache_revision:
+	if cached.is_empty() or GrowthNumber.compare(cached.amount,drop.amount)!=0 or cached.get("ratio",-1)!=drop.get("jewelRatio",-1) or cached.get("stage",-1)!=game.stage or cached.get("revision",-1)!=game.attributes.configuration_version(game):
 		pickup_preview_builds += 1
-		cached = {"amount":drop.amount.duplicate(true) if drop.amount is Dictionary else drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.stat_cache_revision,"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
+		cached = {"amount":drop.amount.duplicate(true) if drop.amount is Dictionary else drop.amount,"ratio":drop.get("jewelRatio",-1),"stage":game.stage,"revision":game.attributes.configuration_version(game),"manual":pickup_preview_amount(drop,true),"auto":pickup_preview_amount(drop,false)}
 		if not pickup_preview_cache.has(uid):
 			if pickup_preview_order.size()>=64:pickup_preview_cache.erase(pickup_preview_order.pop_front())
 			pickup_preview_order.append(uid)
@@ -3605,8 +3591,8 @@ func draw_engine_wake(position: Vector2) -> void:
 		draw_surface.draw_line(point,point+Vector2(0,5.0),Color(CYAN,fade),1.0,true)
 
 func draw_ship(pos: Vector2, scale_value: float, hostile: bool, type: int, shield: bool) -> void:
-	if not hostile and not ship_visual_entry(str(game.profile.selectedShip)).is_empty():
-		var ship_key := str(game.profile.selectedShip)
+	if not hostile and not ship_visual_entry(str(game.equipment.selected_ship())).is_empty():
+		var ship_key := str(game.equipment.selected_ship())
 		scale_value = player_art_scale()
 		var hull_angle := -PI/2+player_idle_angle()
 		draw_player_weapon_components(ship_key,pos,scale_value,hull_angle,true)
@@ -3844,7 +3830,7 @@ func confirm_unequip(category: String, index: int) -> void:
 	var entry := game.slot_entry(category,index).duplicate()
 	if entry.is_empty() or str(entry.key).is_empty():
 		return
-	var ship_key := str(game.profile.selectedShip)
+	var ship_key := str(game.equipment.selected_ship())
 	var dialog := ConfirmationDialog.new()
 	dialog.title = UIText.t("main.confirm_unequip.text_01")
 	dialog.dialog_text = UIText.t("main.confirm_unequip.text_02", {"key":"%s" % (NAMES[str(entry.key)]), "level":"%d" % (int(entry.level))})
@@ -3853,7 +3839,7 @@ func confirm_unequip(category: String, index: int) -> void:
 	preload("res://scripts/dialog_presentation.gd").dialog(dialog)
 	add_child(dialog)
 	dialog.confirmed.connect(func():
-		if str(game.profile.selectedShip) == ship_key and game.slot_entry(category,index) == entry:
+		if str(game.equipment.selected_ship()) == ship_key and game.slot_entry(category,index) == entry:
 			if game.unequip_slot(category,index):
 				refresh_structure()
 		dialog.queue_free())
@@ -3886,7 +3872,7 @@ func ai_tech_page_snapshot() -> Dictionary:
 
 func on_ai_tech_research_requested(display_id: String) -> void:
 	var model_id := AI_TECH_VIEW.model_id(display_id)
-	game.select_tech("" if str(game.profile.aiTechActive)==model_id else model_id)
+	game.select_tech("" if game.research.selected()==model_id else model_id)
 	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
 func on_ai_tech_investment_requested(resource_id: String, amount: int) -> void:

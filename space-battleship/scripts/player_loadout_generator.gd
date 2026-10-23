@@ -1,5 +1,5 @@
 extends RefCounted
-## Test records use the original profile.loadout schema and BattleGame rules.
+## Generated records use the durable equipment schema and BattleGame rules.
 ## One save-disabled, scene-free rules object per generation context; never ticked.
 const POLICY_PATH := "res://data/enemy_fleet_analysis.json"
 const EnemySimulator := preload("res://scripts/enemy_fleet_simulator.gd")
@@ -151,8 +151,8 @@ static func signature_for(ship: String, equipment: Dictionary) -> String:
 	return JSON.stringify({"ship":ship,"equipment":equipment}).sha256_text()
 
 func describe(ship: String, equipment: Dictionary) -> Dictionary:
-	rules.profile.selectedShip = ship
-	rules.profile.loadout = equipment
+	rules.equipment.install_snapshot({"selectedShip":ship,"loadout":equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},db)
+	rules.configuration_committed()
 	var stats := {"armour":rules.stat("armour"),"shield":rules.max_shield(),"movement":rules.ship_movement(),"burst":0.0,"sustained":0.0,"attack_rate":0.0,"multi_target":0.0,"aoe":0.0,"range":0.0}
 	var counts := {}
 	for entry in equipment.weapons:
@@ -258,18 +258,18 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 	if delta<0:return {"error":"invalid_level"}
 	if delta==0:return base_profile.duplicate(true)
 	var game:=BattleGame.new(database,false)
-	game.profile=base_profile.duplicate(true)
-	game.profile.selectedShip=record.ship
-	game.profile.loadout=record.equipment.duplicate(true)
+	game.load_progress_data(base_profile)
+	game.equipment.install_snapshot({"selectedShip":record.ship,"loadout":record.equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},database)
+	game.configuration_committed()
 	game.state=BattleGame.State.RETREAT
 	for category in ["weapons","defence"]:
-		for index in range(game.profile.loadout[category].size()):
-			if str(game.profile.loadout[category][index].get("key"," ")).strip_edges().is_empty():continue
+		for index in range(game.module_entries(category).size()):
+			if str(game.module_entries(category)[index].get("key"," ")).strip_edges().is_empty():continue
 			var costs: Dictionary=game.slot_upgrade_cost(category,index,delta)
 			if costs.is_empty():return {"error":"level_cap"}
-			for id in costs:game.profile.resources[id]=maxf(float(game.profile.resources.get(id,0)),float(costs[id]))
+			for id in costs:game.economy.credit(str(id), maxf(0.0,float(costs[id])-float(game.economy.balance(str(id)))))
 			if not game.upgrade_slot(category,index,delta):return {"error":"upgrade_failed"}
-	return game.profile.duplicate(true)
+	return game.portable_save_data()
 
 func replay(record: Dictionary) -> Dictionary:
 	if record.get("config_fingerprint","")!=fingerprint:return {"error":"config_changed"}
@@ -345,9 +345,9 @@ static func start_validated_battle(private_db: ShipDatabase, enemy_fleet: Dictio
 	game.simulation_mode = mode
 	game.player_power_multiplier = power_multiplier
 	if prepared_profile.is_empty():apply_progress(game,int(player_loadout.generation_options.cleared_through))
-	else:game.profile = prepared_profile.duplicate(true)
-	game.profile.selectedShip = player_loadout.ship
-	if prepared_profile.is_empty():game.profile.loadout = player_loadout.equipment.duplicate(true)
+	else:game.load_progress_data(prepared_profile)
+	if prepared_profile.is_empty():game.equipment.install_snapshot({"selectedShip":player_loadout.ship,"loadout":player_loadout.equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},private_db)
+	game.configuration_committed()
 	game.rng.seed = battle_seed
 	game.start(1,false)
 	game.spawn_group()

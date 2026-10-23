@@ -12,10 +12,11 @@ func fixture(key: String) -> BattleGame:
  db.equipment.longLaser[0].para3=.2
  db.data.enhance_config.base_critical_rate.value=0;db.data.enhance_config.repeat_probability.value=0
  var g:=BattleGame.new(db,false)
- g.profile.cleared=range(1,41);g.rebuild_unlocks();g.profile.enhancementLevel=50
- g.profile.selectedShip="Cruiser" # Explicit multi-module fixture.
- g.profile.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
- g.reset_player();g.spawn_group()
+ g.profile.cleared=range(1,41);g.rebuild_unlocks()
+ var growth:=g.enhancement_growth.save_data();growth.enhancementLevel=50;g.enhancement_growth.install_snapshot(growth)
+ var equipment:=g.equipment.save_data();equipment.loadout={"weapons":[{"key":key,"level":150}],"defence":[{"key":"armour","level":150}]}
+ check(g.equipment.install_snapshot(equipment,db),"Single-module attack fixture validates")
+ g.stat_cache_enabled=true;g.enable_compiled_combat_rules();g.reset_player();g.spawn_group()
  # This tests secondary targeting independently of the authored opening roster.
  var target_template:Dictionary=g.enemies[0].duplicate(true)
  for ordinal in range(g.enemies.size(),4):
@@ -40,11 +41,11 @@ func observe(g:BattleGame)->Dictionary:
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
  for key in ["laser","cannon","missile"]:
-  var g:=fixture(key);g.set_enhancement_branch("weapons","repeat",3,"B");g.db.data.enhance_config.repeat_b3_probability.value=1
+  var g:=fixture(key);g.set_enhancement_branch("weapons","repeat",3,"B");g.db.data.enhance_config.repeat_b3_probability.value=1;g.notify_configuration_changed()
   g.cooldowns[g.slot_id("weapons",0)]=0;g.tick(.001)
   var count:=int(g.db.equip(key,150).para1) if key=="missile" else 1
   check(g.projectiles.size()==count*2,"secondary clones full canonicalattack "+key)
-  check(g.profile.enhancementAttacks==1 and g.enhancement_branches.weapon(g,0).next==2,"primaryplussecondarycountone andchargeone "+key)
+  check(g.enhancement_growth.attacks()==1 and g.enhancement_branches.weapon(g,0).next==2,"primaryplussecondarycountone andchargeone "+key)
   check(g.jewel_repeats.is_empty(),"secondarycannotstartrepeatrecursion "+key)
   var distinct:=false
   for shot in g.projectiles:
@@ -52,7 +53,7 @@ func run() -> void:
   check(distinct,"secondarytarget differs "+key)
  # Authorized rule: a root attack may trigger once; a derived attack cannot
  # trigger any effect. The former two-generation assertions contradicted it.
- var g:=fixture("missile");g.set_enhancement_branch("weapons","repeat",2,"B");g.db.data.enhance_config.repeat_probability.value=1
+ var g:=fixture("missile");g.set_enhancement_branch("weapons","repeat",2,"B");g.db.data.enhance_config.repeat_probability.value=1;g.notify_configuration_changed()
  var missile_events:=observe(g)
  g.cooldowns[g.slot_id("weapons",0)]=0;g.tick(.001)
  var salvo:=int(g.db.equip("missile",150).para1)
@@ -62,14 +63,14 @@ func run() -> void:
  var expected_multiplier=1+g.enhancement_parameter("repeat_growth")*g.enhancement_effective_level()
  check(original_repeat_multiplier==expected_multiplier,"first repeat derives configured source multiplier")
  g.advance_jewel_repeats(g.enhancement_parameter("repeat_delay"))
- check(g.profile.enhancementAttacks==2 and g.jewel_repeats.is_empty() and g.projectiles.size()==salvo*2,"first repeat launches a full salvo and queues no descendant")
+ check(g.enhancement_growth.attacks()==2 and g.jewel_repeats.is_empty() and g.projectiles.size()==salvo*2,"first repeat launches a full salvo and queues no descendant")
  var expected_repeat_damage=N.multiply(primary_damage,expected_multiplier)
  check(g.projectiles.slice(salvo).all(func(shot):return N.compare(shot.damage,expected_repeat_damage)==0 and int(shot.combat_context.trigger_depth)==1),"derived salvo retains source damage multiplier and first-level context")
  for i in 150:g.tick_projectiles(.02)
  check(missile_events.fire==salvo*2 and missile_events.hit==salvo*2 and missile_events.secondary==0 and g.projectiles.is_empty(),"root and first repeat each settle once per missile without another triggered attack")
  check(is_equal_approx(float(missile_events.damage),float(N.add(N.multiply(N.ceiling(primary_damage),salvo),N.multiply(N.ceiling(expected_repeat_damage),salvo)))),"settled missile damage equals root plus first repeat only")
  g.advance_jewel_repeats(2*g.enhancement_parameter("repeat_delay"))
- check(g.profile.enhancementAttacks==2 and g.jewel_repeats.is_empty() and g.enhancement_branches.weapon(g,0).next==2 and missile_events.fire==salvo*2,"later repeat windows add no attack, event, or root charge consumption")
+ check(g.enhancement_growth.attacks()==2 and g.jewel_repeats.is_empty() and g.enhancement_branches.weapon(g,0).next==2 and missile_events.fire==salvo*2,"later repeat windows add no attack, event, or root charge consumption")
  for key in ["laser","cannon","missile","longLaser"]:
   g=fixture(key);g.set_enhancement_branch("weapons","repeat",1,"B")
   g.enemies.resize(2) # One explicit secondary avoids authored formation target order.
@@ -85,15 +86,15 @@ func run() -> void:
   check(g.projectiles.is_empty() and g.jewel_repeats.is_empty() and chain_events.secondary==0,"derived chain hit cannot launch another triggered effect "+key)
   var after=secondary.hp;g.hit_enemy(primary,100,0,effects)
   check(secondary.hp==after,"sameprojectile/splashcannotchainagain "+key)
-  check(g.profile.enhancementAttacks==0 and g.enhancement_branches.weapon(g,0).next==3,"chaindoesnotcountorconsumecrit "+key)
- g=fixture("longLaser");g.set_enhancement_branch("weapons","repeat",3,"B");g.db.data.enhance_config.repeat_b3_probability.value=1
+  check(g.enhancement_growth.attacks()==0 and g.enhancement_branches.weapon(g,0).next==3,"chaindoesnotcountorconsumecrit "+key)
+ g=fixture("longLaser");g.set_enhancement_branch("weapons","repeat",3,"B");g.db.data.enhance_config.repeat_b3_probability.value=1;g.notify_configuration_changed()
  var events: Array=[];g.event.connect(func(kind,payload):
   if kind=="enhancement_secondary":events.append(payload))
  g.lock_long_laser(g.player,g.player_weapon_row(g.slot_entry("weapons",0)),false,0,g.slot_entry("weapons",0))
  g.tick_long_laser(g.projectiles[0],.2)
- check(g.profile.enhancementAttacks==1 and g.enhancement_branches.weapon(g,0).next==2,"beamsecondarysinglehit shares canonicalevent")
+ check(g.enhancement_growth.attacks()==1 and g.enhancement_branches.weapon(g,0).next==2,"beamsecondarysinglehit shares canonicalevent")
  check(g.projectiles.size()==1 and events.size()==1,"beamsecondarycreatesnoindependentramp/beam")
- g=fixture("longLaser");g.set_enhancement_branch("weapons","repeat",2,"B");g.db.data.enhance_config.repeat_probability.value=1
+ g=fixture("longLaser");g.set_enhancement_branch("weapons","repeat",2,"B");g.db.data.enhance_config.repeat_probability.value=1;g.notify_configuration_changed()
  var beam_events:=observe(g)
  g.lock_long_laser(g.player,g.player_weapon_row(g.slot_entry("weapons",0)),false,0,g.slot_entry("weapons",0))
  var root_beam:Dictionary=g.projectiles[0]
@@ -113,12 +114,12 @@ func run() -> void:
  before_damage=beam_events.damage
  g.tick_long_laser(root_beam,.2);g.tick_long_laser(repeat_beam,.2)
  check(is_equal_approx(float(N.subtract(beam_events.damage,before_damage)),float(expected_period_damage)) and beam_events.period==4 and beam_events.hit==4,"root and repeat keep their own ramp with exactly four total period settlements")
- check(g.profile.enhancementAttacks==2 and g.enhancement_branches.weapon(g,0).next==2 and beam_events.started==2 and beam_events.secondary==0 and g.jewel_repeats.is_empty(),"periodic root and derived hits cannot trigger another effect or consume root charge again")
+ check(g.enhancement_growth.attacks()==2 and g.enhancement_branches.weapon(g,0).next==2 and beam_events.started==2 and beam_events.secondary==0 and g.jewel_repeats.is_empty(),"periodic root and derived hits cannot trigger another effect or consume root charge again")
  g=fixture("longLaser");g.set_enhancement_branch("weapons","proficiency",2,"B")
  g.lock_long_laser(g.player,g.player_weapon_row(g.slot_entry("weapons",0)),false,0,g.slot_entry("weapons",0))
  g.tick_long_laser(g.projectiles[0],.2)
  g.set_enhancement_branch("weapons","proficiency",2,"A")
  g.tick_long_laser(g.projectiles[0],.14)
- check(g.profile.enhancementAttacks==1 and g.projectiles[0].ticks==2,"branch switch keeps frozen beam interval and periodic damage does not count attacks")
+ check(g.enhancement_growth.attacks()==1 and g.projectiles[0].ticks==2,"branch switch keeps frozen beam interval and periodic damage does not count attacks")
  print("BRANCH ATTACKS: ",checks," checks, ",failures," failures")
  quit(1 if failures else 0)

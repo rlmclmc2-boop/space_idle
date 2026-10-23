@@ -1,12 +1,15 @@
 extends RefCounted
 const N=preload("res://scripts/growth_number.gd")
 var weapons: Dictionary={}
+var weapon_revisions:Dictionary={}
+func changed(key:String)->void:weapon_revisions[key]=int(weapon_revisions.get(key,0))+1
 var defenses: Dictionary={}
 var incoming_sources: Dictionary={}
 var memory_reduction_remaining := 0.0
 var clear_reduction_remaining := 0.0
 
 func reset() -> void:
+ for key in ["laser","missile","cannon","longLaser"]:changed(key)
  weapons.clear();defenses.clear();incoming_sources.clear()
  memory_reduction_remaining=0.0;clear_reduction_remaining=0.0
 
@@ -23,7 +26,9 @@ func global_active(g,effect: String,node: int,choice: String) -> bool:
  return g.defense_entries().any(func(entry):return active(g,entry,effect,node,choice))
 
 func a_count(g,entry: Dictionary,effect: String) -> int:
- if g.compiled_combat_rules!=null and not g.compiled_combat_rules.compiling:return g.compiled_combat_rules.count_a(entry,effect)
+ if g.compiled_combat_rules!=null and not g.compiled_combat_rules.compiling:
+  g.compiled_combat_rules.compile(g)
+  return g.compiled_combat_rules.count_a(entry,effect)
  var count := 0
  for node in [1,2,3]:
   if active(g,entry,effect,node,"A"):count+=1
@@ -31,14 +36,16 @@ func a_count(g,entry: Dictionary,effect: String) -> int:
 
 func weapon(g,index: int) -> Dictionary:
  var entry: Dictionary=g.combat_entry(index)
- if not weapons.has(index) or not is_same(weapons[index].entry,entry):
+ if not weapons.has(index) or not g.same_module(weapons[index].entry,entry):
   weapons[index]={"entry":entry,"target":{},"dwell":0.0,"next":0,"stacks":0,"stack_time":0.0}
+ weapons[index].entry=entry
  return weapons[index]
 
 func defense(g,index: int) -> Dictionary:
  var entry: Dictionary=g.slot_entry("defence",index)
- if not defenses.has(index) or not is_same(defenses[index].entry,entry):
+ if not defenses.has(index) or not g.same_module(defenses[index].entry,entry):
   defenses[index]={"entry":entry,"cover_elapsed":0.0,"cover_time":0.0,"cover":0.0,"resistance_type":0,"resistance_time":0.0,"lockout":0.0}
+ defenses[index].entry=entry
  return defenses[index]
 
 func reconcile(g) -> void:
@@ -47,15 +54,13 @@ func reconcile(g) -> void:
  var common_count: int=g.shared_enhancement_effect_count()
  var weapon_entries: Array=g.combat_weapon_entries()
  var defense_entries: Array=g.defense_entries()
- var defense_order: Array=g.profile.enhancementOrder.get("defence",[])
  var defense_effects={}
  for effect in ["adaptation","memory_material","delayed_damage"]:
-  var rank: int=defense_order.find(effect)
+  var rank: int=g.enhancement_growth.order_position("defence",effect)
   defense_effects[effect]=rank>=0 and rank<common_count
  var weapon_ready={}
- var weapon_order: Array=g.profile.enhancementOrder.get("weapons",[])
- var proficiency_index:=weapon_order.find("proficiency")
- var critical_index:=weapon_order.find("critical")
+ var proficiency_index:int=g.enhancement_growth.order_position("weapons","proficiency")
+ var critical_index:int=g.enhancement_growth.order_position("weapons","critical")
  if not weapons.is_empty():
   for pair in [["proficiency",1],["critical",1],["critical",2]]:
    weapon_ready[str(pair[0])+str(pair[1])]=g.enhancement_branch_choice("weapons",pair[0],pair[1])=="B" and g.enhancement_branch_unlocked("weapons",pair[0],pair[1])
@@ -93,12 +98,12 @@ func advance_weapons(g,dt: float) -> void:
    data.dwell+=dt
   else:data.target={};data.dwell=0.0
   if before_stacks!=int(data.stacks) or before_focus!=int(floor(float(data.dwell)/interval)):
-   g.invalidate_equipment_counter(str(data.entry.get("key","")))
+   changed(str(data.entry.get("key","")))
    # Timed bonuses remain combat-only; module presentation has no dependency.
 
 func begin_attack(g,index: int,target: Dictionary,derived := false,track_primary := true) -> Dictionary:
  var data:=weapon(g,index)
- if not derived and track_primary and not is_same(data.target,target):data.target=target;data.dwell=0.0
+ if not derived and track_primary and not is_same(data.target,target):data.target=target;data.dwell=0.0;changed(str(data.entry.get("key","")))
  var boost := 1.0
  if not derived and int(data.next)>0 and active(g,data.entry,"critical",1,"B"):
   boost+=g.enhancement_parameter("critical_b1_damage_bonus");data.next-=1
@@ -111,14 +116,14 @@ func finish_attack(g,context: Dictionary) -> void:
  if active(g,data.entry,"critical",2,"B"):
   data.stacks=mini(int(g.enhancement_parameter("critical_b2_stacks")),int(data.stacks)+1)
   data.stack_time=g.enhancement_parameter("critical_b2_duration")
- g.invalidate_equipment_counter(str(data.entry.get("key","")))
+ changed(str(data.entry.get("key","")))
 
 
 func weapon_multiplier(g,entry: Dictionary,original_entry: Dictionary={},include_timed_buffs := true) -> Variant:
  var result = 1.0+float(a_count(g,entry,"proficiency"))*g.enhancement_parameter("proficiency_a_damage_bonus")
  if not include_timed_buffs:return result
  var owner: Dictionary=entry if original_entry.is_empty() else original_entry
- var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,owner))
+ var index: int=g.combat_weapon_entries().find_custom(func(candidate):return g.same_module(candidate,owner))
  if index<0:return result
  var data:=weapon(g,index)
  if active(g,entry,"proficiency",1,"B"):
@@ -133,6 +138,9 @@ func capacity_multiplier(g,entry: Dictionary) -> float:
 func cooldown_multiplier(g,entry: Dictionary) -> float:
  return g.enhancement_parameter("proficiency_b2_interval_multiplier") if active(g,entry,"proficiency",2,"B") else 1.0
 
+func repeat_multiplier(effect:Dictionary)->float:
+ return 1.0+float(effect.p4)*int(effect.level)
+
 func repeat_probability(g,entry: Dictionary) -> float:
  if not g.has_enhancement_effect(entry,"repeat"):return clampf(float(g.hyperspace_totals().repeat_chance),0,1)
  return clampf(g.enhancement_parameter("repeat_probability")+float(a_count(g,entry,"repeat"))*g.enhancement_parameter("repeat_a_probability")+float(g.hyperspace_totals().repeat_chance),0,1)
@@ -141,7 +149,7 @@ func underlying_critical_rate(g,entry: Dictionary,include_timed_buffs := true) -
  var row: Dictionary=g.combat_equipment_row(str(entry.key),int(entry.level))
  var rate: float=float(row.get("cri",0))+float(a_count(g,entry,"critical"))*g.enhancement_parameter("critical_a_probability")
  if g.has_enhancement_effect(entry,"critical"):rate+=g.enhancement_parameter("base_critical_rate")
- var index: int=g.combat_weapon_entries().find_custom(func(candidate):return is_same(candidate,entry))
+ var index: int=g.combat_weapon_entries().find_custom(func(candidate):return g.same_module(candidate,entry))
  if include_timed_buffs and index>=0 and active(g,entry,"critical",2,"B"):rate+=int(weapon(g,index).stacks)*g.enhancement_parameter("critical_b2_probability")
  return clampf(rate,0,1)
 
@@ -149,6 +157,15 @@ func resistance(g,entry: Dictionary,base: float) -> float:
  # Existing matching resistance may be raised; neutral layers never gain one.
  if base>0 and active(g,entry,"adaptation",3,"B"):base+=g.enhancement_parameter("adaptation_b3_resistance_bonus")
  return clampf(base,0,1)
+
+func memory_healing_fraction(g,entry:Dictionary,effect:Dictionary,ticks:int=1)->float:
+ return float(effect.p2)*int(effect.level)*ticks*memory_heal_multiplier(g,entry)
+
+func memory_charge_fraction(g,entry:Dictionary,effect:Dictionary)->float:
+ return float(effect.p2)*int(effect.level)*memory_charge_multiplier(g,entry)
+
+func memory_capacity_fraction(g,entry:Dictionary,effect:Dictionary)->float:
+ return float(effect.p4)*int(effect.level)*memory_cap_multiplier(g,entry)
 
 func memory_cap_multiplier(g,entry: Dictionary) -> float:
  var multiplier: float=1.0+a_count(g,entry,"memory_material")*g.enhancement_parameter("memory_a_bonus")
