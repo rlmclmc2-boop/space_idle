@@ -1,0 +1,107 @@
+{
+  "candidate": "e9347c682cd8ad0f6a7c0ece3cf69d703c056e59",
+  "reusable_entry_commit": "b0e4bf4bfda2a2aa977579f74b51ee2150cdd97f",
+  "base_main": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+  "branch": "impl/domain-architecture-20261022",
+  "scope": "Crew AI factory completion-only continuation, level speed, proportional actual game-time income inputs, shared GrowthNumber payment/UI/save.",
+  "results": {
+    "research": {
+      "checks": 120,
+      "failures": 0
+    },
+    "crew_levels": {
+      "checks": 99,
+      "failures": 0
+    },
+    "original_main": {
+      "write_checks": 17,
+      "reopen_checks": 8,
+      "failures": 0,
+      "all_saved_domain_mismatches": []
+    },
+    "split_workbooks": "Both changed sheets converted with existing import_workbook methods and equal game_data; validate_crew passed.",
+    "ui_catalog": "ui_text.validate returned no errors."
+  },
+  "commands": [
+    "python test/run.py test_ai_tech_tree.gd --godot <Godot 4.7.2> --headless --timeout 180 (imported isolated workspace reused after source sync; executed hashes below)",
+    "Godot --headless --path <same isolated project> --script <isolated test/test_crew_levels.gd>",
+    "python test/run.py test_ordinary_entry.gd --scenario factory --godot <Godot 4.7.2> --timeout 180",
+    "After fixture-only corrections, reused that imported project with a fresh isolated APPDATA/LOCALAPPDATA slot: Godot --path <project> --script <test/test_ordinary_entry.gd> -- factory-write, then factory-reopen"
+  ],
+  "product_evidence": {
+    "scene": "res://main.tscn, original scripts and native writer lock; saving and caches enabled; no UI substitute",
+    "renderer": "NVIDIA GeForce RTX 2060 / OpenGL compatibility",
+    "actual_operations": [
+      "Crew picker and assign button",
+      "Separate percent submission at 2.5% iron / 0.1% uranium",
+      "Collected authored 6e403 iron drop through real collect/credit/history path",
+      "Actual large research payment, singularity completion and shortest continuation",
+      "Manual research pause",
+      "Pause clock and x5 game-time behavior",
+      "Actual save button and separate process reopen",
+      "Recall button and scientific manual input 1e401"
+    ],
+    "visual_check": "Both final viewport captures inspected; percentage fields, actual rates and current balance header visible."
+  },
+  "limitations": [
+    "Shared binary64 mantissa/exponent precision; no arbitrary precision or guaranteed unit increments at huge magnitudes. Materials/core integer rules unchanged.",
+    "Headless research process reports existing resource/ObjectDB exit warnings; sandbox processes report root certificate read warning. No GDScript errors in final runs.",
+    "This is focused feature acceptance, not a new whole-game/performance approval. Main remains unchanged pending dual review."
+  ],
+  "superseded_fixture_failures": [
+    "Initial UI assertion compared 1 against displayed 1.0; compare numeric percentage.",
+    "Shortest project in live config is equipment_reinforcement (40 seconds), not resource_refining.",
+    "Authored stage unlock seed had not refreshed galaxy eligibility before saving; invoke existing galaxy_runtime.refresh_unlocks after seed. Research/crew/input restored correctly even in that failed broader state comparison."
+  ],
+  "verified_executed_runtime_sha256": {
+    "test_ai_tech_tree-atgp3u1r": {
+      "space-battleship/config_excel/crew_assignment.xlsx": "1c972db0ddacd785f683cb4bd98bc79d6f4e650035f0f1b6400a02059420d50d",
+      "space-battleship/config_excel/crew_config.xlsx": "3f962042b041e8ccf85c2e841fde6fa9fe78c21d7a6536687168c1dc2fe34cef",
+      "space-battleship/data/game_data.json": "1f8fe4cfb78bce240998e1877507ea795a4e08706bd0256f2e18b16d2e5aa854",
+      "space-battleship/data/ui_text.json": "da3871c41cb9a56f9b177a2beb14919c18cb69e9adaf737622dac0e041e0bd2c",
+      "space-battleship/data/ui_text_contract.json": "7da41940f906ca33f534a8fa3eb7cee1e19e9c638c6a8c2e9d628d5c1041b850",
+      "space-battleship/scripts/ai_tech_factory_page.gd": "09d9f6389a377495bd7508dc9bc15337bcf2e69a14ed2823c5242494b1a8eee3",
+      "space-battleship/scripts/ai_tech_tree.gd": "b1de59ea0b632392e6446eb30143abfe3d0c1a4e15b70e2f6d03a00d1ede67a4",
+      "space-battleship/scripts/ai_tech_view_model.gd": "0440dad8ada8a5b1dcf7955607d13fcc4cc78cb6fe208a6d68e282f4082ce5dd",
+      "space-battleship/scripts/crew_panel.gd": "a765ee030e9185f48a1f1d654994c45e46d6c7e01a1583db7143fd729487e425",
+      "space-battleship/scripts/crew_system.gd": "f8111fdb5e0025d67e65d1e03d42dad86a3b0f3802c64c93dbd69a635ccebccb",
+      "space-battleship/scripts/game.gd": "10903426e4b59af2ff8642935580a6b5f8ee10d36065d1eee1569465021c2af4",
+      "space-battleship/scripts/main.gd": "9adba91906cfd06d9f174ad79f0b6d8d49588d20f20807d9c470e7f68de5e3cf",
+      "space-battleship/scripts/save_transfer.gd": "e86b5b44327db53b03019d8abda3ac8ca74d270b7802e14b83389bd83677ef05",
+      "space-battleship/tools/import_workbook.py": "d5f0abb6f8fb2581ba220b019979d4c55c44bcf1617655b41cdb6c74cb8aad2e"
+    },
+    "test_ordinary_entry-jltl3ryi": {
+      "space-battleship/config_excel/crew_assignment.xlsx": "1c972db0ddacd785f683cb4bd98bc79d6f4e650035f0f1b6400a02059420d50d",
+      "space-battleship/config_excel/crew_config.xlsx": "3f962042b041e8ccf85c2e841fde6fa9fe78c21d7a6536687168c1dc2fe34cef",
+      "space-battleship/data/game_data.json": "1f8fe4cfb78bce240998e1877507ea795a4e08706bd0256f2e18b16d2e5aa854",
+      "space-battleship/data/ui_text.json": "da3871c41cb9a56f9b177a2beb14919c18cb69e9adaf737622dac0e041e0bd2c",
+      "space-battleship/data/ui_text_contract.json": "7da41940f906ca33f534a8fa3eb7cee1e19e9c638c6a8c2e9d628d5c1041b850",
+      "space-battleship/scripts/ai_tech_factory_page.gd": "09d9f6389a377495bd7508dc9bc15337bcf2e69a14ed2823c5242494b1a8eee3",
+      "space-battleship/scripts/ai_tech_tree.gd": "b1de59ea0b632392e6446eb30143abfe3d0c1a4e15b70e2f6d03a00d1ede67a4",
+      "space-battleship/scripts/ai_tech_view_model.gd": "0440dad8ada8a5b1dcf7955607d13fcc4cc78cb6fe208a6d68e282f4082ce5dd",
+      "space-battleship/scripts/crew_panel.gd": "a765ee030e9185f48a1f1d654994c45e46d6c7e01a1583db7143fd729487e425",
+      "space-battleship/scripts/crew_system.gd": "f8111fdb5e0025d67e65d1e03d42dad86a3b0f3802c64c93dbd69a635ccebccb",
+      "space-battleship/scripts/game.gd": "10903426e4b59af2ff8642935580a6b5f8ee10d36065d1eee1569465021c2af4",
+      "space-battleship/scripts/main.gd": "9adba91906cfd06d9f174ad79f0b6d8d49588d20f20807d9c470e7f68de5e3cf",
+      "space-battleship/scripts/save_transfer.gd": "e86b5b44327db53b03019d8abda3ac8ca74d270b7802e14b83389bd83677ef05",
+      "space-battleship/tools/import_workbook.py": "d5f0abb6f8fb2581ba220b019979d4c55c44bcf1617655b41cdb6c74cb8aad2e"
+    }
+  },
+  "test_sha256": {
+    "test/test_ai_tech_tree.gd": "5e13f9aee36e85f018f1c6c69b1d55dc6766825a16e5b8db2dbd47b95d03fed3",
+    "test/test_crew_levels.gd": "770c431aa56fa2e6872fd7144503e5b8e67c4e0d0a54b45d45ce4895da8bb233",
+    "test/test_ordinary_entry.gd": "b2aa9d38014886458bc511f77d2c20f96fcbda21e33c4fbfa1a55cbe42184562",
+    "test/run.py": "d70d623f844c761db8324cf8feab3113fc883c082120b1f1d1af9180af1d64c3"
+  },
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "files": {
+    "crew.log": "f1b1ff018ae4664a380ae0ac6f536d56c21515fa31865707cbe69133916e8b9b",
+    "factory-reopen.json": "a5e04cd0f059d3c8f44e0776b266563908e7c637bc8aaa69bf0343c90a04c76c",
+    "factory-reopen.log": "c3949bd3a40bf15424f0d101060e44d58d82e778d8bb69f4e197fea878291474",
+    "factory-reopen.png": "fb5b2108c3a656f27d4a77f0f80f1d6239e3ea8ea6a7f6188c895ce83ccb2732",
+    "factory-write.json": "9b45bf794f8517e71c6a1fda768d7c7fb1a6a1962e1181d1562768e0def673a1",
+    "factory-write.log": "67416a2da8ef2f2d47b408113e34301b2a2736b8d81228d63d9357382d7ce7cc",
+    "factory-write.png": "2b3f4e4dfa45ee4e1a15d9f17cb8b8ad4314ae922fca1c4db94af2557162d1c1",
+    "research.log": "ae2cdd3afcd31e60a618e8e6b49adaabbbf8870ffb4bfbe2b712e71a83af9e56"
+  }
+}
