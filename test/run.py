@@ -17,7 +17,7 @@ def main():
     parser.add_argument("--godot", type=Path, default=workspace / "space-battleship/engine/Godot_v4.7.2-stable_win64.exe")
     parser.add_argument("--timeout", type=int, default=180, help="Timeout in seconds for each isolated process")
     parser.add_argument("--headless", action="store_true", help="Disable rendering for logic benchmarks")
-    parser.add_argument("--scenario", choices=("all", "game", "reactor", "planet"),
+    parser.add_argument("--scenario", choices=("all", "game", "reactor", "planet", "factory"),
                         help="Original main-scene workflow for test_ordinary_entry.gd (default: all)")
     args = parser.parse_args()
     if args.scenario and args.test != "test_ordinary_entry.gd":
@@ -136,6 +136,7 @@ def main():
             "planet": ("planet-loading",),
             "game": ("product-write", "product-reopen", "product-claimed-reopen"),
             "reactor": ("reactor-write", "reactor-reopen"),
+            "factory": ("factory-write", "factory-reopen"),
         }
         for name, phases in workflows.items():
             if args.scenario not in (None, "all", name):
