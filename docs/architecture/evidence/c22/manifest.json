@@ -1,0 +1,41 @@
+{
+  "runtime_sha": "4522c77f00c9fd25c8e1510c6540443d1a4ac73b",
+  "source_matches_isolated_scripts": true,
+  "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "scope": "v11 reactor capacity/allocation; real original main scene with writer and stat cache enabled; independent write/reopen processes",
+  "checks": {
+    "reactor": 33,
+    "large_numbers": 157,
+    "product_write": 25,
+    "product_reopen": 8
+  },
+  "test_sha256": {
+    "test_reactor.gd": "dde7a1e1e1e0a4d32f8c5771ca8ba293274928706eebe53d07f32279f394826d",
+    "test_large_numbers.gd": "75d68063e8043b602ed98d5a313725d418189fd6792edf716ae86516df975fac",
+    "test_ordinary_entry.gd": "76516a7803f9abdcf5fde7f8946f039e6f551e032788df9d1c2be5d2d2729128"
+  },
+  "purchase_levels": 1000000000,
+  "purchase_ms": 0.594,
+  "capacity_formula_reference": "100 * 1.5 ** 1000000002, Decimal 60 digit logarithm reference",
+  "capacity_relative_error": "1.326823173909523241378184005210273630027313627684909E-8",
+  "not_claimed": [
+    "whole-product performance pass",
+    "native coverage at huge magnitudes",
+    "legacy save compatibility",
+    "arbitrary low-growth configurations for per-level quote sums"
+  ],
+  "warnings": [
+    "Godot system certificate warning",
+    "Early fixture runs used retired cache API / incorrect equalization method and timed out; final runs only are included. JSON int/float material comparison was normalized in the fixture."
+  ],
+  "files_sha256": {
+    "reactor-reopen-c22.log": "1e690a231dd8baa6fa3babbcbdf2240a5e4e85d37867bc3bc19f259f9b3f9974",
+    "reactor-reopen.json": "54d63bbf05ba20df4c75c6d2ae9f291c904c54af69735a3db60b6e6935b23084",
+    "reactor-reopen.png": "8d47688dbcb7b82d290f805820646c4889b41151fc0fbdfdc3a3ed22837ea911",
+    "reactor-write-c22.log": "d4d68292c5c1460c0d450af8125efcb207a9a35b20068fb5ff10b90d354c3136",
+    "reactor-write.json": "077e53e51988610a4cde5284ed2658d1b7c40193fb6947e307c1c9ba422606f7",
+    "reactor-write.png": "e008e8e3f2afffb1b06a0b0263dc3d917695632723c918c98ecb65d66366474a",
+    "test_large_numbers.gd-c22.log": "880bb79284022eb5a3cb363ef4413b720549bcc42fd42da210e9e798fa64cb02",
+    "test_reactor.gd-c22.log": "c4c227a63f07ed13f14696b9f8d55f662990dcf57465f1c1fefca4a33b0dbe4a"
+  }
+}
