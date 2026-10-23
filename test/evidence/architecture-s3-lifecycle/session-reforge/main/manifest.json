@@ -1,0 +1,24 @@
+{
+  "run": "test\\work\\test_ordinary_entry-yezt9won",
+  "checks": [
+    31,
+    26,
+    18,
+    7,
+    25,
+    8,
+    20,
+    8
+  ],
+  "total_checks": 143,
+  "failures": 0,
+  "production_commit": "38dca748c221a78548c1fdff6450d5ab252100af",
+  "sha256": {
+    "game.gd": "bf0fcc2cacd317db6835ce14c55043361581c4be877e1aa9d87e36b71ebf5344",
+    "balance_game.gd": "19a9f9836773f2f351a59daaf5d8f558ef1022b352c20611aaeb818f11875468",
+    "progress_runtime.gd": "363c361ffffc287a9678711fe15ff0b73ca9367557266eb898767c141f2a1c63",
+    "product_lifecycle.gd": "e92f0cf34686575e98a71f122588763319c5c410d996eb7d5620a7b1028f5795",
+    "progress_writer.gd": "c693c58e694278163a781f038d7e9052be1e72636503d516859efa61c6309a95",
+    "save_transfer.gd": "da86bb849a7f5e29027e51935aee8a6baf3bafb61c91e995a2aaf6bee56ad44f"
+  }
+}

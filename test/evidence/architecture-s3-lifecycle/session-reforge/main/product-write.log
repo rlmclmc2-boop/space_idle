@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PRODUCT_CHALLENGE {"active":false,"enemies":[],"point":0,"result":{"elapsed":157.600000000018,"end_point":10,"level":1,"reason":"success","refund":0.0,"return_point":0,"return_stage":1,"route":"alpha"},"state":2}
+PRODUCT_ENTRY product-write 26 checks 0 failures
