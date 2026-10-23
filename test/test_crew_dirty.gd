@@ -4,6 +4,9 @@ class CallbackGame extends BattleGame:
 	var before_change: Callable
 	var accept_change:=true
 	var captures:=0
+	var health_applies:=0
+	func apply_refit_health()->void:
+		health_applies+=1;super.apply_refit_health()
 	func capture_refit_health()->void:
 		captures+=1;super.capture_refit_health()
 	func native_before_configuration_change()->bool:
@@ -71,6 +74,7 @@ func _initialize()->void:
 	check(stable_save(g)==before,"Discarded overrun cannot cause a second purchase")
 	g.assign_crew("navigator","","");before=stable_save(g);g.crew.advance(g,2)
 	check(stable_save(g)==before,"Equipment recall stops spending")
+	nondefence_damage_boundary()
 	coordination_boundaries()
 	material_wakeup()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
@@ -148,3 +152,22 @@ func coordination_boundaries()->void:
 	check(not g.crew.timers.has("navigator") and not g.galaxy_runtime.native_prepared and not g.hyperspace_runtime.advancing,"Full load clears old purchase task and cached runtime work")
 	var loaded:=stable_save(g);g.crew.advance(g,2)
 	check(stable_save(g)==loaded,"No old job revives after full load")
+
+func nondefence_damage_boundary()->void:
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var damage=GrowthNumber.multiply(g.stat("armour"),0.25)
+	g.player.armour=GrowthNumber.subtract(g.stat("armour"),damage)
+	g.jewel_defence_damage={0:damage}
+	var original_damage:=g.jewel_defence_damage.duplicate(true);var original_health=g.player.armour
+	var seen:Array=[]
+	g.event.connect(func(kind,_info):
+		if kind=="crew_changed":seen.append(g.jewel_defence_damage.duplicate(true)))
+	check(g.assign_crew("navigator","hightech_scientists","hightech"),"Nondefence assignment commits")
+	check(g.add_crew_exp("navigator",g.crew.required_exp(g,0)),"Research crew gains a real level")
+	check(g.assign_crew("navigator","",""),"Nondefence recall commits")
+	check(g.health_applies==0 and g.jewel_defence_damage==original_damage and g.player.armour==original_health,"Research assignment, level and recall never clear or redistribute module damage")
+	check(seen.size()==3 and seen.all(func(value):return value==original_damage),"Nondefence notices retain the original module damage")
+	g.captures=0
+	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.health_applies==1 and g.captures==1,"Actual defence change still captures and reapplies health once")
+	check(absf(GrowthNumber.ratio(g.player.armour,g.stat("armour"))-0.75)<0.000001,"Actual defence refit retains the existing health algorithm")

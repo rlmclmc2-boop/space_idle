@@ -1,13 +1,14 @@
 extends RefCounted
+const N=preload("res://scripts/growth_number.gd")
 ## Concrete coordination of crew, planets and research. Domains own state; Game owns time.
 
 func add_crew_exp(g,crew_id: String, amount: float) -> bool:
 	if not g.crew.levels_unlocked(g) or not g.crew.unlocked(g,crew_id):return false
 	var plan: Dictionary=g.crew.prepare_experience(g,{crew_id:amount})
 	if not prepare_crew_commit(g,plan):return false
-	if plan.configuration:g.capture_refit_health()
+	var defence:=capture_progress_health(g,plan.configuration)
 	g.crew.commit(plan)
-	finish_progress_change(g,plan.configuration)
+	finish_progress_change(g,plan.configuration,defence)
 	notify_crew_changes(g,plan.changes)
 	return true
 
@@ -25,10 +26,10 @@ func commit_planet_command(g,plan: Dictionary,payload: Dictionary) -> bool:
 	if not g.planets.proposal_current(plan):return false
 	if plan.configuration and not g.native_before_configuration_change():return false
 	if not g.planets.proposal_current(plan):return false
-	if plan.configuration:g.capture_refit_health()
+	var defence:=capture_progress_health(g,plan.configuration)
 	g.planets.commit(plan)
 	if plan.configuration:g.invalidate_tutorial_unlocks()
-	finish_progress_change(g,plan.configuration)
+	finish_progress_change(g,plan.configuration,defence)
 	g.event.emit("planet_changed",payload)
 	return true
 
@@ -113,9 +114,9 @@ func advance_planets(g,dt: float) -> void:
 		if (planet_plan.configuration or crew_plan.configuration) and not g.native_before_configuration_change():return
 		if not g.planets.proposal_current(planet_plan) or not g.crew.proposal_current(crew_plan):return
 		var refitted: bool=planet_plan.configuration or crew_plan.configuration
-		if refitted:g.capture_refit_health()
+		var defence:=capture_progress_health(g,refitted)
 		g.planets.commit(planet_plan);g.crew.commit(crew_plan)
-		finish_progress_change(g,refitted)
+		finish_progress_change(g,refitted,defence)
 		notify_crew_changes(g,crew_plan.changes,"planet")
 		g.event.emit("planet_changed",{"id":id,"crewId":planet_plan.crew_id,"reward":reward})
 
@@ -131,12 +132,12 @@ func assign_crew(g,crew_id: String, assignment_type: String, target_id: String, 
 			if not g.crew.proposal_current(plan) or not g.crew.can_assign(g,crew_id,assignment_type,target_id):return false
 		if assignment_type=="galaxy_explore" and not g.galaxy_runtime.flush_pending(g,target_id):return false
 		if not g.crew.proposal_current(plan) or not g.crew.can_assign(g,crew_id,assignment_type,target_id):return false
-		g.capture_refit_health()
+	var defence:=capture_progress_health(g,plan.configuration)
 	var factory_was_active: bool= g.crew.factory_active(g)
 	g.crew.commit(plan)
 	if not factory_was_active and g.crew.factory_active(g):g.research.refresh_auto_inputs(g,g.production_time(),true)
 	var started: bool=g.galaxy.start(target_id) if assignment_type=="galaxy_explore" else false
-	finish_progress_change(g,plan.configuration)
+	finish_progress_change(g,plan.configuration,defence)
 	notify_crew_changes(g,plan.changes)
 	if started:g.event.emit("galaxy_changed",{"key":target_id})
 	return true
@@ -191,13 +192,20 @@ func refresh_factory_inputs(g,dt: float) -> void:
 	g.save_dirty=true
 	if refreshed:g.event.emit("tech_tree_changed",{"reason":"automatic_input"})
 
-func finish_progress_change(g, refitted: bool) -> void:
+func capture_progress_health(g, configuration: bool) -> Dictionary:
+	if not configuration:return {}
+	var defence: Dictionary={"armour":g.stat("armour"),"shield":g.stat("shield")}
+	g.capture_refit_health()
+	return defence
+
+func finish_progress_change(g, configuration: bool, defence: Dictionary) -> void:
 	g.save_dirty=true
-	if not refitted:return
+	if not configuration:return
 	# Both domain owners are committed before capacity, descriptors and health settle.
 	g.reactor.reconcile_capacity(g.reactor_capacity())
 	g.configuration_committed()
-	g.apply_refit_health()
+	# Configuration changes alone must not clear or redistribute module damage.
+	if defence.keys().any(func(key):return N.compare(defence[key],g.stat(key))!=0):g.apply_refit_health()
 
 func notify_crew_effects(g,changes: Array) -> void:
 	if not g.crew.levels_unlocked(g):return

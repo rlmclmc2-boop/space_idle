@@ -4,8 +4,8 @@
 
 | 既有用例 | 结果 | 直接覆盖 |
 |---|---|---|
-| test_crew_dirty.gd | 39 / 0 failures | 接管拒绝、回调后 stale 计划、真实银河旧岗位结算回调、完整加载清旧调度、既有材料唤醒与截止时间 |
-| test_ai_tech_tree.gd | 134 / 0 failures | 钱包/科研原子提交、接管回调改变钱包后的拒绝、完成通知见完整状态、值守续研与加载保留手动暂停 |
+| test_crew_dirty.gd | 46 / 0 failures | 接管拒绝、回调后 stale 计划、真实银河旧岗位结算回调、完整加载清旧调度、既有材料唤醒与截止时间 |
+| test_ai_tech_tree.gd（c5016813，本次未重跑） | 134 / 0 failures | 钱包/科研原子提交、接管回调改变钱包后的拒绝、完成通知见完整状态、值守续研与加载保留手动暂停 |
 | test_planet.gd | 684 / 0 failures | 经验接管拒绝无半提交、来源载荷、通知见完整经验与行星状态、重铸保留语义与清旧运行时 |
 | test_save_startup_rejection.gd（38387d9e 前版，本次未重跑） | 11 / 0 failures | 正式 main.tscn 启动、坏档拒绝和现行快照恢复；该用例未修改 |
 
@@ -22,3 +22,8 @@ Godot 4.7.2。先用现有 `python test/run.py test_crew_dirty.gd --headless --g
 - prepare_crew_commit 只接管与复核；生命只在最后复核通过、提交之前捕获。船员/行星相关提交统一进入 finish_progress_change：所有权威域先提交，再协调容量、一次 configuration_committed、生命应用，最后只读通知。来源载荷和加载/重铸边界保留。
 - ai_tech_tree.advance_inputs 提供计划实际使用的有效速度、所需时间与资格；准备使用同一快照计算，原生回调后重取比较。保留科研和钱包 revision 校验，不添加全局戳、重试或事务框架。
 - 本次直接重跑原三套用例：39/134/684 全通过。新断言覆盖拒绝无捕获、成功单次捕获、联合经验变更单次配置更新/最终通知状态/生命比例，以及真实 crew.install_snapshot 和 hyperspace.install_snapshot 改变科研速度后拒绝旧工作和旧扣费。启动日志为前版保留，不声称本轮重新执行。
+
+## 防御副作用修订（基于 c5016813）
+
+仅修改 progress_runtime 的生命应用条件：最终复核后单次捕获提交前护甲/护盾上限和生命比例；提交后正常协调容量和配置，仅实际防御上限变化调用既有 apply_refit_health。无防御变化不触碰 module damage，未修改 game 防御算法。
+本次直接验证 test_crew_dirty 46/46、test_planet 684/684。新增原用例断言：科研派遣、升级、撤回不调用生命重整且原模块损伤/当前生命及通知视图保持；转入实际防御岗位仍单次捕获/应用且保留75%生命比例。既有联合结算用例继续通过。科研输入与生命周期未改，本轮不重复跑其余用例。
