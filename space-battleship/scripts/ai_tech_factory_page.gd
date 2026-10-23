@@ -2,7 +2,10 @@ extends Control
 ## Snapshot-driven AI factory. The game owns all research math and unlock decisions.
 
 signal research_requested(technology_id: String)
-signal investment_requested(resource_id: String, amount: int)
+signal investment_requested(resource_id: String, amount: Variant)
+signal input_ratio_requested(resource_id: String, ratio: float)
+
+const N = preload("res://scripts/growth_number.gd")
 
 const ART = preload("res://scripts/ai_tech_factory_art.gd")
 const INK := Color("dce9e8")
@@ -30,6 +33,10 @@ var remaining_text: Label
 var progress_fill: ColorRect
 var ai_text: Label
 var speed_text: Label
+var iron_label: Label
+var uranium_label: Label
+var input_mode: Label
+var automatic_input := false
 var iron_edit: LineEdit
 var uranium_edit: LineEdit
 var iron_state: Label
@@ -127,12 +134,13 @@ func setup(source: Variant = null) -> void:
 	remaining_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	ai_text = _label(foot, "AI —", Rect2(25, 183, 160, 36), 24, CYAN)
 	speed_text = _label(foot, "", Rect2(188, 186, 545, 35), 21, INK)
-	_label(foot, UIText.t("ai_tech.investment.iron_per_second"), Rect2(25, 230, 108, 34), 20, MUTED)
+	input_mode = _label(foot, "", Rect2(750, 183, 510, 35), 19, CYAN)
+	iron_label = _label(foot, UIText.t("ai_tech.investment.iron_per_second"), Rect2(25, 230, 108, 34), 20, MUTED)
 	iron_edit = _investment_input(foot, Rect2(135, 225, 130, 42), "iron")
-	iron_state = _label(foot, "", Rect2(352, 231, 181, 33), 18, CYAN)
-	_label(foot, UIText.t("ai_tech.investment.uranium_per_second"), Rect2(552, 230, 108, 34), 20, MUTED)
-	uranium_edit = _investment_input(foot, Rect2(662, 225, 130, 42), "uranium")
-	uranium_state = _label(foot, "", Rect2(879, 231, 367, 33), 18, CYAN)
+	iron_state = _label(foot, "", Rect2(352, 231, 282, 33), 18, CYAN)
+	uranium_label = _label(foot, UIText.t("ai_tech.investment.uranium_per_second"), Rect2(660, 230, 108, 34), 20, MUTED)
+	uranium_edit = _investment_input(foot, Rect2(775, 225, 130, 42), "uranium")
+	uranium_state = _label(foot, "", Rect2(992, 231, 270, 33), 18, CYAN)
 	_build_drawer()
 	set_drawer_open(false)
 	if source_provider.is_valid(): refresh_snapshot()
@@ -153,9 +161,19 @@ func _investment_input(parent: Control, rect: Rect2, resource_id: String) -> Lin
 
 func _submit_investment(resource_id: String, value: String) -> void:
 	var cleaned := value.strip_edges()
-	if not cleaned.is_valid_int() or cleaned.begins_with("-"):
-		return
-	investment_requested.emit(resource_id, cleaned.to_int())
+	var editor: LineEdit=iron_edit if resource_id=="iron" else uranium_edit
+	var state_label: Label=iron_state if resource_id=="iron" else uranium_state
+	if automatic_input:
+		if not cleaned.is_valid_float() or not is_finite(cleaned.to_float()) or cleaned.to_float()<0.1:
+			state_label.text=UIText.t("ai_tech.investment.invalid_ratio");return
+		editor.release_focus()
+		input_ratio_requested.emit(resource_id,cleaned.to_float()/100.0)
+	else:
+		var amount=N.parse_input(cleaned)
+		if amount==null or N.compare(amount,N.floor_value(amount))!=0:
+			state_label.text=UIText.t("ai_tech.investment.invalid_amount");return
+		editor.release_focus()
+		investment_requested.emit(resource_id,amount)
 
 func _build_drawer() -> void:
 	drawer = Control.new()
@@ -253,8 +271,19 @@ func set_snapshot(data: Dictionary) -> void:
 	progress_fill.size.x = 1237.0 * percent if working else 0.0
 	ai_text.text = str(data.get("ai_text", "AI —"))
 	speed_text.text = str(data.get("speed_text", ""))
+	var next_automatic := bool(data.get("automatic_input",false))
+	if automatic_input!=next_automatic:
+		iron_edit.release_focus();uranium_edit.release_focus()
+	automatic_input=next_automatic
+	iron_label.text=UIText.t("ai_tech.investment.iron_ratio" if automatic_input else "ai_tech.investment.iron_per_second")
+	uranium_label.text=UIText.t("ai_tech.investment.uranium_ratio" if automatic_input else "ai_tech.investment.uranium_per_second")
+	input_mode.text=UIText.t("ai_tech.investment.automatic") if automatic_input else ""
+	iron_edit.tooltip_text=UIText.t("ai_tech.investment.auto_help" if automatic_input else "ai_tech.investment.manual_help")
+	uranium_edit.tooltip_text=iron_edit.tooltip_text
 	iron_state.text = str(data.get("iron_state", ""))
 	uranium_state.text = str(data.get("uranium_state", ""))
+	iron_state.tooltip_text=iron_state.text;uranium_state.tooltip_text=uranium_state.text
+	iron_state.mouse_filter=Control.MOUSE_FILTER_PASS;uranium_state.mouse_filter=Control.MOUSE_FILTER_PASS
 	_sync_input(iron_edit, str(data.get("iron_investment", "0")))
 	_sync_input(uranium_edit, str(data.get("uranium_investment", "0")))
 	drawer_active.text = UIText.t("ui.ai_tech_factory_page.message_11") + str(active.get("name", UIText.t("ui.ai_tech_factory_page.message_12")))

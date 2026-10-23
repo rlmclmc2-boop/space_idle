@@ -321061,17 +321061,17 @@
     "hightech_scientists": {
       "id": "hightech_scientists",
       "targetType": "hightech",
-      "effectType": "AUTO_SCIENTIST",
+      "effectType": "AUTO_RESEARCH",
       "baseValue": 1,
       "levelScale": 0,
       "powerScale": 0,
-      "interval": 1,
+      "interval": 0,
       "maxCrew": 1,
-      "description": "每1秒按选定数量购买AI；成功后平均分配。",
+      "description": "研究完成后自动续研剩余时间最短的可用项目；等级提升科研速度。",
       "titleTextId": "crew.job.hightech",
-      "descTextId": "crew.effect.scientist_auto",
+      "descTextId": "crew.effect.research_auto",
       "targetCategory": "system",
-      "upgradeModes": "1,10,max"
+      "upgradeModes": ""
     },
     "jewel_auto": {
       "id": "jewel_auto",
@@ -321194,16 +321194,10 @@
       "des": "已装备装备属性 {effect}",
       "targetType": "equipment"
     },
-    "tech_ai_per_level": {
-      "id": "tech_ai_per_level",
-      "value": 2,
-      "des": "每个工厂项目获得 {ai} 个专属AI",
-      "targetType": "hightech"
-    },
     "tech_speed": {
       "id": "tech_speed",
       "value": 0.2,
-      "des": "AI工厂生产速度 {effect}",
+      "des": "科研速度 {effect}",
       "targetType": "hightech"
     },
     "gem_bonus": {
@@ -321252,12 +321246,6 @@
       "id": "planet_exp",
       "value": "",
       "des": "船员经验 +{exp}",
-      "targetType": ""
-    },
-    "dedicated_ai": {
-      "id": "dedicated_ai",
-      "value": "",
-      "des": "专属AI {ai}",
       "targetType": ""
     },
     "hyperspace_duration_k": {

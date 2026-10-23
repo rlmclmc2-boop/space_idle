@@ -4148,11 +4148,11 @@
     "note": "船员紧凑布局"
   },
   {
-    "key": "crew.core_title.scientist",
-    "text": "AI 自动建造",
+    "key": "crew.core_title.research",
+    "text": "自动续研",
     "params": "",
     "category": "crew",
-    "note": "船员紧凑布局"
+    "note": "船员 AI 工厂自动续研岗位"
   },
   {
     "key": "crew.core_title.jewel",
@@ -4176,13 +4176,6 @@
     "note": "船员紧凑布局"
   },
   {
-    "key": "crew.core_scientist",
-    "text": "每{interval}秒 · 建造{amount}并平均分配",
-    "params": "interval,amount",
-    "category": "crew",
-    "note": "船员紧凑布局"
-  },
-  {
     "key": "crew.core_jewel",
     "text": "每{interval}秒 · 尝试提升共享强化等级",
     "params": "interval",
@@ -4192,13 +4185,6 @@
   {
     "key": "crew.amount_label",
     "text": "单次升级量",
-    "params": "",
-    "category": "crew",
-    "note": "船员紧凑布局"
-  },
-  {
-    "key": "crew.ai_amount_label",
-    "text": "单次建造量",
     "params": "",
     "category": "crew",
     "note": "船员紧凑布局"
@@ -10864,13 +10850,7 @@
     "category": "crew",
     "note": "仅下一名未解锁船员剪影显示，不包含身份或效果"
   },
-  {
-    "key": "crew.effect.scientist_auto",
-    "text": "每 {interval} 秒购买{mode}；成功后平均分配",
-    "params": "{interval},{mode}",
-    "category": "crew",
-    "note": "船员自动AI岗位效果"
-  },
+  {"key": "crew.effect.research_auto", "text": "当前研究完成后，继续研究剩余时间最短的可用项目；保持已有进度和手动暂停。每 60 游戏秒按实际收入比例分配铁、铀投入。", "params": "", "category": "crew", "note": "船员 AI 工厂自动续研岗位"},
   {
     "key": "crew.hightech_system",
     "text": "AI工厂",
@@ -10898,27 +10878,6 @@
     "params": "{interval}",
     "category": "crew",
     "note": "船员宝石岗位效果"
-  },
-  {
-    "key": "crew.scientist_amount",
-    "text": "每次购买数量（AI）",
-    "params": "",
-    "category": "crew",
-    "note": "船员页面购买选项"
-  },
-  {
-    "key": "crew.scientist_count",
-    "text": "×{count} AI",
-    "params": "{count}",
-    "category": "crew",
-    "note": "船员页面购买选项"
-  },
-  {
-    "key": "crew.scientist_max",
-    "text": "MAX AI",
-    "params": "",
-    "category": "crew",
-    "note": "船员页面购买选项"
   },
   {
     "key": "planet.tab",
@@ -15628,13 +15587,7 @@
     "category": "crew",
     "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
   },
-  {
-    "key": "crew.preview.scientist",
-    "text": "确认后每{interval}秒按正常费用消耗{resources}，建造{amount}并均分到研发；买不起时等待。",
-    "params": "interval,resources,amount",
-    "category": "crew",
-    "note": "确认分配前显示所选自动岗位的现有行为，不改变升级规则"
-  },
+  {"key": "crew.preview.research", "text": "保留当前研究，完成后选择剩余时间最短的可用项目。等级提升科研速度；铁、铀投入比例在 AI 工厂设置。", "params": "", "category": "crew", "note": "船员 AI 工厂自动续研岗位"},
   {
     "key": "crew.preview.enhancement",
     "text": "确认后每{interval}秒按正常费用花强化碎片升1级；碎片不足时等待。",
@@ -16218,7 +16171,7 @@
   {"key":"battle.damage_stats.unknown_slot","text":"已卸下","params":"","category":"battle","note":"统计窗口内已卸下的无人机"},
   {"key":"battle.damage_stats.other","text":"其他伤害","params":"","category":"battle","note":"无法可靠归属的伤害"},
   {"key":"ai_tech.tutorial.research","text":"可连续研发；前置条件不足时停止。暂停保留进度。","params":"","category":"tutorial","note":"首次选择科技时的研究说明"},
-  {"key":"ai_tech.tutorial.investment","text":"铁和铀投入仅用于可选加速，按每秒持续消耗；余额不足时仅暂停该资源加速。","params":"","category":"tutorial","note":"科技投入说明"},
+  {"key": "ai_tech.tutorial.investment", "text": "投入按每游戏秒扣费，余额不足保留基础科研。派驻船员后可设置铁、铀收入比例，每 60 游戏秒自动更新。", "params": "", "category": "tutorial", "note": "科技投入说明"},
   {"key":"ai_tech.investment.iron_per_second","text":"铁投入/秒","params":"","category":"research","note":"投入框旁直接标明持续扣费单位"},
   {"key":"ai_tech.investment.uranium_per_second","text":"铀投入/秒","params":"","category":"research","note":"投入框旁直接标明持续扣费单位"},
   {"key":"ai_tech.research.estimate","text":"预计 {time}","params":"time","category":"research","note":"选择研究时按当前速度估算下一等级耗时"},
@@ -16319,5 +16272,13 @@
   {"key": "ui.enhancement_panel.message_03", "text": " 个", "params": "", "category": "interface", "note": "enhancement_panel.gd"},
   {"key": "ui.enhancement_panel.message_04", "text": " 次", "params": "", "category": "interface", "note": "enhancement_panel.gd"},
   {"key": "ui.enhancement_panel.message_05", "text": " 层", "params": "", "category": "interface", "note": "enhancement_panel.gd"},
-  {"key": "ui.enhancement_panel.message_06", "text": " 个百分点", "params": "", "category": "interface", "note": "enhancement_panel.gd"}
+  {"key": "ui.enhancement_panel.message_06", "text": " 个百分点", "params": "", "category": "interface", "note": "enhancement_panel.gd"},
+  {"key": "ai_tech.investment.iron_ratio", "text": "铁比例 %", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.uranium_ratio", "text": "铀比例 %", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.automatic", "text": "船员自动投入 · 每 60 游戏秒更新", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.auto_help", "text": "按最近 60 游戏秒的实际收入均值分配。比例最低 0.1%，投入向下取整后最低为 1/秒；倍速不改变每游戏秒投入。修改比例立即重算。", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.manual_help", "text": "每游戏秒投入的整数资源量，支持科学计数法，例如 1e400。余额不足时只扣实际可支付部分。", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.invalid_ratio", "text": "比例最低 0.1%", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.invalid_amount", "text": "请输入非负整数或科学计数值", "params": "", "category": "ai_tech", "note": "AI 工厂船员自动投入"},
+  {"key": "ai_tech.investment.current", "text": "{amount}/秒 · {effect}", "params": "amount,effect", "category": "ai_tech", "note": "AI 工厂船员自动投入"}
 ]

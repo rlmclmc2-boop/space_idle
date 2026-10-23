@@ -32,7 +32,9 @@ static func schema() -> Dictionary:
  result.aiTechLevels={"*":"i"}
  result.aiTechProgress={"*":"n"}
  result.aiTechActive="s"
- result.aiTechInput={"*":"i"}
+ result.aiTechInput={"*":"g"}
+ result.aiTechAutoRatios={"*":"n"}
+ result.aiTechAutoElapsed="n"
  result.aiIncomePeak={"*":"g"}
  result.aiTechCompletionUnread="b"
  result.productionElapsed="n"

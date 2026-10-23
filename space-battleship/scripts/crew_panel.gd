@@ -522,7 +522,7 @@ func refresh_detail_status(item: Dictionary) -> void:
 	if not assigned:return
 	var job: Dictionary=g.crew.assignments(g).get(item.assignmentType,{})
 	var kind:=str(job.get("effectType",""))
-	var effect_key: String={"AUTO_UPGRADE":"equipment","AUTO_SCIENTIST":"scientist","AUTO_COMBINE":"jewel","AUTO_REACTOR":"reactor","OUTPUT":"output"}.get(kind,"")
+	var effect_key: String={"AUTO_UPGRADE":"equipment","AUTO_RESEARCH":"research","AUTO_COMBINE":"jewel","AUTO_REACTOR":"reactor","OUTPUT":"output"}.get(kind,"")
 	host.set_ui_value(effect_title,"text",UIText.t("crew.core_title."+effect_key) if not effect_key.is_empty() else job_title(job))
 	var text: String=g.crew.effect_text(g,item)
 	if g.crew.active(g,item) and not effect_key.is_empty():
@@ -531,14 +531,14 @@ func refresh_detail_status(item: Dictionary) -> void:
 		var mode: String=str(item.get("upgradeMode","1"))
 		if kind=="AUTO_UPGRADE":
 			text=UIText.t("crew.core_equipment",{"interval":interval,"amount":UIText.t("crew.amount_max") if mode=="max" else UIText.t("crew.amount_levels",{"count":mode})})
-		elif kind=="AUTO_SCIENTIST":text=UIText.t("crew.core_scientist",{"interval":interval,"amount":g.crew.upgrade_mode_text(mode,kind)})
 		elif kind=="AUTO_COMBINE":text=UIText.t("crew.core_jewel",{"interval":interval})
 		elif kind=="OUTPUT":text=UIText.t("crew.effect.output",{"value":"%.1f" % (value*100)})
 	host.set_ui_value(description,"text",text)
 
 func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
 	var kind:=str(row.get("effectType",""))
-	var key: String={"AUTO_UPGRADE":"equipment","AUTO_SCIENTIST":"scientist","AUTO_COMBINE":"enhancement","AUTO_REACTOR":"reactor"}.get(kind,"")
+	if kind=="AUTO_RESEARCH":return UIText.t("crew.preview.research")
+	var key: String={"AUTO_UPGRADE":"equipment","AUTO_RESEARCH":"research","AUTO_COMBINE":"enhancement","AUTO_REACTOR":"reactor"}.get(kind,"")
 	if key.is_empty() or jobs.selected<0:return ""
 	var g=host.game
 	var value: float=g.crew.effect_value(g,{"crewId":item.crewId,"assignmentType":job_ids[jobs.selected]})
@@ -547,11 +547,6 @@ func assignment_preview_text(item: Dictionary, row: Dictionary) -> String:
 	var mode:=draft_mode
 	if kind=="AUTO_UPGRADE":
 		values.amount=UIText.t("crew.preview.maximum") if mode=="max" else g.crew.upgrade_mode_text(mode,kind)
-	elif kind=="AUTO_SCIENTIST":
-		values.amount=g.crew.upgrade_mode_text(mode,kind)
-		var resources:=PackedStringArray()
-		for id in g.scientist_cost():resources.append(UIText.data_text("resources",str(id)))
-		values.resources="、".join(resources)
 	return UIText.t("crew.preview."+key,values)
 
 func refresh_actions() -> void:
@@ -563,10 +558,9 @@ func refresh_actions() -> void:
 	if exploring or item.is_empty():return
 	var row: Dictionary=g.crew.assignments(g).get(job_ids[jobs.selected],{}) if jobs.selected>=0 else {}
 	var equipment: bool=row.get("targetType")=="equipment" and row.get("effectType")=="AUTO_UPGRADE"
-	var scientist: bool=row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_SCIENTIST"
-	var automatic:=equipment or scientist
+	var automatic:=equipment
 	var choose_target: bool=not automatic and target_ids.size()>1
-	host.set_ui_value(target_label,"text",UIText.t("crew.amount_label" if equipment else "crew.ai_amount_label" if scientist else "crew.choose_target"))
+	host.set_ui_value(target_label,"text",UIText.t("crew.amount_label" if equipment else "crew.choose_target"))
 	host.set_ui_value(parameter_column,"visible",automatic or choose_target)
 	host.set_ui_value(target_picker,"visible",choose_target)
 	host.set_ui_value(upgrade_picker,"visible",automatic)

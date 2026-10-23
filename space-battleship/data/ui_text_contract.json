@@ -1,5 +1,14 @@
 {
   "entries": {
+    "ai_tech.investment.iron_ratio": {"params": []},
+    "ai_tech.investment.uranium_ratio": {"params": []},
+    "ai_tech.investment.automatic": {"params": []},
+    "ai_tech.investment.auto_help": {"params": []},
+    "ai_tech.investment.manual_help": {"params": []},
+    "ai_tech.investment.invalid_ratio": {"params": []},
+    "ai_tech.investment.invalid_amount": {"params": []},
+    "ai_tech.investment.current": {"params": ["amount", "effect"]},
+
     "ai_tech.benefit.weapon_damage": {"params": []},
     "ai_tech.benefit.durability": {"params": []},
     "ai_tech.benefit.iron": {"params": []},
@@ -2882,9 +2891,7 @@
     "crew.core_title.equipment": {
       "params": []
     },
-    "crew.core_title.scientist": {
-      "params": []
-    },
+    "crew.core_title.research": {"params": []},
     "crew.core_title.jewel": {
       "params": []
     },
@@ -2897,21 +2904,12 @@
         "amount"
       ]
     },
-    "crew.core_scientist": {
-      "params": [
-        "interval",
-        "amount"
-      ]
-    },
     "crew.core_jewel": {
       "params": [
         "interval"
       ]
     },
     "crew.amount_label": {
-      "params": []
-    },
-    "crew.ai_amount_label": {
       "params": []
     },
     "crew.amount_max": {
@@ -6199,12 +6197,7 @@
         "level"
       ]
     },
-    "crew.effect.scientist_auto": {
-      "params": [
-        "interval",
-        "mode"
-      ]
-    },
+    "crew.effect.research_auto": {"params": []},
     "crew.hightech_system": {
       "params": []
     },
@@ -6218,17 +6211,6 @@
       "params": [
         "interval"
       ]
-    },
-    "crew.scientist_amount": {
-      "params": []
-    },
-    "crew.scientist_count": {
-      "params": [
-        "count"
-      ]
-    },
-    "crew.scientist_max": {
-      "params": []
     },
     "planet.tab": {
       "params": []
@@ -8491,13 +8473,7 @@
         "amount"
       ]
     },
-    "crew.preview.scientist": {
-      "params": [
-        "interval",
-        "resources",
-        "amount"
-      ]
-    },
+    "crew.preview.research": {"params": []},
     "crew.preview.enhancement": {
       "params": [
         "interval"

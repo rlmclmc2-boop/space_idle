@@ -1153,10 +1153,16 @@ func select_tech(id: String) -> bool:
 	event.emit("tech_tree_changed",{"reason":"selection","id":id})
 	return true
 
-func set_tech_input(resource_id: String, amount: int) -> bool:
+func set_tech_input(resource_id: String, amount: Variant) -> bool:
 	if not research.set_input(self,resource_id,amount):return false
 	save_dirty = true
 	event.emit("tech_tree_changed",{"reason":"input","resource":resource_id})
+	return true
+
+func set_tech_input_ratio(resource_id: String, ratio: float) -> bool:
+	if not research.set_auto_ratio(self,resource_id,ratio):return false
+	save_dirty=true
+	event.emit("tech_tree_changed",{"reason":"input_ratio","resource":resource_id})
 	return true
 
 func hightech_slots() -> Array:
@@ -1478,7 +1484,9 @@ func assign_crew(crew_id: String, assignment_type: String, target_id: String, up
 		if assignment_type=="galaxy_explore" and not galaxy_runtime.flush_pending(self,target_id):return false
 		if not crew.proposal_current(plan) or not crew.can_assign(self,crew_id,assignment_type,target_id):return false
 		capture_refit_health()
+	var factory_was_active := crew.factory_active(self)
 	crew.commit(plan)
+	if not factory_was_active and crew.factory_active(self):research.refresh_auto_inputs(self,production_time(),true)
 	var started: bool=galaxy.start(target_id) if assignment_type=="galaxy_explore" else false
 	notify_crew_changes(plan.changes)
 	if started:event.emit("galaxy_changed",{"key":target_id})
@@ -1518,6 +1526,7 @@ func record_research_income(id: String) -> void:
 		event.emit("tech_tree_changed",{"reason":"income_peak","id":id})
 
 func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
+	if dt<=0.0 or not is_finite(dt):return
 	var proposal := research.prepare_advance(self,dt)
 	if proposal.is_empty():return
 	if proposal.completed and not native_before_configuration_change():return
@@ -1533,6 +1542,15 @@ func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 	if not proposal.paid.is_empty() and now_ms-ai_tech_last_resource_notice_ms>=250:
 		ai_tech_last_resource_notice_ms=now_ms
 		resources_changed(proposal.paid)
+	# A completed interval is committed before choosing the following project.
+	# Its research starts on the next shared step, with no replayed time or fee.
+	if proposal.completed:crew.continue_research(self)
+
+func refresh_factory_inputs(dt: float) -> void:
+	if not crew.factory_active(self):return
+	var refreshed := research.advance_auto_inputs(self,dt,production_time())
+	save_dirty=true
+	if refreshed:event.emit("tech_tree_changed",{"reason":"automatic_input"})
 
 func production_time() -> float:
 	return float(profile.get("productionElapsed",0.0))
@@ -1553,6 +1571,15 @@ func production_minute_total(id: String, at := -1.0) -> Variant:
 		# Their old acceleration history is unavailable; persisted peaks are retained.
 		var stamp := float(sample.get("production_time",game_now-(wall_now-float(sample.time))))
 		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.get("production_base",sample.amount))
+	return total
+
+func resource_game_minute_total(id: String, at := -1.0) -> Variant:
+	if at<0.0:at=production_time()
+	var total: Variant=0.0
+	for sample in resource_samples:
+		if str(sample.id)!=id or not sample.has("production_time"):continue
+		var stamp := float(sample.production_time)
+		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.amount)
 	return total
 
 func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> Variant:
@@ -3949,7 +3976,7 @@ func refresh_crew_level_effects(changes: Array) -> void:
 	if kinds.has("equipment") or kinds.has("reactor"):
 		configuration_committed();apply_refit_health()
 		for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
-	if kinds.has("hightech"):event.emit("scientists_changed",{})
+	if kinds.has("hightech"):event.emit("tech_tree_changed",{"reason":"crew_speed"})
 	if kinds.has("reactor"):event.emit("reactor_changed",{})
 
 func native_before_configuration_change()->bool:
@@ -4019,6 +4046,9 @@ func advance_shared_clock_and_economy(dt:float)->void:
 		drop.age += dt
 		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
 			collect(drop, false)
+	# Allocate after this step's receipts, so a drop settled on the window
+	# boundary is included now rather than falling out of the following window.
+	refresh_factory_inputs(dt)
 
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():

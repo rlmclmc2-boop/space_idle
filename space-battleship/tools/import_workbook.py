@@ -545,16 +545,15 @@ def validate_crew(data):
         if isinstance(luck_per_level, bool) or not math.isfinite(luck_per_level * 9e18):
             raise ValueError('crew_config hyperspace_luck_per_level: invalid numeric range')
         multiplier = settings.get('exp_multiplier', {}).get('value')
-        for key in ('equip_bonus', 'tech_ai_per_level', 'tech_speed', 'gem_bonus', 'charge_bonus'):
+        for key in ('equip_bonus', 'tech_speed', 'gem_bonus', 'charge_bonus'):
             row = settings.get(key, {})
             positive(row.get('value'), 'crew_config ' + key, True)
             if not isinstance(row.get('des'), str) or not row['des'].strip():
                 raise ValueError('crew_config ' + key + ': missing des')
-        integer(settings['tech_ai_per_level']['value'], 'tech_ai_per_level', True)
-        for key in ('name_level', 'exp_bar', 'badge_tip', 'planet_exp', 'dedicated_ai'):
+        for key in ('name_level', 'exp_bar', 'badge_tip', 'planet_exp'):
             if not isinstance(settings.get(key, {}).get('des'), str) or not settings[key]['des'].strip():
                 raise ValueError('crew_config ' + key + ': missing des')
-        for key, target in {'equip_bonus':'equipment', 'tech_ai_per_level':'hightech', 'tech_speed':'hightech', 'gem_bonus':'jewel', 'charge_bonus':'reactor'}.items():
+        for key, target in {'equip_bonus':'equipment', 'tech_speed':'hightech', 'gem_bonus':'jewel', 'charge_bonus':'reactor'}.items():
             if settings[key].get('targetType') != target:
                 raise ValueError('crew_config ' + key + ': invalid targetType')
         positive(multiplier, 'crew_config exp_multiplier')
@@ -571,10 +570,10 @@ def validate_crew(data):
         if row.get('levelScale', 0) != 0:
             raise ValueError(f'{id}: crew level effect scaling is retired; levelScale must be 0')
         integer(row.get('maxCrew'), f'crew_assignment {id} maxCrew')
-        if row['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST','AUTO_COMBINE','AUTO_REACTOR'):
+        if row['effectType'] in ('AUTO_UPGRADE','AUTO_COMBINE','AUTO_REACTOR'):
             positive(row['baseValue'], f'{id} baseValue')
             positive(row['interval'], f'{id} interval')
-            if row['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST'):
+            if row['effectType'] == 'AUTO_UPGRADE':
                 modes = [mode.strip() for mode in str(row.get('upgradeModes','')).split(',')]
                 if not modes or len(set(modes))!=len(modes) or any(mode!='max' and (not mode.isdigit() or not 0<int(mode)<=2147483647) for mode in modes):
                     raise ValueError(f'{id}: upgradeModes requires positive integers or max')
@@ -594,7 +593,7 @@ def validate_crew(data):
         for job in jobs.values():
             try:
                 value = float(job['baseValue'])*float(row['basePower'])**float(job['powerScale'])
-                if not math.isfinite(value) or (job['effectType'] in ('AUTO_UPGRADE','AUTO_SCIENTIST','AUTO_COMBINE','AUTO_REACTOR') and (value<=0 or not math.isfinite(float(job['interval'])/value))):
+                if not math.isfinite(value) or (job['effectType'] in ('AUTO_UPGRADE','AUTO_COMBINE','AUTO_REACTOR') and (value<=0 or not math.isfinite(float(job['interval'])/value))):
                     raise ValueError(f'crew {id}: nonfinite effective power or interval')
             except OverflowError as error:
                 raise ValueError(f'crew {id}: effect power overflow') from error

@@ -10,10 +10,11 @@ func run()->void:
 	var phase:String=str(args[0]) if not args.is_empty() else ""
 	match phase:
 		"planet-loading":await run_planet_loading()
+		"factory-write","factory-reopen":await run_factory(phase)
 		"reactor-write","reactor-reopen":await run_reactor(phase)
 		"product-write","product-reopen","product-claimed-reopen":await run_product(phase)
 		_:
-			printerr("Use test/run.py test_ordinary_entry.gd [--scenario all|game|reactor|planet]")
+			printerr("Use test/run.py test_ordinary_entry.gd [--scenario all|game|reactor|planet|factory]")
 			quit(2)
 
 func open_product():
@@ -280,3 +281,87 @@ func claim_and_forge(scene,receipt:Dictionary)->void:
 	await product_capture(scene,"product-forge")
 	panel.select_section(1);panel.dirty=true;panel.refresh();feedback.mark_viewed()
 	check(not g.hyperspace.receipt_marker().unread,"Viewing acknowledges the matching domain receipt")
+
+# AI factory acceptance reuses the original scene, its controls and real writer.
+func run_factory(phase:String)->void:
+	var scene=await open_product()
+	if scene==null:return
+	var g=scene.game
+	var N=GrowthNumber
+	if phase=="factory-write":
+		g.profile.cleared=range(1,61);g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g);g.pending_unlocks.clear()
+		check(g.start(1,false),"Factory product starts through the real battle entry")
+		var wallet:Dictionary=g.economy.save_data();wallet.chronoParticles=1000.0
+		check(g.economy.install_snapshot(wallet),"Factory speed budget installs")
+		# Authored drops enter through the actual collection/credit/history path.
+		for pair in [["1",N.parse_input("6e403")],["2",6000.0]]:
+			g.uid+=1
+			var drop:Dictionary={"id":pair[0],"amount":pair[1],"x":300.0,"y":300.0,"age":0.0,"uid":g.uid}
+			g.drops.append(drop);g.collect(drop,true)
+		var xp:float=g.crew.required_exp(g,0)+g.crew.required_exp(g,1)
+		check(g.add_crew_exp("navigator",xp),"Factory crew gains two levels through current XP command")
+		scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(5)
+		var panel=scene.crew_panel;panel.refresh();panel.select("navigator")
+		var index:int=panel.job_ids.find("hightech_scientists")
+		check(index>=0,"Actual crew picker exposes AI factory job")
+		panel.jobs.select(index);panel.jobs.item_selected.emit(index);panel.assign_button.pressed.emit()
+		check(g.crew.factory_active(g) and g.research.selected().is_empty(),"Actual assign button starts automatic inputs without starting paused research")
+		check(N.compare(g.research.save_data().aiTechInput["1"],N.parse_input("1e400"))==0,"Actual collected huge income supplies the immediate one-percent allocation")
+		scene.select_system(1);var page=scene.hightech_page;page.refresh_snapshot()
+		check(page.automatic_input and page.iron_edit.text.to_float()==1.0 and page.uranium_edit.text.to_float()==1.0,"Actual AI page displays separate percent controls")
+		page.iron_edit.text_submitted.emit("2.5");page.uranium_edit.text_submitted.emit("0.1")
+		check(g.research.save_data().aiTechAutoRatios=={"1":0.025,"2":0.001},"Actual percentage controls commit separate ratios")
+		page.research_requested.emit("ai_singularity")
+		var before=g.economy.balance("1")
+		for frame in 10:scene._process(0.05)
+		check(g.research.level(g,"singularity")==1 and g.research.selected()=="equipment_reinforcement","Real product clock completes research and chooses shortest eligible continuation")
+		check(N.compare(g.economy.balance("1"),before)<0,"Real product clock actually pays huge research input")
+		page.research_requested.emit(g.research.selected())
+		check(g.research.selected().is_empty(),"Actual research control pauses automatic continuation")
+		g.paused=true;var timer:float=g.research.save_data().aiTechAutoElapsed;var time:float=g.production_time()
+		scene._process(1.0)
+		check(g.production_time()==time and g.research.save_data().aiTechAutoElapsed==timer,"Product pause freezes automatic allocation timer")
+		g.paused=false;check(g.set_speed(5),"Factory product accepts x5")
+		var input=g.research.save_data().aiTechInput.duplicate(true)
+		for frame in 10:scene._process(0.1)
+		check(is_equal_approx(g.production_time()-time,5.0) and ["1","2"].all(func(id):return N.compare(g.research.save_data().aiTechInput[id],input[id])==0),"X5 advances five game seconds without multiplying per-game-second inputs")
+		g.set_speed(1)
+		# Place one ordinary auto-collection on the next refresh boundary.
+		var scheduled:Dictionary=g.research.save_data();scheduled.aiTechAutoElapsed=60.0-BattleGame.LOGICAL_STEP
+		check(g.research.install_snapshot(scheduled,g.db.data.ai_tech_tree),"Near-boundary factory timer fixture installs")
+		g.uid+=1
+		var boundary_drop:Dictionary={"id":"1","amount":N.parse_input("6e406"),"x":300.0,"y":300.0,"age":float(g.db.defaults.autoCollectDelay)-BattleGame.LOGICAL_STEP*0.5,"uid":g.uid}
+		g.drops.append(boundary_drop)
+		var old_input=g.research.save_data().aiTechInput["1"]
+		scene._process(BattleGame.LOGICAL_STEP)
+		check(not g.drops.has(boundary_drop) and g.resource_samples.any(func(sample):return sample.id=="1" and sample.production_time==g.production_time()),"Original step settles the ordinary drop on the refresh boundary")
+		check(N.compare(g.research.save_data().aiTechInput["1"],old_input)>0 and g.research.save_data().aiTechAutoElapsed==0.0,"Same completed step includes the boundary receipt in automatic allocation")
+		g.paused=true;page.refresh_snapshot()
+		await product_capture(scene,phase)
+		save_product(scene,"Actual save button writes huge factory inputs, ratios, job and timer")
+		product_remember(g,{})
+	else:
+		var expected:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("user://product-expected.json"))
+		var current:Dictionary=JSON.parse_string(JSON.stringify(product_state(g)))
+		var mismatches:Array=[]
+		for key in expected.domains:
+			if current.get(key)!=expected.domains[key]:mismatches.append(key)
+		print("FACTORY_RESTORED ",JSON.stringify({"mismatches":mismatches,"research":current.research}))
+		check(current==expected.domains,"New original-main process restores all saved domain state including factory inputs and timer")
+		check(g.crew.factory_active(g) and g.research.selected().is_empty(),"Saved factory crew preserves the player's research pause")
+		g.paused=true;scene.refresh_structure();scene.refresh_tab_visibility();scene.select_system(1)
+		var page=scene.hightech_page;page.refresh_snapshot()
+		check(page.automatic_input and page.iron_edit.text=="2.5" and page.uranium_edit.text=="0.1","Reopened real page restores both controlled percentages")
+		await product_capture(scene,phase)
+		scene.select_system(5);scene.crew_panel.refresh();scene.crew_panel.select("navigator");scene.crew_panel.release_button.pressed.emit()
+		scene.select_system(1);page.refresh_snapshot()
+		check(not g.crew.factory_active(g) and not page.automatic_input,"Actual recall button restores manual input mode")
+		page.iron_edit.text_submitted.emit("1e401")
+		check(N.compare(g.research.save_data().aiTechInput["1"],N.parse_input("1e401"))==0,"Actual manual scientific entry accepts amounts beyond the old limit")
+		var inputs=g.research.save_data().aiTechInput.duplicate(true);g.paused=false
+		scene._process(0.2)
+		check(g.research.selected().is_empty() and ["1","2"].all(func(id):return N.compare(g.research.save_data().aiTechInput[id],inputs[id])==0),"Recall leaves paused research and manual inputs untouched during game time")
+	var report:={"phase":phase,"checks":checks,"failures":failures,"research":g.research.save_data(),"crew":g.crew.save_data(),"saving":g.save_enabled,"writer":g.progress_writer.owns_progress(),"header":{"iron":scene.resource_display("1"),"uranium":scene.resource_display("2")}}
+	FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," ",true,true))
+	await close_product(scene)
+	print("FACTORY_ENTRY ",phase," ",checks," checks ",failures," failures");quit(1 if failures else 0)
