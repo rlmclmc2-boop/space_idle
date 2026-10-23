@@ -20,3 +20,24 @@
 - Preserved later-slice boundaries: reforge/load/recovery remain S3; factory refresh and full shared-step/retained-time handling remain S2; BalanceGame legacy research consumer remains a known later consumer issue. Do not interpret partial migration as proof these paths are correct.
 - Next explicit reads: this task record, approved plan 76ed4b587b21af276b59ed37867c5a7271009b6d section 4, changed scripts command_result.gd/commit_effects.gd/game.gd/progress_runtime.gd/crew_system.gd/equipment_state.gd/balance_game.gd, test/test_commit_boundary.gd and affected existing tests. Inspect the Git diff against the base, then resume only in a continuation authorized to work after this stopped handoff.
 - No new gameplay ambiguity has been resolved on the user's behalf. Report any discovered questionable legacy behavior as current behavior / impact / recommendation for user judgment.
+
+## Authorized continuation — candidate, review still required
+
+- Continuation starts from c903c062 in a separate local Git clone; the previous checkout, personal saves and uncommitted work were not changed. Branch: `work/architecture-s1-continuation-20261024`. Base remains 793f7c4c; no main merge or remote push.
+- Closed additional gaps: Progress rechecks cross-domain contribution inputs after native handoff; externally supplied planet/research proposals are copied and frozen; research input/ratio commands use the same completion boundary; configuration handoff rejects writes during completion. Planet advancement now consumes a concrete step result for both partial progress and joint planet/crew completion. Partial progress marks save dirty without issuing completion rewards/notices. Planet scheduling facts derive from the plan, not the UI payload.
+- Command results are not a global write lock or a time ledger. Public migrated commands are guarded; direct owner APIs, lifecycle and other S2 producers are not claimed migrated. No gameplay, balance, frozen data or save schema edits.
+
+### Responsibility replacement / callers
+
+| Old responsibility | Current owner / consumers / exit |
+|---|---|
+| Equipment refit/upgrade dirty flag and notifications | Game result methods install the concrete proposals, then `commit_effects.finish`; bool facades remain current UI API. `equipment_tab`, `ship_panel`, `main`, `balance_autoplayer`, `player_loadout_generator` and crew equipment purchasing reach the same implementation. No parallel equipment event scheduling remains. |
+| Progress crew/planet/research notification completion | `progress_runtime` result methods and `commit_effects`; crew/planet panels and main research controls use bool facades. Internal planet/research advance checks concrete commit results; advance wrappers still do not report a shared-time remainder. |
+| Crew scheduling inferred from equipment/crew/planet UI notices | `crew_system.on_committed` uses immutable facts. Removed migrated branches from `on_event`; resource/reactor/unlock bridges exist only for unmigrated S2 producers. Migrated notices carry `_committed_fact` to suppress those bridges. |
+| Native numeric update followed by host install | Existing session/kernel retain responsibility. Kernel `update_configuration` validates before `apply_configuration`; apply has no business rejection or host notification. Host wallet validation precedes native commit; synchronous owner installs have no external callbacks. Existing real-native test plus boundary rejection/reentry fixture cover distinct sides of this contract. No native source/binary changed. |
+
+### Review boundary requiring parent dot/high disposition
+
+- Current behavior: shared time wrappers remain void; after earlier domains/planets commit, a later native rejection can return without a retained remainder. Factory refresh and BalanceGame's legacy research fields also remain later-slice consumers. Impact: this candidate proves individual commit completion, not lossless/replay-safe shared time or full Lab research support. Recommendation: retain the approved S2 time/consumer migration and S4 Lab scope, and explicitly accept this S1 pilot boundary before marking S1 closed. Do not infer acceptance from this record.
+- Existing reforge/load/recovery stays S3; no compatibility promise for historical personal saves was added.
+- Independent high and dot must review the final candidate SHA through the parent. No new review subagent was created. Full architecture acceptance and main merge are pending, not denied.

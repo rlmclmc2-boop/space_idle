@@ -1146,16 +1146,10 @@ func select_tech(id: String) -> bool:
 	return progress_runtime.select_tech(self,id)
 
 func set_tech_input(resource_id: String, amount: Variant) -> bool:
-	if not research.set_input(self,resource_id,amount):return false
-	save_dirty = true
-	event.emit("tech_tree_changed",{"reason":"input","resource":resource_id})
-	return true
+	return CommandResult.succeeded(progress_runtime.set_tech_input_result(self,resource_id,amount))
 
 func set_tech_input_ratio(resource_id: String, ratio: float) -> bool:
-	if not research.set_auto_ratio(self,resource_id,ratio):return false
-	save_dirty=true
-	event.emit("tech_tree_changed",{"reason":"input_ratio","resource":resource_id})
-	return true
+	return CommandResult.succeeded(progress_runtime.set_tech_input_ratio_result(self,resource_id,ratio))
 
 func hightech_slots() -> Array:
 	var unlocked: Array = db.data.get("hightech", {}).keys().filter(func(key):return hightech_unlocked(key))
@@ -3812,6 +3806,7 @@ func sync_jewel_defence_damage() -> Dictionary:
 	return capacities
 
 func native_before_configuration_change()->bool:
+	if commit_effects.active:return false
 	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
 
 

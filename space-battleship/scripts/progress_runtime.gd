@@ -21,8 +21,10 @@ func add_crew_exp_result(g,crew_id: String, amount: float) -> Dictionary:
 
 func prepare_crew_commit(g,plan: Dictionary) -> Dictionary:
 	if not g.crew.proposal_current(plan):return Result.make("rejected","stale_crew")
+	var configuration_before: Array=g.attributes.configuration_inputs(g)
 	if plan.configuration and not g.native_before_configuration_change():return Result.make("blocked","native_handoff")
 	if not g.crew.proposal_current(plan):return Result.make("rejected","stale_crew")
+	if configuration_before!=g.attributes.configuration_inputs(g):return Result.make("rejected","stale_configuration")
 	return {}
 
 func crew_notices(g,changes: Array, source := "crew") -> Array:
@@ -35,15 +37,19 @@ func commit_planet_command(g,plan: Dictionary,payload: Dictionary) -> bool:
 
 func commit_planet_command_result(g,plan: Dictionary,payload: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
+	plan=plan.duplicate(true)
+	Result.freeze(plan)
 	if not g.planets.proposal_current(plan):return Result.make("rejected","stale_planet")
+	var configuration_before: Array=g.attributes.configuration_inputs(g)
 	if plan.configuration and not g.native_before_configuration_change():return Result.make("blocked","native_handoff")
 	if not g.planets.proposal_current(plan):return Result.make("rejected","stale_planet")
+	if configuration_before!=g.attributes.configuration_inputs(g):return Result.make("rejected","stale_configuration")
 	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
 	var defence:=capture_progress_health(g,plan.configuration)
 	g.planets.commit(plan)
 	if plan.configuration:g.invalidate_tutorial_unlocks()
 	g.commit_effects.settle_progress(g,plan.configuration,defence)
-	return g.commit_effects.finish(g,["planets"],[],[],{"reactor_allocation_changed":payload.has("activated")},[{"kind":"planet_changed","payload":payload}])
+	return g.commit_effects.finish(g,["planets"],[],[],{"reactor_allocation_changed":plan.configuration},[{"kind":"planet_changed","payload":payload}])
 
 func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
 	if g.commit_effects.active:return false
@@ -114,28 +120,41 @@ func advance_planets(g,dt: float) -> void:
 	if g.commit_effects.active or dt<=0 or not is_finite(dt):return
 	for id in g.planets.all():
 		var planet_plan: Dictionary=g.planets.prepare_step(g,str(id),dt)
-		if planet_plan.is_empty():continue
-		if not planet_plan.completed:
-			g.planets.commit(planet_plan);continue
-		var reward: float=g.planet_exp_reward(str(id));var rewards: Dictionary={}
-		if reward>0:
-			if g.planet_buffs.shares_experience(g,str(id)):
-				for member in g.crew.members():rewards[member.crewId]=reward
-			else:rewards[planet_plan.crew_id]=reward
-		var crew_plan: Dictionary=g.crew.prepare_experience(g,rewards)
-		if not g.crew.proposal_current(crew_plan):return
-		if (planet_plan.configuration or crew_plan.configuration) and not g.native_before_configuration_change():return
-		if not g.planets.proposal_current(planet_plan) or not g.crew.proposal_current(crew_plan):return
-		if not g.commit_effects.begin(g):return
-		var refitted: bool=planet_plan.configuration or crew_plan.configuration
-		var defence:=capture_progress_health(g,refitted)
-		g.planets.commit(planet_plan);g.crew.commit(crew_plan)
-		g.commit_effects.settle_progress(g,refitted,defence)
-		var notices:=crew_notices(g,crew_plan.changes,"planet")
-		notices.append({"kind":"planet_changed","payload":{"id":id,"crewId":planet_plan.crew_id,"reward":reward}})
-		var domains:Array=["planets"]
-		if not crew_plan.changes.is_empty():domains.append("crew")
-		g.commit_effects.finish(g,domains,[],[],{"crew_changes":crew_plan.changes,"reactor_allocation_changed":true},notices)
+		var result:=commit_planet_step_result(g,planet_plan)
+		if not Result.succeeded(result):return
+
+func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
+	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
+	if planet_plan.is_empty():return Result.make("no_change")
+	planet_plan=planet_plan.duplicate(true)
+	Result.freeze(planet_plan)
+	if not g.planets.proposal_current(planet_plan):return Result.make("rejected","stale_planet")
+	if not planet_plan.completed:
+		if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
+		g.planets.commit(planet_plan)
+		return g.commit_effects.finish(g,["planets"],[],[],{},[])
+	var id: String=planet_plan.id
+	var reward: float=g.planet_exp_reward(id);var rewards: Dictionary={}
+	if reward>0:
+		if g.planet_buffs.shares_experience(g,id):
+			for member in g.crew.members():rewards[member.crewId]=reward
+		else:rewards[planet_plan.crew_id]=reward
+	var crew_plan: Dictionary=g.crew.prepare_experience(g,rewards)
+	if not g.crew.proposal_current(crew_plan):return Result.make("rejected","stale_crew")
+	var configuration_before: Array=g.attributes.configuration_inputs(g)
+	if (planet_plan.configuration or crew_plan.configuration) and not g.native_before_configuration_change():return Result.make("blocked","native_handoff")
+	if not g.planets.proposal_current(planet_plan) or not g.crew.proposal_current(crew_plan):return Result.make("rejected","stale_planet_step")
+	if configuration_before!=g.attributes.configuration_inputs(g):return Result.make("rejected","stale_configuration")
+	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
+	var refitted: bool=planet_plan.configuration or crew_plan.configuration
+	var defence:=capture_progress_health(g,refitted)
+	g.planets.commit(planet_plan);g.crew.commit(crew_plan)
+	g.commit_effects.settle_progress(g,refitted,defence)
+	var notices:=crew_notices(g,crew_plan.changes,"planet")
+	notices.append({"kind":"planet_changed","payload":{"id":id,"crewId":planet_plan.crew_id,"reward":reward}})
+	var domains:Array=["planets"]
+	if not crew_plan.changes.is_empty():domains.append("crew")
+	return g.commit_effects.finish(g,domains,[],[],{"crew_changes":crew_plan.changes,"reactor_allocation_changed":true},notices)
 
 func assign_crew(g,crew_id: String, assignment_type: String, target_id: String, upgrade_mode := "") -> bool:
 	return Result.succeeded(assign_crew_result(g,crew_id,assignment_type,target_id,upgrade_mode))
@@ -194,12 +213,24 @@ func select_tech_result(g,id: String) -> Dictionary:
 func record_research_income(g,id: String) -> void:
 	record_research_income_result(g,id)
 
+func set_tech_input_result(g,id: String,amount: Variant) -> Dictionary:
+	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
+	if not g.research.set_input(g,id,amount):return g.commit_effects.abort("research_input","rejected")
+	return g.commit_effects.finish(g,["research"],[],[],{},[{"kind":"tech_tree_changed","payload":{"reason":"input","resource":id}}])
+
+func set_tech_input_ratio_result(g,id: String,ratio: float) -> Dictionary:
+	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
+	if not g.research.set_auto_ratio(g,id,ratio):return g.commit_effects.abort("research_input_ratio","rejected")
+	return g.commit_effects.finish(g,["research"],[],[],{},[{"kind":"tech_tree_changed","payload":{"reason":"input_ratio","resource":id}}])
+
 func record_research_income_result(g,id: String) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
 	var proposal: Dictionary= g.research.income_peak_proposal(g,id)
 	if proposal.is_empty():return Result.make("no_change")
+	var configuration_before: Array=g.attributes.configuration_inputs(g)
 	if proposal.affects_combat and not g.native_before_configuration_change():return Result.make("blocked","native_handoff")
 	if not g.research.proposal_current(proposal):return Result.make("rejected","stale_research")
+	if configuration_before!=g.attributes.configuration_inputs(g):return Result.make("rejected","stale_configuration")
 	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
 	var committed: bool=g.research.commit_income_peak(proposal)
 	assert(committed,"Research changed inside synchronous commit")
@@ -220,8 +251,12 @@ func advance_hightech(g,dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
 	if proposal.is_empty():return Result.make("no_change")
+	proposal=proposal.duplicate(true)
+	Result.freeze(proposal)
+	var configuration_before: Array=g.attributes.configuration_inputs(g)
 	if proposal.completed and not g.native_before_configuration_change():return Result.make("blocked","native_handoff")
 	if not g.research.proposal_current(proposal) or proposal.inputs!=g.research.advance_inputs(g,proposal.id):return Result.make("rejected","stale_research")
+	if configuration_before!=g.attributes.configuration_inputs(g):return Result.make("rejected","stale_configuration")
 	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
 	if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return g.commit_effects.abort("stale_research_wallet","rejected")
 	g.research.commit_advance(proposal)
