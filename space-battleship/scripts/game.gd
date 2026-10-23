@@ -82,10 +82,8 @@ var native_execution_requested:=false
 var native_execution_auto:=false
 var native_execution_scope:=""
 var native_wave_waiting:=false
-var native_step_phase:="idle"
+var step_progress=preload("res://scripts/step_progress.gd").new()
 var logical_step_active:=false
-var native_step_remaining:=0.0
-var native_cancelled_step:=0.0
 var native_handoff_count:=0
 
 var drops: Array[Dictionary] = []
@@ -96,7 +94,6 @@ var paused := false
 var speed := 1.0
 const LOGICAL_STEP := 1.0/60.0
 const RETURN_DEPARTURE_SECONDS := 1.6
-var game_time_remainder := 0.0
 var departure_remaining := 0.0
 var application_focused := true
 var external_time_active := false
@@ -572,27 +569,42 @@ func consume_external_time(real_dt:float,presentation:Variant=null)->void:
 	if not application_focused:speed=default_speed()
 	var cost:=chrono_cost(speed)
 	if cost<0:speed=default_speed();cost=chrono_cost(speed)
+	# Resume the reserved interval before accepting this frame's new time.
+	if step_progress.active:
+		_dispatch_reserved_step(presentation)
+		if step_progress.active or paused:
+			external_time_active=false;return
+	var multiplier:=speed
 	var boosted:=economy.consume_chrono(real_dt,cost)
-	var budget:=boosted*speed
+	# Debit and acceptance are adjacent, with no callback between them.
+	step_progress.accept(boosted,multiplier,cost)
 	if boosted<real_dt or (cost>0 and economy.balance("chrono")<=0):
 		speed=default_speed()
-		budget+=(real_dt-boosted)*speed
+		step_progress.accept(real_dt-boosted,speed,0.0)
 	advance_resource_history_clock(real_dt)
-	if native_cancelled_step>0:
-		game_time_remainder=maxf(0.0,game_time_remainder-native_cancelled_step)
-		native_cancelled_step=0.0
-	game_time_remainder+=budget
-	while game_time_remainder+0.0000000001>=LOGICAL_STEP and not paused and departure_remaining<=0:
-		if not prepare_logical_step(LOGICAL_STEP):break
-		if presentation!=null:presentation.before_time_step(LOGICAL_STEP)
-		tick(LOGICAL_STEP)
-		var completed:=native_step_phase!="blocked"
-		var ready:=true if presentation==null else bool(presentation.after_time_step(completed))
-		if not completed:break
-		game_time_remainder=maxf(0.0,game_time_remainder-LOGICAL_STEP)
-		if not ready:paused=true;break
+	while step_progress.available()+0.0000000001>=LOGICAL_STEP and not paused and departure_remaining<=0:
+		if not step_progress.begin(LOGICAL_STEP,true):break
+		_dispatch_reserved_step(presentation)
+		if step_progress.active:break
+
 	if presentation!=null:presentation.publish_time_frame()
 	external_time_active=false
+
+func _dispatch_reserved_step(presentation:Variant)->void:
+	if not step_progress.before_presented:
+		step_progress.before_presented=true
+		if presentation!=null:presentation.before_time_step(step_progress.duration)
+	tick(step_progress.duration)
+	var completed:bool=not step_progress.active
+	if presentation!=null and not presentation.after_time_step(completed):paused=true
+
+func snapshot_ready()->bool:return not step_progress.active
+
+func continuation_context()->Array:
+	return attributes.configuration_inputs(self)+[economy.revision,research.revision,planets.revision,crew.revision,galaxy.revision,hyperspace.revision]
+
+func block_step(reason:String)->void:
+	step_progress.block(reason,continuation_context());paused=true
 
 func advance_resource_history_clock(seconds:float)->void:
 	resource_prune_elapsed+=seconds
@@ -2428,41 +2440,54 @@ func advance_enemy_shields(dt: float) -> void:
 
 func prepare_logical_step(dt:float)->bool:
 	if native_execution!=null and native_execution.advance_blocked:
-		native_step_phase="blocked";paused=true;return false
+		if not native_execution.handoff_to_legacy(self,"resume_blocked_step"):
+			block_step("native_handoff");return false
 	if galaxy_runtime.prepare_advance(self,dt):return true
-	native_step_phase="blocked";paused=true
-	return false
+	block_step("galaxy_preparation");return false
 
 func tick(dt: float) -> void:
-	if logical_step_active or commit_effects.active:return
+	if logical_step_active or commit_effects.active or paused or not is_finite(dt) or dt<=0:return
+	if step_progress.frozen:return
+	if not step_progress.active and not step_progress.begin(dt):return
+	if not step_progress.blocked_context.is_empty() and step_progress.blocked_context!=continuation_context():
+		step_progress.freeze("blocked_context_changed");paused=true;return
+	step_progress.reason="";step_progress.blocked_context=[]
 	logical_step_active=true
-	_tick_logical_step(dt)
+	_tick_logical_step(step_progress.duration)
 	logical_step_active=false
-	if native_step_phase!="blocked":manual_hyperspace.dispatch_queued(self)
+	if not step_progress.active:manual_hyperspace.dispatch_queued(self)
 
-func _tick_logical_step(dt: float) -> void:
-	if paused:return
-	if native_execution!=null and native_execution.advance_blocked:
-		paused=true
-		push_error("Native combat step remains blocked pending explicit cancellation or successful transfer")
-		return
-	var native_at_entry=native_execution
-	# Presented.tick already advanced motion on a legacy entry. Handoff restores
-	# kernel.clock, so restore the captured step endpoint rather than adding twice.
-	var motion_step_end:=float(get("motion_clock"))+(dt if native_at_entry!=null else 0.0) if "motion_clock" in self else 0.0
-	native_step_phase="shared";native_step_remaining=dt
-	# A galaxy refit must transfer before this step changes clocks, income or
-	# region work. Failed preparation leaves the complete step in the caller.
-	if not prepare_logical_step(dt):return
-	advance_shared_clock_and_economy(dt)
-	if native_step_phase=="blocked":return
-	if native_execution!=null and native_execution.paused_by_configuration:
-		native_execution.handoff_to_legacy(self,"configuration_notification")
-	# Presented.tick advanced this clock itself on a legacy entry. If a shared
-	# callback handed off a native entry, only its unexecuted combat phase remains.
-	if native_at_entry!=null and native_execution==null and native_step_remaining>0 and "motion_clock" in self:
-		set("motion_clock",motion_step_end)
+func next_substep_size(remaining:float)->float:return remaining
+func begin_substep()->void:pass
+func finish_substep()->void:pass
 
+func _tick_logical_step(_dt:float)->void:
+	while step_progress.completed+0.000000001<step_progress.duration and not paused:
+		if step_progress.substep==0.0:
+			step_progress.open_substep(next_substep_size(step_progress.duration-step_progress.completed))
+		var dt:float=step_progress.substep
+		if step_progress.phase=="prepare":
+			if not prepare_logical_step(dt):return
+			step_progress.phase="shared"
+			begin_substep()
+		if step_progress.phase=="shared":
+			advance_shared_clock_and_economy(dt)
+			if not step_progress.reason.is_empty():return
+			step_progress.phase="combat"
+		if step_progress.phase=="combat":
+			if native_execution!=null and native_execution.paused_by_configuration:
+				if not native_execution.handoff_to_legacy(self,"configuration_notification"):
+					block_step("configuration_handoff");return
+			_tick_combat_step(dt)
+			if not step_progress.reason.is_empty():return
+			step_progress.phase="combat_done"
+		if step_progress.phase=="combat_done":
+			finish_substep()
+			step_progress.retire_substep()
+	if step_progress.completed+0.000000001>=step_progress.duration:step_progress.finish()
+
+func _tick_combat_step(dt:float)->void:
+	if native_execution==null and "motion_clock" in self:set("motion_clock",step_progress.motion_end)
 	if native_wave_waiting and state==State.COMBAT:
 		if not advance_jewel_repair(dt):return
 		if damage_stats.enabled:damage_stats.advance(dt)
@@ -2476,12 +2501,12 @@ func _tick_logical_step(dt: float) -> void:
 	if native_execution!=null:
 		if native_execution.advance(self,dt):
 			if damage_stats.enabled:damage_stats.advance(dt)
-			native_step_phase="idle";native_step_remaining=0.0
 			return
 		# A failed transfer retains the owner and the unconsumed combat phase.
 		if native_execution!=null:return
 		# Successful transfer resumes only combat; shared economy already ran.
-		if "motion_clock" in self:set("motion_clock",motion_step_end)
+		if "motion_clock" in self:set("motion_clock",step_progress.motion_end)
+	step_progress.phase="combat_running"
 	if damage_stats.enabled and state==State.COMBAT:damage_stats.advance(dt)
 	if state == State.LEVEL_CLEAR:
 		if not advance_jewel_repair(dt):return
@@ -3661,7 +3686,6 @@ func _legacy_end_defence_span()->void:
 	# Terminal events consume the logical tail without replaying defence or hits.
 	enemy_shield_time=_legacy_combat_end
 	_legacy_defence_span_active=false
-	native_step_phase="idle";native_step_remaining=0.0
 
 func _legacy_defence_stopped()->bool:
 	if _legacy_defence_span_active and state==State.COMBAT and is_final_encounter() and not has_alive_enemy():
@@ -3673,7 +3697,7 @@ func _legacy_advance_defence_to(combat_at:float)->bool:
 	if _legacy_defence_stopped():return false
 	var target:=_legacy_defence_origin+(combat_at-_legacy_combat_origin)
 	if target+0.000000001<enhancement_defense_time or combat_at>_legacy_combat_end+0.000000001:
-		push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid event cursor");return false
+		step_progress.freeze("PLAYER_DEFENCE_TIME_CONTRACT invalid event cursor");paused=true;push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid event cursor");return false
 	if not advance_jewel_repair(maxf(0.0,target-enhancement_defense_time)):return false
 	return not _legacy_defence_stopped()
 
@@ -3700,7 +3724,7 @@ func advance_jewel_repair(dt: float) -> bool:
 	var memory_interval := enhancement_parameter("memory_interval")
 	var deferred_interval := enhancement_parameter("deferred_interval")
 	if not is_finite(dt) or memory_interval<=0.000000001 or deferred_interval<=0.000000001 or not is_finite(memory_interval) or not is_finite(deferred_interval) or enhancement_memory_elapsed<0 or enhancement_memory_elapsed>=memory_interval or enhancement_deferred_elapsed<0 or enhancement_deferred_elapsed>=deferred_interval:
-		push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid periodic phase")
+		step_progress.freeze("PLAYER_DEFENCE_TIME_CONTRACT invalid periodic phase");paused=true;push_error("PLAYER_DEFENCE_TIME_CONTRACT invalid periodic phase")
 		return false
 	var rest := dt
 	while true:
@@ -3719,7 +3743,7 @@ func advance_jewel_repair(dt: float) -> bool:
 		step=minf(step,enhancement_branches.next_defense_step(self))
 		if _legacy_defence_span_active:step=minf(step,drone_combat.next_incoming_step(self))
 		if step<=0 or not is_finite(step):
-			push_error("PLAYER_DEFENCE_TIME_CONTRACT nonprogressing repair piece")
+			step_progress.freeze("PLAYER_DEFENCE_TIME_CONTRACT nonprogressing repair piece");paused=true;push_error("PLAYER_DEFENCE_TIME_CONTRACT nonprogressing repair piece")
 			return false
 		enhancement_defense_time+=step
 		since_hit+=step
@@ -3853,25 +3877,42 @@ func projectile_motion_age(shot:Dictionary,fallback:float=1.0)->float:
 
 
 func advance_shared_clock_and_economy(dt:float)->void:
-	if manual_hyperspace.active:hyperspace.advance_manual(dt)
-	profile.productionElapsed=production_time()+dt
-	hyperspace_runtime.advance(self,dt)
-	if native_execution==null:enhancement_branches.advance_weapons(self,dt)
-	advance_planets(dt)
-	galaxy_runtime.advance(self,dt)
-	if native_step_phase=="blocked":return
-	crew.advance(self,dt)
-	advance_auto_gen(dt)
-	advance_hightech(dt)
-	for drop in drops.duplicate():
-		if drop.get("hightech", false) or drop.get("auto_gen", false):
-			continue
-		drop.age += dt
-		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
-			collect(drop, false)
-	# Allocate after this step's receipts, so a drop settled on the window
-	# boundary is included now rather than falling out of the following window.
-	refresh_factory_inputs(dt)
+	if commit_effects.active or not is_finite(dt) or dt<=0:return
+	var standalone:bool=not step_progress.active
+	if standalone:
+		step_progress.begin(dt);step_progress.open_substep(dt);step_progress.phase="shared"
+	while step_progress.stage<11:
+		var current:int=step_progress.stage
+		match current:
+			0:
+				if manual_hyperspace.active:hyperspace.advance_manual(dt)
+			1:profile.productionElapsed=production_time()+dt
+			2:
+				if not step_progress.accepted:
+					step_progress.accepted=true
+					hyperspace_runtime.advance(self,dt)
+			3:
+				if native_execution==null:enhancement_branches.advance_weapons(self,dt)
+			4:advance_planets(dt)
+			5:galaxy_runtime.advance(self,dt)
+			6:crew.advance(self,dt)
+			7:advance_auto_gen(dt)
+			8:advance_hightech(dt)
+			9:
+				if not step_progress.accepted:
+					step_progress.items=drops.duplicate();step_progress.accepted=true
+				while step_progress.item<step_progress.items.size():
+					var drop:Dictionary=step_progress.items[step_progress.item]
+					step_progress.item+=1
+					if drop.get("hightech",false) or drop.get("auto_gen",false):continue
+					drop.age+=dt
+					if drop.age>=(2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):collect(drop,false)
+			10:
+				# The interval is retired before factory-refresh notification.
+				step_progress.next_stage();refresh_factory_inputs(dt)
+		if not step_progress.reason.is_empty():return
+		if step_progress.stage==current:step_progress.next_stage()
+	if standalone:step_progress.finish()
 
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():

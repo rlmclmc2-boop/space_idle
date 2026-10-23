@@ -76,26 +76,24 @@ func _init(database:ShipDatabase,persist:=true)->void:
 
 # Game.tick owns the complete logical boundary and dispatches session commands
 # only after all missile-deadline subdivisions have settled.
-func _tick_logical_step(dt:float)->void:
-	if paused:return
-	if native_execution!=null:
-		super._tick_logical_step(dt)
-		return
-	var remaining:=maxf(0.0,dt)
-	while remaining>0.000000001:
-		var step:=minf(remaining,1.0/60.0)
-		for packet in missile_queue:
-			var until:=float(packet.due)-motion_clock
-			if until>0.000000001:step=minf(step,until)
-		motion_clock+=step
-		var boss_survivors:Variant=[]
-		if state==State.COMBAT and is_boss_encounter():
-			boss_survivors=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead))
-		super._tick_logical_step(step)
-		if state==State.LEVEL_CLEAR:
-			for shot in boss_survivors:
-				if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
-		remaining-=step
+func next_substep_size(remaining:float)->float:
+	if native_execution!=null:return remaining
+	var step:=minf(remaining,1.0/60.0)
+	for packet in missile_queue:
+		var until:=float(packet.due)-motion_clock
+		if until>0.000000001:step=minf(step,until)
+	return step
+
+func begin_substep()->void:
+	step_progress.motion_end=motion_clock+step_progress.substep
+	if native_execution==null:motion_clock=step_progress.motion_end
+	if state==State.COMBAT and is_boss_encounter():
+		step_progress.boss_survivors=projectiles.filter(func(shot):return bool(shot.get("prototype_missile",false)) and not bool(shot.dead))
+
+func finish_substep()->void:
+	if state==State.LEVEL_CLEAR:
+		for shot in step_progress.boss_survivors:
+			if not bool(shot.dead) and not projectiles.has(shot):_retire_missile(shot,"level_clear",true)
 
 func reset_player()->void:
 	event.emit("prototype_missile_reset",{})

@@ -125,10 +125,19 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 
 func advance_planets(g,dt: float) -> void:
 	if g.commit_effects.active or dt<=0 or not is_finite(dt):return
-	for id in g.planets.all():
+	var tracked:bool=g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==4
+	if tracked and not g.step_progress.accepted:
+		g.step_progress.items=g.planets.all().keys();g.step_progress.accepted=true
+	var ids:Array=g.step_progress.items if tracked else g.planets.all().keys()
+	var index:int=g.step_progress.item if tracked else 0
+	while index<ids.size():
+		var id=ids[index]
 		var planet_plan: Dictionary=g.planets.prepare_step(g,str(id),dt)
 		var result:=commit_planet_step_result(g,planet_plan)
-		if not Result.succeeded(result):return
+		if not Result.succeeded(result):
+			g.block_step(str(result.reason));return
+		if tracked and g.step_progress.item==index:g.step_progress.retire_item(4)
+		index+=1
 
 func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
@@ -137,6 +146,7 @@ func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	if not planet_plan.completed:
 		if not g.commit_effects.begin_progress():return Result.make("blocked","commit_in_progress")
 		g.planets.commit(planet_plan)
+		g.step_progress.retire_item(4)
 		return g.commit_effects.finish_progress(g,PLANET_PROGRESS)
 	planet_plan=planet_plan.duplicate(true)
 	Result.freeze(planet_plan)
@@ -156,6 +166,7 @@ func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	var refitted: bool=planet_plan.configuration or crew_plan.configuration
 	var defence:=capture_progress_health(g,refitted)
 	g.planets.commit(planet_plan);g.crew.commit(crew_plan)
+	g.step_progress.retire_item(4)
 	g.commit_effects.settle_progress(g,refitted,defence)
 	var notices:=crew_notices(g,crew_plan.changes,"planet")
 	notices.append({"kind":"planet_changed","payload":{"id":id,"crewId":planet_plan.crew_id,"reward":reward}})
@@ -330,7 +341,7 @@ func clear_runtime(g) -> void:
 	g.crew.clear_schedule()
 	g.galaxy_runtime.reset()
 	g.hyperspace_runtime.reset()
-	g.game_time_remainder=0.0;g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
+	g.step_progress.reset();g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
 	g.income_history.clear();g.pending_unlocks.clear()
 
 func install_loaded_domains(g, raw: Dictionary) -> void:

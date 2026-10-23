@@ -70,7 +70,7 @@ func cancel_queue(g,reason:String="")->bool:
 	if queued.is_empty():return false
 	queued={};queue_error=reason;g.event.emit("hyperspace_queue",{"status":"cancelled","reason":reason});return true
 func dispatch_queued(g)->bool:
-	if g.logical_step_active or g.native_step_phase=="blocked" or transitioning:return false
+	if g.logical_step_active or g.step_progress.active or transitioning:return false
 	if not finishing.is_empty():
 		var ending=finishing;finishing={}
 		return finish(g,bool(ending.success),str(ending.reason))
@@ -90,7 +90,7 @@ func start(g,route: String,level: int) -> bool:
 	if g.logical_step_active:
 		queued={"route":route,"level":level,"round":int(g.hyperspace.state.round_id)}
 		return true
-	if g.native_step_phase=="blocked":last_error="incomplete_logical_step";return false
+	if g.step_progress.active:last_error="incomplete_logical_step";return false
 	if g.N.compare(g.stat("armour"),0)<=0:return false
 	var bound_registry:Dictionary=registry
 	if reward_binder!=null:
@@ -135,7 +135,7 @@ func finish(g,success: bool,reason: String="failed") -> bool:
 	if g.logical_step_active:
 		if finishing.is_empty():finishing={"success":success,"reason":reason}
 		return true
-	if g.native_step_phase=="blocked":last_error="incomplete_logical_step";return false
+	if g.step_progress.active:last_error="incomplete_logical_step";return false
 	transitioning=true
 	g.settle_drops()
 	var receipt:Dictionary=g.hyperspace.state.active.duplicate(true)
