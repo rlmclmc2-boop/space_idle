@@ -21,14 +21,13 @@ static func read_mon_enemies() -> Dictionary:
 		if not id.is_valid_int() or int(id)<1 or enemies.has(id):return {"error":"invalid_mon_table"}
 		var description: String=str(source.get("des","")).strip_edges()
 		var equipment_text: String=_clean_list(str(source.get("equipment","")))
-		var resources: PackedStringArray=_clean_list(str(source.get("res",""))).split(",")
-		if description.is_empty() or resources.size()!=3:return {"error":"invalid_mon_table"}
+		var resources: Dictionary=parse_resource_drops(str(source.get("res","")))
+		if description.is_empty() or resources.has("error"):return {"error":"invalid_mon_table"}
 		var mounts: Array=[]
 		for item in equipment_text.split(","):
 			var pair: PackedStringArray=item.split("|")
 			if pair.size()!=2 or pair[0].strip_edges().is_empty() or not pair[1].strip_edges().is_valid_int() or int(pair[1])<1:return {"error":"invalid_mon_table"}
 			for _index in range(int(pair[1])):mounts.append({"name":pair[0].strip_edges()})
-		if not resources[0].strip_edges().is_valid_int() or not resources[1].strip_edges().is_valid_float() or not resources[2].strip_edges().is_valid_float():return {"error":"invalid_mon_table"}
 		var row: Dictionary=source.duplicate(true)
 		row.id=int(id)
 		for field in ["dmgMultiple","health","armourType","size"]:
@@ -36,9 +35,24 @@ static func read_mon_enemies() -> Dictionary:
 			if not number.is_valid_float():return {"error":"invalid_mon_table"}
 			row[field]=float(number)
 		row.equipment=mounts
-		row.drops=[{"resourceId":int(resources[0]),"amount":float(resources[1]),"chance":float(resources[2])}]
+		row.drops=resources.drops
 		enemies[id]=row
 	return {"enemies":enemies}
+
+static func parse_resource_drops(value: String) -> Dictionary:
+	# Same semicolon blocks and decimal-comma compatibility as import_workbook.
+	# Reject the complete input on any malformed block; never keep a valid prefix.
+	var drops: Array=[]
+	for block in _clean_list(value).split(";",true):
+		var fields: PackedStringArray=block.split(",",true)
+		if fields.size()==4:fields=PackedStringArray([fields[0],fields[1],fields[2]+"."+fields[3]])
+		if fields.size()!=3:return {"error":"invalid_mon_table"}
+		for i in fields.size():fields[i]=fields[i].strip_edges()
+		if not fields[0].is_valid_int() or not fields[1].is_valid_float() or not fields[2].is_valid_float():return {"error":"invalid_mon_table"}
+		var id:=int(fields[0]);var amount:=float(fields[1]);var chance:=float(fields[2])
+		if id<1 or not is_finite(amount) or amount<0 or not is_finite(chance) or chance<0 or chance>1:return {"error":"invalid_mon_table"}
+		drops.append({"resourceId":id,"amount":amount,"chance":chance})
+	return {"drops":drops}
 
 static func _clean_list(value: String) -> String:
 	return value.replace("｛","{").replace("｝","}").replace("，",",").replace("；",";").strip_edges().trim_prefix("{").trim_suffix("}").strip_edges()

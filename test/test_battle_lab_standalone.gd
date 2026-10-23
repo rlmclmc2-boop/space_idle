@@ -4,6 +4,11 @@ func check(ok: bool,label: String) -> void:
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
+	var workbook=load("res://scripts/mon_group_xlsx.gd")
+	check(workbook.parse_resource_drops("｛1，128，1；2，4，0,5｝").drops==[{"resourceId":1,"amount":128.0,"chance":1.0},{"resourceId":2,"amount":4.0,"chance":0.5}],"all drop blocks preserve order, values and supported punctuation")
+	check(workbook.parse_resource_drops("{1,0,0}").drops==[{"resourceId":1,"amount":0.0,"chance":0.0}],"zero amount/probability remains valid")
+	for invalid in ["", "{1,2}", "{x,2,1}", "{1,no,1}", "{1,2,no}", "{1,2,1;}", "{1,2,1;;2,3,1}", "{1,2,1;2,3}", "{1,-1,1}", "{1,2,1.1}", "{0,2,1}", "{1,1e999,1}"]:
+		check(workbook.parse_resource_drops(invalid).has("error"),"reject malformed complete drop list: "+invalid)
 	check(not FileAccess.file_exists("res://scripts/main.gd") and not FileAccess.file_exists("res://main_game.tscn"),"portable project has no game UI")
 	var entry=load("res://main.tscn").instantiate()
 	root.add_child(entry)
@@ -18,6 +23,15 @@ func run() -> void:
 		print("BATTLE LAB STANDALONE failures=",failures)
 		quit(1)
 		return
+	print("STANDALONE workbook accepted enemies=",panel.database.enemies.size())
+	var large_id: String=""
+	var small_id: String=""
+	for id in panel.database.enemies:
+		if float(panel.database.enemies[id].size)>=4 and large_id.is_empty():large_id=str(id)
+		if float(panel.database.enemies[id].size)<4 and small_id.is_empty():small_id=str(id)
+	# Exercise the real selection controls with a bounded smoke-test pool. The
+	# full workbook was parsed above; catalog-wide combinatorics is a perf test.
+	for id in panel.enemy_checks:panel.enemy_checks[id].button_pressed=id in [large_id,small_id]
 	panel.inputs.count.value=2
 	panel.inputs.min_count.value=1
 	panel.inputs.max_count.value=2
@@ -29,11 +43,6 @@ func run() -> void:
 		print("BATTLE LAB STANDALONE failures=",failures)
 		quit(1)
 		return
-	var large_id: String=""
-	var small_id: String=""
-	for id in panel.database.enemies:
-		if float(panel.database.enemies[id].size)>=4 and large_id.is_empty():large_id=str(id)
-		if float(panel.database.enemies[id].size)<4 and small_id.is_empty():small_id=str(id)
 	var large: Dictionary=panel.simulator.generate({"count":1,"min_count":1,"max_count":1,"available_enemies":[large_id],"seed":81,"min_strength":0,"max_strength":1000000}).results[0]
 	var small: Dictionary=panel.simulator.generate({"count":1,"min_count":1,"max_count":1,"available_enemies":[small_id],"seed":82,"min_strength":0,"max_strength":1000000}).results[0]
 	panel.rows=[small,large]

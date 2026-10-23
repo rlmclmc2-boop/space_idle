@@ -117,9 +117,12 @@ func _initialize() -> void:
 	check(game.switch_ship("Destroyer"),"Switch unlocked ship")
 	check(game.slot_entry("weapons",1).level==2 and game.slot_entry("defence",1).level==2,"Switch preserves module levels")
 	record(game,"switch ship")
+	check(game.equip_slot("weapons",0,"laser"),"Reinstall first duplicate before snapshot")
+	check(game.slot_entry("weapons",0).level==3 and game.slot_entry("weapons",1).level==2,"Snapshot fixture has same-name slots at distinct levels")
 	# Current-format snapshots exercise owner precedence and repeatable installation.
 	# No new historical-save continuity contract is introduced by this fixture.
 	var saved := game.portable_save_data()
+	check(saved.loadout.weapons[0].key=="laser" and saved.loadout.weapons[1].key=="laser" and saved.loadout.weapons[0].level==3 and saved.loadout.weapons[1].level==2,"Export preserves both same-name slot investments")
 	saved.levels={"laser":999,"armour":999}
 	var restored := BattleGame.new(db,false)
 	restored.load_progress_data(saved)
@@ -129,8 +132,9 @@ func _initialize() -> void:
 	var first_load := snapshot(restored)
 	restored.load_progress_data(saved)
 	check(snapshot(restored)==first_load,"Repeated current load preserves domain state and health")
+	check(restored.slot_entry("weapons",0).key=="laser" and restored.slot_entry("weapons",1).key=="laser" and restored.slot_entry("weapons",0).level==3 and restored.slot_entry("weapons",1).level==2,"Repeated load preserves different levels of same-name slots")
 	var exported := restored.portable_save_data()
-	check(exported.version==BattleGame.SAVE_VERSION and exported.levels.laser==2 and exported.loadout.weapons[1].level==2,"Export derives first matching level and preserves independent slots")
+	check(exported.version==BattleGame.SAVE_VERSION and exported.levels.laser==3 and exported.loadout.weapons[0].level==3 and exported.loadout.weapons[1].level==2,"Export derives first matching level and preserves independent slots")
 	check_reads(restored,"reloaded")
 	check(not exported.has("cooldowns") and not restored.profile.has("cooldowns"),"Cooldowns remain transient")
 	var empty_save := saved.duplicate(true)
