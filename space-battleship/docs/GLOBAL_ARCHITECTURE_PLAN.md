@@ -247,7 +247,7 @@ dot 审查需求/范围与用户约束，独立 high 审查架构、失败顺序
 
 实际交付树通过 `python test/run.py test_ordinary_entry.gd --godot <Godot 4.7.2> --timeout 300`，启用真实渲染与原 `main.tscn`，使用隔离用户目录：planet-loading 16、product-write 26、product-reopen 18、product-claimed-reopen 7、reactor-write 25、reactor-reopen 8、factory-write 20、factory-reopen 8，共 **128 检查、0 失败**。保存/重开领域对照均无差异；产品保存页和科研工厂重开截图已查看。只出现已记录的 Windows 证书读取警告。原始阶段日志位于候选分支 `test/evidence/architecture-s1-delivery/`，不进入 main。
 
-**交付状态：main 推送被自动审批拒绝，未执行。** 理由是审批仍将先前“不合 main”视为可信约束，未接受委派消息中的后续授权；正在请求本次普通 main 推送的可信用户确认。不得把本地交付提交或候选分支误称 main 已更新。本节 S2 是可独立准备的范围草案，尚未实施。
+**交付状态：main 已完成正常推送。** 父级补交可信用户原话后，仅重试一次获准；远端完整 SHA 回读为 `c3cdf98e5e6fdd8b0e2dba507d840b796ead0bc7`。此前自动审批拒绝的尝试未执行；没有强制推送或绕路合并。S2 仍仅为范围草案，未实施或擅改功能语义。
 
 旧 `test_time_steps.gd` 在基线和修正候选均为 206 检查、1 失败并伴随脚本错误（离港几何断言、已删除的 `Runtime.detach_requested`、空几何接收器）。它仍未解决、不算通过；正式入口 128 项通过不能替代 S2 失败续行验证。
 
