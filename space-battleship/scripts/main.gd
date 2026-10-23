@@ -1,5 +1,5 @@
 extends Node2D
-const GEOMETRY_RULES=preload("res://scripts/geometry_rules.gd")
+var simulation_geometry_authority=preload("res://scripts/simulation_geometry_authority.gd").new()
 
 var space_pause_held := false
 
@@ -543,12 +543,16 @@ func prepare_time_frame()->bool:
 	return prepare_native_laser_display()
 
 func before_time_step(dt:float)->void:
+	if simulation_geometry_authority.prepared:
+		simulation_geometry_authority.before_tick(dt)
+		if game.native_execution!=null:game.native_execution.prepare_geometry(simulation_geometry_authority,game)
 	attach_native_display()
 	time_step_slice=battle_slice_runtime
 	if time_step_slice!=null:time_step_slice.before_tick(dt)
 	else:before_logical_game_tick(dt)
 
 func after_time_step(completed:bool)->bool:
+	if completed and simulation_geometry_authority.prepared:simulation_geometry_authority.after_tick()
 	var ready:=true if time_step_slice==null else bool(time_step_slice.after_tick(completed))
 	time_step_slice=null
 	return ready
@@ -1175,10 +1179,10 @@ func beep(frequency: float) -> void:
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
 
 func weapon_visual_key(key:String)->String:
-	return GEOMETRY_RULES.weapon_visual_key(self, key)
+	return _geometry_source().weapon_visual_key(key)
 
 func weapon_key(shot: Dictionary) -> String:
-	return GEOMETRY_RULES.weapon_key(self, shot)
+	return _geometry_source().weapon_key(shot)
 
 func weapon_visual_tier(shot: Dictionary) -> int:
 	if bool(shot.get("hostile",false)) and game.is_boss_encounter():return 2
@@ -1236,13 +1240,13 @@ func weapon_sparks(pos: Vector2, count: int, force: float, direction := Vector2.
 		particles.append({"pos":pos,"vel":direction.rotated(randf_range(-0.65,0.65))*randf_range(force*0.3,force),"color":ORANGE,"life":randf_range(0.12,0.22),"size":randf_range(5,11),"spark":true})
 
 func turret_angle(index: int) -> float:
-	return GEOMETRY_RULES.turret_angle(self, index)
+	return _geometry_source().turret_angle(index)
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
-	return GEOMETRY_RULES.ship_visual_entry(self, ship_key)
+	return _geometry_source().ship_visual_entry(ship_key)
 
 func weapon_visual_profile(key: String) -> Dictionary:
-	return GEOMETRY_RULES.weapon_visual_profile(self, key)
+	return _geometry_source().weapon_visual_profile(key)
 
 func weapon_visual_glow(key: String, hostile: bool) -> Color:
 	var faction := "enemy" if hostile else "ally"
@@ -1266,24 +1270,25 @@ func ship_geometry_texture(ship_key: String) -> Texture2D:
 	return visual_texture(str(entry.get("geometry_texture",entry.get("texture",""))))
 
 func slot_hardpoint_index(ship_key: String, index: int) -> int:
-	return GEOMETRY_RULES.slot_hardpoint_index(self, ship_key,index)
+	return _geometry_source().slot_hardpoint_index(ship_key,index)
 
 func hardpoint_for_slot(ship_key: String, index: int) -> Dictionary:
-	return GEOMETRY_RULES.hardpoint_for_slot(self, ship_key,index)
+	return _geometry_source().hardpoint_for_slot(ship_key,index)
 
 func weapon_visual_role(index: int) -> String:
-	return GEOMETRY_RULES.weapon_visual_role(self, index)
+	return _geometry_source().weapon_visual_role(index)
 
 func weapon_visual_angle(index: int) -> float:
-	return GEOMETRY_RULES.weapon_visual_angle(self, index)
+	return _geometry_source().weapon_visual_angle(index)
 
 func player_weapon_components() -> Array:
-	return GEOMETRY_RULES.player_weapon_components(self)
+	return _geometry_source().player_weapon_components()
 
 func compose_weapon_components(ship_key: String, entries: Array, faction: String) -> Array:
-	return GEOMETRY_RULES.compose_weapon_components(self, ship_key,entries,faction)
+	return _geometry_source().compose_weapon_components(ship_key,entries,faction)
 
 func enemy_ship_key(enemy:Dictionary)->String:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_ship_key(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return str(simulation_geometry_view.appearance(enemy).ship_key)
 	return enemy_visual_identity.resolve(enemy,visual_config)
 
@@ -1292,6 +1297,7 @@ func enemy_attack_deck_visible(enemy:Dictionary)->bool:
 	return not enemy_ship_key(enemy).begins_with("enemy_opening_")
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_weapon_components(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).components
 	var pose := enemy_pose(enemy)
 	var ship_key := enemy_ship_key(enemy)
@@ -1340,7 +1346,7 @@ func turret_muzzle(index: int) -> Vector2:
 	return battle_logical_point(player_render_position()+local.rotated(-PI/2+player_idle_angle())*scale_value)
 
 func player_component_for_slot(index: int):
-	return GEOMETRY_RULES.player_component_for_slot(self, index)
+	return _geometry_source().player_component_for_slot(index)
 
 func shot_mount(shot: Dictionary) -> int:
 	if shot.hostile:return -1
@@ -1357,6 +1363,7 @@ func shot_mount(shot: Dictionary) -> int:
 	return closest
 
 func enemy_render_angle(enemy:Dictionary)->float:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_angle(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).angle)
 	var pose:=enemy_pose(enemy)
 	return float(pose.rotation)
@@ -1382,16 +1389,16 @@ func enemy_weapon_art_pose(enemy:Dictionary,component)->Dictionary:
 	return enemy_rotating_art.pose(self,enemy,component)
 
 func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> Vector2:
-	return GEOMETRY_RULES.enemy_port_offset(self, enemy,index,render_position)
+	return _geometry_source().enemy_port_offset(enemy,index,render_position)
 
 func enemy_weapon_angle(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> float:
-	return GEOMETRY_RULES.enemy_weapon_angle(self, enemy,index,render_position)
+	return _geometry_source().enemy_weapon_angle(enemy,index,render_position)
 
 func enemy_component_for_slot(enemy: Dictionary, index: int):
-	return GEOMETRY_RULES.enemy_component_for_slot(self, enemy,index)
+	return _geometry_source().enemy_component_for_slot(enemy,index)
 
 func enemy_shot_mount(enemy: Dictionary, shot: Dictionary) -> int:
-	return GEOMETRY_RULES.enemy_shot_mount(self, enemy,shot)
+	return _geometry_source().enemy_shot_mount(enemy,shot)
 
 func advance_turrets(dt: float) -> void:
 	if game.paused:return
@@ -1459,16 +1466,16 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.equipment.selected_ship())))
 
 func player_base_art_scale_for(ship_key: String) -> float:
-	return GEOMETRY_RULES.player_base_art_scale_for(self, ship_key)
+	return _geometry_source().player_base_art_scale_for(ship_key)
 
 func player_base_art_scale() -> float:
-	return GEOMETRY_RULES.player_base_art_scale(self)
+	return _geometry_source().player_base_art_scale()
 
 func player_art_scale_for(ship_key: String) -> float:
-	return GEOMETRY_RULES.player_art_scale_for(self, ship_key)
+	return _geometry_source().player_art_scale_for(ship_key)
 
 func player_art_scale() -> float:
-	return GEOMETRY_RULES.player_art_scale(self)
+	return _geometry_source().player_art_scale()
 
 func player_idle_angle() -> float:
 	return deg_to_rad(float(battle_visual.player_idle_rotation))*sin(fx_time*TAU/6.3)
@@ -1532,12 +1539,13 @@ func player_mount_center(key: String, index: int) -> Vector2:
 	return Vector2(-float(normalized[1])*core.y,float(normalized[0])*core.x)
 
 func enemy_config_visual_scale(size: int) -> float:
-	return GEOMETRY_RULES.enemy_config_visual_scale(self, size)
+	return _geometry_source().enemy_config_visual_scale(size)
 
 func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) -> Vector2:
-	return GEOMETRY_RULES.enemy_formation_anchor(self, slot,large,size,columns)
+	return _geometry_source().enemy_formation_anchor(slot,large,size,columns)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_pose(enemy).duplicate(true)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.pose(enemy)
 	var slot := int(enemy.slot)
 	if enemy_poses.has(slot) and is_same(enemy_poses[slot].entity,enemy):return enemy_poses[slot]
@@ -1605,12 +1613,14 @@ func enemy_display_protection_scale(enemy:Dictionary,packet:Dictionary,angle:flo
 	return minf(1.0,enemy_display_fit(half*2.0,angle,enemy_display_size(enemy)))
 
 func enemy_render_width(enemy: Dictionary) -> float:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_width(enemy)
 	if fixed_enemy_layout and simulation_geometry_view==null:
 		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
 	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_width_at_y(enemy,y)
 	if fixed_enemy_layout and simulation_geometry_view==null:
 		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.width_at(enemy,y)
@@ -1665,6 +1675,7 @@ func enemy_safe_entry_distance()->float:
 	return distance
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_frontline_y_limit(enemy)
 	if fixed_enemy_layout and simulation_geometry_view==null:
 		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).frontline)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).frontline)
@@ -1687,6 +1698,7 @@ func enemy_frontline_y_limit(enemy: Dictionary) -> float:
 	return minf(BATTLE_VIEW_SIZE.y*max_y,clearance)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_position(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).position
 	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
 	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
@@ -1717,7 +1729,7 @@ func enemy_render_position(enemy: Dictionary) -> Vector2:
 	return position
 
 func entity_render_position(entity: Dictionary) -> Vector2:
-	return GEOMETRY_RULES.entity_render_position(self, entity)
+	return _geometry_source().entity_render_position(entity)
 
 func shot_target_screen_position(shot: Dictionary) -> Vector2:
 	return player_contact_screen_position() if bool(shot.hostile) and is_same(shot.target,game.player) else entity_render_position(shot.target)
@@ -1755,10 +1767,10 @@ func visual_effect_point(point: Vector2) -> Vector2:
 	return point
 
 func battle_point(point: Vector2) -> Vector2:
-	return GEOMETRY_RULES.battle_point(self, point)
+	return _geometry_source().battle_point(point)
 
 func enemy_drop_anchor(enemy: Dictionary) -> Vector2:
-	return GEOMETRY_RULES.enemy_drop_anchor(self, enemy)
+	return _geometry_source().enemy_drop_anchor(enemy)
 
 func drop_render_position(drop: Dictionary) -> Vector2:
 	var source_uid := int(drop.get("source_uid",-1))
@@ -1787,7 +1799,7 @@ func drop_pickup_positions() -> Dictionary:
 	return positions
 
 func battle_logical_point(point: Vector2) -> Vector2:
-	return GEOMETRY_RULES.battle_logical_point(self, point)
+	return _geometry_source().battle_logical_point(point)
 
 func weapon_launch(shot: Dictionary, spread := 0.0) -> void:
 	var key := weapon_key(shot)
@@ -3467,6 +3479,7 @@ func enemy_recognition_screen_scale() -> float:
 	return maxf(0.1,absf((get_viewport().get_stretch_transform()*battle_layer.get_global_transform_with_canvas()).get_scale().x)) if is_instance_valid(battle_layer) else 1.0
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
+	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_recognition_geometry(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).recognition
 	var texture := ship_geometry_texture(enemy_ship_key(enemy))
 	var components := enemy_weapon_components(enemy)
@@ -3828,6 +3841,7 @@ func _exit_tree()->void:
 	if damage_stats_ui!=null:damage_stats_ui.dispose();damage_stats_ui=null
 	if battle_slice_runtime!=null:
 		if battle_slice_runtime.close():battle_slice_runtime=null
+	if simulation_geometry_authority.prepared:simulation_geometry_authority.close()
 
 func _advance_projectile_visual_record(visual:Dictionary,dt:float)->void:
 	visual.age += dt
@@ -3966,3 +3980,13 @@ func draw_damage_floats()->void:
 			var panel:=Rect2(point-Vector2(0,float(f.tag_ascent)),Vector2(f.tag_size)).grow(3.0)
 			draw_surface.draw_rect(panel,Color(0.025,0.06,0.085,alpha*0.88))
 		text_at(str(f.text),point,int(f.get("size",20)),Color(f.color,alpha))
+
+func _geometry_source():
+	# Before asset preparation, UI construction needs only authoring data.
+	# Once prepared, no presentation state is copied back into the authority.
+	if not simulation_geometry_authority.prepared:
+		simulation_geometry_authority.game=game
+		simulation_geometry_authority.db=db
+		simulation_geometry_authority.visual_config=visual_config
+		simulation_geometry_authority.battle_visual=battle_visual
+	return simulation_geometry_authority

@@ -10,3 +10,4 @@
 | unlock-notice-copy-20261017 | tasks/unlock-notice-copy-20261017.md |
 | fleet-13-20261018 | tasks/fleet-13-20261018.md |
 | battlefield-motion | tasks/battlefield-motion.md |
+| simulation-geometry-preparation-stage3 | tasks/simulation-geometry-preparation-stage3.md |

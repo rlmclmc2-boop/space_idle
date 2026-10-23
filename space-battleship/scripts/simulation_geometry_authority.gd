@@ -1,5 +1,4 @@
 extends RefCounted
-const GEOMETRY_RULES=preload("res://scripts/geometry_rules.gd")
 ## Prototype simulation-owned mathematical geometry. No active scene objects.
 const FIXED_LAYOUT=preload("res://scripts/enemy_fixed_layout.gd")
 const ENEMY_VISUAL_ALIASES := {"laser_mon":"laser","cannon-mon":"cannon","missile-mon":"missile","longLaser-mon":"longLaser","missile_mon":"missile"}
@@ -23,6 +22,7 @@ var screen_scale=1.0
 var captured_visuals:Dictionary={}
 var captured_bounds={}
 var prepared_hulls:Dictionary={}
+var status_metrics:Dictionary={}
 
 const BATTLE_INVERSE_STEPS := 20
 
@@ -101,37 +101,73 @@ var battle_read_model=preload("res://scripts/battle_read_model.gd").new()
 var battle_read_model_enabled:=true
 
 func weapon_visual_key(key:String)->String:
-	return GEOMETRY_RULES.weapon_visual_key(self, key)
+	return str(ENEMY_VISUAL_ALIASES.get(key,key.replace("-mon", "").replace("_mon", "")))
 
 func weapon_key(shot: Dictionary) -> String:
-	return GEOMETRY_RULES.weapon_key(self, shot)
+	return weapon_visual_key(str(shot.get("chain_weapon",shot.key) if shot.get("chain_hop",false) else shot.key))
 
 func turret_angle(index: int) -> float:
-	return GEOMETRY_RULES.turret_angle(self, index)
+	if turret_ship!=str(game.equipment.selected_ship()) or not turret_visuals.has(index):return 0.0
+	var pose: Dictionary = turret_visuals[index]
+	return float(pose.angle) if game.same_module(pose.entry,game.slot_entry("weapons",index)) and pose.key==str(pose.entry.key) else 0.0
 
 func ship_visual_entry(ship_key: String) -> Dictionary:
-	return GEOMETRY_RULES.ship_visual_entry(self, ship_key)
+	return visual_config.get("ships",{}).get(ship_key,{})
 
 func weapon_visual_profile(key: String) -> Dictionary:
-	return GEOMETRY_RULES.weapon_visual_profile(self, key)
+	return visual_config.get("weapons",{}).get(weapon_visual_key(key),{})
 
 func slot_hardpoint_index(ship_key: String, index: int) -> int:
-	return GEOMETRY_RULES.slot_hardpoint_index(self, ship_key,index)
+	var ship := ship_visual_entry(ship_key)
+	var mapping: Array = ship.get("slot_map",[])
+	var points: Array = ship.get("hardpoints",[])
+	if points.is_empty():return -1
+	return clampi(int(mapping[index]) if index<mapping.size() else posmod(index,points.size()),0,points.size()-1)
 
 func hardpoint_for_slot(ship_key: String, index: int) -> Dictionary:
-	return GEOMETRY_RULES.hardpoint_for_slot(self, ship_key,index)
+	var point := slot_hardpoint_index(ship_key,index)
+	return ship_visual_entry(ship_key).get("hardpoints",[])[point] if point>=0 else {}
 
 func weapon_visual_role(index: int) -> String:
-	return GEOMETRY_RULES.weapon_visual_role(self, index)
+	var component = player_component_for_slot(index)
+	return component.mode() if component!=null else "embedded"
 
 func weapon_visual_angle(index: int) -> float:
-	return GEOMETRY_RULES.weapon_visual_angle(self, index)
+	var role := weapon_visual_role(index)
+	var limit := deg_to_rad(float(hardpoint_for_slot(str(game.equipment.selected_ship()),index).get("rotation_limit",0)))
+	return clampf(turret_angle(index),-limit,limit)*(1.0 if role=="main" else 0.2 if role=="secondary" else 0.0)
 
 func player_weapon_components() -> Array:
-	return GEOMETRY_RULES.player_weapon_components(self)
+	if battle_draw_active:return player_components
+	var ship_key := str(game.equipment.selected_ship())
+	var entries := game.weapon_entries()
+	var signature := ship_key
+	for entry in entries:signature += "|"+str(entry.get("key",""))
+	if signature==player_components_signature:return player_components
+	player_components_signature=signature
+	player_components=compose_weapon_components(ship_key,entries,"ally")
+	return player_components
 
 func compose_weapon_components(ship_key: String, entries: Array, faction: String) -> Array:
-	return GEOMETRY_RULES.compose_weapon_components(self, ship_key,entries,faction)
+	var components: Array = []
+	var ship := ship_visual_entry(ship_key)
+	var points: Array = ship.get("hardpoints",[])
+	for point_index in points.size():
+		var point: Dictionary = points[point_index]
+		var bound: Array[int] = []
+		var owner := -1
+		for index in entries.size():
+			if slot_hardpoint_index(ship_key,index)!=point_index:continue
+			bound.append(index)
+			var profile := weapon_visual_profile(str(entries[index].get("key","")))
+			if profile.is_empty() or not point.get("allowed_weapon_visual_class",[]).has(profile.get("visual_class","")):continue
+			if owner<0 or (str(weapon_visual_profile(str(entries[owner].get("key",""))).get("visual_class",""))=="missile" and str(profile.get("visual_class",""))!="missile"):
+				owner=index
+		if owner>=0:
+			var component=WEAPON_VISUAL.new(point,weapon_visual_profile(str(entries[owner].key)),bound,owner,faction)
+			if faction=="enemy":component.damage_type=int(db.enemy_weapon(str(entries[owner].key)).get("dmgtype",0))
+			components.append(component)
+	return components
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
 	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.components(enemy)
@@ -183,7 +219,9 @@ func turret_muzzle(index:int)->Vector2:
 	return launch_pose(index,Vector2.ZERO,0).position
 
 func player_component_for_slot(index: int):
-	return GEOMETRY_RULES.player_component_for_slot(self, index)
+	for component in player_weapon_components():
+		if component.slots.has(index):return component
+	return null
 
 func shot_mount(shot: Dictionary) -> int:
 	if shot.hostile:return -1
@@ -236,16 +274,46 @@ func execution_enemy_port_offset(enemy:Dictionary,index:int,render_position:Vect
 	return enemy_port_offset(enemy,index,render_position)
 
 func enemy_port_offset(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> Vector2:
-	return GEOMETRY_RULES.enemy_port_offset(self, enemy,index,render_position)
+	var component=enemy_component_for_slot(enemy,index)
+	if component!=null:return enemy_component_pose(enemy,component,render_position).muzzle
+	# Unknown external configurations keep the previous logical mount fallback.
+	var point:=hardpoint_for_slot(enemy_ship_key(enemy),index)
+	if point.is_empty():return Vector2.ZERO
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var width:=enemy_render_width_at_y(enemy,position.y)
+	var angle:=float(enemy_pose(enemy).rotation)
+	var origin:=Vector2(float(point.pos[0])*width,float(point.pos[1])*width*2.0).rotated(PI+angle)
+	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
+	return origin+Vector2(width*0.42*class_scale*0.22,0).rotated(PI/2+angle)
 
 func enemy_weapon_angle(enemy: Dictionary, index: int,render_position:=Vector2.INF) -> float:
-	return GEOMETRY_RULES.enemy_weapon_angle(self, enemy,index,render_position)
+	var component = enemy_component_for_slot(enemy,index)
+	if component==null:return 0.0
+	var role: String = component.mode()
+	if role!="main" and role!="secondary":return 0.0
+	var pose_angle := enemy_render_angle(enemy)
+	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
+	var desired := wrapf((player_render_position()-position).angle()-PI/2-pose_angle,-PI,PI)
+	var limit := deg_to_rad(float(component.hardpoint.get("rotation_limit",0)))
+	return clampf(desired,-limit,limit)*(1.0 if role=="main" else 0.2)
 
 func enemy_component_for_slot(enemy: Dictionary, index: int):
-	return GEOMETRY_RULES.enemy_component_for_slot(self, enemy,index)
+	for component in enemy_weapon_components(enemy):
+		if component.slots.has(index):return component
+	return null
 
 func enemy_shot_mount(enemy: Dictionary, shot: Dictionary) -> int:
-	return GEOMETRY_RULES.enemy_shot_mount(self, enemy,shot)
+	if is_same(enemy,shot.get("source",{})) and shot.has("mount"):return int(shot.mount)
+	var origin := game.projectile_position(shot)
+	var best := 0
+	var distance := INF
+	for index in enemy.equipment.size():
+		var logical := Vector2(enemy.x,enemy.y)+game.enemy_weapon_offset(enemy,index)
+		var candidate := logical.distance_squared_to(origin)
+		if candidate<distance:
+			distance = candidate
+			best = index
+	return best
 
 func advance_turrets(dt: float) -> void:
 	if game.paused:return
@@ -322,22 +390,25 @@ func visual_muzzle(shot: Dictionary) -> Vector2:
 	return source+(pos-source)*player_art_scale()/SHIP_VISUALS.scale_for(db.ship(str(game.equipment.selected_ship())))
 
 func player_base_art_scale_for(ship_key: String) -> float:
-	return GEOMETRY_RULES.player_base_art_scale_for(self, ship_key)
+	var entry := ship_visual_entry(ship_key)
+	return float(entry.get("display_scale",minf(SHIP_VISUALS.scale_for(db.ship(ship_key)),0.18)))*SHIP_VISUALS.player_display_multiplier()
 
 func player_base_art_scale() -> float:
-	return GEOMETRY_RULES.player_base_art_scale(self)
+	return player_base_art_scale_for(str(game.equipment.selected_ship()))
 
 func player_art_scale_for(ship_key: String) -> float:
-	return GEOMETRY_RULES.player_art_scale_for(self, ship_key)
+	return player_base_art_scale_for(ship_key)*float(db.config.get("playerVisualScale"+ship_key,1.0))
 
 func player_art_scale() -> float:
-	return GEOMETRY_RULES.player_art_scale(self)
+	return player_art_scale_for(str(game.equipment.selected_ship()))
 
 func enemy_config_visual_scale(size: int) -> float:
-	return GEOMETRY_RULES.enemy_config_visual_scale(self, size)
+	return float(db.config.get("enemyVisualScaleSize"+str(clampi(size,1,6)),1.0))
 
 func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) -> Vector2:
-	return GEOMETRY_RULES.enemy_formation_anchor(self, slot,large,size,columns)
+	var scale_offset := maxf(0.0,enemy_config_visual_scale(size)-1.0)*35.0
+	if columns==5:return BattleGame.enemy_slot_position(slot,columns)+Vector2(0,scale_offset)
+	return Vector2(BattleGame.enemy_slot_position(slot).x,(130.0 if large else 120.0)+scale_offset)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
 	var frozen:Dictionary=boundary_dead_geometry.get(int(enemy.uid),{})
@@ -372,7 +443,9 @@ func enemy_pose(enemy: Dictionary) -> Dictionary:
 	return pose
 
 func enemy_render_width(enemy: Dictionary) -> float:
-	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
+	# Fixed width does not depend on entry position; avoid re-entering the
+	# entry-envelope solver while it requests body/status dimensions.
+	return _source_enemy_render_width_at_y(enemy,0.0)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
 	if battle_read_model_enabled and battle_read_model.active:return battle_read_model.width_at(enemy,y)
@@ -412,17 +485,34 @@ func _source_enemy_render_position(enemy:Dictionary)->Vector2:
 	return point
 
 func entity_render_position(entity: Dictionary) -> Vector2:
-	return GEOMETRY_RULES.entity_render_position(self, entity)
+	if is_same(entity,game.player):return player_render_position()
+	if entity.has("slot"):return enemy_render_position(entity)
+	return battle_point(Vector2(entity.x,entity.y))
 
 func battle_point(point: Vector2) -> Vector2:
-	return GEOMETRY_RULES.battle_point(self, point)
+	# Presentation only: open the engagement corridor without stretching hulls or FX.
+	return Vector2(point.x,point.y+smoothstep(220.0,420.0,point.y)*220.0)
 
 func enemy_drop_anchor(enemy: Dictionary) -> Vector2:
-	return GEOMETRY_RULES.enemy_drop_anchor(self, enemy)
+	var position:=enemy_render_position(enemy)
+	return position+Vector2(0,enemy_render_width_at_y(enemy,position.y)+12.0)
 
 func battle_logical_point(point: Vector2) -> Vector2:
-	return GEOMETRY_RULES.battle_logical_point(self, point)
-
+	# In these affine regions all original comparisons take the same branch.
+	# Preserve the finite-bisection midpoint bias, rather than replacing it
+	# with the mathematical inverse and moving missile collision coordinates.
+	if point.y>=-512.0 and point.y<=220.0:
+		return Vector2(point.x,point.y-BATTLE_LINEAR_INVERSE_OFFSET)
+	if point.y>=640.0 and point.y<=2048.0:
+		return Vector2(point.x,point.y-220.0+BATTLE_LINEAR_INVERSE_OFFSET)
+	if game.combat_presentation!=null:return game.combat_presentation.battle_logical_point(point)
+	var low := point.y-220.0
+	var high := point.y
+	for iteration in BATTLE_INVERSE_STEPS:
+		var middle := (low+high)*0.5
+		if battle_point(Vector2(0,middle)).y<point.y:low=middle
+		else:high=middle
+	return Vector2(point.x,(low+high)*0.5)
 
 func enemy_recognition_geometry(enemy: Dictionary, known_width:float=-1.0) -> Dictionary:
 	var texture := ship_hull_texture(enemy_ship_key(enemy))
@@ -434,15 +524,18 @@ var reference_height=0.0
 var demo_time=0.0
 var canonical_generation=0
 var prepared=false
-var previous_providers:Dictionary={}
-var previous_spatial_source
 var current_hull=""
 
 # Main-thread preparation captures immutable imported descriptors and alpha
 # envelopes. No prepare/texture read/scene method is permitted after ownership
 # is handed to a simulation owner.
 func prepare(owner,simulation:BattleGame)->void:
-	game=simulation;db=simulation.db
+	prepare_data(capture_preparation(owner,simulation),simulation)
+
+# The only scene/asset adapter. Its result contains numeric descriptors and
+# initial poses; no owner, Node, Texture or Image is retained by the authority.
+static func capture_preparation(owner,simulation:BattleGame)->Dictionary:
+	var game=simulation
 	# The fixture/UI may have changed loadout since the last native pose.
 	# Complete this main-thread descriptor boundary before capturing ownership.
 	owner.ship_view.set_hull(str(game.equipment.selected_ship()))
@@ -450,29 +543,31 @@ func prepare(owner,simulation:BattleGame)->void:
 	owner.current_hull=str(game.equipment.selected_ship())
 	owner._set_reference_dimensions()
 	owner.hyperspace_visual.sync(game.hyperspace.state.inventory)
-	battle_visual=owner.battle_visual.duplicate(true)
-	visual_config=owner.visual_config.duplicate(true)
-	player_anchor=owner.player_render_position()
-	screen_scale=owner.enemy_recognition_screen_scale()
-	reference_height=owner.reference_height
-	demo_time=owner.demo_time;fx_time=owner.fx_time
-	turret_ship=owner.turret_ship
+	var battle_visual=owner.battle_visual.duplicate(true)
+	var visual_config=owner.visual_config.duplicate(true)
+	var player_anchor=owner.player_render_position()
+	var screen_scale=owner.enemy_recognition_screen_scale()
+	var reference_height=owner.reference_height
+	var demo_time=owner.demo_time;var fx_time=owner.fx_time
+	var turret_ship=owner.turret_ship
 	# Bind live entity identities exclusively to this simulation instance.
-	turret_visuals=owner.turret_visuals.duplicate(true)
+	var turret_visuals=owner.turret_visuals.duplicate(true)
 	for index in turret_visuals:
 		turret_visuals[index].entry=game.slot_entry("weapons",int(index))
 		var previous:Dictionary=owner.turret_visuals[index].target
-		turret_visuals[index].target=resolve_entity(previous)
+		turret_visuals[index].target=resolve_prepared_entity(game,previous)
 	# Main may still hold poses for contacts removed at the preceding boundary.
 	# Those identities have no actor in this simulation; never hand an empty
 	# Dictionary to the frozen-enemy display path during native admission.
-	enemy_poses={}
+	var enemy_poses={}
 	for slot in owner.enemy_poses:
-		var resolved:Dictionary=resolve_entity(owner.enemy_poses[slot].entity)
+		var resolved:Dictionary=resolve_prepared_entity(game,owner.enemy_poses[slot].entity)
 		if resolved.is_empty() or not game.enemies.has(resolved):continue
 		var pose:Dictionary=owner.enemy_poses[slot].duplicate(true)
 		pose.entity=resolved
 		enemy_poses[slot]=pose
+	var captured_visuals:Dictionary={}
+	var captured_bounds:Dictionary={}
 	for key in visual_config.get("ships",{}):
 		# Older/isolated owners predate asset_ready. Preserve their legacy capture;
 		# an explicit unavailable flag still wins. This remains before ownership.
@@ -483,40 +578,36 @@ func prepare(owner,simulation:BattleGame)->void:
 			var identity=geometry_texture.get_instance_id()
 			var bounds=owner.enemy_hull_bounds(texture)
 			var profile=owner.enemy_recognition.hull_profile(geometry_texture).duplicate()
-			captured_visuals[str(visual_config.ships[key].get("texture",""))]={"identity":identity,"bounds":bounds,"profile":profile}
+			captured_visuals[str(visual_config.ships[key].get("texture",""))]={"identity":identity,"bounds":bounds,"profile":profile,"size":texture.get_size(),"display_region":owner.visual_region(str(visual_config.ships[key].get("texture","")))}
 			captured_bounds[identity]=bounds
-	fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
+	var fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
 	fleet_pose.prepare(owner.ship_view)
 	fleet_pose.manifest=fleet_pose.manifest.duplicate(true)
 	fleet_pose.configure(str(game.equipment.selected_ship()),game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 	# Capture every authored hull's footprint before worker admission. Runtime
 	# ship commands choose immutable descriptors; they never instantiate/read Nodes.
+	var prepared_hulls:Dictionary={}
 	for key in fleet_pose.manifest.hulls:
-		var texture=owner.ship_geometry_texture(key);var image=texture.get_image()
-		var factor=float(battle_visual.player_core_scale)*player_art_scale_for(key)
-		var hull:Dictionary=fleet_pose.manifest.hulls[key]
-		var radius=float(fleet_pose.manifest.weapon_contract.conservative_xz_rotation_radius)
-		var left=float(hull.godot_aabb_min[0]);var right=float(hull.godot_aabb_max[0])
-		for point in hull.weapon_mounts:
-			left=minf(left,float(point.position[0])-radius);right=maxf(right,float(point.position[0])+radius)
-		for offset in hull.drone_offsets:
-			left=minf(left,float(offset[0])+minf(-radius,float(fleet_pose.manifest.drone.godot_aabb_min[0])))
-			right=maxf(right,float(offset[0])+maxf(radius,float(fleet_pose.manifest.drone.godot_aabb_max[0])))
-		var height=minf(float(image.get_used_rect().size.y)*factor,BATTLE_VIEW_SIZE.x*0.90*float(hull.model_span)/(right-left))
-		height*=0.74 if key=="Heavy_Battleship" else 0.85 if key=="Battleship" else 1.0
-		image.convert(Image.FORMAT_RGBA8);var pixels=image.get_data();var width=image.get_width();var bottom=image.get_height()
-		for y in range(image.get_height()-1,-1,-1):
-			var found=false
-			for x in range(0,width,2):
-				if pixels[(y*width+x)*4+3]>8:bottom=y+1;found=true;break
-			if found:break
-		var tail=(float(bottom)-SHIP_ART_CANVAS.y*0.5)*factor
-		var reference_half=SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*0.18*1.15*0.5
-		var anchor_y=BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)+maxf(0,reference_half-SHIP_ART_CANVAS.y*factor*0.5)
-		anchor_y=minf(anchor_y,1132.0-owner.BATTLE_ORIGIN.y-float(battle_visual.player_hud_gap)-tail-absf(float(battle_visual.player_idle_y)))
-		anchor_y=minf(anchor_y,BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
+		var art:Dictionary=visual_config.ships[key]
+		assert(float(art.get("static_height",0.0))>0.0,"Hull requires authored static_height")
+		var height:float=float(art.static_height)*SHIP_VISUALS.player_display_multiplier()*float(game.db.config.get("playerVisualScale"+key,1.0))
+		var anchor_y:float=minf(BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y),BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
 		prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
-	current_hull=str(game.equipment.selected_ship())
+	# Compile only the captions used by current enemy/group tables and slot labels.
+	# Numeric entry fitting reads these metrics, never the live Font resource.
+	var status_metrics:Dictionary={}
+	var captions:Array=[]
+	for id in game.db.enemies:
+		var name:String=str(game.db.enemies[id].get("des","")).strip_edges()
+		captions.append(name)
+		captions.append(UIText.data_text("enemies",str(id),"des",name))
+	for row in game.db.groups.values():captions.append(str(row.get("description","")).strip_edges())
+	for slot in 512:captions.append(UIText.t("battle.enemy_marker",{"slot":"%02d" % (slot+1)}))
+	for caption in captions:
+		if status_metrics.has(caption):continue
+		var fitted:String=owner.fit_battle_text(caption,260.0,17)
+		status_metrics[caption]={"text":fitted,"size17":owner.font.get_string_size(fitted,HORIZONTAL_ALIGNMENT_LEFT,-1,17),"ascent17":owner.font.get_ascent(17),"descent17":owner.font.get_descent(17),"size12":owner.font.get_string_size(caption,HORIZONTAL_ALIGNMENT_LEFT,-1,12),"ascent12":owner.font.get_ascent(12),"descent12":owner.font.get_descent(12)}
+	var current_hull=str(game.equipment.selected_ship())
 	# Ownership handoff begins at the exact existing logical pose, including
 	# startup steps. Descriptors alone do not reproduce accumulated orbit time.
 	fleet_pose.orbit_elapsed=owner.ship_view.orbit_elapsed
@@ -531,9 +622,40 @@ func prepare(owner,simulation:BattleGame)->void:
 		fleet_pose.carriers[index].euler=owner.ship_view.carriers[index].rotation
 	for index in fleet_pose.drones.size():fleet_pose.drones[index].transform=owner.hyperspace_visual.nodes[index].transform
 	fleet_pose.invalidate_pose()
+	return {"status_metrics":status_metrics,"battle_visual":battle_visual,"visual_config":visual_config,"player_anchor":player_anchor,"screen_scale":screen_scale,"reference_height":reference_height,"demo_time":demo_time,"fx_time":fx_time,"turret_ship":turret_ship,"turret_visuals":turret_visuals,"enemy_poses":enemy_poses,"fleet_pose":fleet_pose,"current_hull":current_hull,"captured_visuals":captured_visuals,"captured_bounds":captured_bounds,"prepared_hulls":prepared_hulls}
+
+static func resolve_prepared_entity(simulation:BattleGame,previous:Dictionary)->Dictionary:
+	if previous.is_empty():return {}
+	if not previous.has("uid"):return simulation.player
+	for enemy in simulation.enemies:
+		if int(enemy.get("uid",-1))==int(previous.uid):return enemy
+	return {}
+
+func prepare_data(data:Dictionary,simulation:BattleGame)->void:
+	assert(not prepared,"Geometry preparation occurs once per authority")
+	game=simulation;db=simulation.db
+	status_metrics=data.status_metrics
+	battle_visual=data.battle_visual
+	visual_config=data.visual_config
+	player_anchor=data.player_anchor
+	screen_scale=data.screen_scale
+	reference_height=data.reference_height
+	demo_time=data.demo_time
+	fx_time=data.fx_time
+	turret_ship=data.turret_ship
+	turret_visuals=data.turret_visuals
+	enemy_poses=data.enemy_poses
+	fleet_pose=data.fleet_pose
+	current_hull=data.current_hull
+	captured_visuals=data.captured_visuals
+	captured_bounds=data.captured_bounds
+	prepared_hulls=data.prepared_hulls
 	battle_read_model.setup(self)
 	sync_fixed_layout()
 	prepared=true
+	current_hull=""
+	sync_hull()
+	ensure_fleet_geometry()
 
 func sync_fixed_layout()->bool:
 	if not FIXED_LAYOUT.sync(self):return false
@@ -603,10 +725,13 @@ func geometry_from_descriptor(descriptor:Dictionary,width:float,mounts:Array,rep
 
 func sync_hull()->void:
 	var key=str(game.equipment.selected_ship())
-	if key==current_hull:return
-	assert(prepared_hulls.has(key),"Hull has no main-thread compiled descriptors")
-	current_hull=key;reference_height=prepared_hulls[key].height
-	player_anchor=Vector2(game.player.x,prepared_hulls[key].anchor_y)
+	assert(prepared_hulls.has(key),"Hull has no compiled descriptors")
+	var height:float=float(visual_config.ships[key].static_height)*SHIP_VISUALS.player_display_multiplier()*float(db.config.get("playerVisualScale"+key,1.0))
+	var anchor_y:float=minf(BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y),BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
+	var anchor:=Vector2(game.player.x,anchor_y)
+	if key==current_hull and reference_height==height and player_anchor==anchor:return
+	prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
+	current_hull=key;reference_height=height;player_anchor=anchor
 	fleet_pose.configuration_dirty=true
 	fleet_pose.configure(key,game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 
@@ -717,6 +842,13 @@ func record_direct_fire_alignment(slot:int,info:Dictionary,ordinal:int=0)->void:
 	pose.fire_until=fx_time+0.12
 
 func on_simulation_event(kind:String,info:Dictionary)->void:
+	if info.has("native_laser"):
+		var laser:Dictionary=info.native_laser
+		if kind=="fire" and not bool(laser.drone) and bool(laser.owns_primary_aim) and int(laser.mount)>=0 and int(laser.mount)<game.weapon_entries().size():
+			var pose=turret_pose(int(laser.mount))
+			record_direct_fire_alignment(int(laser.mount),info)
+			pose.target=laser.primary_target;pose.fired_at=fx_time
+		return
 	if kind=="explode":
 		for enemy in game.enemies:
 			if int(enemy.uid)==int(info.get("uid",-1)):freeze_display_entity(enemy,true);break
@@ -755,20 +887,16 @@ func drone_identity(shot:Dictionary)->String:
 	return source.trim_prefix("drone:") if source.begins_with("drone:") else ""
 
 func resolve_entity(previous:Dictionary)->Dictionary:
-	if previous.is_empty():return {}
-	if not previous.has("uid"):return game.player
-	for enemy in game.enemies:
-		if int(enemy.get("uid",-1))==int(previous.uid):return enemy
-	return {}
+	return resolve_prepared_entity(game,previous)
 
-func close(restoration:Dictionary={})->void:
+func close(_restoration:Dictionary={})->void:
 	# RefCounted signal/provider/spatial links form cycles unless detached explicitly.
 	if game!=null:
 		if game.event.is_connected(on_simulation_event):game.event.disconnect(on_simulation_event)
-		var providers:Dictionary=restoration.get("providers",previous_providers)
-		for key in providers:game.set(key,providers[key])
-		game.target_spatial_source=restoration.get("spatial",previous_spatial_source)
-	previous_providers.clear();previous_spatial_source=null
+		for key in ["target_provider","launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:
+			var provider:Callable=game.get(key)
+			if provider.get_object()==self:game.set(key,Callable())
+		if game.target_spatial_source==battle_read_model:game.target_spatial_source=null
 	battle_read_model.end();battle_read_model.host=null
 	battle_read_model.records.clear();battle_read_model.bounds_members.clear()
 	captured_visuals.clear();captured_bounds.clear()
@@ -846,3 +974,110 @@ func display_pose_values_match(values:Dictionary,pose:Dictionary)->bool:
 	for key in ["logical_position","target","phase","born","variance","rotation","duration","entry_x"]:
 		if values[key]!=pose[key]:return false
 	return true
+
+func bind_game()->void:
+	assert(prepared)
+	game.target_provider=target_point
+	game.launch_provider=launch_pose
+	game.drone_launch_provider=drone_launch_pose
+	game.target_spatial_source=battle_read_model
+	game.rail_geometry_provider=rail_geometry
+	game.rail_target_point_provider=entity_render_position
+	if not game.event.is_connected(on_simulation_event):game.event.connect(on_simulation_event)
+
+func encounter_leader_name(enemy:Dictionary)->String:
+	# Mainline display bindings must not resolve the manual hyperspace registry's IDs.
+	var row:Dictionary=game.db.enemies.get(str(int(enemy.id)),{})
+	var caption:=str(row.get("des","")).strip_edges()
+	if not game.manual_hyperspace.active and not caption.is_empty():
+		caption=UIText.data_text("enemies",str(int(enemy.id)),"des",caption)
+	if not caption.is_empty():return caption
+	if game.group_index>0 and game.group_index<=game.db.levels[game.stage-1].groups.size():
+		var group:Dictionary=game.db.levels[game.stage-1].groups[game.group_index-1]
+		var group_row:Dictionary=game.db.groups.get(str(int(group.id)),{})
+		return str(group_row.get("description","")).strip_edges()
+	return ""
+
+# Keep base-hull meters centred even near the clip edge. Shorten both ends
+# symmetrically instead of pushing a full-width bar away from its ship.
+
+func enemy_base_meter_span(pos:Vector2,bar_width:float)->Vector2:
+	var half:=minf(bar_width*0.5,maxf(0.0,minf(pos.x-6.0,BATTLE_VIEW_SIZE.x-6.0-pos.x)))
+	return Vector2(pos.x-half,half*2.0)
+
+func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
+	# Status placement follows the drawn hull/protection, not combat bounds.
+	var dimensions:=status_hull_size(enemy,width)
+	var texture:=ship_hull_texture(enemy_ship_key(enemy))
+	var used:=enemy_hull_bounds(texture)
+	var top:=pos.y
+	var bottom:=pos.y
+	for corner in [used.position,Vector2(used.end.x,used.position.y),used.end,Vector2(used.position.x,used.end.y)]:
+		var corner_y:float=pos.y+(Vector2(corner)*dimensions).rotated(PI+angle).y
+		top=minf(top,corner_y)
+		bottom=maxf(bottom,corner_y)
+	for point in outline:
+		var point_y:float=pos.y+point.rotated(PI+angle).y
+		top=minf(top,point_y)
+		bottom=maxf(bottom,point_y)
+	top-=9.0
+	var bar_width:=clampf(dimensions.x*used.size.x,28,100)
+	var left:=clampf(pos.x-bar_width*0.5,6,BATTLE_VIEW_SIZE.x-bar_width-6)
+	var base_hull:=enemy_ship_key(enemy).begins_with("enemy_opening_")
+	if base_hull:
+		var span:=enemy_base_meter_span(pos,bar_width)
+		left=span.x;bar_width=span.y
+	if bool(enemy.get("encounter_leader",false)):
+		# text_at renders at least 17 px: measure the same font size. Place the
+		# name and meters as one block, never clamp three rows independently.
+		var name:=encounter_leader_name(enemy)
+		if name.is_empty():name=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
+		var metrics:Dictionary=status_caption_metrics(name,int(enemy.slot))
+		name=str(metrics.text)
+		var name_size:Vector2=metrics.size17
+		var ascent:float=float(metrics.ascent17)
+		var descent:float=float(metrics.descent17)
+		var name_height:float=ascent+descent
+		var has_shield:bool=float(enemy.get("max_shield",0))>0.0
+		var block_height:float=name_height+6.0+(11.0 if has_shield else 4.0)
+		var block_top:float=top+4.0-block_height
+		# An enlarged ultimate can reach the header. Move the whole block
+		# below its visible outline instead of laying text across hull/meters.
+		if block_top<12.0:block_top=bottom+12.0
+		block_top=clampf(block_top,12.0,BATTLE_VIEW_SIZE.y-block_height-12.0)
+		var name_left:float=clampf(pos.x-name_size.x*0.5,12.0,BATTLE_VIEW_SIZE.x-name_size.x-12.0)
+		var baseline:=Vector2(name_left,block_top+ascent)
+		var first_meter_y:float=block_top+name_height+6.0
+		return {"health":Rect2(left,first_meter_y+(7.0 if has_shield else 0.0),bar_width,4),"shield":Rect2(left,first_meter_y,bar_width,4),"caption":name,"caption_position":baseline,"caption_bounds":Rect2(Vector2(name_left,block_top),Vector2(name_size.x,name_height))}
+	var outer_wing:bool=enemy.get("explicit_formation",false) and absf(float(enemy.x)-BATTLE_VIEW_SIZE.x*0.5)>150.0
+	if outer_wing and not base_hull:
+		# Meters use the same free outer-wing space as their captions.
+		left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,BATTLE_VIEW_SIZE.x-bar_width-6)
+	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
+	var metrics:Dictionary=status_caption_metrics(caption,int(enemy.slot))
+	var caption_size:Vector2=metrics.size12
+	var caption_left:=left
+	if outer_wing:
+		# Outer wing labels use the space away from the neighbouring centre fleet.
+		caption_left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-caption_size.x,6,BATTLE_VIEW_SIZE.x-caption_size.x-6)
+	var caption_position:=Vector2(caption_left,maxf(20,top-5))
+	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,float(metrics.ascent12)),Vector2(caption_size.x,float(metrics.ascent12)+float(metrics.descent12)))}
+
+func status_caption_metrics(caption:String,slot:int)->Dictionary:
+	if status_metrics.has(caption):return status_metrics[caption]
+	return status_metrics[UIText.t("battle.enemy_marker",{"slot":"%02d" % (slot+1)})]
+
+func status_hull_size(enemy:Dictionary,width:float)->Vector2:
+	var dimensions:=Vector2(width,width*2.0)
+	var key:=enemy_ship_key(enemy)
+	var row:Dictionary=visual_config.ships[key]
+	if key.begins_with("enemy_opening_"):
+		var descriptor:Dictionary=ship_hull_texture(key)
+		var actual_width:float=enemy_render_width(enemy)
+		var available:Array=row.get("display_size",[90.4,79.3333333333])
+		var opaque:Vector2=descriptor.display_region.size/descriptor.size*Vector2(actual_width,actual_width*2.0)
+		var angle:float=enemy_render_angle(enemy)
+		var c:=absf(cos(angle));var sn:=absf(sin(angle))
+		var rotated:=Vector2(opaque.x*c+opaque.y*sn,opaque.x*sn+opaque.y*c)
+		dimensions*=minf(float(available[0])/maxf(rotated.x,.001),float(available[1])/maxf(rotated.y,.001))
+	return dimensions
