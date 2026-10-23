@@ -23,7 +23,7 @@
 
 ## Authorized continuation — candidate, review still required
 
-- Continuation starts from c903c062 in a separate local Git clone; the previous checkout, personal saves and uncommitted work were not changed. Branch: `work/architecture-s1-continuation-20261024`. Base remains 793f7c4c; no main merge or remote push.
+- Continuation starts from c903c062 in a separate local Git clone; the previous checkout, personal saves and uncommitted work were not changed. Branch: `work/architecture-s1-continuation-20261024`. Base remains 793f7c4c; no main merge. The complete candidate branch was normally pushed to `rlmclmc2-boop/space_idle`; remote readback confirmed `3140aeb2ebe921c0a8702ce18fbed3b45dd9b331` before this evidence-only follow-up.
 - Closed additional gaps: Progress rechecks cross-domain contribution inputs after native handoff; externally supplied planet/research proposals are copied and frozen; research input/ratio commands use the same completion boundary; configuration handoff rejects writes during completion. Planet advancement now consumes a concrete step result for both partial progress and joint planet/crew completion. Partial progress marks save dirty without issuing completion rewards/notices. Planet scheduling facts derive from the plan, not the UI payload.
 - Command results are not a global write lock or a time ledger. Public migrated commands are guarded; direct owner APIs, lifecycle and other S2 producers are not claimed migrated. No gameplay, balance, frozen data or save schema edits.
 
@@ -46,14 +46,14 @@
 
 Executed from repository root with `python test/run.py <name> --headless --godot C:\Users\Administrator\Documents\Codex\2026-10-23\task-4\godot\Godot_v4.7.2-stable_win64.exe`. Each runner isolated both project and user directories, imported successfully, returned 0 and produced its recognized completion summary. No personal save was used.
 
-| Test | Checks / failures | Ignored local evidence under test/work |
+| Test | Checks / failures | Committed original test.log (repository-relative) |
 |---|---|---|
-| test_commit_boundary.gd | 25 / 0 | test_commit_boundary-qfyrdqua/{import,test}.log |
-| test_planet.gd | 688 / 0 | test_planet-z1d6h0dc/{import,test}.log |
-| test_module_refit.gd | 63 / 0 | test_module_refit-ezn85vxc/{import,test}.log |
-| test_ai_tech_tree.gd | 134 / 0 | test_ai_tech_tree-5ydwe442/{import,test}.log |
-| test_crew_dirty.gd | 59 / 0 | test_crew_dirty-kfk4oomy/{import,test}.log |
-| test_native_numeric_upgrade.gd | 146 / 0 | test_native_numeric_upgrade-3e4igs4i/{import,test}.log |
+| test_commit_boundary.gd | 25 / 0 | `test/evidence/architecture-s1/test_commit_boundary/test.log` |
+| test_planet.gd | 688 / 0 | `test/evidence/architecture-s1/test_planet/test.log` |
+| test_module_refit.gd | 63 / 0 | `test/evidence/architecture-s1/test_module_refit/test.log` |
+| test_ai_tech_tree.gd | 134 / 0 | `test/evidence/architecture-s1/test_ai_tech_tree/test.log` |
+| test_crew_dirty.gd | 59 / 0 | `test/evidence/architecture-s1/test_crew_dirty/test.log` |
+| test_native_numeric_upgrade.gd | 146 / 0 | `test/evidence/architecture-s1/test_native_numeric_upgrade/test.log` |
 
 The last three ran after all their affected implementation changes. The final subsequent code delta changed only planet-command allocation facts from `payload.has("activated")` to `plan.configuration`; boundary, planet and module-refit tests ran again on the final script tree. No runtime code changed after those final launches. Total selected assertions: 1115, zero failures. `git diff --check 793f7c4c HEAD` also passed.
 
@@ -61,4 +61,4 @@ Engine: Godot 4.7.2 stable official ed1daf0bf, SHA256 `ab1824f85bfd8e0e4128182c0
 
 All runs emitted the Windows root certificate store warning. Boundary/research/crew/planet runs also reported ObjectDB/resource leaks on exit (57/57/58/87 instances and 26 resources respectively). These were not repaired or represented as clean runtime teardown. No script-load/parse/runtime failure or missing completion summary was accepted. This is affected-correctness evidence, not performance, full UI, whole-step accounting, or release acceptance.
 
-Git handoff: fetch `work/architecture-s1-continuation-20261024` from `C:\Users\Administrator\Documents\Codex\2026-10-24\task-2\s1`. The complete S1 candidate includes inherited c903c062 plus continuation 1501dccf and this verification record; do not cherry-pick the continuation alone onto main. Original candidate checkout still reports c903c062 with a clean worktree. Only Git commits are delivery; ignored test artifacts are not part of the candidate.
+Git handoff: fetch [work/architecture-s1-continuation-20261024](https://github.com/rlmclmc2-boop/space_idle/tree/work/architecture-s1-continuation-20261024) from `https://github.com/rlmclmc2-boop/space_idle.git`. The complete S1 candidate includes inherited c903c062 plus continuation 1501dccf and this verification record; do not cherry-pick the continuation alone onto main. Original candidate checkout still reports c903c062 with a clean worktree. Only Git commits are delivery. The six original test.log files are now committed under `test/evidence/architecture-s1/`; they were copied byte-for-byte from the completed runs, with no rerun. Directory-local Git attributes disable text conversion for these logs. Import logs, saves and caches remain excluded. This follow-up changes only evidence and this handoff record; the implementation and test results are unchanged. The final pushed evidence commit SHA is supplied with the remote readback in the parent handoff.
