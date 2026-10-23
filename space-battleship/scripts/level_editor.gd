@@ -4,7 +4,7 @@ extends Control
 const TABLES := ["mon", "monGroup", "level"]
 static var TITLES := [UIText.t("debug.global.text_01"), UIText.t("debug.global.text_02"), UIText.t("debug.global.text_03")]
 static var LABELS := {"id":UIText.t("debug.global.text_04"), "des":UIText.t("debug.global.text_05"), "equipment":UIText.t("debug.global.text_06"), "dmgMultiple":UIText.t("debug.global.text_07"), "health":UIText.t("debug.global.text_08"), "armourType":UIText.t("debug.global.text_09"), "res":UIText.t("debug.global.text_10"), "size":UIText.t("debug.global.text_11"), "length":UIText.t("debug.global.text_12"), "atkRatio":UIText.t("debug.global.text_13"), "lifeRatio":UIText.t("debug.global.text_14"), "resRatio":UIText.t("debug.global.text_15"), "jewelRatio":UIText.t("debug.global.text_16")}
-const NUMBERS := ["id", "dmgMultiple", "health", "armourType", "size", "length", "atkRatio", "lifeRatio", "resRatio", "jewelRatio", "planetExpRatio"]
+const NUMBERS := ["id", "dmgMultiple", "health", "armourType", "size", "length", "atkRatio", "lifeRatio", "resRatio", "jewelRatio", "planetExpRatio", "entryAtkRatio", "entryLifeRatio"]
 var document: Dictionary = {}
 var table := "mon"
 var selected := -1
@@ -254,7 +254,8 @@ func stash() -> void:
 	var before := JSON.stringify(record)
 	for key in fields:
 		var value: String = fields[key].text.strip_edges()
-		record[key] = float(value) if key in NUMBERS and value.is_valid_float() else value
+		var numeric:bool = key in NUMBERS or key in document.tables[table].get("numeric_fields",[])
+		record[key] = null if value.is_empty() and record.get(key)==null else (float(value) if numeric and value.is_valid_float() else value)
 	if table == "monGroup":
 		var values: Array[String] = []
 		for slot in slots: values.append(choice_value(slot))

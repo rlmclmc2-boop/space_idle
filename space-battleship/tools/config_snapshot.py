@@ -147,20 +147,20 @@ class Store:
     def _capture(self):
         raw = (self.root / MANIFEST).read_bytes()
         manifest = json.loads(raw)
-        if manifest.get('version') != 1 or not manifest.get('files'): raise RecoveryRequired('Invalid generation manifest')
+        if manifest.get('version') != 1 or not manifest.get('files'): raise RecoveryRequired('Invalid generation manifest',str(self.root/MANIFEST))
         files = {}
         for name, expected in manifest['files'].items():
-            if name in (MANIFEST, JOURNAL, LOCK): raise RecoveryRequired('Invalid generation member')
+            if name in (MANIFEST, JOURNAL, LOCK): raise RecoveryRequired('Invalid generation member',str(self.root/MANIFEST))
             self.member(name)
             payload = self._read(name)
             if expected != {'sha256': digest(payload), 'size': len(payload)}:
-                raise RecoveryRequired('Configuration generation mismatch: ' + name)
+                raise RecoveryRequired('Configuration generation mismatch: ' + name,str(self.root/MANIFEST),[str(self.path(name))])
             files[name] = payload
         return Snapshot(digest(raw), MappingProxyType(files), raw)
 
     def capture(self):
         with exclusive(self.root / LOCK):
-            if (self.root/JOURNAL).exists():raise RecoveryRequired('Configuration publication unresolved; run publisher recovery')
+            if (self.root/JOURNAL).exists():raise RecoveryRequired('Configuration publication unresolved; run publisher recovery',str(self.root/JOURNAL))
             return self._capture()
 
     def capture_publication(self, initialize=False):
@@ -178,7 +178,7 @@ class Store:
                 expected = None
                 files = {p.relative_to(self.root).as_posix(): p.read_bytes()
                          for folder in ('data', 'config_excel') for p in (self.root/folder).rglob('*.json')}
-            else:raise RecoveryRequired('Configuration manifest required; run complete publication first')
+            else:raise RecoveryRequired('Configuration manifest required; run complete publication first',str(self.root/MANIFEST))
             inputs = {}
             with ExitStack() as leases:
                 for path in sorted((self.root/'config_excel').glob('*.xlsx')):
@@ -372,4 +372,6 @@ class Store:
             if source_leases is not None:source_leases.close()
             # Never discard the only recovery evidence for an unresolved journal.
             if not (self.root / JOURNAL).exists() and recovery.exists(): shutil.rmtree(recovery)
-        return self.capture()
+        # The committed result belongs to this operation even if another writer
+        # publishes immediately after release. Never recapture a different generation.
+        return Snapshot(digest(manifest),MappingProxyType(files),manifest)

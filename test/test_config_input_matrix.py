@@ -300,6 +300,27 @@ def published_editor_protocol():
 
 
 
+def initialization_protocol():
+    import config_publication as publication
+    import config_snapshot as protocol
+    root=AREA/'initialization';root.mkdir()
+    for name in ('data','config_excel'):shutil.copytree(ROOT/name,root/name)
+    original=(root/'data/game_data.json').read_bytes()
+    publication.execute(root,'initialize')
+    initial=protocol.Store(root).capture()
+    check(initial.files['data/game_data.json']==original,'Explicit initialization validates without changing authored business bytes')
+    source=root/'config_excel/mon.xlsx';raw=source.read_bytes();source.write_bytes(b'not a workbook')
+    try:publication.execute(root,'initialize')
+    except ValueError:pass
+    else:raise AssertionError('Initializer certified invalid managed template')
+    check(protocol.Store(root).capture().identity==initial.identity and source.read_bytes()==b'not a workbook','Invalid initial template preserves committed generation and external input')
+    source.write_bytes(raw);xml_cell(root,'mon','health',321)
+    try:publication.execute(root,'initialize')
+    except ValueError:pass
+    else:raise AssertionError('Initializer silently certified a different source projection')
+    check(protocol.Store(root).capture().identity==initial.identity,'Mismatched initial source requires explicit import')
+
+
 def generation_protocol():
     import os
     import subprocess
@@ -358,6 +379,21 @@ def generation_protocol():
         with protocol.exclusive(root/protocol.LOCK): validate(files)
     second = store.publish(second, dict(second.files), outside_lock)
     check(store.capture().identity==second.identity, 'Candidate parsing does not hold the publication lock')
+    from contextlib import contextmanager
+    original_exclusive=protocol.exclusive
+    replaced=False
+    @contextmanager
+    def publish_after_release(path):
+        nonlocal replaced
+        with original_exclusive(path):yield
+        if Path(path)==root/protocol.LOCK and not replaced:
+            replaced=True
+            with original_exclusive(root/protocol.LOCK):current=store._capture()
+            store.publish(current,{'data/a.json':b'{"value":11}','data/b.json':b'{"value":12}'},validate)
+    with patch.object(protocol,'exclusive',publish_after_release):
+        returned=store.publish(second,{'data/a.json':b'{"value":9}','data/b.json':b'{"value":10}'},validate)
+    check(returned.files['data/a.json']==b'{"value":9}' and store.capture().files['data/a.json']==b'{"value":11}','Publication returns its committed identity, not another writer after lock release')
+    second=store.capture()
     native_lock_protocol(root, protocol)
     powershell_lock_protocol(root, protocol)
     (root/'data/a.json').write_bytes(b'{"value":9}')
@@ -582,6 +618,7 @@ def main():
     generation_protocol()
     print(f"CONFIGURATION_PROTOCOL {checks} assertions passed",flush=True)
     build_capture_protocol()
+    initialization_protocol()
     published_editor_protocol()
     print(f"CONFIGURATION_PUBLICATION cumulative {checks} assertions passed",flush=True)
     matrix=[]

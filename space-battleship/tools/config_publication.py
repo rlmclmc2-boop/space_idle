@@ -63,6 +63,19 @@ def worker(root,action,request):
     import config_workbooks as cw
     import level_editor_store as le
     if action=='initialize':
+        # Bootstrap may certify existing bytes, never an unparsed template or a
+        # projection that disagrees with its selected sources. Force full parsing
+        # privately, compare business content, then retain original committed bytes.
+        before=json_files(root)
+        (root/'data/.import_state.json').unlink(missing_ok=True)
+        cw._prepare_incremental_import(root/'config_excel',root/'data/game_data.json')
+        old=json.loads(before['data/game_data.json'])
+        parsed=json.loads((root/'data/game_data.json').read_bytes())
+        for value in (old,parsed):
+            value.pop('source_files',None);value.pop('source',None)
+        if old!=parsed:raise ValueError('Initial JSON differs from validated source projection; use explicit import')
+        for name,raw in before.items():(root/name).write_bytes(raw)
+        for name in set(json_files(root))-set(before):(root/name).unlink()
         result={'ok':True,'action':'initialize'}
     elif action=='import':
         result=cw._prepare_incremental_import(root/'config_excel',root/'data/game_data.json')

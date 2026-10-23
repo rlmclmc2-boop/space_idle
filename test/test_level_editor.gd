@@ -58,6 +58,8 @@ func run() -> void:
 	editor.fields.health.text = "432"
 	editor.stash()
 	check(editor.rows()[-1].health == 432, "edit numeric field")
+	check(editor.rows()[-1].shield is float or editor.rows()[-1].shield is int,"Source-declared shield remains numeric")
+	check(editor.rows()[-1].reactiveReduction==null,"Untouched optional source field remains absent")
 	editor.search.text = "UI测试飞行器"
 	editor.refresh_list()
 	check(editor.listing.item_count == 1, "search record")

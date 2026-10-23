@@ -61,7 +61,8 @@ class PreparedStore:
                 headers = [c.value for c in sheet[1] if c.value is not None]
                 rows = [{key: sheet.cell(r, c + 1).value for c, key in enumerate(headers)}
                         for r in range(4, sheet.max_row + 1) if sheet.cell(r, 1).value is not None]
-                tables[name] = {'headers': headers, 'rows': rows}
+                numeric = [key for c,key in enumerate(headers) if str(sheet.cell(3,c+1).value).lower() in ('int','float','number') or any(type(row.get(key)) in (int,float) for row in rows)]
+                tables[name] = {'headers': headers, 'rows': rows, 'numeric_fields': numeric}
             finally:
                 book.close()
         if before != self.snapshot():
