@@ -382,6 +382,16 @@ func load_progress() -> void:
 func create_load_candidate(database: ShipDatabase) -> BattleGame:
 	return BattleGame.new(database,false)
 
+func create_session_candidate(database:ShipDatabase)->BattleGame:
+	var candidate:=create_load_candidate(database)
+	candidate.stat_cache_enabled=stat_cache_enabled
+	# Consumers can retain departed actors and shots after replacement. Allocate
+	# every new identity above the live session before preparing any encounter.
+	for key in ["uid","projectile_serial","main_attack_serial","attack_instance_serial"]:
+		candidate.set(key,get(key))
+	if compiled_combat_rules!=null and candidate.startup_error.is_empty():candidate.enable_compiled_combat_rules()
+	return candidate
+
 func load_progress_data(raw: Dictionary) -> void:
 	if (not lifecycle.ready() and not _initializing) or not snapshot_ready() or commit_effects.active:
 		hyperspace.last_error="replacement_busy";return
@@ -419,8 +429,7 @@ func install_loaded_session(candidate:BattleGame)->void:
 
 func prepare_loaded_game(raw:Dictionary)->BattleGame:
 	var source_db=manual_hyperspace.base_db if manual_hyperspace.active else db
-	var candidate:=create_load_candidate(source_db)
-	candidate.stat_cache_enabled=stat_cache_enabled
+	var candidate:=create_session_candidate(source_db)
 	if not candidate.startup_error.is_empty():hyperspace.last_error=candidate.startup_error;return null
 	candidate._install_progress_data(raw)
 	if not candidate.hyperspace.last_error.is_empty():hyperspace.last_error=candidate.hyperspace.last_error;return null

@@ -1927,6 +1927,8 @@ func request_ui_rebuild() -> void:
 
 func flush_ui_rebuild() -> void:
 	ui_rebuild_scheduled = false
+	# A replacement may detach this host before its deferred rebuild runs.
+	if not is_inside_tree():return
 	if ui_rebuild_pending and not get_viewport().gui_is_dragging():
 		build_ui()
 

@@ -252,6 +252,7 @@ func run_planet_loading()->void:
 	panel.cards[id].list_button.pressed.emit();scene._process(0.0)
 	await product_capture(scene,"planet-loading-ready")
 	FileAccess.open("res://.runtime/planet-loading.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"production_time":g.production_time(),"planets":panel.cards.size(),"saving":g.save_enabled}))
+	check_presented_replacement(scene)
 	scene=await check_replacement_lifecycle(scene)
 	await close_product(scene)
 	print("PLANET_LOADING ",checks," checks ",failures," failures");quit(1 if failures else 0)
@@ -417,3 +418,39 @@ func check_replacement_lifecycle(scene):
 	check(not scene.presentation_ready and lifecycle.state=="recovery_required" and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Actual failed main readiness preserves backup and blocks completion")
 	# This process ends here; retain failed lifecycle/disk evidence until exit.
 	return scene
+
+func check_presented_replacement(scene)->void:
+	var g=scene.game
+	g.paused=true
+	check(g.native_before_configuration_change(),"Reforge fixture settles actual native session")
+	if g.enemies.is_empty():g.spawn_group()
+	var old_enemy:Dictionary=g.enemies[0]
+	var old_uid:int=g.uid
+	var old_serial:int=g.projectile_serial
+	var bindings=g.combat_presentation
+	var raw:Dictionary=g.portable_save_data()
+	g.missile_queue.append({"retired":true})
+	g.missile_target_registry[int(old_enemy.uid)]=old_enemy
+	g.load_progress_data(raw)
+	check(g.lifecycle.ready() and g.missile_queue.is_empty() and not g.missile_target_live(old_enemy) and g.compiled_combat_rules!=null,"Actual Presented game memory install retires old mechanics and retains compiled policy")
+	check(g.uid>=old_uid and g.projectile_serial>=old_serial and g.combat_presentation==bindings,"Memory replacement preserves identity allocation and scene binding")
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var planets:Dictionary=g.portable_save_data()
+	planets.planets["1"].conquered=false;planets.planets["1"].degree=1000
+	for row in g.planet_buildings.rows(g,"1"):
+		planets.planets["1"].buildings[str(row.id)].status="built"
+		planets.planets["1"].buildings[str(row.id)].build_progress=float(row.build_explore)
+	check(g.planets.install_snapshot(planets,g.db),"Actual reforge facilities install")
+	g.missile_queue.append({"retired":true})
+	g.missile_target_registry[int(old_enemy.uid)]=old_enemy
+	scene.floats.append({"target_entity":old_enemy})
+	check(g.reforge_planet("1"),"Actual Presented game reforges through lifecycle")
+	g.paused=true
+	check(g.missile_queue.is_empty() and not g.missile_target_live(old_enemy) and g.compiled_combat_rules!=null,"Reforge replaces subtype mechanics before reopening lifecycle")
+	if g.enemies.is_empty():g.spawn_group()
+	check(not g.enemies.is_empty() and g.uid>=old_uid and g.projectile_serial>=old_serial and g.enemies.all(func(enemy):return int(enemy.uid)>old_uid),"Reforge encounter identities cannot collide with retained display targets")
+	if scene.battle_slice_runtime!=null:
+		scene.battle_slice_runtime.snapshot()
+		check(g.enemies.all(func(enemy):return scene.battle_slice_runtime.view.rows.has(int(enemy.uid))),"Actual slice publishes new actors despite retained old damage target")
+	else:check(false,"Actual slice consumer remains available for replacement check")
+	scene.floats.clear()

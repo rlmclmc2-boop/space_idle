@@ -70,8 +70,7 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	if hyperspace_plan.is_empty():return false
 	var raw:Dictionary=g.portable_save_data()
 	if not g.lifecycle.begin():return false
-	var candidate:BattleGame=g.create_load_candidate(g.db)
-	candidate.stat_cache_enabled=g.stat_cache_enabled
+	var candidate:BattleGame=g.create_session_candidate(g.db)
 	candidate.profile=g.profile.duplicate(true)
 	# Clone current owners directly. Reforge must not apply disk-load interruption,
 	# login accrual or offline recovery to the still-running source state.
