@@ -17,8 +17,10 @@ static func read_mon_enemies() -> Dictionary:
 	if table.has("error"):return table
 	var enemies: Dictionary={}
 	for source in table.rows:
-		var id: String=str(source.get("id","")).strip_edges()
-		if not id.is_valid_int() or int(id)<1 or enemies.has(id):return {"error":"invalid_mon_table"}
+		var raw_id: Variant=source.get("id")
+		if typeof(raw_id) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(raw_id)) or float(raw_id)!=floorf(float(raw_id)) or float(raw_id)<1:return {"error":"invalid_mon_table"}
+		var id:=str(int(raw_id))
+		if enemies.has(id):return {"error":"invalid_mon_table"}
 		var description: String=str(source.get("des","")).strip_edges()
 		var equipment_text: String=_clean_list(str(source.get("equipment","")))
 		var resources: Dictionary=parse_resource_drops(str(source.get("res","")))
@@ -29,11 +31,22 @@ static func read_mon_enemies() -> Dictionary:
 			if pair.size()!=2 or pair[0].strip_edges().is_empty() or not pair[1].strip_edges().is_valid_int() or int(pair[1])<1:return {"error":"invalid_mon_table"}
 			for _index in range(int(pair[1])):mounts.append({"name":pair[0].strip_edges()})
 		var row: Dictionary=source.duplicate(true)
-		row.id=int(id)
+		row.id=float(raw_id)
 		for field in ["dmgMultiple","health","armourType","size"]:
-			var number: String=str(source.get(field,"")).strip_edges()
-			if not number.is_valid_float():return {"error":"invalid_mon_table"}
+			var number: Variant=source.get(field)
+			if typeof(number) not in [TYPE_INT,TYPE_FLOAT] or not is_finite(float(number)):return {"error":"invalid_mon_table"}
 			row[field]=float(number)
+		# Mirror convert_sheet('mon'): optional metadata is absent, not empty;
+		# shield defaults are numeric, and authored numeric cells keep JSON types.
+		for field in ["intelTrait","intelName","intelVisualRef","intelMechanics"]:
+			if row.get(field)==null or row.get(field)=="":row.erase(field)
+		if row.has("intelMechanics"):
+			row.intelMechanics=[] if row.intelMechanics=="none" else Array(str(row.intelMechanics).split(",")).map(func(part):return str(part).strip_edges())
+		row.erase("intelMechanicRef")
+		for field in ["reactiveReduction","archetype_id"]:
+			if not row.get(field):row.erase(field)
+		for field in ["shield","shieldType","shieldRecovery","shieldDelay"]:
+			if row.get(field)==null:row[field]=0.0
 		row.equipment=mounts
 		row.drops=resources.drops
 		enemies[id]=row
@@ -51,7 +64,9 @@ static func parse_resource_drops(value: String) -> Dictionary:
 		if not fields[0].is_valid_int() or not fields[1].is_valid_float() or not fields[2].is_valid_float():return {"error":"invalid_mon_table"}
 		var id:=int(fields[0]);var amount:=float(fields[1]);var chance:=float(fields[2])
 		if id<1 or not is_finite(amount) or amount<0 or not is_finite(chance) or chance<0 or chance>1:return {"error":"invalid_mon_table"}
-		drops.append({"resourceId":id,"amount":amount,"chance":chance})
+		# Runtime JSON numbers are floats. Preserve the same representation so
+		# frozen reward-block equality validates both input adapters identically.
+		drops.append({"resourceId":float(id),"amount":amount,"chance":chance})
 	return {"drops":drops}
 
 static func _clean_list(value: String) -> String:
@@ -109,12 +124,20 @@ static func _read_mon_rows() -> Dictionary:
 						if cell_type=="s":
 							var index:=int(value)
 							value=str(shared[index]) if index>=0 and index<shared.size() else ""
-						cells[cell]=value.strip_edges()
+						# openpyxl/data_only projects numeric cells as numbers and
+						# absent cells as null. JSON exposes all numbers as floats.
+						if cell_type in ["s","inlineStr","str"]:cells[cell]=value
+						elif value.is_empty():cells[cell]=null
+						elif cell_type=="b":cells[cell]=value=="1"
+						elif value.is_valid_float() and is_finite(float(value)):cells[cell]=float(value)
+						else:
+							archive.close();return {"error":"invalid_mon_table"}
 					"row":
 						if row==1:headers=cells.duplicate()
-						elif row>=4 and not str(cells.get("A","")).is_empty():
+						elif row>=4 and cells.get("A")!=null:
 							var record: Dictionary={}
-							for column in headers:record[str(headers[column])]=cells.get(column,"")
+							for column in headers:
+								if headers[column]!=null:record[str(headers[column])]=cells.get(column)
 							rows.append(record)
 	archive.close()
 	return {"error":"invalid_mon_table"} if rows.is_empty() or headers.get("A")!="id" or headers.get("B")!="des" else {"rows":rows}

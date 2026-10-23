@@ -37,14 +37,15 @@ func options_error(options: Dictionary) -> String:
 			if not key is String or not db.ships.has(key):return "invalid_input"
 	return ""
 
-func configure(options: Dictionary) -> void:
-	rules = BattleGame.new(db, false)
-	apply_progress(rules, int(options.cleared_through))
+func configure(options: Dictionary) -> String:
 	ships.clear()
 	weapons.clear()
 	defences.clear()
 	equipment_stats.clear()
 	reference = {"burst":0.0,"sustained":0.0,"attack_rate":0.0,"survival":0.0}
+	rules = BattleGame.new(db, false)
+	if not rules.startup_error.is_empty():return rules.startup_error
+	apply_progress(rules, int(options.cleared_through))
 	for key in db.ships:
 		# Missing whitelist preserves replay compatibility with older records.
 		if options.has("available_ships") and not options.available_ships.has(key):continue
@@ -76,6 +77,7 @@ func configure(options: Dictionary) -> void:
 			for metric in ["burst","sustained","attack_rate"]:reference[metric] = maxf(reference[metric],stats[metric])
 		else:reference.survival = maxf(reference.survival,value)
 		equipment_stats[key] = stats
+	return ""
 
 static func apply_progress(game: BattleGame, cleared_through: int) -> void:
 	game.profile.cleared = []
@@ -90,7 +92,8 @@ func generate(options: Dictionary) -> Dictionary:
 	if not invalid.is_empty():
 		result.status = invalid
 		return result
-	configure(options)
+	var startup:=configure(options)
+	if not startup.is_empty():result.status=startup;return result
 	if ships.is_empty() or weapons.is_empty() or not defences.has("armour"):
 		result.status = "no_legal_loadouts"
 		return result
@@ -187,7 +190,8 @@ func generate_canonical(options: Dictionary,max_loadouts: int) -> Dictionary:
 	request.count=max_loadouts
 	var invalid:=options_error(request)
 	if not invalid.is_empty() or max_loadouts<1:return {"results":[],"status":"invalid_input"}
-	configure(request)
+	var startup:=configure(request)
+	if not startup.is_empty():result.status=startup;return result
 	if ships.is_empty() or weapons.is_empty() or not defences.has("armour"):return {"results":[],"status":"no_legal_loadouts"}
 	var buckets: Dictionary={"mono":[],"same_role":[],"synergy":[],"balanced":[]}
 	var seen: Dictionary={}
@@ -277,11 +281,13 @@ func replay(record: Dictionary) -> Dictionary:
 	var options: Dictionary = record.get("generation_options",{})
 	if str(record.get("generation_type","")).begins_with("canonical_"):
 		var canonical:=generate_canonical(options,int(options.get("count",0)))
+		if canonical.status!="complete":return {"error":canonical.status}
 		for row in canonical.results:
 			if row.loadout_id==record.get("loadout_id"):return row
 		return {"error":"invalid_input"}
 	if not options_error(options).is_empty() or not policy.modes.has(record.get("generation_type","")):return {"error":"invalid_input"}
-	configure(options)
+	var startup:=configure(options)
+	if not startup.is_empty():return {"error":startup}
 	var candidate := sample(int(record.seed),record.generation_type,options)
 	if candidate.is_empty():return {"error":"no_legal_loadouts"}
 	var result := describe(candidate.ship,candidate.equipment)

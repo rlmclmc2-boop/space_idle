@@ -1,0 +1,17 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+ERROR: PACK_FAIL_SOURCE_LINE_142
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] pack_valid (res://scripts/hyperspace_config.gd:142)
+       [1] _init (res://scripts/game.gd:184)
+       [2] _initialize (res://diagnose_pack.gd:4)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] _initialize (res://diagnose_pack.gd:4)
+PACK_DIAGNOSTIC startup=invalid_hyperspace_config_pack mon=
+LOADER_ERROR=

@@ -5,8 +5,8 @@ func check(ok: bool,label: String) -> void:
 func _initialize() -> void:call_deferred("run")
 func run() -> void:
 	var workbook=load("res://scripts/mon_group_xlsx.gd")
-	check(workbook.parse_resource_drops("｛1，128，1；2，4，0,5｝").drops==[{"resourceId":1,"amount":128.0,"chance":1.0},{"resourceId":2,"amount":4.0,"chance":0.5}],"all drop blocks preserve order, values and supported punctuation")
-	check(workbook.parse_resource_drops("{1,0,0}").drops==[{"resourceId":1,"amount":0.0,"chance":0.0}],"zero amount/probability remains valid")
+	check(workbook.parse_resource_drops("｛1，128，1；2，4，0,5｝").drops==JSON.parse_string('[{"resourceId":1,"amount":128,"chance":1},{"resourceId":2,"amount":4,"chance":0.5}]'),"drop blocks match runtime JSON representation, order and supported punctuation")
+	check(workbook.parse_resource_drops("{1,0,0}").drops==JSON.parse_string('[{"resourceId":1,"amount":0,"chance":0}]'),"zero amount/probability remains valid")
 	for invalid in ["", "{1,2}", "{x,2,1}", "{1,no,1}", "{1,2,no}", "{1,2,1;}", "{1,2,1;;2,3,1}", "{1,2,1;2,3}", "{1,-1,1}", "{1,2,1.1}", "{0,2,1}", "{1,1e999,1}"]:
 		check(workbook.parse_resource_drops(invalid).has("error"),"reject malformed complete drop list: "+invalid)
 	check(not FileAccess.file_exists("res://scripts/main.gd") and not FileAccess.file_exists("res://main_game.tscn"),"portable project has no game UI")
@@ -24,6 +24,11 @@ func run() -> void:
 		quit(1)
 		return
 	print("STANDALONE workbook accepted enemies=",panel.database.enemies.size())
+	var expected_path:=OS.get_environment("SPACE_MON_PROJECTION")
+	if not expected_path.is_empty():
+		var expected=JSON.parse_string(FileAccess.get_file_as_string(expected_path))
+		check(expected is Dictionary and panel.database.enemies==expected,"external workbook projection equals official importer for every row and field")
+		print("STANDALONE projection comparison failures=",failures)
 	var large_id: String=""
 	var small_id: String=""
 	for id in panel.database.enemies:
