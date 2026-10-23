@@ -41,3 +41,24 @@
 - Current behavior: shared time wrappers remain void; after earlier domains/planets commit, a later native rejection can return without a retained remainder. Factory refresh and BalanceGame's legacy research fields also remain later-slice consumers. Impact: this candidate proves individual commit completion, not lossless/replay-safe shared time or full Lab research support. Recommendation: retain the approved S2 time/consumer migration and S4 Lab scope, and explicitly accept this S1 pilot boundary before marking S1 closed. Do not infer acceptance from this record.
 - Existing reforge/load/recovery stays S3; no compatibility promise for historical personal saves was added.
 - Independent high and dot must review the final candidate SHA through the parent. No new review subagent was created. Full architecture acceptance and main merge are pending, not denied.
+
+### Verification of continuation implementation 1501dccf37d5491e09cfceb156800383fba2cb92
+
+Executed from repository root with `python test/run.py <name> --headless --godot C:\Users\Administrator\Documents\Codex\2026-10-23\task-4\godot\Godot_v4.7.2-stable_win64.exe`. Each runner isolated both project and user directories, imported successfully, returned 0 and produced its recognized completion summary. No personal save was used.
+
+| Test | Checks / failures | Ignored local evidence under test/work |
+|---|---|---|
+| test_commit_boundary.gd | 25 / 0 | test_commit_boundary-qfyrdqua/{import,test}.log |
+| test_planet.gd | 688 / 0 | test_planet-z1d6h0dc/{import,test}.log |
+| test_module_refit.gd | 63 / 0 | test_module_refit-ezn85vxc/{import,test}.log |
+| test_ai_tech_tree.gd | 134 / 0 | test_ai_tech_tree-5ydwe442/{import,test}.log |
+| test_crew_dirty.gd | 59 / 0 | test_crew_dirty-kfk4oomy/{import,test}.log |
+| test_native_numeric_upgrade.gd | 146 / 0 | test_native_numeric_upgrade-3e4igs4i/{import,test}.log |
+
+The last three ran after all their affected implementation changes. The final subsequent code delta changed only planet-command allocation facts from `payload.has("activated")` to `plan.configuration`; boundary, planet and module-refit tests ran again on the final script tree. No runtime code changed after those final launches. Total selected assertions: 1115, zero failures. `git diff --check 793f7c4c HEAD` also passed.
+
+Engine: Godot 4.7.2 stable official ed1daf0bf, SHA256 `ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424`. Verified bundled native DLL used by the isolated runner: SHA256 `4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f`. No rebuild was required because native source was unchanged.
+
+All runs emitted the Windows root certificate store warning. Boundary/research/crew/planet runs also reported ObjectDB/resource leaks on exit (57/57/58/87 instances and 26 resources respectively). These were not repaired or represented as clean runtime teardown. No script-load/parse/runtime failure or missing completion summary was accepted. This is affected-correctness evidence, not performance, full UI, whole-step accounting, or release acceptance.
+
+Git handoff: fetch `work/architecture-s1-continuation-20261024` from `C:\Users\Administrator\Documents\Codex\2026-10-24\task-2\s1`. The complete S1 candidate includes inherited c903c062 plus continuation 1501dccf and this verification record; do not cherry-pick the continuation alone onto main. Original candidate checkout still reports c903c062 with a clean worktree. Only Git commits are delivery; ignored test artifacts are not part of the candidate.
