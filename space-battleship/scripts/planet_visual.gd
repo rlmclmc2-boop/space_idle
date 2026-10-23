@@ -70,7 +70,7 @@ func _ready() -> void:
 	loading.vertical_alignment=VERTICAL_ALIGNMENT_CENTER
 	loading.mouse_filter=Control.MOUSE_FILTER_IGNORE
 	loading.add_theme_font_size_override("font_size",23)
-	loading.add_theme_color_override("font_color",Color("243d50"))
+	loading.add_theme_color_override("font_color",Color("e9f2f2"))
 	loading.text="正在载入星球影像\n探索与舰队继续运行"
 	loading.hide();add_child(loading)
 	visibility_changed.connect(func():set_process(preparing and is_visible_in_tree()))
