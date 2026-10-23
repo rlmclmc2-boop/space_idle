@@ -163,6 +163,66 @@ func run() -> void:
 	for row_id in source_rejected.db.enemies:source_rejected.db.enemies[row_id].shield=huge
 	source_rejected.spawn_group()
 	check(source_rejected.execution_error=="unsupported_lab_enemy_source:shield" and source_rejected.enemies.is_empty(),"large source shield rejected before enemy construction")
+	check(not source_rejected.start(1,false,{"distance":0.0,"groupIndex":1,"retreatBossPending":false,"state":BattleGame.State.COMBAT,"guardArrived":false}),"checkpoint propagates rejected spawn")
+	check(source_rejected.execution_error=="unsupported_lab_enemy_source:shield","checkpoint preserves admission reason")
+	var rejected_baseline_path := "res://.runtime/s4-rejected-baseline.json"
+	DirAccess.remove_absolute(rejected_baseline_path)
+	check(preload("res://scripts/balance_baseline.gd").save_baseline(runner.completed,rejected_baseline_path).is_empty(),"valid baseline fixture saved")
+	check(rejected.load_baseline(rejected_baseline_path).is_empty() and rejected.completed.comparison.reasons.has("no_comparable_report"),"baseline loads after admission error without comparing absent report")
+	var identity_api = preload("res://scripts/execution_identity.gd")
+	var captured: Dictionary = runner.config.execution_identity
+	check(captured.status=="known" and captured.rules.has("res://scripts/game.gd"),"batch identity includes actual loaded core rules")
+	var loaded_core: GDScript=load("res://scripts/game.gd")
+	check(captured.rules["res://scripts/game.gd"]==loaded_core.source_code.sha256_text(),"identity hashes loaded implementation")
+	check(identity_api.compare(captured,captured,"comparison").compatible,"known matching identity comparable")
+	check(not identity_api.compare({}, {},"merge").compatible,"unknown identities never equal")
+	var changed_identity: Dictionary=captured.duplicate(true)
+	changed_identity.data_sha256="changed"
+	check(identity_api.compare(captured,changed_identity,"comparison").compatible and identity_api.compare(captured,changed_identity,"comparison").differences.has("data_sha256"),"data comparison exposes intentional differences")
+	check(not identity_api.compare(captured,changed_identity,"retest").compatible,"retest refuses changed data")
+	changed_identity=captured.duplicate(true)
+	changed_identity.rules_sha256="changed"
+	check(not identity_api.compare(captured,changed_identity,"merge").compatible,"merge refuses changed rules")
+	var probe_path := "res://scripts/s4_identity_probe.gd"
+	var probe_file := FileAccess.open(probe_path,FileAccess.WRITE)
+	probe_file.store_string("extends RefCounted\nconst VALUE = 1\n");probe_file.close()
+	var first_capture = identity_api.new()
+	var first_identity:Dictionary=first_capture.capture(original,[probe_path],"probe",{})
+	probe_file=FileAccess.open(probe_path,FileAccess.WRITE)
+	probe_file.store_string("extends RefCounted\nconst VALUE = 2\n");probe_file.close()
+	var second_capture = identity_api.new()
+	var retained_identity:Dictionary=second_capture.capture(original,[probe_path],"probe",{})
+	check(first_identity.rules_sha256==retained_identity.rules_sha256,"disk edit after capture does not relabel retained loaded implementation")
+	var dirty: GDScript=first_capture.retained_scripts[0]
+	dirty.source_code="extends RefCounted\nconst VALUE = 3\n"
+	check(dirty.reload()==OK,"dirty loaded implementation fixture compiles")
+	var third_capture=identity_api.new()
+	var dirty_identity:Dictionary=third_capture.capture(original,[probe_path],"probe",{})
+	check(first_identity.rules_sha256!=dirty_identity.rules_sha256,"actual dirty loaded implementation changes identity")
+	var fleet_db := ShipDatabase.new()
+	var enemy_generator = preload("res://scripts/enemy_fleet_simulator.gd").new(fleet_db)
+	var enemy_rows: Array = enemy_generator.generate({"count":1,"min_count":1,"max_count":1,"available_enemies":[fleet_db.enemies.keys()[0]],"seed":12,"min_strength":0,"max_strength":1000000}).results
+	var player_generator = preload("res://scripts/player_loadout_generator.gd").new(fleet_db)
+	var player_options: Dictionary=player_generator.default_options();player_options.count=1
+	var player_rows: Array=player_generator.generate(player_options).results
+	var fleet = preload("res://scripts/fleet_battle_runner.gd").new(fleet_db)
+	check(fleet.start(enemy_rows,player_rows,{"runs":1,"max_total":1,"max_per_pair":1,"max_seconds":0.1,"directory":"res://.runtime/s4-fleet"}).is_empty(),"actual F9 batch starts with captured identity")
+	var deadline := Time.get_ticks_msec()+5000
+	while fleet.busy() and Time.get_ticks_msec()<deadline:fleet.process(10000)
+	check(not fleet.busy() and fleet.completed==1 and fleet.execution_identity.status=="known","actual F9 batch finishes with identity")
+	var saved_inputs: Dictionary=JSON.parse_string(FileAccess.get_file_as_string(fleet.directory.path_join("inputs.json")))
+	check(identity_api.digest(saved_inputs.execution_identity)==identity_api.digest(fleet.execution_identity),"F9 result inputs retain captured identity")
+	var followup=preload("res://scripts/fleet_battle_runner.gd").new(fleet_db)
+	var followup_options:Dictionary=saved_inputs.config.duplicate(true)
+	followup_options.retest_saved_inputs=true;followup_options.data_sha256=saved_inputs.data_sha256
+	followup_options.source_execution_identity=saved_inputs.execution_identity
+	followup_options.replay_inputs=saved_inputs.replay_inputs
+	followup_options.explicit_pairs=[{"enemy_index":0,"player_index":0,"runs":1}]
+	check(followup.start(saved_inputs.enemy_fleets,saved_inputs.player_loadouts,followup_options).is_empty(),"actual F9 retest accepts captured persisted identity")
+	deadline=Time.get_ticks_msec()+5000
+	while followup.busy() and Time.get_ticks_msec()<deadline:followup.process(10000)
+	var merged:Dictionary=preload("res://scripts/fleet_batch_retest.gd").combine(fleet.directory,followup.directory)
+	check(merged.has("directory"),"actual F9 merge accepts compatible batches")
 	var timings := []
 	for database in [original,cached]:
 		var started := Time.get_ticks_usec()

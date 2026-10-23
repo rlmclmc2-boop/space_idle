@@ -245,7 +245,7 @@ func start_retest(enemy_index: int) -> void:
 	retest_runner=candidate_runner
 	if ProjectSettings.has_setting("application/config/battle_frame_budget_usec"):
 		retest_runner.policy.frame_budget_usec=clampi(int(ProjectSettings.get_setting("application/config/battle_frame_budget_usec")),1000,50000)
-	var request := {"mode":"fast","runs":1,"max_total":int(retest_plan.battles),"max_per_pair":target,"seed":int(retest_seed.value),"explicit_pairs":retest_plan.pairs,"max_seconds":retest_runner.policy.defaults.max_seconds,"retest_saved_inputs":true,"data_sha256":source.data_sha256}
+	var request := {"mode":source.get("config",{}).get("mode","unknown"),"runs":1,"max_total":int(retest_plan.battles),"max_per_pair":target,"seed":int(retest_seed.value),"explicit_pairs":retest_plan.pairs,"max_seconds":source.get("config",{}).get("max_seconds",0),"retest_saved_inputs":true,"data_sha256":source.data_sha256,"source_execution_identity":source.get("execution_identity",{}),"replay_inputs":source.get("replay_inputs","")}
 	if ProjectSettings.has_setting("application/config/battle_results_directory"):
 		request.directory=ProjectSettings.globalize_path(str(ProjectSettings.get_setting("application/config/battle_results_directory")))
 	var message: String=retest_runner.start(source.enemy_fleets,source.player_loadouts,request)

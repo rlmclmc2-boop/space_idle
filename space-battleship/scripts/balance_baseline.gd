@@ -46,8 +46,11 @@ static func mean(report: Dictionary, key: String) -> Variant:
 	return report.get("metrics_summary",{}).get(key,{}).get("mean")
 
 static func compare(baseline: Dictionary, current: Dictionary) -> Dictionary:
+	if not current.get("config") is Dictionary or not current.get("summary") is Dictionary:
+		return {"compatible":false,"reasons":["no_comparable_report"],"rows":[],"warnings":[]}
 	if baseline.is_empty():return {"compatible":false,"reasons":["no_baseline"],"rows":[],"warnings":[]}
-	var reasons := []
+	var identity: Dictionary=preload("res://scripts/execution_identity.gd").compare(baseline.config.get("execution_identity",{}),current.config.get("execution_identity",{}),"comparison")
+	var reasons: Array=identity.reasons.duplicate()
 	if baseline.config.get("simulation_mode","exact") != current.config.get("simulation_mode","exact"):reasons.append("different_simulation_mode")
 	if signature(baseline) != signature(current):reasons.append("different_samples_or_partial")
 	for key in ["policy","initial_state","step_seconds","sample_interval","max_samples"]:
@@ -68,4 +71,4 @@ static func compare(baseline: Dictionary, current: Dictionary) -> Dictionary:
 			elif N.compare(before,0)!=0:change = Report.finite_change(before,after)
 		rows.append({"metric":key,"baseline":before,"current":after,"absolute":absolute,"change":change,"unit":"pp" if pp else "%","unavailable_reason":"outside_finite_report_range" if before!=null and after!=null and (absolute==null or (N.compare(before,0)!=0 and change==null)) else ""})
 	return {"compatible":reasons.is_empty(),"reasons":reasons,"baseline_hash":baseline.config.get("data_sha256",""),"current_hash":current.config.get("data_sha256",""),
-		"rows":rows,"warnings":Analyzer.comparison_warnings(rows) if reasons.is_empty() else []}
+		"identity_differences":identity.differences,"rows":rows,"warnings":Analyzer.comparison_warnings(rows) if reasons.is_empty() else []}

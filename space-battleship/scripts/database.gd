@@ -12,6 +12,7 @@ var config: Dictionary
 var defaults: Dictionary
 var ships: Dictionary
 var mon_source_error := ""
+var input_origin: Dictionary = {"kind":"published_json"}
 var unlock_lookup: Dictionary = {}
 
 func _init() -> void:
@@ -29,6 +30,7 @@ func _init() -> void:
 			data.enemies={}
 		else:
 			data.enemies=mon_table.enemies
+			input_origin=mon_table.input_origin.duplicate(true)
 	equipment = data.equipment
 	enemies = data.enemies
 	groups = data.groups

@@ -109,3 +109,15 @@ Validation: same existing test now 172 checks / 0 failures, s4-admission.log, no
 Formal impact: no new restriction applied to PresentedBattleGame. Only native compiler call access is delegated unchanged. Existing Game/ShipDatabase enemy capacity and shield settlement use finite scalar values, so manually supplied large enemy HP/max_shield were already unsupported; Lab now reports that boundary instead of crashing. This does not prove all authored configuration ranges or native cases; retain actual-entry regression as a gate. No timing/target/damage rewrite.
 
 Remaining: immutable execution identity from actual loaded rule contents and captured data, external workbook provenance, explicit compare/retest/merge difference policy, builders and all F8/F9/cycle/standalone consumers; finish actual-entry and native verification; dual review before main. No S4 completion claim.
+
+## S4 checkpoint 5 - batch identity and rejected-result consumers
+
+High P2 fixes: BalanceGame.start no longer clears spawn rejection from super.start(checkpoint). Baseline loading remains a successful load operation, but an admission-error result has comparison compatible=false/no_comparable_report instead of accessing missing config/summary.
+
+F8/F9 capture loaded GDScript contents, retained dependency resources, actual private database input, auxiliary captured configuration, model/capability/numeric/engine and parameters before execution. Disk edits after capture do not relabel a batch; dirty loaded implementation changes identity. Unknown source/model identity is not equal. Comparison explicitly allows disclosed configuration differences; retest and merge require compatible execution and physical settings. F9 validators now use batch-private data. Merged outputs retain constituent batch identities. F9 retest UI uses original mode/duration.
+
+JSON parsing demonstrably changes some double tail bits. F9 retains its actual input arrays using built-in Marshalls Variant serialization (objects disabled on decode), and retest executes that snapshot. Identity metadata represents nonintegral floats using standard Variant bytes. This is serialization only: no accounting precision, numeric algorithm, compensation, or combat timing change. Human-readable JSON views remain. Published workbook origin is captured by its bytes hash.
+
+Validation: existing test_balance_database, isolated imported project, 191 checks / 0 failures, no script errors; s4-identity.log. Covers both P2 paths, F8, F9 actual batch, loaded/disk source differences, unknown/change refusal, persisted identity, actual followup and combine. Earlier serialization mismatches and parser failures were observed and fixed before this result. Root certificate-store diagnostic remains environment-only.
+
+Remaining S4: generator fingerprints and existing-pair reuse admission; fleet/cycle generated outputs; portable/build provenance and native actual-entry acceptance. Source-less exported scripts currently yield unknown, not fabricated source identity. This is a production checkpoint, not full S4 completion or authorization to merge main. Existing two formation baseline failures unchanged.

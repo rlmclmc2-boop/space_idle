@@ -50,7 +50,7 @@ static func read_mon_enemies() -> Dictionary:
 		row.equipment=mounts
 		row.drops=resources.drops
 		enemies[id]=row
-	return {"enemies":enemies}
+	return {"enemies":enemies,"input_origin":{"kind":"captured_workbook","sha256":preload("res://scripts/configuration_snapshot.gd").active().sha256(preload("res://scripts/configuration_snapshot.gd").active().read_bytes("res://config_excel/published/mon.xlsx"))}}
 
 static func parse_resource_drops(value: String) -> Dictionary:
 	# Same semicolon blocks and decimal-comma compatibility as import_workbook.

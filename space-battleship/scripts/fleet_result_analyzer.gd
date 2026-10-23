@@ -102,7 +102,7 @@ func analyze(directory: String) -> Dictionary:
 		add_design_fields(enemy,comparisons)
 		candidates.append(enemy.duplicate(true))
 	candidates.sort_custom(func(a,b):return int(a.enemy_index)<int(b.enemy_index))
-	report={"schema_version":1,"source":directory,"batch_status":summary.get("status","unknown"),"policy":policy.duplicate(true),"sampling":summary.get("sampling",{}),"warnings":warnings,"interpretation":["observational_sample_only","adaptive_sampling_not_population_win_rate","weapons_cooccur_not_isolated_effect","hp_ratios_exclude_shield","wilson_is_descriptive_under_adaptive_stopping"],"tests":actual_tests,"attempts":attempts,"enemy_analysis":enemies.values(),"player_analysis":players.values(),"enemy_tags":enemy_tags.values(),"player_tags":player_tags.values(),"weapon_analysis":weapons.values(),"pair_analysis":pairs,"level_candidates":candidates}
+	report={"execution_identity":inputs.get("execution_identity",{"status":"unknown"}).duplicate(true),"schema_version":1,"source":directory,"batch_status":summary.get("status","unknown"),"policy":policy.duplicate(true),"sampling":summary.get("sampling",{}),"warnings":warnings,"interpretation":["observational_sample_only","adaptive_sampling_not_population_win_rate","weapons_cooccur_not_isolated_effect","hp_ratios_exclude_shield","wilson_is_descriptive_under_adaptive_stopping"],"tests":actual_tests,"attempts":attempts,"enemy_analysis":enemies.values(),"player_analysis":players.values(),"enemy_tags":enemy_tags.values(),"player_tags":player_tags.values(),"weapon_analysis":weapons.values(),"pair_analysis":pairs,"level_candidates":candidates}
 	report.display_names=inputs.get("display_names",{}).duplicate(true)
 	return report
 

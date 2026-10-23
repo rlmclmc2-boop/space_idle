@@ -122,7 +122,7 @@ static func read_pairs(path: String) -> Variant:
 static func save_json(path: String,value: Variant) -> bool:
 	var file := FileAccess.open(path,FileAccess.WRITE)
 	if file==null:return false
-	file.store_string(JSON.stringify(value,"  "))
+	file.store_string(JSON.stringify(value,"  ",true,true))
 	file.flush()
 	return file.get_error()==OK
 
@@ -147,12 +147,16 @@ static func combine(base: String,followup: String) -> Dictionary:
 	var recent=read_json(followup.path_join("summary.json"))
 	if not original is Dictionary or not additional is Dictionary or not previous is Dictionary or not recent is Dictionary:return {"error":"invalid_batch"}
 	if JSON.stringify(original.get("enemy_fleets"))!=JSON.stringify(additional.get("enemy_fleets")) or JSON.stringify(original.get("player_loadouts"))!=JSON.stringify(additional.get("player_loadouts")) or original.get("data_sha256")!=additional.get("data_sha256"):return {"error":"input_mismatch"}
+	var compatibility:Dictionary=preload("res://scripts/execution_identity.gd").compare(original.get("execution_identity",{}),additional.get("execution_identity",{}),"merge")
+	if not compatibility.compatible:return {"error":"execution_identity_mismatch","reasons":compatibility.reasons}
 	var pairs=read_pairs(base.path_join("pairs.jsonl"))
 	var new_pairs=read_pairs(followup.path_join("pairs.jsonl"))
 	if not pairs is Dictionary or not new_pairs is Dictionary:return {"error":"invalid_pairs"}
 	for key in new_pairs:
 		pairs[key]=merge_pair(pairs[key],new_pairs[key]) if pairs.has(key) else new_pairs[key]
 	var combined: Dictionary=previous.duplicate(true)
+	combined.execution_batches=previous.get("execution_batches",[original.execution_identity]).duplicate(true)
+	combined.execution_batches.append(additional.execution_identity.duplicate(true))
 	combined.status="retested"
 	combined.completed_count=int(previous.get("completed_count",0))+int(recent.get("completed_count",0))
 	combined.budget=int(previous.get("budget",0))+int(recent.get("budget",0))
@@ -169,6 +173,7 @@ static func combine(base: String,followup: String) -> Dictionary:
 	if DirAccess.make_dir_recursive_absolute(output)!=OK:return {"error":"write_failed"}
 	var inputs: Dictionary=original.duplicate(true)
 	inputs.retest=combined.retest
+	inputs.execution_batches=combined.execution_batches
 	if not save_json(output.path_join("inputs.json"),inputs) or not save_json(output.path_join("summary.json"),combined):return {"error":"write_failed"}
 	var pair_file := FileAccess.open(output.path_join("pairs.jsonl"),FileAccess.WRITE)
 	if pair_file==null:return {"error":"write_failed"}

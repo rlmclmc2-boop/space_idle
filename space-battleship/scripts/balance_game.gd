@@ -108,7 +108,6 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	var result := super.start(level,loop_mode,checkpoint)
 	if result:
 		clear_pending_hits()
-		execution_error="";execution_inputs=[]
 		return admit_execution(true)
 	return result
 

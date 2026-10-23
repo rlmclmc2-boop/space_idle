@@ -1,5 +1,9 @@
 extends RefCounted
 ## Bounded adaptive execution. Combat still uses the existing pure-logic path.
+const Identity = preload("res://scripts/execution_identity.gd")
+var execution_capture: RefCounted
+var execution_identity: Dictionary={}
+var replay_inputs := ""
 const Sampling := preload("res://scripts/fleet_battle_sampling.gd")
 var sampling: RefCounted
 var active_pair := -1
@@ -70,6 +74,12 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 	var module_delta: Variant=request.get("module_delta",0)
 	if not (module_delta is int or module_delta is float) or not is_finite(float(module_delta)) or module_delta!=floorf(module_delta) or module_delta<0 or module_delta>1000:return "invalid_input"
 	if int(module_delta)>0 and float(power)!=1.0:return "invalid_input"
+	if request.get("retest_saved_inputs",false):
+		var restored:Variant=Marshalls.base64_to_variant(str(request.get("replay_inputs","")))
+		if not restored is Array or restored.size()!=2 or not restored[0] is Array or not restored[1] is Array:return "missing_replay_inputs"
+		# Standard Variant serialization retains the original batch inputs for replay.
+		# Public JSON arrays remain readable views, never an alternate numeric ledger.
+		enemy_rows=restored[0];player_rows=restored[1]
 	if enemy_rows.is_empty() or player_rows.is_empty():return "empty_selection"
 	if not request.get("focus_pairs",[]) is Array:return "invalid_input"
 	for focus in request.get("focus_pairs",[]):
@@ -96,6 +106,7 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 	total = int(request.max_total)
 	enemies = enemy_rows.duplicate(true)
 	players = player_rows.duplicate(true)
+	replay_inputs=Marshalls.variant_to_base64([enemies,players])
 	sampling=Sampling.new(policy.sampling,config)
 	sampling.build(enemies,players)
 	enemy_errors.resize(enemies.size())
@@ -118,9 +129,24 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 	database.config = database.data.config
 	database.defaults = database.data.defaults
 	database.ships = database.data.ship
-	# Validators use the unmodified source snapshot; combat changes only private group/level.
-	enemy_validator = EnemyGenerator.new(source)
-	player_validator = PlayerGenerator.new(source)
+	# Validators and execution identity bind the same private input generation.
+	var validation_source := RunDatabase.new()
+	validation_source.data=database.data.duplicate(true)
+	for field in ["equipment","enemies","groups","levels","config","defaults"]:validation_source.set(field,validation_source.data[field])
+	validation_source.ships=validation_source.data.ship
+	validation_source.input_origin=source.input_origin.duplicate(true)
+	execution_capture=Identity.new()
+	var execution_parameters:Dictionary={"step_seconds":STEP,"max_seconds":config.max_seconds,"power_multiplier":config.get("power_multiplier",1.0),"module_delta":config.get("module_delta",0),"seed":config.seed,"sampling":config.duplicate(true),"selected_inputs_sha256":Identity.digest([enemies,players])}
+	execution_parameters.sampling.erase("source_execution_identity")
+	execution_parameters.sampling.erase("replay_inputs")
+	execution_identity=execution_capture.capture(validation_source,["res://scripts/fleet_battle_runner.gd"],"BalanceGame/"+str(config.mode),execution_parameters,policy)
+	if config.get("retest_saved_inputs",false):
+		var compatibility:Dictionary=Identity.compare(config.get("source_execution_identity",{}),execution_identity,"retest")
+		if not compatibility.compatible:
+			status="error";error="execution_identity_mismatch:"+str(compatibility.reasons)
+			return error
+	enemy_validator = EnemyGenerator.new(validation_source)
+	player_validator = PlayerGenerator.new(validation_source)
 	directory = str(request.get("directory",ProjectSettings.globalize_path("res://../test/work/fleet_battles"))).path_join("batch_%s_%s" % [str(Time.get_unix_time_from_system()).replace(".","_"),Time.get_ticks_usec()])
 	if DirAccess.make_dir_recursive_absolute(directory)!=OK:return fail_output()
 	trials_file = FileAccess.open(directory.path_join("battles.jsonl"),FileAccess.WRITE)
@@ -132,7 +158,7 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 	for key in source.equipment:
 		var binding := UIText.data_key("equipment",str(key),"name")
 		names.equipment[str(key)]=UIText.t(binding) if not binding.is_empty() else str(source.equip(str(key),1).get("name",""))
-	inputs.store_string(JSON.stringify({"config":config,"sampling_policy":policy.sampling,"sampling":sampling.report(),"display_names":names,"enemy_fleets":enemies,"player_loadouts":players,"data_sha256":JSON.stringify(source.data).sha256_text(),"engine":Engine.get_version_info().string,"step_seconds":STEP},"  "))
+	inputs.store_string(JSON.stringify({"replay_inputs":replay_inputs,"execution_identity":execution_identity,"config":config,"sampling_policy":policy.sampling,"sampling":sampling.report(),"display_names":names,"enemy_fleets":enemies,"player_loadouts":players,"data_sha256":JSON.stringify(source.data).sha256_text(),"engine":Engine.get_version_info().string,"step_seconds":STEP},"  ",true,true))
 	inputs.flush()
 	if inputs.get_error()!=OK:return fail_output()
 	status = "validating"
@@ -289,6 +315,7 @@ func finish_battle(outcome: String, message := "") -> void:
 		current.damage_by_weapon=metrics.damage.duplicate(true)
 		current.damage_basis="enemy_hp_removed_excluding_shield"
 		current.execution=game.execution_admission.duplicate(true)
+		current.execution_identity=execution_identity.get("batch_sha256","")
 	update_aggregate(aggregate,current)
 	update_aggregate(pair_aggregate,current)
 	sampling.observe(sampling.pairs[active_pair],current)
@@ -349,7 +376,7 @@ func finalize(next_status: String) -> void:
 	if file==null:
 		fail_output()
 		return
-	file.store_string(JSON.stringify({"status":status,"budget":total,"completed_count":completed,"remaining_budget":total-completed,"sampling":sampling.report(),"aggregate":aggregate,"config":config},"  "))
+	file.store_string(JSON.stringify({"execution_identity":execution_identity,"status":status,"budget":total,"completed_count":completed,"remaining_budget":total-completed,"sampling":sampling.report(),"aggregate":aggregate,"config":config},"  ",true,true))
 	file.flush()
 	if file.get_error()!=OK:
 		fail_output()
@@ -368,6 +395,7 @@ func release_game() -> void:
 	combat_enemies.clear()
 
 func reset() -> void:
+	execution_capture=null;execution_identity={}
 	if busy():stop()
 	release_game()
 	database=null

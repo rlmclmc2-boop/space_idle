@@ -1,4 +1,6 @@
 extends RefCounted
+const Identity = preload("res://scripts/execution_identity.gd")
+var execution_capture: RefCounted
 const LabGame := preload("res://scripts/balance_game.gd")
 const Metrics := preload("res://scripts/balance_metrics.gd")
 const AutoPlayer := preload("res://scripts/balance_autoplayer.gd")
@@ -55,6 +57,8 @@ func start(request: Dictionary) -> String:
 	config.policy = "rules_v2"
 	config.initial_state = "fresh_profile"
 	config.engine_version = Engine.get_version_info().string
+	execution_capture=Identity.new()
+	config.execution_identity=execution_capture.capture(database,["res://scripts/balance_runner.gd"],"BalanceGame/"+str(config.simulation_mode),config,{"policy":config.policy})
 	jobs = planned.jobs
 	speed = requested_speed
 	status = "running"
@@ -138,6 +142,7 @@ func step_once() -> void:
 func finish_run(partial: bool) -> void:
 	metrics.timeline.snapshot(game,metrics,true)
 	var result: Dictionary = metrics.report(game)
+	result.execution_identity=config.execution_identity.duplicate(true)
 	result.execution=game.execution_admission.duplicate(true)
 	result.seed = jobs[job_index].seed
 	result.simulation_mode = config.simulation_mode
@@ -187,6 +192,7 @@ func stop() -> void:
 	credit = 0.0
 
 func reset() -> void:
+	execution_capture=null
 	execution_error=""
 	performance_log.close()
 	performance_log = PerformanceLog.new()
