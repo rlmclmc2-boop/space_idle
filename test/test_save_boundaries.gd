@@ -1,5 +1,15 @@
 extends SceneTree
 
+class RefusingGalaxy extends "res://scripts/galaxy_system.gd":
+	func install_snapshot(_raw:Dictionary,_db)->bool:return false
+class RefusingLoad extends BattleGame:
+	func create_load_candidate(database:ShipDatabase)->BattleGame:
+		var candidate:=BattleGame.new(database,false)
+		candidate.galaxy=RefusingGalaxy.new()
+		return candidate
+class RefusingRollback extends "res://scripts/save_transfer.gd":
+	func rollback(_transaction:Dictionary)->Error:return ERR_FILE_CANT_WRITE
+
 var checks := 0
 var failures := 0
 func check(ok: bool, label: String) -> void:
@@ -14,7 +24,7 @@ func finish() -> void:
 
 func remember(data: Dictionary) -> void:
 	var file := FileAccess.open("user://expected.json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(data))
+	file.store_string(JSON.stringify(data,"\t",true,true))
 	file.close()
 
 func _initialize() -> void:
@@ -26,8 +36,33 @@ func _initialize() -> void:
 	if phase != "write":
 		reopen(db, phase)
 		return
+	var rejected:=RefusingLoad.new(db,false)
+	var prior:=rejected.portable_save_data()
+	var incoming:=prior.duplicate(true);incoming.resources["1"]=99999.0
+	rejected.load_progress_data(incoming)
+	var after_rejected:=rejected.portable_save_data()
+	for key in ["chronoSavedAt","hightechSavedAt"]:
+		prior.erase(key);after_rejected.erase(key)
+	check(rejected.hyperspace.last_error=="domain_install_failed" and after_rejected==prior,"Late private owner refusal leaves all live domains unchanged")
+	check(rejected.lifecycle.ready(),"Rejected private load retains old authority")
 	var game := BattleGame.new(db, true)
 	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
+	var frozen:=BattleGame.new(db,false)
+	frozen.lifecycle.fail("test_recovery","disk")
+	var frozen_before:=frozen.portable_save_data()
+	frozen.economy.credit("1",100000.0)
+	var balance=frozen.economy.balance("1")
+	frozen.tick(1.0);frozen.advance_hightech(1.0)
+	check(not frozen.upgrade_slot("weapons",0,1) and frozen.economy.balance("1")==balance and not frozen.step_progress.active,"Recovery state gates commands and time even when unpaused")
+	frozen.save_enabled=true;frozen.progress_writer.path="user://blocked-save.json";frozen.save_progress()
+	check(not FileAccess.file_exists(frozen.progress_writer.path),"Recovery state gates manual/autosave writes")
+	var refusing_transfer:=RefusingRollback.new()
+	var txgame:=BattleGame.new(db,false);txgame.progress_writer.path="user://lifecycle-progress.json"
+	check(txgame.progress_writer.acquire_owner(),"Replacement test owns isolated writer")
+	var transaction:=txgame.lifecycle.import_progress(txgame,txgame.portable_save_data(),refusing_transfer)
+	check(transaction.error==OK and txgame.lifecycle.state=="installing","Disk success waits for actual scene installation")
+	var outcome:=txgame.lifecycle.reload_failed(ERR_CANT_CREATE)
+	check(outcome.rollback==ERR_FILE_CANT_WRITE and not txgame.lifecycle.ready() and FileAccess.file_exists(transaction.primary),"Failed rollback preserves recovery state and disk evidence")
 	game.profile.cleared = range(1,61)
 	game.rebuild_unlocks()
 	game.economy.credit("2", 10000.0)

@@ -366,18 +366,19 @@ func clear_runtime(g) -> void:
 	g.step_progress.reset();g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
 	g.income_history.clear();g.pending_unlocks.clear()
 
-func install_loaded_domains(g, raw: Dictionary) -> void:
-	if not g.snapshot_ready():return
-	g.economy.install_snapshot(raw)
-	g.equipment.install_snapshot(raw,g.db)
+func install_loaded_domains(g, raw: Dictionary) -> bool:
+	if not g.snapshot_ready():return false
+	if not g.economy.install_snapshot(raw):return false
+	if not g.equipment.install_snapshot(raw,g.db):return false
 	g.profile.productionElapsed=float(raw.productionElapsed)
-	g.enhancement_growth.install_snapshot(raw)
+	if not g.enhancement_growth.install_snapshot(raw):return false
+	if not g.research.install_snapshot(raw,g.db.data.ai_tech_tree):return false
 	g.load_hightech(raw)
-	g.crew.install_snapshot(raw,g.db)
-	g.planets.install_snapshot(raw,g.db)
-	g.reactor.install_snapshot(raw,g.db.config)
-	g.hyperspace.install_snapshot(raw,g.db)
-	g.galaxy.install_snapshot(raw,g.db)
+	if not g.crew.install_snapshot(raw,g.db):return false
+	if not g.planets.install_snapshot(raw,g.db):return false
+	if not g.reactor.install_snapshot(raw,g.db.config):return false
+	if not g.hyperspace.install_snapshot(raw,g.db):return false
+	return g.galaxy.install_snapshot(raw,g.db)
 
 func rebuild_contributions(g) -> void:
 	g.rebuild_unlock_gates()

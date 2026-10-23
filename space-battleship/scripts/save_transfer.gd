@@ -134,7 +134,7 @@ func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  return prepare_data(raw, db)
 
 func export_progress(game: BattleGame, path: String) -> Error:
- if not game.snapshot_ready():return ERR_BUSY
+ if not game.lifecycle.ready() or not game.snapshot_ready():return ERR_BUSY
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  if Writer.is_protected_target(target,game.progress_writer.path):return ERR_INVALID_PARAMETER
  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
@@ -148,6 +148,9 @@ func rename(from: String,to: String) -> Error:
 
 func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  if not game.snapshot_ready():return {"error":ERR_BUSY}
+ return _commit_import_owned(game,raw,game.portable_save_data())
+
+func _commit_import_owned(game:BattleGame,raw:Dictionary,previous_snapshot:Dictionary)->Dictionary:
  if not game.progress_writer.owns_progress():return {"error":ERR_ALREADY_IN_USE}
  # Install ownership before staging bytes, so startup in another process cannot
  # mistake an in-flight transaction for an interrupted import.
@@ -155,15 +158,14 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  if FileAccess.file_exists(marker) or DirAccess.dir_exists_absolute(marker):return {"error":ERR_ALREADY_IN_USE}
  var error:=game.progress_writer.write_import_stage(marker,JSON.stringify({"pid":OS.get_process_id()}).to_utf8_buffer())
  if error!=OK:return {"error":error}
- var transaction:=_commit_import(game,raw)
+ var transaction:=_commit_import(game,raw,previous_snapshot)
  DirAccess.remove_absolute(marker)
  if transaction.get("error") == OK:
   transaction.owner_lock=game.progress_writer.owner_handle()
   transaction.owner_writer=game.progress_writer
  return transaction
 
-func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
- if not game.snapshot_ready():return {"error":ERR_BUSY}
+func _commit_import(game: BattleGame, raw: Dictionary, previous_snapshot:Dictionary) -> Dictionary:
  var source_db=game.manual_hyperspace.base_db if game.manual_hyperspace.active else game.db
  var prepared:=prepare_data(raw,source_db)
  if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}
@@ -174,7 +176,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  var backup:=ProjectSettings.globalize_path(BACKUP_ROOT)+"/%d-%d"%[int(Time.get_unix_time_from_system()),Time.get_ticks_usec()]
  var error:=DirAccess.make_dir_recursive_absolute(backup)
  if error!=OK:return {"error":error}
- error=write_file(backup+"/current-progress.json",JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
+ error=write_file(backup+"/current-progress.json",JSON.stringify(clean(previous_snapshot,schema()),"\t",true,true).to_utf8_buffer())
  if error!=OK:return {"error":error}
  for suffix in ["", ".bak"]:
   if FileAccess.file_exists(primary+suffix):
@@ -194,9 +196,9 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
   if error!=OK:DirAccess.remove_absolute(incoming);return {"error":error}
  error=rename(incoming,primary)
  if error!=OK:
-  if had_primary:rename(previous,primary)
-  DirAccess.remove_absolute(incoming)
-  return {"error":error,"backup":backup}
+  var restored:Error=rename(previous,primary) if had_primary else OK
+  if restored==OK:DirAccess.remove_absolute(incoming)
+  return {"error":error,"backup":backup,"recovery_required":restored!=OK}
  return {"error":OK,"backup":backup,"primary":primary,"had_primary":had_primary}
 
 func rollback(transaction: Dictionary) -> Error:
@@ -214,11 +216,36 @@ func rollback(transaction: Dictionary) -> Error:
  if error!=OK:return error
  return rename(primary+".import-prev",primary) if transaction.had_primary else OK
 
-func finish(transaction: Dictionary) -> void:
- if not _transaction_owns_progress(transaction):return
- if transaction.had_primary:DirAccess.remove_absolute(str(transaction.primary)+".import-prev")
+func finish(transaction: Dictionary) -> Error:
+ if not _transaction_owns_progress(transaction):return ERR_ALREADY_IN_USE
+ if transaction.had_primary and FileAccess.file_exists(str(transaction.primary)+".import-prev"):
+  return DirAccess.remove_absolute(str(transaction.primary)+".import-prev")
+ return OK
 
 func _transaction_owns_progress(transaction: Dictionary) -> bool:
  var owner: RefCounted=transaction.get("owner_lock")
  var writer: RefCounted=transaction.get("owner_writer")
  return owner != null and owner.owns() and writer != null and writer.owns_progress() and writer.owner_handle() == owner
+
+func stage_restart(game:BattleGame)->Dictionary:
+ var writer=game.progress_writer
+ if not writer.owns_progress():return {"error":ERR_ALREADY_IN_USE}
+ var primary:String=writer.path
+ if FileAccess.file_exists(primary+".import-prev") or FileAccess.file_exists(primary+".import-new"):return {"error":ERR_ALREADY_IN_USE}
+ var had_primary:=FileAccess.file_exists(primary)
+ if had_primary:
+  var error:=rename(primary,primary+".import-prev")
+  if error!=OK:return {"error":error}
+ return {"error":OK,"primary":primary,"had_primary":had_primary,"owner_lock":writer.owner_handle(),"owner_writer":writer}
+
+func rollback_restart(transaction:Dictionary)->Error:
+ if not _transaction_owns_progress(transaction):return ERR_ALREADY_IN_USE
+ if not transaction.had_primary:return OK
+ return rename(str(transaction.primary)+".import-prev",transaction.primary)
+
+func finish_restart(transaction:Dictionary)->Error:
+ if not _transaction_owns_progress(transaction):return ERR_ALREADY_IN_USE
+ # The replacement fresh game is bound before any previous disk copy is retired.
+ var error:Error=transaction.owner_writer.clear_files()
+ if error!=OK:return error
+ return finish(transaction)

@@ -62,6 +62,8 @@ var db: ShipDatabase
 var profile: Dictionary
 var economy := preload("res://scripts/economy_state.gd").new()
 var reactor := preload("res://scripts/reactor_state.gd").new()
+var lifecycle := preload("res://scripts/product_lifecycle.gd").new()
+var _initializing := true
 var progress_runtime := preload("res://scripts/progress_runtime.gd").new()
 const CommandResult=preload("res://scripts/command_result.gd")
 var commit_effects := preload("res://scripts/commit_effects.gd").new()
@@ -180,6 +182,8 @@ func economy_time() -> float:
 func _init(database: ShipDatabase, persist := true) -> void:
 	event.connect(_configuration_event)
 	db = database
+	if persist and preload("res://scripts/product_lifecycle.gd").pending!=null:
+		progress_writer=preload("res://scripts/product_lifecycle.gd").pending.writer
 	progress_writer.validation_db = db
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
 		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
@@ -207,11 +211,15 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	profile.hightechOrder = hightech_slots()
 	progress_runtime.rebuild_schedule(self)
 	if persist:
-		load_progress()
+		var replacement=preload("res://scripts/product_lifecycle.gd").pending
+		if replacement==null or replacement.operation!="clear":load_progress()
 		save_dirty = true
 	reset_player()
 	reset_save_timer()
 	if persist:manual_hyperspace.load_production(self)
+	_initializing=false
+	commit_effects.guard=lifecycle
+	if not startup_error.is_empty():lifecycle.fail(startup_error,"disk")
 
 func fresh_profile() -> Dictionary:
 	var profile := {"version":SAVE_VERSION, "productionElapsed":0.0, "highestLevel":1, "cleared":[], "bossSeen":[], "unlocked":str(db.config.startEquip).split(","), "loop":false, "hightechSavedAt":Time.get_unix_time_from_system()}
@@ -348,7 +356,9 @@ func load_progress() -> void:
 	if result.status == "loaded":
 		load_progress_data(result.data)
 		if hyperspace.last_error.is_empty():
-			if not progress_writer.owns_progress():return
+			if not progress_writer.owns_progress() or preload("res://scripts/product_lifecycle.gd").pending!=null:return
+			if preload("res://scripts/product_lifecycle.gd").constructing_scene:
+				lifecycle.recovery=result;return
 			# Our OS lock proves a prior import owner is gone even if its PID was reused.
 			result.import_active = false
 			var recovery_error := progress_writer.finish_loaded_recovery(SAVE_PATH,result)
@@ -364,7 +374,40 @@ func load_progress() -> void:
 	# A rejected existing save must never become an autosaved fresh profile.
 	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
+func create_load_candidate(database: ShipDatabase) -> BattleGame:
+	return BattleGame.new(database,false)
+
 func load_progress_data(raw: Dictionary) -> void:
+	if (not lifecycle.ready() and not _initializing) or not snapshot_ready() or commit_effects.active:
+		hyperspace.last_error="replacement_busy";return
+	if native_execution!=null and not native_before_configuration_change():hyperspace.last_error="native_handoff";return
+	if not lifecycle.begin():return
+	var candidate:=prepare_loaded_game(raw)
+	if candidate==null:
+		lifecycle.complete("live");return
+	# Candidate owners and derived state are complete before the live install.
+	lifecycle.state="installing"
+	progress_runtime.clear_runtime(self)
+	if event.is_connected(crew.on_event):event.disconnect(crew.on_event)
+	for key in ["db","profile","economy","equipment","enhancement_growth","research","crew","planets","reactor","hyperspace","galaxy","income_history","galaxy_runtime","hyperspace_runtime","manual_hyperspace","attributes","configuration_revision","unlock_revision","_unlock_inputs","_committed_configuration","save_interval_minutes","last_successful_save_at","login_chrono_particles"]:
+		set(key,candidate.get(key))
+	crew.attach(self)
+	invalidate_tutorial_unlocks()
+	lifecycle.complete("memory")
+
+func prepare_loaded_game(raw:Dictionary)->BattleGame:
+	var source_db=manual_hyperspace.base_db if manual_hyperspace.active else db
+	var candidate:=create_load_candidate(source_db)
+	candidate.stat_cache_enabled=stat_cache_enabled
+	if not candidate.startup_error.is_empty():hyperspace.last_error=candidate.startup_error;return null
+	candidate._install_progress_data(raw)
+	if not candidate.hyperspace.last_error.is_empty():hyperspace.last_error=candidate.hyperspace.last_error;return null
+	if manual_hyperspace.production_accepted and not candidate.manual_hyperspace.load_production(candidate):
+		hyperspace.last_error=candidate.manual_hyperspace.last_error;return null
+	candidate.reset_player()
+	return candidate
+
+func _install_progress_data(raw: Dictionary) -> void:
 	if not snapshot_ready() or commit_effects.active:hyperspace.last_error="incomplete_logical_step";return
 	var source_db = manual_hyperspace.base_db if manual_hyperspace.active else db
 	var prepared: Dictionary = load("res://scripts/save_transfer.gd").new().prepare_data(raw, source_db)
@@ -431,7 +474,8 @@ func load_progress_data(raw: Dictionary) -> void:
 				var id := db.unlock_id("equipment", key)
 				if not id.is_empty() and not profile.grantedUnlocks.has(id):profile.grantedUnlocks.append(id)
 	# Install every validated domain before rebuilding contributions and schedules.
-	progress_runtime.install_loaded_domains(self,raw)
+	if not progress_runtime.install_loaded_domains(self,raw):
+		hyperspace.last_error="domain_install_failed";set_block_signals(signals_were_blocked);return
 	hyperspace_runtime.settle_interrupted(self)
 	progress_runtime.rebuild_contributions(self)
 	economy.accrue_chrono(0.0, chrono_capacity())
@@ -553,6 +597,7 @@ func begin_return_departure()->void:
 	departure_remaining=RETURN_DEPARTURE_SECONDS
 
 func consume_external_time(real_dt:float,presentation:Variant=null)->void:
+	if not lifecycle.ready():return
 	# Sole live wall-time consumer. tick() remains the domain's logical algorithm
 	# for internal event subdivision and deterministic offline analysis.
 	if external_time_active or logical_step_active or commit_effects.active or not is_finite(real_dt) or real_dt<0:return
@@ -608,7 +653,7 @@ func _dispatch_reserved_step(presentation:Variant)->void:
 	var completed:bool=not step_progress.active
 	if presentation!=null and not presentation.after_time_step(completed):paused=true
 
-func snapshot_ready()->bool:return not step_progress.active
+func snapshot_ready()->bool:return lifecycle.ready() and not step_progress.active
 
 func continuation_context()->Array:
 	return attributes.configuration_inputs(self)+[economy.revision,research.revision,planets.revision,crew.revision,galaxy.revision,hyperspace.revision]
@@ -625,7 +670,7 @@ func resume_step_context()->bool:
 	return true
 
 func enter_domain_step(dt:float,domain:String,stage_index:int)->bool:
-	if paused or commit_effects.active or not is_finite(dt) or dt<=0:return false
+	if not lifecycle.ready() or paused or commit_effects.active or not is_finite(dt) or dt<=0:return false
 	if not step_progress.active:
 		if not step_progress.begin(dt):return false
 		step_progress.open_substep(dt);step_progress.phase="shared";step_progress.stage=stage_index;step_progress.scope=domain
@@ -715,7 +760,7 @@ func check_timed_save() -> void:
 
 func save_progress() -> void:
 	# Called only by the real-time deadline or explicit manual save.
-	if not save_enabled:return
+	if not save_enabled or not lifecycle.ready():return
 	if not snapshot_ready():boundary_save_pending=true;return
 	boundary_save_pending=false
 	save_dirty = true
@@ -2532,7 +2577,7 @@ func prepare_logical_step(dt:float)->bool:
 	block_step("galaxy_preparation");return false
 
 func tick(dt: float) -> void:
-	if logical_step_active or commit_effects.active or paused or not is_finite(dt) or dt<=0:return
+	if not lifecycle.ready() or logical_step_active or commit_effects.active or paused or not is_finite(dt) or dt<=0:return
 	if step_progress.frozen:return
 	if not step_progress.active and not step_progress.begin(dt):return
 	if not resume_step_context():return
@@ -3917,7 +3962,7 @@ func sync_jewel_defence_damage() -> Dictionary:
 	return capacities
 
 func native_before_configuration_change()->bool:
-	if commit_effects.active:return false
+	if not lifecycle.ready() or commit_effects.active:return false
 	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
 
 

@@ -147,6 +147,7 @@ def main():
         env[key] = str(area / "userdata" / folder)
         Path(env[key]).mkdir(parents=True)
     env["SPACE_BATTLESHIP_PYTHON"] = sys.executable
+    env["SPACE_BATTLESHIP_TEST_GODOT"] = str(args.godot.resolve())
     for key in ("APPDATA", "LOCALAPPDATA"):
         Path(env[key]).mkdir(parents=True)
     print(f"Artifacts: {area}", flush=True)

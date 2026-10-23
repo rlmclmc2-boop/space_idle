@@ -235,16 +235,18 @@ var save_file_dialog: FileDialog
 var save_import_confirmation: ConfirmationDialog
 var save_transfer_feedback: Label
 var pending_import: Dictionary = {}
-var import_committing := false
+var import_committing: bool:
+	get:return game!=null and not game.lifecycle.ready()
 
 var presentation_ready := false
+var product_ready := false
 
 func _ready() -> void:
 	set_process(false)
 	set_process_unhandled_input(false)
 	if preload("res://scripts/hyperspace_appearance.gd").reload_config():
 		preload("res://scripts/hyperspace_drone_visual.gd").base_materials.clear()
-	var from_save_import := get_tree().has_meta("save_import_backup")
+	var from_save_import := preload("res://scripts/product_lifecycle.gd").pending!=null
 	# Place the battlefield at the cropped viewport edge; keep the title strip anchored.
 	position.x = -VIEW_CROP_LEFT
 	for side in [-1.0,1.0]:
@@ -303,7 +305,9 @@ func _ready() -> void:
 			point.pos=[float(point.pos[0])-geometry_offset.x,float(point.pos[1])-geometry_offset.y]
 	for key in battle_visual:
 		battle_visual[key] = ProjectSettings.get_setting("visuals/"+key,battle_visual[key])
+	preload("res://scripts/product_lifecycle.gd").constructing_scene=true
 	game = create_battle_game(not automation_args.has("--capture"))
+	preload("res://scripts/product_lifecycle.gd").constructing_scene=false
 	if not game.startup_error.is_empty():
 		set_process(false);set_process_unhandled_input(false)
 		var problem := AcceptDialog.new()
@@ -364,15 +368,20 @@ func _ready() -> void:
 	enemy_defence_inspector = preload("res://scripts/enemy_defence_inspector.gd").new()
 	add_child(enemy_defence_inspector)
 	enemy_defence_inspector.setup(self)
-	if get_tree().has_meta("save_import_backup"):
-		var backup: String=get_tree().get_meta("save_import_backup")
-		get_tree().remove_meta("save_import_backup")
-		call_deferred("save_transfer_message",UIText.t("save.import_success",{"backup":backup}))
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
 		if not from_save_import:call_deferred("show_chrono_login_report")
 
 	presentation_ready = true
+	if not defers_product_ready():finish_product_ready()
+
+func defers_product_ready()->bool:return false
+
+func finish_product_ready()->void:
+	if not game.lifecycle.finish_startup(game):return
+	product_ready=true
+	if not preload("res://scripts/product_lifecycle.gd").acknowledge_process(game):
+		product_ready=false;return
 	set_process(true)
 	set_process_unhandled_input(true)
 
@@ -1032,28 +1041,16 @@ func save_transfer_message(message: String) -> void:
 func confirm_save_import() -> void:
 	save_import_confirmation.hide()
 	if import_committing or pending_import.is_empty():return
-	import_committing=true
-	var transaction: Dictionary=save_transfer.commit_import(game,pending_import)
+	var transaction: Dictionary=game.lifecycle.import_progress(game,pending_import,save_transfer)
 	pending_import.clear()
 	if transaction.error!=OK:
-		import_committing=false
-		save_transfer_message(UIText.t("save.transfer_failed",{"error":error_string(transaction.error)}))
-		return
-	# Explicit global replacement uses the same fresh load/cache/UI path as startup.
-	var was_saving: bool=game.save_enabled
-	game.save_enabled=false
-	set_process(false)
+		save_transfer_message(UIText.t("save.transfer_failed",{"error":error_string(transaction.error)}));return
 	var scene_tree:=get_tree()
 	var error:=scene_tree.reload_current_scene()
 	if error!=OK:
-		var rollback_error: Error=save_transfer.rollback(transaction)
-		game.save_enabled=was_saving
-		set_process(true)
-		import_committing=false
-		save_transfer_message(UIText.t("save.import_reload_failed",{"error":error_string(error),"backup":str(transaction.backup),"rollback":error_string(rollback_error)}))
-		return
-	save_transfer.finish(transaction)
-	scene_tree.set_meta("save_import_backup",str(transaction.backup)+"/current-progress.json")
+		var outcome:Dictionary=game.lifecycle.reload_failed(error)
+		save_transfer_message(UIText.t("save.import_reload_failed",{"error":error_string(error),"backup":outcome.backup,"rollback":error_string(outcome.rollback)}));return
+	game.lifecycle.watch_scene(scene_tree)
 
 func apply_save_interval() -> void:
 	if not game.set_save_interval(save_interval_input.text):

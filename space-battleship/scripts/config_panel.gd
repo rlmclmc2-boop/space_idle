@@ -303,6 +303,7 @@ func full_restart() -> void:
 	if scene == null:
 		status_label.text = UIText.t("debug.full_restart.text_01")
 		return
+	if not scene.game.lifecycle.ready() or not scene.game.snapshot_ready() or scene.game.commit_effects.active:return
 	if settings.save("user://qa_settings.cfg") != OK:
 		status_label.text = UIText.t("debug.full_restart.text_03")
 		return
@@ -310,10 +311,13 @@ func full_restart() -> void:
 	if DirAccess.make_dir_recursive_absolute(project.path_join(".runtime")) != OK:
 		status_label.text = UIText.t("debug.full_restart.text_04")
 		return
-	var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--headless", "--path", project, "--log-file", project.path_join(".runtime/full-restart.log"), "--script", "res://scripts/restart_host.gd", "--", str(OS.get_process_id())]))
+	var restart_id:=Crypto.new().generate_random_bytes(16).hex_encode()
+	var pid := OS.create_process(OS.get_executable_path(), PackedStringArray(["--headless", "--path", project, "--log-file", project.path_join(".runtime/full-restart.log"), "--script", "res://scripts/restart_host.gd", "--", str(OS.get_process_id()),restart_id]))
 	if pid == -1:
 		status_label.text = UIText.t("debug.full_restart.text_05")
 		return
+	scene.game.lifecycle.state="installing"
+	scene.game.lifecycle.source="restart_process"
 	restarting = true
 	full_restart_button.disabled = true
 	scene.set_process(false)
@@ -327,14 +331,9 @@ func restart_game(clear_save: bool = false) -> void:
 	if scene == null:
 		status_label.text = UIText.t("debug.full_restart.text_01")
 		return
-	if clear_save:
-		var error: Error = scene.game.progress_writer.clear_files()
-		if error != OK:
-			status_label.text = UIText.t("debug.restart_game.text_01") + error_string(error)
-			return
-		# Prevent the outgoing scene from writing its old progress back.
-		scene.game.save_enabled = false
-		scene.set_process(false)
+	var result:Dictionary=scene.game.lifecycle.restart(scene.game,clear_save,preload("res://scripts/save_transfer.gd").new())
+	if result.error!=OK:
+		status_label.text=UIText.t("debug.restart_game.text_01")+error_string(result.error);return
 	deleting_save = clear_save
 	restarting = true
 	import_button.disabled = true
@@ -347,15 +346,21 @@ func restart_game(clear_save: bool = false) -> void:
 	call_deferred("reload_game")
 
 func reload_game() -> void:
+	var scene:=game_scene()
+	if scene==null:return
+	var lifecycle=scene.game.lifecycle
 	var result := get_tree().reload_current_scene()
 	if result == OK:
+		lifecycle.watch_scene(get_tree())
 		await get_tree().scene_changed
-	restarting = false
-	import_button.disabled = false
-	split_button.disabled = false
-	restart_button.disabled = false
-	status_label.text = UIText.t("debug.reload_game.text_01") if result == OK else UIText.t("debug.reload_game.text_02") + error_string(result)
-	if deleting_save and result == OK:
+	else:
+		lifecycle.reload_failed(result)
+	restarting = not lifecycle.ready()
+	import_button.disabled = restarting
+	split_button.disabled = restarting
+	restart_button.disabled = restarting
+	status_label.text = UIText.t("debug.reload_game.text_01") if lifecycle.ready() and result==OK else UIText.t("debug.reload_game.text_02") + lifecycle.reason
+	if deleting_save and lifecycle.ready() and result == OK:
 		status_label.text = UIText.t("debug.reload_game.text_03")
 	deleting_save = false
 

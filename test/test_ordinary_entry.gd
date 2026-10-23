@@ -33,7 +33,7 @@ func open_product():
 
 func close_product(scene)->void:
 	if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
-	if scene.game.native_execution!=null:scene.game.native_execution.cancel(scene.game);scene.game.native_execution=null
+	if scene.game!=null and scene.game.native_execution!=null:scene.game.native_execution.cancel(scene.game);scene.game.native_execution=null
 	scene.queue_free();await process_frame
 
 func save_product(scene,label:String)->void:
@@ -252,6 +252,7 @@ func run_planet_loading()->void:
 	panel.cards[id].list_button.pressed.emit();scene._process(0.0)
 	await product_capture(scene,"planet-loading-ready")
 	FileAccess.open("res://.runtime/planet-loading.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"production_time":g.production_time(),"planets":panel.cards.size(),"saving":g.save_enabled}))
+	scene=await check_replacement_lifecycle(scene)
 	await close_product(scene)
 	print("PLANET_LOADING ",checks," checks ",failures," failures");quit(1 if failures else 0)
 
@@ -365,3 +366,39 @@ func run_factory(phase:String)->void:
 	FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," ",true,true))
 	await close_product(scene)
 	print("FACTORY_ENTRY ",phase," ",checks," checks ",failures," failures");quit(1 if failures else 0)
+
+func check_replacement_lifecycle(scene):
+	var g=scene.game
+	g.paused=true;g.save_progress()
+	var raw:Dictionary=g.portable_save_data();raw.resources["1"]=12345.0
+	var service=preload("res://scripts/save_transfer.gd").new()
+	var lifecycle=g.lifecycle
+	var tx:Dictionary=lifecycle.import_progress(g,raw,service)
+	check(tx.error==OK and not lifecycle.ready() and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Import retains old disk authority while installation is pending")
+	if tx.error!=OK:return scene
+	var error:=reload_current_scene()
+	check(error==OK,"Real main reload request accepted")
+	lifecycle.watch_scene(self)
+	await scene_changed
+	scene=current_scene;scene.set_process(false);scene.game.paused=true
+	check(scene.presentation_ready and scene.game.lifecycle==lifecycle and lifecycle.ready() and scene.game.progress_writer==g.progress_writer,"New main binds the transferred writer before lifecycle completion")
+	check(scene.game.economy.balance("1")==12345.0 and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Only successful new main retires previous import")
+	var clear:Dictionary=lifecycle.restart(scene.game,true,service)
+	check(clear.error==OK and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Clear restart stages previous primary instead of deleting it early")
+	error=reload_current_scene();check(error==OK,"Clear reload request accepted")
+	lifecycle.watch_scene(self);await scene_changed
+	scene=current_scene;scene.set_process(false);scene.game.paused=true
+	check(lifecycle.ready() and scene.game.profile.highestLevel==1 and not FileAccess.file_exists(BattleGame.SAVE_PATH) and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Fresh main confirms clear before retiring disk copies")
+	scene.game.save_progress()
+	tx=lifecycle.import_progress(scene.game,scene.game.portable_save_data(),service)
+	check(tx.error==OK,"Prepare real new-scene readiness failure")
+	var visual_path:="res://data/ship_weapon_visuals.json"
+	var original:=FileAccess.get_file_as_bytes(visual_path)
+	FileAccess.open(visual_path,FileAccess.WRITE).store_string("[]")
+	error=reload_current_scene();check(error==OK,"Reload API can succeed before readiness fails")
+	lifecycle.watch_scene(self);await scene_changed
+	FileAccess.open(visual_path,FileAccess.WRITE).store_buffer(original)
+	scene=current_scene;scene.set_process(false)
+	check(not scene.presentation_ready and lifecycle.state=="recovery_required" and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Actual failed main readiness preserves backup and blocks completion")
+	# This process ends here; retain failed lifecycle/disk evidence until exit.
+	return scene

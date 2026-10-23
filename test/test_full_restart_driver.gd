@@ -19,8 +19,12 @@ func run() -> void:
 	current_scene.game.start(2, false)
 	current_scene.game.group_index = 1
 	current_scene.game.spawn_group()
-	current_scene.game.profile.resources["1"] = 432123
+	var wallet:Dictionary=current_scene.game.economy.save_data()
+	wallet.resources["1"]=432123
+	assert(current_scene.game.economy.install_snapshot(wallet))
 	current_scene.game.drops.clear()
+	current_scene.game.save_progress()
+	assert(current_scene.game.last_save_error==OK)
 	panel.settings.set_value("control", "speed", 5)
 	panel.restarting = true
 	panel.full_restart()
