@@ -201,7 +201,7 @@ func reset(g) -> void:
 		var assignment:=str(row.get("defaultAssignment",""));var target:=str(row.get("defaultTargetId",""))
 		if can_assign(g,str(item.crewId),assignment,target,true):
 			item.assignmentType=assignment;item.targetId=target;_install_members(items)
-	reset_schedule(g)
+	clear_schedule()
 
 static func valid_integer(value,maximum:float) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and value>=0 and value<=maximum and float(value)==floorf(float(value))
@@ -210,7 +210,7 @@ static func valid_snapshot(raw: Dictionary, db) -> bool:
 	if not raw.get("crew") is Array or not raw.get("crewEquipment") is Dictionary or not raw.crewEquipment.is_empty():return false
 	var definitions: Dictionary=db.data.get("crew",{});var assignments: Dictionary=db.data.get("crew_assignment",{})
 	if raw.crew.size()!=definitions.size():return false
-	var seen: Dictionary={};var occupied: Dictionary={};var modes: Array=[]
+	var seen: Dictionary={};var modes: Array=[]
 	for row in assignments.values():
 		if row.get("effectType")=="AUTO_UPGRADE":
 			for mode in str(row.get("upgradeModes","")).split(",",false):
@@ -222,21 +222,9 @@ static func valid_snapshot(raw: Dictionary, db) -> bool:
 		if not item.get("equipmentSlots") is Array or item.equipmentSlots.size()!=int(definitions[item.crewId].equipmentSlotCount) or not item.equipmentSlots.all(func(slot):return slot==null):return false
 		if not item.get("upgradeMode") is String or (not modes.has(item.upgradeMode) and not (modes.is_empty() and item.upgradeMode.is_empty())):return false
 		if not item.get("assignmentType") is String or not item.get("targetId") is String:return false
-		if item.assignmentType.is_empty():
-			if not item.targetId.is_empty():return false
-			continue
-		if not assignments.has(item.assignmentType):return false
-		var row: Dictionary=assignments[item.assignmentType];var target:=str(item.targetId);var valid:=false
-		match str(row.targetType):
-			"equipment":valid=target=="equipment" and row.effectType=="AUTO_UPGRADE"
-			"hightech":valid=target=="hightech" and row.effectType=="AUTO_RESEARCH"
-			"jewel":valid=target=="jewels" and row.effectType=="AUTO_COMBINE"
-			"reactor":valid=target=="reactor" and row.effectType=="AUTO_REACTOR"
-			"galaxy":valid=db.data.get("galaxy",{}).has(target) and row.effectType=="EXPLORE"
-			"production","smelting":valid=db.data.get("hightech",{}).has(target) and target==("超时空炼铁炉" if row.targetType=="production" else "宝石熔炼炉") and row.effectType in ["OUTPUT","SPEED","EFFICIENCY"]
-		if not valid:return false
-		var key:=str(row.targetType)+":"+target;occupied[key]=int(occupied.get(key,0))+1
-		if occupied[key]>int(row.maxCrew):return false
+	var rules = load("res://scripts/crew_system.gd").new()
+	for item in raw.crew:
+		if not rules.binding_valid(db,raw.crew,item.crewId,item.assignmentType,item.targetId):return false
 	return true
 
 func install_snapshot(raw: Dictionary, db) -> bool:
@@ -283,28 +271,41 @@ func commit(plan: Dictionary) -> void:
 		if change.previous.assignmentType!=change.current.assignmentType or change.previous.targetId!=change.current.targetId:
 			timers.erase(change.current.crewId);intervals.erase(change.current.crewId)
 
-func available_targets(g, assignment: String, include_inactive := false) -> Array:
-	var row: Dictionary = assignments(g).get(assignment,{})
+func binding_targets(db, assignment: String, g = null) -> Array:
+	var row: Dictionary = db.data.get("crew_assignment",{}).get(assignment,{})
 	if not supported(row):return []
-	var result: Array = targets[str(row.targetType)].call(g)
+	var result: Array = targets[str(row.targetType)].call(db,g)
 	var category := str(row.get("targetCategory", ""))
-	return result.filter(func(target):return (include_inactive or target.get("active",true)) and (category.is_empty() or str(target.get("category", ""))==category))
+	return result.filter(func(target):return target.get("active",true) and (category.is_empty() or str(target.get("category", ""))==category))
+
+func available_targets(g, assignment: String, include_inactive := false) -> Array:
+	return binding_targets(g.db,assignment,null if include_inactive else g)
 
 func valid_target(g, assignment: String, id: String, include_inactive := false) -> bool:
 	return available_targets(g,assignment,include_inactive).any(func(target):return target.id==id)
+
+# Structural bindings are identical for defaults, player commands and strict snapshots.
+# A live game adds availability; saved bindings may legitimately be inactive.
+func binding_valid(db, items: Array, id: String, assignment: String, target: String, g = null) -> bool:
+	if assignment.is_empty():return target.is_empty()
+	if not binding_targets(db,assignment,g).any(func(row):return row.id==target):return false
+	var jobs: Dictionary=db.data.get("crew_assignment",{})
+	var row: Dictionary=jobs[assignment]
+	var count := 0
+	var capacity := int(row.maxCrew)
+	for item in items:
+		var occupied: Dictionary=jobs.get(str(item.assignmentType),{})
+		if item.crewId!=id and occupied.get("targetType")==row.targetType and item.targetId==target:
+			count+=1
+			capacity=mini(capacity,int(occupied.maxCrew))
+	return count < capacity
 
 func can_assign(g, id: String, assignment: String, target: String, restoring := false) -> bool:
 	if entry(g,id).is_empty() or (not restoring and not unlocked(g,id)):return false
 	if not assignment.is_empty() and not restoring:
 		if preload("res://scripts/hyperspace_permissions.gd").reserved_crew(g.hyperspace.state)==id:return false
 		if not g.crew_exploration(id).is_empty():return false
-	if assignment.is_empty():return target.is_empty()
-	if not valid_target(g,assignment,target,restoring):return false
-	var count := 0
-	for item in _members:
-		var occupied: Dictionary=assignments(g).get(str(item.assignmentType),{})
-		if item.crewId!=id and occupied.get("targetType")==assignments(g)[assignment].targetType and item.targetId==target:count+=1
-	return count < int(assignments(g)[assignment].maxCrew)
+	return binding_valid(g.db,_members,id,assignment,target,null if restoring else g)
 
 func prepare_assignment(g, id: String, assignment: String, target: String, upgrade_mode := "") -> Dictionary:
 	if not can_assign(g,id,assignment,target):return {}
@@ -407,31 +408,35 @@ func auto_reactor(g, _item: Dictionary) -> bool:
 	run_reactor_allocation(g,_item)
 	return true
 
-func reactor_targets(g) -> Array:
-	return [{"id":"reactor","name":UIText.t("crew.job.reactor"),"active":g.reactor_unlocked()}]
+func reactor_targets(_db, g = null) -> Array:
+	return [{"id":"reactor","name":UIText.t("crew.job.reactor"),"active":g==null or g.reactor_unlocked()}]
 
-func galaxy_targets(g) -> Array:
-	return g.galaxy.targets(g)
+func galaxy_targets(db, g = null) -> Array:
+	if g!=null:return g.galaxy.targets(g)
+	var result: Array=[]
+	for id in db.data.get("galaxy",{}):
+		result.append({"id":id,"name":db.data.galaxy[id].name,"active":true})
+	return result
 
-func equipment_targets(g) -> Array:
-	return [{"id":"equipment","name":UIText.t("crew.all_equipment"),"active":not g.loadout_entries("weapons").is_empty() or not g.loadout_entries("defence").is_empty()}]
+func equipment_targets(_db, g = null) -> Array:
+	return [{"id":"equipment","name":UIText.t("crew.all_equipment"),"active":g==null or not g.loadout_entries("weapons").is_empty() or not g.loadout_entries("defence").is_empty()}]
 
-func research_targets(g) -> Array:
-	return [{"id":"hightech","name":UIText.t("crew.hightech_system"),"active":g.ai_tech_factory_unlocked(),"category":"system"}]
+func research_targets(_db, g = null) -> Array:
+	return [{"id":"hightech","name":UIText.t("crew.hightech_system"),"active":g==null or g.ai_tech_factory_unlocked(),"category":"system"}]
 
-func production_targets(g) -> Array:
-	return furnace_targets(g,[g.FURNACE])
+func production_targets(db, g = null) -> Array:
+	return furnace_targets(db,["超时空炼铁炉"],g)
 
-func smelting_targets(g) -> Array:
-	return furnace_targets(g,[g.JEWEL_FURNACE])
+func smelting_targets(db, g = null) -> Array:
+	return furnace_targets(db,["宝石熔炼炉"],g)
 
-func jewel_targets(g) -> Array:
-	return [{"id":"jewels","name":UIText.t("crew.jewel_system"),"active":g.jewels_unlocked()}]
+func jewel_targets(_db, g = null) -> Array:
+	return [{"id":"jewels","name":UIText.t("crew.jewel_system"),"active":g==null or g.jewels_unlocked()}]
 
-func furnace_targets(g, keys: Array) -> Array:
+func furnace_targets(db, keys: Array, g = null) -> Array:
 	var result: Array = []
 	for key in keys:
-		if g.db.data.get("hightech",{}).has(key):result.append({"id":key,"name":UIText.data_text("hightech",key),"active":g.hightech_unlocked(key) and g.hightech_level(key)>0})
+		if db.data.get("hightech",{}).has(key):result.append({"id":key,"name":UIText.data_text("hightech",key),"active":g==null or (g.hightech_unlocked(key) and g.hightech_level(key)>0)})
 	return result
 
 func target_name(g, item: Dictionary) -> String:

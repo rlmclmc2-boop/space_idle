@@ -90,6 +90,7 @@ func _initialize() -> void:
 	joint_payout_boundary()
 	construction_boundaries()
 	conquest_boundaries()
+	definition_extension()
 	print("PLANET: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
 
@@ -266,3 +267,18 @@ func joint_payout_boundary()->void:
 	g.advance_planets(g.planet_duration("1"))
 	check(g.captures==1 and g.configurations==1,"Joint planet and crew commit captures health and updates configuration exactly once")
 	check(not views.is_empty() and views.all(func(view):return view[0]==1 and view[1]>0 and absf(view[2]-0.4)<0.000001 and GrowthNumber.compare(view[4],view[3])<=0),"Every payout notice sees final crew, planet, capacity and preserved health ratio")
+
+func definition_extension()->void:
+	var db:=ShipDatabase.new()
+	db.data.planet["999"]=db.data.planet["1"].duplicate(true)
+	db.data.planet["999"].id=999
+	db.data.planet_build.stage4_station=db.data.planet_build.station.duplicate(true)
+	var row:Dictionary=db.data.planet_build.stage4_station
+	row.id="stage4_station";row.planet_rule="only";row.planet_value="999";row.min_planet=1
+	var g:=BattleGame.new(db,false)
+	check(not g.planet_progress("999").is_empty() and g.planet_progress("999").buildings.has("stage4_station"),"New planet and same-kind building definitions initialize without Game branches")
+	check(not g.planet_progress("1").buildings.has("stage4_station"),"New building retains configured planet selection")
+	var raw:Dictionary=g.portable_save_data()
+	check(g.planets.valid_snapshot(raw,db),"Extended definitions round-trip through strict planet validation")
+	raw.planets["999"].buildings.erase("stage4_station")
+	check(not g.planets.valid_snapshot(raw,db),"Missing new building snapshot remains rejected without backfill")

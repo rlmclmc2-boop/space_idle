@@ -205,6 +205,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	planets.reset(self)
 	galaxy_runtime.refresh_unlocks(self)
 	profile.hightechOrder = hightech_slots()
+	progress_runtime.rebuild_schedule(self)
 	if persist:
 		load_progress()
 		save_dirty = true

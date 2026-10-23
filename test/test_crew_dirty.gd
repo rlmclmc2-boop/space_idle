@@ -14,6 +14,12 @@ class CallbackGame extends BattleGame:
 			var callback:=before_change;before_change=Callable();callback.call()
 		return accept_change
 
+class ReadyGame extends BattleGame:
+	var early_target_read:=false
+	func loadout_entries(category: String) -> Array:
+		if not crew.members().is_empty() and planets.all().size()!=db.data.planet.size():early_target_read=true
+		return super.loadout_entries(category)
+
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -77,6 +83,7 @@ func _initialize()->void:
 	nondefence_damage_boundary()
 	coordination_boundaries()
 	material_wakeup()
+	binding_boundaries()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
@@ -171,3 +178,45 @@ func nondefence_damage_boundary()->void:
 	g.captures=0
 	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.health_applies==1 and g.captures==1,"Actual defence change still captures and reapplies health once")
 	check(absf(GrowthNumber.ratio(g.player.armour,g.stat("armour"))-0.75)<0.000001,"Actual defence refit retains the existing health algorithm")
+
+func binding_boundaries()->void:
+	var db:=ShipDatabase.new()
+	db.data.crew["stage4_crew"]=db.data.crew.navigator.duplicate(true)
+	db.data.crew.stage4_crew.unlockId=""
+	db.data.crew.stage4_crew.defaultAssignment="equipment_upgrade"
+	db.data.crew.stage4_crew.defaultTargetId="equipment"
+	var g:=ReadyGame.new(db,false)
+	check(g.crew.entry(g,"stage4_crew").assignmentType=="equipment_upgrade" and g.crew.timers.has("stage4_crew"),"New configured crew receives default job and fresh-game schedule")
+	check(not g.early_target_read and g.planets.all().size()==db.data.planet.size(),"Fresh scheduler never reads live targets before planet domains initialize")
+	g.crew.reset(g)
+	check(g.crew.timers.is_empty() and g.crew.allocation_timers.is_empty(),"Crew reset initializes defaults without dispatching")
+	g.progress_runtime.rebuild_schedule(g)
+	check(g.crew.timers.has("stage4_crew"),"Progress coordinator starts initialized default job")
+	var raw:=g.crew.save_data()
+	check(g.crew.valid_snapshot(raw,db),"Runtime default bindings are valid strict snapshots")
+	var member:Dictionary=raw.crew[0]
+	for item in raw.crew:
+		item.assignmentType="";item.targetId=""
+	member.assignmentType="hightech_scientists";member.targetId="hightech"
+	check(g.crew.valid_snapshot(raw,db) and g.crew.can_assign(g,member.crewId,"hightech_scientists","hightech",true),"Inactive configured target remains loadable and usable for defaults")
+	db.data.crew_assignment.hightech_scientists.targetCategory="other"
+	check(not g.crew.valid_snapshot(raw,db) and not g.crew.can_assign(g,member.crewId,"hightech_scientists","hightech",true),"Category mismatch is rejected by runtime and strict loading")
+	db.data.crew_assignment.hightech_scientists.targetCategory="system"
+	db.data.crew_assignment.hightech_scientists.effectType="UNKNOWN"
+	check(not g.crew.valid_snapshot(raw,db) and not g.crew.can_assign(g,member.crewId,"hightech_scientists","hightech",true),"Unsupported effect is rejected at both boundaries")
+	db.data.crew_assignment.hightech_scientists.effectType="AUTO_RESEARCH"
+	member.targetId="missing"
+	check(not g.crew.valid_snapshot(raw,db),"Unknown target remains strictly rejected")
+	member.targetId="hightech"
+	db.data.crew_assignment.stage4_research=db.data.crew_assignment.hightech_scientists.duplicate(true)
+	db.data.crew_assignment.stage4_research.id="stage4_research"
+	db.data.crew_assignment.stage4_research.maxCrew=2
+	var other:Dictionary=raw.crew[1]
+	other.assignmentType="stage4_research";other.targetId="hightech"
+	check(not g.crew.valid_snapshot(raw,db),"Different jobs share target capacity, including the stricter occupant")
+	raw.crew.reverse()
+	check(not g.crew.valid_snapshot(raw,db),"Capacity rejection is independent of snapshot member order")
+	other.assignmentType="";other.targetId=""
+	check(g.crew.install_snapshot(raw,db) and not g.crew.can_assign(g,other.crewId,"stage4_research","hightech",true),"Runtime cannot exceed an existing occupant's capacity")
+	raw.crew.pop_back()
+	check(not g.crew.valid_snapshot(raw,db),"New definitions still require complete snapshots without backfill")
