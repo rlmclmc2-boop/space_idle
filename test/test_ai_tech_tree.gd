@@ -6,6 +6,11 @@ class RefusedHandoff:
 	extends RefCounted
 	func handoff_to_legacy(_game,_reason)->bool:return false
 
+class ChangedWalletHandoff:
+	extends RefCounted
+	func handoff_to_legacy(game,_reason)->bool:
+		game.economy.credit("1",1);game.native_execution=null;return true
+
 var checks := 0
 var failures := 0
 
@@ -156,6 +161,9 @@ func run() -> void:
 	check(plan.completed and atomic.research.save_data()==original and atomic.economy.resources()==original_wallet,"research preparation changes neither progress nor wallet")
 	atomic.native_execution=RefusedHandoff.new();atomic.advance_hightech(100000.0)
 	check(atomic.research.save_data()==original and atomic.economy.resources()==original_wallet,"native refusal leaves research and paid interval uncommitted")
+	atomic.native_execution=ChangedWalletHandoff.new();atomic.advance_hightech(100000.0)
+	check(atomic.research.save_data()==original and GrowthNumber.compare(atomic.economy.balance("1"),GrowthNumber.add(original_wallet["1"],1))==0,"Handoff wallet mutation invalidates research payment without overwriting callback credit")
+	fund(atomic,original_wallet)
 	atomic.native_execution=null
 	var seen:Array=[]
 	atomic.event.connect(func(kind,_info):

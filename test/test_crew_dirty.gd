@@ -1,5 +1,13 @@
 extends SceneTree
 ## Current scheduler results, not a second implementation of the old per-second loop.
+class CallbackGame extends BattleGame:
+	var before_change: Callable
+	var accept_change:=true
+	func native_before_configuration_change()->bool:
+		if before_change.is_valid():
+			var callback:=before_change;before_change=Callable();callback.call()
+		return accept_change
+
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -60,6 +68,7 @@ func _initialize()->void:
 	check(stable_save(g)==before,"Discarded overrun cannot cause a second purchase")
 	g.assign_crew("navigator","","");before=stable_save(g);g.crew.advance(g,2)
 	check(stable_save(g)==before,"Equipment recall stops spending")
+	coordination_boundaries()
 	material_wakeup()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
@@ -101,3 +110,35 @@ func material_wakeup()->void:
 	check(g.slot_entry("weapons",0).level==boundary-1,"Material credit waits the existing crew interval")
 	g.crew.advance(g,0.01)
 	check(g.slot_entry("weapons",0).level==boundary,"Merged material credits resume once without postponing the first deadline")
+
+func coordination_boundaries()->void:
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var before:=g.crew.save_data();var notices:Array=[]
+	g.event.connect(func(kind,info):
+		if kind=="crew_changed":notices.append(info))
+	g.accept_change=false
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.save_data()==before and notices.is_empty(),"Rejected handoff leaves assignment and notifications untouched")
+	g.accept_change=true
+	g.before_change=func():g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.entry(g,"navigator").assignmentType=="" and g.crew.entry(g,"navigator").upgradeMode=="10","Handoff callback invalidates stale assignment without overwriting its change")
+	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.galaxy_runtime.refresh_unlocks(g)
+	check(g.assign_crew("navigator","galaxy_explore","galaxy_1"),"Assign actual previous galaxy job")
+	g.galaxy.set_pending_context("galaxy_1",g.galaxy.crew_count(g,"galaxy_1"));g.galaxy.add_pending("galaxy_1",0.25)
+	var settled:Array=[]
+	var observer:=func(kind,_info):
+		if kind=="galaxy_changed":
+			settled.append(true);g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
+	g.event.connect(observer)
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback rejects stale transfer")
+	g.event.disconnect(observer)
+	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="galaxy_explore","Earned previous-job work settles once and assignment remains current")
+	var saved:=fixture().portable_save_data()
+	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.assign_crew("navigator","equipment_upgrade","equipment");g.crew.advance(g,0.9)
+	g.galaxy_runtime.native_prepared=true;g.hyperspace_runtime.advancing=true
+	g.load_progress_data(saved)
+	check(not g.crew.timers.has("navigator") and not g.galaxy_runtime.native_prepared and not g.hyperspace_runtime.advancing,"Full load clears old purchase task and cached runtime work")
+	var loaded:=stable_save(g);g.crew.advance(g,2)
+	check(stable_save(g)==loaded,"No old job revives after full load")
