@@ -2,7 +2,7 @@
   "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
   "runtime_candidate_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525",
   "prior_full_game_runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
-  "purpose": "Reviewable production-only delta; no main branch update or integration performed. Full audit branch must not be merged wholesale to obtain this filtered tree.",
+  "purpose": "Reviewable source delivery: the approved 76 runtime/preview paths plus 41 modifications to existing tests, runners and a fixture. All 41 validation paths already exist; no new test project. Audit documents, images, logs and temporary outputs remain excluded; no main update performed.",
   "included": [
     {
       "status": "M",
@@ -687,83 +687,398 @@
       "insertions": 20,
       "deletions": 20,
       "role": "runtime_or_associated_metadata"
+    },
+    {
+      "status": "M",
+      "path": "test/fixtures/galaxy_1_complete.json",
+      "base_blob": "da2ce858dfa29c95ad650da3d0d3f12420c46677",
+      "candidate_blob": "53feeba99056216b59075af1fd8e751f2285c641",
+      "insertions": 32,
+      "deletions": 32,
+      "role": "existing_fixture_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/run.py",
+      "base_blob": "cafd61ee99d226fc03f161d6dbaff1d719b7d660",
+      "candidate_blob": "2ff08d5cd2b4fa6dabf35c8f8fd3ab126f42b727",
+      "insertions": 16,
+      "deletions": 1,
+      "role": "existing_runner_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_ai_tech_tree.gd",
+      "base_blob": "1d0a0fc8f03892ebc99bd650371beee9e3655e18",
+      "candidate_blob": "c103dc5986531080fec1d18f87da2a7a512bda4e",
+      "insertions": 97,
+      "deletions": 50,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_auto_gen_resources.gd",
+      "base_blob": "84d6974e3a9eb1ada20800d3ab9d1602875c60b7",
+      "candidate_blob": "ec6b0287a1e637626eb6b01192781557be6165f4",
+      "insertions": 10,
+      "deletions": 4,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_chrono_ui.gd",
+      "base_blob": "e8335e22b0b282704f48adb4891aea98f82b3e5d",
+      "candidate_blob": "35bbdbc5a3352d09c1965f247c2fc2098d3631a4",
+      "insertions": 14,
+      "deletions": 10,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_crew_dirty.gd",
+      "base_blob": "3ec863f4260d1ca194a8c2daad86c17498f4c165",
+      "candidate_blob": "ba230dcdff905a8d3248870c91b76ca18e5179b9",
+      "insertions": 29,
+      "deletions": 25,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_crew_levels.gd",
+      "base_blob": "0d8a85dc16777ad2b2c4ddf6458a4d0bea686d13",
+      "candidate_blob": "9d2517952ddc48d5084d4a0716ff1af67b65f0e0",
+      "insertions": 65,
+      "deletions": 11,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_crew_levels_ui.gd",
+      "base_blob": "900c95bd7e0df900d55f2fb227eee70217b05170",
+      "candidate_blob": "e3fe1c35a82191b999a987acabc9412d272eff38",
+      "insertions": 3,
+      "deletions": 1,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_crew_reactor.gd",
+      "base_blob": "fa949f9b906c192f9375389499635971c2965237",
+      "candidate_blob": "58ba3be36d9b13e465a0651c87cc97685015e585",
+      "insertions": 19,
+      "deletions": 19,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_departure_batch_debt.gd",
+      "base_blob": "f5e87a590f11db0558ef1dd48881757e8ff7e642",
+      "candidate_blob": "83e2c0afe1d09ae33326cd0ddfd1516c4168a668",
+      "insertions": 76,
+      "deletions": 20,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_enhancement_branch_attacks.gd",
+      "base_blob": "767429234865b89249f85c64707ad9d306752834",
+      "candidate_blob": "bcfa9f1da7b7302828eb406e843a1d9e07c56d7a",
+      "insertions": 16,
+      "deletions": 15,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_enhancement_cost.gd",
+      "base_blob": "da98e1056c02ce2ea69116cc1c7163df65ccb141",
+      "candidate_blob": "e2b8e8025c872f8a418efc8f8e393fb7ddf53e0c",
+      "insertions": 44,
+      "deletions": 24,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_enhancement_summary.gd",
+      "base_blob": "0f0433776a08b38e874580bc8212dc7afd1d579d",
+      "candidate_blob": "f85a69906bf48ee1fdff2a4c021bd6f9df765c77",
+      "insertions": 31,
+      "deletions": 18,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_galaxy.gd",
+      "base_blob": "7a8877dae15ec1dfa7903a41bfc8dfd2042fbb00",
+      "candidate_blob": "a340c6b6cb90c2e25575fe1694728e9cc8eb9eca",
+      "insertions": 52,
+      "deletions": 26,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_galaxy_ui.gd",
+      "base_blob": "fb6a43cf86dccff05514aa857c9c885fdb502a1c",
+      "candidate_blob": "323c4193583ae00798b1a1dec22cdf3116340919",
+      "insertions": 105,
+      "deletions": 37,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_hyperspace_consumers.gd",
+      "base_blob": "46a13ec1d5659a38b15cbbd5aa3b1479f1b21eac",
+      "candidate_blob": "070ddadccb9f7116147c6611c307989998c95562",
+      "insertions": 9,
+      "deletions": 4,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_hyperspace_departure_gate.gd",
+      "base_blob": "8acf1785cbde95bcb4c12566a65144ccc5a10787",
+      "candidate_blob": "cc2b71a1d4c46dc4755e268b01eb4b5d48f9eccd",
+      "insertions": 60,
+      "deletions": 26,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_hyperspace_exchange.gd",
+      "base_blob": "971df749b89fad14bc6caa0f68e8d88657dcc71e",
+      "candidate_blob": "07d564485f8d01adc566f7e8c3be22df4bc4ea3d",
+      "insertions": 14,
+      "deletions": 4,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_hyperspace_layers.gd",
+      "base_blob": "51c7634ccd22fd70ff1fcd436f75259cc390794d",
+      "candidate_blob": "9dd069da360d67c4b688422f60f0a10ca49a1589",
+      "insertions": 124,
+      "deletions": 70,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_hyperspace_manual.gd",
+      "base_blob": "7a079352e1344694056f1a9071a681f1c6d95669",
+      "candidate_blob": "66df965eba7bb75e5987bc479da3e7a8b70f4157",
+      "insertions": 15,
+      "deletions": 13,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_hyperspace_material_economy.gd",
+      "base_blob": "2433b86c989e81c7e726c1af877809bcd0461fd1",
+      "candidate_blob": "9416d8fbfdf5fc94f2777d85e436829f1b70a894",
+      "insertions": 99,
+      "deletions": 46,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_large_numbers.gd",
+      "base_blob": "832361a45edff50faba6643985310bff0f0f36b9",
+      "candidate_blob": "f3a818afc7e6c74751652208115579042ea474e7",
+      "insertions": 33,
+      "deletions": 0,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_module_refit.gd",
+      "base_blob": "fe20121ba1c675ac6ee963bd0cacf0113d894ab9",
+      "candidate_blob": "0dc912836df142a389b869230e5812c7cbc99e67",
+      "insertions": 62,
+      "deletions": 20,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_native_blocked_transfer.gd",
+      "base_blob": "b34aa08580238923ec7ba5be2ca5d516c65a089b",
+      "candidate_blob": "e0dda57347ef6bd70d532771f37b6585c1f5f98e",
+      "insertions": 34,
+      "deletions": 19,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_native_galaxy_refit.gd",
+      "base_blob": "06b6275f27c923e7f253cd287f42bb647a180ce5",
+      "candidate_blob": "22c34eb86578fcaa67d4a45c18e660247c0c311a",
+      "insertions": 85,
+      "deletions": 27,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_native_laser_charge.gd",
+      "base_blob": "48a173cc278fd588923de6feceb13abbb4f8f876",
+      "candidate_blob": "ddf6b45297e54613e26835539f188c32eaf7708e",
+      "insertions": 68,
+      "deletions": 15,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_native_numeric_upgrade.gd",
+      "base_blob": "4948b7eaf76130b89f742a13fdffec96016dec10",
+      "candidate_blob": "070780804927a2a84c3b13fd2ef30af9e9b08913",
+      "insertions": 91,
+      "deletions": 30,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_ordinary_entry.gd",
+      "base_blob": "4ab4d6562101101d772fcd3ccf884f4f2f325a22",
+      "candidate_blob": "8de1a3324a632daef1d441fe69cd395a4c5331ac",
+      "insertions": 252,
+      "deletions": 3,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_pause_key_focus.gd",
+      "base_blob": "0267072c205a6ad657cbb96d1c04226bfcfcda27",
+      "candidate_blob": "22bfd8b326c1fae60a248ea8df8dc901e9d71f55",
+      "insertions": 9,
+      "deletions": 9,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_planet.gd",
+      "base_blob": "c7f30ec97a77df15fa94bd945065d542088a2045",
+      "candidate_blob": "d84efae1ebcf9159f9d45fba6e86d7c6fa138983",
+      "insertions": 56,
+      "deletions": 5,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_planet_buff_ui.gd",
+      "base_blob": "7707ab015273fa329df2fa5daef8e29217d3edf8",
+      "candidate_blob": "eec9d6a86ce4f807f384bc360c6c254e037d8bbf",
+      "insertions": 9,
+      "deletions": 3,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_planet_conquest_progress.gd",
+      "base_blob": "16d816c7657e55697cedef20248b6ad6777af587",
+      "candidate_blob": "e203e843d2aac216cf750b57b64763d686c89a5d",
+      "insertions": 24,
+      "deletions": 26,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_reactor.gd",
+      "base_blob": "78431283194ea4f480a6e1ac6b1700647ea23503",
+      "candidate_blob": "9b29904ab4cbc4e60177adf76036b5029a24b3f4",
+      "insertions": 21,
+      "deletions": 17,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_reactor_integer_cost.gd",
+      "base_blob": "c90668c8e648a8a5317f8af60c3288302cdb7ff1",
+      "candidate_blob": "9cc1fcc5d8e3d6cbc6ec173620bddd8f19827c49",
+      "insertions": 18,
+      "deletions": 5,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_save_boundaries.gd",
+      "base_blob": "68f2e8c2b49a1d31e88980d9cf338a50570b8346",
+      "candidate_blob": "3b69b4cf4a7655fdd36a629744586386f7b3c173",
+      "insertions": 187,
+      "deletions": 88,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_shared_enhancement_ranks.gd",
+      "base_blob": "5efb0d0207af5fdb8962790567173872c42ed782",
+      "candidate_blob": "64c39304c80ef3a327cd5feb8e79d9924564b0ef",
+      "insertions": 29,
+      "deletions": 24,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_stable_compiled_rules.gd",
+      "base_blob": "4319f46e37e094eca61484712e0c9bd212702d51",
+      "candidate_blob": "e7baba4913f33a195a68fc5e714c9c112010a074",
+      "insertions": 14,
+      "deletions": 9,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_stat_snapshot.gd",
+      "base_blob": "288ca325cfac7078225b324187e723447722b0c9",
+      "candidate_blob": "699ebbabafb7ff29966d24ae50a7b054734566a4",
+      "insertions": 36,
+      "deletions": 1,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/test_time_steps.gd",
+      "base_blob": "3c01eb38273b76f21d0ad7f6247c7b188aa075e3",
+      "candidate_blob": "c2c8619f051e27dd08e2605dd2cc911f7f74552b",
+      "insertions": 62,
+      "deletions": 13,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/whole_game_perf.gd",
+      "base_blob": "fa804609cb6609f69193ae3a770add2ba2402b90",
+      "candidate_blob": "94332ec6d16ca734f5ca9d93772c9bc2ea906b21",
+      "insertions": 217,
+      "deletions": 31,
+      "role": "existing_test_or_performance_entry_adapter"
+    },
+    {
+      "status": "M",
+      "path": "test/whole_game_perf.py",
+      "base_blob": "034fc51ebe9aae8f957815130ff25191aa5c7f1b",
+      "candidate_blob": "75397a1217c9a3c0b0dd047ee445982cfd2798c1",
+      "insertions": 39,
+      "deletions": 9,
+      "role": "existing_runner_adapter"
     }
   ],
   "counts": {
     "runtime_paths": 74,
     "existing_preview_paths": 2,
-    "total_paths": 76,
+    "existing_test_runner_fixture_paths": 41,
+    "total_paths": 117,
     "statuses": {
-      "M": 61,
+      "M": 102,
       "A": 11,
       "D": 4
     },
-    "insertions": 3930,
-    "deletions": 3570
+    "insertions": 6206,
+    "deletions": 4380
   },
   "delta_verification": {
     "method": "git diff --binary --full-index base candidate -- included paths; git apply --cached --check and apply using an isolated GIT_INDEX_FILE initialized from exact base; write-tree and compare changed paths. No checkout/ref/main/working-file changes.",
-    "patch_sha256": "efc4e3e3dd24cda3ad842e9264fc98f4f73a79be4cf226a1d7058548d9824d0f",
-    "prepared_tree": "2696dde6bc4c26fef4142785bf8f6b208295686e",
+    "patch_sha256": "edd0109bcfa29fb25df5013c1f79ba8c4be0b9252101cbd5d60b3ac8bd238dfe",
+    "prepared_tree": "66a5c2d2309ebddf96636a2f200a711f376a4657",
     "changed_paths_exactly_match_manifest": true,
-    "index_purpose": "Static Git delivery validation only; not a new game/test run."
-  },
-  "excluded_from_production_delta": {
-    "test_paths": [
-      "test/fixtures/galaxy_1_complete.json",
-      "test/run.py",
-      "test/test_ai_tech_tree.gd",
-      "test/test_auto_gen_resources.gd",
-      "test/test_chrono_ui.gd",
-      "test/test_crew_dirty.gd",
-      "test/test_crew_levels.gd",
-      "test/test_crew_levels_ui.gd",
-      "test/test_crew_reactor.gd",
-      "test/test_departure_batch_debt.gd",
-      "test/test_enhancement_branch_attacks.gd",
-      "test/test_enhancement_cost.gd",
-      "test/test_enhancement_summary.gd",
-      "test/test_galaxy.gd",
-      "test/test_galaxy_ui.gd",
-      "test/test_hyperspace_consumers.gd",
-      "test/test_hyperspace_departure_gate.gd",
-      "test/test_hyperspace_exchange.gd",
-      "test/test_hyperspace_layers.gd",
-      "test/test_hyperspace_manual.gd",
-      "test/test_hyperspace_material_economy.gd",
-      "test/test_large_numbers.gd",
-      "test/test_module_refit.gd",
-      "test/test_native_blocked_transfer.gd",
-      "test/test_native_galaxy_refit.gd",
-      "test/test_native_laser_charge.gd",
-      "test/test_native_numeric_upgrade.gd",
-      "test/test_ordinary_entry.gd",
-      "test/test_pause_key_focus.gd",
-      "test/test_planet.gd",
-      "test/test_planet_buff_ui.gd",
-      "test/test_planet_conquest_progress.gd",
-      "test/test_reactor.gd",
-      "test/test_reactor_integer_cost.gd",
-      "test/test_save_boundaries.gd",
-      "test/test_shared_enhancement_ranks.gd",
-      "test/test_stable_compiled_rules.gd",
-      "test/test_stat_snapshot.gd",
-      "test/test_time_steps.gd",
-      "test/whole_game_perf.gd",
-      "test/whole_game_perf.py"
-    ],
-    "documentation_paths": [
-      "docs/architecture/**",
-      "space-battleship/docs/knowledge/TASKS.md",
-      "space-battleship/docs/knowledge/tasks/architecture-renewal-20261022.md"
-    ],
-    "temporary_artifacts": [
-      "test/work/**",
-      "**/.godot/**",
-      "**/.runtime/**",
-      "isolated userdata, captures/import logs and temporary index outside this audit evidence"
-    ],
-    "note": "Existing main tests are not deleted. The 41 changed tests/runner/fixture files are audit/validation adapters, not product runtime dependencies; they remain available on the implementation branch. Their exclusion does not claim old main tests are compatible with new contracts. No blanket test cleanup is part of this delivery."
+    "index_purpose": "Static Git delivery validation only; not a new game/test run.",
+    "candidate_blobs_match_prepared_tree": true,
+    "existing_validation_sources": "All 41 paths exist in the base and are modifications only. They exactly match fd1c5eb4 and are unchanged since the C25 runtime 820262e6. No tests rerun for this manifest-only revision."
   },
   "unchanged_runtime_inputs": [
     "space-battleship/main.tscn",
@@ -788,7 +1103,51 @@
   },
   "review_status": {
     "820262e6": "Parent reports dot/astra agreement on main architecture, C24 loading logic and C25 functional persistence closure.",
-    "current_style_and_delivery": "Pending dual review. No main merge authorized or performed.",
+    "current_style_and_delivery": "Parent confirms dot/astra acceptance of fd1c5eb4 style and the 76 runtime/preview paths. This 117-path source-delivery revision adds only the already-existing 41 validation adaptations and is pending confirmation. No main merge.",
     "performance": "Not comprehensively at target; retained C23/C24 peaks and long-duration limitations. No new timing claim from a color-only change."
-  }
+  },
+  "delivery_groups": {
+    "approved_runtime_and_existing_previews": {
+      "paths": 76,
+      "statuses": {
+        "M": 61,
+        "A": 11,
+        "D": 4
+      },
+      "insertions": 3930,
+      "deletions": 3570,
+      "roles": [
+        "existing_preview_consumer",
+        "runtime_or_associated_metadata"
+      ]
+    },
+    "existing_test_runner_fixture_adaptations": {
+      "paths": 41,
+      "statuses": {
+        "M": 41
+      },
+      "insertions": 2276,
+      "deletions": 810,
+      "roles": [
+        "existing_fixture_adapter",
+        "existing_runner_adapter",
+        "existing_test_or_performance_entry_adapter"
+      ]
+    }
+  },
+  "excluded_from_delivery": {
+    "documentation_paths": [
+      "docs/architecture/**",
+      "space-battleship/docs/knowledge/TASKS.md",
+      "space-battleship/docs/knowledge/tasks/architecture-renewal-20261022.md"
+    ],
+    "temporary_artifacts": [
+      "test/work/**",
+      "**/.godot/**",
+      "**/.runtime/**",
+      "isolated userdata, captures/import logs and temporary index outside this audit evidence"
+    ],
+    "note": "Preserve adaptations to the 41 existing test/runner/fixture paths in the same source delivery as their new production contracts; do not leave those changed entry points at obsolete main versions. Exclude only audit documentation, screenshots/logs and temporary output. No test additions, cleanup or rerun in this delivery revision."
+  },
+  "supersedes_delivery_manifest_commit": "34046ae3c8740345cc267c471d5e66f89168a072"
 }
