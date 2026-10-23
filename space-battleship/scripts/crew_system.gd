@@ -115,6 +115,8 @@ func on_committed(g,result: Dictionary) -> void:
 	if result.facts.get("equipment_changed",false):invalidate_jobs(g,["equipment_upgrade"])
 	if result.facts.get("reactor_upgraded",false):invalidate_jobs(g,["reactor_upgrade"])
 	if result.facts.get("jewels_changed",false):invalidate_jobs(g,["jewel_auto"])
+	if result.facts.get("unlocks_changed",false):
+		invalidate_jobs(g,PURCHASE_JOBS);invalidate_reactor_allocation(g)
 	var allocation_changed: bool=result.facts.get("reactor_allocation_changed",false)
 	for change in result.facts.get("crew_changes",[]):
 		var item: Dictionary=change.current
@@ -128,19 +130,9 @@ func on_committed(g,result: Dictionary) -> void:
 		allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
 	elif allocation_changed:invalidate_reactor_allocation(g)
 
-func on_event(kind: String, payload: Dictionary) -> void:
-	# S1 commands already delivered their authoritative facts before UI notices.
-	# Only unmigrated income/currency/unlock producers use this S2 bridge.
-	if payload.get("_committed_fact",false):return
-	var g = game_ref.get_ref()
-	if g==null:return
-	match kind:
-		"collect","galaxy_income":invalidate_resources(g,[str(payload.id)])
-		"resources_changed":invalidate_resources(g,payload.ids)
-		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
-		"unlocks_changed","planet_reforged":
-			invalidate_jobs(g,PURCHASE_JOBS)
-			invalidate_reactor_allocation(g)
+func on_event(_kind:String,_payload:Dictionary)->void:
+	# Compatibility hook for existing fixtures; UI events carry no business work.
+	pass
 
 func register_target(target_type: String, provider: Callable) -> void:
 	targets[target_type] = provider

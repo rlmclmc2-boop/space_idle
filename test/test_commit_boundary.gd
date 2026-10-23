@@ -21,6 +21,7 @@ class OrderedGame extends BattleGame:
 	var forced_capacity: Variant=null
 	var committed_allocations: Array=[]
 	var before_change: Callable
+	var refuse_income:=false
 	func reactor_capacity(galaxy_charge := -1.0) -> Variant:
 		return super.reactor_capacity(galaxy_charge) if forced_capacity==null else forced_capacity
 	func configuration_committed(native_updated:=false) -> void:
@@ -29,7 +30,28 @@ class OrderedGame extends BattleGame:
 	func native_before_configuration_change() -> bool:
 		if before_change.is_valid():
 			var callback:=before_change;before_change=Callable();callback.call()
-		return true
+		return not refuse_income
+
+class SecondPlanetFailure extends "res://scripts/progress_runtime.gd":
+	var refuse:=true
+	func commit_planet_step_result(g,plan:Dictionary)->Dictionary:
+		if refuse and plan.get("id","")=="2":return Result.make("blocked","second_planet")
+		return super.commit_planet_step_result(g,plan)
+
+class TwoRegionCrew extends "res://scripts/galaxy_system.gd":
+	func crew_count(_g,_key:String)->int:return 1
+class SecondRegionFailure extends "res://scripts/galaxy_runtime.gd":
+	var refused_key:=""
+	func flush_pending(g,key:String)->bool:
+		if key==refused_key:return false
+		return super.flush_pending(g,key)
+
+class SecondCombatFailure extends "res://scripts/presented_battle_game.gd":
+	var executed:=0
+	var refuse:=true
+	func _tick_combat_step(dt:float)->void:
+		if executed==1 and refuse:block_step("second_combat");return
+		executed+=1;super._tick_combat_step(dt)
 
 class NumericSession extends RefCounted:
 	var accepted:=false
@@ -72,7 +94,7 @@ func _initialize()->void:
 	g.economy.accrue_chrono(100,100)
 	for option in g.chrono_options():
 		if option.cost>0:g.speed=option.multiplier;break
-	g.departure_remaining=0.25;g.game_time_remainder=0.125;g.resource_prune_elapsed=0.5
+	g.departure_remaining=0.25;g.step_progress.accept(0.125,1.0,0.0);g.resource_prune_elapsed=0.5
 	g.save_dirty=false
 	var observer:=func(kind,payload):
 		if kind=="upgrade":
@@ -80,9 +102,9 @@ func _initialize()->void:
 			reentered.append(g.upgrade_slot("weapons",0,1))
 			reentered.append(g.progress_runtime.set_crew_upgrade_mode_result(g,"navigator","10").status)
 			g.tick(1.0)
-			var time_before:Array=[g.economy.balance("chrono"),g.economy.revision,g.departure_remaining,g.game_time_remainder,g.resource_prune_elapsed,g.speed,g.save_checks,g.external_time_active]
+			var time_before:Array=[g.economy.balance("chrono"),g.economy.revision,g.departure_remaining,g.step_progress.available(),g.resource_prune_elapsed,g.speed,g.save_checks,g.external_time_active]
 			g.consume_external_time(1.0,presentation)
-			external_observations.append(time_before==[g.economy.balance("chrono"),g.economy.revision,g.departure_remaining,g.game_time_remainder,g.resource_prune_elapsed,g.speed,g.save_checks,g.external_time_active])
+			external_observations.append(time_before==[g.economy.balance("chrono"),g.economy.revision,g.departure_remaining,g.step_progress.available(),g.resource_prune_elapsed,g.speed,g.save_checks,g.external_time_active])
 	g.event.connect(observer)
 	var result:=g.commit_equipment_upgrades_result(plan,false)
 	g.event.disconnect(observer)
@@ -101,7 +123,7 @@ func _initialize()->void:
 	g.event.emit("upgrade",{})
 	check(tracker.timers.is_empty(),"UI equipment event no longer drives business scheduling")
 	g.event.emit("resources_changed",{"ids":["1"]})
-	check(tracker.timers.has("navigator"),"unmigrated income bridge remains available until S2")
+	check(tracker.timers.is_empty(),"UI resource event no longer drives business scheduling")
 	var noop:=g.progress_runtime.assign_crew_result(g,"navigator","equipment_upgrade","equipment")
 	check(noop.status=="no_change" and tracker.commits==1,"unchanged assignment does not publish another commit")
 	var native:=NumericSession.new();g.native_execution=native
@@ -183,6 +205,10 @@ func _initialize()->void:
 	hot.advance_hightech(0.001)
 	check(paid_notices==[[["1"],true,true,1]] and nested_time==[true] and not hot.commit_effects.active,"due resource notice delivers one committed fact before immutable UI notification and blocks external time")
 	cold_growth_commands()
+	income_receipts()
+	shared_income_failure()
+	partial_domain_failure()
+	partial_region_failure()
 	print("COMMIT BOUNDARY: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
@@ -215,3 +241,102 @@ func cold_growth_commands()->void:
 		check(result.status=="committed" and tracker.commits==calls+1 and not seen.is_empty() and seen.all(func(item):return item==[calls+1,true,true,true]),"growth command installs and schedules once before immutable UI notices "+str(index))
 		check(nested.size()==6 and nested.all(func(status):return status=="blocked") and not g.commit_effects.active,"every cold growth entry rejects notification reentry "+str(index))
 		check(result.contributions.get("after",[])==g.attributes.configuration_inputs(g),"growth result describes final authoritative configuration "+str(index))
+
+func income_receipts()->void:
+	var g:=OrderedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var raw:=g.research.save_data();raw.aiTechLevels.unification=1
+	g.research.install_snapshot(raw,g.db.data.ai_tech_tree)
+	var drop:Dictionary={"id":"1","amount":120.0,"age":0.0,"x":0.0,"y":0.0}
+	g.drops.append(drop)
+	var wallet:=g.economy.save_data();var history:=g.income_history.records()
+	g.before_change=func():g.configuration_revision+=1
+	var rejected:=g.collect_result(drop,true)
+	check(rejected.status=="rejected" and g.drops.has(drop) and g.economy.save_data()==wallet and g.income_history.records()==history,"invalidated income preparation leaves wallet, receipt and drop untouched")
+	var observed:Array=[]
+	g.event.connect(func(kind,payload):
+		if kind=="collect":
+			observed.append([not g.drops.has(drop),g.income_history.size(),payload.is_read_only(),g.collect_result(drop,true).status,g.pickup_jewel_fragment()])
+	)
+	var committed:=g.collect_result(drop,true)
+	check(committed.status=="committed" and observed==[[true,1,true,"no_change",false]],"income installs all owners before immutable notice and rejects nested income")
+	var balance:Variant=g.economy.balance("1")
+	check(g.collect_result(drop,true).status=="no_change" and g.economy.balance("1")==balance and g.income_history.size()==1,"collected receipt cannot replay")
+	var economy=preload("res://scripts/economy_state.gd").new()
+	economy.credit_fragments(0.0101)
+	check(economy.balance("jewel")==N.add(0.0,0.0101),"fragment wallet uses existing big-number addition without extra precision policy")
+	economy.credit("jewel",{"m":1.0,"e":400.0});var large:Variant=economy.balance("jewel")
+	economy.credit_fragments(0.0001)
+	check(economy.balance("jewel")==N.add(large,0.0001),"large-balance small credit follows shared big-number discard without compensation")
+
+func shared_income_failure()->void:
+	for invalidate in [false,true]:
+		var g:=OrderedGame.new(ShipDatabase.new(),false)
+		g.profile.cleared=range(1,101);g.rebuild_unlocks()
+		var raw:=g.research.save_data();raw.aiTechLevels.unification=1
+		g.research.install_snapshot(raw,g.db.data.ai_tech_tree)
+		var drop:Dictionary={"id":"1","amount":120.0,"age":100.0,"x":0.0,"y":0.0}
+		g.drops.append(drop);g.refuse_income=true
+		var before:=g.portable_save_data();var earned_before:Variant=g.economy.balance("1")
+		g.consume_external_time(2.0*g.LOGICAL_STEP)
+		var clock:float=g.production_time();var age:float=drop.age
+		check(g.paused and g.step_progress.active and g.step_progress.stage==9 and g.step_progress.item==0,"failed income retains the exact shared item")
+		check(g.economy.balance("1")==earned_before and g.income_history.size()==0 and g.drops.has(drop),"failed income leaves no partial receipt")
+		check(is_equal_approx(g.step_progress.available()+g.step_progress.duration,2.0*g.LOGICAL_STEP),"blocked receipt conserves reserved and undispatched budget")
+		check(g.portable_save_data().is_empty() and g._build_save_data().is_empty(),"incomplete shared step gates every full snapshot")
+		g.load_progress_data(before)
+		g.load_hightech(before);g.load_journey(before.get("journey",{}))
+		check(g.production_time()==clock and g.step_progress.active,"replacement cannot erase an incomplete step")
+		if invalidate:g.economy.credit("1",1)
+		g.refuse_income=false;g.paused=false;g.tick(g.LOGICAL_STEP)
+		if invalidate:
+			check(g.step_progress.frozen and g.drops.has(drop) and g.income_history.size()==0,"changed blocked context freezes without replay or stale credit")
+		else:
+			check(not g.step_progress.active and g.production_time()==clock and drop.age==age and g.income_history.size()==1 and not g.drops.has(drop),"retry completes only the retained receipt without aging or shared-time replay")
+
+func partial_domain_failure()->void:
+	var g:=fixture();var runtime:=SecondPlanetFailure.new();g.progress_runtime=runtime
+	for row in g.db.data.unlock.values():
+		if row.type=="crew" and not g.profile.grantedUnlocks.has(row.name):g.profile.grantedUnlocks.append(row.name)
+	var station:Dictionary=g.planet_progress("1").duplicate(true);station.conquered=true
+	g.planets.commit(g.planets.proposal("1",station,true));g.configuration_committed()
+	check(g.start_planet_exploration("1","navigator") and g.start_planet_exploration("2","engineer"),"two real planet jobs start")
+	g.advance_planets(0.25)
+	var first:Dictionary=g.planet_progress("1").duplicate(true)
+	check(g.paused and g.step_progress.scope=="planets" and g.step_progress.item==1,"second planet failure retains stable list position after first commit")
+	runtime.refuse=false;g.paused=false;g.advance_planets(100.0)
+	check(not g.step_progress.active and g.planet_progress("1")==first,"direct retry uses reserved duration and never replays first planet")
+	var combat:=SecondCombatFailure.new(ShipDatabase.new(),false);combat.native_execution_auto=false
+	combat.start(1,false);combat.spawn_group();combat.tick(2.0*combat.LOGICAL_STEP)
+	var clock:float=combat.production_time();var rng_state:int=combat.rng.state
+	check(combat.paused and combat.executed==1 and is_equal_approx(combat.step_progress.completed,combat.LOGICAL_STEP) and combat.step_progress.phase=="combat","second combat subdivision blocks after first retirement")
+	check(combat.portable_save_data().is_empty(),"second combat failure cannot export half a logical step")
+	combat.tick(2.0*combat.LOGICAL_STEP)
+	check(combat.rng.state==rng_state and combat.executed==1,"paused retry preserves RNG and damage execution position")
+	combat.speed=10.0;combat.refuse=false;combat.paused=false;combat.tick(20.0)
+	check(combat.executed==2 and not combat.step_progress.active and combat.production_time()==clock,"changed speed and retry duration cannot reprice or replay reserved combat")
+
+func partial_region_failure()->void:
+	var db:=ShipDatabase.new()
+	var second:Dictionary=db.data.galaxy.galaxy_1.duplicate(true);second.key="galaxy_s2";second.next_galaxy=""
+	db.data.galaxy.galaxy_s2=second
+	for row in db.data.galaxy_build.values().duplicate():
+		if row.galaxy_key!="galaxy_1":continue
+		var build:Dictionary=row.duplicate(true);build.key="s2_"+str(row.key);build.galaxy_key="galaxy_s2"
+		db.data.galaxy_build[build.key]=build
+	var g:=BattleGame.new(db,false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var owner:=TwoRegionCrew.new();var runtime:=SecondRegionFailure.new()
+	var raw:Dictionary=g.galaxy.save_data();var keys:Array=raw.galaxies.keys()
+	check(keys.size()>=2,"multi-region fixture has two independently configured regions")
+	if keys.size()<2:return
+	for key in keys:
+		raw.galaxies[key].status="exploring";raw.galaxies[key].pending_crew_count=1
+	check(owner.install_snapshot(raw,g.db),"multi-region fixture installs current owner snapshots")
+	g.galaxy=owner;g.galaxy_runtime=runtime;g.configuration_committed()
+	runtime.refused_key=str(keys[1]);var dt:float=owner.work_interval(g)
+	runtime.advance(g,dt)
+	var first:Dictionary=owner.regions[keys[0]].save_data()
+	var income:float=owner.income_time()
+	check(g.paused and g.step_progress.item==1 and owner.pending(keys[0])==0 and is_equal_approx(owner.pending(keys[1]),dt),"second region failure retains its accepted time after first commit")
+	runtime.refused_key="";g.paused=false;runtime.advance(g,999.0)
+	check(not g.step_progress.active and owner.regions[keys[0]].save_data()==first and owner.income_time()==income and owner.pending(keys[1])==0,"region retry drains accepted work without replaying income or first region")

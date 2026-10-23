@@ -13,7 +13,7 @@ func begin_progress() -> bool:
 	active=true
 	return true
 
-func finish_progress(g,result: Dictionary,notify_resources:=false) -> Dictionary:
+func finish_progress(g,result: Dictionary,notify_resources:=false,notices:Array=[]) -> Dictionary:
 	assert(active)
 	g.save_dirty=true
 	# Spending cannot make a waiting purchase affordable. Preserve the existing
@@ -23,6 +23,10 @@ func finish_progress(g,result: Dictionary,notify_resources:=false) -> Dictionary
 		var payload:Dictionary={"ids":result.resources,"_committed_fact":true}
 		payload.make_read_only()
 		g.event.emit("resources_changed",payload)
+	for notice in notices:
+		var payload:Dictionary=notice.payload.duplicate(true)
+		payload._committed_fact=true;Result.freeze(payload)
+		g.event.emit(str(notice.kind),payload)
 	active=false
 	return result
 

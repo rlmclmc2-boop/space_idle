@@ -254,13 +254,13 @@ func consume_feedback(game:RefCounted)->void:
 				if row.shot.get("prototype_missile",false) and not bool(row.shot.hostile):
 					game.event.emit("prototype_missile_retired",{"serial":row.shot.serial,"reason":"native_retire","time":row.clock,"position":p,"direction":row.direction,"speed":game.projectile_speed(row.shot),"coast":false,"tier":game.db.evolution_visual_tier(int(row.shot.get("entry",{}).get("level",1)))})
 
-func cancel(game:RefCounted)->void:
-	if kernel==null:return
+func cancel(game:RefCounted)->bool:
+	if game.step_progress.active and game.step_progress.phase!="combat_done":
+		game.step_progress.freeze("cancel_incomplete_step");game.paused=true;return false
+	if kernel==null:return true
 	if game.damage_stats.enabled:
 		for row in kernel.take_damage_stats():
 			game.damage_stats.record(str(row.source),game.N.add(row.shield,row.health))
-	if game.step_progress.active and game.step_progress.phase!="combat_done":
-		game.step_progress.freeze("cancel_incomplete_step");game.paused=true;return
 	var released:Dictionary=kernel.exit_state()
 	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)
 	game.attack_instance_serial=int(released.instance_serial);game.uid=int(released.drop_uid)
@@ -270,6 +270,7 @@ func cancel(game:RefCounted)->void:
 	game.enhancement_defense_time=float(released.defence_time);game.enhancement_memory_elapsed=float(released.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(released.deferred_elapsed);game.enhancement_deferred_tick=int(released.deferred_tick)
 	consume_feedback(game)
+	return true
 
 func configuration_changed()->void:
 	# A mutation cannot resume the old executor. Later rich admission will

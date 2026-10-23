@@ -120,9 +120,7 @@ func credit_many(gains: Dictionary) -> bool:
 	return true
 
 func credit_fragments(amount: Variant) -> bool:
-	if not credit("jewel", amount):return false
-	if not _balances.jewel is Dictionary:_balances.jewel = snappedf(float(_balances.jewel), 0.01)
-	return true
+	return credit("jewel", amount)
 
 func can_pay(costs: Dictionary) -> bool:
 	var materials := {}

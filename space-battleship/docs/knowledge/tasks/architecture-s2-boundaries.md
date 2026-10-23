@@ -69,14 +69,14 @@ Still outstanding for full S2: collection/fragment/peak joint receipt completion
 
 Original-main validation completed on the runtime tree committed as 7359286e: 128 checks, zero failures across all eight phases (16/26/18/7/25/8/20/8), with no domain differences after reopening. Product-save and factory-reopen screenshots were inspected. Raw completed test logs are in `test/evidence/architecture-s2-cold-income/`; earlier cold-command tests preceded the income extraction, while AI tech and original-main ran with the extraction installed. No standalone stale UI fixture or legacy time test is represented as passed.
 
-Concrete gameplay question submitted, answer still pending: `Economy.credit_fragments` snaps the balance to 0.01 but `settle_jewel_fragments` records the unrounded earned value in income history. A computed 0.0101 can therefore credit only 0.01 while contributing 0.0101 to history/peak. Moving to actual balance deltas would alter peak/auto-input values (and very-large-balance absorption), so this continuation preserves existing values pending user decision. Proposed choice is actual credited delta, but no approval is inferred. Other S2 work is independent of this decision.
+Income precision decision is CLOSED by the user's later instruction: all large-number algorithms use the existing GrowthNumber operations and discard amounts outside their precision; no exact-difference accounting, tail compensation or separate precision mechanism. The continuation below applies this to fragments and income. The earlier recommendation to derive income from balance differences is withdrawn.
 
 
 ## Compaction handoff: shared-step WIP (2026-10-24)
 
 Implementation stopped on context compaction as explicitly required. This branch is `work/architecture-s2-step-wip-20261024`, separate from the reviewable cold-command candidate. Its history starts with d83155a7 and includes 26517f23 (the Galaxy review correction, equivalent to candidate b59ed5cc). The current handoff commit preserves subsequent incomplete work; it is NOT merge-ready or S2 acceptance.
 
-Parent clarification supersedes the preceding proposed income choice: preserve computed effective earned amount, do not replace it with floating balance delta (large balances can absorb small credits), and do not expand precision mechanisms around the 0.0001 difference. No income rule change was made.
+Historical clarification at that handoff preserved computed earned amounts. The later, now final user instruction is project-wide reuse of existing big-number arithmetic, with precision-external amounts discarded and no exact bookkeeping. See the current continuation; this is no longer a pending decision.
 
 StepProgress now replaces production `game_time_remainder`, `native_step_phase`, `native_step_remaining`, `native_cancelled_step` and native `blocked_shared_step`. It owns paid budget segments, one reserved interval, shared/combat phases, substep and stable item cursors, and blocked/frozen context. Presented substeps and native completion retirement use this record. Shared order is preserved. Galaxy, planet, research and Hyperspace paths have partial acceptance/retirement markers; direct domain calls use scopes on the same record. Save/export/import/load/capture and BalanceGame consumers have initial complete-step gates. These are implementation intentions, not verified guarantees.
 
@@ -89,3 +89,38 @@ Required next work, before claiming closure:
 - Run targeted shared/native/failure/snapshot tests, then required performance comparison. No expanded testing or standalone reviewer was started.
 
 Only an EARLY intermediate time tree passed AI tech 142/0 (`test/work/test_ai_tech_tree-1fnha6j9/test.log`); subsequent domain and consumer edits were not imported or tested. Do not attribute that pass to the final WIP. No final WIP correctness, syntax or performance claim. No main merge; independent high remains parent-coordinated.
+
+
+## Current continuation — 2026-10-24, from 6abcea2f (validation in progress)
+
+Same branch and same task; local isolated checkout is `task-4/s2`. Git acquisition was resolved from the preceding task's object store; HEAD was checked against the exact requested commit. No original player checkout, save or main branch was changed. Remote branch readback still showed 6abcea2f before delivery. Independent high remains parent-coordinated; no reviewer task was opened.
+
+Final numeric direction: **all project large-number algorithms reuse GrowthNumber; precision-external small amounts are discarded, without exact differences, tail compensation, or a special precision ledger.** Fragment credit now uses the same N.add path as other resources, removing the extra 0.01 balance snap. Income queries continue N.add/N.divide on computed earned receipts, never reconstructing credit by subtracting large balances. Source qualification and existing windows are unchanged. Exact bounded integer material quantities remain the existing material domain contract, not a new large-number accounting mechanism.
+
+### Responsibility exits in this continuation
+
+| Prior responsibility | Sole completion owner and consumer change |
+|---|---|
+| collect/fragment drop erase, wallet credit, history append, peak handoff and UI split | `Game.commit_income_receipt` prepares peak before native transfer, revalidates configuration/wallet/receipt, installs all owners synchronously, retires a shared collection item, then CommitEffects schedules and publishes. Failed preparation leaves the drop and all receipt owners unchanged. `collect`, `settle_jewel_fragments`, pickup remain value facades. |
+| BalanceGame fragment override depended on one particular caller | Metrics consume successful receipt completion, including collected fragment drops, exactly once. |
+| crew UI-event business bridge | `on_event` is a stateless compatibility no-op; resources/currency/unlocks and lifecycle completion send committed facts directly. No UI event schedules work. |
+| Galaxy start/unlock local dirty/notices; unqualified native cache reuse | Start/unlock completion uses CommitEffects. Cached preparation is qualified by session, duration, region revision and configuration. Region installation retires its cursor before map/UI publication. |
+| factory input refresh local notification | Lightweight CommitEffects progress completion; shared stage is retired before notification. |
+| direct planet/research/Hyperspace replay and uncleared blocked reason | Same StepProgress validates context, freezes invalidated context, drains the reserved interval, and rejects mismatched phases. Hyperspace completed-count retirement precedes its completion notices. |
+| native cancel caller always clearing session | Cancel reports success; failure freezes incomplete work and retains owner, kernel and paid interval. Start/reset reject incomplete external replacement. Existing automatic clear-to-next-stage transition stays inside its executing combat stage. |
+| auto/drop iteration replay after income preparation failure | Stable item list and item movement/aging marker; receipt and item retirement precede notification. Failed item resumes without adding age/time twice. |
+| partial save/load/export/capture/tool results | Complete-step gate covers save composers, portable/export/import backup, load/load_hightech/load_journey, reforge, capture, and private tool final snapshots; fleet validation reports an incomplete snapshot rather than accepting an empty profile. UI read markers remain non-economic projections. |
+
+`StepProgress` remains the only paid-budget / reserved-step / substep / stage / item position. Production no longer references game_time_remainder, native_step_phase, native_step_remaining, native_cancelled_step or blocked_shared_step. Source segments are released on completion; frozen work is retained, not refunded, serialized or silently abandoned.
+
+Native failure basis: `combat_execution_kernel.h::advance` has its only false return before mutation (`can_advance`); the rest completes and returns true. The real-kernel blocked-transfer test compares full export and RNG before/after refused advance, and checks reserved plus undispatched budget. Successful native advance sets combat_done before notifications; handoff continues only unconsumed work.
+
+### Validation status and evidence (to finalize before delivery)
+
+Use Godot 4.7.2, isolated test projects/user directories. The existing runner's imported project `test/work/test_time_steps-ak2cifhs` was reused for focused reruns by copying changed scripts/tests and invoking the same Godot script entry with isolated APPDATA/LOCALAPPDATA. Raw failures were retained; no old failure is treated as a pass.
+
+Passing results so far: time steps 237/0 (current battlefield fixture, old assertions retained); commit boundary 82/0 (income atomicity, snapshot gates, invalidated context, second planet, second region, second combat subdivision); Hyperspace material economy 144/0; save boundaries 31/0; AI tech 142/0; native blocked transfer 38/0; native Galaxy boundary 137/0; native Galaxy refit 301/0; native handoff 55/0. Final affected reruns and performance are in progress.
+
+The real original-main rendering workflow passed all 8 phases, 128 checks total, with empty reopened-domain mismatch lists. Product save and factory reopen images were inspected. A final affected-tree rendering run is pending. Certificate-store and ObjectDB/resource exit warnings are retained in raw evidence. The first performance attempts exposed stale synthetic geometry initialization; fixture preparation was repaired, without changing production rendering. One baseline attempt then emitted a DummyMesh RID exit leak; it is not recorded as a clean performance pass. Final comparison must run serially after correctness tests finish, using equal engine, configuration, seed, frame count and workload.
+
+No S2 acceptance or main merge is claimed by this interim record. Frozen context/cancellation intentionally requires stopping that session; no new abandonment/recovery policy is introduced.

@@ -365,7 +365,7 @@ func load_progress() -> void:
 	startup_error="invalid_progress_save";save_enabled=false;paused=true;last_save_error=ERR_FILE_CORRUPT
 
 func load_progress_data(raw: Dictionary) -> void:
-	if not snapshot_ready():hyperspace.last_error="incomplete_logical_step";return
+	if not snapshot_ready() or commit_effects.active:hyperspace.last_error="incomplete_logical_step";return
 	var source_db = manual_hyperspace.base_db if manual_hyperspace.active else db
 	var prepared: Dictionary = load("res://scripts/save_transfer.gd").new().prepare_data(raw, source_db)
 	if not prepared.error.is_empty():
@@ -467,6 +467,7 @@ func load_progress_data(raw: Dictionary) -> void:
 	set_block_signals(signals_were_blocked)
 
 func load_journey(value) -> void:
+	if not snapshot_ready() or commit_effects.active:return
 	if not value is Dictionary:
 		return
 	for key in ["stage", "groupIndex", "state"]:
@@ -594,6 +595,7 @@ func consume_external_time(real_dt:float,presentation:Variant=null)->void:
 	external_time_active=false
 
 func _dispatch_reserved_step(presentation:Variant)->void:
+	if not resume_step_context():return
 	if step_progress.phase=="prepare" and step_progress.substep==0.0:
 		logical_step_active=true
 		var ready:=prepare_logical_step(step_progress.duration)
@@ -611,6 +613,21 @@ func snapshot_ready()->bool:return not step_progress.active
 func continuation_context()->Array:
 	return attributes.configuration_inputs(self)+[economy.revision,research.revision,planets.revision,crew.revision,galaxy.revision,hyperspace.revision]
 
+func resume_step_context()->bool:
+	if step_progress.frozen:return false
+	if not step_progress.blocked_context.is_empty() and step_progress.blocked_context!=continuation_context():
+		step_progress.freeze("blocked_context_changed");paused=true;return false
+	step_progress.reason="";step_progress.blocked_context=[]
+	return true
+
+func enter_domain_step(dt:float,domain:String,stage_index:int)->bool:
+	if paused or commit_effects.active or not is_finite(dt) or dt<=0:return false
+	if not step_progress.active:
+		if not step_progress.begin(dt):return false
+		step_progress.open_substep(dt);step_progress.phase="shared";step_progress.stage=stage_index;step_progress.scope=domain
+	if step_progress.phase!="shared" or step_progress.stage!=stage_index:return false
+	return resume_step_context()
+
 func block_step(reason:String)->void:
 	step_progress.block(reason,continuation_context());paused=true
 
@@ -625,6 +642,7 @@ func nonnegative_number(value) -> bool:
 	return (value is int or value is float) and is_finite(float(value)) and float(value) >= 0
 
 func load_hightech(raw: Dictionary) -> void:
+	if not snapshot_ready() or commit_effects.active:return
 	research.install_snapshot(raw,db.data.ai_tech_tree)
 	for field in ["productionElapsed", "hightechSavedAt"]:
 		if nonnegative_number(raw.get(field)):profile[field] = float(raw[field])
@@ -651,6 +669,7 @@ func rebuild_unlocks() -> void:
 	rebuild_unlock_gates()
 	ensure_loadout()
 	profile.hightechOrder = hightech_slots()
+	crew.on_committed(self,preload("res://scripts/command_result.gd").make("committed","",[],[],[],{"unlocks_changed":true}))
 	event.emit("unlocks_changed",{})
 
 func ensure_loadout() -> void:
@@ -893,6 +912,7 @@ func can_afford_upgrade_costs(costs: Dictionary) -> bool:
 	return economy.can_pay(costs)
 
 func resources_changed(ids: Array) -> void:
+	crew.on_committed(self,preload("res://scripts/command_result.gd").make("committed","",[],ids))
 	event.emit("resources_changed",{"ids":ids})
 
 func equipment_limit() -> int:
@@ -1383,11 +1403,8 @@ func cancel_planet_exploration(id: String) -> bool:
 	return progress_runtime.commit_planet_command(self,planets.prepare_cancel(id),{"id":id})
 
 func advance_planets(dt: float) -> void:
-	if commit_effects.active:return
-	if not step_progress.active:
-		if not step_progress.begin(dt):return
-		step_progress.open_substep(dt);step_progress.phase="shared";step_progress.stage=4;step_progress.scope="planets"
-	progress_runtime.advance_planets(self,dt)
+	if not enter_domain_step(dt,"planets",4):return
+	progress_runtime.advance_planets(self,step_progress.substep)
 	if step_progress.scope=="planets" and step_progress.reason.is_empty():step_progress.finish()
 
 func assign_crew(crew_id: String, assignment_type: String, target_id: String, upgrade_mode := "") -> bool:
@@ -1397,8 +1414,9 @@ func set_crew_upgrade_mode(crew_id: String, mode: String, assignment := "") -> b
 	return progress_runtime.set_crew_upgrade_mode(self,crew_id,mode,assignment)
 
 func start_galaxy(key: String) -> bool:
-	if not galaxy.start(key):return false
-	save_dirty=true;event.emit("galaxy_changed",{"key":key})
+	if not commit_effects.begin(self):return false
+	if not galaxy.start(key):commit_effects.abort("galaxy_start","rejected");return false
+	commit_effects.finish(self,["galaxy"],[],[],{},[{"kind":"galaxy_changed","payload":{"key":key}}])
 	return true
 
 func get_crew_modifier(target_type: String, target_id: String, effect_type: String) -> float:
@@ -1417,11 +1435,8 @@ func record_research_income(id: String) -> void:
 	progress_runtime.record_research_income(self,id)
 
 func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
-	if commit_effects.active:return
-	if not step_progress.active:
-		if not step_progress.begin(dt):return
-		step_progress.open_substep(dt);step_progress.phase="shared";step_progress.stage=8;step_progress.scope="research"
-	progress_runtime.advance_hightech(self,dt)
+	if not enter_domain_step(dt,"research",8):return
+	progress_runtime.advance_hightech(self,step_progress.substep)
 	if step_progress.scope=="research" and step_progress.reason.is_empty():step_progress.finish()
 
 func refresh_factory_inputs(dt: float) -> void:
@@ -1464,12 +1479,21 @@ func auto_gen_settings() -> Dictionary:
 	return {"interval":interval,"resource_id":resource_id,"amount":amount,"speed":speed_value}
 
 func advance_auto_gen(dt: float) -> void:
-	for drop in drops.duplicate():
-		if not drop.get("auto_gen", false):
-			continue
-		drop.y += float(drop.speed) * dt
-		if drop.y >= float(player.y):
-			collect(drop, false)
+	var tracked:bool=step_progress.active and step_progress.phase=="shared" and step_progress.stage==7
+	if tracked and not step_progress.accepted:
+		step_progress.items=drops.duplicate();step_progress.accepted=true
+	var work:Array=step_progress.items if tracked else drops.duplicate()
+	var index:int=step_progress.item if tracked else 0
+	while index<work.size():
+		var drop:Dictionary=work[index]
+		if drops.has(drop) and drop.get("auto_gen",false):
+			if not tracked or not step_progress.detail.get("moved",false):
+				drop.y+=float(drop.speed)*dt
+				if tracked:step_progress.detail.moved=true
+			if drop.y>=float(player.y):collect(drop,false)
+			if not step_progress.reason.is_empty():return
+		index+=1
+		if tracked:step_progress.item=index;step_progress.detail.erase("moved")
 	var settings := auto_gen_settings()
 	if not is_active() or settings.is_empty():
 		return
@@ -1509,7 +1533,8 @@ func reset_player() -> void:
 
 func change_state(next: State) -> void:
 	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
+		if not native_execution.cancel(self):return
+		native_execution=null
 	if next != State.COMBAT:
 		projectiles = projectiles.filter(func(p): return not p.get("beam", false) or (next==State.TRAVEL and endless_beam_eligible(p)))
 	if next == State.TRAVEL:
@@ -1639,7 +1664,13 @@ func advance_after_clear() -> bool:
 func next_stage() -> int:
 	return mini(stage + 1, db.levels.size())
 
+func sortie_reset_ready()->bool:
+	if commit_effects.active or step_progress.frozen or not step_progress.reason.is_empty():return false
+	# Existing automatic stage transition is part of the executing combat stage.
+	return snapshot_ready() or (logical_step_active and step_progress.phase=="combat_running" and state==State.LEVEL_CLEAR and clear_timer<=0 and pending_unlocks.is_empty())
+
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
+	if not sortie_reset_ready():return false
 	if manual_hyperspace.active and not manual_hyperspace.initializing:return false
 	if level < 1 or level > (db.levels.size() if manual_hyperspace.initializing else int(profile.highestLevel)):
 		return false
@@ -1670,9 +1701,11 @@ func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
 	return true
 
 func reset_sortie(level:int,loop_mode:bool)->void:
+	if not sortie_reset_ready():return
 	departure_remaining=0.0
 	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
+		if not native_execution.cancel(self):return
+		native_execution=null
 	native_execution_requested=false;native_wave_waiting=false
 	settle_drops()
 	drone_combat.reset();configuration_committed()
@@ -2080,9 +2113,10 @@ func hit_player(raw, type: int, context: Dictionary = {}) -> void:
 	jewel_hit_player(modified,type)
 
 func begin_retreat() -> void:
-	if not player_alive():equipment.clear_switches()
 	if native_execution!=null:
-		native_execution.cancel(self);native_execution=null
+		if not native_execution.cancel(self):return
+		native_execution=null
+	if not player_alive():equipment.clear_switches()
 	drone_combat.restore_rebuild(self)
 	if manual_hyperspace.active:
 		manual_hyperspace.finish(self,false,"defeat" if not player_alive() else "user_exit");return
@@ -2257,38 +2291,59 @@ func guided_missile_damage(enemy: Dictionary,raw,context: Dictionary) -> Variant
 	context.guidance_factors=factors
 	return N.multiply(raw,factors[key])
 
-func collect(drop: Dictionary, manual: bool, force := false) -> void:
-	if not drops.has(drop):
-		return
+func commit_income_receipt(id:String,earned:Variant,source:String,notices:Array,drop:Dictionary={},manual:=false,production_base:Variant=null)->Dictionary:
+	var R=preload("res://scripts/command_result.gd")
+	if commit_effects.active:return R.make("blocked","commit_in_progress")
+	if not N.valid(earned):return R.make("rejected","invalid_income")
+	var qualified:bool=source in ["drop","furnace"] and (id!="jewel" or N.compare(earned,0)>0)
+	var peak:Dictionary=research.income_peak_proposal(self,id,earned) if qualified else {}
+	var context:=continuation_context()
+	var original:Dictionary=drop.duplicate(true)
+	if not peak.is_empty() and peak.affects_combat and not native_before_configuration_change():return R.make("blocked","native_handoff")
+	if context!=continuation_context() or (not drop.is_empty() and (not drops.has(drop) or drop!=original)):return R.make("rejected","stale_income")
+	if not commit_effects.begin(self):return R.make("blocked","commit_in_progress")
+	if not economy.credit(id,earned):return commit_effects.abort("invalid_income","rejected")
+	if not drop.is_empty():drops.erase(drop)
+	if qualified:
+		var sample:Dictionary={"time":economy_time(),"production_time":production_time(),"id":id,"amount":earned,"origin":source}
+		if production_base!=null:sample.production_base=production_base
+		income_history.record(sample)
+	if not peak.is_empty():
+		var installed:bool=research.commit_income_peak(peak)
+		assert(installed)
+		if peak.affects_combat:
+			configuration_committed()
+			notices.append({"kind":"tech_tree_changed","payload":{"reason":"income_peak","id":id}})
+	if id in ["1","2"]:run_resources[id]=N.add(run_resources[id],earned)
+	# The shared item retires together with its receipt, before observers run.
+	if not drop.is_empty() and step_progress.phase=="shared" and step_progress.stage in [7,9]:
+		step_progress.item+=1;step_progress.detail.erase("moved")
+	return commit_effects.finish(self,["economy","income","research"],[id],[],{"jewels_changed":id=="jewel","earned":earned},notices)
+
+func collect_result(drop:Dictionary,manual:bool,force:=false)->Dictionary:
+	var R=preload("res://scripts/command_result.gd")
+	if not drops.has(drop):return R.make("no_change")
+	var core:bool=drop.get("hightech",false)
+	if core and not manual and not force and float(drop.get("age",0))<10.0:return R.make("no_change")
+	var source:String="furnace" if core else "drop"
+	var notices:Array=[]
 	if drop.has("jewel"):
-		if not jewels_unlocked():
-			return
-		var core: bool = drop.get("hightech",false)
-		if core and not manual and not force and float(drop.get("age",0)) < 10.0:
-			return
-		drops.erase(drop)
-		var amount := float(drop.get("amount",1))
-		if core and not manual:
-			amount = ceilf(amount * (1.0 - float(db.config.autoCollectReduce)))
-		drop.amount = settle_jewel_fragments(amount, "furnace" if core else "drop", 1.0 if core else float(drop.get("jewelRatio", jewel_ratio())))
-		enhancement_currency_changed()
-		event.emit("jewel_pickup", drop)
-		return
-	if drop.get("hightech", false) and not manual and not force and float(drop.get("age",0)) < 10.0:
-		return
-	drops.erase(drop)
-	# Auto-collection loss is a separate calculation on the integer drop amount.
-	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
-	amount = N.ceiling(N.multiply(amount,research.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
-	economy.credit(str(drop.id), amount)
-	income_history.record({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
-	record_research_income(str(drop.id))
-	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
-	var info := drop.duplicate()
-	info.amount = amount
-	info.manual = manual
-	event.emit("collect", info)
-	save_dirty = true
+		if not jewels_unlocked():return R.make("no_change")
+		var amount:float=float(drop.get("amount",1))
+		if core and not manual:amount=ceilf(amount*(1.0-float(db.config.autoCollectReduce)))
+		var earned:Variant=fragment_income(amount,source,1.0 if core else float(drop.get("jewelRatio",jewel_ratio())))
+		var info:Dictionary=drop.duplicate(true);info.amount=earned
+		notices=[{"kind":"enhancement_currency","payload":{"amount":earned,"source":source}},{"kind":"jewels_changed","payload":{"slot":"","slots":[]}},{"kind":"jewel_pickup","payload":info}]
+		return commit_income_receipt("jewel",earned,source,notices,drop,manual)
+	var base:Variant=N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0-float(db.config.autoCollectReduce)))
+	var earned:Variant=N.ceiling(N.multiply(base,research.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
+	var info:Dictionary=drop.duplicate(true);info.amount=earned;info.manual=manual
+	var production_base:Variant=N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce)))
+	return commit_income_receipt(str(drop.id),earned,source,[{"kind":"collect","payload":info}],drop,manual,production_base)
+
+func collect(drop:Dictionary,manual:bool,force:=false)->void:
+	var result:=collect_result(drop,manual,force)
+	if result.status in ["blocked","rejected"] and result.reason!="commit_in_progress" and step_progress.active:block_step(str(result.reason))
 
 func settle_drops(force := false) -> void:
 	for drop in drops.duplicate():
@@ -2472,9 +2527,7 @@ func tick(dt: float) -> void:
 	if logical_step_active or commit_effects.active or paused or not is_finite(dt) or dt<=0:return
 	if step_progress.frozen:return
 	if not step_progress.active and not step_progress.begin(dt):return
-	if not step_progress.blocked_context.is_empty() and step_progress.blocked_context!=continuation_context():
-		step_progress.freeze("blocked_context_changed");paused=true;return
-	step_progress.reason="";step_progress.blocked_context=[]
+	if not resume_step_context():return
 	logical_step_active=true
 	_tick_logical_step(step_progress.duration)
 	logical_step_active=false
@@ -2757,26 +2810,23 @@ func jewel_fragment_amount(amount: Variant, ratio := -1.0) -> Variant:
 		return 0.0 if float(result.e)<-2.0 else result
 	return snappedf(float(result),0.01)
 
-func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
+func fragment_income(amount:float,source:String,ratio:float)->Variant:
 	var production_bonus: float=1.0+float(hyperspace_totals().hangings.get("gem_refiner",0)) if source in ["drop","furnace"] else 1.0
 	var reactor_bonus=reactor_multiplier("condensation") if source=="drop" else 1.0
 	var gem_factor=N.multiply(N.multiply(crew.system_effect(self,"gem_bonus"),reactor_bonus),galaxy.multiplier("gem_fragment")) if source=="drop" else 1.0
 	var input=N.multiply(N.multiply(amount,production_bonus),gem_factor)
 	var earned = N.multiply(jewel_fragment_amount(input,ratio),research.income_factor(self,"fragment_income"))
-	economy.credit_fragments(earned)
-	# Production only: refunds must not inflate future income.
-	if source in ["drop","furnace"] and N.compare(earned,0) > 0:
-		income_history.record({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
-		record_research_income("jewel")
-	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
 
-func pickup_jewel_fragment(_legacy_id := "") -> bool:
-	if not jewels_unlocked():
-		return false
-	settle_jewel_fragments(1.0,"drop")
-	enhancement_currency_changed()
-	return true
+func settle_jewel_fragments(amount:float,source:String,ratio:=-1.0)->Variant:
+	var earned:Variant=fragment_income(amount,source,ratio)
+	var result:=commit_income_receipt("jewel",earned,source,[{"kind":"enhancement_currency","payload":{"amount":earned,"source":source}}])
+	return earned if result.status=="committed" else 0.0
+
+func pickup_jewel_fragment(_legacy_id:="")->bool:
+	if not jewels_unlocked():return false
+	var earned:Variant=fragment_income(1.0,"drop",-1.0)
+	return commit_income_receipt("jewel",earned,"drop",[{"kind":"enhancement_currency","payload":{"amount":earned,"source":"drop"}},{"kind":"jewels_changed","payload":{"slot":"","slots":[]}}]).status=="committed"
 
 func jewel_kill_drop(enemy: Dictionary) -> void:
 	if enemy.get("jewelDropChecked", false):
@@ -3024,6 +3074,7 @@ func commit_enhancement_counters(attacks:int,hits:int,notify:bool=true)->void:
 		for category in changed:event.emit("equipment_stats",{"category":category,"counter_only":true})
 
 func enhancement_currency_changed() -> void:
+	crew.on_committed(self,preload("res://scripts/command_result.gd").make("committed","",[],[],[],{"jewels_changed":true}))
 	save_dirty = true
 	event.emit("jewels_changed", {"slot":"","slots":[]}) # Legacy event name retained for currency consumers.
 
@@ -3912,6 +3963,9 @@ func advance_shared_clock_and_economy(dt:float)->void:
 	var standalone:bool=not step_progress.active
 	if standalone:
 		step_progress.begin(dt);step_progress.open_substep(dt);step_progress.phase="shared";step_progress.scope="shared"
+	if step_progress.phase!="shared" or step_progress.scope not in ["all","shared"]:return
+	if not logical_step_active and not resume_step_context():return
+	dt=step_progress.substep
 	while step_progress.stage<11:
 		var current:int=step_progress.stage
 		match current:
@@ -3935,10 +3989,12 @@ func advance_shared_clock_and_economy(dt:float)->void:
 					step_progress.items=drops.duplicate();step_progress.accepted=true
 				while step_progress.item<step_progress.items.size():
 					var drop:Dictionary=step_progress.items[step_progress.item]
-					step_progress.item+=1
-					if drop.get("hightech",false) or drop.get("auto_gen",false):continue
-					drop.age+=dt
-					if drop.age>=(2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):collect(drop,false)
+					var index:int=step_progress.item
+					if drops.has(drop) and not drop.get("hightech",false) and not drop.get("auto_gen",false):
+						if not step_progress.detail.get("moved",false):drop.age+=dt;step_progress.detail.moved=true
+						if drop.age>=(2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):collect(drop,false)
+						if not step_progress.reason.is_empty():return
+					step_progress.item=index+1;step_progress.detail.erase("moved")
 			10:
 				# The interval is retired before factory-refresh notification.
 				step_progress.next_stage();refresh_factory_inputs(dt)

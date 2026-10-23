@@ -38,6 +38,8 @@ func commit_result(g,plan:Dictionary)->Dictionary:
 		assert(installed,"Validated material wallet must install without callbacks")
 		if not changed_resources.is_empty():domains.append("economy")
 	g.hyperspace.commit(plan)
+	if advancing and kind=="completed_pending" and g.step_progress.active and g.step_progress.stage==2:
+		g.step_progress.detail.completions=int(g.step_progress.detail.get("completions",0))+1
 	var capacity_changed:=false
 	if refit:
 		var capacity=g.reactor_capacity()
@@ -65,19 +67,22 @@ func settle_interrupted(g)->void:
 		g.manual_hyperspace.last_result={"route":str(receipt.route),"level":int(receipt.level),"reason":"interrupted_reload","refund":refund}
 func reset()->void:advancing=false
 func advance(g,dt:float)->void:
-	if advancing or not is_finite(dt) or dt<=0 or g.paused or not g.hyperspace.is_unlocked(g):return
-	if not g.step_progress.active:
-		g.step_progress.begin(dt);g.step_progress.open_substep(dt)
-		g.step_progress.phase="shared";g.step_progress.stage=2;g.step_progress.scope="hyperspace"
+	if advancing or not g.hyperspace.is_unlocked(g):return
+	if not g.enter_domain_step(dt,"hyperspace",2):return
 	if g.step_progress.scope=="hyperspace" and g.step_progress.accepted:drain(g);return
 	advancing=true
-	g.hyperspace.add_online_time(dt);g.save_dirty=true
+	g.hyperspace.add_online_time(g.step_progress.substep);g.save_dirty=true
 	g.step_progress.accepted=true
 	_advance(g)
 	advancing=false
 	if g.step_progress.scope=="hyperspace" and g.step_progress.reason.is_empty():g.step_progress.finish()
 func drain(g)->void:
-	if advancing or g.paused or not g.hyperspace.is_unlocked(g):return
+	if advancing or g.paused or g.commit_effects.active or not g.hyperspace.is_unlocked(g):return
+	if not g.step_progress.active:
+		if not g.enter_domain_step(float(g.hyperspace.state.pending_time),"hyperspace",2):return
+		g.step_progress.accepted=true
+	if g.step_progress.phase!="shared" or g.step_progress.stage!=2:return
+	if not g.resume_step_context():return
 	advancing=true;_advance(g);advancing=false
 	if g.step_progress.scope=="hyperspace" and g.step_progress.reason.is_empty():g.step_progress.finish()
 func online_commit(g,plan:Dictionary)->bool:
@@ -117,7 +122,7 @@ func _advance(g)->void:
 		if tracked:g.step_progress.detail.once_completed=once
 		if not online_commit(g,owner.prepare_complete_auto(g)):inactive_work(g,c);return
 		completions+=1
-		if tracked:g.step_progress.detail.completions=completions
+		if tracked:completions=int(g.step_progress.detail.get("completions",completions))
 		if not online_commit(g,owner.prepare_claim(g,int(a.round_id),int(a.run_id))):
 			inactive_work(g,c,not Bag.has_space(owner.state.inventory,c));return
 		if once:owner.advance_online_work(c,float(owner.state.pending_time));return

@@ -2,6 +2,12 @@ extends SceneTree
 class Host extends "res://scripts/main.gd":
 	var shield_before_hit=0.0
 	var demo_time=0.0
+	var fail_after_step:=false
+	func before_time_step(dt:float)->void:
+		battle_slice_runtime.geometry.before_tick(dt)
+		super.before_time_step(dt)
+	func after_time_step(completed:bool)->bool:
+		return super.after_time_step(completed) and not fail_after_step
 class GeometryProbe extends RefCounted:
 	var fx_time=0.0
 	var demo_time=0.0
@@ -14,7 +20,7 @@ class GameProbe extends BattleGame:
 	var ticks=0
 	var depart_on_first=true
 	func prepare_logical_step(_dt:float)->bool:return true
-	func tick(_dt:float)->void:
+	func _tick_combat_step(_dt:float)->void:
 		ticks+=1
 		if ticks==1 and depart_on_first:begin_return_departure()
 class PresentedProbe extends "res://scripts/presented_battle_game.gd":
@@ -36,7 +42,7 @@ class Runtime extends "res://scripts/battle_slice_runtime.gd":
 	func snapshot()->void:pass
 
 
-class IsolatedMain extends "res://scripts/main.gd":
+class IsolatedMain extends "res://scripts/battlefield.gd":
 	func create_battle_game(_persist:bool)->BattleGame:return super.create_battle_game(false)
 
 class ObservedGame extends BattleGame:
@@ -94,7 +100,7 @@ func run() -> void:
 			for step in game.steps:
 				total += step
 			var max_expected_step := 1.0/60.0
-			check(is_equal_approx(total+game.game_time_remainder,expected_real*speed),"Processed ticks plus pending frame tail equal budget: %s/%s" % [speed,delta])
+			check(is_equal_approx(total+game.step_progress.available(),expected_real*speed),"Processed ticks plus pending frame tail equal budget: %s/%s" % [speed,delta])
 			check(game.steps.all(func(step):return is_equal_approx(step,max_expected_step)),"Simulation substep uses the selected speed mode: %s/%s" % [speed,delta])
 			check(scene.accelerated_visual_mode==(speed>=3.0),"Accelerated presentation starts at 3x: %s/%s" % [speed,delta])
 			check(is_equal_approx(game.distance,game.ship_movement()*total),"Travel follows simulated time: %s/%s" % [speed,delta])
@@ -124,7 +130,7 @@ func run() -> void:
 			frame_probe.speed=multiplier;set_chrono(frame_probe,100)
 			for frame in fps:frame_probe.consume_external_time(1.0/fps)
 			check(frame_probe.steps.size()==int(multiplier*60),"Frame-rate-independent step count %s/%s" % [fps,multiplier])
-			check(frame_probe.game_time_remainder<.000000001,"Frame tails settle at exact budget %s/%s" % [fps,multiplier])
+			check(frame_probe.step_progress.available()<.000000001,"Frame tails settle at exact budget %s/%s" % [fps,multiplier])
 	var cooldown_probe := BattleGame.new(scene.db,false)
 	cooldown_probe.speed = 3.0
 	check(is_equal_approx(cooldown_probe.weapon_cooldown_after_shot(0.1,1.0/6.0,0.5),0.5),"3x cooldown retains the same X1 attack schedule")
@@ -152,16 +158,16 @@ func run() -> void:
 	split.consume_external_time(0.1)
 	check(split.steps.size()==18 and split.economy.balance("chrono")==0 and split.speed==split.default_speed(),"Exhaustion divides one real frame into 0.05 at x5 and 0.05 at x1")
 	var tail:=ObservedGame.new(scene.db,false);tail.consume_external_time(0.01);tail.speed=10;set_chrono(tail,10);tail.consume_external_time(0.01)
-	check(is_equal_approx(tail.steps.size()/60.0+tail.game_time_remainder,0.11),"Changing speed does not rescale the previously earned game-time tail")
-	var unchanged:=tail.economy.save_data();var tail_before:=tail.game_time_remainder
+	check(is_equal_approx(tail.steps.size()/60.0+tail.step_progress.available(),0.11),"Changing speed does not rescale the previously earned game-time tail")
+	var unchanged:=tail.economy.save_data();var tail_before:=tail.step_progress.available()
 	for invalid in [-1.0,INF,NAN]:tail.consume_external_time(invalid)
-	check(tail.economy.save_data()==unchanged and tail.game_time_remainder==tail_before,"Invalid external durations neither spend nor advance")
+	check(tail.economy.save_data()==unchanged and tail.step_progress.available()==tail_before,"Invalid external durations neither spend nor advance")
 	var valid:=tail.portable_save_data();tail.begin_return_departure()
 	var invalid_save:=valid.duplicate(true);invalid_save.materials.erase(invalid_save.materials.keys()[0])
 	tail.load_progress_data(invalid_save)
-	check(tail.game_time_remainder==tail_before and tail.departure_remaining>0,"Rejected load retains the existing time session")
+	check(tail.step_progress.available()==tail_before and tail.departure_remaining>0,"Rejected load retains the existing time session")
 	tail.load_progress_data(valid)
-	check(tail.game_time_remainder==0 and tail.departure_remaining==0,"Validated snapshot installation starts with no abandoned frame debt")
+	check(tail.step_progress.available()==0 and tail.departure_remaining==0,"Validated snapshot installation starts with no abandoned frame debt")
 	var lab=preload("res://scripts/balance_game.gd").new(scene.db)
 	lab.income_history.replace_records([{"time":-100.0,"id":"1","amount":1.0}]);lab.tick(6.0)
 	check(lab.income_history.records().is_empty() and is_equal_approx(lab.resource_prune_elapsed,1.0),"Independent analysis preserves sample pruning using its simulated clock")
@@ -197,21 +203,21 @@ func departure_boundaries()->void:
 	game.consume_external_time(3.0/60.0+0.004,host)
 	check(game.ticks==1 and runtime.logical_steps==1,"mid-batch departure stops before the next logical substep")
 	check(runtime.geometry.preparations==1,"no later geometry preparation after departure")
-	check(absf(game.game_time_remainder-(2.0/60.0+0.004))<1e-10,"Game retains the only unconsumed debt")
-	var debt=game.game_time_remainder;game.consume_external_time(0.8,host)
-	check(game.game_time_remainder==debt and game.ticks==1,"departure wall time never enters game debt")
+	check(absf(game.step_progress.available()-(2.0/60.0+0.004))<1e-10,"Game retains the only unconsumed debt")
+	var debt=game.step_progress.available();game.consume_external_time(0.8,host)
+	check(game.step_progress.available()==debt and game.ticks==1,"departure wall time never enters game debt")
 	game.consume_external_time(0.8,host)
-	check(game.departure_remaining==0 and game.game_time_remainder==debt,"Game ends the departure without a rendered animation")
+	check(game.departure_remaining==0 and game.step_progress.available()==debt,"Game ends the departure without a rendered animation")
 	game.consume_external_time(0.0,host)
-	check(game.ticks==3 and runtime.logical_steps==3 and absf(game.game_time_remainder-0.004)<1e-10,"resume consumes retained debt exactly once")
+	check(game.ticks==3 and runtime.logical_steps==3 and absf(game.step_progress.available()-0.004)<1e-10,"resume consumes retained debt exactly once")
 	check(not runtime.advancing,"step ownership released on every return")
-	game.depart_on_first=false;game.game_time_remainder=0;runtime.detach_requested=true;runtime.deny_close=true
+	game.depart_on_first=false;game.step_progress.reset();host.fail_after_step=true
 	var before=game.ticks;game.consume_external_time(3.0/60.0,host)
-	check(game.paused and game.ticks==before+1 and is_equal_approx(game.game_time_remainder,2.0/60.0),"Failed display materialization acknowledges only the completed step and stops")
+	check(game.paused and game.ticks==before+1 and is_equal_approx(game.step_progress.available(),2.0/60.0),"Failed display materialization acknowledges only the completed step and stops")
 	game.consume_external_time(1.0,host)
-	check(game.ticks==before+1 and is_equal_approx(game.game_time_remainder,2.0/60.0),"Blocked presentation cannot accumulate more live budget")
-	runtime.deny_close=false;game.paused=false;game.consume_external_time(0.0,host)
-	check(game.ticks==before+3 and is_zero_approx(game.game_time_remainder) and host.battle_slice_runtime==null,"Successful detach resumes the same Game tail without another scheduler")
+	check(game.ticks==before+1 and is_equal_approx(game.step_progress.available(),2.0/60.0),"Blocked presentation cannot accumulate more live budget")
+	host.fail_after_step=false;game.paused=false;game.consume_external_time(0.0,host)
+	check(game.ticks==before+3 and is_zero_approx(game.step_progress.available()) ,"Successful presentation resumes the same Game tail without another scheduler")
 	runtime.scene=null;runtime.game=null;host.battle_slice_runtime=null;host.free()
 	for success in [false,true]:check_presented_return(success)
 
@@ -246,12 +252,12 @@ func check_presented_return(success:bool)->void:
 	check(is_equal_approx(settled,g.LOGICAL_STEP) and is_equal_approx(g.production_time()-clock,g.LOGICAL_STEP),"Complete outer step is settled exactly once")
 	check(not g.manual_hyperspace.active and is_equal_approx(g.manual_hyperspace.last_result.elapsed,g.LOGICAL_STEP),"Challenge receipt includes the entire logical step before return")
 	check(g.distance==0 and g.group_index==0 and g.enemies.is_empty() and g.projectiles.is_empty() and g.missile_queue.is_empty(),"No remainder segment advances the fresh mainline or revives old actors")
-	check(g.departure_remaining==g.RETURN_DEPARTURE_SECONDS and is_equal_approx(g.game_time_remainder,2.0*g.LOGICAL_STEP+0.004),"Only the completed outer step is debited; later fixed steps remain pending")
+	check(g.departure_remaining==g.RETURN_DEPARTURE_SECONDS and is_equal_approx(g.step_progress.available(),2.0*g.LOGICAL_STEP+0.004),"Only the completed outer step is debited; later fixed steps remain pending")
 	check(g.manual_hyperspace.last_result.reason==("success" if success else "user_exit"),"Requested success or exit result is committed")
 	var stopped_clock=g.production_time();g.consume_external_time(g.RETURN_DEPARTURE_SECONDS)
 	check(g.production_time()==stopped_clock and g.distance==0,"Real departure hold does not settle pending time")
 	g.consume_external_time(0.0)
-	check(is_equal_approx(g.production_time()-stopped_clock,2.0*g.LOGICAL_STEP) and is_equal_approx(g.game_time_remainder,0.004),"Pending outer steps resume exactly once after departure")
+	check(is_equal_approx(g.production_time()-stopped_clock,2.0*g.LOGICAL_STEP) and is_equal_approx(g.step_progress.available(),0.004),"Pending outer steps resume exactly once after departure")
 
 func stable_save(g)->Dictionary:
 	var data:Dictionary=g.portable_save_data()

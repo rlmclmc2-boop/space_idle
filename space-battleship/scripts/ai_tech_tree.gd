@@ -192,9 +192,9 @@ func peak_factor(game) -> Variant:
 func combat_factor(game, id: String) -> Variant:
 	return N.multiply(income_factor(game, id), peak_factor(game))
 
-func income_peak_proposal(game, id: String) -> Dictionary:
+func income_peak_proposal(game, id: String, additional:Variant=0.0) -> Dictionary:
 	if id not in ["1", "2", "jewel"]:return {}
-	var rate = N.divide(game.income_history.peak_total(id,game.economy_time()),60.0)
+	var rate = N.divide(N.add(game.income_history.peak_total(id,game.economy_time()),additional),60.0)
 	if N.compare(rate,_state.aiIncomePeak.get(id,0.0)) <= 0:return {}
 	return {"id":id,"rate":rate,"revision":revision,"affects_combat":level(game,"unification")>0}
 

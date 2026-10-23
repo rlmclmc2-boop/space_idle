@@ -2,6 +2,7 @@ extends RefCounted
 const N=preload("res://scripts/growth_number.gd")
 const Result=preload("res://scripts/command_result.gd")
 static var NO_CHANGE:Dictionary=Result.make("no_change")
+static var FACTORY_PROGRESS:Dictionary=Result.make("committed","",["research"])
 static var PLANET_PROGRESS:Dictionary=Result.make("committed","",["planets"])
 static var RESEARCH_PROGRESS:Array=[
 	Result.make("committed","",["research"]),
@@ -120,6 +121,7 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	g.start(start_level,false)
 	g.save_enabled=persist
 	if cancelled_queue:g.event.emit("hyperspace_queue",{"status":"cancelled","reason":"round_changed"})
+	g.crew.on_committed(g,Result.make("committed","",[],[],[],{"unlocks_changed":true}))
 	g.event.emit("unlocks_changed",{})
 	g.event.emit("planet_reforged",{"id":id})
 	return true
@@ -317,9 +319,10 @@ func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 
 func refresh_factory_inputs(g,dt: float) -> void:
 	if g.commit_effects.active or not g.crew.factory_active(g):return
-	var refreshed: bool= g.research.advance_auto_inputs(g,dt,g.production_time())
-	g.save_dirty=true
-	if refreshed:g.event.emit("tech_tree_changed",{"reason":"automatic_input"})
+	if not g.commit_effects.begin_progress():return
+	var refreshed:bool=g.research.advance_auto_inputs(g,dt,g.production_time())
+	var notices:Array=[{"kind":"tech_tree_changed","payload":{"reason":"automatic_input"}}] if refreshed else []
+	g.commit_effects.finish_progress(g,FACTORY_PROGRESS,false,notices)
 
 func capture_progress_health(g, configuration: bool) -> Dictionary:
 	if not configuration:return {}

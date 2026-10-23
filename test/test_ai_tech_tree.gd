@@ -165,9 +165,9 @@ func run() -> void:
 	var plan:Dictionary=atomic.research.prepare_advance(atomic,100000.0)
 	var original:Dictionary=atomic.research.save_data();var original_wallet:=atomic.economy.resources()
 	check(plan.completed and atomic.research.save_data()==original and atomic.economy.resources()==original_wallet,"research preparation changes neither progress nor wallet")
-	atomic.native_execution=RefusedHandoff.new();atomic.advance_hightech(100000.0)
+	atomic.native_execution=RefusedHandoff.new();atomic.progress_runtime.commit_research_advance_result(atomic,atomic.research.prepare_advance(atomic,100000.0))
 	check(atomic.research.save_data()==original and atomic.economy.resources()==original_wallet,"native refusal leaves research and paid interval uncommitted")
-	atomic.native_execution=ChangedWalletHandoff.new();atomic.advance_hightech(100000.0)
+	atomic.native_execution=ChangedWalletHandoff.new();atomic.progress_runtime.commit_research_advance_result(atomic,atomic.research.prepare_advance(atomic,100000.0))
 	check(atomic.research.save_data()==original and GrowthNumber.compare(atomic.economy.balance("1"),GrowthNumber.add(original_wallet["1"],1))==0,"Handoff wallet mutation invalidates research payment without overwriting callback credit")
 	fund(atomic,original_wallet)
 	atomic.native_execution=null
@@ -175,7 +175,7 @@ func run() -> void:
 	atomic.event.connect(func(kind,_info):
 		if kind=="hightech_complete":seen.append(atomic.portable_save_data())
 	)
-	atomic.advance_hightech(100000.0)
+	atomic.progress_runtime.commit_research_advance_result(atomic,atomic.research.prepare_advance(atomic,100000.0))
 	check(seen.size()==1 and seen[0].aiTechLevels.weapon_accuracy==1 and seen[0].aiTechActive=="" and seen[0].resources==plan.resources,"completion observer sees quoted paid interval and entire growth result")
 	var bad:=atomic.portable_save_data();bad.aiTechProgress.weapon_accuracy=-1
 	var before_rejection:=atomic.research.save_data()
@@ -204,7 +204,7 @@ func run_factory_crew() -> void:
 	var before:=g.research.save_data();var wallet:=g.economy.save_data()
 	g.native_execution=RefusedHandoff.new();g.advance_hightech(1.0)
 	check(g.research.save_data()==before and g.economy.save_data()==wallet,"Rejected completion neither switches project nor partially commits growth/payment")
-	g.native_execution=null;g.advance_hightech(1.0)
+	g.native_execution=null;g.paused=false;g.advance_hightech(1.0)
 	check(g.research.level(g,"singularity")==1 and g.research.selected()=="weapon_accuracy","After commit choose shortest remaining eligible project; configured order resolves equal times")
 	check(g.research.progress("weapon_accuracy")==float(state.aiTechProgress.weapon_accuracy) and g.research.progress("equipment_finishing")==float(state.aiTechProgress.equipment_finishing),"Continuation preserves progress and ignores a shorter locked project")
 	var display:Dictionary=g.tech_tree_snapshot()

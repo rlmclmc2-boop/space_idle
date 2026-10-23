@@ -2,19 +2,26 @@ extends RefCounted
 ## Concrete galaxy command coordinator owned by Game. The domain supplies work and income plans.
 var native_prepared:=false
 var native_refit:Dictionary={}
-func reset()->void:native_prepared=false;native_refit={}
+var prepared_context:Array=[]
+func reset()->void:native_prepared=false;native_refit={};prepared_context=[]
 func refresh_unlocks(g)->void:
+	if not g.commit_effects.begin(g):return
 	var unlocked:Array=g.galaxy.refresh_unlocks(g)
-	if not unlocked.is_empty():g.invalidate_tutorial_unlocks();g.save_dirty=true
-	for key in unlocked:g.event.emit("galaxy_unlocked",{"key":key})
+	if unlocked.is_empty():g.commit_effects.abort("","no_change");return
+	g.invalidate_tutorial_unlocks()
+	var notices:Array=[]
+	for key in unlocked:notices.append({"kind":"galaxy_unlocked","payload":{"key":key}})
+	g.commit_effects.finish(g,["galaxy"],[],[],{"unlocks_changed":true},notices)
 func prepare_advance(g,dt:float)->bool:
 	if g.native_execution==null or dt<=0 or g.paused:reset();return true
-	if native_prepared:return true
+	var context:Array=[g.native_execution,dt,g.galaxy.revision,g.attributes.configuration_inputs(g)]
+	if native_prepared and prepared_context==context:return true
+	native_prepared=false;prepared_context=[]
 	native_refit={}
 	var candidate:Dictionary=g.galaxy.preview_advance(g,dt)
 	if candidate.has("boundary"):return g.native_execution.handoff_to_legacy(g,"galaxy_crew_configuration" if candidate.boundary=="crew_change" else "galaxy_compound_configuration")
 	if not candidate.is_empty() and not prepare_refit(g,g.galaxy.prepare_region(candidate.key,candidate.dt,candidate.count)):return false
-	native_prepared=true;return true
+	native_prepared=true;prepared_context=context;return true
 func prepare_refit(g,proposal:Dictionary)->bool:
 	var session=g.native_execution
 	# A building selection or a noncombat contribution needs no native descriptor.
