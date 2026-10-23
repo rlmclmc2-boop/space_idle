@@ -117,8 +117,8 @@ func _initialize() -> void:
 	var ids:Array=[]
 	for i in int(atomic.hyperspace.config.hull_capacities.Frigate)+1:
 		var drone:=preload("res://scripts/drone_rewards.gd").create_drone(random,atomic.hyperspace.config,"hull_"+str(i),"white","laser",1,"1")
-		preload("res://scripts/drone_inventory.gd").insert(atomic.profile.hyperspace.inventory,drone,atomic.hyperspace.config);ids.append(drone.id)
-	check(atomic.hyperspace.set_equipped(atomic,ids),"Prepare equipped drones beyond smaller hull capacity")
+		var hs:Dictionary=atomic.hyperspace.save_data();preload("res://scripts/drone_inventory.gd").insert(hs.hyperspace.inventory,drone,atomic.hyperspace.config);assert(atomic.hyperspace.install_snapshot(hs,atomic.db));ids.append(drone.id)
+	check(atomic.hyperspace_runtime.set_equipped(atomic,ids),"Prepare equipped drones beyond smaller hull capacity")
 	observations.clear()
 	check(atomic.switch_ship("Frigate"),"Hull and clipped drone selection commit together")
 	committed=atomic.portable_save_data()

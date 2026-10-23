@@ -38,7 +38,7 @@ func fixture(galaxy_boundary:bool=false):
 	g.stat_cache_enabled=true;g.configuration_committed();g.save_enabled=false;g.reset_player();g.state=BattleGame.State.COMBAT
 	g.enemies.assign([{"uid":100,"slot":0,"x":286.0,"y":100.0,"hp":1e8,"max_hp":1e8,"armourType":2,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
 	if galaxy_boundary:
-		g.profile.cleared=range(1,101);g.rebuild_unlocks();g.galaxy.refresh_unlocks(g)
+		g.profile.cleared=range(1,101);g.rebuild_unlocks();g.galaxy_runtime.refresh_unlocks(g)
 		check(g.assign_crew("navigator","galaxy_explore","galaxy_1"),"crew before native boundary fixture")
 		var galaxy:Dictionary=g.galaxy.save_data();var saved:Dictionary=galaxy.galaxies.galaxy_1
 		var chosen=""
@@ -74,6 +74,7 @@ func run()->void:
 	for slice in [false,true]:
 		g=fixture(true);scene=BudgetMain.new();scene.game=g
 		var state=g.galaxy.save_data().duplicate(true);var clock=g.production_time();before=g.native_execution.kernel.export_handoff().duplicate(true)
+		var economic_state:Dictionary={"wallet":g.economy.save_data(),"crew":g.crew.save_data(),"research":g.research.save_data()}
 		var probe=GeometryProbe.new()
 		if slice:
 			runtime=CancelBudgetRuntime.new();runtime.scene=scene;runtime.game=g;runtime.geometry=probe
@@ -82,7 +83,7 @@ func run()->void:
 		else:g.consume_external_time(3.0/60.0,scene)
 		check(g.paused and g.native_step_phase=="blocked" and g.shared_calls==0 and g.production_time()==clock,"galaxy failure precedes shared clock and economy")
 		check(scene.demo_time==0 and probe.demo_time==0 and probe.fx_time==0 and is_equal_approx(g.game_time_remainder,3.0/60.0),"galaxy failure preserves presentation clocks and complete budget")
-		check(g.galaxy.save_data()==state and g.native_execution.kernel.export_handoff()==before,"galaxy failure leaves region and combat untouched")
+		check(g.galaxy.save_data()==state and g.native_execution.kernel.export_handoff()==before and economic_state=={"wallet":g.economy.save_data(),"crew":g.crew.save_data(),"research":g.research.save_data()},"Galaxy refusal preserves real wallet, growth, region and combat")
 		g.begin_retreat();scene.free()
 	for slice in [false,true]:
 		g=fixture();scene=BudgetMain.new();scene.game=g

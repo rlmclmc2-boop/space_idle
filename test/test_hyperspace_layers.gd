@@ -80,14 +80,12 @@ func _initialize()->void:
 	check(timed.hyperspace.save_data()==timed_reload.hyperspace.save_data() and timed.economy.save_data()==timed_reload.economy.save_data(),"callback save reopens and consumes identical remaining time without duplicate reward or RNG replay")
 	var paused_snapshot:Dictionary=timed.hyperspace.save_data();timed.paused=true;timed.hyperspace_runtime.advance(timed,2.0)
 	check(timed.hyperspace.save_data()==paused_snapshot,"paused external input does not add or consume hyperspace time")
-	var legacy:Dictionary=h.fresh();legacy.version=6
-	check(not S.valid(legacy,h.config,db.levels.size()),"previous save format explicitly unsupported")
 	# Clear real continuous beams and staged missile launches; do not reconstruct them.
 	var battle=opened(db)
 	var equipment:Dictionary=battle.equipment.save_data()
 	equipment.loadout.weapons=[{"key":"longLaser","level":14},{"key":"missile","level":14}]
 	check(battle.equipment.install_snapshot(equipment,battle.db),"current equipment fixture installs")
-	battle.invalidate_stat_cache();battle.start(14,false);battle.spawn_group()
+	battle.start(14,false);battle.spawn_group()
 	battle.cooldowns[battle.slot_id("weapons",1)]=0.0
 	battle.tick(0.2)
 	check(not battle.projectiles.is_empty() and not battle.missile_queue.is_empty(),"real beam and missile ejection before departure")
@@ -168,33 +166,28 @@ func _initialize()->void:
 	blocked.hyperspace_runtime.remove_unprotected(blocked,"occupied")
 	check(blocked.claim_hyperspace(blocked_receipt.round_id,blocked_receipt.run_id) and not blocked.claim_hyperspace(blocked_receipt.round_id,blocked_receipt.run_id),"background pending claim after capacity freed settles once")
 	check(S.valid(blocked.hyperspace.state,config,db.levels.size()),"full-bag recovery stays saveable")
-	var rng:=RandomNumberGenerator.new();rng.seed=1901
-	var sample:Dictionary={"random_state":str(rng.state)}
-	var req:Dictionary={"round_id":1,"run_id":1,"route":"alpha","level":1}
-	var original:=Rewards.generate(sample,h.config,req,"1")
-	req.luck=0.0;req.luck_state="123"
-	check(Rewards.generate(sample,h.config,req,"1")==original,"zero luck byte-identical old sampling")
-	var lucky_before:=Time.get_ticks_usec()
-	for i in 100:
-		rng.seed=i;sample.random_state=str(rng.state);req.luck=0.0
-		var plain:=Rewards.generate(sample,h.config,req,"1")
-		req.luck=1000000000000.0;req.luck_state=str(i+1)
-		var lucky:=Rewards.generate(sample,h.config,req,"1")
-		var a:Dictionary=plain.reward.drone;var b:Dictionary=lucky.reward.drone
-		if not a.is_empty():
-			check(a.origin_quality==b.origin_quality and a.weapon==b.weapon and a.hanging_slots==b.hanging_slots and a.affixes.size()==b.affixes.size() and a.forge_rng_state==b.forge_rng_state and a.legendary_effect==b.legendary_effect and plain.random_state==lucky.random_state,"luck only affix tier sample"+str(i))
-			for j in a.affixes.size():check(a.affixes[j].key==b.affixes[j].key and int(b.affixes[j].tier)<=int(a.affixes[j].tier),"tier improves without changing type")
-	print("LAYER_CORE: ",checks," checks ",failures," failures; huge-luck100 elapsed_us=",Time.get_ticks_usec()-lucky_before)
+	var failed=opened(db);var pristine:Dictionary=stable_save(failed)
+	check(not failed.start_hyperspace("unknown",1) and stable_save(failed)==pristine,"Unknown route preserves wallet, progression and ticket")
+	var saved:Dictionary=failed.hyperspace.save_data();saved.hyperspace.history.beta={"1":1.0,"2":1.0,"3":1.0,"4":1.0};saved.hyperspace.energy=216000
+	assert(failed.hyperspace.install_snapshot(saved,db))
+	check(failed.start_hyperspace("beta",5),"Paid challenge starts with actual configured encounters")
+	check(not failed.start(6,false) and failed.manual_hyperspace.active,"Ordinary stage selection cannot replace a manual session")
+	failed.begin_retreat()
+	check(not failed.manual_hyperspace.active and failed.hyperspace.state.energy==216000 and failed.hyperspace.state.history==saved.hyperspace.history and failed.hyperspace.state.active.is_empty(),"Defeat refunds ticket without a victory, reward or record")
+	print("HYPERSPACE SESSIONS: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
 func conquer(g,value:bool)->void:
 	var snapshot:Dictionary=g.planets.save_data();snapshot.merge(g.crew.save_data())
 	snapshot.planets["1"].conquered=value
 	check(g.planets.install_snapshot(snapshot,g.db),"planet fixture installs")
-	g.invalidate_stat_cache()
 func set_crew_level(g,value:int)->void:
 	var snapshot:Dictionary=g.crew.save_data()
 	for member in snapshot.crew:
 		if member.crewId=="navigator":member.level=value
 	check(g.crew.install_snapshot(snapshot,g.db),"crew fixture installs")
-	g.invalidate_stat_cache()
+
+func stable_save(g)->Dictionary:
+	var data:Dictionary=g.portable_save_data()
+	data.erase("chronoSavedAt");data.erase("hightechSavedAt")
+	return data

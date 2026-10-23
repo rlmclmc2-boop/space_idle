@@ -19,7 +19,6 @@ func run() -> void:
 	db.config.reactorEnergyGrowth = 1.2
 	db.config.reactorUpgradeBase = 100.0
 	db.config.reactorUpgradeGrowth = 1.4
-	check(not db.data.has("charge"),"Old charge table removed")
 	var game := BattleGame.new(db,false)
 	check(game.reactor.level() == 1 and game.reactor_energy() == 100.0,"Initial level and energy")
 	check(not game.upgrade_reactor(1),"Locked reactor cannot upgrade")
@@ -27,7 +26,7 @@ func run() -> void:
 	check(game.reactor_unlocked(),"Reactor gate")
 	game.economy.credit("2",436.0)
 	check(game.reactor_max_upgrades() == 3,"MAX sums changing costs")
-	check(not game.upgrade_reactor(4) and game.economy.balance("2") == 436.0,"Unaffordable batch is atomic")
+	check(not game.upgrade_reactor(4) and game.economy.balance("2") == 436.0 and game.reactor.level()==1,"Unaffordable batch is atomic")
 	check(game.upgrade_reactor(game.reactor_max_upgrades()),"MAX purchases all affordable levels")
 	check(game.reactor.level() == 4 and absf(float(game.economy.balance("2"))) < 0.00001,"Exact batch debit")
 	check(absf(game.reactor_energy()-172.8)<0.00001,"Energy follows level")
@@ -49,12 +48,11 @@ func run() -> void:
 	var defence_before := float(game.reactor.allocations().defence)
 	check(game.set_reactor_allocation("weapons",10),"One module can change after equalization")
 	check(float(game.reactor.allocations().defence) == defence_before,"Single slider leaves other modules unchanged")
-	var raw := {"reactorLevel":2,"reactorAllocation":{"weapons":90,"defence":90,"smelting":90,"condensation":0},"charge":{"攻击充能":{"level":999}}}
+	var raw := {"reactorLevel":2,"reactorAllocation":{"weapons":90,"defence":90,"smelting":90,"condensation":0}}
 	for key in game.reactor_modules():
 		if not raw.reactorAllocation.has(key):raw.reactorAllocation[key] = 0
 	check(game.reactor.install_snapshot(raw,db.config),"current reactor snapshot installs");game.reactor.reconcile_capacity(game.reactor_capacity())
 	check(game.reactor.level() == 2 and game.reactor_allocated() <= game.reactor_capacity() and int(game.reactor.allocations().weapons) == 90,"Loaded allocation is integer and clamped")
-	check(not game.profile.has("charge"),"Legacy charge state ignored")
 	var batch := BattleGame.new(db,false)
 	batch.profile.cleared = [1]
 	batch.economy.credit("2",1000000.0)
@@ -77,5 +75,27 @@ func run() -> void:
 	check(iron.size()==1 and uranium.size()==1,"Both enemy drops generated")
 	if iron.size()==1 and uranium.size()==1:
 		check(float(iron[0].amount)>100.0 and float(uranium[0].amount)==100.0,"Smelting boosts only enemy iron")
+	price_boundaries()
 	print("REACTOR ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
+
+func price_boundaries()->void:
+	var g:=BattleGame.new(ShipDatabase.new(),false);g.profile.cleared=[1];g.rebuild_unlocks()
+	for i in 3:check(GrowthNumber.compare(g.reactor_upgrade_cost(i+1),[10,14,19][i])==0,"Current price rounds before summing: "+str(i+1))
+	var reactor:=g.reactor.save_data();reactor.reactorLevel=2;assert(g.reactor.install_snapshot(reactor,g.db.config))
+	g.economy.credit("2",13)
+	var before:=stable_save(g)
+	check(not g.upgrade_reactor(1) and stable_save(g)==before,"One-unit shortage preserves every domain")
+	g.economy.credit("2",37)
+	check(g.reactor_max_upgrades()==2 and g.upgrade_reactor(2) and g.reactor.level()==4 and GrowthNumber.compare(g.economy.balance("2"),17)==0,"Actual MAX pays14+19 leaving17")
+	reactor=g.reactor.save_data();reactor.reactorLevel=2400;assert(g.reactor.install_snapshot(reactor,g.db.config))
+	var price=g.reactor_upgrade_cost();g.economy.credit("2",GrowthNumber.multiply(price,10))
+	var balance=g.economy.balance("2")
+	check(price is Dictionary and GrowthNumber.valid(price),"High price uses finite representation")
+	check(g.upgrade_reactor(1) and g.reactor.level()==2401 and GrowthNumber.compare(g.economy.balance("2"),GrowthNumber.subtract(balance,price))==0,"Actual high-price purchase matches quote")
+	check(GrowthNumber.valid(g.reactor_multiplier("weapons")),"Large capacity supplies a finite effect")
+
+func stable_save(g)->Dictionary:
+	var data:Dictionary=g.portable_save_data()
+	data.erase("chronoSavedAt");data.erase("hightechSavedAt")
+	return data

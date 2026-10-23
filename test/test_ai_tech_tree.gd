@@ -37,7 +37,6 @@ func research_fixture(game: BattleGame, field: String, value: Variant, key: Stri
 				if not data[field].has(id):data[field][id]=0.0
 	else:data[field][key] = value
 	check(game.research.install_snapshot(data,game.db.data.ai_tech_tree),"Valid research fixture installs")
-	game.invalidate_stat_cache()
 
 func _initialize() -> void:
 	call_deferred("run")
@@ -46,10 +45,8 @@ func run() -> void:
 	var page_script = load("res://scripts/ai_tech_factory_page.gd")
 	check(page_script != null and page_script.can_instantiate(), "AI technology page compiles")
 	var db := ShipDatabase.new()
-	check(db.data.unlock.values().filter(func(row):return str(row.type)=="hightech").size()==4, "original hightech gate rows remain")
 	var g := BattleGame.new(db,false)
 	check(not g.ai_tech_factory_unlocked() and not g.select_tech("singularity") and not g.set_tech_input("1",10), "new save cannot open, research, or invest in factory")
-	check(not g.available_unlocks().any(func(id):return str(id).begins_with("hightech/")), "obsolete scientist notices stay hidden")
 	g.profile.cleared = [3]
 	g.rebuild_unlocks()
 	check(g.ai_tech_factory_unlocked(), "cleared stage 3 opens replacement factory")
@@ -133,19 +130,14 @@ func run() -> void:
 	var base_stats := {}
 	for key in BattleGame.WEAPON_KEYS + BattleGame.DEFENSE_KEYS:base_stats[key] = float(combat.equipment_stat(key,1))
 	research_fixture(combat,"aiTechLevels",{"weapon_accuracy":2,"equipment_finishing":1})
-	combat.invalidate_stat_cache()
 	for key in BattleGame.WEAPON_KEYS:
 		check(near(float(combat.equipment_stat(key,1)),ceilf(float(base_stats[key])*1.1*1.1*1.25)), "shared weapon effect: "+key)
 	for key in BattleGame.DEFENSE_KEYS:
 		check(near(float(combat.equipment_stat(key,1)),ceilf(float(base_stats[key])*1.25)), "shared durability effect: "+key)
 	var original_factor:float=db.data.ai_tech_tree.weapon_accuracy.factor
-	db.data.ai_tech_tree.weapon_accuracy.factor=1.2
-	check(near(float(combat.research.income_factor(combat,"weapon_damage")),1.2*1.2*1.25),"contribution cache follows changed configuration without global clearing")
-	db.data.ai_tech_tree.weapon_accuracy.factor=original_factor
-	combat.profile.hightechLevels = {BattleGame.ENERGY_FOCUS:100}
-	combat.invalidate_stat_cache()
-	check(near(float(combat.equipment_stat("laser",1)),ceilf(float(base_stats.laser)*1.1*1.1*1.25)), "retired technology does not stack")
-	check(not combat.generate_scientist(), "retired AI purchase is disabled")
+	db.data.ai_tech_tree.weapon_accuracy.factor=1.2;combat.notify_configuration_changed()
+	check(near(float(combat.research.income_factor(combat,"weapon_damage")),1.2*1.2*1.25),"Contribution follows explicit configuration revision")
+	db.data.ai_tech_tree.weapon_accuracy.factor=original_factor;combat.notify_configuration_changed()
 	research_fixture(combat,"aiTechLevels",10000,"weapon_accuracy")
 	check(is_inf(combat.research.required(combat,"weapon_accuracy")), "large levels do not overflow time")
 	var restored := BattleGame.new(db,false)

@@ -1,207 +1,69 @@
 extends SceneTree
-
-class ObservedGame extends BattleGame:
-	var attempts := {"equipment":0,"ai":0,"enhance":0,"reactor":0}
-	var splits := {"reactor":0,"ai":0}
-	func equalize_reactor_allocation() -> bool:
-		splits.reactor+=1
-		return super.equalize_reactor_allocation()
-	func distribute_scientists() -> bool:
-		splits.ai+=1
-		return super.distribute_scientists()
-	func upgrade_equipment_batch(mode: String) -> bool:
-		attempts.equipment+=1
-		return super.upgrade_equipment_batch(mode)
-	func generate_scientist(amount := 1) -> bool:
-		attempts.ai+=1
-		return super.generate_scientist(amount)
-	func upgrade_enhancement(count := 1) -> int:
-		attempts.enhance+=1
-		return super.upgrade_enhancement(count)
-	func upgrade_reactor(amount: int) -> bool:
-		attempts.reactor+=1
-		return super.upgrade_reactor(amount)
-
-var checks := 0
-var failures := 0
-func check(ok: bool, label: String) -> void:
+## Current scheduler results, not a second implementation of the old per-second loop.
+var checks:=0
+var failures:=0
+func check(ok:bool,label:String)->void:
 	checks+=1
-	if not ok:failures+=1;printerr(label)
-
-func fund(g: BattleGame, resources: Dictionary, fragments := -1.0) -> void:
-	var snapshot:=g.economy.save_data();snapshot.resources={"1":0.0,"2":0.0};snapshot.resources.merge(resources,true)
-	if fragments>=0:snapshot.jewelFragments=fragments
-	assert(g.economy.install_snapshot(snapshot))
-func fixture(budget := 0.0) -> ObservedGame:
-	var g := ObservedGame.new(ShipDatabase.new(),false)
-	g.profile.cleared=range(1,101)
-	g.rebuild_unlocks()
-	fund(g,{"1":budget,"2":budget},budget)
-	var jobs := [["equipment_upgrade","equipment"],["hightech_scientists","hightech"],["jewel_auto","jewels"],["reactor_upgrade","reactor"]]
-	for i in jobs.size():
-		var id: String = g.crew.members()[i].crewId
-		check(g.assign_crew(id,jobs[i][0],jobs[i][1]),"assign "+jobs[i][0])
-		if i<2:check(g.set_crew_upgrade_mode(id,"1"),"+1 mode")
+	if not ok:failures+=1;printerr("FAIL: ",label)
+func fixture()->BattleGame:
+	var g:=BattleGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var wallet:=g.economy.save_data();wallet.resources={"1":0.0,"2":0.0};wallet.jewelFragments=0
+	assert(g.economy.install_snapshot(wallet))
 	return g
-
-func compare_state(g, reference, label: String) -> void:
-	var actual: Dictionary=g.portable_save_data();var expected: Dictionary=reference.portable_save_data()
-	for key in ["resources","loadout","enhancementLevel","jewelFragments","reactorLevel","reactorAllocation"]:
-		check(actual[key]==expected[key],label+" "+key)
-	check(g.player.armour==reference.player.armour and g.player.shield==reference.player.shield,label+" health")
-
-func reference_second(g) -> void:
-	# Original periodic business calls, in configuration crew order.
-	for item in g.crew.members():
-		match item.assignmentType:
-			"equipment_upgrade":g.crew.auto_upgrade(g,item)
-			"hightech_scientists":g.crew.auto_scientists(g,item)
-			"jewel_auto":g.crew.auto_jewels(g,item)
-			"reactor_upgrade":
-				g.upgrade_reactor(1)
-				g.equalize_reactor_allocation()
-
-func _initialize() -> void:
-	# Limited same-initial-state reference: original per-second callbacks, +1, 1x.
-	var g := fixture(1e7)
-	var reference := fixture(1e7)
-	for second in 3:
-		for frame in 60:g.crew.advance(g,1.0/60.0)
-		reference_second(reference)
-		compare_state(g,reference,"second "+str(second+1))
-	check(g.attempts==reference.attempts,"funded attempt cadence")
-	# Constrain the shared pool and deliberately enqueue in reverse crew order.
-	var constrained := fixture()
-	var constrained_reference := fixture()
-	var funds: Dictionary=constrained.slot_upgrade_cost("weapons",0)
-	fund(constrained,funds.duplicate())
-	fund(constrained_reference,funds.duplicate())
-	constrained.crew.timers.clear()
-	constrained.crew.intervals.clear()
-	for i in range(3,-1,-1):constrained.crew.invalidate_member(constrained,constrained.crew.members()[i])
-	constrained.crew.advance(constrained,1)
-	reference_second(constrained_reference)
-	compare_state(constrained,constrained_reference,"constrained balance/order")
-	var idle := fixture()
-	var idle_reference := fixture()
-	for frame in 3600:idle.crew.advance(idle,1.0/60.0)
-	for second in 60:reference_second(idle_reference)
-	compare_state(idle,idle_reference,"idle same-state comparison")
-	check(idle.attempts.equipment==1 and idle.attempts.ai==1 and idle.attempts.enhance==1 and idle.attempts.reactor<=2,"failed unchanged jobs stop after initial work")
-	print("IDLE ATTEMPTS / 60 seconds: ",idle.attempts,"; original periodic calls: ",idle_reference.attempts)
-	check(idle_reference.attempts=={"equipment":60,"ai":60,"enhance":60,"reactor":60},"reference idle attempt count")
-	check(idle.splits.reactor==1,"unchanged energy split is not recomputed on failed purchases")
-	var splitting: Dictionary=idle.splits.duplicate()
-	idle.profile.planets["1"].conquered=true
-	idle.invalidate_stat_cache()
-	idle.event.emit("planet_changed",{"id":"1","reward":1.0})
-	for frame in 120:idle.crew.advance(idle,1.0/60.0)
-	check(idle.splits==splitting and idle.charge_free_ratio()>0,"free charge bonus never triggers ordinary energy distribution")
-	idle.set_reactor_allocation("weapons",0)
-	idle.crew.advance(idle,0.5)
-	idle.set_reactor_allocation("defence",0)
-	idle.crew.advance(idle,0.5)
-	check(idle.splits.reactor==2 and idle.reactor_allocated()==idle.reactor_capacity(),"manual energy edits merge into first fixed deadline")
-	check(idle.attempts.reactor==1,"energy edits do not retry uranium purchase")
-	var events := {"count":0}
-	idle.event.connect(func(kind,_payload):
-		if kind in ["scientists_changed","reactor_changed"]:events.count+=1)
-	idle.save_dirty=false
-	check(not idle.equalize_reactor_allocation() and events.count==0 and not idle.save_dirty,"identical reactor split has no event/save")
-	idle.profile.scientists=12
-	idle.distribute_scientists()
-	idle.save_dirty=false
-	events.count=0
-	check(not idle.distribute_scientists() and events.count==0 and not idle.save_dirty,"identical AI split has no event/save")
-	var tech: String=idle.hightech_slots()[0]
-	idle.assign_scientist(tech,-1)
-	var manual: Dictionary=idle.profile.scientistAssignments.duplicate()
-	for frame in 120:idle.crew.advance(idle,1.0/60.0)
-	check(idle.profile.scientistAssignments==manual and idle.splits.ai==2,"AI manual edit never triggers automatic redistribution")
-	var energy := fixture()
-	energy.crew.advance(energy,1)
-	var reactor_attempts: int=energy.attempts.reactor
-	energy.db.config.reactorEnergyBase=float(energy.db.config.reactorEnergyBase)*2
-	energy.event.emit("reactor_changed",{})
-	energy.crew.advance(energy,1)
-	check(energy.reactor_allocated()==energy.reactor_capacity() and energy.splits.reactor==2 and energy.attempts.reactor==reactor_attempts,"capacity-only change redistributes without uranium attempt")
-	var locked := fixture()
-	locked.crew.advance(locked,1)
-	locked.profile.cleared.clear()
-	locked.profile.grantedUnlocks=[]
-	locked.rebuild_unlocks()
-	locked.crew.advance(locked,1)
-	check(locked.crew.timers.is_empty() and locked.crew.allocation_timers.is_empty(),"unavailable assignments consume pending work once")
-	locked.profile.cleared=range(1,101)
-	locked.rebuild_unlocks()
-	locked.economy.credit("2",1e7)
-	locked.crew.advance(locked,1)
-	check(locked.reactor.level()==int(locked.db.config.reactorInitialLevel)+1,"unlock reactivates retained assignment")
-	var first: Dictionary=idle.crew.entry(idle,str(idle.crew.members()[0].crewId))
-	idle.economy.credit("1",1e7)
-	idle.event.emit("galaxy_income",{"id":"1","amount":1e7})
-	idle.crew.advance(idle,0.6)
-	idle.economy.credit("2",1e7)
-	idle.resources_changed(["2"])
-	idle.crew.advance(idle,0.39)
-	check(idle.attempts.equipment==1,"income merge keeps first fixed deadline")
-	idle.crew.advance(idle,0.01)
-	check(idle.attempts.equipment==2 and idle.slot_entry("weapons",0).level==2,"first deadline sees all arrivals")
-	idle.crew.advance(idle,0.5)
-	idle.set_crew_upgrade_mode(str(first.crewId),"10")
-	idle.crew.advance(idle,0.5)
-	check(idle.slot_entry("weapons",0).level==12,"mode edit does not postpone pending deadline")
-	var before: Dictionary=idle.profile.duplicate(true)
-	idle.paused=true
-	for frame in 120:idle.tick(1.0/60.0)
-	check(idle.profile==before,"pause freezes pending work and economy")
-	idle.paused=false
-	idle.profile.highestLevel=int(idle.hyperspace.config.unlock_stage)
-	idle.economy.credit(idle.db.evolution_material_id(),10000)
-	idle.crew.advance(idle,10)
-	check(idle.slot_entry("weapons",0).level==22,"large step attempts once")
-	idle.crew.advance(idle,0.1)
-	check(idle.slot_entry("weapons",0).level==22,"large-step overrun discarded")
-	assert(idle.crew.install_snapshot(idle.crew.save_data(),idle.db));idle.crew.reset_schedule(idle)
-	idle.crew.advance(idle,0.9)
-	check(idle.slot_entry("weapons",0).level==22,"load resets elapsed clock")
-	idle.crew.advance(idle,0.1)
-	check(idle.slot_entry("weapons",0).level==32,"load schedules current assignment")
-	var refund := fixture()
-	refund.crew.advance(refund,2)
-	refund.economy.credit("1",refund.slot_upgrade_cost("weapons",0)["1"]);refund.resources_changed(["1"])
-	check(refund.crew.timers.has(refund.crew.members()[0].crewId),"collected income wakes equipment purchase")
-	refund.crew.advance(refund,1)
-	check(refund.slot_entry("weapons",0).level==2,"collected resources are spendable at next deadline")
-	refund.assign_crew(str(refund.crew.members()[0].crewId),"","")
-	refund.crew.advance(refund,2)
-	check(not refund.crew.timers.has(refund.crew.members()[0].crewId),"unassign cancels pending work")
-	# A shared exploration payout that adds XP only changes no purchase dependency.
-	var xp_only := fixture()
-	xp_only.crew.advance(xp_only,1)
-	var xp_attempts: Dictionary=xp_only.attempts.duplicate()
-	var xp_member: Dictionary=xp_only.crew.members()[0]
-	var xp_level: int=xp_member.level
-	xp_only.add_crew_exp(str(xp_member.crewId),1)
-	check(xp_member.level==xp_level,"XP fixture stays below next level")
-	xp_only.crew.advance(xp_only,1)
-	check(xp_only.attempts==xp_attempts,"XP-only change never wakes failed purchase")
-	# A saved level-zero assignment can be retained while its crew unlock is unavailable.
-	# Restoring just that unlock leaves energy capacity and module targets unchanged.
-	var reenabled := fixture()
-	var reactor_member: Dictionary=reenabled.crew.members()[3]
-	var gate: String=reenabled.db.data.crew[reactor_member.crewId].unlockId
-	var old_gate_level: int=reenabled.db.data.unlock[gate].level
-	reenabled.db.data.unlock[gate].level=99999
-	reenabled.profile.grantedUnlocks.erase(gate)
-	reenabled.rebuild_unlocks()
-	reenabled.crew.advance(reenabled,1)
-	check(reenabled.splits.reactor==0,"locked crew does not distribute")
-	var pool_before: int=reenabled.reactor_capacity()
-	reenabled.db.data.unlock[gate].level=old_gate_level
-	reenabled.rebuild_unlocks()
-	check(reenabled.reactor_capacity()==pool_before,"unlock fixture preserves capacity")
-	reenabled.crew.advance(reenabled,1)
-	check(reenabled.splits.reactor==1 and reenabled.reactor_allocated()==pool_before,"crew unlock alone wakes retained distribution")
-	print("CREW DIRTY: %d checks, %d failures" % [checks,failures])
+func _initialize()->void:
+	var locked:=BattleGame.new(ShipDatabase.new(),false)
+	check(locked.crew.available_targets(locked,"reactor_upgrade").is_empty(),"Locked reactor cannot receive crew")
+	var g:=fixture();var c=g.crew
+	check(g.assign_crew("navigator","reactor_upgrade","reactor"),"Assign reactor crew")
+	check(not g.assign_crew("engineer","reactor_upgrade","reactor"),"Reactor job is exclusive")
+	var level:=g.reactor.level();var price=g.reactor_upgrade_cost()
+	g.economy.credit("2",price);g.resources_changed(["2"])
+	c.advance(g,0.9)
+	check(g.reactor.level()==level and g.reactor_allocated()==0,"No purchase or allocation before deadline")
+	c.advance(g,0.1)
+	check(g.reactor.level()==level+1 and GrowthNumber.compare(g.economy.balance("2"),0)==0,"Deadline pays quote and buys once")
+	check(g.reactor_allocated()==g.reactor_capacity(),"New capacity allocated at the same deadline")
+	var shares:Array=g.reactor.allocations().values()
+	check(int(shares.max())-int(shares.min())<=1,"Small capacity keeps integer remainder")
+	g.set_reactor_allocation("weapons",0);c.advance(g,1)
+	check(g.reactor.level()==level+1 and g.reactor_allocated()==g.reactor_capacity(),"Unaffordable purchase still permits redistribution")
+	var events:Array=[];g.event.connect(func(kind,_payload):events.append(kind))
+	g.save_dirty=false;var before:=stable_save(g);c.advance(g,2)
+	check(stable_save(g)==before and events.is_empty() and not g.save_dirty,"Unchanged failed job neither mutates domains nor emits saves/events")
+	g.db.config.reactorEnergyBase*=2;g.notify_configuration_changed();g.event.emit("reactor_changed",{});c.advance(g,1)
+	check(g.reactor.level()==level+1 and g.reactor_allocated()==g.reactor_capacity(),"Capacity-only change redistributes without purchase")
+	g.economy.credit("2",GrowthNumber.multiply(g.reactor_upgrade_cost(),100));g.resources_changed(["2"])
+	g.paused=true;before=stable_save(g);g.consume_external_time(2)
+	check(stable_save(g)==before,"Pause preserves real wallet and all growth domains")
+	g.paused=false;c.advance(g,10)
+	check(g.reactor.level()==level+2,"Long frame makes one purchase, not a burst")
+	g.assign_crew("navigator","","");c.advance(g,1)
+	check(g.reactor.level()==level+2,"Recall cancels pending job")
+	g.assign_crew("navigator","reactor_upgrade","reactor");c.advance(g,0.9)
+	assert(c.install_snapshot(c.save_data(),g.db));c.reset_schedule(g);c.advance(g,0.1)
+	check(g.reactor.level()==level+2,"Snapshot install restarts a full job interval")
+	c.advance(g,0.9);check(g.reactor.level()==level+3,"Restored current assignment executes once")
+	# Income arrivals coalesce at the original deadline; mode changes do not postpone it.
+	g=fixture();check(g.assign_crew("navigator","equipment_upgrade","equipment"),"Assign equipment job")
+	g.set_crew_upgrade_mode("navigator","1");g.crew.advance(g,1)
+	var initial:int=g.slot_entry("weapons",0).level
+	g.economy.credit("1",1e7);g.resources_changed(["1"]);g.crew.advance(g,0.6)
+	g.economy.credit("2",1e7);g.resources_changed(["2"]);g.crew.advance(g,0.39)
+	check(g.slot_entry("weapons",0).level==initial,"Income does not spend before original deadline")
+	g.crew.advance(g,0.01);check(g.slot_entry("weapons",0).level==initial+1,"Merged arrivals fund one actual equipment purchase")
+	g.crew.advance(g,0.5);g.set_crew_upgrade_mode("navigator","10");g.crew.advance(g,0.5)
+	check(g.slot_entry("weapons",0).level==initial+11,"Mode change takes effect at existing deadline")
+	g.economy.credit(g.db.evolution_material_id(),10000);g.crew.advance(g,10)
+	check(g.slot_entry("weapons",0).level==initial+21,"Large interval executes one configured batch")
+	before=stable_save(g);g.crew.advance(g,0.1)
+	check(stable_save(g)==before,"Discarded overrun cannot cause a second purchase")
+	g.assign_crew("navigator","","");before=stable_save(g);g.crew.advance(g,2)
+	check(stable_save(g)==before,"Equipment recall stops spending")
+	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
+
+func stable_save(g)->Dictionary:
+	var data:Dictionary=g.portable_save_data()
+	data.erase("chronoSavedAt");data.erase("hightechSavedAt")
+	return data

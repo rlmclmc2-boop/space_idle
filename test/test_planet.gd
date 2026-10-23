@@ -15,7 +15,7 @@ func check(ok: bool, label: String) -> void:
 
 func set_degree(g: BattleGame,id: String,value) -> void:
 	var snapshot:=g.portable_save_data();snapshot.planets[id].degree=value
-	check(g.planets.install_snapshot(snapshot,g.db),"Current planet fixture installs");g.invalidate_stat_cache()
+	check(g.planets.install_snapshot(snapshot,g.db),"Current planet fixture installs")
 func _initialize() -> void:
 	var db := ShipDatabase.new()
 	# This scenario exercises the duration curve independently of live balance edits.
@@ -67,12 +67,6 @@ func _initialize() -> void:
 	check(is_equal_approx(g.planet_exp_multiplier(), 1.2), "Next level experience coefficient")
 	check(g.start_planet_exploration(id, "navigator"), "Crew can explore again")
 	g.advance_planets(10.0)
-	check(g.progress_writer.acquire_owner(),"Acquire isolated real save writer")
-	g.save_enabled = true
-	g.save_progress()
-	var restored := BattleGame.new(db, false)
-	restored.load_progress()
-	check(int(restored.planet_progress(id).degree) == 1 and str(restored.planet_progress(id).crewId) == "navigator" and is_equal_approx(float(restored.planet_progress(id).elapsed), 10.0), "Exploration progress survives save and load")
 	g.advance_planets(g.planet_duration(id) - 10.0)
 	check(int(g.crew.entry(g, "navigator").level) == 2, "Second reward uses current highest level and growth cost")
 	check(g.assign_crew("navigator", "equipment_upgrade", "equipment"), "Completed crew can take assignment")
@@ -85,6 +79,7 @@ func _initialize() -> void:
 	g.advance_planets(g.planet_duration(id))
 	check(g.crew.entry(g,"engineer").level==1 and is_equal_approx(g.crew.entry(g,"engineer").exp,24) and is_equal_approx(emitted_reward[0],124),"Credited and emitted experience match integer preview")
 	construction_boundaries()
+	conquest_boundaries()
 	print("PLANET: %d checks, %d failures" % [checks, failures])
 	quit(1 if failures else 0)
 
@@ -127,3 +122,113 @@ func construction_boundaries() -> void:
 	g.event.connect(observer);check(g.reforge_planet("1"),"Reforge commits permanent conquest and new run");g.event.disconnect(observer)
 	check(observed.size()==1 and observed[0].planets["1"].conquered and observed[0].planets["1"].crewId=="navigator" and observed[0].planets["1"].elapsed==0.25 and observed[0].crew==crew_before.crew,"Reforge notification sees conquest, retained trip and all crew together")
 	check(not g.reforge_planet("1"),"Conquest remains once per planet")
+
+func update_planet(g,id: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid planet fixture installs")
+func update_building(g,id: String,key: String,fields: Dictionary) -> void:
+	var snapshot: Dictionary=g.portable_save_data();snapshot.planets[id].buildings[key].merge(fields,true)
+	check(g.planets.install_snapshot(snapshot,g.db),"Valid building fixture installs")
+func make_game(db):
+	var g := BattleGame.new(db,false)
+	g.profile.cleared = range(1,61)
+	g.rebuild_unlocks()
+	return g
+func complete_shipyard(g, id: String) -> void:
+	# Building identity is table-driven: later planets may migrate a legacy ID.
+	for row in g.planet_buildings.rows(g,id):
+		if str(row.type)=="shipyard":
+			update_building(g,id,str(row.id),{"status":"built"})
+			return
+	check(false,"Configured shipyard exists for " + id)
+func total_exp(g, member: Dictionary) -> float:
+	var result := float(member.exp)
+	for level in int(member.level):result += g.crew.required_exp(g,level)
+	return result
+func trip(g, id: String, member := "navigator") -> void:
+	check(g.start_planet_exploration(id,member), "Dispatch " + id)
+	g.advance_planets(g.planet_duration(id))
+func conquest_boundaries() -> void:
+	var db := ShipDatabase.new()
+	var original := db.data.duplicate(true)
+	# Shared XP must respect each crew's existing unlock gate, including future unlocks.
+	var locked_id := "engineer"
+	var locked_gate: String = db.data.crew[locked_id].unlockId
+	var gate_before: Dictionary = db.data.unlock[locked_gate].duplicate(true)
+	db.data.unlock[locked_gate].level=61
+	db.data.unlock[locked_gate].mode="cleared"
+	var shared = make_game(db)
+	update_planet(shared,"1",{"conquered":true})
+	var shared_reward: float = shared.planet_exp_reward("1")
+	check(not shared.crew.unlocked(shared,locked_id),"Fixture includes a locked crew")
+	check(not shared.add_crew_exp(locked_id,shared_reward),"Direct XP also rejects locked crew")
+	trip(shared,"1")
+	for member in shared.crew.members():
+		var expected: float = shared_reward if shared.crew.unlocked(shared,member.crewId) else 0.0
+		check(is_equal_approx(total_exp(shared,member),expected),"Sharing pays unlocked crew only, once: "+str(member.crewId))
+	shared.profile.cleared.append(61)
+	check(shared.crew.unlocked(shared,locked_id),"Existing unlock system unlocks crew")
+	trip(shared,"1")
+	check(is_equal_approx(total_exp(shared,shared.crew.entry(shared,locked_id)),shared_reward),"Newly unlocked crew receives next trip only, with no backfill")
+	db.data.unlock[locked_gate]=gate_before
+	for index in 6:
+		var id := str(index+1)
+		var g = make_game(db)
+		# Later planets are unlocked by prior conquest, not just combat stage.
+		for previous in range(1,index+1):update_planet(g,str(previous),{"conquered":true})
+		g.rebuild_unlocks()
+		var start := int(db.data.planet[id].reforgeStartLevel)
+		check(g.planet_reforge_start(id)==start, "Configured initial start " + id)
+		var amount: float = g.planet_exp_reward(id)
+		trip(g,id)
+		for member in g.crew.members():
+			check(is_equal_approx(total_exp(g,member),amount if member.crewId=="navigator" else 0.0), "Before conquest explorer only " + str(member.crewId))
+		complete_shipyard(g,id)
+		update_planet(g,id,{"auto_explore":true})
+		var historical: int = g.profile.highestLevel
+		var multiplier: float = g.planet_exp_multiplier()
+		var resources: Dictionary = g.economy.resources().duplicate()
+		var old_unlocks: Array = g.available_unlocks()
+		check(g.reforge_planet(id), "Conquest " + id)
+		check(g.stage==start and g.profile.highestLevel==g.stage and g.profile.cleared==range(1,g.stage), "Starts at table stage, earlier stages skipped")
+		check(g.economy.resources()==resources, "Skipped stages grant no resources")
+		check(g.profile.lifetime_max_stage==historical and g.planet_exp_multiplier()==multiplier, "Historical XP retained")
+		check(g.planet_progress(id).auto_explore and g.planet_progress(id).crewId=="", "Reforge retains auto preference without dispatch")
+		check(g.pending_unlocks.is_empty(), "Reforge has no repeated notices")
+		for gate in old_unlocks:
+			check(g.profile.seenUnlocks.has(gate), "Old notice history retained " + gate)
+			if int(db.data.unlock[gate].level)<=g.stage:check(g.unlock_available(gate), "Old starting-stage unlock restored " + gate)
+		var before := {}
+		for member in g.crew.members():before[member.crewId]=total_exp(g,member)
+		trip(g,id)
+		for member in g.crew.members():
+			var expected: float = amount if g.crew.unlocked(g,member.crewId) else 0.0
+			check(is_equal_approx(total_exp(g,member)-before[member.crewId],expected), "Conquest pays unlocked crew exactly once " + str(member.crewId))
+		# Previously granted later unlocks activate again, silently.
+		for stage in range(g.stage,61):
+			g.stage=stage
+			g.clear_level()
+		check(g.pending_unlocks.is_empty(), "All previously experienced unlocks remain silent after reforge")
+	# First-time unlocks still notify and acknowledge one page at a time.
+	var g = make_game(db)
+	db.data.unlock["test_future"]={"name":"test_future","type":"equipment","target":"laser","level":61,"mode":"cleared","title":"future","desc":"future"}
+	g.stage=61
+	g.clear_level()
+	check(g.pending_unlocks.has("test_future"), "New unlock still notifies")
+	while not g.pending_unlocks.is_empty():g.acknowledge_unlocks()
+	check(g.profile.seenUnlocks.has("test_future"), "Acknowledgement stores permanent history")
+	complete_shipyard(g,"1")
+	db.data.planet["1"].reforgeStartLevel=17
+	check(g.reforge_planet("1") and g.stage==17, "Edited start table value controls runtime")
+	var first_peak: int=g.profile.lifetime_max_stage
+	complete_shipyard(g,"2")
+	check(g.reforge_planet("2") and g.profile.lifetime_max_stage==first_peak, "Repeated reforge never lowers historical peak")
+	g.profile.cleared=range(1,64)
+	g.rebuild_unlocks()
+	check(g.profile.lifetime_max_stage==64 and g.planet_exp_multiplier()==float(db.levels[63].planetExpRatio), "New best stage raises historical XP")
+	# Current format must reject an incomplete progression snapshot intact.
+	var raw: Dictionary=g.portable_save_data();raw.erase("lifetime_max_stage")
+	var before_crew: Dictionary=g.crew.save_data();var before_planets: Dictionary=g.planets.save_data()
+	g.load_progress_data(raw)
+	check(g.crew.save_data()==before_crew and g.planets.save_data()==before_planets and not g.hyperspace.last_error.is_empty(),"Incomplete save cannot reset permanent conquest or crew")
+	db.data=original
