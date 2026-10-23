@@ -1,8 +1,8 @@
 {
   "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
-  "runtime_candidate_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525",
+  "runtime_candidate_sha": "e54b5a315290831a76f4edc12db67a5eb966fcf1",
   "prior_full_game_runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
-  "purpose": "Reviewable source delivery: the approved 76 runtime/preview paths plus 41 modifications to existing tests, runners and a fixture. All 41 validation paths already exist; no new test project. Audit documents, images, logs and temporary outputs remain excluded; no main update performed.",
+  "purpose": "Reviewable source delivery: the frozen 76 runtime/preview paths plus reviewed changes/deletions within the original 41 test/runner/fixture paths. No new test file or test project. Audit artifacts remain excluded; no main update.",
   "included": [
     {
       "status": "M",
@@ -701,18 +701,18 @@
       "status": "M",
       "path": "test/run.py",
       "base_blob": "cafd61ee99d226fc03f161d6dbaff1d719b7d660",
-      "candidate_blob": "2ff08d5cd2b4fa6dabf35c8f8fd3ab126f42b727",
-      "insertions": 16,
-      "deletions": 1,
+      "candidate_blob": "c43663cb4e8ffff1175bb5e834bd33c75101290e",
+      "insertions": 48,
+      "deletions": 2,
       "role": "existing_runner_adapter"
     },
     {
       "status": "M",
       "path": "test/test_ai_tech_tree.gd",
       "base_blob": "1d0a0fc8f03892ebc99bd650371beee9e3655e18",
-      "candidate_blob": "c103dc5986531080fec1d18f87da2a7a512bda4e",
-      "insertions": 97,
-      "deletions": 50,
+      "candidate_blob": "fd26713c216af622cae3d32152e2eddbe4da796f",
+      "insertions": 96,
+      "deletions": 57,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -737,9 +737,9 @@
       "status": "M",
       "path": "test/test_crew_dirty.gd",
       "base_blob": "3ec863f4260d1ca194a8c2daad86c17498f4c165",
-      "candidate_blob": "ba230dcdff905a8d3248870c91b76ca18e5179b9",
-      "insertions": 29,
-      "deletions": 25,
+      "candidate_blob": "333ed8ab9f7258561e0fb05ed4f489c9d1cb23f3",
+      "insertions": 65,
+      "deletions": 199,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -761,21 +761,21 @@
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_crew_reactor.gd",
       "base_blob": "fa949f9b906c192f9375389499635971c2965237",
-      "candidate_blob": "58ba3be36d9b13e465a0651c87cc97685015e585",
-      "insertions": 19,
-      "deletions": 19,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 59,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_departure_batch_debt.gd",
       "base_blob": "f5e87a590f11db0558ef1dd48881757e8ff7e642",
-      "candidate_blob": "83e2c0afe1d09ae33326cd0ddfd1516c4168a668",
-      "insertions": 76,
-      "deletions": 20,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 47,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -791,18 +791,18 @@
       "status": "M",
       "path": "test/test_enhancement_cost.gd",
       "base_blob": "da98e1056c02ce2ea69116cc1c7163df65ccb141",
-      "candidate_blob": "e2b8e8025c872f8a418efc8f8e393fb7ddf53e0c",
-      "insertions": 44,
-      "deletions": 24,
+      "candidate_blob": "d99f7e9f221bdd080bbcf98eb78cd405e85b77dc",
+      "insertions": 84,
+      "deletions": 61,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_enhancement_summary.gd",
       "base_blob": "0f0433776a08b38e874580bc8212dc7afd1d579d",
-      "candidate_blob": "f85a69906bf48ee1fdff2a4c021bd6f9df765c77",
-      "insertions": 31,
-      "deletions": 18,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 106,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -824,56 +824,56 @@
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_hyperspace_consumers.gd",
       "base_blob": "46a13ec1d5659a38b15cbbd5aa3b1479f1b21eac",
-      "candidate_blob": "070ddadccb9f7116147c6611c307989998c95562",
-      "insertions": 9,
-      "deletions": 4,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 57,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_hyperspace_departure_gate.gd",
       "base_blob": "8acf1785cbde95bcb4c12566a65144ccc5a10787",
-      "candidate_blob": "cc2b71a1d4c46dc4755e268b01eb4b5d48f9eccd",
-      "insertions": 60,
-      "deletions": 26,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 88,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_hyperspace_exchange.gd",
       "base_blob": "971df749b89fad14bc6caa0f68e8d88657dcc71e",
-      "candidate_blob": "07d564485f8d01adc566f7e8c3be22df4bc4ea3d",
-      "insertions": 14,
-      "deletions": 4,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 30,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_hyperspace_layers.gd",
       "base_blob": "51c7634ccd22fd70ff1fcd436f75259cc390794d",
-      "candidate_blob": "9dd069da360d67c4b688422f60f0a10ca49a1589",
-      "insertions": 124,
-      "deletions": 70,
+      "candidate_blob": "340d9003b42b60a96fb5936d8bafbad34374b5c7",
+      "insertions": 135,
+      "deletions": 88,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_hyperspace_manual.gd",
       "base_blob": "7a079352e1344694056f1a9071a681f1c6d95669",
-      "candidate_blob": "66df965eba7bb75e5987bc479da3e7a8b70f4157",
-      "insertions": 15,
-      "deletions": 13,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 51,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_hyperspace_material_economy.gd",
       "base_blob": "2433b86c989e81c7e726c1af877809bcd0461fd1",
-      "candidate_blob": "9416d8fbfdf5fc94f2777d85e436829f1b70a894",
-      "insertions": 99,
+      "candidate_blob": "b8a3c5c1363e48c2b1148ecba28a811cf34fdea3",
+      "insertions": 187,
       "deletions": 46,
       "role": "existing_test_or_performance_entry_adapter"
     },
@@ -890,7 +890,7 @@
       "status": "M",
       "path": "test/test_module_refit.gd",
       "base_blob": "fe20121ba1c675ac6ee963bd0cacf0113d894ab9",
-      "candidate_blob": "0dc912836df142a389b869230e5812c7cbc99e67",
+      "candidate_blob": "09fa2f7826ef7b0318e13d5014bc4ef6fe943b71",
       "insertions": 62,
       "deletions": 20,
       "role": "existing_test_or_performance_entry_adapter"
@@ -899,18 +899,18 @@
       "status": "M",
       "path": "test/test_native_blocked_transfer.gd",
       "base_blob": "b34aa08580238923ec7ba5be2ca5d516c65a089b",
-      "candidate_blob": "e0dda57347ef6bd70d532771f37b6585c1f5f98e",
-      "insertions": 34,
-      "deletions": 19,
+      "candidate_blob": "4512b672a643934a84c6fcafae0a36e995d4f648",
+      "insertions": 37,
+      "deletions": 21,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_native_galaxy_refit.gd",
       "base_blob": "06b6275f27c923e7f253cd287f42bb647a180ce5",
-      "candidate_blob": "22c34eb86578fcaa67d4a45c18e660247c0c311a",
-      "insertions": 85,
-      "deletions": 27,
+      "candidate_blob": "90a365b2fea21159d967198d6b9e7ea58b796ede",
+      "insertions": 93,
+      "deletions": 29,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -935,9 +935,9 @@
       "status": "M",
       "path": "test/test_ordinary_entry.gd",
       "base_blob": "4ab4d6562101101d772fcd3ccf884f4f2f325a22",
-      "candidate_blob": "8de1a3324a632daef1d441fe69cd395a4c5331ac",
-      "insertions": 252,
-      "deletions": 3,
+      "candidate_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+      "insertions": 276,
+      "deletions": 44,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -953,80 +953,80 @@
       "status": "M",
       "path": "test/test_planet.gd",
       "base_blob": "c7f30ec97a77df15fa94bd945065d542088a2045",
-      "candidate_blob": "d84efae1ebcf9159f9d45fba6e86d7c6fa138983",
-      "insertions": 56,
-      "deletions": 5,
+      "candidate_blob": "d8d69ec7a052c514c86d53e5b72cfe7d715a26cc",
+      "insertions": 166,
+      "deletions": 10,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_planet_buff_ui.gd",
       "base_blob": "7707ab015273fa329df2fa5daef8e29217d3edf8",
-      "candidate_blob": "eec9d6a86ce4f807f384bc360c6c254e037d8bbf",
-      "insertions": 9,
-      "deletions": 3,
+      "candidate_blob": "788734a24d19def5f92b03cb1f4004cd3a2ece69",
+      "insertions": 10,
+      "deletions": 6,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_planet_conquest_progress.gd",
       "base_blob": "16d816c7657e55697cedef20248b6ad6777af587",
-      "candidate_blob": "e203e843d2aac216cf750b57b64763d686c89a5d",
-      "insertions": 24,
-      "deletions": 26,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 129,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_reactor.gd",
       "base_blob": "78431283194ea4f480a6e1ac6b1700647ea23503",
-      "candidate_blob": "9b29904ab4cbc4e60177adf76036b5029a24b3f4",
-      "insertions": 21,
-      "deletions": 17,
+      "candidate_blob": "f6f0751985a304ed0241c7d74e7679484788099a",
+      "insertions": 43,
+      "deletions": 19,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_reactor_integer_cost.gd",
       "base_blob": "c90668c8e648a8a5317f8af60c3288302cdb7ff1",
-      "candidate_blob": "9cc1fcc5d8e3d6cbc6ec173620bddd8f19827c49",
-      "insertions": 18,
-      "deletions": 5,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 34,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_save_boundaries.gd",
       "base_blob": "68f2e8c2b49a1d31e88980d9cf338a50570b8346",
-      "candidate_blob": "3b69b4cf4a7655fdd36a629744586386f7b3c173",
-      "insertions": 187,
-      "deletions": 88,
+      "candidate_blob": "8f2fe5ee758911002dbf51a304a04031b146bc50",
+      "insertions": 152,
+      "deletions": 89,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_shared_enhancement_ranks.gd",
       "base_blob": "5efb0d0207af5fdb8962790567173872c42ed782",
-      "candidate_blob": "64c39304c80ef3a327cd5feb8e79d9924564b0ef",
-      "insertions": 29,
-      "deletions": 24,
+      "candidate_blob": "a59d5a734e3f4037b18f31db6ee94959bcd39604",
+      "insertions": 159,
+      "deletions": 131,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
-      "status": "M",
+      "status": "D",
       "path": "test/test_stable_compiled_rules.gd",
       "base_blob": "4319f46e37e094eca61484712e0c9bd212702d51",
-      "candidate_blob": "e7baba4913f33a195a68fc5e714c9c112010a074",
-      "insertions": 14,
-      "deletions": 9,
+      "candidate_blob": null,
+      "insertions": 0,
+      "deletions": 38,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/test_stat_snapshot.gd",
       "base_blob": "288ca325cfac7078225b324187e723447722b0c9",
-      "candidate_blob": "699ebbabafb7ff29966d24ae50a7b054734566a4",
-      "insertions": 36,
+      "candidate_blob": "eace1f70802fe843639926b675cdb72112d8b663",
+      "insertions": 22,
       "deletions": 1,
       "role": "existing_test_or_performance_entry_adapter"
     },
@@ -1034,18 +1034,18 @@
       "status": "M",
       "path": "test/test_time_steps.gd",
       "base_blob": "3c01eb38273b76f21d0ad7f6247c7b188aa075e3",
-      "candidate_blob": "c2c8619f051e27dd08e2605dd2cc911f7f74552b",
-      "insertions": 62,
-      "deletions": 13,
+      "candidate_blob": "16e65caf98d1cc390738fdf291e59692158b8361",
+      "insertions": 168,
+      "deletions": 15,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
       "status": "M",
       "path": "test/whole_game_perf.gd",
       "base_blob": "fa804609cb6609f69193ae3a770add2ba2402b90",
-      "candidate_blob": "94332ec6d16ca734f5ca9d93772c9bc2ea906b21",
-      "insertions": 217,
-      "deletions": 31,
+      "candidate_blob": "bd05f04441aa069f8c7bdf168ee837cca7cb69fa",
+      "insertions": 284,
+      "deletions": 113,
       "role": "existing_test_or_performance_entry_adapter"
     },
     {
@@ -1064,21 +1064,21 @@
     "existing_test_runner_fixture_paths": 41,
     "total_paths": 117,
     "statuses": {
-      "M": 102,
+      "M": 92,
       "A": 11,
-      "D": 4
+      "D": 14
     },
-    "insertions": 6206,
-    "deletions": 4380
+    "insertions": 6554,
+    "deletions": 5359
   },
   "delta_verification": {
     "method": "git diff --binary --full-index base candidate -- included paths; git apply --cached --check and apply using an isolated GIT_INDEX_FILE initialized from exact base; write-tree and compare changed paths. No checkout/ref/main/working-file changes.",
-    "patch_sha256": "edd0109bcfa29fb25df5013c1f79ba8c4be0b9252101cbd5d60b3ac8bd238dfe",
-    "prepared_tree": "66a5c2d2309ebddf96636a2f200a711f376a4657",
+    "patch_sha256": "c48a6d05404e10ac2c786b0a9afda8ebaccd55f3af240226b16150ac888c2f31",
+    "prepared_tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
     "changed_paths_exactly_match_manifest": true,
     "index_purpose": "Static Git delivery validation only; not a new game/test run.",
     "candidate_blobs_match_prepared_tree": true,
-    "existing_validation_sources": "All 41 paths exist in the base and are modifications only. They exactly match fd1c5eb4 and are unchanged since the C25 runtime 820262e6. No tests rerun for this manifest-only revision."
+    "existing_validation_sources": "All 41 paths exist at base main; 31 retained and 10 deleted after necessity review. 76 production/preview paths match fd1c5eb4 exactly. Validation sources and tested blobs are recorded below."
   },
   "unchanged_runtime_inputs": [
     "space-battleship/main.tscn",
@@ -1103,7 +1103,7 @@
   },
   "review_status": {
     "820262e6": "Parent reports dot/astra agreement on main architecture, C24 loading logic and C25 functional persistence closure.",
-    "current_style_and_delivery": "Parent confirms dot/astra acceptance of fd1c5eb4 style and the 76 runtime/preview paths. This 117-path source-delivery revision adds only the already-existing 41 validation adaptations and is pending confirmation. No main merge.",
+    "current_style_and_delivery": "Frozen fd1c5eb4 runtime/style remains accepted. C27 test rewrite and revised delivery tree await dot/astra review. No main merge.",
     "performance": "Not comprehensively at target; retained C23/C24 peaks and long-duration limitations. No new timing claim from a color-only change."
   },
   "delivery_groups": {
@@ -1124,10 +1124,11 @@
     "existing_test_runner_fixture_adaptations": {
       "paths": 41,
       "statuses": {
-        "M": 41
+        "M": 31,
+        "D": 10
       },
-      "insertions": 2276,
-      "deletions": 810,
+      "insertions": 2624,
+      "deletions": 1789,
       "roles": [
         "existing_fixture_adapter",
         "existing_runner_adapter",
@@ -1147,7 +1148,704 @@
       "**/.runtime/**",
       "isolated userdata, captures/import logs and temporary index outside this audit evidence"
     ],
-    "note": "Preserve adaptations to the 41 existing test/runner/fixture paths in the same source delivery as their new production contracts; do not leave those changed entry points at obsolete main versions. Exclude only audit documentation, screenshots/logs and temporary output. No test additions, cleanup or rerun in this delivery revision."
+    "note": "Retain the reviewed adaptations and deletions within the original 41 validation paths alongside the frozen 76 runtime/preview paths. Exclude audit documentation, evidence, images, logs and temporary data. No new test files or test project."
   },
-  "supersedes_delivery_manifest_commit": "34046ae3c8740345cc267c471d5e66f89168a072"
+  "supersedes_delivery_manifest_commit": "12ca5486ab51c7d681f834ae08e154b544297335",
+  "validation_rewrite": {
+    "baseline_sha": "12ca5486ab51c7d681f834ae08e154b544297335",
+    "production_frozen_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525",
+    "status": "Implementation complete; targeted checks passed; awaiting independent dot/astra review; no main update",
+    "items": [
+      {
+        "path": "test/fixtures/galaxy_1_complete.json",
+        "action": "保留",
+        "reason": "既有完整城市数据仍被预览/星系UI/性能场景引用；不删不压缩数据制造代码量改善。",
+        "lines_before": 3142,
+        "lines_after": 3142,
+        "source_blob": "53feeba99056216b59075af1fd8e751f2285c641"
+      },
+      {
+        "path": "test/run.py",
+        "action": "重写",
+        "reason": "ordinary_entry六阶段显式调用，按流程隔离用户目录；脚本错误不能当成功。",
+        "lines_before": 134,
+        "lines_after": 165,
+        "source_blob": "c43663cb4e8ffff1175bb5e834bd33c75101290e"
+      },
+      {
+        "path": "test/test_ai_tech_tree.gd",
+        "action": "精简",
+        "reason": "保留实际付费科研、门槛、短缺及拒绝提交；退出旧科学家兼容断言，使用配置版本边界。",
+        "lines_before": 179,
+        "lines_after": 171,
+        "source_blob": "fd26713c216af622cae3d32152e2eddbe4da796f"
+      },
+      {
+        "path": "test/test_auto_gen_resources.gd",
+        "action": "保留",
+        "reason": "配置收入间隔、掉落/拾取及累计边界，主场景只覆盖一次正常收入。",
+        "lines_before": 55,
+        "lines_after": 55,
+        "source_blob": "ec6b0287a1e637626eb6b01192781557be6165f4"
+      },
+      {
+        "path": "test/test_chrono_ui.gd",
+        "action": "保留",
+        "reason": "倍速与粒子供给的实际UI表示和输入。",
+        "lines_before": 139,
+        "lines_after": 139,
+        "source_blob": "35bbdbc5a3352d09c1965f247c2fc2098d3631a4"
+      },
+      {
+        "path": "test/test_crew_dirty.gd",
+        "action": "重写",
+        "reason": "以真实余额、等级、分配和领域状态检查截止时间、收入唤醒、模式/暂停/召回；删除旧逐秒参考及科学家。",
+        "lines_before": 207,
+        "lines_after": 69,
+        "source_blob": "333ed8ab9f7258561e0fb05ed4f489c9d1cb23f3"
+      },
+      {
+        "path": "test/test_crew_levels.gd",
+        "action": "保留",
+        "reason": "船员等级、溢出经验、职业效果及派驻提交边界。",
+        "lines_before": 131,
+        "lines_after": 131,
+        "source_blob": "9d2517952ddc48d5084d4a0716ff1af67b65f0e0"
+      },
+      {
+        "path": "test/test_crew_levels_ui.gd",
+        "action": "保留",
+        "reason": "船员等级/解锁/效果文字与真实控件；属于组件验证。",
+        "lines_before": 73,
+        "lines_after": 73,
+        "source_blob": "e3fe1c35a82191b999a987acabc9412d272eff38"
+      },
+      {
+        "path": "test/test_crew_reactor.gd",
+        "action": "删除并入",
+        "reason": "test_crew_dirty.gd中的反应炉派驻、正常价购买、分配和重载调度。",
+        "lines_before": 59,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_departure_batch_debt.gd",
+        "action": "删除并入",
+        "reason": "test_time_steps.gd保留尾段债务、失败停止，以及真实Presented导弹细分中返回的完整步边界。",
+        "lines_before": 103,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_enhancement_branch_attacks.gd",
+        "action": "保留",
+        "reason": "实际攻击分支、连续/重复攻击和命中计数，不能由面板文字替代。",
+        "lines_before": 125,
+        "lines_after": 125,
+        "source_blob": "bcfa9f1da7b7302828eb406e843a1d9e07c56d7a"
+      },
+      {
+        "path": "test/test_enhancement_cost.gd",
+        "action": "适配",
+        "reason": "保留共享成长实际价格及永久奖励不增加购买成本；星球准备改由领域安装。",
+        "lines_before": 88,
+        "lines_after": 91,
+        "source_blob": "d99f7e9f221bdd080bbcf98eb78cd405e85b77dc"
+      },
+      {
+        "path": "test/test_enhancement_summary.gd",
+        "action": "删除并入",
+        "reason": "test_shared_enhancement_ranks.gd显示直接对照领域效果结果；删除复写历史对数公式及重复门槛笛卡尔积。",
+        "lines_before": 119,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_galaxy.gd",
+        "action": "保留",
+        "reason": "星系独立算法、建造/升级与结算边界。",
+        "lines_before": 187,
+        "lines_after": 187,
+        "source_blob": "a340c6b6cb90c2e25575fe1694728e9cc8eb9eca"
+      },
+      {
+        "path": "test/test_galaxy_ui.gd",
+        "action": "保留",
+        "reason": "几何/连接/点击/加载生命周期与最终材质，真实游戏快验不能替代资产结构检查。",
+        "lines_before": 637,
+        "lines_after": 637,
+        "source_blob": "323c4193583ae00798b1a1dec22cdf3116340919"
+      },
+      {
+        "path": "test/test_hyperspace_consumers.gd",
+        "action": "删除并入",
+        "reason": "test_hyperspace_material_economy.gd实际装备挂设与下游效果，领域快照准备替代旧任意写入。",
+        "lines_before": 62,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_hyperspace_departure_gate.gd",
+        "action": "删除并入",
+        "reason": "实际奖励卡/装备/锻造归ordinary_entry；时间门槛归time_steps，会话清场归layers，退出替身UI。",
+        "lines_before": 122,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_hyperspace_exchange.gd",
+        "action": "删除并入",
+        "reason": "test_hyperspace_material_economy.gd；报价/重试比较钱包与异空间域，不再比较旧profile。",
+        "lines_before": 40,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_hyperspace_layers.gd",
+        "action": "合并",
+        "reason": "活动会话、清场不奖励、正常/驻守返回、后台待领与有限预算、拒绝/失败/满仓；退出旧格式与百次抽样计时。",
+        "lines_before": 200,
+        "lines_after": 193,
+        "source_blob": "340d9003b42b60a96fb5936d8bafbad34374b5c7"
+      },
+      {
+        "path": "test/test_hyperspace_manual.gd",
+        "action": "删除并入",
+        "reason": "真实路线拒绝/退出失败并入layers，真实胜利与保存领取归ordinary_entry；删除40组合成路线和重复成功往返。",
+        "lines_before": 53,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_hyperspace_material_economy.gd",
+        "action": "合并",
+        "reason": "锻造/兑换/挂设消费者实际交易，精确材料/核心、短缺/溢出/过期提案/RNG/通知/幂等与加载容量。",
+        "lines_before": 191,
+        "lines_after": 279,
+        "source_blob": "b8a3c5c1363e48c2b1148ecba28a811cf34fdea3"
+      },
+      {
+        "path": "test/test_large_numbers.gd",
+        "action": "保留",
+        "reason": "有限有效位表示、比较、舍入和价格边界；不恢复逐位整数要求。",
+        "lines_before": 61,
+        "lines_after": 61,
+        "source_blob": "f3a818afc7e6c74751652208115579042ea474e7"
+      },
+      {
+        "path": "test/test_module_refit.gd",
+        "action": "适配",
+        "reason": "换装保留投入、冷却与活跃投射物；跨域费用失败及当前生成器合法输入；修复旧异空间写入。",
+        "lines_before": 142,
+        "lines_after": 142,
+        "source_blob": "09fa2f7826ef7b0318e13d5014bc4ef6fe943b71"
+      },
+      {
+        "path": "test/test_native_blocked_transfer.gd",
+        "action": "适配",
+        "reason": "真实native拒绝交接停止、已开始共享步与未访时间保留；检查实际钱包/船员/科研同时保留未重复共享结算检查。",
+        "lines_before": 100,
+        "lines_after": 101,
+        "source_blob": "4512b672a643934a84c6fcafae0a36e995d4f648"
+      },
+      {
+        "path": "test/test_native_galaxy_refit.gd",
+        "action": "精简",
+        "reason": "去项目外旧父类；保留活动贡献变化、原生生命/弹体/费用提交、过期与拒绝边界，缩减私有字段枚举。",
+        "lines_before": 218,
+        "lines_after": 224,
+        "source_blob": "90a365b2fea21159d967198d6b9e7ea58b796ede"
+      },
+      {
+        "path": "test/test_native_laser_charge.gd",
+        "action": "保留",
+        "reason": "实际脚本/native攻击出生配置与激活能力保护。",
+        "lines_before": 169,
+        "lines_after": 169,
+        "source_blob": "ddf6b45297e54613e26835539f188c32eaf7708e"
+      },
+      {
+        "path": "test/test_native_numeric_upgrade.gd",
+        "action": "保留",
+        "reason": "活跃native中数字成长、顺序共享结算、真实批处理一致性与失败守卫。",
+        "lines_before": 232,
+        "lines_after": 232,
+        "source_blob": "070780804927a2a84c3b13fd2ef30af9e9b08913"
+      },
+      {
+        "path": "test/test_ordinary_entry.gd",
+        "action": "重写",
+        "reason": "原main场景、真实writer、实际成长/自动收入/暂停倍速/挑战/领取/装备锻造/保存重开；退出替身UI。",
+        "lines_before": 299,
+        "lines_after": 282,
+        "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96"
+      },
+      {
+        "path": "test/test_pause_key_focus.gd",
+        "action": "保留",
+        "reason": "键盘焦点与暂停输入的独有交互边界。",
+        "lines_before": 70,
+        "lines_after": 70,
+        "source_blob": "22bfd8b326c1fae60a248ea8df8dc901e9d71f55"
+      },
+      {
+        "path": "test/test_planet.gd",
+        "action": "合并",
+        "reason": "探索/建造/启用/征服、阶段起点/历史奖励/解锁与共享经验；失败原子性保留，重复成功写盘移出。",
+        "lines_before": 129,
+        "lines_after": 234,
+        "source_blob": "d8d69ec7a052c514c86d53e5b72cfe7d715a26cc"
+      },
+      {
+        "path": "test/test_planet_buff_ui.gd",
+        "action": "适配",
+        "reason": "征服加成、领域有效等级与反应炉免费比例的实际显示；退出退休科技字段。",
+        "lines_before": 101,
+        "lines_after": 99,
+        "source_blob": "788734a24d19def5f92b03cb1f4004cd3a2ece69"
+      },
+      {
+        "path": "test/test_planet_conquest_progress.gd",
+        "action": "删除并入",
+        "reason": "test_planet.gd征服和历史/经验边界；普通保存归主场景，特殊存档拒绝仍保留。",
+        "lines_before": 127,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_reactor.gd",
+        "action": "合并",
+        "reason": "接管逐级取整报价、实际MAX与大数扣费；保留分配、效果与敌人铁掉落。",
+        "lines_before": 81,
+        "lines_after": 101,
+        "source_blob": "f6f0751985a304ed0241c7d74e7679484788099a"
+      },
+      {
+        "path": "test/test_reactor_integer_cost.gd",
+        "action": "删除并入",
+        "reason": "test_reactor.gd价格与实际扣费；test_ordinary_entry.gd巨大分配、真实页面和保存。",
+        "lines_before": 47,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_save_boundaries.gd",
+        "action": "精简",
+        "reason": "保留写失败原文件保护、损坏主文件恢复、拒绝无效整档、活动占用/挂设容量/精确整数边界；去正常购买与视图归属重复检查。",
+        "lines_before": 204,
+        "lines_after": 168,
+        "source_blob": "8f2fe5ee758911002dbf51a304a04031b146bc50"
+      },
+      {
+        "path": "test/test_shared_enhancement_ranks.gd",
+        "action": "合并",
+        "reason": "保留共享等级门槛、重排休眠选择、真实分支效果/控件；接管必要效果显示，退出旧缓存接口。",
+        "lines_before": 147,
+        "lines_after": 170,
+        "source_blob": "a59d5a734e3f4037b18f31db6ee94959bcd39604"
+      },
+      {
+        "path": "test/test_stable_compiled_rules.gd",
+        "action": "删除并入",
+        "reason": "属性一致归stat_snapshot，共享等级归shared_enhancement_ranks，真实native批处理归native_numeric_upgrade；旧类缺席断言删除。",
+        "lines_before": 43,
+        "lines_after": 0,
+        "source_blob": null
+      },
+      {
+        "path": "test/test_stat_snapshot.gd",
+        "action": "精简",
+        "reason": "用实际属性变化和启用/关闭缓存结果一致检查版本更新；退出内部构建次数身份断言。",
+        "lines_before": 75,
+        "lines_after": 61,
+        "source_blob": "eace1f70802fe843639926b675cdb72112d8b663"
+      },
+      {
+        "path": "test/test_time_steps.gd",
+        "action": "合并",
+        "reason": "唯一外部时间、倍速/失焦/暂停/余量/可见性；暂停检查全部保存领域，比较时只排除导出墙钟时间戳。",
+        "lines_before": 155,
+        "lines_after": 259,
+        "source_blob": "16e65caf98d1cc390738fdf291e59692158b8361"
+      },
+      {
+        "path": "test/whole_game_perf.gd",
+        "action": "精简",
+        "reason": "保留按需观察完整画面和活动星系的场景有效性；删除旧profile双接线，不作为功能前置。",
+        "lines_before": 310,
+        "lines_after": 295,
+        "source_blob": "bd05f04441aa069f8c7bdf168ee837cca7cb69fa"
+      },
+      {
+        "path": "test/whole_game_perf.py",
+        "action": "保留",
+        "reason": "既有按需性能启动/采集工具，本轮不启动性能测量或另造执行器。",
+        "lines_before": 139,
+        "lines_after": 139,
+        "source_blob": "75397a1217c9a3c0b0dd047ee445982cfd2798c1"
+      }
+    ],
+    "source_sha": "e54b5a315290831a76f4edc12db67a5eb966fcf1",
+    "size": {
+      "scoped_paths_before": 41,
+      "retained_paths_after": 31,
+      "deleted_scripts": 10,
+      "new_test_files": 0,
+      "modified_existing_paths": 18,
+      "unchanged_in_this_revision": 13,
+      "code_files_before": 40,
+      "code_files_after": 30,
+      "code_lines_before": 5753,
+      "code_lines_after": 5122,
+      "fixture_lines_before": 3142,
+      "fixture_lines_after": 3142,
+      "count_method": "Physical source lines; fixture excluded from code; no minification."
+    },
+    "verification": {
+      "engine": "Godot 4.7.2 stable ed1daf0bf",
+      "rendered_entry": "original main.tscn and project.godot; RTX2060/OpenGL 3.3/NVIDIA610.88",
+      "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+      "method": "One targeted campaign. Started through test/run.py ordinary_entry default workflow. After fixture failures, reused its imported isolated project and invoked the same Godot script/phase commands, with a fresh isolated userdata slot per workflow and separate restart processes. Only affected failures/changed sources retried; no full performance run. Final source-matching outcomes only below.",
+      "product_entry_checks": 100,
+      "save_boundary_checks": 97,
+      "focused_scripts": 14,
+      "focused_checks": 1951,
+      "results": [
+        {
+          "test": "test_hyperspace_material_economy.gd",
+          "code": 0,
+          "source_sha256": "ec17b402e88a8a4e33201bd9952cd7ab8223d8a545c34948874610545931a992",
+          "log_sha256": "dd559d0184e5546f9367c978014ac9c4cdc0b7a6a1577e3f40a7443bf8336e9b",
+          "source_blob": "b8a3c5c1363e48c2b1148ecba28a811cf34fdea3",
+          "summary": "MATERIAL_ECONOMY: 135 checks 0 failures; formula and committed ownership boundaries",
+          "diagnostics": [
+            "ERROR: 24 resources still in use at exit (run with --verbose for details).",
+            "ERROR: Failed to read the root certificate store.",
+            "WARNING: 106 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+          ]
+        },
+        {
+          "test": "test_module_refit.gd",
+          "code": 0,
+          "source_sha256": "1ecfa9fb97427524cc60774cf98d832a4f0feb61d9575b4795903a29e1fe5577",
+          "log_sha256": "37f396ae41e184ff4ddc358db202af8f9dfec61840ae950d5201786dcbd53de5",
+          "source_blob": "09fa2f7826ef7b0318e13d5014bc4ef6fe943b71",
+          "summary": "Module refit: 63 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_planet.gd",
+          "code": 0,
+          "source_sha256": "fbd03ac4b336cd551b7ea5562c52990d7c15cd3cfc53f60212a537c061c2e90f",
+          "log_sha256": "30c91367a87822ba1779b4db096e87b494391899c382fc299daf6bccb5744169",
+          "source_blob": "d8d69ec7a052c514c86d53e5b72cfe7d715a26cc",
+          "summary": "PLANET: 675 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_stat_snapshot.gd",
+          "code": 0,
+          "source_sha256": "62f0d6c62915e41db1831a1542f797c89ebdff50d37b94b9a35b32ab6c581e3a",
+          "log_sha256": "c8acf74641bb6e3207d0e863c1af18fa5c5e9ba882ec3536ae89952f5b3a790d",
+          "source_blob": "eace1f70802fe843639926b675cdb72112d8b663",
+          "summary": "Stat snapshot: 18 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_native_galaxy_refit.gd",
+          "code": 0,
+          "source_sha256": "0aab5044a21860e25e83675c7b0a009b29e1410ef00449b2bac0a3121eecb26f",
+          "log_sha256": "1130dbae49860305c6d136d7d34ab02d8e0905a049c629b8773af2c8f10b40f2",
+          "source_blob": "90a365b2fea21159d967198d6b9e7ea58b796ede",
+          "summary": "GALAXY_REFIT_CHECKS 303 failures 0",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_ordinary_entry.gd",
+          "phase": "product-write",
+          "code": 0,
+          "source_sha256": "1d615c2da2719de603df219db6d68fb489f8c804fe67eff1ea116e39cd0e6c67",
+          "log_sha256": "7b1e4ca56b745e75bb9d3fb5300eb24860f5cda6211cdca45af9a11859186897",
+          "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+          "summary": "PRODUCT_ENTRY product-write 26 checks 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_ordinary_entry.gd",
+          "phase": "product-reopen",
+          "code": 0,
+          "source_sha256": "1d615c2da2719de603df219db6d68fb489f8c804fe67eff1ea116e39cd0e6c67",
+          "log_sha256": "78dc89d230ffbd36263f1b1b77afc3523eccb9a9057256cc738518efd3406782",
+          "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+          "summary": "PRODUCT_ENTRY product-reopen 18 checks 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_ordinary_entry.gd",
+          "phase": "product-claimed-reopen",
+          "code": 0,
+          "source_sha256": "1d615c2da2719de603df219db6d68fb489f8c804fe67eff1ea116e39cd0e6c67",
+          "log_sha256": "4431de7052bd9eb784af1f710d2dada4c2f14966ff86709d2e5e5e3dd7b40463",
+          "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+          "summary": "PRODUCT_ENTRY product-claimed-reopen 7 checks 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_ordinary_entry.gd",
+          "phase": "reactor-write",
+          "code": 0,
+          "source_sha256": "1d615c2da2719de603df219db6d68fb489f8c804fe67eff1ea116e39cd0e6c67",
+          "log_sha256": "3de6bae6d26396a0d2ee2cc470fdf512cfe60546e892f4f613c05b60ddeedde3",
+          "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+          "summary": "REACTOR_PRODUCT reactor-write 25 checks 0 failures {\"capacity\":{\"e\":176091261.0,\"m\":2.55778340873895},\"checks\":25,\"cores\":4321,\"effect\":{\"e\":140873006.0,\"m\":2.53407243371943},\"failures\":0,\"header_values\":{\"iron\":\"0\",\"uranium\":\"1.63e+130333770\"},\"materials\":{\"antiproton\":12345,\"degenerate_matter\":0,\"glueball\":0,\"zero_point_energy\":0},\"native\":false,\"phase\":\"reactor-write\",\"purchase_ms\":0.634,\"reactor\":{\"reactorAllocation\":{\"condensation\":{\"e\":176091260.0,\"m\":6.39445852184737},\"defence\":{\"e\":176091260.0,\"m\":6.39445852184737},\"smelting\":{\"e\":176091260.0,\"m\":6.39445852184737},\"weapons\":{\"e\":176091260.0,\"m\":3.19722926092368}},\"reactorLevel\":1000000003},\"saving\":true,\"uranium\":{\"e\":130333770.0,\"m\":1.62781721443327},\"version\":11}",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_ordinary_entry.gd",
+          "phase": "reactor-reopen",
+          "code": 0,
+          "source_sha256": "1d615c2da2719de603df219db6d68fb489f8c804fe67eff1ea116e39cd0e6c67",
+          "log_sha256": "3df5defcefee921e8ef4ede1223aa9d11ebf9c6eb2a78e11e2d9cddbb5d86c95",
+          "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+          "summary": "REACTOR_PRODUCT reactor-reopen 8 checks 0 failures {\"checks\":8,\"failures\":0,\"header_values\":{\"iron\":\"0\",\"uranium\":\"1.63e+130333770\"},\"native\":false,\"phase\":\"reactor-reopen\",\"saving\":true,\"version\":11}",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_time_steps.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "67858883f8e6f3c466e802a0cce2868fd6fa538ee60ce80957a50859ac9084f0",
+          "log_sha256": "e3aec6c520ace75c4e1a8491275f1b1fd2048969c7c6734245643affa4755b8a",
+          "source_blob": "16e65caf98d1cc390738fdf291e59692158b8361",
+          "summary": "Time steps: 237 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_shared_enhancement_ranks.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "dfa4d9a00c03c1242c5d02de8d4bda352ebf82549bfb48e19945844b1520647c",
+          "log_sha256": "6813cc2f4c9ea26cb95ff2493dd99956a8ed425058f57095740e14da305abc11",
+          "source_blob": "a59d5a734e3f4037b18f31db6ee94959bcd39604",
+          "summary": "SHARED ENHANCEMENT RANKS: 186 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_planet_buff_ui.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "9bcfca97a0e8dcb56b341868ba2c187f9690cd17f229c9a9a785cf66bd5610d8",
+          "log_sha256": "d3eaa734f36190b8b93fe8149f5262010d4ff0580866bca3f40da7624cebe270",
+          "source_blob": "788734a24d19def5f92b03cb1f4004cd3a2ece69",
+          "summary": "PLANET BUFF UI: 31 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store.",
+            "WARNING: 1 ObjectDB instance was leaked at exit (run with `--verbose` for details)."
+          ]
+        },
+        {
+          "test": "test_crew_dirty.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "31750b6773b03329420eca65eb29393b27b240566989c7ab39e27683ee773f76",
+          "log_sha256": "f231aa0dad84e45a2064fa53f157d08d88356a818cbfa49b3aba7bd186e56b2d",
+          "source_blob": "333ed8ab9f7258561e0fb05ed4f489c9d1cb23f3",
+          "summary": "CREW SCHEDULE: 22 checks 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_ai_tech_tree.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "59f9cf217f4a3105f71255516bc85616d1b12f32c31b3b00e42c78b84fd7d2f0",
+          "log_sha256": "a7a11fc922c8a6d6fe73dd792c9f988d30e2f2c4ea86a3107ec4afe090992ec9",
+          "source_blob": "fd26713c216af622cae3d32152e2eddbe4da796f",
+          "summary": "AI_TECH_TREE_CHECKS=72 FAILURES=0",
+          "diagnostics": [
+            "ERROR: 24 resources still in use at exit (run with --verbose for details).",
+            "ERROR: Failed to read the root certificate store.",
+            "WARNING: 53 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+          ]
+        },
+        {
+          "test": "test_hyperspace_layers.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "da62161f2c0abf05e13a5b8dbccc622f1dbd7ba78b994cab619a8ed4d684fdd6",
+          "log_sha256": "1eac4dd8e49add49e485065a66b4ff4ab015d7e3c99d0e3ddc01d5bfc94f475d",
+          "source_blob": "340d9003b42b60a96fb5936d8bafbad34374b5c7",
+          "summary": "HYPERSPACE SESSIONS: 83 checks 0 failures",
+          "diagnostics": [
+            "ERROR: 27 resources still in use at exit (run with --verbose for details).",
+            "ERROR: Failed to read the root certificate store.",
+            "WARNING: 88 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+          ]
+        },
+        {
+          "test": "test_save_boundaries.gd",
+          "phase": "write",
+          "code": 0,
+          "source_sha256": "dc2573579fd6e3fbae870c57700cae636ee5bf2dcf9ae72ba8429b07d46036ea",
+          "log_sha256": "0ef9ee1f0bb3e95193b58bb220475e624ccca55fefe4593f2ca217a5fc7afff4",
+          "source_blob": "8f2fe5ee758911002dbf51a304a04031b146bc50",
+          "summary": "Save boundaries: 31 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_save_boundaries.gd",
+          "phase": "reopen",
+          "code": 0,
+          "source_sha256": "dc2573579fd6e3fbae870c57700cae636ee5bf2dcf9ae72ba8429b07d46036ea",
+          "log_sha256": "0caae575c7046a2e235fcfe54d3eeae8661b615970d54cb7c5e0095cef1924f0",
+          "source_blob": "8f2fe5ee758911002dbf51a304a04031b146bc50",
+          "summary": "Save boundaries: 30 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_save_boundaries.gd",
+          "phase": "latest",
+          "code": 0,
+          "source_sha256": "dc2573579fd6e3fbae870c57700cae636ee5bf2dcf9ae72ba8429b07d46036ea",
+          "log_sha256": "e13e7868f14097e1e3d60647e2b87feeb6bdc7d7918b18136707fb6e780c9287",
+          "source_blob": "8f2fe5ee758911002dbf51a304a04031b146bc50",
+          "summary": "Save boundaries: 17 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_save_boundaries.gd",
+          "phase": "recovery",
+          "code": 0,
+          "source_sha256": "dc2573579fd6e3fbae870c57700cae636ee5bf2dcf9ae72ba8429b07d46036ea",
+          "log_sha256": "d0f2534a96b39eb2fd02e07e135b66e1a04601106c8a290915114e7a984002df",
+          "source_blob": "8f2fe5ee758911002dbf51a304a04031b146bc50",
+          "summary": "Save boundaries: 19 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_reactor.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "4c630047f9694c960e2e8f301f0ad78cc680a53e7e579448f0b958b16956e48c",
+          "log_sha256": "5960fcada9ecd1e6e7e71d0f23122a75fd57a10b9d06b416569554232ee07894",
+          "source_blob": "f6f0751985a304ed0241c7d74e7679484788099a",
+          "summary": "REACTOR 39 checks 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_enhancement_cost.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "e169da06fc7a515d7e377a0a6cc0898ab447492624a65c03fabe3ed2a5905d9b",
+          "log_sha256": "b4f11b7f99e419fcec80c471dc651542f78be0355f1c8f373e38243e684ceac5",
+          "source_blob": "d99f7e9f221bdd080bbcf98eb78cd405e85b77dc",
+          "summary": "Enhancement exponential costs: 53 checks, 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        },
+        {
+          "test": "test_native_blocked_transfer.gd",
+          "phase": "",
+          "code": 0,
+          "source_sha256": "548c28660184f3faf3ae2a193e10c1452162b9a7753302945a341c12f383af95",
+          "log_sha256": "a5c698483c72380d1af5d78f0d54c920fff510d3ab7fd78f6681343da9cb605b",
+          "source_blob": "4512b672a643934a84c6fcafae0a36e995d4f648",
+          "summary": "EXPECTED_BLOCKED_TRANSFER_PROOF {\"checks\":34,\"failures\":0,\"remaining_preserved\":true}",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store.",
+            "ERROR: Native numeric boundary could not transfer its untouched combat step"
+          ]
+        },
+        {
+          "test": "test_ordinary_entry.gd",
+          "phase": "planet-loading",
+          "code": 0,
+          "source_sha256": "1d615c2da2719de603df219db6d68fb489f8c804fe67eff1ea116e39cd0e6c67",
+          "log_sha256": "18e6a1099135afd801fb02990ff2bbc71aeebc4ac10c323652a512192cfccfa6",
+          "source_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+          "summary": "PLANET_LOADING 16 checks 0 failures",
+          "diagnostics": [
+            "ERROR: Failed to read the root certificate store."
+          ]
+        }
+      ],
+      "parser_validation": "All 28 retained scoped GDScript entries parsed; merged time indentation repaired and executed. The changed performance observer was parsed at final source only. Both Python entry sources parsed.",
+      "production_frozen": true,
+      "repaired_fixture_failures": [
+        "Mixed source indentation after merge, no production parse change.",
+        "Two export wall-clock timestamp fields excluded only from no-mutation comparisons; no domain state excluded.",
+        "Direct research configuration edits now notify the real configuration version.",
+        "Pending reward reopened after first unlock uses the actual reward-card action; it need not replay a first-unlock popup.",
+        "Integer/float container equality replaced by semantic prices; removed obsolete int coercion of saved finite reactor allocations."
+      ],
+      "limitations": [
+        "Authored unlocks and budgets; not a manual 60-stage playthrough or input latency measurement.",
+        "Some isolated domain fixtures retain exit ObjectDB/resource warnings; rendered product and save workflow logs have no such resource-exit error.",
+        "Native blocked-transfer diagnostic errors are deliberately exercised and accompanied by 34 successful guard checks.",
+        "System root-certificate-store diagnostic remains on this host.",
+        "No performance rerun or new comprehensive performance pass; previous C23/C24/long-duration limits remain.",
+        "Unchanged scoped files were reviewed/parsed, not all rerun. Tests outside the requested 41-path adaptation set were not reorganized."
+      ],
+      "visual_review": [
+        {
+          "capture": "product-forge.png",
+          "sha256": "bcb6741750619c931dcca7502550c2b14e66fd051717eb04cd176c4fe815d861",
+          "review": "Actual original-main forge completion, quoted material debit, result and equipped drone visible."
+        },
+        {
+          "capture": "reactor-write.png",
+          "sha256": "d76544f95f9714bbb1dc6ea734b9eb0ec9fc3833700abd4a4a9f1550dce2e1c3",
+          "review": "Actual header uranium 1.63e+130333770, purchased level1000000003 and finite allocations visible."
+        },
+        {
+          "capture": "reactor-reopen.png",
+          "sha256": "30ffaf30568ee4e0b7f06e2a4e73f13b8871985356790d1c25d3f7a73053f6b9",
+          "review": "Same header, level, allocations and resumed voyage visible after process restart."
+        }
+      ],
+      "temporary_artifacts": "Generated isolated project, userdata and captures/logs are reproducible. Required outcomes, source/log/capture hashes and diagnostics are retained in this manifest; transient artifacts are excluded from source delivery and removed after successful push verification."
+    },
+    "commands": {
+      "whole_game": "python test/run.py test_ordinary_entry.gd --godot <Godot4.7.2.exe>",
+      "selected_flow": "python test/run.py test_ordinary_entry.gd --scenario game|reactor|planet --godot <Godot4.7.2.exe>",
+      "save_failure_and_recovery": "python test/run.py test_save_boundaries.gd --headless --godot <Godot4.7.2.exe>",
+      "focused": "python test/run.py <retained_test.gd> --godot <Godot4.7.2.exe> [--headless for logic-only]",
+      "performance": "python test/whole_game_perf.py --help (optional observer, never a functional prerequisite)"
+    }
+  },
+  "production_source_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525"
 }
