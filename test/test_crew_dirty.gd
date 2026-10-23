@@ -60,6 +60,7 @@ func _initialize()->void:
 	check(stable_save(g)==before,"Discarded overrun cannot cause a second purchase")
 	g.assign_crew("navigator","","");before=stable_save(g);g.crew.advance(g,2)
 	check(stable_save(g)==before,"Equipment recall stops spending")
+	material_wakeup()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
@@ -67,3 +68,36 @@ func stable_save(g)->Dictionary:
 	var data:Dictionary=g.portable_save_data()
 	data.erase("chronoSavedAt");data.erase("hightechSavedAt")
 	return data
+
+func material_wakeup()->void:
+	var g:=fixture()
+	var boundary:int=int(g.db.data.equipment_evolution.interval)
+	var material:String=g.db.evolution_material_id()
+	g.economy.credit("1",1e100);g.economy.credit("2",1e100)
+	g.upgrade_equipment_batch(str(boundary-2))
+	check(g.slot_entry("weapons",0).level==boundary-1,"Fixture reaches configured evolution boundary")
+	g.assign_crew("navigator","equipment_upgrade","equipment");g.set_crew_upgrade_mode("navigator","1")
+	g.crew.advance(g,1)
+	check(g.slot_entry("weapons",0).level==boundary-1 and not g.crew.timers.has("navigator"),"Missing evolution material suspends the actual job")
+	var source:String=""
+	for id in g.economy.material_wallet().materials:
+		if id!=material:source=id;break
+	g.economy.credit(source,1000000)
+	var events:Array=[]
+	g.event.connect(func(kind,payload):
+		if kind=="resources_changed":events.append(payload.ids.duplicate()))
+	g.event.emit("hyperspace_changed",{"reason":"completed_pending"})
+	check(not g.crew.timers.has("navigator"),"Pending reward without credit does not wake equipment")
+	var quote:Dictionary=g.hyperspace_material_exchange_quote(source,material,10000)
+	var request:Dictionary=quote.request
+	check(g.exchange_hyperspace_materials(request).get("applied",false),"Actual exchange commits material credit")
+	check(events.size()==1 and events[0]==[material],"Commit publishes exactly the increased material")
+	g.crew.advance(g,0.6)
+	g.exchange_hyperspace_materials(request)
+	check(events.size()==1,"Replay publishes no second credit")
+	quote=g.hyperspace_material_exchange_quote(source,material,1)
+	g.exchange_hyperspace_materials(quote.request)
+	g.crew.advance(g,0.39)
+	check(g.slot_entry("weapons",0).level==boundary-1,"Material credit waits the existing crew interval")
+	g.crew.advance(g,0.01)
+	check(g.slot_entry("weapons",0).level==boundary,"Merged material credits resume once without postponing the first deadline")

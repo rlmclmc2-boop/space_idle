@@ -129,6 +129,7 @@ var encounter_presentation := preload("res://scripts/encounter_presentation.gd")
 func _ready() -> void:
 	battlefield_motion_enabled = OS.get_environment("SPACE_IDLE_BATTLE_MOTION") != "0"
 	super._ready()
+	if not presentation_ready:return
 	rail_vfx.configure(db)
 	# Resolve the six fixed enemy silhouettes before gameplay starts, so a new
 	# encounter never loads a hull or reads its pixels inside the draw callback.

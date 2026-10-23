@@ -15,7 +15,11 @@ func commit(g,plan:Dictionary)->bool:
 	if not g.hyperspace.proposal_current(g,plan) or (not wallet.is_empty() and plan.wallet_revision!=g.economy.material_revision):return false
 	if refit:g.capture_refit_health()
 	var previous_capacity=g.reactor_capacity() if refit else 0
-	if not wallet.is_empty():g.economy.install_material_wallet(wallet)
+	var credited: Array = []
+	if not wallet.is_empty():
+		for id in wallet.materials:
+			if int(wallet.materials[id]) > int(g.economy.balance(id)):credited.append(id)
+		g.economy.install_material_wallet(wallet)
 	g.hyperspace.commit(plan);g.save_dirty=true
 	if refit:
 		g.configuration_committed()
@@ -24,6 +28,7 @@ func commit(g,plan:Dictionary)->bool:
 		if capacity!=previous_capacity:g.event.emit("reactor_changed",{"capacity":capacity})
 	var payload:Dictionary={"reason":kind,"round_id":int(g.hyperspace.state.round_id)}
 	if plan.has("reward"):payload.reward=plan.reward.duplicate(true);payload.receipt=g.hyperspace.receipt_marker().duplicate()
+	if not credited.is_empty():g.resources_changed(credited)
 	g.event.emit("hyperspace_changed",payload)
 	return true
 func start(g,route:String,level:int,mode:String,crew_id:String="",return_target:Dictionary={})->Dictionary:

@@ -117,15 +117,20 @@ func _initialize()->void:
 	hs=resumed.hyperspace.save_data();hs.hyperspace.next_run=2
 	var receipt:Dictionary={"round_id":1,"run_id":1,"status":"completed_pending","mode":"idle","route":"alpha","level":5,"crew_id":"","crew_snapshot":"","luck":0.0,"crew_luck":0.0,"permanent_luck":0.0,"luck_state":"0","return_target":{},"ticket":0.0,"duration":3.0,"work":3.0,"reward":{"drone":d.duplicate(true),"materials":{"degenerate_matter":7},"ultimate_cores":1,"hanging_rewards":{"resource_collector":1}}}
 	receipt.reward.drone.id="space:1:1";hs.hyperspace.idle=receipt;check(resumed.hyperspace.install_snapshot(hs,db),"pending reward fixture installs")
+	var credits:Array=[]
+	resumed.event.connect(func(kind,info):
+		if kind=="resources_changed":credits.append({"ids":info.ids.duplicate(),"save":resumed.portable_save_data()}))
 	resumed.economy.credit("degenerate_matter",9000000000000000-1)
 	var baseline:Dictionary=resumed.hyperspace.state.duplicate(true)
 	check(not resumed.hyperspace_runtime.claim(resumed,1,1) and resumed.hyperspace.state==baseline and resumed.economy.balance("ultimate_cores")==0,"overflow keeps pending receipt, inventory, modules and core unchanged")
+	check(credits.is_empty(),"Rejected claim publishes no material credit")
 	resumed.economy.debit({"degenerate_matter":100})
 	var seen:Array=[]
 	resumed.event.connect(func(kind,_info):
 		if kind=="hyperspace_changed":seen.append(resumed.portable_save_data())
 	)
 	check(resumed.hyperspace_runtime.claim(resumed,1,1) and not resumed.hyperspace_runtime.claim(resumed,1,1),"current pending reward settles exactly once")
+	check(credits.size()==1 and credits[0].ids==["degenerate_matter"] and credits[0].save.hyperspace.idle.is_empty() and credits[0].save.ultimateCores==1,"Material wakeup sees committed claim once, including on replay")
 	check(seen.size()==1 and seen[0].ultimateCores==1 and seen[0].hyperspace.idle.is_empty() and seen[0].hyperspace.inventory.drones.has("space:1:1") and seen[0].hyperspaceReceipt=={"round":1,"run":1,"drone_id":"space:1:1","unread":true},"claim notification sees earned wallet and claim fact together")
 	var pending:Dictionary=resumed.portable_save_data()
 	check(Transfer.new().prepare_data(JSON.parse_string(JSON.stringify(pending)),db).error=="","current save exports and validates after claim")

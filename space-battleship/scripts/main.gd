@@ -239,7 +239,11 @@ var save_transfer_feedback: Label
 var pending_import: Dictionary = {}
 var import_committing := false
 
+var presentation_ready := false
+
 func _ready() -> void:
+	set_process(false)
+	set_process_unhandled_input(false)
 	if preload("res://scripts/hyperspace_appearance.gd").reload_config():
 		preload("res://scripts/hyperspace_drone_visual.gd").base_materials.clear()
 	var from_save_import := get_tree().has_meta("save_import_backup")
@@ -385,6 +389,10 @@ func _ready() -> void:
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
 		if not from_save_import:call_deferred("show_chrono_login_report")
+
+	presentation_ready = true
+	set_process(true)
+	set_process_unhandled_input(true)
 
 func show_chrono_login_report() -> void:
 	if is_instance_valid(chrono_login_dialog):
