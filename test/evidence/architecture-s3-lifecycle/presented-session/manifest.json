@@ -1,0 +1,20 @@
+{
+  "production_commit": "b5a513ffafd8a3cdddae6fa353944bbc08c279ee",
+  "run": "test_ordinary_entry-3dvznreb",
+  "checks": 39,
+  "failures": 0,
+  "scope": "Actual main planet workflow including Presented memory load/reforge and retained actor slice publication",
+  "production_sha256": {
+    "scripts/game.gd": "ad60497d73fb550a922ddf8c738a7f200c9ae6642d75da1579958ca5c680fed1",
+    "scripts/progress_runtime.gd": "ae5d039b75550c563965becc3cae5981fd618224f01c62e722c407e52fddfc39",
+    "scripts/presented_battle_game.gd": "f91b00d5c00bacb16d88c6fd358d477db93b1f33cdd78b7b5e2a39baa5c67a80",
+    "scripts/main.gd": "25dd0424c9fe3907709705c9e3107d9d239d2ffcc93a66e8a17e057c080e8e4f"
+  },
+  "expected_error": "Invalid ship weapon visual profiles is the existing injected negative readiness test",
+  "earlier_rejected_runs": [
+    "mkh_2_0k empty-enemy fixture access",
+    "1mx17rzs deferred rebuild on detached scene"
+  ],
+  "save_boundaries": "chb9ldqs 113/0 predates final startup-error and detached-host guards; not byte-identical final run",
+  "whole_s3_pass": false
+}
