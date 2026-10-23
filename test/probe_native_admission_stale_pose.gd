@@ -7,6 +7,16 @@ func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;printerr("FAIL ",label)
 
+func values_only(value:Variant)->bool:
+	if value is Object:return false
+	if value is Dictionary:
+		for key in value:
+			if not values_only(key) or not values_only(value[key]):return false
+	elif value is Array:
+		for item in value:
+			if not values_only(item):return false
+	return true
+
 func _initialize()->void:
 	call_deferred("run")
 
@@ -31,6 +41,17 @@ func run()->void:
 	geometry.close({"spatial":scene.game.target_spatial_source})
 	var g=scene.game
 	var authority=scene.simulation_geometry_authority
+	var data=scene.ship_view.fleet_static
+	check(values_only([data.manifest,data.approved_hull_art,data.presentation_art,data.hulls,data.approved,data.weapons,data.drone_sockets,data.carrier_mount]),"static descriptors retain values only")
+	check(is_same(authority.fleet_pose.hulls,data.hulls) and is_same(authority.fleet_pose.approved,data.approved) and is_same(authority.fleet_pose.weapons,data.weapons) and is_same(authority.fleet_pose.drone_sockets,data.drone_sockets),"logical and display owners share startup descriptors")
+	var extra_view=preload("res://scripts/presented_ship_view.gd").new()
+	extra_view.size=scene.ship_view.size;root.add_child(extra_view)
+	check(not is_same(extra_view.fleet_static,data) and not is_same(extra_view.fleet_static.approved,data.approved),"separate view owns separate static descriptors")
+	extra_view.free()
+	var recaptured=Geometry.capture_preparation(scene,g)
+	check(is_same(recaptured.fleet_pose.hulls,data.hulls) and is_same(recaptured.fleet_pose.drone_sockets,data.drone_sockets),"recapture reuses prepared descriptors")
+	check(recaptured.fleet_pose.ship_transform==scene.ship_view.ship.transform and recaptured.fleet_pose.orbit_elapsed==scene.ship_view.orbit_elapsed,"recapture preserves instance initial pose")
+	check(not is_same(recaptured.fleet_pose.modules,authority.fleet_pose.modules),"recapture owns independent mutable members")
 	check(authority.canonical_generation>0,"capture startup advances only after authority preparation")
 	var caption_metrics_ok:=true
 	for registry in [g.db.enemies,g.manual_hyperspace.registry.get("enemies",{}),g.db.groups,g.manual_hyperspace.registry.get("groups",{})]:

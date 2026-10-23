@@ -582,7 +582,6 @@ static func capture_preparation(owner,simulation:BattleGame)->Dictionary:
 			captured_bounds[identity]=bounds
 	var fleet_pose=preload("res://scripts/logical_fleet_pose.gd").new()
 	fleet_pose.prepare(owner.ship_view)
-	fleet_pose.manifest=fleet_pose.manifest.duplicate(true)
 	fleet_pose.configure(str(game.equipment.selected_ship()),game.weapon_entries(),game.active_slot_count("weapons"),game.hyperspace.state.inventory)
 	# Capture every authored hull's footprint before worker admission. Runtime
 	# ship commands choose immutable descriptors; they never instantiate/read Nodes.

@@ -19,6 +19,7 @@ var display_motion_applied=false
 var rebuilds=0
 var identities: Array[String]=[]
 var muzzles: Dictionary={}
+var socket_descriptors: Dictionary={}
 const MUZZLE_MESHES={"laser":["PulseLens"],"missile":["LaunchBay"] ,"cannon":["RailMuzzleCap"] ,"longLaser":["AxialFocusingLens"]}
 func sync(bag: Dictionary) -> bool:
  var sources: Array=[]
@@ -71,6 +72,11 @@ func install_materials(node: Node,style: Dictionary={}) -> void:
   if child.name!="Appearance":install_materials(child,style)
 func install_muzzles(node: Node3D,id: String,weapon: String) -> void:
  var sockets: Array[Node3D]=[]
+ if socket_descriptors.has(weapon):
+  for transform in socket_descriptors[weapon].points:
+   var socket=Node3D.new();socket.name="HyperspaceMuzzle"+str(sockets.size());node.add_child(socket);socket.transform=transform;sockets.append(socket)
+  muzzles[id]=sockets
+  return
  for mesh_name in MUZZLE_MESHES[weapon]:
   var found=node.find_children(mesh_name+"*","MeshInstance3D",true,false)
   for mesh in found:
