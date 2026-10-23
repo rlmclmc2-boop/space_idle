@@ -1,7 +1,7 @@
 extends RefCounted
 ## Desktop portable progress, validated before any live state or file replacement.
 const Writer := preload("res://scripts/progress_writer.gd")
-const ReactorInt := preload("res://scripts/reactor_integer.gd")
+const Reactor := preload("res://scripts/reactor_state.gd")
 const MAX_BYTES := 16 * 1024 * 1024
 const BACKUP_ROOT := "user://save-import-backups"
 const SUPPORTED_VERSIONS := [BattleGame.SAVE_VERSION]
@@ -40,6 +40,7 @@ static func schema() -> Dictionary:
  result.equipmentSwitchUntil={"*":"n"}
  result.techPoints={"*":"n"}
  for key in ["highestLevel","lifetime_max_stage","moduleVersion","hightechVersion","enhancementVersion","scientists","enhancementLevel","enhancementAttacks","enhancementHits","guardDeath","loopLevel","guardStage","guardIndex","reactorLevel"]:result[key]="i"
+ result.reactorLevel="reactor_level"
  result.enhancementAttacks="counter";result.enhancementHits="counter"
  result.loop="b"
  result.resourceSamples=[{"time":"n","amount":"g","production_base":"g","id":"s","origin":"s","production_time":"n"}]
@@ -61,7 +62,8 @@ static func shape(value: Variant, spec: Variant, depth := 0) -> bool:
    "n":return (value is int or value is float) and is_finite(float(value))
    "i":return (value is int or value is float) and is_finite(float(value)) and value==floorf(float(value)) and absf(float(value))<9.22e18
    "g":return GrowthNumber.valid(value)
-   "r":return ReactorInt.valid(value) or ((value is int or value is float) and is_finite(float(value)) and value>=0 and value==floorf(float(value)) and float(value)<9223372036854775808.0)
+   "r":return Reactor.valid_allocation(value)
+   "reactor_level":return Reactor.valid_level(value)
    "currency":return GrowthNumber.valid(value) or (value is Dictionary and value.values().all(func(n):return GrowthNumber.valid(n)))
    "interval":return BattleGame.parse_save_interval(str(value))>0 and (value is String or value is int or value is float)
    "p":return value is Array and value.size()==2 and value.all(func(n):return (n is float or n is int) and is_finite(float(n)))
@@ -132,7 +134,7 @@ func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
 func export_progress(game: BattleGame, path: String) -> Error:
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  if Writer.is_protected_target(target,game.progress_writer.path):return ERR_INVALID_PARAMETER
- return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
+ return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
 
 func write_file(path: String, bytes: PackedByteArray) -> Error:
  var writer:=Writer.new();writer.path=path
@@ -167,7 +169,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  var backup:=ProjectSettings.globalize_path(BACKUP_ROOT)+"/%d-%d"%[int(Time.get_unix_time_from_system()),Time.get_ticks_usec()]
  var error:=DirAccess.make_dir_recursive_absolute(backup)
  if error!=OK:return {"error":error}
- error=write_file(backup+"/current-progress.json",JSON.stringify(clean(game.portable_save_data(),schema()),"\t").to_utf8_buffer())
+ error=write_file(backup+"/current-progress.json",JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
  if error!=OK:return {"error":error}
  for suffix in ["", ".bak"]:
   if FileAccess.file_exists(primary+suffix):
@@ -179,7 +181,7 @@ func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
    error=write_file(backup+("/original-progress.json" if suffix.is_empty() else "/original-recovery.json"),bytes)
    if error!=OK:return {"error":error}
  var installed:Dictionary=prepared.data
- error=game.progress_writer.write_import_stage(incoming,JSON.stringify(clean(installed,schema()),"\t").to_utf8_buffer())
+ error=game.progress_writer.write_import_stage(incoming,JSON.stringify(clean(installed,schema()),"\t",true,true).to_utf8_buffer())
  if error!=OK:return {"error":error}
  var had_primary:=FileAccess.file_exists(primary)
  if had_primary:

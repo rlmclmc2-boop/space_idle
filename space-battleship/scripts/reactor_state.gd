@@ -2,7 +2,6 @@ extends RefCounted
 ## Reactor rules/state. Contributions are supplied by the command owner; this
 ## domain never switches a combat backend, clears global caches or emits events.
 const N = preload("res://scripts/growth_number.gd")
-const Integer = preload("res://scripts/reactor_integer.gd")
 var _level := 1
 var _allocation: Dictionary = {}
 var revision := 0
@@ -23,30 +22,37 @@ func reset(config: Dictionary) -> void:
 	for key in str(config.reactorModules).split(",", false):_allocation[key] = 0
 	revision += 1
 
+# Levels remain signed 64-bit integers. JSON numbers cannot round-trip every
+# such integer, so large levels are saved as decimal text, without a gameplay cap.
+static func valid_level(value: Variant) -> bool:
+	if value is int:return value>=1
+	if value is float:return is_finite(value) and value>=1 and value<=9007199254740992.0 and value==floorf(value)
+	if not value is String or value.is_empty() or value.begins_with("0") or not value.is_valid_int() or value.begins_with("+") or value.begins_with("-"):return false
+	return value.length()<19 or (value.length()==19 and value<="9223372036854775807")
+
+static func valid_allocation(value: Variant) -> bool:
+	return N.valid(value) and N.compare(value,N.floor_value(value))==0
+
 static func valid_snapshot(raw: Dictionary, config: Dictionary) -> bool:
 	var value = raw.get("reactorLevel")
-	if not (value is int or value is float) or not is_finite(float(value)) or value != floorf(float(value)) or value < int(config.reactorInitialLevel) or value >= 9223372036854775807.0:return false
+	if not valid_level(value) or int(value)<int(config.reactorInitialLevel):return false
 	var allocation = raw.get("reactorAllocation")
 	var modules := str(config.reactorModules).split(",", false)
 	if not allocation is Dictionary or allocation.size() != modules.size():return false
 	for key in modules:
-		var amount = allocation.get(key)
-		if Integer.valid(amount):continue
-		if not (amount is float and is_finite(amount) and amount >= 0 and amount <= 9007199254740991 and amount == floorf(amount)):return false
+		if not valid_allocation(allocation.get(key)):return false
 	return true
 
 func install_snapshot(raw: Dictionary, config: Dictionary) -> bool:
 	if not valid_snapshot(raw, config):return false
 	_level = int(raw.reactorLevel)
 	_allocation = {}
-	for key in str(config.reactorModules).split(",", false):_allocation[key] = Integer.command_floor(raw.reactorAllocation[key])
+	for key in str(config.reactorModules).split(",", false):_allocation[key] = N.floor_value(raw.reactorAllocation[key])
 	revision += 1
 	return true
 
 func save_data() -> Dictionary:
-	var saved := {}
-	for key in _allocation:saved[key] = Integer.encode(_allocation[key])
-	return {"reactorLevel":_level, "reactorAllocation":saved}
+	return {"reactorLevel":_level if _level<=9007199254740992 else str(_level), "reactorAllocation":allocations()}
 
 func energy(config: Dictionary, contributions: Array, at_level := -1) -> Variant:
 	var actual := _level if at_level < 0 else at_level
@@ -59,11 +65,7 @@ func energy(config: Dictionary, contributions: Array, at_level := -1) -> Variant
 func capacity(config: Dictionary, contributions: Array) -> Variant:
 	var signature: Array = [_level, float(config.reactorEnergyBase), float(config.reactorEnergyGrowth)] + contributions
 	if signature != _capacity_inputs:
-		var available = energy(config, contributions)
-		if not available is Dictionary and is_finite(float(available)) and float(available) < 9223372036854775808.0:
-			_capacity = maxi(0, int(floor(float(available))))
-		else:
-			_capacity = Integer.formula_floor([float(config.reactorEnergyBase)] + contributions, float(config.reactorEnergyGrowth), _level - 1)
+		_capacity = N.floor_value(energy(config, contributions))
 		_capacity_inputs = signature
 	return _capacity.duplicate(true) if _capacity is Dictionary else _capacity
 
@@ -74,11 +76,11 @@ func upgrade_cost(config: Dictionary, at_level := -1) -> Variant:
 
 func allocated() -> Variant:
 	var total: Variant = 0
-	for key in _allocation:total = Integer.add(total, _allocation[key])
+	for key in _allocation:total = N.add(total, _allocation[key])
 	return total
 
 func effective_ratio(key: String, capacity: Variant, free_ratio: float) -> Variant:
-	return N.add(N.ratio(N.from_integer(allocation(key)), N.from_integer(Integer.maximum(1, capacity))), free_ratio)
+	return N.add(N.ratio(allocation(key), N.maximum(1, capacity)), free_ratio)
 
 func multiplier(key: String, capacity: Variant, free_ratio: float, config: Dictionary) -> Variant:
 	var manual = allocation(key)
@@ -87,7 +89,7 @@ func multiplier(key: String, capacity: Variant, free_ratio: float, config: Dicti
 		var boost := pow(ordinary, float(config.reactorBoostExponent)) if ordinary > 0 else 0.0
 		var bonus := 1.0 + boost / float(config.reactorPercentScale)
 		if is_finite(bonus):return bonus
-	var assigned = N.add(N.from_integer(manual), N.multiply(N.from_integer(capacity), free_ratio))
+	var assigned = N.add(manual, N.multiply(capacity, free_ratio))
 	return N.add(1.0, N.divide(N.power(assigned, float(config.reactorBoostExponent)), float(config.reactorPercentScale))) if N.compare(assigned, 0) > 0 else 1.0
 
 # Below binary64's integral precision boundary each single-level ceil remains
@@ -144,21 +146,30 @@ func commit_purchase(quote: Dictionary) -> void:
 
 func allocation_proposal(key: String, requested: Variant, capacity: Variant) -> Dictionary:
 	if not _allocation.has(key):return {}
-	var amount = Integer.command_floor(requested)
-	if amount == null:return {}
+	if not N.valid(requested):return {}
+	var amount = N.floor_value(requested)
 	var current = allocation(key)
-	var allowed = Integer.subtract(capacity, Integer.subtract(allocated(), current))
-	var next = Integer.minimum(amount, allowed)
-	if Integer.compare(next, current) == 0:return {}
+	var others: Variant = 0.0
+	for other in _allocation:
+		if other!=key:others=N.add(others,_allocation[other])
+	var allowed = N.floor_value(N.subtract(capacity, others))
+	var next = N.minimum(amount, allowed)
+	if N.compare(next, current) == 0:return {}
 	var result := allocations()
 	result[key] = next
 	return result
 
 func equal_allocation(modules: PackedStringArray, capacity: Variant) -> Dictionary:
 	if modules.is_empty():return {}
-	var division := Integer.div_small(capacity, modules.size())
 	var result := allocations()
-	for index in modules.size():result[modules[index]] = Integer.add(division[0], 1 if index < int(division[1]) else 0)
+	var share = N.floor_value(N.divide(capacity,modules.size()))
+	var remaining = capacity
+	# Exact integer remainders remain meaningful only below binary64's boundary.
+	var remainder: int = int(capacity)-int(share)*modules.size() if not capacity is Dictionary and capacity<=9007199254740992.0 else 0
+	for index in modules.size():
+		var amount = N.minimum(N.add(share,1 if index<remainder else 0),remaining)
+		result[modules[index]]=N.floor_value(amount)
+		remaining=N.subtract(remaining,result[modules[index]])
 	return {} if result == _allocation else result
 
 func commit_allocation(next: Dictionary) -> void:
@@ -169,6 +180,6 @@ func reconcile_capacity(capacity: Variant) -> void:
 	var remaining = capacity
 	var next := allocations()
 	for key in next:
-		next[key] = Integer.minimum(next[key], remaining)
-		remaining = Integer.subtract(remaining, next[key])
+		next[key] = N.floor_value(N.minimum(next[key], remaining))
+		remaining = N.subtract(remaining, next[key])
 	if next != _allocation:commit_allocation(next)

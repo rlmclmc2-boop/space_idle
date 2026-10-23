@@ -52,7 +52,7 @@ func run() -> void:
 	var raw := {"reactorLevel":2,"reactorAllocation":{"weapons":90,"defence":90,"smelting":90,"condensation":0},"charge":{"攻击充能":{"level":999}}}
 	for key in game.reactor_modules():
 		if not raw.reactorAllocation.has(key):raw.reactorAllocation[key] = 0
-	check(game.reactor.install_snapshot(raw,db.config),"current reactor snapshot installs");game.invalidate_stat_cache();game.reactor.reconcile_capacity(game.reactor_capacity())
+	check(game.reactor.install_snapshot(raw,db.config),"current reactor snapshot installs");game.reactor.reconcile_capacity(game.reactor_capacity())
 	check(game.reactor.level() == 2 and game.reactor_allocated() <= game.reactor_capacity() and int(game.reactor.allocations().weapons) == 90,"Loaded allocation is integer and clamped")
 	check(not game.profile.has("charge"),"Legacy charge state ignored")
 	var batch := BattleGame.new(db,false)

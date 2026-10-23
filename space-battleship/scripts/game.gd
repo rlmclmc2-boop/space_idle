@@ -13,12 +13,11 @@ signal event(kind: String, payload: Dictionary)
 enum State { MAIN_MENU, LEVEL_SELECT, TRAVEL, COMBAT, LEVEL_CLEAR, DEFEAT, UPGRADE, RETREAT }
 const EQUIPMENT := ["armour", "shield", "laser", "missile", "cannon", "longLaser"]
 const SAVE_PATH := "user://progress.json"
-const SAVE_VERSION := 10
+const SAVE_VERSION := 11
 # JSON.parse_string stores numbers as doubles; larger integers cannot round-trip exactly.
 const EnhancementGrowth=preload("res://scripts/enhancement_growth.gd")
 var enhancement_growth:=EnhancementGrowth.new()
 const N = preload("res://scripts/growth_number.gd")
-const ReactorInt = preload("res://scripts/reactor_integer.gd")
 const AITech = preload("res://scripts/ai_tech_tree.gd")
 var research := AITech.new()
 const EquipmentState=preload("res://scripts/equipment_state.gd")
@@ -698,7 +697,7 @@ func save_progress() -> void:
 	if not save_enabled:return
 	save_dirty = true
 	var saved := _build_save_data()
-	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t").to_utf8_buffer())
+	last_save_error = progress_writer.write_progress(JSON.stringify(saved, "\t",true,true).to_utf8_buffer())
 	if last_save_error != OK:
 		event.emit("save_error", {"error":last_save_error})
 		return

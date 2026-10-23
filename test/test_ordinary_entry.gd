@@ -23,6 +23,8 @@ func points(scene)->Dictionary:
  return out
 func run()->void:
  var args:=OS.get_cmdline_user_args()
+ if not args.is_empty() and str(args[0]).begins_with("reactor-"):
+  await run_reactor(str(args[0]));return
  if not args.is_empty() and str(args[0]).begins_with("product-"):
   await run_product(str(args[0]));return
  for native in [false,true]:
@@ -174,3 +176,74 @@ func run_product(phase:String)->void:
  if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
  scene.queue_free();await process_frame
  print("PRODUCT_ENTRY ",phase," ",checks," checks ",failures," failures");quit(1 if failures else 0)
+
+# Capacity acceptance uses the original product scene and a fresh real save slot.
+func run_reactor(phase:String)->void:
+ var N=GrowthNumber
+ var area:=ProjectSettings.globalize_path("res://../userdata").simplify_path().replace("\\","/")
+ check(OS.get_user_data_dir().replace("\\","/").begins_with(area),"Reactor product uses isolated player data")
+ var scene=load("res://main.tscn").instantiate();scene.automation_args=[];scene.music_on=false
+ root.add_child(scene);current_scene=scene;scene.set_process(false)
+ var g=scene.game
+ check(g.startup_error.is_empty() and g.save_enabled and g.progress_writer.owns_progress() and g.stat_cache_enabled,"Original scene enables saving, writer lock and attribute caches")
+ if not g.startup_error.is_empty() or not g.save_enabled:quit(1);return
+ g.profile.onboarding.completed=true;scene.beginner_guide.hide();g.pending_unlocks.clear()
+ await process_frame
+ if is_instance_valid(scene.chrono_login_dialog):scene.chrono_login_dialog.hide()
+ var report:Dictionary={"phase":phase}
+ if phase=="reactor-write":
+  check(not FileAccess.file_exists(BattleGame.SAVE_PATH),"Fresh reactor product save")
+  g.profile.cleared=range(1,61);g.rebuild_unlocks();g.pending_unlocks.clear()
+  check(g.economy.credit_many({"antiproton":12345,"ultimate_cores":4321}),"Exact material and core acceptance balances")
+  check(g.economy.credit("2",1e6) and g.upgrade_reactor(2),"Actual small integer purchase")
+  check(g.set_reactor_allocation("weapons",30.9) and g.reactor.allocation("weapons")==30.0,"Small allocation floors to an integer")
+  var cost=g.reactor.purchase_cost(1000000000,g.db.config)
+  check(g.economy.credit("2",N.multiply(cost,2.0)),"Finite huge budget installs through economy")
+  var before=g.economy.balance("2");var started:=Time.get_ticks_usec()
+  check(g.upgrade_reactor(1000000000) and g.reactor.level()==1000000003,"Actual billion-level purchase commits")
+  report.purchase_ms=(Time.get_ticks_usec()-started)/1000.0
+  check(N.compare(g.economy.balance("2"),N.subtract(before,cost))==0,"Actual purchase uses the same finite quoted cost")
+  var capacity=g.reactor_capacity()
+  check(capacity is Dictionary and N.valid(capacity),"Capacity remains finite without expanding decimal digits")
+  check(g.equalize_reactor_allocation(),"Actual huge equalization commits")
+  check(absf(N.ratio(g.reactor_allocated(),capacity)-1.0)<1e-14,"Equalized sum consumes capacity within binary64 rounding")
+  scene.refresh_tab_visibility();scene.select_system(2);scene.reactor_panel.refresh()
+  var controls:Dictionary=scene.reactor_panel.module_controls.weapons
+  controls.allocation_input.text_submitted.emit(N.input_text(N.divide(capacity,8.0)))
+  check(absf(N.ratio(g.reactor.allocation("weapons"),capacity)-0.125)<1e-14,"Actual scientific entry signal changes huge allocation")
+  var allocation=g.reactor.allocations()
+  for invalid in [-1.0,NAN,INF,{"i":"100"},{"m":INF,"e":1000}]:
+   check(not g.set_reactor_allocation("weapons",invalid) and g.reactor.allocations()==allocation,"Invalid allocation rejected without changing state")
+  check(N.parse_input("-3")==null and N.parse_input("1e+-3")==null and N.parse_input("nan")==null,"Invalid editable numbers rejected")
+  check(N.compare(N.parse_input(N.input_text(g.reactor.allocation("weapons"))),g.reactor.allocation("weapons"))==0,"Scientific editable value round trips")
+  check(not g.set_reactor_allocation("weapons",N.add(g.reactor.allocation("weapons"),1)),"Unrepresentable unit increment is a no-op")
+  var wide=g.reactor.save_data();wide.reactorLevel=9007199254740993
+  var owner=preload("res://scripts/reactor_state.gd").new()
+  check(owner.install_snapshot(wide,g.db.config),"64-bit level above binary64 integer range accepted")
+  var encoded=JSON.parse_string(JSON.stringify(owner.save_data()))
+  check(encoded.reactorLevel=="9007199254740993" and owner.install_snapshot(encoded,g.db.config) and owner.level()==9007199254740993,"Wide level survives JSON without rounding or a new gameplay cap")
+  wide.reactorLevel="9223372036854775807"
+  check(owner.install_snapshot(wide,g.db.config) and owner.level()==9223372036854775807 and not owner.valid_level("9223372036854775808"),"Existing signed64 level representation boundary is explicit")
+  g.paused=true;scene.show_save_page();scene.save_panel.manual_button.pressed.emit()
+  check(g.last_save_error==OK and FileAccess.file_exists(BattleGame.SAVE_PATH),"Real save button writes huge capacity allocation")
+  var expected:={"reactor":g.reactor.save_data(),"capacity":g.reactor_capacity(),"effect":g.reactor_multiplier("weapons"),"uranium":g.economy.balance("2"),"materials":g.economy.save_data().materials,"cores":g.economy.save_data().ultimateCores}
+  FileAccess.open("user://reactor-expected.json",FileAccess.WRITE).store_string(JSON.stringify(expected,"",true,true))
+  report.merge(expected)
+ else:
+  var expected:Dictionary=JSON.parse_string(FileAccess.get_file_as_string("user://reactor-expected.json"))
+  check(g.reactor.level()==1000000003 and JSON.parse_string(JSON.stringify(g.reactor.save_data(),"",true,true))==expected.reactor,"New product process restores billion-level allocations")
+  check(N.compare(g.reactor_capacity(),expected.capacity)==0 and N.compare(g.reactor_multiplier("weapons"),expected.effect)==0,"Reopen recomputes identical capacity and effective weapon contribution")
+  check(N.compare(g.economy.balance("2"),expected.uranium)==0,"Debited huge wallet survives reopen")
+  check(JSON.parse_string(JSON.stringify(g.economy.save_data().materials))==expected.materials and g.economy.save_data().ultimateCores==expected.cores,"Material and core integer wallets unchanged")
+  check(g.start(1,false),"Reopened huge-capacity product starts a sortie")
+  var before=g.production_time()
+  for frame in 30:scene._process(1.0/60.0)
+  check(g.production_time()>before and N.valid(g.reactor_multiplier("weapons")),"Live product clock and finite effects continue after reopen")
+ scene.refresh_tab_visibility();scene.select_system(2);scene.reactor_panel.refresh()
+ await product_capture(scene,phase)
+ report.merge({"checks":checks,"failures":failures,"saving":g.save_enabled,"version":g.SAVE_VERSION,"native":g.native_execution!=null})
+ FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," ",true,true))
+ if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
+ if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
+ scene.queue_free();await process_frame
+ print("REACTOR_PRODUCT ",phase," ",checks," checks ",failures," failures ",JSON.stringify(report));quit(1 if failures else 0)

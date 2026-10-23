@@ -1,5 +1,4 @@
 extends RefCounted
-const ReactorInt = preload("res://scripts/reactor_integer.gd")
 ## Domain commands prepare their result and exact wallet before a joint commit.
 const Economy=preload("res://scripts/economy_state.gd")
 const C=preload("res://scripts/hyperspace_config.gd")

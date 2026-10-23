@@ -38,8 +38,8 @@ func _initialize() -> void:
 	var snapshot:Dictionary=g.economy.save_data();var bad:Dictionary=snapshot.duplicate(true);bad.resources["1"]={"v":1,"i":"10000000000000001"}
 	check(not g.economy.install_snapshot(bad) and g.economy.save_data()==snapshot,"removed resource shape is rejected before wallet installation")
 	check(g.economy.credit("degenerate_matter",9000000000000000-1) and g.economy.debit({"degenerate_matter":1}) and g.economy.balance("degenerate_matter")==9000000000000000-2,"material integer debit remains exact near its domain limit")
-	var int_capacity=preload("res://scripts/reactor_integer.gd").make("1"+"0".repeat(400))
-	check(N.valid(N.from_integer(int_capacity)) and N.parts(N.from_integer(int_capacity))[1]==400,"integer capacity has an explicit bounded growth projection")
+	var capacity=N.floor_value(N.make(1.25,400))
+	check(N.valid(capacity) and N.parts(capacity)[1]==400 and N.compare(N.parse_input(N.input_text(capacity)),capacity)==0,"capacity directly uses finite growth representation and editable round trip")
 	var config:Dictionary=db.config.duplicate(true);config.reactorUpgradeBase=10.0;config.reactorUpgradeGrowth=1.35
 	var reactor=g.reactor
 	var samples:Array=[1,3,10,100,1000,10000,1000000000]

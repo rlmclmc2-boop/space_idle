@@ -1,9 +1,8 @@
 class_name GrowthNumber
 extends RefCounted
-const ReactorInt := preload("res://scripts/reactor_integer.gd")
 ## Ordinary values stay floats. Large values use a JSON-safe mantissa/exponent.
 ## Binary64 precision; exponent arithmetic avoids expanding a resource into digits.
-## Reactor allocation integers enter only through the explicit from_integer projection.
+## Capacity and allocations use the same representation; materials do not.
 static func valid(value) -> bool:
 	if value is int or value is float:return is_finite(float(value)) and value>=0
 	return value is Dictionary and value.size()==2 and value.has("m") and value.has("e") and (value.m is float or value.m is int) and (value.e is float or value.e is int) and is_finite(float(value.m)) and is_finite(float(value.e)) and float(value.m)>=1 and float(value.m)<10 and float(value.e)==floorf(float(value.e))
@@ -20,15 +19,6 @@ static func parts(value) -> Array:
 
 static func normalize(value: Variant) -> Variant:
 	return make(float(value.m),float(value.e)) if value is Dictionary else float(value)
-
-static func from_integer(value: Variant) -> Variant:
-	# Allocation/capacity retain their integer owner and exact save contract.
-	# Combat ratios and displayed growth consume only a bounded projection.
-	if not value is Dictionary:return float(value)
-	assert(ReactorInt.valid(value))
-	var digits: String=value.i
-	var count:=mini(16,digits.length())
-	return make(float(digits.substr(0,count))/pow(10.0,count-1),float(digits.length()-1))
 
 static func make(m: float, e: float):
 	if m==0:return 0.0
@@ -97,6 +87,28 @@ static func compare(a,b) -> int:
 static func minimum(a,b):return a if compare(a,b)<=0 else b
 static func maximum(a,b):return a if compare(a,b)>=0 else b
 static func ceiling(a):return (1.0 if a.e<0 else a) if a is Dictionary else ceilf(float(a))
+static func floor_value(a):
+	var value = normalize(a)
+	return (0.0 if value.e<0 else value) if value is Dictionary else floorf(value)
+
+# Round-trip text for editable quantities, separate from compact display text.
+static func input_text(a) -> String:
+	return JSON.stringify(a.m,"",true,true)+"e"+("%.0f" % a.e) if a is Dictionary else JSON.stringify(a,"",true,true)
+
+static func parse_input(text: String) -> Variant:
+	var pieces := text.strip_edges().to_lower().split("e",true)
+	if pieces.size()>2 or not pieces[0].is_valid_float():return null
+	var mantissa := pieces[0].to_float()
+	if not is_finite(mantissa) or mantissa<0:return null
+	if pieces.size()==1:return mantissa
+	var exponent_text: String=pieces[1]
+	if exponent_text.begins_with("+") or exponent_text.begins_with("-"):exponent_text=exponent_text.substr(1)
+	if exponent_text.is_empty() or not exponent_text.is_valid_int() or exponent_text.begins_with("+") or exponent_text.begins_with("-"):return null
+	var exponent := pieces[1].to_float()
+	if not is_finite(exponent) or exponent!=floorf(exponent):return null
+	var value = make(mantissa,exponent)
+	return value if valid(value) else null
+
 static func ratio(a,b) -> float:
 	var value = divide(a,b)
 	return float(value) if not value is Dictionary else (0.0 if value.e<0 else 1.0)
