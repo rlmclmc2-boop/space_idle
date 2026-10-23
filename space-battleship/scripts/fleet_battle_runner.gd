@@ -256,7 +256,6 @@ func begin_battle() -> void:
 		release_game()
 		finish_battle("error",startup_error)
 		return
-	game.skip_empty_batch_research=true
 	metrics = Metrics.new()
 	metrics.timeline.configure(config.max_seconds,config.max_seconds,2,8)
 	metrics.initialize(game)

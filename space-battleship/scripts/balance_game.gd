@@ -7,7 +7,6 @@ var source_weapon := "unknown"
 # Only known stationary-target, single-hit projectiles are eligible. The original
 # fire caller retains its shot until tick_projectiles, so jewel metadata is intact.
 var simulation_mode := "exact"
-var skip_empty_batch_research := false
 var player_power_multiplier := 1.0
 var pending_hits: Array[Dictionary] = []
 var fresh_shots: Array[Dictionary] = []
@@ -29,23 +28,16 @@ var repair_stats := {}
 var tick_effects_active := false
 var tick_effect_entries: Array = []
 var tick_effect_values: Array = []
-# Active assignments and research rates cannot change during this synchronous
-# Lab call: its only signal consumer is observe/metrics. Levels/point balances
-# still change through the original implementation, including furnace boundaries.
-var research_scope := false
-var research_rates := {}
-var research_active: Array = []
-
-func stat(key: String) -> float:
+func stat(key: String) -> Variant:
 	var value: Variant = super.stat(key)
-	return value * player_power_multiplier if key in ["armour", "shield"] else value
+	return N.multiply(value,player_power_multiplier) if key in ["armour", "shield"] else value
 
 func jewel_attack(index: int, multiplier := 1.0) -> Dictionary:
 	var attack := super.jewel_attack(index, multiplier)
-	attack.damage *= player_power_multiplier
+	attack.damage = N.multiply(attack.damage,player_power_multiplier)
 	return attack
 
-func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw: float, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
+func fire(source: Dictionary, target: Dictionary, weapon: Dictionary, raw, hostile: bool, key: String, offset := Vector2.ZERO, visual_spread := 0.0) -> void:
 	super.fire(source,target,weapon,raw,hostile,key,offset,visual_spread)
 	if simulation_mode == "fast":fresh_shots.append(projectiles.back())
 
@@ -134,27 +126,6 @@ func tick_projectiles(dt: float) -> void:
 	# Reuse impact events, hit functions, death clearing, AOE and gem triggers.
 	super.tick_projectiles(dt)
 
-func research_rate(key: String, crew_effects: Dictionary = {}) -> float:
-	if not research_scope:return super.research_rate(key,crew_effects)
-	if not research_rates.has(key):research_rates[key] = super.research_rate(key,crew_effects)
-	return float(research_rates[key])
-
-func active_research(rates: Dictionary = {}) -> Array:
-	if not research_scope:return super.active_research(rates)
-	rates.assign(research_rates)
-	return research_active
-
-func advance_hightech(dt: float, real_dt := -1.0, end_time := -1.0) -> void:
-	# Batch loadouts have no scientists, research or furnaces. The guard keeps
-	# the original path for any profile that can advance either system.
-	if skip_empty_batch_research and profile.hightechLevels.is_empty() and profile.scientistAssignments.is_empty() and profile.techPoints.is_empty():return
-	research_active = super.active_research(research_rates)
-	research_scope = true
-	super.advance_hightech(dt,real_dt,end_time)
-	research_scope = false
-	research_rates.clear()
-	research_active.clear()
-
 func advance_jewel_repair(dt: float) -> bool:
 	repair_cache_active = true
 	var repaired := super.advance_jewel_repair(dt)
@@ -213,7 +184,6 @@ func install_loaded_session(candidate:BattleGame)->void:
 	pending_hits.clear();fresh_shots.clear();projectile_tick=0
 	repair_cache_active=false;repair_entries.clear();repair_effects.clear();repair_stats.clear()
 	tick_effects_active=false;clear_tick_effects()
-	research_scope=false;research_rates.clear();research_active.clear()
 
 func economy_time() -> float:
 	return simulated_time
@@ -295,16 +265,6 @@ func begin_retreat() -> void:
 		if metrics.first_death == null:metrics.first_death = {"time":simulated_time,"stage":stage,"wave":group_index}
 		metrics.born.clear()
 	super.begin_retreat()
-
-func generate_scientist(amount := 1) -> bool:
-	var before: Dictionary = economy.resources().duplicate()
-	var previous_count:int=int(profile.scientists)
-	var result := super.generate_scientist(amount)
-	if result and metrics != null:
-		for id in before:before[id] = float(before[id])-float(economy.balance(id))
-		metrics.spend("scientists",before)
-		metrics.use("scientists",int(profile.scientists)-previous_count)
-	return result
 
 func upgrade_reactor(amount: int) -> bool:
 	var before := float(economy.balance(str(int(db.config.reactorUraniumId))))

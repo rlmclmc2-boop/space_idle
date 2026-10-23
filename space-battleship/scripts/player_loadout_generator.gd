@@ -272,7 +272,7 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 			if str(game.module_entries(category)[index].get("key"," ")).strip_edges().is_empty():continue
 			var costs: Dictionary=game.slot_upgrade_cost(category,index,delta)
 			if costs.is_empty():return {"error":"level_cap"}
-			for id in costs:game.economy.credit(str(id), maxf(0.0,float(costs[id])-float(game.economy.balance(str(id)))))
+			for id in costs:game.economy.credit(str(id), GrowthNumber.subtract(costs[id],game.economy.balance(str(id))))
 			if not game.upgrade_slot(category,index,delta):return {"error":"upgrade_failed"}
 	if not game.snapshot_ready():return {"error":"incomplete_logical_step"}
 	return game.portable_save_data()

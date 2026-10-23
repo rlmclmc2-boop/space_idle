@@ -20,16 +20,6 @@ func run() -> void:
 	options.module_level=10
 	var players: Array=gen.generate(options).results
 	check(enemies.size()==2 and players.size()==2,"fixtures")
-	var guard_snapshots: Array=[]
-	for skip_empty in [false,true]:
-		var guard_db := ShipDatabase.new()
-		var guard_game = Player.start_validated_battle(guard_db,enemies[0],players[0],22,"fast")
-		guard_game.skip_empty_batch_research=skip_empty
-		for _step in range(1800):
-			if guard_game.state!=BattleGame.State.COMBAT:break
-			guard_game.tick(1.0/60.0)
-		guard_snapshots.append({"state":guard_game.state,"armour":guard_game.player.armour,"shield":guard_game.player.shield,"rng":guard_game.rng.state,"time":guard_game.simulated_time})
-	check(guard_snapshots[0]==guard_snapshots[1],"empty batch research skip preserves combat and RNG")
 	var baseline_game=Player.start_validated_battle(ShipDatabase.new(),enemies[0],players[0],99,"fast",{},1.0)
 	var double_game=Player.start_validated_battle(ShipDatabase.new(),enemies[0],players[0],99,"fast",{},2.0)
 	var triple_game=Player.start_validated_battle(ShipDatabase.new(),enemies[0],players[0],99,"fast",{},3.0)

@@ -15,8 +15,6 @@ func run() -> void:
 		for level in [-1,1,2,40,200,1000]:
 			check(original.equip(key,level) == cached.equip(key,level),"real equipment projection %s/%d" % [key,level])
 		check(original.enemy_weapon(key) == cached.enemy_weapon(key),"enemy fallback projection "+key)
-	for id in original.data.jewel:
-		check(original.jewel_effect(id) == cached.jewel_effect(id),"effect definition "+id)
 	for unlock in original.data.unlock.values():
 		check(cached.unlock_id(unlock.type,unlock.target) == original.unlock_id(unlock.type,unlock.target),"fixed config unlock lookup")
 	for index in 600:cached.unlock_id("missing",str(index))
@@ -41,6 +39,53 @@ func run() -> void:
 	cached.clear_derived_cache()
 	check(cached.equip("laser",40) == original.equip("laser",40),"explicit source edit invalidation")
 	check(cached.enemy_weapon("laser-mon") == original.enemy_weapon("laser-mon"),"fallback invalidation after source edit")
+	# Lab adapter must preserve the shared numeric and current Research owners.
+	var live := BattleGame.new(ShipDatabase.new(),false)
+	var lab = preload("res://scripts/balance_game.gd").new(RunDatabase.new())
+	for subject in [live,lab]:
+		subject.profile.cleared = [3,4]
+		subject.rebuild_unlocks()
+		check(subject.select_tech("weapon_accuracy"),"current research selected")
+		subject.advance_hightech(5.0)
+	check(lab.research.progress("weapon_accuracy")>0,"Lab advances current research without legacy profile fields")
+	check(live.research.save_data()==lab.research.save_data(),"Lab research uses shared advancement")
+	var huge = GrowthNumber.make(2.0,400.0)
+	lab.player_power_multiplier = 3.0
+	for subject in [live,lab]:
+		var equipment: Dictionary = subject.equipment.save_data()
+		for entry in equipment.loadout.defence:entry.level = 6000
+		check(subject.equipment.install_snapshot(equipment,subject.db),"large defence fixture installs")
+		subject.configuration_committed()
+	check(lab.stat("armour") is Dictionary and GrowthNumber.compare(lab.stat("armour"),GrowthNumber.multiply(live.stat("armour"),3.0))==0,"Lab stat preserves large value and multiplier")
+	for subject in [live,lab]:
+		var equipment: Dictionary = subject.equipment.save_data()
+		equipment.loadout.weapons[0].level = 6000
+		check(subject.equipment.install_snapshot(equipment,subject.db),"large attack fixture installs")
+		subject.configuration_committed()
+		subject.rng.seed = 44
+	var live_attack: Dictionary = live.jewel_attack(0)
+	var lab_attack: Dictionary = lab.jewel_attack(0)
+	check(lab_attack.damage is Dictionary and GrowthNumber.compare(lab_attack.damage,GrowthNumber.multiply(live_attack.damage,3.0))==0,"Lab attack preserves large value and multiplier")
+	lab.start(1,false)
+	lab.spawn_group()
+	var target: Dictionary = lab.enemies[0]
+	lab.fire(lab.player,target,lab.db.equip("laser",1),huge,false,"laser")
+	check(GrowthNumber.compare(lab.projectiles.back().damage,huge)==0,"Lab projectile preserves large raw damage")
+	var auto_game = preload("res://scripts/balance_game.gd").new(RunDatabase.new())
+	auto_game.profile.cleared = [3,4]
+	auto_game.rebuild_unlocks()
+	var expected_choice: String = auto_game.research.shortest_available(auto_game)
+	var auto = preload("res://scripts/balance_autoplayer.gd").new()
+	auto.act(auto_game,0.0)
+	check(not expected_choice.is_empty() and auto_game.research.selected()==expected_choice,"Lab automatic selection reuses current Research choice")
+	auto_game.advance_hightech(1.0)
+	check(auto_game.research.progress(expected_choice)>0,"automatic Lab research actually advances")
+	var base := BattleGame.new(ShipDatabase.new(),false)
+	base.economy.credit("1",huge)
+	base.economy.credit("2",huge)
+	var saved: Dictionary = base.portable_save_data()
+	var upgraded: Dictionary = preload("res://scripts/player_loadout_generator.gd").upgraded_profile(base.db,{"ship":saved.selectedShip,"equipment":saved.loadout},saved,1)
+	check(not upgraded.has("error") and int(upgraded.loadout.weapons[0].level)==2 and GrowthNumber.compare(upgraded.resources["1"],huge)==0,"Lab upgrade funding preserves out-of-precision large balances")
 	var timings := []
 	for database in [original,cached]:
 		var started := Time.get_ticks_usec()

@@ -74,24 +74,15 @@ func run() -> void:
 				subject.since_hit = 100
 				subject.advance_jewel_repair(0.25)
 			check(live.player == lab.player and live.jewel_defence_damage == lab.jewel_defence_damage,"repair matches original after dependency changes %s/%d" % [weapon,phase])
-	# Research query reuse must expire before assignments/configuration change.
+	# Current Research owner is shared; no Lab query cache or legacy assignments.
 	var research_live := ReferenceGame.new(ShipDatabase.new(),false)
 	var research_lab = LabGame.new(RunDatabase.new())
 	for subject in [research_live,research_lab]:
-		subject.rng.seed = 888
-		subject.profile.hightechSavedAt = 0.0
-	for phase in 5:
-		for subject in [research_live,research_lab]:
-			subject.profile.cleared = range(1,subject.db.levels.size()+1)
-			subject.profile.highestLevel = subject.db.levels.size()
-			for research_key in subject.db.data.hightech:
-				subject.profile.scientistAssignments[research_key] = phase+1
-				subject.profile.techPoints[research_key] = 1e21 if phase == 4 else 0.0
-			subject.db.config.techPointGet = phase+1
-			subject.advance_hightech(10.0,10.0,phase*10.0+10.0)
-		check(research_live.profile == research_lab.profile and research_live.drops == research_lab.drops,"research/furnace boundaries and bulk match original phase "+str(phase))
-		check(research_live.rng.state == research_lab.rng.state,"research reuse preserves RNG")
-		check(not research_lab.research_scope and research_lab.research_rates.is_empty() and research_lab.research_active.is_empty(),"research scope released")
+		subject.profile.cleared = [3,4]
+		subject.rebuild_unlocks()
+		check(subject.select_tech("weapon_accuracy"),"current research selected")
+		subject.advance_hightech(5.0)
+	check(research_live.research.save_data()==research_lab.research.save_data(),"research uses current shared owner")
 	# Reactor metrics use the same cumulative purchase as the game.
 	var db := ShipDatabase.new()
 	var game = LabGame.new(db)
