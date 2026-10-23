@@ -1,0 +1,1 @@
+PASS: non-source drive alias, renamed project, Chinese/spaces, unrelated cwd, stale absolute template rebound without changing source preset, full release build/runtime verification, one ZIP with EXE and required native DLL.

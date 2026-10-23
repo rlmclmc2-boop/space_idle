@@ -1,0 +1,26 @@
+{
+  "source_sha256": {
+    "scripts/main.gd": "c903076c31a1ac71ceb54037c1614af747c66ef3ed0164534c6ee7c66f03d645",
+    "scripts/database.gd": "fde66a5a2a01efe6e8f2764c438e1f00e9af5762d662dad8f6b261134fcf828f",
+    "scripts/configuration_snapshot.gd": "baa6198c35e397ab7a0997c2239ffb44b71227d756605293e07002578b8921b1",
+    "scripts/cycle_level_xlsx.gd": "c87310c9171599ed1925b3ac7b6e9f4aaedb4b890ee5977b58ec14aaa840aaff",
+    "scripts/mon_group_xlsx.gd": "48213cdfff0a13aaa124cb5ca88f9d0d505be89600a2d0d4b53b0e8b73eb6bc1",
+    "tools/build_release.ps1": "921f9558f0bbd66a984799b7d170d66968fd163009bfb2ae1d716d224e334738",
+    "tools/configuration_snapshot.ps1": "e486a8d04473ce3e49a0044fbdd8443fc648fe8195f1551c54acde646ce0960d",
+    "configuration_manifest.json": "8a30ef29d834ec92f0b0ef73071fcb222a8725c83e2a482046313b06b39e9da3"
+  },
+  "main_checks": 151,
+  "main_failures": 0,
+  "main_script_differences_since_run": [
+    "level_editor.gd"
+  ],
+  "portable_lab_failures": 0,
+  "public_editor_tests": 10,
+  "release_portability": "passed",
+  "retest_baseline_sha": "a1b31ce166d73e9a00f8d457dc4fe9cea2a0413c",
+  "retest_existing_failures": 2,
+  "pending": [
+    "complete input matrix",
+    "actual editor UI save/reload"
+  ]
+}

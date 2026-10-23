@@ -461,6 +461,37 @@ def powershell_lock_protocol(root, protocol):
             if child.poll() is None:child.kill();child.wait()
 
 
+def build_capture_protocol():
+    import os,subprocess,time
+    import config_snapshot as protocol
+    root=AREA/'build-capture';root.mkdir()
+    store=protocol.Store(root)
+    first=store.publish(None,{'data/a.json':b'{"value":1}'},lambda _:None)
+    captured=store.capture().runtime()
+    second=store.publish(first,{'data/a.json':b'{"value":2}'},lambda _:None)
+    python_output=AREA/'python-package';captured.materialize(python_output)
+    check(protocol.Store(python_output).capture().files['data/a.json']==first.files['data/a.json'],'Python package materializes captured bytes after source generation changes')
+    if os.name!='nt':return
+    marker=AREA/'ps-captured';destination=AREA/'powershell-package';destination.mkdir()
+    script=AREA/'capture-build.ps1'
+    script.write_text('param($Helper,$Root,$Marker,$Destination)\n$ErrorActionPreference="Stop"\n. $Helper\n'
+        '$captured=Get-ConfigurationSnapshot $Root\n[IO.File]::WriteAllText($Marker,"captured")\n'
+        'while(-not [IO.File]::Exists($Marker+".release")){Start-Sleep -Milliseconds 50}\n'
+        'foreach($name in $captured.Keys){$path=Join-Path $Destination $name;[IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($path))|Out-Null;[IO.File]::WriteAllBytes($path,$captured[$name])}\n',encoding='utf-8')
+    with (AREA/'powershell-capture.log').open('wb') as log:
+        child=subprocess.Popen(['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',str(script),str(ROOT/'tools/configuration_snapshot.ps1'),str(root),str(marker),str(destination)],stdout=log,stderr=subprocess.STDOUT)
+        try:
+            deadline=time.monotonic()+30
+            while not marker.exists() and child.poll() is None and time.monotonic()<deadline:time.sleep(.05)
+            check(marker.exists(),'Actual PowerShell build helper completed capture')
+            store.publish(second,{'data/a.json':b'{"value":3}'},lambda _:None)
+            Path(str(marker)+'.release').touch()
+            check(child.wait(timeout=30)==0,'PowerShell materializes after source changes')
+        finally:
+            if child.poll() is None:child.kill();child.wait()
+    check(protocol.Store(destination).capture().files['data/a.json']==second.files['data/a.json'],'Player staging uses its complete captured generation, not changed source paths')
+
+
 def native_lock_protocol(root, protocol):
     import os
     import subprocess
@@ -550,6 +581,7 @@ def native_lock_protocol(root, protocol):
 def main():
     generation_protocol()
     print(f"CONFIGURATION_PROTOCOL {checks} assertions passed",flush=True)
+    build_capture_protocol()
     published_editor_protocol()
     print(f"CONFIGURATION_PUBLICATION cumulative {checks} assertions passed",flush=True)
     matrix=[]

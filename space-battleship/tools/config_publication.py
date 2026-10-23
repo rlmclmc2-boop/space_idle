@@ -16,6 +16,8 @@ def json_files(root):
 
 
 def relocate_metadata(root, before, after):
+    # Canonicalize Windows short/long aliases before forming cache identities.
+    after=Path(after).resolve(strict=True)
     # Only provenance/cache paths change; never rewrite business strings.
     target=root/'data/game_data.json'
     data=json.loads(target.read_bytes())
@@ -81,7 +83,7 @@ def worker(root,action,request):
         request['snapshot']=store.snapshot() # outer capture identity was checked by the coordinator
         files,warnings=store.prepare(request)
         for path,raw in files.items():path.write_bytes(raw)
-        result={'warnings':warnings}
+        result={'warnings':warnings,'message':le.ui_text('debug.level_editor_store.message_10' if action=='save' else 'debug.level_editor_store.message_03')}
     if action!='load':validate_complete(root,action!='split')
     return result
 
