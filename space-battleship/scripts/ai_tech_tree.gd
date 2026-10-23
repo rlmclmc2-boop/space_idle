@@ -256,9 +256,14 @@ func snapshot(game) -> Dictionary:
 	var remaining = remaining_seconds(game,selected,acceleration)
 	return {"nodes":nodes,"selected":selected,"inputs":inputs,"automatic_input":game.crew.factory_active(game),"input_ratios":_state.aiTechAutoRatios.duplicate(),"input_refresh_seconds":auto_refresh_in(),"ai_count":ai_count(game),"speed":acceleration,"remaining_seconds":remaining,"status":"idle" if selected.is_empty() else "researching"}
 
+func advance_inputs(game, id: String) -> Dictionary:
+	# Effective calculation inputs, including current crew and drone contributions.
+	return {"speed":research_speed(game),"required":required(game,id),"eligible":bool(eligibility(game,id).ok)}
+
 func prepare_advance(game, dt: float) -> Dictionary:
 	if dt <= 0.0 or not is_finite(dt) or selected().is_empty():return {}
 	var id := selected()
+	var inputs := advance_inputs(game,id)
 	var next := save_data()
 	var resources: Dictionary = game.economy.resources()
 	var remaining := dt
@@ -269,11 +274,11 @@ func prepare_advance(game, dt: float) -> Dictionary:
 	var stopped := false
 	while remaining > 0.0000000001 and iterations < 256:
 		iterations += 1
-		if not bool(eligibility(game,id).ok):
+		if not inputs.eligible:
 			next.aiTechActive = "";changed = true;stopped = true
 			break
 		var step: Variant = remaining
-		var speed: Variant = research_speed(game)
+		var speed: Variant = inputs.speed
 		var factors := {}
 		for resource_id in ["1", "2"]:
 			var amount = next.aiTechInput[resource_id]
@@ -283,7 +288,7 @@ func prepare_advance(game, dt: float) -> Dictionary:
 				step = N.minimum(step,N.divide(resources[resource_id],amount))
 			factors[resource_id] = amount
 			speed = N.multiply(speed,input_factor(amount))
-		var cost := required(game,id)
+		var cost: float = inputs.required
 		if not is_finite(cost):break
 		var before := float(next.aiTechProgress.get(id,0.0))
 		if cost-before <= maxf(1.0,cost)*1e-12:completed = true
@@ -314,7 +319,7 @@ func prepare_advance(game, dt: float) -> Dictionary:
 			changed = true
 			break
 	if not changed:return {}
-	return {"state":next,"resources":resources,"paid":paid.keys(),"revision":revision,"resource_revision":game.economy.resource_revision,"completed":completed,"stopped":stopped,"id":id}
+	return {"state":next,"resources":resources,"paid":paid.keys(),"revision":revision,"resource_revision":game.economy.resource_revision,"inputs":inputs,"completed":completed,"stopped":stopped,"id":id}
 
 func proposal_current(proposal: Dictionary) -> bool:
 	return proposal.revision == revision

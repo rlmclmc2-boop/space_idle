@@ -732,7 +732,7 @@ func on_event(kind: String, info: Dictionary) -> void:
 				if is_instance_valid(planet_panel):planet_panel.invalidate()
 			else:
 				if is_instance_valid(crew_panel):
-					if game.planet_crew_payout_active:
+					if info.get("source","")=="planet":
 						# planet_changed refreshes the complete panel after this payout.
 						crew_panel.dirty=true
 					else:crew_panel.refresh_member(info.current)

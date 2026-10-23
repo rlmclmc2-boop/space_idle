@@ -25,7 +25,7 @@ func _init() -> void:
 	register_target("galaxy", galaxy_targets)
 	register_handler("galaxy", "EXPLORE", passive)
 	register_handler("equipment", "AUTO_UPGRADE", auto_upgrade)
-	register_handler("hightech", "AUTO_RESEARCH", auto_research)
+	register_handler("hightech", "AUTO_RESEARCH", passive)
 	register_handler("jewel", "AUTO_COMBINE", auto_jewels)
 	register_handler("reactor", "AUTO_REACTOR", auto_reactor)
 	for target in ["production", "smelting"]:
@@ -36,12 +36,15 @@ func attach(g) -> void:
 	game_ref = weakref(g)
 	g.event.connect(on_event)
 
-func reset_schedule(g) -> void:
+func clear_schedule() -> void:
 	timers.clear()
 	intervals.clear()
 	allocation_timers.clear()
 	allocation_intervals.clear()
 	allocation_dependencies.clear()
+
+func reset_schedule(g) -> void:
+	clear_schedule()
 	invalidate_jobs(g,PURCHASE_JOBS)
 	invalidate_reactor_allocation(g)
 
@@ -394,15 +397,6 @@ func factory_active(g) -> bool:
 		var row: Dictionary=assignments(g).get(item.assignmentType,{})
 		if row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_RESEARCH" and active(g,item):return true
 	return false
-
-func continue_research(g) -> void:
-	# Completion is the only trigger: assignment/load never override manual pause.
-	if factory_active(g):auto_research(g,{})
-
-func auto_research(g, _item: Dictionary) -> bool:
-	if not g.research.selected().is_empty():return false
-	var next: String = g.research.shortest_available(g)
-	return not next.is_empty() and g.select_tech(next)
 
 func auto_jewels(g, _item: Dictionary) -> bool:
 	return g.upgrade_enhancement(1)>0

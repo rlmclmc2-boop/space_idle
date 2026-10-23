@@ -1,5 +1,19 @@
 extends SceneTree
 ## Current scheduler results, not a second implementation of the old per-second loop.
+class CallbackGame extends BattleGame:
+	var before_change: Callable
+	var accept_change:=true
+	var captures:=0
+	var health_applies:=0
+	func apply_refit_health()->void:
+		health_applies+=1;super.apply_refit_health()
+	func capture_refit_health()->void:
+		captures+=1;super.capture_refit_health()
+	func native_before_configuration_change()->bool:
+		if before_change.is_valid():
+			var callback:=before_change;before_change=Callable();callback.call()
+		return accept_change
+
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -60,6 +74,8 @@ func _initialize()->void:
 	check(stable_save(g)==before,"Discarded overrun cannot cause a second purchase")
 	g.assign_crew("navigator","","");before=stable_save(g);g.crew.advance(g,2)
 	check(stable_save(g)==before,"Equipment recall stops spending")
+	nondefence_damage_boundary()
+	coordination_boundaries()
 	material_wakeup()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
@@ -101,3 +117,57 @@ func material_wakeup()->void:
 	check(g.slot_entry("weapons",0).level==boundary-1,"Material credit waits the existing crew interval")
 	g.crew.advance(g,0.01)
 	check(g.slot_entry("weapons",0).level==boundary,"Merged material credits resume once without postponing the first deadline")
+
+func coordination_boundaries()->void:
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var before:=g.crew.save_data();var notices:Array=[]
+	g.event.connect(func(kind,info):
+		if kind=="crew_changed":notices.append(info))
+	g.accept_change=false
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.save_data()==before and notices.is_empty() and g.captures==0,"Rejected handoff leaves assignment and notifications untouched")
+	g.accept_change=true
+	g.before_change=func():g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.entry(g,"navigator").assignmentType=="" and g.crew.entry(g,"navigator").upgradeMode=="10" and g.captures==0,"Handoff callback invalidates stale assignment without overwriting its change")
+	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.galaxy_runtime.refresh_unlocks(g)
+	check(g.assign_crew("navigator","galaxy_explore","galaxy_1"),"Assign actual previous galaxy job")
+	g.galaxy.set_pending_context("galaxy_1",g.galaxy.crew_count(g,"galaxy_1"));g.galaxy.add_pending("galaxy_1",0.25)
+	var settled:Array=[]
+	var observer:=func(kind,_info):
+		if kind=="galaxy_changed":
+			settled.append(true);g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
+	g.event.connect(observer)
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback rejects stale transfer")
+	g.event.disconnect(observer)
+	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="galaxy_explore","Earned previous-job work settles once and assignment remains current")
+	check(g.captures==1,"Only the original successful assignment captured health; stale transfer did not")
+	g.captures=0
+	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.captures==1,"Successful transfer captures health once after final callback checks")
+	var saved:=fixture().portable_save_data()
+	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.assign_crew("navigator","equipment_upgrade","equipment");g.crew.advance(g,0.9)
+	g.galaxy_runtime.native_prepared=true;g.hyperspace_runtime.advancing=true
+	g.load_progress_data(saved)
+	check(not g.crew.timers.has("navigator") and not g.galaxy_runtime.native_prepared and not g.hyperspace_runtime.advancing,"Full load clears old purchase task and cached runtime work")
+	var loaded:=stable_save(g);g.crew.advance(g,2)
+	check(stable_save(g)==loaded,"No old job revives after full load")
+
+func nondefence_damage_boundary()->void:
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var damage=GrowthNumber.multiply(g.stat("armour"),0.25)
+	g.player.armour=GrowthNumber.subtract(g.stat("armour"),damage)
+	g.jewel_defence_damage={0:damage}
+	var original_damage:=g.jewel_defence_damage.duplicate(true);var original_health=g.player.armour
+	var seen:Array=[]
+	g.event.connect(func(kind,_info):
+		if kind=="crew_changed":seen.append(g.jewel_defence_damage.duplicate(true)))
+	check(g.assign_crew("navigator","hightech_scientists","hightech"),"Nondefence assignment commits")
+	check(g.add_crew_exp("navigator",g.crew.required_exp(g,0)),"Research crew gains a real level")
+	check(g.assign_crew("navigator","",""),"Nondefence recall commits")
+	check(g.health_applies==0 and g.jewel_defence_damage==original_damage and g.player.armour==original_health,"Research assignment, level and recall never clear or redistribute module damage")
+	check(seen.size()==3 and seen.all(func(value):return value==original_damage),"Nondefence notices retain the original module damage")
+	g.captures=0
+	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.health_applies==1 and g.captures==1,"Actual defence change still captures and reapplies health once")
+	check(absf(GrowthNumber.ratio(g.player.armour,g.stat("armour"))-0.75)<0.000001,"Actual defence refit retains the existing health algorithm")
