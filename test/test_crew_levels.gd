@@ -11,8 +11,8 @@ func check(ok: bool, message: String) -> void:
 	if not ok:failures+=1;printerr(scenario+": "+message)
 func _initialize() -> void:
 	run_case("live configuration",{})
-	run_case("changed balance",{"base_exp":37,"exp_multiplier":1.7,"equip_bonus":0.23,"tech_ai_per_level":3,"tech_speed":0.35,"gem_bonus":0.27,"charge_bonus":0.45})
-	run_case("zero bonuses and flat XP",{"base_exp":10,"exp_multiplier":1.0,"equip_bonus":0.0,"tech_ai_per_level":0,"tech_speed":0.0,"gem_bonus":0.0,"charge_bonus":0.0})
+	run_case("changed balance",{"base_exp":37,"exp_multiplier":1.7,"equip_bonus":0.23,"tech_speed":0.35,"gem_bonus":0.27,"charge_bonus":0.45})
+	run_case("zero bonuses and flat XP",{"base_exp":10,"exp_multiplier":1.0,"equip_bonus":0.0,"tech_speed":0.0,"gem_bonus":0.0,"charge_bonus":0.0})
 	run_boundaries()
 	print("crew levels: %d checks, %d failures" % [checks,failures])
 	quit(1 if failures else 0)
@@ -30,7 +30,6 @@ func run_case(label: String, overrides: Dictionary) -> void:
 	var charge_factor: float=1.0+float(cfg.charge_bonus.value)*2
 	# Text-format assertions use controlled templates, independent of editable wording.
 	cfg.equip_bonus.des="Equipment {effect}"
-	cfg.tech_ai_per_level.des="AI {ai}"
 	cfg.tech_speed.des="Research {effect}"
 	cfg.gem_bonus.des="Fragments {effect}"
 	cfg.charge_bonus.des="Energy {effect}"
@@ -52,7 +51,6 @@ func run_case(label: String, overrides: Dictionary) -> void:
 	check(c.levels_unlocked(g),"Existing clear unlocks feature")
 	for effect_key in ["equip_bonus","tech_speed","gem_bonus","charge_bonus"]:
 		check(c.level_effect(g,effect_key,0)==1.0,"Level zero has no multiplier bonus: "+effect_key)
-	check(c.level_effect(g,"tech_ai_per_level",0)==0.0,"Level zero grants no dedicated AI")
 	check(c.level_description(g,c.entry(g,"navigator")).contains("%+.2f%%" % ((equipment_factor-1.0)*100)),"Equipment compounded bonus uses two decimal places")
 	check(is_equal_approx(g.jewel_equipment_stat(module),base*equipment_factor),"Equipment uses exponential level projection")
 	check(is_equal_approx(g.jewel_equipment_stat(module),base*equipment_factor),"Repeated reads do not compound")
@@ -65,10 +63,19 @@ func run_case(label: String, overrides: Dictionary) -> void:
 	var second_cost: float=maxf(1.0,roundf(float(cfg.base_exp.value)*float(cfg.exp_multiplier.value)))
 	g.add_crew_exp("navigator",first_cost+second_cost)
 	check(c.entry(g,"navigator").level==2,"XP from zero uses configured curve")
-	g.assign_crew("navigator","hightech_scientists","hightech")
-	db.data.crew_config.tech_ai_per_level.des="自定义 {level}/{value}/{effect}/{ai}/{unknown}"
+	var base_speed:float=g.research.research_speed(g)
+	var ai_count:int=g.research.ai_count(g)
+	check(g.assign_crew("navigator","hightech_scientists","hightech"),"Factory retains its saved job identity")
+	var research_factor:float=1.0+float(cfg.tech_speed.value)*2.0
+	check(is_equal_approx(g.research.research_speed(g),base_speed*research_factor) and g.research.ai_count(g)==ai_count,"Crew level scales actual research speed once without adding AI")
+	check(g.select_tech("weapon_accuracy"),"Start actual research while crew is assigned")
+	g.advance_hightech(0.5)
+	check(is_equal_approx(g.research.progress("weapon_accuracy"),base_speed*research_factor*0.5),"Configured crew bonus reaches actual progress")
+	db.data.crew_config.tech_speed.des="自定义 {level}/{value}/{effect}/{unknown}"
 	var description: String=c.level_description(g,c.entry(g,"navigator"))
-	check(description.contains("自定义 2/") and description.contains("/{unknown}") and not description.contains("{ai}") and not description.contains("{effect}") and not description.contains("{value}"),"Descriptions substitute safe placeholders")
+	check(description.contains("自定义 2/") and description.contains("/{unknown}") and not description.contains("{effect}") and not description.contains("{value}"),"Descriptions substitute safe placeholders")
+	g.assign_crew("navigator","","")
+	check(is_equal_approx(g.research.research_speed(g),base_speed) and g.research.selected()=="weapon_accuracy","Recall removes only crew speed and preserves active research")
 	g.assign_crew("navigator","jewel_auto","jewels")
 	check(c.level_description(g,c.entry(g,"navigator")).contains("Fragments %+.2f%%" % ((gem_factor-1.0)*100)),"Jewel bonus uses two decimal percent")
 	check(is_equal_approx(g.settle_jewel_fragments(10,"drop",1),snappedf(10*gem_factor,0.01)),"Direct fragments use bonus")
@@ -125,7 +132,7 @@ func run_boundaries() -> void:
 		if kind in ["crew_changed","galaxy_changed"]:observed.append({"assignment":g.crew.entry(g,"navigator").assignmentType,"status":g.galaxy.regions[galaxy_key].state.status})
 	g.event.connect(assignment_observer);check(g.assign_crew("navigator","galaxy_explore",galaxy_key),"Assign crew and begin region");g.event.disconnect(assignment_observer)
 	check(not observed.is_empty() and observed.all(func(value):return value.assignment=="galaxy_explore" and value.status=="exploring"),"Region start and crew assignment precede both notifications")
-	g.galaxy.elapsed[galaxy_key]=0.25;g.galaxy.elapsed_crew[galaxy_key]=1
+	g.galaxy.set_pending_context(galaxy_key,1);g.galaxy.add_pending(galaxy_key,0.25)
 	var region=g.galaxy.regions[galaxy_key];var prediction=region.predict_advance(0.25,1)
-	check(g.assign_crew("navigator","","") and g.galaxy.elapsed[galaxy_key]==0,"Recall settles pending original crew time")
+	check(g.assign_crew("navigator","","") and g.galaxy.pending(galaxy_key)==0,"Recall settles pending original crew time")
 	check(region.state==prediction.state and region.random.state==prediction.random.state,"Recall settlement matches original one-crew algorithm")

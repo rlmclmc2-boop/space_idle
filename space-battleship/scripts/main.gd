@@ -3862,6 +3862,7 @@ func build_hightech_tab() -> void:
 	hightech_page.set_snapshot_provider(Callable(self,"ai_tech_page_snapshot"))
 	hightech_page.research_requested.connect(on_ai_tech_research_requested)
 	hightech_page.investment_requested.connect(on_ai_tech_investment_requested)
+	hightech_page.input_ratio_requested.connect(on_ai_tech_input_ratio_requested)
 	hightech_page.set_snapshot(ai_tech_page_snapshot())
 
 func tech_page_suppressed_for_perf() -> bool:
@@ -3875,9 +3876,14 @@ func on_ai_tech_research_requested(display_id: String) -> void:
 	game.select_tech("" if game.research.selected()==model_id else model_id)
 	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
-func on_ai_tech_investment_requested(resource_id: String, amount: int) -> void:
+func on_ai_tech_investment_requested(resource_id: String, amount: Variant) -> void:
 	var model_id := str({"iron":"1","uranium":"2"}.get(resource_id,resource_id))
 	game.set_tech_input(model_id,amount)
+	if is_instance_valid(hightech_page):hightech_page.invalidate()
+
+func on_ai_tech_input_ratio_requested(resource_id: String, ratio: float) -> void:
+	var model_id := str({"iron":"1","uranium":"2"}.get(resource_id,resource_id))
+	game.set_tech_input_ratio(model_id,ratio)
 	if is_instance_valid(hightech_page):hightech_page.invalidate()
 
 func draw_unlock() -> void:

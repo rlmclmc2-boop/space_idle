@@ -167,5 +167,112 @@ func run() -> void:
 	var before_rejection:=atomic.research.save_data()
 	atomic.load_progress_data(bad)
 	check(atomic.research.save_data()==before_rejection and atomic.economy.resources()==plan.resources,"invalid research save cannot partially install other domains")
+	run_factory_crew()
+	run_factory_inputs()
 	print("AI_TECH_TREE_CHECKS=",checks," FAILURES=",failures)
 	quit(1 if failures else 0)
+
+func run_factory_crew() -> void:
+	var db:=ShipDatabase.new()
+	for gate in db.data.unlock.values():gate.level=0
+	var g:=BattleGame.new(db,false)
+	check(g.assign_crew("navigator","hightech_scientists","hightech"),"Assign actual factory crew")
+	g.advance_hightech(1.0)
+	check(g.research.selected().is_empty(),"Assignment and idle ticks never cancel a manual research pause")
+	var state:=g.research.save_data()
+	state.aiTechProgress={"singularity":g.research.required(g,"singularity")-2.0,"weapon_accuracy":g.research.required(g,"weapon_accuracy")-5.0,"resource_refining":g.research.required(g,"resource_refining")-5.0,"equipment_finishing":g.research.required(g,"equipment_finishing")-0.1}
+	check(g.research.install_snapshot(state,db.data.ai_tech_tree),"Partial research fixture installs without resetting work")
+	check(g.select_tech("singularity"),"Player can choose a longer project")
+	g.advance_hightech(1.0)
+	check(g.research.selected()=="singularity","Assigned crew never preempts current research")
+	var before:=g.research.save_data();var wallet:=g.economy.save_data()
+	g.native_execution=RefusedHandoff.new();g.advance_hightech(1.0)
+	var refused:=g.research.save_data();refused.aiTechAutoElapsed=before.aiTechAutoElapsed
+	check(refused==before and g.economy.save_data()==wallet,"Rejected completion neither switches project nor partially commits growth/payment; automatic clock still advances")
+	g.native_execution=null;g.advance_hightech(1.0)
+	check(g.research.level(g,"singularity")==1 and g.research.selected()=="weapon_accuracy","After commit choose shortest remaining eligible project; configured order resolves equal times")
+	check(g.research.progress("weapon_accuracy")==float(state.aiTechProgress.weapon_accuracy) and g.research.progress("equipment_finishing")==float(state.aiTechProgress.equipment_finishing),"Continuation preserves progress and ignores a shorter locked project")
+	var display:Dictionary=g.tech_tree_snapshot()
+	check(near(float(display.remaining_seconds),5.0/1.1),"Chosen remaining time uses newly committed AI speed")
+	check(g.select_tech(""),"Player explicitly pauses research")
+	g.advance_hightech(10.0)
+	var paused:=g.portable_save_data();var restored:=BattleGame.new(db,false)
+	restored.load_progress_data(paused);restored.advance_hightech(1.0)
+	check(restored.research.selected().is_empty() and restored.crew.entry(restored,"navigator").assignmentType=="hightech_scientists","Saved assignment does not restart manually paused research on reload")
+	check(g.select_tech("weapon_accuracy") and g.assign_crew("navigator","",""),"Recall preserves current research")
+	g.advance_hightech(10.0)
+	check(g.research.selected().is_empty(),"Without assigned crew completion stays idle")
+	# All other projects are now unavailable. Completion may wait but does not poll.
+	var waiting:=BattleGame.new(db,false)
+	waiting.assign_crew("navigator","hightech_scientists","hightech")
+	for id in db.data.ai_tech_tree:db.data.ai_tech_tree[id].requirements={"singularity":999}
+	db.data.ai_tech_tree.singularity.requirements={"singularity":"10*k+1"}
+	var ready:=waiting.research.save_data();ready.aiTechLevels.singularity=11
+	check(waiting.research.install_snapshot(ready,db.data.ai_tech_tree),"Research prerequisite fixture installs")
+	# Use an independent project whose next-level gate closes after this completion.
+	db.data.ai_tech_tree.equipment_finishing.requirements={"singularity":"10*k+1"}
+	check(waiting.select_tech("equipment_finishing"),"One eligible project can start")
+	waiting.advance_hightech(waiting.research.required(waiting,"equipment_finishing"))
+	check(waiting.research.selected().is_empty(),"No eligible next project leaves factory idle")
+	db.data.ai_tech_tree.weapon_accuracy.requirements={};waiting.notify_configuration_changed();waiting.advance_hightech(1.0)
+	check(waiting.research.selected().is_empty(),"New availability does not turn a completed/manual idle state into polling research")
+
+func run_factory_inputs() -> void:
+	var N=GrowthNumber
+	var db:=ShipDatabase.new()
+	for gate in db.data.unlock.values():gate.level=0
+	var g:=BattleGame.new(db,false)
+	g.profile.productionElapsed=100.0
+	g.resource_samples=[
+		{"id":"1","time":0.0,"production_time":41.0,"amount":3000.0,"production_base":1.0,"origin":"drop"},
+		{"id":"1","time":0.0,"production_time":100.0,"amount":3000.0,"origin":"galaxy"},
+		{"id":"1","time":g.economy_time(),"production_time":40.0,"amount":1e20,"origin":"drop"},
+		{"id":"1","time":g.economy_time(),"production_time":101.0,"amount":1e20,"origin":"drop"},
+		{"id":"2","time":0.0,"production_time":90.0,"amount":11999.0,"origin":"drop"}]
+	check(g.resource_game_minute_total("1")==6000.0,"Same receipt ledger sums actual amount including galaxy receipts in the game-time window")
+	fund(g,{"1":1e30,"2":1e30})
+	check(g.assign_crew("navigator","hightech_scientists","hightech"),"Factory assignment immediately allocates inputs")
+	var state:=g.research.save_data()
+	check(state.aiTechInput=={"1":1.0,"2":1.0},"Default one percent uses actual gross income, floors, and ignores wallet/production base")
+	check(g.set_tech_input_ratio("1",0.025) and g.research.save_data().aiTechInput["1"]==2.0,"Ratio edit immediately recomputes floored per-second input")
+	check(g.set_tech_input_ratio("2",0.001) and not g.set_tech_input_ratio("2",0.00099),"Ratio minimum is independently 0.1 percent")
+	check(not g.set_tech_input("1",999),"Assigned factory owns its automatic input rather than accepting stale manual writes")
+	g.resource_samples.clear()
+	g.profile.productionElapsed=159.9;g.advance_hightech(59.9)
+	check(g.research.save_data().aiTechInput["1"]==2.0,"Automatic allocation stays fixed until sixty game seconds")
+	g.profile.productionElapsed=160.0;g.advance_hightech(0.1)
+	check(g.research.save_data().aiTechInput["1"]==1.0 and g.research.save_data().aiTechAutoElapsed==0.0,"Zero income still allocates one at the refresh boundary")
+	var huge=N.parse_input("1e400")
+	g.resource_samples=[{"id":"1","time":g.economy_time(),"production_time":160.0,"amount":N.multiply(huge,6000.0),"origin":"galaxy"}]
+	check(g.set_tech_input_ratio("1",0.01),"Huge income ratio can be configured")
+	check(N.compare(g.research.save_data().aiTechInput["1"],huge)==0 and near(g.research.input_factor(huge),101.0),"Shared GrowthNumber allocates above floating/integer range and computes the original logarithmic factor")
+	var transfer=preload("res://scripts/save_transfer.gd").new()
+	g.advance_hightech(12.25)
+	var raw:=g.portable_save_data();var prepared:Dictionary=transfer.prepare_data(JSON.parse_string(JSON.stringify(raw)),db)
+	check(prepared.get("error")=="","Portable validator accepts huge input and auto settings")
+	var loaded:=BattleGame.new(db,false);loaded.load_progress_data(prepared.data)
+	check(loaded.research.save_data()==g.research.save_data(),"Current save restores large inputs, separate ratios and remaining refresh interval")
+	check(g.assign_crew("navigator","",""),"Recall ends automatic allocation")
+	g.resource_samples.clear();g.advance_hightech(60.0)
+	check(N.compare(g.research.save_data().aiTechInput["1"],huge)==0 and g.research.save_data().aiTechAutoElapsed==12.25,"Recall leaves current inputs and stops automatic timer/writes")
+	check(g.set_tech_input("1",1e20) and near(g.research.input_factor(1e20),6.0),"Manual input above the old 2^53 limit is accepted")
+	check(g.set_tech_input("1",huge) and g.set_tech_input("2",0),"Manual scientific input uses the same value type")
+	fund(g,{"1":N.multiply(huge,0.4),"2":0.0})
+	check(g.select_tech("weapon_accuracy"),"Large paid research starts")
+	g.advance_hightech(0.25)
+	check(near(g.research.progress("weapon_accuracy"),25.25) and near(N.ratio(g.economy.balance("1"),huge),0.15),"Huge actual payment and progress commit together")
+	g.advance_hightech(0.5)
+	check(N.compare(g.economy.balance("1"),0)==0 and near(g.research.progress("weapon_accuracy"),40.75),"Insufficient huge wallet pays only its funded interval then resumes base speed")
+	check(N.compare(N.parse_input(VIEW.snapshot(g).iron_investment),huge)==0,"Displayed scientific input round trips through the shared parser")
+	check(g.set_tech_input("1",N.parse_input("1e1000")),"Larger shared exponent is not capped by the research interface")
+	for bad in [-1.0,0.5,NAN,INF,{"m":1.0,"e":-400.0}]:
+		check(not g.set_tech_input("1",bad),"Research input rejects invalid or fractional quantities")
+
+	var fast:=BattleGame.new(db,false)
+	var rate=N.make(1.0,1e12)
+	fund(fast,{"1":rate,"2":rate})
+	fast.set_tech_input("1",rate);fast.set_tech_input("2",rate);fast.select_tech("weapon_accuracy")
+	var quote:Dictionary=fast.research.prepare_advance(fast,0.05)
+	check(quote.completed and N.compare(quote.resources["1"],0)>0,"Sub-nanosecond research pays its actual interval rather than draining the wallet or discarding work")
+	fast.advance_hightech(0.05)
+	check(fast.research.level(fast,"weapon_accuracy")==1 and fast.economy.resources()==quote.resources,"Very short huge-input completion commits the same prepared payment")

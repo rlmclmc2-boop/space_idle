@@ -13,7 +13,7 @@ var allocation_timers: Dictionary = {}
 var allocation_intervals: Dictionary = {}
 var allocation_dependencies: Array = []
 var game_ref: WeakRef
-const PURCHASE_JOBS := ["equipment_upgrade","hightech_scientists","jewel_auto","reactor_upgrade"]
+const PURCHASE_JOBS := ["equipment_upgrade","jewel_auto","reactor_upgrade"]
 
 func _init() -> void:
 	register_target("equipment", equipment_targets)
@@ -25,7 +25,7 @@ func _init() -> void:
 	register_target("galaxy", galaxy_targets)
 	register_handler("galaxy", "EXPLORE", passive)
 	register_handler("equipment", "AUTO_UPGRADE", auto_upgrade)
-	register_handler("hightech", "AUTO_SCIENTIST", auto_scientists)
+	register_handler("hightech", "AUTO_RESEARCH", auto_research)
 	register_handler("jewel", "AUTO_COMBINE", auto_jewels)
 	register_handler("reactor", "AUTO_REACTOR", auto_reactor)
 	for target in ["production", "smelting"]:
@@ -68,10 +68,6 @@ func invalidate_resources(g, ids: Array) -> void:
 			for field in row:
 				if str(field).begins_with("res_") and row[field]!=null and ids.has(str(int(row[field]))):
 					if not jobs.has("equipment_upgrade"):jobs.append("equipment_upgrade")
-	for part in Array(str(g.db.config.scientistCost).split(",")).slice(1):
-		if ids.has(str(part).get_slice("|",0)):
-			jobs.append("hightech_scientists")
-			break
 	if ids.has(str(int(g.db.config.reactorUraniumId))):jobs.append("reactor_upgrade")
 	invalidate_jobs(g,jobs)
 
@@ -116,8 +112,6 @@ func on_event(kind: String, payload: Dictionary) -> void:
 		"collect","galaxy_income":invalidate_resources(g,[str(payload.id)])
 		"resources_changed":invalidate_resources(g,payload.ids)
 		"upgrade","upgrades_completed","module_changed","ship_changed":invalidate_jobs(g,["equipment_upgrade"])
-		"scientists_changed":
-			if payload.has("purchased"):invalidate_jobs(g,["hightech_scientists"])
 		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
 		"reactor_changed":
 			if payload.has("level"):invalidate_jobs(g,["reactor_upgrade"])
@@ -214,7 +208,7 @@ static func valid_snapshot(raw: Dictionary, db) -> bool:
 	if raw.crew.size()!=definitions.size():return false
 	var seen: Dictionary={};var occupied: Dictionary={};var modes: Array=[]
 	for row in assignments.values():
-		if row.get("effectType") in ["AUTO_UPGRADE","AUTO_SCIENTIST"]:
+		if row.get("effectType")=="AUTO_UPGRADE":
 			for mode in str(row.get("upgradeModes","")).split(",",false):
 				if not modes.has(mode.strip_edges()):modes.append(mode.strip_edges())
 	for item in raw.crew:
@@ -231,7 +225,7 @@ static func valid_snapshot(raw: Dictionary, db) -> bool:
 		var row: Dictionary=assignments[item.assignmentType];var target:=str(item.targetId);var valid:=false
 		match str(row.targetType):
 			"equipment":valid=target=="equipment" and row.effectType=="AUTO_UPGRADE"
-			"hightech":valid=(target=="hightech" or db.data.get("hightech",{}).has(target)) and row.effectType=="AUTO_SCIENTIST" and (str(row.get("targetCategory",""))!="system" or target=="hightech")
+			"hightech":valid=target=="hightech" and row.effectType=="AUTO_RESEARCH"
 			"jewel":valid=target=="jewels" and row.effectType=="AUTO_COMBINE"
 			"reactor":valid=target=="reactor" and row.effectType=="AUTO_REACTOR"
 			"galaxy":valid=db.data.get("galaxy",{}).has(target) and row.effectType=="EXPLORE"
@@ -332,15 +326,13 @@ func upgrade_modes(g, assignment := "") -> Array[String]:
 	var result: Array[String] = []
 	for id in assignments(g):
 		var row: Dictionary=assignments(g)[id]
-		if (assignment.is_empty() or id==assignment) and row.get("effectType") in ["AUTO_UPGRADE","AUTO_SCIENTIST"]:
+		if (assignment.is_empty() or id==assignment) and row.get("effectType")=="AUTO_UPGRADE":
 			for mode in str(row.get("upgradeModes","")).split(",",false):
 				var value := mode.strip_edges()
 				if not result.has(value):result.append(value)
 	return result
 
-func upgrade_mode_text(mode: String, effect_type := "AUTO_UPGRADE") -> String:
-	if effect_type=="AUTO_SCIENTIST":
-		return UIText.t("crew.scientist_max") if mode=="max" else UIText.t("crew.scientist_count",{"count":mode})
+func upgrade_mode_text(mode: String, _effect_type := "AUTO_UPGRADE") -> String:
 	return UIText.t("crew.upgrade_max") if mode=="max" else UIText.t("crew.upgrade_levels",{"count":mode})
 
 func effect_value(g, item: Dictionary) -> float:
@@ -396,12 +388,20 @@ func auto_upgrade(g, item: Dictionary) -> bool:
 	# Match manual module upgrades. Each later module sees the remaining resources.
 	return g.upgrade_equipment_batch(mode)
 
-func auto_scientists(g, item: Dictionary) -> bool:
-	var mode := str(item.get("upgradeMode",""))
-	if not upgrade_modes(g,item.assignmentType).has(mode):return false
-	if not g.generate_scientist(-1 if mode=="max" else int(mode)):return false
-	g.distribute_scientists()
-	return true
+func factory_active(g) -> bool:
+	for item in _members:
+		var row: Dictionary=assignments(g).get(item.assignmentType,{})
+		if row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_RESEARCH" and active(g,item):return true
+	return false
+
+func continue_research(g) -> void:
+	# Completion is the only trigger: assignment/load never override manual pause.
+	if factory_active(g):auto_research(g,{})
+
+func auto_research(g, _item: Dictionary) -> bool:
+	if not g.research.selected().is_empty():return false
+	var next: String = g.research.shortest_available(g)
+	return not next.is_empty() and g.select_tech(next)
 
 func auto_jewels(g, _item: Dictionary) -> bool:
 	return g.upgrade_enhancement(1)>0
@@ -422,11 +422,7 @@ func equipment_targets(g) -> Array:
 	return [{"id":"equipment","name":UIText.t("crew.all_equipment"),"active":not g.loadout_entries("weapons").is_empty() or not g.loadout_entries("defence").is_empty()}]
 
 func research_targets(g) -> Array:
-	var result: Array = []
-	for key in g.db.data.get("hightech",{}):
-		result.append({"id":key,"name":UIText.data_text("hightech",key),"active":g.hightech_unlocked(key),"category":"technology"})
-	result.append({"id":"hightech","name":UIText.t("crew.hightech_system"),"active":g.db.data.get("hightech",{}).keys().any(func(key):return g.hightech_unlocked(key)),"category":"system"})
-	return result
+	return [{"id":"hightech","name":UIText.t("crew.hightech_system"),"active":g.ai_tech_factory_unlocked(),"category":"system"}]
 
 func production_targets(g) -> Array:
 	return furnace_targets(g,[g.FURNACE])
@@ -493,7 +489,6 @@ func format_text(g, key: String, values: Dictionary) -> String:
 
 func level_effect(g, key: String, level: int) -> float:
 	var value := config_value(g,key)
-	if key=="tech_ai_per_level":return level*value
 	if key=="equip_bonus":return pow(1.0+value,level)
 	return 1.0+value*level
 
@@ -517,8 +512,8 @@ func level_description(g, item: Dictionary) -> String:
 		if str(row.get("targetType",""))!=kind or kind.is_empty():continue
 		var effect := level_effect(g,key,int(item.level))
 		# Multipliers show the bonus above baseline; Lv0 (x1) means +0.00%.
-		var effect_text := str(int(effect)) if key == "tech_ai_per_level" else "%+.2f%%" % ((effect - 1.0) * 100.0)
-		lines.append(format_text(g,key,{"level":item.level,"value":str(row.value),"effect":effect_text,"ai":int(effect)}))
+		var effect_text := "%+.2f%%" % ((effect - 1.0) * 100.0)
+		lines.append(format_text(g,key,{"level":item.level,"value":str(row.value),"effect":effect_text}))
 	return "\n".join(lines)
 
 func display_name(g, item: Dictionary) -> String:
