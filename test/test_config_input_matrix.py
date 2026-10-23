@@ -391,7 +391,7 @@ def native_lock_protocol(root, protocol):
     (project/'bin').mkdir(parents=True, exist_ok=True)
     shutil.copy2(bundle, project/'bin/space_native.dll')
     shutil.copy2(ROOT/'space_native.gdextension', project/'space_native.gdextension')
-    (project/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Config lock fixture"\n', encoding='utf-8')
+    (project/'project.godot').write_text('config_version=5\n[application]\nconfig/name="Config lock fixture"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n', encoding='utf-8')
     script = project/'lock.gd'
     script.write_text('extends SceneTree\nvar lease:RefCounted\nvar marker:String\n'
         'func _initialize():\n var args=OS.get_cmdline_user_args()\n lease=ClassDB.instantiate("SpaceSaveLock")\n'
@@ -399,29 +399,69 @@ def native_lock_protocol(root, protocol):
         ' print("CONFIG_LOCK_OWNED")\n'
         ' if args.size()==1:quit(0);return\n marker=args[1]\n FileAccess.open(marker,FileAccess.WRITE).store_string("held")\n'
         'func _process(_delta):\n if not marker.is_empty() and FileAccess.file_exists(marker+".release"):quit(0)\n return false\n', encoding='utf-8')
-    imported = subprocess.run([engine,'--headless','--editor','--import','--quit','--path',str(project)],capture_output=True,timeout=45)
-    check(imported.returncode==0, 'Minimal native lock fixture imports')
-    cmd=[engine,'--headless','--path',str(project),'--script',str(script),'--',str(root/protocol.LOCK)]
+    env=os.environ.copy()
+    for key, folder in [('APPDATA','roaming'),('LOCALAPPDATA','local')]:
+        directory=AREA/'native-userdata'/folder;directory.mkdir(parents=True,exist_ok=True)
+        env[key]=str(directory)
+    # This fixture has no imported assets or global script classes. Register the
+    # actual extension directly; runtime loading/instantiation below is required.
+    (project/'.godot').mkdir(exist_ok=True)
+    (project/'.godot/extension_list.cfg').write_text('res://space_native.gdextension\n',encoding='utf-8')
+    cmd=[engine,'--headless','--rendering-method','gl_compatibility','--path',str(project),'--script',str(script),'--',str(root/protocol.LOCK)]
     with protocol.exclusive(root/protocol.LOCK):
-        blocked=subprocess.run(cmd,capture_output=True,timeout=15)
-        check(blocked.returncode==23 and b'CONFIG_LOCK_BUSY' in blocked.stdout, 'Godot observes Python root lock')
-    available=subprocess.run(cmd,capture_output=True,timeout=15)
-    check(available.returncode==0 and b'CONFIG_LOCK_OWNED' in available.stdout, 'Godot acquires after Python releases')
-    marker=project/'held'
-    child=subprocess.Popen(cmd+[str(marker)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        with (project/'blocked.log').open('wb') as log:
+            blocked=subprocess.run(cmd,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=45)
+        check(blocked.returncode==23 and b'CONFIG_LOCK_BUSY' in (project/'blocked.log').read_bytes(), 'Godot observes Python root lock')
+    with (project/'available.log').open('wb') as log:
+        available=subprocess.run(cmd,env=env,stdout=log,stderr=subprocess.STDOUT,timeout=45)
+    check(available.returncode==0 and b'CONFIG_LOCK_OWNED' in (project/'available.log').read_bytes(), 'Godot acquires after Python releases')
+    import uuid
+    marker=project/('held-'+uuid.uuid4().hex)
+    holder_log=(project/'holder.log').open('wb')
+    child=subprocess.Popen(cmd+[str(marker)],env=env,stdout=holder_log,stderr=subprocess.STDOUT)
     try:
-        deadline=time.monotonic()+15
+        deadline=time.monotonic()+45
         while not marker.exists() and child.poll() is None and time.monotonic()<deadline:time.sleep(.05)
+        if not marker.exists():
+            child.kill(); child.wait()
         check(marker.exists(), 'Native holder confirms acquisition')
         try: protocol.Store(root).capture()
         except protocol.Busy: pass
         else: raise AssertionError('Python bypassed native root ownership')
         Path(str(marker)+'.release').touch()
-        output=child.communicate(timeout=15)[0]
-        check(child.returncode==0 and b'CONFIG_LOCK_OWNED' in output, 'Native release completes')
+        child.wait(timeout=45);holder_log.flush()
+        check(child.returncode==0 and b'CONFIG_LOCK_OWNED' in (project/'holder.log').read_bytes(), 'Native release completes')
     finally:
         if child.poll() is None:child.kill();child.wait()
+    holder_log.close()
     print('CONFIG_NATIVE_LOCK: passed both directions',flush=True)
+    shutil.copy2(ROOT/'scripts/configuration_snapshot.gd',project/'configuration_snapshot.gd')
+    store=protocol.Store(project)
+    first=store.publish(None,{'data/a.json':b'{"generation":1}'},lambda files:None)
+    probe=project/'capture.gd'
+    probe.write_text('extends SceneTree\nvar snapshot:RefCounted\nvar marker:String\n'
+        'func _initialize():\n snapshot=load("res://configuration_snapshot.gd").new()\n'
+        ' if not snapshot.capture():push_error(snapshot.error);quit(4);return\n'
+        ' marker=OS.get_cmdline_user_args()[0]\n FileAccess.open(marker,FileAccess.WRITE).store_string(snapshot.identity)\n'
+        'func _process(_delta):\n if marker.is_empty() or not FileAccess.file_exists(marker+".release"):return false\n'
+        ' var fresh=load("res://configuration_snapshot.gd").new()\n'
+        ' if not fresh.capture() or fresh.identity==snapshot.identity or snapshot.json("res://data/a.json").generation!=1 or fresh.json("res://data/a.json").generation!=2:quit(5);return false\n'
+        ' print("CONFIG_CAPTURE_STABLE");quit(0);return false\n',encoding='utf-8')
+    marker=project/('captured-'+uuid.uuid4().hex)
+    command=[engine,'--headless','--rendering-method','gl_compatibility','--path',str(project),'--script',str(probe),'--',str(marker)]
+    with (project/'capture.log').open('wb') as log:
+        child=subprocess.Popen(command,env=env,stdout=log,stderr=subprocess.STDOUT)
+        try:
+            deadline=time.monotonic()+45
+            while not marker.exists() and child.poll() is None and time.monotonic()<deadline:time.sleep(.05)
+            check(marker.exists() and marker.read_text()==first.identity,'Godot captured Python manifest identity')
+            store.publish(first,{'data/a.json':b'{"generation":2}'},lambda files:None)
+            Path(str(marker)+'.release').touch()
+            check(child.wait(timeout=45)==0,'Godot keeps old captured bytes after publisher releases new generation')
+        finally:
+            if child.poll() is None:child.kill();child.wait()
+    check(b'CONFIG_CAPTURE_STABLE' in (project/'capture.log').read_bytes(),'Actual reader parsed both immutable generations')
+
 
 
 def main():

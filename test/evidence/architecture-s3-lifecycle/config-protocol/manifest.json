@@ -1,0 +1,10 @@
+{
+  "result": "17 assertions passed",
+  "run": "test\\work\\s3-protocol-m677r_s9",
+  "scope": "targeted existing generation_protocol only; historical full matrix remains timed out",
+  "sha256": {
+    "space-battleship/scripts/configuration_snapshot.gd": "46fc49e3a352ef24d520cd9191d5924421c12e255b52911288774ece9bb29e0c",
+    "space-battleship/tools/config_snapshot.py": "5c2e4f152bbcfec1f472d26a204fc3c5eaba831478a84dfbb507d17151a86cb3",
+    "test/test_config_input_matrix.py": "041767c27eaffe6975c9420a9d7b24aafc0b9bc5ea04cbeb83c2629f2a604e9f"
+  }
+}

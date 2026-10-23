@@ -56,7 +56,7 @@ func capture()->bool:
   if not expected is Dictionary or not expected.get("sha256") is String or not expected.has("size"):
    error="invalid_configuration_manifest";return false
   var bytes:=FileAccess.get_file_as_bytes("res://"+name)
-  if not FileAccess.file_exists("res://"+name) or bytes.size()!=int(expected.size) or sha256(bytes)!=expected.sha256:
+  if not FileAccess.file_exists("res://"+name) or bytes.size()!=int(expected["size"]) or sha256(bytes)!=expected.sha256:
    error="configuration_generation_mismatch:"+name;return false
   captured[name]=bytes
  # Releasing the root lock is safe now: later source replacement cannot alter
