@@ -1,0 +1,23 @@
+{
+  "protocol_and_build_capture": {
+    "checks": 32,
+    "result": "passed",
+    "fixture": "s3-protocol-final-1rnyhktw",
+    "includes": "actual Windows native/Python/PowerShell mutual exclusion, same-handle recovery/delete competition, CLI path, immutable generation and post-release competing publisher"
+  },
+  "initialization": {
+    "checks": 3,
+    "result": "passed",
+    "fixture": "initialize-extra-o90peu07"
+  },
+  "formula_projection": {
+    "checks": 43,
+    "result": "passed",
+    "fixture": "projection-extra-fsm_36k7"
+  },
+  "recovery_location": {
+    "checks": 1,
+    "result": "passed",
+    "kind": "custom-root mismatch reports actual manifest and member"
+  }
+}

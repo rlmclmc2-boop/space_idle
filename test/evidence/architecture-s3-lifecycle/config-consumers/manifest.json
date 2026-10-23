@@ -7,7 +7,11 @@
     "scripts/mon_group_xlsx.gd": "48213cdfff0a13aaa124cb5ca88f9d0d505be89600a2d0d4b53b0e8b73eb6bc1",
     "tools/build_release.ps1": "921f9558f0bbd66a984799b7d170d66968fd163009bfb2ae1d716d224e334738",
     "tools/configuration_snapshot.ps1": "e486a8d04473ce3e49a0044fbdd8443fc648fe8195f1551c54acde646ce0960d",
-    "configuration_manifest.json": "8a30ef29d834ec92f0b0ef73071fcb222a8725c83e2a482046313b06b39e9da3"
+    "configuration_manifest.json": "8a30ef29d834ec92f0b0ef73071fcb222a8725c83e2a482046313b06b39e9da3",
+    "tools/config_snapshot.py": "14bac3b1d1b8828b656cff547b02673ef60f4832ae2eb09acb765e7e4047e24b",
+    "tools/config_publication.py": "831fa33e75e381076918bf98da96057b4dd7021df866eac938cc7e04ab5b5c09",
+    "tools/level_editor_store.py": "c3ebf627a411983b7c7f04681ebbc8cc30e086d680d023f9da2bdc12ef230255",
+    "scripts/level_editor.gd": "ab9c6649dd5a8dbeaf1c827525907a7fa54156a8b25a04cf29eab3744e239364"
   },
   "main_checks": 151,
   "main_failures": 0,
@@ -19,8 +23,37 @@
   "release_portability": "passed",
   "retest_baseline_sha": "a1b31ce166d73e9a00f8d457dc4fe9cea2a0413c",
   "retest_existing_failures": 2,
-  "pending": [
-    "complete input matrix",
-    "actual editor UI save/reload"
+  "pending": [],
+  "input_matrix": {
+    "cases": 152,
+    "assertions": 243,
+    "source": "gqbtbb_m; before later initialization/result-return/UI-hint refinements"
+  },
+  "final_protocol": {
+    "assertions": 32,
+    "source": "s3-protocol-final-1rnyhktw"
+  },
+  "initialization": {
+    "assertions": 3,
+    "source": "initialize-extra-o90peu07"
+  },
+  "formula_projection": {
+    "assertions": 43,
+    "source": "projection-extra-fsm_36k7"
+  },
+  "editor_ui": {
+    "checks": 25,
+    "failures": 0,
+    "source": "9nxz23y_"
+  },
+  "workbook_integration": {
+    "tests": 14,
+    "source": "2iw1u89d; afterward removed ineffective in-process parser mocks and renamed the no-op test, no production/assertion change"
+  },
+  "production_checkpoint": "21b0af12df6547ac7418a80a5a49e9fdcab42a69",
+  "limitations": [
+    "Two old-formation retest failures reproduce on main a1b31ce; no new legacy compatibility",
+    "Composed verification: matrix precedes final narrow initialization/result-return/UI-hint changes, covered separately",
+    "No performance or simulation equivalence claim; parent dual review still required"
   ]
 }

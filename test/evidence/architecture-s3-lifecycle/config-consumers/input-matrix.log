@@ -1,0 +1,42 @@
+CONFIG_NATIVE_LOCK: passed both directions
+CONFIGURATION_PROTOCOL 27 assertions passed
+CONFIGURATION_PUBLICATION cumulative 42 assertions passed
+Recorded valid
+Recorded manifest_missing
+Recorded manifest_broken
+Recorded manifest_value_empty
+Recorded manifest_value_list
+Recorded manifest_value_sheets_missing
+Recorded manifest_value_sheets_null
+Recorded manifest_value_sheets_list
+Recorded required_mapping_missing
+Recorded path_empty
+Recorded path_null
+Recorded path_number
+Recorded path_parent
+Recorded path_backslash
+Recorded path_absolute
+Recorded path_missing_file
+Recorded path_wrong_sheet
+Recorded optional_ship_fallback
+Recorded optional_ship_null
+Recorded optional_ship_empty
+Recorded optional_ship_absent_existing_projection
+Recorded optional_ship_absent_no_projection
+Recorded target_missing
+Recorded target_broken
+Recorded cache_broken
+Recorded cache_valid
+Recorded cache_old
+Recorded cache_wrong_target
+Recorded invalid_health
+Recorded invalid_size
+Recorded invalid_armour
+Recorded invalid_weapon
+Recorded invalid_drop
+Recorded invalid_id
+Recorded invalid_reference
+Recorded missing_formula_cache
+Recorded corrupt_xlsx
+Recorded extra_json
+Configuration boundaries: 152 input outcomes, 243 assertions passed. Evidence: C:\Users\Administrator\Documents\Codex\2026-10-24\task-4\s2\test\work\test_config_input_matrix-gqbtbb_m\phase8-matrix

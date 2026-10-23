@@ -1,0 +1,20 @@
+{
+  "matrix": {
+    "tools/config_snapshot.py": "55a2717186fbfc91d5c8acc4f07bdddd93f026e5f1e157c1bab7c3e06802fa1f",
+    "tools/config_publication.py": "7b5f29e3a87c4f1ea85f16dc811f7b85e7aa78021bc98bad8ad1867431fe36ed",
+    "tools/level_editor_store.py": "6291b4966ee040b76936f4cfbcc3b4161325ec6f5902d65778938f53cf4c2c15",
+    "scripts/level_editor.gd": "70367463a57ae6be31bcc7771ef6e83ef035ef2c41bb6fd23d9db7114929d913"
+  },
+  "ui": {
+    "tools/config_snapshot.py": "14bac3b1d1b8828b656cff547b02673ef60f4832ae2eb09acb765e7e4047e24b",
+    "tools/config_publication.py": "35a05ba85a43b257b7e916d390cc1d70196f1648dd0cfc029d44f6a3aa0af1ab",
+    "tools/level_editor_store.py": "c3ebf627a411983b7c7f04681ebbc8cc30e086d680d023f9da2bdc12ef230255",
+    "scripts/level_editor.gd": "ab9c6649dd5a8dbeaf1c827525907a7fa54156a8b25a04cf29eab3744e239364"
+  },
+  "public_editor": {
+    "tools/config_snapshot.py": "55a2717186fbfc91d5c8acc4f07bdddd93f026e5f1e157c1bab7c3e06802fa1f",
+    "tools/config_publication.py": "7b5f29e3a87c4f1ea85f16dc811f7b85e7aa78021bc98bad8ad1867431fe36ed",
+    "tools/level_editor_store.py": "6291b4966ee040b76936f4cfbcc3b4161325ec6f5902d65778938f53cf4c2c15",
+    "scripts/level_editor.gd": "70367463a57ae6be31bcc7771ef6e83ef035ef2c41bb6fd23d9db7114929d913"
+  }
+}
