@@ -1,0 +1,22 @@
+# architecture-s1-commit-boundary
+
+- Goal: S1 pilot from approved 76ed4b58: equipment upgrade/loadout/hull changes and Progress completion contract, committed-fact scheduler entry, compatibility facade. Deliver candidate only.
+- Base: 793f7c4cda5e480434f14663597ffbeee72163ff (S0 main, remotely verified).
+- Constraints: no S2 time/accounting redesign, gameplay/balance/frozen data/save changes, or main merge. Preserve personal saves/unrelated edits. Existing independent reviewer is coordinated by parent; do not create another review agent. Compaction requires Git handoff and stop.
+- User decision boundary: questionable/wrong/ambiguous old behavior goes to parent with current behavior, impact and recommendation, not automatic compatibility or unilateral semantic changes.
+- Initial read gap: no architecture route. Read approved plan section 4 and S1/exit requirements; inspect game.gd configuration_committed, commit_loadout_change, commit_equipment_upgrades and direct facade callers; progress_runtime.gd command/advance/completion functions; crew_system.gd event/scheduler invalidation; equipment/economy proposal/commit methods; attribute_projection dependency table; native prepare/batch boundaries; directly relevant existing tests and equipment/crew/progression guides. No unrelated task records.
+- Risks: native callbacks stale plans, reentrant writes/notifications, duplicate scheduler wakeups, capacity/health order, tests of current owner APIs. Retain existing business algorithms and native fast path, establish actual failure boundary before implementation.
+- Next: inventory selected command callers and commit/install invariants, then implement minimal shared result/completion support and targeted tests.
+
+## Compaction handoff — WIP, not accepted
+
+- Stop reason: context compaction; user requires Git handoff and immediate stop. No further implementation or verification after compaction.
+- Main delivery completed before S1: 793f7c4cda5e480434f14663597ffbeee72163ff, normal push and remote full-SHA readback. No S1 main merge.
+- Candidate branch: work/architecture-s1-commit-boundary-20261024, based on that main commit.
+- Implemented WIP: immutable command results; shared commit completion boundary; equipment upgrade/loadout/hull result facades with stale-wallet/configuration checks; capacity reconciliation before contribution publication; committed-fact crew scheduling; reentrant command/tick guards; Progress crew/planet/research result paths. Existing gameplay algorithms are intended to remain unchanged.
+- Tests completed on earlier launch snapshots: test_crew_dirty.gd 59 checks / 0 failures; test_commit_boundary.gd 16 checks / 0 failures; test_native_numeric_upgrade.gd 146 checks / 0 failures. Godot import succeeded. Root certificate store warning occurred; crew test also reported exit resource leaks. Test artifacts remain ignored locally under test/work and are not delivery files.
+- IMPORTANT: latest progress_runtime.gd research income/advance and prepare-helper changes occurred after these test snapshots. Final committed tree has NOT been validated by those passes. git diff --check was clean before handoff.
+- Remaining: validate current-tree parsing and affected correctness; review all selected public callers and rejection propagation; decide exact S1/S2 boundary for void time APIs and incomplete planet steps; verify native failure atomicity, contribution descriptors and scheduler facts; update necessary current guides/architecture/status; obtain parent-coordinated independent high and dot agreement. S1 is not complete or approved.
+- Preserved later-slice boundaries: reforge/load/recovery remain S3; factory refresh and full shared-step/retained-time handling remain S2; BalanceGame legacy research consumer remains a known later consumer issue. Do not interpret partial migration as proof these paths are correct.
+- Next explicit reads: this task record, approved plan 76ed4b587b21af276b59ed37867c5a7271009b6d section 4, changed scripts command_result.gd/commit_effects.gd/game.gd/progress_runtime.gd/crew_system.gd/equipment_state.gd/balance_game.gd, test/test_commit_boundary.gd and affected existing tests. Inspect the Git diff against the base, then resume only in a continuation authorized to work after this stopped handoff.
+- No new gameplay ambiguity has been resolved on the user's behalf. Report any discovered questionable legacy behavior as current behavior / impact / recommendation for user judgment.

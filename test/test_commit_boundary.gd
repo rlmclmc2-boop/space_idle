@@ -1,0 +1,107 @@
+extends SceneTree
+const N=preload("res://scripts/growth_number.gd")
+class TrackedCrew extends "res://scripts/crew_system.gd":
+	var commits:=0
+	var last: Dictionary={}
+	func on_committed(g,result: Dictionary) -> void:
+		commits+=1;last=result
+		super.on_committed(g,result)
+
+class OrderedGame extends BattleGame:
+	var forced_capacity: Variant=null
+	var committed_allocations: Array=[]
+	var before_change: Callable
+	func reactor_capacity(galaxy_charge := -1.0) -> Variant:
+		return super.reactor_capacity(galaxy_charge) if forced_capacity==null else forced_capacity
+	func configuration_committed(native_updated:=false) -> void:
+		if forced_capacity!=null:committed_allocations.append(reactor_allocated())
+		super.configuration_committed(native_updated)
+	func native_before_configuration_change() -> bool:
+		if before_change.is_valid():
+			var callback:=before_change;before_change=Callable();callback.call()
+		return true
+
+class NumericSession extends RefCounted:
+	var accepted:=false
+	var calls:=0
+	var nested: Array=[]
+	func prepare_numeric_batch(_g,_plan:Dictionary,_next:Dictionary) -> Dictionary:
+		return {"descriptor":{}}
+	func commit_numeric_batch(g,_batch:Dictionary) -> bool:
+		calls+=1
+		nested.append(g.upgrade_slot("weapons",0,1))
+		return accepted
+	func configuration_changed() -> void:pass
+
+var checks:=0
+var failures:=0
+func check(ok:bool,label:String)->void:
+	checks+=1
+	if not ok:failures+=1;printerr("FAIL: ",label)
+
+func fixture() -> BattleGame:
+	var g:=BattleGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.economy.credit("1",1e8);g.economy.credit("2",1e8)
+	return g
+
+func plan_for(g) -> Dictionary:
+	return g.equipment.prepare_upgrades(g.db,g.economy.equipment_balances(g.db.evolution_material_id()),g.hyperspace.is_unlocked(g),"1",{"category":"weapons","index":0})
+
+func _initialize()->void:
+	var g:=fixture()
+	var tracker:=TrackedCrew.new()
+	tracker.install_snapshot(g.crew.save_data(),g.db)
+	g.event.disconnect(g.crew.on_event);g.crew=tracker;tracker.attach(g)
+	g.assign_crew("navigator","equipment_upgrade","equipment")
+	tracker.commits=0;tracker.timers.clear();tracker.intervals.clear()
+	var plan:=plan_for(g)
+	var before:=g.economy.resources();var initial:=int(g.slot_entry("weapons",0).level)
+	var seen:Array=[];var reentered:Array=[];var clock:=g.production_time()
+	g.save_dirty=false
+	var observer:=func(kind,payload):
+		if kind=="upgrade":
+			seen.append([int(g.slot_entry("weapons",0).level),g.economy.resources(),g.save_dirty,tracker.commits,tracker.timers.has("navigator"),payload.is_read_only(),payload.cost.is_read_only()])
+			reentered.append(g.upgrade_slot("weapons",0,1))
+			reentered.append(g.progress_runtime.set_crew_upgrade_mode_result(g,"navigator","10").status)
+			g.tick(1.0)
+	g.event.connect(observer)
+	var result:=g.commit_equipment_upgrades_result(plan,false)
+	g.event.disconnect(observer)
+	check(result.status=="committed" and result.domains==["equipment","economy"] and result.slots==["weapons_0"],"result identifies the actual joint commit")
+	check(result.is_read_only() and result.facts.is_read_only() and result.slots.is_read_only() and result.contributions.after.is_read_only(),"cross-callback result is deeply immutable")
+	check(seen.size()==1 and seen[0][0]==initial+1,"one upgrade notice sees the installed level")
+	check(seen[0][1]==g.economy.resources() and plan.purchases[0].costs.keys().all(func(id):return N.compare(g.economy.balance(id),N.subtract(before[id],plan.purchases[0].costs[id]))==0),"observer sees exactly one wallet debit and completed growth")
+	check(seen[0][2] and seen[0][3]==1 and seen[0][4] and seen[0][5] and seen[0][6],"dirty flag and one scheduler wake precede immutable UI notice")
+	check(reentered==[false,"blocked"] and g.production_time()==clock and g.slot_entry("weapons",0).level==initial+1,"notification cannot insert a command or nested time step")
+	check(not g.commit_effects.active,"completion releases boundary")
+	var stale:=plan_for(g);g.economy.credit("1",100)
+	var wallet:=g.economy.resources();initial=int(g.slot_entry("weapons",0).level)
+	check(g.commit_equipment_upgrades_result(stale,false).reason=="stale_proposal" and g.economy.resources()==wallet and g.slot_entry("weapons",0).level==initial,"intervening receipt cannot be lost through an old wallet plan")
+	tracker.timers.clear();tracker.intervals.clear()
+	g.event.emit("upgrade",{})
+	check(tracker.timers.is_empty(),"UI equipment event no longer drives business scheduling")
+	g.event.emit("resources_changed",{"ids":["1"]})
+	check(tracker.timers.has("navigator"),"unmigrated income bridge remains available until S2")
+	var noop:=g.progress_runtime.assign_crew_result(g,"navigator","equipment_upgrade","equipment")
+	check(noop.status=="no_change" and tracker.commits==1,"unchanged assignment does not publish another commit")
+	var native:=NumericSession.new();g.native_execution=native
+	plan=plan_for(g);wallet=g.economy.resources();initial=int(g.slot_entry("weapons",0).level)
+	check(g.commit_equipment_upgrades_result(plan,false).status=="blocked" and g.economy.resources()==wallet and g.slot_entry("weapons",0).level==initial and not g.commit_effects.active,"native rejection leaves both host owners unchanged and releases boundary")
+	native.accepted=true
+	check(g.commit_equipment_upgrades_result(plan,false).status=="committed" and g.slot_entry("weapons",0).level==initial+1 and native.nested==[false,false],"native commit cannot reenter host installation")
+	g.native_execution=null
+	var ordered:=OrderedGame.new(ShipDatabase.new(),false)
+	ordered.profile.cleared=range(1,101);ordered.rebuild_unlocks()
+	ordered.reactor.commit_allocation({"weapons":10.0,"defence":0.0,"smelting":0.0})
+	ordered.forced_capacity=1.0
+	var refit:=ordered.commit_loadout_change_result(ordered.equipment.selected_ship(),{"weapons":{0:"cannon"}},false)
+	check(refit.status=="committed" and ordered.committed_allocations==[1.0] and ordered.reactor_allocated()==1.0,"configuration descriptor is finalized only after capacity reconciliation")
+	check(refit.contributions.after==ordered.attributes.configuration_inputs(ordered),"result captures final contribution versions")
+	var equipment_before:=ordered.equipment.save_data()
+	ordered.equipment.clear_switches()
+	ordered.before_change=func():ordered.reactor.commit_allocation({"weapons":0.0,"defence":0.0,"smelting":0.0})
+	var rejected:=ordered.commit_loadout_change_result(ordered.equipment.selected_ship(),{"weapons":{0:"laser"}},false)
+	check(rejected.status=="rejected" and rejected.reason=="stale_proposal" and ordered.equipment.save_data().loadout==equipment_before.loadout,"preparation callbacks retain their mutation while stale refit is rejected")
+	print("COMMIT BOUNDARY: ",checks," checks ",failures," failures")
+	quit(1 if failures else 0)

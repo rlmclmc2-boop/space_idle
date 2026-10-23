@@ -166,4 +166,4 @@ func prepare_upgrades(db,wallet:Dictionary,material_enabled:bool,mode:String,onl
 			purchases.append({"category":category,"index":index,"levels":levels,"before":value,"after":values[index],"costs":expense})
 		next[category]=values
 	if purchases.is_empty():return {}
-	return {"ship":_ship,"modules":next,"deadlines":_switch_until.duplicate(),"revision":revision,"purchases":purchases,"wallet":available}
+	return {"ship":_ship,"modules":next,"deadlines":_switch_until.duplicate(),"revision":revision,"purchases":purchases,"wallet":available,"wallet_before":wallet.duplicate(true)}
