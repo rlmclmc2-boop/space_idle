@@ -1,7 +1,7 @@
 # stage4-crew-bindings — 候选交接
 
 基准：27681c3807d3569fbdb41435952c1a9fc0822db8；分支 codex/refactor-stage4。
-范围：第四段岗位绑定同源、初始化调度分离；不合 main、不 push，无配置/个人存档改动。
+范围：第四段岗位绑定同源、初始化调度分离；不合 main；候选已推送，无配置/个人存档改动。
 
 ## 实现与设计决策
 - crew_system.binding_targets/binding_valid 为默认岗位、运行指令、严格快照提供同一目标、支持效果、类别和容量规则。加载仅用 db，不查询当前 Game 活跃状态；锁定/暂停目标仍可合法恢复。
@@ -18,9 +18,12 @@
 - test_crew_dirty.gd：59 checks，0 failures（原断言保留，追加13项）。
 - test_planet.gd：688 checks，0 failures（原断言保留，追加4项）。
 - test_save_boundaries.gd 未修改：write 31/0、reopen 30/1、latest 17/0、recovery 19/0。
-- 基准27681c3在另一独立 userdata 上重跑四阶段，结果完全相同；唯一失败均为 `Real reopen restores selected research, paid progress and input to its owner`。这是基准可复现的旧探针问题，本段不扩修。
+- 基准27681c3在另一独立 userdata 上重跑四阶段，结果完全相同；唯一失败均为 `Real reopen restores selected research, paid progress and input to its owner`。该失败已在原基线复现，证实非本段新增；根因尚未定位，不能据此判定属于测试缺陷还是游戏缺陷，本段不扩修。
 - 首次新增 galaxy provider 错用 RefCounted.get 默认参数已修复为复用 galaxy.targets(g)，最终 crew 零失败；未修改断言规避。
 - 日志：test/work/stage4-evidence/；存档复现项目：test/work/test_save_boundaries-2g4vuov2/（含 candidate 与 baseline 各阶段日志及隔离存档）。对照脚本：test/work/stage4-save-compare.py。
 - Godot 输出根证书读取提示及 crew/planet 退出资源占用提示；无最终 SCRIPT ERROR。存档四阶段结果按实际失败报告，不宣称全绿。
 
-交接：实现完成，等待父线程 dot 与既有 Astra high 双审；科研旧探针为剩余验证限制。
+交接：实现完成，等待父线程 dot 与既有 Astra high 双审；科研恢复断言失败根因未定位，为剩余验证限制。
+
+## 审计日志补交
+最终现存日志原样提交于 [stage4-evidence](stage4-evidence/)：crew.log、planet.log，以及候选 test-* 和基线 baseline-* 的 write/reopen/latest/recovery 四阶段日志，共10份。本次仅复制现存最终日志，未重跑测试；未提交导入日志、隔离存档或缓存。候选与基线 reopen 均命中同一科研恢复失败，原因仍待定位。
