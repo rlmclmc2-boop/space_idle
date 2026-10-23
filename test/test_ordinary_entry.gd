@@ -334,7 +334,7 @@ func run_factory(phase:String)->void:
 		g.drops.append(boundary_drop)
 		var old_input=g.research.save_data().aiTechInput["1"]
 		scene._process(BattleGame.LOGICAL_STEP)
-		check(not g.drops.has(boundary_drop) and g.resource_samples.any(func(sample):return sample.id=="1" and sample.production_time==g.production_time()),"Original step settles the ordinary drop on the refresh boundary")
+		check(not g.drops.has(boundary_drop) and g.income_history.records().any(func(sample):return sample.id=="1" and sample.production_time==g.production_time()),"Original step settles the ordinary drop on the refresh boundary")
 		check(N.compare(g.research.save_data().aiTechInput["1"],old_input)>0 and g.research.save_data().aiTechAutoElapsed==0.0,"Same completed step includes the boundary receipt in automatic allocation")
 		g.paused=true;page.refresh_snapshot()
 		await product_capture(scene,phase)

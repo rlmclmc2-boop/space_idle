@@ -113,6 +113,8 @@ func on_committed(g,result: Dictionary) -> void:
 	if result.status!="committed":return
 	if not result.resources.is_empty():invalidate_resources(g,result.resources)
 	if result.facts.get("equipment_changed",false):invalidate_jobs(g,["equipment_upgrade"])
+	if result.facts.get("reactor_upgraded",false):invalidate_jobs(g,["reactor_upgrade"])
+	if result.facts.get("jewels_changed",false):invalidate_jobs(g,["jewel_auto"])
 	var allocation_changed: bool=result.facts.get("reactor_allocation_changed",false)
 	for change in result.facts.get("crew_changes",[]):
 		var item: Dictionary=change.current
@@ -122,11 +124,13 @@ func on_committed(g,result: Dictionary) -> void:
 		for member in [previous,item]:
 			if str(member.assignmentType)=="reactor_upgrade":allocation_changed=true
 			if [item.level,item.assignmentType,item.targetId] != [previous.level,previous.assignmentType,previous.targetId] and assignments(g).get(str(member.assignmentType),{}).get("targetType","")=="reactor":allocation_changed=true
-	if allocation_changed:invalidate_reactor_allocation(g)
+	if result.facts.get("reactor_equalized",false) and not allocation_dependencies.is_empty():
+		allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
+	elif allocation_changed:invalidate_reactor_allocation(g)
 
 func on_event(kind: String, payload: Dictionary) -> void:
 	# S1 commands already delivered their authoritative facts before UI notices.
-	# Only unmigrated resource/reactor/unlock producers use this S2 bridge.
+	# Only unmigrated income/currency/unlock producers use this S2 bridge.
 	if payload.get("_committed_fact",false):return
 	var g = game_ref.get_ref()
 	if g==null:return
@@ -134,11 +138,6 @@ func on_event(kind: String, payload: Dictionary) -> void:
 		"collect","galaxy_income":invalidate_resources(g,[str(payload.id)])
 		"resources_changed":invalidate_resources(g,payload.ids)
 		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
-		"reactor_changed":
-			if payload.has("level"):invalidate_jobs(g,["reactor_upgrade"])
-			if payload.get("equalized",false):
-				if not allocation_dependencies.is_empty():allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
-			else:invalidate_reactor_allocation(g)
 		"unlocks_changed","planet_reforged":
 			invalidate_jobs(g,PURCHASE_JOBS)
 			invalidate_reactor_allocation(g)

@@ -148,7 +148,7 @@ func set_auto_ratio(game, resource_id: String, ratio: float) -> bool:
 
 func refresh_auto_inputs(game, at: float, reset_clock := false) -> void:
 	for id in ["1","2"]:
-		var rate = N.divide(game.resource_game_minute_total(id,at),AUTO_INPUT_SECONDS)
+		var rate = N.divide(game.income_history.research_total(id,at),AUTO_INPUT_SECONDS)
 		_state.aiTechInput[id]=N.maximum(1.0,N.floor_value(N.multiply(rate,_state.aiTechAutoRatios[id])))
 	if reset_clock:_state.aiTechAutoElapsed=0.0
 	revision+=1
@@ -194,7 +194,7 @@ func combat_factor(game, id: String) -> Variant:
 
 func income_peak_proposal(game, id: String) -> Dictionary:
 	if id not in ["1", "2", "jewel"]:return {}
-	var rate = N.divide(game.resource_minute_total(id),60.0)
+	var rate = N.divide(game.income_history.peak_total(id,game.economy_time()),60.0)
 	if N.compare(rate,_state.aiIncomePeak.get(id,0.0)) <= 0:return {}
 	return {"id":id,"rate":rate,"revision":revision,"affects_combat":level(game,"unification")>0}
 

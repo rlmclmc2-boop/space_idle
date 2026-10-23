@@ -163,8 +163,8 @@ func run() -> void:
 	tail.load_progress_data(valid)
 	check(tail.game_time_remainder==0 and tail.departure_remaining==0,"Validated snapshot installation starts with no abandoned frame debt")
 	var lab=preload("res://scripts/balance_game.gd").new(scene.db)
-	lab.resource_samples.assign([{"time":-100.0,"id":"1","amount":1.0}]);lab.tick(6.0)
-	check(lab.resource_samples.is_empty() and is_equal_approx(lab.resource_prune_elapsed,1.0),"Independent analysis preserves sample pruning using its simulated clock")
+	lab.income_history.replace_records([{"time":-100.0,"id":"1","amount":1.0}]);lab.tick(6.0)
+	check(lab.income_history.records().is_empty() and is_equal_approx(lab.resource_prune_elapsed,1.0),"Independent analysis preserves sample pruning using its simulated clock")
 	tail.begin_return_departure();tail.start(1,false)
 	check(tail.departure_remaining==0,"An explicit new sortie does not inherit a prior return animation wait")
 	# A visible independent lab no longer freezes the live scene.

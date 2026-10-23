@@ -186,7 +186,7 @@ func _initialize() -> void:
 	check(snapshot(reads)==before and reads.slot_entry("weapons",0).level==1,"Stale legacy levels cannot mutate runtime slots")
 	check(not restored.profile.has("levels"),"Legacy export never installs a second runtime level source")
 	check_reads(reads,"stale legacy input")
-	reads.resource_samples=[{"time":reads.economy_time(),"production_time":reads.production_time(),"id":"1","amount":150.0,"origin":"drop"}]
+	reads.income_history.replace_records([{"time":reads.economy_time(),"production_time":reads.production_time(),"id":"1","amount":150.0,"origin":"drop"}])
 	check_reads(reads,"unsettled income sample and research snapshot")
 	before=snapshot(reads)
 	var proposal: Dictionary=reads.research.income_peak_proposal(reads,"1")

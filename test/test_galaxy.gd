@@ -165,7 +165,7 @@ func _initialize() -> void:
 		projected.galaxies.galaxy_1.slots[i].type=type;projected.galaxies.galaxy_1.slots[i].planned_type=type
 		projected.galaxies.galaxy_1.blueprint.nodes[i].type=type;projected.galaxies.galaxy_1.blueprint.nodes[i].planned_type=type
 	check(g.galaxy.install_snapshot(projected,db),"Income fixture uses complete validated blueprint")
-	g.resource_samples=[{"time":g.economy_time(),"id":"1","amount":200.0,"production_base":100.0,"origin":"drop"},{"time":g.economy_time(),"id":"1","amount":9000.0,"origin":"galaxy"},{"time":g.economy_time(),"id":"2","amount":80.0,"origin":"drop"},{"time":g.economy_time(),"id":"2","amount":9000.0,"origin":"furnace"}]
+	g.income_history.replace_records([{"time":g.economy_time(),"id":"1","amount":200.0,"production_base":100.0,"origin":"drop"},{"time":g.economy_time(),"id":"1","amount":9000.0,"origin":"galaxy"},{"time":g.economy_time(),"id":"2","amount":80.0,"origin":"drop"},{"time":g.economy_time(),"id":"2","amount":9000.0,"origin":"furnace"}])
 	var rates: Dictionary=g.galaxy.effects.rates(g,g.galaxy)
 	check(is_equal_approx(float(rates.iron),100*g.galaxy.effects.totals.iron_auto_ratio),"Existing iron valid-income samples exclude automation")
 	check(is_equal_approx(float(rates.uranium),80*g.galaxy.effects.totals.uranium_auto_ratio),"Uranium excludes automation")

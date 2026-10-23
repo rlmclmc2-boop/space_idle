@@ -37,7 +37,7 @@ Existing completion truncation and inactive-work policies are not automatically 
 
 Inventory established; implementation begins with cold Hyperspace command completion, independent of time remainder or income-qualification decisions. No S2 acceptance claimed yet. Later units still require shared-step, per-domain cursor, snapshot and income closure plus failure evidence.
 
-## Compaction handoff — unvalidated WIP
+## Previous compaction handoff — unvalidated WIP at ab825e29
 
 Implementation stopped on context compaction as instructed. The candidate changes only this inventory and `scripts/hyperspace_runtime.gd`; it is not ready for acceptance or main merge. Independent high approved the section 12 scope, not this implementation.
 
@@ -46,3 +46,23 @@ The runtime WIP adds `commit_result` with the existing bool `commit` wrapper, re
 Next executor should inspect this exact diff and the current CommandResult/CommitEffects contracts before validating Hyperspace command failures and callbacks. Continue section 12 with authoritative shared-step progress, stable domain cursors, invalidated blocked contexts, all snapshot gates, and the single income-history owner; none of those remaining units is implemented here. Reuse existing boundary tests, without a new test framework. `test_hyperspace_material_economy.gd` has current owner fixtures and handoff fakes; inspect it before selection. The guide-mentioned `test_hyperspace_manual.gd` is absent, and `test_hyperspace_player_feedback.gd` uses stale profile fixtures.
 
 Legacy `test_time_steps.gd` remains unresolved from S1 (206 checks, one failure, plus missing `Runtime.detach_requested` and nil `screen_mount_for_slot` errors); do not count it as passed or as fixed by this WIP. Protect personal saves and cache, use isolated test storage, and deliver by normal candidate branch push only. No main changes are authorized for S2.
+
+## Continuation: cold command completion and income ownership
+
+Exact starting candidate was ab825e293e32c9c888a2cadcd1253e3f13390bbe. The previous Hyperspace WIP now imports and passes the material-economy test, including added assertions for detached proposal envelopes, configuration invalidation across handoff, one scheduling fact before immutable UI notices, rejected command/time reentry, and stale replay without another debit/notification.
+
+Reactor purchase/allocation/equalization and enhancement purchase/order/branch now have full result methods. They reject active commits, recheck configuration after handoff (and wallet revision for purchases), install without callbacks, and delegate dirty/scheduling/notices to CommitEffects. Existing bool/int UI and BalanceGame wrappers derive their answer from the full result; pricing, health clamping, branch reconciliation and purchased-count behavior are unchanged. Equalization retains its existing scheduler dependency update rather than starting another allocation cycle.
+
+IncomeHistory now owns the one receipt array, detached recording/reads, current-schema restore/export, rolling retention and named display/peak/research/production queries. All production script writers and consumers moved; old Game query methods are stateless forwards only. The retention predicate still preserves facts live on either existing 60-second coordinate, with the existing periodic pruning cadence. Source qualification, base versus credited amount and all existing window semantics are preserved. This extraction does NOT yet make collection/peak/native preparation atomic, and does not fix the unresolved income-qualification gameplay question.
+
+| Old responsibility | New sole owner / retained consumers | Exit in this candidate |
+|---|---|---|
+| Hyperspace local dirty/resource/UI completion | commit_result -> CommitEffects; existing command facades remain | Old local completion removed in ab825e29, now exercised |
+| Game six reactor/enhancement command completion sequences | *_result -> CommitEffects; panels/crew/BalanceGame still call value wrappers | Local dirty/scheduling/event sequences replaced, no second implementation |
+| crew.on_event reactor level/equalization business branches | crew.on_committed reactor facts, including equalized dependency semantics | Reactor UI-event bridge deleted; income/currency/unlock bridge remains pending its writer migration |
+| Game.resource_samples and Main mutable projection | IncomeHistory; actual runtime, restore/export, diagnostics and fixture consumers migrated | Both old array properties deleted; no dual writes |
+| Game filtering/cropping query algorithms | IncomeHistory named queries | Game functions only forward; AI/Galaxy/HUD call purpose-specific owner methods |
+
+Verification uses Godot 4.7.2 at `D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe`, existing `python test/run.py <file> --godot <path> --timeout 300`, isolated project/user directories. Completed: material economy 144/0, commit boundary 54/0, reactor 39/0, enhancement cost 53/0, AI tech tree 142/0. Logic tests used `--headless`; original-main rendering workflow is pending. A first new branch-choice fixture at level 20 failed after order reversal moved its threshold to 30; it was corrected to level 40, preserving all assertions, and the complete boundary test passed. Certificate warnings and ObjectDB/resource exit warnings are present in some logs; they are not hidden or counted as assertion success.
+
+Still outstanding for full S2: collection/fragment/peak joint receipt completion, Galaxy public completion and native cached-context invalidation, removal of remaining crew UI business bridge, single paid-budget/StepProgress owner, per-domain stable cursors and retirement-before-notification, Hyperspace retained/drain distinction, every snapshot/replacement gate and capture/tool consumers, required native/script failure matrix, legacy time fixture repairs and comparable performance evidence. No time fields/cancellation compensation were replaced in this continuation. Do not present these partial units or the original-main smoke test as S2 acceptance. Independent high remains parent-coordinated.

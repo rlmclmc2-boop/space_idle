@@ -81,7 +81,7 @@ func run() -> void:
 	preview_builds=scene.pickup_preview_builds
 	scene.pickup_comparison(large_drop)
 	check(scene.pickup_preview_builds==preview_builds,"Large-number drop reuses preview without type errors")
-	scene.game.resource_samples.assign([{"time":100.0,"id":"jewel","amount":2.5}])
+	scene.game.income_history.replace_records([{"time":100.0,"id":"jewel","amount":2.5}])
 	scene.resource_rate_mode=true
 	check(scene.game.resource_minute_total("jewel",100.0)==2.5 and scene.resource_display("jewel",100.0)==UIText.t("inventory.rate",{"rate":scene.NUMBER_FORMAT.rate(2.5/60.0)}),"Fragment top rate follows actual minute samples")
 	print("Opening feedback: %d checks, %d failures" % [checks,failures])

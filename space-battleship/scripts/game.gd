@@ -137,7 +137,7 @@ var retreat_elapsed := 0.0
 var retreat_boss_pending := false
 var rng := RandomNumberGenerator.new()
 var resource_prune_elapsed := 0.0
-var resource_samples: Array[Dictionary] = []
+var income_history=preload("res://scripts/income_history.gd").new()
 var auto_gen_elapsed := 0.0
 var save_dirty := false
 var save_interval_minutes := 1
@@ -609,13 +609,7 @@ func load_hightech(raw: Dictionary) -> void:
 	for field in ["productionElapsed", "hightechSavedAt"]:
 		if nonnegative_number(raw.get(field)):profile[field] = float(raw[field])
 	if raw.get("resourceSamples") is Array:
-		for sample in raw.resourceSamples:
-			if sample is Dictionary and nonnegative_number(sample.get("time")) and N.valid(sample.get("amount")) and str(sample.get("id", "")) in ["1", "2", "jewel"] and float(sample.time) <= float(profile.hightechSavedAt) and (float(sample.time) > float(profile.hightechSavedAt) - 60.0 or (nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time() and float(sample.production_time)>production_time()-60.0)):
-				# Legacy samples have no reliable source; keep totals but exclude them
-				# from furnace input until this short rolling window expires.
-				var restored := {"time":float(sample.time), "amount":sample.amount, "production_base":sample.get("production_base",sample.amount), "id":str(sample.id), "origin":str(sample.get("origin", "unknown"))}
-				if nonnegative_number(sample.get("production_time")) and float(sample.production_time)<=production_time():restored.production_time=float(sample.production_time)
-				resource_samples.append(restored)
+		income_history.restore(raw.resourceSamples,float(profile.hightechSavedAt),production_time())
 
 func read_ai_tech_completion() -> bool:
 	if not research.read_completion():return false
@@ -698,7 +692,7 @@ func portable_save_data() -> Dictionary:
 	var now := Time.get_unix_time_from_system()
 	saved.hightechOrder = hightech_slots()
 	saved.hightechSavedAt = now
-	saved.resourceSamples = resource_samples.filter(func(sample):return float(sample.time)>now-60.0 or (sample.has("production_time") and float(sample.production_time)>production_time()-60.0)).duplicate(true)
+	saved.resourceSamples = income_history.snapshot(now,production_time())
 	saved.chronoSavedAt = now
 	saved.hightechDrops = drops.filter(func(drop):return drop.get("hightech", false)).duplicate(true)
 	return _compose_save_data(saved)
@@ -1084,50 +1078,64 @@ func reactor_max_upgrades() -> int:
 	return reactor.max_upgrades(economy.balance(str(int(db.config.reactorUraniumId))), db.config)
 
 func upgrade_reactor(amount: int) -> bool:
-	if not reactor_unlocked():return false
+	return CommandResult.succeeded(upgrade_reactor_result(amount))
+
+func upgrade_reactor_result(amount: int) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if not reactor_unlocked():return CommandResult.make("rejected","reactor_locked")
 	var id := str(int(db.config.reactorUraniumId))
 	var quote := reactor.purchase_quote(amount, economy.balance(id), db.config)
-	if quote.is_empty():return false
-	if not native_before_configuration_change():return false
-	if not reactor.purchase_matches(quote):return false
-	if not economy.debit({id:quote.cost}):return false
+	if quote.is_empty():return CommandResult.make("rejected","purchase_unavailable")
+	var wallet_revision:=economy.revision
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if wallet_revision!=economy.revision or not reactor.purchase_matches(quote) or configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
+	if not economy.debit({id:quote.cost}):return commit_effects.abort("insufficient_resources","rejected")
 	# No callbacks or fallible work between the two authoritative commits.
 	reactor.commit_purchase(quote)
 	configuration_committed()
-	save_dirty = true
-	resources_changed([id])
-	event.emit("reactor_changed", {"level":reactor.level(),"cost":quote.cost})
-	return true
+	return commit_effects.finish(self,["reactor","economy"],[id],[],{"reactor_upgraded":true},[{"kind":"resources_changed","payload":{"ids":[id]}},{"kind":"reactor_changed","payload":{"level":reactor.level(),"cost":quote.cost}}])
 
 func set_reactor_allocation(key: String, value: Variant) -> bool:
-	if not reactor_unlocked() or not reactor_module_unlocked(key):return false
+	return CommandResult.succeeded(set_reactor_allocation_result(key,value))
+
+func set_reactor_allocation_result(key: String, value: Variant) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if not reactor_unlocked() or not reactor_module_unlocked(key):return CommandResult.make("rejected","reactor_locked")
 	var next := reactor.allocation_proposal(key, value, reactor_capacity())
-	if next.is_empty():return false
-	if not native_before_configuration_change():return false
+	if next.is_empty():return CommandResult.make("rejected","allocation_unavailable")
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	reactor.commit_allocation(next)
 	configuration_committed()
 	if key == "defence":
 		player.armour = N.minimum(player.armour,stat("armour"))
 		player.shield = N.minimum(player.shield,stat("shield"))
-	save_dirty = true
-	if key in ["defence", "weapons"]:event.emit("equipment_stats",{"category":key})
-	event.emit("reactor_changed", {"module":key})
-	return true
+	var notices:Array=[]
+	if key in ["defence", "weapons"]:notices.append({"kind":"equipment_stats","payload":{"category":key}})
+	notices.append({"kind":"reactor_changed","payload":{"module":key}})
+	return commit_effects.finish(self,["reactor"],[],[],{},notices)
 
 func equalize_reactor_allocation() -> bool:
-	if not reactor_unlocked():return false
+	return CommandResult.succeeded(equalize_reactor_allocation_result())
+
+func equalize_reactor_allocation_result() -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if not reactor_unlocked():return CommandResult.make("rejected","reactor_locked")
 	var next := reactor.equal_allocation(reactor_available_modules(), reactor_capacity())
-	if next.is_empty():return false
-	if not native_before_configuration_change():return false
+	if next.is_empty():return CommandResult.make("rejected","allocation_unavailable")
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	reactor.commit_allocation(next)
 	configuration_committed()
 	player.armour = N.minimum(player.armour,stat("armour"))
 	player.shield = N.minimum(player.shield,stat("shield"))
-	save_dirty = true
-	event.emit("equipment_stats",{"category":"weapons"})
-	event.emit("equipment_stats",{"category":"defence"})
-	event.emit("reactor_changed", {"equalized":true})
-	return true
+	return commit_effects.finish(self,["reactor"],[],[],{"reactor_equalized":true},[{"kind":"equipment_stats","payload":{"category":"weapons"}},{"kind":"equipment_stats","payload":{"category":"defence"}},{"kind":"reactor_changed","payload":{"equalized":true}}])
 
 func hightech_level(key: String) -> int:
 	return research.level(self,key)
@@ -1388,42 +1396,17 @@ func production_time() -> float:
 	return float(profile.get("productionElapsed",0.0))
 
 func prune_resource_samples(now: float) -> void:
-	# HUD receipts use real time; production inputs use X1 game time.
-	var game_now := production_time()
-	resource_samples = resource_samples.filter(func(sample):return float(sample.time) > now - 60.0 or (sample.has("production_time") and float(sample.production_time)>game_now-60.0))
+	income_history.prune(now,production_time())
 
 func production_minute_total(id: String, at := -1.0) -> Variant:
-	var game_now := production_time()
-	if at < 0:at=game_now
-	var wall_now := economy_time()
-	var total = 0.0
-	for sample in resource_samples:
-		if sample.get("origin","drop")!="drop" or str(sample.id)!=id:continue
-		# Old explicit-origin samples keep their remaining X1 window on migration.
-		# Their old acceleration history is unavailable; persisted peaks are retained.
-		var stamp := float(sample.get("production_time",game_now-(wall_now-float(sample.time))))
-		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.get("production_base",sample.amount))
-	return total
+	return income_history.production_total(id,production_time() if at<0 else at,economy_time(),production_time())
 
 func resource_game_minute_total(id: String, at := -1.0) -> Variant:
-	if at<0.0:at=production_time()
-	var total: Variant=0.0
-	for sample in resource_samples:
-		if str(sample.id)!=id or not sample.has("production_time"):continue
-		var stamp := float(sample.production_time)
-		if stamp>at-60.0 and stamp<=at:total=N.add(total,sample.amount)
-	return total
+	return income_history.research_total(id,production_time() if at<0 else at)
 
 func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> Variant:
-	if now < 0:
-		now = economy_time()
-	var total = 0.0
-	for sample in resource_samples:
-		if exclude_furnace and sample.get("origin", "drop") != "drop":
-			continue
-		if sample.id == id and float(sample.time) > now - 60.0 and float(sample.time) <= now:
-			total = N.add(total,sample.get("production_base",sample.amount) if exclude_furnace else sample.amount)
-	return total
+	if now<0:now=economy_time()
+	return income_history.wall_production_total(id,now) if exclude_furnace else income_history.display_total(id,now)
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")
@@ -2263,7 +2246,7 @@ func collect(drop: Dictionary, manual: bool, force := false) -> void:
 	var amount = N.ceiling(N.multiply(drop.amount,1.0 if manual else 1.0 - float(db.config.autoCollectReduce)))
 	amount = N.ceiling(N.multiply(amount,research.income_factor(self,"iron_income" if str(drop.id)=="1" else "uranium_income")))
 	economy.credit(str(drop.id), amount)
-	resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
+	income_history.record({"time":economy_time(),"production_time":production_time(),"id":str(drop.id),"amount":amount,"production_base":N.ceiling(N.multiply(drop.get("production_base",drop.amount),1.0 if manual else 1.0-float(db.config.autoCollectReduce))),"origin":"furnace" if drop.get("hightech",false) else "drop"})
 	record_research_income(str(drop.id))
 	run_resources[drop.id] = N.add(run_resources[drop.id],amount)
 	var info := drop.duplicate()
@@ -2727,7 +2710,7 @@ func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Var
 	economy.credit_fragments(earned)
 	# Production only: refunds must not inflate future income.
 	if source in ["drop","furnace"] and N.compare(earned,0) > 0:
-		resource_samples.append({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
+		income_history.record({"time":economy_time(),"production_time":production_time(),"id":"jewel","amount":earned,"origin":source})
 		record_research_income("jewel")
 	event.emit("enhancement_currency", {"amount":earned,"source":source})
 	return earned
@@ -2776,10 +2759,18 @@ func enhancement_branch_choice(category: String, effect: String, node: int) -> S
 	return enhancement_growth.branch_choice(category,effect,node)
 
 func set_enhancement_branch(category: String, effect: String, node: int, choice: String) -> bool:
-	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return false
-	if enhancement_branch_choice(category,effect,node)==choice:return true
+	return CommandResult.succeeded(set_enhancement_branch_result(category,effect,node,choice))
+
+func set_enhancement_branch_result(category: String, effect: String, node: int, choice: String) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if not enhancement_branch_unlocked(category,effect,node) or choice not in ["A","B"]:return CommandResult.make("rejected","branch_unavailable")
+	if enhancement_branch_choice(category,effect,node)==choice:return CommandResult.make("no_change")
 	var plan:=enhancement_growth.prepare_branch(db,category,effect,node,choice,enhancement_effective_level(),enhancement_unlocked())
-	if plan.is_empty() or not native_before_configuration_change() or not enhancement_growth.proposal_current(plan):return false
+	if plan.is_empty():return CommandResult.make("rejected","branch_unavailable")
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if not enhancement_growth.proposal_current(plan) or configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	enhancement_growth.commit_configuration(plan)
 	# Selection invalidates projections and only the removed branch's transient buffs.
 	configuration_committed()
@@ -2788,9 +2779,7 @@ func set_enhancement_branch(category: String, effect: String, node: int, choice:
 	if player.has("armour"):
 		player.armour=N.minimum(player.armour,stat("armour"))
 		player.shield=N.minimum(player.shield,max_shield())
-	save_dirty = true
-	event.emit("enhancement_changed",{"category":category,"effect":effect,"node":node,"choice":choice})
-	return true
+	return commit_effects.finish(self,["enhancement"],[],[],{},[{"kind":"enhancement_changed","payload":{"category":category,"effect":effect,"node":node,"choice":choice}}])
 
 func enhancement_branch_metadata(category: String, effect: String, node: int, choice: String) -> Dictionary:
 	if not valid_enhancement_branch(category,effect,node) or choice not in ["A","B"]:return {}
@@ -2906,20 +2895,23 @@ func enhancement_max_upgrades(limit := -1) -> int:
 	return enhancement_growth.max_upgrades(db,economy.balance("jewel"),limit) if enhancement_unlocked() else 0
 
 func upgrade_enhancement(count := 1) -> int:
-	if count==0 or not enhancement_unlocked():return 0
+	return int(upgrade_enhancement_result(count).facts.get("purchased",0))
+
+func upgrade_enhancement_result(count := 1) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if count==0 or not enhancement_unlocked():return CommandResult.make("rejected","enhancement_unavailable")
 	var plan:=enhancement_growth.prepare_upgrade(db,economy.balance("jewel"),count)
-	if plan.is_empty():return 0
+	if plan.is_empty():return CommandResult.make("rejected","purchase_unavailable")
 	var wallet_revision:=economy.revision
-	if not native_before_configuration_change():return 0
-	if wallet_revision!=economy.revision or not enhancement_growth.proposal_current(plan):return 0
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if wallet_revision!=economy.revision or not enhancement_growth.proposal_current(plan) or configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	# The quoted expense and growth are committed without intervening callbacks.
-	if not economy.debit({"jewel":plan.cost}):return 0
+	if not economy.debit({"jewel":plan.cost}):return commit_effects.abort("insufficient_resources","rejected")
 	enhancement_growth.commit_configuration(plan)
-	configuration_committed();sync_enhancement_buffers();save_dirty=true
-	event.emit("enhancement_changed", {"purchased":plan.purchased})
-	event.emit("jewels_changed", {"slot":"","slots":[]})
-	for category in ["weapons","defence"]:event.emit("equipment_stats",{"category":category})
-	return int(plan.purchased)
+	configuration_committed();sync_enhancement_buffers()
+	return commit_effects.finish(self,["enhancement","economy"],["jewel"],[],{"purchased":int(plan.purchased),"jewels_changed":true},[{"kind":"enhancement_changed","payload":{"purchased":plan.purchased}},{"kind":"jewels_changed","payload":{"slot":"","slots":[]}},{"kind":"equipment_stats","payload":{"category":"weapons"}},{"kind":"equipment_stats","payload":{"category":"defence"}}])
 
 func enhancement_order(category: String) -> Array:
 	return enhancement_growth.order(category)
@@ -2928,10 +2920,18 @@ func valid_enhancement_order(category: String, value: Variant) -> bool:
 	return EnhancementGrowth.valid_order(category,value)
 
 func set_enhancement_order(category: String, order: Array) -> bool:
-	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return false
-	if enhancement_order(category)==order:return true
+	return CommandResult.succeeded(set_enhancement_order_result(category,order))
+
+func set_enhancement_order_result(category: String, order: Array) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if not enhancement_unlocked() or not valid_enhancement_order(category,order):return CommandResult.make("rejected","order_unavailable")
+	if enhancement_order(category)==order:return CommandResult.make("no_change")
 	var plan:=enhancement_growth.prepare_order(category,order)
-	if plan.is_empty() or not native_before_configuration_change() or not enhancement_growth.proposal_current(plan):return false
+	if plan.is_empty():return CommandResult.make("rejected","order_unavailable")
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if not enhancement_growth.proposal_current(plan) or configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	enhancement_growth.commit_configuration(plan)
 	configuration_committed()
 	enhancement_branches.reconcile(self)
@@ -2939,11 +2939,7 @@ func set_enhancement_order(category: String, order: Array) -> bool:
 	if player.has("armour"):
 		player.armour=N.minimum(player.armour,stat("armour"))
 		player.shield=N.minimum(player.shield,max_shield())
-	save_dirty = true
-	event.emit("enhancement_changed", {"category":category})
-	event.emit("jewels_changed", {"slot":"","slots":[]})
-	for kind in ["weapons","defence"]:event.emit("equipment_stats",{"category":kind})
-	return true
+	return commit_effects.finish(self,["enhancement"],[],[],{"jewels_changed":true},[{"kind":"enhancement_changed","payload":{"category":category}},{"kind":"jewels_changed","payload":{"slot":"","slots":[]}},{"kind":"equipment_stats","payload":{"category":"weapons"}},{"kind":"equipment_stats","payload":{"category":"defence"}}])
 
 func available_effect_count(entry: Dictionary) -> int:
 	var key := str(entry.get("key",""))

@@ -182,5 +182,36 @@ func _initialize()->void:
 	hot.ai_tech_last_resource_notice_ms=Time.get_ticks_msec()-250
 	hot.advance_hightech(0.001)
 	check(paid_notices==[[["1"],true,true,1]] and nested_time==[true] and not hot.commit_effects.active,"due resource notice delivers one committed fact before immutable UI notification and blocks external time")
+	cold_growth_commands()
 	print("COMMIT BOUNDARY: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
+
+func cold_growth_commands()->void:
+	var g:=OrderedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.profile.grantedUnlocks.append(g.db.unlock_id("feature","jewels"))
+	g.economy.credit("2",1e10);g.economy.credit("jewel",1e20)
+	var raw:=g.enhancement_growth.save_data();raw.enhancementLevel=40
+	check(g.enhancement_growth.install_snapshot(raw),"current growth fixture installs")
+	var tracker:=TrackedCrew.new();tracker.install_snapshot(g.crew.save_data(),g.db)
+	g.event.disconnect(g.crew.on_event);g.crew=tracker;tracker.attach(g)
+	var order:=g.enhancement_order("weapons");order.reverse()
+	var commands:Array=[func():return g.upgrade_reactor_result(1),func():return g.set_reactor_allocation_result("weapons",1),func():return g.equalize_reactor_allocation_result(),func():return g.upgrade_enhancement_result(1),func():return g.set_enhancement_order_result("weapons",order),func():return g.set_enhancement_branch_result("weapons","proficiency",1,"B")]
+	for index in commands.size():
+		var command:Callable=commands[index]
+		var before:Array=[g.economy.save_data(),g.reactor.save_data(),g.enhancement_growth.save_data()]
+		var calls:int=tracker.commits
+		g.before_change=func():g.configuration_revision+=1
+		var failed:Dictionary=command.call()
+		check(failed.status=="rejected" and failed.reason=="stale_proposal" and before==[g.economy.save_data(),g.reactor.save_data(),g.enhancement_growth.save_data()] and tracker.commits==calls,"growth command rejects handoff-invalidated configuration without partial install "+str(index))
+		var seen:Array=[];var nested:Array=[]
+		var observer:=func(_kind,payload):
+			seen.append([tracker.commits,g.save_dirty,payload.is_read_only(),g.reactor_allocated()<=g.reactor_capacity()])
+			if nested.is_empty():
+				for another in commands:nested.append(another.call().status)
+		g.save_dirty=false;g.event.connect(observer)
+		var result:Dictionary=command.call()
+		g.event.disconnect(observer)
+		check(result.status=="committed" and tracker.commits==calls+1 and not seen.is_empty() and seen.all(func(item):return item==[calls+1,true,true,true]),"growth command installs and schedules once before immutable UI notices "+str(index))
+		check(nested.size()==6 and nested.all(func(status):return status=="blocked") and not g.commit_effects.active,"every cold growth entry rejects notification reentry "+str(index))
+		check(result.contributions.get("after",[])==g.attributes.configuration_inputs(g),"growth result describes final authoritative configuration "+str(index))

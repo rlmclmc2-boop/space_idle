@@ -331,7 +331,7 @@ func clear_runtime(g) -> void:
 	g.galaxy_runtime.reset()
 	g.hyperspace_runtime.reset()
 	g.game_time_remainder=0.0;g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
-	g.resource_samples.clear();g.pending_unlocks.clear()
+	g.income_history.clear();g.pending_unlocks.clear()
 
 func install_loaded_domains(g, raw: Dictionary) -> void:
 	g.economy.install_snapshot(raw)

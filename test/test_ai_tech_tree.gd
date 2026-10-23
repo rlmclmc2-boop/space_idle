@@ -184,6 +184,7 @@ func run() -> void:
 	run_cross_domain_inputs()
 	run_factory_crew()
 	run_factory_inputs()
+	run_income_history()
 	print("AI_TECH_TREE_CHECKS=",checks," FAILURES=",failures)
 	quit(1 if failures else 0)
 
@@ -231,18 +232,43 @@ func run_factory_crew() -> void:
 	db.data.ai_tech_tree.weapon_accuracy.requirements={};waiting.notify_configuration_changed();waiting.advance_hightech(1.0)
 	check(waiting.research.selected().is_empty(),"New availability does not turn a completed/manual idle state into polling research")
 
+func run_income_history()->void:
+	var history=preload("res://scripts/income_history.gd").new()
+	var rows:Array=[
+		{"id":"1","time":99.0,"production_time":199.0,"amount":12.0,"production_base":5.0,"origin":"drop"},
+		{"id":"1","time":99.0,"production_time":199.0,"amount":30.0,"origin":"galaxy"},
+		{"id":"1","time":99.0,"production_time":199.0,"amount":20.0,"origin":"furnace"},
+		{"id":"1","time":40.0,"production_time":140.0,"amount":100.0,"origin":"drop"},
+		{"id":"2","time":99.0,"production_time":199.0,"amount":999.0,"origin":"drop"},
+		{"id":"1","time":39.0,"production_time":199.0,"amount":7.0,"origin":"drop"}]
+	history.replace_records(rows)
+	rows[0].amount=10000.0
+	check(history.display_total("1",100.0)==62.0 and history.peak_total("1",100.0)==62.0,"display and existing peak qualification retain actual mixed-source receipts and exact wall boundary")
+	check(history.research_total("1",200.0)==69.0 and history.production_total("1",200.0,100.0,200.0)==12.0,"research includes actual receipts while production uses qualified base values on its own clock")
+	check(history.wall_production_total("1",100.0)==5.0,"explicit legacy wall production query remains separate from mixed-source display")
+	var detached:Array=history.records();detached[0].amount=20000.0
+	check(history.display_total("1",100.0)==62.0,"caller arrays and detached query records cannot rewrite income facts")
+	var saved:Array=history.snapshot(100.0,200.0)
+	check(saved.size()==5 and history.size()==6,"portable snapshot excludes fully expired facts without mutating owner")
+	history.prune(100.0,200.0)
+	check(history.size()==5 and history.research_total("1",200.0)==69.0,"pruning preserves a receipt still live on the other clock")
+	var restored=preload("res://scripts/income_history.gd").new();restored.restore(saved,100.0,200.0)
+	check(restored.display_total("1",100.0)==62.0 and restored.research_total("1",200.0)==69.0 and restored.production_total("1",200.0,100.0,200.0)==12.0,"current-schema export and restore preserve every existing purpose query")
+	history.prune(160.0,260.0)
+	check(history.size()==0,"facts expire when both rolling windows end")
+
 func run_factory_inputs() -> void:
 	var N=GrowthNumber
 	var db:=ShipDatabase.new()
 	for gate in db.data.unlock.values():gate.level=0
 	var g:=BattleGame.new(db,false)
 	g.profile.productionElapsed=100.0
-	g.resource_samples=[
+	g.income_history.replace_records([
 		{"id":"1","time":0.0,"production_time":41.0,"amount":3000.0,"production_base":1.0,"origin":"drop"},
 		{"id":"1","time":0.0,"production_time":100.0,"amount":3000.0,"origin":"galaxy"},
 		{"id":"1","time":g.economy_time(),"production_time":40.0,"amount":1e20,"origin":"drop"},
 		{"id":"1","time":g.economy_time(),"production_time":101.0,"amount":1e20,"origin":"drop"},
-		{"id":"2","time":0.0,"production_time":90.0,"amount":11999.0,"origin":"drop"}]
+		{"id":"2","time":0.0,"production_time":90.0,"amount":11999.0,"origin":"drop"}])
 	check(g.resource_game_minute_total("1")==6000.0,"Same receipt ledger sums actual amount including galaxy receipts in the game-time window")
 	fund(g,{"1":1e30,"2":1e30})
 	check(g.assign_crew("navigator","hightech_scientists","hightech"),"Factory assignment immediately allocates inputs")
@@ -251,13 +277,13 @@ func run_factory_inputs() -> void:
 	check(g.set_tech_input_ratio("1",0.025) and g.research.save_data().aiTechInput["1"]==2.0,"Ratio edit immediately recomputes floored per-second input")
 	check(g.set_tech_input_ratio("2",0.001) and not g.set_tech_input_ratio("2",0.00099),"Ratio minimum is independently 0.1 percent")
 	check(not g.set_tech_input("1",999),"Assigned factory owns its automatic input rather than accepting stale manual writes")
-	g.resource_samples.clear()
+	g.income_history.clear()
 	g.advance_shared_clock_and_economy(59.9)
 	check(g.research.save_data().aiTechInput["1"]==2.0,"Automatic allocation stays fixed until sixty game seconds")
 	g.advance_shared_clock_and_economy(0.1)
 	check(g.research.save_data().aiTechInput["1"]==1.0 and g.research.save_data().aiTechAutoElapsed==0.0,"Zero income still allocates one at the refresh boundary")
 	var huge=N.parse_input("1e400")
-	g.resource_samples=[{"id":"1","time":g.economy_time(),"production_time":160.0,"amount":N.multiply(huge,6000.0),"origin":"galaxy"}]
+	g.income_history.replace_records([{"id":"1","time":g.economy_time(),"production_time":160.0,"amount":N.multiply(huge,6000.0),"origin":"galaxy"}])
 	check(g.set_tech_input_ratio("1",0.01),"Huge income ratio can be configured")
 	check(N.compare(g.research.save_data().aiTechInput["1"],huge)==0 and near(g.research.input_factor(huge),101.0),"Shared GrowthNumber allocates above floating/integer range and computes the original logarithmic factor")
 	var transfer=preload("res://scripts/save_transfer.gd").new()
@@ -267,7 +293,7 @@ func run_factory_inputs() -> void:
 	var loaded:=BattleGame.new(db,false);loaded.load_progress_data(prepared.data)
 	check(loaded.research.save_data()==g.research.save_data(),"Current save restores large inputs, separate ratios and remaining refresh interval")
 	check(g.assign_crew("navigator","",""),"Recall ends automatic allocation")
-	g.resource_samples.clear();g.advance_shared_clock_and_economy(60.0)
+	g.income_history.clear();g.advance_shared_clock_and_economy(60.0)
 	check(N.compare(g.research.save_data().aiTechInput["1"],huge)==0 and g.research.save_data().aiTechAutoElapsed==12.25,"Recall leaves current inputs and stops automatic timer/writes")
 	check(g.set_tech_input("1",1e20) and near(g.research.input_factor(1e20),6.0),"Manual input above the old 2^53 limit is accepted")
 	check(g.set_tech_input("1",huge) and g.set_tech_input("2",0),"Manual scientific input uses the same value type")
@@ -294,7 +320,7 @@ func run_factory_inputs() -> void:
 	var ranked:=BattleGame.new(db,false)
 	var extreme=N.make(1.0,1e200)
 	fund(ranked,{"1":extreme,"2":extreme})
-	for id in ["1","2"]:ranked.resource_samples.append({"id":id,"time":ranked.economy_time(),"production_time":ranked.production_time(),"amount":extreme,"origin":"galaxy"})
+	for id in ["1","2"]:ranked.income_history.record({"id":id,"time":ranked.economy_time(),"production_time":ranked.production_time(),"amount":extreme,"origin":"galaxy"})
 	check(ranked.assign_crew("navigator","hightech_scientists","hightech") and ranked.select_tech("singularity"),"Extreme shared-speed continuation starts with actual factory assignment")
 	var durations:Dictionary=ranked.tech_tree_snapshot()
 	var times:Array=durations.nodes.filter(func(node):return node.id in ["singularity","equipment_reinforcement"])

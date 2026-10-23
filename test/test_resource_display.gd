@@ -29,14 +29,14 @@ func run() -> void:
 	check(scene.resource_display("1")=="1.00/秒", "Spending does not reduce acquisition rate")
 	scene.build_ui()
 	check(scene.resource_rate_mode and scene.resource_mode_button.text=="资源：每秒", "UI rebuild retains selected mode")
-	scene.resource_samples.assign([{"time":40.0,"id":"1","amount":600.0},{"time":40.1,"id":"1","amount":30.0},{"time":99.0,"id":"2","amount":15.0}])
+	scene.game.income_history.replace_records([{"time":40.0,"id":"1","amount":600.0},{"time":40.1,"id":"1","amount":30.0},{"time":99.0,"id":"2","amount":15.0}])
 	check(scene.resource_display("1",100.0)=="0.50/秒" and scene.resource_display("2",100.0)=="0.25/秒", "Rolling window excludes exact 60-second boundary and separates resources")
 	check(scene.resource_display("1",160.0)=="0.00/秒", "No recent income expires to zero")
 	scene.resource_mode_button.pressed.emit()
 	check(not scene.resource_rate_mode and scene.resource_display("1")=="83", "Second click restores current total")
 	if DisplayServer.get_name() != "headless":
 		scene.resource_mode_button.pressed.emit()
-		scene.resource_samples.assign([{"time":Time.get_unix_time_from_system(),"id":"1","amount":75.0}])
+		scene.game.income_history.replace_records([{"time":Time.get_unix_time_from_system(),"id":"1","amount":75.0}])
 		scene.queue_redraw()
 		await process_frame
 		await RenderingServer.frame_post_draw

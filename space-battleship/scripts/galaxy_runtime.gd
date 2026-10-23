@@ -34,7 +34,7 @@ func advance(g,dt:float)->void:
 		if not g.galaxy.income_current(income) or not g.economy.credit_many(income.gains):return
 		g.galaxy.commit_income(income)
 		# Both currencies and consumed income time are visible before any notification.
-		for id in income.gains:g.resource_samples.append({"time":g.economy_time(),"production_time":g.production_time(),"id":id,"amount":income.gains[id],"origin":"galaxy"})
+		for id in income.gains:g.income_history.record({"time":g.economy_time(),"production_time":g.production_time(),"id":id,"amount":income.gains[id],"origin":"galaxy"})
 		g.save_dirty=true
 		for id in income.gains:g.event.emit("galaxy_income",{"id":id,"amount":income.gains[id]})
 	for key in g.galaxy.regions:
