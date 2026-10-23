@@ -1,7 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
-
-SHIELD_PIXELS native=false changed=2788 maximum=0.45882353186607 opacity=0.12
-SHIELD_NATIVE_COMPILE 
-SHIELD_PIXELS native=true changed=2800 maximum=0.37254902720451 opacity=0.12
-SHIELD_FEEDBACK_CHECK checks=20 failures=0

@@ -1,7 +1,7 @@
 # 真实 main 与最终候选：五套高负载性能对照
 
 - 基线 `001a7c5`，候选 `affa83c`；基线由候选完整项目快照按该两提交的 `git diff --name-status` 对每个变动文件回填 `git show 001a7c5`，候选直接取最终源。两侧相同原生 DLL SHA-256 `dccd40b52e086444edd7291d2bead736b96f7876a53f989df5549a1d4f99b30a`、Godot SHA-256 `c8f0a6bc45a19b33541501e57f6f7cd972ab18453743266339d495cbbe846643`。
-- 复用 `test/evidence/enemy-intel-final-perf-20261016/SUMMARY.md` 指向的完整画面混合武器与四种单武器夹具；每套串行真实 main → 候选 → 真实 main。原始 JSON trace、系统负载采样、日志和候选 PNG 均在此目录，SHA-256 见 `manifest.json`。
+- 复用[当时的敌情性能报告](https://github.com/rlmclmc2-boop/space_idle/blob/d71bd1d26d9d3a5005a891b684de531966fdab1c/test/evidence/enemy-intel-final-perf-20261016/SUMMARY.md)指向的完整画面混合武器与四种单武器夹具；每套串行真实 main → 候选 → 真实 main。原始 JSON trace、系统负载采样、日志和候选 PNG 均在此目录，SHA-256 见 `manifest.json`。
 - 同一隔离夹具将双方装备设为 140 级，候选实际渲染第7档进化，且同一组自动升级不会跨160级额外触发材料事件。除该等同输入外没有调整战斗统计、伤害或敌方生命。每套预热240步、采样480步，1倍/60 Hz、FPS 0、VSync 0、cache=true/save=false、原生战斗、完整画面、15敌人存活。每套三次战斗事件字典与压力计数严格相等，帧时 trace 闭合。
 - 数值单位 ms，CPU 为同期全系统繁忙百分比。候选差值以首尾 main 均值为基准；单次样本有背景波动，不能解释为确定性性能收益。
 

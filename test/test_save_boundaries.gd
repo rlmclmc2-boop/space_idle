@@ -93,8 +93,8 @@ func _initialize() -> void:
 
 func reopen(db: ShipDatabase, phase: String) -> void:
 	var saved: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("user://expected.json"))
-	# Current capacity/allocation values use the same finite representation as JSON.
-	for key in saved.aiTechInput:saved.aiTechInput[key] = int(saved.aiTechInput[key])
+	# GrowthNumber keeps ordinary inputs as floats and large inputs as {m,e}.
+	# Preserve the written JSON representation; integer coercion breaks equality.
 	for member in saved.crew:member.level=int(member.level)
 	var original := FileAccess.get_file_as_string(BattleGame.SAVE_PATH)
 	var restored := BattleGame.new(db, true)
@@ -129,7 +129,10 @@ func reopen(db: ShipDatabase, phase: String) -> void:
 		finish()
 		return
 	check(restored.economy.balance("degenerate_matter")==int(saved.materials.degenerate_matter) and restored.economy.balance("ultimate_cores")==int(saved.ultimateCores) and not restored.hyperspace.state.has("materials"),"Real reopen restores exact integer wallet into economic authority")
-	check(restored.research.selected()==saved.aiTechActive and restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy and restored.research.save_data().aiTechInput==saved.aiTechInput and not restored.profile.has("aiTechProgress"),"Real reopen restores selected research, paid progress and input to its owner")
+	var research_parts := {"selected":restored.research.selected()==saved.aiTechActive,"paid_progress":restored.research.progress("weapon_accuracy")==saved.aiTechProgress.weapon_accuracy,"input":restored.research.save_data().aiTechInput==saved.aiTechInput,"owner":not restored.profile.has("aiTechProgress")}
+	if research_parts.values().has(false):
+		print("RESEARCH_RESTORE ",JSON.stringify({"parts":research_parts,"actual_input":restored.research.save_data().aiTechInput,"expected_input":saved.aiTechInput,"actual_type":typeof(restored.research.save_data().aiTechInput["1"]),"expected_type":typeof(saved.aiTechInput["1"])}))
+	check(not research_parts.values().has(false),"Real reopen restores selected research, paid progress and input to its owner")
 	var wallet_before:=restored.economy.material_wallet()
 	var retry:=restored.exchange_hyperspace_materials({"round_id":1,"command_seq":1,"source":"degenerate_matter","target":"antiproton","amount":7})
 	check(retry.error=="" and retry.amount==7 and restored.economy.material_wallet()==wallet_before,"Reopened exchange retries cached receipt without a second debit")

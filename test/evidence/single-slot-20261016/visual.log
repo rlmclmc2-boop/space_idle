@@ -1,8 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
-
-VISUAL Frigate weapons=1 physical=1 carriers=0
-VISUAL Destroyer weapons=2 physical=2 carriers=0
-VISUAL Cruiser weapons=3 physical=3 carriers=0
-VISUAL Battleship weapons=4 physical=4 carriers=0
-VISUAL Heavy_Battleship weapons=5 physical=5 carriers=0

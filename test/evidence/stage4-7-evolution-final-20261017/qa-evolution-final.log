@@ -1,3 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-QA_ASSERT_OK gates=20,40 batch_shared=10 native_batch_shared=10 weapon_switch=40 virtual=19+35,39+35 tiers=10
