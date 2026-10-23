@@ -76,4 +76,3 @@ func _chain(node: Node3D, root: Node3D) -> Array:
 		result.push_front(node.transform)
 		node = node.get_parent() as Node3D
 	return result
-
