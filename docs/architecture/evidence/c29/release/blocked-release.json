@@ -1,0 +1,12 @@
+{
+  "action": "git push origin main",
+  "target": "rlmclmc2-boop/space_idle refs/heads/main",
+  "status": "denied_not_executed",
+  "reason": "Automatic approval review requires explicit human approval of this specific C29 main delivery; agent-reported dual approval was not accepted as sufficient evidence.",
+  "local_main": "6a8388c26387f76bc3d3047ef8b5042026ae7cf1",
+  "remote_main_last_verified": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+  "tree": "2ae51c85f8bb9012e2cc2833b4801e119f5944e0",
+  "premerge_checks": "import and original-main startup exit 0",
+  "player_launcher": "not executed: main/origin-main equality remains unsatisfied; protection was not bypassed",
+  "next": "Obtain explicit human approval for normal push of this exact candidate, then push/readback and use the actual player launcher once. No test rerun or further implementation needed."
+}

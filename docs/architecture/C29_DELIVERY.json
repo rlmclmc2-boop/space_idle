@@ -4,7 +4,7 @@
   "base_main_tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
   "runtime_candidate_sha": "5ea23d598b980978f0894f2b2569ff4a56484c47",
   "prepared_delivery_tree": "2ae51c85f8bb9012e2cc2833b4801e119f5944e0",
-  "status": "dual_review_approved_pending_premerge_and_release",
+  "status": "local_main_committed_remote_push_denied",
   "counts": {
     "runtime_and_configuration": 14,
     "existing_validation": 4,
@@ -274,5 +274,17 @@
     "no_new_runtime_verification_for_manifest_only_work": true
   },
   "prior_release_manifest": "MAIN_DELIVERY.json (C27/C28 historical delivery; retained unchanged)",
-  "review": "Parent confirmed unanimous dot/astra approval of 5ea23d598b980978f0894f2b2569ff4a56484c47 and authorized filtered main delivery plus player-launcher acceptance."
+  "review": "Parent confirmed unanimous dot/astra approval of 5ea23d598b980978f0894f2b2569ff4a56484c47 and authorized filtered main delivery plus player-launcher acceptance.",
+  "release": {
+    "action": "git push origin main",
+    "target": "rlmclmc2-boop/space_idle refs/heads/main",
+    "status": "denied_not_executed",
+    "reason": "Automatic approval review requires explicit human approval of this specific C29 main delivery; agent-reported dual approval was not accepted as sufficient evidence.",
+    "local_main": "6a8388c26387f76bc3d3047ef8b5042026ae7cf1",
+    "remote_main_last_verified": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+    "tree": "2ae51c85f8bb9012e2cc2833b4801e119f5944e0",
+    "premerge_checks": "import and original-main startup exit 0",
+    "player_launcher": "not executed: main/origin-main equality remains unsatisfied; protection was not bypassed",
+    "next": "Obtain explicit human approval for normal push of this exact candidate, then push/readback and use the actual player launcher once. No test rerun or further implementation needed."
+  }
 }

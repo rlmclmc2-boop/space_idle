@@ -1,0 +1,16 @@
+[
+  {
+    "phase": "import",
+    "exit": 0,
+    "seconds": 27.328,
+    "errors": [],
+    "log_sha256": "84e22daece7bc46a24b41ccd514e547f1cb39c6e83a0867ac513cbe71f2eb157"
+  },
+  {
+    "phase": "startup",
+    "exit": 0,
+    "seconds": 17.687,
+    "errors": [],
+    "log_sha256": "0c4aa66f84a9d4ac9c3f85faca9aed8575bdec43cfdf17f73bf51623a38be546"
+  }
+]

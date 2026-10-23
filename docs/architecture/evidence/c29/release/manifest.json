@@ -1,0 +1,14 @@
+{
+  "local_main_sha": "6a8388c26387f76bc3d3047ef8b5042026ae7cf1",
+  "prepared_tree": "2ae51c85f8bb9012e2cc2833b4801e119f5944e0",
+  "source_candidate": "5ea23d598b980978f0894f2b2569ff4a56484c47",
+  "status": "remote_main_push_denied_not_executed",
+  "player_launcher": "pending after authorized push; not run",
+  "files": {
+    "blocked-release.json": "21613d234294aa10e99a92361b41dcc5983459f7fad1befd6664d62ddbb08e7d",
+    "delivery-verification.json": "9158e96e7a26a5ed6034e3b4ff745b09d0d360b4026fb27ae58ad0473f9e66ed",
+    "premerge-import.log": "84e22daece7bc46a24b41ccd514e547f1cb39c6e83a0867ac513cbe71f2eb157",
+    "premerge-results.json": "b632b6bd72626e6f4ba2c232c0b694a558e3e928f2345f94b3e354af8e228100",
+    "premerge-startup.log": "0c4aa66f84a9d4ac9c3f85faca9aed8575bdec43cfdf17f73bf51623a38be546"
+  }
+}
