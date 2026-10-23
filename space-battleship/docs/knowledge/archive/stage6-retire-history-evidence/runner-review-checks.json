@@ -1,0 +1,138 @@
+{
+  "checks": 33,
+  "failures": 0,
+  "cases": [
+    {
+      "case": "empty",
+      "pass": true
+    },
+    {
+      "case": "zero checks",
+      "pass": true
+    },
+    {
+      "case": "failed",
+      "pass": true
+    },
+    {
+      "case": "complete",
+      "pass": true
+    },
+    {
+      "case": "wrong phase",
+      "pass": true
+    },
+    {
+      "case": "right phase",
+      "pass": true
+    },
+    {
+      "case": "partial save",
+      "pass": true
+    },
+    {
+      "case": "save complete",
+      "pass": true
+    },
+    {
+      "case": "native complete",
+      "pass": true
+    },
+    {
+      "case": "native failed",
+      "pass": true
+    },
+    {
+      "case": "native malformed",
+      "pass": true
+    },
+    {
+      "case": "seating",
+      "pass": true
+    },
+    {
+      "case": "python empty",
+      "pass": true
+    },
+    {
+      "case": "python unittest",
+      "pass": true
+    },
+    {
+      "case": "python failure",
+      "pass": true
+    },
+    {
+      "case": "lifecycle summary",
+      "pass": true
+    },
+    {
+      "case": "lifecycle partial",
+      "pass": true
+    },
+    {
+      "case": "lifecycle failed",
+      "pass": true
+    },
+    {
+      "case": "crew complete",
+      "pass": true
+    },
+    {
+      "case": "crew incomplete count",
+      "pass": true
+    },
+    {
+      "case": "crew empty count",
+      "pass": true
+    },
+    {
+      "case": "python zero passed",
+      "pass": true
+    },
+    {
+      "case": "python not passed",
+      "pass": true
+    },
+    {
+      "case": "python exact summary",
+      "pass": true
+    },
+    {
+      "case": "python wrong entry",
+      "pass": true
+    },
+    {
+      "case": "python partial summary",
+      "pass": true
+    },
+    {
+      "case": "python trailing diagnostic",
+      "pass": true
+    },
+    {
+      "case": "reject whole_game_perf.py",
+      "pass": true
+    },
+    {
+      "case": "reject phase9_probe.gd",
+      "pass": true
+    },
+    {
+      "case": "reject ../test/test_save_boundaries.gd",
+      "pass": true
+    },
+    {
+      "case": "reject test_crew.gd",
+      "pass": true
+    },
+    {
+      "case": "reject probe_weapon_roles.gd",
+      "pass": true
+    },
+    {
+      "case": "explicit lifecycle entry accepted before execution",
+      "pass": true
+    }
+  ]
+}

@@ -20,6 +20,11 @@ def completed(output, test, phase):
         return re.search(r"^" + re.escape(prefix) + r" [1-9]\d* checks 0 failures(?: |$)", output, re.M) is not None
     if test == "test_save_boundaries.gd":
         return re.search(r"^Save boundaries: [1-9]\d* checks, 0 failures$", output, re.M) is not None
+    if test == "probe_native_admission_stale_pose.gd":
+        return re.search(r"^GEOMETRY LIFECYCLE: [1-9]\d* checks, 0 failures$", output, re.M) is not None
+    if test == "test_crew_performance.gd":
+        # Existing fixture: 2 ships * 2 pages * 3 modes * 3 budgets + 4 scheduler cases.
+        return re.search(r"^CREW_PERF_COMPLETE 40 scenarios$", output, re.M) is not None
     if test == "test_dynamic_native_ports.gd":
         rows = re.findall(r"^DYNAMIC_PORTS (.+)$", output, re.M)
         if len(rows) != 1:
@@ -40,7 +45,24 @@ def completed(output, test, phase):
         if re.search(r"^Ran [1-9]\d* tests? in .+\n\s*\nOK$", output.strip(), re.M):
             return True
         last = output.strip().splitlines()[-1] if output.strip() else ""
-        return re.search(r"(?:\bpassed\b|^PASS:|^AI_TECH_CONFIG=PASS rows=8$|^reactor config valid$|^Enemy intel import: full data valid;|^EXCEL MUTATIONS: [1-9]\d* official incremental exports; restored original source and projection$|^FRESH PROCESS IMPORT RECOVERY: [1-9]\d* scenarios, 0 failures$)", last) is not None
+        # Exact existing terminal summaries, keyed to their entry; no generic "passed".
+        summaries = {
+            "test_ai_tech_tree_config.py": r"AI_TECH_CONFIG=PASS rows=8",
+            "test_config_input_matrix.py": r"Phase 8: [1-9]\d* input outcomes, [1-9]\d* fault outcomes, [1-9]\d* assertions passed\. Evidence: .+",
+            "test_enemy_attack_pairs.py": re.escape("Attack pairs: current authored pairs, four source projections, legacy metadata and malformed/Lv1-order cases passed"),
+            "test_enemy_intel_import.py": re.escape("Enemy intel import: full data valid; current opening mechanism mismatches and visual mismatch rejected; native reactive constants and integer-ms durations match"),
+            "test_enemy_shield_schema.py": re.escape("Enemy shield schema: authored data, omitted legacy fields and 6 invalid cases passed"),
+            "test_enhance_config.py": r"ENHANCE CONFIG: passed; [1-9]\d* invalid inputs rejected; growth1/2 valid; 68 rows match workbook",
+            "test_full_restart.py": re.escape("PASS: busy guard, real new PID, updated source, same user directory, saved progress, current node, QA settings"),
+            "test_import.py": re.escape("PASS: import, data rows, defaults preservation, failure preserves JSON"),
+            "test_offline_config.py": re.escape("Chrono config: workbook projection and validation passed"),
+            "test_planet_build_config.py": re.escape("Planet configuration: projection, four rules, rejection and incremental import passed"),
+            "test_reactor_config.py": r"reactor config valid",
+            "test_weapon_config.py": r"EXCEL MUTATIONS: [1-9]\d* official incremental exports; restored original source and projection",
+            "test_weapon_config_validation.py": r"WEAPON TABLE VALIDATION: [1-9]\d* cases passed; 4 actual invalid Excel imports rejected; projection unchanged",
+            "test_save_import_recovery.py": r"FRESH PROCESS IMPORT RECOVERY: [1-9]\d* scenarios, 0 failures",
+        }
+        return test in summaries and re.fullmatch(summaries[test], last) is not None
     # Do not retrofit historical probes: an unrecognized result is not acceptance.
     return False
 
@@ -49,14 +71,14 @@ def main():
     tests = Path(__file__).resolve().parent
     workspace = tests.parent
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("test", help="One existing test_*.gd or test_*.py; helpers are not acceptance entries")
+    parser.add_argument("test", help="One existing test_*.gd/test_*.py or probe_native_admission_stale_pose.gd")
     parser.add_argument("--godot", type=Path, default=workspace / "space-battleship/engine/Godot_v4.7.2-stable_win64.exe")
     parser.add_argument("--timeout", type=int, default=180, help="Timeout in seconds for each isolated process")
     parser.add_argument("--headless", action="store_true", help="Disable rendering for logic benchmarks")
     parser.add_argument("--scenario", choices=("all", "game", "reactor", "planet", "factory"),
                         help="Original main-scene workflow for test_ordinary_entry.gd (default: all)")
     args = parser.parse_args()
-    if not re.fullmatch(r"test_[A-Za-z0-9_]+\.(gd|py)", args.test) or not (tests / args.test).is_file():
+    if (not re.fullmatch(r"test_[A-Za-z0-9_]+\.(gd|py)", args.test) and args.test != "probe_native_admission_stale_pose.gd") or not (tests / args.test).is_file():
         parser.error("Choose one existing test_*.gd or test_*.py from the relevant guide")
     if args.timeout <= 0:
         parser.error("--timeout must be positive")
