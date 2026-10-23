@@ -3,6 +3,9 @@ extends SceneTree
 class CallbackGame extends BattleGame:
 	var before_change: Callable
 	var accept_change:=true
+	var captures:=0
+	func capture_refit_health()->void:
+		captures+=1;super.capture_refit_health()
 	func native_before_configuration_change()->bool:
 		if before_change.is_valid():
 			var callback:=before_change;before_change=Callable();callback.call()
@@ -118,10 +121,10 @@ func coordination_boundaries()->void:
 	g.event.connect(func(kind,info):
 		if kind=="crew_changed":notices.append(info))
 	g.accept_change=false
-	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.save_data()==before and notices.is_empty(),"Rejected handoff leaves assignment and notifications untouched")
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.save_data()==before and notices.is_empty() and g.captures==0,"Rejected handoff leaves assignment and notifications untouched")
 	g.accept_change=true
 	g.before_change=func():g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
-	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.entry(g,"navigator").assignmentType=="" and g.crew.entry(g,"navigator").upgradeMode=="10","Handoff callback invalidates stale assignment without overwriting its change")
+	check(not g.assign_crew("navigator","equipment_upgrade","equipment") and g.crew.entry(g,"navigator").assignmentType=="" and g.crew.entry(g,"navigator").upgradeMode=="10" and g.captures==0,"Handoff callback invalidates stale assignment without overwriting its change")
 	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
 	g.galaxy_runtime.refresh_unlocks(g)
 	check(g.assign_crew("navigator","galaxy_explore","galaxy_1"),"Assign actual previous galaxy job")
@@ -134,6 +137,9 @@ func coordination_boundaries()->void:
 	check(not g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback rejects stale transfer")
 	g.event.disconnect(observer)
 	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="galaxy_explore","Earned previous-job work settles once and assignment remains current")
+	check(g.captures==1,"Only the original successful assignment captured health; stale transfer did not")
+	g.captures=0
+	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.captures==1,"Successful transfer captures health once after final callback checks")
 	var saved:=fixture().portable_save_data()
 	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
 	g.assign_crew("navigator","equipment_upgrade","equipment");g.crew.advance(g,0.9)

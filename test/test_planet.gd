@@ -2,6 +2,12 @@ extends SceneTree
 
 class BlockedGame extends BattleGame:
 	var reject_change:=false
+	var captures:=0
+	var configurations:=0
+	func capture_refit_health()->void:
+		captures+=1;super.capture_refit_health()
+	func configuration_committed(native_updated:=false)->void:
+		configurations+=1;super.configuration_committed(native_updated)
 	func native_before_configuration_change() -> bool:
 		return false if reject_change else super.native_before_configuration_change()
 var checks := 0
@@ -81,6 +87,7 @@ func _initialize() -> void:
 	g.advance_planets(g.planet_duration(id))
 	check(g.crew.entry(g,"engineer").level==1 and is_equal_approx(g.crew.entry(g,"engineer").exp,24) and is_equal_approx(emitted_reward[0],124),"Credited and emitted experience match integer preview")
 	check(payout_views.size()==1 and payout_views[0].planets[id].crewId=="" and payout_views[0].crew==g.crew.save_data().crew,"Planet-sourced crew notification observes committed trip and entire experience payout")
+	joint_payout_boundary()
 	construction_boundaries()
 	conquest_boundaries()
 	print("PLANET: %d checks, %d failures" % [checks, failures])
@@ -242,3 +249,20 @@ func conquest_boundaries() -> void:
 	g.load_progress_data(raw)
 	check(g.crew.save_data()==before_crew and g.planets.save_data()==before_planets and not g.hyperspace.last_error.is_empty(),"Incomplete save cannot reset permanent conquest or crew")
 	db.data=original
+
+func joint_payout_boundary()->void:
+	var g:=BlockedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,61);g.rebuild_unlocks()
+	update_planet(g,"1",{"conquered":true})
+	for row in g.planet_buildings.rows(g,"1"):
+		if str(row.type)=="equipment":update_building(g,"1",str(row.id),{"status":"built"})
+	check(g.assign_crew("engineer","reactor_upgrade","reactor"),"Joint payout includes staffed reactor contribution")
+	check(g.start_planet_exploration("1","navigator"),"Joint payout starts real exploration")
+	g.player.armour=GrowthNumber.multiply(g.stat("armour"),0.4)
+	g.captures=0;g.configurations=0
+	var views:Array=[]
+	g.event.connect(func(kind,info):
+		if kind=="crew_changed" and info.get("source","")=="planet":views.append([g.planet_progress("1").degree,g.crew.entry(g,"engineer").level,GrowthNumber.ratio(g.player.armour,g.stat("armour")),g.reactor_capacity(),g.reactor_allocated()]))
+	g.advance_planets(g.planet_duration("1"))
+	check(g.captures==1 and g.configurations==1,"Joint planet and crew commit captures health and updates configuration exactly once")
+	check(not views.is_empty() and views.all(func(view):return view[0]==1 and view[1]>0 and absf(view[2]-0.4)<0.000001 and GrowthNumber.compare(view[4],view[3])<=0),"Every payout notice sees final crew, planet, capacity and preserved health ratio")

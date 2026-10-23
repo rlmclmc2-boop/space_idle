@@ -5,29 +5,31 @@ func add_crew_exp(g,crew_id: String, amount: float) -> bool:
 	if not g.crew.levels_unlocked(g) or not g.crew.unlocked(g,crew_id):return false
 	var plan: Dictionary=g.crew.prepare_experience(g,{crew_id:amount})
 	if not prepare_crew_commit(g,plan):return false
-	g.crew.commit(plan);notify_crew_changes(g,plan.changes)
+	if plan.configuration:g.capture_refit_health()
+	g.crew.commit(plan)
+	finish_progress_change(g,plan.configuration)
+	notify_crew_changes(g,plan.changes)
 	return true
 
 func prepare_crew_commit(g,plan: Dictionary) -> bool:
 	if not g.crew.proposal_current(plan):return false
 	if plan.configuration and not g.native_before_configuration_change():return false
-	if not g.crew.proposal_current(plan):return false
-	g.capture_refit_health()
-	return true
+	return g.crew.proposal_current(plan)
 
 func notify_crew_changes(g,changes: Array, source := "crew") -> void:
 	if changes.is_empty():return
-	g.save_dirty=true
-	refresh_crew_level_effects(g,changes)
+	notify_crew_effects(g,changes)
 	for change in changes:g.event.emit("crew_changed",{"crewId":change.current.crewId,"previous":change.previous,"current":change.current,"source":source})
 
 func commit_planet_command(g,plan: Dictionary,payload: Dictionary) -> bool:
 	if not g.planets.proposal_current(plan):return false
 	if plan.configuration and not g.native_before_configuration_change():return false
 	if not g.planets.proposal_current(plan):return false
+	if plan.configuration:g.capture_refit_health()
 	g.planets.commit(plan)
-	if plan.configuration:g.invalidate_tutorial_unlocks();g.configuration_committed()
-	g.save_dirty=true;g.event.emit("planet_changed",payload)
+	if plan.configuration:g.invalidate_tutorial_unlocks()
+	finish_progress_change(g,plan.configuration)
+	g.event.emit("planet_changed",payload)
 	return true
 
 func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
@@ -110,9 +112,10 @@ func advance_planets(g,dt: float) -> void:
 		if not g.crew.proposal_current(crew_plan):return
 		if (planet_plan.configuration or crew_plan.configuration) and not g.native_before_configuration_change():return
 		if not g.planets.proposal_current(planet_plan) or not g.crew.proposal_current(crew_plan):return
-		g.capture_refit_health()
+		var refitted: bool=planet_plan.configuration or crew_plan.configuration
+		if refitted:g.capture_refit_health()
 		g.planets.commit(planet_plan);g.crew.commit(crew_plan)
-		g.configuration_committed();g.save_dirty=true
+		finish_progress_change(g,refitted)
 		notify_crew_changes(g,crew_plan.changes,"planet")
 		g.event.emit("planet_changed",{"id":id,"crewId":planet_plan.crew_id,"reward":reward})
 
@@ -133,6 +136,7 @@ func assign_crew(g,crew_id: String, assignment_type: String, target_id: String, 
 	g.crew.commit(plan)
 	if not factory_was_active and g.crew.factory_active(g):g.research.refresh_auto_inputs(g,g.production_time(),true)
 	var started: bool=g.galaxy.start(target_id) if assignment_type=="galaxy_explore" else false
+	finish_progress_change(g,plan.configuration)
 	notify_crew_changes(g,plan.changes)
 	if started:g.event.emit("galaxy_changed",{"key":target_id})
 	return true
@@ -140,7 +144,8 @@ func assign_crew(g,crew_id: String, assignment_type: String, target_id: String, 
 func set_crew_upgrade_mode(g,crew_id: String, mode: String, assignment := "") -> bool:
 	var plan: Dictionary=g.crew.prepare_mode(g,crew_id,mode,assignment)
 	if not g.crew.proposal_current(plan):return false
-	g.crew.commit(plan);notify_crew_changes(g,plan.changes)
+	g.crew.commit(plan);g.save_dirty=true
+	notify_crew_changes(g,plan.changes)
 	return true
 
 func select_tech(g,id: String) -> bool:
@@ -164,7 +169,7 @@ func advance_hightech(g,dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 	var proposal: Dictionary= g.research.prepare_advance(g,dt)
 	if proposal.is_empty():return
 	if proposal.completed and not g.native_before_configuration_change():return
-	if not g.research.proposal_current(proposal):return
+	if not g.research.proposal_current(proposal) or proposal.inputs!=g.research.advance_inputs(g,proposal.id):return
 	if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return
 	g.research.commit_advance(proposal)
 	g.save_dirty = true
@@ -186,7 +191,15 @@ func refresh_factory_inputs(g,dt: float) -> void:
 	g.save_dirty=true
 	if refreshed:g.event.emit("tech_tree_changed",{"reason":"automatic_input"})
 
-func refresh_crew_level_effects(g,changes: Array) -> void:
+func finish_progress_change(g, refitted: bool) -> void:
+	g.save_dirty=true
+	if not refitted:return
+	# Both domain owners are committed before capacity, descriptors and health settle.
+	g.reactor.reconcile_capacity(g.reactor_capacity())
+	g.configuration_committed()
+	g.apply_refit_health()
+
+func notify_crew_effects(g,changes: Array) -> void:
 	if not g.crew.levels_unlocked(g):return
 	var kinds: Dictionary={}
 	for change in changes:
@@ -195,10 +208,7 @@ func refresh_crew_level_effects(g,changes: Array) -> void:
 		for member in [previous,current]:
 			var job: Dictionary=g.crew.assignments(g).get(str(member.assignmentType),{})
 			kinds[str(job.get("targetType",""))]=true
-	# Install every affected projection before the first notification.
-	if kinds.has("reactor"):g.reactor.reconcile_capacity(g.reactor_capacity())
 	if kinds.has("equipment") or kinds.has("reactor"):
-		g.configuration_committed();g.apply_refit_health()
 		for category in ["weapons","defence"]:g.event.emit("equipment_stats",{"category":category})
 	if kinds.has("hightech"):g.event.emit("tech_tree_changed",{"reason":"crew_speed"})
 	if kinds.has("reactor"):g.event.emit("reactor_changed",{})

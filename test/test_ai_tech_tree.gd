@@ -11,6 +11,12 @@ class ChangedWalletHandoff:
 	func handoff_to_legacy(game,_reason)->bool:
 		game.economy.credit("1",1);game.native_execution=null;return true
 
+class InputHandoff:
+	extends RefCounted
+	var change: Callable
+	func handoff_to_legacy(game,_reason)->bool:
+		change.call();game.native_execution=null;return true
+
 var checks := 0
 var failures := 0
 
@@ -175,6 +181,7 @@ func run() -> void:
 	var before_rejection:=atomic.research.save_data()
 	atomic.load_progress_data(bad)
 	check(atomic.research.save_data()==before_rejection and atomic.economy.resources()==plan.resources,"invalid research save cannot partially install other domains")
+	run_cross_domain_inputs()
 	run_factory_crew()
 	run_factory_inputs()
 	print("AI_TECH_TREE_CHECKS=",checks," FAILURES=",failures)
@@ -295,3 +302,28 @@ func run_factory_inputs() -> void:
 	check(N.compare(times[1].remaining_seconds,times[0].remaining_seconds)<0,"Shared time comparison retains the shorter project")
 	ranked.advance_hightech(0.05)
 	check(ranked.research.level(ranked,"singularity")==1 and ranked.research.selected()=="equipment_reinforcement","Completion compares shared large-number times rather than choosing the first zero display time")
+
+func run_cross_domain_inputs()->void:
+	for dependency in ["crew","drone"]:
+		var g:=BattleGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,61);g.rebuild_unlocks()
+		fund(g,{"1":100000.0,"2":100000.0})
+		g.select_tech("weapon_accuracy")
+		var original:=g.research.save_data();var wallet:=g.economy.resources();var speed:=g.research.research_speed(g)
+		var handoff:=InputHandoff.new()
+		if dependency=="crew":
+			var members:=g.crew.save_data()
+			for member in members.crew:
+				if member.crewId=="navigator":member.level=2;member.assignmentType="hightech_scientists";member.targetId="hightech"
+			handoff.change=func():check(g.crew.install_snapshot(members,g.db),"Callback installs real crew speed input")
+		else:
+			var rng:=RandomNumberGenerator.new();rng.seed=123
+			var config:Dictionary=g.hyperspace.config
+			var drone:Dictionary=preload("res://scripts/drone_rewards.gd").create_drone(rng,config,"speed-fixture","blue","laser",5,"1")
+			drone.hangings=["distributed_algorithm"];drone.hanging_slots=1
+			var snapshot:=g.hyperspace.save_data()
+			check(preload("res://scripts/drone_inventory.gd").insert(snapshot.hyperspace.inventory,drone,config),"Speed fixture inserts drone")
+			snapshot.hyperspace.inventory.equipped=[drone.id]
+			snapshot.hyperspace.hanging_modules.distributed_algorithm={"unlocked":true,"level":1,"exp":0.0}
+			handoff.change=func():check(g.hyperspace.install_snapshot(snapshot,g.db),"Callback installs real drone speed input")
+		g.native_execution=handoff;g.advance_hightech(100000.0)
+		check(g.research.research_speed(g)!=speed and g.research.save_data()==original and g.economy.resources()==wallet,"Changed "+dependency+" calculation input rejects old research and payment")
