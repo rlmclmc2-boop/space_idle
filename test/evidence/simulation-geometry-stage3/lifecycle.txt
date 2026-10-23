@@ -1,0 +1,8 @@
+Artifacts: C:\Users\Administrator\Documents\Codex\2026-10-23\task-3\stage3-local\test\work\probe_native_admission_stale_pose-flo58t14
+Godot import completed.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PASS stale enemy pose discarded before freeze_display_entity
+GEOMETRY LIFECYCLE: 36 checks, 0 failures

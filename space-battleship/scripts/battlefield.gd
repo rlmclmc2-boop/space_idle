@@ -180,6 +180,7 @@ func _ready() -> void:
 	simulation_geometry_authority.bind_game()
 	game.event.connect(on_event)
 	attach_native_display()
+	prepare_capture_battle()
 	battlefield_motion_player_birth=battlefield_motion_clock
 
 func battlefield_motion_counters()->Dictionary:
@@ -275,13 +276,7 @@ func _numeric_launch_origin(shot:Dictionary)->Vector2:
 	return simulation_geometry_authority.visual_muzzle(shot)
 
 func _set_reference_dimensions()->void:
-	var key:=str(game.equipment.selected_ship())
-	if simulation_geometry_authority.prepared:
-		reference_height=float(simulation_geometry_authority.prepared_hulls[key].height)
-	else:
-		var art:=ship_visual_entry(key)
-		assert(float(art.get("static_height",0.0))>0.0)
-		reference_height=float(art.static_height)*SHIP_VISUALS.player_display_multiplier()*float(db.config.get("playerVisualScale"+key,1.0))
+	reference_height=float(_geometry_source().configured_hull(str(game.equipment.selected_ship())).height)
 	stable_center_ready=false
 	reference_offset=Vector2.ZERO
 
@@ -949,42 +944,20 @@ func draw_engine_wake(pos: Vector2) -> void:
 
 
 func turret_muzzle(index: int) -> Vector2:
-	if prototype_enabled and is_instance_valid(ship_view):
-		var point: Vector2 = ship_view.screen_muzzle_for_slot(index)
-		if point!=Vector2.ZERO: return battle_logical_point(point)
 	return super.turret_muzzle(index)
 
-
 func player_mount_center(key: String, index: int) -> Vector2:
-	if prototype_enabled and is_instance_valid(ship_view):
-		for module in ship_view.modules:
-			if int(module.slot)!=index: continue
-			var point: Vector2 = ship_view.camera.unproject_position(module.mount.global_position)
-			return (point-player_render_position()).rotated(PI/2-player_idle_angle())/player_art_scale()
 	return super.player_mount_center(key,index)
-
 
 func player_idle_angle() -> float:
 	return 0.0 if prototype_enabled else super.player_idle_angle()
 
 
 func _stable_player_anchor() -> Vector2:
-	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.player_position
-	var point := super.player_render_position()
-	# The inherited renderer adds perpetual sine bob. Remove it only in this
-	# renderer; real game.player.x movement, if any, remains the input.
-	point-=Vector2(sin(fx_time*TAU/5.7)*float(battle_visual.player_idle_x),sin(fx_time*TAU/4.3)*float(battle_visual.player_idle_y))
-	if reference_height>0:
-		point.y=minf(point.y,BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-reference_height*0.5)
-	return point
-
+	return super.player_render_position()
 
 func player_render_position() -> Vector2:
-	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.player_position
-	if not prototype_enabled:return super.player_render_position()
-	if battle_draw_active:return battle_draw_player_position
-	return stable_center if stable_center_ready else _stable_player_anchor()
-
+	return super.player_render_position()
 
 func draw_battle() -> void:
 	if effects_enabled:
@@ -1210,23 +1183,10 @@ func draw_enemy_hull_and_status(enemy:Dictionary,offset:Vector2,boss_battle:bool
 	if boss_battle and leader:text_at(layout.caption,layout.caption_position,17,BATTLE_CREAM)
 
 func encounter_leader_name(enemy:Dictionary)->String:
-	# Mainline display bindings must not resolve the manual hyperspace registry's IDs.
-	var row:Dictionary=game.db.enemies.get(str(int(enemy.id)),{})
-	var caption:=str(row.get("des","")).strip_edges()
-	if not game.manual_hyperspace.active and not caption.is_empty():
-		caption=UIText.data_text("enemies",str(int(enemy.id)),"des",caption)
-	if not caption.is_empty():return caption
-	if game.group_index>0 and game.group_index<=game.db.levels[game.stage-1].groups.size():
-		var group:Dictionary=game.db.levels[game.stage-1].groups[game.group_index-1]
-		var group_row:Dictionary=game.db.groups.get(str(int(group.id)),{})
-		return str(group_row.get("description","")).strip_edges()
-	return ""
+	return simulation_geometry_authority.encounter_leader_name(enemy)
 
-# Keep base-hull meters centred even near the clip edge. Shorten both ends
-# symmetrically instead of pushing a full-width bar away from its ship.
 func enemy_base_meter_span(pos:Vector2,bar_width:float)->Vector2:
-	var half:=minf(bar_width*0.5,maxf(0.0,minf(pos.x-6.0,BATTLE_VIEW_SIZE.x-6.0-pos.x)))
-	return Vector2(pos.x-half,half*2.0)
+	return simulation_geometry_authority.enemy_base_meter_span(pos,bar_width)
 
 func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,outline:PackedVector2Array)->Dictionary:
 	return simulation_geometry_authority.enemy_status_layout(enemy,pos,width,angle,outline)

@@ -588,11 +588,7 @@ static func capture_preparation(owner,simulation:BattleGame)->Dictionary:
 	# ship commands choose immutable descriptors; they never instantiate/read Nodes.
 	var prepared_hulls:Dictionary={}
 	for key in fleet_pose.manifest.hulls:
-		var art:Dictionary=visual_config.ships[key]
-		assert(float(art.get("static_height",0.0))>0.0,"Hull requires authored static_height")
-		var height:float=float(art.static_height)*SHIP_VISUALS.player_display_multiplier()*float(game.db.config.get("playerVisualScale"+key,1.0))
-		var anchor_y:float=minf(BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y),BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
-		prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
+		prepared_hulls[key]=owner._geometry_source().configured_hull(key)
 	# Compile only the captions used by current enemy/group tables and slot labels.
 	# Numeric entry fitting reads these metrics, never the live Font resource.
 	var status_metrics:Dictionary={}
@@ -602,6 +598,8 @@ static func capture_preparation(owner,simulation:BattleGame)->Dictionary:
 		captions.append(name)
 		captions.append(UIText.data_text("enemies",str(id),"des",name))
 	for row in game.db.groups.values():captions.append(str(row.get("description","")).strip_edges())
+	for row in game.manual_hyperspace.registry.get("enemies",{}).values():captions.append(str(row.get("des","")).strip_edges())
+	for row in game.manual_hyperspace.registry.get("groups",{}).values():captions.append(str(row.get("description","")).strip_edges())
 	for slot in 512:captions.append(UIText.t("battle.enemy_marker",{"slot":"%02d" % (slot+1)}))
 	for caption in captions:
 		if status_metrics.has(caption):continue
@@ -704,6 +702,7 @@ func freeze_display_entity(enemy:Dictionary,current:bool=false)->void:
 		boundary_dead_geometry[uid]={"entity":enemy,"pose":enemy_pose(enemy),"value":row}
 
 func player_render_position()->Vector2:
+	if not prepared:return Vector2(game.player.x,configured_hull(str(game.equipment.selected_ship())).anchor_y)
 	return player_anchor
 func player_idle_angle()->float:return 0.0
 func player_mount_center(_key:String,index:int)->Vector2:
@@ -726,8 +725,9 @@ func geometry_from_descriptor(descriptor:Dictionary,width:float,mounts:Array,rep
 func sync_hull()->void:
 	var key=str(game.equipment.selected_ship())
 	assert(prepared_hulls.has(key),"Hull has no compiled descriptors")
-	var height:float=float(visual_config.ships[key].static_height)*SHIP_VISUALS.player_display_multiplier()*float(db.config.get("playerVisualScale"+key,1.0))
-	var anchor_y:float=minf(BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y),BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
+	var dimensions:=configured_hull(key)
+	var height:float=dimensions.height
+	var anchor_y:float=dimensions.anchor_y
 	var anchor:=Vector2(game.player.x,anchor_y)
 	if key==current_hull and reference_height==height and player_anchor==anchor:return
 	prepared_hulls[key]={"height":height,"anchor_y":anchor_y}
@@ -1032,7 +1032,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		# name and meters as one block, never clamp three rows independently.
 		var name:=encounter_leader_name(enemy)
 		if name.is_empty():name=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
-		var metrics:Dictionary=status_caption_metrics(name,int(enemy.slot))
+		var metrics:Dictionary=status_caption_metrics(name)
 		name=str(metrics.text)
 		var name_size:Vector2=metrics.size17
 		var ascent:float=float(metrics.ascent17)
@@ -1054,7 +1054,7 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 		# Meters use the same free outer-wing space as their captions.
 		left=clampf(pos.x if pos.x>=BATTLE_VIEW_SIZE.x*0.5 else pos.x-bar_width,6,BATTLE_VIEW_SIZE.x-bar_width-6)
 	var caption:=UIText.t("battle.enemy_marker",{"slot":"%02d" % (int(enemy.slot)+1)})
-	var metrics:Dictionary=status_caption_metrics(caption,int(enemy.slot))
+	var metrics:Dictionary=status_caption_metrics(caption)
 	var caption_size:Vector2=metrics.size12
 	var caption_left:=left
 	if outer_wing:
@@ -1063,9 +1063,9 @@ func enemy_status_layout(enemy:Dictionary,pos:Vector2,width:float,angle:float,ou
 	var caption_position:=Vector2(caption_left,maxf(20,top-5))
 	return {"health":Rect2(left,maxf(6,top),bar_width,4),"shield":Rect2(left,maxf(6,top-7),bar_width,4),"caption":caption,"caption_position":caption_position,"caption_bounds":Rect2(caption_position-Vector2(0,float(metrics.ascent12)),Vector2(caption_size.x,float(metrics.ascent12)+float(metrics.descent12)))}
 
-func status_caption_metrics(caption:String,slot:int)->Dictionary:
-	if status_metrics.has(caption):return status_metrics[caption]
-	return status_metrics[UIText.t("battle.enemy_marker",{"slot":"%02d" % (slot+1)})]
+func status_caption_metrics(caption:String)->Dictionary:
+	assert(status_metrics.has(caption),"Caption requires prepared font metrics")
+	return status_metrics[caption]
 
 func status_hull_size(enemy:Dictionary,width:float)->Vector2:
 	var dimensions:=Vector2(width,width*2.0)
@@ -1081,3 +1081,42 @@ func status_hull_size(enemy:Dictionary,width:float)->Vector2:
 		var rotated:=Vector2(opaque.x*c+opaque.y*sn,opaque.x*sn+opaque.y*c)
 		dimensions*=minf(float(available[0])/maxf(rotated.x,.001),float(available[1])/maxf(rotated.y,.001))
 	return dimensions
+
+func validate_explicit_formation() -> Array[String]:
+	var geometry=preload("res://scripts/explicit_formation_geometry.gd")
+	var errors:Array[String]=[]
+	var saved_time:=fx_time
+	var saved_read_model:=battle_read_model_enabled
+	var saved_draw:=battle_draw_active
+	battle_read_model_enabled=false
+	battle_draw_active=false
+	for enemy in game.enemies:enemy_pose(enemy)
+	for sample in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
+		fx_time=saved_time+sample
+		var previous:Array[Dictionary]=[]
+		for enemy in game.enemies:
+			if not enemy.get("explicit_formation",false):continue
+			var centre:=enemy_render_position(enemy)
+			var parts:Array[Dictionary]=geometry.swept_parts(self,enemy,centre)
+			if centre.y>floorf(enemy_frontline_y_limit(enemy)):
+				errors.append("slot %d sample %.2f crosses front line"%[int(enemy.slot),sample])
+			for part in parts:
+				for point in part.polygon:
+					if point.x<0 or point.x>BATTLE_VIEW_SIZE.x or point.y<6.0 or point.y>BATTLE_VIEW_SIZE.y:
+						errors.append("slot %d %s sample %.2f crosses display boundary"%[int(enemy.slot),str(part.kind),sample]);break
+				for other in previous:
+					if geometry.overlap(part.polygon,other.polygon):
+						errors.append("slots %d/%d %s/%s sample %.2f independent-yaw overlap"%[int(enemy.slot),int(other.slot),str(part.kind),str(other.kind),sample])
+			for part in parts:previous.append({"slot":int(enemy.slot),"kind":part.kind,"polygon":part.polygon})
+	fx_time=saved_time
+	battle_read_model_enabled=saved_read_model
+	battle_draw_active=saved_draw
+	return errors
+
+
+func configured_hull(key:String)->Dictionary:
+	var art:Dictionary=visual_config.ships[key]
+	assert(float(art.get("static_height",0.0))>0.0,"Hull requires authored static_height")
+	var height:float=float(art.static_height)*SHIP_VISUALS.player_display_multiplier()*float(db.config.get("playerVisualScale"+key,1.0))
+	var anchor_y:float=minf(BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y),BATTLE_VIEW_SIZE.y-maxf(52.0,float(battle_visual.player_hud_gap))-height*0.5)
+	return {"height":height,"anchor_y":anchor_y}

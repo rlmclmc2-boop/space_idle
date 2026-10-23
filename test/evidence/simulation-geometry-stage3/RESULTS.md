@@ -1,52 +1,29 @@
-# Stage 3 safe partial candidate
+# Stage 3 geometry authority candidate
 
-Base: b2d91c21c1ecfdbd056049edbeb654292abc9434.
+Main base: b2d91c21c1ecfdbd056049edbeb654292abc9434. Continued WIP: 8bd4283009b0832b2d682bdf7037861f113d2826. Parent dot and existing Astra high review remain required; this is not merge approval.
 
-## Implemented
+## Boundary closed
 
-- Extracted 26 identical Main/authority geometry bodies into `scripts/geometry_rules.gd`, preserving existing signatures through thin adapters. Each call supplies the original context; state and dynamic dispatch remain with that context. The component cache still belongs to its caller.
-- Removed the unused authority `beam_style` copy. Main and its presentation consumers retain the existing implementation.
-- Every original duplicate has a direct-consumer row and explicit numerical-context dependency row in [CONSUMERS](CONSUMERS.md).
-- Astra high static review, relayed by parent: 26/26 normalized bodies match both originals; differences are host qualification, local inference spelling and whitespace. No other function body changed. Parent dot review remains pending; this is not a completed dual review.
+- One persistent authority is prepared/bound before formal stepping. Capture startup's former pre-preparation ticks now use the external-time coordinator after binding.
+- configured_hull supplies authored static_height, display multiplier, per-hull scale and HUD-limited anchor for preparation, initial presentation and later hull changes. Player queries no longer consult PNG tail pixels or stale stable_center when a slice is absent.
+- Main enemy position, pose, width, frontline, appearance, component and recognition queries consume the published view or authority. Old scene geometry fallback bodies and redundant scene layout sync calls are removed. Launch/mount queries use the authority fleet pose; render-only charge effects still read the rendered ship for drawing.
+- Slice attachment borrows the authority; detachment does not restore scene providers or return poses. Numerical events belong to the authority; display state is copied.
+- Caption preparation includes raw/translated ordinary names, ordinary groups, independent hyperspace enemies/groups and existing slot labels. Missing captions assert instead of substituting slot dimensions. Font fitting, 17 px leader metrics, 12 px marker metrics and status rectangle equations preserve the preceding layout. Leader geometry uses the encounter leader flag before display synchronization.
+- Explicit formation validation executes the existing seven times against the authority, bypassing published views and active read-model/draw caches, then restores time/flags. Frontline, screen-boundary and independent-yaw overlap checks and the existing reject/retreat caller remain.
 
 ## Verification
 
-Engine: D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe. All runs used `test/run.py` isolated project/user directories.
+Engine: D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe. Existing test/run.py isolated project/user directories; --headless --timeout 180.
 
 | Existing entry | Result | Evidence |
 |---|---|---|
-| test_battle_coordinate_inverse.gd --headless | 10,015 checks, 0 failures; import had no parse errors | coordinate.txt |
-| test_player_mount_seating.gd --headless | 90 samples, 0 failures; maximum error 0.00033880010596 | seating.txt |
-| test_weapon_fx.gd | Blocked by obsolete fixture before attack: line 23 reads removed game.profile.loadout. Run stopped; assertions unchanged | weapon-fx-blocked.txt |
-| git diff --check | Passed | command output |
+| probe_native_admission_stale_pose.gd | 36 checks, 0 failures | [lifecycle.txt](lifecycle.txt) |
+| test_battle_coordinate_inverse.gd | 10,015 checks, 0 failures | [coordinate-final.txt](coordinate-final.txt) |
+| test_player_mount_seating.gd | 90 samples, 0 failures; max error 0.00033880010596 | [seating-final.txt](seating-final.txt) |
+| git diff --check | Passed | final command |
 
-The certificate-store diagnostic is environmental and also appeared in successful runs. No player save, asset/config table, native binary or original checkout was changed. The seating check covers imported placement, not complete simulation ownership. Full weapon/drone/switch acceptance is not claimed.
+Lifecycle coverage: stale pose discard; capture initialization; unchanged authority/providers across ship round trip and display off/on; static_height equality with display; detached anchors; actual laser/missile/cannon/longLaser launch/beam and damage events; real drone launch; native admission/handoff; font metrics for both registries; live-invalid formation rejection despite an older published view. Drone fixture uses save_data/install_snapshot and the existing hyperspace runtime equipment command.
 
-## Pending behavior choice and unimplemented closure
+The first resumed probe failed on obsolete direct mutation of read-only inventory and nonexistent hyperspace.set_equipped; [failure evidence](lifecycle-resume-before.txt) is retained. Fixture corrected without weakening gameplay assertions. Earlier checkpoint/extraction evidence is historical, not final acceptance.
 
-No persistent-authority integration has been applied. All following old paths remain:
-
-- Battlefield `create_battle_game` still installs scene target/launch/drone/rail providers.
-- Legacy `before_logical_game_tick` still queries/updates ship_view and hyperspace_visual.
-- battle_slice_runtime install still captures a new authority and rebinds providers; close still restores providers and transfers poses to the scene.
-- Slice/native compact-fire and presentation event callbacks still update numerical turret state.
-- Initial descriptors are still captured during native admission rather than once before the first formal logical step.
-
-The correct future install point is after battlefield `_ready` finishes initial ship_view pose (baseline line 175), not `create_battle_game`. Preparation must preserve orbit_elapsed, elapsed, module/carrier/drone transforms as well as asset descriptors.
-
-Material existing difference requiring user selection: battlefield `_set_reference_dimensions` baseline 309-317 honors authored static_height; authority.prepare baseline 590-614 compiles older PNG/formation heights for future sync_hull. First capture uses the scene height, but later native hull changes use prepared_hulls. Consolidating this changes one old path unless a behavior baseline is selected. Parent has asked the user; no answer is assumed.
-
-Anchor distinction: ordinary legacy hull changes reset stable_center_ready and snap, so they must not be described as universally lerped. Same-hull anchor-input changes can use the display-frame lerp while authority only writes player_anchor during prepare/sync_hull. Formal reachable actions must be measured before choosing behavior; no speculative compatibility callback was added.
-
-Two syntactic chain differences were examined, not changed: authority excludes chain_hop beams and does not repeat Main's chain_hop recoil exclusion. Current game.launch_enhancement_chain constructs a non-beam, mountless carrier and emits enhancement_chain, not fire/beam_started; beam chains apply link damage directly. Therefore these differences were not shown reachable through current public production construction.
-
-Existing explicit-formation risk reported by architecture audit: entry-distance calculation can call explicit_formation_geometry.parts -> enemy_status_layout, absent on authority. This predates the extraction and remains a future lifecycle-integration verification item.
-
-## Existing tests disposition
-
-- Retain coordinate inverse and player mount seating; both ran unchanged.
-- weapon_fx needs separate fixture migration to the current equipment owner; no gameplay assertion changed here.
-- native_geometry_scale is not an accepted current switching test: its contract reads removed battle_slice_runtime.remainder. Do not repair merely to obtain a green result.
-- enemy_runtime_art and enemy_base_eight_battle still construct profile.loadout rather than current equipment-owned state; not run as proof of this candidate.
-- No test project or new regression suite was added. Complete weapon/drone/legacy-native switching coverage remains required when persistent ownership is implemented.
-
+Successful runs emitted the pre-existing Windows certificate-store diagnostic. No parser/script error or assertion failure appeared in successful logs. These finite checks do not claim visual-quality/performance acceptance. No personal saves, original dirty checkout, assets, tables, native binary or Library changed. No new suite or audit layer.

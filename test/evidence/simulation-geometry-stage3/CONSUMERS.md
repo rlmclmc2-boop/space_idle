@@ -1,5 +1,7 @@
 # Stage 3 duplicate geometry consumer audit
 
+Historical extraction map from 87de88cb. The final candidate removes geometry_rules(host) and scene fallback bodies; adapters use the persistent authority or its published view. See [RESULTS](RESULTS.md) for current ownership and validation. Context dependencies and pending-boundary notes below describe the earlier extraction only.
+
 Base: b2d91c21c1ecfdbd056049edbeb654292abc9434.
 
 | Function | Direct consumers | Disposition |

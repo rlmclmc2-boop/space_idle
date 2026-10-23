@@ -1,0 +1,23 @@
+Artifacts: C:\Users\Administrator\Documents\Codex\2026-10-23\task-3\stage3-local\test\work\probe_native_admission_stale_pose-u_ewg65l
+Godot import completed.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PASS stale enemy pose discarded before freeze_display_entity
+ERROR: Dictionary is in read-only state.
+   at: set (core/variant/dictionary.cpp:203)
+   GDScript backtrace (most recent call first):
+       [0] insert (res://scripts/drone_inventory.gd:124)
+       [1] run (C:/Users/Administrator/Documents/Codex/2026-10-23/task-3/stage3-local/test/work/probe_native_admission_stale_pose-u_ewg65l/test/probe_native_admission_stale_pose.gd:82)
+SCRIPT ERROR: Invalid assignment on read-only value (on base: 'Dictionary').
+   at: insert (res://scripts/drone_inventory.gd:124)
+   GDScript backtrace (most recent call first):
+       [0] insert (res://scripts/drone_inventory.gd:124)
+       [1] run (C:/Users/Administrator/Documents/Codex/2026-10-23/task-3/stage3-local/test/work/probe_native_admission_stale_pose-u_ewg65l/test/probe_native_admission_stale_pose.gd:82)
+SCRIPT ERROR: Invalid call. Nonexistent function 'set_equipped' in base 'RefCounted (hyperspace_system.gd)'.
+   at: run (C:/Users/Administrator/Documents/Codex/2026-10-23/task-3/stage3-local/test/work/probe_native_admission_stale_pose-u_ewg65l/test/probe_native_admission_stale_pose.gd:83)
+   GDScript backtrace (most recent call first):
+       [0] run (C:/Users/Administrator/Documents/Codex/2026-10-23/task-3/stage3-local/test/work/probe_native_admission_stale_pose-u_ewg65l/test/probe_native_admission_stale_pose.gd:83)
+
+TIMEOUT: test exceeded 180 seconds

@@ -371,22 +371,6 @@ func _ready() -> void:
 		var backup: String=get_tree().get_meta("save_import_backup")
 		get_tree().remove_meta("save_import_backup")
 		call_deferred("save_transfer_message",UIText.t("save.import_success",{"backup":backup}))
-	if automation_args.has("--capture"):
-		game.start(1, false)
-		game.distance = 99.8
-		game.tick(0.02)
-		game.tick(0.1)
-		if automation_args.has("--capture-unlock"):
-			game.clear_level()
-		if automation_args.has("--capture-all"):
-			game.profile.cleared = [1,2]
-			game.rebuild_unlocks()
-			game.start(3, false)
-			var capture_economy := game.economy.save_data()
-			capture_economy.resources={"1":5000.0,"2":100.0}
-			capture_economy.jewelFragments=0.0;capture_economy.chronoParticles=0.0
-			game.economy.install_snapshot(capture_economy)
-		build_ui()
 	get_window().min_size = Vector2i(960,540)
 	if game.save_enabled:
 		if not from_save_import:call_deferred("show_chrono_login_report")
@@ -471,7 +455,6 @@ func _notification(what: int) -> void:
 		if is_instance_valid(chrono_panel):chrono_panel.refresh()
 
 func _process(delta: float) -> void:
-	if fixed_enemy_layout and battle_slice_runtime==null:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	advance_unlock_notice()
 	var tech_now_ms := Time.get_ticks_msec()
 	if tech_now_ms-tech_ui_last_refresh_ms >= 250 and is_instance_valid(hightech_page) and hightech_page.is_visible_in_tree():
@@ -711,7 +694,6 @@ func invalidate_equipment_projections() -> void:
 
 func on_event(kind: String, info: Dictionary) -> void:
 	if kind in ["upgrade","upgrades_completed","module_changed","ship_changed","progress_loaded","configuration_changed"]:refresh_evolution_visuals()
-	if fixed_enemy_layout and battle_slice_runtime==null and kind in ["state","encounter","ship_changed","configuration_changed","progress_loaded"]:preload("res://scripts/enemy_fixed_layout.gd").sync(self)
 	# State/refit/encounter events may change geometry within a logical step.
 	enemy_entry_distance_time = -INF
 	match kind:
@@ -1288,41 +1270,20 @@ func compose_weapon_components(ship_key: String, entries: Array, faction: String
 	return _geometry_source().compose_weapon_components(ship_key,entries,faction)
 
 func enemy_ship_key(enemy:Dictionary)->String:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_ship_key(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return str(simulation_geometry_view.appearance(enemy).ship_key)
-	return enemy_visual_identity.resolve(enemy,visual_config)
+	return _geometry_source().enemy_ship_key(enemy)
 
 func enemy_attack_deck_visible(enemy:Dictionary)->bool:
 	# New hulls carry defence identity in their material; actual weapons remain.
 	return not enemy_ship_key(enemy).begins_with("enemy_opening_")
 
 func enemy_weapon_components(enemy: Dictionary) -> Array:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_weapon_components(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).components
-	var pose := enemy_pose(enemy)
-	var ship_key := enemy_ship_key(enemy)
-	var entries: Array = []
-	var signature := ship_key+":"+str(db.get_instance_id())
-	for equipment in enemy.equipment:
-		var key := str(equipment.get("name",""))
-		entries.append({"key":key})
-		signature += "|"+key
-	if str(pose.get("components_signature",""))!=signature:
-		pose.components_signature=signature
-		pose.components=compose_weapon_components(ship_key,entries,"enemy")
-	return pose.components
+	return _geometry_source().enemy_weapon_components(enemy)
 
 func enemy_attack_types(enemy: Dictionary) -> Array:
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.appearance(enemy).types
-	var pose := enemy_pose(enemy)
-	enemy_weapon_components(enemy)
-	if pose.get("attack_signature","")!=pose.components_signature:
-		pose.attack_signature=pose.components_signature
-		pose.attack_types=[]
-		for entry in enemy.equipment:
-			var damage_type:=int(db.enemy_weapon(str(entry.name)).get("dmgtype",0))
-			if damage_type in [1,2] and not pose.attack_types.has(damage_type):pose.attack_types.append(damage_type)
-	return pose.attack_types
+	return _geometry_source().enemy_appearance(enemy).types
 
 func turret_pose(index: int) -> Dictionary:
 	if turret_ship!=str(game.equipment.selected_ship()):
@@ -1334,16 +1295,7 @@ func turret_pose(index: int) -> Dictionary:
 	return turret_visuals[index]
 
 func turret_muzzle(index: int) -> Vector2:
-	var key := str(game.equipment.selected_ship())
-	var scale_value := player_art_scale()
-	var component = player_component_for_slot(index)
-	var owner: int = component.owner_slot if component!=null else index
-	var profile: Dictionary = component.profile if component!=null else weapon_visual_profile(str(game.slot_entry("weapons",index).get("key","")))
-	var muzzle: Array = profile.get("muzzle",[[0.25,0]])
-	var class_scale := float({"small":0.72,"medium":0.9,"large":1.1}.get(str(component.hardpoint.get("visual_size_class","medium")),0.9)) if component!=null else 0.9
-	var reach := SHIP_VISUALS.module_width(key)*class_scale*float(muzzle[0][0])
-	var local := player_mount_center(key,index)+Vector2(reach,0).rotated(weapon_visual_angle(owner))
-	return battle_logical_point(player_render_position()+local.rotated(-PI/2+player_idle_angle())*scale_value)
+	return _geometry_source().turret_muzzle(index)
 
 func player_component_for_slot(index: int):
 	return _geometry_source().player_component_for_slot(index)
@@ -1363,28 +1315,13 @@ func shot_mount(shot: Dictionary) -> int:
 	return closest
 
 func enemy_render_angle(enemy:Dictionary)->float:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_angle(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).angle)
-	var pose:=enemy_pose(enemy)
-	return float(pose.rotation)
+	return _geometry_source().enemy_render_angle(enemy)
 
-# Supplied positions stay within one synchronous solve; no value survives it.
 func enemy_component_pose(enemy:Dictionary,component,render_position:=Vector2.INF)->Dictionary:
-	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).components[int(component.owner_slot)]
-	var point:Dictionary=component.hardpoint
-	var position:Vector2=enemy_render_position(enemy) if render_position==Vector2.INF else render_position
-	var width:=enemy_render_width_at_y(enemy,position.y)
-	var hull_angle:=enemy_render_angle(enemy)
-	var normalized:Array=point.pos
-	var origin:=Vector2(float(normalized[0])*width,float(normalized[1])*width*2.0).rotated(PI+hull_angle)
-	var class_scale:=float({"small":0.7,"medium":0.9,"large":1.1}.get(str(point.get("visual_size_class","small")),0.7))
-	var module_width:=width*0.42*class_scale
-	var angle:=PI/2+hull_angle+enemy_weapon_angle(enemy,component.owner_slot,position)+deg_to_rad(float(point.get("base_rotation",0)))
-	var muzzle:Array=component.profile.get("muzzle",[[0.22,0]])
-	var port:=Vector2(float(muzzle[0][0]),float(muzzle[0][1]))*module_width
-	return {"origin":origin,"angle":angle,"width":module_width,"port":port,"muzzle":origin+port.rotated(angle)}
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).components[int(component.owner_slot)].duplicate(true)
+	return _geometry_source().enemy_component_pose(enemy,component,render_position).duplicate(true)
 
-# Display-only pose: equipment, component profiles and simulation ports stay intact.
 func enemy_weapon_art_pose(enemy:Dictionary,component)->Dictionary:
 	return enemy_rotating_art.pose(self,enemy,component)
 
@@ -1522,21 +1459,11 @@ func player_contact_screen_position() -> Vector2:
 	return player_render_position()
 
 func player_render_position() -> Vector2:
-	if battle_draw_active:return battle_draw_player_position
-	var half_height := SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*player_art_scale()*0.5
-	var reference_half_height := SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)*0.18*1.15*0.5
-	var hud_top := 1132.0-BATTLE_ORIGIN.y
-	var y := BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)+maxf(0.0,reference_half_height-half_height)
-	y = minf(y,hud_top-float(battle_visual.player_hud_gap)-player_visible_tail()-absf(float(battle_visual.player_idle_y)))
-	return Vector2(game.player.x,y)+Vector2(sin(fx_time*TAU/5.7)*float(battle_visual.player_idle_x),sin(fx_time*TAU/4.3)*float(battle_visual.player_idle_y))
+	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.player_position
+	return _geometry_source().player_render_position()
 
 func player_mount_center(key: String, index: int) -> Vector2:
-	# Convert normalized hull coordinates to the original x-forward mount frame.
-	var point := hardpoint_for_slot(key,index)
-	if point.is_empty():return Vector2.ZERO
-	var normalized: Array = point.pos
-	var core := SHIP_ART_CANVAS*float(battle_visual.player_core_scale)
-	return Vector2(-float(normalized[1])*core.y,float(normalized[0])*core.x)
+	return _geometry_source().player_mount_center(key,index)
 
 func enemy_config_visual_scale(size: int) -> float:
 	return _geometry_source().enemy_config_visual_scale(size)
@@ -1545,36 +1472,8 @@ func enemy_formation_anchor(slot: int, large: bool, size: int, columns := 10) ->
 	return _geometry_source().enemy_formation_anchor(slot,large,size,columns)
 
 func enemy_pose(enemy: Dictionary) -> Dictionary:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_pose(enemy).duplicate(true)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.pose(enemy)
-	var slot := int(enemy.slot)
-	if enemy_poses.has(slot) and is_same(enemy_poses[slot].entity,enemy):return enemy_poses[slot]
-	# Local deterministic generator never consumes the combat RNG stream.
-	var rng := RandomNumberGenerator.new()
-	rng.seed = int(enemy.get("uid",slot))*7919+slot*104729
-	var phase := rng.randf()*TAU
-	var offset := Vector2(0,rng.randf_range(-battle_visual.enemy_offset_y,battle_visual.enemy_offset_y))
-	var large := game.is_final_encounter() or game.enemies.any(func(item):return int(item.size)>=4)
-	var columns:=int(enemy.get("formation_columns",10))
-	if game.enemies.size()>columns and not enemy.get("explicit_formation",false):columns=5
-	var anchor := enemy_formation_anchor(slot,large,int(enemy.size),columns)
-	anchor.x += float(enemy.x)-BattleGame.enemy_slot_position(slot,columns).x
-	if enemy.get("size_formation",false):
-		anchor = battle_point(Vector2(enemy.x,enemy.y))
-		offset = Vector2.ZERO
-	# Preserve left-to-right slot order. Hull overlap is allowed for this line.
-	var target := anchor+offset
-	if not fixed_enemy_layout and columns==5 and game.enemies.size()>=10 and not enemy.get("explicit_formation",false):
-		var rows:=ceili(float(game.enemies.size())/columns)
-		var top:=maxf(100.0,(78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*enemy_config_visual_scale(int(enemy.size))+28.0)
-		target.y=lerpf(top,enemy_frontline_y_limit(enemy),float(slot/columns)/maxf(1.0,rows-1))+offset.y
-	if not enemy.get("explicit_formation",false):target.x = clampf(target.x,54.0,BATTLE_VIEW_SIZE.x-54.0)
-	var pose := {"entity":enemy,"logical_position":Vector2(enemy.x,enemy.y),"target":target,"phase":phase,"born":fx_time,
-		"variance":rng.randf_range(battle_visual.enemy_scale_variance.x,battle_visual.enemy_scale_variance.y),
-		"rotation":deg_to_rad(rng.randf_range(-battle_visual.enemy_rotation_variance,battle_visual.enemy_rotation_variance)),
-		"duration":rng.randf_range(0.65,1.15),"entry_x":rng.randf_range(-2,2)}
-	enemy_poses[slot] = pose
-	return pose
+	return _geometry_source().enemy_pose(enemy).duplicate(true)
 
 func enemy_depth(enemy: Dictionary) -> float:
 	return clampf((enemy_render_position(enemy).y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
@@ -1613,120 +1512,26 @@ func enemy_display_protection_scale(enemy:Dictionary,packet:Dictionary,angle:flo
 	return minf(1.0,enemy_display_fit(half*2.0,angle,enemy_display_size(enemy)))
 
 func enemy_render_width(enemy: Dictionary) -> float:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_width(enemy)
-	if fixed_enemy_layout and simulation_geometry_view==null:
-		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).width)
-	return enemy_render_width_at_y(enemy,enemy_render_position(enemy).y)
+	return _geometry_source().enemy_render_width(enemy)
 
 func enemy_render_width_at_y(enemy: Dictionary, y:float) -> float:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_width_at_y(enemy,y)
-	if fixed_enemy_layout and simulation_geometry_view==null:
-		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).width)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.width_at(enemy,y)
-	var tier := 1.85 if game.is_final_encounter() else 1.5 if int(enemy.size)>=4 else 1.0+float(int(enemy.size)-1)*0.08
-	var width_limit := 78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0
-	var base := minf(width_limit/(float(battle_visual.enemy_depth_scale_max)*float(battle_visual.enemy_scale_variance.y)),SHIP_VISUALS.CANVAS.y*1.2*player_base_art_scale()*float(battle_visual.enemy_base_scale)*tier)
-	var depth := clampf((y-90.0)/maxf(1.0,enemy_frontline_y_limit(enemy)-90.0),0,1)
-	var width := base*enemy_config_visual_scale(int(enemy.size))*lerpf(battle_visual.enemy_depth_scale_min,battle_visual.enemy_depth_scale_max,depth)*float(enemy_pose(enemy).variance)
-	# Explicit formations reserve fixed screen-pixel mount/protection margins.
-	# On compact windows, reduce the drawn hull as well as its mount envelope;
-	# never validate with a larger fake screen scale or waive real collisions.
-	if enemy.get("explicit_formation",false) and int(enemy.size)>=4:
-		width*=minf(1.0,enemy_recognition_screen_scale()/0.6)
-	# Full five-column fleets reserve space for hover and protection outlines.
-	return (minf(width,74.0) if int(enemy.get("formation_count",0))>=4 else width)*float(enemy.get("hull_scale",1.0))
+	return _geometry_source().enemy_render_width_at_y(enemy,y)
 
 func enemy_display_top_clearance(enemy:Dictionary,y:float)->float:
-	var pose:=enemy_pose(enemy)
-	var width:=enemy_render_width_at_y(enemy,y)
-	var scale_value:=enemy_recognition_screen_scale()
-	var key:=Vector2(ceili(width*scale_value/2.0),scale_value)
-	if not pose.has("top_geometries"):pose.top_geometries={}
-	# The target and top-bound solver sample different width buckets; keep each
-	# cached separately so stationary frames never rebuild alternating envelopes.
-	if not pose.top_geometries.has(key):pose.top_geometries[key]={}
-	var packet:Dictionary=enemy_recognition.geometry(ship_geometry_texture(enemy_ship_key(enemy)),width,enemy_recognition.descriptors(enemy_weapon_components(enemy)),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,pose.top_geometries[key],scale_value,int(enemy.size)>=4)
-	var outlines:Array=[packet.inner]
-	if float(enemy.get("max_shield",0))>0:
-		outlines.append(packet.outer)
-		if int(enemy.get("shieldType",0))==1 and int(enemy.size)>=4:outlines.append(packet.front)
-	var top:=0.0
-	for outline in outlines:
-		for point in outline:top=minf(top,Vector2(point).rotated(PI+enemy_render_angle(enemy)).y)
-	# Two 4px meters spaced by 7 logical px; boss captions also need their ascent.
-	var status_space:=28.0 if game.is_boss_encounter() else 16.0
-	return -top+status_space+6.0+4.0/enemy_recognition_screen_scale()
+	return _geometry_source().enemy_display_top_clearance(enemy,y)
 
 func enemy_safe_entry_distance()->float:
-	# All ships share this fleet-wide limit. Reuse it only inside one synchronous
-	# process/draw batch at the same animation time; standalone queries stay live.
-	if enemy_entry_batch_active and enemy_entry_distance_time==fx_time:
-		return enemy_entry_distance_value
-	var distance:=float(battle_visual.enemy_entry_distance)
-	for enemy in game.enemies:
-		var pose:=enemy_pose(enemy)
-		var target:Vector2=pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
-		var hover_margin:=float(battle_visual.enemy_idle_y)*(0.25 if enemy.get("size_formation",false) else 1.0)
-		distance=minf(distance,maxf(0.0,target.y-enemy_display_top_clearance(enemy,target.y)-hover_margin))
-	if enemy_entry_batch_active:
-		enemy_entry_distance_time=fx_time
-		enemy_entry_distance_value=distance
-	return distance
+	return _geometry_source().enemy_safe_entry_distance()
 
 func enemy_frontline_y_limit(enemy: Dictionary) -> float:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_frontline_y_limit(enemy)
-	if fixed_enemy_layout and simulation_geometry_view==null:
-		return float(preload("res://scripts/enemy_fixed_layout.gd").ensure(self,enemy,enemy_pose(enemy)).frontline)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return float(simulation_geometry_view.row(enemy).frontline)
-	# Measure empty firing space between hull envelopes, not entity centres.
-	# Conservative rotation bounds avoid a dependency on enemy_depth/width.
-	var player_half_height := (SHIP_ART_CANVAS.y*float(battle_visual.player_core_scale)/2.0+SHIP_ART_CANVAS.x*float(battle_visual.player_core_scale)/2.0*absf(sin(deg_to_rad(float(battle_visual.player_idle_rotation)))))*player_art_scale()
-	var player_front := BATTLE_VIEW_SIZE.y*float(battle_visual.player_ship_y)-absf(float(battle_visual.player_idle_y))-player_half_height
-	var enemy_half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06*enemy_config_visual_scale(int(enemy.size))
-	# The legacy cap fits one row. Fifteen-slot groups need the third row;
-	# retain the same measured clearance from the player hull.
-	var max_y := maxf(float(battle_visual.enemy_max_y),0.52) if int(enemy.get("formation_columns",10))==5 else float(battle_visual.enemy_max_y)
-	# Explicit coordinates deliberately reserve the same authored battlefield
-	# depth budget; this does not claim or require five columns.
-	if enemy.get("explicit_formation",false):max_y=maxf(float(battle_visual.enemy_max_y),0.52)
-	var min_gap:=float(battle_visual.enemy_player_min_gap)
-	if enemy.get("explicit_formation",false):
-		min_gap=clampf(float(db.config.get("explicitEnemyPlayerMinGap",min_gap)),0.0,1.0)
-	var clearance:=player_front-BATTLE_VIEW_SIZE.y*min_gap-enemy_half_height
-	if game.enemies.size()>=10 and not enemy.get("explicit_formation",false):return clearance
-	return minf(BATTLE_VIEW_SIZE.y*max_y,clearance)
+	return _geometry_source().enemy_frontline_y_limit(enemy)
 
 func enemy_render_position(enemy: Dictionary) -> Vector2:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_render_position(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).position
-	var cached: Dictionary = battle_draw_enemy_positions.get(int(enemy.slot),{}) if battle_draw_active else {}
-	if not cached.is_empty() and is_same(cached.entity,enemy):return cached.position
-	var pose := enemy_pose(enemy)
-	if fixed_enemy_layout:return preload("res://scripts/enemy_fixed_layout.gd").position(self,enemy,pose)
-	var age := maxf(0,fx_time-float(pose.born))
-	var enter := 1.0-pow(1.0-clampf(age/float(pose.duration),0,1),3)
-	var target: Vector2 = pose.target+Vector2(enemy.x,enemy.y)-pose.logical_position
-	if not enemy.get("explicit_formation",false):target.x=clampf(target.x,54,BATTLE_VIEW_SIZE.x-54)
-	# Shared approach distance keeps each column separated even during entry.
-	# Once entry is complete its distance contributes exactly zero. Avoid the
-	# fleet-wide clearance calculation without caching moving entity state.
-	var entry_distance := enemy_safe_entry_distance() if enter<1.0 else 0.0
-	var position := target+Vector2(float(pose.entry_x)*(1.0-enter),-entry_distance*(1.0-enter))
-	var half_height := (78.0 if game.is_final_encounter() else 66.0 if int(enemy.size)>=4 else 54.0)*1.06
-	# Clamp the final animated position, so hover, entry and ship changes cannot
-	# cross the front line. Logical entity coordinates remain untouched.
-	var minimum_y:=maxf(half_height+8.0,enemy_display_top_clearance(enemy,maxf(position.y,target.y)))
-	# Width changes slightly with depth; solve the local top bound without moving
-	# other rows or altering the existing player clearance cap.
-	for iteration in 3:
-		var next_minimum:=maxf(minimum_y,enemy_display_top_clearance(enemy,minimum_y))
-		if next_minimum==minimum_y:break
-		minimum_y=next_minimum
-	if not enemy.get("explicit_formation",false):position.y=clampf(position.y,minimum_y,floorf(enemy_frontline_y_limit(enemy)))
-	else:position.y=minf(position.y,floorf(enemy_frontline_y_limit(enemy)))
-	if battle_draw_active:battle_draw_enemy_positions[int(enemy.slot)]={"entity":enemy,"position":position}
-	return position
+	return _geometry_source().enemy_render_position(enemy)
 
 func entity_render_position(entity: Dictionary) -> Vector2:
 	return _geometry_source().entity_render_position(entity)
@@ -1735,29 +1540,7 @@ func shot_target_screen_position(shot: Dictionary) -> Vector2:
 	return player_contact_screen_position() if bool(shot.hostile) and is_same(shot.target,game.player) else entity_render_position(shot.target)
 
 func validate_explicit_formation() -> Array[String]:
-	var geometry=preload("res://scripts/explicit_formation_geometry.gd")
-	var errors:Array[String]=[]
-	var saved_time:=fx_time
-	for enemy in game.enemies:enemy_pose(enemy)
-	for sample in [0.0,0.1,0.25,0.5,1.0,5.0,8.0]:
-		fx_time=saved_time+sample
-		var previous:Array[Dictionary]=[]
-		for enemy in game.enemies:
-			if not enemy.get("explicit_formation",false):continue
-			var centre:=enemy_render_position(enemy)
-			var parts:Array[Dictionary]=geometry.swept_parts(self,enemy,centre)
-			if centre.y>floorf(enemy_frontline_y_limit(enemy)):
-				errors.append("slot %d sample %.2f crosses front line"%[int(enemy.slot),sample])
-			for part in parts:
-				for point in part.polygon:
-					if point.x<0 or point.x>BATTLE_VIEW_SIZE.x or point.y<6.0 or point.y>BATTLE_VIEW_SIZE.y:
-						errors.append("slot %d %s sample %.2f crosses display boundary"%[int(enemy.slot),str(part.kind),sample]);break
-				for other in previous:
-					if geometry.overlap(part.polygon,other.polygon):
-						errors.append("slots %d/%d %s/%s sample %.2f independent-yaw overlap"%[int(enemy.slot),int(other.slot),str(part.kind),str(other.kind),sample])
-			for part in parts:previous.append({"slot":int(enemy.slot),"kind":part.kind,"polygon":part.polygon})
-	fx_time=saved_time
-	return errors
+	return simulation_geometry_authority.validate_explicit_formation()
 
 func visual_effect_point(point: Vector2) -> Vector2:
 	# Event-time snapshot in the existing FX coordinate space; no entity mutation.
@@ -3479,11 +3262,8 @@ func enemy_recognition_screen_scale() -> float:
 	return maxf(0.1,absf((get_viewport().get_stretch_transform()*battle_layer.get_global_transform_with_canvas()).get_scale().x)) if is_instance_valid(battle_layer) else 1.0
 
 func enemy_recognition_geometry(enemy: Dictionary) -> Dictionary:
-	if simulation_geometry_authority.prepared and simulation_geometry_view==null:return simulation_geometry_authority.enemy_recognition_geometry(enemy)
 	if simulation_geometry_view!=null and simulation_geometry_view.ready:return simulation_geometry_view.row(enemy).recognition
-	var texture := ship_geometry_texture(enemy_ship_key(enemy))
-	var components := enemy_weapon_components(enemy)
-	return enemy_recognition.geometry(texture,enemy_render_width(enemy),enemy_recognition.descriptors(components),float(enemy.get("max_shield",0))>0 and float(enemy.get("shieldRecovery",0))>0,enemy_pose(enemy),enemy_recognition_screen_scale(),int(enemy.size)>=4)
+	return _geometry_source().enemy_recognition_geometry(enemy)
 
 func draw_enemy_weapon_components(enemy: Dictionary, pos: Vector2, _hull_angle: float, _hull_width: float, under_hull: bool) -> void:
 	for component in enemy_weapon_components(enemy):
@@ -3990,3 +3770,22 @@ func _geometry_source():
 		simulation_geometry_authority.visual_config=visual_config
 		simulation_geometry_authority.battle_visual=battle_visual
 	return simulation_geometry_authority
+
+func prepare_capture_battle()->void:
+	assert(simulation_geometry_authority.prepared)
+	if automation_args.has("--capture"):
+		game.start(1, false)
+		game.distance = 99.8
+		game.consume_external_time(0.02,self)
+		game.consume_external_time(0.1,self)
+		if automation_args.has("--capture-unlock"):
+			game.clear_level()
+		if automation_args.has("--capture-all"):
+			game.profile.cleared = [1,2]
+			game.rebuild_unlocks()
+			game.start(3, false)
+			var capture_economy := game.economy.save_data()
+			capture_economy.resources={"1":5000.0,"2":100.0}
+			capture_economy.jewelFragments=0.0;capture_economy.chronoParticles=0.0
+			game.economy.install_snapshot(capture_economy)
+		build_ui()
