@@ -40,8 +40,16 @@ func display_total(id:String,at:float)->Variant:
 		if sample.id==id and float(sample.time)>at-60.0 and float(sample.time)<=at:total=N.add(total,sample.amount)
 	return total
 
-# Explicitly preserve today's peak qualification; this is not a gameplay fix.
-func peak_total(id:String,wall_now:float)->Variant:return display_total(id,wall_now)
+# Derived receipts (furnace/Galaxy) cannot feed the production income peak.
+# Keep the peak's existing wall clock and credited-amount basis.
+func peak_eligible(source:String)->bool:return source=="drop"
+
+func peak_total(id:String,wall_now:float)->Variant:
+	var total:Variant=0.0
+	for sample in _samples:
+		if not peak_eligible(str(sample.get("origin","unknown"))) or str(sample.id)!=id:continue
+		if float(sample.time)>wall_now-60.0 and float(sample.time)<=wall_now:total=N.add(total,sample.amount)
+	return total
 
 func research_total(id:String,at:float)->Variant:
 	var total:Variant=0.0

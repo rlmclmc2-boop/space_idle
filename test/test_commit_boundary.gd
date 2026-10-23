@@ -206,7 +206,9 @@ func _initialize()->void:
 	check(paid_notices==[[["1"],true,true,1]] and nested_time==[true] and not hot.commit_effects.active,"due resource notice delivers one committed fact before immutable UI notification and blocks external time")
 	cold_growth_commands()
 	income_receipts()
+	derived_income_peak()
 	shared_income_failure()
+	combat_income_failure()
 	partial_domain_failure()
 	partial_region_failure()
 	print("COMMIT BOUNDARY: ",checks," checks ",failures," failures")
@@ -269,6 +271,20 @@ func income_receipts()->void:
 	economy.credit_fragments(0.0001)
 	check(economy.balance("jewel")==N.add(large,0.0001),"large-balance small credit follows shared big-number discard without compensation")
 
+func derived_income_peak()->void:
+	var g:=OrderedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var raw:=g.research.save_data();raw.aiTechLevels.unification=1
+	g.research.install_snapshot(raw,g.db.data.ai_tech_tree)
+	g.refuse_income=true
+	var revision:=g.research.revision
+	var result:=g.commit_income_receipt("1",6000.0,"furnace",[])
+	check(result.status=="committed" and g.research.revision==revision,"furnace receipt credits without preparing a combat peak or requiring native handoff")
+	check(g.income_history.display_total("1",g.economy_time())==6000.0 and g.income_history.peak_total("1",g.economy_time())==0.0,"derived income remains displayed but is excluded from peak history")
+	g.refuse_income=false
+	result=g.commit_income_receipt("1",120.0,"drop",[])
+	check(result.status=="committed" and g.research.save_data().aiIncomePeak["1"]==N.divide(120.0,60.0),"next ordinary receipt peak excludes earlier furnace income and includes its pending amount once")
+
 func shared_income_failure()->void:
 	for invalidate in [false,true]:
 		var g:=OrderedGame.new(ShipDatabase.new(),false)
@@ -293,6 +309,29 @@ func shared_income_failure()->void:
 			check(g.step_progress.frozen and g.drops.has(drop) and g.income_history.size()==0,"changed blocked context freezes without replay or stale credit")
 		else:
 			check(not g.step_progress.active and g.production_time()==clock and drop.age==age and g.income_history.size()==1 and not g.drops.has(drop),"retry completes only the retained receipt without aging or shared-time replay")
+
+func combat_income_failure()->void:
+	var g:=OrderedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var raw:=g.research.save_data();raw.aiTechLevels.unification=1
+	g.research.install_snapshot(raw,g.db.data.ai_tech_tree)
+	g.native_execution_auto=false;g.start(1,false)
+	g.group_index=g.db.levels[0].groups.size();g.change_state(g.State.COMBAT)
+	var drop:Dictionary={"id":"1","amount":120.0,"age":0.0,"x":0.0,"y":0.0}
+	g.drops.append(drop);g.refuse_income=true
+	g.tick(g.LOGICAL_STEP)
+	check(g.state==g.State.LEVEL_CLEAR and g.step_progress.phase=="combat_running" and g.step_progress.reason=="native_handoff","real final encounter reaches refused forced income inside combat")
+	check(g.drops.has(drop) and g.income_history.size()==0,"failed combat settlement retains its receipt")
+	var clock:=g.production_time();var rng_state:=g.rng.state;var clear_time:=g.clear_timer
+	print("COMBAT_INCOME_RETRY context_equal=",g.step_progress.blocked_context==g.continuation_context())
+	g.refuse_income=false;g.paused=false;g.tick(g.LOGICAL_STEP)
+	check(g.step_progress.frozen and g.step_progress.active,"interrupted combat without a resumable cursor freezes instead of spinning")
+	check(g.production_time()==clock and g.rng.state==rng_state and g.clear_timer==clear_time and g.drops.has(drop),"frozen combat neither replays execution nor retires the failed receipt")
+	check(g.portable_save_data().is_empty(),"interrupted combat cannot publish a complete snapshot")
+	var budget:float=g.step_progress.available()+g.step_progress.duration
+	for retry in range(3):
+		g.paused=false;g.consume_external_time(1.0)
+	check(g.step_progress.available()+g.step_progress.duration==budget and g.production_time()==clock and g.drops.has(drop),"repeated external resumes of frozen combat return without accepting new budget or losing receipts")
 
 func partial_domain_failure()->void:
 	var g:=fixture();var runtime:=SecondPlanetFailure.new();g.progress_runtime=runtime

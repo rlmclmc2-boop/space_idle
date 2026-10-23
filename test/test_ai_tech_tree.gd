@@ -243,7 +243,7 @@ func run_income_history()->void:
 		{"id":"1","time":39.0,"production_time":199.0,"amount":7.0,"origin":"drop"}]
 	history.replace_records(rows)
 	rows[0].amount=10000.0
-	check(history.display_total("1",100.0)==62.0 and history.peak_total("1",100.0)==62.0,"display and existing peak qualification retain actual mixed-source receipts and exact wall boundary")
+	check(history.display_total("1",100.0)==62.0 and history.peak_total("1",100.0)==12.0,"display retains mixed receipts; peak excludes derived sources with the existing credited amount and wall boundary")
 	check(history.research_total("1",200.0)==69.0 and history.production_total("1",200.0,100.0,200.0)==12.0,"research includes actual receipts while production uses qualified base values on its own clock")
 	check(history.wall_production_total("1",100.0)==5.0,"explicit legacy wall production query remains separate from mixed-source display")
 	var detached:Array=history.records();detached[0].amount=20000.0

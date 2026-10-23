@@ -615,6 +615,10 @@ func continuation_context()->Array:
 
 func resume_step_context()->bool:
 	if step_progress.frozen:return false
+	# Legacy combat has already mutated execution state and has no inner retry
+	# cursor. Never clear its interruption and redispatch an unhandled phase.
+	if step_progress.phase=="combat_running":
+		step_progress.freeze("interrupted_combat" if step_progress.reason.is_empty() else step_progress.reason);paused=true;return false
 	if not step_progress.blocked_context.is_empty() and step_progress.blocked_context!=continuation_context():
 		step_progress.freeze("blocked_context_changed");paused=true;return false
 	step_progress.reason="";step_progress.blocked_context=[]
@@ -630,6 +634,7 @@ func enter_domain_step(dt:float,domain:String,stage_index:int)->bool:
 
 func block_step(reason:String)->void:
 	step_progress.block(reason,continuation_context());paused=true
+	if step_progress.phase=="combat_running":step_progress.freeze(reason)
 
 func advance_resource_history_clock(seconds:float)->void:
 	resource_prune_elapsed+=seconds
@@ -2296,7 +2301,7 @@ func commit_income_receipt(id:String,earned:Variant,source:String,notices:Array,
 	if commit_effects.active:return R.make("blocked","commit_in_progress")
 	if not N.valid(earned):return R.make("rejected","invalid_income")
 	var qualified:bool=source in ["drop","furnace"] and (id!="jewel" or N.compare(earned,0)>0)
-	var peak:Dictionary=research.income_peak_proposal(self,id,earned) if qualified else {}
+	var peak:Dictionary=research.income_peak_proposal(self,id,earned) if qualified and income_history.peak_eligible(source) else {}
 	var context:=continuation_context()
 	var original:Dictionary=drop.duplicate(true)
 	if not peak.is_empty() and peak.affects_combat and not native_before_configuration_change():return R.make("blocked","native_handoff")
