@@ -51,8 +51,9 @@ func _initialize()->void:
 	var events:Array=[];g.event.connect(func(kind,_payload):events.append(kind))
 	g.save_dirty=false;var before:=stable_save(g);c.advance(g,2)
 	check(stable_save(g)==before and events.is_empty() and not g.save_dirty,"Unchanged failed job neither mutates domains nor emits saves/events")
-	g.db.config.reactorEnergyBase*=2;g.notify_configuration_changed();g.event.emit("reactor_changed",{});c.advance(g,1)
-	check(g.reactor.level()==level+1 and g.reactor_allocated()==g.reactor_capacity(),"Capacity-only change redistributes without purchase")
+	galaxy_capacity_change(g)
+	c.advance(g,1)
+	check(g.reactor.level()==level+1 and g.reactor_allocated()==g.reactor_capacity(),"Actual Galaxy capacity-only commit wakes sleeping redistribution without purchase")
 	g.economy.credit("2",GrowthNumber.multiply(g.reactor_upgrade_cost(),100));g.resources_changed(["2"])
 	g.paused=true;before=stable_save(g);g.consume_external_time(2)
 	check(stable_save(g)==before,"Pause preserves real wallet and all growth domains")
@@ -125,6 +126,28 @@ func material_wakeup()->void:
 	g.crew.advance(g,0.01)
 	check(g.slot_entry("weapons",0).level==boundary,"Merged material credits resume once without postponing the first deadline")
 
+func galaxy_capacity_change(g)->void:
+	check(not g.crew.allocation_timers.has("navigator"),"Automatic allocation is asleep before Galaxy capacity changes")
+	var before=g.reactor_capacity()
+	var row:Dictionary=g.db.data.galaxy.galaxy_1
+	row.explore_work_total=1.0;row.build_interval=0.01;row.construction_time=0.01
+	for level in [2,3,4,5]:row["upgrade_cost_lv%d"%level]=1.0
+	check(g.galaxy.install_snapshot(g.galaxy.save_data(),g.db),"Fast Galaxy fixture uses validated current owner snapshot")
+	g.galaxy_runtime.refresh_unlocks(g)
+	check(g.assign_crew("engineer","galaxy_explore","galaxy_1"),"Separate crew performs actual Galaxy work")
+	var notifications:Array=[]
+	var observer:=func(kind,payload):
+		if kind=="reactor_changed" and g.reactor_capacity()>before:
+			notifications.append([g.crew.allocation_timers.has("navigator"),g.save_dirty,payload.get("_committed_fact",false)])
+	g.event.connect(observer)
+	for attempt in 200:
+		g.galaxy_runtime.advance(g,1.0)
+		if g.reactor_capacity()>before:break
+	g.event.disconnect(observer)
+	check(g.reactor_capacity()>before and g.reactor_allocated()<g.reactor_capacity(),"An actual completed Galaxy charge_max building adds capacity before redistribution")
+	check(notifications==[[true,true,true]],"Galaxy scheduling fact wakes allocation before its sole UI notice")
+	g.assign_crew("engineer","","")
+
 func coordination_boundaries()->void:
 	var g:=CallbackGame.new(ShipDatabase.new(),false)
 	g.profile.cleared=range(1,101);g.rebuild_unlocks()
@@ -145,12 +168,12 @@ func coordination_boundaries()->void:
 		if kind=="galaxy_changed":
 			settled.append(true);g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
 	g.event.connect(observer)
-	check(not g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback rejects stale transfer")
+	check(g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback cannot insert another command into the commit")
 	g.event.disconnect(observer)
-	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="galaxy_explore","Earned previous-job work settles once and assignment remains current")
-	check(g.captures==1,"Only the original successful assignment captured health; stale transfer did not")
+	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="equipment_upgrade" and g.crew.entry(g,"navigator").upgradeMode!="10","Earned previous-job work settles once; nested mode write is rejected before successful transfer")
+	check(g.captures==2,"Original assignment and successful transfer each capture health once")
 	g.captures=0
-	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.captures==1,"Successful transfer captures health once after final callback checks")
+	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.captures==0,"Repeated identical transfer does not capture health or repeat installation")
 	var saved:=fixture().portable_save_data()
 	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
 	g.assign_crew("navigator","equipment_upgrade","equipment");g.crew.advance(g,0.9)
