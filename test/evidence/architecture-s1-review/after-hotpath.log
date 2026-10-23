@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+HOTPATH {"batch_us":[46778,46389,56112,46637,55248,46901,46828],"configuration_reads":0,"dt":0.001,"full_results":0,"median_batch_us":46828,"resource_scans":0,"scenario":"planet","steps":7000,"wallet":{"1":100000000.0,"2":100000000.0},"warmup":200,"work":7.20000000000074}
+HOTPATH {"batch_us":[130286,139724,132874,131669,130858,131950,130221],"configuration_reads":0,"dt":0.001,"full_results":0,"median_batch_us":131669,"resource_scans":0,"scenario":"research_unpaid","steps":7000,"wallet":{"1":100000000.0,"2":100000000.0},"warmup":200,"work":7.20000000000074}
+HOTPATH {"batch_us":[150443,151938,152447,162180,160103,154807,163587],"configuration_reads":0,"dt":0.001,"full_results":0,"median_batch_us":154807,"resource_scans":0,"scenario":"research_paid","steps":7000,"wallet":{"1":99999992.7999854,"2":99999992.7999854},"warmup":200,"work":7.20000000000074}
+PROGRESS HOT PATH: 13 checks 0 failures

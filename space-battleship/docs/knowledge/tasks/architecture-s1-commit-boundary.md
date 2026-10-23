@@ -62,3 +62,41 @@ Engine: Godot 4.7.2 stable official ed1daf0bf, SHA256 `ab1824f85bfd8e0e4128182c0
 All runs emitted the Windows root certificate store warning. Boundary/research/crew/planet runs also reported ObjectDB/resource leaks on exit (57/57/58/87 instances and 26 resources respectively). These were not repaired or represented as clean runtime teardown. No script-load/parse/runtime failure or missing completion summary was accepted. This is affected-correctness evidence, not performance, full UI, whole-step accounting, or release acceptance.
 
 Git handoff: fetch [work/architecture-s1-continuation-20261024](https://github.com/rlmclmc2-boop/space_idle/tree/work/architecture-s1-continuation-20261024) from `https://github.com/rlmclmc2-boop/space_idle.git`. The complete S1 candidate includes inherited c903c062 plus continuation 1501dccf and this verification record; do not cherry-pick the continuation alone onto main. Original candidate checkout still reports c903c062 with a clean worktree. Only Git commits are delivery. The six original test.log files are now committed under `test/evidence/architecture-s1/`; they were copied byte-for-byte from the completed runs, with no rerun. Directory-local Git attributes disable text conversion for these logs. Import logs, saves and caches remain excluded. This follow-up changes only evidence and this handoff record; the implementation and test results are unchanged. The final pushed evidence commit SHA is supplied with the remote readback in the parent handoff.
+
+## Review correction: external-time reentry and ordinary-progress cost
+
+Parent review did not accept candidate `84bf68e1fd1e7c7387c536301123d56701de2b3c`: external-time consumption could perform side effects before tick refused reentry, and ordinary Progress steps added unnecessary copying/result construction/resource scans. Correction implementation: `4af9fa253b3612fc3e28fb7795779aba2749c227`. This section supersedes the earlier acceptance evidence for these two concerns; final parent dot/high acceptance remains pending.
+
+- `consume_external_time` now refuses commit/logical-step reentry in its first guard, before timed-save checks, departure countdown, presentation, particles, resource-history pruning or budget/remainder changes. This is an entry guard, not S2 time retention or replay accounting.
+- Ordinary incomplete planet and noncompleted/nonstopped research use `commit_effects.begin_progress/finish_progress`, the same exclusion and dirty-state owner with cached deeply immutable results. Result domains and changed resource IDs remain precise; contributions are empty because these steps do not alter them. No contribution-vector capture, coordinator proposal deep copy/freeze, or full result construction occurs on these paths. Existing domain snapshot preparation/install copies remain authoritative and unchanged.
+- Research spending alone does not make a waiting purchase affordable. Resource scheduling and immutable UI notice now share the preexisting 250ms resource-notice cadence instead of rescanning all equipment cost rows each paid substep. Completion/stopping/configuration transitions retain full result publication. Due-notice tests verify one scheduler delivery before UI and blocked external-time reentry.
+- No S2 ledger, gameplay/balance, native source/binary or save-schema change. Original six evidence logs remain historical and unchanged; new logs are in `test/evidence/architecture-s1-review/`.
+
+### Affected correctness and regression reproduction
+
+| Check | Outcome | Committed raw log under test/evidence/architecture-s1-review |
+|---|---|---|
+| Updated boundary fixture on rejected 84bf68e1 | 29 checks, 4 expected failures: external-time side effects, reused result, per-step scheduler scan, due-notice ordering/reentry | before-boundary-regression.log |
+| Same boundary fixture on 4af9fa25 | 29 checks, 0 failures | after-boundary.log |
+| Current research test on 4af9fa25 | 134 checks, 0 failures | after-research.log |
+| Current planet test on 4af9fa25 | 688 checks, 0 failures | after-planet.log |
+| Same hot-path harness, baseline and corrected source | 13 checks, 0 failures each; identical work and wallet outputs | before-hotpath.log / after-hotpath.log |
+| Legacy test_time_steps.gd, both revisions | 206 checks, 1 failure and script errors on both; not accepted as passing | before-time-steps-known-failure.log / after-time-steps-known-failure.log |
+
+The additional time-step probe fails identically on 84bf68e1 and 4af9fa25: `no later geometry preparation after departure`, missing `Runtime.detach_requested` at test line 208, and a nil geometry mount (`screen_mount_for_slot`). Both exit 1. This is an existing fixture/entry mismatch, not closed by this S1 correction; the test was neither changed nor counted as acceptance. Broader time-step acceptance remains limited by that probe, while the new targeted external-entry regression is red on the baseline and green on the correction. No attempt was made to expand into S2 or repair unrelated geometry/lifecycle behavior.
+
+Runner: same `python test/run.py <test> --headless --godot <engine>` and engine/native hashes recorded above. The updated boundary and domain tests were imported in isolated projects and isolated user directories. Baseline regression reproduction reused the imported 84bf68e1 project with only the identical updated fixture copied in. Initial benchmark fixture parsing encountered a built-in type-name collision; it was corrected before both measured runs and is not counted as passing evidence. Certificate warnings remain; boundary/domain runs still report fixture exit resource leaks, preserved in the raw logs.
+
+### Hot-path before/after measurement
+
+Same Windows host, engine, source data and fixture; environment reports `Intel64 Family 6 Model 165 Stepping 5, GenuineIntel`, 16 logical processors. Hardware inventory through CIM was unavailable; no specific processor model is inferred. Both already-imported isolated projects were run serially after the other test processes finished. Before each run, game/progress_runtime/commit_effects/command_result script contents were checked against the stated Git revision (ignoring checkout CRLF only), and both fixture files were checked identical. Harness SHA256: `b3a5fe03b50b5f56491f740ede04bce9ee49525fd930ad3c5b61677c58f96bf1`.
+
+Reproduce by putting `4af9fa25:test/test_progress_commit_hotpath.gd` into independent checkouts of 84bf68e1 and 4af9fa25, then running the same test/run.py command serially. The deterministic fixture extends planet/research completion thresholds to 1e9 only in memory; it uses one active planet or singularity research, with both resource inputs equal to 1 for the paid case. Each scenario warms 200 steps then measures seven batches of 1000 steps at dt=0.001. The notice timestamp is set each step to measure the interior of the 250ms window consistently; due delivery is separately tested above. No random draws or personal saves are involved.
+
+| Scenario | Before median microseconds / 1000 steps | After | Reduction | Configuration-input reads before -> after | Full completion results before -> after | Resource scans before -> after |
+|---|---:|---:|---:|---|---|---|
+| Planet ordinary progress | 122065 | 46828 | 61.64% | 14000 -> 0 | 7000 -> 0 | 0 -> 0 |
+| Research, unpaid | 188623 | 131669 | 30.19% | 28000 -> 0 | 7000 -> 0 | 0 -> 0 |
+| Research, paid | 234567 | 154807 | 34.00% | 28000 -> 0 | 7000 -> 0 | 7000 -> 0 |
+
+Counters cover the 7000 measured steps, excluding warmup. These are instrumented method-call counts, not a total heap-allocation measurement. Every pair produced exactly the same 7.20000000000074 units of work and wallet values; paid wallets were 99999992.7999854 for each resource, unpaid/planet 100000000.0. Raw per-batch samples and full outcomes are committed. This establishes a reduction in the selected ordinary hot paths only, not frame-rate, native-battle, F9, peak-memory or full-product performance acceptance. No performance threshold or S2 correctness claim is inferred.

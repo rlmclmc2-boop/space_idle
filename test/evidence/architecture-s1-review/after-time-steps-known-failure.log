@@ -1,0 +1,26 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+FAIL: no later geometry preparation after departure
+SCRIPT ERROR: Invalid assignment of property or key 'detach_requested' with value of type 'bool' on a base object of type 'RefCounted (Runtime)'.
+   at: departure_boundaries (C:/Users/Administrator/Documents/Codex/2026-10-24/task-2/s1/test/work/test_time_steps-wndyqioz/test/test_time_steps.gd:208)
+   GDScript backtrace (most recent call first):
+       [0] departure_boundaries (C:/Users/Administrator/Documents/Codex/2026-10-24/task-2/s1/test/work/test_time_steps-wndyqioz/test/test_time_steps.gd:208)
+       [1] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task-2/s1/test/work/test_time_steps-wndyqioz/test/test_time_steps.gd:77)
+SCRIPT ERROR: Invalid call. Nonexistent function 'screen_mount_for_slot' in base 'Nil'.
+   at: player_mount_center (res://scripts/simulation_geometry_authority.gd:708)
+   GDScript backtrace (most recent call first):
+       [0] player_mount_center (res://scripts/simulation_geometry_authority.gd:708)
+       [1] player_mount_center (res://scripts/main.gd:1466)
+       [2] draw_player_weapon_components (res://scripts/main.gd:3249)
+       [3] draw_ship (res://scripts/main.gd:3315)
+       [4] draw_battle (res://scripts/main.gd:3096)
+       [5] <anonymous lambda> (res://scripts/main.gd:2523)
+Time steps: 206 checks, 1 failures
+WARNING: 1 RID of type "CanvasItem" was leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2733)
+WARNING: 85 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 35 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
