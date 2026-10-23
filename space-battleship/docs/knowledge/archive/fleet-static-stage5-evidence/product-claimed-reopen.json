@@ -1,0 +1,15 @@
+{
+ "checks": 7,
+ "failures": 0,
+ "header_values": {
+  "iron": "90No",
+  "uranium": "3.79No"
+ },
+ "native": false,
+ "phase": "product-claimed-reopen",
+ "production_time": 199.600000000051,
+ "receipt_status": "",
+ "saving": true,
+ "startup_error": "",
+ "writer": true
+}
