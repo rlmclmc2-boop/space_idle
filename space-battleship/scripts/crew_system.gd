@@ -62,6 +62,7 @@ func invalidate_member(g, item: Dictionary) -> void:
 
 func invalidate_resources(g, ids: Array) -> void:
 	var jobs: Array = []
+	if ids.has(g.db.evolution_material_id()):jobs.append("equipment_upgrade")
 	for category in ["weapons","defence"]:
 		var cost_key: String = g.module_cost_key(category)
 		for row in g.db.equipment.get(cost_key,[]):
