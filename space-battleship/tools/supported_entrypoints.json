@@ -8,7 +8,7 @@
       "roots": ["tools/result_analyzer/main.tscn"],
       "resource_aliases": {"entry.gd": "tools/result_analyzer/entry.gd"},
       "model": "F9 portable entry; BalanceGame for automatic-level evaluation",
-      "data": "packaged JSON plus external mon.xlsx; see analyzer_required_data.json",
+      "data": "captured published JSON and workbook templates; see analyzer_required_data.json",
       "verification": "../../test/guides/balance-tools.md"
     },
     "configuration": {"roots": ["tools/config_workbooks.py"], "model": "workbook import", "data": "Excel to JSON", "verification": "../../test/guides/configuration.md"},

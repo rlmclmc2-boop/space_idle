@@ -1,9 +1,12 @@
 extends RefCounted
 ## Fixed schema/order and typed mappings shared with the authoritative importer.
 static var schema:Dictionary={}
+static var generation:=""
 static func definition()->Dictionary:
+	var current:String=preload("res://scripts/configuration_snapshot.gd").active().identity
+	if generation!=current:schema={};generation=current
 	if schema.is_empty():
-		var parsed=JSON.parse_string(FileAccess.get_file_as_string("res://data/hyperspace_entity_schema.json"))
+		var parsed=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/hyperspace_entity_schema.json"))
 		if parsed is Dictionary:schema=parsed
 	return schema
 static func template_matches(template:Variant,value:Variant,filename:String,path:String="")->bool:
@@ -50,5 +53,5 @@ static func frozen_valid()->bool:
 	var spec:=definition()
 	if spec.is_empty():return false
 	for name in spec.frozen_inputs:
-		if FileAccess.get_sha256("res://data/"+str(name))!=str(spec.frozen_inputs[name]):return false
+		if preload("res://scripts/configuration_snapshot.gd").sha256(preload("res://scripts/configuration_snapshot.gd").active().read_bytes("res://data/"+str(name)))!=str(spec.frozen_inputs[name]):return false
 	return true

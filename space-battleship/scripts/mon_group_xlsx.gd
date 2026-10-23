@@ -3,7 +3,7 @@ extends RefCounted
 const TEMPLATE := "res://config_excel/monGroup.xlsx"
 const STYLES := "xl/styles.xml"
 const SLOT_COUNTS := [10,15]
-const MON_TABLE := "res://../space-battleship/config_excel/mon.xlsx"
+const MON_TABLE := "res://config_excel/mon.xlsx"
 
 static func read_mon_names() -> Dictionary:
 	var table: Dictionary=read_mon_enemies()
@@ -73,12 +73,7 @@ static func _clean_list(value: String) -> String:
 	return value.replace("｛","{").replace("｝","}").replace("，",",").replace("；",";").strip_edges().trim_prefix("{").trim_suffix("}").strip_edges()
 
 static func _read_mon_rows() -> Dictionary:
-	var path: String=ProjectSettings.globalize_path("res://config_excel/mon.xlsx")
-	if FileAccess.file_exists("res://analyzer-package.json"):
-		path=ProjectSettings.globalize_path(MON_TABLE)
-		if not FileAccess.file_exists(path):
-			var marker=JSON.parse_string(FileAccess.get_file_as_string("res://analyzer-package.json"))
-			if marker is Dictionary:path=str(marker.get("source_mon",path))
+	var path:String=preload("res://scripts/configuration_snapshot.gd").active().workbook_path(MON_TABLE)
 	var archive:=ZIPReader.new()
 	if archive.open(path)!=OK:return {"error":"missing_mon_table"}
 	var sheet: String=""

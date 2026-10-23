@@ -15,11 +15,13 @@ var mon_source_error := ""
 var unlock_lookup: Dictionary = {}
 
 func _init() -> void:
-	data = JSON.parse_string(FileAccess.get_file_as_string("res://data/game_data.json"))
-	data.ai_tech_tree = JSON.parse_string(FileAccess.get_file_as_string("res://data/ai_tech_tree.json"))
+	if not preload("res://scripts/configuration_snapshot.gd").active().error.is_empty():
+		mon_source_error=preload("res://scripts/configuration_snapshot.gd").active().error;return
+	data = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/game_data.json"))
+	data.ai_tech_tree = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/ai_tech_tree.json"))
 	# Keep the original hightech gates for the replacement research system.
 	# The obsolete scientist notices are filtered by BattleGame instead.
-	data.equipment_evolution = JSON.parse_string(FileAccess.get_file_as_string("res://data/equipment_evolution.json"))
+	data.equipment_evolution = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/equipment_evolution.json"))
 	if FileAccess.file_exists("res://analyzer-package.json"):
 		var mon_table: Dictionary=MonGroupXlsx.read_mon_enemies()
 		if mon_table.has("error"):

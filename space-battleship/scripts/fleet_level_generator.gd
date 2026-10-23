@@ -27,7 +27,7 @@ var current: Dictionary={}
 
 func _init(source: ShipDatabase) -> void:
 	database=source
-	policy=JSON.parse_string(FileAccess.get_file_as_string("res://data/auto_level_generation.json"))
+	policy=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/auto_level_generation.json"))
 
 func busy() -> bool:return status=="running"
 

@@ -2,7 +2,7 @@ extends RefCounted
 ## Independent configuration; reject invalid packs before creating player state.
 const Entity=preload("res://scripts/hyperspace_entity_validation.gd")
 static func load_config() -> Dictionary:
-	var parsed=JSON.parse_string(FileAccess.get_file_as_string("res://data/hyperspace_config.json"))
+	var parsed=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/hyperspace_config.json"))
 	if not parsed is Dictionary or not valid(parsed):
 		push_error("Invalid hyperspace configuration; import both authoritative entity workbooks")
 		return {}
@@ -107,7 +107,7 @@ static func pack_valid(g)->bool:
 	if not valid(g.hyperspace.config) or not Entity.frozen_valid():return false
 	var outputs:Dictionary={}
 	for name in ["space_enemy_candidates.json","space_enemy_routes.json","space_enemy_reward_recipes.json","space_enemy_reward_catalog.json"]:
-		var parsed=JSON.parse_string(FileAccess.get_file_as_string("res://data/"+name))
+		var parsed=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/"+name))
 		if not parsed is Dictionary or not Entity.output_valid(name,parsed):return false
 		outputs[name]=parsed
 	var candidate:Dictionary=outputs["space_enemy_candidates.json"]
@@ -126,7 +126,7 @@ static func pack_valid(g)->bool:
 		if design.is_empty() or design.slots.filter(func(v):return v!=null).size()!=int(ref.reference_member_count) or level<1 or level>g.db.levels.size():return false
 		if not (g.db.levels[level-1].groups+g.db.levels[level-1].get("rewardReferenceGroups",[])).any(func(point):return int(point.id)==int(ref.late_reference_actual_group_id)):return false
 	var origin:Dictionary=Entity.definition().sources_origin
-	var source_data=JSON.parse_string(FileAccess.get_file_as_string("res://data/space_enemy_reward_sources.json"))
+	var source_data=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/space_enemy_reward_sources.json"))
 	if not source_data is Dictionary or source_data.get("source_sha256")!=origin.sha256 or binder.sources.size()!=int(origin.verified_wave_count):return false
 	for wave in binder.sources:
 		var stage:int=int(wave.stage);var node:int=int(wave.node)

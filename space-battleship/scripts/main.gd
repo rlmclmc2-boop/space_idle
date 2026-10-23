@@ -243,6 +243,9 @@ var product_ready := false
 
 func _ready() -> void:
 	set_process(false)
+	var configuration=preload("res://scripts/configuration_snapshot.gd").activate()
+	if not configuration.error.is_empty():
+		push_error(configuration.error);set_process_unhandled_input(false);return
 	set_process_unhandled_input(false)
 	if preload("res://scripts/hyperspace_appearance.gd").reload_config():
 		preload("res://scripts/hyperspace_drone_visual.gd").base_materials.clear()
@@ -280,7 +283,7 @@ func _ready() -> void:
 		var color:=Color(str(db.data.equipment_evolution.visual_palette[index]))
 		color.a=clampf(float(db.data.equipment_evolution.visual_strength_start)+float(db.data.equipment_evolution.visual_strength_per_tier)*float(index+1),0.0,1.0)
 		evolution_palette.append(color)
-	var parsed_visuals = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
+	var parsed_visuals = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/ship_weapon_visuals.json"))
 	if not parsed_visuals is Dictionary:
 		push_error("Invalid ship weapon visual profiles")
 		return

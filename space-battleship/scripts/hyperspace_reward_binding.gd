@@ -10,9 +10,9 @@ var sources:Array=[]
 var early_frozen:Dictionary={}
 func load_contract()->bool:
  for pair in [["catalog","res://data/space_enemy_reward_catalog.json"],["recipes","res://data/space_enemy_reward_recipes.json"],["sources","res://data/space_enemy_reward_sources.json"],["early_frozen","res://data/space_enemy_reward_early_frozen.json"]]:
-  if not FileAccess.file_exists(pair[1]):last_error="space_reward_contract_missing";return false
-  if pair[0]=="early_frozen" and FileAccess.get_sha256(pair[1])!=EARLY_FROZEN_SHA256:last_error="space_reward_early_source_digest_invalid";return false
-  var data=JSON.parse_string(FileAccess.get_file_as_string(pair[1]))
+  if not preload("res://scripts/configuration_snapshot.gd").active().has(pair[1]):last_error="space_reward_contract_missing";return false
+  if pair[0]=="early_frozen" and preload("res://scripts/configuration_snapshot.gd").sha256(preload("res://scripts/configuration_snapshot.gd").active().read_bytes(pair[1]))!=EARLY_FROZEN_SHA256:last_error="space_reward_early_source_digest_invalid";return false
+  var data=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text(pair[1]))
   if not data is Dictionary or data.get("schema_version")!=1:last_error="space_reward_contract_invalid";return false
   match pair[0]:
    "catalog":catalog=data.get("references",{})

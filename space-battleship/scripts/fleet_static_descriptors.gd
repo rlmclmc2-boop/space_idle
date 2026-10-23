@@ -16,7 +16,7 @@ var carrier_mount: Array = []
 func prepare(world: Node3D) -> void:
 	manifest = JSON.parse_string(FileAccess.get_file_as_string("res://dev/toon_ship/hybrid_manifest.json"))
 	presentation_art = JSON.parse_string(FileAccess.get_file_as_string("res://assets/weapons/fleet_20261019/manifest.json")).weapons
-	var visual_rows: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/ship_weapon_visuals.json"))
+	var visual_rows: Variant = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/ship_weapon_visuals.json"))
 	if visual_rows is Dictionary: approved_hull_art = visual_rows.get("ships",{})
 	# Temporary invisible native instances reproduce imported transforms and the
 	# authored drone socket installation. No instance survives this preparation.

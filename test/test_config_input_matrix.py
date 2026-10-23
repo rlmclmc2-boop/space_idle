@@ -310,6 +310,36 @@ def projection_and_excel():
     check(snapshot(root)==before and not target.with_suffix('.json.tmp').exists(),'full-import failure preserves output')
 
 
+def published_editor_protocol():
+    """The real public importer/editor share complete snapshots and publication."""
+    import config_publication as publication
+    import config_snapshot as protocol
+    root=AREA/'published-editor'
+    root.mkdir()
+    for name in ('data','config_excel'):shutil.copytree(ROOT/name,root/name)
+    imported=cw.incremental_import(root/'config_excel',root/'data/game_data.json')
+    initial=protocol.Store(root).capture()
+    check(imported['generation']==initial.identity,'Public import publishes a complete validated generation')
+    editor=le.Store(root);request=editor.load()
+    check(set(request['tables'])==set(le.EDITABLE),'Public editor loads frozen source tables')
+    editor.execute(request,False)
+    check(protocol.Store(root).capture().identity==initial.identity,'Validation does not publish')
+    request['tables']['mon']['rows'][0]['health']*=1.01
+    saved=editor.execute(request,True);current=protocol.Store(root).capture()
+    check(current.identity!=initial.identity and saved['snapshot']['generation']==current.identity,'Editor saves source and projection under one publication')
+    check(initial.files['data/game_data.json']!=current.files['data/game_data.json'],'Existing consumer retains original captured bytes')
+    try:editor.execute(request,True)
+    except ValueError:pass
+    else:raise AssertionError('Public editor accepted stale request')
+    check(protocol.Store(root).capture().identity==current.identity,'Stale editor cannot write')
+    source=root/'config_excel/mon.xlsx'
+    with protocol.exclusive(source):
+        try:editor.load()
+        except protocol.Busy:pass
+        else:raise AssertionError('Editor captured workbook while external writer held it')
+    check(protocol.Store(root).capture().identity==current.identity,'Editable sources do not invalidate committed JSON readers')
+
+
 def generation_protocol():
     import os
     import subprocess

@@ -42,7 +42,7 @@ var pairs_file: FileAccess
 
 func _init(database_source: ShipDatabase) -> void:
 	source = database_source
-	policy = JSON.parse_string(FileAccess.get_file_as_string("res://data/enemy_fleet_analysis.json")).batch
+	policy = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/enemy_fleet_analysis.json")).batch
 	aggregate = empty_aggregate()
 
 static func empty_aggregate() -> Dictionary:

@@ -1,11 +1,11 @@
 extends RefCounted
 ## Complete immutable input generation. Consumers parse captured bytes only.
-## Not activated until every supported publisher/reader is wired to this owner.
+## Published configuration is captured before consumers bind a product session.
 static var current:RefCounted
 var identity := ""
 var error := ""
 var _files:Dictionary = {}
-const MANIFEST := "res://.configuration.json"
+const MANIFEST := "res://configuration_manifest.json"
 
 static func activate()->RefCounted:
  var snapshot=load("res://scripts/configuration_snapshot.gd").new()
@@ -19,6 +19,8 @@ static func active()->RefCounted:
 
 static func text(path:String)->String:
  return active().read_bytes(path).get_string_from_utf8()
+
+func has(path:String)->bool:return error.is_empty() and _files.has(path.trim_prefix("res://"))
 
 func read_bytes(path:String)->PackedByteArray:
  if not error.is_empty():return PackedByteArray()
@@ -36,7 +38,7 @@ func capture()->bool:
  var lease:RefCounted
  # Exported player resources are a frozen package. Source/tools use the same
  # root lock as Python publishers; never lock by a UI-selected alias spelling.
- if OS.has_feature("editor"):
+ if OS.has_feature("editor") and not FileAccess.file_exists("res://analyzer-package.json"):
   lease=ClassDB.instantiate("SpaceSaveLock")
   if lease==null:error="configuration_lock_unavailable";return false
   var root:String=lease.canonical_path(ProjectSettings.globalize_path("res://"))
@@ -69,7 +71,7 @@ static func sha256(bytes:PackedByteArray)->String:
  return hash.finish().hex_encode()
 
 func workbook_path(path:String)->String:
- var bytes:=read_bytes(path)
+ var bytes:=read_bytes(path.replace("res://config_excel/","res://config_excel/published/"))
  if bytes.is_empty():return ""
  var directory:="user://configuration-workbooks"
  if DirAccess.make_dir_recursive_absolute(directory)!=OK:return ""

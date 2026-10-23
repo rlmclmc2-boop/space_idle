@@ -17,8 +17,8 @@ static func pattern() -> RegEx:
 
 static func reload_catalog() -> PackedStringArray:
 	var errors := PackedStringArray()
-	var source = JSON.parse_string(FileAccess.get_file_as_string("res://data/ui_text.json"))
-	var contract = JSON.parse_string(FileAccess.get_file_as_string("res://data/ui_text_contract.json"))
+	var source = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/ui_text.json"))
+	var contract = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/ui_text_contract.json"))
 	if not source is Array or not contract is Dictionary:
 		errors.append("UI text catalog or contract is invalid JSON")
 		return errors

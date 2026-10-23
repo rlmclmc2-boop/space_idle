@@ -6,7 +6,7 @@ const SHEET := "xl/worksheets/sheet1.xml"
 
 static func export_levels(levels: Array,output_path: String,groups: Dictionary) -> String:
 	if levels.is_empty():return UIText.t("ui.cycle_level_xlsx.message_01")
-	var template_path: String=ProjectSettings.globalize_path(TEMPLATE)
+	var template_path: String=preload("res://scripts/configuration_snapshot.gd").active().workbook_path(TEMPLATE)
 	if output_path.get_file().to_lower()=="level.xlsx" or output_path.replace("\\","/")==template_path.replace("\\","/"):return UIText.t("ui.cycle_level_xlsx.message_02")
 	var archive:=ZIPReader.new()
 	if archive.open(template_path)!=OK:return UIText.t("ui.cycle_level_xlsx.message_03")

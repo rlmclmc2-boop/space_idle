@@ -24,7 +24,7 @@ EDITABLE = ('mon', 'monGroup', 'level')
 LEVEL_RATIOS = ('atkRatio', 'lifeRatio', 'resRatio')
 
 
-class Store:
+class PreparedStore:
     def __init__(self, root=ROOT):
         self.root = Path(root)
         self.directory = self.root / 'config_excel'
@@ -246,6 +246,17 @@ class Store:
             atomic_batch(files, self.root / '.runtime/config-recovery')
             return {**self.load(), 'warnings': warnings, 'backup': str(backup), 'message': ui_text('debug.level_editor_store.message_10')}
         return {'warnings': warnings, 'message': ui_text('debug.level_editor_store.message_03')}
+
+
+class Store:
+    """Public editor reads and writes one stable configuration/input capture."""
+    def __init__(self,root=ROOT):self.root=Path(root).resolve()
+    def load(self):
+        from config_publication import execute
+        return execute(self.root,'load')
+    def execute(self,request,save=False):
+        from config_publication import execute
+        return execute(self.root,'save' if save else 'validate',request)
 
 
 def main():

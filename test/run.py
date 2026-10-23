@@ -99,8 +99,8 @@ def main():
     source = workspace / "space-battleship"
     for name in ("scripts", "shaders", "tools", "data", "config_excel", "assets", "addons", "dev"):
         shutil.copytree(source / name, game / name,
-                        ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*", "*.blend", "*.blend1"))
-    for name in ("project.godot", "main.tscn", "level_editor.tscn"):
+                        ignore=shutil.ignore_patterns("__pycache__", "~$*", "*.blend", "*.blend1"))
+    for name in ("project.godot", "main.tscn", "level_editor.tscn", "configuration_manifest.json"):
         shutil.copy2(source / name, game / name)
     # Persistence fixtures need the same OS writer lock as the player entry.
     # Reuse its verified bundled runtime; specialized native tests may replace it.

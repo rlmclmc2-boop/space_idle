@@ -51,7 +51,7 @@ func _ready() -> void:
 	grid.add_theme_constant_override("h_separation",12)
 	grid.add_theme_constant_override("v_separation",12)
 	scroll.add_child(grid)
-	per_page=int(JSON.parse_string(FileAccess.get_file_as_string("res://data/battle_result_analysis.json")).design.cards_per_page)
+	per_page=int(JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/battle_result_analysis.json")).design.cards_per_page)
 	for i in range(per_page):
 		var card := PanelContainer.new()
 		card.size_flags_horizontal=Control.SIZE_EXPAND_FILL
