@@ -6,6 +6,26 @@ var active := false
 var _before: Array=[]
 var _reactor_revision:=0
 
+# Ordinary progress has no contribution change and no preparation callback.
+# Use the same exclusion/dirty boundary without constructing a full descriptor.
+func begin_progress() -> bool:
+	if active:return false
+	active=true
+	return true
+
+func finish_progress(g,result: Dictionary,notify_resources:=false) -> Dictionary:
+	assert(active)
+	g.save_dirty=true
+	# Spending cannot make a waiting purchase affordable. Preserve the existing
+	# research resource-notice cadence rather than scanning jobs every substep.
+	if notify_resources:
+		g.crew.on_committed(g,result)
+		var payload:Dictionary={"ids":result.resources,"_committed_fact":true}
+		payload.make_read_only()
+		g.event.emit("resources_changed",payload)
+	active=false
+	return result
+
 func begin(g) -> bool:
 	if active:return false
 	active=true

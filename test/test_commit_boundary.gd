@@ -1,5 +1,15 @@
 extends SceneTree
 const N=preload("res://scripts/growth_number.gd")
+class TimeGame extends BattleGame:
+	var save_checks:=0
+	func check_timed_save()->void:
+		save_checks+=1
+class Presentation extends RefCounted:
+	var calls:=0
+	func prepare_time_frame()->bool:calls+=1;return true
+	func before_time_step(_dt:float)->void:calls+=1
+	func after_time_step(_completed:bool)->bool:calls+=1;return true
+	func publish_time_frame()->void:calls+=1
 class TrackedCrew extends "res://scripts/crew_system.gd":
 	var commits:=0
 	var last: Dictionary={}
@@ -40,7 +50,7 @@ func check(ok:bool,label:String)->void:
 	if not ok:failures+=1;printerr("FAIL: ",label)
 
 func fixture() -> BattleGame:
-	var g:=BattleGame.new(ShipDatabase.new(),false)
+	var g:=TimeGame.new(ShipDatabase.new(),false)
 	g.profile.cleared=range(1,101);g.rebuild_unlocks()
 	g.economy.credit("1",1e8);g.economy.credit("2",1e8)
 	return g
@@ -58,6 +68,11 @@ func _initialize()->void:
 	var plan:=plan_for(g)
 	var before:=g.economy.resources();var initial:=int(g.slot_entry("weapons",0).level)
 	var seen:Array=[];var reentered:Array=[];var clock:=g.production_time()
+	var external_observations:Array=[];var presentation:=Presentation.new()
+	g.economy.accrue_chrono(100,100)
+	for option in g.chrono_options():
+		if option.cost>0:g.speed=option.multiplier;break
+	g.departure_remaining=0.25;g.game_time_remainder=0.125;g.resource_prune_elapsed=0.5
 	g.save_dirty=false
 	var observer:=func(kind,payload):
 		if kind=="upgrade":
@@ -65,6 +80,9 @@ func _initialize()->void:
 			reentered.append(g.upgrade_slot("weapons",0,1))
 			reentered.append(g.progress_runtime.set_crew_upgrade_mode_result(g,"navigator","10").status)
 			g.tick(1.0)
+			var time_before:Array=[g.economy.balance("chrono"),g.economy.revision,g.departure_remaining,g.game_time_remainder,g.resource_prune_elapsed,g.speed,g.save_checks,g.external_time_active]
+			g.consume_external_time(1.0,presentation)
+			external_observations.append(time_before==[g.economy.balance("chrono"),g.economy.revision,g.departure_remaining,g.game_time_remainder,g.resource_prune_elapsed,g.speed,g.save_checks,g.external_time_active])
 	g.event.connect(observer)
 	var result:=g.commit_equipment_upgrades_result(plan,false)
 	g.event.disconnect(observer)
@@ -75,6 +93,7 @@ func _initialize()->void:
 	check(seen[0][2] and seen[0][3]==1 and seen[0][4] and seen[0][5] and seen[0][6],"dirty flag and one scheduler wake precede immutable UI notice")
 	check(reentered==[false,"blocked"] and g.production_time()==clock and g.slot_entry("weapons",0).level==initial+1,"notification cannot insert a command or nested time step")
 	check(not g.commit_effects.active,"completion releases boundary")
+	check(external_observations==[true] and presentation.calls==0,"external-time reentry rejects before save checks, departure, particle debit, budget, history or presentation effects")
 	var stale:=plan_for(g);g.economy.credit("1",100)
 	var wallet:=g.economy.resources();initial=int(g.slot_entry("weapons",0).level)
 	check(g.commit_equipment_upgrades_result(stale,false).reason=="stale_proposal" and g.economy.resources()==wallet and g.slot_entry("weapons",0).level==initial,"intervening receipt cannot be lost through an old wallet plan")
@@ -143,5 +162,25 @@ func _initialize()->void:
 	check(partial.status=="committed" and partial.domains==["planets"] and planet.save_dirty and notices.is_empty() and planet.planet_progress("1").degree==0,"partial planet work uses completion boundary without completion reward or UI notice")
 	var complete:=planet.progress_runtime.commit_planet_step_result(planet,planet.planets.prepare_step(planet,"1",half))
 	check(complete.status=="committed" and complete.domains.has("crew") and complete.facts.reactor_allocation_changed and planet.planet_progress("1").degree==1 and notices.count("planet_changed")==1,"planet completion jointly installs reward and publishes exactly one completion notice")
+	var hot:=fixture()
+	hot.select_tech("singularity");hot.set_tech_input("1",1)
+	var hot_tracker:=TrackedCrew.new();hot_tracker.install_snapshot(hot.crew.save_data(),hot.db)
+	hot.event.disconnect(hot.crew.on_event);hot.crew=hot_tracker;hot_tracker.attach(hot)
+	var paid_notices:Array=[];var nested_time:Array=[]
+	hot.event.connect(func(kind,payload):
+		if kind=="resources_changed":
+			paid_notices.append([payload.ids,payload.is_read_only(),payload.ids.is_read_only(),hot_tracker.commits])
+			var old_time:=hot.production_time();var old_checks:int=hot.save_checks
+			hot.consume_external_time(1)
+			nested_time.append(hot.production_time()==old_time and hot.save_checks==old_checks)
+	)
+	hot.ai_tech_last_resource_notice_ms=Time.get_ticks_msec()+100000
+	var first:=hot.progress_runtime.commit_research_advance_result(hot,hot.research.prepare_advance(hot,0.001))
+	var second:=hot.progress_runtime.commit_research_advance_result(hot,hot.research.prepare_advance(hot,0.001))
+	check(is_same(first,second) and first.resources==["1"] and first.contributions.is_empty() and first.is_read_only(),"ordinary paid progress reuses an immutable precise result without contribution allocation")
+	check(hot_tracker.commits==0 and paid_notices.is_empty(),"ordinary paid substeps do not scan scheduler jobs inside the resource notice window")
+	hot.ai_tech_last_resource_notice_ms=Time.get_ticks_msec()-250
+	hot.advance_hightech(0.001)
+	check(paid_notices==[[["1"],true,true,1]] and nested_time==[true] and not hot.commit_effects.active,"due resource notice delivers one committed fact before immutable UI notification and blocks external time")
 	print("COMMIT BOUNDARY: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)

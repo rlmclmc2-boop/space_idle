@@ -554,7 +554,7 @@ func begin_return_departure()->void:
 func consume_external_time(real_dt:float,presentation:Variant=null)->void:
 	# Sole live wall-time consumer. tick() remains the domain's logical algorithm
 	# for internal event subdivision and deterministic offline analysis.
-	if external_time_active or not is_finite(real_dt) or real_dt<0:return
+	if external_time_active or logical_step_active or commit_effects.active or not is_finite(real_dt) or real_dt<0:return
 	check_timed_save()
 	if paused:return
 	external_time_active=true

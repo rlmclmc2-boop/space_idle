@@ -1,6 +1,13 @@
 extends RefCounted
 const N=preload("res://scripts/growth_number.gd")
 const Result=preload("res://scripts/command_result.gd")
+static var NO_CHANGE:Dictionary=Result.make("no_change")
+static var PLANET_PROGRESS:Dictionary=Result.make("committed","",["planets"])
+static var RESEARCH_PROGRESS:Array=[
+	Result.make("committed","",["research"]),
+	Result.make("committed","",["research","economy"],["1"]),
+	Result.make("committed","",["research","economy"],["2"]),
+	Result.make("committed","",["research","economy"],["1","2"])]
 ## Concrete coordination of crew, planets and research. Domains own state; Game owns time.
 
 func add_crew_exp(g,crew_id: String, amount: float) -> bool:
@@ -125,14 +132,14 @@ func advance_planets(g,dt: float) -> void:
 
 func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
-	if planet_plan.is_empty():return Result.make("no_change")
-	planet_plan=planet_plan.duplicate(true)
-	Result.freeze(planet_plan)
+	if planet_plan.is_empty():return NO_CHANGE
 	if not g.planets.proposal_current(planet_plan):return Result.make("rejected","stale_planet")
 	if not planet_plan.completed:
-		if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
+		if not g.commit_effects.begin_progress():return Result.make("blocked","commit_in_progress")
 		g.planets.commit(planet_plan)
-		return g.commit_effects.finish(g,["planets"],[],[],{},[])
+		return g.commit_effects.finish_progress(g,PLANET_PROGRESS)
+	planet_plan=planet_plan.duplicate(true)
+	Result.freeze(planet_plan)
 	var id: String=planet_plan.id
 	var reward: float=g.planet_exp_reward(id);var rewards: Dictionary={}
 	if reward>0:
@@ -250,7 +257,19 @@ func advance_hightech(g,dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 
 func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
-	if proposal.is_empty():return Result.make("no_change")
+	if proposal.is_empty():return NO_CHANGE
+	if not proposal.completed and not proposal.stopped:
+		# No callbacks occur before these two installations. The domain retains
+		# its own snapshot; only callback-bearing completion needs a frozen copy.
+		if not g.research.proposal_current(proposal) or proposal.inputs!=g.research.advance_inputs(g,proposal.id):return Result.make("rejected","stale_research")
+		if not g.commit_effects.begin_progress():return Result.make("blocked","commit_in_progress")
+		if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return g.commit_effects.abort("stale_research_wallet","rejected")
+		g.research.commit_advance(proposal)
+		var mask:int=(1 if proposal.paid.has("1") else 0)+(2 if proposal.paid.has("2") else 0)
+		var progress_now_ms:=Time.get_ticks_msec()
+		var notify_resources:bool=mask!=0 and progress_now_ms-g.ai_tech_last_resource_notice_ms>=250
+		if notify_resources:g.ai_tech_last_resource_notice_ms=progress_now_ms
+		return g.commit_effects.finish_progress(g,RESEARCH_PROGRESS[mask],notify_resources)
 	proposal=proposal.duplicate(true)
 	Result.freeze(proposal)
 	var configuration_before: Array=g.attributes.configuration_inputs(g)
