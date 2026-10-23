@@ -383,3 +383,10 @@ Old responsibility exits:
 - UI event delivery does not own business scheduling, and existing big-number arithmetic remains the only quantity representation.
 
 No implementation process remains intentionally running after workbook completion. Remaining gate is the parent's independent dual review of this candidate. Lifecycle's earlier limited approval does not itself approve configuration/S3; no merge, arbitrary interrupted-resume promise, model-equivalence claim or new performance guarantee is made.
+
+
+### S3 public-return P2 follow-up
+
+High closed the original four configuration findings on 2304ae2d but found two remaining post-commit rereads. config_publication save no longer calls execute(load) after publication: its private worker prepares the returned editor tables from the rewritten source bytes before commit, and the coordinator binds that result to this commit's generation plus fingerprints of inputs updated by this transaction. Full import likewise prepares the returned projection from its candidate bytes before publication; import_workbook.full_import returns that result instead of capturing the live root again. Later refresh is a separate operation and cannot replace this successful outcome or combine another editor's tables with this generation.
+
+Existing published_editor_protocol extended with public_commit_returns passed **17 assertions** in s3-public-return-15f0_9ge. A real OS root lock is acquired immediately after actual commit for both public operations; neither falsely reports Busy. A second public editor save completes before each first operation returns; the first result still matches its own committed generation, updated source fingerprints and tables/projection. The complete existing public importer/editor/split/full checks remain included. The two changed production files and test were byte-compared with the executed fixture. Evidence: test/evidence/architecture-s3-lifecycle/public-return. No main merge, gameplay change, new compatibility or full-suite rerun claim; this narrow P2 fix awaits independent high review.

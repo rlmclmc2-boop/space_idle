@@ -738,9 +738,7 @@ def full_import(source, target):
     from config_publication import execute
     root=target.resolve().parent.parent
     if target.resolve()!=root/'data/game_data.json':raise ValueError('Canonical configuration target required')
-    execute(root,'full',source=source)
-    from config_snapshot import Store
-    return json.loads(Store(root).capture().files['data/game_data.json'])
+    return execute(root,'full',source=source)['data']
 
 
 def _prepare_full_import(source, target):

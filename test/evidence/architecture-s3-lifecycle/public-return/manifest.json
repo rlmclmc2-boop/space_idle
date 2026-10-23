@@ -1,0 +1,17 @@
+{
+  "checks": 17,
+  "failures": 0,
+  "entry": "existing published_editor_protocol + public_commit_returns",
+  "fixture": "s3-public-return-15f0_9ge",
+  "source_sha256": {
+    "space-battleship/tools/config_publication.py": "589b1d9dbbbfcc967c3e1d30d17d938c9639efc71dd8edd97733b6829ace6ead",
+    "space-battleship/tools/import_workbook.py": "6080ed611be1846607587c3f2a7a467bc2748fc03d675001cc565f66abb3319f",
+    "test/test_config_input_matrix.py": "60d044b067bb679de0924d24f7c3539b630b93b4e5f2ed95cfc30b7654fa6994"
+  },
+  "coverage": [
+    "real public editor save with root lock acquired after commit",
+    "editor result generation, tables and updated source fingerprints remain coherent after second editor save",
+    "full_import returns own projection under post-commit lock and intervening public editor save",
+    "existing public initialization/import/save/stale refusal/split/full-import checks"
+  ]
+}

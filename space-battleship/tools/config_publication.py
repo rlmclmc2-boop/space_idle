@@ -98,6 +98,7 @@ def worker(root,action,request):
         for path,raw in files.items():path.write_bytes(raw)
         result={'warnings':warnings,'message':le.ui_text('debug.level_editor_store.message_10' if action=='save' else 'debug.level_editor_store.message_03')}
     if action!='load':validate_complete(root,action!='split')
+    if action=='save':result={**le.PreparedStore(root).load(),**result}
     return result
 
 
@@ -150,11 +151,15 @@ def execute(root,action,request=None,source=None):
             (backup/'manifest.json').write_bytes(encoded({'version':1,'generation':expected.identity,
                 'files':[{'target':str(root/name),'original':name,'sha256':digest(raw)} for name,raw in originals.items()]}))
             result['backup']=str(backup)
+        # Finish all result preparation before commit; refreshing the live root
+        # afterward could fail despite success or mix another editor's generation.
+        if action=='save':result['snapshot']={'sources':{name:digest(raw) for name,raw in {**inputs,**updates}.items()}}
+        if action=='full':result['data']=json.loads(files['data/game_data.json'])
         published=store.publish(expected,files,lambda _:None,inputs=inputs,source_updates=updates,
                                 initial_files=original if expected is None else None,
                                 external_inputs=[{"path":str(Path(source).resolve()),"sha256":digest(external),"size":len(external),"model":"frozen_selection"}] if external is not None else None)
         result['generation']=published.identity
-        if action=='save':return {**execute(root,'load'),**result}
+        if action=='save':result['snapshot']['generation']=published.identity
         return result
 
 

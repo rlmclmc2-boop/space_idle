@@ -287,6 +287,8 @@ def published_editor_protocol():
     full.full_import(complete,root/'data/game_data.json')
     current=protocol.Store(root).capture()
     check(json.loads(current.manifest)['external_inputs'][0]['sha256']==protocol.digest(complete.read_bytes()),'Full import publishes a validated frozen external selection')
+    public_commit_returns(root,complete)
+    current=protocol.Store(root).capture()
     master=ROOT.parent/'太空战舰.xlsx'
     cw.sync_workbooks(master,root/'config_excel')
     split=protocol.Store(root).capture()
@@ -298,6 +300,45 @@ def published_editor_protocol():
     else:raise AssertionError('Historical aggregate unexpectedly passed current validators')
     check(dict(protocol.Store(root).capture().files)==before,'Rejected full import preserves the published configuration')
 
+
+
+def public_commit_returns(root,complete):
+    """Real public saves/imports return their own commit under post-commit races."""
+    import config_snapshot as protocol
+    editor=le.Store(root);real_publish=protocol.Store.publish
+    request=editor.load();request['tables']['mon']['rows'][0]['health']+=1
+    own_health=request['tables']['mon']['rows'][0]['health']
+    committed=[]
+    with ExitStack() as held:
+        def lock_after_commit(store,*args,**kwargs):
+            result=real_publish(store,*args,**kwargs);committed.append(result)
+            held.enter_context(protocol.exclusive(root/protocol.LOCK))
+            return result
+        with patch.object(protocol.Store,'publish',lock_after_commit):saved=editor.execute(request,True)
+        check(saved['generation']==saved['snapshot']['generation']==committed[0].identity,'Public save remains successful when another holder takes the lock after commit')
+        check(saved['tables']['mon']['rows'][0]['health']==own_health and saved['snapshot']['sources']=={name:entry['sha256'] for name,entry in json.loads(committed[0].manifest)['inputs'].items()},'Saved tables and updated source fingerprints belong to this commit')
+    request=editor.load();request['tables']['mon']['rows'][0]['health']+=1
+    own_health=request['tables']['mon']['rows'][0]['health'];committed=[]
+    active=False
+    def second_editor(store,*args,**kwargs):
+        nonlocal active
+        result=real_publish(store,*args,**kwargs)
+        if not active:
+            active=True;committed.append(result)
+            next_request=editor.load();next_request['tables']['mon']['rows'][0]['health']+=10
+            editor.execute(next_request,True)
+        return result
+    with patch.object(protocol.Store,'publish',second_editor):saved=editor.execute(request,True)
+    check(saved['generation']==saved['snapshot']['generation']==committed[0].identity and saved['generation']!=protocol.Store(root).capture().identity,'Second editor cannot replace first save result generation')
+    check(saved['tables']['mon']['rows'][0]['health']==own_health and saved['snapshot']['sources']=={name:entry['sha256'] for name,entry in json.loads(committed[0].manifest)['inputs'].items()},'First editor receives its own tables and source identity after second save')
+    with ExitStack() as held:
+        committed=[]
+        with patch.object(protocol.Store,'publish',lock_after_commit):data=full.full_import(complete,root/'data/game_data.json')
+        check(data==json.loads(committed[0].files['data/game_data.json']),'Full importer returns its committed projection while the root is busy')
+    # A later editor actually changes the installed projection before full_import returns.
+    active=False;committed=[]
+    with patch.object(protocol.Store,'publish',second_editor):data=full.full_import(complete,root/'data/game_data.json')
+    check(data==json.loads(committed[0].files['data/game_data.json']) and data!=json.loads(protocol.Store(root).capture().files['data/game_data.json']),'Full importer cannot return the second editor projection')
 
 
 def initialization_protocol():
