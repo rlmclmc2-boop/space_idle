@@ -1527,18 +1527,6 @@ func record_research_income(id: String) -> void:
 
 func advance_hightech(dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 	if dt<=0.0 or not is_finite(dt):return
-	var remaining := dt
-	while remaining>0.0:
-		var automatic := crew.factory_active(self)
-		var step := minf(remaining,research.auto_refresh_in()) if automatic else remaining
-		advance_research_interval(step)
-		remaining=maxf(0.0,remaining-step)
-		if automatic:
-			var refreshed := research.advance_auto_inputs(self,step,production_time()-remaining)
-			save_dirty=true
-			if refreshed:event.emit("tech_tree_changed",{"reason":"automatic_input"})
-
-func advance_research_interval(dt: float) -> void:
 	var proposal := research.prepare_advance(self,dt)
 	if proposal.is_empty():return
 	if proposal.completed and not native_before_configuration_change():return
@@ -1557,6 +1545,12 @@ func advance_research_interval(dt: float) -> void:
 	# A completed interval is committed before choosing the following project.
 	# Its research starts on the next shared step, with no replayed time or fee.
 	if proposal.completed:crew.continue_research(self)
+
+func refresh_factory_inputs(dt: float) -> void:
+	if not crew.factory_active(self):return
+	var refreshed := research.advance_auto_inputs(self,dt,production_time())
+	save_dirty=true
+	if refreshed:event.emit("tech_tree_changed",{"reason":"automatic_input"})
 
 func production_time() -> float:
 	return float(profile.get("productionElapsed",0.0))
@@ -4052,6 +4046,9 @@ func advance_shared_clock_and_economy(dt:float)->void:
 		drop.age += dt
 		if drop.age >= (2.0 if drop.has("jewel") else float(db.defaults.autoCollectDelay)):
 			collect(drop, false)
+	# Allocate after this step's receipts, so a drop settled on the window
+	# boundary is included now rather than falling out of the following window.
+	refresh_factory_inputs(dt)
 
 func finish_combat_step(dt:float)->void:
 	if state == State.COMBAT and not has_alive_enemy():

@@ -205,22 +205,28 @@ func commit_income_peak(proposal: Dictionary) -> bool:
 	revision += 1
 	return true
 
-func remaining_seconds(game, id: String, speed: Variant) -> float:
-	if id.is_empty() or N.compare(speed,0)<=0 or not is_finite(required(game,id)):return INF
-	return N.ratio(maxf(0.0,required(game,id)-progress(id)),speed)
+func remaining_work(game, id: String) -> float:
+	if id.is_empty():return INF
+	return maxf(0.0,required(game,id)-progress(id))
+
+func remaining_seconds(game, id: String, speed: Variant) -> Variant:
+	var work := remaining_work(game,id)
+	if not is_finite(work) or N.compare(speed,0)<=0:return INF
+	return N.divide(work,speed)
 
 func shortest_available(game) -> String:
-	# Inputs and crew speed are shared by every project. Use the same remaining
-	# time as the factory view; configured order breaks equal-time ties.
+	# Keep the shared time representation through selection; only the view
+	# formats short durations. Strict comparison retains configured tie order.
 	var speed: Variant = research_speed(game)
 	for id in ["1","2"]:
-		if N.compare(game.economy.balance(id),0)>0:speed = N.multiply(speed,input_factor(_state.aiTechInput[id]))
+		if N.compare(game.economy.balance(id),0)>0:speed=N.multiply(speed,input_factor(_state.aiTechInput[id]))
 	var choice := ""
-	var shortest := INF
+	var shortest: Variant = null
 	for id in game.db.data.ai_tech_tree:
 		if not bool(eligibility(game,id).ok):continue
-		var seconds := remaining_seconds(game,id,speed)
-		if seconds < shortest:choice = id;shortest = seconds
+		var seconds = remaining_seconds(game,id,speed)
+		if not N.valid(seconds):continue
+		if choice.is_empty() or N.compare(seconds,shortest)<0:choice=id;shortest=seconds
 	return choice
 
 func snapshot(game) -> Dictionary:
@@ -247,7 +253,7 @@ func snapshot(game) -> Dictionary:
 			current = peak_factor(game)
 			next = N.multiply(float(level(game,id)+1),peak_product(game))
 		nodes.append({"id":id,"name":str(row.name),"description":str(row.description),"tier":str(row.tier),"level":level(game,id),"effect":str(row.effect),"factor":float(row.factor),"current_multiplier":current,"next_multiplier":next,"requirements":row.get("requirements",{}),"eligibility":eligibility(game,id),"required_seconds":cost,"progress_seconds":progress,"remaining_seconds":remaining_seconds(game,id,acceleration),"percent":clampi(int(floor(100.0*progress/cost)),0,99) if is_finite(cost) else 0})
-	var remaining := remaining_seconds(game,selected,acceleration)
+	var remaining = remaining_seconds(game,selected,acceleration)
 	return {"nodes":nodes,"selected":selected,"inputs":inputs,"automatic_input":game.crew.factory_active(game),"input_ratios":_state.aiTechAutoRatios.duplicate(),"input_refresh_seconds":auto_refresh_in(),"ai_count":ai_count(game),"speed":acceleration,"remaining_seconds":remaining,"status":"idle" if selected.is_empty() else "researching"}
 
 func prepare_advance(game, dt: float) -> Dictionary:

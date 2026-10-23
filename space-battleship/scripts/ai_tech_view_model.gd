@@ -13,7 +13,8 @@ static func model_id(display_id: String) -> String:
 static func display_id(model_id: String) -> String:
 	return str(DISPLAY_IDS.get(model_id,model_id))
 
-static func duration(seconds: float) -> String:
+static func duration(seconds: Variant) -> String:
+	if seconds is Dictionary:return UIText.t("ai_tech.view.duration_subsecond") if N.compare(seconds,1.0)<0 else UIText.t("ai_tech.view.duration_scientific",{"value_1":N.text(seconds)})
 	if not is_finite(seconds):return UIText.t("ai_tech.view.duration_overflow")
 	if seconds >= 9.0e18:return UIText.t("ai_tech.view.duration_scientific", {"value_1":String.num_scientific(seconds)})
 	if seconds < 1.0:return UIText.t("ai_tech.view.duration_subsecond")
@@ -52,7 +53,7 @@ static func snapshot(game) -> Dictionary:
 		var state_text := UIText.t("ai_tech.view.enhancement_locked") if str(node.eligibility.get("reason", "")) == "enhancement_locked" else UIText.t("ai_tech.view.prerequisite_locked")
 		if str(node.eligibility.get("reason", "")) in ["factory_locked","legacy_locked"]:state_text = UIText.t("ai_tech.view.legacy_locked")
 		if can_start:
-			var seconds_left := float(node.remaining_seconds)
+			var seconds_left = node.remaining_seconds
 			state_text = UIText.t("ai_tech.research.active_estimate" if is_active else "ai_tech.research.estimate", {"time":duration(seconds_left)})
 		technologies.append({"id":display_id(id),"tier":"final" if node.tier=="ultimate" else node.tier,"name":node.name,"level":node.level,"generation_text":generation_text,"effect_text":effect,"requirement_text":requirement(game,id,int(node.level)),"state_text":state_text,"can_research":can_start,"action_text":UIText.t("ai_tech.view.pause") if is_active else UIText.t("ai_tech.view.start")})
 	var iron: Dictionary = source.inputs["1"]
@@ -62,7 +63,7 @@ static func snapshot(game) -> Dictionary:
 	var status_text := UIText.t("ai_tech.view.idle") if active_id.is_empty() else UIText.t("ai_tech.view.active")
 	if not active_id.is_empty() and shortage:status_text = UIText.t("ai_tech.view.acceleration_paused")
 	var automatic := bool(source.automatic_input)
-	return {"automatic_input":automatic,"technologies":technologies,"active_id":display_id(active_id) if not active_id.is_empty() else "","researching":not active_id.is_empty(),"advancing":not active_id.is_empty() and not game.paused,"progress":clampf(progress,0.0,1.0),"remaining_text":duration(float(source.remaining_seconds)) if not active_id.is_empty() else "—","status_text":status_text,"ai_text":UIText.t("ai_tech.view.ai_count", {"value_1":"%d" % (int(source.ai_count))}),"speed_text":UIText.t("ai_tech.view.speed", {"value_1":N.text(source.speed) if source.speed is Dictionary else "%.3f" % float(source.speed)}),"iron_investment":str(float(source.input_ratios["1"])*100.0) if automatic else N.input_text(iron.amount),"uranium_investment":str(float(source.input_ratios["2"])*100.0) if automatic else N.input_text(uranium.amount),"iron_state":input_state(iron,automatic),"uranium_state":input_state(uranium,automatic)}
+	return {"automatic_input":automatic,"technologies":technologies,"active_id":display_id(active_id) if not active_id.is_empty() else "","researching":not active_id.is_empty(),"advancing":not active_id.is_empty() and not game.paused,"progress":clampf(progress,0.0,1.0),"remaining_text":duration(source.remaining_seconds) if not active_id.is_empty() else "—","status_text":status_text,"ai_text":UIText.t("ai_tech.view.ai_count", {"value_1":"%d" % (int(source.ai_count))}),"speed_text":UIText.t("ai_tech.view.speed", {"value_1":N.text(source.speed) if source.speed is Dictionary else "%.3f" % float(source.speed)}),"iron_investment":str(float(source.input_ratios["1"])*100.0) if automatic else N.input_text(iron.amount),"uranium_investment":str(float(source.input_ratios["2"])*100.0) if automatic else N.input_text(uranium.amount),"iron_state":input_state(iron,automatic),"uranium_state":input_state(uranium,automatic)}
 
 static func input_state(input: Dictionary, automatic: bool) -> String:
 	var effect := UIText.t("ai_tech.view.insufficient_resources") if input.shortage else UIText.t("ai_tech.view.input_factor",{"value_1":"%.3f" % float(input.factor)})
