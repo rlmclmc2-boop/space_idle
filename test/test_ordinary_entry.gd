@@ -23,6 +23,8 @@ func points(scene)->Dictionary:
  return out
 func run()->void:
  var args:=OS.get_cmdline_user_args()
+ if not args.is_empty() and str(args[0])=="planet-loading":
+  await run_planet_loading();return
  if not args.is_empty() and str(args[0]).begins_with("reactor-"):
   await run_reactor(str(args[0]));return
  if not args.is_empty() and str(args[0]).begins_with("product-"):
@@ -63,6 +65,7 @@ func product_state(g)->Dictionary:
  return {"wallet":wallet,"equipment":g.equipment.save_data(),"enhancement":g.enhancement_growth.save_data(),"reactor":g.reactor.save_data(),"crew":g.crew.save_data(),"planets":g.planets.save_data(),"galaxy":g.galaxy.save_data(),"research":g.research.save_data(),"hyperspace":g.hyperspace.save_data(),"time":g.production_time()}
 
 func product_capture(scene,label:String)->void:
+ scene._process(0.0) # Use the product redraw path before reading the displayed header.
  scene.battle_layer.queue_redraw();scene.refresh_save_status()
  await process_frame;await RenderingServer.frame_post_draw
  root.get_texture().get_image().save_png("res://.runtime/"+label+".png")
@@ -170,7 +173,7 @@ func run_product(phase:String)->void:
     if frame%10==0:await process_frame
    check(g.production_time()>float(expected.domains.time),"Reopened product resumes live simulation")
   await product_capture(scene,phase)
- var report:={"phase":phase,"checks":checks,"failures":failures,"saving":g.save_enabled,"writer":g.progress_writer.owns_progress(),"startup_error":g.startup_error,"production_time":g.production_time(),"receipt_status":g.hyperspace.state.active.get("status",""),"native":g.native_execution!=null}
+ var report:={"phase":phase,"checks":checks,"failures":failures,"saving":g.save_enabled,"writer":g.progress_writer.owns_progress(),"startup_error":g.startup_error,"header_values":{"iron":scene.resource_display("1"),"uranium":scene.resource_display("2")},"production_time":g.production_time(),"receipt_status":g.hyperspace.state.active.get("status",""),"native":g.native_execution!=null}
  FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," "))
  if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
  if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
@@ -241,9 +244,56 @@ func run_reactor(phase:String)->void:
   check(g.production_time()>before and N.valid(g.reactor_multiplier("weapons")),"Live product clock and finite effects continue after reopen")
  scene.refresh_tab_visibility();scene.select_system(2);scene.reactor_panel.refresh()
  await product_capture(scene,phase)
- report.merge({"checks":checks,"failures":failures,"saving":g.save_enabled,"version":g.SAVE_VERSION,"native":g.native_execution!=null})
+ report.merge({"header_values":{"iron":scene.resource_display("1"),"uranium":scene.resource_display("2")},"checks":checks,"failures":failures,"saving":g.save_enabled,"version":g.SAVE_VERSION,"native":g.native_execution!=null})
  FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," ",true,true))
  if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
  if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
  scene.queue_free();await process_frame
  print("REACTOR_PRODUCT ",phase," ",checks," checks ",failures," failures ",JSON.stringify(report));quit(1 if failures else 0)
+
+func run_planet_loading()->void:
+ var area:=ProjectSettings.globalize_path("res://../userdata").simplify_path().replace("\\","/")
+ check(OS.get_user_data_dir().replace("\\","/").begins_with(area),"Planet product uses isolated player data")
+ var scene=load("res://main.tscn").instantiate();scene.automation_args=[];scene.music_on=false
+ root.add_child(scene);current_scene=scene;scene.set_process(false)
+ var g=scene.game
+ check(g.startup_error.is_empty() and g.save_enabled and g.progress_writer.owns_progress(),"Planet loading uses original product scene and writer")
+ if not g.startup_error.is_empty():quit(1);return
+ g.profile.onboarding.completed=true;scene.beginner_guide.hide();g.profile.cleared=range(1,101);g.profile.highestLevel=101
+ var planets:Dictionary=g.planets.save_data();planets.merge(g.crew.save_data())
+ for progress in planets.planets.values():progress.conquered=true
+ check(g.planets.install_snapshot(planets,g.db),"Current planet acceptance state installs")
+ g.rebuild_unlocks();g.pending_unlocks.clear();scene.refresh_structure();scene.refresh_tab_visibility()
+ check(g.start(1,false),"Live sortie starts before opening the planet page")
+ scene.select_system(6)
+ var panel=scene.planet_panel;var id:String=panel.selected_planet_id;var visual=panel.cards[id].visual
+ check(visual.preparing and visual.loading.visible and panel.cards[id].stage_title.visible,"Planet details and image-loading feedback appear immediately")
+ await product_capture(scene,"planet-loading-shell")
+ scene.select_system(0);await process_frame
+ var before:float=g.production_time()
+ for frame in 4:scene._process(1.0/60.0);await process_frame
+ check(not panel.is_visible_in_tree() and g.production_time()>before,"Navigation and game clock respond while images are pending")
+ planets=g.planets.save_data();planets.merge(g.crew.save_data());planets.planets[id].degree=7.0
+ check(g.planets.install_snapshot(planets,g.db),"Current planet view changes while hidden")
+ scene.select_system(6)
+ for frame in 600:
+  if panel.cards.values().all(func(card):return not card.icon.preparing) and not visual.preparing:break
+  scene._process(1.0/60.0);await process_frame
+ check(not visual.preparing and visual.globe.visible and not visual.loading.visible and visual.last_degree==7.0,"Prepared image uses current exploration state after returning")
+ check(visual.globe.surface_map!=null and visual.globe.cloud_map!=null,"Actual planet textures are installed")
+ var visual_id:int=visual.get_instance_id();var texture:Texture2D=visual.globe.surface_map
+ scene.select_system(0);await process_frame;scene.select_system(6);await process_frame
+ check(panel.cards[id].visual.get_instance_id()==visual_id and visual.globe.surface_map==texture and not visual.preparing,"Prepared image and controls are reused on revisit")
+ for other in panel.cards:
+  panel.cards[other].list_button.pressed.emit()
+  for frame in 600:
+   if not panel.cards[other].visual.preparing:break
+   scene._process(1.0/60.0);await process_frame
+  check(panel.selected_planet_id==other and not panel.cards[other].visual.preparing and panel.cards[other].visual.planet_id==other,"Actual navigation signal installs the selected planet image")
+ panel.cards[id].list_button.pressed.emit();scene._process(0.0)
+ await product_capture(scene,"planet-loading-ready")
+ FileAccess.open("res://.runtime/planet-loading.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"production_time":g.production_time(),"planets":panel.cards.size(),"saving":g.save_enabled}))
+ if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
+ if g.native_execution!=null:g.native_execution.cancel(g);g.native_execution=null
+ scene.queue_free();await process_frame
+ print("PLANET_LOADING ",checks," checks ",failures," failures");quit(1 if failures else 0)

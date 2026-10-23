@@ -15,6 +15,7 @@ const CLOUDS := preload("res://assets/planets/toon/origin-clouds.svg")
 var phases := Vector2.ZERO
 var parameter_writes := 0
 var globe_material := ShaderMaterial.new()
+var material_ready := false
 var visual_clock := 0.0
 var extent := 1.09
 # Optional visual fields share the existing planet.visual dictionary. No IDs here.
@@ -45,15 +46,21 @@ func configure_visual(appearance: Dictionary) -> void:
 	extent = maxf(extent, minf(10.0, float(globe_material.get_shader_parameter("beam_length"))) + 0.2)
 	globe_material.set_shader_parameter("extent", extent)
 
-func _init() -> void:
+func _init(defer_material := false) -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if not defer_material:prepare_material()
+
+func prepare_material() -> void:
+	if material_ready:return
 	globe_material.shader = preload("res://scripts/rotating_planet.gdshader")
 	material = globe_material
+	material_ready = true
 
 func _ready() -> void:
-	apply_settings()
+	if material_ready:apply_settings()
 
 func apply_settings() -> void:
+	prepare_material()
 	for key in ["surface_map", "cloud_map", "glow_strength", "shadow_strength", "cloud_opacity", "atmosphere_color", "light_direction"]:
 		globe_material.set_shader_parameter(key, get(key))
 

@@ -161,15 +161,15 @@ func run():
   var preparation_frames:Array=[]
   var preparation_time_before:float=g.production_time()
   var preparation_started:=Time.get_ticks_usec()
-  var shell_visible:bool=page==8 and scene.galaxy_panel.map.get("preparing")==true and scene.galaxy_panel.map.loading.visible
-  if page==8:
-   while scene.galaxy_panel.map.get("preparing")==true and preparation_frames.size()<600:
-    preparation_stages.append(scene.galaxy_panel.map.prepare_stage)
+  var shell_visible:bool=page_preparing(scene,page)
+  if page in [6,8]:
+   while page_preparing(scene,page) and preparation_frames.size()<600:
+    preparation_stages.append(scene.galaxy_panel.map.prepare_stage if page==8 else 0)
     var began:=Time.get_ticks_usec()
     if not realtime:scene._process(1.0/60.0)
     await process_frame
     preparation_frames.append(Time.get_ticks_usec()-began)
-   page_check(scene.galaxy_panel.map.get("preparing")!=true,"Galaxy content reaches ready through bounded view preparation")
+   page_check(not page_preparing(scene,page),"Selected page reaches ready through bounded view preparation")
   var preparation_timings=meter.times.duplicate(true);meter.enabled=false
   var preparation_us:=Time.get_ticks_usec()-preparation_started
   var preparation_game_seconds:float=g.production_time()-preparation_time_before
@@ -301,3 +301,10 @@ func galaxy_progress(g)->Dictionary:
  for candidate in (g.crew.members() if g.get("equipment")!=null else g.profile.crew):
   if candidate.crewId=="navigator":member={"id":candidate.crewId,"assignment":candidate.assignmentType,"target":candidate.targetId}
  return {"status":region.state.status,"crew":member,"crew_count":g.galaxy.crew_count(g,"galaxy_1"),"upgrade_work":region.state.upgrade_work,"active_upgrade_work":work,"level_total":levels,"building_revision":region.building_revision,"effect_generation":g.galaxy.effect_generation,"settlements":galaxy_settlements,"income_events":galaxy_income_events,"game_time":g.production_time()}
+
+func page_preparing(scene,page:int)->bool:
+ if page==8:return scene.galaxy_panel.map.get("preparing")==true
+ if page==6:
+  for card in scene.planet_panel.cards.values():
+   if card.icon.get("preparing")==true or (card.has("visual") and card.visual.get("preparing")==true):return true
+ return false
