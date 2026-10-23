@@ -19,6 +19,7 @@ var baseline := {}
 var jobs := []
 var reports := []
 var status := "idle"
+var execution_error := ""
 var speed := 100.0
 var credit := 0.0
 var steps := 0
@@ -112,6 +113,11 @@ func step_once() -> void:
 	var remaining := float(config.duration)-steps*STEP
 	var dt := minf(STEP,remaining)
 	game.tick(dt)
+	if not game.execution_error.is_empty():
+		execution_error=game.execution_error
+		status="error"
+		completed={"status":"error","error":execution_error,"execution":game.execution_admission,"runs":reports.duplicate()}
+		return
 	total_game_seconds += dt
 	steps += 1
 	logic_steps_total += 1
@@ -132,6 +138,7 @@ func step_once() -> void:
 func finish_run(partial: bool) -> void:
 	metrics.timeline.snapshot(game,metrics,true)
 	var result: Dictionary = metrics.report(game)
+	result.execution=game.execution_admission.duplicate(true)
 	result.seed = jobs[job_index].seed
 	result.simulation_mode = config.simulation_mode
 	result.projectile_processing = {"scheduled":game.fast_scheduled,"resolved":game.fast_resolved,"pending_peak":game.fast_peak,"fallback":game.fast_fallback}
@@ -180,6 +187,7 @@ func stop() -> void:
 	credit = 0.0
 
 func reset() -> void:
+	execution_error=""
 	performance_log.close()
 	performance_log = PerformanceLog.new()
 	logic_steps_total = 0

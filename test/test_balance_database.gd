@@ -147,6 +147,22 @@ func run() -> void:
 		if runner.status!="running":break
 		runner.step_once()
 	check(runner.status=="completed" and runner.completed.summary.dps.count==1,"actual F8 runner completes report")
+	var contract = preload("res://scripts/execution_contract.gd")
+	check(not contract.lab(lab,"unknown").ok,"unknown Lab model rejected")
+	check(contract.enemy_state({"hp":1.0,"max_shield":huge})=="unsupported_lab_enemy_scalar:max_shield","finite HP with large max shield rejected before float")
+	check(contract.enemy_state({"hp":huge})=="unsupported_lab_enemy_scalar:hp","large enemy HP rejected before float")
+	var rejected = preload("res://scripts/balance_runner.gd").new()
+	check(rejected.start({"duration":1.0,"performance_diagnostics":false}).is_empty(),"admission fixture starts")
+	rejected.game.spawn_group()
+	rejected.game.enemies[0].max_shield=huge
+	rejected.game.configuration_revision+=1
+	rejected.step_once()
+	check(rejected.status=="error" and rejected.execution_error=="unsupported_lab_enemy_scalar:max_shield" and rejected.steps==0,"version change rejection reaches actual F8 result without consuming time")
+	var source_rejected = preload("res://scripts/balance_game.gd").new(RunDatabase.new())
+	source_rejected.start(1,false)
+	for row_id in source_rejected.db.enemies:source_rejected.db.enemies[row_id].shield=huge
+	source_rejected.spawn_group()
+	check(source_rejected.execution_error=="unsupported_lab_enemy_source:shield" and source_rejected.enemies.is_empty(),"large source shield rejected before enemy construction")
 	var timings := []
 	for database in [original,cached]:
 		var started := Time.get_ticks_usec()

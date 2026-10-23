@@ -12,6 +12,10 @@ class ResearchMetrics extends "res://scripts/progress_runtime.gd":
 		if result.status=="committed" and g.metrics!=null:g.metrics.spend("research",costs)
 		return result
 
+const Execution = preload("res://scripts/execution_contract.gd")
+var execution_error := ""
+var execution_admission: Dictionary = {}
+var execution_inputs: Array = []
 var metrics = null
 var simulated_time := 0.0
 var source_weapon := "unknown"
@@ -40,6 +44,20 @@ var repair_stats := {}
 var tick_effects_active := false
 var tick_effect_entries: Array = []
 var tick_effect_values: Array = []
+func admit_execution(force := false) -> bool:
+	if not execution_error.is_empty():return false
+	var inputs: Array = [simulation_mode,attributes.configuration_inputs(self),enhancement_growth.attacks(),enhancement_growth.hits()]
+	if force or inputs!=execution_inputs:
+		execution_admission=Execution.lab(self,simulation_mode)
+		execution_inputs=inputs.duplicate(true)
+		if not execution_admission.ok:execution_error=execution_admission.error
+	return execution_error.is_empty()
+
+func _tick_combat_step(dt: float) -> void:
+	# Shared progress may change research/equipment before this same combat step.
+	if not admit_execution():return
+	super._tick_combat_step(dt)
+
 func stat(key: String) -> Variant:
 	var value: Variant = super.stat(key)
 	return N.multiply(value,player_power_multiplier) if key in ["armour", "shield"] else value
@@ -85,8 +103,13 @@ func clear_pending_hits() -> void:
 	fresh_shots.clear()
 
 func start(level: int, loop_mode: bool, checkpoint: Dictionary = {}) -> bool:
+	execution_error="";execution_inputs=[]
+	if not admit_execution(true):return false
 	var result := super.start(level,loop_mode,checkpoint)
-	if result:clear_pending_hits()
+	if result:
+		clear_pending_hits()
+		execution_error="";execution_inputs=[]
+		return admit_execution(true)
 	return result
 
 func leave(next: State) -> void:
@@ -205,6 +228,7 @@ func save_progress() -> void:
 	pass
 
 func tick(dt: float) -> void:
+	if not admit_execution():return
 	if paused or commit_effects.active or logical_step_active:return
 	# This independent analysis clock substitutes for live wall time.
 	if not step_progress.active:
@@ -229,7 +253,11 @@ func observe(kind: String, payload: Dictionary) -> void:
 		if kind == "state" and state == State.LEVEL_CLEAR:metrics.timeline.discover(self,simulated_time)
 
 func spawn_group(keep_distance := false) -> void:
+	if not execution_error.is_empty():return
+	execution_error=Execution.encounter(self)
+	if not execution_error.is_empty():return
 	super.spawn_group(keep_distance)
+	if not admit_execution(true):return
 	if metrics == null:return
 	metrics.born.clear()
 	metrics.encounter_start = simulated_time
@@ -240,6 +268,9 @@ func spawn_group(keep_distance := false) -> void:
 	if is_boss_encounter():metrics.timeline.record("BOSS",simulated_time,stage,{"wave":group_index})
 
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false, context: Dictionary = {}) -> void:
+	if not execution_error.is_empty():return
+	execution_error=Execution.enemy_state(enemy)
+	if not execution_error.is_empty():return
 	var before: Variant = enemy.hp
 	var weapon := source_weapon
 	var boss := is_boss_encounter()

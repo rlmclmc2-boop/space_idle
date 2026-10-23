@@ -30,8 +30,8 @@ var metrics: RefCounted
 var combat_enemies: Array = []
 var elapsed := 0.0
 var work_usec := 0
-var max_hp := 0.0
-var max_enemy_hp := 0.0
+var max_hp: Variant = 0.0
+var max_enemy_hp: Variant = 0.0
 var current := {}
 var results: Array = []
 var aggregate := {}
@@ -162,9 +162,12 @@ func process(budget_usec := -1) -> void:
 			if not busy() or game==null:continue
 		var started := Time.get_ticks_usec()
 		game.tick(STEP)
+		if not game.execution_error.is_empty():
+			finish_battle("error",game.execution_error)
+			continue
 		work_usec += Time.get_ticks_usec()-started
 		elapsed += STEP
-		if not is_finite(float(game.player.armour)) or not is_finite(enemy_remaining()):finish_battle("error","nonfinite_state")
+		if not GrowthNumber.valid(game.player.armour) or not GrowthNumber.valid(enemy_remaining()):finish_battle("error","nonfinite_state")
 		elif metrics.deaths>0 or not game.player_alive():finish_battle("loss")
 		elif game.state==BattleGame.State.LEVEL_CLEAR:finish_battle("win")
 		elif game.state!=BattleGame.State.COMBAT:finish_battle("error","unexpected_state")
@@ -251,8 +254,8 @@ func begin_battle() -> void:
 		return
 	var started := Time.get_ticks_usec()
 	game = PlayerGenerator.start_validated_battle(database,enemy,player,current.seed,config.mode,profiles[player_index],float(config.get("power_multiplier",1.0)))
-	if not game.startup_error.is_empty():
-		var startup_error:=game.startup_error
+	if not game.startup_error.is_empty() or not game.execution_error.is_empty():
+		var startup_error: String=game.startup_error if not game.startup_error.is_empty() else game.execution_error
 		release_game()
 		finish_battle("error",startup_error)
 		return
@@ -264,14 +267,14 @@ func begin_battle() -> void:
 	for target in game.enemies:metrics.born[target.uid]=0.0
 	# Retreat clears game.enemies; keep references to retain actual enemy HP on defeat.
 	combat_enemies=game.enemies.duplicate()
-	max_hp=float(game.stat("armour"))+float(game.stat("shield"))
+	max_hp=GrowthNumber.add(game.stat("armour"),game.stat("shield"))
 	max_enemy_hp=enemy_remaining()
 	work_usec=Time.get_ticks_usec()-started
-	if max_hp<=0 or max_enemy_hp<=0:finish_battle("error","invalid_initial_hp")
+	if GrowthNumber.compare(max_hp,0)<=0 or GrowthNumber.compare(max_enemy_hp,0)<=0:finish_battle("error","invalid_initial_hp")
 
-func enemy_remaining() -> float:
-	var hp := 0.0
-	for enemy in combat_enemies:hp+=maxf(0,float(enemy.hp))
+func enemy_remaining() -> Variant:
+	var hp: Variant = 0.0
+	for enemy in combat_enemies:hp=GrowthNumber.add(hp,GrowthNumber.maximum(0,enemy.hp))
 	return hp
 
 func finish_battle(outcome: String, message := "") -> void:
@@ -280,10 +283,12 @@ func finish_battle(outcome: String, message := "") -> void:
 	current.win = outcome=="win" if outcome in ["win","loss"] else null
 	current.battle_time=elapsed
 	if game!=null:
-		current.player_hp_ratio=clampf((float(game.player.armour)+float(game.player.shield))/maxf(max_hp,0.000001),0,1)
-		current.enemy_hp_ratio=clampf(enemy_remaining()/maxf(max_enemy_hp,0.000001),0,1)
+		current.player_hp_ratio=clampf(GrowthNumber.ratio(GrowthNumber.add(game.player.armour,game.player.shield),GrowthNumber.maximum(max_hp,0.000001)),0,1)
+		current.enemy_hp_ratio=clampf(GrowthNumber.ratio(enemy_remaining(),GrowthNumber.maximum(max_enemy_hp,0.000001)),0,1)
 		current.player_deaths=int(metrics.deaths)
 		current.damage_by_weapon=metrics.damage.duplicate(true)
+		current.damage_basis="enemy_hp_removed_excluding_shield"
+		current.execution=game.execution_admission.duplicate(true)
 	update_aggregate(aggregate,current)
 	update_aggregate(pair_aggregate,current)
 	sampling.observe(sampling.pairs[active_pair],current)

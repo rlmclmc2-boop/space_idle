@@ -73,7 +73,7 @@ func prepare_galaxy_refit(game,values:Dictionary)->Dictionary:
 		if not values.has(key) or not is_finite(float(values[key])) or float(values[key])<0:return {}
 	var energy=game.reactor_energy(-1,float(values.charge_max))
 	if energy is Dictionary or not is_finite(float(energy)) or float(energy)<0 or float(energy)>=9223372036854775808.0:return {}
-	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{},values)
+	var descriptor:Dictionary=preload("res://scripts/execution_contract.gd").native_descriptor(game,execution_scope,{},values)
 	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	var ratios:Dictionary=game.refit_health_ratios.duplicate()
 	for key in ["armour","shield"]:
@@ -282,7 +282,7 @@ func prepare_numeric_batch(game,plan:Dictionary,next_player:Dictionary)->Diction
 	for purchase in plan.purchases:
 		if purchase.category=="weapons":weapon_levels[purchase.index]=int(purchase.after.level)
 		else:defence_levels[purchase.index]=int(purchase.after.level)
-	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
+	var descriptor:Dictionary=preload("res://scripts/execution_contract.gd").native_descriptor(game,execution_scope,{"weapon_levels":weapon_levels,"defence_levels":defence_levels})
 	if descriptor.has("error") or not supports_configuration(kernel,descriptor):return {}
 	descriptor.player=next_player.duplicate(true)
 	if not kernel.can_update_configuration(descriptor):return {}

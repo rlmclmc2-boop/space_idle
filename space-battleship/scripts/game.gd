@@ -4019,7 +4019,7 @@ func admit_native_execution(descriptor:Dictionary)->bool:
 func admit_native_compiled_execution(scope:String)->bool:
 	if not projectiles.is_empty() or not jewel_repeats.is_empty() or ("missile_queue" in self and not get("missile_queue").is_empty()):return false
 
-	var descriptor:Dictionary=preload("res://scripts/native_execution_compiler.gd").new().compile(self,scope)
+	var descriptor:Dictionary=preload("res://scripts/execution_contract.gd").native_descriptor(self,scope)
 	if descriptor.has("error"):return false
 	return admit_native_execution(descriptor)
 
