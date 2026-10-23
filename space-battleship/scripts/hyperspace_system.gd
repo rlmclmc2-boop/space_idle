@@ -11,7 +11,7 @@ const Filter=preload("res://scripts/hyperspace_filter.gd")
 const Permission=preload("res://scripts/hyperspace_permissions.gd")
 var config: Dictionary=C.load_config()
 const Clock=preload("res://scripts/hyperspace_scheduler.gd")
-var revision:=0
+var revision:=0 # Economic/proposal revision; receipt acknowledgement is UI-only.
 var contribution_revision:=0
 var _contribution_inputs:Array=[]
 var _state:Dictionary={}
@@ -101,7 +101,7 @@ func install_snapshot(raw:Dictionary,db)->bool:
 	return true
 func acknowledge_receipt(round_id:int,run_id:int)->bool:
 	if _receipt.round!=round_id or _receipt.run!=run_id or not _receipt.unread:return false
-	_receipt=_receipt.duplicate();_receipt.unread=false;freeze(_receipt);changed();return true
+	_receipt=_receipt.duplicate();_receipt.unread=false;freeze(_receipt);return true
 func advance_manual(dt:float)->void:
 	if not is_finite(dt) or dt<=0 or _state.active.get("status","")!="started":return
 	_state.active.work+=dt;changed()
@@ -135,7 +135,9 @@ func proposal_current(g,plan:Dictionary)->bool:
 	return plan.has("next") and plan.revision==revision and plan.dependencies==dependencies(g)
 func commit(plan:Dictionary)->void:
 	assert(plan.revision==revision)
-	_install(plan.next,plan.marker)
+	# Only a new claim/reforge replaces receipt identity. Other commands preserve
+	# a UI acknowledgement that happened after the proposal was prepared.
+	_install(plan.next,plan.marker if plan.kind in ["claimed","reforge"] else _receipt)
 
 func is_unlocked(g) -> bool:
 	return int(g.profile.highestLevel)>=int(config.unlock_stage)

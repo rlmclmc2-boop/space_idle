@@ -188,3 +188,19 @@ Evidence in repository-root test/evidence/architecture-s2-step-boundaries:
 - resume-validation-manifest.json records SHA-256 of affected production/test sources and evidence, so this follow-up is distinguishable from older whole-main/performance results. No new whole-main or performance claim.
 
 Deliver this correction candidate to the parent's existing independent high. Remaining gate: review/acceptance; no known failing targeted candidate assertion. Do not merge main or describe the entire S2 as accepted before that review.
+
+
+## Final read-marker correction after 5fcefed9
+
+The parent relayed that high passed the three continuation corrections and source qualification, with one remaining blocker: UI reads were treated as economic invalidation. Both reported owners had the same defect. AI read_completion incremented revision, and Hyperspace acknowledge_receipt called changed(), so Game.continuation_context differed after clearing either unread marker and permanently froze otherwise valid retained work.
+
+Owner revision now explicitly means economic/proposal state. Those two UI-only reads mutate their existing read markers without advancing economic revision. No second continuation counter, permissive context comparison or contribution-only fallback was added. Research input/progress/completion/peak changes, Hyperspace time/configuration/command/installation changes, and existing other domain versions still invalidate stale work as before. Game's complete continuation-context comparison remains intact.
+
+Prepared snapshot installation was checked as well: partial research commit_advance preserves the current unread marker, while a genuinely new completion creates a new unread badge. Hyperspace commits preserve the current acknowledgement for ordinary commands; only a new claim or reforge installs its planned receipt identity. This prevents an economic proposal prepared before a read from restoring an obsolete unread marker. Existing Game read/save-dirty and Hyperspace feedback save/defer paths remain the consumers.
+
+Extended existing commit-boundary tests cover each UI read during a blocked real income handoff, exact resume without replay, preservation of read markers, true research-input/Hyperspace-time invalidation, and reads between proposal preparation and installation. Running them on 5fcefed9 reproduced 7 failures (131 checks). On the revised tree: commit boundary 131/0, AI tech tree 142/0, Hyperspace material economy 156/0. Logs are read-marker-baseline-* and read-marker-final-* in test/evidence/architecture-s2-step-boundaries. Certificate/ObjectDB/resource exit warnings remain visible; no final script errors. Actual main-entry rendering validation is complete as recorded below.
+
+
+Final actual main entry: `python test/run.py test_ordinary_entry.gd --godot D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe --timeout 300`, with rendering enabled and fresh isolated storage. All eight phases passed: 16/26/18/7/25/8/20/8, total 128/0. Product and factory reopened-domain mismatch lists are empty. Product-write and factory-reopen screenshots were inspected and are included under read-marker-*.png. Logs are read-marker-main-*.log; read-marker-validation-manifest.json confirms every tested production .gd matches the candidate byte-for-byte. This is new final-tree main evidence, not attribution of earlier checkpoint results. Combined final targeted and main checks: 557/0. The main run has only the known certificate-store warning.
+
+Candidate remains on work/architecture-s2-step-wip-20261024 for the parent's existing high review. No unresolved source-eligibility decision remains, no new accounting or gameplay rule was introduced, and main was not merged. Parent must confirm final acceptance.

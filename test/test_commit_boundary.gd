@@ -215,6 +215,8 @@ func _initialize()->void:
 	income_receipts()
 	derived_income_peak()
 	timed_resource_pickup()
+	read_markers_during_continuation()
+	prepared_commands_preserve_reads()
 	shared_income_failure()
 	combat_income_failure()
 	partial_domain_failure()
@@ -411,3 +413,53 @@ func timed_resource_pickup()->void:
 	if rows.is_empty():return
 	check(g.income_history.peak_total("1",g.economy_time())==rows[0].amount and g.income_history.production_total("1",g.production_time(),g.economy_time(),g.production_time())==rows[0].production_base,"Unification and Galaxy both include the top block with their existing amount bases")
 	check(g.research.save_data().aiIncomePeak["1"]==N.divide(rows[0].amount,60.0),"Top block commits the actual unification peak")
+
+
+func unread_fixture()->OrderedGame:
+	var g:=OrderedGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var raw:=g.research.save_data();raw.aiTechLevels.unification=1;raw.aiTechCompletionUnread=true
+	check(g.research.install_snapshot(raw,g.db.data.ai_tech_tree),"Unread research fixture installs")
+	var hs:=g.hyperspace.save_data();hs.hyperspace.next_run=2;hs.hyperspace.settled_run=1
+	hs.hyperspaceReceipt={"round":1,"run":1,"drone_id":"","unread":true}
+	check(g.hyperspace.install_snapshot(hs,g.db),"Unread reward marker fixture installs")
+	return g
+
+func read_markers_during_continuation()->void:
+	for action in ["research_read","hyperspace_read","research_input","hyperspace_time"]:
+		var g:=unread_fixture()
+		var drop:Dictionary={"id":"1","amount":120.0,"age":100.0,"x":0.0,"y":0.0}
+		g.drops.append(drop);g.refuse_income=true;g.consume_external_time(g.LOGICAL_STEP)
+		check(g.paused and g.step_progress.active and g.step_progress.stage==9,"Receipt blocks before read/change "+action)
+		var context:=g.continuation_context();var clock:=g.production_time()
+		match action:
+			"research_read":check(g.read_ai_tech_completion(),"Research page clears unread while blocked")
+			"hyperspace_read":check(g.hyperspace.acknowledge_receipt(1,1),"Hyperspace UI acknowledges receipt while blocked")
+			"research_input":check(g.research.set_input(g,"1",1.0),"Actual research input changes while blocked")
+			"hyperspace_time":g.hyperspace.add_online_time(0.1)
+		var ui_only:bool=action.ends_with("read")
+		check((context==g.continuation_context())==ui_only,"Only economic changes invalidate continuation "+action)
+		g.refuse_income=false;g.paused=false;g.tick(g.LOGICAL_STEP)
+		if ui_only:
+			check(not g.step_progress.active and not g.step_progress.frozen and not g.drops.has(drop) and g.income_history.size()==1 and g.production_time()==clock,"UI read permits exact retained receipt completion "+action)
+			check(not g.research.completion_unread() if action=="research_read" else not g.hyperspace.receipt_marker().unread,"Read marker stays cleared after resume "+action)
+		else:
+			check(g.step_progress.frozen and g.step_progress.reason=="blocked_context_changed" and g.drops.has(drop) and g.income_history.size()==0,"Economic mutation still freezes stale continuation "+action)
+
+func prepared_commands_preserve_reads()->void:
+	var g:=unread_fixture()
+	check(g.select_tech("weapon_accuracy"),"Prepare actual research work with an old unread badge")
+	var plan:=g.research.prepare_advance(g,0.001)
+	check(not plan.is_empty() and not plan.completed,"Prepared work is a partial research advance")
+	g.read_ai_tech_completion()
+	check(g.research.proposal_current(plan),"UI read leaves economic research proposal current")
+	g.research.commit_advance(plan)
+	check(not g.research.completion_unread(),"Partial advance cannot resurrect a badge read after preparation")
+	plan=g.research.prepare_advance(g,1e6)
+	check(not plan.is_empty() and plan.completed,"Actual new research completion is prepared")
+	g.research.commit_advance(plan)
+	check(g.research.completion_unread(),"New completion still creates its own unread badge")
+	var filter:Dictionary=g.hyperspace.state.filter.duplicate(true)
+	var command:Dictionary=g.hyperspace.prepare_set_filter(g,filter)
+	g.hyperspace.acknowledge_receipt(1,1)
+	check(g.hyperspace_runtime.commit_result(g,command).status=="committed" and not g.hyperspace.receipt_marker().unread,"Economic Hyperspace commit preserves acknowledgement made after preparation")

@@ -8,7 +8,7 @@ const AUTO_INPUT_SECONDS := 60.0
 const MIN_INPUT_RATIO := 0.001
 const LEVEL_LIMIT := 9007199254740991
 var _state: Dictionary = fresh()
-var revision := 0
+var revision := 0 # Economic/proposal revision; reading a UI badge is excluded.
 var contribution_revision:=0
 var _level_revision := 0
 var _factor_level_revision := -1
@@ -40,7 +40,6 @@ func completion_unread() -> bool:
 func read_completion() -> bool:
 	if not completion_unread():return false
 	_state.aiTechCompletionUnread = false
-	revision += 1
 	return true
 
 static func required_at(rows: Dictionary, id: String, current: int) -> float:
@@ -326,5 +325,8 @@ func proposal_current(proposal: Dictionary) -> bool:
 
 func commit_advance(proposal: Dictionary) -> void:
 	if _state.aiTechLevels != proposal.state.aiTechLevels:_level_revision += 1;contribution_revision+=1
+	var unread:bool=completion_unread()
 	_state = proposal.state.duplicate(true)
+	# A read after preparation stays read, unless this commit completes new work.
+	if not proposal.completed:_state.aiTechCompletionUnread=unread
 	revision += 1
