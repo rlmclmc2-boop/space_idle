@@ -109,13 +109,30 @@ func run_reactor_allocation(g, item: Dictionary) -> void:
 	if active(g,item):g.equalize_reactor_allocation()
 	allocation_dependencies=reactor_allocation_state(g,str(item.crewId))
 
+func on_committed(g,result: Dictionary) -> void:
+	if result.status!="committed":return
+	if not result.resources.is_empty():invalidate_resources(g,result.resources)
+	if result.facts.get("equipment_changed",false):invalidate_jobs(g,["equipment_upgrade"])
+	var allocation_changed: bool=result.facts.get("reactor_allocation_changed",false)
+	for change in result.facts.get("crew_changes",[]):
+		var item: Dictionary=change.current
+		var previous: Dictionary=change.previous
+		# XP alone does not alter costs, eligibility or cadence.
+		if [item.assignmentType,item.targetId,item.upgradeMode,item.level] != [previous.assignmentType,previous.targetId,previous.upgradeMode,previous.level]:invalidate_member(g,item)
+		for member in [previous,item]:
+			if str(member.assignmentType)=="reactor_upgrade":allocation_changed=true
+			if [item.level,item.assignmentType,item.targetId] != [previous.level,previous.assignmentType,previous.targetId] and assignments(g).get(str(member.assignmentType),{}).get("targetType","")=="reactor":allocation_changed=true
+	if allocation_changed:invalidate_reactor_allocation(g)
+
 func on_event(kind: String, payload: Dictionary) -> void:
+	# S1 commands already delivered their authoritative facts before UI notices.
+	# Only unmigrated resource/reactor/unlock producers use this S2 bridge.
+	if payload.get("_committed_fact",false):return
 	var g = game_ref.get_ref()
 	if g==null:return
 	match kind:
 		"collect","galaxy_income":invalidate_resources(g,[str(payload.id)])
 		"resources_changed":invalidate_resources(g,payload.ids)
-		"upgrade","upgrades_completed","module_changed","ship_changed":invalidate_jobs(g,["equipment_upgrade"])
 		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
 		"reactor_changed":
 			if payload.has("level"):invalidate_jobs(g,["reactor_upgrade"])
@@ -125,15 +142,6 @@ func on_event(kind: String, payload: Dictionary) -> void:
 		"unlocks_changed","planet_reforged":
 			invalidate_jobs(g,PURCHASE_JOBS)
 			invalidate_reactor_allocation(g)
-		"planet_changed":
-			if payload.has("reward") or payload.has("activated"):invalidate_reactor_allocation(g)
-		"crew_changed":
-			var item := entry(g,str(payload.crewId))
-			var previous: Dictionary=payload.previous
-			# XP-only payouts leave purchase eligibility, costs and cadence unchanged.
-			if [item.get("assignmentType"),item.get("targetId"),item.get("upgradeMode"),item.get("level")] != [previous.get("assignmentType"),previous.get("targetId"),previous.get("upgradeMode"),previous.get("level")]:
-				invalidate_member(g,item)
-			if item.get("assignmentType")=="reactor_upgrade" or payload.previous.get("assignmentType")=="reactor_upgrade":invalidate_reactor_allocation(g)
 
 func register_target(target_type: String, provider: Callable) -> void:
 	targets[target_type] = provider

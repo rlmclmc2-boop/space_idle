@@ -63,6 +63,8 @@ var profile: Dictionary
 var economy := preload("res://scripts/economy_state.gd").new()
 var reactor := preload("res://scripts/reactor_state.gd").new()
 var progress_runtime := preload("res://scripts/progress_runtime.gd").new()
+const CommandResult=preload("res://scripts/command_result.gd")
+var commit_effects := preload("res://scripts/commit_effects.gd").new()
 var crew := preload("res://scripts/crew_system.gd").new()
 var state: State = State.MAIN_MENU
 var stage := 1
@@ -552,7 +554,7 @@ func begin_return_departure()->void:
 func consume_external_time(real_dt:float,presentation:Variant=null)->void:
 	# Sole live wall-time consumer. tick() remains the domain's logical algorithm
 	# for internal event subdivision and deterministic offline analysis.
-	if external_time_active or not is_finite(real_dt) or real_dt<0:return
+	if external_time_active or logical_step_active or commit_effects.active or not is_finite(real_dt) or real_dt<0:return
 	check_timed_save()
 	if paused:return
 	external_time_active=true
@@ -971,33 +973,45 @@ func switch_ship(key: String, selected_loadout: Dictionary = {}) -> bool:
 	return commit_loadout_change(key,choices,true)
 
 func commit_loadout_change(ship: String, choices: Dictionary, hull_change: bool) -> bool:
+	return CommandResult.succeeded(commit_loadout_change_result(ship,choices,hull_change))
+
+func commit_loadout_change_result(ship: String, choices: Dictionary, hull_change: bool) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
 	var plan := equipment.prepare_refit(db,ship,choices,production_time(),float(db.config.equipmentSwitchCooldownSeconds))
-	if plan.is_empty():return false
+	if plan.is_empty():return CommandResult.make("rejected","refit_unavailable")
+	if ship==equipment.selected_ship() and plan.changed.is_empty():return CommandResult.make("no_change")
 	var drone_plan := hyperspace.prepare_hull_fit(self,ship)
 	var requested: Array=plan.modules.weapons.slice(0,active_slot_count("weapons",ship))
-	if not hyperspace.equipment_constraints(self,drone_plan.state.inventory.equipped,drone_plan.state.inventory,requested):return false
-	if not native_before_configuration_change():return false
-	if not equipment.proposal_current(plan) or not hyperspace.hull_fit_current(self,drone_plan):return false
+	if not hyperspace.equipment_constraints(self,drone_plan.state.inventory.equipped,drone_plan.state.inventory,requested):return CommandResult.make("rejected","equipment_constraints")
+	var configuration_before:=attributes.configuration_inputs(self)
+	if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
+	if not equipment.proposal_current(plan) or not hyperspace.hull_fit_current(self,drone_plan) or configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	capture_refit_health()
 	var old_weapon_count := active_slot_count("weapons")
 	var previous_capacity=reactor_capacity()
 	# Both proposals are complete. No callbacks between the two installations.
 	equipment.commit_refit(db,plan)
 	hyperspace.commit_hull_fit(self,drone_plan)
-	configuration_committed()
 	var capacity=reactor_capacity()
 	reactor.reconcile_capacity(capacity)
 	for changed in plan.changed:
 		if changed.category=="weapons":invalidate_module_attack(int(changed.index))
 	for index in range(mini(old_weapon_count,active_slot_count("weapons")),maxi(old_weapon_count,active_slot_count("weapons"))):invalidate_module_attack(index)
+	configuration_committed()
 	apply_refit_health()
-	save_dirty=true
-	if capacity!=previous_capacity:event.emit("reactor_changed",{"capacity":capacity})
-	if drone_plan.changed:event.emit("hyperspace_changed",{"reason":"hull_capacity_changed","round_id":hyperspace.state.round_id})
-	if hull_change:event.emit("ship_changed",{"key":ship})
+	var notices:Array=[];var slots:Array=[];var domains:Array=["equipment"]
+	if capacity!=previous_capacity:
+		domains.append("reactor")
+		notices.append({"kind":"reactor_changed","payload":{"capacity":capacity}})
+	if drone_plan.changed:
+		domains.append("hyperspace")
+		notices.append({"kind":"hyperspace_changed","payload":{"reason":"hull_capacity_changed","round_id":hyperspace.state.round_id}})
+	for changed in plan.changed:slots.append(slot_id(changed.category,int(changed.index)))
+	if hull_change:notices.append({"kind":"ship_changed","payload":{"key":ship}})
 	else:
-		for changed in plan.changed:event.emit("module_changed",{"slot":slot_id(changed.category,int(changed.index))})
-	return true
+		for slot in slots:notices.append({"kind":"module_changed","payload":{"slot":slot}})
+	return commit_effects.finish(self,domains,[],slots,{"equipment_changed":true,"reactor_allocation_changed":capacity!=previous_capacity},notices)
 
 func permanent_modifiers() -> Dictionary:
 	return attributes.permanent_modifiers(self)
@@ -1132,16 +1146,10 @@ func select_tech(id: String) -> bool:
 	return progress_runtime.select_tech(self,id)
 
 func set_tech_input(resource_id: String, amount: Variant) -> bool:
-	if not research.set_input(self,resource_id,amount):return false
-	save_dirty = true
-	event.emit("tech_tree_changed",{"reason":"input","resource":resource_id})
-	return true
+	return CommandResult.succeeded(progress_runtime.set_tech_input_result(self,resource_id,amount))
 
 func set_tech_input_ratio(resource_id: String, ratio: float) -> bool:
-	if not research.set_auto_ratio(self,resource_id,ratio):return false
-	save_dirty=true
-	event.emit("tech_tree_changed",{"reason":"input_ratio","resource":resource_id})
-	return true
+	return CommandResult.succeeded(progress_runtime.set_tech_input_ratio_result(self,resource_id,ratio))
 
 func hightech_slots() -> Array:
 	var unlocked: Array = db.data.get("hightech", {}).keys().filter(func(key):return hightech_unlocked(key))
@@ -2358,36 +2366,47 @@ func projected_upgrade_health(plan: Dictionary) -> Dictionary:
 	return result
 
 func commit_equipment_upgrades(plan: Dictionary, batch: bool) -> bool:
+	return CommandResult.succeeded(commit_equipment_upgrades_result(plan,batch))
+
+func commit_equipment_upgrades_result(plan: Dictionary, batch: bool) -> Dictionary:
+	if commit_effects.active:return CommandResult.make("blocked","commit_in_progress")
+	if plan.is_empty():return CommandResult.make("rejected","upgrade_unavailable")
+	plan=plan.duplicate(true)
+	CommandResult.freeze(plan)
+	if not equipment.proposal_current(plan) or plan.get("wallet_before",{})!=economy.equipment_balances(db.evolution_material_id()):return CommandResult.make("rejected","stale_proposal")
 	var balance_revision:int=economy.revision
+	var configuration_before:=attributes.configuration_inputs(self)
 	var next_player:=projected_upgrade_health(plan)
 	var native_plan:Dictionary={}
 	if native_execution!=null:
 		native_plan=native_execution.prepare_numeric_batch(self,plan,next_player)
 		if native_plan.is_empty():
-			if not native_before_configuration_change():return false
+			if not native_before_configuration_change():return CommandResult.make("blocked","native_handoff")
 			next_player=projected_upgrade_health(plan)
-	if not equipment.proposal_current(plan) or not economy.equipment_proposal_current(plan.wallet,db.evolution_material_id(),balance_revision):return false
+	if not equipment.proposal_current(plan) or not economy.equipment_proposal_current(plan.wallet,db.evolution_material_id(),balance_revision) or configuration_before!=attributes.configuration_inputs(self):return CommandResult.make("rejected","stale_proposal")
+	if not commit_effects.begin(self):return CommandResult.make("blocked","commit_in_progress")
 	if native_execution!=null and not native_plan.is_empty():
-		if not native_execution.commit_numeric_batch(self,native_plan):return false
+		if not native_execution.commit_numeric_batch(self,native_plan):return commit_effects.abort("native_numeric_batch")
 	# The staged wallet and growth use the same ordered purchase list.
 	var paid:=economy.commit_equipment_balances(plan.wallet,db.evolution_material_id(),balance_revision)
 	assert(paid,"Equipment wallet changed inside synchronous commit")
 	equipment.commit_refit(db,plan)
 	for key in ["armour","shield"]:player[key]=next_player[key]
 	configuration_committed(not native_plan.is_empty())
-	save_dirty=true
-	var changed:Array=[];var resource_ids:Array=[];var material_changed:=false
+	var changed:Array=[];var resource_ids:Array=[];var material_changed:=false;var notices:Array=[]
 	for purchase in plan.purchases:
 		changed.append(slot_id(purchase.category,int(purchase.index)))
 		for id in purchase.costs:
 			if id==db.evolution_material_id():material_changed=true
 			elif not resource_ids.has(id):resource_ids.append(id)
-	resources_changed(resource_ids)
-	if material_changed:event.emit("hyperspace_changed",{"reason":"equipment_evolution"})
+	notices.append({"kind":"resources_changed","payload":{"ids":resource_ids}})
+	if material_changed:notices.append({"kind":"hyperspace_changed","payload":{"reason":"equipment_evolution"}})
 	for purchase in plan.purchases:
-		event.emit("upgrade",{"key":purchase.before.key,"slot":slot_id(purchase.category,int(purchase.index)),"levels":purchase.levels,"cost":purchase.costs,"batch":batch})
-	if batch:event.emit("upgrades_completed",{"slots":changed})
-	return true
+		notices.append({"kind":"upgrade","payload":{"key":purchase.before.key,"slot":slot_id(purchase.category,int(purchase.index)),"levels":purchase.levels,"cost":purchase.costs,"batch":batch}})
+	if batch:notices.append({"kind":"upgrades_completed","payload":{"slots":changed}})
+	var paid_ids:=resource_ids.duplicate()
+	if material_changed:paid_ids.append(db.evolution_material_id())
+	return commit_effects.finish(self,["equipment","economy"],paid_ids,changed,{"equipment_changed":true},notices)
 
 func upgrade_max(key: String) -> bool:
 	var levels := max_upgrade_amount(key)
@@ -2432,7 +2451,7 @@ func prepare_logical_step(dt:float)->bool:
 	return false
 
 func tick(dt: float) -> void:
-	if logical_step_active:return
+	if logical_step_active or commit_effects.active:return
 	logical_step_active=true
 	_tick_logical_step(dt)
 	logical_step_active=false
@@ -3787,6 +3806,7 @@ func sync_jewel_defence_damage() -> Dictionary:
 	return capacities
 
 func native_before_configuration_change()->bool:
+	if commit_effects.active:return false
 	return native_execution==null or native_execution.handoff_to_legacy(self,"configuration")
 
 

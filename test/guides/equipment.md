@@ -1,5 +1,9 @@
 # 换装、成长与属性缓存
 
+S1 commit pilot: `python test/run.py test_commit_boundary.gd --headless` checks joint wallet/equipment installation, immutable results/notices, scheduler-before-UI order, stale proposals and nested commands. Pair with `test_native_numeric_upgrade.gd --headless` for the actual native fast path; the boundary fixture's fake session alone is not native-kernel evidence.
+
+The boundary fixture also checks external-time reentry before fees/save/presentation and ordinary paid-progress notification cadence.
+
 | 修改范围 / 目的 | 按需入口 |
 |---|---|
 | 换装、换舰与成长 | `test_module_refit.gd`、`test_equipment_growth.gd`、`test_bulk_upgrades.gd`；状态归属用 `test_state_ownership.gd`，界面用 `test_module_ui.gd` |

@@ -208,7 +208,7 @@ func save_progress() -> void:
 	pass
 
 func tick(dt: float) -> void:
-	if paused:return
+	if paused or commit_effects.active:return
 	simulated_time += dt
 	# This independent analysis clock substitutes for live wall time.
 	advance_resource_history_clock(dt)
