@@ -14,6 +14,12 @@ $run = $null
 $published = $false
 $utf8 = New-Object Text.UTF8Encoding($false)
 
+function FileHash([string]$path) {
+    $stream = [IO.File]::OpenRead($path)
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { return [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','').ToLowerInvariant() }
+    finally { $sha.Dispose(); $stream.Dispose() }
+}
 function Note([string]$message) {
     Write-Host $message
     [IO.File]::AppendAllText($log, "$message`r`n", $utf8)
@@ -80,7 +86,12 @@ function Run([string]$exe, [string[]]$arguments, [string]$cwd, [string]$name, [i
         [IO.File]::AppendAllText($log, $output, $utf8)
         Note "Process log: $outputPath"
         if (!$finished) { throw "Timeout after ${timeout}s: $exe. See $outputPath" }
-        if ($process.ExitCode -ne 0 -or $output -match '(?im)(SCRIPT ERROR:|(^|\s)ERROR:|Parse Error|Failed to load)') {
+        # Same narrowly identified Windows certificate diagnostic as the Lab builder.
+        # Keep it in logs; it is unrelated to offline resource import/export.
+        $diagnostic = 'ERROR: Failed to read the root certificate store\.\r?\n   at: get_system_ca_certificates \(platform/windows/os_windows.cpp:2582\)'
+        $checkedOutput = $output
+        if ([regex]::Matches($output, $diagnostic).Count -eq 1) { $checkedOutput = [regex]::Replace($output, $diagnostic, '') }
+        if ($process.ExitCode -ne 0 -or $checkedOutput -match '(?im)(SCRIPT ERROR:|(^|\s)ERROR:|Parse Error|Failed to load)') {
             throw "Exit code $($process.ExitCode): $exe`r`n$output"
         }
         return $output
@@ -156,26 +167,22 @@ try {
         New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
         Copy-Item -LiteralPath $source -Destination $destination
         if (!(Test-Path -LiteralPath $destination -PathType Leaf) -or
-            (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne
-            (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash) {
+            (FileHash $source) -ne
+            (FileHash $destination)) {
             throw "Missing or changed staged player file: $relative"
         }
     }
-    New-Item -ItemType Directory -Path (Join-Path $staging 'data') | Out-Null
+    . (Join-Path $PSScriptRoot 'configuration_snapshot.ps1')
+    $configuration = Get-ConfigurationSnapshot $project
     foreach ($dataFile in $requiredData) {
-        $source = Join-Path $project "data/$dataFile"
-        if (!(Test-Path -LiteralPath $source -PathType Leaf)) { throw "Missing required player data: $source" }
-        Copy-Item -LiteralPath $source -Destination (Join-Path $staging 'data')
+        if (!$configuration.ContainsKey("data/$dataFile")) { throw "Published configuration missing required player data: $dataFile" }
     }
-    foreach ($dataFile in $requiredData) {
-        $staged = Join-Path $staging "data/$dataFile"
-        if (!(Test-Path -LiteralPath $staged -PathType Leaf)) { throw "Missing staged player data: $staged" }
-        if ((Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash -ne
-            (Get-FileHash -LiteralPath (Join-Path $project "data/$dataFile") -Algorithm SHA256).Hash) {
-            throw "Staged player data differs from source: $dataFile"
-        }
+    foreach ($name in $configuration.Keys) {
+        $destination = Join-Path $staging $name
+        New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
+        [IO.File]::WriteAllBytes($destination,$configuration[$name])
     }
-    $nativeHash = (Get-FileHash -LiteralPath (Join-Path $project 'bin/space_native.dll') -Algorithm SHA256).Hash.ToLowerInvariant()
+    $nativeHash = (FileHash (Join-Path $project 'bin/space_native.dll'))
     $presetPath = Join-Path $project 'export_presets.cfg'
     $preset = [IO.File]::ReadAllText($presetPath)
     $templateSetting = '(?m)^custom_template/release\s*=\s*[^\r\n]*'
@@ -202,7 +209,7 @@ try {
     }
     $nativeFiles = @($files | Where-Object { $_.Name -eq 'space_native.dll' })
     if ($files.Count -ne 2 -or $nativeFiles.Count -ne 1) { throw "Expected exactly EXE and required native DLL in $candidateDir" }
-    if ((Get-FileHash -LiteralPath $nativeFiles[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nativeHash) { throw 'Exported native DLL differs from validated source DLL' }
+    if ((FileHash $nativeFiles[0].FullName) -ne $nativeHash) { throw 'Exported native DLL differs from validated source DLL' }
     $stream = [IO.File]::OpenRead($candidate)
     $reader = New-Object IO.BinaryReader($stream)
     try {
@@ -277,7 +284,7 @@ try {
     Expand-Archive -LiteralPath $zipPath -DestinationPath $unpacked
     $candidate = Join-Path $unpacked 'SpaceBattleship.exe'
     $zipNative = Join-Path $unpacked ($nativeFiles[0].FullName.Substring($candidateDir.Length + 1))
-    if ((Get-FileHash -LiteralPath $zipNative -Algorithm SHA256).Hash.ToLowerInvariant() -ne $nativeHash) { throw 'ZIP native DLL mismatch' }
+    if ((FileHash $zipNative) -ne $nativeHash) { throw 'ZIP native DLL mismatch' }
     Stage 'Run release verification in isolated user directory'
     $null = Run $verifier @('--','--capture','--capture-all') (Join-Path $run 'empty-cwd') 'verify-runtime' 30 -isolated
     $reportPath = Join-Path $run 'user/roaming/SpaceBattleship/release-verification.json'

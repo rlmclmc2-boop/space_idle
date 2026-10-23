@@ -49,3 +49,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# OS lock handle file; no authority is represented by its existence.
+space-battleship/.configuration-lock

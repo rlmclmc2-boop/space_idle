@@ -1,3 +1,4 @@
+from config_snapshot import RecoveryRequired as ConfigurationRecoveryRequired
 """Level editor source transaction. Uses the existing XLSX projection contract."""
 from ui_text import t as ui_text
 import argparse
@@ -24,7 +25,7 @@ EDITABLE = ('mon', 'monGroup', 'level')
 LEVEL_RATIOS = ('atkRatio', 'lifeRatio', 'resRatio')
 
 
-class Store:
+class PreparedStore:
     def __init__(self, root=ROOT):
         self.root = Path(root)
         self.directory = self.root / 'config_excel'
@@ -60,7 +61,8 @@ class Store:
                 headers = [c.value for c in sheet[1] if c.value is not None]
                 rows = [{key: sheet.cell(r, c + 1).value for c, key in enumerate(headers)}
                         for r in range(4, sheet.max_row + 1) if sheet.cell(r, 1).value is not None]
-                tables[name] = {'headers': headers, 'rows': rows}
+                numeric = [key for c,key in enumerate(headers) if str(sheet.cell(3,c+1).value).lower() in ('int','float','number') or any(type(row.get(key)) in (int,float) for row in rows)]
+                tables[name] = {'headers': headers, 'rows': rows, 'numeric_fields': numeric}
             finally:
                 book.close()
         if before != self.snapshot():
@@ -248,6 +250,17 @@ class Store:
         return {'warnings': warnings, 'message': ui_text('debug.level_editor_store.message_03')}
 
 
+class Store:
+    """Public editor reads and writes one stable configuration/input capture."""
+    def __init__(self,root=ROOT):self.root=Path(root).resolve()
+    def load(self):
+        from config_publication import execute
+        return execute(self.root,'load')
+    def execute(self,request,save=False):
+        from config_publication import execute
+        return execute(self.root,'save' if save else 'validate',request)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('action', choices=['load', 'validate', 'save'])
@@ -258,9 +271,9 @@ def main():
         result = store.load() if args.action == 'load' else store.execute(json.loads(args.request.read_text(encoding='utf-8')), args.action == 'save')
         print(json.dumps({'ok': True, **result}, ensure_ascii=True, allow_nan=False))
     except Exception as error:
-        result = {'ok': False, 'message': str(error), 'recovery_required': isinstance(error, RecoveryRequired)}
-        if isinstance(error, RecoveryRequired):
-            result.update(recovery_path=error.recovery_path, rollback_failed=error.rollback_failed)
+        result = {'ok': False, 'message': str(error), 'recovery_required': isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired))}
+        if isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired)):
+            result.update(recovery_path=(getattr(error,"recovery_path",None) or str(ROOT/".configuration-transaction.json")), rollback_failed=getattr(error,"rollback_failed",[]))
         print(json.dumps(result, ensure_ascii=True))
         return 1
     return 0

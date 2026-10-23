@@ -8,8 +8,8 @@ var last_error:=""
 func fail(code: String) -> Dictionary:
 	last_error=code;return {}
 func read_file(path: String) -> Variant:
-	if not FileAccess.file_exists(path):return null
-	return JSON.parse_string(FileAccess.get_file_as_string(path))
+	if not preload("res://scripts/configuration_snapshot.gd").active().has(path):return null
+	return JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text(path))
 func load_files(g) -> Dictionary:
 	return prepare(g,read_file(ROUTES_PATH),read_file(CANDIDATES_PATH))
 func prepare(g,binding: Variant,candidate: Variant) -> Dictionary:

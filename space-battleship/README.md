@@ -20,6 +20,10 @@ AI 入口：[AGENTS](AGENTS.md)。本页只列操作；规则、定位和测试�
 
 ## 配置
 
+运行配置以 `configuration_manifest.json` 为已提交身份。游戏、F8/F9、关卡编辑器与构建都先捕获完整快照；JSON 被直接改写、发布未完成或文件锁被占用时会拒绝继续。修改 Excel 后使用现有“读取配置”入口发布，再重启载入。拆分总表只更新编辑源，不自动更改运行配置。内置导出模板随发布快照保存在 `config_excel/published/`，便携工具不回读源码邻目录。
+
+首次建立清单使用 `python tools/config_workbooks.py initialize`，它会完整验证当前配置；普通启动不自动认可散落文件。失败返回 `recovery_required` 时，保留提示的 journal/备份并通过发布器重试恢复；外部文件身份不明时不会覆盖，不能通过删除恢复材料绕过。详见 [当前架构](docs/ARCHITECTURE.md)。
+
 编辑源为 `config_excel/*.xlsx`，运行投影为 `data/game_data.json`。日常流程：修改对应分表，在表格软件中计算并保存 → QA「读取配置」→ 成功后「重启游戏」。导入不计算 Excel 公式；缓存缺失时回表格软件保存。Python 需 `openpyxl/lxml`，可用 `SPACE_BATTLESHIP_PYTHON` 指定。
 
 武器调参：`equipment.xlsx` 的玩家武器一级行拥有基础伤害 `dmg`、成长 `dmgMulti`、冷却 `cd`；导弹 `para1` 是每批数量，`para2` 是巡航速度（单位/秒）。导弹已回填当前有效一级值，不再额外乘伤害或强制改批量。目标不足时按存活目标轮转发满整批。

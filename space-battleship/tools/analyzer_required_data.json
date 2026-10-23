@@ -23,12 +23,10 @@
     "assets/fonts/NotoSansSC.ttf"
   ],
   "workbooks": [
-    "config_excel/monGroup.xlsx",
-    "config_excel/level.xlsx"
+    "config_excel/published/level.xlsx",
+    "config_excel/published/monGroup.xlsx",
+    "config_excel/published/mon.xlsx"
   ],
-  "external_workbooks": {
-    "source_mon": "config_excel/mon.xlsx"
-  },
   "dynamic_data": [
     "space_enemy_candidates.json",
     "space_enemy_reward_catalog.json",
@@ -40,10 +38,17 @@
     "data/",
     "config_excel",
     "config_excel/mon.xlsx",
-    "../space-battleship/config_excel",
-    "../space-battleship/config_excel/mon.xlsx",
     "../test/work/fleet_battles",
     "../战斗模拟工具/results",
-    "analyzer-package.json"
+    "analyzer-package.json",
+    "configuration_manifest.json",
+    "config_excel/level.xlsx",
+    "config_excel/monGroup.xlsx",
+    "config_excel/published/",
+    "user://configuration-workbooks",
+    ".configuration-transaction.json",
+    "",
+    "config_excel/",
+    "results"
   ]
 }

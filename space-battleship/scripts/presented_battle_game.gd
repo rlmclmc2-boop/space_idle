@@ -74,6 +74,16 @@ func _init(database:ShipDatabase,persist:=true)->void:
 
 	if ClassDB.class_exists("SpaceCombatPresentation"):combat_presentation=ClassDB.instantiate("SpaceCombatPresentation")
 
+func create_load_candidate(database:ShipDatabase)->BattleGame:
+	return get_script().new(database,false)
+
+func install_loaded_session(candidate:BattleGame)->void:
+	super.install_loaded_session(candidate)
+	# Replace the complete presentation-mechanics session. Scene geometry
+	# providers and the GPU presentation binding belong to the surviving host.
+	for key in ["missile_queue","motion_clock","release_context","launch_records","hit_records","lifetime_expirations","maximum_turn_step_error","orphan_expirations","cancelled_ejections","missile_retirements","missile_target_registry","missile_target_candidates","missile_retarget_count","missile_target_scans","invalid_target_cancellations"]:
+		set(key,candidate.get(key))
+
 # Game.tick owns the complete logical boundary and dispatches session commands
 # only after all missile-deadline subdivisions have settled.
 func next_substep_size(remaining:float)->float:

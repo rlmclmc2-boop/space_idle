@@ -15,7 +15,7 @@ var reference := {}
 
 func _init(database: ShipDatabase) -> void:
 	db = database
-	policy = JSON.parse_string(FileAccess.get_file_as_string(POLICY_PATH)).player
+	policy = JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text(POLICY_PATH)).player
 	fingerprint = JSON.stringify({"data":db.data,"policy":policy}).sha256_text()
 
 func default_options() -> Dictionary:

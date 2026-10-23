@@ -1,19 +1,19 @@
 {
   "version": 1,
   "entries": {
-    "player": {"roots": ["main.tscn"], "model": "PresentedBattleGame with admitted native subset", "data": "generated JSON", "verification": "../../test/guides/progression.md"},
-    "f8": {"roots": ["scripts/balance_panel.gd"], "model": "BalanceGame exact/fast; not live-motion equivalence", "data": "private run database", "verification": "../../test/guides/balance-tools.md"},
-    "f9": {"roots": ["scripts/enemy_fleet_panel.gd"], "model": "enemy fleets, automatic levels, cycle levels", "data": "database and workbook inputs", "verification": "../../test/guides/fleet-generation.md"},
+    "player": {"roots": ["main.tscn"], "model": "PresentedBattleGame with admitted native subset", "data": "verified captured configuration generation", "verification": "../../test/guides/progression.md"},
+    "f8": {"roots": ["scripts/balance_panel.gd"], "model": "BalanceGame exact/fast; not live-motion equivalence", "data": "private run database from captured configuration", "verification": "../../test/guides/balance-tools.md"},
+    "f9": {"roots": ["scripts/enemy_fleet_panel.gd"], "model": "enemy fleets, automatic levels, cycle levels", "data": "captured database and published workbook templates", "verification": "../../test/guides/fleet-generation.md"},
     "portable_lab": {
       "roots": ["tools/result_analyzer/main.tscn"],
       "resource_aliases": {"entry.gd": "tools/result_analyzer/entry.gd"},
       "model": "F9 portable entry; BalanceGame for automatic-level evaluation",
-      "data": "packaged JSON plus external mon.xlsx; see analyzer_required_data.json",
+      "data": "captured published JSON and workbook templates; see analyzer_required_data.json",
       "verification": "../../test/guides/balance-tools.md"
     },
-    "configuration": {"roots": ["tools/config_workbooks.py"], "model": "workbook import", "data": "Excel to JSON", "verification": "../../test/guides/configuration.md"},
-    "level_editor": {"roots": ["level_editor.tscn", "tools/level_editor_store.py"], "model": "level editing", "data": "workbooks and generated JSON", "verification": "../../test/guides/configuration.md"},
-    "player_build": {"roots": ["tools/build_release.ps1"], "model": "isolated player staging", "data": "player resource manifest", "verification": "../../test/guides/release.md"},
+    "configuration": {"roots": ["tools/config_workbooks.py", "tools/import_workbook.py"], "model": "workbook import", "data": "stable external workbook capture to complete published generation", "verification": "../../test/guides/configuration.md"},
+    "level_editor": {"roots": ["level_editor.tscn", "tools/level_editor_store.py"], "model": "level editing", "data": "captured generation/source identities and coordinated publication", "verification": "../../test/guides/configuration.md"},
+    "player_build": {"roots": ["tools/build_release.ps1"], "model": "isolated player staging", "data": "captured runtime generation and player resource manifest", "verification": "../../test/guides/release.md"},
     "tests": {"roots": ["../test/run.py"], "model": "one selected isolated test; guides select current consumers", "data": "isolated fixtures", "verification": "../../test/README.md"}
   }
 }

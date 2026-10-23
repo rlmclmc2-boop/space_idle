@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "tools/analyzer_required_data.json"
 
 
-def required_files() -> dict:
+def required_files(configuration=None) -> dict:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     if manifest.get('version') != 2 or 'scripts' in manifest:
         raise ValueError('Analyzer manifest must use version 2 entrypoint-derived scripts')
@@ -35,21 +35,18 @@ def required_files() -> dict:
     if dynamic_loop is None:
         raise ValueError("Analyzer dynamic data read changed; update its manifest")
     dynamic_names = set(re.findall(r'"([^"/]+\.json)"', dynamic_loop.group(1)))
-    schema = json.loads((ROOT / "data/hyperspace_entity_schema.json").read_text(encoding="utf-8"))
+    schema = json.loads(configuration.files["data/hyperspace_entity_schema.json"] if configuration is not None else (ROOT / "data/hyperspace_entity_schema.json").read_bytes())
     dynamic_names.update(schema["frozen_inputs"])
     if dynamic_names - set(manifest["dynamic_data"]):
         raise ValueError(f"Undeclared dynamic analyzer data: {sorted(dynamic_names - set(manifest['dynamic_data']))}")
     for name in manifest["data"]:
         source = ROOT / "data" / name
-        if not source.is_file():
+        if ("data/"+name not in configuration.files) if configuration is not None else not source.is_file():
             raise FileNotFoundError(source)
-    for name in manifest["assets"] + manifest["workbooks"]:
+    for name in manifest["assets"]:
         source = ROOT / name
         if not source.is_file():
             raise FileNotFoundError(source)
-    source_mon = ROOT / manifest["external_workbooks"]["source_mon"]
-    if not source_mon.is_file():
-        raise FileNotFoundError(source_mon)
     return manifest
 
 
@@ -82,13 +79,14 @@ def build(output: Path, engine: Path | None = None) -> None:
     # A package is an exact closure, not an overlay retaining retired scripts.
     if output.exists() and any(output.iterdir()):
         raise ValueError("Use a new empty output directory for an exact analyzer package")
-    manifest = required_files()
+    from config_snapshot import Store
+    configuration=Store(ROOT).capture().runtime()
+    manifest = required_files(configuration)
     engine = (engine or ROOT / "engine/Godot_v4.7.2-stable_win64.exe").resolve()
     if not engine.is_file():
         raise FileNotFoundError(engine)
     output.mkdir(parents=True, exist_ok=True)
-    marker.write_text(json.dumps({"tool": "battle-simulation-lab", "version": 2,
-                                  "source_mon": str((ROOT / "config_excel/mon.xlsx").resolve())}), encoding="utf-8")
+    marker.write_text(json.dumps({"tool": "battle-simulation-lab", "version": 3, "configuration_generation":configuration.identity}), encoding="utf-8")
     (output / 'analyzer_required_data.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     for folder in ("scripts", "data", "assets/fonts", "config_excel", "runtime", "results"):
         (output / folder).mkdir(parents=True, exist_ok=True)
@@ -97,17 +95,8 @@ def build(output: Path, engine: Path | None = None) -> None:
     for name in manifest["scripts"]:
         (output / 'scripts' / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / "scripts" / name, output / "scripts" / name)
-    for name in manifest["data"]:
-        if name == "game_data.json":
-            continue
-        shutil.copy2(ROOT / "data" / name, output / "data" / name)
-    data = json.loads((ROOT / "data/game_data.json").read_text(encoding="utf-8"))
-    # Enemy rows are read directly from the original mon.xlsx at runtime.
-    data.pop("enemies", None)
-    (output / "data/game_data.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
-    names = {"equipment": {k: rows[0].get("name", "") for k, rows in data["equipment"].items() if rows}}
-    (output / "data/analysis_display_names.json").write_text(json.dumps(names, ensure_ascii=False), encoding="utf-8")
-    for name in manifest["assets"] + manifest["workbooks"]:
+    configuration.materialize(output)
+    for name in manifest["assets"]:
         (output / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(ROOT / name, output / name)
     for name in ("project.godot", "main.tscn", "entry.gd", "start.bat", "周期关卡工具.cmd"):
@@ -118,7 +107,7 @@ def build(output: Path, engine: Path | None = None) -> None:
     (output / "使用说明.txt").write_text(
         "双击 start.bat 启动。敌舰群页生成组合，自动关卡页从当前组合生成关卡并导出 Excel；周期关卡页可读取 generated_levels.json。\n"
         "结果写入本目录的 results 文件夹。当前窗口没有独立批量战斗或结果分析页。\n"
-        "运行时读取 analyzer-package.json 中记录的 mon.xlsx 来源；请保留该文件。无需启动游戏、Python 或安装 Godot，不读取游戏存档。\n", encoding="utf-8")
+        "Built-in configuration and workbook templates are frozen in this package. No source repository or external mon.xlsx is required.\n", encoding="utf-8")
     # Import only this independent project; never touch player directories.
     env = os.environ.copy()
     env["APPDATA"] = str(output / ".build-user/roaming")

@@ -29,4 +29,13 @@ assert after['save']['resources']['1'] == 432123, 'Progress must survive'
 for field in ('stage', 'groupIndex', 'distance'):
     assert after[field] == before[field], f'Current node must survive: {field}'
 assert 'speed=5' in (Path(after['user']) / 'qa_settings.cfg').read_text(encoding="utf-8"), 'QA settings must survive'
+while time.monotonic() < deadline:
+    acknowledgements = [json.loads(p.read_text(encoding='utf-8')) for p in Path(after['user']).glob('restart-*.json')]
+    if any(a.get('pid') == after['pid'] and a.get('state') == 'ready' and a.get('owns_progress') for a in acknowledgements): break
+    time.sleep(0.2)
+else: raise AssertionError('New process must acknowledge fully bound writer ownership')
+host_log = game / '.runtime/full-restart.log'
+while time.monotonic() < deadline and 'RESTART_READY ' not in host_log.read_text(encoding='utf-8', errors='replace'):
+    time.sleep(0.2)
+assert 'RESTART_READY ' in host_log.read_text(encoding='utf-8', errors='replace'), 'Restart host must verify acknowledgement, not only process creation'
 print('PASS: busy guard, real new PID, updated source, same user directory, saved progress, current node, QA settings')

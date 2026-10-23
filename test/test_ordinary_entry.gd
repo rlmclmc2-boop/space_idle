@@ -33,7 +33,7 @@ func open_product():
 
 func close_product(scene)->void:
 	if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.close();scene.battle_slice_runtime=null
-	if scene.game.native_execution!=null:scene.game.native_execution.cancel(scene.game);scene.game.native_execution=null
+	if scene.game!=null and scene.game.native_execution!=null:scene.game.native_execution.cancel(scene.game);scene.game.native_execution=null
 	scene.queue_free();await process_frame
 
 func save_product(scene,label:String)->void:
@@ -252,6 +252,8 @@ func run_planet_loading()->void:
 	panel.cards[id].list_button.pressed.emit();scene._process(0.0)
 	await product_capture(scene,"planet-loading-ready")
 	FileAccess.open("res://.runtime/planet-loading.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures,"production_time":g.production_time(),"planets":panel.cards.size(),"saving":g.save_enabled}))
+	check_presented_replacement(scene)
+	scene=await check_replacement_lifecycle(scene)
 	await close_product(scene)
 	print("PLANET_LOADING ",checks," checks ",failures," failures");quit(1 if failures else 0)
 
@@ -365,3 +367,90 @@ func run_factory(phase:String)->void:
 	FileAccess.open("res://.runtime/"+phase+".json",FileAccess.WRITE).store_string(JSON.stringify(report," ",true,true))
 	await close_product(scene)
 	print("FACTORY_ENTRY ",phase," ",checks," checks ",failures," failures");quit(1 if failures else 0)
+
+func check_replacement_lifecycle(scene):
+	var g=scene.game
+	g.paused=true;g.save_progress()
+	var raw:Dictionary=g.portable_save_data();raw.resources["1"]=12345.0
+	var service=preload("res://scripts/save_transfer.gd").new()
+	var lifecycle=g.lifecycle
+	var tx:Dictionary=lifecycle.import_progress(g,raw,service)
+	check(tx.error==OK and not lifecycle.ready() and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Import retains old disk authority while installation is pending")
+	if tx.error!=OK:return scene
+	var error:=reload_current_scene()
+	check(error==OK,"Real main reload request accepted")
+	lifecycle.watch_scene(self)
+	await scene_changed
+	scene=current_scene;scene.set_process(false);scene.game.paused=true
+	check(scene.presentation_ready and scene.game.lifecycle==lifecycle and lifecycle.ready() and scene.game.progress_writer==g.progress_writer,"New main binds the transferred writer before lifecycle completion")
+	check(scene.game.economy.balance("1")==12345.0 and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Only successful new main retires previous import")
+	var saved_primary:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+	tx=lifecycle.import_progress(scene.game,raw,service)
+	var target_bytes:=FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH)
+	FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE).store_string("{broken")
+	error=reload_current_scene();check(error==OK,"Corrupted import reload request accepted")
+	lifecycle.watch_scene(self);await scene_changed
+	scene=current_scene;scene.set_process(false)
+	check(scene.game.installed_progress.get("source")==".import-prev" and lifecycle.reason=="import_target_not_installed" and not scene.product_ready,"Fallback installation cannot acknowledge imported target")
+	check(FileAccess.get_file_as_bytes(BattleGame.SAVE_PATH+".import-prev")==saved_primary and FileAccess.get_file_as_string(BattleGame.SAVE_PATH)=="{broken" and not scene.game.snapshot_ready(),"Rejected import retains both old authority and damaged target, blocks saves")
+	# Restore this test's injected corruption, then perform a real replacement again.
+	FileAccess.open(BattleGame.SAVE_PATH,FileAccess.WRITE).store_buffer(target_bytes)
+	error=reload_current_scene();check(error==OK,"Reload restored test target")
+	lifecycle.watch_scene(self);await scene_changed
+	scene=current_scene;scene.set_process(false);scene.game.paused=true
+	check(lifecycle.ready() and scene.product_ready,"Actual matching target can complete after fixture repair")
+	var clear:Dictionary=lifecycle.restart(scene.game,true,service)
+	check(clear.error==OK and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Clear restart stages previous primary instead of deleting it early")
+	error=reload_current_scene();check(error==OK,"Clear reload request accepted")
+	lifecycle.watch_scene(self);await scene_changed
+	scene=current_scene;scene.set_process(false);scene.game.paused=true
+	check(lifecycle.ready() and scene.game.profile.highestLevel==1 and not FileAccess.file_exists(BattleGame.SAVE_PATH) and not FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Fresh main confirms clear before retiring disk copies")
+	scene.game.save_progress()
+	tx=lifecycle.import_progress(scene.game,scene.game.portable_save_data(),service)
+	check(tx.error==OK,"Prepare real new-scene readiness failure")
+	var visual_path:="res://data/ship_weapon_visuals.json"
+	var original:=FileAccess.get_file_as_bytes(visual_path)
+	FileAccess.open(visual_path,FileAccess.WRITE).store_string("[]")
+	error=reload_current_scene();check(error==OK,"Reload API can succeed before readiness fails")
+	lifecycle.watch_scene(self);await scene_changed
+	FileAccess.open(visual_path,FileAccess.WRITE).store_buffer(original)
+	scene=current_scene;scene.set_process(false)
+	check(not scene.presentation_ready and lifecycle.state=="recovery_required" and FileAccess.file_exists(BattleGame.SAVE_PATH+".import-prev"),"Actual failed main readiness preserves backup and blocks completion")
+	# This process ends here; retain failed lifecycle/disk evidence until exit.
+	return scene
+
+func check_presented_replacement(scene)->void:
+	var g=scene.game
+	g.paused=true
+	check(g.native_before_configuration_change(),"Reforge fixture settles actual native session")
+	if g.enemies.is_empty():g.spawn_group()
+	var old_enemy:Dictionary=g.enemies[0]
+	var old_uid:int=g.uid
+	var old_serial:int=g.projectile_serial
+	var bindings=g.combat_presentation
+	var raw:Dictionary=g.portable_save_data()
+	g.missile_queue.append({"retired":true})
+	g.missile_target_registry[int(old_enemy.uid)]=old_enemy
+	g.load_progress_data(raw)
+	check(g.lifecycle.ready() and g.missile_queue.is_empty() and not g.missile_target_live(old_enemy) and g.compiled_combat_rules!=null,"Actual Presented game memory install retires old mechanics and retains compiled policy")
+	check(g.uid>=old_uid and g.projectile_serial>=old_serial and g.combat_presentation==bindings,"Memory replacement preserves identity allocation and scene binding")
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	var planets:Dictionary=g.portable_save_data()
+	planets.planets["1"].conquered=false;planets.planets["1"].degree=1000
+	for row in g.planet_buildings.rows(g,"1"):
+		planets.planets["1"].buildings[str(row.id)].status="built"
+		planets.planets["1"].buildings[str(row.id)].build_progress=float(row.build_explore)
+	check(g.planets.install_snapshot(planets,g.db),"Actual reforge facilities install")
+	g.missile_queue.append({"retired":true})
+	g.missile_target_registry[int(old_enemy.uid)]=old_enemy
+	scene.floats.append({"target_entity":old_enemy})
+	check(g.reforge_planet("1"),"Actual Presented game reforges through lifecycle")
+	g.paused=true
+	check(g.missile_queue.is_empty() and not g.missile_target_live(old_enemy) and g.compiled_combat_rules!=null,"Reforge replaces subtype mechanics before reopening lifecycle")
+	if g.enemies.is_empty():g.spawn_group()
+	check(not g.enemies.is_empty() and g.uid>=old_uid and g.projectile_serial>=old_serial and g.enemies.all(func(enemy):return int(enemy.uid)>old_uid),"Reforge encounter identities cannot collide with retained display targets")
+	if scene.battle_slice_runtime!=null:
+		scene.battle_slice_runtime.snapshot()
+		check(g.enemies.all(func(enemy):return scene.battle_slice_runtime.view.rows.has(int(enemy.uid))),"Actual slice publishes new actors despite retained old damage target")
+	else:check(false,"Actual slice consumer remains available for replacement check")
+	scene.floats.clear()

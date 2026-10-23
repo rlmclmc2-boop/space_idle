@@ -28,7 +28,7 @@ var error := ""
 
 func _init(database: ShipDatabase, settings: Dictionary = {}) -> void:
 	db = database
-	policy = settings.duplicate(true) if not settings.is_empty() else JSON.parse_string(FileAccess.get_file_as_string(POLICY_PATH))
+	policy = settings.duplicate(true) if not settings.is_empty() else JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text(POLICY_PATH))
 	var generation: Dictionary=policy.get("generation",{}).duplicate(true)
 	for key in GENERATION_DEFAULTS:
 		if not generation.has(key):generation[key]=GENERATION_DEFAULTS[key]

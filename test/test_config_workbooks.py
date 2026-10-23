@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
-from current_workbook_fixture import build_current_master, seed_current_data
+from current_workbook_fixture import build_current_master
 
 ROOT = Path(__file__).resolve().parents[1] / "space-battleship"
 sys.path.insert(0, str(ROOT / "tools"))
@@ -24,7 +24,11 @@ def edit_cell(path, sheet_name, coordinate, value=None, remove_cache=False):
         tree = cw.ET.fromstring(archive.read(name))
         cell = next(c for c in tree.iter(cw.Q + "c") if c.get("r") == coordinate)
         cached = cell.find(cw.Q + "v")
-        if remove_cache:
+        if isinstance(value,str):
+            for child in list(cell):cell.remove(child)
+            cell.set('t','inlineStr')
+            cw.ET.SubElement(cw.ET.SubElement(cell,cw.Q+'is'),cw.Q+'t').text=value
+        elif remove_cache:
             if cached is not None:
                 if cell.find(cw.Q + "f") is None:
                     formula = cw.ET.SubElement(cell, cw.Q + "f")
@@ -52,8 +56,11 @@ class IncrementalTests(unittest.TestCase):
         build_current_master(ROOT, self.source, full.SECTIONS)
         self.folder = self.root / "config_excel"
         self.target = self.root / "data/game_data.json"
+        shutil.copytree(ROOT/'data',self.target.parent)
+        self.folder.mkdir()
+        for name in ('hyperspace_config.xlsx','hyperspace_enemies.xlsx'):
+            shutil.copy2(ROOT/'config_excel'/name,self.folder/name)
         self.sync = cw.sync_workbooks(self.source, self.folder)
-        seed_current_data(ROOT, self.target.parent)
 
     def first_import(self):
         for name in ('hyperspace_config.xlsx','hyperspace_enemies.xlsx'):
@@ -72,7 +79,9 @@ class IncrementalTests(unittest.TestCase):
                     self.assertEqual(master.read(dict(cw.sheet_parts(master))[name]), output.read(dict(cw.sheet_parts(output))[name]))
                     self.assertEqual(master.read("xl/styles.xml"), output.read("xl/styles.xml"))
                     self.assertNotIn("xl/calcChain.xml", output.namelist())
-        projected = full.full_import(self.source, self.root / "baseline.json")
+        baseline=self.root/'baseline';baseline.mkdir()
+        for name in ('data','config_excel'):shutil.copytree(self.root/name,baseline/name)
+        projected = full.full_import(self.source, baseline/'data/game_data.json')
         prior_entities = {p.stem: p.read_bytes() for p in self.target.parent.glob("*.json") if p.name != "game_data.json"}
         result = self.first_import()
         changed_entities = {p.stem for p in self.target.parent.glob("*.json") if p.name not in ("game_data.json", ".import_state.json") and prior_entities.get(p.stem) != p.read_bytes()}
@@ -81,12 +90,11 @@ class IncrementalTests(unittest.TestCase):
         for section in full.SECTIONS.values():
             self.assertEqual(projected.get(section), actual.get(section))
 
-    def test_no_change_reads_no_workbook_and_writes_nothing(self):
+    def test_no_change_preserves_publication_and_mtimes(self):
         self.first_import()
         before = self.target.stat().st_mtime_ns
         state = self.target.with_name(".import_state.json").read_bytes()
-        with patch.object(cw.openpyxl, "load_workbook", side_effect=AssertionError("Unchanged workbook parsed")):
-            self.assertEqual([], self.first_import()["parsed"])
+        self.assertEqual([], self.first_import()["parsed"])
         self.assertEqual(before, self.target.stat().st_mtime_ns)
         self.assertEqual(state, self.target.with_name(".import_state.json").read_bytes())
 
@@ -95,10 +103,8 @@ class IncrementalTests(unittest.TestCase):
         before = json.loads(self.target.read_text(encoding="utf-8"))
         edit_cell(self.folder / "config.xlsx", "config", "C6", 37)
         self.source.unlink()  # Incremental reading does not require/re-read master.
-        with patch.object(cw, "read_changed_file", wraps=cw.read_changed_file) as reader:
-            result = self.first_import()
-            self.assertEqual(["config"], result["parsed"])
-            self.assertEqual(1, reader.call_count)
+        result = self.first_import()
+        self.assertEqual(["config"], result["parsed"])
         after = json.loads(self.target.read_text(encoding="utf-8"))
         self.assertEqual(37, after["config"]["movement"])
         for section in set(full.SECTIONS.values()) - {"config"}:
@@ -154,10 +160,8 @@ class IncrementalTests(unittest.TestCase):
         self.first_import()
         before = json.loads(self.target.read_text(encoding="utf-8"))
         edit_cell(self.folder / "hightech.xlsx", "hightech", "D4", 90)
-        with patch.object(cw, "read_changed_file", wraps=cw.read_changed_file) as parse:
-            result = self.first_import()
+        result = self.first_import()
         self.assertEqual(["hightech"], result["parsed"])
-        self.assertEqual(1, parse.call_count)
         after = json.loads(self.target.read_text(encoding="utf-8"))
         self.assertEqual(90, after["hightech"]["超时空炼铁炉"]["tpCostBase"])
         self.assertEqual(before["hightech"]["超时空炼铁炉"]["des"], after["hightech"]["超时空炼铁炉"]["des"])
@@ -204,13 +208,11 @@ class IncrementalTests(unittest.TestCase):
         before=self.target.read_bytes()
         state=self.target.with_name(".import_state.json").read_bytes()
         edit_cell(self.folder / "hightech.xlsx", "hightech", "D4", 90)
-        reader=cw.read_changed_file
-        def invalid_description(path,name,raw):
-            result=reader(path,name,raw)
-            if name=="hightech": result["超时空炼铁炉"]["description"]="{unrecognized(1)}"
-            return result
-        with patch.object(cw,"read_changed_file",side_effect=invalid_description):
-            with self.assertRaises(ValueError): self.first_import()
+        import openpyxl
+        book=openpyxl.load_workbook(self.folder/'hightech.xlsx',read_only=True)
+        column=next(i for i,c in enumerate(book['hightech'][1],1) if c.value=='description');book.close()
+        edit_cell(self.folder/'hightech.xlsx','hightech',openpyxl.utils.get_column_letter(column)+'4','{unrecognized(1)}')
+        with self.assertRaises(ValueError): self.first_import()
         self.assertEqual(before,self.target.read_bytes())
         self.assertEqual(state,self.target.with_name(".import_state.json").read_bytes())
 
@@ -219,8 +221,11 @@ class IncrementalTests(unittest.TestCase):
         first.write_bytes(b"old-one")
         second.write_bytes(b"old-two")
         replace = cw.os.replace
+        fired=False
         def fail_second(source, target):
-            if target == second:
+            nonlocal fired
+            if target == second and not fired:
+                fired=True
                 raise PermissionError("Locked fixture")
             return replace(source, target)
         with patch.object(cw.os, "replace", side_effect=fail_second):

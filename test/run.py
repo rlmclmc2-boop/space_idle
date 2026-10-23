@@ -48,7 +48,7 @@ def completed(output, test, phase):
         # Exact existing terminal summaries, keyed to their entry; no generic "passed".
         summaries = {
             "test_ai_tech_tree_config.py": r"AI_TECH_CONFIG=PASS rows=8",
-            "test_config_input_matrix.py": r"Phase 8: [1-9]\d* input outcomes, [1-9]\d* fault outcomes, [1-9]\d* assertions passed\. Evidence: .+",
+            "test_config_input_matrix.py": r"Configuration boundaries: [1-9]\d* input outcomes, [1-9]\d* assertions passed\. Evidence: .+",
             "test_enemy_attack_pairs.py": re.escape("Attack pairs: current authored pairs, four source projections, legacy metadata and malformed/Lv1-order cases passed"),
             "test_enemy_intel_import.py": re.escape("Enemy intel import: full data valid; current opening mechanism mismatches and visual mismatch rejected; native reactive constants and integer-ms durations match"),
             "test_enemy_shield_schema.py": re.escape("Enemy shield schema: authored data, omitted legacy fields and 6 invalid cases passed"),
@@ -99,8 +99,8 @@ def main():
     source = workspace / "space-battleship"
     for name in ("scripts", "shaders", "tools", "data", "config_excel", "assets", "addons", "dev"):
         shutil.copytree(source / name, game / name,
-                        ignore=shutil.ignore_patterns("__pycache__", ".import_state.json", "~$*", "*.blend", "*.blend1"))
-    for name in ("project.godot", "main.tscn", "level_editor.tscn"):
+                        ignore=shutil.ignore_patterns("__pycache__", "~$*", "*.blend", "*.blend1"))
+    for name in ("project.godot", "main.tscn", "level_editor.tscn", "configuration_manifest.json"):
         shutil.copy2(source / name, game / name)
     # Persistence fixtures need the same OS writer lock as the player entry.
     # Reuse its verified bundled runtime; specialized native tests may replace it.
@@ -147,6 +147,7 @@ def main():
         env[key] = str(area / "userdata" / folder)
         Path(env[key]).mkdir(parents=True)
     env["SPACE_BATTLESHIP_PYTHON"] = sys.executable
+    env["SPACE_BATTLESHIP_TEST_GODOT"] = str(args.godot.resolve())
     for key in ("APPDATA", "LOCALAPPDATA"):
         Path(env[key]).mkdir(parents=True)
     print(f"Artifacts: {area}", flush=True)

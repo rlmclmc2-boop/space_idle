@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'space-battleship'
@@ -18,20 +19,29 @@ def main():
     workspace = area / 'Moved workspace 中文'
     project = workspace / 'Renamed game 中文'
     project.mkdir(parents=True)
-    for folder in ('scripts', 'assets', 'data', 'dev', 'addons', 'bin'):
+    for folder in ('scripts', 'assets', 'data', 'dev', 'addons', 'shaders', 'config_excel'):
         shutil.copytree(SOURCE / folder, project / folder,
-                        ignore=shutil.ignore_patterns('__pycache__', '.import_state.json'))
-    for name in ('project.godot', 'main.tscn', 'export_presets.cfg'):
+                        ignore=shutil.ignore_patterns('__pycache__'))
+    for name in ('project.godot', 'main.tscn', 'export_presets.cfg', 'configuration_manifest.json'):
         shutil.copy2(SOURCE / name, project / name)
     (project / 'tools').mkdir()
-    shutil.copy2(SOURCE / 'tools/build_release.ps1', project / 'tools/build_release.ps1')
+    for name in ('build_release.ps1','player_required_data.json','configuration_snapshot.ps1'):
+        shutil.copy2(SOURCE/'tools'/name,project/'tools'/name)
+    sys.path.insert(0,str(ROOT/'tools'))
+    from play_main import verified_bundle, DESCRIPTOR
+    native,_,_=verified_bundle(ROOT)
+    (project/'bin').mkdir()
+    shutil.copy2(native,project/'bin/space_native.dll')
+    (project/'addons/native_battle/space_native.gdextension').write_text(DESCRIPTOR,encoding='utf-8')
     (workspace / 'test').mkdir()
     shutil.copy2(ROOT / 'test/verify_release.gd', workspace / 'test/verify_release.gd')
     shutil.copy2(ROOT / 'build_release.bat', workspace / 'build_release.bat')
     for relative in ('Godot_v4.7.2-stable_win64.exe', 'templates/4.7.2.stable/windows_release_x86_64.exe'):
         destination = project / 'engine' / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
-        os.link(SOURCE / 'engine' / relative, destination)
+        setting='SPACE_BATTLESHIP_TEST_TEMPLATE' if relative.startswith('templates/') else 'SPACE_BATTLESHIP_TEST_GODOT'
+        source=Path(os.environ.get(setting,str(SOURCE/'engine'/relative)))
+        shutil.copy2(source,destination)
     preset_path = project / 'export_presets.cfg'
     stale_path = 'Z:/old-machine/deleted-project/windows_release_x86_64.exe'
     original_preset = preset_path.read_text(encoding='utf-8').replace(

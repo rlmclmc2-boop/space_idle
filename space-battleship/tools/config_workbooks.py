@@ -1,3 +1,4 @@
+from config_snapshot import RecoveryRequired as ConfigurationRecoveryRequired
 """Synchronize single-sheet XLSX files and incrementally rebuild game configuration.
 
 Split at the OOXML package level: retain cell formulas, cached values, styles,
@@ -192,6 +193,13 @@ def split_package(raw, sheet_name):
 
 
 def sync_workbooks(source, directory):
+    from config_publication import execute
+    directory=pathlib.Path(directory).resolve()
+    if directory.name!='config_excel':raise ValueError('Canonical config_excel directory required')
+    return execute(directory.parent,'split',source=source)
+
+
+def _prepare_sync_workbooks(source, directory):
     raw = source.read_bytes()
     directory.mkdir(parents=True, exist_ok=True)
     manifest = read_json(directory / MANIFEST)
@@ -272,6 +280,14 @@ def cached_entities_valid(state, raw_by_filename, data_directory):
 
 
 def incremental_import(directory, target):
+    from config_publication import execute
+    root=pathlib.Path(target).resolve().parent.parent
+    if pathlib.Path(directory).resolve()!=root/'config_excel' or pathlib.Path(target).resolve()!=root/'data/game_data.json':
+        raise ValueError('Configuration import requires the canonical project inputs')
+    return execute(root,'import')
+
+
+def _prepare_incremental_import(directory, target):
     manifest_path = directory / MANIFEST
     manifest_raw = manifest_path.read_bytes() if manifest_path.exists() else None
     manifest = json.loads(manifest_raw) if manifest_raw is not None else {}
@@ -368,18 +384,21 @@ def main():
         sys.stdout.reconfigure(encoding="utf-8")
         sys.stderr.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", choices=["split", "import"])
+    parser.add_argument("action", choices=["split", "import", "initialize"])
     parser.add_argument("--source", type=pathlib.Path, default=ROOT.parent / "太空战舰.xlsx")
     parser.add_argument("--directory", type=pathlib.Path, default=ROOT / "config_excel")
     parser.add_argument("--target", type=pathlib.Path, default=ROOT / "data/game_data.json")
     args = parser.parse_args()
     try:
-        result = sync_workbooks(args.source, args.directory) if args.action == "split" else incremental_import(args.directory, args.target)
+        if args.action=="initialize":
+            from config_publication import execute
+            result=execute(args.target.resolve().parent.parent,"initialize")
+        else:result = sync_workbooks(args.source, args.directory) if args.action == "split" else incremental_import(args.directory, args.target)
     except Exception as error:
         result = {"ok":False,"action":args.action,"message":str(error),
-                  "recovery_required": isinstance(error, RecoveryRequired)}
-        if isinstance(error, RecoveryRequired):
-            result.update(recovery_path=error.recovery_path, rollback_failed=error.rollback_failed)
+                  "recovery_required": isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired))}
+        if isinstance(error, (RecoveryRequired, ConfigurationRecoveryRequired)):
+            result.update(recovery_path=(getattr(error,"recovery_path",None) or str(ROOT/".configuration-transaction.json")), rollback_failed=getattr(error,"rollback_failed",[]))
         print(json.dumps(result, ensure_ascii=True))
         return 1
     # ASCII transport avoids Windows OS.execute code-page corruption; JSON restores Unicode.

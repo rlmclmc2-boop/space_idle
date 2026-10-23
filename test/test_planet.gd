@@ -1,6 +1,13 @@
 extends SceneTree
 
+class RefusingGalaxy extends "res://scripts/galaxy_system.gd":
+	func install_snapshot(_raw:Dictionary,_db)->bool:return false
 class BlockedGame extends BattleGame:
+	var reject_candidate:=false
+	func create_load_candidate(database:ShipDatabase)->BattleGame:
+		var candidate:=super.create_load_candidate(database)
+		if reject_candidate:candidate.galaxy=RefusingGalaxy.new()
+		return candidate
 	var reject_change:=false
 	var captures:=0
 	var configurations:=0
@@ -80,12 +87,14 @@ func _initialize() -> void:
 	check(is_equal_approx(g.planet_exp_reward(id),124),"Exploration preview rounds fractional reward")
 	var payout_views:Array=[]
 	var emitted_reward := [-1.0]
-	g.event.connect(func(kind, payload):
-		if kind=="crew_changed" and payload.get("source","")=="planet":payout_views.append(g.portable_save_data())
-		if kind=="planet_changed" and payload.has("reward"):emitted_reward[0]=float(payload.reward))
+	var payout_observer:=func(kind, payload):
+		if kind=="crew_changed" and payload.get("source","")=="planet":payout_views.append({"planets":g.planets.save_data().planets,"crew":g.crew.save_data().crew})
+		if kind=="planet_changed" and payload.has("reward"):emitted_reward[0]=float(payload.reward)
+	g.event.connect(payout_observer)
 	check(g.start_planet_exploration(id,"engineer"),"Idle crew starts integer reward check")
 	g.advance_planets(g.planet_duration(id))
 	check(g.crew.entry(g,"engineer").level==1 and is_equal_approx(g.crew.entry(g,"engineer").exp,24) and is_equal_approx(emitted_reward[0],124),"Credited and emitted experience match integer preview")
+	g.event.disconnect(payout_observer)
 	check(payout_views.size()==1 and payout_views[0].planets[id].crewId=="" and payout_views[0].crew==g.crew.save_data().crew,"Planet-sourced crew notification observes committed trip and entire experience payout")
 	joint_payout_boundary()
 	construction_boundaries()
@@ -107,7 +116,7 @@ func construction_boundaries() -> void:
 	var unpaid_planet:=g.planets.save_data();var unpaid_crew:=g.crew.save_data()
 	g.reject_change=true;g.advance_planets(g.planet_duration("1"))
 	check(g.planets.save_data()==unpaid_planet and g.crew.save_data()==unpaid_crew,"Refused experience handoff commits neither completed trip nor crew growth")
-	g.reject_change=false;g.advance_planets(g.planet_duration("1"))
+	g.reject_change=false;g.paused=false;g.advance_planets(g.planet_duration("1"))
 	check(g.planet_buildings.state(g,"1","station").status=="building" and g.planet_buildings.state(g,"1","station").build_progress==0,"Threshold trip unlocks without backfilling construction")
 	check(g.assign_planet_builder("1",str(row.id),"engineer"),"Assign builder through current game command")
 	check(not g.start_planet_exploration("1","engineer") and not g.assign_crew("engineer","reactor_upgrade","reactor"),"Building occupation excludes other jobs")
@@ -132,6 +141,9 @@ func construction_boundaries() -> void:
 	g.reject_change=true
 	check(not g.reforge_planet("1") and g.planets.save_data()==before and g.crew.save_data()==crew_before and g.economy.save_data()==wallet_before,"Rejected reforge preparation leaves all growth and wallet state intact")
 	g.reject_change=false
+	g.reject_candidate=true
+	check(not g.reforge_planet("1") and g.lifecycle.ready() and g.planets.save_data()==before and g.crew.save_data()==crew_before and g.economy.save_data()==wallet_before,"Late private reforge refusal preserves all live owners and authority")
+	g.reject_candidate=false
 	var observed: Array=[]
 	var observer:=func(kind,_payload):
 		if kind=="planet_reforged":observed.append(g.portable_save_data())
@@ -262,9 +274,11 @@ func joint_payout_boundary()->void:
 	g.player.armour=GrowthNumber.multiply(g.stat("armour"),0.4)
 	g.captures=0;g.configurations=0
 	var views:Array=[]
-	g.event.connect(func(kind,info):
-		if kind=="crew_changed" and info.get("source","")=="planet":views.append([g.planet_progress("1").degree,g.crew.entry(g,"engineer").level,GrowthNumber.ratio(g.player.armour,g.stat("armour")),g.reactor_capacity(),g.reactor_allocated()]))
+	var payout_observer:=func(kind,info):
+		if kind=="crew_changed" and info.get("source","")=="planet":views.append([g.planet_progress("1").degree,g.crew.entry(g,"engineer").level,GrowthNumber.ratio(g.player.armour,g.stat("armour")),g.reactor_capacity(),g.reactor_allocated()])
+	g.event.connect(payout_observer)
 	g.advance_planets(g.planet_duration("1"))
+	g.event.disconnect(payout_observer)
 	check(g.captures==1 and g.configurations==1,"Joint planet and crew commit captures health and updates configuration exactly once")
 	check(not views.is_empty() and views.all(func(view):return view[0]==1 and view[1]>0 and absf(view[2]-0.4)<0.000001 and GrowthNumber.compare(view[4],view[3])<=0),"Every payout notice sees final crew, planet, capacity and preserved health ratio")
 

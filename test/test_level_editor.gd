@@ -1,8 +1,10 @@
 extends SceneTree
 
 var failures := 0
+var checks := 0
 
 func check(value: bool, label: String) -> void:
+	checks += 1
 	print(('PASS ' if value else 'FAIL ') + label)
 	if not value: failures += 1
 
@@ -56,6 +58,8 @@ func run() -> void:
 	editor.fields.health.text = "432"
 	editor.stash()
 	check(editor.rows()[-1].health == 432, "edit numeric field")
+	check(editor.rows()[-1].shield is float or editor.rows()[-1].shield is int,"Source-declared shield remains numeric")
+	check(editor.rows()[-1].reactiveReduction==null,"Untouched optional source field remains absent")
 	editor.search.text = "UI测试飞行器"
 	editor.refresh_list()
 	check(editor.listing.item_count == 1, "search record")
@@ -78,6 +82,7 @@ func run() -> void:
 	editor.fields.jewelRatio.text = "2.5"
 	editor.stash()
 	check(editor.rows()[0].jewelRatio == 2.5, "Jewel multiplier parsed as number")
+	check(editor.rows()[0].planetExpRatio is float or editor.rows()[0].planetExpRatio is int,"Existing planet experience ratio remains numeric")
 	editor.fields.length.text = "1200"
 	editor.run_action("validate")
 	await wait_idle(editor)
@@ -104,4 +109,5 @@ func run() -> void:
 	editor.delete_record()
 	check(editor.status.text.begins_with("无法删除"), "prevent referenced enemy deletion")
 	editor.free()
+	print("LEVEL_EDITOR ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)

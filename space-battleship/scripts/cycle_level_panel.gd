@@ -42,7 +42,7 @@ func _ready() -> void:
 	add_child(open_dialog)
 	open_dialog.file_selected.connect(func(path):source_input.text=path)
 	_button(source_bar,"browse",func():open_dialog.popup_centered(Vector2i(900,600)))
-	var defaults=JSON.parse_string(FileAccess.get_file_as_string(DEFAULTS))
+	var defaults=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text(DEFAULTS))
 	if not defaults is Dictionary:defaults={}
 	var numbers:=HFlowContainer.new()
 	add_child(numbers)
@@ -172,9 +172,7 @@ func _latest_analysis() -> String:
 	return ""
 
 func _output_directory() -> String:
-	var project: String=ProjectSettings.globalize_path("res://../space-battleship/config_excel")
-	if FileAccess.file_exists(project.path_join("level.xlsx")):return project
-	return ProjectSettings.globalize_path("res://config_excel")
+	return ProjectSettings.globalize_path("res://results")
 
 func _integers(raw: String) -> Dictionary:
 	var source: String=raw.strip_edges().replace("，",",").replace(" ","")

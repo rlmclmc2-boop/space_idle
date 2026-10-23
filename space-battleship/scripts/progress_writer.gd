@@ -162,7 +162,7 @@ static func read_progress_result(path: String, db: ShipDatabase = null) -> Dicti
 		var checked := _check_progress_file(path + suffix, db)
 		if checked.error.is_empty():
 			if best.is_empty() or checked.quality_rank > best.quality_rank:
-				best = {"status":"loaded", "source":suffix, "data":checked.data, "quality":checked.quality, "quality_rank":checked.quality_rank, "rejected":rejected, "import_active":active}
+				best = {"status":"loaded", "source":suffix, "identity":checked.identity, "data":checked.data, "quality":checked.quality, "quality_rank":checked.quality_rank, "rejected":rejected, "import_active":active}
 		else:
 			rejected.append({"source":suffix, "error":checked.error})
 	if not best.is_empty():return best
@@ -207,7 +207,9 @@ static func _check_progress_file(path: String, db: ShipDatabase = null) -> Dicti
 	var data = parser.data
 	var database := db if db != null else ShipDatabase.new()
 	# Disk load and portable import use the same current-format domain validation.
-	return load("res://scripts/save_transfer.gd").new().prepare_disk_data(data, database)
+	var checked:Dictionary=load("res://scripts/save_transfer.gd").new().prepare_disk_data(data, database)
+	checked.identity=source.sha256_text()
+	return checked
 
 static func _read_progress_file(path: String, db: ShipDatabase = null) -> Variant:
 	var checked := _check_progress_file(path, db)

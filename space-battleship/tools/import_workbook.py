@@ -735,6 +735,13 @@ def encode(data):
     return json.dumps(data,ensure_ascii=False,indent=2,allow_nan=False).encode("utf-8")
 
 def full_import(source, target):
+    from config_publication import execute
+    root=target.resolve().parent.parent
+    if target.resolve()!=root/'data/game_data.json':raise ValueError('Canonical configuration target required')
+    return execute(root,'full',source=source)['data']
+
+
+def _prepare_full_import(source, target):
     previous=json.loads(target.read_text(encoding="utf-8")) if target.exists() else {}
     data=projection_base(previous,source.name)
 

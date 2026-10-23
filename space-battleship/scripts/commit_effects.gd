@@ -2,7 +2,11 @@ extends RefCounted
 ## Synchronous install/completion boundary. Preparation remains in each use case.
 const Result=preload("res://scripts/command_result.gd")
 const N=preload("res://scripts/growth_number.gd")
-var active := false
+var guard:RefCounted
+var _active := false
+var active:bool:
+	get:return _active or (guard!=null and not guard.ready())
+	set(value):_active=value
 var _before: Array=[]
 var _reactor_revision:=0
 
@@ -31,7 +35,7 @@ func finish_progress(g,result: Dictionary,notify_resources:=false,notices:Array=
 	return result
 
 func begin(g) -> bool:
-	if active:return false
+	if not g.lifecycle.ready() or active:return false
 	active=true
 	_before=g.attributes.configuration_inputs(g)
 	_reactor_revision=g.reactor.revision

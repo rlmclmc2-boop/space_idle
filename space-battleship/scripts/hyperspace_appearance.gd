@@ -13,7 +13,7 @@ static var thumbnail_order: Array=[]
 static var projections=0
 static var resource_creations=0
 static func reload_config() -> bool:
- var raw=JSON.parse_string(FileAccess.get_file_as_string("res://data/hyperspace_visuals.json"))
+ var raw=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/hyperspace_visuals.json"))
  if not raw is Dictionary or raw.is_empty():return false
  for key in ["emission","ornament_scale","body_tint","tier_glyph_scale","high_tier_max","version"]:
   if raw.has(key) and not (raw[key] is int or raw[key] is float):return false

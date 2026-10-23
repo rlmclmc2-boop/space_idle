@@ -183,6 +183,9 @@ func _ready() -> void:
 	attach_native_display()
 	prepare_capture_battle()
 	battlefield_motion_player_birth=battlefield_motion_clock
+	finish_product_ready()
+
+func defers_product_ready()->bool:return true
 
 func battlefield_motion_counters()->Dictionary:
 	return {"poses":battlefield_motion_pose_frames,"hull_builds":ship_view.hull_builds,"loadout_builds":ship_view.loadout_builds,"body_attach_builds":ship_view.body_baker.attach_builds,"body_texture_bakes":ship_view.body_baker.texture_bakes,"body_material_invalidations":ship_view.body_baker.material_invalidations,"enemy_hull_scans":enemy_recognition.hull_scans,"enemy_envelope_builds":enemy_recognition.envelope_builds}

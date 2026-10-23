@@ -6,7 +6,7 @@ var error := ""
 var warnings: Array = []
 
 func _init() -> void:
-	policy=JSON.parse_string(FileAccess.get_file_as_string("res://data/battle_result_analysis.json"))
+	policy=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/battle_result_analysis.json"))
 
 func read_json(path: String) -> Variant:
 	var file := FileAccess.open(path,FileAccess.READ)

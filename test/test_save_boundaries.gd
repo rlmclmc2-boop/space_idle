@@ -1,5 +1,15 @@
 extends SceneTree
 
+class RefusingGalaxy extends "res://scripts/galaxy_system.gd":
+	func install_snapshot(_raw:Dictionary,_db)->bool:return false
+class RefusingLoad extends BattleGame:
+	func create_load_candidate(database:ShipDatabase)->BattleGame:
+		var candidate:=BattleGame.new(database,false)
+		candidate.galaxy=RefusingGalaxy.new()
+		return candidate
+class RefusingRollback extends "res://scripts/save_transfer.gd":
+	func rollback(_transaction:Dictionary)->Error:return ERR_FILE_CANT_WRITE
+
 var checks := 0
 var failures := 0
 func check(ok: bool, label: String) -> void:
@@ -14,7 +24,7 @@ func finish() -> void:
 
 func remember(data: Dictionary) -> void:
 	var file := FileAccess.open("user://expected.json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(data))
+	file.store_string(JSON.stringify(data,"\t",true,true))
 	file.close()
 
 func _initialize() -> void:
@@ -26,8 +36,49 @@ func _initialize() -> void:
 	if phase != "write":
 		reopen(db, phase)
 		return
+	var rejected:=RefusingLoad.new(db,false)
+	var prior:=rejected.portable_save_data()
+	var incoming:=prior.duplicate(true);incoming.resources["1"]=99999.0
+	rejected.load_progress_data(incoming)
+	var after_rejected:=rejected.portable_save_data()
+	for key in ["chronoSavedAt","hightechSavedAt"]:
+		prior.erase(key);after_rejected.erase(key)
+	check(rejected.hyperspace.last_error=="domain_install_failed" and after_rejected==prior,"Late private owner refusal leaves all live domains unchanged")
+	check(rejected.lifecycle.ready(),"Rejected private load retains old authority")
+	var reloadable:=BattleGame.new(db,false)
+	for i in 5:reloadable.economy.credit("1",1.0)
+	var old_revision:int=reloadable.economy.revision
+	var reload_snapshot:=reloadable.portable_save_data()
+	reloadable.state=BattleGame.State.COMBAT
+	reloadable.enemies.append({"retired":true});reloadable.projectiles.append({"retired":true})
+	reloadable.player.armour=0;reloadable.cooldowns["retired"]=1.0
+	reloadable.load_progress_data(reload_snapshot)
+	check(reloadable.lifecycle.ready() and reloadable.economy.revision>old_revision,"Private replacement preserves monotonic owner versions for existing consumers")
+	check(reloadable.state==BattleGame.State.MAIN_MENU and reloadable.enemies.is_empty() and reloadable.projectiles.is_empty() and reloadable.cooldowns.is_empty() and GrowthNumber.compare(reloadable.player.armour,reloadable.stat("armour"))==0,"Memory load installs prepared player and retires old combat session")
+	var lab=preload("res://scripts/balance_game.gd").new(db)
+	lab.player_power_multiplier=2.0;lab.simulated_time=123.0
+	lab.pending_hits.append({"retired":true});lab.repair_cache_active=true
+	lab.load_progress_data(reload_snapshot)
+	check(lab.lifecycle.ready() and lab.simulated_time==123.0 and lab.pending_hits.is_empty() and not lab.repair_cache_active and GrowthNumber.compare(lab.player.armour,lab.stat("armour"))==0,"Lab replacement preserves simulation policy while retiring stale derived session")
+	check_reforge_owners(db)
 	var game := BattleGame.new(db, true)
 	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
+	var frozen:=BattleGame.new(db,false)
+	frozen.lifecycle.fail("test_recovery","disk")
+	var frozen_before:=frozen.portable_save_data()
+	frozen.economy.credit("1",100000.0)
+	var balance=frozen.economy.balance("1")
+	frozen.tick(1.0);frozen.advance_hightech(1.0)
+	check(not frozen.upgrade_slot("weapons",0,1) and frozen.economy.balance("1")==balance and not frozen.step_progress.active,"Recovery state gates commands and time even when unpaused")
+	frozen.save_enabled=true;frozen.progress_writer.path="user://blocked-save.json";frozen.save_progress()
+	check(not FileAccess.file_exists(frozen.progress_writer.path),"Recovery state gates manual/autosave writes")
+	var refusing_transfer:=RefusingRollback.new()
+	var txgame:=BattleGame.new(db,false);txgame.progress_writer.path="user://lifecycle-progress.json"
+	check(txgame.progress_writer.acquire_owner(),"Replacement test owns isolated writer")
+	var transaction:=txgame.lifecycle.import_progress(txgame,txgame.portable_save_data(),refusing_transfer)
+	check(transaction.error==OK and txgame.lifecycle.state=="installing","Disk success waits for actual scene installation")
+	var outcome:=txgame.lifecycle.reload_failed(ERR_CANT_CREATE)
+	check(outcome.rollback==ERR_FILE_CANT_WRITE and not txgame.lifecycle.ready() and FileAccess.file_exists(transaction.primary),"Failed rollback preserves recovery state and disk evidence")
 	game.profile.cleared = range(1,61)
 	game.rebuild_unlocks()
 	game.economy.credit("2", 10000.0)
@@ -169,3 +220,25 @@ func stable_save(g)->Dictionary:
 
 func stable_data(data:Dictionary)->Dictionary:
 	var result:=data.duplicate(true);result.erase("chronoSavedAt");result.erase("hightechSavedAt");return result
+
+func check_reforge_owners(db:ShipDatabase)->void:
+	var g:=BattleGame.new(db,false)
+	g.profile.cleared=range(1,61);g.rebuild_unlocks()
+	var planets:=g.portable_save_data();planets.planets["1"].degree=1000
+	for row in g.planet_buildings.rows(g,"1"):
+		planets.planets["1"].buildings[str(row.id)].status="built"
+		planets.planets["1"].buildings[str(row.id)].build_progress=float(row.build_explore)
+	check(g.planets.install_snapshot(planets,db),"Prepare owner-backed completed facilities for reforge")
+	var rng:=RandomNumberGenerator.new();rng.seed=234
+	var drone:=preload("res://scripts/drone_rewards.gd").create_drone(rng,g.hyperspace.config,"retained","white","laser",30,"1")
+	drone.affixes=[];drone.hanging_slots=1;drone.hangings=[]
+	var hs:=g.hyperspace.save_data()
+	preload("res://scripts/drone_inventory.gd").insert(hs.hyperspace.inventory,drone,g.hyperspace.config)
+	hs.hyperspace.hanging_modules.extra_storage={"unlocked":true,"level":2,"exp":0.0}
+	check(g.hyperspace.install_snapshot(hs,db) and g.hyperspace_runtime.attach_hangings(g,"retained",["extra_storage"]),"Prepare retained drone using current owners")
+	g.economy.credit_many({"1":1234.0,"2":5678.0,"chrono":123.0,"jewel":55.0,"degenerate_matter":7,"ultimate_cores":2})
+	var wallet:=g.economy.resources();var chrono=g.economy.balance("chrono")
+	check(g.reforge_planet("1",["retained"]),"Reforge installs complete private domain and session candidate")
+	check(g.lifecycle.ready() and g.economy.resources()==wallet and g.economy.balance("chrono")==chrono and g.planet_progress("1").conquered,"Reforge preserves ordinary reserves and publishes conquest together")
+	check(g.hyperspace.state.round_id==2 and g.hyperspace.state.inventory.sealed.get("retained")==int(db.data.unlock[db.data.planet["1"].unlockId].level) and g.hyperspace.state.inventory.drones.retained.hangings==["extra_storage"],"Reforge keeps selected drone layout in sealed namespace")
+	check(not g.hyperspace.state.hanging_modules.extra_storage.unlocked and g.hyperspace.state.hanging_modules.extra_storage.level==0 and g.economy.balance("degenerate_matter")==0 and g.economy.balance("ultimate_cores")==0 and g.economy.balance("jewel")==0,"Reforge resets current hanging growth and run-only balances")

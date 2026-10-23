@@ -68,6 +68,35 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	if planet_plan.is_empty():return false
 	var hyperspace_plan: Dictionary=g.hyperspace.prepare_reforge(g,keep_drones,claim_stages)
 	if hyperspace_plan.is_empty():return false
+	var raw:Dictionary=g.portable_save_data()
+	if not g.lifecycle.begin():return false
+	var candidate:BattleGame=g.create_session_candidate(g.db)
+	candidate.profile=g.profile.duplicate(true)
+	# Clone current owners directly. Reforge must not apply disk-load interruption,
+	# login accrual or offline recovery to the still-running source state.
+	if not candidate.startup_error.is_empty() or not install_loaded_domains(candidate,raw):
+		g.lifecycle.complete("live");return false
+	for key in ["save_interval_minutes","last_successful_save_at","login_chrono_particles"]:candidate.set(key,g.get(key))
+	if g.manual_hyperspace.production_accepted and not candidate.manual_hyperspace.load_production(candidate):
+		g.lifecycle.complete("live");return false
+	# Proposals carry owner revisions; prepare again against the private owners.
+	planet_plan=candidate.planets.prepare_conquest(candidate,id)
+	hyperspace_plan=candidate.hyperspace.prepare_reforge(candidate,keep_drones,claim_stages)
+	if planet_plan.is_empty() or hyperspace_plan.is_empty():
+		g.lifecycle.complete("live");return false
+	var notices:Array=[]
+	candidate.event.connect(func(kind,payload):notices.append({"kind":kind,"payload":payload.duplicate(true)}))
+	if not _prepare_reforge(candidate,id,planet_plan,hyperspace_plan):
+		g.lifecycle.complete("live");return false
+	g.advance_replacement_versions(candidate)
+	var cancelled_queue:bool=not g.manual_hyperspace.queued.is_empty()
+	g.install_prepared_game(candidate,"reforge")
+	g.speed=candidate.speed;g.paused=candidate.paused
+	if cancelled_queue:g.event.emit("hyperspace_queue",{"status":"cancelled","reason":"round_changed"})
+	for notice in notices:g.event.emit(notice.kind,notice.payload)
+	return true
+
+func _prepare_reforge(g,id:String,planet_plan:Dictionary,hyperspace_plan:Dictionary)->bool:
 	var start_level: int= g.planet_reforge_start(id)
 	# Prepare the complete replacement before changing any authoritative state.
 	var next: Dictionary= g.fresh_profile()
@@ -118,8 +147,9 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	g.set_block_signals(signals_were_blocked)
 	var persist: bool= g.save_enabled
 	g.save_enabled=false
-	g.start(start_level,false)
+	var started:bool=g.start(start_level,false)
 	g.save_enabled=persist
+	if not started:return false
 	if cancelled_queue:g.event.emit("hyperspace_queue",{"status":"cancelled","reason":"round_changed"})
 	g.crew.on_committed(g,Result.make("committed","",[],[],[],{"unlocks_changed":true}))
 	g.event.emit("unlocks_changed",{})
@@ -366,18 +396,19 @@ func clear_runtime(g) -> void:
 	g.step_progress.reset();g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
 	g.income_history.clear();g.pending_unlocks.clear()
 
-func install_loaded_domains(g, raw: Dictionary) -> void:
-	if not g.snapshot_ready():return
-	g.economy.install_snapshot(raw)
-	g.equipment.install_snapshot(raw,g.db)
+func install_loaded_domains(g, raw: Dictionary) -> bool:
+	if not g.snapshot_ready():return false
+	if not g.economy.install_snapshot(raw):return false
+	if not g.equipment.install_snapshot(raw,g.db):return false
 	g.profile.productionElapsed=float(raw.productionElapsed)
-	g.enhancement_growth.install_snapshot(raw)
+	if not g.enhancement_growth.install_snapshot(raw):return false
+	if not g.research.install_snapshot(raw,g.db.data.ai_tech_tree):return false
 	g.load_hightech(raw)
-	g.crew.install_snapshot(raw,g.db)
-	g.planets.install_snapshot(raw,g.db)
-	g.reactor.install_snapshot(raw,g.db.config)
-	g.hyperspace.install_snapshot(raw,g.db)
-	g.galaxy.install_snapshot(raw,g.db)
+	if not g.crew.install_snapshot(raw,g.db):return false
+	if not g.planets.install_snapshot(raw,g.db):return false
+	if not g.reactor.install_snapshot(raw,g.db.config):return false
+	if not g.hyperspace.install_snapshot(raw,g.db):return false
+	return g.galaxy.install_snapshot(raw,g.db)
 
 func rebuild_contributions(g) -> void:
 	g.rebuild_unlock_gates()
