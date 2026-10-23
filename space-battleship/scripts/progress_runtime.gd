@@ -68,6 +68,36 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	if planet_plan.is_empty():return false
 	var hyperspace_plan: Dictionary=g.hyperspace.prepare_reforge(g,keep_drones,claim_stages)
 	if hyperspace_plan.is_empty():return false
+	var raw:Dictionary=g.portable_save_data()
+	if not g.lifecycle.begin():return false
+	var candidate:BattleGame=g.create_load_candidate(g.db)
+	candidate.stat_cache_enabled=g.stat_cache_enabled
+	candidate.profile=g.profile.duplicate(true)
+	# Clone current owners directly. Reforge must not apply disk-load interruption,
+	# login accrual or offline recovery to the still-running source state.
+	if not candidate.startup_error.is_empty() or not install_loaded_domains(candidate,raw):
+		g.lifecycle.complete("live");return false
+	for key in ["save_interval_minutes","last_successful_save_at","login_chrono_particles"]:candidate.set(key,g.get(key))
+	if g.manual_hyperspace.production_accepted and not candidate.manual_hyperspace.load_production(candidate):
+		g.lifecycle.complete("live");return false
+	# Proposals carry owner revisions; prepare again against the private owners.
+	planet_plan=candidate.planets.prepare_conquest(candidate,id)
+	hyperspace_plan=candidate.hyperspace.prepare_reforge(candidate,keep_drones,claim_stages)
+	if planet_plan.is_empty() or hyperspace_plan.is_empty():
+		g.lifecycle.complete("live");return false
+	var notices:Array=[]
+	candidate.event.connect(func(kind,payload):notices.append({"kind":kind,"payload":payload.duplicate(true)}))
+	if not _prepare_reforge(candidate,id,planet_plan,hyperspace_plan):
+		g.lifecycle.complete("live");return false
+	g.advance_replacement_versions(candidate)
+	var cancelled_queue:bool=not g.manual_hyperspace.queued.is_empty()
+	g.install_prepared_game(candidate,"reforge")
+	g.speed=candidate.speed;g.paused=candidate.paused
+	if cancelled_queue:g.event.emit("hyperspace_queue",{"status":"cancelled","reason":"round_changed"})
+	for notice in notices:g.event.emit(notice.kind,notice.payload)
+	return true
+
+func _prepare_reforge(g,id:String,planet_plan:Dictionary,hyperspace_plan:Dictionary)->bool:
 	var start_level: int= g.planet_reforge_start(id)
 	# Prepare the complete replacement before changing any authoritative state.
 	var next: Dictionary= g.fresh_profile()
@@ -118,8 +148,9 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	g.set_block_signals(signals_were_blocked)
 	var persist: bool= g.save_enabled
 	g.save_enabled=false
-	g.start(start_level,false)
+	var started:bool=g.start(start_level,false)
 	g.save_enabled=persist
+	if not started:return false
 	if cancelled_queue:g.event.emit("hyperspace_queue",{"status":"cancelled","reason":"round_changed"})
 	g.crew.on_committed(g,Result.make("committed","",[],[],[],{"unlocks_changed":true}))
 	g.event.emit("unlocks_changed",{})

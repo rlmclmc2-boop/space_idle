@@ -201,6 +201,20 @@ func _init(database: ShipDatabase) -> void:
 	profile.hightechSavedAt = 0.0
 	event.connect(observe)
 
+func create_load_candidate(database:ShipDatabase)->BattleGame:
+	var candidate=get_script().new(database)
+	candidate.simulated_time=simulated_time
+	candidate.player_power_multiplier=player_power_multiplier
+	candidate.simulation_mode=simulation_mode
+	return candidate
+
+func install_loaded_session(candidate:BattleGame)->void:
+	super.install_loaded_session(candidate)
+	pending_hits.clear();fresh_shots.clear();projectile_tick=0
+	repair_cache_active=false;repair_entries.clear();repair_effects.clear();repair_stats.clear()
+	tick_effects_active=false;clear_tick_effects()
+	research_scope=false;research_rates.clear();research_active.clear()
+
 func economy_time() -> float:
 	return simulated_time
 

@@ -390,6 +390,9 @@ func load_progress_data(raw: Dictionary) -> void:
 	var candidate:=prepare_loaded_game(raw)
 	if candidate==null:
 		lifecycle.complete("live");return
+	install_prepared_game(candidate)
+
+func install_prepared_game(candidate:BattleGame,authority:String="memory")->void:
 	# Candidate owners and derived state are complete before the live install.
 	lifecycle.state="installing"
 	progress_runtime.clear_runtime(self)
@@ -397,8 +400,22 @@ func load_progress_data(raw: Dictionary) -> void:
 	for key in ["db","profile","economy","equipment","enhancement_growth","research","crew","planets","reactor","hyperspace","galaxy","income_history","galaxy_runtime","hyperspace_runtime","manual_hyperspace","attributes","configuration_revision","unlock_revision","_unlock_inputs","_committed_configuration","save_interval_minutes","last_successful_save_at","login_chrono_particles"]:
 		set(key,candidate.get(key))
 	crew.attach(self)
+	install_loaded_session(candidate)
 	invalidate_tutorial_unlocks()
-	lifecycle.complete("memory")
+	save_dirty=true
+	reset_save_timer()
+	lifecycle.complete(authority)
+
+func install_loaded_session(candidate:BattleGame)->void:
+	# A loaded profile has its own prepared player and a pending journey checkpoint.
+	# No actor, shot, effect, timer or native session from the retired game survives.
+	for keys in [
+		["state","stage","distance","travel_origin","group_index","enemies","projectiles","drops","player","cooldowns","since_hit","clear_timer","guard_index","guard_elapsed","guard_engaged","guard_arrived","first_clear","run_resources","uid","projectile_serial","pending_unlocks"],
+		["retreat_from","retreat_target","retreat_elapsed","retreat_boss_pending","auto_gen_elapsed","jewel_repeats","main_attack_serial","damage_stats","attack_instance_serial","jewel_defence_times","jewel_defence_damage","jewel_charged","compiled_combat_rules","enhancement_branches","drone_combat"],
+		["enhancement_attack_contexts","enhancement_buffers","enhancement_buffer_owners","enhancement_memory_elapsed","enhancement_defense_time","enhancement_deferred_elapsed","enhancement_deferred_tick","enhancement_deferred","enhancement_memory_due_pending","enhancement_deferred_due_pending","refit_health_ratios","enemy_shield_time","enemy_shield_hit_time","_legacy_defence_span_active","_legacy_defence_origin","_legacy_combat_origin","_legacy_combat_end"]]:
+		for key in keys:set(key,candidate.get(key))
+	native_execution=null;native_execution_requested=false;native_wave_waiting=false
+	boundary_save_pending=false
 
 func prepare_loaded_game(raw:Dictionary)->BattleGame:
 	var source_db=manual_hyperspace.base_db if manual_hyperspace.active else db
@@ -409,6 +426,11 @@ func prepare_loaded_game(raw:Dictionary)->BattleGame:
 	if not candidate.hyperspace.last_error.is_empty():hyperspace.last_error=candidate.hyperspace.last_error;return null
 	if manual_hyperspace.production_accepted and not candidate.manual_hyperspace.load_production(candidate):
 		hyperspace.last_error=candidate.manual_hyperspace.last_error;return null
+	advance_replacement_versions(candidate)
+	candidate.reset_player()
+	return candidate
+
+func advance_replacement_versions(candidate:BattleGame)->void:
 	# Replacing owner objects must not rewind versions observed by live consumers.
 	for key in ["economy","equipment","enhancement_growth","research","crew","planets","reactor","hyperspace","galaxy"]:
 		var prior=get(key);var prepared=candidate.get(key)
@@ -416,8 +438,6 @@ func prepare_loaded_game(raw:Dictionary)->BattleGame:
 			if field in prior and field in prepared:prepared.set(field,maxi(int(prepared.get(field)),int(prior.get(field))+1))
 	candidate.configuration_revision=maxi(candidate.configuration_revision,configuration_revision+1)
 	candidate.unlock_revision=maxi(candidate.unlock_revision,unlock_revision+1)
-	candidate.reset_player()
-	return candidate
 
 func _install_progress_data(raw: Dictionary) -> void:
 	if not snapshot_ready() or commit_effects.active:hyperspace.last_error="incomplete_logical_step";return

@@ -364,6 +364,7 @@ def generation_protocol():
     second = store.publish(second, dict(second.files), outside_lock)
     check(store.capture().identity==second.identity, 'Candidate parsing does not hold the publication lock')
     native_lock_protocol(root, protocol)
+    powershell_lock_protocol(root, protocol)
     (root/'data/a.json').write_bytes(b'{"value":9}')
     try: store.capture()
     except protocol.RecoveryRequired: pass
@@ -376,6 +377,36 @@ def generation_protocol():
             except protocol.Busy: pass
             else: raise AssertionError('Workbook writer handle was not excluded')
         check(protocol.stable_external_bytes(workbook)==b'frozen workbook bytes', 'External workbook captures only after writer releases')
+
+
+def powershell_lock_protocol(root, protocol):
+    import os, subprocess, time, uuid
+    if os.name != 'nt':return
+    engine=shutil.which('powershell.exe')
+    if engine is None:raise AssertionError('PowerShell lock consumer unavailable')
+    script=AREA/'lock.ps1'
+    script.write_text('param([string]$LockPath,[string]$Marker)\n'
+        'try {$lease=[System.IO.File]::Open($LockPath,[System.IO.FileMode]::OpenOrCreate,[System.IO.FileAccess]::ReadWrite,[System.IO.FileShare]::None)} catch {exit 23}\n'
+        'try {[System.IO.File]::WriteAllText($Marker,"held"); while (-not [System.IO.File]::Exists($Marker+".release")) {Start-Sleep -Milliseconds 50}} finally {$lease.Dispose()}\n',encoding='utf-8')
+    marker=AREA/('powershell-held-'+uuid.uuid4().hex)
+    command=[engine,'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',str(script),str(root/protocol.LOCK),str(marker)]
+    with protocol.exclusive(root/protocol.LOCK):
+        with (AREA/'powershell-blocked.log').open('wb') as log:
+            child=subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,timeout=30)
+        check(child.returncode==23 and not marker.exists(),'PowerShell observes Python configuration lock')
+    with (AREA/'powershell-holder.log').open('wb') as log:
+        child=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT)
+        try:
+            deadline=time.monotonic()+30
+            while not marker.exists() and child.poll() is None and time.monotonic()<deadline:time.sleep(.05)
+            check(marker.exists(),'PowerShell holds actual configuration lock')
+            try:
+                with protocol.exclusive(root/protocol.LOCK):raise AssertionError('Python bypassed PowerShell lock')
+            except protocol.Busy:pass
+            Path(str(marker)+'.release').touch()
+            check(child.wait(timeout=30)==0,'PowerShell releases configuration lock')
+        finally:
+            if child.poll() is None:child.kill();child.wait()
 
 
 def native_lock_protocol(root, protocol):

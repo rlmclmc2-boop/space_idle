@@ -1,0 +1,17 @@
+{
+  "runs": {
+    "save": "test_save_boundaries-1hw9vfz4",
+    "planet": "test_planet-wgiwxgo4"
+  },
+  "checks": {
+    "save": 113,
+    "planet": 689
+  },
+  "failures": 0,
+  "source_sha256": {
+    "space-battleship/scripts/game.gd": "bf0fcc2cacd317db6835ce14c55043361581c4be877e1aa9d87e36b71ebf5344",
+    "space-battleship/scripts/balance_game.gd": "19a9f9836773f2f351a59daaf5d8f558ef1022b352c20611aaeb818f11875468",
+    "space-battleship/scripts/progress_runtime.gd": "363c361ffffc287a9678711fe15ff0b73ca9367557266eb898767c141f2a1c63"
+  },
+  "note": "Full actual-main run yezt9won still in progress at checkpoint creation."
+}
