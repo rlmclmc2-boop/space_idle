@@ -180,6 +180,7 @@ func economy_time() -> float:
 	return Time.get_unix_time_from_system()
 
 func _init(database: ShipDatabase, persist := true) -> void:
+	commit_effects.guard=lifecycle
 	event.connect(_configuration_event)
 	db = database
 	if persist and preload("res://scripts/product_lifecycle.gd").pending!=null:
@@ -187,6 +188,7 @@ func _init(database: ShipDatabase, persist := true) -> void:
 	progress_writer.validation_db = db
 	if not preload("res://scripts/hyperspace_config.gd").pack_valid(self):
 		startup_error="invalid_hyperspace_config_pack";save_enabled=false;paused=true;profile={}
+		lifecycle.fail(startup_error,"configuration")
 		push_error(startup_error)
 		return
 	speed = default_speed()
@@ -404,6 +406,13 @@ func prepare_loaded_game(raw:Dictionary)->BattleGame:
 	if not candidate.hyperspace.last_error.is_empty():hyperspace.last_error=candidate.hyperspace.last_error;return null
 	if manual_hyperspace.production_accepted and not candidate.manual_hyperspace.load_production(candidate):
 		hyperspace.last_error=candidate.manual_hyperspace.last_error;return null
+	# Replacing owner objects must not rewind versions observed by live consumers.
+	for key in ["economy","equipment","enhancement_growth","research","crew","planets","reactor","hyperspace","galaxy"]:
+		var prior=get(key);var prepared=candidate.get(key)
+		for field in ["revision","contribution_revision","configuration_revision","counter_revision","combat_generation"]:
+			if field in prior and field in prepared:prepared.set(field,maxi(int(prepared.get(field)),int(prior.get(field))+1))
+	candidate.configuration_revision=maxi(candidate.configuration_revision,configuration_revision+1)
+	candidate.unlock_revision=maxi(candidate.unlock_revision,unlock_revision+1)
 	candidate.reset_player()
 	return candidate
 

@@ -6,6 +6,7 @@ func _initialize() -> void:
 func run() -> void:
 	change_scene_to_file("res://main.tscn")
 	await scene_changed
+	current_scene.show_qa_tools()
 	for i in range(300):
 		if root.has_node("QATools"): break
 		await process_frame

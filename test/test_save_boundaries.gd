@@ -45,6 +45,12 @@ func _initialize() -> void:
 		prior.erase(key);after_rejected.erase(key)
 	check(rejected.hyperspace.last_error=="domain_install_failed" and after_rejected==prior,"Late private owner refusal leaves all live domains unchanged")
 	check(rejected.lifecycle.ready(),"Rejected private load retains old authority")
+	var reloadable:=BattleGame.new(db,false)
+	for i in 5:reloadable.economy.credit("1",1.0)
+	var old_revision:int=reloadable.economy.revision
+	var reload_snapshot:=reloadable.portable_save_data()
+	reloadable.load_progress_data(reload_snapshot)
+	check(reloadable.lifecycle.ready() and reloadable.economy.revision>old_revision,"Private replacement preserves monotonic owner versions for existing consumers")
 	var game := BattleGame.new(db, true)
 	check(game.save_enabled and game.progress_writer.owns_progress(), "Real native writer lock is held")
 	var frozen:=BattleGame.new(db,false)
