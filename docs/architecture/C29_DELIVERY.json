@@ -1,0 +1,278 @@
+{
+  "scope": "C29 AI factory only; prepared for dual review, main not changed",
+  "base_main_sha": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+  "base_main_tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
+  "runtime_candidate_sha": "5ea23d598b980978f0894f2b2569ff4a56484c47",
+  "prepared_delivery_tree": "2ae51c85f8bb9012e2cc2833b4801e119f5944e0",
+  "status": "dual_review_approved_pending_premerge_and_release",
+  "counts": {
+    "runtime_and_configuration": 14,
+    "existing_validation": 4,
+    "feature_documentation": 1,
+    "total_changed_paths": 19,
+    "added": 0,
+    "deleted": 0
+  },
+  "included": [
+    {
+      "status": "M",
+      "path": "space-battleship/config_excel/crew_assignment.xlsx",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "e270de7eeefd99b51ce8a57104283e03bd640ecf",
+      "candidate_mode": "100644",
+      "candidate_blob": "99dbb13062668a32144bf86fd2104b11512d2e8c",
+      "candidate_blob_sha256": "1c972db0ddacd785f683cb4bd98bc79d6f4e650035f0f1b6400a02059420d50d",
+      "insertions": null,
+      "deletions": null
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/config_excel/crew_config.xlsx",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "4d4877e9301bdef7a29bd2e7505cc35aa343585b",
+      "candidate_mode": "100644",
+      "candidate_blob": "8961d9411b1e3c7f8aafdade2d62b477906ef377",
+      "candidate_blob_sha256": "3f962042b041e8ccf85c2e841fde6fa9fe78c21d7a6536687168c1dc2fe34cef",
+      "insertions": null,
+      "deletions": null
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/data/game_data.json",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "582d36199cb394127288e53eac16fb7eee57b4a6",
+      "candidate_mode": "100644",
+      "candidate_blob": "6873f794adb7f541d39a3af93dd2b45bff7ee468",
+      "candidate_blob_sha256": "6495f35f28b35573b3dce4548d19b816addf69480df71f5ac1ef5a16b3285a75",
+      "insertions": 7,
+      "deletions": 19
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/data/ui_text.json",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "9fd63742d32ac03784b8ae9159333d1ac5bfcf84",
+      "candidate_mode": "100644",
+      "candidate_blob": "e2424422231ba5243d307b9e75d700f1321060a7",
+      "candidate_blob_sha256": "d8d315b7206baa44f2b866f6f2323c2e67ab37c206bcd5ffece07ea30e08121b",
+      "insertions": 15,
+      "deletions": 54
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/data/ui_text_contract.json",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "bfd02443ad6283d1f8586bf7527cceac2c3a31fb",
+      "candidate_mode": "100644",
+      "candidate_blob": "092fedb721cbad0e08ab56ed60d2bf4d2e9bbaf5",
+      "candidate_blob_sha256": "bd060b742700c28843ea2765b78038e1f224cf18093daa0bab2db7d47c323d66",
+      "insertions": 12,
+      "deletions": 36
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/docs/CREW.md",
+      "group": "feature_documentation",
+      "base_mode": "100644",
+      "base_blob": "127cf7e1839f88474c5638bbf85750c50b5cc94f",
+      "candidate_mode": "100644",
+      "candidate_blob": "265dd3578c899f3da7f592a700e2253325e231ed",
+      "candidate_blob_sha256": "fd82f600e3b4c463ce92a9812075e51bb2da1a1b4d6bd04cc10736d34b60116d",
+      "insertions": 4,
+      "deletions": 4
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/ai_tech_factory_page.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "c82212630e3443e079f4288c39e50368b19e6f31",
+      "candidate_mode": "100644",
+      "candidate_blob": "08bfcae981a6e3d13a6b15eed88ed43ee3e5b1e9",
+      "candidate_blob_sha256": "38dce342afea55bfe286ba185dc75923459c60a2bd02376285f5309c84087213",
+      "insertions": 38,
+      "deletions": 9
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/ai_tech_tree.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "f4a7b68c268715411a476549b492fff116c2054a",
+      "candidate_mode": "100644",
+      "candidate_blob": "ce26951d9f13d6e95633b1b1fad170f11e30b9c0",
+      "candidate_blob_sha256": "e3878f319dfd2b35a4b6635968d6b81dfeee4b84e6b93bebb8a6a1b8e202cf1a",
+      "insertions": 101,
+      "deletions": 40
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/ai_tech_view_model.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "13078d6e4a6b459fdc7f1e8d8d0f6285d01b5792",
+      "candidate_mode": "100644",
+      "candidate_blob": "563dece32eec83159050c56a06521d475edbede1",
+      "candidate_blob_sha256": "54d4fc376c84a35acdf24a0844afb61e6b2a29c155c8e36e4282e1da031874c8",
+      "insertions": 9,
+      "deletions": 3
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/crew_panel.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "b782da501fc98e418f49dee1d2f79b326db90215",
+      "candidate_mode": "100644",
+      "candidate_blob": "1010154c86019961648b60f95caefc67b0886035",
+      "candidate_blob_sha256": "4b3e21aa0162735f771d89ddf931d62733dbf00aa5b764b206b792f67ed42dd6",
+      "insertions": 5,
+      "deletions": 11
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/crew_system.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "6e487e3627b1f1b1ecb355bd8a71fcfbb11536f5",
+      "candidate_mode": "100644",
+      "candidate_blob": "3fcb3c8f34bd658456f67387316b3051a537518a",
+      "candidate_blob_sha256": "227d0c38fd1a13f2b09fec82cd05307d80379349aeb28ff02811b0df7e0c3d59",
+      "insertions": 23,
+      "deletions": 28
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/game.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "15f9ce6eedbd37d83651bd83f8b46c69a9239c8d",
+      "candidate_mode": "100644",
+      "candidate_blob": "c52adcc9a64fba838499b17e40665067d70f4e01",
+      "candidate_blob_sha256": "aa873ae087226c84bf004f25f21abaac23bd8d2739a9d144df3617cc3b2d2013",
+      "insertions": 32,
+      "deletions": 2
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/main.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "22d5fe9b8feef6461f09abfb8c4569d1237b5457",
+      "candidate_mode": "100644",
+      "candidate_blob": "6588a53ac91db0e41937ff5813701dbb296911d1",
+      "candidate_blob_sha256": "381fe5774cbbdcebca0f16cd579000855257074dbbbe169dbbc87750d9ec076c",
+      "insertions": 7,
+      "deletions": 1
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/scripts/save_transfer.gd",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "399e4b699a6c46163e01a001b87f895b7def95e6",
+      "candidate_mode": "100644",
+      "candidate_blob": "b20501fa21e821967c3c99a040e0add98f1cb8ee",
+      "candidate_blob_sha256": "f1923b63d35540f6d18141fad90288c770a125c7c748f22b11f68015d1a5df38",
+      "insertions": 3,
+      "deletions": 1
+    },
+    {
+      "status": "M",
+      "path": "space-battleship/tools/import_workbook.py",
+      "group": "runtime_and_configuration",
+      "base_mode": "100644",
+      "base_blob": "297b8ac71b3ba0edfdfcfd00b496fed541812190",
+      "candidate_mode": "100644",
+      "candidate_blob": "29a4e952a6debe8f70a56de07127cb32fa64ff74",
+      "candidate_blob_sha256": "00bf8a14eefaecfd4269385e9d11a2d96766f552e6c04c0ef7b3eb984d8adcbb",
+      "insertions": 6,
+      "deletions": 7
+    },
+    {
+      "status": "M",
+      "path": "test/run.py",
+      "group": "existing_validation",
+      "base_mode": "100644",
+      "base_blob": "c43663cb4e8ffff1175bb5e834bd33c75101290e",
+      "candidate_mode": "100644",
+      "candidate_blob": "834ea5d58fd5eff886f88c39c37e834ac60c5d88",
+      "candidate_blob_sha256": "b8dbafc9074c10bf31f075d3d3a14fdb30f7d2a762575138038ea1afb0f96aab",
+      "insertions": 2,
+      "deletions": 1
+    },
+    {
+      "status": "M",
+      "path": "test/test_ai_tech_tree.gd",
+      "group": "existing_validation",
+      "base_mode": "100644",
+      "base_blob": "fd26713c216af622cae3d32152e2eddbe4da796f",
+      "candidate_mode": "100644",
+      "candidate_blob": "d443b66479def6d8a805ccc29fc5212e34a03cf6",
+      "candidate_blob_sha256": "2712e26551a47378eb2467c57231d8af310abaf2a9a450378261724afcf05114",
+      "insertions": 118,
+      "deletions": 0
+    },
+    {
+      "status": "M",
+      "path": "test/test_crew_levels.gd",
+      "group": "existing_validation",
+      "base_mode": "100644",
+      "base_blob": "9d2517952ddc48d5084d4a0716ff1af67b65f0e0",
+      "candidate_mode": "100644",
+      "candidate_blob": "66168342e4db091b694cd984b80f20b045b2bc20",
+      "candidate_blob_sha256": "d7df5c9752eedc88a0b98cccb38455f29975603016986c583d692fcce20eaee1",
+      "insertions": 16,
+      "deletions": 9
+    },
+    {
+      "status": "M",
+      "path": "test/test_ordinary_entry.gd",
+      "group": "existing_validation",
+      "base_mode": "100644",
+      "base_blob": "43fbfba88e69f4126a61a119206e49d9240e7e96",
+      "candidate_mode": "100644",
+      "candidate_blob": "ff2001f4705b56818438d6b219a1813159aba741",
+      "candidate_blob_sha256": "5d8cabe5c9f933205998e11396f0ef297112f4fabc4aaf801558d622710c23f6",
+      "insertions": 86,
+      "deletions": 1
+    }
+  ],
+  "excluded": [
+    {
+      "prefix": "docs/architecture/",
+      "changed_paths": 330,
+      "reason": "Implementation/audit documents, manifests, logs, captures and evidence stay on the implementation branch."
+    },
+    {
+      "path": "space-battleship/docs/knowledge/TASKS.md",
+      "reason": "Historical task bookkeeping is not a C29 product deliverable."
+    },
+    {
+      "path": "space-battleship/docs/knowledge/tasks/architecture-renewal-20261022.md",
+      "reason": "Historical task bookkeeping is not a C29 product deliverable."
+    }
+  ],
+  "checks": {
+    "filtered_tree_diff_matches_exact_included_set": true,
+    "every_included_blob_and_mode_matches_runtime_candidate": true,
+    "all_excluded_paths_keep_main_content": true,
+    "working_tree_and_real_index_unchanged_by_tree_construction": true
+  },
+  "validation_attribution": {
+    "candidate": "5ea23d598b980978f0894f2b2569ff4a56484c47",
+    "research_checks": 125,
+    "original_main_write_checks": 20,
+    "original_main_reopen_checks": 8,
+    "evidence": "evidence/c29/r1/manifest.json",
+    "prior_crew_evidence_candidate": "e9347c682cd8ad0f6a7c0ece3cf69d703c056e59",
+    "no_new_runtime_verification_for_manifest_only_work": true
+  },
+  "prior_release_manifest": "MAIN_DELIVERY.json (C27/C28 historical delivery; retained unchanged)",
+  "review": "Parent confirmed unanimous dot/astra approval of 5ea23d598b980978f0894f2b2569ff4a56484c47 and authorized filtered main delivery plus player-launcher acceptance."
+}
