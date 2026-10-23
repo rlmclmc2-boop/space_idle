@@ -1,0 +1,1022 @@
+{
+  "options": {
+    "label": "c23-after",
+    "godot": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+    "ref": null,
+    "reuse": "test\\work\\whole-perf-3j_8vayx",
+    "headless": false,
+    "rich": true,
+    "enemies": 15,
+    "reactor_level": 1,
+    "balance": 1e+80,
+    "check_pages": false,
+    "capture": true,
+    "max_quote": false,
+    "realtime": false,
+    "instrument": false,
+    "pages": "0,8,0,8",
+    "frames": 600,
+    "galaxy_work": "active",
+    "galaxy_steady": false
+  },
+  "exit": 0,
+  "environment": [
+    {
+      "adapter": "NVIDIA GeForce RTX 2060",
+      "cap": 0,
+      "display": "Windows",
+      "engine": "4.7.2-stable (official)",
+      "galaxy_assignment": true,
+      "galaxy_initial": {
+        "active_upgrade_work": 1786.5,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 2,
+        "game_time": 0.12,
+        "income_events": 0,
+        "level_total": 120,
+        "settlements": 0,
+        "status": "developing",
+        "upgrade_work": 1786.5
+      },
+      "galaxy_work": "active",
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(1373, 883)",
+      "vendor": "NVIDIA"
+    }
+  ],
+  "rows": [
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 377.0,
+        "mean": 365.286666666667,
+        "p50": 365.0,
+        "p95": 374.0,
+        "p99": 376.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 43701,
+        "mean": 6548.5,
+        "p50": 6228,
+        "p95": 8755,
+        "p99": 10866
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 901.5,
+        "building_revision": 2,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 3,
+        "game_time": 10.3700000000001,
+        "income_events": 0,
+        "level_total": 121,
+        "settlements": 10,
+        "status": "developing",
+        "upgrade_work": 1801.5
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 1786.5,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 2,
+        "game_time": 0.37,
+        "income_events": 0,
+        "level_total": 120,
+        "settlements": 0,
+        "status": "developing",
+        "upgrade_work": 1786.5
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 6447,
+        "mean": 2986.26,
+        "p50": 2719,
+        "p95": 4805,
+        "p99": 6169
+      },
+      "memory": 270577829,
+      "memory_delta": 903328,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 600,
+      "node_delta": 1,
+      "owned_domains": true,
+      "page": 0,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 1,
+      "primitives": {
+        "max": 30603.0,
+        "mean": 25701.0466666667,
+        "p50": 25250.0,
+        "p95": 29813.0,
+        "p99": 30493.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.0783333333333,
+        "p50": 21,
+        "p95": 28,
+        "p99": 31
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "settlement_samples": [
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6447,
+          "effects_changed": false,
+          "frame": 44,
+          "frame_us": 10866
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6220,
+          "effects_changed": false,
+          "frame": 104,
+          "frame_us": 10595
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6173,
+          "effects_changed": false,
+          "frame": 164,
+          "frame_us": 10623
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5225,
+          "effects_changed": true,
+          "frame": 224,
+          "frame_us": 9199
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 4912,
+          "effects_changed": false,
+          "frame": 284,
+          "frame_us": 8610
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5769,
+          "effects_changed": false,
+          "frame": 344,
+          "frame_us": 9029
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6187,
+          "effects_changed": false,
+          "frame": 404,
+          "frame_us": 9557
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6170,
+          "effects_changed": false,
+          "frame": 464,
+          "frame_us": 9865
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6169,
+          "effects_changed": false,
+          "frame": 524,
+          "frame_us": 9476
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5362,
+          "effects_changed": false,
+          "frame": 584,
+          "frame_us": 9720
+        }
+      ],
+      "switch_cpu_us": 398,
+      "switch_frame_us": 195083,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(185, 203)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 649.0,
+        "mean": 633.686666666667,
+        "p50": 633.0,
+        "p95": 646.0,
+        "p99": 649.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 15921,
+        "mean": 6257.27,
+        "p50": 6126,
+        "p95": 7554,
+        "p99": 9921
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 18.0,
+        "building_revision": 4,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 4,
+        "game_time": 21.1533333333334,
+        "income_events": 0,
+        "level_total": 122,
+        "settlements": 21,
+        "status": "developing",
+        "upgrade_work": 1818.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 903.0,
+        "building_revision": 2,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 3,
+        "game_time": 11.1533333333335,
+        "income_events": 0,
+        "level_total": 121,
+        "settlements": 11,
+        "status": "developing",
+        "upgrade_work": 1803.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": true,
+      "main_us": {
+        "max": 11691,
+        "mean": 2433.59166666667,
+        "p50": 2263,
+        "p95": 3250,
+        "p99": 5456
+      },
+      "memory": 277899174,
+      "memory_delta": 301686,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 600,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "preparation_frames_us": [
+        22478,
+        36014,
+        15762,
+        10444,
+        10733,
+        11554,
+        13919,
+        14024,
+        13424,
+        13919,
+        10301,
+        12301,
+        35414,
+        35476,
+        7744,
+        5512,
+        6747,
+        36557,
+        5814,
+        5562,
+        5365,
+        6618,
+        39679,
+        11356,
+        10168,
+        7543,
+        8234,
+        7012,
+        7698,
+        7632,
+        9998,
+        9108
+      ],
+      "preparation_game_seconds": 0.53333333333336,
+      "preparation_stages": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "preparation_timings": {},
+      "preparation_us": 454410,
+      "primitives": {
+        "max": 143377.0,
+        "mean": 137944.581666667,
+        "p50": 137282.0,
+        "p95": 142006.0,
+        "p99": 142814.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.6383333333333,
+        "p50": 21,
+        "p95": 27,
+        "p99": 31
+      },
+      "reactor_level": 1,
+      "resources_delta": 11.0,
+      "scenario": 1,
+      "settlement_samples": [
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5456,
+          "effects_changed": false,
+          "frame": 57,
+          "frame_us": 8940
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5198,
+          "effects_changed": false,
+          "frame": 117,
+          "frame_us": 8739
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 11691,
+          "effects_changed": true,
+          "frame": 177,
+          "frame_us": 15921
+        },
+        {
+          "building_changed": true,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6055,
+          "effects_changed": false,
+          "frame": 237,
+          "frame_us": 9909
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5361,
+          "effects_changed": false,
+          "frame": 297,
+          "frame_us": 9003
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5663,
+          "effects_changed": false,
+          "frame": 357,
+          "frame_us": 9543
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5407,
+          "effects_changed": false,
+          "frame": 417,
+          "frame_us": 9122
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5242,
+          "effects_changed": false,
+          "frame": 477,
+          "frame_us": 8846
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6163,
+          "effects_changed": false,
+          "frame": 537,
+          "frame_us": 10410
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5979,
+          "effects_changed": false,
+          "frame": 597,
+          "frame_us": 10786
+        }
+      ],
+      "switch_cpu_us": 4315,
+      "switch_frame_us": 14554,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 352,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 377.0,
+        "mean": 365.436666666667,
+        "p50": 365.0,
+        "p95": 371.0,
+        "p99": 372.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 10355,
+        "mean": 6075.54166666667,
+        "p50": 5922,
+        "p95": 7816,
+        "p99": 9499
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 33.0000000000001,
+        "building_revision": 4,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 4,
+        "game_time": 31.4033333333328,
+        "income_events": 0,
+        "level_total": 122,
+        "settlements": 31,
+        "status": "developing",
+        "upgrade_work": 1833.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 18.0,
+        "building_revision": 4,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 4,
+        "game_time": 21.4033333333334,
+        "income_events": 0,
+        "level_total": 122,
+        "settlements": 21,
+        "status": "developing",
+        "upgrade_work": 1818.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 6584,
+        "mean": 2762.41166666667,
+        "p50": 2553,
+        "p95": 3729,
+        "p99": 5722
+      },
+      "memory": 277891112,
+      "memory_delta": 141894,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 600,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 0,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 1,
+      "primitives": {
+        "max": 30533.0,
+        "mean": 25838.3966666667,
+        "p50": 25140.0,
+        "p95": 29705.0,
+        "p99": 30260.0
+      },
+      "projectiles": {
+        "max": 31,
+        "mean": 20.1833333333333,
+        "p50": 21,
+        "p95": 27,
+        "p99": 30
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 2,
+      "settlement_samples": [
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5722,
+          "effects_changed": false,
+          "frame": 42,
+          "frame_us": 9412
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5375,
+          "effects_changed": false,
+          "frame": 102,
+          "frame_us": 8318
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5581,
+          "effects_changed": false,
+          "frame": 162,
+          "frame_us": 9002
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6209,
+          "effects_changed": false,
+          "frame": 222,
+          "frame_us": 9955
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 4924,
+          "effects_changed": false,
+          "frame": 282,
+          "frame_us": 7960
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6337,
+          "effects_changed": false,
+          "frame": 342,
+          "frame_us": 9945
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5958,
+          "effects_changed": false,
+          "frame": 402,
+          "frame_us": 9267
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5373,
+          "effects_changed": false,
+          "frame": 462,
+          "frame_us": 8554
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5752,
+          "effects_changed": false,
+          "frame": 522,
+          "frame_us": 8984
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 4980,
+          "effects_changed": false,
+          "frame": 582,
+          "frame_us": 8083
+        }
+      ],
+      "switch_cpu_us": 6322,
+      "switch_frame_us": 8493,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 352,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(815, 558)"
+        }
+      ]
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 668.0,
+        "mean": 657.57,
+        "p50": 658.0,
+        "p95": 665.0,
+        "p99": 668.0
+      },
+      "enemies": 15,
+      "frames_us": {
+        "max": 10784,
+        "mean": 6658.33666666667,
+        "p50": 6545,
+        "p95": 8326,
+        "p99": 10181
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 48.0000000000001,
+        "building_revision": 4,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 4,
+        "game_time": 41.6533333333322,
+        "income_events": 0,
+        "level_total": 122,
+        "settlements": 41,
+        "status": "developing",
+        "upgrade_work": 1848.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 33.0000000000001,
+        "building_revision": 4,
+        "crew": {
+          "assignment": "galaxy_explore",
+          "id": "navigator",
+          "target": "galaxy_1"
+        },
+        "crew_count": 1,
+        "effect_generation": 4,
+        "game_time": 31.6533333333328,
+        "income_events": 0,
+        "level_total": 122,
+        "settlements": 31,
+        "status": "developing",
+        "upgrade_work": 1833.0
+      },
+      "live_enemies": {
+        "max": 15,
+        "mean": 15.0,
+        "p50": 15,
+        "p95": 15,
+        "p99": 15
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 6301,
+        "mean": 2621.02,
+        "p50": 2495,
+        "p95": 3697,
+        "p99": 5622
+      },
+      "memory": 278033880,
+      "memory_delta": 183524,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": true,
+      "native_frames": 600,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 8,
+      "primitives": {
+        "max": 143846.0,
+        "mean": 138930.493333333,
+        "p50": 138252.0,
+        "p95": 142836.0,
+        "p99": 143635.0
+      },
+      "projectiles": {
+        "max": 32,
+        "mean": 20.7833333333333,
+        "p50": 21,
+        "p95": 28,
+        "p99": 31
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 3,
+      "settlement_samples": [
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5575,
+          "effects_changed": false,
+          "frame": 27,
+          "frame_us": 9767
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5245,
+          "effects_changed": false,
+          "frame": 87,
+          "frame_us": 8651
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6033,
+          "effects_changed": false,
+          "frame": 147,
+          "frame_us": 10355
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6066,
+          "effects_changed": false,
+          "frame": 207,
+          "frame_us": 10185
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5649,
+          "effects_changed": false,
+          "frame": 267,
+          "frame_us": 9611
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5407,
+          "effects_changed": false,
+          "frame": 327,
+          "frame_us": 9089
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 6301,
+          "effects_changed": false,
+          "frame": 387,
+          "frame_us": 10181
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5622,
+          "effects_changed": false,
+          "frame": 447,
+          "frame_us": 9639
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5923,
+          "effects_changed": false,
+          "frame": 507,
+          "frame_us": 10070
+        },
+        {
+          "building_changed": false,
+          "combat_changed": false,
+          "commits": 1,
+          "cpu_us": 5504,
+          "effects_changed": false,
+          "frame": 567,
+          "frame_us": 9357
+        }
+      ],
+      "switch_cpu_us": 2176,
+      "switch_frame_us": 3385,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 11,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Planets/@Node@2079/@SubViewport@2080",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 362,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1598/Galaxy/@PanelContainer@2151/@VBoxContainer@2152/@PanelContainer@2245/@Control@2246/@Control@2247/@SubViewport@2250",
+          "size": "(815, 558)"
+        }
+      ]
+    }
+  ],
+  "page_checks": [
+    [
+      {
+        "label": "Actual navigator assignment to existing developing galaxy_1 succeeds",
+        "ok": true
+      },
+      {
+        "label": "Galaxy content reaches ready through bounded view preparation",
+        "ok": true
+      },
+      {
+        "label": "Galaxy content reaches ready through bounded view preparation",
+        "ok": true
+      },
+      {
+        "label": "Assigned galaxy advances real work and commits through the external clock",
+        "ok": true
+      },
+      {
+        "label": "Production upgrade boundaries actually complete during the measured run",
+        "ok": true
+      }
+    ]
+  ]
+}

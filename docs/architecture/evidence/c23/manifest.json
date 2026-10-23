@@ -1,0 +1,46 @@
+{
+  "runtime_sha": "fc7782154505df5c9151d31ddf04e180187c949c",
+  "baseline_runtime_sha": "4522c77f00c9fd25c8e1510c6540443d1a4ac73b",
+  "scope": "Galaxy first-load lifecycle; original whole_game_perf and galaxy UI entries",
+  "validation": {
+    "galaxy_ui_checks": 913,
+    "failures": 0,
+    "performance_rows_each": 4,
+    "frames_each_row": 600,
+    "enemies": 15,
+    "galaxy_assignment": "navigator -> galaxy_1; actual work and commits"
+  },
+  "source_sha256": {
+    "space-battleship/scripts/galaxy_map.gd": "ef59d0f5de7fecfd9ccb91956939936bc50eef0fa2619d0e94365f0bbb4d178f",
+    "space-battleship/scripts/galaxy_city_structure.gd": "6cd5d065926a2875dfb74394ccec0e508300f70596d08d4eb9404d1a227cc9bb",
+    "test/test_galaxy_ui.gd": "c23635293100e6a40a776394f535759d96d909e44ae49eb1aeeaf1b146c7d007",
+    "test/whole_game_perf.gd": "6d44af308f0d74a79e5b5eab67d6dbe861ebdaca6ca60f394b1d7b92ac1291fd",
+    "test/whole_game_perf.py": "85a295aadb0b24c5c9b72e0c728cfb60e923a3c5a8b934c4e634fe68a8ce6037"
+  },
+  "native_dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "baseline_fixture_note": "Before used the same loading-wait/clock measurement; per-stage and preparation call-timing metadata were added afterwards. Both snapshots and options are in their reports. Baseline has no asynchronous preparation.",
+  "limitations": [
+    "39.679 ms maximum preparation frame on this GPU; not a 60 FPS guarantee",
+    "0.454 second preparation spans real render work; no fake percentage or delay animation",
+    "Preparation advances the game, so later steady-state windows are offset in game time; no claim of steady-frame improvement",
+    "Planet first navigation loading remains the next affected scope",
+    "No whole-product or final dual-review approval"
+  ],
+  "excluded_attempts": [
+    "Initial fixture type inference error",
+    "Pre-final display preparation still had 155 / 98-106 ms GPU first-draw spikes; excluded as accepted outcomes"
+  ],
+  "shader_reference": "https://docs.godotengine.org/en/stable/tutorials/performance/pipeline_compilations.html",
+  "files_sha256": {
+    "after-page-8.png": "a92dcf0685621837adea848d5b250dce0da8a827c275c6fe666594f16ba55e64",
+    "before-page-8.png": "24cb22b2e593e2d6bdf111f25954acf8469c7877562901139e072b136319ed4f",
+    "c23-after.json": "0fadacb7a288a02f3cc4bc573225574f902bb15c6233e95b45de001421983662",
+    "c23-after.log": "14f57e29d0abd789ef0682e52d8f1ad65329c8a3066f68c5056a2eee25252a8a",
+    "c23-before.json": "044bb01ac3db8a1f72b973534a7be923da4d5264168ea9f7437b459c2263c8ca",
+    "c23-before.log": "5221be383eb30d43e737b3b890b81d03232175f07256cd014d88f1013eafa919",
+    "comparison.json": "d3a3a73052067c0bae6a338f761ec828bee2c1fb692901015e026b26482a1d5e",
+    "galaxy-loading-ready.png": "b07f6e627dbaa86299dfdd9a3ed66bcf10ad9ae52881e009672919aae51379e7",
+    "galaxy-loading-shell.png": "a295eb8d8b037f6c8449918a5f6895da36dc21320a85aeb06d2ae6fd015d767c",
+    "galaxy-ui.log": "5244e3f10789f0c6beb4cead24f024bbc505cdbe914190acb3a37e345fd70da7"
+  }
+}
