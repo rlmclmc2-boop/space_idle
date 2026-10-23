@@ -262,6 +262,7 @@ static func upgraded_profile(database: ShipDatabase,record: Dictionary,base_prof
 	if delta<0:return {"error":"invalid_level"}
 	if delta==0:return base_profile.duplicate(true)
 	var game:=BattleGame.new(database,false)
+	if not game.startup_error.is_empty():return {"error":game.startup_error}
 	game.load_progress_data(base_profile)
 	game.equipment.install_snapshot({"selectedShip":record.ship,"loadout":record.equipment,"moduleVersion":1,"equipmentSwitchUntil":{}},database)
 	game.configuration_committed()
@@ -338,16 +339,21 @@ func create_battle(matchup: Dictionary) -> Dictionary:
 	private_db.config = private_db.data.config
 	private_db.defaults = private_db.data.defaults
 	private_db.ships = private_db.data.ship
-	return {"game":start_validated_battle(private_db,enemy_fleet,player_loadout,int(matchup.get("seed",0)))}
+	var game:=start_validated_battle(private_db,enemy_fleet,player_loadout,int(matchup.get("seed",0)))
+	if not game.startup_error.is_empty():return {"error":game.startup_error}
+	return {"game":game}
 
 static func start_validated_battle(private_db: ShipDatabase, enemy_fleet: Dictionary, player_loadout: Dictionary, battle_seed: int, mode := "exact", prepared_profile: Dictionary = {}, power_multiplier := 1.0) -> BattleGame:
 	# Only callers that validated both immutable input records may use this helper.
 	# A serial runner can reuse its private database; each game still owns fresh state.
 	var group_id := str(int(private_db.levels[0].groups[0].id))
-	private_db.groups[group_id] = enemy_fleet.duplicate(true)
+	# Generated formation_positions describe the analysis preview, not authored
+	# runtime coordinates. Match the slot-only group used by the level exporter.
+	private_db.groups[group_id] = EnemySimulator.runtime_group(enemy_fleet)
 	private_db.levels[0].groups = [{"id":int(group_id),"position":0.0}]
 	for ratio in ["lifeRatio","atkRatio","resRatio"]:private_db.levels[0][ratio] = 1.0
 	var game = preload("res://scripts/balance_game.gd").new(private_db)
+	if not game.startup_error.is_empty():return game
 	game.simulation_mode = mode
 	game.player_power_multiplier = power_multiplier
 	if prepared_profile.is_empty():apply_progress(game,int(player_loadout.generation_options.cleared_through))

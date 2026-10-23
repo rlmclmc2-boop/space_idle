@@ -1,0 +1,81 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+WARNING: Exponent too high
+   at: built_in_strtod (core/string/ustring.cpp:2553)
+   GDScript backtrace (most recent call first):
+       [0] parse_resource_drops (res://scripts/mon_group_xlsx.gd:65)
+       [1] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:11)
+STANDALONE workbook accepted enemies=10461
+STANDALONE projection comparison failures=0
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] configure (res://scripts/player_loadout_generator.gd:46)
+       [2] generate (res://scripts/player_loadout_generator.gd:95)
+       [3] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:117)
+       [4] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] configure (res://scripts/player_loadout_generator.gd:46)
+       [2] generate_canonical (res://scripts/player_loadout_generator.gd:193)
+       [3] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:118)
+       [4] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] configure (res://scripts/player_loadout_generator.gd:46)
+       [2] replay (res://scripts/player_loadout_generator.gd:290)
+       [3] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:121)
+       [4] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] configure (res://scripts/player_loadout_generator.gd:46)
+       [2] generate_canonical (res://scripts/player_loadout_generator.gd:193)
+       [3] replay (res://scripts/player_loadout_generator.gd:284)
+       [4] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:124)
+       [5] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] _init (res://scripts/balance_game.gd:199)
+       [2] start_validated_battle (res://scripts/player_loadout_generator.gd:355)
+       [3] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:125)
+       [4] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] upgraded_profile (res://scripts/player_loadout_generator.gd:264)
+       [2] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:127)
+       [3] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] configure (res://scripts/player_loadout_generator.gd:46)
+       [2] replay (res://scripts/player_loadout_generator.gd:290)
+       [3] validate_record (res://scripts/player_loadout_generator.gd:301)
+       [4] create_battle (res://scripts/player_loadout_generator.gd:326)
+       [5] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:128)
+       [6] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+ERROR: invalid_hyperspace_config_pack
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://scripts/game.gd:186)
+       [1] _init (res://scripts/balance_game.gd:199)
+       [2] start_validated_battle (res://scripts/player_loadout_generator.gd:355)
+       [3] begin_battle (res://scripts/fleet_battle_runner.gd:251)
+       [4] process (res://scripts/fleet_battle_runner.gd:161)
+       [5] verify_startup_rejection (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:134)
+       [6] run (C:/Users/Administrator/Documents/Codex/2026-10-24/task/candidate/test/test_battle_lab_standalone.gd:92)
+STANDALONE startup rejection cases complete
+BATTLE LAB STANDALONE failures=0

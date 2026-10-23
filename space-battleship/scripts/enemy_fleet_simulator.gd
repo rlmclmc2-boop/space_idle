@@ -258,6 +258,11 @@ func sample(candidate_seed: int,pool: Array,counts: Array[int],prepared_plans: A
 		positions.append({"slot":slot,"id":placement.id,"x":placement.x,"y":placement.y,"pair":placement.get("pair",-1),"role":placement.role})
 	return {"description":"","slots":slots,"formation_type":template.id,"formation_positions":positions}
 
+static func runtime_group(record: Dictionary) -> Dictionary:
+	# Generated preview coordinates are metadata, not authored runtime positions.
+	# Both battle evaluation and exported groups consume the same source slots.
+	return {"description":record.get("description",""),"slots":record.slots.duplicate(true)}
+
 func take_grouped(remaining: Dictionary) -> String:
 	var best: String=""
 	var amount:=0

@@ -197,6 +197,7 @@ func jewel_equipment_stat(entry: Dictionary, level := -1, effects: Variant = nul
 
 func _init(database: ShipDatabase) -> void:
 	super(database,false)
+	if not startup_error.is_empty():return
 	profile.hightechSavedAt = 0.0
 	event.connect(observe)
 
