@@ -1,4 +1,5 @@
 extends RefCounted
+const N = preload("res://scripts/growth_number.gd")
 ## Bounded samples and event marks; exact decision counters survive event truncation.
 var interval := 30.0
 var max_samples := 1200
@@ -60,8 +61,8 @@ func discover(game: BattleGame, time: float, initial := false) -> void:
 	for key in game.profile.unlocked:now["equipment/"+str(key)] = true
 	if game.jewels_unlocked():now["jewels"] = true
 	if game.reactor_unlocked():now["reactor"] = true
-	for key in game.db.data.get("hightech",{}):
-		if game.hightech_unlocked(key):now["research/"+str(key)] = true
+	for key in game.db.data.ai_tech_tree:
+		if game.research.eligibility(game,key).ok:now["research/"+str(key)] = true
 	for key in game.db.ships:
 		if game.ship_unlocked(key):now["ship/"+str(key)] = true
 	for key in now:
@@ -78,35 +79,35 @@ func snapshot(game: BattleGame, metrics, force := false) -> void:
 	if not samples.is_empty() and absf(float(samples.back().game_time)-time) < 0.000001:return
 	if samples.size() >= max_samples:return
 	var elapsed := time-float(previous.get("time",0))
-	var total := 0.0
-	for value in metrics.damage.values():total += float(value)
-	var delta_damage := total-float(previous.get("damage",0))
+	var total: Variant = 0.0
+	for value in metrics.damage.values():total = N.add(total,value)
+	var delta_damage: Variant = N.subtract(total,previous.get("damage",0))
 	var shares := {}
 	for key in metrics.damage:
-		var value := float(metrics.damage[key])-float(previous.get("weapons",{}).get(key,0))
-		shares[key] = value/delta_damage if delta_damage > 0 else 0.0
+		var value: Variant = N.subtract(metrics.damage[key],previous.get("weapons",{}).get(key,0))
+		shares[key] = N.ratio(value,delta_damage)
 	var kills := int(metrics.kills)-int(previous.get("kills",0))
 	var normal_kills := int(metrics.normal_kills)-int(previous.get("normal_kills",0))
 	var spawn_count := int(metrics.spawn_count)-int(previous.get("spawn_count",0))
 	var income := {}
-	for id in metrics.income:income[id] = (float(metrics.income[id])-float(previous.get("income",{}).get(id,0)))*60.0/maxf(elapsed,0.000001)
+	for id in metrics.income:income[id] = N.multiply(N.subtract(metrics.income[id],previous.get("income",{}).get(id,0)),60.0/maxf(elapsed,0.000001))
 	var balance: Dictionary = game.economy.resources().duplicate()
 	balance.jewel_fragments = game.economy.balance("jewel")
 	var interval_count := int(metrics.interval_count)-int(previous.get("interval_count",0))
 	var upgrade_interval: Variant = (float(metrics.interval_sum)-float(previous.get("interval_sum",0)))/interval_count if interval_count > 0 else null
-	var health := float(game.player.armour)/maxf(game.stat("armour"),0.000001)
-	var shield := float(game.player.shield)/maxf(game.max_shield(),0.000001)
+	var health := N.ratio(game.player.armour,N.maximum(game.stat("armour"),0.000001))
+	var shield := N.ratio(game.player.shield,N.maximum(game.max_shield(),0.000001))
 	var upgrades := int(metrics.upgrades)-int(previous.get("upgrades",0))
-	var received := float(metrics.received)-float(previous.get("received",0))
+	var received: Variant = N.subtract(metrics.received,previous.get("received",0))
 	var combat := float(metrics.combat_seconds)-float(previous.get("combat",0))
 	samples.append({"game_time":time,"window_seconds":elapsed,"stage":game.stage,"highest_stage":game.profile.highestLevel,"wave":game.group_index,
-		"dps":delta_damage/maxf(elapsed,0.000001),"damage":delta_damage,"combat_seconds":combat,
-		"enemy_hp":(float(metrics.spawn_hp)-float(previous.get("spawn_hp",0)))/spawn_count if spawn_count > 0 else null,
+		"dps":N.divide(delta_damage,maxf(elapsed,0.000001)),"damage":delta_damage,"combat_seconds":combat,
+		"enemy_hp":N.divide(N.subtract(metrics.spawn_hp,previous.get("spawn_hp",0)),spawn_count) if spawn_count > 0 else null,
 		"ttk":(float(metrics.ttk_sum)-float(previous.get("ttk_sum",0)))/kills if kills > 0 else null,
 		"normal_ttk":(float(metrics.normal_ttk_sum)-float(previous.get("normal_ttk_sum",0)))/normal_kills if normal_kills > 0 else null,
 		"kills":kills,"normal_kills":normal_kills,"resource_income":income,"resource_balance":balance,
 		"upgrade_interval":upgrade_interval,"upgrade_idle":time-float(metrics.last_upgrade),"upgrades":upgrades,
-		"player_survivability":{"health_ratio":health,"shield_ratio":shield,"damage_received":received,"received_per_combat_second":received/maxf(combat,0.000001)},
+		"player_survivability":{"health_ratio":health,"shield_ratio":shield,"damage_received":received,"received_per_combat_second":N.divide(received,maxf(combat,0.000001))},
 		"deaths":int(metrics.deaths)-int(previous.get("deaths",0)),"weapon_damage_share":shares,
 		"system_uses":metrics.uses.duplicate(),"decisions":decisions,"choice_count":choices.size(),"growth_idle":time-last_growth,
 		"resource_blocked_seconds":metrics.unaffordable_seconds,"marks":marks.duplicate()})

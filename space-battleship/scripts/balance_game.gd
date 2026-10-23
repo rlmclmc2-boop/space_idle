@@ -116,7 +116,7 @@ func tick_projectiles(dt: float) -> void:
 		if shot.target.is_empty():continue
 		if shot.hostile:
 			if not player_alive():continue
-		elif shot.target.hp <= 0 or not enemies.has(shot.target):continue
+		elif N.compare(shot.target.hp,0)<=0 or not enemies.has(shot.target):continue
 		shot.x = item.destination.x
 		shot.y = item.destination.y
 		projectiles.append(shot)
@@ -223,18 +223,18 @@ func spawn_group(keep_distance := false) -> void:
 	for enemy in enemies:
 		metrics.born[enemy.uid] = simulated_time
 		metrics.spawn_count += 1
-		metrics.spawn_hp += float(enemy.max_hp)
+		metrics.spawn_hp = N.add(metrics.spawn_hp,enemy.max_hp)
 	if is_boss_encounter():metrics.timeline.record("BOSS",simulated_time,stage,{"wave":group_index})
 
 func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical: bool = false, context: Dictionary = {}) -> void:
-	var before := float(enemy.hp)
+	var before: Variant = enemy.hp
 	var weapon := source_weapon
 	var boss := is_boss_encounter()
 	super.hit_enemy(enemy,raw,type,effects,critical,context)
-	if simulation_mode == "fast" and before > 0 and enemy.hp <= 0 and boss and targets().is_empty():clear_pending_hits()
-	if metrics == null or before <= 0:return
-	metrics.add(metrics.damage,weapon,before-float(enemy.hp))
-	if enemy.hp <= 0 and metrics.born.has(enemy.uid):
+	if simulation_mode == "fast" and N.compare(before,0)>0 and N.compare(enemy.hp,0)<=0 and boss and targets().is_empty():clear_pending_hits()
+	if metrics == null or N.compare(before,0)<=0:return
+	metrics.add(metrics.damage,weapon,N.subtract(before,enemy.hp))
+	if N.compare(enemy.hp,0)<=0 and metrics.born.has(enemy.uid):
 		metrics.ttk_sum += simulated_time-float(metrics.born[enemy.uid])
 		metrics.kills += 1
 		if not boss:
@@ -246,15 +246,15 @@ func hit_enemy(enemy: Dictionary, raw, type: int, effects: Array = [], critical:
 			metrics.boss_ttk_sum += simulated_time-metrics.encounter_start
 
 func hit_player(raw, type: int, context: Dictionary = {}) -> void:
-	var armour := float(player.armour)
-	var shield := float(player.shield)
+	var armour: Variant = player.armour
+	var shield: Variant = player.shield
 	super.hit_player(raw,type,context)
 	if metrics == null:return
-	metrics.health_lost += maxf(0,armour-float(player.armour))
-	metrics.shield_absorbed += maxf(0,shield-float(player.shield))
-	metrics.received += maxf(0,armour+shield-float(player.armour)-float(player.shield))
-	metrics.min_health = minf(metrics.min_health,float(player.armour))
-	metrics.min_shield = minf(metrics.min_shield,float(player.shield))
+	metrics.health_lost = N.add(metrics.health_lost,N.subtract(armour,player.armour))
+	metrics.shield_absorbed = N.add(metrics.shield_absorbed,N.subtract(shield,player.shield))
+	metrics.received = N.add(metrics.received,N.subtract(N.add(armour,shield),N.add(player.armour,player.shield)))
+	metrics.min_health = player.armour if metrics.min_health==null else N.minimum(metrics.min_health,player.armour)
+	metrics.min_shield = player.shield if metrics.min_shield==null else N.minimum(metrics.min_shield,player.shield)
 
 func begin_retreat() -> void:
 	# All ordinary targets are lost on death; none may hit a reset player later.
@@ -267,19 +267,19 @@ func begin_retreat() -> void:
 	super.begin_retreat()
 
 func upgrade_reactor(amount: int) -> bool:
-	var before := float(economy.balance(str(int(db.config.reactorUraniumId))))
+	var before: Variant = economy.balance(str(int(db.config.reactorUraniumId)))
 	var result := super.upgrade_reactor(amount)
 	if result and metrics != null:
-		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):before-float(economy.balance(str(int(db.config.reactorUraniumId))))})
+		metrics.spend("reactor",{str(int(db.config.reactorUraniumId)):N.subtract(before,economy.balance(str(int(db.config.reactorUraniumId))))})
 		metrics.use("reactor_levels",amount)
 	return result
 
 func upgrade_enhancement(count := 1) -> int:
-	var before := float(economy.balance("jewel"))
+	var before: Variant = economy.balance("jewel")
 	var purchased := super.upgrade_enhancement(count)
 	if metrics!=null and purchased>0:
 		metrics.use("enhancement_levels",purchased)
-		metrics.spend("enhancements",{"jewel_fragments":before-float(economy.balance("jewel"))})
+		metrics.spend("enhancements",{"jewel_fragments":N.subtract(before,economy.balance("jewel"))})
 	return purchased
 
 func commit_income_receipt(id:String,earned:Variant,source:String,notices:Array,drop:Dictionary={},manual:=false,production_base:Variant=null)->Dictionary:

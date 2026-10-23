@@ -71,6 +71,22 @@ func run() -> void:
 	var target: Dictionary = lab.enemies[0]
 	lab.fire(lab.player,target,lab.db.equip("laser",1),huge,false,"laser")
 	check(GrowthNumber.compare(lab.projectiles.back().damage,huge)==0,"Lab projectile preserves large raw damage")
+	var metrics = preload("res://scripts/balance_metrics.gd").new()
+	lab.metrics = metrics
+	metrics.initialize(lab)
+	metrics.add(metrics.damage,"laser",huge)
+	metrics.add(metrics.income,"1",huge)
+	metrics.spend("weapons",{"1":huge})
+	metrics.time = 60.0
+	metrics.combat_seconds = 60.0
+	metrics.timeline.snapshot(lab,metrics,true)
+	var large_report: Dictionary = metrics.report(lab)
+	check(GrowthNumber.compare(large_report.dps,GrowthNumber.divide(huge,60.0))==0,"metrics preserve large DPS")
+	check(large_report.weapon_damage_share.laser==1.0 and large_report.resources.system_share.weapons["1"]==1.0,"large metric shares use shared ratio")
+	check(GrowthNumber.compare(large_report.timeline.samples.back().resource_income["1"],huge)==0,"timeline preserves large income")
+	check(GrowthNumber.valid(large_report.defence.min_health),"large minimum health is reportable")
+	lab.hit_player(GrowthNumber.multiply(lab.player.armour,0.1),0)
+	check(GrowthNumber.compare(metrics.received,0)>0 and GrowthNumber.valid(metrics.received),"actual large player hit records valid damage")
 	var auto_game = preload("res://scripts/balance_game.gd").new(RunDatabase.new())
 	auto_game.profile.cleared = [3,4]
 	auto_game.rebuild_unlocks()
