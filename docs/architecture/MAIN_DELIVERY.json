@@ -2,7 +2,7 @@
   "base_main_sha": "31e79337741bf9860d69fff21dae6be994dacd00",
   "runtime_candidate_sha": "e54b5a315290831a76f4edc12db67a5eb966fcf1",
   "prior_full_game_runtime_sha": "820262e643218180d43ac22a4ef4282212891df7",
-  "purpose": "Reviewable source delivery: the frozen 76 runtime/preview paths plus reviewed changes/deletions within the original 41 test/runner/fixture paths. No new test file or test project. Audit artifacts remain excluded; no main update.",
+  "purpose": "Delivered exactly the reviewed 117 change paths on main: frozen 76 runtime/preview paths and approved adaptations/deletions within the original 41 validation paths. Audit artifacts excluded from main.",
   "included": [
     {
       "status": "M",
@@ -1103,7 +1103,7 @@
   },
   "review_status": {
     "820262e6": "Parent reports dot/astra agreement on main architecture, C24 loading logic and C25 functional persistence closure.",
-    "current_style_and_delivery": "Frozen fd1c5eb4 runtime/style remains accepted. C27 test rewrite and revised delivery tree await dot/astra review. No main merge.",
+    "current_style_and_delivery": "Parent reports unanimous dot/astra approval of e54b5a31 C27 source and ead3a047 manifest. Normal main delivery completed at f18dce07; exact reviewed tree retained.",
     "performance": "Not comprehensively at target; retained C23/C24 peaks and long-duration limitations. No new timing claim from a color-only change."
   },
   "delivery_groups": {
@@ -1847,5 +1847,13 @@
       "performance": "python test/whole_game_perf.py --help (optional observer, never a functional prerequisite)"
     }
   },
-  "production_source_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525"
+  "production_source_sha": "fd1c5eb4d37edf7b6e330e3647ff1e87119ec525",
+  "release": {
+    "main_sha": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+    "tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
+    "parent": "31e79337741bf9860d69fff21dae6be994dacd00",
+    "remote_main_readback": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+    "evidence": "evidence/c28/manifest.json",
+    "actual_player_launcher": "Original launcher with guarded main, import and exit 0 confirmed; window pixels remain unverified due execution desktop capture limitations. No confirmed launch blocker."
+  }
 }

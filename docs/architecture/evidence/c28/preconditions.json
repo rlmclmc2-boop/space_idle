@@ -1,0 +1,12 @@
+{
+  "source": "e54b5a315290831a76f4edc12db67a5eb966fcf1",
+  "base": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "target_tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
+  "path_count": 117,
+  "patch_sha256": "c48a6d05404e10ac2c786b0a9afda8ebaccd55f3af240226b16150ac888c2f31",
+  "engine": "D:\\\u653e\u7f6e\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+  "engine_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "engine_version": "4.7.2.stable.official.ed1daf0bf",
+  "native_bundle": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task-2\\space_idle\\tools\\player_runtime\\space_native.dll",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f"
+}

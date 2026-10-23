@@ -1,0 +1,13 @@
+{
+  "main": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+  "title": "太空战舰 · 深空远征 (DEBUG)",
+  "pid": 53024,
+  "captured": false,
+  "error": "Own window not confirmed at center; screenshot skipped.",
+  "entry": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task-2\\space_idle\\玩游戏.cmd",
+  "handle": 1389172,
+  "width": 1389,
+  "executable": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+  "height": 922,
+  "method": "CopyFromScreen, own window raised and confirmed at center"
+}

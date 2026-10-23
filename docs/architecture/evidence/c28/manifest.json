@@ -1,0 +1,121 @@
+{
+  "main_sha": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+  "parent": "31e79337741bf9860d69fff21dae6be994dacd00",
+  "tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
+  "reviewed_source": "e54b5a315290831a76f4edc12db67a5eb966fcf1",
+  "reviewed_manifest": "ead3a04778744b391ce30ddfae54c3b062975c39",
+  "authorization": "Parent reports unanimous dot/astra C27 approval and directs exact 117-path delivery and normal main push.",
+  "delivery": {
+    "main_sha": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+    "parent": "31e79337741bf9860d69fff21dae6be994dacd00",
+    "tree": "c4fe30708a0914b2b044b12a4ad605e28951716d",
+    "exact_reviewed_paths": 117,
+    "same_as_reviewed_tree": true,
+    "new_audit_or_temporary_paths": [],
+    "remote_main_readback": "f18dce07b1e1ab5b5da0b3c67155845fae046652"
+  },
+  "premerge": [
+    {
+      "phase": "import",
+      "exit": 0,
+      "seconds": 51.281,
+      "errors": [],
+      "log_sha256": "bd641651bd8de7e54c9713c512d5359d5c52c4e6209a5d9c3e07af06d1f3d572"
+    },
+    {
+      "phase": "startup",
+      "exit": 0,
+      "seconds": 11.531,
+      "errors": [],
+      "log_sha256": "f0509d7aead71e12324459f8661449e7d16b8b5b18034707caa269a14ecbc543"
+    }
+  ],
+  "player_acceptance": {
+    "entry": "玩游戏.cmd -> tools/bootstrap_player.ps1 -> tools/play_main.py -> original res://main.tscn",
+    "guard": "Existing checked_source main/origin-main fetch-and-equality check ran unchanged. No test scene or UI replacement.",
+    "receipt": {
+      "project": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task-2\\space_idle\\space-battleship",
+      "head": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+      "accepted_runtime": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+      "engine": "D:\\放置\\space-battleship\\engine\\Godot_v4.7.2-stable_win64.exe",
+      "engine_version": "4.7.2.stable.official.ed1daf0bf",
+      "dll_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+      "game_data_sha256": "e25cec9db813b1122dae681c37cd990067efab439caec97f1cc4ef889bcf4c4a"
+    },
+    "observed_result": {
+      "main": "f18dce07b1e1ab5b5da0b3c67155845fae046652",
+      "observation_error": "Own window not confirmed at center; screenshot skipped.",
+      "exit": 0,
+      "frames": 1200,
+      "entry": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task-2\\space_idle\\玩游戏.cmd",
+      "captured": false
+    },
+    "environment": "Existing VERIFY_WINDOW=1 and QUIT_AFTER_FRAMES=1200; approved hash-validated engine. Process-local Git safe.directory only for this authorized clone because desktop and sandbox accounts differ; no global configuration update.",
+    "userdata": "test/work/player-window-check/userdata; original personal save and dirty checkout untouched",
+    "launch_import_exit": "Actual launcher passed import and returned exit code 0.",
+    "visual_status": "NOT VERIFIED: desktop screenshot could not confirm the game window as screen target. Earlier PrintWindow returned a dark client area; rejected as rendered-game evidence.",
+    "diagnostics": "Final desktop-account game log and launcher stderr contain no error. Earlier sandbox runs had the existing root certificate store diagnostic.",
+    "previous_observations": [
+      "First sandbox CIM observer access denied, launcher continued, final exit not observed.",
+      "Second sandbox launcher exit 0; PrintWindow image only dark client area, visual check rejected.",
+      "Third sandbox CopyFromScreen invalid handle; observer stopped early, launcher final exit not observed.",
+      "Final desktop-account run exit 0; screenshot skipped because own window could not be confirmed at screen center."
+    ]
+  },
+  "scope": "Filtered-tree verification, required import/startup, actual player launcher and bounded window observation only. No whole test suite, new test, runtime change or optimization.",
+  "remaining": [
+    "Actual-player visual acceptance unconfirmed in execution desktop; no confirmed game launch blocker.",
+    "C22 numeric and C23/C24 frame-peak, long-duration and cross-hardware limitations retained."
+  ],
+  "local_details": "Full premerge logs and rejected capture attempts retained in C:\\Users\\Administrator\\Documents\\Codex\\2026-10-22\\task-2\\release-20261023-c27; no userdata or blank image committed.",
+  "files": {
+    "delivery-verification.json": {
+      "bytes": 350,
+      "sha256": "ac01c3d87af4afcdf30a916d859b256ef1f976a4e806fb8a7c5415ebd2f1328a"
+    },
+    "desktop-entry-result.json": {
+      "bytes": 303,
+      "sha256": "b6b4c9c44190d1c8b667deb722e6c8aba2c2e390b3c2efc295c23fad0271f2ac"
+    },
+    "desktop-entry.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "desktop-entry.stdout.log": {
+      "bytes": 537,
+      "sha256": "fc148d28caf1380cf403d495742c2fa8483e672c11ab6343731b6c16338f7212"
+    },
+    "desktop-player-window.json": {
+      "bytes": 547,
+      "sha256": "78a32c7333d460cf313f17c52f15c108882ebd5506559f3169db8e6d082eebd7"
+    },
+    "player-game.log": {
+      "bytes": 169,
+      "sha256": "c7a7d02b34061630f6fff5340becd0c379826daf5a3fccebc102778160a78f3a"
+    },
+    "player-import.log": {
+      "bytes": 51437,
+      "sha256": "a44d42e883596b4e2915bea3ac86b470c49e75be80d6e6ac48f5244ede602d18"
+    },
+    "player-launch.json": {
+      "bytes": 551,
+      "sha256": "53d87603d7b0e8e07aae33485f91516678ef42845719e0dfe4cb8c80ebfcc545"
+    },
+    "preconditions.json": {
+      "bytes": 747,
+      "sha256": "89dcc3b119612828a5b2beda733ada8352b3da59e07f16210ebf47cdec04f15d"
+    },
+    "premerge-results.json": {
+      "bytes": 364,
+      "sha256": "f339d813f1974c7613cedd3a2c22aad1d2f25e6ae0b45ffc7013b678380605ef"
+    },
+    "sandbox-player-entry-result.json": {
+      "bytes": 200,
+      "sha256": "d8c4301531913ec6026009cb796c81582d8d9c495068c1124b195a5b76f57c19"
+    },
+    "sandbox-player-window.json": {
+      "bytes": 456,
+      "sha256": "c0719c9679722961fba0bcdc7eea796391c9c6936a4116b98b9f97e9ed30c7ad"
+    }
+  }
+}
