@@ -20,6 +20,8 @@ class ChangedDuringShared extends "res://scripts/presented_battle_game.gd":
 class RefusedLater extends "res://scripts/native_execution_session.gd":
 	var refuse:=true
 	var refuse_preparation:=false
+	var refuse_commit:=false
+	func commit_galaxy_refit(g,plan:Dictionary)->bool:return false if refuse_commit else super.commit_galaxy_refit(g,plan)
 	func prepare_galaxy_refit(g,values:Dictionary)->Dictionary:return {} if refuse_preparation else super.prepare_galaxy_refit(g,values)
 	func handoff_to_legacy(g:RefCounted,reason:String)->bool:return false if refuse else super.handoff_to_legacy(g,reason)
 func refit_fixture(key:String="missile",effect:String="equipment_value",shared_change:bool=false,selection:bool=false):
@@ -198,27 +200,28 @@ func run()->void:
 	g.galaxy.add_pending("galaxy_1",10.0-1.0/60.0-g.galaxy.pending("galaxy_1"))
 	check(g.prepare_logical_step(1.0/60.0),"stale plan fallback preflight")
 	g.mutation_due=true;g.tick(1.0/60.0)
-	check(g.mutation_ok and g.native_execution==null and g.native_handoff_count==1,"stale plan safely transfers updated state once")
+	check(g.mutation_ok and g.native_execution==owner and g.native_handoff_count==0,"stale cached plan is replaced using current native configuration")
 	check(g.galaxy.regions.galaxy_1.slots[0].status=="active" and not g.paused,"legacy finishes actual refit after stale-plan transfer")
 	g.begin_retreat()
 	g=refit_fixture("missile","equipment_value",true);owner=g.native_execution
 	var refused=RefusedLater.new()
 	for field in ["kernel","actor_rows","actor_by_uid","execution_scope","weapons","production_seconds","ticks"]:refused.set(field,owner.get(field))
-	g.native_execution=refused;owner=refused
+	g.native_execution=refused;owner=refused;refused.refuse_commit=true
 	g.galaxy.add_pending("galaxy_1",10.0-1.0/60.0-g.galaxy.pending("galaxy_1"))
 	var before_region=g.galaxy.regions.galaxy_1.save_data().duplicate(true)
 	check(g.prepare_logical_step(1.0/60.0) and not g.galaxy_runtime.native_refit.is_empty(),"late failure starts with a valid plan")
 	g.mutation_due=true;g.later_shared=0
 	g.tick(1.0/60.0)
-	check(g.mutation_ok and owner.advance_blocked and g.paused and g.native_step_phase=="blocked","stale commit plus refused transfer explicitly blocks")
+	check(g.mutation_ok and owner.advance_blocked and g.paused and not g.step_progress.reason.is_empty(),"stale commit plus refused transfer explicitly blocks")
 	check(owner.kernel.export_handoff()==g.mutation_state and g.later_shared==0,"late failure executes neither remaining economy nor combat")
 	check(g.galaxy.regions.galaxy_1.save_data()==before_region and is_equal_approx(g.galaxy.pending("galaxy_1"),10.0),"late failure preserves all unconsumed region work")
 	refused.refuse=false
-	check(not owner.handoff_to_legacy(g,"retry") and g.native_execution==owner,"blocked partial shared step permits cancellation only, never later handoff")
+	check(owner.handoff_to_legacy(g,"retry") and g.native_execution==null,"same-context blocked step can transfer its untouched combat ownership")
 	var clock=g.production_time();g.paused=false
-	check(not g.prepare_logical_step(1.0/60.0) and g.production_time()==clock and owner.kernel.export_handoff()==g.mutation_state,"blocked late failure cannot replay shared work on resume")
+	g.tick(1.0/60.0)
+	check(not g.step_progress.active and g.production_time()==clock and g.later_shared==1,"late retry completes only remaining shared stages and combat")
+	check(g.galaxy.regions.galaxy_1.slots[0].status=="active" and g.galaxy.pending("galaxy_1")==0,"retry commits retained region work exactly once")
 	g.begin_retreat()
-	check(g.native_execution==null and is_equal_approx(g.native_cancelled_step,1.0/60.0),"explicit cancel marks already-started step for scheduler discard")
 	print("GALAXY_REFIT_CHECKS ",checks," failures ",failures)
 	FileAccess.open("res://.runtime/galaxy-refit-checks.json",FileAccess.WRITE).store_string(JSON.stringify({"checks":checks,"failures":failures}))
 	quit(1 if failures else 0)

@@ -208,13 +208,14 @@ func save_progress() -> void:
 	pass
 
 func tick(dt: float) -> void:
-	if paused or commit_effects.active:return
-	simulated_time += dt
+	if paused or commit_effects.active or logical_step_active:return
 	# This independent analysis clock substitutes for live wall time.
-	advance_resource_history_clock(dt)
-	if metrics != null:
-		metrics.time = simulated_time
-		if state == State.COMBAT:metrics.combat_seconds += dt
+	if not step_progress.active:
+		simulated_time += dt
+		advance_resource_history_clock(dt)
+		if metrics != null:
+			metrics.time = simulated_time
+			if state == State.COMBAT:metrics.combat_seconds += dt
 	tick_effects_active = true
 	super.tick(dt)
 	tick_effects_active = false
@@ -307,7 +308,7 @@ func upgrade_enhancement(count := 1) -> int:
 		metrics.spend("enhancements",{"jewel_fragments":before-float(economy.balance("jewel"))})
 	return purchased
 
-func settle_jewel_fragments(amount: float, source: String, ratio := -1.0) -> Variant:
-	var result: Variant = super.settle_jewel_fragments(amount,source,ratio)
-	if metrics != null:metrics.add(metrics.income,"jewel_fragments",result)
+func commit_income_receipt(id:String,earned:Variant,source:String,notices:Array,drop:Dictionary={},manual:=false,production_base:Variant=null)->Dictionary:
+	var result:Dictionary=super.commit_income_receipt(id,earned,source,notices,drop,manual,production_base)
+	if metrics!=null and id=="jewel" and result.status=="committed":metrics.add(metrics.income,"jewel_fragments",earned)
 	return result

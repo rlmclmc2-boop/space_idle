@@ -57,19 +57,19 @@ func run()->void:
 	var g=fixture();var owner=g.native_execution
 	var before=owner.kernel.export_handoff();var rng=g.rng.state
 	g.tick(1.0/60.0)
-	check(g.paused and owner.advance_blocked and g.native_step_phase=="blocked" and g.native_step_remaining==1.0/60.0,"failed transfer visibly stops and retains combat remainder")
+	check(g.paused and owner.advance_blocked and not g.step_progress.reason.is_empty() and g.step_progress.substep==1.0/60.0,"failed transfer visibly stops and retains combat remainder")
 	check(g.shared_calls==1 and owner.kernel.export_handoff()==before and g.rng.state==rng and g.native_handoff_count==0,"failed transfer executes no combat or fake commit")
 	g.tick(1.0/60.0)
-	check(g.shared_calls==1 and g.native_step_remaining==1.0/60.0,"paused repeat does not replay shared economy")
+	check(g.shared_calls==1 and g.step_progress.substep==1.0/60.0,"paused repeat does not replay shared economy")
 	g.begin_retreat()
 	g=fixture();var scene=BudgetMain.new();scene.game=g
 	g.consume_external_time(3.0/60.0,scene)
-	check(g.shared_calls==1 and g.paused and is_equal_approx(g.game_time_remainder,3.0/60.0) and g.native_step_remaining==1.0/60.0,"normal frame scheduler keeps blocked and unvisited time budget")
+	check(g.shared_calls==1 and g.paused and is_equal_approx((g.step_progress.available()+g.step_progress.duration-g.step_progress.completed),3.0/60.0) and g.step_progress.substep==1.0/60.0,"normal frame scheduler keeps blocked and unvisited time budget")
 	g.begin_retreat();scene.free()
 	g=fixture();scene=BudgetMain.new();scene.game=g
 	var runtime=CancelBudgetRuntime.new();runtime.scene=scene;runtime.game=g;runtime.geometry=GeometryProbe.new()
 	scene.battle_slice_runtime=runtime;g.consume_external_time(3.0/60.0,scene)
-	check(g.shared_calls==1 and g.paused and runtime.logical_steps==0 and is_equal_approx(g.game_time_remainder,3.0/60.0),"native frame scheduler does not acknowledge blocked logical step")
+	check(g.shared_calls==1 and g.paused and runtime.logical_steps==0 and is_equal_approx((g.step_progress.available()+g.step_progress.duration-g.step_progress.completed),3.0/60.0),"native frame scheduler does not acknowledge blocked logical step")
 	g.begin_retreat();scene.free()
 	for slice in [false,true]:
 		g=fixture(true);scene=BudgetMain.new();scene.game=g
@@ -79,23 +79,25 @@ func run()->void:
 		if slice:
 			runtime=CancelBudgetRuntime.new();runtime.scene=scene;runtime.game=g;runtime.geometry=probe
 			scene.battle_slice_runtime=runtime;g.consume_external_time(3.0/60.0,scene)
-			check(runtime.logical_steps==0 and is_equal_approx(g.game_time_remainder,3.0/60.0),"galaxy failure keeps slice step and remainder")
+			check(runtime.logical_steps==0 and is_equal_approx((g.step_progress.available()+g.step_progress.duration-g.step_progress.completed),3.0/60.0),"galaxy failure keeps slice step and remainder")
 		else:g.consume_external_time(3.0/60.0,scene)
-		check(g.paused and g.native_step_phase=="blocked" and g.shared_calls==0 and g.production_time()==clock,"galaxy failure precedes shared clock and economy")
-		check(scene.demo_time==0 and probe.demo_time==0 and probe.fx_time==0 and is_equal_approx(g.game_time_remainder,3.0/60.0),"galaxy failure preserves presentation clocks and complete budget")
+		check(g.paused and not g.step_progress.reason.is_empty() and g.shared_calls==0 and g.production_time()==clock,"galaxy failure precedes shared clock and economy")
+		check(scene.demo_time==0 and probe.demo_time==0 and probe.fx_time==0 and is_equal_approx((g.step_progress.available()+g.step_progress.duration-g.step_progress.completed),3.0/60.0),"galaxy failure preserves presentation clocks and complete budget")
 		check(g.galaxy.save_data()==state and g.native_execution.kernel.export_handoff()==before and economic_state=={"wallet":g.economy.save_data(),"crew":g.crew.save_data(),"research":g.research.save_data()},"Galaxy refusal preserves real wallet, growth, region and combat")
 		g.begin_retreat();scene.free()
 	for slice in [false,true]:
 		g=fixture();scene=BudgetMain.new();scene.game=g
-		g.native_cancelled_step=1.0/60.0
 		if slice:
-			runtime=CancelBudgetRuntime.new();runtime.scene=scene;runtime.game=g;g.game_time_remainder=1.5/60.0
-			scene.battle_slice_runtime=runtime;g.consume_external_time(0.0,scene)
-			check(is_equal_approx(g.game_time_remainder,0.5/60.0),"cancel consumes only the partial shared step from slice budget")
-		else:
-			g.game_time_remainder=1.5/60.0;g.consume_external_time(0.0,scene)
-			check(is_equal_approx(g.game_time_remainder,0.5/60.0),"cancel consumes only the partial shared step from Main budget")
-		check(g.native_cancelled_step==0 and g.shared_calls==0,"cancel never replays shared work")
-		g.begin_retreat();scene.free()
+			runtime=CancelBudgetRuntime.new();runtime.scene=scene;runtime.game=g;runtime.geometry=GeometryProbe.new()
+			scene.battle_slice_runtime=runtime
+		g.consume_external_time(1.5/60.0,scene)
+		var retained=g.native_execution;var saved_kernel=retained.kernel.export_handoff()
+		g.begin_retreat()
+		check(g.step_progress.frozen and g.native_execution==retained,"cancel retains frozen interval and its native owner")
+		check(is_equal_approx(g.step_progress.available()+g.step_progress.duration,1.5/60.0),"cancel preserves reserved and undispatched paid budget")
+		g.paused=false;g.consume_external_time(0.0,scene)
+		check(g.shared_calls==1 and retained.kernel.export_handoff()==saved_kernel,"cancel never replays shared or native work")
+		check(not g.start(1,false) and not g.snapshot_ready(),"frozen work rejects replacement and snapshots")
+		scene.free()
 	print("EXPECTED_BLOCKED_TRANSFER_PROOF ",JSON.stringify({"checks":checks,"failures":failures,"remaining_preserved":true}))
 	quit(0 if failures==0 else 1)

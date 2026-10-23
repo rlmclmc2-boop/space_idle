@@ -8,7 +8,7 @@ const AUTO_INPUT_SECONDS := 60.0
 const MIN_INPUT_RATIO := 0.001
 const LEVEL_LIMIT := 9007199254740991
 var _state: Dictionary = fresh()
-var revision := 0
+var revision := 0 # Economic/proposal revision; reading a UI badge is excluded.
 var contribution_revision:=0
 var _level_revision := 0
 var _factor_level_revision := -1
@@ -40,7 +40,6 @@ func completion_unread() -> bool:
 func read_completion() -> bool:
 	if not completion_unread():return false
 	_state.aiTechCompletionUnread = false
-	revision += 1
 	return true
 
 static func required_at(rows: Dictionary, id: String, current: int) -> float:
@@ -148,7 +147,7 @@ func set_auto_ratio(game, resource_id: String, ratio: float) -> bool:
 
 func refresh_auto_inputs(game, at: float, reset_clock := false) -> void:
 	for id in ["1","2"]:
-		var rate = N.divide(game.resource_game_minute_total(id,at),AUTO_INPUT_SECONDS)
+		var rate = N.divide(game.income_history.research_total(id,at),AUTO_INPUT_SECONDS)
 		_state.aiTechInput[id]=N.maximum(1.0,N.floor_value(N.multiply(rate,_state.aiTechAutoRatios[id])))
 	if reset_clock:_state.aiTechAutoElapsed=0.0
 	revision+=1
@@ -192,9 +191,9 @@ func peak_factor(game) -> Variant:
 func combat_factor(game, id: String) -> Variant:
 	return N.multiply(income_factor(game, id), peak_factor(game))
 
-func income_peak_proposal(game, id: String) -> Dictionary:
+func income_peak_proposal(game, id: String, additional:Variant=0.0) -> Dictionary:
 	if id not in ["1", "2", "jewel"]:return {}
-	var rate = N.divide(game.resource_minute_total(id),60.0)
+	var rate = N.divide(N.add(game.income_history.peak_total(id,game.economy_time()),additional),60.0)
 	if N.compare(rate,_state.aiIncomePeak.get(id,0.0)) <= 0:return {}
 	return {"id":id,"rate":rate,"revision":revision,"affects_combat":level(game,"unification")>0}
 
@@ -326,5 +325,8 @@ func proposal_current(proposal: Dictionary) -> bool:
 
 func commit_advance(proposal: Dictionary) -> void:
 	if _state.aiTechLevels != proposal.state.aiTechLevels:_level_revision += 1;contribution_revision+=1
+	var unread:bool=completion_unread()
 	_state = proposal.state.duplicate(true)
+	# A read after preparation stays read, unless this commit completes new work.
+	if not proposal.completed:_state.aiTechCompletionUnread=unread
 	revision += 1

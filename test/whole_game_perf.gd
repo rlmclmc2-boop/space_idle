@@ -116,7 +116,10 @@ func run():
 			var enemy=template.duplicate(true);enemy.uid=100+i;enemy.slot=i;enemy.x=formation[i].x;enemy.y=formation[i].y;enemy.formation_count=enemy_count;enemy.formation_columns=5
 			enemy.hp=1e300 if reactor_level>1 else 1e50;enemy.max_hp=enemy.hp
 			g.enemies.append(enemy)
+		# The synthetic replacement needs the same numeric geometry installation as a real encounter.
+		scene.simulation_geometry_authority.on_simulation_event("encounter",{})
 		g.native_execution_auto=true;g.admit_native_compiled_execution("native_rich15_layer2")
+		if scene.battle_slice_runtime!=null:scene.battle_slice_runtime.snapshot()
 	scene.refresh_structure();scene.refresh_tab_visibility()
 	print("ENV ",JSON.stringify({"engine":Engine.get_version_info().string,"adapter":RenderingServer.get_video_adapter_name(),"vendor":RenderingServer.get_video_adapter_vendor(),"method":RenderingServer.get_current_rendering_method(),"display":DisplayServer.get_name(),"resolution":str(root.size),"cap":Engine.max_fps,"low_processor":OS.low_processor_usage_mode,"galaxy_assignment":galaxy_assignment,"galaxy_work":galaxy_work,"galaxy_initial":galaxy_initial}))
 	var realtime=OS.get_environment("PERF_REALTIME")=="1"

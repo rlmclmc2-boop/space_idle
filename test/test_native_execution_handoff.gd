@@ -13,16 +13,21 @@ func check(ok:bool,label:String)->void:
 	checks+=1
 	if not ok:failures+=1;printerr("FAIL: ",label)
 func fixture(key:String="missile",beam_chain:bool=false,shared_command:bool=false):
-	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0
+	var db=ShipDatabase.new();db.equipment.shield[0].para2=0.0;db.ships.Heavy_Battleship.defenseSlots=4
 	var g=SharedCommandGame.new(db,false) if shared_command else preload("res://scripts/presented_battle_game.gd").new(db,false)
-	g.profile.unlocked=BattleGame.EQUIPMENT.duplicate();g.profile.resources={"1":1e30,"2":1e30}
-	g.profile.loadout.weapons[0].key=key
-	g.profile.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1},{"key":"shield","level":1},{"key":"armour","level":1}]
+	g.profile.cleared=range(1,101);g.rebuild_unlocks()
+	g.economy.credit_many({"1":1e30,"2":1e30})
+	var equipment:Dictionary=g.equipment.save_data();equipment.selectedShip="Heavy_Battleship"
+	equipment.loadout=preload("res://scripts/equipment_state.gd").empty_loadout(db,equipment.selectedShip)
+	equipment.loadout.weapons[0].key=key
+	equipment.loadout.defence=[{"key":"shield","level":1},{"key":"armour","level":1},{"key":"shield","level":1},{"key":"armour","level":1}]
+	check(g.equipment.install_snapshot(equipment,db),"handoff fixture installs current loadout")
 	if beam_chain:
-		g.profile.enhancementLevel=40;g.profile.cleared=range(1,61);g.profile.highestLevel=61
+		var enhancement:Dictionary=g.enhancement_growth.save_data();enhancement.enhancementLevel=40
+		check(g.enhancement_growth.install_snapshot(enhancement),"handoff growth fixture installs")
 		g.rebuild_unlocks();g.set_enhancement_branch("weapons","repeat",1,"B")
 		if key=="missile":g.set_enhancement_branch("weapons","repeat",3,"B")
-	g.invalidate_stat_cache();g.reset_player();g.state=BattleGame.State.COMBAT
+	g.configuration_committed();g.reset_player();g.state=BattleGame.State.COMBAT
 	g.enemies.assign([{"uid":100,"slot":4,"x":286.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0},{"uid":101,"slot":3,"x":240.0,"y":150.0,"hp":1e8,"max_hp":1e8,"armourType":1,"shieldType":0,"shield":0.0,"max_shield":0.0,"equipment":[],"cooldowns":[],"drops":[],"res_ratio":1.0}])
 	g.cooldowns[g.slot_id("weapons",0)]=0.0
 	var desc=preload("res://scripts/native_execution_compiler.gd").new().compile(g,"native_low_contract")
@@ -39,12 +44,12 @@ func run()->void:
 	var shot=g.projectiles[0];var position=g.projectile_position(shot);var hp=g.enemies[0].hp;var rng_before=g.rng.state
 	var cd=exported.cooldowns[0].remaining
 	var costs=g.slot_upgrade_cost("weapons",0,1)
-	for id in costs:g.profile.resources[id]=N.multiply(costs[id],10.0)
-	var resource=g.profile.resources["1"];var level=g.weapon_entries()[0].level
+	for id in costs:g.economy.credit(id,N.multiply(costs[id],10.0))
+	var resource=g.economy.balance("1");var level=g.weapon_entries()[0].level
 	check(g.upgrade_slot("weapons",0,1),"upgrade while missile packets pending")
 	g.notify_configuration_changed()
 	check(g.native_execution==null and g.native_handoff_count==1,"one whole-owner handoff")
-	check(g.weapon_entries()[0].level==level+1 and N.compare(g.profile.resources["1"],N.subtract(resource,costs.get("1",0)))==0,"level and spend applied exactly once")
+	check(g.weapon_entries()[0].level==level+1 and N.compare(g.economy.balance("1"),N.subtract(resource,costs.get("1",0)))==0,"level and spend applied exactly once")
 	check(is_equal_approx(g.cooldowns[g.slot_id("weapons",0)],cd),"upgrade keeps exact remaining cooldown")
 	check(is_same(g.projectiles[0],shot) and g.projectile_position(shot)==position and g.enemies[0].hp==hp and g.rng.state==rng_before,"handoff preserves shot identity/position/hp/RNG without settlement")
 	check(g.missile_queue.size()==exported.ejections.size(),"all pending tubes imported")

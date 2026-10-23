@@ -37,7 +37,7 @@ func sample(runner, force := false) -> void:
 	var projectile_count:int=int(game.native_execution.kernel.metrics().active_flights) if game.native_execution!=null else game.projectiles.size()
 	var sizes := {"enemies":game.enemies.size(),"projectiles":projectile_count,"drops":game.drops.size(),
 		"pending_hits":game.pending_hits.size(),
-		"resource_samples":game.resource_samples.size(),"jewel_repeats":game.jewel_repeats.size(),"jewels":game.profile.jewels.size(),
+		"resource_samples":game.income_history.size(),"jewel_repeats":game.jewel_repeats.size(),"jewels":game.profile.jewels.size(),
 		"cooldowns":game.cooldowns.size(),"defence_damage":game.jewel_defence_damage.size(),"defence_times":game.jewel_defence_times.size(),"charged":game.jewel_charged.size(),
 		"timeline":timeline.samples.size(),"events":timeline.events.size(),"decision_bins":timeline.decision_bins.size(),"born":metrics.born.size(),
 		"damage_keys":metrics.damage.size(),"income_keys":metrics.income.size(),"spending_keys":metrics.spending.size(),"systems":metrics.uses.size(),

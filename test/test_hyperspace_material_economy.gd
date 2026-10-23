@@ -4,6 +4,22 @@ const R=preload("res://scripts/drone_rewards.gd")
 const Forge=preload("res://scripts/drone_forge.gd")
 const Bag=preload("res://scripts/drone_inventory.gd")
 const Transfer=preload("res://scripts/save_transfer.gd")
+class CallbackGame extends BattleGame:
+	var before_change:Callable
+	func native_before_configuration_change()->bool:
+		if before_change.is_valid():
+			var callback:=before_change;before_change=Callable();callback.call()
+		return true
+class CompletionFailure extends "res://scripts/hyperspace_runtime.gd":
+	var refuse_kind:="claimed"
+	func commit_result(g,plan:Dictionary)->Dictionary:
+		if plan.get("kind","")==refuse_kind:return Result.make("blocked","test_handoff")
+		return super.commit_result(g,plan)
+class TrackedCrew extends "res://scripts/crew_system.gd":
+	var commits:=0
+	var last:Dictionary={}
+	func on_committed(g,result:Dictionary)->void:
+		commits+=1;last=result;super.on_committed(g,result)
 class RefusedHandoff:
 	extends RefCounted
 	func handoff_to_legacy(_game,_reason)->bool:return false
@@ -194,8 +210,50 @@ func _initialize()->void:
 	check(evolved.upgrade_slot("weapons",0) and evolved.module_entry("weapons",0).level==20 and evolved.economy.balance(material)==0,"actual evolution consumes quoted material and advances equipment")
 	exchange_boundaries()
 	consumer_boundaries()
+	completion_boundaries()
+	exact_duration_retry(db)
 	print("MATERIAL_ECONOMY: ",checks," checks ",failures," failures; formula and committed ownership boundaries")
 	quit(1 if failures else 0)
+
+func completion_boundaries()->void:
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	var tracker:=TrackedCrew.new()
+	tracker.install_snapshot(g.crew.save_data(),g.db)
+	g.event.disconnect(g.crew.on_event);g.crew=tracker;tracker.attach(g)
+	var keys:Array=g.economy.material_wallet().materials.keys()
+	var source:String=keys[0];var target:String=keys[1]
+	g.economy.credit(source,100)
+	var quote:=g.hyperspace_material_exchange_quote(source,target,20)
+	var plan:=g.hyperspace.prepare_exchange_materials(g,quote.request)
+	var seen:Array=[];var nested:Array=[];var clock:=g.production_time()
+	g.save_dirty=false
+	var observer:=func(kind,payload):
+		if kind=="hyperspace_changed":
+			seen.append([g.economy.balance(source),g.economy.balance(target),g.hyperspace.state.command_seq,tracker.commits,g.save_dirty,payload.is_read_only()])
+			nested.append(g.hyperspace_runtime.commit_result(g,g.hyperspace.prepare_set_favorites(g,[])).status)
+			g.tick(1.0)
+	g.event.connect(observer)
+	var result:=g.hyperspace_runtime.commit_result(g,plan)
+	g.event.disconnect(observer)
+	check(result.status=="committed" and result.domains==["hyperspace","economy"] and result.resources.has(source) and result.resources.has(target),"completion reports both debit and credit from the installed wallet")
+	check(seen==[[60,20,2,1,true,true]],"one fact reaches scheduling before immutable UI notice and complete wallet/receipt")
+	check(nested==["blocked"] and g.production_time()==clock and not g.commit_effects.active,"completion excludes nested command/time and releases its guard")
+	check(result.is_read_only() and result.resources.is_read_only() and tracker.last==result,"scheduler receives the same immutable committed fact")
+	var state:=g.hyperspace.save_data();var wallet:=g.economy.save_data()
+	check(g.hyperspace_runtime.commit_result(g,plan).status=="rejected" and g.hyperspace.save_data()==state and g.economy.save_data()==wallet and tracker.commits==1,"stale replay cannot debit, install or notify twice")
+	# A handoff can change unrelated configuration without changing hyperspace dependencies.
+	plan=g.hyperspace.prepare_set_equipped(g,[])
+	g.before_change=func():g.configuration_revision+=1
+	result=g.hyperspace_runtime.commit_result(g,plan)
+	check(result.reason=="stale_configuration" and g.hyperspace.save_data()==state and tracker.commits==1,"handoff configuration change rejects before installation or notification")
+	# The external caller still owns its mutable envelope; a callback cannot rewrite our detached proposal.
+	plan=g.hyperspace.prepare_set_equipped(g,[])
+	g.before_change=func():plan.kind="caller_mutated";plan.next={};plan.marker={}
+	var reasons:Array=[]
+	g.event.connect(func(kind,payload):
+		if kind=="hyperspace_changed":reasons.append(payload.reason))
+	result=g.hyperspace_runtime.commit_result(g,plan)
+	check(result.status=="committed" and reasons==["equipment_changed"] and g.hyperspace.state.inventory.equipped==[],"handoff cannot mutate the prepared envelope used by install and notification")
 
 func exchange_boundaries()->void:
 	var db:=ShipDatabase.new();var g:=BattleGame.new(db,false)
@@ -282,3 +340,22 @@ func consumer_boundaries() -> void:
 	var online: Dictionary=g.hyperspace.online_config(g)
 	check(is_equal_approx(online.energy_cap,float(g.hyperspace.config.energy_cap)) and is_equal_approx(online.energy_rate,float(g.hyperspace.config.energy_rate)),"material module does not modify energy rate or cap")
 	check(is_equal_approx(online.exploration_material_multiplier,1.21),"hyperspace charge now targets exploration material income")
+
+
+func exact_duration_retry(db)->void:
+	for kind in ["claimed","completed_pending"]:
+		var g=fixture(db);var runtime:=CompletionFailure.new();runtime.refuse_kind=kind;g.hyperspace_runtime=runtime
+		var hs:Dictionary=g.hyperspace.save_data();hs.hyperspace.next_run=2
+		hs.hyperspace.idle={"round_id":1,"run_id":1,"status":"started","mode":"idle","route":"alpha","level":5,"crew_id":"","crew_snapshot":"","luck":0.0,"crew_luck":0.0,"permanent_luck":0.0,"luck_state":"0","return_target":{},"ticket":0.0,"duration":3.0,"work":0.0,"reward":{}}
+		check(g.hyperspace.install_snapshot(hs,db),"Exact-duration current receipt fixture installs "+kind)
+		runtime.advance(g,3.0)
+		check(g.paused and g.step_progress.active and g.hyperspace.state.pending_time==0.0 and g.hyperspace.state.idle.work==3.0,"Exact-duration commit refusal retains operation with zero remaining time "+kind)
+		check(g.portable_save_data().is_empty(),"Blocked zero-time completion gates snapshot "+kind)
+		var rng_state:String=g.hyperspace.state.random_state
+		g.paused=false;runtime.drain(g)
+		check(g.step_progress.active and g.paused and g.hyperspace.state.random_state==rng_state,"Repeated refused drain preserves receipt/RNG and snapshot gate "+kind)
+		runtime.refuse_kind="";g.paused=false;runtime.drain(g)
+		check(not g.step_progress.active and g.hyperspace.state.idle.is_empty() and g.hyperspace.state.settled_run==1 and g.hyperspace.state.pending_time==0.0,"Zero-time drain retries outstanding completion/claim before retiring step "+kind)
+		var wallet:Dictionary=g.economy.material_wallet();var state:Dictionary=g.hyperspace.save_data()
+		runtime.drain(g)
+		check(g.economy.material_wallet()==wallet and g.hyperspace.save_data()==state and not g.portable_save_data().is_empty(),"Repeated drain cannot credit or advance RNG twice "+kind)

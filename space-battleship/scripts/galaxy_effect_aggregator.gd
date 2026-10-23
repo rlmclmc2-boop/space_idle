@@ -54,6 +54,6 @@ func multiplier(system, effect: String) -> float:
 func rates(g, system, key := "") -> Dictionary:
 	refresh(system)
 	var effects: Dictionary=totals if key.is_empty() else cache.get(key,{})
-	var iron=g.production_minute_total(str(int(system.setting(g,"iron_resource_id"))))
-	var uranium=g.production_minute_total(str(int(g.db.config.reactorUraniumId)))
+	var iron=g.income_history.production_total(str(int(system.setting(g,"iron_resource_id"))),g.production_time(),g.economy_time(),g.production_time())
+	var uranium=g.income_history.production_total(str(int(g.db.config.reactorUraniumId)),g.production_time(),g.economy_time(),g.production_time())
 	return {"iron":g.N.multiply(iron,float(effects.get("iron_auto_ratio",0))),"uranium":g.N.multiply(uranium,float(effects.get("uranium_auto_ratio",0)))}

@@ -20,6 +20,9 @@ class ReadyGame extends BattleGame:
 		if not crew.members().is_empty() and planets.all().size()!=db.data.planet.size():early_target_read=true
 		return super.loadout_entries(category)
 
+class RefusedNumeric extends RefCounted:
+	func prepare_numeric_batch(_g,_plan,_health)->Dictionary:return {}
+
 var checks:=0
 var failures:=0
 func check(ok:bool,label:String)->void:
@@ -51,8 +54,9 @@ func _initialize()->void:
 	var events:Array=[];g.event.connect(func(kind,_payload):events.append(kind))
 	g.save_dirty=false;var before:=stable_save(g);c.advance(g,2)
 	check(stable_save(g)==before and events.is_empty() and not g.save_dirty,"Unchanged failed job neither mutates domains nor emits saves/events")
-	g.db.config.reactorEnergyBase*=2;g.notify_configuration_changed();g.event.emit("reactor_changed",{});c.advance(g,1)
-	check(g.reactor.level()==level+1 and g.reactor_allocated()==g.reactor_capacity(),"Capacity-only change redistributes without purchase")
+	galaxy_capacity_change(g)
+	c.advance(g,1)
+	check(g.reactor.level()==level+1 and g.reactor_allocated()==g.reactor_capacity(),"Actual Galaxy capacity-only commit wakes sleeping redistribution without purchase")
 	g.economy.credit("2",GrowthNumber.multiply(g.reactor_upgrade_cost(),100));g.resources_changed(["2"])
 	g.paused=true;before=stable_save(g);g.consume_external_time(2)
 	check(stable_save(g)==before,"Pause preserves real wallet and all growth domains")
@@ -84,6 +88,7 @@ func _initialize()->void:
 	coordination_boundaries()
 	material_wakeup()
 	binding_boundaries()
+	blocked_jobs()
 	print("CREW SCHEDULE: ",checks," checks ",failures," failures")
 	quit(1 if failures else 0)
 
@@ -125,6 +130,28 @@ func material_wakeup()->void:
 	g.crew.advance(g,0.01)
 	check(g.slot_entry("weapons",0).level==boundary,"Merged material credits resume once without postponing the first deadline")
 
+func galaxy_capacity_change(g)->void:
+	check(not g.crew.allocation_timers.has("navigator"),"Automatic allocation is asleep before Galaxy capacity changes")
+	var before=g.reactor_capacity()
+	var row:Dictionary=g.db.data.galaxy.galaxy_1
+	row.explore_work_total=1.0;row.build_interval=0.01;row.construction_time=0.01
+	for level in [2,3,4,5]:row["upgrade_cost_lv%d"%level]=1.0
+	check(g.galaxy.install_snapshot(g.galaxy.save_data(),g.db),"Fast Galaxy fixture uses validated current owner snapshot")
+	g.galaxy_runtime.refresh_unlocks(g)
+	check(g.assign_crew("engineer","galaxy_explore","galaxy_1"),"Separate crew performs actual Galaxy work")
+	var notifications:Array=[]
+	var observer:=func(kind,payload):
+		if kind=="reactor_changed" and g.reactor_capacity()>before:
+			notifications.append([g.crew.allocation_timers.has("navigator"),g.save_dirty,payload.get("_committed_fact",false)])
+	g.event.connect(observer)
+	for attempt in 200:
+		g.galaxy_runtime.advance(g,1.0)
+		if g.reactor_capacity()>before:break
+	g.event.disconnect(observer)
+	check(g.reactor_capacity()>before and g.reactor_allocated()<g.reactor_capacity(),"An actual completed Galaxy charge_max building adds capacity before redistribution")
+	check(notifications==[[true,true,true]],"Galaxy scheduling fact wakes allocation before its sole UI notice")
+	g.assign_crew("engineer","","")
+
 func coordination_boundaries()->void:
 	var g:=CallbackGame.new(ShipDatabase.new(),false)
 	g.profile.cleared=range(1,101);g.rebuild_unlocks()
@@ -145,12 +172,12 @@ func coordination_boundaries()->void:
 		if kind=="galaxy_changed":
 			settled.append(true);g.set_crew_upgrade_mode("navigator","10","equipment_upgrade")
 	g.event.connect(observer)
-	check(not g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback rejects stale transfer")
+	check(g.assign_crew("navigator","equipment_upgrade","equipment"),"Previous-job settlement callback cannot insert another command into the commit")
 	g.event.disconnect(observer)
-	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="galaxy_explore","Earned previous-job work settles once and assignment remains current")
-	check(g.captures==1,"Only the original successful assignment captured health; stale transfer did not")
+	check(settled.size()==1 and g.galaxy.pending("galaxy_1")==0 and g.crew.entry(g,"navigator").assignmentType=="equipment_upgrade" and g.crew.entry(g,"navigator").upgradeMode!="10","Earned previous-job work settles once; nested mode write is rejected before successful transfer")
+	check(g.captures==2,"Original assignment and successful transfer each capture health once")
 	g.captures=0
-	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.captures==1,"Successful transfer captures health once after final callback checks")
+	check(g.assign_crew("navigator","equipment_upgrade","equipment") and g.captures==0,"Repeated identical transfer does not capture health or repeat installation")
 	var saved:=fixture().portable_save_data()
 	g=CallbackGame.new(ShipDatabase.new(),false);g.profile.cleared=range(1,101);g.rebuild_unlocks()
 	g.assign_crew("navigator","equipment_upgrade","equipment");g.crew.advance(g,0.9)
@@ -220,3 +247,41 @@ func binding_boundaries()->void:
 	check(g.crew.install_snapshot(raw,db) and not g.crew.can_assign(g,other.crewId,"stage4_research","hightech",true),"Runtime cannot exceed an existing occupant's capacity")
 	raw.crew.pop_back()
 	check(not g.crew.valid_snapshot(raw,db),"New definitions still require complete snapshots without backfill")
+
+
+func blocked_jobs()->void:
+	for job in ["equipment_upgrade","reactor_upgrade","jewel_auto"]:
+		var g:=CallbackGame.new(ShipDatabase.new(),false)
+		g.profile.cleared=range(1,101);g.rebuild_unlocks()
+		g.economy.credit("1",1e20);g.economy.credit("2",1e20);g.economy.credit("jewel",1e20)
+		var target:String="equipment" if job=="equipment_upgrade" else "reactor" if job=="reactor_upgrade" else "jewels"
+		check(g.assign_crew("navigator",job,target),"Blocked job fixture assignment "+job)
+		var before:=g.economy.save_data();var growth:Array=[g.slot_entry("weapons",0).level,g.reactor.level(),g.enhancement_level()]
+		g.accept_change=false
+		if job=="equipment_upgrade":g.native_execution=RefusedNumeric.new()
+		g.crew.advance(g,10.0)
+		check(g.paused and g.step_progress.active and g.step_progress.stage==6 and g.step_progress.item==0 and g.crew.timers.has("navigator"),"Native refusal retains due purchase position and timer "+job)
+		check(g.economy.save_data()==before and g.portable_save_data().is_empty(),"Blocked purchase spends nothing and gates snapshots "+job)
+		g.accept_change=true;g.native_execution=null;g.paused=false;g.crew.advance(g,100.0)
+		var after:Array=[g.slot_entry("weapons",0).level,g.reactor.level(),g.enhancement_level()]
+		check(not g.step_progress.active and after!=growth,"Retained purchase executes after refusal clears "+job)
+		g.crew.advance(g,0.001)
+		check(after==[g.slot_entry("weapons",0).level,g.reactor.level(),g.enhancement_level()],"Retry duration does not replay long-frame overrun "+job)
+	# Purchase commits, but its immediate capacity split refuses handoff.
+	var g:=CallbackGame.new(ShipDatabase.new(),false)
+	g.profile.cleared=range(1,101);g.rebuild_unlocks();g.economy.credit("2",1e20)
+	g.assign_crew("navigator","reactor_upgrade","reactor")
+	var before_level:=g.reactor.level()
+	var reject_split:=func(kind,_payload):
+		if kind=="reactor_changed":g.accept_change=false
+	g.event.connect(reject_split);g.crew.advance(g,1.0);g.event.disconnect(reject_split)
+	var paid:=g.economy.save_data()
+	check(g.paused and g.reactor.level()==before_level+1 and g.step_progress.items[g.step_progress.item].kind=="allocation","Committed reactor purchase retires before blocked allocation")
+	g.accept_change=true;g.paused=false;g.crew.advance(g,100.0)
+	check(not g.step_progress.active and g.reactor.level()==before_level+1 and g.economy.save_data()==paid and g.reactor_allocated()==g.reactor_capacity(),"Allocation resumes without another purchase or debit")
+	# An independently due allocation also survives a refusal.
+	g.set_reactor_allocation("weapons",0);g.crew.timers.clear();g.crew.intervals.clear()
+	g.accept_change=false;g.crew.advance(g,1.0)
+	check(g.paused and g.crew.allocation_timers.has("navigator") and g.step_progress.active,"Standalone allocation deadline remains due after refusal")
+	g.accept_change=true;g.paused=false;g.crew.advance(g,2.0)
+	check(not g.step_progress.active and g.reactor_allocated()==g.reactor_capacity() and g.reactor.level()==before_level+1,"Standalone allocation resumes at its retained operation")

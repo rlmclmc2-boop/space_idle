@@ -14,7 +14,6 @@ var handed_off:=false
 var laser_view_revision:=0
 var advance_blocked:=false
 var galaxy_refit_blocked:=false
-var blocked_shared_step:=0.0
 var target_geometry_revision:int=-1
 var fleet_geometry_revision:int=-1
 var hostile_weapon_indices:Array[int]=[]
@@ -97,7 +96,6 @@ func commit_galaxy_refit(game,plan:Dictionary)->bool:
 	return true
 
 func handoff_to_legacy(game:RefCounted,reason:String)->bool:
-	if galaxy_refit_blocked:return false # Partial shared work cannot be replayed by another owner.
 	if handed_off:return game.native_execution==null
 	var exported:Dictionary=kernel.export_handoff()
 	var prepared=preload("res://scripts/native_execution_handoff.gd").new()
@@ -112,14 +110,14 @@ func handoff_to_legacy(game:RefCounted,reason:String)->bool:
 	return true
 
 func advance(game:RefCounted,dt:float)->bool:
-	if kernel==null:return false
+	if kernel==null:game.block_step("native_kernel_missing");return false
 	if not kernel.advance(dt):
 		if not handoff_to_legacy(game,"numeric_range"):
-			advance_blocked=true;game.paused=true;game.native_step_phase="blocked"
+			advance_blocked=true;game.block_step("native_handoff")
 			push_error("Native numeric boundary could not transfer its untouched combat step")
 			return false
 		return false
-	game.native_step_phase="native_done";game.native_step_remaining=0.0
+	game.step_progress.phase="combat_done"
 	production_seconds+=dt
 	var values:Dictionary=kernel.metrics()
 	game.commit_enhancement_counters(int(values.attack_counter),int(values.incoming_counter))
@@ -256,14 +254,13 @@ func consume_feedback(game:RefCounted)->void:
 				if row.shot.get("prototype_missile",false) and not bool(row.shot.hostile):
 					game.event.emit("prototype_missile_retired",{"serial":row.shot.serial,"reason":"native_retire","time":row.clock,"position":p,"direction":row.direction,"speed":game.projectile_speed(row.shot),"coast":false,"tier":game.db.evolution_visual_tier(int(row.shot.get("entry",{}).get("level",1)))})
 
-func cancel(game:RefCounted)->void:
-	if kernel==null:return
+func cancel(game:RefCounted)->bool:
+	if game.step_progress.active and game.step_progress.phase!="combat_done":
+		game.step_progress.freeze("cancel_incomplete_step");game.paused=true;return false
+	if kernel==null:return true
 	if game.damage_stats.enabled:
 		for row in kernel.take_damage_stats():
 			game.damage_stats.record(str(row.source),game.N.add(row.shield,row.health))
-	if galaxy_refit_blocked:
-		game.native_cancelled_step+=blocked_shared_step;blocked_shared_step=0.0
-		game.native_step_phase="idle";game.native_step_remaining=0.0
 	var released:Dictionary=kernel.exit_state()
 	game.projectile_serial=int(released.projectile_serial);game.main_attack_serial=int(released.attack_serial)
 	game.attack_instance_serial=int(released.instance_serial);game.uid=int(released.drop_uid)
@@ -273,6 +270,7 @@ func cancel(game:RefCounted)->void:
 	game.enhancement_defense_time=float(released.defence_time);game.enhancement_memory_elapsed=float(released.memory_elapsed)
 	game.enhancement_deferred_elapsed=float(released.deferred_elapsed);game.enhancement_deferred_tick=int(released.deferred_tick)
 	consume_feedback(game)
+	return true
 
 func configuration_changed()->void:
 	# A mutation cannot resume the old executor. Later rich admission will

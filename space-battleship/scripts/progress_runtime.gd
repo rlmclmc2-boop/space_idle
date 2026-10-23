@@ -2,6 +2,7 @@ extends RefCounted
 const N=preload("res://scripts/growth_number.gd")
 const Result=preload("res://scripts/command_result.gd")
 static var NO_CHANGE:Dictionary=Result.make("no_change")
+static var FACTORY_PROGRESS:Dictionary=Result.make("committed","",["research"])
 static var PLANET_PROGRESS:Dictionary=Result.make("committed","",["planets"])
 static var RESEARCH_PROGRESS:Array=[
 	Result.make("committed","",["research"]),
@@ -59,6 +60,7 @@ func commit_planet_command_result(g,plan: Dictionary,payload: Dictionary) -> Dic
 	return g.commit_effects.finish(g,["planets"],[],[],{"reactor_allocation_changed":plan.configuration},[{"kind":"planet_changed","payload":payload}])
 
 func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary={}) -> bool:
+	if not g.snapshot_ready():return false
 	if g.commit_effects.active:return false
 	if not g.can_reforge_planet(id):return false
 	if not g.native_before_configuration_change() or not g.can_reforge_planet(id):return false
@@ -119,16 +121,26 @@ func reforge_planet(g,id: String,keep_drones: Array=[],claim_stages: Dictionary=
 	g.start(start_level,false)
 	g.save_enabled=persist
 	if cancelled_queue:g.event.emit("hyperspace_queue",{"status":"cancelled","reason":"round_changed"})
+	g.crew.on_committed(g,Result.make("committed","",[],[],[],{"unlocks_changed":true}))
 	g.event.emit("unlocks_changed",{})
 	g.event.emit("planet_reforged",{"id":id})
 	return true
 
 func advance_planets(g,dt: float) -> void:
 	if g.commit_effects.active or dt<=0 or not is_finite(dt):return
-	for id in g.planets.all():
+	var tracked:bool=g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==4
+	if tracked and not g.step_progress.accepted:
+		g.step_progress.items=g.planets.all().keys();g.step_progress.accepted=true
+	var ids:Array=g.step_progress.items if tracked else g.planets.all().keys()
+	var index:int=g.step_progress.item if tracked else 0
+	while index<ids.size():
+		var id=ids[index]
 		var planet_plan: Dictionary=g.planets.prepare_step(g,str(id),dt)
 		var result:=commit_planet_step_result(g,planet_plan)
-		if not Result.succeeded(result):return
+		if not Result.succeeded(result):
+			g.block_step(str(result.reason));return
+		if tracked and g.step_progress.item==index:g.step_progress.retire_item(4)
+		index+=1
 
 func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
@@ -137,6 +149,7 @@ func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	if not planet_plan.completed:
 		if not g.commit_effects.begin_progress():return Result.make("blocked","commit_in_progress")
 		g.planets.commit(planet_plan)
+		g.step_progress.retire_item(4)
 		return g.commit_effects.finish_progress(g,PLANET_PROGRESS)
 	planet_plan=planet_plan.duplicate(true)
 	Result.freeze(planet_plan)
@@ -156,6 +169,7 @@ func commit_planet_step_result(g,planet_plan: Dictionary) -> Dictionary:
 	var refitted: bool=planet_plan.configuration or crew_plan.configuration
 	var defence:=capture_progress_health(g,refitted)
 	g.planets.commit(planet_plan);g.crew.commit(crew_plan)
+	g.step_progress.retire_item(4)
 	g.commit_effects.settle_progress(g,refitted,defence)
 	var notices:=crew_notices(g,crew_plan.changes,"planet")
 	notices.append({"kind":"planet_changed","payload":{"id":id,"crewId":planet_plan.crew_id,"reward":reward}})
@@ -249,11 +263,20 @@ func record_research_income_result(g,id: String) -> Dictionary:
 
 func advance_hightech(g,dt: float, _real_dt := -1.0, _end_time := -1.0) -> void:
 	if g.commit_effects.active or dt<=0.0 or not is_finite(dt):return
+	var tracked:bool=g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==8
+	if tracked and g.step_progress.accepted:
+		if g.step_progress.item==1:
+			var continued:=continue_research_result(g)
+			if not Result.succeeded(continued):g.block_step(str(continued.reason))
+		return
 	var proposal: Dictionary= g.research.prepare_advance(g,dt)
 	var result:=commit_research_advance_result(g,proposal)
+	if not Result.succeeded(result):g.block_step(str(result.reason));return
 	if result.status!="committed":return
 	# Continuation follows the fully published interval; no time or fee is replayed.
-	if proposal.completed:continue_research(g)
+	if proposal.completed:
+		var continued:=continue_research_result(g)
+		if not Result.succeeded(continued):g.block_step(str(continued.reason))
 
 func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 	if g.commit_effects.active:return Result.make("blocked","commit_in_progress")
@@ -265,6 +288,7 @@ func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 		if not g.commit_effects.begin_progress():return Result.make("blocked","commit_in_progress")
 		if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return g.commit_effects.abort("stale_research_wallet","rejected")
 		g.research.commit_advance(proposal)
+		retire_research_interval(g,false)
 		var mask:int=(1 if proposal.paid.has("1") else 0)+(2 if proposal.paid.has("2") else 0)
 		var progress_now_ms:=Time.get_ticks_msec()
 		var notify_resources:bool=mask!=0 and progress_now_ms-g.ai_tech_last_resource_notice_ms>=250
@@ -279,6 +303,7 @@ func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 	if not g.commit_effects.begin(g):return Result.make("blocked","commit_in_progress")
 	if not g.economy.commit_research_resources(proposal.resources,proposal.resource_revision):return g.commit_effects.abort("stale_research_wallet","rejected")
 	g.research.commit_advance(proposal)
+	retire_research_interval(g,proposal.completed)
 	var notices:Array=[]
 	if proposal.completed:
 		g.configuration_committed()
@@ -294,9 +319,10 @@ func commit_research_advance_result(g,proposal: Dictionary) -> Dictionary:
 
 func refresh_factory_inputs(g,dt: float) -> void:
 	if g.commit_effects.active or not g.crew.factory_active(g):return
-	var refreshed: bool= g.research.advance_auto_inputs(g,dt,g.production_time())
-	g.save_dirty=true
-	if refreshed:g.event.emit("tech_tree_changed",{"reason":"automatic_input"})
+	if not g.commit_effects.begin_progress():return
+	var refreshed:bool=g.research.advance_auto_inputs(g,dt,g.production_time())
+	var notices:Array=[{"kind":"tech_tree_changed","payload":{"reason":"automatic_input"}}] if refreshed else []
+	g.commit_effects.finish_progress(g,FACTORY_PROGRESS,false,notices)
 
 func capture_progress_health(g, configuration: bool) -> Dictionary:
 	if not configuration:return {}
@@ -321,19 +347,27 @@ func crew_effect_notices(g,changes: Array) -> Array:
 	return notices
 
 func continue_research(g) -> void:
+	continue_research_result(g)
+
+func retire_research_interval(g,completed:bool)->void:
+	if g.step_progress.active and g.step_progress.phase=="shared" and g.step_progress.stage==8:
+		g.step_progress.accepted=true;g.step_progress.item=1 if completed else 2
+
+func continue_research_result(g)->Dictionary:
 	# Only completion continues research; assignment/load preserve manual pause.
-	if not g.crew.factory_active(g) or not g.research.selected().is_empty():return
+	if not g.crew.factory_active(g) or not g.research.selected().is_empty():return NO_CHANGE
 	var next: String=g.research.shortest_available(g)
-	if not next.is_empty():select_tech(g,next)
+	return select_tech_result(g,next) if not next.is_empty() else NO_CHANGE
 
 func clear_runtime(g) -> void:
 	g.crew.clear_schedule()
 	g.galaxy_runtime.reset()
 	g.hyperspace_runtime.reset()
-	g.game_time_remainder=0.0;g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
-	g.resource_samples.clear();g.pending_unlocks.clear()
+	g.step_progress.reset();g.departure_remaining=0.0;g.resource_prune_elapsed=0.0
+	g.income_history.clear();g.pending_unlocks.clear()
 
 func install_loaded_domains(g, raw: Dictionary) -> void:
+	if not g.snapshot_ready():return
 	g.economy.install_snapshot(raw)
 	g.equipment.install_snapshot(raw,g.db)
 	g.profile.productionElapsed=float(raw.productionElapsed)

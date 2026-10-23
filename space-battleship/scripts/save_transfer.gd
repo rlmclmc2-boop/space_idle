@@ -134,6 +134,7 @@ func prepare_disk_data(raw: Dictionary, db: ShipDatabase) -> Dictionary:
  return prepare_data(raw, db)
 
 func export_progress(game: BattleGame, path: String) -> Error:
+ if not game.snapshot_ready():return ERR_BUSY
  var target:=ProjectSettings.globalize_path(path).simplify_path()
  if Writer.is_protected_target(target,game.progress_writer.path):return ERR_INVALID_PARAMETER
  return write_file(target,JSON.stringify(clean(game.portable_save_data(),schema()),"\t",true,true).to_utf8_buffer())
@@ -146,6 +147,7 @@ func rename(from: String,to: String) -> Error:
  return DirAccess.rename_absolute(from,to)
 
 func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
+ if not game.snapshot_ready():return {"error":ERR_BUSY}
  if not game.progress_writer.owns_progress():return {"error":ERR_ALREADY_IN_USE}
  # Install ownership before staging bytes, so startup in another process cannot
  # mistake an in-flight transaction for an interrupted import.
@@ -161,6 +163,7 @@ func commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
  return transaction
 
 func _commit_import(game: BattleGame, raw: Dictionary) -> Dictionary:
+ if not game.snapshot_ready():return {"error":ERR_BUSY}
  var source_db=game.manual_hyperspace.base_db if game.manual_hyperspace.active else game.db
  var prepared:=prepare_data(raw,source_db)
  if not prepared.error.is_empty():return {"error":ERR_INVALID_DATA}

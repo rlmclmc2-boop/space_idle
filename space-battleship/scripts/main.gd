@@ -166,9 +166,6 @@ var last_sound := -1.0
 var loop_button: Button
 var loop_select: OptionButton
 var resource_rate_mode := false
-var resource_samples: Array[Dictionary]:
-	get:
-		return game.resource_samples
 var resource_mode_button: Button
 var upgrade_buttons: Dictionary = {}
 var ten_upgrade_buttons: Dictionary = {}
@@ -912,7 +909,7 @@ func resource_display(id: String, now := -1.0) -> String:
 	if now < 0:
 		now = Time.get_unix_time_from_system()
 	prune_resource_samples(now)
-	var rate = GrowthNumber.divide(game.resource_minute_total(id,now),60.0)
+	var rate = GrowthNumber.divide(game.income_history.display_total(id,now),60.0)
 	return UIText.t("inventory.rate",{"rate":NUMBER_FORMAT.rate(rate)})
 
 func toggle_resource_display() -> void:
@@ -3772,12 +3769,14 @@ func _geometry_source():
 	return simulation_geometry_authority
 
 func prepare_capture_battle()->void:
+	if not game.snapshot_ready():return
 	assert(simulation_geometry_authority.prepared)
 	if automation_args.has("--capture"):
 		game.start(1, false)
 		game.distance = 99.8
 		game.consume_external_time(0.02,self)
 		game.consume_external_time(0.1,self)
+		if not game.snapshot_ready():return
 		if automation_args.has("--capture-unlock"):
 			game.clear_level()
 		if automation_args.has("--capture-all"):

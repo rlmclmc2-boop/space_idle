@@ -166,8 +166,8 @@ func run() -> void:
 	g.db.data.planet_build.refinery.config2=2.0
 	g.profile.planets["1"].degree=1e250
 	g.profile.resources["1"]={"m":1.5,"e":450.0}
-	g.resource_samples.clear()
-	g.resource_samples.append({"time":Time.get_unix_time_from_system(),"id":"1","amount":g.profile.resources["1"],"production_base":10.0,"origin":"drop"})
+	g.income_history.clear()
+	g.income_history.record({"time":Time.get_unix_time_from_system(),"id":"1","amount":g.profile.resources["1"],"production_base":10.0,"origin":"drop"})
 	g.invalidate_stat_cache();g.reset_player()
 	scene.resource_rate_mode=true
 	check(scene.resource_display("1").contains("e+"),"Large resource rate renders safely")

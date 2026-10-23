@@ -13,6 +13,8 @@ var allocation_timers: Dictionary = {}
 var allocation_intervals: Dictionary = {}
 var allocation_dependencies: Array = []
 var game_ref: WeakRef
+var advancing:=false
+const Result=preload("res://scripts/command_result.gd")
 const PURCHASE_JOBS := ["equipment_upgrade","jewel_auto","reactor_upgrade"]
 
 func _init() -> void:
@@ -103,16 +105,14 @@ func invalidate_reactor_allocation(g) -> void:
 	allocation_timers[id]=0.0
 	allocation_intervals[id]=interval
 
-func run_reactor_allocation(g, item: Dictionary) -> void:
-	allocation_timers.erase(item.crewId)
-	allocation_intervals.erase(item.crewId)
-	if active(g,item):g.equalize_reactor_allocation()
-	allocation_dependencies=reactor_allocation_state(g,str(item.crewId))
-
 func on_committed(g,result: Dictionary) -> void:
 	if result.status!="committed":return
 	if not result.resources.is_empty():invalidate_resources(g,result.resources)
 	if result.facts.get("equipment_changed",false):invalidate_jobs(g,["equipment_upgrade"])
+	if result.facts.get("reactor_upgraded",false):invalidate_jobs(g,["reactor_upgrade"])
+	if result.facts.get("jewels_changed",false):invalidate_jobs(g,["jewel_auto"])
+	if result.facts.get("unlocks_changed",false):
+		invalidate_jobs(g,PURCHASE_JOBS);invalidate_reactor_allocation(g)
 	var allocation_changed: bool=result.facts.get("reactor_allocation_changed",false)
 	for change in result.facts.get("crew_changes",[]):
 		var item: Dictionary=change.current
@@ -122,26 +122,13 @@ func on_committed(g,result: Dictionary) -> void:
 		for member in [previous,item]:
 			if str(member.assignmentType)=="reactor_upgrade":allocation_changed=true
 			if [item.level,item.assignmentType,item.targetId] != [previous.level,previous.assignmentType,previous.targetId] and assignments(g).get(str(member.assignmentType),{}).get("targetType","")=="reactor":allocation_changed=true
-	if allocation_changed:invalidate_reactor_allocation(g)
+	if result.facts.get("reactor_equalized",false) and not allocation_dependencies.is_empty():
+		allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
+	elif allocation_changed:invalidate_reactor_allocation(g)
 
-func on_event(kind: String, payload: Dictionary) -> void:
-	# S1 commands already delivered their authoritative facts before UI notices.
-	# Only unmigrated resource/reactor/unlock producers use this S2 bridge.
-	if payload.get("_committed_fact",false):return
-	var g = game_ref.get_ref()
-	if g==null:return
-	match kind:
-		"collect","galaxy_income":invalidate_resources(g,[str(payload.id)])
-		"resources_changed":invalidate_resources(g,payload.ids)
-		"jewels_changed":invalidate_jobs(g,["jewel_auto"])
-		"reactor_changed":
-			if payload.has("level"):invalidate_jobs(g,["reactor_upgrade"])
-			if payload.get("equalized",false):
-				if not allocation_dependencies.is_empty():allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
-			else:invalidate_reactor_allocation(g)
-		"unlocks_changed","planet_reforged":
-			invalidate_jobs(g,PURCHASE_JOBS)
-			invalidate_reactor_allocation(g)
+func on_event(_kind:String,_payload:Dictionary)->void:
+	# Compatibility hook for existing fixtures; UI events carry no business work.
+	pass
 
 func register_target(target_type: String, provider: Callable) -> void:
 	targets[target_type] = provider
@@ -366,40 +353,63 @@ func get_modifier(g, target_type: String, target_id: String, effect_type: String
 	return total
 
 func advance(g, dt: float) -> void:
-	if g.paused or dt<=0 or not is_finite(dt):return
-	# Only pending work advances; passive jobs have no scheduler work.
-	var allocation_due: Array = []
-	for id in allocation_timers:
-		allocation_timers[id]+=dt
-		if float(allocation_timers[id])+0.000000001>=float(allocation_intervals[id]):allocation_due.append(id)
-	var due: Array = []
-	for id in timers:
-		var elapsed := float(timers[id])+dt
-		if elapsed+0.000000001 < float(intervals[id]):timers[id]=elapsed
-		else:due.append(id)
-	if due.is_empty() and allocation_due.is_empty():return
-	# Preserve configuration crew order when jobs share a resource balance.
-	for item in _members:
-		var id: String = item.crewId
-		if not due.has(id):continue
-		# Clear before acting: synchronous changes can queue the following second.
-		# Large steps make one attempt, with no replay or retained overrun.
-		timers.erase(id)
-		intervals.erase(id)
-		var row: Dictionary = assignments(g).get(item.get("assignmentType",""),{})
-		if supported(row) and active(g,item) and handlers[str(row.targetType)+":"+str(row.effectType)].call(g,item):
-			invalidate_member(g,item)
-	for id in allocation_due:
-		if allocation_timers.has(id):run_reactor_allocation(g,entry(g,str(id)))
+	if advancing or not g.enter_domain_step(dt,"crew",6):return
+	advancing=true
+	_advance(g)
+	advancing=false
 
-func passive(_g, _item: Dictionary) -> bool:
-	return false
+func _advance(g)->void:
+	var step=g.step_progress
+	if not step.accepted:
+		# Advance each timer once for the retained interval, then freeze due order.
+		var allocation_due:Array=[];var due:Array=[]
+		for id in allocation_timers:
+			allocation_timers[id]+=step.substep
+			if float(allocation_timers[id])+0.000000001>=float(allocation_intervals[id]):allocation_due.append(id)
+		for id in timers:
+			var elapsed:float=float(timers[id])+step.substep
+			if elapsed+0.000000001<float(intervals[id]):timers[id]=elapsed
+			else:due.append(id)
+		for item in _members:
+			if due.has(item.crewId):step.items.append({"kind":"purchase","id":str(item.crewId)})
+		for id in allocation_due:step.items.append({"kind":"allocation","id":str(id),"force":false})
+		step.accepted=true
+	while step.item<step.items.size():
+		var job:Dictionary=step.items[step.item]
+		var id:String=job.id;var member:=entry(g,id)
+		var allocation:bool=job.kind=="allocation"
+		var clocks:Dictionary=allocation_timers if allocation else timers
+		var cadence:Dictionary=allocation_intervals if allocation else intervals
+		if allocation and not job.force and not clocks.has(id):step.item+=1;continue
+		var had_timer:bool=clocks.has(id)
+		var elapsed:float=float(clocks.get(id,0.0));var interval:float=float(cadence.get(id,0.0))
+		# Retire the old deadline before the command schedules the next one.
+		# On a blocked command restore it and retain this exact operation index.
+		clocks.erase(id);cadence.erase(id)
+		var result:Dictionary=Result.make("rejected","inactive_job")
+		var row:Dictionary=assignments(g).get(member.get("assignmentType",""),{})
+		if active(g,member):
+			if allocation:result=g.equalize_reactor_allocation_result()
+			elif supported(row):result=handlers[str(row.targetType)+":"+str(row.effectType)].call(g,member)
+		if result.status=="blocked" or str(result.reason).begins_with("stale_"):
+			if had_timer:clocks[id]=elapsed;cadence[id]=interval
+			g.block_step(str(result.reason));return
+		if allocation:allocation_dependencies=reactor_allocation_state(g,id)
+		elif result.status=="committed":
+			invalidate_member(g,member)
+			# Buy and split are separate commits. Retire the purchase first so a
+			# blocked split cannot purchase a second level on resume.
+			if row.get("effectType","")=="AUTO_REACTOR":step.items.insert(step.item+1,{"kind":"allocation","id":id,"force":true})
+		step.item+=1
+	if step.scope=="crew":step.finish()
 
-func auto_upgrade(g, item: Dictionary) -> bool:
-	var mode := str(item.get("upgradeMode",""))
-	if not upgrade_modes(g).has(mode):return false
-	# Match manual module upgrades. Each later module sees the remaining resources.
-	return g.upgrade_equipment_batch(mode)
+func passive(_g, _item: Dictionary) -> Dictionary:
+	return Result.make("rejected","passive_job")
+
+func auto_upgrade(g, item: Dictionary) -> Dictionary:
+	var mode:=str(item.get("upgradeMode",""))
+	if not upgrade_modes(g).has(mode):return Result.make("rejected","invalid_mode")
+	return g.upgrade_equipment_batch_result(mode)
 
 func factory_active(g) -> bool:
 	for item in _members:
@@ -407,14 +417,11 @@ func factory_active(g) -> bool:
 		if row.get("targetType")=="hightech" and row.get("effectType")=="AUTO_RESEARCH" and active(g,item):return true
 	return false
 
-func auto_jewels(g, _item: Dictionary) -> bool:
-	return g.upgrade_enhancement(1)>0
+func auto_jewels(g, _item: Dictionary) -> Dictionary:
+	return g.upgrade_enhancement_result(1)
 
-func auto_reactor(g, _item: Dictionary) -> bool:
-	if not g.upgrade_reactor(1):return false
-	# A paid upgrade changes capacity: preserve the existing buy-then-split order.
-	run_reactor_allocation(g,_item)
-	return true
+func auto_reactor(g, _item: Dictionary) -> Dictionary:
+	return g.upgrade_reactor_result(1)
 
 func reactor_targets(_db, g = null) -> Array:
 	return [{"id":"reactor","name":UIText.t("crew.job.reactor"),"active":g==null or g.reactor_unlocked()}]
