@@ -1,7 +1,6 @@
 extends RefCounted
 ## Direct battle slice: one gameplay Game; numeric geometry and typed effects.
 ## No Owner, mailbox, DisplayGame, object graph encoding or scene geometry providers.
-const Geometry=preload("res://scripts/simulation_geometry_authority.gd")
 const View=preload("res://scripts/simulation_geometry_view.gd")
 const HOT=["fire","hit","beam_started","beam_hit","projectile_impact","explode","prototype_missile_retired","prototype_missile_reset","critical_impact"]
 class Effect extends RefCounted:
@@ -23,30 +22,22 @@ class Effect extends RefCounted:
 	var spread:float=0.0
 var scene
 var game:BattleGame
-var geometry=Geometry.new()
+var geometry
 var view=View.new()
 var logical_steps:int=0
 var frame:Dictionary={}
-var previous:Dictionary={}
-var previous_spatial
 var born:Dictionary={}
 var muzzle_values:Dictionary={}
 var started:=false
 var advancing:=false
-var detach_requested:=false
 func install(root)->void:
 	scene=root;game=root.game
 	root.fixed_enemy_layout=true
 	# A native owner may be selected inside an already-started legacy frame.
 	# End that frame publication before display consumers use the new view.
 	root.battle_read_model.end()
-	geometry.prepare(root,game)
-	previous_spatial=game.target_spatial_source
-	for key in ["target_provider","launch_provider","drone_launch_provider","rail_geometry_provider","rail_target_point_provider"]:
-		previous[key]=game.get(key)
-	game.target_provider=geometry.target_point;game.launch_provider=geometry.launch_pose
-	game.drone_launch_provider=geometry.drone_launch_pose;game.target_spatial_source=geometry.battle_read_model
-	game.rail_geometry_provider=geometry.rail_geometry;game.rail_target_point_provider=geometry.entity_render_position
+	geometry=root.simulation_geometry_authority
+	assert(geometry.prepared)
 	scene.simulation_geometry_view=view
 	snapshot()
 	scene.ship_view.numeric_slice_only=true
@@ -54,7 +45,10 @@ func install(root)->void:
 func sync_screen_scale(value:float)->bool:
 	var scale_changed:bool=geometry.sync_screen_scale(value)
 	var layout_changed:bool=geometry.sync_fixed_layout()
-	if not scale_changed and not layout_changed:return false
+	# The paused external-time path does not publish. A configuration commit
+	# must still reach the frame before the display applies its new members.
+	var inventory_changed:bool=int(frame.get("inventory_generation",-1))!=int(game.hyperspace.state.inventory.get("generation",-1))
+	if not scale_changed and not layout_changed and not inventory_changed and not geometry.fleet_configuration_pending():return false
 	snapshot()
 	scene.paused_presentation_signature=""
 	# A zero-step/paused frame may keep the normal draw signature unchanged.
@@ -63,19 +57,13 @@ func sync_screen_scale(value:float)->bool:
 	return true
 func before_tick(dt:float)->void:
 	advancing=true
-	geometry.before_tick(dt)
 	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
-	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
-	if game.native_execution!=null:game.native_execution.prepare_geometry(geometry,game)
+	scene.turret_visuals=geometry.turret_visuals.duplicate(true);scene.turret_ship=geometry.turret_ship
 	scene.shield_before_hit=game.player.shield
 func after_tick(completed:bool)->bool:
 	if completed:
-		geometry.after_tick()
 		logical_steps+=1
 	advancing=false
-	if detach_requested:
-		if not close():return false
-		scene.battle_slice_runtime=null
 	return true
 func snapshot()->void:
 	geometry.sync_fixed_layout()
@@ -119,7 +107,7 @@ func snapshot()->void:
 	var values:Dictionary=geometry.display_frame(retained.values())
 	view.apply(values);frame=values.fleet
 	scene.fx_time=geometry.fx_time;scene.demo_time=geometry.demo_time
-	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
+	scene.turret_visuals=geometry.turret_visuals.duplicate(true);scene.turret_ship=geometry.turret_ship
 	var beam_shots:Array=membership.beams if native_membership else game.projectiles
 	for shot in beam_shots:
 		if str(shot.get("key","")) in ["longLaser","longLaser_mon","longLaser-mon"]:
@@ -143,10 +131,6 @@ func on_event(kind:String,info:Dictionary)->bool:
 	if info.has("native_laser"):
 		var laser:Dictionary=info.native_laser
 		if kind=="fire":
-			if not bool(laser.drone) and bool(laser.owns_primary_aim) and int(laser.mount)>=0 and int(laser.mount)<game.weapon_entries().size():
-				var pose=geometry.turret_pose(int(laser.mount))
-				geometry.record_direct_fire_alignment(int(laser.mount),info)
-				pose.target=laser.primary_target;pose.fired_at=geometry.fx_time
 			# Reserve only the old decorative cap slot, not a shot/visual object.
 			if scene.projectile_visuals.size()+scene.native_laser_visuals.size()<256:scene.native_laser_visuals[int(laser.serial)]=true
 		var e=Effect.new();e.kind=0 if kind=="fire" else 4;e.style=1
@@ -167,7 +151,6 @@ func on_event(kind:String,info:Dictionary)->bool:
 			if GrowthNumber.compare(scene.shield_before_hit,0)>0:scene.player_hit_at=geometry.fx_time
 			scene.shield_before_hit=game.player.shield
 		return true
-	geometry.on_simulation_event(kind,info)
 	if not kind in HOT:
 		if kind=="encounter":snapshot()
 		return false
@@ -275,30 +258,14 @@ func consume(e:Effect)->void:
 			scene.beam_ring(e.position,scene.ORANGE,0.12,11)
 			scene.weapon_sparks(e.position,7,140,e.direction)
 func request_legacy_display()->void:
-	detach_requested=true
-	if not advancing:
-		if not close():return
-		scene.battle_slice_runtime=null
+	# Backend handoff changes retained laser representation only.
+	scene.prepare_native_laser_display(true)
+
 func close()->bool:
 	if not started:return true
 	if not scene.prepare_native_laser_display(true):return false
 	started=false
-	scene.ship_view.numeric_slice_only=false
 	scene.simulation_geometry_view=null
-	scene.enemy_poses=geometry.enemy_poses
-	for record in geometry.boundary_dead_geometry.values():
-		var slot:int=int(record.entity.slot)
-		if not scene.enemy_poses.has(slot) or is_same(scene.enemy_poses[slot].entity,record.entity):scene.enemy_poses[slot]=record.pose
-	scene.turret_visuals=geometry.turret_visuals;scene.turret_ship=geometry.turret_ship
-	# Move ownership: cleanup must not clear the containers now held by Main.
-	geometry.enemy_poses={};geometry.turret_visuals={}
-	# In-flight fixed rays need a live hull publisher after ownership returns.
-	# Cold native admission may never have initialized Main's read model.
-	scene.battle_read_model.setup(scene)
-	scene.battle_read_model.invalidate_membership()
-	if previous_spatial==null:previous_spatial=scene.battle_read_model
-	geometry.close({"providers":previous,"spatial":previous_spatial})
-	started=false
 	return true
 
 func record_contact(e:Effect,launch:bool,critical:bool)->void:
