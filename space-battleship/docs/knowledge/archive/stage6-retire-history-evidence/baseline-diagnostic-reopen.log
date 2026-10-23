@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+RESEARCH_RESTORE {"actual_input":{"1":10.0,"2":0.0},"actual_type":3,"expected_input":{"1":10,"2":0},"expected_type":2,"parts":{"input":false,"owner":true,"paid_progress":true,"selected":true}}
+FAIL: Real reopen restores selected research, paid progress and input to its owner
+Save boundaries: 30 checks, 1 failures
