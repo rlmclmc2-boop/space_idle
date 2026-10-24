@@ -137,6 +137,10 @@ def compile_bundle(manifest_path: Path):
                 return tuple((0,0) if row[k] is None else (1,row[k]) if isinstance(row[k],(int,float)) else (2,row[k]) for k in spec.get('order',spec['primary']))
             rows.sort(key=order_key)
             tables[table] = rows
+            if spec.get('requiredKeys'):
+                present={r[spec['primary'][0]] for r in rows}
+                for missing in set(spec['requiredKeys'])-present:
+                    error(rel,name,0,'A',missing,'MissingRule','required runtime key')
         formulas.close(); values.close()
 
     def location_error(table, row, field, code, detail):

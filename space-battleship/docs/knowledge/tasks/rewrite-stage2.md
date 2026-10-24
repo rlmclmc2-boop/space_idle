@@ -10,3 +10,5 @@
 已落地：共享evaluate_module/绑定；同核Amount金额与int64历史；start_wave/finish_wave/take_results及撤退生命周期。
 验证：重建DLL，14 Amount+6四武器/命中/大数用例+W01跨波/掉落去重通过；Amount原生测试通过。
 下一步：GameSession、静态装备组装、航行/驻守/撤退、经济拾取及可运行入口；阶段未完成。
+
+WIP接线：runtime/game_session.gd与combat_setup.gd已编写；create_stage2_inputs.py写入运行profile/rules/geometry与独立session fixture。尚未生成新输入、尚未运行GameSession；不代表第2阶段完成。下一步生成输入并修复解析/联调，验证自动/手动拾取与时间分块。

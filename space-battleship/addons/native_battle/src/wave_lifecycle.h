@@ -42,6 +42,7 @@
             descriptor["defences"]=Array();descriptor["requires_module_defense"]=false;
             descriptor["clock"]=clock;descriptor["attack_counter"]=attack_counter;descriptor["incoming_counter"]=incoming_counter;
             descriptor["final_encounter"]=wave["final"];
+            if(wave.has("jewel_ratio")) descriptor["jewel_ratio"]=wave["jewel_ratio"];
             Ref<SpaceCombatKernel> candidate;candidate.instantiate();
             // Admission only: the candidate is never advanced and never draws RNG.
             if(!candidate->configure(descriptor)) return false;
@@ -65,6 +66,7 @@
                 roots.push({clock+weapon.remaining,checked_id(event_serial),0,index});
             }
             final_encounter=wave["final"];final_cleared=false;wave_running=true;
+            jewel_ratio=candidate->jewel_ratio;
             retain_configuration_bounds();
             return true;
         } catch(const std::exception &error) {stopped=true;native_error=String(error.what());return false;}
@@ -84,7 +86,9 @@
         Dictionary result;Array events=take_feedback(),drops;
         for(int i=0;i<events.size();++i) {
             Dictionary event=events[i];
-            if(int(event["kind"])==7) drops.push_back(event["shot"]);
+            if(int(event["kind"])==7) {
+                Dictionary drop=Dictionary(event["shot"]).duplicate(true);drop["created_at"]=event["clock"];drops.push_back(drop);
+            }
         }
         bool live=false;for(const Actor &actor:actors) live=live||actor.live;
         bool cleared=wave_running&&!live;
@@ -94,6 +98,7 @@
         result["events"]=events;result["drops"]=drops;result["wave_cleared"]=cleared;
         result["final_cleared"]=cleared&&final_encounter;result["player_died"]=died;
         result["history"]=read_history();result["encounter_id"]=encounter_id;result["error"]=native_error;
+        result["clock"]=clock;
         return result;
     }
     bool begin_retreat() {
