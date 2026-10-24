@@ -20,9 +20,11 @@ func run() -> void:
 	var baseline: Array=[]
 	var failed:=false
 	for budget in [8000,int(ProjectSettings.get_setting("application/config/battle_frame_budget_usec",24000))]:
+		var launch_started:=Time.get_ticks_usec()
 		var runner=Runner.new(db)
 		var request={"max_total":total,"max_per_pair":3,"runs":3,"seed":12345,"directory":ProjectSettings.globalize_path("res://results/frame-profile")}
 		if not runner.start(enemies,players,request).is_empty():failed=true;break
+		print("BATTLE_START_US budget_us=",budget," start_us=",Time.get_ticks_usec()-launch_started)
 		var started:=Time.get_ticks_usec()
 		var frames:=0
 		var cpu_us:=0

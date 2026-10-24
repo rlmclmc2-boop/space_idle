@@ -1,4 +1,6 @@
 extends SceneTree
+# Historical pre-domain diagnostic, not a current acceptance entry.
+# Retains retired profile/clock fixtures; see test/guides/progression.md.
 const Game=preload("res://qa/presented_balance_game.gd")
 const Driver=preload("res://qa/scene_driver.gd")
 const Metrics=preload("res://scripts/balance_metrics.gd")

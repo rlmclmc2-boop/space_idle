@@ -51,6 +51,17 @@ def main():
     work.mkdir(exist_ok=True)
     area = args.reuse.resolve() if args.reuse else Path(tempfile.mkdtemp(prefix='whole-perf-', dir=work))
     assert area.parent == work.resolve() and area.name.startswith('whole-perf-')
+    source_record = area / 'source-fingerprint.json'
+    reuse_record = None
+    if args.reuse:
+        if not source_record.is_file():
+            raise ValueError('Reuse requires this runner\'s recorded source fingerprint')
+        reuse_record = json.loads(source_record.read_text(encoding='utf-8'))
+        if (not isinstance(reuse_record, dict) or not isinstance(reuse_record.get('sha256'), str)
+                or len(reuse_record['sha256']) != 64
+                or any(c not in '0123456789abcdef' for c in reuse_record['sha256'])
+                or not isinstance(reuse_record.get('files'), dict) or not reuse_record['files']):
+            raise ValueError('Reuse requires a valid recorded source fingerprint')
     project = area / 'space-battleship'
     source = ROOT / 'space-battleship'
     if args.ref:
@@ -71,10 +82,8 @@ def main():
             if path.is_file() and '__pycache__' not in path.parts and path.suffix not in {'.blend', '.blend1', '.pyc'}:
                 fingerprints[str(path.relative_to(source)).replace('\\', '/')] = hashlib.sha256(path.read_bytes()).hexdigest()
     fingerprint = hashlib.sha256(json.dumps(fingerprints, sort_keys=True).encode()).hexdigest()
-    source_record = area / 'source-fingerprint.json'
-    if args.reuse and source_record.exists():
-        if json.loads(source_record.read_text(encoding='utf-8'))['sha256'] != fingerprint:
-            raise ValueError('Reuse requires exactly the same source/configuration bytes')
+    if reuse_record is not None and reuse_record['sha256'] != fingerprint:
+        raise ValueError('Reuse requires exactly the same source/configuration bytes')
     source_record.write_text(json.dumps({'sha256': fingerprint, 'files': fingerprints}, indent=2), encoding='utf-8')
     project.mkdir(exist_ok=True)
     for part in PARTS + OPTIONAL_PARTS:

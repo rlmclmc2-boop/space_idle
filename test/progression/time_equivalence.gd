@@ -1,4 +1,6 @@
 extends SceneTree
+# Historical pre-domain diagnostic, not a current acceptance entry.
+# Retains retired profile/clock fixtures; see test/guides/progression.md.
 const ClockGame=preload("res://qa/clock_game.gd")
 var failures:=0
 func check(ok: bool, label: String) -> void:
