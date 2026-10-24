@@ -1,0 +1,82 @@
+{
+  "status": "stage 1 implemented; paused for dot and designated Astra review after delivery",
+  "baseline": "f1e2358b981743da4452e30e052568c6eee8b858",
+  "design": "a815d2a843976e22cb3fb24e7683d4a54c65fd3f",
+  "environment": {
+    "godot": "4.7.2.stable.official.ed1daf0bf",
+    "platform": "Windows x86_64",
+    "godotCppCommit": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5"
+  },
+  "compilerTests": {
+    "passed": 21,
+    "command": "python foundation/tests/test_compiler.py"
+  },
+  "nativeAmount": "arithmetic, encoding range and invalid-input boundary tests passed",
+  "nativeHeadless": {
+    "amountCases": 12,
+    "checks": 111,
+    "configHash": "f533ee6af90d128e2170c41f39988a6147dd0aa0baa3d990ddb0e7c206bf9987",
+    "failures": [],
+    "nativeCases": 1,
+    "ok": true,
+    "saveCases": 7
+  },
+  "production": {
+    "tables": 45,
+    "rows": 14563,
+    "semanticHash": "0bed0a72f8f9ce16c839b1b4199b3761f1e16b0eb8afb3dbd4ca06f8c0329581",
+    "sourceManifestHash": "31cc096c7709b42ddb460b207cd2790d00f678cd712dd6ed04d0cd0adf9570f0",
+    "sourceFiles": 30,
+    "sourceClasses": {
+      "active": 24,
+      "candidate": 1,
+      "retired": 1,
+      "generated": 1,
+      "published": 3
+    },
+    "levels": 220,
+    "enemies": 10461,
+    "formations": 2330,
+    "zeroBudgetRows": 42,
+    "fullLiteralFieldComparison": "passed"
+  },
+  "nativeDllSha256": "db58db08e650c877b8eec282b4032b5db42c648b40148f76467f3f1cab1048ed",
+  "fingerprintEncoding": "UTF-8 text with LF and no BOM; XLSX bytes unmodified",
+  "sourceSha256": {
+    ".gitignore": "8f8fbb71d8614883b9767cb390e452dfa6e1be9c1cde1e6c2dd2ed8a1693c08b",
+    "addons/native_battle/build_native.ps1": "f6d25a314526936e614b852208b138c988c0cdc583ccf5ea5347830a44300037",
+    "addons/native_battle/SConstruct": "78bc1a8d8b84c8eb88166b3d97807857bee9caf421b7ccefff01962232f01444",
+    "addons/native_battle/src/amount_api.hpp": "9fe1377ed072cebacf7eb8fce97a7028cda7a229ee04a088dd8119f5aeea47d6",
+    "addons/native_battle/src/amount_value.hpp": "7d0a4068390d52c839a66cd056664989176ff74507e63533798fb16f686637eb",
+    "addons/native_battle/src/combat_execution_kernel.h": "be1a1b745fe8cf8d7abcc9772e808a75a92bb0697514bdd15a54c46f459c5823",
+    "addons/native_battle/src/combat_presentation.h": "c67fd06b7f0d0333596903d866015e44762ecd115f64323759ee6932355178b2",
+    "addons/native_battle/src/combat_retained_presentation.h": "3a823d67d916a3e066fc14db4e1823f3e7e386e0de6c109b70100b39cd5d1b76",
+    "addons/native_battle/src/foundation_disk.hpp": "79975eeaf90a84774de93e6936af52a1b165ff00cd6d53f00c6dcbc75c7906e5",
+    "addons/native_battle/src/space_native.cpp": "aea3288fef7552bd8e827b92803630329ba6dc665986fd8631f27e843b1d12f1",
+    "config_excel/enhance_config.xlsx": "3ec1ce7b79f10a7d6950378393c4d62ccd779942abda76ffc3238626886480e4",
+    "config_excel/equipment_evolution.xlsx": "bc0f83f4bdc7864ad96beae075bc9cf34db5b73af252ffe91bf898e8487b6e19",
+    "config_excel/galaxy_config.xlsx": "2819c9bc9d3fd9d7a746717113962884a0655fe10f029957ec33958014501e1c",
+    "config_excel/hyperspace_config.xlsx": "16073c3a3f2512b3ed1e33aec8d375dfbad6ca099270e49e02351e4972677fcc",
+    "data/equipment_evolution.json": "6f494f85b50d4e6d3a993ce03a7f5420cbdd04deb979a2cde1734253b4d9c99c",
+    "foundation/compile_config.py": "06eb873255256638c4bbe9d78dd35087e7519ff28fbd72597ab53cdbf502935d",
+    "foundation/config/production.json": "7cb9cd373a75fcab3357de7249fb06cb5f687a68456d4290860e0c5a8bd5e174",
+    "foundation/config/schema.json": "e119236fc4bc37fc22cf554598e5f66c5cd60884fb3af3196377848ed2aff736",
+    "foundation/host/check_foundation.gd": "dcb2266b22056b5d98f126dd56616df452ee6f1b3ce08537cb60053a121236ea",
+    "foundation/host/config_bundle.gd": "86337875001cc82d4bd783413f13c3f1af804b7661858372362ead28e08faf1a",
+    "foundation/host/save_files.gd": "4cd731e5bf8be746d868661c0ca2f0389d47cc466544a216b1331897cabb4166",
+    "foundation/README.md": "3ff97019bb0c4d7b3b18e3ed26cfea226b4200615ab8b0feeb280b090c23f9ce",
+    "foundation/run_checks.py": "10581097c3afbecc50918ca39222131b42ef1ffcdb390433151b40cc5a95fc06",
+    "foundation/tests/amount_value_tests.cpp": "80a3b2977f96dfb64da84500b13ebc8e5c334a75aeaf12a8f441f3463ca17e7a",
+    "foundation/tests/excel/foundation.xlsx": "f3c0a622096f8f7437302d2531fa84abe4eb9af9953d9c87b31009ee3b123bd3",
+    "foundation/tests/fixture.json": "2c36d4d9195e7df7fb300cd8ff7ea12bfd52cb0e032ec072c1086543049c557e",
+    "foundation/tests/test_compiler.py": "1ec5a17913d54ed8b6bc3b1e3cf32b3c6b93c820dd7b9b818074149041d2cfff"
+  },
+  "limits": [
+    "No second-stage GameSession, combat Amount migration, equipment, wave, journey or drop loop implemented.",
+    "Opaque save payload foundation only; full entity/reference/claim/native-state restore validation belongs to later stages.",
+    "Complete domain geometry envelopes, reward-source semantics and subsequent system rule consumers are not certified.",
+    "Windows isolated same-source DLL validated; shipping SCons/export and POSIX durability not exercised.",
+    "No personal save read or written.",
+    "Godot root certificate store warning occurs in this host and is unrelated to headless numerical/persistence assertions."
+  ]
+}

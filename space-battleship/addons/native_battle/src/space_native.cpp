@@ -125,9 +125,12 @@ void SpaceMotionLease::_bind_methods() {
 }
 #include "combat_execution_kernel.h"
 #include "combat_presentation.h"
+#include "amount_api.hpp"
+#include "foundation_disk.hpp"
 
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
+    ClassDB::register_class<FoundationAmount>();ClassDB::register_class<FoundationDisk>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceCombatKernel>();
     ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceCombatFlightFrame>();ClassDB::register_class<SpaceCombatPresentation>();
 }

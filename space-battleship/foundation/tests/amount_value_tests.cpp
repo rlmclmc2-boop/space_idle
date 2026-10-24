@@ -1,0 +1,38 @@
+#include "../../addons/native_battle/src/amount_value.hpp"
+#include <cassert>
+#include <iostream>
+#include <functional>
+#include <vector>
+using foundation::Amount;
+int main() {
+    auto a = [](const char *s) { return Amount::decimal(s); };
+    auto equal = [&](Amount x, const char *expected) { assert(x.compare(a(expected)) == 0); };
+    equal(a("1e500").add(a("1e499")), "1.1e500");
+    equal(a("2e500").multiply(a("3e499")), "6e999");
+    equal(a("6e999").divide(a("2e500")), "3e499");
+    equal(a("1e500").power(2), "1e1000");
+    equal(a("1").subtract(a("2")), "0");
+    equal(a("1e500").subtract(a("9.9999999999999e499")), "1e486");
+    equal(a("0.0001").floor_value(), "0");
+    equal(a("0.0001").ceil_value(), "1");
+    equal(a("123.75").floor_value(), "123");
+    equal(a("123.25").ceil_value(), "124");
+    equal(a("201.000000001").ceil_value(), "202");
+    equal(a("200.999999999").floor_value(), "200");
+    equal(a("1e-9000000000000000").divide(a("10")), "0");
+    equal(a("1.25e500").rounded(2), "1.3e500");
+    equal(Amount::geometric(1, 10000), "10000");
+    equal(Amount::geometric(2, 10), "1023");
+    assert(std::abs(double(Amount::geometric(1.00000001, 10000).logarithm()) - std::log10(10000.49996666)) < 1e-8);
+    assert(a("1e500").ratio(a("1e499")) == 1);
+    assert(a("1e499").ratio(a("1e500")) == 0.1);
+    assert(a("1e9000000000000000").compare(a("9e8999999999999999")) > 0);
+    for (std::function<void()> f : std::vector<std::function<void()>>{
+        std::function<void()>([&] { a("-1"); }), [&] { a("NaN"); },
+        [&] { a("1").divide(a("0")); }, [&] { a("1e9000000000000000").power(2); },
+        [&] { a("1e9000000000000001"); }, [&] { Amount::normalized(INFINITY); }}) {
+        bool rejected = false; try { f(); } catch (const std::exception &) { rejected = true; }
+        assert(rejected);
+    }
+    std::cout << "Amount arithmetic, encoding range and invalid-input boundaries passed\n";
+}

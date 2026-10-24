@@ -1,0 +1,3979 @@
+{
+  "version": 1,
+  "tables": {
+    "ai_tech_tree": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "tier",
+        "base_seconds",
+        "growth",
+        "effect",
+        "factor",
+        "unlock",
+        "requirements",
+        "legacy_unlock"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "tier": {
+          "types": [
+            "string"
+          ]
+        },
+        "base_seconds": {
+          "types": [
+            "number"
+          ]
+        },
+        "growth": {
+          "types": [
+            "number"
+          ]
+        },
+        "effect": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "ai_count",
+            "equipment_durability",
+            "fragment_income",
+            "iron_income",
+            "uranium_income",
+            "weapon_damage",
+            "weapon_damage,equipment_durability"
+          ]
+        },
+        "factor": {
+          "types": [
+            "number"
+          ]
+        },
+        "unlock": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "requirements": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "legacy_unlock": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "config": {
+      "columns": [
+        "name",
+        "des",
+        "para_1"
+      ],
+      "primary": [
+        "name"
+      ],
+      "fields": {
+        "name": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "autoCollectReduce",
+            "autoGenRes",
+            "backRange",
+            "chronoDefaultSpeed",
+            "chronoParticlesPerSecond",
+            "chronoSpeeds",
+            "dmgReduce",
+            "enemyVisualScaleSize1",
+            "enemyVisualScaleSize2",
+            "enemyVisualScaleSize3",
+            "enemyVisualScaleSize4",
+            "enemyVisualScaleSize5",
+            "enemyVisualScaleSize6",
+            "equipmentSwitchCooldownSeconds",
+            "explicitEnemyPlayerMinGap",
+            "hightechCostGrowthLevel",
+            "hightechLimit",
+            "jewelDrop",
+            "movement",
+            "offlineMax",
+            "playerVisualScaleBattleship",
+            "playerVisualScaleCruiser",
+            "playerVisualScaleDestroyer",
+            "playerVisualScaleFrigate",
+            "playerVisualScaleHeavy_Battleship",
+            "reactorAllocationStep",
+            "reactorBoostExponent",
+            "reactorEnergyBase",
+            "reactorEnergyGrowth",
+            "reactorInitialLevel",
+            "reactorModules",
+            "reactorPercentScale",
+            "reactorUpgradeBase",
+            "reactorUpgradeGrowth",
+            "reactorUraniumId",
+            "scientistCost",
+            "startEquip",
+            "techPointGet"
+          ]
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "para_1": {
+          "types": [
+            "bool",
+            "null",
+            "number",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "autoCollectReduce",
+        "autoGenRes",
+        "backRange",
+        "chronoDefaultSpeed",
+        "chronoParticlesPerSecond",
+        "chronoSpeeds",
+        "dmgReduce",
+        "enemyVisualScaleSize1",
+        "enemyVisualScaleSize2",
+        "enemyVisualScaleSize3",
+        "enemyVisualScaleSize4",
+        "enemyVisualScaleSize5",
+        "enemyVisualScaleSize6",
+        "equipmentSwitchCooldownSeconds",
+        "explicitEnemyPlayerMinGap",
+        "hightechCostGrowthLevel",
+        "hightechLimit",
+        "jewelDrop",
+        "movement",
+        "offlineMax",
+        "playerVisualScaleBattleship",
+        "playerVisualScaleCruiser",
+        "playerVisualScaleDestroyer",
+        "playerVisualScaleFrigate",
+        "playerVisualScaleHeavy_Battleship",
+        "reactorAllocationStep",
+        "reactorBoostExponent",
+        "reactorEnergyBase",
+        "reactorEnergyGrowth",
+        "reactorInitialLevel",
+        "reactorModules",
+        "reactorPercentScale",
+        "reactorUpgradeBase",
+        "reactorUpgradeGrowth",
+        "reactorUraniumId",
+        "scientistCost",
+        "startEquip",
+        "techPointGet"
+      ]
+    },
+    "crew": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "icon",
+        "basePower",
+        "defaultAssignment",
+        "unlockId",
+        "equipmentSlotCount",
+        "defaultTargetId"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "icon": {
+          "types": [
+            "string"
+          ]
+        },
+        "basePower": {
+          "types": [
+            "number"
+          ]
+        },
+        "defaultAssignment": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "unlockId": {
+          "types": [
+            "string"
+          ]
+        },
+        "equipmentSlotCount": {
+          "types": [
+            "number"
+          ]
+        },
+        "defaultTargetId": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "references": [
+        {
+          "field": "unlockId",
+          "table": "unlock",
+          "target": "name"
+        }
+      ]
+    },
+    "crew_assignment": {
+      "columns": [
+        "id",
+        "targetType",
+        "effectType",
+        "baseValue",
+        "levelScale",
+        "powerScale",
+        "interval",
+        "maxCrew",
+        "description",
+        "titleTextId",
+        "descTextId",
+        "targetCategory",
+        "upgradeModes"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "targetType": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "equipment",
+            "galaxy",
+            "hightech",
+            "jewel",
+            "reactor"
+          ]
+        },
+        "effectType": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "AUTO_COMBINE",
+            "AUTO_REACTOR",
+            "AUTO_RESEARCH",
+            "AUTO_UPGRADE",
+            "EXPLORE"
+          ]
+        },
+        "baseValue": {
+          "types": [
+            "number"
+          ]
+        },
+        "levelScale": {
+          "types": [
+            "number"
+          ]
+        },
+        "powerScale": {
+          "types": [
+            "number"
+          ]
+        },
+        "interval": {
+          "types": [
+            "number"
+          ]
+        },
+        "maxCrew": {
+          "types": [
+            "number"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "titleTextId": {
+          "types": [
+            "string"
+          ]
+        },
+        "descTextId": {
+          "types": [
+            "string"
+          ]
+        },
+        "targetCategory": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "upgradeModes": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "crew_config": {
+      "columns": [
+        "id",
+        "value",
+        "des",
+        "targetType"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "badge_tip",
+            "base_exp",
+            "charge_bonus",
+            "equip_bonus",
+            "exp_bar",
+            "exp_multiplier",
+            "gem_bonus",
+            "hyperspace_duration_k",
+            "hyperspace_luck_per_level",
+            "name_level",
+            "planet_exp",
+            "tech_speed"
+          ]
+        },
+        "value": {
+          "types": [
+            "bool",
+            "null",
+            "number",
+            "string"
+          ]
+        },
+        "des": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "targetType": {
+          "types": [
+            "null",
+            "string"
+          ],
+          "enum": [
+            "equipment",
+            "hightech",
+            "jewel",
+            "reactor"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "badge_tip",
+        "base_exp",
+        "charge_bonus",
+        "equip_bonus",
+        "exp_bar",
+        "exp_multiplier",
+        "gem_bonus",
+        "hyperspace_duration_k",
+        "hyperspace_luck_per_level",
+        "name_level",
+        "planet_exp",
+        "tech_speed"
+      ]
+    },
+    "enemy_weapon_base": {
+      "columns": [
+        "id",
+        "dmg",
+        "cd",
+        "dmgtype",
+        "para1",
+        "para2",
+        "para3"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "cannon",
+            "laser",
+            "longLaser",
+            "missile"
+          ]
+        },
+        "dmg": {
+          "types": [
+            "number"
+          ]
+        },
+        "cd": {
+          "types": [
+            "number"
+          ]
+        },
+        "dmgtype": {
+          "types": [
+            "number"
+          ]
+        },
+        "para1": {
+          "types": [
+            "number"
+          ]
+        },
+        "para2": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "para3": {
+          "types": [
+            "null",
+            "number"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "cannon",
+        "laser",
+        "longLaser",
+        "missile"
+      ]
+    },
+    "enhance_config": {
+      "columns": [
+        "id",
+        "value",
+        "unit",
+        "des"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "adaptation_a_capacity_bonus",
+            "adaptation_b1_reduction",
+            "adaptation_b1_stacks",
+            "adaptation_b2_capacity_multiplier",
+            "adaptation_b2_duration",
+            "adaptation_b2_interval",
+            "adaptation_b3_resistance_bonus",
+            "adaptation_growth",
+            "base_critical_multiplier",
+            "base_critical_rate",
+            "bonus_round_scale",
+            "branch_position_offset_1",
+            "branch_position_offset_2",
+            "branch_position_offset_3",
+            "branch_threshold_1",
+            "branch_threshold_2",
+            "branch_threshold_3",
+            "cost_base",
+            "cost_growth",
+            "counter_log_base",
+            "critical_a_probability",
+            "critical_b1_attacks",
+            "critical_b1_damage_bonus",
+            "critical_b2_damage_bonus",
+            "critical_b2_duration",
+            "critical_b2_probability",
+            "critical_b2_stacks",
+            "critical_b3_guaranteed_rate",
+            "critical_growth",
+            "deferred_a_clear_probability",
+            "deferred_b1_duration",
+            "deferred_b1_reduction",
+            "deferred_b2_probability_conversion",
+            "deferred_b3_damage_scale",
+            "deferred_b3_forced_probability",
+            "deferred_clear_probability",
+            "deferred_curve_coefficient",
+            "deferred_duration",
+            "deferred_interval",
+            "deferred_percent_scale",
+            "memory_a_bonus",
+            "memory_b1_duration",
+            "memory_b1_probability",
+            "memory_b1_reduction",
+            "memory_b2_duration",
+            "memory_b2_lockout",
+            "memory_b2_resistance",
+            "memory_b3_armour_capacity_bonus",
+            "memory_b3_shield_charge_bonus",
+            "memory_buffer_fraction",
+            "memory_heal_fraction",
+            "memory_interval",
+            "proficiency_a_damage_bonus",
+            "proficiency_b1_growth",
+            "proficiency_b1_interval",
+            "proficiency_b2_interval_multiplier",
+            "proficiency_b3_resistance",
+            "proficiency_growth",
+            "repeat_a_probability",
+            "repeat_b1_targets",
+            "repeat_b2_repeats",
+            "repeat_b3_probability",
+            "repeat_delay",
+            "repeat_growth",
+            "repeat_probability",
+            "threshold_1",
+            "threshold_2",
+            "threshold_3"
+          ]
+        },
+        "value": {
+          "types": [
+            "number"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "adaptation_a_capacity_bonus",
+        "adaptation_b1_reduction",
+        "adaptation_b1_stacks",
+        "adaptation_b2_capacity_multiplier",
+        "adaptation_b2_duration",
+        "adaptation_b2_interval",
+        "adaptation_b3_resistance_bonus",
+        "adaptation_growth",
+        "base_critical_multiplier",
+        "base_critical_rate",
+        "bonus_round_scale",
+        "branch_position_offset_1",
+        "branch_position_offset_2",
+        "branch_position_offset_3",
+        "branch_threshold_1",
+        "branch_threshold_2",
+        "branch_threshold_3",
+        "cost_base",
+        "cost_growth",
+        "counter_log_base",
+        "critical_a_probability",
+        "critical_b1_attacks",
+        "critical_b1_damage_bonus",
+        "critical_b2_damage_bonus",
+        "critical_b2_duration",
+        "critical_b2_probability",
+        "critical_b2_stacks",
+        "critical_b3_guaranteed_rate",
+        "critical_growth",
+        "deferred_a_clear_probability",
+        "deferred_b1_duration",
+        "deferred_b1_reduction",
+        "deferred_b2_probability_conversion",
+        "deferred_b3_damage_scale",
+        "deferred_b3_forced_probability",
+        "deferred_clear_probability",
+        "deferred_curve_coefficient",
+        "deferred_duration",
+        "deferred_interval",
+        "deferred_percent_scale",
+        "memory_a_bonus",
+        "memory_b1_duration",
+        "memory_b1_probability",
+        "memory_b1_reduction",
+        "memory_b2_duration",
+        "memory_b2_lockout",
+        "memory_b2_resistance",
+        "memory_b3_armour_capacity_bonus",
+        "memory_b3_shield_charge_bonus",
+        "memory_buffer_fraction",
+        "memory_heal_fraction",
+        "memory_interval",
+        "proficiency_a_damage_bonus",
+        "proficiency_b1_growth",
+        "proficiency_b1_interval",
+        "proficiency_b2_interval_multiplier",
+        "proficiency_b3_resistance",
+        "proficiency_growth",
+        "repeat_a_probability",
+        "repeat_b1_targets",
+        "repeat_b2_repeats",
+        "repeat_b3_probability",
+        "repeat_delay",
+        "repeat_growth",
+        "repeat_probability",
+        "threshold_1",
+        "threshold_2",
+        "threshold_3"
+      ]
+    },
+    "equipment": {
+      "columns": [
+        "name",
+        "des",
+        "level",
+        "dmgtype",
+        "dmg",
+        "dmgMulti",
+        "cd",
+        null,
+        "res_1",
+        "cost_1",
+        "costMulti_1",
+        "res_2",
+        "cost_2",
+        "costMulti_2",
+        "para1",
+        "para2",
+        "para3",
+        "para4"
+      ],
+      "primary": [
+        "name",
+        "level"
+      ],
+      "fields": {
+        "name": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "level": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "dmgtype": {
+          "types": [
+            "number"
+          ],
+          "min": 0,
+          "max": 2,
+          "integer": true
+        },
+        "dmg": {
+          "types": [
+            "null",
+            "number"
+          ],
+          "min": 0
+        },
+        "dmgMulti": {
+          "types": [
+            "null",
+            "number"
+          ],
+          "min": 0
+        },
+        "cd": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "res_1": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "cost_1": {
+          "types": [
+            "null",
+            "number"
+          ],
+          "min": 0
+        },
+        "costMulti_1": {
+          "types": [
+            "null",
+            "number"
+          ],
+          "min": 0
+        },
+        "res_2": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "cost_2": {
+          "types": [
+            "null",
+            "number"
+          ],
+          "min": 0
+        },
+        "costMulti_2": {
+          "types": [
+            "null",
+            "number"
+          ],
+          "min": 0
+        },
+        "para1": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "para2": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "para3": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "para4": {
+          "types": [
+            "null",
+            "number"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "references": [
+        {
+          "field": "res_1",
+          "table": "res",
+          "target": "id"
+        },
+        {
+          "field": "res_2",
+          "table": "res",
+          "target": "id"
+        }
+      ]
+    },
+    "equipment_evolution": {
+      "columns": [
+        "key",
+        "value"
+      ],
+      "primary": [
+        "key"
+      ],
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "first_stat_multiplier",
+            "interval",
+            "later_stat_multiplier",
+            "material_cost_per_tier",
+            "material_id",
+            "visual_palette",
+            "visual_strength_per_tier",
+            "visual_strength_start"
+          ]
+        },
+        "value": {
+          "types": [
+            "bool",
+            "null",
+            "number",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "first_stat_multiplier",
+        "interval",
+        "later_stat_multiplier",
+        "material_cost_per_tier",
+        "material_id",
+        "visual_palette",
+        "visual_strength_per_tier",
+        "visual_strength_start"
+      ]
+    },
+    "galaxy": {
+      "columns": [
+        "id",
+        "key",
+        "name",
+        "order",
+        "unlock_type",
+        "unlock_value",
+        "next_galaxy",
+        "map_w",
+        "map_h",
+        "start_w",
+        "start_h",
+        "building_slot_count",
+        "slot_seed",
+        "explore_work_total",
+        "explore_power_base",
+        "explore_power_per_crew",
+        "ship_per_crew",
+        "build_interval",
+        "construction_time",
+        "upgrade_power_base",
+        "upgrade_power_per_crew",
+        "upgrade_cost_lv2",
+        "upgrade_cost_lv3",
+        "upgrade_cost_lv4",
+        "upgrade_cost_lv5",
+        "concurrent_upgrade_count",
+        "special_cycle",
+        "core_asset",
+        "des"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "key": {
+          "types": [
+            "string"
+          ]
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        },
+        "order": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "unlock_type": {
+          "types": [
+            "string"
+          ]
+        },
+        "unlock_value": {
+          "types": [
+            "number"
+          ]
+        },
+        "next_galaxy": {
+          "types": [
+            "null"
+          ]
+        },
+        "map_w": {
+          "types": [
+            "number"
+          ]
+        },
+        "map_h": {
+          "types": [
+            "number"
+          ]
+        },
+        "start_w": {
+          "types": [
+            "number"
+          ]
+        },
+        "start_h": {
+          "types": [
+            "number"
+          ]
+        },
+        "building_slot_count": {
+          "types": [
+            "number"
+          ]
+        },
+        "slot_seed": {
+          "types": [
+            "number"
+          ]
+        },
+        "explore_work_total": {
+          "types": [
+            "number"
+          ]
+        },
+        "explore_power_base": {
+          "types": [
+            "number"
+          ]
+        },
+        "explore_power_per_crew": {
+          "types": [
+            "number"
+          ]
+        },
+        "ship_per_crew": {
+          "types": [
+            "number"
+          ]
+        },
+        "build_interval": {
+          "types": [
+            "number"
+          ]
+        },
+        "construction_time": {
+          "types": [
+            "number"
+          ]
+        },
+        "upgrade_power_base": {
+          "types": [
+            "number"
+          ]
+        },
+        "upgrade_power_per_crew": {
+          "types": [
+            "number"
+          ]
+        },
+        "upgrade_cost_lv2": {
+          "types": [
+            "number"
+          ]
+        },
+        "upgrade_cost_lv3": {
+          "types": [
+            "number"
+          ]
+        },
+        "upgrade_cost_lv4": {
+          "types": [
+            "number"
+          ]
+        },
+        "upgrade_cost_lv5": {
+          "types": [
+            "number"
+          ]
+        },
+        "concurrent_upgrade_count": {
+          "types": [
+            "number"
+          ]
+        },
+        "special_cycle": {
+          "types": [
+            "number"
+          ]
+        },
+        "core_asset": {
+          "types": [
+            "string"
+          ]
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "galaxy_build": {
+      "columns": [
+        "id",
+        "key",
+        "galaxy_key",
+        "name",
+        "group",
+        "max_lv",
+        "effect_type",
+        "base_effect",
+        "asset_lv1",
+        "asset_lv2",
+        "asset_lv3",
+        "asset_lv4",
+        "asset_lv5",
+        "visual_category",
+        "des"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "key": {
+          "types": [
+            "string"
+          ]
+        },
+        "galaxy_key": {
+          "types": [
+            "string"
+          ]
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        },
+        "group": {
+          "types": [
+            "string"
+          ]
+        },
+        "max_lv": {
+          "types": [
+            "number"
+          ]
+        },
+        "effect_type": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "charge_max",
+            "crew_exp",
+            "equipment_value",
+            "gem_fragment",
+            "iron_auto_ratio",
+            "uranium_auto_ratio"
+          ]
+        },
+        "base_effect": {
+          "types": [
+            "number"
+          ]
+        },
+        "asset_lv1": {
+          "types": [
+            "string"
+          ]
+        },
+        "asset_lv2": {
+          "types": [
+            "string"
+          ]
+        },
+        "asset_lv3": {
+          "types": [
+            "string"
+          ]
+        },
+        "asset_lv4": {
+          "types": [
+            "string"
+          ]
+        },
+        "asset_lv5": {
+          "types": [
+            "string"
+          ]
+        },
+        "visual_category": {
+          "types": [
+            "string"
+          ]
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "references": [
+        {
+          "field": "galaxy_key",
+          "table": "galaxy",
+          "target": "key"
+        }
+      ]
+    },
+    "galaxy_config": {
+      "columns": [
+        "key",
+        "value",
+        "type",
+        "des"
+      ],
+      "primary": [
+        "key"
+      ],
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "camera_zoom_max",
+            "camera_zoom_min",
+            "chunk_size",
+            "disable_hidden_visual",
+            "hidden_tick",
+            "income_basis",
+            "income_interval",
+            "iron_resource_id",
+            "max_transport_ships",
+            "max_visual_pulses",
+            "transport_buildings_per_ship",
+            "transport_departure_interval",
+            "transport_initial_delay",
+            "visible_tick"
+          ]
+        },
+        "value": {
+          "types": [
+            "bool",
+            "null",
+            "number",
+            "string"
+          ]
+        },
+        "type": {
+          "types": [
+            "string"
+          ]
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "camera_zoom_max",
+        "camera_zoom_min",
+        "chunk_size",
+        "disable_hidden_visual",
+        "hidden_tick",
+        "income_basis",
+        "income_interval",
+        "iron_resource_id",
+        "max_transport_ships",
+        "max_visual_pulses",
+        "transport_buildings_per_ship",
+        "transport_departure_interval",
+        "transport_initial_delay",
+        "visible_tick"
+      ]
+    },
+    "hightech": {
+      "columns": [
+        "name",
+        "des",
+        "description",
+        "tpCostBase",
+        "tpCostMutiple",
+        "tpCostMutiple2",
+        "para1",
+        "para2"
+      ],
+      "primary": [
+        "name"
+      ],
+      "fields": {
+        "name": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "tpCostBase": {
+          "types": [
+            "number"
+          ]
+        },
+        "tpCostMutiple": {
+          "types": [
+            "number"
+          ]
+        },
+        "tpCostMutiple2": {
+          "types": [
+            "number"
+          ]
+        },
+        "para1": {
+          "types": [
+            "number"
+          ]
+        },
+        "para2": {
+          "types": [
+            "null",
+            "number"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "hyper_base": {
+      "columns": [
+        "key",
+        "data_type",
+        "value",
+        "unit",
+        "description",
+        "constraint",
+        "editable"
+      ],
+      "primary": [
+        "key"
+      ],
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "data_type": {
+          "types": [
+            "string"
+          ]
+        },
+        "value": {
+          "types": [
+            "number"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "constraint": {
+          "types": [
+            "string"
+          ]
+        },
+        "editable": {
+          "types": [
+            "bool"
+          ]
+        }
+      },
+      "literalOnly": true
+    },
+    "hyper_routes": {
+      "columns": [
+        "order",
+        "route_id",
+        "weapon",
+        "material"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "route_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "weapon": {
+          "types": [
+            "string"
+          ]
+        },
+        "material": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_quality": {
+      "columns": [
+        "order",
+        "quality",
+        "weight",
+        "affix_limit",
+        "hanging_limit",
+        "weapon_level_bonus",
+        "dismantle_amount"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "quality": {
+          "types": [
+            "string"
+          ]
+        },
+        "weight": {
+          "types": [
+            "number"
+          ]
+        },
+        "affix_limit": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "hanging_limit": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "weapon_level_bonus": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "dismantle_amount": {
+          "types": [
+            "null",
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_hulls": {
+      "columns": [
+        "order",
+        "hull_id",
+        "capacity"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "hull_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "capacity": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_tiers": {
+      "columns": [
+        "order",
+        "tier",
+        "draw_weight",
+        "modernization_weight"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "tier": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "draw_weight": {
+          "types": [
+            "number"
+          ]
+        },
+        "modernization_weight": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_affixes": {
+      "columns": [
+        "order",
+        "affix_id",
+        "weapon",
+        "amplified"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "affix_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "weapon": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "amplified": {
+          "types": [
+            "bool"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_ranges": {
+      "columns": [
+        "affix_id",
+        "tier",
+        "minimum",
+        "maximum"
+      ],
+      "primary": [
+        "affix_id",
+        "tier"
+      ],
+      "fields": {
+        "affix_id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "tier": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "minimum": {
+          "types": [
+            "number"
+          ]
+        },
+        "maximum": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "affix_id",
+          "table": "hyper_affixes",
+          "target": "affix_id"
+        }
+      ]
+    },
+    "hyper_hanging": {
+      "columns": [
+        "order",
+        "module_id",
+        "base_exp",
+        "exp_growth",
+        "effect_growth",
+        "unlock_stage",
+        "effects_note"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "module_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "base_exp": {
+          "types": [
+            "number"
+          ]
+        },
+        "exp_growth": {
+          "types": [
+            "number"
+          ]
+        },
+        "effect_growth": {
+          "types": [
+            "number"
+          ]
+        },
+        "unlock_stage": {
+          "types": [
+            "number"
+          ]
+        },
+        "effects_note": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_legends": {
+      "columns": [
+        "order",
+        "effect_id",
+        "weapon",
+        "score_parameter_note"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "effect_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "weapon": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "score_parameter_note": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "orderScope": []
+    },
+    "hyper_legend_ranges": {
+      "columns": [
+        "effect_id",
+        "order",
+        "parameter",
+        "minimum",
+        "maximum",
+        "unit",
+        "description"
+      ],
+      "primary": [
+        "effect_id",
+        "parameter"
+      ],
+      "fields": {
+        "effect_id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "order": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "parameter": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "minimum": {
+          "types": [
+            "number"
+          ]
+        },
+        "maximum": {
+          "types": [
+            "number"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "effect_id",
+          "table": "hyper_legends",
+          "target": "effect_id"
+        }
+      ],
+      "orderScope": [
+        "effect_id"
+      ]
+    },
+    "hyper_constants": {
+      "columns": [
+        "effect_id",
+        "constant_path",
+        "data_type",
+        "value",
+        "unit",
+        "description",
+        "constraint",
+        "editable"
+      ],
+      "primary": [
+        "effect_id",
+        "constant_path"
+      ],
+      "fields": {
+        "effect_id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "constant_path": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "data_type": {
+          "types": [
+            "string"
+          ]
+        },
+        "value": {
+          "types": [
+            "bool",
+            "number",
+            "string"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "constraint": {
+          "types": [
+            "string"
+          ]
+        },
+        "editable": {
+          "types": [
+            "bool"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "effect_id",
+          "table": "hyper_legends",
+          "target": "effect_id"
+        }
+      ]
+    },
+    "hyper_costs": {
+      "columns": [
+        "operation_order",
+        "operation",
+        "resource",
+        "resource_order",
+        "amount"
+      ],
+      "primary": [
+        "operation",
+        "resource"
+      ],
+      "fields": {
+        "operation_order": {
+          "types": [
+            "number"
+          ]
+        },
+        "operation": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "resource": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "resource_order": {
+          "types": [
+            "number"
+          ]
+        },
+        "amount": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true
+    },
+    "hyper_rules": {
+      "columns": [
+        "key",
+        "data_type",
+        "value",
+        "unit",
+        "description",
+        "constraint",
+        "editable"
+      ],
+      "primary": [
+        "key"
+      ],
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "data_type": {
+          "types": [
+            "string"
+          ]
+        },
+        "value": {
+          "types": [
+            "null",
+            "number",
+            "string"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "constraint": {
+          "types": [
+            "string"
+          ]
+        },
+        "editable": {
+          "types": [
+            "bool"
+          ]
+        }
+      },
+      "literalOnly": true
+    },
+    "hyper_visuals": {
+      "columns": [
+        "key",
+        "data_type",
+        "value",
+        "unit",
+        "description",
+        "constraint",
+        "editable"
+      ],
+      "primary": [
+        "key"
+      ],
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "data_type": {
+          "types": [
+            "string"
+          ]
+        },
+        "value": {
+          "types": [
+            "bool",
+            "number",
+            "string"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "constraint": {
+          "types": [
+            "string"
+          ]
+        },
+        "editable": {
+          "types": [
+            "bool"
+          ]
+        }
+      },
+      "literalOnly": true
+    },
+    "hyper_enemies": {
+      "columns": [
+        "order",
+        "enemy_id",
+        "description",
+        "size",
+        "health",
+        "armour_type",
+        "shield",
+        "shield_type",
+        "shield_recovery",
+        "shield_delay",
+        "damage_multiplier"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "enemy_id": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "size": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "health": {
+          "types": [
+            "number"
+          ]
+        },
+        "armour_type": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 0,
+          "max": 2
+        },
+        "shield": {
+          "types": [
+            "number"
+          ]
+        },
+        "shield_type": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 0,
+          "max": 2
+        },
+        "shield_recovery": {
+          "types": [
+            "number"
+          ]
+        },
+        "shield_delay": {
+          "types": [
+            "number"
+          ]
+        },
+        "damage_multiplier": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true
+    },
+    "hyper_weapons": {
+      "columns": [
+        "enemy_id",
+        "order",
+        "weapon_id"
+      ],
+      "primary": [
+        "enemy_id",
+        "order"
+      ],
+      "fields": {
+        "enemy_id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "weapon_id": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "enemy_id",
+          "table": "hyper_enemies",
+          "target": "enemy_id"
+        },
+        {
+          "field": "weapon_id",
+          "table": "equipment",
+          "target": "name"
+        }
+      ],
+      "orderScope": [
+        "enemy_id"
+      ]
+    },
+    "hyper_groups": {
+      "columns": [
+        "order",
+        "group_id",
+        "description",
+        "tier",
+        "reward_reference_id"
+      ],
+      "primary": [
+        "order"
+      ],
+      "fields": {
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "group_id": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "tier": {
+          "types": [
+            "string"
+          ]
+        },
+        "reward_reference_id": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "reward_reference_id",
+          "table": "hyper_rewards",
+          "target": "reference_id"
+        }
+      ],
+      "orderScope": []
+    },
+    "hyper_slots": {
+      "columns": [
+        "group_id",
+        "slot_index",
+        "enemy_id",
+        "x",
+        "y"
+      ],
+      "primary": [
+        "group_id",
+        "slot_index"
+      ],
+      "fields": {
+        "group_id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "slot_index": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true,
+          "min": 0,
+          "max": 14
+        },
+        "enemy_id": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "x": {
+          "types": [
+            "number"
+          ],
+          "min": 54,
+          "max": 518
+        },
+        "y": {
+          "types": [
+            "number"
+          ],
+          "min": 80,
+          "max": 350
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "group_id",
+          "table": "hyper_groups",
+          "target": "group_id"
+        },
+        {
+          "field": "enemy_id",
+          "table": "hyper_enemies",
+          "target": "enemy_id"
+        }
+      ]
+    },
+    "hyper_schedule": {
+      "columns": [
+        "route_id",
+        "tier",
+        "order",
+        "group_id"
+      ],
+      "primary": [
+        "route_id",
+        "tier",
+        "order"
+      ],
+      "fields": {
+        "route_id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "tier": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "group_id": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "route_id",
+          "table": "hyper_routes",
+          "target": "route_id"
+        },
+        {
+          "field": "group_id",
+          "table": "hyper_groups",
+          "target": "group_id"
+        }
+      ],
+      "orderScope": [
+        "route_id",
+        "tier"
+      ]
+    },
+    "hyper_rewards": {
+      "columns": [
+        "reference_id",
+        "source_design_group_id",
+        "reference_member_count",
+        "late_reference_level_id",
+        "late_reference_group_id",
+        "boundary_note"
+      ],
+      "primary": [
+        "reference_id"
+      ],
+      "fields": {
+        "reference_id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "source_design_group_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "reference_member_count": {
+          "types": [
+            "number"
+          ]
+        },
+        "late_reference_level_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "late_reference_group_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "boundary_note": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "late_reference_level_id",
+          "table": "level",
+          "target": "id"
+        },
+        {
+          "field": "late_reference_group_id",
+          "table": "monGroup",
+          "target": "id"
+        },
+        {
+          "field": "source_design_group_id",
+          "table": "monGroup",
+          "target": "id"
+        }
+      ]
+    },
+    "hyper_members": {
+      "columns": [
+        "group_id",
+        "member_order",
+        "slot_index",
+        "order",
+        "reference_member_ordinal"
+      ],
+      "primary": [
+        "group_id",
+        "member_order",
+        "order"
+      ],
+      "fields": {
+        "group_id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "member_order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "slot_index": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "order": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "reference_member_ordinal": {
+          "types": [
+            "null",
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "group_id",
+          "table": "hyper_groups",
+          "target": "group_id"
+        }
+      ],
+      "orderScope": [
+        "group_id",
+        "member_order"
+      ],
+      "nullOrderMeaning": "zero_budget_member"
+    },
+    "hyper_early": {
+      "columns": [
+        "reference_id",
+        "reference_member_ordinal",
+        "drop_order",
+        "resource_id",
+        "amount",
+        "chance"
+      ],
+      "primary": [
+        "reference_id",
+        "reference_member_ordinal",
+        "drop_order"
+      ],
+      "fields": {
+        "reference_id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "reference_member_ordinal": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "drop_order": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "resource_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "amount": {
+          "types": [
+            "number"
+          ]
+        },
+        "chance": {
+          "types": [
+            "number"
+          ],
+          "min": 0,
+          "max": 1
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "reference_id",
+          "table": "hyper_rewards",
+          "target": "reference_id"
+        },
+        {
+          "field": "resource_id",
+          "table": "res",
+          "target": "id"
+        }
+      ]
+    },
+    "level": {
+      "columns": [
+        "id",
+        "length",
+        "monGroup",
+        "atkRatio",
+        "lifeRatio",
+        "resRatio",
+        "jewelRatio",
+        "planetExpRatio",
+        "entryAtkRatio",
+        "entryLifeRatio",
+        "rewardReferenceGroups"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "length": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "monGroup": {
+          "types": [
+            "string"
+          ]
+        },
+        "atkRatio": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "lifeRatio": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "resRatio": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "jewelRatio": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "planetExpRatio": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "entryAtkRatio": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "entryLifeRatio": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "rewardReferenceGroups": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "mon": {
+      "columns": [
+        "id",
+        "des",
+        "equipment",
+        "dmgMultiple",
+        "health",
+        "armourType",
+        "res",
+        "size",
+        "shield",
+        "shieldType",
+        "shieldRecovery",
+        "shieldDelay",
+        "reactiveReduction",
+        "archetype_id",
+        "intelTrait",
+        "intelName",
+        "intelVisualRef",
+        "intelMechanics"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "equipment": {
+          "types": [
+            "string"
+          ]
+        },
+        "dmgMultiple": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "health": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "armourType": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 0,
+          "max": 2
+        },
+        "res": {
+          "types": [
+            "string",
+            "null"
+          ]
+        },
+        "size": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 1,
+          "max": 6
+        },
+        "shield": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "shieldType": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 0,
+          "max": 2
+        },
+        "shieldRecovery": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "shieldDelay": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "reactiveReduction": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "archetype_id": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "intelTrait": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "intelName": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "intelVisualRef": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "intelMechanics": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "monGroup": {
+      "columns": [
+        "id",
+        "des",
+        "mon",
+        "combatTier"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "mon": {
+          "types": [
+            "string"
+          ]
+        },
+        "combatTier": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "planet": {
+      "columns": [
+        "id",
+        "name",
+        "unlockId",
+        "baseTime",
+        "baseExp",
+        "tags",
+        "visual",
+        "reforgeStartLevel",
+        "minTime"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        },
+        "unlockId": {
+          "types": [
+            "string"
+          ]
+        },
+        "baseTime": {
+          "types": [
+            "number"
+          ]
+        },
+        "baseExp": {
+          "types": [
+            "number"
+          ]
+        },
+        "tags": {
+          "types": [
+            "null"
+          ]
+        },
+        "visual": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "reforgeStartLevel": {
+          "types": [
+            "number"
+          ]
+        },
+        "minTime": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "references": [
+        {
+          "field": "unlockId",
+          "table": "unlock",
+          "target": "name"
+        }
+      ]
+    },
+    "planet_buff": {
+      "columns": [
+        "id",
+        "planet_id",
+        "source",
+        "source_id",
+        "condition",
+        "buff_type",
+        "target",
+        "value",
+        "stack",
+        "order",
+        "des"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "planet_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "source": {
+          "types": [
+            "string"
+          ]
+        },
+        "source_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "condition": {
+          "types": [
+            "string"
+          ]
+        },
+        "buff_type": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "crew_exp_share",
+            "free_charge",
+            "level_bonus",
+            "luck",
+            "planet_unlock"
+          ]
+        },
+        "target": {
+          "types": [
+            "string"
+          ]
+        },
+        "value": {
+          "types": [
+            "number"
+          ]
+        },
+        "stack": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "add",
+            "max"
+          ]
+        },
+        "order": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "references": [
+        {
+          "field": "planet_id",
+          "table": "planet",
+          "target": "id"
+        }
+      ]
+    },
+    "planet_build": {
+      "columns": [
+        "id",
+        "name",
+        "des",
+        "min_planet",
+        "planet_rule",
+        "planet_value",
+        "order",
+        "unlock_explore",
+        "build_explore",
+        "extra_crew",
+        "type",
+        "config1",
+        "config2",
+        "previous_id"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "min_planet": {
+          "types": [
+            "number"
+          ]
+        },
+        "planet_rule": {
+          "types": [
+            "string"
+          ]
+        },
+        "planet_value": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "order": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "unlock_explore": {
+          "types": [
+            "number"
+          ]
+        },
+        "build_explore": {
+          "types": [
+            "number"
+          ]
+        },
+        "extra_crew": {
+          "types": [
+            "number"
+          ]
+        },
+        "type": {
+          "types": [
+            "string"
+          ]
+        },
+        "config1": {
+          "types": [
+            "number"
+          ]
+        },
+        "config2": {
+          "types": [
+            "number"
+          ]
+        },
+        "previous_id": {
+          "types": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "res": {
+      "columns": [
+        "id",
+        "name"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "number"
+          ],
+          "required": true,
+          "integer": true
+        },
+        "name": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "ship": {
+      "columns": [
+        "name",
+        "des",
+        "para_1",
+        "para_2",
+        "para_3",
+        null,
+        "para_5",
+        "para_6"
+      ],
+      "primary": [
+        "name"
+      ],
+      "fields": {
+        "name": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "des": {
+          "types": [
+            "string"
+          ]
+        },
+        "para_1": {
+          "types": [
+            "number"
+          ]
+        },
+        "para_2": {
+          "types": [
+            "number"
+          ]
+        },
+        "para_3": {
+          "types": [
+            "number"
+          ]
+        },
+        "para_5": {
+          "types": [
+            "number"
+          ]
+        },
+        "para_6": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "unlock": {
+      "columns": [
+        "name",
+        "type",
+        "target",
+        "level",
+        "mode",
+        "title",
+        "desc"
+      ],
+      "primary": [
+        "name"
+      ],
+      "fields": {
+        "name": {
+          "types": [
+            "string"
+          ],
+          "required": true
+        },
+        "type": {
+          "types": [
+            "string"
+          ]
+        },
+        "target": {
+          "types": [
+            "string"
+          ]
+        },
+        "level": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "mode": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "cleared",
+            "reached"
+          ]
+        },
+        "title": {
+          "types": [
+            "string"
+          ]
+        },
+        "desc": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false
+    },
+    "weapon_motion": {
+      "columns": [
+        "id",
+        "value",
+        "unit",
+        "description",
+        "scope"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ],
+          "required": true,
+          "enum": [
+            "chain_carrier_speed",
+            "enemy_projectile_pixels_per_unit",
+            "missile_brake_angle",
+            "missile_brake_factor",
+            "missile_brake_range",
+            "missile_cruise_at",
+            "missile_departure_angle",
+            "missile_ejection_gap",
+            "missile_hit_radius",
+            "missile_ignition_at",
+            "missile_launch_edge_margin",
+            "missile_launch_forward_y",
+            "missile_launch_speed",
+            "missile_lifetime",
+            "missile_min_guided_speed",
+            "missile_orphan_lifetime",
+            "missile_reacquire_interval",
+            "missile_seek_start",
+            "missile_turn_rate",
+            "player_cannon_speed_multiplier",
+            "player_projectile_pixels_per_unit",
+            "rail_charge_radius",
+            "rail_charge_seconds",
+            "rail_flash_seconds",
+            "rail_impact_radius",
+            "rail_impact_seconds",
+            "rail_penetration_length",
+            "rail_trail_length",
+            "rail_trail_width"
+          ]
+        },
+        "value": {
+          "types": [
+            "number"
+          ]
+        },
+        "unit": {
+          "types": [
+            "string"
+          ]
+        },
+        "description": {
+          "types": [
+            "string"
+          ]
+        },
+        "scope": {
+          "types": [
+            "string"
+          ]
+        }
+      },
+      "literalOnly": false,
+      "requiredKeys": [
+        "chain_carrier_speed",
+        "enemy_projectile_pixels_per_unit",
+        "missile_brake_angle",
+        "missile_brake_factor",
+        "missile_brake_range",
+        "missile_cruise_at",
+        "missile_departure_angle",
+        "missile_ejection_gap",
+        "missile_hit_radius",
+        "missile_ignition_at",
+        "missile_launch_edge_margin",
+        "missile_launch_forward_y",
+        "missile_launch_speed",
+        "missile_lifetime",
+        "missile_min_guided_speed",
+        "missile_orphan_lifetime",
+        "missile_reacquire_interval",
+        "missile_seek_start",
+        "missile_turn_rate",
+        "player_cannon_speed_multiplier",
+        "player_projectile_pixels_per_unit",
+        "rail_charge_radius",
+        "rail_charge_seconds",
+        "rail_flash_seconds",
+        "rail_impact_radius",
+        "rail_impact_seconds",
+        "rail_penetration_length",
+        "rail_trail_length",
+        "rail_trail_width"
+      ]
+    },
+    "amount_case": {
+      "columns": [
+        "id",
+        "operation",
+        "left",
+        "right",
+        "scalar",
+        "count",
+        "expected",
+        "error",
+        "log_tolerance"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ]
+        },
+        "operation": {
+          "types": [
+            "string"
+          ]
+        },
+        "left": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "right": {
+          "types": [
+            "null",
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "scalar": {
+          "types": [
+            "null",
+            "number"
+          ]
+        },
+        "count": {
+          "types": [
+            "null",
+            "string"
+          ],
+          "literal": "int64_text"
+        },
+        "expected": {
+          "types": [
+            "null",
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "error": {
+          "types": [
+            "null",
+            "string"
+          ]
+        },
+        "log_tolerance": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        }
+      },
+      "literalOnly": true
+    },
+    "native_fixture": {
+      "columns": [
+        "id",
+        "player_armour",
+        "player_shield",
+        "player_x",
+        "player_y",
+        "enemy_id",
+        "enemy_hp",
+        "enemy_x",
+        "enemy_y",
+        "duration",
+        "seed"
+      ],
+      "primary": [
+        "id"
+      ],
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ]
+        },
+        "player_armour": {
+          "types": [
+            "number"
+          ]
+        },
+        "player_shield": {
+          "types": [
+            "number"
+          ]
+        },
+        "player_x": {
+          "types": [
+            "number"
+          ]
+        },
+        "player_y": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_id": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_hp": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_x": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_y": {
+          "types": [
+            "number"
+          ]
+        },
+        "duration": {
+          "types": [
+            "number"
+          ]
+        },
+        "seed": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true
+    },
+    "save_case": {
+      "columns": [
+        "id",
+        "mode",
+        "fault",
+        "initial",
+        "updated",
+        "expected",
+        "generation"
+      ],
+      "primary": [
+        "id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ]
+        },
+        "mode": {
+          "types": [
+            "string"
+          ]
+        },
+        "fault": {
+          "types": [
+            "string",
+            "null"
+          ]
+        },
+        "initial": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "updated": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "expected": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "generation": {
+          "types": [
+            "string"
+          ],
+          "literal": "int64_text"
+        }
+      }
+    }
+  },
+  "productionSources": [
+    {
+      "file": "ai_tech_tree.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "ai_tech_tree",
+          "table": "ai_tech_tree"
+        }
+      ]
+    },
+    {
+      "file": "battle_design.xlsx",
+      "classification": "candidate",
+      "sheets": [
+        {
+          "sheet": "battle_design",
+          "table": "battle_design"
+        }
+      ]
+    },
+    {
+      "file": "config.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "config",
+          "table": "config"
+        }
+      ]
+    },
+    {
+      "file": "crew.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "crew",
+          "table": "crew"
+        }
+      ]
+    },
+    {
+      "file": "crew_assignment.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "crew_assignment",
+          "table": "crew_assignment"
+        }
+      ]
+    },
+    {
+      "file": "crew_config.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "crew_config",
+          "table": "crew_config"
+        }
+      ]
+    },
+    {
+      "file": "enemy_weapon_base.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "enemy_weapon_base",
+          "table": "enemy_weapon_base"
+        }
+      ]
+    },
+    {
+      "file": "enhance_config.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "enhance_config",
+          "table": "enhance_config"
+        }
+      ]
+    },
+    {
+      "file": "equipment.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "equipment",
+          "table": "equipment"
+        }
+      ]
+    },
+    {
+      "file": "equipment_evolution.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "equipment_evolution",
+          "table": "equipment_evolution"
+        }
+      ]
+    },
+    {
+      "file": "galaxy.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "galaxy",
+          "table": "galaxy"
+        }
+      ]
+    },
+    {
+      "file": "galaxy_build.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "galaxy_build",
+          "table": "galaxy_build"
+        }
+      ]
+    },
+    {
+      "file": "galaxy_config.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "galaxy_config",
+          "table": "galaxy_config"
+        }
+      ]
+    },
+    {
+      "file": "hightech.xlsx",
+      "classification": "retired",
+      "sheets": [
+        {
+          "sheet": "hightech",
+          "table": "hightech"
+        }
+      ]
+    },
+    {
+      "file": "hyperspace_config.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "基础参数",
+          "table": "hyper_base"
+        },
+        {
+          "sheet": "路线",
+          "table": "hyper_routes"
+        },
+        {
+          "sheet": "品质",
+          "table": "hyper_quality"
+        },
+        {
+          "sheet": "舰型容量",
+          "table": "hyper_hulls"
+        },
+        {
+          "sheet": "阶级权重",
+          "table": "hyper_tiers"
+        },
+        {
+          "sheet": "词缀定义",
+          "table": "hyper_affixes"
+        },
+        {
+          "sheet": "词缀区间",
+          "table": "hyper_ranges"
+        },
+        {
+          "sheet": "挂设成长",
+          "table": "hyper_hanging"
+        },
+        {
+          "sheet": "传说定义",
+          "table": "hyper_legends"
+        },
+        {
+          "sheet": "传说随机参数",
+          "table": "hyper_legend_ranges"
+        },
+        {
+          "sheet": "传说常量",
+          "table": "hyper_constants"
+        },
+        {
+          "sheet": "改造费用",
+          "table": "hyper_costs"
+        },
+        {
+          "sheet": "固定规则_兼容说明",
+          "table": "hyper_rules"
+        },
+        {
+          "sheet": "无人机外观",
+          "table": "hyper_visuals"
+        }
+      ]
+    },
+    {
+      "file": "hyperspace_enemies.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "敌人",
+          "table": "hyper_enemies"
+        },
+        {
+          "sheet": "武器安装",
+          "table": "hyper_weapons"
+        },
+        {
+          "sheet": "编队",
+          "table": "hyper_groups"
+        },
+        {
+          "sheet": "编队槽位",
+          "table": "hyper_slots"
+        },
+        {
+          "sheet": "路线编排",
+          "table": "hyper_schedule"
+        },
+        {
+          "sheet": "奖励参考",
+          "table": "hyper_rewards"
+        },
+        {
+          "sheet": "成员分配",
+          "table": "hyper_members"
+        },
+        {
+          "sheet": "早段回退预算",
+          "table": "hyper_early"
+        }
+      ]
+    },
+    {
+      "file": "level.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "level",
+          "table": "level"
+        }
+      ]
+    },
+    {
+      "file": "level_monGroup_generated.xlsx",
+      "classification": "generated",
+      "sheets": [
+        {
+          "sheet": "level",
+          "table": "level_monGroup_generated"
+        }
+      ]
+    },
+    {
+      "file": "mon.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "mon",
+          "table": "mon"
+        }
+      ]
+    },
+    {
+      "file": "monGroup.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "monGroup",
+          "table": "monGroup"
+        }
+      ]
+    },
+    {
+      "file": "planet.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "planet",
+          "table": "planet"
+        }
+      ]
+    },
+    {
+      "file": "planet_buff.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "planet_buff",
+          "table": "planet_buff"
+        }
+      ]
+    },
+    {
+      "file": "planet_build.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "planet_build",
+          "table": "planet_build"
+        }
+      ]
+    },
+    {
+      "file": "res.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "res",
+          "table": "res"
+        }
+      ]
+    },
+    {
+      "file": "ship.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "ship",
+          "table": "ship"
+        }
+      ]
+    },
+    {
+      "file": "unlock.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "unlock",
+          "table": "unlock"
+        }
+      ]
+    },
+    {
+      "file": "weapon_motion.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "weapon_motion",
+          "table": "weapon_motion"
+        }
+      ]
+    },
+    {
+      "file": "published/level.xlsx",
+      "classification": "published",
+      "sheets": [
+        {
+          "sheet": "level",
+          "table": "level"
+        }
+      ]
+    },
+    {
+      "file": "published/mon.xlsx",
+      "classification": "published",
+      "sheets": [
+        {
+          "sheet": "mon",
+          "table": "mon"
+        }
+      ]
+    },
+    {
+      "file": "published/monGroup.xlsx",
+      "classification": "published",
+      "sheets": [
+        {
+          "sheet": "monGroup",
+          "table": "monGroup"
+        }
+      ]
+    }
+  ],
+  "productionTables": [
+    "ai_tech_tree",
+    "config",
+    "crew",
+    "crew_assignment",
+    "crew_config",
+    "enemy_weapon_base",
+    "enhance_config",
+    "equipment",
+    "equipment_evolution",
+    "galaxy",
+    "galaxy_build",
+    "galaxy_config",
+    "hightech",
+    "hyper_affixes",
+    "hyper_base",
+    "hyper_constants",
+    "hyper_costs",
+    "hyper_early",
+    "hyper_enemies",
+    "hyper_groups",
+    "hyper_hanging",
+    "hyper_hulls",
+    "hyper_legend_ranges",
+    "hyper_legends",
+    "hyper_members",
+    "hyper_quality",
+    "hyper_ranges",
+    "hyper_rewards",
+    "hyper_routes",
+    "hyper_rules",
+    "hyper_schedule",
+    "hyper_slots",
+    "hyper_tiers",
+    "hyper_visuals",
+    "hyper_weapons",
+    "level",
+    "mon",
+    "monGroup",
+    "planet",
+    "planet_buff",
+    "planet_build",
+    "res",
+    "ship",
+    "unlock",
+    "weapon_motion"
+  ],
+  "fallbacks": {
+    "enemy_weapon_fields": {
+      "target": "enemy_weapon_base",
+      "fields": [
+        "dmg",
+        "cd",
+        "para1",
+        "para2",
+        "para3",
+        "dmgtype"
+      ]
+    }
+  },
+  "retainedWithoutRuntimeConsumers": {
+    "hightech": "retired scientific upgrades; content only",
+    "config": [
+      "scientistCost",
+      "hightechLimit",
+      "techPointGet",
+      "loopDelay",
+      "deathRetreatDistance"
+    ]
+  },
+  "unlockTargets": {
+    "equipment": [
+      "equipment",
+      "name"
+    ],
+    "ship": [
+      "ship",
+      "name"
+    ],
+    "crew": [
+      "crew",
+      "id"
+    ],
+    "planet": [
+      "planet",
+      "id"
+    ],
+    "hightech": [
+      "hightech",
+      "name"
+    ]
+  },
+  "unlockRuleIds": {
+    "feature": [
+      "crew_level",
+      "galaxy",
+      "jewels",
+      "reactor"
+    ],
+    "reactor_module": [
+      "condensation"
+    ]
+  }
+}

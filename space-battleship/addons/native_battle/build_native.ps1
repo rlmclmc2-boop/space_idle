@@ -31,6 +31,7 @@ try {
     New-Item -ItemType Directory -Force -Path (Join-Path $native 'src') | Out-Null
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'SConstruct') -Destination (Join-Path $native 'SConstruct')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\space_native.cpp') -Destination (Join-Path $native 'src\space_native.cpp')
+    Copy-Item -Path (Join-Path $PSScriptRoot 'src\*.hpp') -Destination (Join-Path $native 'src') -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_execution_kernel.h') -Destination (Join-Path $native 'src\combat_execution_kernel.h')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_presentation.h') -Destination (Join-Path $native 'src\combat_presentation.h')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_retained_presentation.h') -Destination (Join-Path $native 'src\combat_retained_presentation.h')

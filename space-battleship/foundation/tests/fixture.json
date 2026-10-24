@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "domain": "fixture",
+  "root": "excel",
+  "workbooks": [
+    {
+      "file": "foundation.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "res",
+          "table": "res"
+        },
+        {
+          "sheet": "amount_case",
+          "table": "amount_case"
+        },
+        {
+          "sheet": "native_fixture",
+          "table": "native_fixture"
+        },
+        {
+          "sheet": "save_case",
+          "table": "save_case"
+        }
+      ]
+    }
+  ]
+}

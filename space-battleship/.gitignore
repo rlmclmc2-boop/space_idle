@@ -21,3 +21,7 @@ exports/
 
 # Local previews; keep asset .import settings and script .uid files
 preview*.png
+
+# Isolated foundation builds and portable Godot data
+.stage1-work/
+__pycache__/
