@@ -19,20 +19,21 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 		"entry": {"key": key, "name": key, "slot": slot}, "row": row.duplicate(true),
 		"branch_factors": [], "external_factors": []}
 
-static func build_player(session) -> Dictionary:
-	var api = session.amount_api
+static func build_player(slots: Array, equipment_definitions: Dictionary, evolution: Dictionary,
+		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary,
+		resistance: float, motion: Dictionary, enhancement: Dictionary, seed_value: int) -> Dictionary:
 	var one = api.apply("from_decimal", ["1"])
 	if not one.ok:
 		return one
-	var player_point := Vector2(float(session.geometry.player_x), float(session.geometry.player_y))
+	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
 	var weapons: Array = []
 	var defences: Array = []
-	for slot in session.slots:
+	for slot in slots:
 		if str(slot.equipment_id).is_empty():
 			continue
-		var row: Dictionary = session.equipment_definitions[str(slot.equipment_id)]
-		var value = Equipment.charged_base(row, session.equipment_definitions.armour,
-			int(slot.paid_level), int(slot.extra_levels), session.evolution, one.value, one.value, api)
+		var row: Dictionary = equipment_definitions[str(slot.equipment_id)]
+		var value = Equipment.charged_base(row, equipment_definitions.armour,
+			int(slot.paid_level), int(slot.extra_levels), evolution, one.value, one.value, api)
 		if not value.ok:
 			return value
 		var text = api.apply("to_display", [value.value])
@@ -46,8 +47,8 @@ static func build_player(session) -> Dictionary:
 				"rate": float(row.para2) if row.name == "shield" else 0.0,
 				"branch_factors": [], "external_factors": []})
 		else:
-			var row_weapon: Dictionary = weapon(row, str(row.name), str(text.text), int(slot.index), false, session.motion)
-			row_weapon.muzzle = Geometry.mount_position(session.player_art, int(slot.index), player_point, session.player_dimensions)
+			var row_weapon: Dictionary = weapon(row, str(row.name), str(text.text), int(slot.index), false, motion)
+			row_weapon.muzzle = Geometry.mount_position(player_art, int(slot.index), player_point, player_dimensions)
 			row_weapon.entry.id = str(slot.id)
 			row_weapon.entry.generation = int(slot.generation)
 			row_weapon.entry.paid_level = int(slot.paid_level)
@@ -56,13 +57,13 @@ static func build_player(session) -> Dictionary:
 	var descriptor := {"player": {"armour": "0", "shield": "0", "x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,
 		"requires_module_defense": true, "requires_drop_rules": true, "drop_rules_compiled": true,
-		"resistance": float(session.parameters.dmgReduce), "rng_state": session.seed_value,
-		"target_slot_center": float(session.geometry.target_slot_center), "battle_width": float(session.geometry.view_width),
+		"resistance": resistance, "rng_state": seed_value,
+		"target_slot_center": float(geometry.target_slot_center), "battle_width": float(geometry.view_width),
 		"attack_counter": 0, "incoming_counter": 0, "counter_level": 0,
-		"counter_growth": float(session.enhancement.proficiency_growth),
-		"defence_counter_growth": float(session.enhancement.adaptation_growth),
-		"counter_log_base": float(session.enhancement.counter_log_base),
-		"counter_round_scale": float(session.enhancement.bonus_round_scale),
+		"counter_growth": float(enhancement.proficiency_growth),
+		"defence_counter_growth": float(enhancement.adaptation_growth),
+		"counter_log_base": float(enhancement.counter_log_base),
+		"counter_round_scale": float(enhancement.bonus_round_scale),
 		"jewel_probability": 0.0, "jewel_ratio": 1.0}
 	var motion_keys := {"missile_departure_angle": "missile_departure_angle",
 		"missile_launch_edge_margin": "missile_launch_edge_margin", "missile_launch_forward_y": "missile_launch_forward_y",
@@ -73,17 +74,15 @@ static func build_player(session) -> Dictionary:
 		"min_speed": "missile_min_guided_speed", "brake_factor": "missile_brake_factor",
 		"hit_radius": "missile_hit_radius", "chain_speed": "chain_carrier_speed"}
 	for key in motion_keys:
-		descriptor[key] = session.motion[motion_keys[key]]
+		descriptor[key] = motion[motion_keys[key]]
 	return {"ok": true, "descriptor": descriptor}
 
-static func ratio(session, field: String, point: int, points: int) -> Dictionary:
-	var current: Dictionary = session.level_definitions[int(session.campaign.stage)]
-	var previous = 1 if int(current.id) == 1 else session.level_definitions[int(current.id) - 1][field]
+static func ratio(current: Dictionary, previous_stage: Dictionary, field: String, point: int, points: int, api) -> Dictionary:
+	var previous = 1 if int(current.id) == 1 else previous_stage[field]
 	var entry_key: String = "entryAtkRatio" if field == "atkRatio" else "entryLifeRatio" if field == "lifeRatio" else ""
 	if not entry_key.is_empty() and current.get(entry_key) != null:
 		previous = current[entry_key]
 	var u: float = 1.0 if points <= 1 else float(point) / (points - 1)
-	var api = session.amount_api
 	var start = api.apply("from_decimal", [str(previous)])
 	var finish = api.apply("from_decimal", [str(current[field])])
 	var before = api.apply("from_decimal", [str(1.0 - u)])
@@ -97,27 +96,25 @@ static func ratio(session, field: String, point: int, points: int) -> Dictionary
 		return start if not start.ok else finish
 	return api.apply("add", [start.value, finish.value])
 
-static func build_wave(session, point_index: int) -> Dictionary:
-	var points: Array = session.campaign.points
-	var stage: Dictionary = session.level_definitions[int(session.campaign.stage)]
-	var group: Dictionary = session.group_definitions[int(points[point_index].id)]
+static func build_wave(group: Dictionary, stage: Dictionary, previous_stage: Dictionary,
+		point_index: int, point_count: int, enemy_definitions: Dictionary, enemy_weapon_definitions: Dictionary,
+		equipment_definitions: Dictionary, geometry: Dictionary, motion: Dictionary,
+		jewel_rolls: int, jewel_probability: float, next_uid: int, api) -> Dictionary:
 	var slots: Array = JSON.parse_string(str(group.mon).replace("｛", "[").replace("｝", "]").replace("{", "[").replace("}", "]").replace("，", ","))
-	var positions: Dictionary = Geometry.formation_positions(slots, session.enemy_definitions, session.geometry, group.get("formation_positions"))
-	var final: bool = point_index == points.size() - 1
-	var life = ratio(session, "lifeRatio", point_index, points.size())
-	var attack = ratio(session, "atkRatio", point_index, points.size())
-	var resources = ratio(session, "resRatio", point_index, points.size())
+	var positions: Dictionary = Geometry.formation_positions(slots, enemy_definitions, geometry, group.get("formation_positions"))
+	var final: bool = point_index == point_count - 1
+	var life = ratio(stage, previous_stage, "lifeRatio", point_index, point_count, api)
+	var attack = ratio(stage, previous_stage, "atkRatio", point_index, point_count, api)
+	var resources = ratio(stage, previous_stage, "resRatio", point_index, point_count, api)
 	for result in [life, attack, resources]:
 		if not result.ok:
 			return result
-	var api = session.amount_api
 	var enemies: Array = []
 	var weapons: Array = []
-	var next_uid: int = session.next_enemy_uid
 	var tier: String = str(group.combatTier) if group.combatTier != null else "normal"
 	var leader: int = -1
 	for candidate in slots.size():
-		if slots[candidate] != null and (leader < 0 or int(session.enemy_definitions[int(slots[candidate])].size) > int(session.enemy_definitions[int(slots[leader])].size)):
+		if slots[candidate] != null and (leader < 0 or int(enemy_definitions[int(slots[candidate])].size) > int(enemy_definitions[int(slots[leader])].size)):
 			leader = candidate
 	for slot in slots.size():
 		if slots[slot] == null:
@@ -125,7 +122,7 @@ static func build_wave(session, point_index: int) -> Dictionary:
 		if next_uid == 9223372036854775807:
 			return {"ok": false, "reason": "ActorIdRangeExceeded"}
 		next_uid += 1
-		var row: Dictionary = session.enemy_definitions[int(slots[slot])]
+		var row: Dictionary = enemy_definitions[int(slots[slot])]
 		var hp = api.apply("from_decimal", [str(row.health)])
 		var shield = api.apply("from_decimal", [str(0 if row.shield == null else row.shield)])
 		for result in [hp, shield]:
@@ -154,28 +151,29 @@ static func build_wave(session, point_index: int) -> Dictionary:
 		actor.formation_count = positions.size()
 		actor.combat_tier = tier
 		actor.encounter_leader = slot == leader and tier in ["boss", "ultimate"]
-		actor.hull_scale = float(session.geometry.enemy_ultimate_leader_scale if tier == "ultimate" else session.geometry.enemy_boss_leader_scale) if actor.encounter_leader else 1.0
+		actor.hull_scale = float(geometry.enemy_ultimate_leader_scale if tier == "ultimate" else geometry.enemy_boss_leader_scale) if actor.encounter_leader else 1.0
 		actor.shieldType = 0 if row.shieldType == null else int(row.shieldType)
 		actor.shieldDelay = 0.0 if row.shieldDelay == null else float(row.shieldDelay)
 		actor.shieldRecovery = 0.0 if row.shieldRecovery == null else float(row.shieldRecovery)
 		actor.reactiveReduction = 0 if row.reactiveReduction == null else int(row.reactiveReduction)
-		actor.jewel_rolls = int(session.rules.jewel_drop_rolls) if session.unlocked("feature", "jewels") else 0
+		actor.jewel_rolls = jewel_rolls
 		actor.compiled_drops = []
 		var drops := RegEx.new()
 		drops.compile("[｛{]([^｝}]+)[｝}]")
 		for record in drops.search_all(str(row.res)):
-			var fields: PackedStringArray = record.get_string(1).replace("，", ",").split(",")
-			var base = api.apply("from_decimal", [fields[1]])
-			if not base.ok:
-				return base
-			base = api.apply("mul", [base.value, resources.value])
-			if not base.ok:
-				return base
-			base = api.apply("ceil", [base.value])
-			if not base.ok:
-				return base
-			var text = api.apply("to_display", [base.value])
-			actor.compiled_drops.append({"resource": int(fields[0]), "chance": float(fields[2]), "amount": text.text, "base": text.text})
+			for record_text in record.get_string(1).replace("\uff1b", ";").split(";", false):
+				var fields: PackedStringArray = record_text.replace("，", ",").split(",")
+				var base = api.apply("from_decimal", [fields[1]])
+				if not base.ok:
+					return base
+				base = api.apply("mul", [base.value, resources.value])
+				if not base.ok:
+					return base
+				base = api.apply("ceil", [base.value])
+				if not base.ok:
+					return base
+				var text = api.apply("to_display", [base.value])
+				actor.compiled_drops.append({"resource": int(fields[0]), "chance": float(fields[2]), "amount": text.text, "base": text.text})
 		var source: int = enemies.size()
 		enemies.append(actor)
 		var installations: PackedStringArray = str(row.equipment).replace("｛", "").replace("｝", "").replace("{", "").replace("}", "").replace("，", ",").split(",")
@@ -184,11 +182,11 @@ static func build_wave(session, point_index: int) -> Dictionary:
 			var parts: PackedStringArray = installation.split("|")
 			var exact_key: String = parts[0]
 			var key: String = exact_key.replace("_mon", "").replace("-mon", "")
-			var definition: Dictionary = session.enemy_weapon_definitions[key].duplicate(true)
-			if session.equipment_definitions.has(exact_key):
-				for field in session.equipment_definitions[exact_key]:
-					if session.equipment_definitions[exact_key][field] != null:
-						definition[field] = session.equipment_definitions[exact_key][field]
+			var definition: Dictionary = enemy_weapon_definitions[key].duplicate(true)
+			if equipment_definitions.has(exact_key):
+				for field in equipment_definitions[exact_key]:
+					if equipment_definitions[exact_key][field] != null:
+						definition[field] = equipment_definitions[exact_key][field]
 			var damage = api.apply("from_decimal", [str(definition.dmg)])
 			var multiple = api.apply("from_decimal", [str(row.dmgMultiple)])
 			if not damage.ok or not multiple.ok:
@@ -204,10 +202,10 @@ static func build_wave(session, point_index: int) -> Dictionary:
 				return damage
 			var text = api.apply("to_display", [damage.value])
 			for _number in int(parts[1]):
-				var row_weapon: Dictionary = weapon(definition, key, text.text, mount, true, session.motion)
+				var row_weapon: Dictionary = weapon(definition, key, text.text, mount, true, motion)
 				row_weapon.source = source
 				row_weapon.muzzle = positions[slot]
 				weapons.append(row_weapon)
 				mount += 1
 	return {"ok": true, "wave": {"enemies": enemies, "weapons": weapons, "final": final,
-		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": float(session.parameters.jewelDrop)}, "next_uid": next_uid}
+		"jewel_ratio": float(stage.jewelRatio), "jewel_probability": jewel_probability}, "next_uid": next_uid}

@@ -35,7 +35,7 @@ var campaign: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 	"cleared_stages": {}, "origin": 0.0, "speed": 0.0, "wait": 0.0}
 var wallet: Dictionary = {}
 var drops: Dictionary = {}
-var claimed_drops: Dictionary = {}
+var drop_cursor: Dictionary = {"registered_through": 0}
 var income_samples: Array = []
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
@@ -123,7 +123,8 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 			"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
-	var setup = CombatSetup.build_player(self)
+	var setup = CombatSetup.build_player(slots, equipment_definitions, evolution, amount_api,
+		player_art, player_dimensions, geometry, float(parameters.dmgReduce), motion, enhancement, seed_value)
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
 	for row in setup.descriptor.weapons:
@@ -190,7 +191,7 @@ func frame(real_dt: float, _focused: bool) -> void:
 
 func _step(dt: float) -> void:
 	game_time += dt
-	var settled = Economy.collect_due(drops, claimed_drops, wallet, income_samples,
+	var settled = Economy.collect_due(drops, wallet, income_samples,
 		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
 	if not settled.ok:
 		_fail(str(settled.get("error", "CollectionFailed")))
@@ -272,7 +273,7 @@ func _advance_kernel(dt: float) -> bool:
 		return false
 	var result: Dictionary = kernel.take_results()
 	last_events.append_array(result.events)
-	var registered = Economy.register_drops(drops, claimed_drops, result.drops, game_time, rules, amount_api)
+	var registered = Economy.register_drops(drops, drop_cursor, result.drops, game_time, rules, amount_api)
 	if not registered.ok:
 		_fail(str(registered.get("error", "DropRegistrationFailed")))
 		return false
@@ -290,7 +291,7 @@ func _advance_kernel(dt: float) -> bool:
 	elif result.wave_cleared:
 		kernel.finish_wave(bool(result.final_cleared))
 		if result.final_cleared:
-			var settled = Economy.collect_due(drops, claimed_drops, wallet, income_samples,
+			var settled = Economy.collect_due(drops, wallet, income_samples,
 				float(parameters.autoCollectReduce), wall_time, game_time, amount_api, true)
 			if not settled.ok:
 				_fail(str(settled.get("error", "FinalCollectionFailed")))
@@ -307,7 +308,14 @@ func _advance_kernel(dt: float) -> bool:
 	return true
 
 func _start_wave() -> void:
-	var setup = CombatSetup.build_wave(self, int(campaign.point))
+	var point: int = int(campaign.point)
+	var stage: Dictionary = level_definitions[int(campaign.stage)]
+	var previous_stage: Dictionary = level_definitions.get(int(campaign.stage) - 1, {})
+	var group: Dictionary = group_definitions[int(campaign.points[point].id)]
+	var jewel_rolls: int = int(rules.jewel_drop_rolls) if unlocked("feature", "jewels") else 0
+	var setup = CombatSetup.build_wave(group, stage, previous_stage, point, campaign.points.size(),
+		enemy_definitions, enemy_weapon_definitions, equipment_definitions, geometry, motion,
+		jewel_rolls, float(parameters.jewelDrop), next_enemy_uid, amount_api)
 	if not setup.ok:
 		_fail(str(setup.get("error", setup.get("reason", "WaveAssemblyFailed"))))
 		return
@@ -358,7 +366,7 @@ func _sync_geometry() -> void:
 		_fail("InvalidPlayerGeometry")
 
 func collect_drop(id: int) -> Dictionary:
-	return Economy.collect_drop(drops, claimed_drops, wallet, income_samples, id, false,
+	return Economy.collect_drop(drops, wallet, income_samples, id, false,
 		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
 
 func set_guard(enabled: bool, death_option: int = 0) -> Dictionary:

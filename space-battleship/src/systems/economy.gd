@@ -2,11 +2,15 @@ extends RefCounted
 ## These functions mutate the session's ledger only after Amount operations succeed.
 ## Death sampling and damage belong to the native kernel.
 
-static func register_drops(pending: Dictionary, claimed: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api) -> Dictionary:
+static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api) -> Dictionary:
+	# Native emits monotonically increasing IDs through one synchronous result stream.
+	# Keep only its registration frontier, plus the still-unclaimed drops themselves.
+	var registered_through: int = int(cursor.registered_through)
+	var next_frontier: int = registered_through
 	var captured: Dictionary = {}
 	for source in rows:
 		var id: int = source.uid
-		if pending.has(id) or claimed.has(id):
+		if id <= registered_through or pending.has(id) or captured.has(id):
 			continue
 		var row: Dictionary = source.duplicate(true)
 		var quantity = amount_api.apply("from_decimal", [str(row.amount)])
@@ -20,12 +24,14 @@ static func register_drops(pending: Dictionary, claimed: Dictionary, rows: Array
 		row.born_at = float(row.get("created_at", now))
 		row.auto_at = float(row.born_at) + float(rules.fragment_drop_auto_seconds if row.get("jewel", false) else rules.ordinary_drop_auto_seconds)
 		captured[id] = row
+		next_frontier = maxi(next_frontier, id)
 	for id in captured:
 		pending[id] = captured[id]
+	cursor.registered_through = next_frontier
 	return {"ok": true}
 
-static func collect_drop(pending: Dictionary, claimed: Dictionary, wallet: Dictionary, samples: Array, id: int, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
-	if claimed.has(id) or not pending.has(id):
+static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array, id: int, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
+	if not pending.has(id):
 		return {"ok": false, "reason": "NoChange"}
 	var row: Dictionary = pending[id]
 	var resource: String = str(row.id)
@@ -83,17 +89,16 @@ static func collect_drop(pending: Dictionary, claimed: Dictionary, wallet: Dicti
 		"wall": wall, "game": game, "source": "fragment_drop" if resource == "jewel" else "enemy_drop"})
 	while not samples.is_empty() and float(samples[0].wall) <= wall - 60.0 and float(samples[0].game) <= game - 60.0:
 		samples.pop_front()
-	claimed[id] = true
 	pending.erase(id)
 	return {"ok": true, "amount": quantity, "resource": resource}
 
-static func collect_due(pending: Dictionary, claimed: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false) -> Dictionary:
+static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false) -> Dictionary:
 	# Stable birth order; collection never depends on Dictionary iteration order.
 	var ids: Array = pending.keys()
 	ids.sort()
 	for id in ids:
 		if force or float(pending[id].auto_at) <= game:
-			var result = collect_drop(pending, claimed, wallet, samples, id, true, auto_reduce, wall, game, amount_api)
+			var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api)
 			if not result.ok:
 				return result
 	return {"ok": true}

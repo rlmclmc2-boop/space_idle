@@ -61,8 +61,8 @@ public:
     Variant to_array() const {
         Array result; Dictionary cold_by_serial;
         if (persistent && kernel.is_valid()) {
-            // Explicit compatibility-array demand is a cold fallback boundary.
-            // Freeze no second motion state; every reconstructed row shares lease.
+            // Entry selects compatibility mode before requesting this inventory.
+            // This read cannot materialize compact rows or change kernel mode.
             Variant complete=kernel->projectile_views();
             if(complete.get_type()!=Variant::ARRAY)return Variant(); // Keep this frame intact on failure.
             Array shots=complete;

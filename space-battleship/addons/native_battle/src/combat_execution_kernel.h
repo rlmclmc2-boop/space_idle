@@ -1571,18 +1571,23 @@ class SpaceCombatKernel : public RefCounted {
         chain["links"] = links;
         return true;
     }
-    void beam_periods(double dt, bool newborn, double &defence_at) {
-        // Scheduled periods are ordered before boundary roots can query future shields.
-        struct Period {
-            double at, due;
-            size_t id;
-        };
-        std::vector<Period> periods;
+    bool weapon_before(int left, int right) const {
+        const Weapon &a = weapons[left], &b = weapons[right];
+        if (a.hostile != b.hostile) return !a.hostile;
+        if (a.hostile) {
+            int as = a.source.index < actors.size() ? actors[a.source.index].slot : int(a.source.index);
+            int bs = b.source.index < actors.size() ? actors[b.source.index].slot : int(b.source.index);
+            if (as != bs) return as < bs;
+        }
+        if (a.slot != b.slot) return a.slot < b.slot;
+        return left < right;
+    }
+    void advance_beam_clocks(double dt) {
         const size_t begin_count = active.size();
         for (size_t n = 0; n < begin_count; ++n) {
             size_t id = active[n];
             Flight &f = flights[id];
-            if (!f.live || !f.beam || ((f.born_step == step_serial) != newborn))
+            if (!f.live || !f.beam)
                 continue;
             if (!f.hostile && !resolve(f.target)) {
                 if (!retain_endless_target(f, clock - dt, true)) { retire(id); continue; }
@@ -1598,12 +1603,22 @@ class SpaceCombatKernel : public RefCounted {
             motion.direction = unit(f.aim - muzzle);
             if (f.born_step < step_serial)
                 f.age += dt;
-            for (double due = f.next_hit; due <= f.age + 1e-9; due += f.interval)
-                periods.push_back({clock - f.age + due, due, id});
             f.view["elapsed"] = f.age;
         }
+    }
+    void beam_periods(double &defence_at) {
+        struct Period { double at, due; size_t id; };
+        std::vector<Period> periods;
+        for (size_t id : active_beams) {
+            const Flight &f = flights[id];
+            if (!f.live || f.await_target) continue;
+            for (double due = f.next_hit; due <= f.age + 1e-9; due += f.interval)
+                periods.push_back({clock - f.age + due, due, id});
+        }
         std::sort(periods.begin(), periods.end(), [&](const Period &a, const Period &b) {
-            return a.at == b.at ? flights[a.id].serial < flights[b.id].serial : a.at < b.at;
+            if (a.at != b.at) return a.at < b.at;
+            int aw = flights[a.id].weapon, bw = flights[b.id].weapon;
+            return aw != bw ? weapon_before(aw, bw) : flights[a.id].serial < flights[b.id].serial;
         });
         for (const Period &p : periods) {
             if (stopped || final_cleared) break;
@@ -1661,7 +1676,7 @@ class SpaceCombatKernel : public RefCounted {
             }
         }
     }
-    void segment(double dt, bool frame_boundary) {
+    void segment(double dt) {
         executing = true;
         clock += dt;
         ++step_serial;
@@ -1673,54 +1688,59 @@ class SpaceCombatKernel : public RefCounted {
             executing = false;
             return;
         }
-        beam_periods(dt, false, defence_at);
-        if (final_cleared && !stopped) recover(nonnegative(clock - defence_at), defence_at);
-        if (stopped || final_cleared) { compact(); executing = false; return; }
+        // Project existing beam ages without settling hits. At this exact boundary,
+        // recovery/debt comes first, every due birth second, existing hits third.
+        advance_beam_clocks(dt);
         recover(nonnegative(clock - defence_at), defence_at);
         defence_at = clock;
         if (stopped) { compact(); executing = false; return; }
-        while (frame_boundary && !repeats.empty() && repeats.top().at <= clock + 1e-9) {
-            Timed q = repeats.top();
-            repeats.pop();
-            if (q.owner_flight != SIZE_MAX &&
-                (q.owner_flight >= flights.size() || !flights[q.owner_flight].live ||
-                 flights[q.owner_flight].generation != q.owner_generation))
-                continue;
-            auto t = targets(weapons[q.weapon].type, clock);
-            if (!t.empty()) {
-                ++root_attacks;
-                launch(q.weapon, t.front(), q.attack, q.multiplier, true, true, q.owner_flight == SIZE_MAX ? -1 : flights[q.owner_flight].maximum);
+        std::vector<Timed> births, reschedule;
+        auto collect_due = [&](auto &queue) {
+            while (!queue.empty() && queue.top().at <= clock + 1e-9) {
+                births.push_back(queue.top()); queue.pop();
             }
-        }
-        std::vector<Timed> reschedule;
-        while (!roots.empty() && !final_cleared && roots.top().at <= clock + 1e-9) {
-            Timed q = roots.top();
-            roots.pop();
-            const uint64_t before = attack_serial;
-            primary(q.weapon);
-            const Weapon &weapon = weapons[q.weapon];
-            const bool fired = attack_serial != before;
-            q.at = fired ? clock + weapon.interval : clock;
-            const bool occupied_beam = weapon.kind == 3 && weapon.beam >= 0 && flights[weapon.beam].live;
-            if (!stopped && !final_cleared && !occupied_beam && (!weapon.hostile || resolve(weapon.source)))
-                reschedule.push_back(q);
-        }
-        if (!final_cleared) for (const Timed &q : reschedule)
-            roots.push(q);
-        while (!ejections.empty() && ejections.top().at <= clock + 1e-9) {
-            Timed q = ejections.top();
-            ejections.pop();
-            if (weapons[q.weapon].hostile) {
-                if (!resolve(weapons[q.weapon].source)) continue;
-            } else if (!resolve(q.target)) {
-                auto t = targets(weapons[q.weapon].type, clock);
-                if (t.empty()) continue;
-                q.target = t.front();
+        };
+        collect_due(roots); collect_due(repeats); collect_due(ejections);
+        while (!births.empty() && !stopped && !final_cleared) {
+            auto first = std::min_element(births.begin(), births.end(), [&](const Timed &a, const Timed &b) {
+                return a.weapon != b.weapon ? weapon_before(a.weapon, b.weapon) : a.serial < b.serial;
+            });
+            Timed q = *first; births.erase(first);
+            if (q.kind == 0) {
+                const uint64_t before = attack_serial;
+                primary(q.weapon);
+                const Weapon &weapon = weapons[q.weapon];
+                const bool fired = attack_serial != before;
+                q.at = fired ? clock + weapon.interval : clock;
+                const bool occupied_beam = weapon.kind == 3 && weapon.beam >= 0 && flights[weapon.beam].live;
+                if (!stopped && !final_cleared && !occupied_beam && (!weapon.hostile || resolve(weapon.source)))
+                    reschedule.push_back(q);
+            } else if (q.kind == 2) {
+                if (q.owner_flight != SIZE_MAX &&
+                    (q.owner_flight >= flights.size() || !flights[q.owner_flight].live ||
+                     flights[q.owner_flight].generation != q.owner_generation)) continue;
+                auto targets_now = targets(weapons[q.weapon].type, clock);
+                if (!targets_now.empty()) {
+                    ++root_attacks;
+                    launch(q.weapon, targets_now.front(), q.attack, q.multiplier, true, true,
+                           q.owner_flight == SIZE_MAX ? -1 : flights[q.owner_flight].maximum);
+                }
+            } else {
+                if (weapons[q.weapon].hostile) {
+                    if (!resolve(weapons[q.weapon].source)) continue;
+                } else if (!resolve(q.target)) {
+                    auto targets_now = targets(weapons[q.weapon].type, clock);
+                    if (targets_now.empty()) continue;
+                    q.target = targets_now.front();
+                }
+                birth(q.weapon, q.target, q.instance ? q.instance : instance(q.attack), q.multiplier,
+                      q.damage_derived, false, Vector2(), q.context, q.ordinal);
             }
-            birth(q.weapon, q.target, q.instance ? q.instance : instance(q.attack), q.multiplier,
-                  q.damage_derived, false, Vector2(), q.context, q.ordinal);
+            // Salvos may create their first ejection at this same birth boundary.
+            collect_due(ejections);
         }
-        beam_periods(0.0, true, defence_at);
+        if (!stopped && !final_cleared) for (const Timed &q : reschedule) roots.push(q);
+        beam_periods(defence_at);
         if (stopped || final_cleared) { compact(); executing = false; return; }
         const size_t motion_count = active.size();
         for (size_t n = 0; n < motion_count && !stopped; ++n) {
@@ -2035,10 +2055,12 @@ class SpaceCombatKernel : public RefCounted {
         const long double exact_limit = static_cast<long double>(std::numeric_limits<int64_t>::max());
         // Only live beams: missile/pulse populations add no preflight scan.
         // Birth/retire maintain this dense index in O(1).
+        double beam_segments = 0;
         for (size_t id : active_beams) {
             const Flight &f = flights[id];
             double future_age = f.age + seconds;
             double ticks = maximum(0.0,std::floor((future_age-f.next_hit)/f.interval)+1);
+            beam_segments += ticks;
             if (!finite(future_age) || future_age <= f.age || future_age >= exact_limit ||
                 f.next_hit + f.interval <= f.next_hit || !finite(f.next_hit + f.interval) ||
                 double(f.ticks) + ticks >= 2147483647.0) return false;
@@ -2046,7 +2068,7 @@ class SpaceCombatKernel : public RefCounted {
         // Normal roots reschedule after processing. Owned beams can retire/restart once
         // per segment. Every extra segment needs an existing or newly ejected missile.
         double normal = double(roots.size()) * (1 + ceil_number(seconds / retained_min_interval));
-        double segments = 1 + double(ejections.size()) + (normal + double(repeats.size())) * retained_salvo_bound;
+        double segments = 2 + beam_segments + normal + double(ejections.size()) + (normal + double(repeats.size())) * retained_salvo_bound;
         double root_bound = normal + (double(roots.size()) + double(weapons.size())) * segments;
         double copies = 3.0 * retained_salvo_bound * (maximum(1.0,double(actors.size())) + retained_chain_bound);
         double carriers = double(active.size()) + double(ejections.size()) + (root_bound + double(repeats.size())) * copies;
@@ -2628,11 +2650,25 @@ class SpaceCombatKernel : public RefCounted {
         executing = true;
         advance_strange(end);
         executing = false;
+        // A newly installed beam/root can be due at the current clock.
+        segment(0.0);
         while (clock + 1e-9 < end && (!stopped || final_cleared)) {
             double next = end;
-            if (!ejections.empty() && ejections.top().at > clock + 1e-9)
-                next = minimum(next, ejections.top().at);
-            segment(next - clock, next == end);
+            auto include_due = [&](const auto &queue) {
+                if (!queue.empty() && queue.top().at > clock + 1e-9) next = minimum(next, queue.top().at);
+            };
+            // Failed roots stay parked at clock until a target exists; they
+            // must not hide later roots behind the queue's first entry.
+            for (const Timed &root : roots.entries())
+                if (root.at > clock + 1e-9) next = minimum(next, root.at);
+            include_due(repeats); include_due(ejections);
+            for (size_t id : active_beams) {
+                const Flight &f = flights[id];
+                if (!f.live || f.await_target) continue;
+                double due = clock + nonnegative(f.next_hit - f.age);
+                if (due > clock + 1e-9) next = minimum(next, due);
+            }
+            segment(next - clock);
         }
         // The session consumes this whole logical step; terminal death freezes defence,
         // while consuming any tail after an ejection split without more battle events.
@@ -2736,8 +2772,10 @@ class SpaceCombatKernel : public RefCounted {
     }
     // Explicit full compatibility request. NIL is failure, never a partial
     // collection or an empty collection pretending that no flights exist.
-    Variant projectile_views() {
-        if (set_compact_laser_births(false) < 0) return Variant();
+    Variant projectile_views() const {
+        // A complete compatibility inventory requires an explicit entry-side
+        // mode choice. Reading presentation data never changes the owner.
+        if (compact_laser_count != 0) return Variant();
         return flight_rows;
     }
     // Internal native presentation binding only. Compact laser bodies remain
