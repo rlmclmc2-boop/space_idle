@@ -78,7 +78,7 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Weapon {
         int kind = 0, type = 0, slot = 0;
-        bool hostile = false, endless = false;
+        bool hostile = false, endless = false, vacant = false;
         Handle source;
         double interval = 1;
         double remaining = 1;
@@ -273,6 +273,7 @@ class SpaceCombatKernel : public RefCounted {
     Dictionary player_row;
     Dictionary buffer_rows, loss_rows, defence_time_rows;
     Vector2 player_point;
+    PackedVector2Array player_collision_hull;
     double target_slot_center = 0, battle_width = 0;
     double missile_departure_angle = 0, missile_launch_edge_margin = 0, missile_launch_forward_y = 0;
     uint32_t encounter_generation = 1;
@@ -1118,14 +1119,14 @@ class SpaceCombatKernel : public RefCounted {
                         hit_enemy(handle(index), a->max_hp * a->explosion, type, {}, false, at, wi, false, {}, source);
             for (size_t id : active) {
                 Flight &f = flights[id];
-                if (endless_eligible(f) && f.target.index == h.index && !f.await_target) {
+                if (endless_eligible(f) && f.target.index == h.index && f.target.generation == h.generation && !f.await_target) {
                     // All beam ages were projected to the segment end. Roll back
                     // only its post-death tail; waiting never creates catch-up debt.
                     f.age = maximum(0.0,f.age - maximum(0.0,clock-at));
                     f.await_target = true; f.view["await_target"] = true; f.view["elapsed"] = f.age;
                     // Keep links until this hit finishes its inherited chain work.
                 }
-                if (f.live && f.beam && f.hostile && f.source.index == h.index)
+                if (f.live && f.beam && f.hostile && f.source.index == h.index && f.source.generation == h.generation)
                     retire(id);
                 if (f.instance && f.instance->beam) {
                     Dictionary c = f.instance->view["chain"];
@@ -1143,7 +1144,7 @@ class SpaceCombatKernel : public RefCounted {
         // does not grant those decisions to repeats, secondary copies or chain hops.
         if ((trigger || chain_trigger) && inst && !inst->ended) {
             if (inst->beam) {
-                if (inst->primary.index == h.index)
+                if (inst->primary.index == h.index && inst->primary.generation == h.generation)
                     for (Handle link : inst->links)
                         if (resolve(link))
                             hit_enemy(link, raw, type, inst, false, at, wi);
@@ -1688,7 +1689,6 @@ class SpaceCombatKernel : public RefCounted {
             auto t = targets(weapons[q.weapon].type, clock);
             if (!t.empty()) {
                 ++root_attacks;
-                if (!increment_history(attack_counter)) { executing = false; return; }
                 launch(q.weapon, t.front(), q.attack, q.multiplier, true, true, q.owner_flight == SIZE_MAX ? -1 : flights[q.owner_flight].maximum);
             }
         }
@@ -1776,7 +1776,12 @@ class SpaceCombatKernel : public RefCounted {
                         m.direction = unit(delta);
                         impact = distance(position(m), aim) <= m.speed * dt;
                     } else {
-                        if (!f.hostile && t && f.fixed_ray) {
+                        if (f.hostile && player_collision_hull.size() >= 3) {
+                            const Vector2 start = position(m), movement = m.direction * m.speed * dt;
+                            const double ratio = hull_contact(start, movement, player_collision_hull);
+                            impact = ratio <= 1.0;
+                            if (impact) aim = start + movement * ratio;
+                        } else if (!f.hostile && t && f.fixed_ray) {
                             const double progress = (position(m) - f.launch_point).dot(m.direction);
                             if (t->stationary_geometry && f.contact_revision != t->geometry_revision)
                                 refresh_ray_contact(f, *t);
@@ -1832,6 +1837,32 @@ class SpaceCombatKernel : public RefCounted {
     }
 
     bool wave_active = false, battle_started = false, retreating = false;
+    void reclaim_finished_wave() {
+        compact();
+        // All sources in the previous wave are dead. Their queued births would
+        // fail the same source-generation check when due; discard them now.
+        auto prune = [&](auto &queue) {
+            std::vector<Timed> kept;
+            while (!queue.empty()) {
+                Timed event = queue.top(); queue.pop();
+                if (!weapons[event.weapon].hostile) kept.push_back(event);
+            }
+            for (const Timed &event : kept) queue.push(event);
+        };
+        prune(roots); prune(ejections); prune(repeats);
+        std::vector<bool> retained(weapons.size(), false);
+        for (size_t id : active) if (flights[id].live) retained[flights[id].weapon] = true;
+        for (size_t i = 0; i < weapons.size(); ++i) {
+            if (weapons[i].hostile && !retained[i]) {
+                weapons[i] = Weapon{};
+                weapons[i].hostile = true;
+                weapons[i].vacant = true;
+            }
+        }
+        // Global encounter generations invalidate every old target/source
+        // handle while independent live enemy carriers keep their weapon slot.
+        actors.clear(); actor_rows.clear();
+    }
     bool install_actors(Array values) {
         for (int i = 0; i < values.size(); ++i) {
             Dictionary v = values[i];
@@ -1919,8 +1950,10 @@ class SpaceCombatKernel : public RefCounted {
             w.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             w.row = Dictionary(v.get("row", Dictionary())).duplicate(true);
             w.birth = birth_config(w, v, delay);
-            int index = int(weapons.size());
-            weapons.push_back(w);
+            int index = 0;
+            while (index < int(weapons.size()) && !weapons[index].vacant) ++index;
+            if (index == int(weapons.size())) weapons.push_back(w);
+            else weapons[index] = w;
             roots.push({clock + w.remaining, ++event_serial, 0, index});
         }
         return true;
@@ -1956,6 +1989,7 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("refit_configuration", "descriptor"), &SpaceCombatKernel::refit_configuration);
         ClassDB::bind_method(D_METHOD("target_views", "type"), &SpaceCombatKernel::target_views);
         ClassDB::bind_method(D_METHOD("input_player_point", "point"), &SpaceCombatKernel::input_player_point);
+        ClassDB::bind_method(D_METHOD("input_player_hull", "hull"), &SpaceCombatKernel::input_player_hull);
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
         ClassDB::bind_method(D_METHOD("buffer_view"), &SpaceCombatKernel::buffer_view);
         ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total_text);
@@ -1986,6 +2020,7 @@ class SpaceCombatKernel : public RefCounted {
             retained_salvo_bound = 1; retained_chain_bound = 0; retained_drop_bound = 0;
         }
         for (const Weapon &w : weapons) {
+            if (w.vacant) continue;
             retained_min_interval = minimum(retained_min_interval, w.interval);
             retained_salvo_bound = maximum(retained_salvo_bound, w.salvo);
             retained_chain_bound = maximum(retained_chain_bound, maximum(w.chain_count, prism_count));
@@ -2085,6 +2120,7 @@ class SpaceCombatKernel : public RefCounted {
         descriptor["enemies"] = wave.get("enemies", Array());
         descriptor["weapons"] = wave.get("weapons", Array());
         if (!configuration_schema(descriptor) || Array(descriptor["enemies"]).is_empty()) return false;
+        reclaim_finished_wave();
         if (final_cleared) {
             compact();
             actors.clear(); actor_rows.clear();
@@ -2210,6 +2246,7 @@ class SpaceCombatKernel : public RefCounted {
         resistance = d.get("resistance", 0.5);
         player_row = Dictionary(d["player"]).duplicate(true);
         player_point = Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0));
+        player_collision_hull.clear();
         player_hp = read_amount(player_row["armour"]);
         player_shield = read_amount(player_row["shield"]);
         player_initial_hp = player_hp; player_initial_shield = player_shield;
@@ -2519,8 +2556,11 @@ class SpaceCombatKernel : public RefCounted {
             actors[i].stationary_geometry = fixed;
             actors[i].screen_point = points[i];
         }
-        for (int i = 0; i < int(weapons.size()) && i < muzzles.size(); ++i)
-            weapons[i].screen_muzzle = muzzles[i];
+        int muzzle_index = 0;
+        for (Weapon &weapon : weapons) {
+            if (weapon.vacant || (weapon.hostile && !resolve(weapon.source))) continue;
+            if (muzzle_index < muzzles.size()) weapon.screen_muzzle = muzzles[muzzle_index++];
+        }
     }
     void refresh_ray_contact(Flight &f, const Actor &target) {
         ++ballistic_ray_queries;
@@ -2561,11 +2601,21 @@ class SpaceCombatKernel : public RefCounted {
     void input_player_point(Vector2 point) {
         player_point = point;
     }
+    bool input_player_hull(PackedVector2Array hull) {
+        if (executing || hull.size() < 3) return false;
+        for (int i = 0; i < hull.size(); ++i)
+            if (!finite(hull[i].x) || !finite(hull[i].y)) return false;
+        player_collision_hull = hull;
+        return true;
+    }
     void input_geometry(PackedVector2Array points, PackedVector2Array muzzles) {
         for (int i = 0; i < points.size() && i < int(actors.size()); ++i)
             actors[i].point = points[i];
-        for (int i = 0; i < muzzles.size() && i < int(weapons.size()); ++i)
-            weapons[i].muzzle = muzzles[i];
+        int muzzle_index = 0;
+        for (Weapon &weapon : weapons) {
+            if (weapon.vacant || (weapon.hostile && !resolve(weapon.source))) continue;
+            if (muzzle_index < muzzles.size()) weapon.muzzle = muzzles[muzzle_index++];
+        }
     }
     bool advance(double seconds) {
         try {

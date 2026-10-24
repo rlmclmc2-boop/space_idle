@@ -179,9 +179,11 @@ func frame(real_dt: float, _focused: bool) -> void:
 		accepted -= used
 		if departure_remaining <= 0:
 			_begin_travel()
+		else:
+			return
 	pending_seconds += accepted
 	var steps: int = 0
-	while pending_seconds >= STEP and steps < FRAME_STEPS and pause_reasons.is_empty() and last_error.is_empty():
+	while pending_seconds >= STEP and steps < FRAME_STEPS and departure_remaining <= 0 and pause_reasons.is_empty() and last_error.is_empty():
 		_step(STEP)
 		pending_seconds -= STEP
 		steps += 1
@@ -349,7 +351,11 @@ func _sync_geometry() -> void:
 	enemy_hulls = hulls
 	kernel.input_geometry(points, muzzles)
 	kernel.input_ballistic_geometry(hulls, points, muzzles, stationary)
-	kernel.input_player_point(Vector2(float(geometry.player_x), float(geometry.player_y)))
+	var player_point := Vector2(float(geometry.player_x), float(geometry.player_y))
+	kernel.input_player_point(player_point)
+	var player_hull: PackedVector2Array = Geometry.transform_hull(models[selected_ship].hull, player_point, player_dimensions, 0.0)
+	if not kernel.input_player_hull(player_hull):
+		_fail("InvalidPlayerGeometry")
 
 func collect_drop(id: int) -> Dictionary:
 	return Economy.collect_drop(drops, claimed_drops, wallet, income_samples, id, false,
