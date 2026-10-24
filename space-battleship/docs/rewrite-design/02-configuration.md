@@ -6,7 +6,7 @@
 
 当前逐表、逐列、逐行盘点见 inventory/workbooks.csv、fields.csv、rows.csv；这些是审阅证据而非配置源。small-config-content.json 抄录小表的字段说明、类型和实际单元格以支持审阅；不得在游戏、构建或测试中加载本目录数据。
 
-正式源集合是 config_excel 下 26 个顶层 Excel（以清单实际列举为准），排除 level_monGroup_generated.xlsx 的候选生成身份。published/{mon,monGroup,level}.xlsx 是派生副本；根目录太空战舰.xlsx 是历史总表，不参与自动合并。若将候选关卡采纳为正式内容，编辑器必须明确写入正式 level/monGroup/mon Excel，再重新生成。不能让两份表争夺同一字段。
+正式源集合是 config_excel 下 25 个正式顶层 Excel（以清单实际列举为准），排除 level_monGroup_generated.xlsx 的候选生成身份。published/{mon,monGroup,level}.xlsx 是派生副本；根目录太空战舰.xlsx 是历史总表，不参与自动合并。若将候选关卡采纳为正式内容，编辑器必须明确写入正式 level/monGroup/mon Excel，再重新生成。不能让两份表争夺同一字段。
 
 实现接口：`compile_config(source_set, destination) -> ConfigBuildResult`。source_set 明确列出全部必需工作簿和版本；先读取每份源的稳定字节，解析、全量校验、交叉引用、计算生成值，再写一个完整新包。结果包含配置 ID（源字节、schema 和编译器版本摘要）、源列表、错误坐标、输出路径；不返回“部分成功可继续”。输入在读取期间变化即拒绝并要求重试，不能混合两次读取。
 
@@ -41,10 +41,12 @@
 | galaxy_config | key/value/type/des；逻辑结算、隐藏显示、相机、交通艇上限 | UI tick 不替代业务时钟；隐藏仍在线推进 |
 | weapon_motion | id/value/unit/description/scope；逐项29个参数在内容账 | 玩家/敌方单位换算独立；rail_* 标注表现的参数不得偷偷改变伤害 |
 | battle_design | id/group_id/tier/counter/base_level/min_upgrade/target_seconds/status/description；pair_id/attack_variant/attack_type/paired_group_id | 设计与生成工具；counter不是敌方攻击类型；实验目标不是强制战斗结果 |
-| hyperspace_config | 15张子表：基础、路线、品质、舰型容量、阶级权重、词缀定义/区间、挂设成长、传说定义/参数/常量、费用、固定规则、外观 | 各键精确内容见账和07；editable=false为说明或协议，不是任意开关 |
+| hyperspace_config | 14张子表：基础、路线、品质、舰型容量、阶级权重、词缀定义/区间、挂设成长、传说定义/参数/常量、费用、固定规则、外观 | 各键精确内容见账和07；editable=false为说明或协议，不是任意开关 |
 | hyperspace_enemies | 敌人、武器安装、编队、槽位、路线编排、奖励参考、成员分配、早段回退预算 | 全链引用校验；显式位置不得误当F9评分图；早段预算是Excel正式数据，不是测试缺源回退 |
 | hightech | name/描述/para1/para2 与旧tpCost*混合 | 先完成C03逐字段裁决；不能整表删除，也不能恢复科学家 |
 | config | name/des/para_1 键值；初始装备、移动、拾取、撤退、离线、自动资源、反应炉、chrono、显示比例及换装冷却 | 键清单全部录入内容账；科学家/旧科研键进入C03，不能静默带入 |
+
+空结构列明确：equipment第8列和ship第6列均无字段名且无数据，不创造para_4或隐藏新玩法；船型解锁由unlock表负责，旧投影中空unlock占位不升级为新权威。工作簿说明中的“基线固定、现有ID集合锁定”等历史发布约束只做来源说明，不冻结新架构可扩展性；稳定ID/引用/顺序仍需保护，新增内容走合法Excel校验，不要求每次重建旧源码基线锁。
 
 所有 ID 引用必须存在且类型相符；所有范围含“未配置”和0的区别必须显式。费用资源成组，概率与权重不能互换；权重总和>0、最小值<=最大值、时间单位明确、前置图无环、路由指向已有组、预设/装备容量可表达。读公式仅接受工作簿已计算缓存并记录公式文本；缺缓存报告坐标，不读旧产物补值；不另造Excel计算器。
 
@@ -52,7 +54,7 @@
 
 确认不恢复：旧jewel表；jewelCreat/jewelCombine/equipmentSocket/baseCriDmg；旧crew_level表及crew.baseLevel/maxLevel/expGroup/baseExp/expGrowth；旧charge表；科学家购买/分配、旧techPoints/hightechLevels状态及空壳API。当前crew_config、ai_tech_tree、enhance_config和有效装备成长继续保留。jewel_auto实际调用共享强化+1；hightech_scientists实际表示研究完成后续研，名字不能激活旧逻辑。
 
-待决D03：config.scientistCost/hightechLimit/techPointGet/hightechCostGrowthLevel与hightech.tpCostBase/tpCostMutiple/tpCostMutiple2仍有历史校验/函数残留，不能据此认定为现行玩法。建议删这些旧科研参数；hightech.name关联解锁及熔炉有效参数保留，迁移到明确用途的Excel表。待用户裁决后执行精确删列/行，不在本次设计提交改Excel。
+待决D03：config.scientistCost/hightechLimit/techPointGet/hightechCostGrowthLevel与hightech.tpCostBase/tpCostMutiple/tpCostMutiple2仍有历史校验/函数残留，不能据此认定为现行玩法。建议删这些旧科研参数；hightech.name关联解锁保留；熔炉参数需D10确定产品用途后保留，迁移到明确用途的Excel表。待用户裁决后执行精确删列/行，不在本次设计提交改Excel。
 
 待决D04：equipment_evolution.json含20级进化、1.6/1.5倍率、材料费用及色板，目前不是Excel源。代码仍消费，不能确定是否属于用户所说已删除成长。业务成长/材料部分必须裁决保留迁入Excel或删除；纯色板表现保留。不能默默补回成长，更不能把色板一起删掉。
 

@@ -28,7 +28,9 @@ API：parse_decimal/string、normalize、compare、add/subtract_checked、multip
 
 `SaveDocument{formatVersion,configId,savedAt,settings,progression,economy,equipment,enhancement,reactor,research,crew,hyperspace,planets,galaxy,random}`。每节由域明确导出/校验；不序列化整对象，不依赖属性反射扫出所有变量。formatVersion是新格式，与旧v4/v7等无自动兼容承诺。
 
-保存字段逐类见03，额外明确：装备换装冷却保存为剩余游戏秒或与productionTime配套截止时刻，二者择一且不会离线消耗；科研/星球/银河/后台工作保留已实际发生的工作；教程earned/seen/read分别保存；BigNumber与RNG稳定字符串。普通战斗HP/敌人/CD/弹体/临时buff/债务不存，普通读档从保存旅程位置新建合法战场；不能保存半个native状态又接旧GDS场景。
+保存字段逐类见03，额外明确：装备换装冷却保存为剩余游戏秒或与productionTime配套截止时刻，二者择一且不会离线消耗；科研/星球/银河/后台工作保留已实际发生的工作；教程earned/seen/read分别保存；BigNumber与RNG稳定字符串。收入记录保存仍在任一60秒窗口的子集，包括到账值、productionBase、origin、实际UTC时刻、生产游戏时刻；加载保留游戏钟坐标（离线不补游戏时间），真实窗按当前UTC裁剪；新格式要求字段齐全，不继承旧样本缺production_time的推算回退。峰值独立保存，窗口裁剪不降低历史峰值。
+
+普通战斗HP/敌人/CD/弹体/临时buff/债务不存，普通读档从保存旅程位置新建合法战场；不能保存半个native状态又接旧GDS场景。
 
 手动异空间started的读档语义受D01/D02限制，须选中断取消或重新开始；completed_pending冻结奖励和结算身份必须保存，恢复不能重抽/双领。若以后确认收费，只记录实际付费与一次性处理结果，不再保存暂停主线战场。
 

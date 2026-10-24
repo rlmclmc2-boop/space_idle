@@ -19,6 +19,8 @@
 | UI/Presentation | 仅明确用户偏好 | 选中、滚动、草稿、控件、特效/轨迹、动画血条 | 可消费余额、伤害判断 |
 | Session/Platform | SaveDocument组合/设置 | 当前mode、time、单个Combat引用、配置引用 | 各域全部字段的副本 |
 
+强化历史的持久所有者为Enhancement，其规范计数存储使用同一native数值对象；战斗持有引用，在规范事件时更新，保存读取该对象。不能同时由GDS计一次、native再计一次，或靠每帧相减合并两份权威历史。
+
 ID为稳定业务身份，显示名称可变。派生数值通过 `Attributes.query(module, context)` 计算；非热点可直接计算，只有证明需要的缓存才按明确依赖失效。攻击快照是该次攻击所需事实，不是整份世界快照。
 
 ## S02 操作契约与失败
@@ -39,7 +41,7 @@ ID为稳定业务身份，显示名称可变。派生数值通过 `Attributes.qu
 | activate_building(id) | ready、前置满足 | Planets改active→贡献重算→Reactor容量收敛→Combat合法重配→通知 | 失败不先激活；A-WORLD |
 | claim_hyperspace(runId) | completed_pending、空间/奖励合法 | Hyperspace已冻结奖励→Economy收材料→Inventory入库/挂载成长→完成run→UI | 满仓保留原奖励不重抽；A-HYP |
 | forge(quote) | 报价依赖一致、可修改、资金足够 | 使用私有RNG计算一次完整改造→Economy支付→Drone改动/RNG推进→Attributes/Combat→通知 | 预览不扣钱、不推进正式RNG；A-DRONE |
-| reforge(request) | 船坞active、未征服、保留名单/解封条件合法、模式允许 | 预计算09重置清单→停旧Combat→域内重置/保留→新旅程/Combat→统一UI刷新 | 无中间半旧会话；不假装自动保存；A-RESET |
+| reforge(request) | 船坞active、未征服、保留名单/解封条件合法、模式允许 | 预计算08重置清单→停旧Combat→域内重置/保留→新旅程/Combat→统一UI刷新 | 无中间半旧会话；不假装自动保存；A-RESET |
 
 跨域加成规则：资源收益由Economy统一应用；装备属性由Attributes统一组合；Research只提供科技贡献；Galaxy/Planet/Crew/Drone只返回贡献，不改equipment/config基值。收入峰值查询不是精确账本，支出不是收入，派生生产不反哺其生产输入。
 

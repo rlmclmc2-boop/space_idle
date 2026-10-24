@@ -1,0 +1,56 @@
+feature_id,chapter,owner,rule,formula_config_source,call_contract,timing,save_reset,ui,errors,boundary,acceptance,status
+C01,02,ConfigCompiler,25正式Excel→稳定字节校验→单向包；不合并旧数据,config_excel全源,compile_config/load_config,显式导表与新会话边界,只持久生成包及源身份；无运行写回,导表成功/错误坐标,缺源/引用/缓存失效拒绝整包,重写编译器；保留有效值,A-CFG,U/P
+C02,02,ConfigCompiler,字段类型单位与引用逐列；内容全量保留,fields.csv/rows.csv,validate_tables,生成前全量,不读inventory当配置,具体sheet行列错误,未支持字段/枚举拒绝,重建schema；不继承基线锁管理壳,A-CFG,R/P
+C03,02,域配置,删除已废弃旧宝石/船员级表/charge；旧科研候选待决,import_workbook投影过滤/配置键,validate_retired_keys,编译前,旧存档无迁移需求,不得复活旧入口,发现废弃键失败；候选不擅删,确认删除；D03/D04/D10/D14,A-CFG,U/D
+C04,02,ConfigCompiler,JSON独有可调内容迁入Excel；资源本体保留,runtime-data.json,compile_config,构建前,运行JSON只生成,文案编辑写Excel,漏迁配置拒绝完成声明,迁内容/重写结构；D04/D08,A-CFG,U/D
+S01,03,各业务域,事实单一所有者；Attributes只派生,03归属矩阵,域只读查询/明确操作,单逻辑线程步边界,按域序列化事实,局部变更通知,不通过UI补业务,重写；不建容器/多层manager,A-SAVE,P
+S02,03,操作发起域,先全校验再同步支付与修改；拒绝无副作用,03调用表,Result applied/no_change/rejected,两完整步之间,操作本身不自动保存,稳定错误码→文字,资金/权限/RNG失败无部分改变,重写；不造通用事务总线,A-EQP,P
+S03,03,Combat native,单战斗create/advance/apply/read/reset,04能力表/14边界,Combat API,完整接受步输出outcome,战斗瞬态不存,只读常驻视图,能力不足创建前拒绝,保留快路径并补能力,A-NATIVE,U/P
+P01,05,Progression,航行→战斗点→最后波通关→下一旅程；三死亡模式,level/config/backRange,start/jump/hold/replay,游戏秒推进；最多3秒旅程等待,保存进度偏好；不存敌表,可跳/守关/死亡原因,非法跳关拒绝,重写业务保留航行呈现,A-PROG,R
+P02,05,Progression,earned/read/seen独立；不重发阶段奖励,unlock/mon intel,grant_due_unlocks/mark_read,实际到达/通关；提示真实3秒,教程已读跨重铸保留,敌情只按真实字段说明,未知ID配置错误,重写判定；保留引导表现,A-PROG,R
+EQ01,05,Equipment,槽级随模块；换船保留禁用尾部；合法全套更换,ship/equipment/config switchCD,equip/unequip/switch_ship,步边界；已出生快照不改,槽级保存；冷却保存余时,装备卡/详情/限制,冷却/容量/炮源冲突拒绝,重写业务；纯卡片保留；D11,A-EQP,R/D
+EQ02,05,Equipment+Attributes,基值指数成长与两有效位取整；1/10/MAX,equipment/enhance/研究/反应炉,quote/upgrade/query,支付一次；之后更新容量比例,保存购买级；派生不存,当前/下级同公式,不足10全拒绝；MAX不多买再退,新共享大数；无精确副账,A-EQP,R
+EN01,05,Enhancement,统一购买级/历史/排序/按身份A/B；几何费用,enhance_config,buy/set_order/choose_branch,规范攻击计数；命中效果按04,历史普通死亡保留；重铸清,门槛/排序/节点说明,重复ID/越门槛拒绝,重写共享强化；不恢复宝石,A-ENH,U/R
+EQ03,05,Equipment,20级进化倍率/费用现存但无Excel权威,equipment_evolution JSON,D04后确定,购买级决定进化建议,不自动旧档恢复,色板表现单独保留,未裁决不得自动迁业务,D04保留迁入或删除,A-EQP,D
+B01,04,Combat,发射造快照；命中扣血/死亡；每次恰一次,weapon_motion/装备,advance/drain_outcomes,游戏步1/60及内部边界,普通战场不存,血条爆炸原命中时序,无效目标不重复奖,保留native快路；补完整规则,A-BTL,U
+B02,04,Combat,4武器/齐射/逐枚/束/副本/连锁与原目标选择,equipment/enemy_weapon_base/motion,launch/update/hit,到达/脉冲；rail例外D06,在途快照仅会话,轨迹/蓄力/失锁继续呈现,无正间隔/非法配置拒绝,保持当前几何规则；D06/D13,A-BTL,R/D
+B03,04,Combat,原伤→临时保护→盾→体；敌盾抗性溢出,mon/减伤/强化,hit_enemy/player_hit,命中；每束tick重置盾延迟,HP盾临时；死亡一次,实际损失分列/盾条,r=1不除0；D12最小伤害,重写共享伤害函数不复制结算器,A-BTL,R/D
+B04,04,Combat+Enhancement,六类基础及18B节点按04表；A按有效节点叠,enhance_config全部同名前缀,compose_attack/receive_attack,规范攻击/有效受击/时限,历史持久；目标层临时,装备卡排除临时层,无合法来源不触发,native补齐；不能GDS静默回退,A-BTL,R
+B05,04,Combat,记忆按真实max；债务按桶先付再清；延期不二次减伤,memory/deferred配置,recover/pay_debt,游戏时钟；同刻付款先于恢复,普通换装不免债；新会话清,保护/债务只读,容量夹界；无实际回复不抽签,单全局债务队列；无精确副池,A-BTL,R
+B06,04,Combat,无人机12传说共用管线与反递归,hyperspace传说参数/常量,compile_contributions/trigger,装备变化聚合；攻击事件执行,临时禁用/层/锁定会话内,无人机炮与原效果保留,最高评分稳定；不扫描全仓,补native效果；保留批量表现,A-BTL,R
+B07,04,Combat+Presentation,波次/清场/暂停/换装/读档生命周期各不同,04矩阵,reset/apply_loadout,生命周期边界,旧会话ID失效,允许在途效果不被误截断,旧引用拒绝,保留驻留/批次/GPU时钟,A-NATIVE,U/P
+B08,04,Combat,敌反应装甲同窗/超窗/重置；遗留干扰来源待决,mon.reactiveReduction/代码常量,hit_enemy,0.16/2.2秒边界建议迁Excel,按敌临时；死亡清,反应层/命中反馈,孤立旧宝石字段不复活,D14确认；常量迁Excel,A-BTL,R/D
+ECO01,06,Economy,掉落按06管线；手动自动损耗不同；领取幂等,res/mon/level/config,spawn_drop/collect,击杀→可拾取→到期自动,钱包存；地面掉落瞬态,资源条飘字/遮挡,重复领取/过期拒绝,单钱包/单收款口,A-ECO,R
+ECO02,06,Economy,HUD/科研/统一理论/Galaxy四窗口用途明确,income来源分类/秒数迁Excel,record_income/query_window,真实或游戏秒按用途,峰值存；窗口恢复策略按09,每秒收入与余额区分,生产不反哺生产基数,一份有界记录多查询；无副账,A-ECO,R
+ECO03,06,Economy,熔炉旧公式有文档而当前无生产调用,hightech/config/旧熔炉状态,D10批准后producer/collect,不得因动画自动产出,峰值/积存重置待D09/D10,保留纯外观；业务入口待决,不默默恢复旧生产,明确保留重写或删除,A-ECO,D
+REA01,06,Reactor,指数容量/成本；分配+免费比例；升级均分,config reactor键/crew,upgrade/set_allocation/equalize,域步；容量变化按固定序收敛,等级分配存；重铸初始,真实数值可超100%,超额拒绝；买不起仍可均分,单分配权威；UI无第二余额,A-REA,R
+RES01,06,Research,八科技；工作/投入/对数/统一理论/自动续研,ai_tech_tree/crew/收入峰值,select/pause/set_input/advance,按资金耗尽/完成分段,工作/级/投入/峰值存,工厂/前置/完成徽标,缺资金回基础速；非法停研究,重写AI；不恢复科学家techPoints,A-RES,U/R
+CREW01,06,Crew,独占岗位；XP余数；自动调用玩家同一操作,crew/assignment/config/unlock,assign/recall/set_mode/advance,游戏周期；换岗前结已接受段,级XP岗位存；预留装备不实现,身份XP岗位/占用原因,锁定无XP；冲突不偷占,重写；复用身份艺术,A-CREW,R
+H01,07,Hyperspace+Combat,下一层手动挑战；原主战场清空方向,路线/敌表/主线奖励引用,prepare/start/exit,创建前校验；命中仍同内核,手动中断/返回待D01,路线挑战退出/明确不可用原因,非法敌表拒绝不空战获胜,D01/D02；不复制旧战场快照,A-HYP,U/D
+H02,07,Hyperspace,一全局后台槽；started/pending/claimed,best/crew K/level,start_idle/advance/claim/stop,开始冻结幸运时长；结束只抽一次,冻结奖励和RNG存；满仓不重抽,pending领取/自动停止,重复领取拒绝；关闭自动不删奖励,重写单run生命周期,A-HYP,R
+H03,07,Hyperspace,品质/核心/材料/词条/幸运与成员预算守恒,两本hyperspace表,generate_reward,结束一次；幸运只影响词条阶,保存随机事实与RNG后态,真实预览/奖励详情,非法分布/缺引用拒绝,保留配置内容；不凭旧锁定备注冻扩展,A-HYP,R
+DRI01,07,Hyperspace.Inventory,普通/溢出/封存；容量/传说究极/收藏/预设/筛选,品质/舰型容量/基础参数,equip/preset/filter/dismantle,整体校验后修改,实例/预设/筛选存；重铸按矩阵,完整详情/替换/保护原因,满仓保留pending；保护拒拆,重写业务；复用图标外观,A-DRONE,R
+DRF01,07,Hyperspace.Forge,13操作表；预览不推进正式随机；确认一次,改造费用/范围/固定规则,preview_forge/confirm_forge,对象配置轮次变化报价失效,机体与私有RNG存；报价瞬态,先可行操作后更多条件,收费失败不变；升阶失败按规则收费,单报价仅此用途不推广事务框架,A-DRONE,R
+DRF02,07,Hyperspace,挂载首次解锁0级/经验；材料2:1；重铸keep封存,挂设成长/基础参数,mount/exchange/keep/unseal,同步扣加；条件达成解封,挂载事实保留建议；D09,余额缺口/封存条件,核心禁兑；受保护拒绝,重写；常量入Excel,A-DRONE,R/D
+W01,08,Planets,每趟时长/XP；先结旧建设资格后涨degree,planet/level/crew,start_exploration/recall,游戏时；无离线补,进度/趟工作/偏好存,倒计时/召回/自动开关,占用冲突拒绝,重写业务保留星球艺术,A-WORLD,R
+W02,08,Planets,locked/building/ready/active；显式激活才有收益,planet_build/buff,assign_builders/activate,探索趟完成累计；激活一次,建筑状态/进度存,ready徽标/永久效果说明,前置/人数不符不加建设,单贡献聚合不回写配置,A-WORLD,R
+W03,08,Galaxy,一次蓝图；有船员才施工；串行候选,galaxy/galaxy_build,start_region/assign_crew,生成一次固定随机顺序,蓝图/节点/RNG存,逻辑图读成视觉布局,无候选不耗随机,重写逻辑保留模型/桥,A-WORLD,R
+W04,08,Galaxy,工作+固定收尾+派发；并发升级；窗口总和×比例×秒,galaxy/config/build,advance/read_layout,游戏秒；换岗前结旧段,工作/余时/级存,隐藏继续业务；艇无业务,未知effect拒绝不猜,保留视觉；单工作进度,A-WORLD,R
+W05,08,Planets+Session,船坞且未征服；确认收益与保留名单,planet.reforgeStartLevel/buff,preview_reforge/reforge,一次完整替换会话,不自动保存；旧引用失效,游戏内预览/确认,非法名单无半重置,直接编排一次重置,A-RESET,R/D
+W06,08,各域,明确逐域保留/重置矩阵；未定不由旧残留裁决,08矩阵/用户选择,reset_for_reforge,新轮初始化,D09逐项裁决,清单列余额科研材料无人机,未批准规则阻止实施,不继承旧存档迁移壳,A-RESET,D
+N01,09,共享native BigNumber,统一尾数指数算法；无额外精确账,数值类型表/D05,parse/add/pow/round/serialize,所有经济成长计算,规范字符串序列化,统一格式/比率,范围错明确失败不float回退,重写共享数值；有界索引仍整数,A-NUM,U/P/D
+TM01,09,Session,真实→游戏时间只乘一次；粒子耗尽分段；离线只粒子,config chrono/offline,"advance(realDelta,focus,pause)",固定步/单余时；保存用真实钟,粒子/保存UTC持久,速度/粒子/离线获得含0,倒钟0；暂停不消费,一个时间入口不加多域预算壳,A-TIME,R/P
+SV01,09,各域+SaveIO,显式新格式；事实非反射；不存普通战场,09保存字段矩阵,export_state/validate/import,完整步边界,新格式；旧档不承诺兼容,旧格式解释并可新开,不补缓存/历史默认,重写保存；无自动旧档删除,A-SAVE,U/P
+SV02,09,SaveIO,手动/定时；临时写读回备份替换；导入先验证,保存偏好/格式版本,save/load/import/export/delete,默认1分钟真实钟；手动不改期限,只成功后改成功时间,失败可重试；删除明确确认,保留旧档；不回滚已买业务,保留文件安全边界不造事务服务,A-SAVE,R/P
+LC01,09,Session,读档/重开/重铸一次替换；配置显式重开,09生命周期表,install_session/reset,完整边界,按操作矩阵,ready在完成后报告,旧引用无效；失败保留旧会话,移除重复生命周期包装,A-RESET,P
+UI01,10,UI,局部更新；控件留焦点草稿；文案参数不执行,ui_text→Excel/布局素材,query/command_result,变化通知/显示恢复,UI状态瞬态；设置独立,原2048×1280布局呈现,未知KEY参数显式错误,纯绘制保留；命令绑定重写,A-UI,U/P
+UI02,10,各页面,12入口逐行契约；操作只调用业务,10入口表/全部域,页面→域命令,不在刷新时操作,业务按归属；页面选择不进度化,保留声音动画反馈,具体原因而非静默按钮,混合文件按函数拆,A-UI,U/R
+UI03,10,Presentation,静态资产/着色器/常驻native纯表现复用,code-boundaries.csv,readonly state/events→render,渲染帧不回调结算,纯素材保留；瞬态清理,原血条/弹道/爆炸时序,GPU错误不换战斗规则,纯表现retain；混合split,A-UI,U
+T01,11,工具宿主,各工具独立会话/输入身份/同正式内核,entrypoints.csv,load_input/run/export,无玩家进度副作用,实验记录单独,来源状态/部分结果,写失败不报成功,重写工具实现保留用途,A-TOOLS,U/P
+T02,11,F8,单次/扫描/对比同内核；诊断不宣称平衡证明,analysis.xlsx/输入Excel,run/pause/resume/stop/export,加速推进相同有效游戏时间,实验记录；不玩家存档,进度/实际速度/错误,timeout/stop保留部分,删除exact/fast第二模型；D07,A-TOOLS,U/P
+T03,11,F9,生成/合法配装/有界采样/逐场隔离/胜负与未知分开,分析配置/实体配置,generate/sample/run_batch,每场新Combat；seed按序,inputs/逐场/摘要分开,中文标签技术ID详情,尝试限partial；timeout非loss,工具算法重写；同战斗内核,A-TOOLS,R/P
+T04,11,分析器,只读分析/来源一致合并；自动级用实际升级属性,analysis.xlsx/实测报告,analyze/retest/generate_levels,不因打开报告重跑,提案Excel；不写正式关卡,可靠性/预算/未知量,不可比拒合并；未测不捏造,重写工具；保留旧报告只读,A-TOOLS,R/P
+T05,11,周期生成器,周期pattern/offset/候选五级回退/相似与复用,analysis.xlsx/实测loadout,generate_cycle/export,固定seed稳定次序,提案Excel需用户采纳,每点fallback_reason,无候选报具体关点不改阈值,重写用途；不第二战斗模型,A-TOOLS,R
+T06,11,编辑器/QA,关卡草稿→引用校验→源Excel→单向生成；F1显式重启删除,mon/monGroup/level/ui_text,edit/validate/save/restart,保存才改源；新会话才载入,草稿独立；源备份,源变化冲突；只改文本参数保护,缓存缺失不自造Excel计算器,重写编辑工具；纯UI保留,A-TOOLS,U/R
+T07,11,构建/发布,隔离暂存/同native/资源完整/便携无邻目录,build manifests→代码结构/Excel值,build_player/build_lab,构建前重编配置,结果单独；用户目录存档,构建状态/准确版本身份,失败不替换旧发布,重写工具；快路径构建能力保留,A-REL,R/P
+A00,12,新测试运行器,独立测试Excel；缺源失效即失败；不回退,各独立测试工作簿计划,compile_test_source/run_cases,每次先检查所有源,结果含源哈希；不继承旧测试,明确invalid source,缺源不能skip/cache/default,重写少量通用驱动；本轮不运行,A-CFG,U

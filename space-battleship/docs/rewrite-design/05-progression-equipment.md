@@ -4,9 +4,9 @@
 
 状态为standby/travel/combat/clear_wait/retreat；Progression拥有关卡、战斗点、已通关/最高可进入、守关目标与旅程距离。`start/jump/hold/replay/clear_now/change_death_mode`只改该域并请求Combat开始/结束，不创建第二套战斗。
 
-正常循环：航行到战斗点→按level组顺序生成敌方→最后一组全灭才通关→收入/成长→解锁→进入下一旅程。可停留/重打和跳到已清或当前可进关，不能跳未解锁关。航行/撤退段与守关复活间隔最多3个X1游戏秒，原本更快仍更快；通常清场等待3游戏秒，可立即清场。死亡按配置backRange和用户死亡策略撤退，不能因UI刷新触发复活。具体死亡策略枚举由P03设置表及现有UI核对，不以旧数字索引写进新存档。
+正常循环：航行到战斗点→按level组顺序生成敌方→最后一组全灭才通关→收入/成长→解锁→进入下一旅程。可停留/重打和跳到已清或当前可进关，不能跳未解锁关。航行/撤退段与守关复活间隔最多3个X1游戏秒，原本更快仍更快；通常清场等待3游戏秒，可立即清场。死亡按配置backRange和用户死亡策略撤退，不能因UI刷新触发复活。具体死亡策略枚举见10的UI02设置行，不以旧数字索引写进新存档。
 
-关卡倍率：第i战斗点（0起，n点）使用 lerp(start,end,i/(n−1))；n<=1取终点。attack/life起点取当前entryAtkRatio/entryLifeRatio若存在且正，否则前关终点，第一关1；resource起点始终前关终点。敌体/盾最大值ceil(base×lifeRatio)，攻击base×atkRatio×mon.dmgMultiple；资源base×resRatio后进入06管线。jewelRatio与planetExpRatio是独立系数，不混进普通资源倍率。
+关卡倍率：第i战斗点（0起，n点）使用 lerp(start,end,i/(n−1))；n<=1取终点。attack/life起点取当前entryAtkRatio/entryLifeRatio若存在且正，否则前关终点，第一关1；resource起点始终前关终点。敌体/盾最大值ceil(base×lifeRatio)，攻击ceil(base×atkRatio×mon.dmgMultiple)；资源base×resRatio后进入06管线。jewelRatio与planetExpRatio是独立系数，不混进普通资源倍率。
 
 保存旅程位置/距离/守关目标，不存敌HP/弹体/CD；读档创建新的遭遇状态，不能恢复半个敌表。UI展示当前关/战斗点/可跳目标和错误原因；非法跳关不改进度，不花资源。普通死亡不清永久解锁与全局强化历史。重铸见08/09。验收A-PROG。
 
@@ -25,6 +25,8 @@ Equipment拥有实际模块等级，每槽装备可替换、清空；实际等�
 `equip/unequip/switch_ship`校验解锁、槽位、equipmentSwitchCooldownSeconds、无人机容量及希格斯炮源限制；所有检查后一次安装。护盾/装甲按改变前剩余比例映射新最大值（0最大值的初始化明确处理），不能通过来回换装白嫖回血。该比例规则只用于合法换装，不每帧追随UI。共享强化历史不因换装/换船丢失；临时效果失去资格按04夹除，伤害债务仍在。
 
 UI保留装备卡、当前/下一级预览、详情、槽位切换和批量按钮；预览不改正式状态。换装冷却显示剩余游戏时间；无变化不重建页面。费用不足/未解锁/受冷却/限制冲突给具体原因。验收A-EQP。
+
+初始武器CD：当前进入航行时设为完整cd，但导弹设为min(cd,0.4)；旧装备资料“全部完整CD”不一致，D11待决。若保留此例外，0.4迁入Excel，不留隐藏常量。换装/升级不把已经出生攻击重新计CD，具体重置只发生在已声明遭遇初始化边界。
 
 ## EQ02 公式、费用、批量升级
 

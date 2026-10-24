@@ -37,7 +37,7 @@ Galaxy owns regions{key,status,blueprint,nodes,buildElapsed,upgradeWork,assignme
 
 可见/隐藏tick控制批处理/显示频率，不改变已接受游戏时间。换船员前按旧人数结完待处理区间；不把过去时间乘新人数，也不离线补建设。避免旧隐藏pending_time+新通用积欠双重记账：新Session只给已确定crewCount的区间，Galaxy同步结到最近完成边界再接受修改。
 
-单建筑贡献=base_effect×当前激活等级，状态active/upgrading才有；区域内同效果相加，crew_exp/equipment_value/charge_max/gem_fragment每区域加1后区域间相乘；iron_auto_ratio/uranium_auto_ratio跨区域相加。每income_interval结算：金额=该资源过去60游戏秒直接收入productionBase之和×自动比例×interval/60，派生收入不进入该基数。产出与帧率无关；不足一个区间的时间保存。若当前具体收入调用单位不一致，实施前以该公式与配置单位核对，不静默校准数值。
+单建筑贡献=base_effect×当前激活等级，状态active/upgrading才有；区域内同效果相加，crew_exp/equipment_value/charge_max/gem_fragment每区域加1后区域间相乘；iron_auto_ratio/uranium_auto_ratio跨区域相加。每income_interval结算：金额=该资源过去60游戏秒直接收入productionBase之和×自动比例×本次累计结算游戏秒，派生收入不进入该基数。产出与帧率无关；不足一个区间的时间保存。这是当前rates与advance两处组合后的实际口径，不除以60；窗口用于取样，不自动把其总和当每秒速率再平均。作为R保留建议交审阅，不能以单位整理名义改变产量。
 
 显示保留已批准平台/总部/桥/交通艇、视角、缩放、施工脉冲。逻辑蓝图的nodeId/type/前置不因布局重画变化；可视位置仅派生。交通艇数量上限max_transport_ships、脉冲上限max_visual_pulses、出发延迟/间隔来自Excel；艇到达不得产资源或完成建筑。隐藏停止视觉更新，显示时从状态恢复，不重放所有动画。
 

@@ -1,0 +1,17 @@
+entry_id,current_roots,user_entry,new_call_chain,inputs,outputs_and_write_scope,spec,acceptance,boundary
+player,main.tscn;scripts/main.gd,游戏启动/所有页面,启动→load_config→load/import新会话→Session.advance→Combat/各域→表现,发布包+有效存档,用户目录进度仅手动/定时,10;09;14,A-UI;A-SAVE,混合宿主重写；纯表现复用
+editor_launcher,打开编辑器.cmd,Godot编辑器,定位匹配引擎→打开项目；不自动改配置或进度,项目/引擎,编辑环境,11,A-REL,重建启动工具；不更换引擎版本
+qa_f1,scripts/config_panel.gd,F1,显式配置打开/导入/暂停速度/重启/删档→各具体平台操作,源Excel/用户显式动作,配置包或明确选中进度,11:T06,A-TOOLS,用途保留；写入实现重建
+lab_f8,scripts/balance_panel.gd,F8,私有输入→正式内核→单次/扫描→报告对比,独立输入Excel/正式配置实验副本,实验结果，不写玩家进度,11:T02,A-TOOLS,删除旧exact/fast第二模型
+fleet_f9,scripts/enemy_fleet_panel.gd,F9当前界面,敌舰生成/自动关卡/周期→共享内核或报告→提案,Excel配置/实测报告,候选/结果Excel,11:T03-T05,A-TOOLS,产品用途保留；不能声称隐藏批次均已有UI
+fleet_backend,scripts/fleet_battle_runner.gd;scripts/fleet_batch_retest.gd;scripts/fleet_result_analyzer.gd,后端批次/复测/分析,校验身份→隔离场景→共享内核→流结果→分析,显式实验输入,partial/完成记录,11:T03-T04,A-TOOLS,重写能力；新按钮布局另由现有页面范围设计
+portable_lab,tools/result_analyzer/main.tscn;tools/result_analyzer/entry.gd;tools/result_analyzer/start.bat;tools/result_analyzer/周期关卡工具.cmd,便携分析,独立资源→同F9能力→本地results,完整生成包/导出模板,独立results,11:T07,A-REL,不探测旁边源码或玩家存档
+configuration,tools/config_workbooks.py;tools/import_workbook.py;tools/import_ai_tech_tree.py;tools/hyperspace_entities.py;tools/galaxy_config.py,导表,所有正式Excel稳定读取→类型引用校验→完整单向包,25正式源及新增批准源,data生成包,02,A-CFG,重写导表；内容保留；删除旧深合并回退
+level_editor,关卡编辑器.cmd;level_editor.tscn;scripts/level_editor.gd;tools/level_editor_store.py,关卡编辑,打开源→草稿→引用校验→保存Excel→生成包,mon/monGroup/level,源Excel及备份/生成包,11:T06,A-TOOLS,重写存储/业务；保留纯编辑UI
+ui_text_editor,UI文案表.bat;tools/ui_text_editor.py;tools/ui_text_editor.html,文案编辑,打开Excel文案→参数校验→保存源→生成,新ui_text.xlsx,文案Excel与运行包,10:UI01;11:T06,A-TOOLS,替换JSON双向编辑；纯HTML界面可复用
+release_player,tools/build_release.ps1;tools/player_required_data.json;tools/install_release_template.ps1,玩家发布,配置编译→隔离暂存→匹配native→资源校验→导出,Excel/静态资源/明确匹配引擎native,单EXE/构建记录,11:T07,A-REL,重写构建业务；保留构建能力
+release_lab,tools/build_result_analyzer.py;tools/analyzer_required_data.json,便携发布,同编译器/内核→完整隔离包,Excel/分析器/模板,便携包,11:T07,A-REL,不保留另一模型
+native_build,addons/native_battle/SConstruct;addons/native_battle/build_native.ps1;addons/native_battle/build_native_linux.py,native构建,匹配Godot ABI→编译CPU内核/表现→提供实际二进制身份,源/工具链/引擎接口,native库,04;14,A-NATIVE;A-REL,构建高效路径能力保留；不能仅哈希声称源码对应
+art_preview,dev/toon_ship_test.tscn;dev/preview_toon_ship.cmd,开发艺术预览,只读资源→纯预览,素材/纯表现参数Excel,预览窗口；无游戏业务,10:UI03,A-UI,保留纯表现用途；旧验证代码不继承
+art_generation,tools/galaxy_assets_blender.py;tools/galaxy_core_detail.py;tools/galaxy_core_stylized.py;tools/galaxy_toon_buildings.py;tools/create_opening_art.py,资源生成,作者明确运行后生成纯资源，不由游戏启动调用,作者素材及明确参数,静态资产,10:UI03,A-UI,已生成资产保留；旧工具实现不因产物保留自动继承
+test_entry,../test/run.py,旧测试入口,旧实现/断言只供辨认需求，不作为新规格,旧fixtures不可继承,本轮不执行；新测试独立Excel,12:A00,A-CFG,旧测试全部重写；缺独立Excel即失效
