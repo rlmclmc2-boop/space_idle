@@ -1,9 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-NATIVE_BOUNDARY 1.0 residual_normalized=0.0
-NATIVE_BOUNDARY 100.0 residual_normalized=0.0
-NATIVE_BOUNDARY 1000.0 residual_normalized=0.0
-NATIVE_BOUNDARY 100000.0 residual_normalized=0.0
-NATIVE_BOUNDARY 10000000000000001512711848041632841596928.0 residual_normalized=0.0000000000008
-OBSERVED native boundary residual at scale 10000000000000001512711848041632841596928.0: 0.0000000000008
-NATIVE WEAPON SCALE: 54 checked, 0 failures, 1 nonzero boundary observation

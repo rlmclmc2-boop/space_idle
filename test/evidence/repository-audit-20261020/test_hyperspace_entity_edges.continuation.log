@@ -1,6 +1,0 @@
-Command: python test/run.py test_hyperspace_entity_edges.gd --headless --godot /usr/local/bin/godot --timeout 180
-Isolated artifact: test/work/test_hyperspace_entity_edges-hwxvk0x7
-Driver exit: 0
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-HYPERSPACE_ENTITY_EDGES 10 checks 0 failures

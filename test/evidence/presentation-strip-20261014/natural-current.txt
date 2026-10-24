@@ -1,4 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
-
-NATURAL_RESULT coverage_endpoint game=18.0666666666669 encounters=3 waves=2 collects=13 admits=3

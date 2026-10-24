@@ -1,7 +1,0 @@
-COMMAND=python test/run.py test_hyperspace_route_loader.gd --headless --godot /usr/local/bin/godot --timeout 180
-FRESH_ISOLATED_PROJECT=true
-IMPORT_EXIT_CODE=0
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-HYPERSPACE_ROUTE_LOADER 21 checks 0 failures; synthetic acceptance only
-EXIT_CODE=0

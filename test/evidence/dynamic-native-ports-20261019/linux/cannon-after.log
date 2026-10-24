@@ -1,9 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
-     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:364)
-OpenGL API 4.5 (Core Profile) Mesa 25.0.7-2+deb13u1 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 19.1.7, 256 bits)
-
-ADMISSION true ""
-EVOLUTION_TIER 7
-CACHE_ON_START {"accelerated_visual_mode":false,"combat_presentation":true,"compiled_rules":true,"enemy_fx":true,"engine_max_fps":0,"fixed_logic_hz":60,"independent_qualification_plan":false,"missile_fx":true,"native_active":true,"native_auto":true,"old_pipeline_class":false,"pulse_fx":true,"retained":true,"save_enabled":false,"speed":1.0,"stat_cache_enabled":true,"time_scale":1.0,"vsync":0,"window":"(1373, 883)"}
-PORT_PERF_DONE steps=480 frames=176 actual_1x=true stress={"drone_fire":85,"enhancement_chain":1749,"enhancement_secondary":12,"fire":531,"hit":2544}

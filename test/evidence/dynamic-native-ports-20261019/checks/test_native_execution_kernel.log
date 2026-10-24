@@ -1,5 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-NATIVE_LIBRARY_PROOF {"path":"/tmp/dynamic-port-project/bin/space_native.dll","pid":13788,"sha256":""}
-FIXED_RAY_RESULT {"checks":185,"exact_checks":48,"ray_queries":201,"skips":4668}
-NATIVE EXECUTION KERNEL: 485 checks, 0 failures

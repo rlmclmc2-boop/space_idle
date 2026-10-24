@@ -1,9 +1,0 @@
-{
-  "status": "pass",
-  "same_data_and_formal_engine": true,
-  "different_package_code_fingerprint": true,
-  "without_override": "Rejected with explicit code/data/engine message",
-  "with_override": "One-second run recorded as checkpoint diagnostic, never fresh acceptance",
-  "current_package": "4c1255822f0a234eb3fb29c2c0a97dd172a05b596c1f774d39b09614a90b46eb",
-  "checkpoint_package": "97cb263a92252ea8137d87fa7dcce01b9f2f66ae57dd8d96da3b0ee7d82c1783"
-}

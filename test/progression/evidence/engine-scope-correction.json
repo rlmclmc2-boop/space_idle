@@ -1,8 +1,0 @@
-{
-  "finding": "Formal main.tscn uses battlefield.create_battle_game -> PresentedBattleGame; earlier BalanceGame exact inherits base BattleGame. Presented missile ejection/retarget and rail motion are gameplay differences.",
-  "earlier_scope": "All baseline/v1–v6 basic-engine runs and wave matrices remain base-rule diagnostics. Their timings cannot certify formal player progression.",
-  "formal_adapter": "Build emits unmodified BalanceGame bookkeeping/caches inheriting PresentedBattleGame; --engine formal default. --scene includes real carrier and target providers.",
-  "independent_parent_hour_scope": "Parent d41d622 one-hour comparison covers base BattleGame only. Not withdrawn as that claim, not widened to Presented.",
-  "first_proof": "Formal adapter vs native Presented with real scene providers, same seed/operations, each-second900s checks, identical through6-4. Not a full main._process/variable-FPS proof.",
-  "clock_boundary": "New151 time checks validate accumulated fixed ticks across45/60/144fps; actual scene motion may still need frame/boost equivalence audit."
-}

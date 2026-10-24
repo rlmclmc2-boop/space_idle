@@ -1,4 +1,0 @@
-# 手动异空间
-
-- Manual hyperspace uses the selected exploration level for attack/life. Its ordinary monster iron/uranium and enhancement-fragment drops freeze the latest actually cleared mainline level at dispatch; highest reached does not count. Special drone/material rewards keep the exploration receipt level. Read existing authorized Excel ratios and drop probabilities; do not substitute new multipliers.
-- Manual hyperspace requests charge only after revalidation at a non-guard main standby/travel/clear boundary: no live enemies, pending unlock notices or outstanding projectiles/repeats/delayed shots. Queueing/cancelling changes no balances; ownership/energy/route changes reject dispatch. Return freezes absolute main health, shield delay, cooldowns and module-owned transient effects, clamps to current lawful capacities, and preserves earned growth/income plus global RNG/serials. Reforge is unavailable during an active manual battle.

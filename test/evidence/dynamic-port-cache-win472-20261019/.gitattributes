@@ -1,8 +1,0 @@
-* -text whitespace=trailing-space,space-before-tab,cr-at-eol
-*.log -diff
-*.csv -diff
-*.gz -diff
-*.png -diff
-*.zip -diff
-*.patch -diff
-*.diff -diff

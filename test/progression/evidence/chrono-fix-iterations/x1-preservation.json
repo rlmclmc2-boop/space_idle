@@ -1,7 +1,0 @@
-{
-  "actual_provider_calls_identical": true,
-  "rng_identical": true,
-  "reference": "evidence/native-chrono-provider-trace",
-  "candidate": "native-pose-fire-provider-trace",
-  "call_count": 1301
-}

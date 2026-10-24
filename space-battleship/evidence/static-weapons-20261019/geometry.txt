@@ -1,8 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-GEOMETRY Frigate slots=1 poses=2
-GEOMETRY Destroyer slots=2 poses=2
-GEOMETRY Cruiser slots=3 poses=2
-GEOMETRY Battleship slots=4 poses=2
-GEOMETRY Heavy_Battleship slots=5 poses=2
-GEOMETRY_DONE max_pixel_drift=0.0000682393802

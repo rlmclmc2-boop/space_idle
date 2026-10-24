@@ -1,5 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-QA_GROWTH {"ai_factor":1.1,"beam_damage":526.0,"level":12,"reactor":5,"reactor_capacity":506,"reactor_multiplier":1.83655869386795,"shield_capacity":11215.0,"stage":6,"tech_each":1}
-QA_GROWTH {"ai_factor":1.21,"beam_damage":1417.0,"level":15,"reactor":7,"reactor_capacity":1139,"reactor_multiplier":2.59988885516813,"shield_capacity":30701.0,"stage":7,"tech_each":2}
-QA_GROWTH {"ai_factor":1.331,"beam_damage":2784.0,"level":17,"reactor":8,"reactor_capacity":1708,"reactor_multiplier":3.21394229230258,"shield_capacity":57752.0,"stage":7,"tech_each":3}

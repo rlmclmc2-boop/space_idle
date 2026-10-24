@@ -1,2 +1,0 @@
-research:equipment_reinforcement
-invest:iron:12

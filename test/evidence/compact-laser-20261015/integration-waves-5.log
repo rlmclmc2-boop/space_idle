@@ -1,4 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
-
-INTEGRATION_RESULT waves coverage_endpoint events={"beam_hit":3,"beam_started":18,"collect":13,"crew_changed":1,"encounter":3,"enhancement_currency":3,"equipment_stats":90,"explode":18,"fire":127,"hit":89,"jewel_pickup":3,"jewels_changed":3,"native_execution_handoff":2,"projectile_impact":86,"prototype_missile_reset":1,"resources_changed":19,"state":6,"upgrade":19,"upgrades_completed":3,"wave_clear":2} compact=11

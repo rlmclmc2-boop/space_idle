@@ -1,5 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-
-RAIL_GEOMETRY {"forward_one_y":826.106201171875,"height":96.914909,"hud_z":0,"hull_z_max_y":945.999938964844,"hull_z_min_y":849.085083007813,"mount_x":286.0,"mount_y":879.266967773438,"muzzle_x":286.0,"muzzle_y":843.19970703125,"overlay_z":1,"pulse_z":0,"ship_x":286.0,"ship_y":897.542541503906,"socket_z":-1.11000001430511}
-PASS cannon real/logical muzzle ahead of Frigate bow (286.0, 843.1997) vs (286.0, 843.1997)
-PASS rail feedback below tutorial and damage HUD

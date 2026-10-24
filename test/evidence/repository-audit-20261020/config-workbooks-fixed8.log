@@ -1,7 +1,0 @@
-test_split_preserves_formulas_caches_styles_and_values (__main__.IncrementalTests.test_split_preserves_formulas_caches_styles_and_values) ... ok
-test_no_change_reads_no_workbook_and_writes_nothing (__main__.IncrementalTests.test_no_change_reads_no_workbook_and_writes_nothing) ... ok
-
-----------------------------------------------------------------------
-Ran 2 tests in 41.535s
-
-OK

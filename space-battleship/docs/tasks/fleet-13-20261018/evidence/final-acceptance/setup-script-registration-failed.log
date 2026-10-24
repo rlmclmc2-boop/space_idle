@@ -1,7 +1,0 @@
-Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-OpenGL API 3.3.0 NVIDIA 610.88 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 2060
-
-SCRIPT ERROR: Parse Error: Could not resolve class "res://scripts/battlefield.gd".
-   at: GDScript::reload (res://port_perf.gd:5)
-ERROR: Failed to load script "res://port_perf.gd" with error "Parse error".
-   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

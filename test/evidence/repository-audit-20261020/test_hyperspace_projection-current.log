@@ -1,5 +1,0 @@
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-SHORT_SOURCE_CPU drones=0 mean_us=511.5 p95_us=610 projectiles=0
-SHORT_SOURCE_CPU drones=5 mean_us=716.75 p95_us=992 projectiles=1
-HYPERSPACE_PROJECTION 13 checks 0 failures

@@ -1,7 +1,0 @@
-COMMAND=python test/run.py test_hyperspace_manual.gd --headless --godot /usr/local/bin/godot --timeout 180
-FRESH_ISOLATED_PROJECT=true
-IMPORT_EXIT_CODE=0
-Godot Engine v4.6.3.stable.official.7d41c59c4 - https://godotengine.org
-
-HYPERSPACE_MANUAL 27 checks 0 failures; synthetic IDs only; no 60-stage run
-EXIT_CODE=0
