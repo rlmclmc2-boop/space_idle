@@ -22,6 +22,16 @@ static func points(session, stage: Dictionary) -> Array:
 		result.append({"group": pair[0].to_int(), "distance": pair[1].to_float() * stage.length})
 	return result
 
+static func stage_ratio(session, stage: Dictionary, field: String, entry_field: String = "") -> Dictionary:
+	var count: int = points(session, stage).size()
+	var u: float = 1.0 if count <= 1 else float(session.campaign.point) / (count - 1)
+	var entry: Dictionary
+	if not entry_field.is_empty() and stage.get(entry_field) != null:
+		entry = session.amount(stage[entry_field])
+	elif session.campaign.stage == 1: entry = session.amount(1)
+	else: entry = session.amount(session.bundle.lookup("level", [session.campaign.stage - 1])[field])
+	return session.add(session.mul(entry, session.amount(1.0 - u)), session.mul(session.amount(stage[field]), session.amount(u)))
+
 static func positions(session, members: Array) -> Dictionary:
 	var sorted := members.duplicate(true)
 	sorted.sort_custom(func(a, b):
@@ -60,7 +70,7 @@ static func weapon(session, equipment_id: String, source_row: Dictionary, hostil
 	var damage: Dictionary = session.amount(values.dmg)
 	# Enemy levels use the exact row's growth; empty growth never borrows the player's.
 	if level > 1 and source_row.get("dmgMulti") != null:
-		damage = session.mul(damage, session.calculate("pow", session.amount(1.0 + source_row.dmgMulti), {}, level - 1).value)
+		damage = session.growth(damage, source_row.dmgMulti, level)
 	var pixels: float = session.motion.enemy_projectile_pixels_per_unit if hostile else session.motion.player_projectile_pixels_per_unit
 	var speed: float = float(values.para1 if weapon_kind != 2 else values.para2) * pixels
 	var row := {"kind": weapon_kind, "type": int(values.dmgtype), "slot": slot, "hostile": hostile,
@@ -105,6 +115,8 @@ static func initialize(session) -> Dictionary:
 		"brake_range": session.motion.missile_brake_range, "brake_angle": session.motion.missile_brake_angle,
 		"min_speed": session.motion.missile_min_guided_speed, "brake_factor": session.motion.missile_brake_factor,
 		"hit_radius": session.motion.missile_hit_radius, "chain_speed": session.motion.chain_carrier_speed}
+	descriptor.counter_log_base = session.bundle.lookup("enhance_config", ["counter_log_base"]).value
+	descriptor.counter_round_scale = session.bundle.lookup("enhance_config", ["bonus_round_scale"]).value
 	return {"ok": session.kernel.configure(descriptor), "reason": session.kernel.last_error()}
 
 static func wave(session) -> Dictionary:
@@ -121,32 +133,23 @@ static func wave(session) -> Dictionary:
 	var layout := positions(session, members)
 	var enemies := []
 	var weapons := []
-	var ratio: float = 1.0 if points_list.size() <= 1 else float(campaign.point) / (points_list.size() - 1)
-	var previous: Dictionary = session.bundle.lookup("level", [campaign.stage - 1])
-	var attack_entry: float = float(stage.entryAtkRatio) if stage.get("entryAtkRatio") != null else 1.0 if campaign.stage == 1 else float(previous.atkRatio)
-	var life_entry: float = float(stage.entryLifeRatio) if stage.get("entryLifeRatio") != null else 1.0 if campaign.stage == 1 else float(previous.lifeRatio)
-	var attack_ratio: float = lerpf(attack_entry, stage.atkRatio, ratio)
-	var life_ratio: float = lerpf(life_entry, stage.lifeRatio, ratio)
-	var resource_entry: float = 1.0 if campaign.stage == 1 else float(previous.resRatio)
-	var resource_ratio: float = lerpf(resource_entry, stage.resRatio, ratio)
+	var attack_ratio := stage_ratio(session, stage, "atkRatio", "entryAtkRatio")
+	var life_ratio := stage_ratio(session, stage, "lifeRatio", "entryLifeRatio")
+	var resource_ratio := stage_ratio(session, stage, "resRatio")
 	for member in members:
 		var mon: Dictionary = member.definition
 		var point: Vector2 = layout[member.slot]
-		var hp: Dictionary = session.ceil_amount(session.mul(session.amount(mon.health), session.amount(life_ratio)))
-		var shield: Dictionary = session.ceil_amount(session.mul(session.amount(mon.shield), session.amount(life_ratio)))
+		var hp: Dictionary = session.ceil_amount(session.mul(session.amount(mon.health), life_ratio))
+		var shield: Dictionary = session.ceil_amount(session.mul(session.amount(mon.shield), life_ratio))
 		var enemy := {"uid": int(mon.id), "config_id": str(int(mon.id)), "slot": member.slot,
 			"hp": hp, "max_hp": hp, "shield": shield, "max_shield": shield,
 			"armourType": int(mon.armourType), "shieldType": int(mon.shieldType), "x": point.x, "y": point.y,
-            "shieldRecovery": mon.shieldRecovery, "shieldDelay": mon.shieldDelay, "jewel_rolls": 1 if session.content_unlocked("feature", "jewels") else 0,
+			"shieldRecovery": mon.shieldRecovery, "shieldDelay": mon.shieldDelay, "jewel_rolls": 1 if session.content_unlocked("feature", "jewels") else 0,
 			"compiled_drops": []}
 		if mon.get("reactiveReduction") != null: enemy.reactiveReduction = int(mon.reactiveReduction)
-		if mon.get("res") != null:
-			var regex := RegEx.new()
-			regex.compile("\\{([^{}]+)\\}")
-			for match_value in regex.search_all(str(mon.res).replace("｛", "{").replace("｝", "}")):
-				var drop := match_value.get_string(1).split(",")
-				var amount: Dictionary = session.ceil_amount(session.mul(session.amount(drop[1]), session.amount(resource_ratio)))
-				enemy.compiled_drops.append({"resource": drop[0].to_int(), "chance": drop[2].to_float(), "amount": amount, "base": amount})
+		for drop in session.bundle.drop_rules(int(mon.id)):
+			var amount: Dictionary = session.ceil_amount(session.mul(session.amount(drop.amount), resource_ratio))
+			enemy.compiled_drops.append({"resource": str(drop.resource).to_int(), "chance": drop.chance, "amount": amount, "base": amount})
 		var enemy_index := enemies.size()
 		enemies.append(enemy)
 		for entry in list_text(mon.equipment):
@@ -155,6 +158,6 @@ static func wave(session) -> Dictionary:
 			var compiled := weapon(session, pair[0], row, true, member.slot, point, pair[1].to_int())
 			if compiled.has("error"): return {"error": compiled.error}
 			compiled.source = enemy_index
-			compiled.damage = session.ceil_amount(session.mul(compiled.damage, session.mul(session.amount(mon.dmgMultiple), session.amount(attack_ratio))))
+			compiled.damage = session.ceil_amount(session.mul(compiled.damage, session.mul(session.amount(mon.dmgMultiple), attack_ratio)))
 			weapons.append(compiled)
-    return {"enemies": enemies, "weapons": weapons, "final": campaign.point == points_list.size() - 1, "jewel_ratio": stage.jewelRatio}
+	return {"enemies": enemies, "weapons": weapons, "final": campaign.point == points_list.size() - 1, "jewel_ratio": stage.jewelRatio}

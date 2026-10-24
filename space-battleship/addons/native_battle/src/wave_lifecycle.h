@@ -3,6 +3,12 @@
     Dictionary read_history() const {
         Dictionary value; value["attacks"]=attack_counter;value["incoming"]=incoming_counter;return value;
     }
+    Dictionary allocate_drop_id() {
+        Dictionary result;
+        try { result["id"]=checked_increment(drop_uid);result["ok"]=true; }
+        catch(const std::exception &error) {native_error=String(error.what());stopped=true;result["ok"]=false;result["error"]=native_error;}
+        return result;
+    }
     void retain_live_sources() {
         std::vector<bool> keep(weapons.size(),false);
         for(size_t i=0;i<weapons.size();++i) keep[i]=!weapons[i].hostile;
@@ -93,7 +99,7 @@
         bool live=false;for(const Actor &actor:actors) live=live||actor.live;
         bool cleared=wave_running&&!live;
         if(cleared) wave_running=false;
-        const bool died=player_hp<=0&&!death_reported;
+        const bool died=layer_remaining(1)<=0&&!death_reported;
         if(died) death_reported=true;
         result["events"]=events;result["drops"]=drops;result["wave_cleared"]=cleared;
         result["final_cleared"]=cleared&&final_encounter;result["player_died"]=died;
@@ -107,15 +113,19 @@
         actors.clear();actor_rows.clear();wave_running=false;final_cleared=false;
         return true;
     }
+    bool prepare_departure() {
+        if(executing || !native_error.is_empty()) return false;
+        CombatAmount maximum=module_defence?capacity(1):CombatAmount(Dictionary(session_descriptor["player"])["armour"]);
+        if(maximum<=0) return false;
+        return begin_retreat()&&finish_retreat();
+    }
     bool finish_retreat() {
         if(executing || !native_error.is_empty()) return false;
         for(Defence &defence:defences) {defence.loss=0;defence.buffer=0;defence.last_hit=defence_time;}
-        player_hp=module_defence?capacity(1):CombatAmount(Dictionary(session_descriptor["player"])["armour"]);
-        player_shield=module_defence?capacity(0):CombatAmount(Dictionary(session_descriptor["player"])["shield"]);
         stopped=false;death_reported=false;
         for(size_t i=0;i<weapons.size();++i) if(!weapons[i].hostile) {
             weapons[i].beam=-1;
             roots.push({clock+(weapons[i].kind==3?0:weapons[i].interval),checked_id(event_serial),0,int(i)});
         }
-        publish_player();return player_hp>0;
+        publish_player();return layer_remaining(1)>0;
     }

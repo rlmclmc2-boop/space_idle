@@ -15,8 +15,19 @@ class SpaceModuleEvaluator : public RefCounted {
 protected:
     static void _bind_methods() {
         ClassDB::bind_method(D_METHOD("evaluate", "input"), &SpaceModuleEvaluator::evaluate);
+        ClassDB::bind_method(D_METHOD("growth", "input"), &SpaceModuleEvaluator::growth);
     }
 public:
+    Dictionary growth(const Dictionary &input) const {
+        Dictionary result;
+        try {
+            if(!input.has("base") || input["base"].get_type()!=Variant::DICTIONARY || !input.has("growth") ||
+                (input["growth"].get_type()!=Variant::INT && input["growth"].get_type()!=Variant::FLOAT)) throw std::domain_error("InvalidEquipmentGrowth");
+            auto value=space::equipment_growth(SpaceAmount::read(input["base"]),double(input["growth"]),integer(input,"level"));
+            result["value"]=SpaceAmount::encode(value);result["ok"]=true;
+        } catch(const std::exception &error) {result["ok"]=false;result["error"]=String(error.what());}
+        return result;
+    }
     Dictionary evaluate(const Dictionary &input) const {
         Dictionary result;
         try {

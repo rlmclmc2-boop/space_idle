@@ -3,6 +3,12 @@
 #include <vector>
 
 namespace space {
+inline Amount equipment_growth(const Amount &base, double growth, int64_t level) {
+    if(level<1 || !std::isfinite(growth) || growth<0) throw std::domain_error("InvalidEquipmentGrowth");
+    if(level==1) return base;
+    Amount raw=base.mul(Amount(1+growth).pow(double(level-1)));
+    return raw.compare(Amount(100))<0 ? raw.div(Amount(10)).floor().mul(Amount(10)).add(Amount(5)) : raw.round_significant(2);
+}
 struct ModuleInput {
     Amount charged_base;
     int64_t history_count = 0;

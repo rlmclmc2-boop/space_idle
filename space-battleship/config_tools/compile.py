@@ -23,6 +23,20 @@ def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
 
 
+def amount_literal(value):
+    # Lexical validation only; all arithmetic/normalization stays in shared C++.
+    return isinstance(value,str) and re.fullmatch(r'\+?[0-9]+(?:\.[0-9]*)?(?:[eE][+-]?[0-9]+)?',value) is not None
+
+
+def drop_segments(text):
+    if '{' not in text and '}' not in text:
+        parts=[part.strip() for part in text.split(';')]
+        return parts if all(parts) else None
+    parts=re.findall(r'\{([^{}]+)\}',text)
+    remainder=re.sub(r'\{[^{}]+\}','',text).replace(',','').replace(';','').strip()
+    return parts if parts and not remainder else None
+
+
 class CompilationError(Exception):
     def __init__(self, errors):
         self.errors = errors
@@ -41,6 +55,11 @@ def compile_bundle(manifest_path: Path):
 
     def error(book, sheet, row, column, key, code, detail):
         errors.append(dict(workbook=book, sheet=sheet, row=row, column=column, key=key, code=code, detail=detail))
+
+    if manifest.get('entry')=='GameSession':
+        declared_tables={s['table'] for e in manifest['workbooks'] for s in e['sheets']}
+        for missing in set(schema.get('runtimeTables',[]))-declared_tables:
+            error(str(manifest_path),'',0,'',missing,'MissingRuntimeTable','GameSession entry requires table')
 
     seen_inputs = set()
     for entry in manifest['workbooks']:
@@ -107,10 +126,24 @@ def compile_bundle(manifest_path: Path):
                         error(rel, name, row_index, cell.column_letter, field, 'IntegerRange', 'exact Excel integer required'); continue
                     if kind == 'number' and (value < definition.get('min', -math.inf) or value > definition.get('max', math.inf)):
                         error(rel, name, row_index, cell.column_letter, field, 'ValueRange', str(value)); continue
+                    if value is not None and definition.get('literal')=='amount_text' and not amount_literal(value):
+                        error(rel,name,row_index,cell.column_letter,field,'AmountLiteral','nonnegative decimal text required');continue
+                    if value is not None and definition.get('literal')=='int64_text':
+                        if not isinstance(value,str) or not re.fullmatch(r'0|[1-9][0-9]*',value) or len(value)>19 or int(value)>2**63-1:
+                            error(rel,name,row_index,cell.column_letter,field,'IntegerRange','nonnegative canonical int64 text required');continue
                     if 'enum' in definition and value not in definition['enum']:
                         error(rel, name, row_index, cell.column_letter, field, 'UnknownRuleKey', str(value)); continue
                     row[field] = value
                     locations[field] = dict(workbook=rel, sheet=name, row=row_index, column=cell.column_letter)
+                contracts=spec.get('contracts',{}).get(str(row.get(spec['primary'][0])),{})
+                for field, contract in contracts.items():
+                    value=row.get(field)
+                    if value is None:continue # requiredness/type already reported
+                    valid=type(value) in (float,int)
+                    valid=valid and value>=contract.get('min',-math.inf) and value<=contract.get('max',math.inf)
+                    valid=valid and ('exclusiveMin' not in contract or value>contract['exclusiveMin'])
+                    valid=valid and (not contract.get('integer') or int(value)==value)
+                    if not valid:error(rel,name,row_index,openpyxl.utils.get_column_letter(expected.index(field)+1),field,'ValueRange','runtime row contract')
                 required = set()
                 for condition in spec.get('requiredWhen', []):
                     if row.get(condition['field']) in condition['values']:
@@ -149,6 +182,7 @@ def compile_bundle(manifest_path: Path):
         error(loc.get('workbook',''), loc.get('sheet',''), loc.get('row',0), loc.get('column',''), key, code, detail)
 
     indices = {table: {json.dumps([r[k] for k in specs[table]['primary']], ensure_ascii=False, separators=(',', ':')): i for i,r in enumerate(rows)} for table,rows in tables.items()}
+    drop_index={str(row['id']):[] for row in tables.get('mon',[])}
     for table, rows in tables.items():
         for relation in specs[table].get('structuredReferences', []):
             field, target, target_field = relation['field'], relation['table'], relation['target']
@@ -157,6 +191,26 @@ def compile_bundle(manifest_path: Path):
                 value = row.get(field)
                 if value is None: continue
                 text = value.translate(str.maketrans('｛｝，','{},'))
+                if relation['kind']=='resource_drop':
+                    segments=drop_segments(text)
+                    if segments is None:
+                        location_error(table,row,field,'ReferenceSyntax',text);continue
+                    for segment in segments:
+                        parts=[p.strip() for p in segment.split(',')]
+                        if len(parts)!=3:
+                            location_error(table,row,field,'ReferenceSyntax',segment);continue
+                        valid_row=True
+                        if parts[0] not in valid:
+                            location_error(table,row,field,'MissingReference',f'{target}: {parts[0]}');valid_row=False
+                        if not amount_literal(parts[1]):
+                            location_error(table,row,field,'AmountLiteral',parts[1]);valid_row=False
+                        try:
+                            chance=float(parts[2])
+                            if not math.isfinite(chance) or not 0<=chance<=1:raise ValueError()
+                        except ValueError:
+                            location_error(table,row,field,'ValueRange','drop probability');valid_row=False
+                        if valid_row:drop_index[str(row['id'])].append(dict(resource=parts[0],amount=parts[1],chance=chance))
+                    continue
                 if not text.startswith('{') or not text.endswith('}'):
                     location_error(table,row,field,'ReferenceSyntax',str(value)); continue
                 tokens = text[1:-1].split(',')
@@ -174,7 +228,7 @@ def compile_bundle(manifest_path: Path):
                         except (ValueError,IndexError):location_error(table,row,field,'BattlePointOrder',token)
                     if relation['kind']=='weapon_level':
                         try:
-                            if len(parts)!=2 or int(parts[1])<1:raise ValueError()
+                            if len(parts)!=2 or not 1<=int(parts[1])<=2**63-1:raise ValueError()
                         except (ValueError,IndexError):location_error(table,row,field,'WeaponLevel',token)
         for relation in specs[table].get('references', []):
             field, target, target_field = relation['field'], relation['table'], relation['target']
@@ -210,8 +264,9 @@ def compile_bundle(manifest_path: Path):
             good = {'null':value is None,'string':isinstance(value,str),'bool':isinstance(value,bool),'int':type(value) is int,'float':type(value) in (int,float)}
             if not good.get(kind,False): location_error(table,row,'value','TypedLiteralMismatch',str(kind))
     if errors: raise CompilationError(errors)
+    indices['dropRules']=drop_index
     classes = {sheet['table']: entry['classification'] for entry in manifest['workbooks'] for sheet in entry['sheets']}
-    return dict(schemaVersion=schema['version'], kind=mode, semanticHash=digest(tables), sourceManifestHash=digest(dict(manifest=manifest,sources=sources,schema=schema)), tables=tables,
+    return dict(schemaVersion=schema['version'], kind=mode, entry=manifest.get('entry','data'), semanticHash=digest(tables), sourceManifestHash=digest(dict(manifest=manifest,sources=sources,schema=schema)), tables=tables,
                 ruleParameters={}, indices=indices, provenance=provenance, sourceHashes=sources, sourceClasses=classes)
 
 

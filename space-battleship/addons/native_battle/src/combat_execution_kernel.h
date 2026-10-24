@@ -230,7 +230,6 @@ class SpaceCombatKernel : public RefCounted {
     uint32_t encounter_generation = 1;
     uint64_t refit_epoch = 0;
     uint64_t step_serial = 0, event_serial = 0, attack_serial = 0, instance_serial = 0, flight_serial = 0;
-    CombatAmount player_hp = 0, player_shield = 0;
     double clock = 0, resistance = 0.5;
     double last_incoming_at = -100;
     double jewel_probability = 0, jewel_ratio = 1;
@@ -1081,15 +1080,15 @@ class SpaceCombatKernel : public RefCounted {
             a->view["reactive_volley_at"] = a->reactive_volley_at;
         }
         CombatAmount incoming = raw * (1 + a->interference), absorbed = 0, damage = 0;
-        const CombatAmount hp_before = damage_stats_enabled ? a->hp : 0;
-        const CombatAmount shield_before = damage_stats_enabled ? a->shield : 0;
+        const CombatAmount hp_before = a->hp;
+        const CombatAmount shield_before = a->shield;
         if (a->shield > 0) {
             double factor = type == a->shield_type ? 1 - resistance : 1;
             absorbed = combat_min(a->shield, combat_max(1.0, incoming * factor));
             a->shield -= absorbed;
             incoming = factor > 0 ? nonnegative(incoming - absorbed / factor) : 0;
         }
-        if (absorbed <= 0 || incoming > 0) {
+        if (incoming > 0) {
             damage = combat_max(1.0, combat_ceil(incoming * (type == a->armour_type ? 1 - resistance : 1)));
             a->hp = nonnegative(a->hp - damage);
         }
@@ -1119,7 +1118,7 @@ class SpaceCombatKernel : public RefCounted {
         e.kind = 2;
         e.uid = a->uid;
         e.type = type;
-        e.amount = damage + absorbed;
+        e.amount = (hp_before - a->hp) + (shield_before - a->shield);
         e.time = at;
         e.critical = inst && inst->attack->critical;
         e.reactive_stacks = reactive_stacks;
@@ -1235,7 +1234,7 @@ class SpaceCombatKernel : public RefCounted {
                 int count = 0;
                 for (Handle t : targets(type, at))
                     if (t.index != h.index && count++ < inst->count)
-                        birth(wi, t, inst, base_raw / inst->attack->damage, false, true, origin);
+                        birth(wi, t, inst, (inst->attack->damage > 0 ? base_raw / inst->attack->damage : CombatAmount(0)), false, true, origin);
             }
         }
         commit_final_wipe();
@@ -1256,6 +1255,12 @@ class SpaceCombatKernel : public RefCounted {
         input.log_base=counter_log_base;input.round_scale=counter_round_scale;
         return space::evaluate_module(input).history_factor.sub_nonnegative(space::Amount(1));
     }
+    space::ModuleEvaluation evaluate_charged(const CombatAmount &base,const CombatAmount &factor,int64_t count,bool incoming=false) const {
+        space::ModuleInput input;input.charged_base=base;input.history_count=count;input.effective_level=counter_level;
+        input.growth=incoming?defence_counter_growth:counter_growth;input.log_base=counter_log_base;input.round_scale=counter_round_scale;
+        if(factor!=1) input.external_factors.push_back(factor);
+        return space::evaluate_module(input);
+    }
     CombatAmount capacity(int layer) const {
         CombatAmount total = 0;
         for (const Defence &d : defences)
@@ -1263,27 +1268,37 @@ class SpaceCombatKernel : public RefCounted {
                 total += d.maximum;
         return total;
     }
+    CombatAmount layer_remaining(int layer) const {
+        CombatAmount total=0;
+        for(const Defence &module:defences) if(module.layer==layer) total+=module.maximum-module.loss;
+        return total;
+    }
+    void assign_layer_missing(int layer,CombatAmount wanted) {
+        CombatAmount current=0,total=0;
+        for(Defence &module:defences) if(module.layer==layer) {
+            module.loss=combat_min(module.loss,module.maximum);current+=module.loss;total+=module.maximum;
+        }
+        wanted=combat_min(wanted,total);
+        const bool increase=wanted>current;
+        CombatAmount delta=increase?wanted-current:current-wanted;
+        CombatAmount weight_total=increase?total-current:current;
+        for(Defence &module:defences) if(module.layer==layer && delta>0 && weight_total>0) {
+            CombatAmount weight=increase?module.maximum-module.loss:module.loss;
+            CombatAmount part=weight==weight_total?delta:delta*(weight/weight_total);
+            module.loss=increase?combat_min(module.maximum,module.loss+part):module.loss-part;
+            delta-=part;weight_total-=weight;
+        }
+    }
     void reconcile_defence() {
-        for (Defence &d : defences) {
-            d.maximum = combat_ceil(d.base * (1 + counter_bonus(incoming_counter, true))) * d.factor;
-            d.loss = combat_min(d.loss, d.maximum);
-            d.buffer = combat_min(d.buffer, d.maximum * d.memory_cap);
+        const CombatAmount previous[2]={layer_remaining(0),layer_remaining(1)};
+        for(Defence &module:defences) {
+            module.maximum=evaluate_charged(module.base,module.factor,incoming_counter,true).final;
+            module.loss=combat_min(module.loss,module.maximum);
+            module.buffer=combat_min(module.buffer,module.maximum*module.memory_cap);
         }
-        for (int layer = 0; layer < 2; ++layer) {
-            CombatAmount total = capacity(layer), missing = 0;
-            for (const Defence &d : defences)
-                if (d.layer == layer)
-                    missing += d.loss;
-            CombatAmount health = layer == 0 ? player_shield : player_hp, expected = nonnegative(total - health),
-                   delta = (expected > missing ? expected - missing : missing - expected);
-            bool increase = expected > missing;
-            for (Defence &d : defences)
-                if (d.layer == layer) {
-                    double weight = increase ? (total > missing ? (d.maximum - d.loss).to_ratio(CombatAmount(total - missing)) : 0)
-                                             : (missing > 0 ? d.loss.to_ratio(CombatAmount(missing)) : 0);
-                    d.loss = combat_min(d.maximum, nonnegative((increase ? d.loss + delta * weight : d.loss - delta * weight)));
-                }
-        }
+        // Attribute/history changes preserve the former module-derived absolute
+        // remaining health. No cached/player-row total is an input here.
+        for(int layer=0;layer<2;++layer) assign_layer_missing(layer,capacity(layer)-previous[layer]);
     }
     CombatAmount protection(CombatAmount amount, CombatAmount &absorbed) {
         CombatAmount rest = amount;
@@ -1300,8 +1315,8 @@ class SpaceCombatKernel : public RefCounted {
         return rest;
     }
     void publish_player() {
-        player_row["armour"] = player_hp;
-        player_row["shield"] = player_shield;
+        player_row["armour"] = layer_remaining(1);
+        player_row["shield"] = layer_remaining(0);
         for (size_t i = 0; i < defences.size(); ++i) {
             buffer_rows[int64_t(i)] = defences[i].buffer;
             loss_rows[int64_t(i)] = defences[i].loss;
@@ -1314,13 +1329,13 @@ class SpaceCombatKernel : public RefCounted {
         e.player = true;
         e.point = player_point;
         e.type = type;
-        e.amount = deferred ? combat_ceil(loss) : loss;
+        e.amount = loss;
         e.absorbed = absorbed;
         e.time = at;
         feedback.push_back(e);
         ++hit_count;
         publish_player();
-        if (player_hp <= 0 && player_shield <= 0)
+        if (layer_remaining(1) <= 0)
             cancel();
     }
     void queue_debt(int layer, CombatAmount amount) {
@@ -1349,14 +1364,12 @@ class SpaceCombatKernel : public RefCounted {
             CombatAmount taken = combat_min(total, rest), body = 0;
             for (Defence &d : defences)
                 if (d.layer == layer && total > 0) {
-                    CombatAmount part = taken * nonnegative(d.maximum - d.loss) / total;
+                    CombatAmount part = taken * (nonnegative(d.maximum - d.loss) / total);
                     d.loss += part;
                     body += part;
                     if (part > 0)
                         d.last_hit = defence_time;
                 }
-            CombatAmount &hp = layer == 0 ? player_shield : player_hp;
-            hp = taken >= total && total > 0 ? 0 : nonnegative(hp - body);
             loss += body;
             rest = nonnegative(rest - taken);
         }
@@ -1383,7 +1396,6 @@ class SpaceCombatKernel : public RefCounted {
                 double elapsed = nonnegative(defence_time - ready) - nonnegative(begin_defence - ready);
                 CombatAmount recovered = combat_min(d.loss, d.maximum * d.rate * elapsed);
                 d.loss = nonnegative(d.loss - recovered);
-                player_shield = combat_min(capacity(0), player_shield + recovered);
             }
             // Same-time priority: continuous recovery, debt, memory, then beam hit.
             if (deferred_elapsed + 1e-9 >= deferred_interval) {
@@ -1407,12 +1419,10 @@ class SpaceCombatKernel : public RefCounted {
                 memory_elapsed = nonnegative(memory_elapsed - memory_interval);
             reconcile_defence();
             for (Defence &d : defences) {
-                CombatAmount &hp = d.layer == 0 ? player_shield : player_hp;
                 CombatAmount total = capacity(d.layer);
                 if (memory && d.memory_heal > 0) {
                     CombatAmount healing = d.maximum * d.memory_heal, recovered = combat_min(d.loss, healing);
                     d.loss = nonnegative(d.loss - recovered);
-                    hp = combat_min(total, hp + recovered);
                     d.buffer =
                         combat_min(d.maximum * d.memory_cap, d.buffer + nonnegative(healing - recovered));
                 }
@@ -1424,20 +1434,8 @@ class SpaceCombatKernel : public RefCounted {
         if (final_cleared) return;
         checked_increment(incoming_counter);
         last_incoming_at = at;
-        if (!module_defence) {
-            double factor = type == int(player_row.get("shield_type", 0)) ? 1 - resistance : 1;
-            CombatAmount absorbed = combat_min(player_shield, combat_max(1.0, raw * factor));
-            player_shield -= absorbed;
-            CombatAmount left = factor > 0 ? nonnegative(raw - absorbed / factor) : 0;
-            CombatAmount damage =
-                left > 0
-                    ? combat_ceil(left * (type == int(player_row.get("armour_type", 0)) ? 1 - resistance : 1))
-                    : 0;
-            player_hp = nonnegative(player_hp - damage);
-            incoming_effect(damage + absorbed, 0, type, at);
-            return;
-        }
         reconcile_defence();
+        const CombatAmount previous[2]={layer_remaining(0),layer_remaining(1)};
         // A hit restarts every shield delay, even when cover or armour pays it.
         for (Defence &d : defences)
             if (d.layer == 0)
@@ -1466,7 +1464,7 @@ class SpaceCombatKernel : public RefCounted {
                 if (d.layer != layer || available[i] <= 0)
                     continue;
                 double factor = type == d.type ? 1 - resistance : 1;
-                CombatAmount weighted = incoming * available[i] / total, part = weighted * factor,
+                CombatAmount weighted = incoming * (available[i] / total), part = weighted * factor,
                        payable = available[i] / (1 - d.deferred_fraction),
                        taken = layer == 1 ? part : combat_min(payable, part),
                        delayed = taken * d.deferred_fraction, immediate = nonnegative(taken - delayed);
@@ -1486,9 +1484,8 @@ class SpaceCombatKernel : public RefCounted {
         }
         CombatAmount loss = 0;
         for (int layer = 0; layer < 2; ++layer) {
-            CombatAmount &hp = layer == 0 ? player_shield : player_hp;
-            CombatAmount paid = combat_min(hp, deferred[layer] ? payments[layer] : combat_ceil(payments[layer]));
-            hp = nonnegative(hp - paid);
+            CombatAmount paid = combat_min(previous[layer], deferred[layer] ? payments[layer] : combat_ceil(payments[layer]));
+            assign_layer_missing(layer,capacity(layer)-(previous[layer]-paid));
             loss += paid;
         }
         incoming_effect(loss, absorbed, type, at);
@@ -1553,8 +1550,7 @@ class SpaceCombatKernel : public RefCounted {
         // Match weapon_multiplier grouping before multiplying the rounded base.
         double legendary = !w.hostile && w.kind == 0 ?
             (scatter && candidates.size() == 1 ? 1 + scatter_bonus : 1) * laser_charge_multiplier : 1;
-        a->damage = (w.hostile ? w.base : combat_ceil(w.base * (1 + counter_bonus(attack_counter)))) *
-                    w.factor * legendary;
+        a->damage = (w.hostile ? w.base*w.factor : CombatAmount(evaluate_charged(w.base,w.factor,attack_counter).final)) * legendary;
         a->critical = !w.hostile && rng->randf() < w.crit_rate;
         if (a->critical)
             a->damage *= w.crit_multiplier;
@@ -1900,7 +1896,9 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("finish_wave", "final"), &SpaceCombatKernel::finish_wave);
         ClassDB::bind_method(D_METHOD("take_results"), &SpaceCombatKernel::take_results);
         ClassDB::bind_method(D_METHOD("read_history"), &SpaceCombatKernel::read_history);
+        ClassDB::bind_method(D_METHOD("allocate_drop_id"), &SpaceCombatKernel::allocate_drop_id);
         ClassDB::bind_method(D_METHOD("begin_retreat"), &SpaceCombatKernel::begin_retreat);
+        ClassDB::bind_method(D_METHOD("prepare_departure"), &SpaceCombatKernel::prepare_departure);
         ClassDB::bind_method(D_METHOD("finish_retreat"), &SpaceCombatKernel::finish_retreat);
         ClassDB::bind_method(D_METHOD("missile_legend_metrics"), &SpaceCombatKernel::missile_legend_metrics);
         ClassDB::bind_method(D_METHOD("supports_endless_beam"), &SpaceCombatKernel::supports_endless_beam);
@@ -2064,10 +2062,6 @@ class SpaceCombatKernel : public RefCounted {
         resistance = d.get("resistance", 0.5);
         player_row = Dictionary(d["player"]).duplicate(true);
         player_point = Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0));
-        player_hp = player_row["armour"];
-        player_shield = player_row["shield"];
-        if (!combat_finite(player_hp) || !combat_finite(player_shield))
-            return false;
         rng.instantiate();
         rng->set_state(int64_t(d.get("rng_state", 1)));
         missile_attacks = d.get("missile_attacks",0); context_serial = 0;
@@ -2227,7 +2221,15 @@ class SpaceCombatKernel : public RefCounted {
             Dictionary payment = pending_debts[debt_keys[i]];
             debts[int64_t(debt_keys[i])] = {CombatAmount(payment.get("shield", 0.0)), CombatAmount(payment.get("armour", 0.0))};
         }
-        module_defence = !defences.empty();
+        if(defences.empty()) {
+            Defence armour;armour.layer=1;armour.type=player_row.get("armour_type",0);
+            armour.base=CombatAmount(player_row["armour"]);armour.maximum=armour.base;defences.push_back(armour);
+            if(CombatAmount(player_row["shield"])>0) {
+                Defence shield_module;shield_module.layer=0;shield_module.type=player_row.get("shield_type",0);
+                shield_module.base=CombatAmount(player_row["shield"]);shield_module.maximum=shield_module.base;defences.push_back(shield_module);
+            }
+        }
+        module_defence = true;
         admitted = (!bool(d.get("requires_module_defense", false)) || module_defence) &&
                    (!bool(d.get("requires_drop_rules", false)) || drop_rules);
         retain_configuration_bounds(true);
@@ -2335,6 +2337,8 @@ class SpaceCombatKernel : public RefCounted {
         return true;
     }
     void apply_configuration(Dictionary d, bool refit) {
+        CombatAmount former_remaining[2]={layer_remaining(0),layer_remaining(1)};
+        CombatAmount former_capacity[2]={capacity(0),capacity(1)};
         ++refit_epoch;
         // Both entrypoints validate before touching fields or published rows.
         Array rows = d["weapons"], defs = d["defences"];
@@ -2393,11 +2397,7 @@ class SpaceCombatKernel : public RefCounted {
         configure_missile_legends(d);
         prism_count = d.get("prism_count", prism_count);
         prism_bonus = d.get("prism_bonus", prism_bonus);
-        Dictionary player = d["player"];
-        player_hp = player["armour"];
-        player_shield = player["shield"];
         if (refit) {
-            for (Defence &a : defences) a.loss = 0;
             Array enemies = d["enemies"];
             for (int i = 0; i < enemies.size(); ++i) {
                 Dictionary v = enemies[i]; Array drops = v["compiled_drops"];
@@ -2411,6 +2411,10 @@ class SpaceCombatKernel : public RefCounted {
         }
         retain_configuration_bounds();
         reconcile_defence();
+        if(refit) for(int layer=0;layer<2;++layer) {
+            CombatAmount current=former_capacity[layer]>0?capacity(layer)*(former_remaining[layer]/former_capacity[layer]):CombatAmount(0);
+            assign_layer_missing(layer,capacity(layer)-current);
+        }
         publish_player();
         if (!refit) compact();
     }

@@ -43,6 +43,9 @@ int main() {
     assert(Amount::from_decimal("200.999999999").floor().compare(Amount(200))==0);
     assert(Amount::from_decimal("999999999999999").floor().compare(Amount::from_decimal("999999999999999"))==0);
     assert(Amount(1.23456).round_significant(3).compare(Amount(1.23))==0);
+    assert(space::equipment_growth(Amount(50),0.2,1).compare(Amount(50))==0);
+    assert(space::equipment_growth(Amount(50),0.2,2).compare(Amount(65))==0);
+    assert(space::equipment_growth(Amount(50),0.2,3).compare(Amount(75))==0);
     space::ModuleInput module;
     module.charged_base=Amount(10);module.history_count=100;module.effective_level=2;module.growth=0.1;
     module.branch_factors={Amount(1.5)};module.external_factors={Amount(2)};

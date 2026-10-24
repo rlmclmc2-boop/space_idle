@@ -400,6 +400,10 @@
       },
       "primary": [
         "id"
+      ],
+      "requiredKeys": [
+        "counter_log_base",
+        "bonus_round_scale"
       ]
     },
     "equipment": {
@@ -2044,7 +2048,8 @@
           "types": [
             "number"
           ],
-          "integer": true
+          "integer": true,
+          "min": 0
         },
         "monGroup": {
           "types": [
@@ -2055,24 +2060,28 @@
           "types": [
             "number",
             "string"
-          ]
+          ],
+          "min": 0
         },
         "lifeRatio": {
           "types": [
             "number",
             "string"
-          ]
+          ],
+          "min": 0
         },
         "resRatio": {
           "types": [
             "number",
             "string"
-          ]
+          ],
+          "min": 0
         },
         "jewelRatio": {
           "types": [
             "number"
-          ]
+          ],
+          "min": 0
         },
         "planetExpRatio": {
           "types": [
@@ -2084,13 +2093,15 @@
           "types": [
             "null",
             "number"
-          ]
+          ],
+          "min": 0
         },
         "entryLifeRatio": {
           "types": [
             "null",
             "number"
-          ]
+          ],
+          "min": 0
         },
         "rewardReferenceGroups": {
           "types": [
@@ -2152,13 +2163,15 @@
         "dmgMultiple": {
           "types": [
             "number"
-          ]
+          ],
+          "min": 0
         },
         "health": {
           "types": [
             "number"
           ],
-          "integer": true
+          "integer": true,
+          "min": 0
         },
         "armourType": {
           "types": [
@@ -2181,7 +2194,8 @@
           "types": [
             "number"
           ],
-          "integer": true
+          "integer": true,
+          "min": 0
         },
         "shieldType": {
           "types": [
@@ -2246,6 +2260,12 @@
           "table": "equipment",
           "target": "name",
           "kind": "weapon_level"
+        },
+        {
+          "field": "res",
+          "table": "res",
+          "target": "id",
+          "kind": "resource_drop"
         }
       ]
     },
@@ -2861,7 +2881,10 @@
         "enemy_x",
         "enemy_y",
         "player_x",
-        "player_y"
+        "player_y",
+        "history_level",
+        "history_growth",
+        "round_scale"
       ],
       "primary": [
         "case_id"
@@ -2880,17 +2903,20 @@
         "damage": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "enemy_hp": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "enemy_shield": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "shield_type": {
           "types": [
@@ -2940,22 +2966,26 @@
         "expected_hp": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "expected_shield": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "history_start": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "int64_text"
         },
         "expected_attacks": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "int64_text"
         },
         "enemy_x": {
           "types": [
@@ -2976,6 +3006,24 @@
           "types": [
             "number"
           ]
+        },
+        "history_level": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "history_growth": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "round_scale": {
+          "types": [
+            "number"
+          ],
+          "min": 0
         }
       },
       "literalOnly": true,
@@ -3014,12 +3062,14 @@
         "player_hp": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "player_damage": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "player_interval": {
           "types": [
@@ -3029,12 +3079,14 @@
         "enemy_hp": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "enemy_damage": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "enemy_interval": {
           "types": [
@@ -3059,7 +3111,8 @@
         "drop_amount": {
           "types": [
             "string"
-          ]
+          ],
+          "literal": "amount_text"
         },
         "travel_seconds": {
           "types": [
@@ -3068,6 +3121,700 @@
         }
       },
       "literalOnly": true
+    },
+    "battle_rules": {
+      "columns": [
+        "key",
+        "value"
+      ],
+      "primary": [
+        "key"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "clear_wait_seconds",
+            "maximum_travel_seconds",
+            "retreat_seconds",
+            "departure_seconds",
+            "back_distance",
+            "auto_collect_delay",
+            "fragment_collect_delay",
+            "auto_collect_reduce",
+            "resistance",
+            "jewel_probability",
+            "maximum_speed",
+            "timed_drop_interval",
+            "timed_drop_amount",
+            "timed_drop_speed",
+            "minimum_retreat_seconds",
+            "maximum_retreat_seconds"
+          ]
+        },
+        "value": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "requiredKeys": [
+        "clear_wait_seconds",
+        "maximum_travel_seconds",
+        "retreat_seconds",
+        "departure_seconds",
+        "back_distance",
+        "auto_collect_delay",
+        "fragment_collect_delay",
+        "auto_collect_reduce",
+        "resistance",
+        "jewel_probability",
+        "maximum_speed",
+        "timed_drop_interval",
+        "timed_drop_amount",
+        "timed_drop_speed",
+        "minimum_retreat_seconds",
+        "maximum_retreat_seconds"
+      ],
+      "contracts": {
+        "clear_wait_seconds": {
+          "value": {
+            "min": 0
+          }
+        },
+        "maximum_travel_seconds": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "retreat_seconds": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "departure_seconds": {
+          "value": {
+            "min": 0
+          }
+        },
+        "back_distance": {
+          "value": {
+            "min": 0
+          }
+        },
+        "auto_collect_delay": {
+          "value": {
+            "min": 0
+          }
+        },
+        "fragment_collect_delay": {
+          "value": {
+            "min": 0
+          }
+        },
+        "auto_collect_reduce": {
+          "value": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "resistance": {
+          "value": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "jewel_probability": {
+          "value": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "maximum_speed": {
+          "value": {
+            "min": 1,
+            "exclusiveMin": 0,
+            "integer": true
+          }
+        },
+        "timed_drop_interval": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "timed_drop_amount": {
+          "value": {
+            "min": 0
+          }
+        },
+        "timed_drop_speed": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "minimum_retreat_seconds": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "maximum_retreat_seconds": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        }
+      }
+    },
+    "battle_geometry": {
+      "columns": [
+        "key",
+        "value"
+      ],
+      "primary": [
+        "key"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "key": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "center_x",
+            "player_y",
+            "single_row_y",
+            "back_row_y",
+            "middle_row_y",
+            "front_row_y",
+            "columns",
+            "maximum_spacing",
+            "formation_width",
+            "target_slot_center",
+            "timed_spawn_y"
+          ]
+        },
+        "value": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "requiredKeys": [
+        "center_x",
+        "player_y",
+        "single_row_y",
+        "back_row_y",
+        "middle_row_y",
+        "front_row_y",
+        "columns",
+        "maximum_spacing",
+        "formation_width",
+        "target_slot_center",
+        "timed_spawn_y"
+      ],
+      "contracts": {
+        "center_x": {
+          "value": {
+            "min": 0
+          }
+        },
+        "player_y": {
+          "value": {
+            "min": 0
+          }
+        },
+        "single_row_y": {
+          "value": {
+            "min": 0
+          }
+        },
+        "back_row_y": {
+          "value": {
+            "min": 0
+          }
+        },
+        "middle_row_y": {
+          "value": {
+            "min": 0
+          }
+        },
+        "front_row_y": {
+          "value": {
+            "min": 0
+          }
+        },
+        "columns": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0,
+            "integer": true
+          }
+        },
+        "maximum_spacing": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "formation_width": {
+          "value": {
+            "min": 0,
+            "exclusiveMin": 0
+          }
+        },
+        "target_slot_center": {
+          "value": {
+            "min": 0
+          }
+        },
+        "timed_spawn_y": {
+          "value": {
+            "min": 0
+          }
+        }
+      }
+    },
+    "initial_profile": {
+      "columns": [
+        "id",
+        "initial_stage",
+        "ship_id",
+        "iron_id",
+        "uranium_id",
+        "fragment_id",
+        "chrono_id",
+        "initial_amount",
+        "initial_chrono",
+        "initial_slot_level",
+        "death_option"
+      ],
+      "primary": [
+        "id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ]
+        },
+        "initial_stage": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "ship_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "iron_id": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "uranium_id": {
+          "types": [
+            "number"
+          ],
+          "integer": true
+        },
+        "fragment_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "chrono_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "initial_amount": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "initial_chrono": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "initial_slot_level": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 1,
+          "max": 1
+        },
+        "death_option": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 0,
+          "max": 2
+        }
+      },
+      "references": [
+        {
+          "field": "initial_stage",
+          "table": "level",
+          "target": "id"
+        },
+        {
+          "field": "ship_id",
+          "table": "ship",
+          "target": "name"
+        },
+        {
+          "field": "iron_id",
+          "table": "res",
+          "target": "id"
+        },
+        {
+          "field": "uranium_id",
+          "table": "res",
+          "target": "id"
+        }
+      ]
+    },
+    "session_case": {
+      "columns": [
+        "case_id",
+        "duration",
+        "expected_auto",
+        "expected_manual",
+        "expected_stage",
+        "resource"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "duration": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_auto": {
+          "types": [
+            "string"
+          ]
+        },
+        "expected_manual": {
+          "types": [
+            "string"
+          ]
+        },
+        "expected_stage": {
+          "types": [
+            "number"
+          ]
+        },
+        "resource": {
+          "types": [
+            "number"
+          ]
+        }
+      }
+    },
+    "clock_case": {
+      "columns": [
+        "case_id",
+        "mode",
+        "balance",
+        "speed",
+        "real_dt",
+        "expected_game",
+        "expected_balance"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "mode": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "exhaustion",
+            "pause",
+            "focus",
+            "budget"
+          ]
+        },
+        "balance": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "speed": {
+          "types": [
+            "number"
+          ]
+        },
+        "real_dt": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_game": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_balance": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        }
+      }
+    },
+    "journey_case": {
+      "columns": [
+        "case_id",
+        "mode",
+        "duration",
+        "resource",
+        "expected_amount",
+        "death_option"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "mode": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "garrison_timer",
+            "retreat"
+          ]
+        },
+        "duration": {
+          "types": [
+            "number"
+          ]
+        },
+        "resource": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_amount": {
+          "types": [
+            "string"
+          ]
+        },
+        "death_option": {
+          "types": [
+            "number"
+          ]
+        }
+      }
+    },
+    "income_case": {
+      "columns": [
+        "case_id",
+        "resource",
+        "amount",
+        "production_base",
+        "sample_wall",
+        "sample_game",
+        "now_wall",
+        "now_game",
+        "expected_wall",
+        "expected_game",
+        "expected_production"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "resource": {
+          "types": [
+            "number"
+          ]
+        },
+        "amount": {
+          "types": [
+            "string"
+          ]
+        },
+        "production_base": {
+          "types": [
+            "string"
+          ]
+        },
+        "sample_wall": {
+          "types": [
+            "number"
+          ]
+        },
+        "sample_game": {
+          "types": [
+            "number"
+          ]
+        },
+        "now_wall": {
+          "types": [
+            "number"
+          ]
+        },
+        "now_game": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_wall": {
+          "types": [
+            "string"
+          ]
+        },
+        "expected_game": {
+          "types": [
+            "string"
+          ]
+        },
+        "expected_production": {
+          "types": [
+            "string"
+          ]
+        }
+      }
+    },
+    "ratio_case": {
+      "columns": [
+        "case_id",
+        "field",
+        "entry_field",
+        "entry",
+        "end",
+        "point",
+        "mon_group",
+        "length",
+        "expected"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "field": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "atkRatio",
+            "lifeRatio",
+            "resRatio"
+          ]
+        },
+        "entry_field": {
+          "types": [
+            "string"
+          ],
+          "enum": [
+            "entryAtkRatio",
+            "entryLifeRatio",
+            ""
+          ]
+        },
+        "entry": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "end": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "point": {
+          "types": [
+            "number"
+          ]
+        },
+        "mon_group": {
+          "types": [
+            "string"
+          ]
+        },
+        "length": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        }
+      }
     }
-  }
+  },
+  "runtimeTables": [
+    "battle_rules",
+    "battle_geometry",
+    "initial_profile",
+    "level",
+    "monGroup",
+    "mon",
+    "equipment",
+    "res",
+    "ship",
+    "config",
+    "unlock",
+    "enemy_weapon_base",
+    "weapon_motion",
+    "enhance_config"
+  ]
 }

@@ -79,7 +79,12 @@ func run() -> void:
 				check(abs(observed_log - expected_log) <= row.tolerance, diagnostic)
 	var native_count := verify_kernel_cases(bundle, amount, options)
 	var wave_count := verify_wave_cases(bundle, amount, options)
-	check(count + native_count + wave_count > 0, "UnknownOrEmptyCaseSelection")
+	var session_count := verify_session_cases(options)
+	var clock_count := verify_clock_cases(options)
+	var journey_count := verify_journey_cases(options)
+	var income_count := verify_income_cases(options)
+	var ratio_count := verify_ratio_cases(options)
+	check(count + native_count + wave_count + session_count + clock_count + journey_count + income_count + ratio_count > 0, "UnknownOrEmptyCaseSelection")
 	# Stage-1 admission/advance smoke uses the actual existing kernel, no game
 	# scene, GPU object, old Game adapter, or alternative battle implementation.
 	var kernel = ClassDB.instantiate("SpaceCombatKernel")
@@ -94,7 +99,7 @@ func run() -> void:
 	check(kernel.enemy_views().size() == 1, "NativeEnemyRetention")
 	check(kernel.take_feedback().is_empty(), "NativeEmptyFeedback")
 	await verify_saves(options["--output"].path_join("isolated_saves"), bundle.semanticHash)
-	var report := JSON.stringify({"ok": failures.is_empty(), "amountCases": count, "nativeCases": native_count, "waveCases": wave_count, "nativeKernel": true, "saveProtocol": true, "failures": failures})
+	var report := JSON.stringify({"ok": failures.is_empty(), "amountCases": count, "nativeCases": native_count, "waveCases": wave_count, "sessionCases": session_count, "clockCases": clock_count, "journeyCases": journey_count, "incomeCases": income_count, "ratioCases": ratio_count, "nativeKernel": true, "saveProtocol": true, "failures": failures})
 	var report_file := FileAccess.open(options["--output"].path_join("result.json"), FileAccess.WRITE)
 	if report_file == null:
 		quit(2)
@@ -120,7 +125,7 @@ func verify_kernel_cases(bundle: Dictionary, amount, options: Dictionary) -> int
 			"weapons": [{"kind": int(row.kind), "damage": damage, "type": 1, "interval": row.interval,
 				"remaining": row.initial_delay, "speed": row.speed, "charge": row.charge, "maximum": row.maximum, "ramp": row.ramp,
 				"muzzle": Vector2(row.player_x, row.player_y)}], "attack_counter": row.history_start.to_int(), "rng_state": 17,
-			"resistance": row.resistance}
+			"resistance": row.resistance, "counter_level": int(row.history_level), "counter_growth": row.history_growth, "counter_round_scale": row.round_scale}
 		if not kernel.configure(descriptor):
 			check(false, row.case_id + " native admission " + kernel.last_error())
 			continue
@@ -135,6 +140,169 @@ func verify_kernel_cases(bundle: Dictionary, amount, options: Dictionary) -> int
 		check(view.hp == amount.calculate("from_decimal", {"text": row.expected_hp}).value, row.case_id + " hp " + str(view.hp))
 		check(view.shield == amount.calculate("from_decimal", {"text": row.expected_shield}).value, row.case_id + " shield " + str(view.shield))
 		check(str(kernel.metrics().attack_counter) == row.expected_attacks, row.case_id + " exact history " + str(kernel.metrics().attack_counter))
+	return count
+
+func verify_session_cases(options: Dictionary) -> int:
+	var config_script = load("res://runtime/config_bundle.gd")
+	var opened: Dictionary = config_script.open_active(options["--output"])
+	var session_script = load("res://runtime/game_session.gd")
+	if session_script == null or not session_script.can_instantiate():
+		check(false, "GameSession load")
+		return 0
+	var count := 0
+	for row in opened.bundle.rows("session_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		for frame_size in [1.0 / 60.0, 0.1, 1.0]:
+			var created: Dictionary = session_script.create(opened.bundle)
+			check(created.get("ok", false), "Session create " + str(created.get("reason")))
+			if not created.get("ok", false): continue
+			var session = created.session
+			check(session.depart().ok, "Session depart")
+			for i in range(roundi(row.duration / frame_size)): session.frame(frame_size)
+			check(session.stopped_error.is_empty(), "Session error " + session.stopped_error)
+			check(session.campaign.clearedStageIds.has(str(int(row.expected_stage))), "Session clear at frame " + str(frame_size))
+			check(session.economy.wallet[str(int(row.resource))] == session.amount(row.expected_auto), "Session auto income " + str(session.economy.wallet))
+			check(session.depart().ok, "Session re-depart")
+			check(session.kernel.player_view().armour == session.amount(opened.bundle.lookup("equipment", ["armour"]).para1), "Session re-depart full armour")
+			count += 1
+		var manual: Dictionary = session_script.create(opened.bundle)
+		if not manual.ok: continue
+		manual.session.depart()
+		var collected := false
+		for i in range(roundi(row.duration * 60)):
+			manual.session.frame(1.0 / 60.0)
+			if not collected and not manual.session.economy.drops.is_empty():
+				var id: String = manual.session.economy.drops.keys()[0]
+				check(manual.session.collect_drop(id).ok, "Session manual collect")
+				check(manual.session.collect_drop(id).reason == "NoChange", "Session duplicate collect")
+				collected = true
+		check(manual.session.economy.wallet[str(int(row.resource))] == manual.session.amount(row.expected_manual), "Session manual income")
+		count += 1
+	return count
+
+func verify_clock_cases(options: Dictionary) -> int:
+	var config_script = load("res://runtime/config_bundle.gd")
+	var opened: Dictionary = config_script.open_active(options["--output"])
+	var session_script = load("res://runtime/game_session.gd")
+	if session_script == null or not session_script.can_instantiate(): return 0
+	var count := 0
+	for row in opened.bundle.rows("clock_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created: Dictionary = session_script.create(opened.bundle)
+		if not created.ok:
+			check(false, row.case_id + " create")
+			continue
+		var session = created.session
+		session.economy.wallet[session.profile.chrono_id] = session.amount(row.balance)
+		session.set_speed(int(row.speed))
+		match row.mode:
+			"pause":
+				session.set_pause("user", true)
+				session.set_pause("guide", true)
+				session.frame(row.real_dt)
+				session.set_pause("guide", false)
+				session.frame(row.real_dt)
+				check(session.time.game == 0, row.case_id + " user pause retained")
+				check(session.economy.wallet[session.profile.chrono_id] == session.amount(row.balance), row.case_id + " paused balance")
+				session.set_pause("user", false)
+				session.frame(row.real_dt)
+			"focus":
+				session.frame(row.real_dt, false)
+				session.frame(float(row.balance), true)
+				check(session.time.speed == 1, row.case_id + " focus resets speed")
+			"budget":
+				session.frame(row.real_dt, true, 1)
+				var pending: float = session.time.pending
+				session.set_pause("user", true)
+				session.frame(0.0)
+				check(session.time.pending == pending, row.case_id + " paused pending retained")
+				session.set_pause("user", false)
+				session.frame(0.0)
+			_:
+				session.frame(row.real_dt)
+		check(session.stopped_error.is_empty(), row.case_id + " error " + session.stopped_error)
+		check(abs(session.time.game - row.expected_game) < 1e-9, row.case_id + " game " + str(session.time.game))
+		check(session.economy.wallet[session.profile.chrono_id] == session.amount(row.expected_balance), row.case_id + " balance")
+		count += 1
+	return count
+
+func fixture_session(options: Dictionary) -> Dictionary:
+	var config_script = load("res://runtime/config_bundle.gd")
+	var opened: Dictionary = config_script.open_active(options["--output"])
+	var session_script = load("res://runtime/game_session.gd")
+	if session_script == null or not session_script.can_instantiate(): return {"ok": false}
+	return session_script.create(opened.bundle)
+
+func verify_journey_cases(options: Dictionary) -> int:
+	var config_script = load("res://runtime/config_bundle.gd")
+	var opened: Dictionary = config_script.open_active(options["--output"])
+	var count := 0
+	for row in opened.bundle.rows("journey_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created := fixture_session(options)
+		if not created.ok:
+			check(false, row.case_id + " create")
+			continue
+		var session = created.session
+		check(session.depart().ok, row.case_id + " depart")
+		session.set_death_option(int(row.death_option))
+		if row.mode == "garrison_timer":
+			check(session.set_garrison(true).ok, row.case_id + " garrison")
+			for i in range(roundi(row.duration * 60)): session.frame(1.0 / 60.0)
+			check(session.campaign.clearedStageIds.is_empty(), row.case_id + " remains at nonfinal point")
+			check(session.economy.wallet[str(int(row.resource))] == session.amount(row.expected_amount), row.case_id + " timed uranium " + str(session.economy.wallet))
+			session.set_garrison(false)
+			check(session.campaign.garrison.is_empty(), row.case_id + " cancel garrison")
+		else:
+			for i in range(60):
+				if session.campaign.phase == "combat": break
+				session.frame(1.0 / 60.0)
+			var origin: float = session.campaign.distance
+			check(session.begin_retreat().ok and session.campaign.distance == origin, row.case_id + " retreat does not teleport")
+			for i in range(roundi(row.duration * 60)): session.frame(1.0 / 60.0)
+			check(session.campaign.phase == "combat", row.case_id + " retreat and return")
+			check(session.kernel.player_view().armour == session.amount(opened.bundle.lookup("equipment", ["armour"]).para1), row.case_id + " full defence")
+		check(session.stopped_error.is_empty(), row.case_id + " error " + session.stopped_error)
+		count += 1
+	return count
+
+func verify_income_cases(options: Dictionary) -> int:
+	var config_script = load("res://runtime/config_bundle.gd")
+	var opened: Dictionary = config_script.open_active(options["--output"])
+	var count := 0
+	for row in opened.bundle.rows("income_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created := fixture_session(options)
+		if not created.ok: continue
+		var session = created.session
+		session.time.wall = row.now_wall
+		session.time.game = row.now_game
+		session.time.ticks = roundi(row.now_game * 60)
+		session.economy.income = [{"resource": str(int(row.resource)), "source": "enemy_drop", "actual": session.amount(row.amount),
+			"production_base": session.amount(row.production_base), "wall": row.sample_wall, "game": row.sample_game}]
+		check(session.income_per_second(str(int(row.resource)), "wall") == session.amount(row.expected_wall), row.case_id + " wall window")
+		check(session.income_per_second(str(int(row.resource)), "game") == session.amount(row.expected_game), row.case_id + " game window")
+		check(session.income_per_second(str(int(row.resource)), "game", true) == session.amount(row.expected_production), row.case_id + " native base")
+		count += 1
+	return count
+
+func verify_ratio_cases(options: Dictionary) -> int:
+	var config_script = load("res://runtime/config_bundle.gd")
+	var opened: Dictionary = config_script.open_active(options["--output"])
+	var setup = load("res://runtime/combat_setup.gd")
+	var count := 0
+	for row in opened.bundle.rows("ratio_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created := fixture_session(options)
+		if not created.ok: continue
+		var session = created.session
+		session.campaign.point = int(row.point)
+		var stage := {"length": row.length, "monGroup": row.mon_group}
+		stage[row.field] = row.end
+		stage[row.entry_field] = row.entry
+		check(setup.stage_ratio(session, stage, row.field, row.entry_field) == session.amount(row.expected), row.case_id + " shared Amount ratio")
+		check(session.stopped_error.is_empty(), row.case_id + " ratio error")
+		count += 1
 	return count
 
 func verify_wave_cases(bundle: Dictionary, amount, options: Dictionary) -> int:

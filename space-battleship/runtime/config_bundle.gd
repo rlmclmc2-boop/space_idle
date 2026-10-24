@@ -2,6 +2,7 @@ extends RefCounted
 ## Session owns one immutable bundle identity. Queries return detached copies.
 var semantic_hash: String
 var schema_version: int
+var entry: String
 var _data: Dictionary
 
 static func open_active(path: String) -> Dictionary:
@@ -20,6 +21,7 @@ static func open_active(path: String) -> Dictionary:
 	bundle._data = data
 	bundle.semantic_hash = data.semanticHash
 	bundle.schema_version = int(data.schemaVersion)
+	bundle.entry = data.get("entry", "data")
 	return {"ok": true, "bundle": bundle}
 
 func rows(table: String) -> Array:
@@ -28,3 +30,6 @@ func rows(table: String) -> Array:
 func lookup(table: String, primary: Array) -> Dictionary:
 	var index = _data.indices.get(table, {}).get(JSON.stringify(primary), null)
 	return {} if index == null else _data.tables[table][int(index)].duplicate(true)
+
+func drop_rules(enemy_id: int) -> Array:
+	return _data.indices.dropRules[str(enemy_id)].duplicate(true)

@@ -6,28 +6,34 @@ var bundle
 var kernel
 var seed: int
 var _numbers
+var _modules
 var rules := {}
 var geometry := {}
 var motion := {}
 var profile := {}
 var campaign := {}
 var equipment := {}
-var economy := {"wallet": {}, "drops": {}, "claimed": {}, "income": []}
+var economy := {"wallet": {}, "drops": {}, "claimed": {}, "income": [], "peaks": {}, "timed_elapsed": 0.0}
 var notifications := {"seen": {}, "read": {}}
 var settings := {"skip_guides": false}
-var time := {"wall": 0.0, "game": 0.0, "pending": 0.0, "pause_reasons": {}, "departure": 0.0, "speed": 1}
+var time := {"wall": 0.0, "game": 0.0, "ticks": 0, "pending": 0.0, "accepted": [], "sample_wall": 0.0, "pause_reasons": {}, "departure": 0.0, "speed": 1}
 var change_number: int = 0
 var stopped_error := ""
+var _unlock_rows: Array = []
 
 static func create(config, random_seed: int = 17) -> Dictionary:
-	if not ClassDB.class_exists("SpaceCombatKernel") or not ClassDB.class_exists("SpaceAmount"):
+	if config.entry != "GameSession": return {"ok": false, "reason": "IncompatibleConfigEntry"}
+	if not ClassDB.class_exists("SpaceCombatKernel") or not ClassDB.class_exists("SpaceAmount") or not ClassDB.class_exists("SpaceModuleEvaluator"):
 		return {"ok": false, "reason": "MissingNativeDependency"}
 	var session = load("res://runtime/game_session.gd").new()
 	session.bundle = config
+	session._unlock_rows = config.rows("unlock")
 	session.seed = random_seed
 	session.kernel = ClassDB.instantiate("SpaceCombatKernel")
 	session._numbers = ClassDB.instantiate("SpaceAmount")
+	session._modules = ClassDB.instantiate("SpaceModuleEvaluator")
 	for row in config.rows("battle_rules"): session.rules[row.key] = row.value
+	session.rules.retreat_seconds = clampf(session.rules.retreat_seconds, session.rules.minimum_retreat_seconds, session.rules.maximum_retreat_seconds)
 	for row in config.rows("battle_geometry"): session.geometry[row.key] = row.value
 	for row in config.rows("weapon_motion"): session.motion[row.id] = row.value
 	session.profile = config.lookup("initial_profile", ["default"])
@@ -54,7 +60,8 @@ static func create(config, random_seed: int = 17) -> Dictionary:
 	session.economy.wallet[profile.chrono_id] = session.amount(profile.initial_chrono)
 	var initialized: Dictionary = SETUP.initialize(session)
 	if not initialized.ok: return initialized
-	for row in config.rows("unlock"):
+	if not session.stopped_error.is_empty(): return {"ok": false, "reason": session.stopped_error}
+	for row in session._unlock_rows:
 		if session.unlocked(row): session.notifications.seen[row.name] = true
 	return {"ok": true, "session": session}
 
@@ -64,10 +71,16 @@ func calculate(operation: String, left: Dictionary = {}, right: Dictionary = {},
 	return result
 
 func amount(value) -> Dictionary:
+	if value is Dictionary: return calculate("decode", value).get("value", {})
 	return calculate("from_decimal", {"text": str(value)}).get("value", {})
 func add(a: Dictionary, b: Dictionary) -> Dictionary: return calculate("add", a, b).get("value", {})
 func mul(a: Dictionary, b: Dictionary) -> Dictionary: return calculate("mul", a, b).get("value", {})
 func ceil_amount(a: Dictionary) -> Dictionary: return calculate("ceil", a).get("value", {})
+
+func growth(base: Dictionary, rate: float, level: int) -> Dictionary:
+	var result: Dictionary = _modules.growth({"base": base, "growth": rate, "level": str(level)})
+	if not result.ok: stopped_error = result.error
+	return result.get("value", {})
 
 func unlocked(row: Dictionary) -> bool:
 	if campaign.permanentGrants.has(row.name) or int(row.level) == 0: return true
@@ -75,7 +88,7 @@ func unlocked(row: Dictionary) -> bool:
 	return campaign.highestReached > int(row.level) if row.mode == "reached" else false
 
 func content_unlocked(category: String, target: String) -> bool:
-	for row in bundle.rows("unlock"):
+	for row in _unlock_rows:
 		if row.type == category and row.target == target: return unlocked(row)
 	return false
 
@@ -92,8 +105,8 @@ func depart(stage: int = -1) -> Dictionary:
 	if stage < 0: stage = campaign.stage
 	if bundle.lookup("level", [stage]).is_empty(): return {"ok": false, "reason": "UnknownStage"}
 	if stage > campaign.highestReached: return {"ok": false, "reason": "StageLocked"}
-	if calculate("compare", kernel.player_view().armour, amount(0)).scalar <= 0: return {"ok": false, "reason": "NoArmour"}
 	if campaign.phase != "menu": return {"ok": false, "reason": "AlreadyDeparted"}
+	if not kernel.prepare_departure(): return {"ok": false, "reason": "NoArmour"}
 	campaign.stage = stage
 	campaign.point = 0
 	campaign.distance = 0.0
@@ -108,7 +121,11 @@ func frame(real_dt: float, focused: bool = true, step_budget: int = 600) -> void
 	if not is_finite(real_dt) or real_dt < 0 or step_budget < 0:
 		stopped_error = "InvalidFrameInput"
 		return
+	if not is_finite(time.wall + real_dt):
+		stopped_error = "TimeRangeExceeded"
+		return
 	time.wall += real_dt
+	if not focused: time.speed = 1
 	if not time.pause_reasons.is_empty(): return
 	var accepted := real_dt
 	if time.departure > 0:
@@ -119,27 +136,98 @@ func frame(real_dt: float, focused: bool = true, step_budget: int = 600) -> void
 		var speed: int = int(time.speed) if focused else 1
 		var accelerated := accepted
 		if speed > 1:
-			var cost: Dictionary = amount(accepted * (speed - 1))
+			var cost: Dictionary = mul(amount(accepted), amount(speed - 1))
 			var fraction: float = calculate("to_ratio", economy.wallet[profile.chrono_id], cost).scalar
 			accelerated *= fraction
-			var payment: Dictionary = amount(accelerated * (speed - 1))
+		var credit: float = accelerated * speed + accepted - accelerated
+		if not is_finite(time.pending + credit) or time.pending + credit - STEP == time.pending + credit:
+			stopped_error = "TimeRangeExceeded"
+			return
+		if speed > 1:
+			var payment: Dictionary = mul(amount(accelerated), amount(speed - 1))
 			economy.wallet[profile.chrono_id] = calculate("sub_nonnegative", economy.wallet[profile.chrono_id], payment).value
-		time.pending += accelerated * speed + accepted - accelerated
+		var start: float = time.wall - accepted
+		if accelerated > 0:
+			time.accepted.append({"game": accelerated * speed, "wall": start, "speed": speed})
+		if accepted > accelerated:
+			time.accepted.append({"game": accepted - accelerated, "wall": start + accelerated, "speed": 1})
+		time.pending += credit
 	var steps := 0
 	while stopped_error.is_empty() and time.pause_reasons.is_empty() and time.departure <= 0 and time.pending + 1e-10 >= STEP and steps < step_budget:
 		time.pending = maxf(0.0, time.pending - STEP)
+		consume_accepted_time(STEP)
 		step_game(STEP)
 		steps += 1
 
+func consume_accepted_time(game_dt: float) -> void:
+	var remaining := game_dt
+	while remaining > 1e-10 and not time.accepted.is_empty():
+		var segment: Dictionary = time.accepted[0]
+		var consumed: float = minf(remaining, segment.game)
+		segment.wall += consumed / segment.speed
+		segment.game -= consumed
+		remaining -= consumed
+		time.sample_wall = segment.wall
+		if segment.game < 1e-10: time.accepted.pop_front()
+
 func step_game(dt: float) -> void:
-	time.game += dt
+	if time.ticks == 9223372036854775807:
+		stopped_error = "IntegerRangeExceeded"
+		return
+	time.ticks += 1
+	time.game = time.ticks * STEP
+	spawn_timed_resources(dt)
 	collect_due_drops()
 	advance_campaign(dt)
 	refresh_unlocks()
 	change_number += 1
+	var retained_wall: float = minf(time.wall, time.sample_wall)
+	economy.income = economy.income.filter(func(sample): return sample.wall > retained_wall - 60 or sample.game > time.game - 60)
+
+func spawn_timed_resources(dt: float) -> void:
+	if campaign.phase == "menu": return
+	economy.timed_elapsed += dt
+	while economy.timed_elapsed + 1e-10 >= rules.timed_drop_interval:
+		economy.timed_elapsed -= rules.timed_drop_interval
+		var allocated: Dictionary = kernel.allocate_drop_id()
+		if not allocated.ok:
+			stopped_error = allocated.error
+			return
+		var id := str(allocated.id)
+		var stage: Dictionary = bundle.lookup("level", [campaign.stage])
+		var value := ceil_amount(mul(amount(rules.timed_drop_amount), SETUP.stage_ratio(self, stage, "resRatio")))
+		var created: float = time.game - economy.timed_elapsed
+		economy.drops[id] = {"id": id, "resource": str(int(profile.uranium_id)), "amount": value, "production_base": value,
+			"due": created + maxf(0.0, geometry.player_y - geometry.timed_spawn_y) / rules.timed_drop_speed,
+			"fragment": false, "jewel_ratio": amount(1), "source": "timed_drop", "x": geometry.center_x, "y": geometry.timed_spawn_y}
+
+func income_per_second(resource: String, clock: String = "wall", production_base: bool = false) -> Dictionary:
+	var total := amount(0)
+	var now: float = time.wall if clock == "wall" else time.game
+	for sample in economy.income:
+		if sample.resource != resource or sample[clock] <= now - 60 or sample[clock] > now: continue
+		if production_base and sample.source == "fragment_drop": continue
+		total = add(total, sample.production_base if production_base else sample.actual)
+	return calculate("div", total, amount(60)).value
+
+func refresh_income_peak(resource: String) -> void:
+	# Manual input can arrive while accepted time is queued. Re-evaluate the
+	# retained chronological windows so processing order cannot change peaks.
+	var samples: Array = economy.income.filter(func(sample): return sample.resource == resource and sample.source in ["enemy_drop", "timed_drop", "fragment_drop"])
+	samples.sort_custom(func(a, b): return a.wall < b.wall if a.wall != b.wall else a.game < b.game)
+	var total := amount(0)
+	var peak: Dictionary = economy.peaks.get(resource, amount(0))
+	var left := 0
+	for right in range(samples.size()):
+		total = add(total, samples[right].actual)
+		while left <= right and samples[left].wall <= samples[right].wall - 60:
+			total = calculate("sub_nonnegative", total, samples[left].actual).value
+			left += 1
+		peak = calculate("max", peak, calculate("div", total, amount(60)).value).value
+	economy.peaks[resource] = peak
 
 func refresh_unlocks() -> void:
-	for row in bundle.rows("unlock"):
+	for row in _unlock_rows:
 		if unlocked(row) and not notifications.seen.has(row.name):
 			notifications.seen[row.name] = true
 			if not settings.skip_guides: set_pause("unlock/" + row.name, true)
@@ -151,7 +239,7 @@ func advance_campaign(dt: float) -> void:
 	if campaign.phase == "menu": return
 	if campaign.phase == "retreat":
 		campaign.retreat_elapsed += dt
-		var ratio: float = minf(1.0, campaign.retreat_elapsed / rules.retreat_seconds)
+		var ratio: float = 1.0 if campaign.retreat_elapsed + 1e-10 >= rules.retreat_seconds else campaign.retreat_elapsed / rules.retreat_seconds
 		campaign.distance = lerpf(campaign.retreat_origin, campaign.retreat_target, ratio)
 		if ratio >= 1:
 			if not kernel.finish_retreat(): campaign.phase = "menu"
@@ -159,10 +247,15 @@ func advance_campaign(dt: float) -> void:
 				campaign.phase = "travel"
 				campaign.segment_origin = campaign.distance
 		return
-	if campaign.phase == "clear_wait":
+	if campaign.phase in ["clear_wait", "garrison_wait"]:
 		advance_native(dt, time.game)
+		if campaign.phase not in ["clear_wait", "garrison_wait"]: return
 		campaign.wait -= dt
-		if campaign.wait <= 0: continue_campaign()
+		if campaign.wait <= 1e-10:
+			if campaign.phase == "garrison_wait":
+				campaign.phase = "travel"
+				campaign.segment_origin = campaign.distance
+			else: continue_campaign()
 		return
 	if campaign.phase == "travel":
 		var target: float = current_points()[campaign.point].distance
@@ -174,7 +267,7 @@ func advance_campaign(dt: float) -> void:
 			advance_native(travel_dt, time.game - dt + travel_dt)
 		if campaign.phase != "travel" or not stopped_error.is_empty(): return
 		if campaign.distance + 1e-8 >= target:
-			campaign.distance = target
+			campaign.distance = maxf(campaign.distance, target)
 			var wave: Dictionary = SETUP.wave(self)
 			if wave.has("error") or not kernel.start_wave(wave):
 				stopped_error = wave.get("error", "NativeWaveAdmission")
@@ -197,7 +290,8 @@ func advance_native(dt: float, global_end: float) -> void:
 		var created: float = global_end - (result.clock - drop.created_at)
 		economy.drops[id] = {"id": id, "resource": str(drop.id), "amount": amount(drop.amount) if not drop.amount is Dictionary else drop.amount,
 			"production_base": drop.get("production_base", amount(drop.amount) if not drop.amount is Dictionary else drop.amount),
-			"due": created + delay, "fragment": fragment, "jewel_ratio": drop.get("jewelRatio", 1.0)}
+			"due": created + delay, "fragment": fragment, "jewel_ratio": drop.get("jewelRatio", 1.0),
+			"source": "fragment_drop" if fragment else "enemy_drop", "x": drop.x, "y": drop.y}
 	if result.player_died:
 		begin_retreat()
 	elif result.wave_cleared:
@@ -210,9 +304,38 @@ func advance_native(dt: float, global_end: float) -> void:
 			campaign.phase = "clear_wait"
 			campaign.wait = rules.clear_wait_seconds
 		else:
-			campaign.point += 1
 			campaign.phase = "travel"
+		if not campaign.garrison.is_empty() and campaign.garrison.stage == campaign.stage and campaign.garrison.point == campaign.point:
+			var list := current_points()
+			var previous_distance: float = 0.0 if campaign.point == 0 else list[campaign.point - 1].distance
+			var ship: Dictionary = bundle.lookup("ship", [equipment.ship_id])
+			campaign.phase = "garrison_wait"
+			campaign.wait = minf(rules.maximum_travel_seconds, (list[campaign.point].distance - previous_distance) / ship.para_3)
+		elif not result.final_cleared:
+			campaign.point += 1
 			campaign.segment_origin = campaign.distance
+
+func set_garrison(enabled: bool) -> Dictionary:
+	if enabled:
+		if campaign.phase in ["menu", "retreat"]: return {"ok": false, "reason": "NoGarrisonPoint"}
+		campaign.garrison = {"stage": campaign.stage, "point": campaign.point, "distance": current_points()[campaign.point].distance}
+	else:
+		campaign.garrison = {}
+		if campaign.phase == "garrison_wait":
+			if campaign.point == current_points().size() - 1:
+				campaign.phase = "clear_wait"
+			else:
+				campaign.point += 1
+				campaign.phase = "travel"
+				campaign.segment_origin = campaign.distance
+	change_number += 1
+	return {"ok": true}
+
+func set_death_option(option: int) -> Dictionary:
+	if option < 0 or option > 2: return {"ok": false, "reason": "InvalidDeathOption"}
+	campaign.death_option = option
+	change_number += 1
+	return {"ok": true}
 
 func continue_campaign() -> void:
 	if not campaign.garrison.is_empty():
@@ -235,11 +358,15 @@ func begin_retreat() -> Dictionary:
 	if campaign.phase in ["menu", "retreat"]: return {"ok": false, "reason": "NoActiveJourney"}
 	if not kernel.begin_retreat(): return {"ok": false, "reason": "NativeRetreatRejected"}
 	var target: float = campaign.distance - rules.back_distance
+	var origin: float = campaign.distance
 	while target < 0 and campaign.stage > int(profile.initial_stage):
 		campaign.stage -= 1
-		target += bundle.lookup("level", [campaign.stage]).length
+		var length: float = bundle.lookup("level", [campaign.stage]).length
+		target += length
+		origin += length
 	campaign.phase = "retreat"
-	campaign.retreat_origin = campaign.distance
+	campaign.distance = origin
+	campaign.retreat_origin = origin
 	campaign.retreat_target = maxf(0.0, target)
 	campaign.retreat_elapsed = 0.0
 	campaign.point = 0
@@ -262,8 +389,9 @@ func collect_drop(id: String, automatic: bool = false) -> Dictionary:
 		base = ceil_amount(mul(base, amount(1.0 - rules.auto_collect_reduce)))
 	if not economy.wallet.has(drop.resource): economy.wallet[drop.resource] = amount(0)
 	economy.wallet[drop.resource] = add(economy.wallet[drop.resource], value)
-	economy.income.append({"resource": drop.resource, "source": "fragment_drop" if drop.fragment else "enemy_drop", "actual": value,
-		"production_base": base, "wall": time.wall, "game": time.game})
+	economy.income.append({"resource": drop.resource, "source": drop.source, "actual": value,
+		"production_base": base, "wall": time.sample_wall if automatic else time.wall, "game": time.game})
+	refresh_income_peak(drop.resource)
 	economy.claimed[id] = true
 	economy.drops.erase(id)
 	change_number += 1

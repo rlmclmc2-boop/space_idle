@@ -322,6 +322,36 @@
           "table": "weapon_motion"
         }
       ]
+    },
+    {
+      "path": "../config_excel/battle_rules.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "battle_rules",
+          "table": "battle_rules"
+        }
+      ]
+    },
+    {
+      "path": "../config_excel/battle_geometry.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "battle_geometry",
+          "table": "battle_geometry"
+        }
+      ]
+    },
+    {
+      "path": "../config_excel/initial_profile.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "initial_profile",
+          "table": "initial_profile"
+        }
+      ]
     }
   ],
   "excludedSources": {
@@ -329,5 +359,6 @@
     "level_monGroup_generated.xlsx": "generated copy",
     "published/": "release copies",
     "../../太空战舰.xlsx": "historical split input"
-  }
+  },
+  "entry": "GameSession"
 }

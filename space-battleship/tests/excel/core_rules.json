@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "test",
+  "entry": "GameSession",
   "inputRoot": ".",
   "workbooks": [
     {
@@ -14,10 +15,6 @@
         {
           "sheet": "amount_case",
           "table": "amount_case"
-        },
-        {
-          "sheet": "kernel_case",
-          "table": "kernel_case"
         },
         {
           "sheet": "wave_case",
@@ -46,6 +43,62 @@
         {
           "sheet": "level",
           "table": "level"
+        },
+        {
+          "sheet": "kernel_case",
+          "table": "kernel_case"
+        },
+        {
+          "sheet": "battle_rules",
+          "table": "battle_rules"
+        },
+        {
+          "sheet": "battle_geometry",
+          "table": "battle_geometry"
+        },
+        {
+          "sheet": "initial_profile",
+          "table": "initial_profile"
+        },
+        {
+          "sheet": "session_case",
+          "table": "session_case"
+        },
+        {
+          "sheet": "clock_case",
+          "table": "clock_case"
+        },
+        {
+          "sheet": "journey_case",
+          "table": "journey_case"
+        },
+        {
+          "sheet": "income_case",
+          "table": "income_case"
+        },
+        {
+          "sheet": "ratio_case",
+          "table": "ratio_case"
+        },
+        {
+          "sheet": "ship",
+          "table": "ship"
+        },
+        {
+          "sheet": "config",
+          "table": "config"
+        },
+        {
+          "sheet": "enhance_config",
+          "table": "enhance_config"
+        },
+        {
+          "sheet": "unlock",
+          "table": "unlock"
+        },
+        {
+          "sheet": "weapon_motion",
+          "table": "weapon_motion"
         }
       ]
     }
