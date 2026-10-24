@@ -5,16 +5,41 @@
 #include <limits>
 #include <map>
 #include <queue>
+#include <type_traits>
+#include "amount_value.hpp"
 
 class SpaceCombatKernel : public RefCounted {
     GDCLASS(SpaceCombatKernel, RefCounted)
+    using Amount = foundation::Amount;
+    static Amount read_amount(const Variant &v) {
+        if (v.get_type() == Variant::STRING) return Amount::decimal(String(v).utf8().get_data());
+        if (v.get_type() == Variant::INT) return Amount::decimal(std::to_string(int64_t(v)));
+        if (v.get_type() == Variant::FLOAT) return Amount::normalized(double(v));
+        throw std::domain_error("AmountEncoding");
+    }
+    static String wire(const Amount &v) { return String(v.decimal_text().c_str()); }
+    static bool finite(const Amount &) { return true; }
+    static bool finite(double v) { return std::isfinite(v); }
+    static Amount ceil_number(const Amount &v) { return v.ceil_value(); }
+    static double ceil_number(double v) { return std::ceil(v); }
+    template<class A, class B> static auto minimum(A a, B b) {
+        if constexpr (std::is_same_v<A, Amount> || std::is_same_v<B, Amount>) return Amount(a) < Amount(b) ? Amount(a) : Amount(b);
+        else return std::min(a,b);
+    }
+    template<class A, class B> static auto maximum(A a, B b) {
+        if constexpr (std::is_same_v<A, Amount> || std::is_same_v<B, Amount>) return Amount(a) > Amount(b) ? Amount(a) : Amount(b);
+        else return std::max(a,b);
+    }
+
     // Presentation reads the existing active order and generation; it never owns combat.
     friend class SpaceCombatPresentation;
     struct Handle {
         uint32_t index = UINT32_MAX, generation = 0;
     };
     struct DropRule {
-        double chance = 0, amount = 0, base = 0;
+        double chance = 0;
+        Amount amount = 0;
+        Amount base = 0;
         int resource = 0;
     };
     struct Actor {
@@ -23,8 +48,14 @@ class SpaceCombatKernel : public RefCounted {
         uint64_t guidance_firsts = 0, guidance_reuses = 0, guidance_growth = 0, missile_hits = 0, derived_missile_hits = 0;
         double first_guidance_factor = 0, last_guidance_factor = 0, min_guidance_factor = 0, max_guidance_factor = 0;
         bool live = true;
-        double hp = 0, max_hp = 0, shield = 0, max_shield = 0, delay = 0, recovery = 0, shield_at = 0,
-               hit_at = 0;
+        Amount hp = 0;
+        Amount max_hp = 0;
+        Amount shield = 0;
+        Amount max_shield = 0;
+        double delay = 0;
+        double recovery = 0;
+        double shield_at = 0;
+        double hit_at = 0;
         int armour_type = 0, shield_type = 0, slot = 0;
         Vector2 logical, point, screen_point;
         PackedVector2Array collision_hull;
@@ -49,8 +80,14 @@ class SpaceCombatKernel : public RefCounted {
         int kind = 0, type = 0, slot = 0;
         bool hostile = false, endless = false;
         Handle source;
-        double interval = 1, remaining = 1, base = 1, factor = 1, speed = 30, charge = 0, ramp = 1,
-               maximum = 1;
+        double interval = 1;
+        double remaining = 1;
+        Amount base = 1;
+        double factor = 1;
+        double speed = 30;
+        double charge = 0;
+        double ramp = 1;
+        double maximum = 1;
         int salvo = 1;
         double crit_rate = 0, crit_multiplier = 2, repeat_probability = 0, repeat_multiplier = 1,
                secondary_probability = 0;
@@ -58,6 +95,7 @@ class SpaceCombatKernel : public RefCounted {
         Vector2 muzzle, screen_muzzle;
         PackedVector2Array presentation_muzzles; // Display inputs only; never used by combat.
         Dictionary entry, row;
+        Array branch_factors, external_factors;
         int64_t beam = -1;
         std::shared_ptr<const BirthConfig> birth;
     };
@@ -87,7 +125,7 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Attack {
         uint64_t id = 0;
-        double damage = 0;
+        Amount damage = 0;
         bool critical = false, secondary = false, repeats = false;
         std::shared_ptr<MissileContext> context;
         std::shared_ptr<const BirthConfig> birth;
@@ -116,8 +154,15 @@ class SpaceCombatKernel : public RefCounted {
         Handle source, target;
         std::shared_ptr<Instance> instance;
         std::shared_ptr<MissileContext> context;
-        double multiplier = 1, damage = 0, cruise_speed = 0, age = 0, next_hit = 0, charge = 0, interval = 0,
-               ramp = 1, maximum = 1;
+        Amount multiplier = 1;
+        Amount damage = 0;
+        double cruise_speed = 0;
+        double age = 0;
+        double next_hit = 0;
+        double charge = 0;
+        double interval = 0;
+        double ramp = 1;
+        double maximum = 1;
         int ticks = 0;
         Vector2 aim, logical_aim;
         bool await_target = false;
@@ -136,7 +181,7 @@ class SpaceCombatKernel : public RefCounted {
         int kind = 0, weapon = 0, ordinal = 0;
         Handle target;
         std::shared_ptr<const Attack> attack;
-        double multiplier = 1;
+        Amount multiplier = 1;
         std::shared_ptr<Instance> instance;
         size_t owner_flight = SIZE_MAX;
         uint32_t owner_generation = 0;
@@ -153,15 +198,27 @@ class SpaceCombatKernel : public RefCounted {
     };
     struct Defence {
         Dictionary entry;
+        Array branch_factors, external_factors;
+        Amount maximum = 0;
         int layer = 0, type = 0;
-        double base = 0, factor = 1, maximum = 0, loss = 0, buffer = 0, delay = 0, rate = 0, last_hit = 0,
-               memory_heal = 0, memory_cap = 0, deferred_fraction = 0;
+        Amount base = 0;
+        double factor = 1;
+        Amount loss = 0;
+        Amount buffer = 0;
+        double delay = 0;
+        double rate = 0;
+        double last_hit = 0;
+        double memory_heal = 0;
+        double memory_cap = 0;
+        double deferred_fraction = 0;
     };
     struct Effect {
         int kind = 0, type = 0;
         bool player = false, critical = false;
         int64_t uid = 0;
-        double amount = 0, absorbed = 0, time = 0;
+        Amount amount = 0;
+        Amount absorbed = 0;
+        double time = 0;
         int reactive_stacks = -1;
         double reactive_multiplier = 1;
         Vector2 point, direction, target_point;
@@ -179,16 +236,16 @@ class SpaceCombatKernel : public RefCounted {
     };
     // Optional observation. Combat never reads this ledger.
     bool damage_stats_enabled = false;
-    std::map<String, std::array<double, 2>> damage_stats;
+    std::map<String, std::array<Amount, 2>> damage_stats;
     std::vector<Actor> actors;
     std::vector<Weapon> weapons;
     std::vector<Defence> defences;
-    std::map<int64_t, std::array<double, 2>> debts;
+    std::map<int64_t, std::array<Amount, 2>> debts;
     double defence_time = 0, memory_interval = 1, deferred_interval = 1, memory_elapsed = 0,
            deferred_elapsed = 0, deferred_duration = 1, clear_probability = 0, counter_growth = 0,
-           defence_counter_growth = 0, counter_level = 0, counter_log_base = 10, counter_round_scale = 10;
+           defence_counter_growth = 0, counter_log_base = 10, counter_round_scale = 10;
     int64_t deferred_tick = 0;
-    int64_t attack_counter = 0, incoming_counter = 0;
+    int64_t attack_counter = 0, incoming_counter = 0, counter_level = 0;
     String failure_reason;
     bool increment_history(int64_t &value) {
         if (value == std::numeric_limits<int64_t>::max()) { failure_reason = "CounterRangeExceeded"; stopped = true; return false; }
@@ -196,11 +253,17 @@ class SpaceCombatKernel : public RefCounted {
     }
     // Encounter envelopes retain old birth configurations across numeric upgrades.
     // They only widen; no hot scan of carriers or queues is required.
-    double retained_damage_bound = 0, retained_repeat_bound = 1, retained_maximum_bound = 1;
+    Amount retained_damage_bound = 0;
+    double retained_repeat_bound = 1;
+    double retained_maximum_bound = 1;
     double retained_min_interval = std::numeric_limits<double>::infinity();
-    double retained_interference_bound = 1, retained_explosion_bound = 0, retained_debt_bound = 0;
+    double retained_interference_bound = 1;
+    Amount retained_explosion_bound = 0;
+    Amount retained_debt_bound = 0;
     int retained_salvo_bound = 1, retained_chain_bound = 0;
-    double retained_drop_bound = 0, retained_recovery_bound = 0, retained_shield_bound = 0;
+    double retained_drop_bound = 0;
+    Amount retained_recovery_bound = 0;
+    Amount retained_shield_bound = 0;
     double envelope_clock = 0, retained_shield_elapsed = 0;
     bool module_defence = false;
 
@@ -222,7 +285,11 @@ class SpaceCombatKernel : public RefCounted {
     uint32_t encounter_generation = 1;
     uint64_t refit_epoch = 0;
     uint64_t step_serial = 0, event_serial = 0, attack_serial = 0, instance_serial = 0, flight_serial = 0;
-    double clock = 0, player_hp = 0, player_shield = 0, resistance = 0.5;
+    double clock = 0;
+    Amount player_hp = 0;
+    Amount player_initial_hp = 0, player_initial_shield = 0;
+    Amount player_shield = 0;
+    double resistance = 0.5;
     double last_incoming_at = -100;
     double jewel_probability = 0, jewel_ratio = 1;
     int64_t drop_uid = 0;
@@ -264,17 +331,17 @@ class SpaceCombatKernel : public RefCounted {
         if (c->wild) { value["wild_missile"] = true; value["wild_used"] = c->wild_used; value["blast_fraction"] = c->blast; }
         record["id"] = int64_t(c->id); record["value"] = value; return record;
     }
-    static bool missile_arithmetic(double &raw, double layers, bool guidance, double multiplier, double factor, double blast) {
+    static bool missile_arithmetic(Amount &raw, double layers, bool guidance, double multiplier, double factor, double blast) {
         if (layers >= 9007199254740991.0) return false;
-        if (guidance) factor = std::max(factor, std::pow(multiplier,layers));
-        double exploded = raw * std::max(1.0,blast);
-        if (!std::isfinite(factor) || !std::isfinite(exploded)) return false;
-        raw = std::max(raw,exploded) * std::max(1.0,factor);
-        return std::isfinite(raw);
+        if (guidance) factor = maximum(factor, std::pow(multiplier,layers));
+        Amount exploded = raw * maximum(1.0,blast);
+        if (!finite(factor) || !finite(exploded)) return false;
+        raw = maximum(raw,exploded) * maximum(1.0,factor);
+        return finite(raw);
     }
     struct StrangePacket {
         uint64_t order = 0, root = 0;
-        double damage = 0;
+        Amount damage = 0;
         int type = 0;
         String source;
         String stats_source;
@@ -284,7 +351,7 @@ class SpaceCombatKernel : public RefCounted {
     uint64_t strange_serial = 0;
     bool strange_enabled = false;
     double strange_probability = 0, strange_delay = 0, strange_multiplier = 0, strange_boundary_end = 0;
-    double retained_strange_damage = 0;
+    Amount retained_strange_damage = 0;
     int strange_kill_spawns = 0, strange_type = 0;
     void configure_strange(Dictionary d) {
         strange_enabled = d.get("requires_strange_matter", false);
@@ -303,7 +370,7 @@ class SpaceCombatKernel : public RefCounted {
             context["source_id"] = p.source; context["weapon"] = "cannon";
             context["trigger_depth"] = 1; context["trigger"] = "strange_matter";
             context["guidance_factors"] = Dictionary();
-            row["remaining"] = nonnegative(item.first - clock); row["damage"] = p.damage;
+            row["remaining"] = nonnegative(item.first - clock); row["damage"] = wire(p.damage);
             row["type"] = p.type; row["context"] = context;
             ordered.emplace(p.order, row);
         }
@@ -347,10 +414,10 @@ class SpaceCombatKernel : public RefCounted {
     static bool finite_descriptor(const Variant &value) {
         switch (value.get_type()) {
         case Variant::FLOAT:
-            return std::isfinite(double(value));
+            return finite(double(value));
         case Variant::VECTOR2: {
             Vector2 point = value;
-            return std::isfinite(point.x) && std::isfinite(point.y);
+            return finite(point.x) && finite(point.y);
         }
         case Variant::DICTIONARY: {
             Dictionary values = value;
@@ -379,8 +446,10 @@ class SpaceCombatKernel : public RefCounted {
             if (!values.has(key))
                 continue;
             Variant value = values[key];
-            if (value.get_type() != Variant::INT && value.get_type() != Variant::FLOAT)
-                return false;
+            const std::string field(key);
+            if (field == "hp" || field == "max_hp" || field == "armour" || field == "shield" || field == "max_shield" || field == "damage" || field == "amount" || field == "base" || field == "loss" || field == "buffer" || field == "maximum") {
+                try { read_amount(value); } catch (const std::exception &) { return false; }
+            } else if (value.get_type() != Variant::INT && value.get_type() != Variant::FLOAT) return false;
         }
         return true;
     }
@@ -406,7 +475,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     static bool schema_nonnegative(Dictionary row, std::initializer_list<const char *> keys) {
         for (const char *key : keys)
-            if (row.has(key) && double(row[key]) < 0) return false;
+            if (row.has(key) && Variant(row[key]).get_type() != Variant::STRING && double(row[key]) < 0) return false;
         return true;
     }
     static bool schema_probabilities(Dictionary row, std::initializer_list<const char *> keys) {
@@ -422,8 +491,8 @@ class SpaceCombatKernel : public RefCounted {
             !schema_types(d, Variant::ARRAY, {"enemies","weapons","defences","unsupported_rules"}) ||
             !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_strange_matter","requires_laser_charge","requires_endless_beam","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
             !schema_integers(d, {"chain_count","prism_count"}) ||
-            !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid","attack_counter","incoming_counter"}, false) ||
-            !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
+            !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid","attack_counter","incoming_counter","counter_level"}, false) ||
+            !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","counter_growth","defence_counter_growth","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
         if (!Array(d.get("unsupported_rules", Array())).is_empty() ||
             !schema_nonnegative(d, {"since_hit","launch_speed","turn_rate","ignition","seek","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","critical_multiplier","repeat_multiplier","repeat_delay","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","scatter_bonus","prism_bonus","deferred_duration","defence_time","memory_elapsed","deferred_elapsed","jewel_ratio","chain_count","prism_count","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}) ||
             !schema_probabilities(d, {"resistance","critical_rate","repeat_probability","secondary_probability","clear_probability","jewel_probability"})) return false;
@@ -520,147 +589,29 @@ class SpaceCombatKernel : public RefCounted {
         return true;
     }
 
-    static bool checked_counter_bonus(Dictionary d, long double count, bool incoming, double &bonus) {
-        // Counts stay integers. Floating point is used only for their logarithmic factor.
-        if (count < 0 || count > std::numeric_limits<int64_t>::max() || std::floor(count) != count) return false;
-        double growth = incoming ? double(d.get("defence_counter_growth", d.get("counter_growth", 0.0)))
-                                 : double(d.get("counter_growth", 0.0));
-        double product = growth * double(d.get("counter_level", 0.0));
-        if (!std::isfinite(product)) return false;
-        if (product == 0) { bonus = 0; return true; }
-        double value = product * std::log(std::max(1.L, count));
-        if (!std::isfinite(value)) return false;
-        value /= std::log(double(d.get("counter_log_base", 10.0)));
-        if (!std::isfinite(value)) return false;
-        value *= double(d.get("counter_round_scale", 10.0));
-        if (!std::isfinite(value)) return false;
-        bonus = std::round(value) / double(d.get("counter_round_scale", 10.0));
-        return std::isfinite(bonus) && std::isfinite(1 + bonus) && 1 + bonus >= 0;
+    static Amount history_bonus(int64_t count, double growth, int64_t level, double log_base, double round_scale) {
+        if (count < 0 || level < 0 || log_base <= 0 || log_base == 1 || round_scale <= 0) throw std::domain_error("InvalidHistoryParameters");
+        if (count <= 1 || level == 0 || growth == 0) return {};
+        Amount bonus = Amount(growth) * Amount::decimal(std::to_string(level));
+        bonus *= Amount(double(std::log(static_cast<long double>(count)) / std::log(static_cast<long double>(log_base))));
+        // The gameplay formula rounds the bonus; Amount owns all magnitude arithmetic.
+        return (bonus * round_scale + 0.5).floor_value() / round_scale;
     }
-    // Check the actual evaluation order: finite inputs alone do not imply finite intermediates.
-    // Called only after schema validation, before clearing or assigning any live state.
-    static bool configuration_arithmetic(Dictionary d, long double attacks, long double incoming, double retained_raw = 0, double retained_debt = 0, double retained_layers = 0, double retained_factor = 1, double retained_blast = 1) {
-        double attack_bonus = 0, defence_bonus = 0;
-        if (!checked_counter_bonus(d, attacks, false, attack_bonus) ||
-            !checked_counter_bonus(d, incoming, true, defence_bonus)) return false;
-        double next_attack_bonus = 0, next_defence_bonus = 0;
-        if (!checked_counter_bonus(d, attacks + 1, false, next_attack_bonus) ||
-            !checked_counter_bonus(d, incoming + 1, true, next_defence_bonus)) return false;
-        attack_bonus = std::max(attack_bonus,next_attack_bonus);
-        defence_bonus = std::max(defence_bonus,next_defence_bonus);
-        double clock_value = d.get("clock", 0.0), defence_clock = d.get("defence_time", 0.0);
-        if (!std::isfinite(clock_value - double(d.get("since_hit", 100.0))) ||
-            !std::isfinite(clock_value + double(d.get("repeat_delay", .1))) ||
-            !std::isfinite(clock_value + double(d.get("strange_delay", 0.0)))) return false;
-        double portions = std::ceil(double(d.get("deferred_duration",1.0)) / double(d.get("deferred_interval",1.0)));
-        double first_at = defence_clock + double(d.get("deferred_interval",1.0)) - 1e-9;
-        double first_tick = std::ceil(first_at / double(d.get("deferred_interval",1.0)));
-        int64_t tick = d.get("deferred_tick",0);
-        if (!std::isfinite(portions) || portions > std::numeric_limits<int>::max() ||
-            !std::isfinite(first_at) || !std::isfinite(first_tick) || first_tick >= 9223372036854775808.0 ||
-            tick == std::numeric_limits<int64_t>::max()) return false;
-        int64_t first = std::max(tick + 1, int64_t(first_tick));
-        if (first > std::numeric_limits<int64_t>::max() - int64_t(std::max(1.0,portions))) return false;
-        Array weapons = d["weapons"], enemies = d["enemies"], defs = d.get("defences", Array());
-        double raw_bound = retained_raw;
-        // A configuration change also affects eligible hits from retained attacks.
-        if (bool(d.get("requires_strange_matter",false))) {
-            double derived = retained_raw * double(d.get("strange_damage_multiplier",0.0));
-            if (!std::isfinite(derived)) return false;
-            raw_bound = std::max(raw_bound, derived);
-        }
-        for (int i = 0; i < weapons.size(); ++i) {
-            Dictionary v = weapons[i];
-            double raw = v.get("damage", 1.0);
-            if (!bool(v.get("hostile", false))) {
-                raw *= 1 + attack_bonus;
-                if (!std::isfinite(raw)) return false;
-                raw = std::ceil(raw);
-            }
-            raw *= double(v.get("factor", 1.0));
-            if (!std::isfinite(raw)) return false;
-            if (!bool(v.get("hostile", false)) && int(v["kind"]) == 0) {
-                double legendary = (bool(d.get("scatter",false)) ? 1 + double(d.get("scatter_bonus", 0.0)) : 1) *
-                    double(d.get("laser_charge_multiplier", 1.0));
-                if (!std::isfinite(legendary)) return false;
-                raw *= legendary;
-            }
-            if (!std::isfinite(raw)) return false;
-            // Both branches must be representable, regardless of the next RNG draw.
-            double critical = raw * double(v.get("critical_multiplier", d.get("critical_multiplier", 2.0)));
-            if (!std::isfinite(critical)) return false;
-            raw = std::max(raw, critical);
-            if (bool(d.get("wild_missile",false)) && !bool(v.get("hostile",false)) && int(v["kind"]) == 2) {
-                double wild_raw = raw * double(d.get("wild_multiplier",1.0));
-                if (!std::isfinite(wild_raw)) return false;
-                raw = std::max(raw,wild_raw);
-            }
-            if (bool(d.get("requires_strange_matter",false)) && !bool(v.get("hostile",false)) && int(v["kind"]) == 1) {
-                double derived = raw * double(d.get("strange_damage_multiplier",0.0));
-                if (!std::isfinite(derived)) return false;
-                raw_bound = std::max(raw_bound, derived);
-            }
-            double repeated = raw * double(v.get("repeat_multiplier", d.get("repeat_multiplier", 1.0)));
-            if (!std::isfinite(repeated)) return false;
-            raw = std::max(raw, repeated);
-            double maximum = double(v.get("maximum",1.0)) + double(d.get("prism_bonus",0.0));
-            if (!std::isfinite(maximum) || !std::isfinite(raw * std::max(1.0,maximum))) return false;
-            raw_bound = std::max(raw_bound, std::max(raw, raw * std::max(1.0, maximum)));
-            if (!std::isfinite(clock_value + double(v.get("remaining",int(v["kind"]) == 3 ? 0.0 : double(v.get("interval",1.0)))))) return false;
-        }
-        for (int i = 0; i < enemies.size(); ++i) {
-            Dictionary v = enemies[i];
-            double explosion = double(v["max_hp"]) * double(v.get("jewelExplosion",0.0));
-            if (!std::isfinite(explosion)) return false;
-            raw_bound = std::max(raw_bound, explosion);
-            double recovery = double(v.get("max_shield",0.0)) * double(v.get("shieldRecovery",0.0));
-            double elapsed = clock_value - double(v.get("shield_updated_at",clock_value));
-            if (!std::isfinite(recovery) || !std::isfinite(elapsed) || !std::isfinite(recovery * std::max(0.0,elapsed)) ||
-                !std::isfinite(double(v.get("shield",0.0)) + recovery * std::max(0.0,elapsed)) ||
-                !std::isfinite(double(v.get("shield_hit_at",clock_value)) + double(v.get("shieldDelay",0.0)))) return false;
-        }
-        double layers = retained_layers;
-        for (int i = 0; i < enemies.size(); ++i) {
-            Dictionary v = enemies[i];
-            if (!schema_integers(v, {"guidance_layers"}, false) || !schema_nonnegative(v, {"guidance_layers"})) return false;
-            layers = std::max(layers, double(v.get("guidance_layers",0)));
-        }
-        if (!missile_arithmetic(raw_bound,layers,bool(d.get("precise_guidance",false)),double(d.get("guidance_multiplier",1.0)),retained_factor,
-            std::max(retained_blast,bool(d.get("wild_missile",false)) ? double(d.get("wild_blast",0.0)) : 1.0))) return false;
-        // Explosions use the receiving actor's interference too.
-        for (int i = 0; i < enemies.size(); ++i) {
-            Dictionary v = enemies[i];
-            if (!std::isfinite(raw_bound * (1 + double(v.get("interference",0.0))))) return false;
-        }
-        double totals[2] = {}, losses[2] = {}, buffers[2] = {};
-        for (int i = 0; i < defs.size(); ++i) {
-            Dictionary v = defs[i]; int layer = v.get("layer",0);
-            double before_ceil = double(v.get("base",0.0)) * (1 + defence_bonus);
-            double maximum = std::ceil(before_ceil) * double(v.get("factor",1.0));
-            double supplied = v.get("maximum",0.0);
-            if (!std::isfinite(before_ceil) || !std::isfinite(maximum) ||
-                !std::isfinite(maximum * double(v.get("memory_cap",0.0))) ||
-                !std::isfinite(supplied * double(v.get("memory_cap",0.0))) ||
-                !std::isfinite(maximum * double(v.get("memory_heal",0.0))) ||
-                !std::isfinite(maximum * double(v.get("rate",0.0))) ||
-                !std::isfinite(maximum / (1 - double(v.get("deferred_fraction",0.0)))) ||
-                !std::isfinite(defence_clock - double(v.get("last_hit",0.0))) ||
-                !std::isfinite(double(v.get("last_hit",0.0)) + double(v.get("delay",0.0))) ||
-                !std::isfinite(raw_bound * maximum)) return false;
-            totals[layer] += maximum; losses[layer] += double(v.get("loss",0.0)); buffers[layer] += double(v.get("buffer",0.0));
-            if (!std::isfinite(totals[layer]) || !std::isfinite(losses[layer]) || !std::isfinite(buffers[layer])) return false;
-        }
-        Dictionary debt = d.get("deferred",Dictionary()); Array keys = debt.keys();
-        double debt_totals[2] = {retained_debt,retained_debt};
-        for (int i = 0; i < keys.size(); ++i) {
-            Dictionary payment = debt[keys[i]];
-            debt_totals[0] += double(payment.get("shield",0.0)); debt_totals[1] += double(payment.get("armour",0.0));
-            if (!std::isfinite(debt_totals[0]) || !std::isfinite(debt_totals[1])) return false;
-        }
-        return true;
+    static Amount evaluate_module_value(const Amount &charged, int64_t count, double growth, int64_t level, double log_base, double round_scale, Array branches = {}, Array external = {}) {
+        Amount value = (charged * (Amount(1) + history_bonus(count, growth, level, log_base, round_scale))).ceil_value();
+        for (int i = 0; i < branches.size(); ++i) value *= read_amount(branches[i]);
+        for (int i = 0; i < external.size(); ++i) value *= read_amount(external[i]);
+        return value;
     }
-
-
+    static bool configuration_arithmetic(Dictionary d, int64_t attacks, int64_t incoming, Amount = {}, Amount = {}, double = 0, double = 1, double = 1) {
+        try {
+            double log_base = d.get("counter_log_base", 10.0), scale = d.get("counter_round_scale", 100.0);
+            int64_t level = d.get("counter_level", int64_t(0));
+            history_bonus(attacks, d.get("counter_growth", 0.0), level, log_base, scale);
+            history_bonus(incoming, d.get("defence_counter_growth", 0.0), level, log_base, scale);
+            return true;
+        } catch (const std::exception &) { return false; }
+    }
     static Vector2 axis(double angle) {
         return Vector2(std::cos(angle), std::sin(angle));
     }
@@ -674,8 +625,9 @@ class SpaceCombatKernel : public RefCounted {
     static double distance(Vector2 a, Vector2 b) {
         return std::hypot(double(a.x - b.x), double(a.y - b.y));
     }
+    static Amount nonnegative(const Amount &a) { return a; }
     static double nonnegative(double a) {
-        return std::max(0.0, a);
+        return maximum(0.0, a);
     }
     void shield(Actor &a, double at) {
         if (!a.live || a.max_shield <= 0)
@@ -684,9 +636,9 @@ class SpaceCombatKernel : public RefCounted {
         double ready = a.hit_at + a.delay;
         double elapsed = nonnegative(at - ready) - nonnegative(a.shield_at - ready);
         if (elapsed > 0)
-            a.shield = std::min(a.max_shield, a.shield + a.max_shield * a.recovery * elapsed);
+            a.shield = minimum(a.max_shield, a.shield + a.max_shield * a.recovery * elapsed);
         a.shield_at = at;
-        a.view["shield"] = a.shield;
+        a.view["shield"] = wire(a.shield);
         a.view["shield_updated_at"] = at;
     }
     std::vector<Handle> targets(int type, double at) {
@@ -807,7 +759,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         retired.clear();
     }
-    size_t birth(int wi, Handle target, std::shared_ptr<Instance> inst, double multiplier,
+    size_t birth(int wi, Handle target, std::shared_ptr<Instance> inst, Amount multiplier,
                  bool repeated = false, bool chain = false, Vector2 origin = Vector2(), std::shared_ptr<MissileContext> missile_ctx = {}) {
         Weapon w = committed_weapon(wi, inst->attack->birth);
         size_t id;
@@ -887,15 +839,15 @@ class SpaceCombatKernel : public RefCounted {
             const int ordinal = w.kind == 2 ? int(event_serial % w.presentation_muzzles.size()) : 0;
             f.presentation_origin = w.presentation_muzzles[ordinal];
             const Vector2 screen_aim = t ? t->screen_point : w.screen_muzzle + m.direction * 100;
-            f.presentation_step = (screen_aim - f.presentation_origin) / std::max(0.001, distance(from, aim));
+            f.presentation_step = (screen_aim - f.presentation_origin) / maximum(0.001, distance(from, aim));
         }
         if (compact_laser_births && !w.hostile && w.kind == 0 && !chain && t && t->collision_hull.size() >= 3) {
             f.compact_laser = true; ++compact_laser_count; f.fixed_ray = true;
             f.view_birth = weapons[wi].birth;
             f.launch_point = from; f.ray_origin = w.screen_muzzle;
-            f.ray_step = (t->screen_point - w.screen_muzzle) / std::max(0.001, distance(from, aim));
+            f.ray_step = (t->screen_point - w.screen_muzzle) / maximum(0.001, distance(from, aim));
             if (t->stationary_geometry) refresh_ray_contact(f, *t);
-            retained_damage_bound = std::max(retained_damage_bound, f.damage);
+            retained_damage_bound = maximum(retained_damage_bound, f.damage);
             effect(0, f, from, clock);
             return id;
         }
@@ -916,7 +868,7 @@ class SpaceCombatKernel : public RefCounted {
                         : w.kind == 2 ? String(w.hostile ? "missile-mon" : "missile")
                                       : String(w.hostile ? "longLaser-mon" : "longLaser");
         f.view["type"] = w.type;
-        f.view["damage"] = f.damage;
+        f.view["damage"] = wire(f.damage);
         f.view["dead"] = false;
         f.view["entry"] = w.entry;
         if (chain) f.view["chain_weapon"] = w.kind == 0 ? String("laser")
@@ -936,7 +888,7 @@ class SpaceCombatKernel : public RefCounted {
         if (!w.hostile && m.kind == 0 && t && t->collision_hull.size() >= 3) {
             f.view["ballistic_target_origin"] = aim;
             f.view["fixed_screen_origin"] = w.screen_muzzle;
-            f.view["fixed_screen_step"] = (t->screen_point - w.screen_muzzle) / std::max(0.001, distance(from, aim));
+            f.view["fixed_screen_step"] = (t->screen_point - w.screen_muzzle) / maximum(0.001, distance(from, aim));
             f.fixed_ray = true; f.ray_origin = w.screen_muzzle;
             f.ray_step = f.view["fixed_screen_step"]; f.launch_point = from;
             if (!f.beam && t->stationary_geometry) refresh_ray_contact(f, *t);
@@ -1004,14 +956,14 @@ class SpaceCombatKernel : public RefCounted {
             f.view["weapon"] = beam_row; snapshot["weapon"] = beam_row;
             f.view["prism_tower"] = f.prism;
         }
-        retained_damage_bound = std::max(retained_damage_bound, f.damage * std::max(1.0,f.maximum));
+        retained_damage_bound = maximum(retained_damage_bound, f.damage * maximum(1.0,f.maximum));
         f.compatibility_index = compatibility_flights.size();
         compatibility_flights.push_back(id);
         flight_rows.push_back(f.view);
         effect(chain ? 4 : 0, f, from, clock);
         return id;
     }
-    void hit_enemy(Handle h, double raw, int type, const std::shared_ptr<Instance> &inst, bool trigger,
+    void hit_enemy(Handle h, Amount raw, int type, const std::shared_ptr<Instance> &inst, bool trigger,
                    double at, int wi, bool chain_trigger = false, const std::shared_ptr<MissileContext> &context = {},
                    const String &damage_source = String()) {
         Actor *a = resolve(h);
@@ -1021,7 +973,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         shield(*a, at);
         a->hit_at = at;
-        const double base_raw = raw;
+        const Amount base_raw = raw;
         if (context) {
             ++a->missile_hits;
             if (context->derived) ++a->derived_missile_hits;
@@ -1034,15 +986,15 @@ class SpaceCombatKernel : public RefCounted {
                 found = context->factors.emplace(a->uid,factor).first;
                 if (a->guidance_firsts++ == 0) a->first_guidance_factor = a->min_guidance_factor = a->max_guidance_factor = factor;
                 a->last_guidance_factor = factor;
-                a->min_guidance_factor = std::min(a->min_guidance_factor,factor);
-                a->max_guidance_factor = std::max(a->max_guidance_factor,factor);
-                retained_guidance_factor = std::max(retained_guidance_factor,factor);
+                a->min_guidance_factor = minimum(a->min_guidance_factor,factor);
+                a->max_guidance_factor = maximum(a->max_guidance_factor,factor);
+                retained_guidance_factor = maximum(retained_guidance_factor,factor);
                 if (!context->derived) {
                     int64_t previous_layers = a->guidance_layers;
-                    a->guidance_layers = guidance_limited ? std::min(a->guidance_layers+1,guidance_limit) : a->guidance_layers+1;
+                    a->guidance_layers = guidance_limited ? minimum(a->guidance_layers+1,guidance_limit) : a->guidance_layers+1;
                     if (a->guidance_layers > previous_layers) a->guidance_growth += a->guidance_layers - previous_layers;
                     a->view["guidance_layers"] = a->guidance_layers;
-                    retained_guidance_layers = std::max(retained_guidance_layers,double(a->guidance_layers));
+                    retained_guidance_layers = maximum(retained_guidance_layers,double(a->guidance_layers));
                 }
             } else ++a->guidance_reuses;
             raw *= found->second;
@@ -1052,7 +1004,7 @@ class SpaceCombatKernel : public RefCounted {
         if (a->reactive_reduction) {
             if (at > a->reactive_volley_at + 0.16) {
                 a->reactive_stacks = at <= a->reactive_volley_at + 2.2
-                    ? std::min(3, a->reactive_stacks + 1) : 0;
+                    ? minimum(3, a->reactive_stacks + 1) : 0;
                 a->reactive_volley_at = at;
             }
             reactive_stacks = a->reactive_stacks;
@@ -1062,17 +1014,19 @@ class SpaceCombatKernel : public RefCounted {
             a->view["reactive_multiplier"] = reactive_multiplier;
             a->view["reactive_volley_at"] = a->reactive_volley_at;
         }
-        double incoming = raw * (1 + a->interference), absorbed = 0, damage = 0;
-        const double hp_before = damage_stats_enabled ? a->hp : 0;
-        const double shield_before = damage_stats_enabled ? a->shield : 0;
+        Amount incoming = raw * (1 + a->interference);
+        Amount absorbed = 0;
+        Amount damage = 0;
+        const Amount hp_before = damage_stats_enabled ? a->hp : 0;
+        const Amount shield_before = damage_stats_enabled ? a->shield : 0;
         if (a->shield > 0) {
             double factor = type == a->shield_type ? 1 - resistance : 1;
-            absorbed = std::min(a->shield, std::max(1.0, incoming * factor));
+            absorbed = minimum(a->shield, maximum(1.0, incoming * factor));
             a->shield -= absorbed;
             incoming = factor > 0 ? nonnegative(incoming - absorbed / factor) : 0;
         }
         if (absorbed <= 0 || incoming > 0) {
-            damage = std::max(1.0, std::ceil(incoming * (type == a->armour_type ? 1 - resistance : 1)));
+            damage = maximum(1.0, ceil_number(incoming * (type == a->armour_type ? 1 - resistance : 1)));
             a->hp = nonnegative(a->hp - damage);
         }
         String source;
@@ -1085,16 +1039,16 @@ class SpaceCombatKernel : public RefCounted {
                     : String("module:") + String::num_int64(birth.slot);
             }
             if (source.is_empty()) source = "other";
-            const double shield_loss = nonnegative(shield_before - a->shield);
-            const double hp_loss = nonnegative(hp_before - a->hp);
+            const Amount shield_loss = nonnegative(shield_before - a->shield);
+            const Amount hp_loss = nonnegative(hp_before - a->hp);
             if (shield_loss > 0 || hp_loss > 0) {
                 auto &sum = damage_stats[source];
                 sum[0] += shield_loss;
                 sum[1] += hp_loss;
             }
         }
-        a->view["hp"] = a->hp;
-        a->view["shield"] = a->shield;
+        a->view["hp"] = wire(a->hp);
+        a->view["shield"] = wire(a->shield);
         a->view["shield_hit_at"] = at;
         ++hit_count;
         Effect e;
@@ -1118,7 +1072,7 @@ class SpaceCombatKernel : public RefCounted {
                 p.source = w.entry.has("drone_id") ? String("drone:") + String(w.entry["drone_id"]) : String("module:") + String::num_int64(w.slot);
                 if (damage_stats_enabled) p.stats_source = source;
                 strange_pending.emplace(strange_boundary_end + strange_delay, p);
-                retained_strange_damage = std::max(retained_strange_damage, p.damage);
+                retained_strange_damage = maximum(retained_strange_damage, p.damage);
             }
         }
         // Birth freezes base damage and blast fraction; impact uses the current missile damage type, as Game does.
@@ -1133,6 +1087,7 @@ class SpaceCombatKernel : public RefCounted {
         if (a->hp <= 0 && a->live) {
             a->guidance_layers = 0; a->view.erase("guidance_layers");
             a->live = false;
+            a->view["dead"] = true;
             ++a->generation;
             ++dead_count;
             e.kind = 3;
@@ -1142,6 +1097,7 @@ class SpaceCombatKernel : public RefCounted {
                 for (int roll = 0; roll < a->jewel_rolls; ++roll)
                     if (rng->randf() < jewel_probability) {
                         Dictionary drop;
+                        if (drop_uid == std::numeric_limits<int64_t>::max()) { failure_reason = "DropIdRangeExceeded"; stopped = true; return; }
                         drop["uid"] = ++drop_uid;
                         drop["x"] = a->logical.x;
                         drop["y"] = a->logical.y + 65;
@@ -1159,14 +1115,15 @@ class SpaceCombatKernel : public RefCounted {
                 for (const DropRule &rule : a->drops)
                     if (rng->randf() < rule.chance) {
                         Dictionary drop;
+                        if (drop_uid == std::numeric_limits<int64_t>::max()) { failure_reason = "DropIdRangeExceeded"; stopped = true; return; }
                         drop["uid"] = ++drop_uid;
                         drop["x"] = a->logical.x;
                         drop["y"] = a->logical.y + 40;
                         drop["source_uid"] = a->uid;
                         drop["age"] = 0.0;
                         drop["id"] = String::num_int64(rule.resource);
-                        drop["amount"] = rule.amount;
-                        drop["production_base"] = rule.base;
+                        drop["amount"] = wire(rule.amount);
+                        drop["production_base"] = wire(rule.base);
                         Effect birth;
                         birth.kind = 7;
                         birth.time = at;
@@ -1184,7 +1141,7 @@ class SpaceCombatKernel : public RefCounted {
                 if (endless_eligible(f) && f.target.index == h.index && !f.await_target) {
                     // All beam ages were projected to the segment end. Roll back
                     // only its post-death tail; waiting never creates catch-up debt.
-                    f.age = std::max(0.0,f.age - std::max(0.0,clock-at));
+                    f.age = maximum(0.0,f.age - maximum(0.0,clock-at));
                     f.await_target = true; f.view["await_target"] = true; f.view["elapsed"] = f.age;
                     // Keep links until this hit finishes its inherited chain work.
                 }
@@ -1232,16 +1189,11 @@ class SpaceCombatKernel : public RefCounted {
         while (!ejections.empty()) ejections.pop();
         while (!repeats.empty()) repeats.pop();
     }
-    double counter_bonus(int64_t count, bool incoming = false) const {
-        double growth = incoming ? defence_counter_growth : counter_growth;
-        return growth * counter_level == 0
-                   ? 0
-                   : std::round(growth * counter_level * std::log(static_cast<long double>(std::max<int64_t>(1, count))) /
-                                std::log(counter_log_base) * counter_round_scale) /
-                         counter_round_scale;
+    Amount counter_bonus(int64_t count, bool incoming = false) const {
+        return history_bonus(count, incoming ? defence_counter_growth : counter_growth, counter_level, counter_log_base, counter_round_scale);
     }
-    double capacity(int layer) const {
-        double total = 0;
+    Amount capacity(int layer) const {
+        Amount total = 0;
         for (const Defence &d : defences)
             if (d.layer == layer)
                 total += d.maximum;
@@ -1249,32 +1201,34 @@ class SpaceCombatKernel : public RefCounted {
     }
     void reconcile_defence() {
         for (Defence &d : defences) {
-            d.maximum = std::ceil(d.base * (1 + counter_bonus(incoming_counter, true))) * d.factor;
-            d.loss = std::min(d.loss, d.maximum);
-            d.buffer = std::min(d.buffer, d.maximum * d.memory_cap);
+            d.maximum = evaluate_module_value(d.base, incoming_counter, defence_counter_growth, counter_level, counter_log_base, counter_round_scale, d.branch_factors, d.external_factors) * d.factor;
+            d.loss = minimum(d.loss, d.maximum);
+            d.buffer = minimum(d.buffer, d.maximum * d.memory_cap);
         }
         for (int layer = 0; layer < 2; ++layer) {
-            double total = capacity(layer), missing = 0;
+            Amount total = capacity(layer);
+            Amount missing = 0;
             for (const Defence &d : defences)
                 if (d.layer == layer)
                     missing += d.loss;
-            double health = layer == 0 ? player_shield : player_hp, expected = nonnegative(total - health),
-                   delta = std::abs(expected - missing);
+            Amount health = layer == 0 ? player_shield : player_hp;
+            Amount expected = nonnegative(total - health);
+            Amount delta = expected >= missing ? expected - missing : missing - expected;
             bool increase = expected > missing;
             for (Defence &d : defences)
                 if (d.layer == layer) {
-                    double weight = increase ? (d.maximum - d.loss) / std::max(0.001, total - missing)
-                                             : d.loss / std::max(0.001, missing);
-                    d.loss = std::min(d.maximum, nonnegative(d.loss + (increase ? delta : -delta) * weight));
+                    Amount weight = increase ? (d.maximum - d.loss) / maximum(0.001, total - missing)
+                                             : d.loss / maximum(0.001, missing);
+                    d.loss = minimum(d.maximum, nonnegative(increase ? d.loss + delta * weight : d.loss - delta * weight));
                 }
         }
     }
-    double protection(double amount, double &absorbed) {
-        double rest = amount;
+    Amount protection(Amount amount, Amount &absorbed) {
+        Amount rest = amount;
         for (Defence &d : defences) {
             if (rest <= 0)
                 break;
-            double paid = std::min(d.buffer, rest);
+            Amount paid = minimum(d.buffer, rest);
             d.buffer -= paid;
             rest -= paid;
             absorbed += paid;
@@ -1284,21 +1238,21 @@ class SpaceCombatKernel : public RefCounted {
         return rest;
     }
     void publish_player() {
-        player_row["armour"] = player_hp;
-        player_row["shield"] = player_shield;
+        player_row["armour"] = wire(player_hp);
+        player_row["shield"] = wire(player_shield);
         for (size_t i = 0; i < defences.size(); ++i) {
-            buffer_rows[int64_t(i)] = defences[i].buffer;
-            loss_rows[int64_t(i)] = defences[i].loss;
+            buffer_rows[int64_t(i)] = wire(defences[i].buffer);
+            loss_rows[int64_t(i)] = wire(defences[i].loss);
             defence_time_rows[int64_t(i)] = defence_time - defences[i].last_hit;
         }
     }
-    void incoming_effect(double loss, double absorbed, int type, double at, bool deferred = false) {
+    void incoming_effect(Amount loss, Amount absorbed, int type, double at, bool deferred = false) {
         Effect e;
         e.kind = 2;
         e.player = true;
         e.point = player_point;
         e.type = type;
-        e.amount = deferred ? std::ceil(loss) : loss;
+        e.amount = deferred ? ceil_number(loss) : loss;
         e.absorbed = absorbed;
         e.time = at;
         feedback.push_back(e);
@@ -1307,39 +1261,42 @@ class SpaceCombatKernel : public RefCounted {
         if (player_hp <= 0 && player_shield <= 0)
             cancel();
     }
-    void queue_debt(int layer, double amount) {
+    void queue_debt(int layer, Amount amount) {
         if (amount <= 0)
             return;
         retained_debt_bound += amount;
-        int portions = std::max(1, int(std::ceil(deferred_duration / deferred_interval)));
+        int portions = maximum(1, int(ceil_number(deferred_duration / deferred_interval)));
         int64_t first =
-            std::max(deferred_tick + 1,
-                     int64_t(std::ceil((defence_time + deferred_interval - 1e-9) / deferred_interval)));
-        double unit = amount / portions, remaining = amount;
+            maximum(deferred_tick + 1,
+                     int64_t(ceil_number((defence_time + deferred_interval - 1e-9) / deferred_interval)));
+        Amount unit = amount / portions, remaining = amount;
         for (int i = 0; i < portions; ++i) {
-            double part = i == portions - 1 ? remaining : std::min(unit, remaining);
+            Amount part = i == portions - 1 ? remaining : minimum(unit, remaining);
             remaining = nonnegative(remaining - part);
             debts[first + i][layer] += part;
         }
     }
-    void pay_debt(double amount, double at) {
-        double absorbed = 0, rest = protection(amount, absorbed), loss = 0;
+    void pay_debt(Amount amount, double at) {
+        Amount absorbed = 0;
+        Amount rest = protection(amount, absorbed);
+        Amount loss = 0;
         for (int layer = 0; layer < 2 && rest > 0; ++layer) {
             reconcile_defence();
-            double total = 0;
+            Amount total = 0;
             for (const Defence &d : defences)
                 if (d.layer == layer)
                     total += nonnegative(d.maximum - d.loss);
-            double taken = std::min(total, rest), body = 0;
+            Amount taken = minimum(total, rest);
+            Amount body = 0;
             for (Defence &d : defences)
                 if (d.layer == layer && total > 0) {
-                    double part = taken * nonnegative(d.maximum - d.loss) / total;
+                    Amount part = taken * nonnegative(d.maximum - d.loss) / total;
                     d.loss += part;
                     body += part;
                     if (part > 0)
                         d.last_hit = defence_time;
                 }
-            double &hp = layer == 0 ? player_shield : player_hp;
+            Amount &hp = layer == 0 ? player_shield : player_hp;
             hp = taken >= total && total > 0 ? 0 : nonnegative(hp - body);
             loss += body;
             rest = nonnegative(rest - taken);
@@ -1350,24 +1307,24 @@ class SpaceCombatKernel : public RefCounted {
     void recover(double dt, double begin_at) {
         if (!module_defence)
             return;
-        double rest = dt;
-        while (rest > 1e-9 && !stopped) {
-            double piece = std::min(
-                rest, std::min(memory_interval - memory_elapsed, deferred_interval - deferred_elapsed));
+        double seconds_left = dt;
+        while (seconds_left > 1e-9 && !stopped) {
+            double piece = minimum(
+                seconds_left, minimum(memory_interval - memory_elapsed, deferred_interval - deferred_elapsed));
             double begin_defence = defence_time;
             defence_time += piece;
             memory_elapsed += piece;
             deferred_elapsed += piece;
-            rest = nonnegative(rest - piece);
+            seconds_left = nonnegative(seconds_left - piece);
             // Integrate only the elapsed interval before paying its endpoint events.
             reconcile_defence();
             for (Defence &d : defences) {
                 if (d.layer != 0) continue;
                 double ready = d.last_hit + d.delay;
                 double elapsed = nonnegative(defence_time - ready) - nonnegative(begin_defence - ready);
-                double recovered = std::min(d.loss, d.maximum * d.rate * elapsed);
+                Amount recovered = minimum(d.loss, d.maximum * d.rate * elapsed);
                 d.loss = nonnegative(d.loss - recovered);
-                player_shield = std::min(capacity(0), player_shield + recovered);
+                player_shield = minimum(capacity(0), player_shield + recovered);
             }
             // Same-time priority: continuous recovery, debt, memory, then beam hit.
             if (deferred_elapsed + 1e-9 >= deferred_interval) {
@@ -1379,7 +1336,7 @@ class SpaceCombatKernel : public RefCounted {
                     debts.erase(at);
                     for (int layer = 0; layer < 2 && !stopped; ++layer)
                         if (due[layer] > 0)
-                            pay_debt(due[layer], begin_at + dt - rest);
+                            pay_debt(due[layer], begin_at + dt - seconds_left);
                     if (!stopped && rng->randf() < clear_probability)
                         debts.clear();
                 }
@@ -1391,31 +1348,32 @@ class SpaceCombatKernel : public RefCounted {
                 memory_elapsed = nonnegative(memory_elapsed - memory_interval);
             reconcile_defence();
             for (Defence &d : defences) {
-                double &hp = d.layer == 0 ? player_shield : player_hp;
-                double total = capacity(d.layer);
+                Amount &hp = d.layer == 0 ? player_shield : player_hp;
+                Amount total = capacity(d.layer);
                 if (memory && d.memory_heal > 0) {
-                    double healing = d.maximum * d.memory_heal, recovered = std::min(d.loss, healing);
+                    Amount healing = d.maximum * d.memory_heal;
+                    Amount recovered = minimum(d.loss, healing);
                     d.loss = nonnegative(d.loss - recovered);
-                    hp = std::min(total, hp + recovered);
+                    hp = minimum(total, hp + recovered);
                     d.buffer =
-                        std::min(d.maximum * d.memory_cap, d.buffer + nonnegative(healing - recovered));
+                        minimum(d.maximum * d.memory_cap, d.buffer + nonnegative(healing - recovered));
                 }
             }
             publish_player();
         }
     }
-    void player_hit(double raw, int type, double at) {
+    void player_hit(Amount raw, int type, double at) {
         if (final_cleared) return;
         if (!increment_history(incoming_counter)) return;
         last_incoming_at = at;
         if (!module_defence) {
             double factor = type == int(player_row.get("shield_type", 0)) ? 1 - resistance : 1;
-            double absorbed = std::min(player_shield, std::max(1.0, raw * factor));
+            Amount absorbed = minimum(player_shield, maximum(1.0, raw * factor));
             player_shield -= absorbed;
-            double left = factor > 0 ? nonnegative(raw - absorbed / factor) : 0;
-            double damage =
+            Amount left = factor > 0 ? nonnegative(raw - absorbed / factor) : 0;
+            Amount damage =
                 left > 0
-                    ? std::ceil(left * (type == int(player_row.get("armour_type", 0)) ? 1 - resistance : 1))
+                    ? ceil_number(left * (type == int(player_row.get("armour_type", 0)) ? 1 - resistance : 1))
                     : 0;
             player_hp = nonnegative(player_hp - damage);
             incoming_effect(damage + absorbed, 0, type, at);
@@ -1426,8 +1384,9 @@ class SpaceCombatKernel : public RefCounted {
         for (Defence &d : defences)
             if (d.layer == 0)
                 d.last_hit = defence_time;
-        double absorbed = 0, rest = protection(raw, absorbed);
-        std::array<double, 2> payments{};
+        Amount absorbed = 0;
+        Amount rest = protection(raw, absorbed);
+        std::array<Amount, 2> payments{};
         std::array<bool, 2> deferred{};
         int shield_passes = 0;
         for (const Defence &d : defences)
@@ -1435,8 +1394,8 @@ class SpaceCombatKernel : public RefCounted {
                 ++shield_passes;
         for (int pass = 0; pass <= shield_passes && rest > 0; ++pass) {
             int layer = pass < shield_passes ? 0 : 1;
-            double total = 0;
-            std::vector<double> available(defences.size(), 0);
+            Amount total = 0;
+            std::vector<Amount> available(defences.size(), 0);
             for (size_t i = 0; i < defences.size(); ++i)
                 if (defences[i].layer == layer) {
                     available[i] = nonnegative(defences[i].maximum - defences[i].loss);
@@ -1444,16 +1403,19 @@ class SpaceCombatKernel : public RefCounted {
                 }
             if (total <= 0)
                 continue;
-            double incoming = rest, spent = 0;
+            Amount incoming = rest;
+            Amount spent = 0;
             for (size_t i = 0; i < defences.size(); ++i) {
                 Defence &d = defences[i];
                 if (d.layer != layer || available[i] <= 0)
                     continue;
-                double factor = type == d.type ? 1 - resistance : 1,
-                       weighted = incoming * available[i] / total, part = weighted * factor,
-                       payable = available[i] / (1 - d.deferred_fraction),
-                       taken = layer == 1 ? part : std::min(payable, part),
-                       delayed = taken * d.deferred_fraction, immediate = nonnegative(taken - delayed);
+                double factor = type == d.type ? 1 - resistance : 1;
+                Amount weighted = incoming * available[i] / total;
+                Amount part = weighted * factor;
+                Amount payable = available[i] / (1 - d.deferred_fraction);
+                Amount taken = layer == 1 ? part : minimum(payable, part);
+                Amount delayed = taken * d.deferred_fraction;
+                Amount immediate = nonnegative(taken - delayed);
                 if (layer == 0 && taken >= payable) {
                     immediate = available[i];
                     delayed = nonnegative(taken - immediate);
@@ -1468,16 +1430,16 @@ class SpaceCombatKernel : public RefCounted {
             }
             rest = nonnegative(incoming - spent);
         }
-        double loss = 0;
+        Amount loss = 0;
         for (int layer = 0; layer < 2; ++layer) {
-            double &hp = layer == 0 ? player_shield : player_hp;
-            double paid = std::min(hp, deferred[layer] ? payments[layer] : std::ceil(payments[layer]));
+            Amount &hp = layer == 0 ? player_shield : player_hp;
+            Amount paid = minimum(hp, deferred[layer] ? payments[layer] : ceil_number(payments[layer]));
             hp = nonnegative(hp - paid);
             loss += paid;
         }
         incoming_effect(loss, absorbed, type, at);
     }
-    void launch(int wi, Handle target, std::shared_ptr<const Attack> a, double multiplier,
+    void launch(int wi, Handle target, std::shared_ptr<const Attack> a, Amount multiplier,
                 bool repeated = false, bool distribute = true, double inherited_maximum = -1,
                 std::shared_ptr<Instance> shared_instance = {}) {
         Weapon w = committed_weapon(wi, a->birth);
@@ -1536,7 +1498,7 @@ class SpaceCombatKernel : public RefCounted {
         // Match weapon_multiplier grouping before multiplying the rounded base.
         double legendary = !w.hostile && w.kind == 0 ?
             (scatter && candidates.size() == 1 ? 1 + scatter_bonus : 1) * laser_charge_multiplier : 1;
-        a->damage = (w.hostile ? w.base : std::ceil(w.base * (1 + counter_bonus(attack_counter)))) *
+        a->damage = (w.hostile ? w.base : evaluate_module_value(w.base, attack_counter, counter_growth, counter_level, counter_log_base, counter_round_scale, w.branch_factors, w.external_factors)) *
                     w.factor * legendary;
         a->critical = !w.hostile && rng->randf() < w.crit_rate;
         if (a->critical)
@@ -1549,7 +1511,7 @@ class SpaceCombatKernel : public RefCounted {
                 ++wild_replacements;
                 a->damage *= wild_multiplier;
                 a->context->wild = true; a->context->blast = wild_blast;
-                retained_wild_blast = std::max(retained_wild_blast,wild_blast);
+                retained_wild_blast = maximum(retained_wild_blast,wild_blast);
                 auto birth = std::make_shared<BirthConfig>(*a->birth); birth->salvo = 1;
                 birth->weapon = birth->weapon.duplicate(true); birth->weapon["para1"] = 1; birth->weapon.make_read_only();
                 a->birth = birth;
@@ -1557,7 +1519,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         a->secondary = !w.hostile && !wild && rng->randf() < w.secondary_probability;
         a->repeats = !w.hostile && !wild && rng->randf() < w.repeat_probability;
-        retained_damage_bound = std::max(retained_damage_bound,a->damage * retained_repeat_bound * retained_maximum_bound);
+        retained_damage_bound = maximum(retained_damage_bound,a->damage * retained_repeat_bound * retained_maximum_bound);
         if (w.hostile) {
             launch(wi, {}, a, 1);
             return;
@@ -1590,7 +1552,7 @@ class SpaceCombatKernel : public RefCounted {
     bool endless_eligible(const Flight &f) const {
         return f.live && f.beam && !f.hostile && !f.repeated && weapons[f.weapon].endless &&
                !stopped && !final_cleared &&
-               (double(player_row.get("armour",0.0)) > 0 || double(player_row.get("shield",0.0)) > 0);
+               (read_amount(player_row.get("armour",0.0)) > 0 || read_amount(player_row.get("shield",0.0)) > 0);
     }
     // One owner keeps the existing attack, charge, tick clock and frozen link count.
     // Rebinding happens only at the next segment start, never halfway through hits.
@@ -1657,7 +1619,7 @@ class SpaceCombatKernel : public RefCounted {
         for (const Period &p : periods) {
             if (stopped || final_cleared) break;
             recover(nonnegative(p.at - defence_at), defence_at);
-            defence_at = std::max(defence_at, p.at);
+            defence_at = maximum(defence_at, p.at);
             if (stopped) break;
             Flight &f = flights[p.id];
             if (!f.live || f.await_target || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
@@ -1670,7 +1632,7 @@ class SpaceCombatKernel : public RefCounted {
             f.view["ticks"] = f.ticks;
             double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : p.due;
             double ramp = f.ramp > 0 ? std::clamp(duration / f.ramp, 0.0, 1.0) : 1;
-            double raw = f.damage * (1 + (f.maximum - 1) * ramp);
+            Amount raw = f.damage * (1 + (f.maximum - 1) * ramp);
             effect(6, f, f.aim, p.at);
             if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, p.at);
             if (f.hostile)
@@ -1746,9 +1708,13 @@ class SpaceCombatKernel : public RefCounted {
         while (!roots.empty() && !final_cleared && roots.top().at <= clock + 1e-9) {
             Timed q = roots.top();
             roots.pop();
+            const uint64_t before = attack_serial;
             primary(q.weapon);
-            q.at = clock + weapons[q.weapon].interval;
-            if (!final_cleared && weapons[q.weapon].kind != 3)
+            const Weapon &weapon = weapons[q.weapon];
+            const bool fired = attack_serial != before;
+            q.at = fired ? clock + weapon.interval : clock;
+            const bool occupied_beam = weapon.kind == 3 && weapon.beam >= 0 && flights[weapon.beam].live;
+            if (!stopped && !final_cleared && !occupied_beam && (!weapon.hostile || resolve(weapon.source)))
                 reschedule.push_back(q);
         }
         if (!final_cleared) for (const Timed &q : reschedule)
@@ -1798,7 +1764,7 @@ class SpaceCombatKernel : public RefCounted {
                     double change = std::remainder(wanted - old, 6.28318530717958647692);
                     double range = distance(position(m), aim);
                     if (range < brake_range && std::abs(change) > brake_angle)
-                        m.speed = std::min(m.speed, std::max(min_speed, range * turn_rate * brake_factor));
+                        m.speed = minimum(m.speed, maximum(min_speed, range * turn_rate * brake_factor));
                     if (m.age >= seek)
                         m.direction = axis(old + std::clamp(change, -turn_rate * dt, turn_rate * dt));
                     Vector2 delta = m.direction * m.speed * dt, p = position(m);
@@ -1828,7 +1794,7 @@ class SpaceCombatKernel : public RefCounted {
                             // The birth ray is a conservative far-contact gate, not a future hit.
                             // Keep the exact segment predicate at contact, preserving float rounding,
                             // impact coordinates, born_step and active-order damage settlement.
-                            const double margin = std::max(1.0, std::abs(f.contact_distance) * 1e-4);
+                            const double margin = maximum(1.0, std::abs(f.contact_distance) * 1e-4);
                             if (t->stationary_geometry && f.contact_distance >= 0 &&
                                 progress + m.speed * dt < f.contact_distance - margin) {
                                 ++ballistic_skips;
@@ -1886,13 +1852,13 @@ class SpaceCombatKernel : public RefCounted {
             a.generation = encounter_generation;
             a.uid = v["uid"];
             a.view = v.duplicate(true);
-            a.hp = v["hp"];
+            a.hp = read_amount(v["hp"]);
             a.live = a.hp > 0;
-            a.max_hp = v["max_hp"];
-            a.shield = v.get("shield", 0.0);
-            a.max_shield = v.get("max_shield", 0.0);
+            a.max_hp = read_amount(v["max_hp"]);
+            a.shield = read_amount(v.get("shield", 0.0));
+            a.max_shield = read_amount(v.get("max_shield", 0.0));
             a.guidance_layers = v.get("guidance_layers",0);
-            retained_guidance_layers = std::max(retained_guidance_layers,double(a.guidance_layers));
+            retained_guidance_layers = maximum(retained_guidance_layers,double(a.guidance_layers));
             a.armour_type = v.get("armourType", 0);
             a.shield_type = v.get("shieldType", 0);
             a.slot = v.get("slot", i);
@@ -1911,10 +1877,10 @@ class SpaceCombatKernel : public RefCounted {
             Array drops = v.get("compiled_drops", Array());
             for (int index = 0; index < drops.size(); ++index) {
                 Dictionary row = drops[index];
-                a.drops.push_back({double(row["chance"]), double(row["amount"]), double(row["base"]),
+                a.drops.push_back({double(row["chance"]), read_amount(row["amount"]), read_amount(row["base"]),
                                    int(row["resource"])});
             }
-            if (!std::isfinite(a.hp))
+            if (!finite(a.hp))
                 return false;
             actors.push_back(a);
             actor_rows.push_back(a.view);
@@ -1941,11 +1907,13 @@ class SpaceCombatKernel : public RefCounted {
                 w.source = handle(source + actor_offset);
             }
             w.interval = v.get("interval", 1.0);
-            if (w.interval <= 0 || double(v.get("speed", 720.0)) <= 0 || double(v.get("damage", 1.0)) < 0 ||
+            if (w.interval <= 0 || double(v.get("speed", 720.0)) <= 0 || read_amount(v.get("damage", 1.0)) < 0 ||
                 int(v.get("salvo", 1)) < 1)
                 return false;
             w.remaining = v.get("remaining", w.kind == 3 ? 0.0 : w.interval);
-            w.base = v.get("damage", 1.0);
+            w.base = read_amount(v.get("damage", 1.0));
+            w.branch_factors = Array(v.get("branch_factors", Array())).duplicate(true);
+            w.external_factors = Array(v.get("external_factors", Array())).duplicate(true);
             w.factor = v.get("factor", 1.0);
             w.speed = v.get("speed", 720.0);
             w.salvo = v.get("salvo", 1);
@@ -1972,6 +1940,7 @@ class SpaceCombatKernel : public RefCounted {
 
   protected:
     static void _bind_methods() {
+        ClassDB::bind_method(D_METHOD("evaluate_module", "module", "count"), &SpaceCombatKernel::evaluate_module);
         ClassDB::bind_method(D_METHOD("take_results"), &SpaceCombatKernel::take_results);
         ClassDB::bind_method(D_METHOD("read_history"), &SpaceCombatKernel::read_history);
         ClassDB::bind_method(D_METHOD("clear_encounter", "reason"), &SpaceCombatKernel::clear_encounter);
@@ -2001,12 +1970,10 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("input_player_point", "point"), &SpaceCombatKernel::input_player_point);
         ClassDB::bind_method(D_METHOD("enemy_views"), &SpaceCombatKernel::enemy_views);
         ClassDB::bind_method(D_METHOD("buffer_view"), &SpaceCombatKernel::buffer_view);
-        ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total);
+        ClassDB::bind_method(D_METHOD("deferred_total"), &SpaceCombatKernel::deferred_total_text);
         ClassDB::bind_method(D_METHOD("rng_source"), &SpaceCombatKernel::rng_source);
         ClassDB::bind_method(D_METHOD("exit_state"), &SpaceCombatKernel::exit_state);
         ClassDB::bind_method(D_METHOD("set_compact_laser_births", "enabled"), &SpaceCombatKernel::set_compact_laser_births);
-        ClassDB::bind_method(D_METHOD("export_handoff"), &SpaceCombatKernel::export_handoff);
-        ClassDB::bind_method(D_METHOD("commit_handoff", "revision"), &SpaceCombatKernel::commit_handoff);
         ClassDB::bind_method(D_METHOD("loss_view"), &SpaceCombatKernel::loss_view);
         ClassDB::bind_method(D_METHOD("defence_time_view"), &SpaceCombatKernel::defence_time_view);
         ClassDB::bind_method(D_METHOD("projectile_views"), &SpaceCombatKernel::projectile_views);
@@ -2018,9 +1985,6 @@ class SpaceCombatKernel : public RefCounted {
         ClassDB::bind_method(D_METHOD("set_damage_stats_enabled", "enabled"), &SpaceCombatKernel::set_damage_stats_enabled);
         ClassDB::bind_method(D_METHOD("take_damage_stats"), &SpaceCombatKernel::take_damage_stats);
         ClassDB::bind_method(D_METHOD("actor_handle", "uid"), &SpaceCombatKernel::actor_handle);
-        ClassDB::bind_method(D_METHOD("hit_handle", "handle", "raw", "type"), &SpaceCombatKernel::hit_handle);
-        ClassDB::bind_method(D_METHOD("receive_player_hit", "raw", "type"),
-                             &SpaceCombatKernel::receive_player_hit);
         ClassDB::bind_method(D_METHOD("cancel"), &SpaceCombatKernel::cancel);
         ClassDB::bind_method(D_METHOD("metrics"), &SpaceCombatKernel::metrics);
         ClassDB::bind_method(D_METHOD("cooldown_remaining", "slot", "source_uid"),
@@ -2034,148 +1998,66 @@ class SpaceCombatKernel : public RefCounted {
             retained_repeat_bound = retained_maximum_bound = retained_interference_bound = 1;
             retained_min_interval = std::numeric_limits<double>::infinity();
             retained_salvo_bound = 1; retained_chain_bound = 0;
-            retained_drop_bound = retained_recovery_bound = retained_shield_bound = retained_shield_elapsed = 0;
+            retained_drop_bound = retained_shield_elapsed = 0; retained_recovery_bound = retained_shield_bound = 0;
             envelope_clock = clock;
             for (const auto &payment : debts)
                 retained_debt_bound += payment.second[0] + payment.second[1];
         }
         for (const Weapon &w : weapons) {
-            retained_salvo_bound = std::max(retained_salvo_bound,w.salvo);
-            retained_chain_bound = std::max(retained_chain_bound,std::max(w.chain_count,prism_count));
-            retained_min_interval = std::min(retained_min_interval,w.interval);
-            retained_repeat_bound = std::max(retained_repeat_bound,w.repeat_multiplier);
-            retained_maximum_bound = std::max(retained_maximum_bound,w.maximum + prism_bonus);
+            retained_salvo_bound = maximum(retained_salvo_bound,w.salvo);
+            retained_chain_bound = maximum(retained_chain_bound,maximum(w.chain_count,prism_count));
+            retained_min_interval = minimum(retained_min_interval,w.interval);
+            retained_repeat_bound = maximum(retained_repeat_bound,w.repeat_multiplier);
+            retained_maximum_bound = maximum(retained_maximum_bound,w.maximum + prism_bonus);
         }
         if (reset) for (const Actor &a : actors) {
-            retained_interference_bound = std::max(retained_interference_bound,1 + a.interference);
-            retained_explosion_bound = std::max(retained_explosion_bound,a.max_hp * a.explosion);
+            retained_interference_bound = maximum(retained_interference_bound,1 + a.interference);
+            retained_explosion_bound = maximum(retained_explosion_bound,a.max_hp * a.explosion);
             retained_drop_bound += double(a.jewel_rolls) + double(a.drops.size());
-            retained_recovery_bound = std::max(retained_recovery_bound,a.max_shield * a.recovery);
-            retained_shield_bound = std::max(retained_shield_bound,std::max(a.shield,a.max_shield));
-            retained_shield_elapsed = std::max(retained_shield_elapsed,std::max(0.0,clock-a.shield_at));
+            retained_recovery_bound = maximum(retained_recovery_bound,a.max_shield * a.recovery);
+            retained_shield_bound = maximum(retained_shield_bound,maximum(a.shield,a.max_shield));
+            retained_shield_elapsed = maximum(retained_shield_elapsed,maximum(0.0,clock-a.shield_at));
         }
     }
     bool can_advance(double seconds) const {
-        if (!admitted || stopped || executing || !std::isfinite(seconds) || seconds <= 0 ||
-            !std::isfinite(clock + seconds) || !std::isfinite(defence_time + seconds)) return false;
+        if (!admitted || stopped || executing || !finite(seconds) || seconds <= 0 ||
+            !finite(clock + seconds) || !finite(defence_time + seconds)) return false;
         const long double exact_limit = static_cast<long double>(std::numeric_limits<int64_t>::max());
         // Only live beams: missile/pulse populations add no preflight scan.
         // Birth/retire maintain this dense index in O(1).
         for (size_t id : active_beams) {
             const Flight &f = flights[id];
             double future_age = f.age + seconds;
-            double ticks = std::max(0.0,std::floor((future_age-f.next_hit)/f.interval)+1);
-            if (!std::isfinite(future_age) || future_age <= f.age || future_age >= exact_limit ||
-                f.next_hit + f.interval <= f.next_hit || !std::isfinite(f.next_hit + f.interval) ||
+            double ticks = maximum(0.0,std::floor((future_age-f.next_hit)/f.interval)+1);
+            if (!finite(future_age) || future_age <= f.age || future_age >= exact_limit ||
+                f.next_hit + f.interval <= f.next_hit || !finite(f.next_hit + f.interval) ||
                 double(f.ticks) + ticks >= 2147483647.0) return false;
         }
         // Normal roots reschedule after processing. Owned beams can retire/restart once
         // per segment. Every extra segment needs an existing or newly ejected missile.
-        double normal = double(roots.size()) * (1 + std::ceil(seconds / retained_min_interval));
+        double normal = double(roots.size()) * (1 + ceil_number(seconds / retained_min_interval));
         double segments = 1 + double(ejections.size()) + (normal + double(repeats.size())) * retained_salvo_bound;
         double root_bound = normal + (double(roots.size()) + double(weapons.size())) * segments;
-        double copies = 3.0 * retained_salvo_bound * (std::max(1.0,double(actors.size())) + retained_chain_bound);
+        double copies = 3.0 * retained_salvo_bound * (maximum(1.0,double(actors.size())) + retained_chain_bound);
         double carriers = double(active.size()) + double(ejections.size()) + (root_bound + double(repeats.size())) * copies;
-        double periods = carriers * (segments + 1 + std::ceil(seconds / retained_min_interval));
+        double periods = carriers * (segments + 1 + ceil_number(seconds / retained_min_interval));
         // Repeated beams cannot repeat again; secondary shares the primary instance.
         double births = carriers + periods * copies;
-        double hits = births * std::max(1.0,double(actors.size())) + double(actors.size()) * double(actors.size());
-        double strange_births = strange_enabled ? hits * std::max(1, strange_kill_spawns) : 0;
+        double hits = births * maximum(1.0,double(actors.size())) + double(actors.size()) * double(actors.size());
+        double strange_births = strange_enabled ? hits * maximum(1, strange_kill_spawns) : 0;
         hits += double(strange_pending.size()) * double(actors.size());
-        if (!std::isfinite(clock + seconds + strange_delay) ||
+        if (!finite(clock + seconds + strange_delay) ||
             double(strange_serial) + strange_births >= exact_limit) return false;
         long double attack_end = static_cast<long double>(attack_counter) + root_bound + double(repeats.size()) + periods;
         // Every retained wild context can explode once; no recursive explosion.
         hits *= 1 + double(actors.size());
         long double incoming_end = static_cast<long double>(incoming_counter) + hits;
         double events = births + hits + root_bound + periods + retained_drop_bound + strange_births;
-        if (!std::isfinite(events) || events >= exact_limit || attack_end >= exact_limit || incoming_end >= exact_limit ||
+        if (!finite(events) || events >= exact_limit || attack_end >= exact_limit || incoming_end >= exact_limit ||
             double(event_serial) + events >= exact_limit || double(flight_serial) + births >= exact_limit ||
             double(instance_serial) + births >= exact_limit || double(attack_serial) + root_bound >= exact_limit ||
             double(step_serial) + segments >= exact_limit || double(context_serial) + births + root_bound >= exact_limit ||
             double(missile_attacks) + root_bound >= exact_limit) return false;
-        auto bonus = [&](long double count, double growth, double &out) {
-            double product = growth * counter_level;
-            if (!std::isfinite(product)) return false;
-            double value = product * std::log(std::max(1.L,count));
-            if (!std::isfinite(value)) return false;
-            value /= std::log(counter_log_base);
-            if (!std::isfinite(value)) return false;
-            value *= counter_round_scale;
-            if (!std::isfinite(value)) return false;
-            out = std::round(value) / counter_round_scale;
-            return std::isfinite(out) && 1 + out >= 0;
-        };
-        double attack_bonus = 0, defence_bonus = 0, current_attack_bonus = 0, current_defence_bonus = 0;
-        if (!bonus(attack_counter,counter_growth,current_attack_bonus) || !bonus(incoming_counter,defence_counter_growth,current_defence_bonus)) return false;
-        if (!bonus(attack_end,counter_growth,attack_bonus) || !bonus(incoming_end,defence_counter_growth,defence_bonus)) return false;
-        attack_bonus = std::max(attack_bonus,current_attack_bonus);
-        defence_bonus = std::max(defence_bonus,current_defence_bonus);
-        double recovery_elapsed = retained_shield_elapsed + clock - envelope_clock + seconds;
-        if (!std::isfinite(recovery_elapsed) || !std::isfinite(retained_recovery_bound*recovery_elapsed) ||
-            !std::isfinite(retained_shield_bound + retained_recovery_bound*recovery_elapsed)) return false;
-        double raw = std::max(std::max(retained_damage_bound,retained_explosion_bound),retained_strange_damage);
-        if (strange_enabled) {
-            double derived = retained_damage_bound * strange_multiplier;
-            if (!std::isfinite(derived)) return false;
-            raw = std::max(raw, derived);
-        }
-        for (const Weapon &w : weapons) {
-            double base = w.hostile ? w.base : w.base * (1 + attack_bonus);
-            if (!std::isfinite(base)) return false;
-            double damage = (w.hostile ? base : std::ceil(base)) * w.factor;
-            if (!std::isfinite(damage)) return false;
-            double legendary = !w.hostile && w.kind == 0 ?
-                (scatter ? 1 + scatter_bonus : 1) * laser_charge_multiplier : 1;
-            if (!std::isfinite(legendary)) return false;
-            damage *= legendary;
-            if (!std::isfinite(damage)) return false;
-            damage *= std::max(1.0,w.crit_multiplier);
-            if (!std::isfinite(damage)) return false;
-            if (strange_enabled && !w.hostile && w.kind == 1) {
-                double derived = damage * strange_multiplier;
-                if (!std::isfinite(derived)) return false;
-                raw = std::max(raw, derived);
-            }
-            if (wild_enabled && !w.hostile && w.kind == 2) {
-                double wild_raw = damage * wild_multiplier;
-                if (!std::isfinite(wild_raw)) return false;
-                damage = std::max(damage,wild_raw);
-            }
-            damage *= retained_repeat_bound;
-            if (!std::isfinite(damage)) return false;
-            damage *= retained_maximum_bound;
-            if (!std::isfinite(damage)) return false;
-            raw = std::max(raw,damage);
-        }
-        double next_layers = retained_guidance_layers + double(active.size()) + double(ejections.size()) + normal;
-        if (guidance_limited) next_layers = std::max(retained_guidance_layers,std::min(next_layers,double(guidance_limit)));
-        if (!missile_arithmetic(raw,next_layers,guidance_enabled,guidance_multiplier,retained_guidance_factor,
-            std::max(retained_wild_blast,wild_enabled ? wild_blast : 1.0))) return false;
-        raw *= retained_interference_bound;
-        double new_damage = raw * hits;
-        double total_damage = retained_debt_bound + new_damage;
-        if (!std::isfinite(raw) || !std::isfinite(total_damage) || !std::isfinite(retained_debt_bound + total_damage) ||
-            (resistance < 1 && !std::isfinite(raw / (1 - resistance)))) return false;
-        double totals[2] = {}, buffers[2] = {}, losses[2] = {};
-        for (const Defence &d : defences) {
-            double before_ceil = d.base * (1 + defence_bonus);
-            double maximum = std::ceil(before_ceil) * d.factor;
-            double cap = maximum * d.memory_cap, heal = maximum * d.memory_heal;
-            double recovery = maximum * d.rate;
-            if (!std::isfinite(before_ceil) || !std::isfinite(maximum) || !std::isfinite(cap) || !std::isfinite(heal) ||
-                !std::isfinite(recovery) || !std::isfinite(recovery * seconds) || !std::isfinite(cap + heal) ||
-                !std::isfinite(d.buffer + heal) || !std::isfinite(d.loss + total_damage) ||
-                !std::isfinite(maximum / (1 - d.deferred_fraction)) || !std::isfinite(total_damage * maximum)) return false;
-            totals[d.layer] += maximum; buffers[d.layer] += cap; losses[d.layer] += d.loss;
-            if (!std::isfinite(totals[d.layer]) || !std::isfinite(buffers[d.layer]) || !std::isfinite(losses[d.layer])) return false;
-        }
-        double periods_due = std::ceil(seconds / deferred_interval) + 1;
-        double portions = std::max(1.0,std::ceil(deferred_duration / deferred_interval));
-        if (!std::isfinite(periods_due + portions) || double(deferred_tick) + periods_due + portions >= 9223372036854775808.0 ||
-            !std::isfinite((defence_time + seconds + deferred_interval) / deferred_interval) ||
-            std::ceil((defence_time + seconds + deferred_interval) / deferred_interval) + portions >= 9223372036854775808.0 ||
-            double(drop_uid) + retained_drop_bound >= 9223372036854775808.0) return false;
         return true;
     }
     // Read only on demand; no per-step Dictionary/Array allocation for diagnostics.
@@ -2204,7 +2086,21 @@ class SpaceCombatKernel : public RefCounted {
     bool supports_laser_charge() const { return true; }
     // One kernel owns the session. New waves append generations; they never
     // configure a replacement owner or discard legal carriers from an earlier wave.
-    bool initialize(Dictionary descriptor) { return configure(descriptor); }
+    Dictionary evaluate_module(Dictionary module, int64_t count) const {
+        Dictionary result;
+        try {
+            Amount value = evaluate_module_value(read_amount(module["charged_base"]), count,
+                module.get("history_growth", 0.0), module.get("effective_enhancement_level", int64_t(0)),
+                module.get("counter_log_base", 10.0), module.get("counter_round_scale", 100.0),
+                module.get("branch_factors", Array()), module.get("external_factors", Array()));
+            result["ok"] = true; result["value"] = wire(value);
+        } catch (const std::exception &e) { result["ok"] = false; result["error"] = String(e.what()); }
+        return result;
+    }
+    bool initialize(Dictionary descriptor) {
+        try { return configure(descriptor); }
+        catch (const std::exception &e) { failure_reason = String(e.what()); stopped = true; return false; }
+    }
     bool start_wave(Dictionary wave) {
         if (!admitted || executing || stopped || wave_active) return false;
         for (const Actor &a : actors) if (a.live) return false;
@@ -2249,7 +2145,7 @@ class SpaceCombatKernel : public RefCounted {
         actors.clear(); actor_rows.clear();
         weapons.erase(std::remove_if(weapons.begin(), weapons.end(), [](const Weapon &w) { return w.hostile; }), weapons.end());
         for (Defence &d : defences) { d.loss = 0; d.buffer = 0; }
-        player_hp = player_row["armour"]; player_shield = player_row["shield"];
+        player_hp = module_defence ? capacity(1) : player_initial_hp; player_shield = module_defence ? capacity(0) : player_initial_shield;
         reconcile_defence(); publish_player();
         stopped = false; final_encounter = final_cleared = false;
         for (int i = 0; i < int(weapons.size()); ++i) {
@@ -2325,9 +2221,10 @@ class SpaceCombatKernel : public RefCounted {
         resistance = d.get("resistance", 0.5);
         player_row = Dictionary(d["player"]).duplicate(true);
         player_point = Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0));
-        player_hp = player_row["armour"];
-        player_shield = player_row["shield"];
-        if (!std::isfinite(player_hp) || !std::isfinite(player_shield))
+        player_hp = read_amount(player_row["armour"]);
+        player_shield = read_amount(player_row["shield"]);
+        player_initial_hp = player_hp; player_initial_shield = player_shield;
+        if (!finite(player_hp) || !finite(player_shield))
             return false;
         rng.instantiate();
         rng->set_state(int64_t(d.get("rng_state", 1)));
@@ -2353,7 +2250,7 @@ class SpaceCombatKernel : public RefCounted {
         incoming_counter = d.get("incoming_counter", int64_t(0));
         counter_growth = d.get("counter_growth", 0.0);
         defence_counter_growth = d.get("defence_counter_growth", counter_growth);
-        counter_level = d.get("counter_level", 0.0);
+        counter_level = d.get("counter_level", int64_t(0));
         counter_log_base = d.get("counter_log_base", 10.0);
         counter_round_scale = d.get("counter_round_scale", 10.0);
         memory_interval = d.get("memory_interval", 1.0);
@@ -2377,11 +2274,13 @@ class SpaceCombatKernel : public RefCounted {
             a.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             a.layer = v.get("layer", 0);
             a.type = v.get("type", 0);
-            a.base = v.get("base", 0.0);
+            a.base = read_amount(v.get("base", 0.0));
+            a.branch_factors = Array(v.get("branch_factors", Array())).duplicate(true);
+            a.external_factors = Array(v.get("external_factors", Array())).duplicate(true);
             a.factor = v.get("factor", 1.0);
-            a.maximum = v.get("maximum", 0.0);
-            a.loss = v.get("loss", 0.0);
-            a.buffer = v.get("buffer", 0.0);
+            a.maximum = read_amount(v.get("maximum", 0.0));
+            a.loss = read_amount(v.get("loss", 0.0));
+            a.buffer = read_amount(v.get("buffer", 0.0));
             a.delay = v.get("delay", 0.0);
             a.rate = v.get("rate", 0.0);
             a.last_hit = v.get("last_hit", 0.0);
@@ -2400,7 +2299,7 @@ class SpaceCombatKernel : public RefCounted {
         Array debt_keys = pending_debts.keys();
         for (int i = 0; i < debt_keys.size(); ++i) {
             Dictionary payment = pending_debts[debt_keys[i]];
-            debts[int64_t(debt_keys[i])] = {double(payment.get("shield", 0.0)), double(payment.get("armour", 0.0))};
+            debts[int64_t(debt_keys[i])] = {read_amount(payment.get("shield", 0.0)), read_amount(payment.get("armour", 0.0))};
         }
         module_defence = !defences.empty();
         failure_reason = "";
@@ -2415,7 +2314,7 @@ class SpaceCombatKernel : public RefCounted {
     }
     bool can_update_configuration(Dictionary d) const {
         if (!admitted || stopped || executing || !configuration_schema(d) ||
-            !configuration_arithmetic(d, attack_counter, incoming_counter, std::max(retained_damage_bound, retained_strange_damage), retained_debt_bound, retained_guidance_layers, retained_guidance_factor, retained_wild_blast)) return false;
+            !configuration_arithmetic(d, attack_counter, incoming_counter, maximum(retained_damage_bound, retained_strange_damage), retained_debt_bound, retained_guidance_layers, retained_guidance_factor, retained_wild_blast)) return false;
         Array enemies = d.get("enemies", Array());
         if (enemies.size() != int(actors.size())) return false;
         for (int i = 0; i < enemies.size(); ++i) {
@@ -2426,7 +2325,7 @@ class SpaceCombatKernel : public RefCounted {
         if (rows.size() != int(weapons.size()) || defs.size() != int(defences.size())) return false;
         for (int i = 0; i < rows.size(); ++i) {
             Dictionary v = rows[i]; const Weapon &w = weapons[i];
-            if (!numeric_fields(v, {"kind","type","slot","source","damage","factor","interval","speed","salvo","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","chain_count","secondary_probability"}) || double(v.get("interval", 0)) <= 0 || double(v.get("speed", 0)) <= 0 || double(v.get("damage", -1)) < 0 || double(v.get("factor", 1.0)) < 0) return false;
+            if (!numeric_fields(v, {"kind","type","slot","source","damage","factor","interval","speed","salvo","charge","ramp","maximum","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","chain_count","secondary_probability"}) || double(v.get("interval", 0)) <= 0 || double(v.get("speed", 0)) <= 0 || !v.has("damage") || double(v.get("factor", 1.0)) < 0) return false;
             if (int(v.get("kind", -1)) != w.kind || int(v.get("type", -1)) != w.type || int(v.get("slot", -1)) != w.slot || bool(v.get("hostile", false)) != w.hostile || int(v.get("source", -2)) != (w.hostile ? int(w.source.index) : -1)) return false;
             Dictionary entry = v.get("entry", Dictionary());
             if (entry.get("key", "") != w.entry.get("key", "") || entry.get("name", "") != w.entry.get("name", "") || entry.get("drone_id", "") != w.entry.get("drone_id", "")) return false;
@@ -2434,10 +2333,10 @@ class SpaceCombatKernel : public RefCounted {
         }
         for (int i = 0; i < defs.size(); ++i) {
             Dictionary v = defs[i]; const Defence &a = defences[i];
-            if (!numeric_fields(v, {"layer","type","base","factor","maximum","loss","buffer","last_hit","delay","rate","memory_heal","memory_cap","deferred_fraction"}) || double(v.get("base", -1)) < 0 || double(v.get("factor", -1)) < 0) return false;
+            if (!numeric_fields(v, {"layer","type","base","factor","maximum","loss","buffer","last_hit","delay","rate","memory_heal","memory_cap","deferred_fraction"}) || !v.has("base") || double(v.get("factor", -1)) < 0) return false;
             if (int(v.get("layer", -1)) != a.layer || int(v.get("type", -1)) != a.type || double(v.get("memory_heal",0)) != a.memory_heal || double(v.get("memory_cap",0)) != a.memory_cap || double(v.get("deferred_fraction",0)) != a.deferred_fraction) return false;
         }
-        if (double(d.get("counter_growth",0)) != counter_growth || double(d.get("defence_counter_growth",0)) != defence_counter_growth || double(d.get("counter_level",0)) != counter_level || double(d.get("repeat_delay",0)) != repeat_delay || bool(d.get("scatter",false)) != scatter || int(d.get("prism_count",0)) != prism_count) return false;
+        if (double(d.get("counter_growth",0)) != counter_growth || double(d.get("defence_counter_growth",0)) != defence_counter_growth || int64_t(d.get("counter_level",int64_t(0))) != counter_level || double(d.get("repeat_delay",0)) != repeat_delay || bool(d.get("scatter",false)) != scatter || int(d.get("prism_count",0)) != prism_count) return false;
         for (const auto &field : std::initializer_list<std::pair<const char *,double>>{
             {"counter_log_base",counter_log_base},{"counter_round_scale",counter_round_scale},
             {"memory_interval",memory_interval},{"deferred_interval",deferred_interval},{"deferred_duration",deferred_duration},
@@ -2447,7 +2346,7 @@ class SpaceCombatKernel : public RefCounted {
             {"min_speed",min_speed},{"brake_factor",brake_factor},{"hit_radius",hit_radius}})
             if (double(d.get(field.first,field.second)) != field.second) return false;
         Dictionary player = d.get("player", Dictionary());
-        return player.has("armour") && player.has("shield") && numeric_fields(player, {"armour","shield"}) && double(player["armour"]) >= 0 && double(player["shield"]) >= 0;
+        return player.has("armour") && player.has("shield") && numeric_fields(player, {"armour","shield"}) && read_amount(player["armour"]) >= 0 && read_amount(player["shield"]) >= 0;
     }
     Dictionary refit_token() const {
         Dictionary token;
@@ -2461,8 +2360,8 @@ class SpaceCombatKernel : public RefCounted {
         if (Variant(d.get("refit_token", Variant())).get_type() != Variant::DICTIONARY ||
             Dictionary(d["refit_token"]) != refit_token()) return false;
         if (!can_update_configuration(d) ||
-            (double(Dictionary(d["player"])["armour"]) <= 0 &&
-             double(Dictionary(d["player"])["shield"]) <= 0)) return false;
+            (read_amount(Dictionary(d["player"])["armour"]) <= 0 &&
+             read_amount(Dictionary(d["player"])["shield"]) <= 0)) return false;
         // Galaxy refits change numeric equipment/health and resource amounts only.
         Array rows = d["weapons"], defs = d["defences"], enemies = d["enemies"];
         for (int i = 0; i < rows.size(); ++i) {
@@ -2512,7 +2411,9 @@ class SpaceCombatKernel : public RefCounted {
             Weapon &w = weapons[i];
             w.kind = v["kind"];
             w.type = v["type"];
-            w.base = v["damage"];
+            w.base = read_amount(v["damage"]);
+            w.branch_factors = Array(v.get("branch_factors", Array())).duplicate(true);
+            w.external_factors = Array(v.get("external_factors", Array())).duplicate(true);
             w.factor = v.get("factor", 1.0);
             w.interval = v["interval"];
             w.speed = v["speed"];
@@ -2540,7 +2441,9 @@ class SpaceCombatKernel : public RefCounted {
             Defence &a = defences[i];
             a.entry = Dictionary(v.get("entry", Dictionary())).duplicate(true);
             a.layer = v["layer"];
-            a.base = v["base"];
+            a.base = read_amount(v["base"]);
+            a.branch_factors = Array(v.get("branch_factors", Array())).duplicate(true);
+            a.external_factors = Array(v.get("external_factors", Array())).duplicate(true);
             a.factor = v["factor"];
             a.type = v["type"];
             a.delay = v.get("delay", 0.0);
@@ -2563,8 +2466,8 @@ class SpaceCombatKernel : public RefCounted {
         prism_count = d.get("prism_count", prism_count);
         prism_bonus = d.get("prism_bonus", prism_bonus);
         Dictionary player = d["player"];
-        player_hp = player["armour"];
-        player_shield = player["shield"];
+        player_hp = read_amount(player["armour"]);
+        player_shield = read_amount(player["shield"]);
         if (refit) {
             for (Defence &a : defences) a.loss = 0;
             Array enemies = d["enemies"];
@@ -2572,8 +2475,8 @@ class SpaceCombatKernel : public RefCounted {
                 Dictionary v = enemies[i]; Array drops = v["compiled_drops"];
                 for (int j = 0; j < drops.size(); ++j) {
                     Dictionary row = drops[j];
-                    actors[i].drops[j].base = row["base"];
-                    actors[i].drops[j].amount = row["amount"];
+                    actors[i].drops[j].base = read_amount(row["base"]);
+                    actors[i].drops[j].amount = read_amount(row["amount"]);
                 }
                 actors[i].view["compiled_drops"] = drops.duplicate(true);
             }
@@ -2598,7 +2501,7 @@ class SpaceCombatKernel : public RefCounted {
             if (rows[i].get_type() != Variant::PACKED_VECTOR2_ARRAY) return false;
             PackedVector2Array ports = rows[i];
             for (int j = 0; j < ports.size(); ++j)
-                if (!std::isfinite(ports[j].x) || !std::isfinite(ports[j].y)) return false;
+                if (!finite(ports[j].x) || !finite(ports[j].y)) return false;
         }
         for (int i = 0; i < rows.size(); ++i) weapons[i].presentation_muzzles = rows[i];
         return true;
@@ -2632,7 +2535,7 @@ class SpaceCombatKernel : public RefCounted {
             // Expand vertex acceptance only for this rejection gate. The original
             // polygon predicate below still decides the actual contact.
             if (along >= -1.0 && side >= -1e-4 && side <= 1.0001 && (f.contact_distance < 0 || along < f.contact_distance))
-                f.contact_distance = std::max(0.0, along);
+                f.contact_distance = maximum(0.0, along);
         }
         if (inside) f.contact_distance = 0;
         // A miss/degenerate ray conservatively keeps the original per-segment test.
@@ -2648,7 +2551,7 @@ class SpaceCombatKernel : public RefCounted {
             double cross = movement.cross(edge);
             if (std::abs(cross) < 1e-9) continue;
             double along = (a-p).cross(edge)/cross, side = (a-p).cross(movement)/cross;
-            if (along >= 0 && along <= 1 && side >= 0 && side <= 1) first = std::min(first, along);
+            if (along >= 0 && along <= 1 && side >= 0 && side <= 1) first = minimum(first, along);
         }
         return inside ? 0.0 : first;
     }
@@ -2662,6 +2565,7 @@ class SpaceCombatKernel : public RefCounted {
             weapons[i].muzzle = muzzles[i];
     }
     bool advance(double seconds) {
+        try {
         if (!can_advance(seconds)) return false;
         double end = clock + seconds;
         // One logical boundary, before movement/ejection subdivisions. Newborn packets
@@ -2673,13 +2577,16 @@ class SpaceCombatKernel : public RefCounted {
         while (clock + 1e-9 < end && (!stopped || final_cleared)) {
             double next = end;
             if (!ejections.empty() && ejections.top().at > clock + 1e-9)
-                next = std::min(next, ejections.top().at);
+                next = minimum(next, ejections.top().at);
             segment(next - clock, next == end);
         }
         // The session consumes this whole logical step; terminal death freezes defence,
         // while consuming any tail after an ejection split without more battle events.
         if (stopped) clock = end;
         return true;
+        } catch (const std::exception &e) {
+            failure_reason = String(e.what()); stopped = true; executing = false; return false;
+        }
     }
     bool valid_laser_view(const Flight &f) const {
         return f.live && f.fixed_ray && f.lease.is_valid() && f.instance && f.instance->attack && f.instance->attack->birth && f.view_birth &&
@@ -2695,7 +2602,7 @@ class SpaceCombatKernel : public RefCounted {
         v["launch_point"] = f.launch_point;
         const bool target_live = !f.target_view_cleared && f.target.index < actors.size() && actors[f.target.index].generation == f.target.generation;
         v["target"] = target_live ? actors[f.target.index].view : Dictionary(); v["source"] = player_row;
-        v["hostile"] = false; v["key"] = "laser"; v["type"] = f.type; v["damage"] = f.damage; v["dead"] = !f.live;
+        v["hostile"] = false; v["key"] = "laser"; v["type"] = f.type; v["damage"] = wire(f.damage); v["dead"] = !f.live;
         v["entry"] = birth.entry; v["mount"] = birth.slot; v["motion_lease"] = f.lease;
         v["direction"] = m.direction; v["speed"] = m.speed; v["chain_hop"] = false; v["prototype_missile"] = false;
         v["critical"] = f.instance->attack->critical; v["attack_instance"] = f.instance->view;
@@ -2739,115 +2646,11 @@ class SpaceCombatKernel : public RefCounted {
         compact_laser_births = false;
         return laser_view_revision;
     }
-    Dictionary export_handoff() const {
-        Dictionary out;
-        if (!admitted || (stopped && !final_cleared) || executing) return out;
-        out["strange_pending"] = export_strange();
-        out["missile_attacks"] = missile_attacks;
-        out["schema"] = 1; out["revision"] = int64_t(step_serial); out["clock"] = clock;
-        out["player"] = player_row; out["enemies"] = actor_rows;
-        out["buffers"] = buffer_rows; out["losses"] = loss_rows; out["defence_times"] = defence_time_rows;
-        // Eligible beam deadlines can exceed the segment clock by rounding epsilon.
-        out["since_hit"] = nonnegative(clock - last_incoming_at);
-        out["defence_time"] = defence_time; out["memory_elapsed"] = memory_elapsed;
-        out["deferred_elapsed"] = deferred_elapsed; out["deferred_tick"] = deferred_tick;
-        out["attack_counter"] = attack_counter; out["incoming_counter"] = incoming_counter;
-        out["projectile_serial"] = int64_t(flight_serial); out["attack_serial"] = int64_t(attack_serial);
-        out["instance_serial"] = int64_t(instance_serial); out["drop_uid"] = drop_uid; out["rng"] = rng;
-        Dictionary deferred;
-        for (const auto &item : debts) { Dictionary due; due["shield"] = item.second[0]; due["armour"] = item.second[1]; deferred[item.first] = due; }
-        out["deferred"] = deferred;
-        std::map<uint64_t, Dictionary> attack_rows;
-        auto attack_view = [&](const std::shared_ptr<const Attack> &a) {
-            auto found = attack_rows.find(a->id); if (found != attack_rows.end()) return found->second;
-            Dictionary row; row["id"] = int64_t(a->id); row["damage"] = a->damage;
-            row["critical"] = a->critical; row["critical_bonus_applied"] = a->critical;
-            row["native_context"] = export_missile_context(a->context);
-            row["secondary"] = a->secondary; row["secondary_used"] = true; row["repeats_queued"] = true;
-            row["weapon"] = a->birth->weapon.duplicate(true); row["effects"] = a->birth->effects;
-            row["repeat_plan"] = Array(); row["source_slot"] = a->birth->slot;
-            attack_rows[a->id] = row; return row;
-        };
-        // Cold transfer copies typed mutable state without mutating live views.
-        std::map<uint64_t, Dictionary> instance_rows;
-        auto instance_view = [&](const std::shared_ptr<Instance> &inst) {
-            if (!inst) return Dictionary();
-            auto found = instance_rows.find(inst->id); if (found != instance_rows.end()) return found->second;
-            Dictionary row = inst->view.duplicate();
-            Dictionary chain = Dictionary(inst->view["chain"]).duplicate();
-            chain["count"] = inst->count; chain["used"] = inst->chain_used;
-            chain["beam"] = inst->beam; chain["ended"] = inst->ended;
-            if (inst->beam) chain["primary"] = inst->primary.index < actors.size() ? actors[inst->primary.index].view : Dictionary();
-            row["chain"] = chain; instance_rows[inst->id] = row; return row;
-        };
-        Array records;
-        for (size_t id : active) {
-            const Flight &f = flights[id]; if (!f.live) continue;
-            if (f.compact_laser && !valid_laser_view(f)) return Dictionary();
-            Dictionary row; row["view"] = f.compact_laser ? laser_view(f) : f.view; row["weapon_index"] = f.weapon;
-            row["snapshot"] = attack_view(f.instance->attack); row["instance"] = instance_view(f.instance);
-            row["instance_derived"] = f.repeated; row["damage"] = f.damage;
-            row["native_context"] = export_missile_context(f.context);
-            row["multiplier"] = f.multiplier; row["age"] = f.age; row["next_hit"] = f.next_hit;
-            row["ticks"] = f.ticks; row["charge"] = f.charge; row["interval"] = f.interval;
-            row["ramp"] = f.ramp; row["maximum"] = f.maximum; row["cruise_speed"] = f.cruise_speed;
-            row["native_index"] = int64_t(id); row["native_generation"] = int64_t(f.generation);
-            row["endless"] = endless_eligible(f); row["await_target"] = f.await_target;
-            row["beam"] = f.beam; row["chain"] = f.chain; row["repeated"] = f.repeated;
-            row["hostile"] = f.hostile;
-            const Motion &m = f.lease->motion(); row["position"] = position(m); row["direction"] = m.direction;
-            row["speed"] = m.speed; row["motion_age"] = m.age; row["orphan_age"] = m.orphan; row["last_aim"] = m.last_aim;
-            if (f.beam) {
-                Dictionary snap = row["snapshot"], weapon = Dictionary(snap["weapon"]).duplicate(true);
-                weapon["para2"] = f.maximum; snap["weapon"] = weapon;
-                if (!f.repeated && f.ticks == 0) {
-                    snap["secondary_used"] = false; snap["repeats_queued"] = false;
-                    if (f.instance->attack->repeats) {
-                        Dictionary plan; plan["depth"] = 1; plan["delay"] = f.instance->attack->birth->repeat_delay;
-                        plan["factor"] = f.instance->attack->birth->repeat_multiplier; plan["parent"] = -1; plan["plan_index"] = 0;
-                        Array plans; plans.push_back(plan); snap["repeat_plan"] = plans;
-                    }
-                }
-            }
-            records.push_back(row);
-        }
-        out["flights"] = records;
-        Array due_roots; auto root_copy = roots;
-        while (!root_copy.empty()) { auto q = root_copy.top(); root_copy.pop(); Dictionary row; row["weapon_index"] = q.weapon; row["remaining"] = nonnegative(q.at - clock); due_roots.push_back(row); }
-        out["cooldowns"] = due_roots;
-        auto export_queue = [&](auto queue) {
-            Array rows;
-            while (!queue.empty()) { auto q = queue.top(); queue.pop(); Dictionary row;
-                row["weapon_index"] = q.weapon; row["due"] = q.at; row["remaining"] = nonnegative(q.at - clock);
-                row["ordinal"] = q.ordinal; row["multiplier"] = q.multiplier;
-                row["native_context"] = export_missile_context(q.context);
-                row["target"] = q.target.index < actors.size() ? actors[q.target.index].view : Dictionary();
-                row["snapshot"] = attack_view(q.attack); row["instance"] = instance_view(q.instance); row["derived"] = q.damage_derived;
-                row["owner_index"] = q.owner_flight == SIZE_MAX ? -1 : int64_t(q.owner_flight);
-                row["owner_generation"] = int64_t(q.owner_generation); rows.push_back(row);
-            }
-            return rows;
-        };
-        out["ejections"] = export_queue(ejections); out["repeats"] = export_queue(repeats);
-        return out;
-    }
-    bool commit_handoff(int64_t revision) {
-        if (!admitted || (stopped && !final_cleared) || executing || revision != int64_t(step_serial)) return false;
-        stopped = true; admitted = false;
-        strange_pending.clear(); retained_strange_damage = 0;
-        while (!roots.empty()) roots.pop(); while (!ejections.empty()) ejections.pop(); while (!repeats.empty()) repeats.pop();
-        // Drop executor references only. Published rows/leases stay live for the
-        // receiving Game and visual surface; no retire/dead/effect is emitted.
-        flights.clear(); active.clear(); active_beams.clear(); free_flights.clear(); retired.clear();
-        compact_laser_births = false; compact_laser_count = 0; compatibility_flights.clear();
-        flight_rows = Array(); actor_rows = Array(); actors.clear(); weapons.clear(); defences.clear(); debts.clear();
-        return true;
-    }
     Ref<RandomNumberGenerator> rng_source() const { return rng; }
     Dictionary exit_state() {
         Dictionary values, due;
         for (const auto &item : debts) {
-            Dictionary payment; payment["shield"] = item.second[0]; payment["armour"] = item.second[1];
+            Dictionary payment; payment["shield"] = wire(item.second[0]); payment["armour"] = wire(item.second[1]);
             due[item.first] = payment;
         }
         values["strange_pending"] = export_strange();
@@ -2858,8 +2661,9 @@ class SpaceCombatKernel : public RefCounted {
         values["instance_serial"] = int64_t(instance_serial); values["drop_uid"] = drop_uid;
         cancel(); debts.clear(); return values;
     }
-    double deferred_total() const {
-        double total = 0;
+    String deferred_total_text() const { return wire(deferred_total()); }
+    Amount deferred_total() const {
+        Amount total = 0;
         for (const auto &due : debts)
             total += due.second[0] + due.second[1];
         return total;
@@ -2945,8 +2749,8 @@ class SpaceCombatKernel : public RefCounted {
             d["type"] = e.type;
             d["player"] = e.player;
             d["critical"] = e.critical;
-            d["amount"] = e.amount;
-            d["absorbed"] = e.absorbed;
+            d["amount"] = wire(e.amount);
+            d["absorbed"] = wire(e.absorbed);
             d["clock"] = e.time;
             d["position"] = e.point;
             d["direction"] = e.direction;
@@ -2980,8 +2784,8 @@ class SpaceCombatKernel : public RefCounted {
         for (const auto &item : damage_stats) {
             Dictionary row;
             row["source"] = item.first;
-            row["shield"] = item.second[0];
-            row["health"] = item.second[1];
+            row["shield"] = wire(item.second[0]);
+            row["health"] = wire(item.second[1]);
             rows.append(row);
         }
         damage_stats.clear();
@@ -2996,26 +2800,6 @@ class SpaceCombatKernel : public RefCounted {
                 break;
             }
         return h;
-    }
-    bool hit_handle(PackedInt64Array value, double raw, int type) {
-        if (value.size() != 2 || !admitted || stopped || !std::isfinite(raw) || raw < 0)
-            return false;
-        Handle h{uint32_t(value[0]), uint32_t(value[1])};
-        if (!resolve(h)) {
-            ++stale_rejections;
-            return false;
-        }
-        ++refit_epoch;
-        hit_enemy(h, raw, type, {}, false, clock, 0);
-        compact();
-        return true;
-    }
-    bool receive_player_hit(double raw, int type) {
-        if (!admitted || stopped || !std::isfinite(raw) || raw < 0)
-            return false;
-        ++refit_epoch;
-        player_hit(raw, type, clock);
-        return true;
     }
     void cancel() {
         stopped = true;

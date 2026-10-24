@@ -1,15 +1,12 @@
 // Single native presentation table. Kernel active order/generation is read-only authority.
 // Per-slot descriptors are populated only at birth; dynamic motion remains in its lease.
 bool SpaceCombatPresentation::advance_retained(Object *surface,double dt) {
-    Object *game=surface->get("game");Object *session=game->get("native_execution");
-    Ref<SpaceCombatKernel> kernel;
-    if(session&&!bool(session->get("handed_off")))kernel=session->get("kernel");
+    Ref<SpaceCombatKernel> kernel=surface->get("kernel");
     if(!supports_compact_lasers(surface)||kernel.is_null()||!kernel->admitted||kernel->stopped||
        !bool(surface->get("prototype_enabled"))||!bool(surface->get("pulse_vfx_enabled"))||
        !bool(surface->get("enemy_vfx_enabled"))||!bool(surface->get("missile_vfx_enabled"))) {
-        // Materialize before changing presentation owner. Failure keeps the
-        // retained table and kernel intact; advance_visuals must not fall back.
-        if (kernel.is_valid() && kernel->admitted && !kernel->stopped && kernel->set_compact_laser_births(false)<0) return true;
+        // Entry initialization selects the mode. Presentation never mutates it.
+        if (kernel.is_valid() && kernel->admitted && !kernel->stopped && kernel->compact_laser_births) return true;
         surface->call("restore_native_laser_visuals");
         clear_retained_frame();
         return false;

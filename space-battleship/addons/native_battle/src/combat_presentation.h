@@ -169,7 +169,6 @@ protected:
     static void _bind_methods();
 public:
     void configure_retained_gpu(Ref<ShaderMaterial> material) {
-        if(retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped && retained_kernel->set_compact_laser_births(false)<0)return;
         for(RID canvas:retained_canvases)if(canvas.is_valid())RenderingServer::get_singleton()->canvas_item_set_material(canvas,RID());
         retained_canvases.clear();
         if(retained_frame.is_valid()){retained_frame->order.clear();retained_frame->background.clear();retained_frame->flights.clear();}
@@ -509,7 +508,8 @@ void SpaceCombatPresentation::flush_pulses(RID canvas) {
 }
 Ref<SpaceCombatFlightFrame> SpaceCombatPresentation::prepare_flights(Object *surface,Array shots,Vector2 offset) {
     if (!supports_compact_lasers(surface) && retained_kernel.is_valid() && retained_kernel->admitted && !retained_kernel->stopped) {
-        if (retained_kernel->set_compact_laser_births(false)<0) return retained_frame;
+        // Only the entry may change kernel presentation mode.
+        if (retained_kernel->compact_laser_births) return retained_frame;
         shots=retained_kernel->presentation_projectile_rows(); surface->call("restore_native_laser_visuals"); clear_retained_frame();
     }
     if (retained_kernel.is_valid() && (!retained_kernel->admitted || retained_kernel->stopped)) clear_retained_frame();
@@ -653,7 +653,8 @@ void SpaceCombatPresentation::draw_flights(Object *surface,Variant prepared,Vect
 void SpaceCombatPresentation::advance_visuals(Object *surface,double dt) {
     if(advance_retained(surface,dt))return;
     ++old_advances;
-    Object *game=surface->get("game");Array shots=game->get("projectiles"),visuals=surface->get("projectile_visuals");
+    Ref<SpaceCombatKernel> kernel=surface->get("kernel");
+    Array shots=kernel.is_valid()?kernel->presentation_projectile_rows():Array(),visuals=surface->get("projectile_visuals");
     Dictionary active;int density=0;
     for(int i=0;i<shots.size();++i){Dictionary shot=shots[i];if(shot.has("serial"))active[shot["serial"]]=shot;if(!bool(shot.get("hostile",false))&&String(shot.get("key",""))=="missile")++density;}
     surface->set("missile_density",density);

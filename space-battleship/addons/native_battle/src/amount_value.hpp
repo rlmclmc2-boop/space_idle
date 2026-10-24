@@ -30,6 +30,22 @@ class Amount {
     }
 public:
     Amount() = default;
+    Amount(double value) { *this = normalized(value); }
+    std::string decimal_text() const { return mantissa_text() + "e" + std::to_string(power_); }
+    friend bool operator<(const Amount &a, const Amount &b) { return a.compare(b) < 0; }
+    friend bool operator>(const Amount &a, const Amount &b) { return a.compare(b) > 0; }
+    friend bool operator<=(const Amount &a, const Amount &b) { return a.compare(b) <= 0; }
+    friend bool operator>=(const Amount &a, const Amount &b) { return a.compare(b) >= 0; }
+    friend bool operator==(const Amount &a, const Amount &b) { return a.compare(b) == 0; }
+    friend bool operator!=(const Amount &a, const Amount &b) { return a.compare(b) != 0; }
+    friend Amount operator+(const Amount &a, const Amount &b) { return a.add(b); }
+    friend Amount operator-(const Amount &a, const Amount &b) { return a.subtract(b); }
+    friend Amount operator*(const Amount &a, const Amount &b) { return a.multiply(b); }
+    friend Amount operator/(const Amount &a, const Amount &b) { return a.divide(b); }
+    Amount &operator+=(const Amount &b) { return *this = add(b); }
+    Amount &operator-=(const Amount &b) { return *this = subtract(b); }
+    Amount &operator*=(const Amount &b) { return *this = multiply(b); }
+    Amount &operator/=(const Amount &b) { return *this = divide(b); }
     static Amount normalized(double m, int64_t e = 0) {
         if (!std::isfinite(m) || m < 0) throw std::domain_error("InvalidAmount");
         if (m == 0) return {};
