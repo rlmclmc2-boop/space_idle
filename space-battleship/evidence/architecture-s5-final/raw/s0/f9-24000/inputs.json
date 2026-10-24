@@ -1,0 +1,453 @@
+{
+  "config": {
+    "directory": "C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/whole-perf-emeyxxwi/space-battleship/results/frame-profile",
+    "max_per_pair": 3,
+    "max_seconds": 120.0,
+    "max_total": 6,
+    "mode": "fast",
+    "runs": 3,
+    "samples_per_tag": 2.0,
+    "seed": 12345
+  },
+  "data_sha256": "d5c0de0160e480c92240a7f70d6b45fbb29b8dff4adf5188feb460ff3f4882b5",
+  "display_names": {
+    "equipment": {
+      "armour": "复合装甲",
+      "cannon": "磁轨火炮",
+      "cannon-mon": "cannon-mon",
+      "laser": "脉冲激光",
+      "laser-mon": "laser-mon",
+      "laser_mon": "laser_mon",
+      "longLaser": "持续锁定光束",
+      "longLaser-mon": "longLaser-mon",
+      "missile": "追踪导弹",
+      "missile-mon": "missile-mon",
+      "shield": "偏转护盾"
+    }
+  },
+  "enemy_fleets": [
+    {
+      "analysis_version": 2.0,
+      "batch_seed": 12345,
+      "composition": {
+        "1": 2
+      },
+      "config_fingerprint": "52b489488e49fb9859811cac39212424acebe50df37b9bef85bc0ba818d183da",
+      "count": 2,
+      "description": "",
+      "feature_notes": {
+        "aoe": "hostile_single_target",
+        "armor": "matching_type_reduction",
+        "mobility": "stationary_enemies",
+        "range": "no_range_stat",
+        "shield": "no_enemy_shield",
+        "sustained": "peak_uninterrupted_base_dps"
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "armor": 0.5,
+        "burst": 0.0284090909090909,
+        "durability": 0.000642898288347597,
+        "fleet_size": 0.133333333333333,
+        "mobility": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "single_target": 1.0,
+        "sustained": 0.0568181818181818
+      },
+      "fleet_power": 18.0,
+      "formation": "paired",
+      "formation_metrics": {
+        "grouping": 1.0,
+        "layering": 0.75,
+        "spacing": 1.0,
+        "symmetry": 0.918709264695644
+      },
+      "formation_positions": [
+        {
+          "id": 1,
+          "pair": 0,
+          "role": "any",
+          "slot": 3,
+          "x": -0.860435247421265,
+          "y": 1.0
+        },
+        {
+          "id": 1,
+          "pair": 0,
+          "role": "any",
+          "slot": 11,
+          "x": 1.092694491148,
+          "y": 1.0
+        }
+      ],
+      "formation_score": 0.937483705878258,
+      "formation_tags": [
+        "paired",
+        "symmetric"
+      ],
+      "formation_type": "paired",
+      "generation_options": {
+        "available_enemies": [
+          "1"
+        ],
+        "count": 2,
+        "max_count": 2,
+        "max_strength": 1000000,
+        "min_count": 1,
+        "min_strength": 0,
+        "seed": 12345
+      },
+      "hull_score": 0.333333333333333,
+      "max_ship_power": 9.0,
+      "mixed_score": 0.0,
+      "primary_tags": [
+        "fragile",
+        "light"
+      ],
+      "raw_totals": {
+        "armor": 1.0,
+        "burst": 40.0,
+        "durability": 1000.0,
+        "hull": 4.0,
+        "single_target": 2.0,
+        "strength": 18.0,
+        "sustained": 80.0
+      },
+      "scale": "small",
+      "secondary_tags": [
+        "single_target"
+      ],
+      "seed": 1321476956,
+      "ship_count": 2,
+      "ship_power": {
+        "1": 9.0
+      },
+      "signature": "[1,1]",
+      "slots": [
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null
+      ],
+      "strength": 27.0,
+      "tags": [
+        "fragile",
+        "light",
+        "single_target",
+        "paired",
+        "symmetric"
+      ],
+      "type_count": 1
+    },
+    {
+      "analysis_version": 2.0,
+      "batch_seed": 12345,
+      "composition": {
+        "1": 1
+      },
+      "config_fingerprint": "52b489488e49fb9859811cac39212424acebe50df37b9bef85bc0ba818d183da",
+      "count": 1,
+      "description": "",
+      "feature_notes": {
+        "aoe": "hostile_single_target",
+        "armor": "matching_type_reduction",
+        "mobility": "stationary_enemies",
+        "range": "no_range_stat",
+        "shield": "no_enemy_shield",
+        "sustained": "peak_uninterrupted_base_dps"
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "armor": 0.5,
+        "burst": 0.0284090909090909,
+        "durability": 0.000642898288347597,
+        "fleet_size": 0.0666666666666667,
+        "mobility": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "single_target": 1.0,
+        "sustained": 0.0568181818181818
+      },
+      "fleet_power": 9.0,
+      "formation": "symmetric",
+      "formation_metrics": {
+        "grouping": 1.0,
+        "layering": 0.75,
+        "spacing": 1.0,
+        "symmetry": 1.0
+      },
+      "formation_positions": [
+        {
+          "id": 1,
+          "pair": -1,
+          "role": "core",
+          "slot": 7,
+          "x": 0.0,
+          "y": 1.0
+        }
+      ],
+      "formation_score": 0.97,
+      "formation_tags": [
+        "symmetric"
+      ],
+      "formation_type": "symmetric",
+      "generation_options": {
+        "available_enemies": [
+          "1"
+        ],
+        "count": 2,
+        "max_count": 2,
+        "max_strength": 1000000,
+        "min_count": 1,
+        "min_strength": 0,
+        "seed": 12345
+      },
+      "hull_score": 0.333333333333333,
+      "max_ship_power": 9.0,
+      "mixed_score": 0.0,
+      "primary_tags": [
+        "fragile",
+        "light"
+      ],
+      "raw_totals": {
+        "armor": 0.5,
+        "burst": 20.0,
+        "durability": 500.0,
+        "hull": 2.0,
+        "single_target": 1.0,
+        "strength": 9.0,
+        "sustained": 40.0
+      },
+      "scale": "small",
+      "secondary_tags": [
+        "single_target"
+      ],
+      "seed": 4240162672,
+      "ship_count": 1,
+      "ship_power": {
+        "1": 9.0
+      },
+      "signature": "[1]",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "strength": 18.0,
+      "tags": [
+        "fragile",
+        "light",
+        "single_target",
+        "symmetric"
+      ],
+      "type_count": 1
+    }
+  ],
+  "engine": "4.7.2-stable (official)",
+  "player_loadouts": [
+    {
+      "analysis_version": 1.0,
+      "batch_seed": 12345,
+      "config_fingerprint": "fe1d99065daaab9a798e4be479ae918558ece404575dd0b11d14d3cb0056768a",
+      "equipment": {
+        "defence": [
+          {
+            "key": "armour",
+            "level": 10
+          }
+        ],
+        "weapons": [
+          {
+            "key": "laser",
+            "level": 10
+          }
+        ]
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "attack_rate": 0.166666666666667,
+        "balanced": 0.0,
+        "burst": 0.290322580645161,
+        "multi_target": 0.0,
+        "single_target": 1.0,
+        "survival": 1.0,
+        "sustained": 0.555555555555556
+      },
+      "generation_options": {
+        "available_ships": [
+          "Frigate"
+        ],
+        "cleared_through": 220,
+        "count": 2,
+        "module_level": 10,
+        "seed": 12345.0
+      },
+      "generation_type": "mono",
+      "loadout_id": "player_7ac137d210753f886af83052a52cff1ee862d22b3207547b709ff20397eb84e9",
+      "notes": [
+        "baseline_modifiers",
+        "theoretical_firepower",
+        "no_range_or_aoe",
+        "mount_order"
+      ],
+      "seed": 1321476956,
+      "ship": "Frigate",
+      "signature": "7ac137d210753f886af83052a52cff1ee862d22b3207547b709ff20397eb84e9",
+      "stats": {
+        "aoe": 0.0,
+        "armour": 5200.0,
+        "attack_rate": 0.666666666666667,
+        "burst": 1800.0,
+        "movement": 50.0,
+        "multi_target": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "sustained": 1200.0
+      },
+      "tags": [
+        "single_target",
+        "high_survival"
+      ],
+      "weapons": [
+        {
+          "key": "laser",
+          "level": 10
+        }
+      ]
+    },
+    {
+      "analysis_version": 1.0,
+      "batch_seed": 12345,
+      "config_fingerprint": "fe1d99065daaab9a798e4be479ae918558ece404575dd0b11d14d3cb0056768a",
+      "equipment": {
+        "defence": [
+          {
+            "key": "armour",
+            "level": 10
+          }
+        ],
+        "weapons": [
+          {
+            "key": "cannon",
+            "level": 10
+          }
+        ]
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "attack_rate": 0.0714285714285714,
+        "balanced": 0.0,
+        "burst": 1.0,
+        "multi_target": 0.0,
+        "single_target": 1.0,
+        "survival": 1.0,
+        "sustained": 0.82010582010582
+      },
+      "generation_options": {
+        "available_ships": [
+          "Frigate"
+        ],
+        "cleared_through": 220,
+        "count": 2,
+        "module_level": 10,
+        "seed": 12345.0
+      },
+      "generation_type": "mono",
+      "loadout_id": "player_2e380bdbe900ebb86062df2b76786c36728fe99241f1675e63869ee39e336bfb",
+      "notes": [
+        "baseline_modifiers",
+        "theoretical_firepower",
+        "no_range_or_aoe",
+        "mount_order"
+      ],
+      "seed": 3348728241,
+      "ship": "Frigate",
+      "signature": "2e380bdbe900ebb86062df2b76786c36728fe99241f1675e63869ee39e336bfb",
+      "stats": {
+        "aoe": 0.0,
+        "armour": 5200.0,
+        "attack_rate": 0.285714285714286,
+        "burst": 6200.0,
+        "movement": 50.0,
+        "multi_target": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "sustained": 1771.42857142857
+      },
+      "tags": [
+        "high_burst",
+        "sustained",
+        "single_target",
+        "high_survival"
+      ],
+      "weapons": [
+        {
+          "key": "cannon",
+          "level": 10
+        }
+      ]
+    }
+  ],
+  "sampling": {
+    "covered_tags": [],
+    "quota_skipped": 0,
+    "representatives": {
+      "enemy": [
+        1
+      ],
+      "player": [
+        1,
+        0
+      ]
+    },
+    "sampled_pairs": 2,
+    "similar_skipped": 1,
+    "stable_stopped": 0,
+    "tested_pairs": 0,
+    "theoretical_pairs": 4
+  },
+  "sampling_policy": {
+    "boundary_high": 0.7,
+    "boundary_low": 0.3,
+    "candidate_attempts": 20.0,
+    "long_seconds": 45.0,
+    "max_pairs": 512.0,
+    "max_samples_per_tag": 20.0,
+    "short_seconds": 0.5,
+    "similarity": 0.08,
+    "stable_high": 0.9,
+    "stable_hp": 0.65,
+    "stable_low": 0.1,
+    "stable_streak": 3.0,
+    "stable_time_cv": 0.1,
+    "stat_similarity": 0.15,
+    "tag_difference": 0.4,
+    "time_cv": 0.35,
+    "variance": 0.16
+  },
+  "step_seconds": 0.0166666666666667
+}

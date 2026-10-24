@@ -1,0 +1,222 @@
+{
+  "candidate": "6e3ce8dffc002c30249a195b498ee11d20e5d7b3",
+  "runtime_checkpoint": "2e0fc2b4",
+  "rendered": [
+    {
+      "label": "s5r-s0-normal-1",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-normal-1.json",
+      "log": "raw/s0/s5r-s0-normal-1.log"
+    },
+    {
+      "label": "s5r-s4-normal-1",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-normal-1.json",
+      "log": "raw/s4/s5r-s4-normal-1.log"
+    },
+    {
+      "label": "s5r-s5-normal-1",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-normal-1.json",
+      "log": "raw/s5/s5r-s5-normal-1.log"
+    },
+    {
+      "label": "s5r-s0-rich-1",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-rich-1.json",
+      "log": "raw/s0/s5r-s0-rich-1.log"
+    },
+    {
+      "label": "s5r-s4-rich-1",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-rich-1.json",
+      "log": "raw/s4/s5r-s4-rich-1.log"
+    },
+    {
+      "label": "s5r-s5-rich-1",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-rich-1.json",
+      "log": "raw/s5/s5r-s5-rich-1.log"
+    },
+    {
+      "label": "s5r-s0-dense-1",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-dense-1.json",
+      "log": "raw/s0/s5r-s0-dense-1.log"
+    },
+    {
+      "label": "s5r-s4-dense-1",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-dense-1.json",
+      "log": "raw/s4/s5r-s4-dense-1.log"
+    },
+    {
+      "label": "s5r-s5-dense-1",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-dense-1.json",
+      "log": "raw/s5/s5r-s5-dense-1.log"
+    },
+    {
+      "label": "s5r-s0-normal-2",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-normal-2.json",
+      "log": "raw/s0/s5r-s0-normal-2.log"
+    },
+    {
+      "label": "s5r-s4-normal-2",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-normal-2.json",
+      "log": "raw/s4/s5r-s4-normal-2.log"
+    },
+    {
+      "label": "s5r-s5-normal-2",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-normal-2.json",
+      "log": "raw/s5/s5r-s5-normal-2.log"
+    },
+    {
+      "label": "s5r-s0-rich-2",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-rich-2.json",
+      "log": "raw/s0/s5r-s0-rich-2.log"
+    },
+    {
+      "label": "s5r-s4-rich-2",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-rich-2.json",
+      "log": "raw/s4/s5r-s4-rich-2.log"
+    },
+    {
+      "label": "s5r-s5-rich-2",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-rich-2.json",
+      "log": "raw/s5/s5r-s5-rich-2.log"
+    },
+    {
+      "label": "s5r-s0-normal-3",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-normal-3.json",
+      "log": "raw/s0/s5r-s0-normal-3.log"
+    },
+    {
+      "label": "s5r-s4-normal-3",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-normal-3.json",
+      "log": "raw/s4/s5r-s4-normal-3.log"
+    },
+    {
+      "label": "s5r-s5-normal-3",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-normal-3.json",
+      "log": "raw/s5/s5r-s5-normal-3.log"
+    },
+    {
+      "label": "s5r-s0-rich-3",
+      "exit": 0,
+      "result": "raw/s0/s5r-s0-rich-3.json",
+      "log": "raw/s0/s5r-s0-rich-3.log"
+    },
+    {
+      "label": "s5r-s4-rich-3",
+      "exit": 0,
+      "result": "raw/s4/s5r-s4-rich-3.json",
+      "log": "raw/s4/s5r-s4-rich-3.log"
+    },
+    {
+      "label": "s5r-s5-rich-3",
+      "exit": 0,
+      "result": "raw/s5/s5r-s5-rich-3.json",
+      "log": "raw/s5/s5r-s5-rich-3.log"
+    }
+  ],
+  "batches": [
+    {
+      "version": "s0",
+      "type": "growth300",
+      "log": "raw/s0/s5-s0-growth300-1.log"
+    },
+    {
+      "version": "s0",
+      "type": "f9-complete",
+      "log": "raw/s0/s5-s0-f9-complete-1.log"
+    },
+    {
+      "version": "s0",
+      "type": "f9_batch",
+      "budget_usec": 8000,
+      "directory": "raw/s0/f9-8000"
+    },
+    {
+      "version": "s0",
+      "type": "f9_batch",
+      "budget_usec": 24000,
+      "directory": "raw/s0/f9-24000"
+    },
+    {
+      "version": "s4",
+      "type": "growth300",
+      "log": "raw/s4/s5-s4-growth300-1.log"
+    },
+    {
+      "version": "s4",
+      "type": "f9-complete",
+      "log": "raw/s4/s5-s4-f9-complete-1.log"
+    },
+    {
+      "version": "s4",
+      "type": "f9_batch",
+      "budget_usec": 8000,
+      "directory": "raw/s4/f9-8000"
+    },
+    {
+      "version": "s4",
+      "type": "f9_batch",
+      "budget_usec": 24000,
+      "directory": "raw/s4/f9-24000"
+    },
+    {
+      "version": "s5",
+      "type": "growth300",
+      "log": "raw/s5/s5-s5-growth300-1.log"
+    },
+    {
+      "version": "s5",
+      "type": "f9-complete",
+      "log": "raw/s5/s5-s5-f9-complete-1.log"
+    },
+    {
+      "version": "s5",
+      "type": "f9_batch",
+      "budget_usec": 8000,
+      "directory": "raw/s5/f9-8000"
+    },
+    {
+      "version": "s5",
+      "type": "f9_batch",
+      "budget_usec": 24000,
+      "directory": "raw/s5/f9-24000"
+    }
+  ],
+  "verification": [
+    "verification/s5-test_commit_boundary.gd.log",
+    "verification/s5-test_state_ownership.gd.log",
+    "verification/s5-recheck-test_opening_feedback.gd.log",
+    "verification/s5-final-test_hyperspace_material_economy.gd.log",
+    "verification/main/planet-loading.log",
+    "verification/main/product-write.log",
+    "verification/main/product-reopen.log",
+    "verification/main/product-claimed-reopen.log",
+    "verification/main/reactor-write.log",
+    "verification/main/reactor-reopen.log",
+    "verification/main/factory-write.log",
+    "verification/main/factory-reopen.log"
+  ],
+  "excluded": [
+    "excluded/s5-s5-normal-1.json",
+    "excluded/s5-s5-normal-1.log",
+    "excluded/s5-test_opening_feedback.gd.log",
+    "excluded/s5-test_hyperspace_material_economy.gd.log",
+    "excluded/s5-test_fleet_battle_speed.gd.log",
+    "excluded/s5-recheck-test_fleet_battle_speed.gd.log"
+  ]
+}

@@ -1,0 +1,1187 @@
+{
+  "pages": [
+    {
+      "family": "normal",
+      "page": 0,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 1.613,
+          "p95_ms": 2.214,
+          "switch_us": 515,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            516946,
+            516946
+          ],
+          "node_delta": [
+            14,
+            14,
+            14
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 1.639,
+          "p95_ms": 2.209,
+          "switch_us": 520,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            516946,
+            516946
+          ],
+          "node_delta": [
+            14,
+            14,
+            14
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 1.667,
+          "p95_ms": 2.371,
+          "switch_us": 456,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            516946,
+            516946
+          ],
+          "node_delta": [
+            14,
+            14,
+            14
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "normal",
+      "page": 4,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 1.698,
+          "p95_ms": 2.691,
+          "switch_us": 7925,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            740766,
+            740766
+          ],
+          "node_delta": [
+            42,
+            42,
+            42
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 1.935,
+          "p95_ms": 2.927,
+          "switch_us": 7624,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            740766,
+            740766
+          ],
+          "node_delta": [
+            42,
+            42,
+            42
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 1.885,
+          "p95_ms": 2.851,
+          "switch_us": 7444,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            740766,
+            740766
+          ],
+          "node_delta": [
+            42,
+            42,
+            42
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "normal",
+      "page": 1,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 1.72,
+          "p95_ms": 2.892,
+          "switch_us": 3912,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            78866,
+            78866
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 1.881,
+          "p95_ms": 2.909,
+          "switch_us": 4638,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            78866,
+            78866
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 1.883,
+          "p95_ms": 2.93,
+          "switch_us": 3939,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            78866,
+            78866
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "normal",
+      "page": 2,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 2.007,
+          "p95_ms": 3.376,
+          "switch_us": 15479,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            169002,
+            177258
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.139,
+          "p95_ms": 3.38,
+          "switch_us": 13641,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            173162,
+            177258
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.171,
+          "p95_ms": 3.434,
+          "switch_us": 14095,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            173162,
+            177258
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "normal",
+      "page": 6,
+      "same_all_work": false,
+      "versions": {
+        "s0": {
+          "p50_ms": 1.811,
+          "p95_ms": 2.972,
+          "switch_us": 32203,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            46438,
+            46438
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            12,
+            11,
+            10
+          ],
+          "preparation_game_seconds": [
+            0.199999999999989,
+            0.183333333333323,
+            0.166666666666657
+          ]
+        },
+        "s4": {
+          "p50_ms": 1.893,
+          "p95_ms": 3.08,
+          "switch_us": 31312,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            44338,
+            46438
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            11,
+            9,
+            11
+          ],
+          "preparation_game_seconds": [
+            0.183333333333323,
+            0.149999999999991,
+            0.183333333333323
+          ]
+        },
+        "s5": {
+          "p50_ms": 1.9,
+          "p95_ms": 3.032,
+          "switch_us": 31865,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            44338,
+            46438
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            11,
+            9,
+            10
+          ],
+          "preparation_game_seconds": [
+            0.183333333333323,
+            0.149999999999991,
+            0.166666666666657
+          ]
+        }
+      }
+    },
+    {
+      "family": "normal",
+      "page": 8,
+      "same_all_work": false,
+      "versions": {
+        "s0": {
+          "p50_ms": 2.097,
+          "p95_ms": 3.554,
+          "switch_us": 4863,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            115300,
+            143036
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            33,
+            33,
+            34
+          ],
+          "preparation_game_seconds": [
+            0.549999999999969,
+            0.549999999999969,
+            0.566666666666634
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.245,
+          "p95_ms": 3.459,
+          "switch_us": 4221,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            110312,
+            151576
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            35,
+            34,
+            33
+          ],
+          "preparation_game_seconds": [
+            0.5833333333333,
+            0.566666666666634,
+            0.549999999999969
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.24,
+          "p95_ms": 3.431,
+          "switch_us": 4164,
+          "native_frames": [
+            0,
+            0,
+            0
+          ],
+          "memory_delta_range": [
+            115300,
+            151576
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            34,
+            33,
+            32
+          ],
+          "preparation_game_seconds": [
+            0.566666666666634,
+            0.549999999999969,
+            0.533333333333303
+          ]
+        }
+      }
+    },
+    {
+      "family": "rich",
+      "page": 0,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 2.231,
+          "p95_ms": 3.273,
+          "switch_us": 464,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            505757,
+            505757
+          ],
+          "node_delta": [
+            1,
+            1,
+            1
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.424,
+          "p95_ms": 3.621,
+          "switch_us": 449,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            505885,
+            505885
+          ],
+          "node_delta": [
+            1,
+            1,
+            1
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.528,
+          "p95_ms": 3.911,
+          "switch_us": 447,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            505885,
+            505885
+          ],
+          "node_delta": [
+            1,
+            1,
+            1
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "rich",
+      "page": 4,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 1.842,
+          "p95_ms": 2.667,
+          "switch_us": 10912,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            105488,
+            105488
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.017,
+          "p95_ms": 2.856,
+          "switch_us": 10378,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            105488,
+            105488
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.031,
+          "p95_ms": 2.815,
+          "switch_us": 10593,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            105488,
+            105488
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "rich",
+      "page": 1,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 1.903,
+          "p95_ms": 2.929,
+          "switch_us": 4323,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            20280,
+            20280
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.025,
+          "p95_ms": 2.868,
+          "switch_us": 4435,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            20280,
+            20280
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 1.969,
+          "p95_ms": 2.986,
+          "switch_us": 4076,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            20280,
+            20280
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "rich",
+      "page": 2,
+      "same_all_work": true,
+      "versions": {
+        "s0": {
+          "p50_ms": 2.043,
+          "p95_ms": 3.036,
+          "switch_us": 14149,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            101202,
+            109458
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.161,
+          "p95_ms": 2.968,
+          "switch_us": 14219,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            109458,
+            109458
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.13,
+          "p95_ms": 2.982,
+          "switch_us": 14903,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            109458,
+            109458
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            0,
+            0,
+            0
+          ],
+          "preparation_game_seconds": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "family": "rich",
+      "page": 6,
+      "same_all_work": false,
+      "versions": {
+        "s0": {
+          "p50_ms": 2.006,
+          "p95_ms": 2.683,
+          "switch_us": 36124,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            74370,
+            74370
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            12,
+            12,
+            11
+          ],
+          "preparation_game_seconds": [
+            0.199999999999989,
+            0.199999999999989,
+            0.183333333333323
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.122,
+          "p95_ms": 3.001,
+          "switch_us": 35247,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            74370,
+            74370
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            10,
+            12,
+            12
+          ],
+          "preparation_game_seconds": [
+            0.166666666666657,
+            0.199999999999989,
+            0.199999999999989
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.331,
+          "p95_ms": 3.461,
+          "switch_us": 45669,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            74370,
+            74370
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            11,
+            11,
+            10
+          ],
+          "preparation_game_seconds": [
+            0.183333333333323,
+            0.183333333333323,
+            0.166666666666657
+          ]
+        }
+      }
+    },
+    {
+      "family": "rich",
+      "page": 8,
+      "same_all_work": false,
+      "versions": {
+        "s0": {
+          "p50_ms": 2.078,
+          "p95_ms": 3.027,
+          "switch_us": 3768,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            134190,
+            149614
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            33,
+            36,
+            33
+          ],
+          "preparation_game_seconds": [
+            0.549999999999969,
+            0.599999999999966,
+            0.549999999999969
+          ]
+        },
+        "s4": {
+          "p50_ms": 2.112,
+          "p95_ms": 2.989,
+          "switch_us": 4250,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            128934,
+            147954
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            33,
+            34,
+            32
+          ],
+          "preparation_game_seconds": [
+            0.549999999999969,
+            0.566666666666634,
+            0.533333333333303
+          ]
+        },
+        "s5": {
+          "p50_ms": 2.214,
+          "p95_ms": 3.26,
+          "switch_us": 4177,
+          "native_frames": [
+            300,
+            300,
+            300
+          ],
+          "memory_delta_range": [
+            134622,
+            147954
+          ],
+          "node_delta": [
+            0,
+            0,
+            0
+          ],
+          "preparation_frames": [
+            33,
+            33,
+            36
+          ],
+          "preparation_game_seconds": [
+            0.549999999999969,
+            0.549999999999969,
+            0.599999999999966
+          ]
+        }
+      }
+    }
+  ],
+  "preparation": [],
+  "batches": {
+    "s0": {
+      "growth_setup_us": 1063881,
+      "growth_run_report_us": 30961133,
+      "growth_status": "completed",
+      "growth_steps": 18000,
+      "growth_stage": 4,
+      "growth_uses": {
+        "enhancement_levels": 0,
+        "equipment_equip": 2.0,
+        "jewel_pickup": 0,
+        "reactor_levels": 2.0,
+        "research": 0,
+        "scientists": 0,
+        "ship_switch": 0,
+        "upgrade": 8.0
+      },
+      "growth_rng": "-2192389498863842103"
+    },
+    "s4": {
+      "growth_setup_us": 2034982,
+      "growth_run_report_us": 32695245,
+      "growth_status": "completed",
+      "growth_steps": 18000,
+      "growth_stage": 4,
+      "growth_uses": {
+        "enhancement_levels": 0,
+        "equipment_equip": 2.0,
+        "jewel_pickup": 0,
+        "reactor_levels": 2.0,
+        "research": 0,
+        "ship_switch": 0,
+        "upgrade": 8.0
+      },
+      "growth_rng": "-2192389498863842103"
+    },
+    "s5": {
+      "growth_setup_us": 2044783,
+      "growth_run_report_us": 32740771,
+      "growth_status": "completed",
+      "growth_steps": 18000,
+      "growth_stage": 4,
+      "growth_uses": {
+        "enhancement_levels": 0,
+        "equipment_equip": 2.0,
+        "jewel_pickup": 0,
+        "reactor_levels": 2.0,
+        "research": 0,
+        "ship_switch": 0,
+        "upgrade": 8.0
+      },
+      "growth_rng": "-2192389498863842103"
+    }
+  }
+}

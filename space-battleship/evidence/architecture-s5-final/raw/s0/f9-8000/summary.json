@@ -1,0 +1,58 @@
+{
+  "aggregate": {
+    "attempted_count": 6,
+    "avg_battle_time": 2.89166666666666,
+    "avg_enemy_hp_ratio": 0.0,
+    "avg_player_hp_ratio": 0.984615384615385,
+    "battle_count": 6,
+    "errors": 0,
+    "stopped": 0,
+    "timeouts": 0,
+    "win_rate": 1.0,
+    "wins": 6
+  },
+  "budget": 6,
+  "completed_count": 6,
+  "config": {
+    "directory": "C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/whole-perf-emeyxxwi/space-battleship/results/frame-profile",
+    "max_per_pair": 3,
+    "max_seconds": 120.0,
+    "max_total": 6,
+    "mode": "fast",
+    "runs": 3,
+    "samples_per_tag": 2.0,
+    "seed": 12345
+  },
+  "remaining_budget": 0,
+  "sampling": {
+    "covered_tags": [
+      "enemy:fragile",
+      "enemy:light",
+      "player:high_burst",
+      "player:high_survival",
+      "player:single_target",
+      "player:sustained",
+      "player:type:mono",
+      "player:weapons:cannon",
+      "pair:[[\"fragile\",\"light\"],[\"high_burst\",\"high_survival\",\"single_target\",\"sustained\",\"type:mono\",\"weapons:cannon\"]]",
+      "player:weapons:laser",
+      "pair:[[\"fragile\",\"light\"],[\"high_survival\",\"single_target\",\"type:mono\",\"weapons:laser\"]]"
+    ],
+    "quota_skipped": 0,
+    "representatives": {
+      "enemy": [
+        1
+      ],
+      "player": [
+        1,
+        0
+      ]
+    },
+    "sampled_pairs": 2,
+    "similar_skipped": 1,
+    "stable_stopped": 2,
+    "tested_pairs": 2,
+    "theoretical_pairs": 4
+  },
+  "status": "budget_reached"
+}

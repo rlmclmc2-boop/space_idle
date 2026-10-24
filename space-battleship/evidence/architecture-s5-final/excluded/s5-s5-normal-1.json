@@ -1,0 +1,2666 @@
+{
+  "options": {
+    "label": "s5-s5-normal-1",
+    "godot": "D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64.exe",
+    "ref": null,
+    "reuse": null,
+    "headless": true,
+    "rich": false,
+    "enemies": 3,
+    "reactor_level": 1,
+    "balance": 1e+80,
+    "check_pages": false,
+    "capture": false,
+    "max_quote": false,
+    "realtime": false,
+    "instrument": false,
+    "pages": "0,4,1,2,6,8",
+    "frames": 300,
+    "galaxy_work": "complete",
+    "galaxy_steady": false
+  },
+  "source_sha256": "ad792b4fb4f6a4b6d9789094fe2d8e3da8b52ec1dfe13dd7a8f1386fa809d234",
+  "godot_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+  "native_sha256": "4f19359bebcccb38d0d32ff27fc9bd887d98bef0afac5212fe440aaa1ac5b11f",
+  "probe_sha256": "17e83f45db7bdd063a81a5468f957744c0d2240bf7957f04bb486e4235678043",
+  "exit": 0,
+  "environment": [
+    {
+      "adapter": "",
+      "cap": 0,
+      "display": "headless",
+      "engine": "4.7.2-stable (official)",
+      "galaxy_assignment": false,
+      "galaxy_initial": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 0.116666666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_work": "complete",
+      "low_processor": false,
+      "method": "gl_compatibility",
+      "resolution": "(960, 540)",
+      "vendor": ""
+    }
+  ],
+  "rows": [
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 6993,
+        "mean": 6882.98,
+        "p50": 6884,
+        "p95": 6918,
+        "p99": 6932
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 5.36666666666665,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 0.366666666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 1,
+        "mean": 0.476666666666667,
+        "p50": 0,
+        "p95": 1,
+        "p99": 1
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 3466,
+        "mean": 1862.29333333333,
+        "p50": 1819,
+        "p95": 2418,
+        "p99": 2884
+      },
+      "measured_steps": 300,
+      "memory": 687322493,
+      "memory_delta": 799668,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": false,
+      "native_frames": 0,
+      "node_delta": 14,
+      "owned_domains": true,
+      "page": 0,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 4,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 3,
+        "mean": 0.633333333333333,
+        "p50": 0,
+        "p95": 3,
+        "p99": 3
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 0,
+      "settlement_samples": [],
+      "switch_cpu_us": 451,
+      "switch_frame_us": 51325,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(113, 125)"
+        }
+      ],
+      "work_after": {
+        "attack_serial": 1,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271001.0,
+            "shield": 0.0,
+            "x": 286.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 1,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500495.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 1,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.0,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-129251920175951199",
+        "stage": 1,
+        "state": 2,
+        "time": 5.36666666666665
+      },
+      "work_before": {
+        "attack_serial": 0,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 0,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500498.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 0,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.0,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "7273103727351848851",
+        "stage": 1,
+        "state": 2,
+        "time": 0.366666666666667
+      }
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 6974,
+        "mean": 6884.65,
+        "p50": 6887,
+        "p95": 6921,
+        "p99": 6962
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 10.6166666666668,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 5.61666666666665,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 4,
+        "mean": 2.54,
+        "p50": 4,
+        "p95": 4,
+        "p99": 4
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 4324,
+        "mean": 1931.19,
+        "p50": 1831,
+        "p95": 2633,
+        "p99": 3526
+      },
+      "measured_steps": 300,
+      "memory": 690991407,
+      "memory_delta": 875790,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": false,
+      "native_frames": 0,
+      "node_delta": 42,
+      "owned_domains": true,
+      "page": 4,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 3,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 5,
+        "mean": 1.25,
+        "p50": 0,
+        "p95": 5,
+        "p99": 5
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 1,
+      "settlement_samples": [],
+      "switch_cpu_us": 7610,
+      "switch_frame_us": 14650,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(113, 125)"
+        }
+      ],
+      "work_after": {
+        "attack_serial": 2,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 260.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          },
+          {
+            "hp": 260.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 260.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 2,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500482.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 4,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.383333333333333,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-1037809246080442305",
+        "stage": 1,
+        "state": 3,
+        "time": 10.6166666666668
+      },
+      "work_before": {
+        "attack_serial": 1,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271001.0,
+            "shield": 0.0,
+            "x": 286.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 1,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500495.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 1,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.0,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-129251920175951199",
+        "stage": 1,
+        "state": 2,
+        "time": 5.61666666666665
+      }
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 6935,
+        "mean": 6884.75,
+        "p50": 6886,
+        "p95": 6917,
+        "p99": 6933
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 15.866666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 10.8666666666668,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 4,
+        "mean": 4.0,
+        "p50": 4,
+        "p95": 4,
+        "p99": 4
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 3598,
+        "mean": 1998.55666666667,
+        "p50": 1949,
+        "p95": 2787,
+        "p99": 3379
+      },
+      "measured_steps": 300,
+      "memory": 694192913,
+      "memory_delta": 95818,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": false,
+      "native_frames": 0,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 1,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 3,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 4,
+        "mean": 1.71333333333333,
+        "p50": 2,
+        "p95": 4,
+        "p99": 4
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 2,
+      "settlement_samples": [],
+      "switch_cpu_us": 3665,
+      "switch_frame_us": 7839,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(113, 125)"
+        }
+      ],
+      "work_after": {
+        "attack_serial": 5,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 2,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500446.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 0,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.516666666666667,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-3547631926817243271",
+        "stage": 1,
+        "state": 2,
+        "time": 15.866666666667
+      },
+      "work_before": {
+        "attack_serial": 2,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 260.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          },
+          {
+            "hp": 260.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 260.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 2,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500476.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 2,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.383333333333333,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-1037809246080442305",
+        "stage": 1,
+        "state": 3,
+        "time": 10.8666666666668
+      }
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 7834,
+        "mean": 6884.47333333333,
+        "p50": 6885,
+        "p95": 6914,
+        "p99": 6928
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 21.1166666666667,
+        "income_events": 1,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 16.116666666667,
+        "income_events": 0,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 4,
+        "mean": 4.0,
+        "p50": 4,
+        "p95": 4,
+        "p99": 4
+      },
+      "loading_shell_visible": false,
+      "main_us": {
+        "max": 4837,
+        "mean": 2143.83,
+        "p50": 2053,
+        "p95": 2865,
+        "p99": 4030
+      },
+      "measured_steps": 300,
+      "memory": 699228089,
+      "memory_delta": 174258,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": false,
+      "native_frames": 0,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 2,
+      "preparation_frames_us": [],
+      "preparation_game_seconds": 0.0,
+      "preparation_stages": [],
+      "preparation_timings": {},
+      "preparation_us": 2,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 9,
+        "mean": 3.44333333333333,
+        "p50": 4,
+        "p95": 9,
+        "p99": 9
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 3,
+      "settlement_samples": [],
+      "switch_cpu_us": 13541,
+      "switch_frame_us": 21188,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(113, 125)"
+        }
+      ],
+      "work_after": {
+        "attack_serial": 7,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 220.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          },
+          {
+            "hp": 300.0,
+            "id": 271006.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 300.0,
+            "id": 271007.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 3,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500324.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 5,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.883333333333333,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "8774966239621924289",
+        "stage": 1,
+        "state": 3,
+        "time": 21.1166666666667
+      },
+      "work_before": {
+        "attack_serial": 5,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271003.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271004.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 2,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500446.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 0,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.516666666666667,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-3547631926817243271",
+        "stage": 1,
+        "state": 2,
+        "time": 16.116666666667
+      }
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 6946,
+        "mean": 6883.85666666667,
+        "p50": 6885,
+        "p95": 6919,
+        "p99": 6939
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 26.5166666666664,
+        "income_events": 1,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 21.5166666666667,
+        "income_events": 1,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 4,
+        "mean": 4.0,
+        "p50": 4,
+        "p95": 4,
+        "p99": 4
+      },
+      "loading_shell_visible": true,
+      "main_us": {
+        "max": 3535,
+        "mean": 2033.62666666667,
+        "p50": 1991,
+        "p95": 2814,
+        "p99": 3175
+      },
+      "measured_steps": 300,
+      "memory": 715270481,
+      "memory_delta": 61474,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": false,
+      "native_frames": 0,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 6,
+      "preparation_frames_us": [
+        3060,
+        5285,
+        5406,
+        6898,
+        6889,
+        6885,
+        6860,
+        6874,
+        6894
+      ],
+      "preparation_game_seconds": 0.149999999999991,
+      "preparation_stages": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "preparation_timings": {},
+      "preparation_us": 55220,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 6,
+        "mean": 1.74333333333333,
+        "p50": 1,
+        "p95": 5,
+        "p99": 6
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 4,
+      "settlement_samples": [],
+      "switch_cpu_us": 30569,
+      "switch_frame_us": 36226,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(113, 125)"
+        }
+      ],
+      "work_after": {
+        "attack_serial": 9,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271006.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271007.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 3,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500213.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 0,
+        "research": {
+          "aiIncomePeak": {
+            "1": 1.18333333333333,
+            "2": 0.0,
+            "jewel": 0.120166666666667
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-2498157410642705071",
+        "stage": 1,
+        "state": 2,
+        "time": 26.5166666666664
+      },
+      "work_before": {
+        "attack_serial": 7,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          },
+          {
+            "hp": 300.0,
+            "id": 271006.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 300.0,
+            "id": 271007.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 3,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500320.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 6,
+        "research": {
+          "aiIncomePeak": {
+            "1": 0.883333333333333,
+            "2": 0.0,
+            "jewel": 0.0
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-1700016033524029115",
+        "stage": 1,
+        "state": 3,
+        "time": 21.5166666666667
+      }
+    },
+    {
+      "allocation_command_us": 0,
+      "calls": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "enemies": 3,
+      "frames_us": {
+        "max": 7695,
+        "mean": 6884.22,
+        "p50": 6884,
+        "p95": 6913,
+        "p99": 6947
+      },
+      "galaxy_after": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 32.3333333333328,
+        "income_events": 2,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "galaxy_before": {
+        "active_upgrade_work": 0.0,
+        "building_revision": 0,
+        "crew": {
+          "assignment": "",
+          "id": "navigator",
+          "target": ""
+        },
+        "crew_count": 0,
+        "effect_generation": 2,
+        "game_time": 27.3333333333331,
+        "income_events": 1,
+        "level_total": 150,
+        "settlements": 0,
+        "status": "complete",
+        "upgrade_work": 75600.0
+      },
+      "live_enemies": {
+        "max": 4,
+        "mean": 4.0,
+        "p50": 4,
+        "p95": 4,
+        "p99": 4
+      },
+      "loading_shell_visible": true,
+      "main_us": {
+        "max": 5051,
+        "mean": 2323.08,
+        "p50": 2228,
+        "p95": 3273,
+        "p99": 3874
+      },
+      "measured_steps": 300,
+      "memory": 729768611,
+      "memory_delta": 168248,
+      "missile_queue": {
+        "max": 0,
+        "mean": 0.0,
+        "p50": 0,
+        "p95": 0,
+        "p99": 0
+      },
+      "native": false,
+      "native_frames": 0,
+      "node_delta": 0,
+      "owned_domains": true,
+      "page": 8,
+      "preparation_frames_us": [
+        2628,
+        9802,
+        6590,
+        8566,
+        8657,
+        8036,
+        8089,
+        8045,
+        6694,
+        6225,
+        5543,
+        2292,
+        6829,
+        6879,
+        6889,
+        6885,
+        6906,
+        6876,
+        6891,
+        6903,
+        6870,
+        6894,
+        6882,
+        6926,
+        94446,
+        3034,
+        3839,
+        72611,
+        91632,
+        82945,
+        81973,
+        3168,
+        88825,
+        4932
+      ],
+      "preparation_game_seconds": 0.566666666666634,
+      "preparation_stages": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "preparation_timings": {},
+      "preparation_us": 691506,
+      "primitives": {
+        "max": 0.0,
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "p99": 0.0
+      },
+      "projectiles": {
+        "max": 9,
+        "mean": 4.71666666666667,
+        "p50": 5,
+        "p95": 9,
+        "p99": 9
+      },
+      "reactor_level": 1,
+      "resources_delta": 0.0,
+      "scenario": 5,
+      "settlement_samples": [],
+      "switch_cpu_us": 4039,
+      "switch_frame_us": 8366,
+      "switch_timings": {},
+      "timings": {},
+      "views": [
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@3/BattleShipView/ShipViewport",
+          "size": "(572, 960)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile00",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile01",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile02",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile03",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile04",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile05",
+          "size": "(44, 44)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile06",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile07",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile08",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile09",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile10",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile11",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile12",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 1,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Equipment/EquipmentStyleTiles/EquipmentStyleTile13",
+          "size": "(48, 48)"
+        },
+        {
+          "calls": 0,
+          "mode": 0,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Planets/@Node@2085/@SubViewport@2086",
+          "size": "(1024, 256)"
+        },
+        {
+          "calls": 0,
+          "mode": 4,
+          "path": "/root/SpaceBattleship/@Control@14/@TabContainer@1603/Galaxy/@PanelContainer@2157/@VBoxContainer@2158/@PanelContainer@2251/@Control@2252/@Control@2253/@SubViewport@2256",
+          "size": "(498, 342)"
+        }
+      ],
+      "work_after": {
+        "attack_serial": 12,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271008.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271009.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          },
+          {
+            "hp": 300.0,
+            "id": 271009.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 220.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 4,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140499974.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 5,
+        "research": {
+          "aiIncomePeak": {
+            "1": 1.46666666666667,
+            "2": 0.0,
+            "jewel": 0.120166666666667
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "3304471262333143265",
+        "stage": 1,
+        "state": 3,
+        "time": 32.3333333333328
+      },
+      "work_before": {
+        "attack_serial": 9,
+        "economy": {
+          "chronoParticles": 0.0,
+          "jewelFragments": 1e+40,
+          "materials": {
+            "antiproton": 0,
+            "degenerate_matter": 0,
+            "glueball": 0,
+            "zero_point_energy": 0
+          },
+          "resources": {
+            "1": 1e+80,
+            "2": 1e+80
+          },
+          "ultimateCores": 0
+        },
+        "enemies": [
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 58.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271005.0,
+            "shield": 0.0,
+            "x": 514.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271006.0,
+            "shield": 0.0,
+            "x": 210.0,
+            "y": 140.0
+          },
+          {
+            "hp": 0.0,
+            "id": 271007.0,
+            "shield": 0.0,
+            "x": 362.0,
+            "y": 140.0
+          }
+        ],
+        "equipment": {
+          "equipmentSwitchUntil": {},
+          "loadout": {
+            "defence": [
+              {
+                "key": "armour",
+                "level": 1
+              }
+            ],
+            "weapons": [
+              {
+                "key": "laser",
+                "level": 1
+              }
+            ]
+          },
+          "moduleVersion": 1,
+          "selectedShip": "Frigate"
+        },
+        "group": 3,
+        "missile_queue": 0,
+        "player": {
+          "armour": 14796140500213.0,
+          "shield": 0.0,
+          "x": 286.0,
+          "y": 520.0
+        },
+        "projectiles": 0,
+        "research": {
+          "aiIncomePeak": {
+            "1": 1.18333333333333,
+            "2": 0.0,
+            "jewel": 0.120166666666667
+          },
+          "aiTechActive": "",
+          "aiTechAutoElapsed": 0.0,
+          "aiTechAutoRatios": {
+            "1": 0.01,
+            "2": 0.01
+          },
+          "aiTechCompletionUnread": false,
+          "aiTechInput": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "aiTechLevels": {
+            "equipment_finishing": 0,
+            "equipment_reinforcement": 0,
+            "fragment_condensation": 0,
+            "resource_refining": 0,
+            "singularity": 0,
+            "unification": 0,
+            "uranium_extraction": 0,
+            "weapon_accuracy": 0
+          },
+          "aiTechProgress": {}
+        },
+        "rng": "-2498157410642705071",
+        "stage": 1,
+        "state": 2,
+        "time": 27.3333333333331
+      }
+    }
+  ],
+  "page_checks": []
+}

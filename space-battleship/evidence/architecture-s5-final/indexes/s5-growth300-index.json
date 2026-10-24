@@ -1,0 +1,26 @@
+[
+  {
+    "version": "s0",
+    "test": "test_balance_performance.gd",
+    "repeat": 1,
+    "exit": 0,
+    "ok": true,
+    "log": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-24\\task-4\\s2\\test\\work\\whole-perf-emeyxxwi\\s5-s0-growth300-1.log"
+  },
+  {
+    "version": "s4",
+    "test": "test_balance_performance.gd",
+    "repeat": 1,
+    "exit": 0,
+    "ok": true,
+    "log": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-24\\task-4\\s2\\test\\work\\whole-perf-51jfln82\\s5-s4-growth300-1.log"
+  },
+  {
+    "version": "s5",
+    "test": "test_balance_performance.gd",
+    "repeat": 1,
+    "exit": 0,
+    "ok": true,
+    "log": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-24\\task-4\\s2\\test\\work\\whole-perf-jmdyo0ti\\s5-s5-growth300-1.log"
+  }
+]

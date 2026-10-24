@@ -1,0 +1,585 @@
+{
+  "config": {
+    "directory": "C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/whole-perf-jmdyo0ti/space-battleship/results/frame-profile",
+    "max_per_pair": 3,
+    "max_seconds": 120.0,
+    "max_total": 6,
+    "mode": "fast",
+    "runs": 3,
+    "samples_per_tag": 2.0,
+    "seed": 12345
+  },
+  "data_sha256": "d5c0de0160e480c92240a7f70d6b45fbb29b8dff4adf5188feb460ff3f4882b5",
+  "display_names": {
+    "equipment": {
+      "armour": "复合装甲",
+      "cannon": "磁轨火炮",
+      "cannon-mon": "cannon-mon",
+      "laser": "脉冲激光",
+      "laser-mon": "laser-mon",
+      "laser_mon": "laser_mon",
+      "longLaser": "持续锁定光束",
+      "longLaser-mon": "longLaser-mon",
+      "missile": "追踪导弹",
+      "missile-mon": "missile-mon",
+      "shield": "偏转护盾"
+    }
+  },
+  "enemy_fleets": [
+    {
+      "analysis_version": 2.0,
+      "batch_seed": 12345,
+      "composition": {
+        "1": 2
+      },
+      "config_fingerprint": "3b14ce10e079f7961bfd8576a466e2faea0db93a96ff7e9b9ae5d047a830292a",
+      "count": 2,
+      "description": "",
+      "feature_notes": {
+        "aoe": "hostile_single_target",
+        "armor": "matching_type_reduction",
+        "mobility": "stationary_enemies",
+        "range": "no_range_stat",
+        "shield": "no_enemy_shield",
+        "sustained": "peak_uninterrupted_base_dps"
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "armor": 0.5,
+        "burst": 0.028409090909090908,
+        "durability": 0.0006428982883475971,
+        "fleet_size": 0.13333333333333333,
+        "mobility": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "single_target": 1.0,
+        "sustained": 0.056818181818181816
+      },
+      "fleet_power": 18.0,
+      "formation": "paired",
+      "formation_metrics": {
+        "grouping": 1.0,
+        "layering": 0.75,
+        "spacing": 1.0,
+        "symmetry": 0.9187092646956443
+      },
+      "formation_positions": [
+        {
+          "id": 1,
+          "pair": 0,
+          "role": "any",
+          "slot": 3,
+          "x": -0.8604352474212646,
+          "y": 1.0
+        },
+        {
+          "id": 1,
+          "pair": 0,
+          "role": "any",
+          "slot": 11,
+          "x": 1.092694491147995,
+          "y": 1.0
+        }
+      ],
+      "formation_score": 0.9374837058782578,
+      "formation_tags": [
+        "paired",
+        "symmetric"
+      ],
+      "formation_type": "paired",
+      "generation_options": {
+        "available_enemies": [
+          "1"
+        ],
+        "count": 2,
+        "max_count": 2,
+        "max_strength": 1000000,
+        "min_count": 1,
+        "min_strength": 0,
+        "seed": 12345
+      },
+      "hull_score": 0.3333333333333333,
+      "max_ship_power": 9.0,
+      "mixed_score": 0.0,
+      "primary_tags": [
+        "fragile",
+        "light"
+      ],
+      "raw_totals": {
+        "armor": 1.0,
+        "burst": 40.0,
+        "durability": 1000.0,
+        "hull": 4.0,
+        "single_target": 2.0,
+        "strength": 18.0,
+        "sustained": 80.0
+      },
+      "scale": "small",
+      "secondary_tags": [
+        "single_target"
+      ],
+      "seed": 1321476956,
+      "ship_count": 2,
+      "ship_power": {
+        "1": 9.0
+      },
+      "signature": "[1,1]",
+      "slots": [
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null
+      ],
+      "strength": 27.0,
+      "tags": [
+        "fragile",
+        "light",
+        "single_target",
+        "paired",
+        "symmetric"
+      ],
+      "type_count": 1
+    },
+    {
+      "analysis_version": 2.0,
+      "batch_seed": 12345,
+      "composition": {
+        "1": 1
+      },
+      "config_fingerprint": "3b14ce10e079f7961bfd8576a466e2faea0db93a96ff7e9b9ae5d047a830292a",
+      "count": 1,
+      "description": "",
+      "feature_notes": {
+        "aoe": "hostile_single_target",
+        "armor": "matching_type_reduction",
+        "mobility": "stationary_enemies",
+        "range": "no_range_stat",
+        "shield": "no_enemy_shield",
+        "sustained": "peak_uninterrupted_base_dps"
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "armor": 0.5,
+        "burst": 0.028409090909090908,
+        "durability": 0.0006428982883475971,
+        "fleet_size": 0.06666666666666667,
+        "mobility": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "single_target": 1.0,
+        "sustained": 0.056818181818181816
+      },
+      "fleet_power": 9.0,
+      "formation": "symmetric",
+      "formation_metrics": {
+        "grouping": 1.0,
+        "layering": 0.75,
+        "spacing": 1.0,
+        "symmetry": 1.0
+      },
+      "formation_positions": [
+        {
+          "id": 1,
+          "pair": -1,
+          "role": "core",
+          "slot": 7,
+          "x": 0.0,
+          "y": 1.0
+        }
+      ],
+      "formation_score": 0.9700000000000001,
+      "formation_tags": [
+        "symmetric"
+      ],
+      "formation_type": "symmetric",
+      "generation_options": {
+        "available_enemies": [
+          "1"
+        ],
+        "count": 2,
+        "max_count": 2,
+        "max_strength": 1000000,
+        "min_count": 1,
+        "min_strength": 0,
+        "seed": 12345
+      },
+      "hull_score": 0.3333333333333333,
+      "max_ship_power": 9.0,
+      "mixed_score": 0.0,
+      "primary_tags": [
+        "fragile",
+        "light"
+      ],
+      "raw_totals": {
+        "armor": 0.5,
+        "burst": 20.0,
+        "durability": 500.0,
+        "hull": 2.0,
+        "single_target": 1.0,
+        "strength": 9.0,
+        "sustained": 40.0
+      },
+      "scale": "small",
+      "secondary_tags": [
+        "single_target"
+      ],
+      "seed": 4240162672,
+      "ship_count": 1,
+      "ship_power": {
+        "1": 9.0
+      },
+      "signature": "[1]",
+      "slots": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "strength": 18.0,
+      "tags": [
+        "fragile",
+        "light",
+        "single_target",
+        "symmetric"
+      ],
+      "type_count": 1
+    }
+  ],
+  "engine": "4.7.2-stable (official)",
+  "execution_identity": {
+    "auxiliary": {
+      "data/ai_tech_tree.json": "4b6688206c1dabd8779890f1edfc063b09b6dd84e291dd7ee0c47a52251cf224",
+      "data/enemy_fleet_analysis.json": "976babec798a8f255ed371b8d25a326a00f2885532e1179ae215f112bcd6307a",
+      "data/equipment_evolution.json": "6f494f85b50d4e6d3a993ce03a7f5420cbdd04deb979a2cde1734253b4d9c99c",
+      "data/game_data.json": "6495f35f28b35573b3dce4548d19b816addf69480df71f5ac1ef5a16b3285a75",
+      "data/hyperspace_config.json": "47fcb756d075c4070cfe1b18b68d5d79ba3ecffa58a385411baccbdc2ba4d36c",
+      "data/hyperspace_entity_schema.json": "6137f45d5b7292508b83dbdad694502ae58d0620636efbf12d286fbc840f986f",
+      "data/space_enemy_candidates.json": "1d27ecacd93e4208bccc8a3b79568516c169846fea2213bb79e4e68fbd3dcd14",
+      "data/space_enemy_reward_catalog.json": "3a6cb4d121d30c6ab0c32f4f5b094be81b29449c42d159b1b375ca4df1c14e7b",
+      "data/space_enemy_reward_early_frozen.json": "98cd28eff0860449fabaee6c5b8b9e705ec076da49181726e593b1cac0e2b64a",
+      "data/space_enemy_reward_recipes.json": "c7bebfc0e645a2957a559aecb885102c9742cccb0cca043aef47177ae9367077",
+      "data/space_enemy_reward_sources.json": "4c92f2168c9c9b36da933934a10d4cfe4226870825b43dd228c3132ba4b8780a",
+      "data/space_enemy_routes.json": "4470c2af1bea87ad20f476840e4e69a547ab1222438d7802c881e94e6dfdfe58",
+      "data/ui_text.json": "d8d315b7206baa44f2b866f6f2323c2e67ab37c206bcd5ffece07ea30e08121b",
+      "data/ui_text_contract.json": "bd060b742700c28843ea2765b78038e1f224cf18093daa0bab2db7d47c323d66"
+    },
+    "auxiliary_sha256": "11b3ee5cae4f86720bee5801a9d2252654751c553ab301245cb389353b85bdd0",
+    "batch_sha256": "002d1e27f7c6d5263bd7e4ac4303cb757745441da72a48c1699d8a0310c58295",
+    "capability_version": 1,
+    "data_sha256": "6f7fd6ef20d49d4c308e3b26fff5b3ea2d6dd11d25f54c17a734c296b8462d68",
+    "engine": {
+      "binary_sha256": "ab1824f85bfd8e0e4128182c000c4003a3e042245b2967848d089b2a04b22424",
+      "version": "4.7.2-stable (official)"
+    },
+    "input_origin": {
+      "kind": "published_json"
+    },
+    "missing_sources": [],
+    "model": "BalanceGame/fast",
+    "native": "not_used",
+    "numeric_version": "GrowthNumber-v1",
+    "parameters": {
+      "max_seconds": 120,
+      "module_delta": 0,
+      "power_multiplier": 1,
+      "sampling": {
+        "directory": "C:/Users/Administrator/Documents/Codex/2026-10-24/task-4/s2/test/work/whole-perf-jmdyo0ti/space-battleship/results/frame-profile",
+        "max_per_pair": 3,
+        "max_seconds": 120,
+        "max_total": 6,
+        "mode": "fast",
+        "runs": 3,
+        "samples_per_tag": 2,
+        "seed": 12345
+      },
+      "seed": 12345,
+      "selected_inputs_sha256": "eba6e6811f8494994c36067770ab4af448bd847438cb3718704e5c50f5fc0bcc",
+      "step_seconds": {
+        "float64": "03000100111111111111913f"
+      }
+    },
+    "policy_sha256": "31c6f96fc8b2296569f8fe05f2fb4eec5033bc8238d592787fd7519d61b0939e",
+    "rules": {
+      "res://scripts/ai_tech_tree.gd": "52e4d0b27b1392b89d667d9f3ad570f2b7c830ddbf53998b612f5e26b8cb8ab7",
+      "res://scripts/attack_birth_configuration.gd": "0347a643eff106566b0b9fbdd19e22f82dfe5c493a88052817ddde5f5e0e8bed",
+      "res://scripts/attribute_projection.gd": "cc4ea42f87475c801a260f778577480d2927debacbd1aa2e40f750cbeadfe7db",
+      "res://scripts/balance_database.gd": "b1a70872a1ad1a115f772b815455a1582e2929ddaefbad5fc794a841882e183a",
+      "res://scripts/balance_game.gd": "d49a3ce748a0a7db5e6f958a7ad056e65f22179568803c55e3046c70237b0c7f",
+      "res://scripts/balance_metrics.gd": "94917193e6e143b3525215d327d707e0037a52012486ec8e1f0cb046e4bafe5b",
+      "res://scripts/balance_timeline.gd": "1e366eb130efe13f606abe071489ff12ddffea5db91d1a0832455e0fd1fec3e2",
+      "res://scripts/battle_damage_stats.gd": "cb19cf9695e875a3b274a40021d34769cd6204128fb33dd772bc94ac38745330",
+      "res://scripts/battle_rewards.gd": "0e2cc1a0ef2884b7163676006f0f70d00711d857bdf0879ca6c072be6cf42cc2",
+      "res://scripts/candidate_rewards.gd": "a0a785a9ba07dbaad8ebc0ffb081a31f77e51362b29ffb17881e6a1087846e25",
+      "res://scripts/combat_context.gd": "72abf390edaf0a515b54e58d5465f427fa79ed8f85a135dfa500bd3d85ac9140",
+      "res://scripts/command_result.gd": "f276e952aee3eb3b83ebafbb8024dd811ac2d1cb325d4e88222cf2b8e9e151fb",
+      "res://scripts/commit_effects.gd": "4981ff89a062ec12e0e92e780a42d2bc080c6722676635279b65abb45ac39c3f",
+      "res://scripts/compiled_combat_rules.gd": "178fb28ca3a442e65b0dc393d45d3a6276a7da2a0ef038d240fd2b8ed2ea1915",
+      "res://scripts/configuration_snapshot.gd": "77b589461f5c2c55824bc977c0071a072421c6a5136c65c78c5dc0119767ef62",
+      "res://scripts/crew_system.gd": "0ee4f9f15880cca88114cf69505601f3b4b16d2db748261f79714388892febe5",
+      "res://scripts/database.gd": "6fc48a40678a4b85e9ecaa65906d98146f7b2a7f1827b1ee76cb80c712e259eb",
+      "res://scripts/drone_combat_effects.gd": "f638c07f023d63439488d67674bad3730fa2fb9ec80ace0b1ce1c320d89826de",
+      "res://scripts/drone_effect_aggregator.gd": "3a55fd37f05aa850c3b9123deefaa2550bcc6802ed216c3a25e9bdb2526b07da",
+      "res://scripts/drone_forge.gd": "eae07bcd02693add68e006b05d6aeb3a19b85709eee6c02253b34cab2a5a2cd7",
+      "res://scripts/drone_inventory.gd": "d2ed951ce216689a61ac69d55c379907007fdfe93f101862205fbd5d049c9828",
+      "res://scripts/drone_rewards.gd": "1ffb04d513d93829c8164b925433b507af8439b1fec35079d09155d348e4b6f4",
+      "res://scripts/economy_state.gd": "2dd458554dbaecf833f4125342ad07efadca72ad815cc90ec663a941801b433f",
+      "res://scripts/enemy_fleet_simulator.gd": "c5eef2195ba4403698ee57e9d4eed61add07c02fb99b668cc96da809fa91074f",
+      "res://scripts/enemy_formation.gd": "9999780831908e6c5ef3e42c831f95a24a89d42713d3136cb543cb1fa63e3c99",
+      "res://scripts/enhancement_branches.gd": "1d5c93254f7acce105693b946e02ccb3326545d6ed523481e0b1cc00fa9897f5",
+      "res://scripts/enhancement_growth.gd": "2a1196b0576a1b0439ecf6e57d6d22fef81fc485b42b0130cf66d2aa4b927842",
+      "res://scripts/equipment_state.gd": "5557b310eb9f17e9917a1d178ceca09acd2e3741a4ad4f7ba101bdd6e236318e",
+      "res://scripts/execution_contract.gd": "2c9a8d1fa67c57175c34681910968380ca5dc3366ea57890e285634e1aca22cd",
+      "res://scripts/execution_identity.gd": "40bc1bfeb11b6c79706b3a969560c11898e19f73ec6537cfdf0ac71bb1597214",
+      "res://scripts/fleet_battle_runner.gd": "957b95c55832d06b6995c2281be9dec75abe3ee1ca841cdc4a778822fe269e38",
+      "res://scripts/fleet_battle_sampling.gd": "cbdde0d574a17b6c326c9bc7fd0d3849d232e6e90670d04a54d9ba5d51b3ddf9",
+      "res://scripts/galaxy_effect_aggregator.gd": "7f1b3cd61990635587ad128f43bc08497d5a7d2cd2aaf8e0d9a278a62b60055d",
+      "res://scripts/galaxy_layout.gd": "fc230831419568e72cc158a37487973707e7d16b148df83f3701173952798c28",
+      "res://scripts/galaxy_region.gd": "9d5a4bfa4f2eede40f55d9aed10fe6b1f2db6d743a58de1fff994a499178c9fe",
+      "res://scripts/galaxy_runtime.gd": "63249690af45979fb9ddb7106ccf53c0ff42c74b96260115ff8c4c86d6397e0c",
+      "res://scripts/galaxy_system.gd": "005ba66423a41e714a15fcbca5ed40ed156d2dd36d5e9e8d7202cb887fc7cde0",
+      "res://scripts/game.gd": "e724c6b417cceb0d380afc14b01b28d646fe9a0d9684c85a6d752dddc8b3d3c3",
+      "res://scripts/growth_number.gd": "3a0f690674d1764fc74f70f25517d062aca94ddb857ad5275510ddc58a0abf63",
+      "res://scripts/hyperspace_config.gd": "c3b85afaf0842b6c835a45795fc3485b16032369851762a87588cf6a79d0e6af",
+      "res://scripts/hyperspace_encounter_database.gd": "9c36cad7b2d41b66ee2a24d6cbb277fecb40bdc77773b18d39f6e759ad884128",
+      "res://scripts/hyperspace_entity_validation.gd": "178630da12cd6f82a95adcb20974e18194dc38c59c338dbcadffcb106a2ceed6",
+      "res://scripts/hyperspace_filter.gd": "db838dd2677cb830a1f83bfc196626469c03487e81ecf2e9899551a4f31067c0",
+      "res://scripts/hyperspace_manual_session.gd": "f512a271baf956739bc374dca2fa3fedb33b0b9019fd56f209f0906c59c69da8",
+      "res://scripts/hyperspace_permissions.gd": "e9342d84941fbfdb874f6bc3582df7d634b61546ecf41ce9814e1654c5ec144f",
+      "res://scripts/hyperspace_random.gd": "95c87c7e20acf88ad3403134ca73f02b31912059362e3b33e0bbb9bc127cdd10",
+      "res://scripts/hyperspace_return_target.gd": "3864ffc3ac2985287eda7a08732b93736a112a6e4860a326e8e9b6671041c5a3",
+      "res://scripts/hyperspace_reward_binding.gd": "0b8b7cae1cc301f125b4762a338cfe9fef4d50958b97d41008e25f49744df54c",
+      "res://scripts/hyperspace_route_loader.gd": "18bff30ab865cf58e6e71c0c04ddd6065032aa9b922f072595117d05756cf98d",
+      "res://scripts/hyperspace_runtime.gd": "61186254033addeee7f9f931e1f1205c95a0046780d96ac0721d608c553f6824",
+      "res://scripts/hyperspace_scheduler.gd": "f7d981e182622fc2d66524b06d1c81f01705e56975d0594fa43a1cd6d666e22c",
+      "res://scripts/hyperspace_state.gd": "e412e259aa5a33745070140e492b3886acf74180f958fd34391317419591711a",
+      "res://scripts/hyperspace_system.gd": "5fa08571f4b6f704ef9758307d2104634da987a95256c08a6f049fc5b25b22a9",
+      "res://scripts/income_history.gd": "d30cc874cbe3a302880c99e3eb0539f5532db5aa3fb8cc3da4031ef3ad23e05b",
+      "res://scripts/mon_group_xlsx.gd": "454b6cc574a41ce82d38438a0b2e9f8f3f4d64fdcec4ea14df6ac1748946ecb5",
+      "res://scripts/native_execution_compiler.gd": "fbc734d3a0f366c7086bacc260e039da2235995f5362a15ee33b777c7e872270",
+      "res://scripts/native_execution_handoff.gd": "b048eb049d2c82aaeb8aa039c218c022e316de6bc36f837c6a24802f9aec0212",
+      "res://scripts/native_execution_session.gd": "9124700c3537a24a8176ac0da3435bb4493d1c3d97796461af620fa95b8706c5",
+      "res://scripts/number_format.gd": "0218b62c6d7cff64243120d5f5eac234943ffc79bc8b6f763a240b580dff617e",
+      "res://scripts/planet_buffs.gd": "2aab8801123fe09bcbd89ba812f49f6edb9eddaf75ec0ac05867a63ab4b2920e",
+      "res://scripts/planet_buildings.gd": "b65b8edabaa8c9f1c24d7c7ccb0d4a39cc371afe4548918b2fa03dd58909d608",
+      "res://scripts/planet_state.gd": "d25ce5566007824d0a073ba5eddb2cce57405b51cec9bf6982d67f022317d6f1",
+      "res://scripts/player_loadout_generator.gd": "d50599808faa6b76c1fa7822e1e3a619bdd64de55be6fa73074d6e89b5650997",
+      "res://scripts/product_lifecycle.gd": "e92f0cf34686575e98a71f122588763319c5c410d996eb7d5620a7b1028f5795",
+      "res://scripts/progress_runtime.gd": "ae5d039b75550c563965becc3cae5981fd618224f01c62e722c407e52fddfc39",
+      "res://scripts/progress_writer.gd": "c693c58e694278163a781f038d7e9052be1e72636503d516859efa61c6309a95",
+      "res://scripts/rail_geometry.gd": "0b77a2f4da8ee362253fbfe0fd4792865e714dd2923ee6e3f76dfd221a523b3d",
+      "res://scripts/reactor_state.gd": "9c1f5f90fdefd0e317ccae9f52d91e88925dc86af72df000544026c91d31197c",
+      "res://scripts/save_transfer.gd": "da86bb849a7f5e29027e51935aee8a6baf3bafb61c91e995a2aaf6bee56ad44f",
+      "res://scripts/ship_visuals.gd": "d0176a0f5bc860082b8e3139dab579bb2b704f0b04e78aec36b99676464febaa",
+      "res://scripts/step_progress.gd": "1a4908363de3021fc595e8fe30089abbb731a1be7f7999fefba7069d3500b818",
+      "res://scripts/ui_text.gd": "e96793d647c0d2fad622e7c429f3295e1a879265307f7f4d3c108e418f0e11f2"
+    },
+    "rules_sha256": "41314145f9e8e64624f2522e7bff1d1c285e94ca318d311d97bc3e06a13b6d3d",
+    "status": "known",
+    "version": 1
+  },
+  "player_loadouts": [
+    {
+      "analysis_version": 1.0,
+      "batch_seed": 12345,
+      "config_fingerprint": "562bbf351c55637d189740654c12f3c6e19146cdba6a62bd12d11934b1c73fbc",
+      "equipment": {
+        "defence": [
+          {
+            "key": "armour",
+            "level": 10
+          }
+        ],
+        "weapons": [
+          {
+            "key": "laser",
+            "level": 10
+          }
+        ]
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "attack_rate": 0.16666666666666666,
+        "balanced": 0.0,
+        "burst": 0.2903225806451613,
+        "multi_target": 0.0,
+        "single_target": 1.0,
+        "survival": 1.0,
+        "sustained": 0.5555555555555556
+      },
+      "generation_options": {
+        "available_ships": [
+          "Frigate"
+        ],
+        "cleared_through": 220,
+        "count": 2,
+        "module_level": 10,
+        "seed": 12345.0
+      },
+      "generation_type": "mono",
+      "loadout_id": "player_7ac137d210753f886af83052a52cff1ee862d22b3207547b709ff20397eb84e9",
+      "notes": [
+        "baseline_modifiers",
+        "theoretical_firepower",
+        "no_range_or_aoe",
+        "mount_order"
+      ],
+      "seed": 1321476956,
+      "ship": "Frigate",
+      "signature": "7ac137d210753f886af83052a52cff1ee862d22b3207547b709ff20397eb84e9",
+      "stats": {
+        "aoe": 0.0,
+        "armour": 5200.0,
+        "attack_rate": 0.6666666666666666,
+        "burst": 1800.0,
+        "movement": 50.0,
+        "multi_target": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "sustained": 1200.0
+      },
+      "tags": [
+        "single_target",
+        "high_survival"
+      ],
+      "weapons": [
+        {
+          "key": "laser",
+          "level": 10
+        }
+      ]
+    },
+    {
+      "analysis_version": 1.0,
+      "batch_seed": 12345,
+      "config_fingerprint": "562bbf351c55637d189740654c12f3c6e19146cdba6a62bd12d11934b1c73fbc",
+      "equipment": {
+        "defence": [
+          {
+            "key": "armour",
+            "level": 10
+          }
+        ],
+        "weapons": [
+          {
+            "key": "cannon",
+            "level": 10
+          }
+        ]
+      },
+      "feature_scores": {
+        "aoe": 0.0,
+        "attack_rate": 0.07142857142857142,
+        "balanced": 0.0,
+        "burst": 1.0,
+        "multi_target": 0.0,
+        "single_target": 1.0,
+        "survival": 1.0,
+        "sustained": 0.8201058201058201
+      },
+      "generation_options": {
+        "available_ships": [
+          "Frigate"
+        ],
+        "cleared_through": 220,
+        "count": 2,
+        "module_level": 10,
+        "seed": 12345.0
+      },
+      "generation_type": "mono",
+      "loadout_id": "player_2e380bdbe900ebb86062df2b76786c36728fe99241f1675e63869ee39e336bfb",
+      "notes": [
+        "baseline_modifiers",
+        "theoretical_firepower",
+        "no_range_or_aoe",
+        "mount_order"
+      ],
+      "seed": 3348728241,
+      "ship": "Frigate",
+      "signature": "2e380bdbe900ebb86062df2b76786c36728fe99241f1675e63869ee39e336bfb",
+      "stats": {
+        "aoe": 0.0,
+        "armour": 5200.0,
+        "attack_rate": 0.2857142857142857,
+        "burst": 6200.0,
+        "movement": 50.0,
+        "multi_target": 0.0,
+        "range": 0.0,
+        "shield": 0.0,
+        "sustained": 1771.4285714285713
+      },
+      "tags": [
+        "high_burst",
+        "sustained",
+        "single_target",
+        "high_survival"
+      ],
+      "weapons": [
+        {
+          "key": "cannon",
+          "level": 10
+        }
+      ]
+    }
+  ],
+  "replay_inputs": "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AwAAAGFvZQADAAAAAAAAAAQAAAAFAAAAcmFuZ2UAAAADAAAAAAAAAAQAAAAOAAAAZmVhdHVyZV9zY29yZXMAABsAAAAIAAAABAAAAAUAAABidXJzdAAAAAMAAAAAAIA/BAAAAAkAAABzdXN0YWluZWQAAAADAAEA5aOTj04+6j8EAAAACwAAAGF0dGFja19yYXRlAAMAAQCSJEmSJEmyPxUAAAAIAAAAc3Vydml2YWwDAAAAAACAPxUAAAANAAAAc2luZ2xlX3RhcmdldAAAAAMAAAAAAIA/FQAAAAwAAABtdWx0aV90YXJnZXQDAAAAAAAAABUAAAADAAAAYW9lAAMAAAAAAAAAFQAAAAgAAABiYWxhbmNlZAMAAAAAAAAABAAAAAQAAAB0YWdzHAAAAAQAAAAEAAAACgAAAGhpZ2hfYnVyc3QAAAQAAAAJAAAAc3VzdGFpbmVkAAAABAAAAA0AAABzaW5nbGVfdGFyZ2V0AAAABAAAAA0AAABoaWdoX3N1cnZpdmFsAAAABAAAABAAAABhbmFseXNpc192ZXJzaW9uAwAAAAAAgD8EAAAABQAAAG5vdGVzAAAAHAAAAAQAAAAEAAAAEgAAAGJhc2VsaW5lX21vZGlmaWVycwAABAAAABUAAAB0aGVvcmV0aWNhbF9maXJlcG93ZXIAAAAEAAAADwAAAG5vX3JhbmdlX29yX2FvZQAEAAAACwAAAG1vdW50X29yZGVyAAQAAAAKAAAAbG9hZG91dF9pZAAABAAAAEcAAABwbGF5ZXJfMmUzODBiZGJlOTAwZWJiODYwNjJkZjJiNzY3ODZjMzY3MjhmZTk5MjQxZjE2NzVlNjM4NjllZTM5ZTMzNmJmYgAEAAAACQAAAHNpZ25hdHVyZQAAAAQAAABAAAAAMmUzODBiZGJlOTAwZWJiODYwNjJkZjJiNzY3ODZjMzY3MjhmZTk5MjQxZjE2NzVlNjM4NjllZTM5ZTMzNmJmYgQAAAAEAAAAc2VlZAIAAQCxiZnHAAAAAAQAAAAKAAAAYmF0Y2hfc2VlZAAAAgAAADkwAAAEAAAADwAAAGdlbmVyYXRpb25fdHlwZQAEAAAABAAAAG1vbm8EAAAAEgAAAGdlbmVyYXRpb25fb3B0aW9ucwAAGwAAAAUAAAAEAAAABQAAAGNvdW50AAAAAgAAAAIAAAAEAAAABAAAAHNlZWQDAAAAAORARgQAAAAPAAAAY2xlYXJlZF90aHJvdWdoAAIAAADcAAAABAAAAAwAAABtb2R1bGVfbGV2ZWwCAAAACgAAABUAAAAPAAAAYXZhaWxhYmxlX3NoaXBzABwAAAABAAAABAAAAAcAAABGcmlnYXRlAAQAAAASAAAAY29uZmlnX2ZpbmdlcnByaW50AAAEAAAAQAAAADU2MmJiZjM1MWM1NTYzN2QxODk3NDA2NTRjMTJmM2M2ZTE5MTQ2Y2RiYTZhNjJiZDEyZDExOTM0YjFjNzNmYmM=",
+  "sampling": {
+    "covered_tags": [],
+    "quota_skipped": 0,
+    "representatives": {
+      "enemy": [
+        1
+      ],
+      "player": [
+        1,
+        0
+      ]
+    },
+    "sampled_pairs": 2,
+    "similar_skipped": 1,
+    "stable_stopped": 0,
+    "tested_pairs": 0,
+    "theoretical_pairs": 4
+  },
+  "sampling_policy": {
+    "boundary_high": 0.7,
+    "boundary_low": 0.3,
+    "candidate_attempts": 20.0,
+    "long_seconds": 45.0,
+    "max_pairs": 512.0,
+    "max_samples_per_tag": 20.0,
+    "short_seconds": 0.5,
+    "similarity": 0.08,
+    "stable_high": 0.9,
+    "stable_hp": 0.65,
+    "stable_low": 0.1,
+    "stable_streak": 3.0,
+    "stable_time_cv": 0.1,
+    "stat_similarity": 0.15,
+    "tag_difference": 0.4,
+    "time_cv": 0.35,
+    "variance": 0.16
+  },
+  "step_seconds": 0.016666666666666666
+}

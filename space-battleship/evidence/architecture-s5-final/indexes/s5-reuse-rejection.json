@@ -1,0 +1,21 @@
+[
+  {
+    "target": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-24\\task-4\\s2\\test\\work\\whole-perf-untrusted-atp2b7jo",
+    "exit": 1,
+    "unchanged": true,
+    "rejected": true
+  },
+  {
+    "target": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-24\\task-4\\s2\\test\\work\\whole-perf-never-created-s5",
+    "exit": 1,
+    "unchanged": true,
+    "rejected": true
+  },
+  {
+    "target": "C:\\Users\\Administrator\\Documents\\Codex\\2026-10-24\\task-4\\s2\\test\\work\\whole-perf-malformed-lmpeuhsr",
+    "exit": 1,
+    "unchanged": true,
+    "rejected": true,
+    "case": "empty_record"
+  }
+]
