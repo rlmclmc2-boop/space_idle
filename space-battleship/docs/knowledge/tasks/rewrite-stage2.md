@@ -1,14 +1,17 @@
 # rewrite-stage2
-入口：a815d2a 的 docs/game-design/README.md；07第2步；第1阶段终点ca676e0e已双审通过。
-分支：rewrite/stage1-foundation；不合main、不另开线程。
-范围：GameSession直接同一native核，静态输入/历史动态、四武器、命中、连续波次、航行与掉落。
-定位：01运行/02命中/03属性组合/05第5节/06Amount；native combat_execution_kernel.h及直接表现头；runtime/及tests/run_cases.gd。
-缺口：现核2972行仍double金额、2^53历史预检，configure清所有战场；需在同核迁移与连续波次API，不能第二套战斗或双账本。
-下一步：共享Amount操作适配和evaluate_module；逐段接核与真实GameSession/独立Excel用例。
-停止：本阶段审核前不进第3步；上下文开始压缩即停止并交接。
 
-已落地：共享evaluate_module/绑定；同核Amount金额与int64历史；start_wave/finish_wave/take_results及撤退生命周期。
-验证：重建DLL，14 Amount+6四武器/命中/大数用例+W01跨波/掉落去重通过；Amount原生测试通过。
-下一步：GameSession、静态装备组装、航行/驻守/撤退、经济拾取及可运行入口；阶段未完成。
+状态：第二阶段实现完成，等待 dot 与既有 Astra 对最终提交审核；审核前暂停。
+方案唯一入口：a815d2a843976e22cb3fb24e7683d4a54c65fd3f 的 docs/game-design/README.md，实施顺序 07 第 2 步。
+分支：rewrite/stage1-foundation；第一阶段 ca676e0e 已双审通过；不进入第 3 阶段、不合 main、不另开线程。
 
-WIP接线：runtime/game_session.gd与combat_setup.gd已编写；create_stage2_inputs.py写入运行profile/rules/geometry与独立session fixture。尚未生成新输入、尚未运行GameSession；不代表第2阶段完成。下一步生成输入并修复解析/联调，验证自动/手动拾取与时间分块。
+接续保全：原 task-5/space_idle 的 HEAD cd0746c67652ea0800b08208a012654c047a1892，20 项未提交改动完整保全为 2852d4e；通过 Git 克隆到 task-6/space_idle 继续。未覆盖原工作树，未复制或操作个人存档。
+
+交付：GameSession 直连同一 native 核；Amount 金额与 int64 历史、共享 evaluate_module、模块缺损权威、四武器与命中、连续波次/撤退、航行/驻守、掉落唯一 ID 与拾取、定时铀、两种收入窗口、正式与独立 Excel 编译入口。
+付费等级：静态普通成长和按付费等级授予的进化进入实际伤害/容量；盾以同级装甲取整值和表内基础比例计算，再执行属性取整。equipment_evolution.xlsx 是静态进化参数来源。购买命令、AI/反应炉实际成长等按第 3 阶段实施。
+几何：combat_setup 调用共用 enemy_formation.positions，以 Excel 几何参数计算；15 槽及空位保留源索引；玩家所有启用空槽保留类别、序号、付费等级。native 目标排序锚读取配置。
+
+验证：18 个编译器用例、原生 Amount 边界用例、48 个同核 headless 场景通过。含 2/20 级真实命中、盾容量、普通与 1e500 多模块缺损分摊/容量更新不回血/撤退重置、空位和 15 槽编队。
+正式 Excel：48 表、14583 行；120 现实秒，118.4 游戏秒，7104 固定步，关卡 1 已通关且到达关卡 2；57 次攻击、773 次来袭，铁 142、铀 9，无业务错误。
+证据：tests/evidence/stage2-final.json；可复现命令及依赖见 tests/README.md 第二阶段章节。
+边界：headless 验证，不代表 GPU/完整页面或第三阶段缺失强化/传说已验收；此次未触碰个人存档，测试保存仅在隔离目录。
+下一动作：推送最终提交后暂停，由 dot 与既有 Astra 审核同一提交。发生压缩即停止并交接。

@@ -226,6 +226,7 @@ class SpaceCombatKernel : public RefCounted {
     size_t compact_laser_count = 0;
     Dictionary player_row;
     Dictionary buffer_rows, loss_rows, defence_time_rows;
+    double target_slot_center = 4.5;
     Vector2 player_point;
     uint32_t encounter_generation = 1;
     uint64_t refit_epoch = 0;
@@ -445,7 +446,7 @@ class SpaceCombatKernel : public RefCounted {
             !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_strange_matter","requires_laser_charge","requires_endless_beam","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
             !schema_integers(d, {"chain_count","prism_count"}) ||
             !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}, false) ||
-            !numeric_fields(d, {"clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
+            !numeric_fields(d, {"target_slot_center","clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
         if (!Array(d.get("unsupported_rules", Array())).is_empty() ||
             !schema_nonnegative(d, {"since_hit","launch_speed","turn_rate","ignition","seek","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","critical_multiplier","repeat_multiplier","repeat_delay","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","scatter_bonus","prism_bonus","deferred_duration","defence_time","memory_elapsed","deferred_elapsed","jewel_ratio","chain_count","prism_count","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}) ||
             !schema_probabilities(d, {"resistance","critical_rate","repeat_probability","secondary_probability","clear_probability","jewel_probability"})) return false;
@@ -721,7 +722,7 @@ class SpaceCombatKernel : public RefCounted {
                 return ar != type;
             if (a.logical.y != b.logical.y)
                 return a.logical.y > b.logical.y;
-            double ac = std::abs(a.slot - 4.5), bc = std::abs(b.slot - 4.5);
+            double ac = std::abs(a.slot - target_slot_center), bc = std::abs(b.slot - target_slot_center);
             return ac == bc ? a.slot < b.slot : ac < bc;
         });
         return result;
@@ -2061,6 +2062,7 @@ class SpaceCombatKernel : public RefCounted {
             return false;
         resistance = d.get("resistance", 0.5);
         player_row = Dictionary(d["player"]).duplicate(true);
+        target_slot_center = d.get("target_slot_center", 4.5);
         player_point = Vector2(player_row.get("x", 286.0), player_row.get("y", 520.0));
         rng.instantiate();
         rng->set_state(int64_t(d.get("rng_state", 1)));
@@ -2269,7 +2271,7 @@ class SpaceCombatKernel : public RefCounted {
         }
         if (double(d.get("counter_growth",0)) != counter_growth || double(d.get("defence_counter_growth",0)) != defence_counter_growth || int64_t(d.get("counter_level",int64_t(0))) != counter_level || double(d.get("repeat_delay",0)) != repeat_delay || bool(d.get("scatter",false)) != scatter || int(d.get("prism_count",0)) != prism_count) return false;
         for (const auto &field : std::initializer_list<std::pair<const char *,double>>{
-            {"counter_log_base",counter_log_base},{"counter_round_scale",counter_round_scale},
+            {"target_slot_center",target_slot_center},{"counter_log_base",counter_log_base},{"counter_round_scale",counter_round_scale},
             {"memory_interval",memory_interval},{"deferred_interval",deferred_interval},{"deferred_duration",deferred_duration},
             {"resistance",resistance},{"chain_speed",chain_speed},{"ejection_gap",ejection_gap},{"launch_speed",launch_speed},
             {"turn_rate",turn_rate},{"ignition",ignition},{"seek",seek},{"cruise_at",cruise_at},{"lifetime",lifetime},

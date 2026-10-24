@@ -84,6 +84,9 @@ func run() -> void:
 	var journey_count := verify_journey_cases(options)
 	var income_count := verify_income_cases(options)
 	var ratio_count := verify_ratio_cases(options)
+	var loadout_count := verify_loadout_cases(options)
+	var defence_count := verify_defence_cases(options)
+	var geometry_count := verify_geometry_cases(options)
 	check(count + native_count + wave_count + session_count + clock_count + journey_count + income_count + ratio_count > 0, "UnknownOrEmptyCaseSelection")
 	# Stage-1 admission/advance smoke uses the actual existing kernel, no game
 	# scene, GPU object, old Game adapter, or alternative battle implementation.
@@ -99,7 +102,7 @@ func run() -> void:
 	check(kernel.enemy_views().size() == 1, "NativeEnemyRetention")
 	check(kernel.take_feedback().is_empty(), "NativeEmptyFeedback")
 	await verify_saves(options["--output"].path_join("isolated_saves"), bundle.semanticHash)
-	var report := JSON.stringify({"ok": failures.is_empty(), "amountCases": count, "nativeCases": native_count, "waveCases": wave_count, "sessionCases": session_count, "clockCases": clock_count, "journeyCases": journey_count, "incomeCases": income_count, "ratioCases": ratio_count, "nativeKernel": true, "saveProtocol": true, "failures": failures})
+	var report := JSON.stringify({"ok": failures.is_empty(), "amountCases": count, "nativeCases": native_count, "waveCases": wave_count, "sessionCases": session_count, "clockCases": clock_count, "journeyCases": journey_count, "incomeCases": income_count, "ratioCases": ratio_count, "loadoutCases": loadout_count, "defenceCases": defence_count, "geometryCases": geometry_count, "nativeKernel": true, "saveProtocol": true, "failures": failures})
 	var report_file := FileAccess.open(options["--output"].path_join("result.json"), FileAccess.WRITE)
 	if report_file == null:
 		quit(2)
@@ -302,6 +305,96 @@ func verify_ratio_cases(options: Dictionary) -> int:
 		stage[row.entry_field] = row.entry
 		check(setup.stage_ratio(session, stage, row.field, row.entry_field) == session.amount(row.expected), row.case_id + " shared Amount ratio")
 		check(session.stopped_error.is_empty(), row.case_id + " ratio error")
+		count += 1
+	return count
+
+func verify_loadout_cases(options: Dictionary) -> int:
+	var opened: Dictionary = load("res://runtime/config_bundle.gd").open_active(options["--output"])
+	var setup = load("res://runtime/combat_setup.gd")
+	var count := 0
+	for row in opened.bundle.rows("loadout_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created := fixture_session(options)
+		check(created.ok, row.case_id + " create")
+		if not created.ok: continue
+		var session = created.session
+		check(session.equipment.slots.size() == 5, row.case_id + " empty player slots retained")
+		for slot in session.equipment.slots:
+			slot.paid_level = int(row.paid_level)
+			if slot.category == "defence" and slot.equipment_id.is_empty(): slot.equipment_id = "shield"
+		check(setup.initialize(session).ok, row.case_id + " static initialize")
+		check(session.kernel.player_view().armour == session.amount(row.expected_armour), row.case_id + " paid armour reaches native")
+		check(session.kernel.player_view().shield == session.amount(row.expected_shield), row.case_id + " shield shares armour growth and rounding")
+		var wave: Dictionary = setup.wave(session)
+		# Birth the real player shot against an independently defined target.
+		wave.enemies[0].hp = session.amount("1000")
+		wave.enemies[0].max_hp = session.amount("1000")
+		wave.enemies[0].shield = session.amount(0)
+		wave.enemies[0].max_shield = session.amount(0)
+		wave.enemies[0].armourType = 0
+		wave.weapons = []
+		check(session.kernel.start_wave(wave), row.case_id + " start")
+		for i in range(190): check(session.kernel.advance(1.0 / 60.0), row.case_id + " advance")
+		var expected: Dictionary = session.calculate("sub_nonnegative", session.amount(1000), session.amount(row.expected_damage)).value
+		check(session.kernel.enemy_views()[0].hp == expected, row.case_id + " paid damage actually hits " + str(session.kernel.enemy_views()[0].hp) + " expected " + str(expected))
+		# Same source identity, including empty source slots, reaches layout/native.
+		check(wave.enemies[0].slot == 3, row.case_id + " empty source slots retained")
+		count += 1
+	return count
+
+func verify_geometry_cases(options: Dictionary) -> int:
+	var opened: Dictionary = load("res://runtime/config_bundle.gd").open_active(options["--output"])
+	var setup = load("res://runtime/combat_setup.gd")
+	var count := 0
+	for row in opened.bundle.rows("geometry_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created := fixture_session(options)
+		check(created.ok, row.case_id + " create")
+		if not created.ok: continue
+		var slots := []
+		var definitions := {}
+		for entry in setup.list_text(row.slots):
+			slots.append(null if entry == "null" else entry.to_int())
+			if entry != "null": definitions[str(entry.to_int())] = opened.bundle.lookup("mon", [entry.to_int()])
+		var layout: Dictionary = setup.positions(created.session, slots, definitions)
+		check(layout[int(row.target_slot)] == Vector2(row.expected_x, row.expected_y), row.case_id + " shared logical geometry")
+		check(not layout.has(1) if slots[1] == null else layout.has(1), row.case_id + " source holes")
+		count += 1
+	return count
+
+func verify_defence_cases(options: Dictionary) -> int:
+	var opened: Dictionary = load("res://runtime/config_bundle.gd").open_active(options["--output"])
+	var count := 0
+	for row in opened.bundle.rows("defence_case"):
+		if options.has("--case") and options["--case"] != row.case_id: continue
+		var created := fixture_session(options)
+		check(created.ok, row.case_id + " create")
+		if not created.ok: continue
+		var session = created.session
+		var one: Dictionary = session.amount(1)
+		var zero: Dictionary = session.amount(0)
+		var defs := []
+		for suffix in ["a", "b"]:
+			defs.append({"layer": 1, "type": 0, "base": session.amount(row["base_" + suffix]), "factor": one,
+				"maximum": session.amount(row["base_" + suffix]), "loss": session.amount(row["loss_" + suffix])})
+		var descriptor := {"player": {"armour": session.amount(999), "shield": zero, "x": 0.0, "y": 100.0},
+			"defences": defs, "weapons": [], "enemies": [], "rng_state": 17, "repeat_delay": 0.5}
+		check(session.kernel.configure(descriptor), row.case_id + " configure")
+		# Deliberately inconsistent cached total cannot overwrite module losses.
+		check(session.kernel.player_view().armour == session.calculate("sub_nonnegative", session.add(session.amount(row.base_a), session.amount(row.base_b)), session.add(session.amount(row.loss_a), session.amount(row.loss_b))).value, row.case_id + " module-derived initial total")
+		var wave := {"final": false, "enemies": [{"uid": 1, "hp": one, "max_hp": one, "x": 0.0, "y": 0.0}],
+			"weapons": [{"kind": 0, "hostile": true, "source": 0, "damage": session.amount(row.raw), "type": 1,
+				"interval": 100.0, "remaining": 0.0, "speed": 100.0, "muzzle": Vector2.ZERO}]}
+		check(session.kernel.start_wave(wave), row.case_id + " wave")
+		for i in range(66): check(session.kernel.advance(1.0 / 60.0), row.case_id + " advance")
+		check(session.kernel.player_view().armour == session.amount(row.expected_remaining), row.case_id + " remaining")
+		var losses: Dictionary = session.kernel.loss_view()
+		check(losses[0] == session.amount(row.expected_loss_a) and losses[1] == session.amount(row.expected_loss_b), row.case_id + " weighted module losses")
+		check(session.kernel.begin_retreat() and session.kernel.finish_retreat(), row.case_id + " retreat reset")
+		check(session.kernel.loss_view()[0] == zero and session.kernel.loss_view()[1] == zero, row.case_id + " reset losses")
+		for defence in descriptor.defences: defence.base = session.mul(defence.base, session.amount(2))
+		check(session.kernel.update_configuration(descriptor), row.case_id + " numeric update")
+		check(session.kernel.player_view().armour == session.add(session.amount(row.base_a), session.amount(row.base_b)), row.case_id + " no refill from numeric capacity increase")
 		count += 1
 	return count
 

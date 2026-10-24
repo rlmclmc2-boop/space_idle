@@ -352,6 +352,16 @@
           "table": "initial_profile"
         }
       ]
+    },
+    {
+      "path": "../config_excel/equipment_evolution.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "equipment_evolution",
+          "table": "equipment_evolution"
+        }
+      ]
     }
   ],
   "excludedSources": {

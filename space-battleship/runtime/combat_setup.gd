@@ -1,4 +1,5 @@
 extends RefCounted
+const FORMATION = preload("res://scripts/enemy_formation.gd")
 ## Only assembles immutable input. Hit, defence, cooldown, history and RNG stay native.
 
 static func kind(equipment_id: String) -> int:
@@ -32,30 +33,28 @@ static func stage_ratio(session, stage: Dictionary, field: String, entry_field: 
 	else: entry = session.amount(session.bundle.lookup("level", [session.campaign.stage - 1])[field])
 	return session.add(session.mul(entry, session.amount(1.0 - u)), session.mul(session.amount(stage[field]), session.amount(u)))
 
-static func positions(session, members: Array) -> Dictionary:
-	var sorted := members.duplicate(true)
-	sorted.sort_custom(func(a, b):
-		if a.definition.size != b.definition.size: return a.definition.size > b.definition.size
-		if a.definition.id != b.definition.id: return a.definition.id < b.definition.id
-		return a.slot < b.slot)
-	var columns: int = session.geometry.columns
-	var row_count: int = ceili(float(sorted.size()) / columns)
-	var cursor := 0
-	var result := {}
-	for row in range(row_count):
-		var count: int = mini(columns, ceili(float(sorted.size() - cursor) / (row_count - row)))
-		var ordered := []
-		for column in range(count): ordered.append(column)
-		ordered.sort_custom(func(a, b):
-			var da: float = absf(a - (count - 1) * 0.5)
-			var db: float = absf(b - (count - 1) * 0.5)
-			return da < db if da != db else a < b)
-		var y: float = session.geometry.single_row_y if row_count == 1 else session.geometry.back_row_y if row == 0 else session.geometry.middle_row_y if row == 1 else session.geometry.front_row_y
-		var spacing: float = minf(session.geometry.maximum_spacing, session.geometry.formation_width / maxi(1, count - 1))
-		for column in ordered:
-			result[sorted[cursor].slot] = Vector2(session.geometry.center_x + (column - (count - 1) * 0.5) * spacing, y)
-			cursor += 1
-	return result
+static func positions(session, slots: Array, definitions: Dictionary) -> Dictionary:
+	return FORMATION.positions(slots, definitions, null, session.geometry)
+
+# Static ordinary values feed the same native history/branch evaluator used at
+# attack birth and defence reconciliation. No paid level is left in a UI row.
+static func ordinary(session, slot: Dictionary, row: Dictionary) -> Dictionary:
+	var level: int = slot.paid_level
+	var evolution: Dictionary = session.bundle.lookup("equipment_evolution", ["default"])
+	var base: Dictionary
+	if slot.category == "defence":
+		var armour: Dictionary = session.bundle.lookup("equipment", ["armour"])
+		base = session.growth(session.amount(armour.para1), evolution.defence_growth, level)
+		if slot.equipment_id == "shield":
+			base = session.mul(base, session.calculate("div", session.amount(row.para1), session.amount(armour.para1)).value)
+	else:
+		base = session.growth(session.amount(row.dmg), row.dmgMulti, level)
+	var tier: int = level / int(evolution.interval)
+	if tier > 0:
+		var later: Dictionary = session.calculate("pow", session.amount(evolution.later_stat_multiplier), {}, float(tier - 1)).value
+		base = session.mul(base, session.mul(session.amount(evolution.first_stat_multiplier), later))
+	# Neutral research/reactor factors still execute their specified ceilings.
+	return session.ceil_amount(base)
 
 static func weapon(session, equipment_id: String, source_row: Dictionary, hostile: bool, slot: int, muzzle: Vector2, level: int = 1) -> Dictionary:
 	var weapon_kind := kind(equipment_id)
@@ -90,10 +89,11 @@ static func initialize(session) -> Dictionary:
 	var armour: Dictionary = session.amount(0)
 	var shield: Dictionary = session.amount(0)
 	for slot in session.equipment.slots:
+		if slot.equipment_id.is_empty(): continue
 		var row: Dictionary = session.bundle.lookup("equipment", [slot.equipment_id])
 		if row.is_empty(): return {"ok": false, "reason": "UnknownEquipment"}
 		if slot.equipment_id in ["armour", "shield"]:
-			var capacity: Dictionary = session.amount(row.para1)
+			var capacity: Dictionary = ordinary(session, slot, row)
 			var layer := 1 if slot.equipment_id == "armour" else 0
 			if layer == 1: armour = session.add(armour, capacity)
 			else: shield = session.add(shield, capacity)
@@ -103,10 +103,11 @@ static func initialize(session) -> Dictionary:
 		else:
 			var compiled := weapon(session, slot.equipment_id, row, false, slot.slot, player_point)
 			if compiled.has("error"): return {"ok": false, "reason": compiled.error}
+			compiled.damage = ordinary(session, slot, row)
 			weapons.append(compiled)
 	var descriptor := {"player": {"armour": armour, "shield": shield, "x": player_point.x, "y": player_point.y},
 		"weapons": weapons, "defences": defences, "enemies": [], "rng_state": session.seed,
-		"resistance": session.rules.resistance, "drop_rules_compiled": true,
+		"resistance": session.rules.resistance, "target_slot_center": session.geometry.target_slot_center, "drop_rules_compiled": true,
 		"jewel_probability": session.rules.jewel_probability, "counter_level": 0,
 		"ejection_gap": session.motion.missile_ejection_gap, "launch_speed": session.motion.missile_launch_speed,
 		"turn_rate": session.motion.missile_turn_rate, "ignition": session.motion.missile_ignition_at,
@@ -125,12 +126,17 @@ static func wave(session) -> Dictionary:
 	var points_list := points(session, stage)
 	var group: Dictionary = session.bundle.lookup("monGroup", [points_list[campaign.point].group])
 	var members := []
-	var slots := list_text(group.mon)
-	for i in range(slots.size()):
-		if slots[i] == "null": continue
-		var definition: Dictionary = session.bundle.lookup("mon", [slots[i].to_int()])
-		members.append({"slot": i, "definition": definition})
-	var layout := positions(session, members)
+	var slots := []
+	var definitions := {}
+	for entry in list_text(group.mon):
+		if entry == "null":
+			slots.append(null)
+			continue
+		var definition: Dictionary = session.bundle.lookup("mon", [entry.to_int()])
+		definitions[str(entry.to_int())] = definition
+		members.append({"slot": slots.size(), "definition": definition})
+		slots.append(entry.to_int())
+	var layout := positions(session, slots, definitions)
 	var enemies := []
 	var weapons := []
 	var attack_ratio := stage_ratio(session, stage, "atkRatio", "entryAtkRatio")

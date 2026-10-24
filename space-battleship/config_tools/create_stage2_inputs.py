@@ -10,7 +10,7 @@ def main():
     schema=json.loads((ROOT/'config_tools/schema.json').read_text(encoding='utf-8'))
     production=json.loads((ROOT/'config_tools/production.json').read_text(encoding='utf-8'))
     production['entry']='GameSession'
-    schema['runtimeTables']=['battle_rules','battle_geometry','initial_profile','level','monGroup','mon','equipment','res','ship','config','unlock','enemy_weapon_base','weapon_motion','enhance_config']
+    schema['runtimeTables']=['battle_rules','battle_geometry','initial_profile','level','monGroup','mon','equipment','res','ship','config','unlock','enemy_weapon_base','weapon_motion','enhance_config','equipment_evolution']
     schema['tables']['enhance_config']['requiredKeys']=['counter_log_base','bonus_round_scale']
     rules={'clear_wait_seconds':3,'maximum_travel_seconds':3,'retreat_seconds':1.2,'departure_seconds':1.6,
            'back_distance':200,'auto_collect_delay':5,'fragment_collect_delay':2,'auto_collect_reduce':0.5,
@@ -23,6 +23,12 @@ def main():
               'columns':5,'maximum_spacing':160,'formation_width':456,'target_slot_center':4.5,'timed_spawn_y':0}
     def table(columns,numeric,primary):
         return dict(columns=columns,primary=[primary],literalOnly=True,fields={c:dict(types=['number'] if c in numeric else ['string']) for c in columns})
+    evolution={'id':'default','interval':20,'first_stat_multiplier':1.6,'later_stat_multiplier':1.5,'defence_growth':0.2}
+    schema['tables']['equipment_evolution']=table(list(evolution),list(evolution)[1:],'id')
+    schema['tables']['equipment_evolution']['requiredKeys']=['default']
+    schema['tables']['equipment_evolution']['fields']['interval'].update(integer=True,min=1)
+    for key in ['first_stat_multiplier','later_stat_multiplier','defence_growth']:
+        schema['tables']['equipment_evolution']['fields'][key]['min']=0
     for name,values in [('battle_rules',rules),('battle_geometry',geometry)]:
         schema['tables'][name]=table(['key','value'],['value'],'key')
         schema['tables'][name]['requiredKeys']=list(values)
@@ -65,7 +71,7 @@ def main():
         if name in book:del book[name]
         s=book.create_sheet(name);s.append(cols);s.append(['runtime contract']*len(cols));s.append(['literal']*len(cols))
         for row in rows:s.append(row)
-    for name,rows in [('battle_rules',list(rules.items())),('battle_geometry',list(geometry.items())),('initial_profile',[['default',1,'Frigate',1,2,'jewel','chrono','0','0',1,0]])]:
+    for name,rows in [('battle_rules',list(rules.items())),('battle_geometry',list(geometry.items())),('initial_profile',[['default',1,'Frigate',1,2,'jewel','chrono','0','0',1,0]]),('equipment_evolution',[list(evolution.values())])]:
         path=ROOT/'config_excel'/(name+'.xlsx');book=openpyxl.Workbook();book.remove(book.active)
         write_sheet(book,name,schema['tables'][name]['columns'],rows);book.save(path)
         production['workbooks']=[e for e in production['workbooks'] if e['path']!='../config_excel/'+path.name]
@@ -101,10 +107,28 @@ def main():
     write_sheet(book,'income_case',schema['tables']['income_case']['columns'],income_rows)
     write_sheet(book,'ratio_case',schema['tables']['ratio_case']['columns'],ratio_rows)
     # Explicit seeds live in the same case table for every scenario family.
+    write_sheet(book,'equipment_evolution',list(evolution),[list(evolution.values())])
+    # Independent literal oracles for real session/native attribute assembly.
+    columns=['case_id','paid_level','expected_armour','expected_damage','expected_shield']
+    schema['tables']['loadout_case']=table(columns,['paid_level'],'case_id')
+    for field in ['expected_armour','expected_damage','expected_shield']:schema['tables']['loadout_case']['fields'][field]['literal']='amount_text'
+    write_sheet(book,'loadout_case',columns,[['L01-level2',2,'35','5','18'],['L02-evolution20',20,'1536','152','768']])
+    eq=book['equipment'];headers=[c.value for c in eq[1]]
+    for r in range(4,eq.max_row+1):
+        if eq.cell(r,1).value=='laser':eq.cell(r,headers.index('dmgMulti')+1,0.2)
+    columns=['case_id','base_a','base_b','loss_a','loss_b','raw','expected_remaining','expected_loss_a','expected_loss_b']
+    schema['tables']['defence_case']=table(columns,[],'case_id')
+    for field in columns[1:]:schema['tables']['defence_case']['fields'][field]['literal']='amount_text'
+    write_sheet(book,'defence_case',columns,[['M01-loss-authority','100','300','20','60','40','280','30','90'],
+        ['M02-large-loss','1e500','3e500','2e499','6e499','4e499','2.8e500','3e499','9e499']])
+    columns=['case_id','slots','target_slot','expected_x','expected_y']
+    schema['tables']['geometry_case']=table(columns,['target_slot','expected_x','expected_y'],'case_id')
+    write_sheet(book,'geometry_case',columns,[['G01-empty15','{9101,null,null,null,null,null,null,null,null,null,null,null,null,null,9101}',14,80,0],
+        ['G02-full15','{'+','.join(['9101']*15)+'}',10,0,40]])
     existing={book['case'].cell(r,1).value for r in range(4,book['case'].max_row+1)}
-    for key,duration in [('E01-session',20)]+[(row[0],row[4]) for row in clock_rows]+[(row[0],row[2]) for row in journey_rows]+[(row[0],0) for row in income_rows+ratio_rows]+[(row['case_id'],row['duration']) for row in [zero,ordinary,large]]:
+    for key,duration in [('M01-loss-authority',0),('M02-large-loss',0),('G01-empty15',0),('G02-full15',0),('L01-level2',0),('L02-evolution20',0),('E01-session',20)]+[(row[0],row[4]) for row in clock_rows]+[(row[0],row[2]) for row in journey_rows]+[(row[0],0) for row in income_rows+ratio_rows]+[(row['case_id'],row['duration']) for row in [zero,ordinary,large]]:
         if key not in existing:book['case'].append([key,'core_rules',17,duration,'session_exact'])
-    for name,rows in [('ship',[['fixture_ship','independent fixture',1,1,50,None,1,999]]),('config',[['startEquip','independent fixture','armour,laser']])]:
+    for name,rows in [('ship',[['fixture_ship','independent fixture',3,2,50,None,1,999]]),('config',[['startEquip','independent fixture','armour,laser']])]:
         write_sheet(book,name,schema['tables'][name]['columns'],rows)
     write_sheet(book,'enhance_config',schema['tables']['enhance_config']['columns'],[
         ['counter_log_base',10,'fixture','shared log base'],['bonus_round_scale',100,'fixture','shared precision']])
@@ -116,6 +140,12 @@ def main():
         'missile_ignition_at':0.22,'missile_seek_start':0.4,'missile_cruise_at':0.65,'missile_lifetime':4.5,
         'missile_brake_range':120,'missile_brake_angle':0.3,'missile_min_guided_speed':10,'missile_brake_factor':0.7,'missile_hit_radius':5}
     write_sheet(book,'weapon_motion',schema['tables']['weapon_motion']['columns'],[[key,value,'fixture','independent','runtime'] for key,value in motion.items()])
+    equipment_sheet=book['equipment'];headers=[cell.value for cell in equipment_sheet[1]]
+    if not any(equipment_sheet.cell(r,1).value=='shield' for r in range(4,equipment_sheet.max_row+1)):
+        shield=dict(zip(headers,[cell.value for cell in equipment_sheet[4]]));shield.update(name='shield',para1=15,para2=0,para3=0,para4=0.2)
+        equipment_sheet.append([shield.get(key) for key in headers])
+    for r in range(4,equipment_sheet.max_row+1):
+        if equipment_sheet.cell(r,1).value=='shield':equipment_sheet.cell(r,headers.index('para1')+1,15)
     # Explicit independent definitions; no production content fills missing rows.
     if not any(book['res'].cell(r,1).value==72 for r in range(4,book['res'].max_row+1)):book['res'].append([72,'test_uranium'])
     level=book['level'];headers=[c.value for c in level[1]]

@@ -1,0 +1,182 @@
+{
+  "status": "stage 2 implementation complete; paused for dot and existing Astra review",
+  "designCommit": "a815d2a843976e22cb3fb24e7683d4a54c65fd3f",
+  "baseline": "cd0746c67652ea0800b08208a012654c047a1892",
+  "preservationCommit": "2852d4e65ca6238184a8f15634287be6f68d9334",
+  "nativeBindingsPin": "507ed9d840c01a3c5b2a39af8bb4000bfac30bf5",
+  "compilerTests": {
+    "passed": 18,
+    "command": "python tests/test_config_compiler.py"
+  },
+  "nativeAmount": "Amount native boundary checks passed",
+  "headless": {
+    "amountCases": 14,
+    "clockCases": 4,
+    "defenceCases": 2,
+    "failures": [],
+    "geometryCases": 2,
+    "incomeCases": 5,
+    "journeyCases": 2,
+    "loadoutCases": 2,
+    "nativeCases": 9,
+    "nativeKernel": true,
+    "ok": true,
+    "ratioCases": 3,
+    "saveProtocol": true,
+    "sessionCases": 4,
+    "waveCases": 1
+  },
+  "production": {
+    "tables": 48,
+    "rows": 14583,
+    "semanticHash": "42103ea6a46c5531e41cba0b5d56ef8dbd73a07a7961d2028569b46413d57b8e",
+    "realSeconds": 120,
+    "result": {
+      "entry": "GameSession",
+      "ok": true,
+      "state": {
+        "campaign": {
+          "clearedStageIds": {
+            "1": true
+          },
+          "death_option": 0,
+          "distance": 560.0,
+          "garrison": {},
+          "highestReached": 2,
+          "lifetimeHighestReached": 2,
+          "permanentGrants": {},
+          "phase": "combat",
+          "point": 0,
+          "retreat_elapsed": 1.2,
+          "retreat_origin": 606.044444444444,
+          "retreat_target": 406.044444444444,
+          "segment_origin": 406.044444444444,
+          "stage": 2,
+          "wait": 5.65519853168439e-15
+        },
+        "drops": {
+          "35": {
+            "amount": {
+              "e": "0",
+              "m": "5"
+            },
+            "due": 119.916666666667,
+            "fragment": false,
+            "id": "35",
+            "jewel_ratio": 1.0,
+            "production_base": {
+              "e": "0",
+              "m": "5"
+            },
+            "resource": "1",
+            "source": "enemy_drop",
+            "x": 400.0,
+            "y": 150.0
+          },
+          "36": {
+            "amount": {
+              "e": "0",
+              "m": "5"
+            },
+            "due": 122.966666666667,
+            "fragment": false,
+            "id": "36",
+            "jewel_ratio": 1.0,
+            "production_base": {
+              "e": "0",
+              "m": "5"
+            },
+            "resource": "1",
+            "source": "enemy_drop",
+            "x": 58.0,
+            "y": 150.0
+          }
+        },
+        "error": "",
+        "history": {
+          "attacks": 57,
+          "incoming": 773
+        },
+        "player": {
+          "armour": {
+            "e": "2",
+            "m": "1.15"
+          },
+          "shield": {
+            "e": "0",
+            "m": "0"
+          },
+          "x": 286.0,
+          "y": 520.0
+        },
+        "time": {
+          "accepted": [],
+          "departure": 0.0,
+          "game": 118.4,
+          "pause_reasons": {},
+          "pending": 0.0,
+          "sample_wall": 119.999999999994,
+          "speed": 1,
+          "ticks": 7104,
+          "wall": 119.999999999994
+        },
+        "wallet": {
+          "1": {
+            "e": "2",
+            "m": "1.42"
+          },
+          "2": {
+            "e": "0",
+            "m": "9"
+          },
+          "chrono": {
+            "e": "0",
+            "m": "0"
+          },
+          "jewel": {
+            "e": "0",
+            "m": "0"
+          }
+        }
+      }
+    }
+  },
+  "sourceSha256": {
+    "addons/native_battle/src/amount.h": "65f0e1a3c68a86a06436e45e41d9a3599d727673a1717ef00a158e61fdab5657",
+    "addons/native_battle/src/amount_binding.h": "04c0677697464f3a284dcbe28d0470e9adcd5428374a8a57e744fc7f17d5bf2c",
+    "addons/native_battle/src/combat_amount.h": "218eb31b6147ca54c12b7415acf3120f65b16c0f4acdd1be37d9c67121e21882",
+    "addons/native_battle/src/combat_execution_kernel.h": "4c85fc445bd07a88c477fac914d6ebbada87b9871d69b959d46cb458172a77b7",
+    "addons/native_battle/src/combat_presentation.h": "361b13ecc550ac77999f68a002c24dae6cb76ac99ae3c838a652c78ad0680aa5",
+    "addons/native_battle/src/combat_retained_presentation.h": "5341a9f9045d101e76977df2a7c2c31bbeae2fb887b312278b6a5fb714da3aa9",
+    "addons/native_battle/src/module_binding.h": "0c5435a5ba75ba7d9b131405f182848fcda7a80da0c566ef4a5a8b5667ff0900",
+    "addons/native_battle/src/module_evaluation.h": "25752d5203aa7bb70f3ae00571032c7050ad953b531405b7ab6ce7ef7b30eef8",
+    "addons/native_battle/src/save_io.h": "7424d8c8d67febb9d90af16699d525cd7001667c3980ffb8db7bf441078b0835",
+    "addons/native_battle/src/space_native.cpp": "fc4879ef44b7b725f3c8ee49c03b48ceac91948b2c0dec40676540a8794f03ee",
+    "addons/native_battle/src/wave_lifecycle.h": "54dde189e1a09bc031150caf615a7a052c5146f37ed274a3705f302ed55b542a",
+    "config_excel/equipment_evolution.xlsx": "b2203703e634335a680a057b6ff46a3bde6e2245c6e805944224288ffdd545a7",
+    "config_tools/compile.py": "f1e8a2658328f890619ff2ba2f0d9eb94eeda6a4b780e4d0f46cee14c20d22e0",
+    "config_tools/create_stage2_inputs.py": "be1375aef622dd01cdff793dc062f714bba3012e55be66b45c4551e40a0f2cd4",
+    "config_tools/production.json": "78c6e3cadaa6e3049831f87eeecf5694b8d9fb9382f09e28e8924f14de520ab6",
+    "config_tools/schema.json": "35dbea522566ff491002a9bfe9f1c46bc1a75db615e6e466a0c798680bd03c08",
+    "runtime/combat_setup.gd": "42628c5ab98b0cb477556e97f2378718d167955dfb7828172ec7d7f1b00f33da",
+    "runtime/config_bundle.gd": "95a824138718a71778df1153ee92c8c1194633de0cc920ac649275347b0dfb32",
+    "runtime/game_session.gd": "7310fc33661517923ea8f0ed1ff56fdba2dcc99f731cf118df675f837de967e6",
+    "runtime/run_session.gd": "a8e0efb9b70e24967becf8b8a3cfd37f7225d14a4f374737c054c7ae824f7105",
+    "runtime/save_files.gd": "50ded5035e603c308012b3a3712ab32de1f82aa281a9464f3f1e17645628c49d",
+    "scripts/enemy_formation.gd": "28fc43a8cc3d6e073efa651b8a0889512fa865ad5782a202eb397f94ed59eee5",
+    "tests/amount_native.cpp": "c81f9d9acc9b73114ffcb655b2cb72379f9565402ea2d910057003566935ce77",
+    "tests/build_headless.py": "b706485bc112bdaded00116c9b1ea527bb9698c737ea8d15a5d61667f70887df",
+    "tests/excel/core_rules.json": "279fdfbe9bd8765f4d41a19fdd2e493b35cda82a76745169eb226c3be4958f2c",
+    "tests/excel/core_rules.xlsx": "ad425158b07343eb8fbb340c620a6b030a1d5f071e8b7b63762cab4f63369f7e",
+    "tests/run_cases.gd": "236885a2e5516577dc63890a6e0b9d7f19c3d48157eddec3d8eebf26cf446506",
+    "tests/test_config_compiler.py": "c671cbd0ce5f41701fc646c274e9a4fb3e1bac287a9344272db7e21c57c93c77"
+  },
+  "limitations": [
+    "headless only; GPU and complete pages belong to later stages",
+    "stage 3 systems and missing enhancements/legends not implemented in this delivery",
+    "no personal save loaded; save protocol tests use isolated work directories"
+  ],
+  "environmentNotes": [
+    "Godot reports root certificate store unavailable; test harness explicitly ignores this unrelated engine warning"
+  ]
+}

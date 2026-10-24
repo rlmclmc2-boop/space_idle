@@ -25,6 +25,8 @@ def main():
     work=args.work.resolve();work.mkdir(parents=True,exist_ok=True)
     project=work/'project';project.mkdir(exist_ok=True)
     (project/'runtime').mkdir(exist_ok=True)
+    (project/'scripts').mkdir(exist_ok=True)
+    shutil.copy2(ROOT/'scripts/enemy_formation.gd',project/'scripts/enemy_formation.gd')
     lib=project/'space_native.dll'
     binding=args.bindings.resolve()
     pin=subprocess.check_output(['git','-c','safe.directory=*','-C',str(binding),'rev-parse','HEAD'],text=True).strip()

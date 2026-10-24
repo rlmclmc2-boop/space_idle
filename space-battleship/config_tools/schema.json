@@ -3799,6 +3799,209 @@
           "literal": "amount_text"
         }
       }
+    },
+    "equipment_evolution": {
+      "columns": [
+        "id",
+        "interval",
+        "first_stat_multiplier",
+        "later_stat_multiplier",
+        "defence_growth"
+      ],
+      "primary": [
+        "id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "id": {
+          "types": [
+            "string"
+          ]
+        },
+        "interval": {
+          "types": [
+            "number"
+          ],
+          "integer": true,
+          "min": 1
+        },
+        "first_stat_multiplier": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "later_stat_multiplier": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        },
+        "defence_growth": {
+          "types": [
+            "number"
+          ],
+          "min": 0
+        }
+      },
+      "requiredKeys": [
+        "default"
+      ]
+    },
+    "loadout_case": {
+      "columns": [
+        "case_id",
+        "paid_level",
+        "expected_armour",
+        "expected_damage",
+        "expected_shield"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "paid_level": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_armour": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "expected_damage": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "expected_shield": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        }
+      }
+    },
+    "defence_case": {
+      "columns": [
+        "case_id",
+        "base_a",
+        "base_b",
+        "loss_a",
+        "loss_b",
+        "raw",
+        "expected_remaining",
+        "expected_loss_a",
+        "expected_loss_b"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "base_a": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "base_b": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "loss_a": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "loss_b": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "raw": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "expected_remaining": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "expected_loss_a": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        },
+        "expected_loss_b": {
+          "types": [
+            "string"
+          ],
+          "literal": "amount_text"
+        }
+      }
+    },
+    "geometry_case": {
+      "columns": [
+        "case_id",
+        "slots",
+        "target_slot",
+        "expected_x",
+        "expected_y"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "literalOnly": true,
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "slots": {
+          "types": [
+            "string"
+          ]
+        },
+        "target_slot": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_x": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_y": {
+          "types": [
+            "number"
+          ]
+        }
+      }
     }
   },
   "runtimeTables": [
@@ -3815,6 +4018,7 @@
     "unlock",
     "enemy_weapon_base",
     "weapon_motion",
-    "enhance_config"
+    "enhance_config",
+    "equipment_evolution"
   ]
 }

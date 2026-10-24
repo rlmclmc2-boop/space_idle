@@ -27,3 +27,22 @@ python tests/build_headless.py --bindings D:/CodexBuild/space_idle/godot-cpp --c
 `runtime/config_bundle.gd`提供校验后只读查询。`runtime/save_files.gd`提供新格式1 envelope、只读快照、单writer、generation/dirty、不可变generation文件、checksum主/备指针和故障边界。原子写由同DLL的`SpaceSaveIO` flush/替换；`SpaceSaveLock`保护同目录writer。保存测试使用work子目录，覆盖首次写、并发排队、脏标记、四个故障保旧文件。完整领域校验、导入、离线补偿、新战场恢复、超时关闭及更细flush/rename故障矩阵留给07第6步；`close()`目前是显式阻塞收尾接口，不是最终退出UI。
 
 首阶段到此交接，等待dot与独立审核共同通过，再进入第2步。不合main。
+
+
+## 第二阶段交付
+
+唯一方案入口仍为 a815d2a 的 docs/game-design/README.md。第二阶段实现完成并暂停，等待 dot 与既有 Astra 审核最终提交；不进入第三阶段、不合 main。旧 stage2-core.json 仅为历史中间证据；最终证据为 [stage2-final.json](evidence/stage2-final.json)。
+
+在 space-battleship 中运行（隔离项目及 portable Godot 数据均位于 tests/work；不加载个人存档）：
+
+```powershell
+python tests/test_config_compiler.py
+& 'D:/CodexTools/llvm-mingw/llvm-mingw-20261006-ucrt-x86_64/bin/clang++.exe' -std=c++17 -O1 -static tests/amount_native.cpp -o tests/work/amount_native.exe
+& tests/work/amount_native.exe
+python tests/build_headless.py --bindings D:/CodexBuild/space_idle/godot-cpp --compiler D:/CodexTools/llvm-mingw/llvm-mingw-20261006-ucrt-x86_64/bin/clang++.exe --godot D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe --work tests/work/stage2-complete
+python tests/build_headless.py --bindings D:/CodexBuild/space_idle/godot-cpp --compiler D:/CodexTools/llvm-mingw/llvm-mingw-20261006-ucrt-x86_64/bin/clang++.exe --godot D:/CodexTools/godot-4.7.2-stable/Godot_v4.7.2-stable_win64_console.exe --work tests/work/stage2-production-120 --manifest config_tools/production.json --session --duration 120
+```
+
+依赖 godot-cpp 固定 507ed9d840c01a3c5b2a39af8bb4000bfac30bf5；构建器核对该 pin。测试 Excel 经同一编译器进入同一 GameSession/native 核。48 场景覆盖 Amount 14、native 9、波次 1、会话 4、时钟 4、航行 2、收入 5、倍率 3、付费等级 2、模块权威 2、几何 2；另有编译器 18 项和原生边界测试。
+
+静态参数作者工具 create_stage2_inputs.py --write 只用于明确重建这些 Excel 输入，运行与编译不调用它；重建会改变 xlsx ZIP 时间戳。正式掉落兼容逐组花括号、组内分号和无括号分号三种已有写法，统一输出 dropRules 索引。付费升级/配装操作、AI/反应炉系统和 GPU 页面连接仍按第三阶段范围处理。

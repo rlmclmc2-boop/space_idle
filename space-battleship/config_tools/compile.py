@@ -32,9 +32,9 @@ def drop_segments(text):
     if '{' not in text and '}' not in text:
         parts=[part.strip() for part in text.split(';')]
         return parts if all(parts) else None
-    parts=re.findall(r'\{([^{}]+)\}',text)
+    parts=[segment.strip() for group in re.findall(r'\{([^{}]+)\}',text) for segment in group.split(';')]
     remainder=re.sub(r'\{[^{}]+\}','',text).replace(',','').replace(';','').strip()
-    return parts if parts and not remainder else None
+    return parts if parts and all(parts) and not remainder else None
 
 
 class CompilationError(Exception):

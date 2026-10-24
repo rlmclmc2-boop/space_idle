@@ -41,6 +41,16 @@ class CompilerCases(unittest.TestCase):
         self.assertEqual(a,b)
         self.assertEqual(a['provenance']['res']['[71]']['name']['row'],4)
 
+    def test_drop_syntax_and_index(self):
+        for text in ['{71,2,1};{72,4,0.5}', '{71,2,1;72,4,0.5}', '71,2,1;72,4,0.5']:
+            def change(book):
+                sheet=book['mon'];headers=[cell.value for cell in sheet[1]]
+                sheet.cell(4,headers.index('res')+1,text)
+            self.edit(change)
+            bundle=compiler.compile_bundle(self.manifest)
+            self.assertEqual(bundle['indices']['dropRules']['9101'],[
+                dict(resource='71',amount='2',chance=1.0),dict(resource='72',amount='4',chance=0.5)])
+
     def test_duplicate(self):
         self.edit(lambda b:b['res'].append([71,'duplicate']))
         self.expect_error('DuplicateId')

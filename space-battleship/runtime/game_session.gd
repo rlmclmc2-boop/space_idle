@@ -55,6 +55,17 @@ static func create(config, random_seed: int = 17) -> Dictionary:
 		if not session.content_unlocked("equipment", equipment_id): return {"ok": false, "reason": "InitialEquipmentLocked"}
 		session.equipment.slots.append({"slot": session.equipment.slots.size(), "equipment_id": equipment_id, "paid_level": int(profile.initial_slot_level), "category": category})
 	if used.weapon > int(ship.para_1) or used.defence > int(ship.para_2): return {"ok": false, "reason": "InitialSlotCapacity"}
+	for category in ["weapon", "defence"]:
+		var capacity: int = int(ship.para_1 if category == "weapon" else ship.para_2)
+		for index in range(used[category], capacity):
+			session.equipment.slots.append({"slot": session.equipment.slots.size(), "equipment_id": "", "paid_level": int(profile.initial_slot_level), "category": category})
+	var indices := {"weapon": 0, "defence": 0}
+	for slot in session.equipment.slots:
+		slot.index = indices[slot.category]
+		slot.id = slot.category + "/" + str(slot.index)
+		slot.generation = 0
+		slot.switch_ready_at = 0.0
+		indices[slot.category] += 1
 	for resource in [str(int(profile.iron_id)), str(int(profile.uranium_id)), profile.fragment_id]:
 		session.economy.wallet[resource] = session.amount(profile.initial_amount)
 	session.economy.wallet[profile.chrono_id] = session.amount(profile.initial_chrono)
