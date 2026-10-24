@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "kind": "test",
+  "inputRoot": ".",
+  "workbooks": [
+    {
+      "path": "core_rules.xlsx",
+      "classification": "active",
+      "sheets": [
+        {
+          "sheet": "case",
+          "table": "case"
+        },
+        {
+          "sheet": "amount_case",
+          "table": "amount_case"
+        },
+        {
+          "sheet": "res",
+          "table": "res"
+        },
+        {
+          "sheet": "enemy_weapon_base",
+          "table": "enemy_weapon_base"
+        },
+        {
+          "sheet": "equipment",
+          "table": "equipment"
+        },
+        {
+          "sheet": "mon",
+          "table": "mon"
+        },
+        {
+          "sheet": "monGroup",
+          "table": "monGroup"
+        },
+        {
+          "sheet": "level",
+          "table": "level"
+        }
+      ]
+    }
+  ]
+}

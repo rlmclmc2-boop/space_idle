@@ -34,6 +34,9 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_execution_kernel.h') -Destination (Join-Path $native 'src\combat_execution_kernel.h')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_presentation.h') -Destination (Join-Path $native 'src\combat_presentation.h')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_retained_presentation.h') -Destination (Join-Path $native 'src\combat_retained_presentation.h')
+    foreach ($header in 'amount.h','amount_binding.h','save_io.h') {
+        Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('src\' + $header)) -Destination (Join-Path $native ('src\' + $header))
+    }
     Push-Location $native
     try {
         & $python -m SCons "bindings=$($binding.Replace('\','/'))" platform=windows arch=x86_64 use_mingw=yes use_llvm=yes "mingw_prefix=$($compiler.Replace('\','/'))" use_static_cpp=yes "custom_api_file=$($api.Replace('\','/'))" target=template_release lto=none -j $Jobs
