@@ -1,5 +1,4 @@
 extends RefCounted
-const Geometry=preload("res://scripts/rail_geometry.gd")
 ## Presentation only. A brief dark-red discharge leaves cyan laser packets readable.
 const ELECTRIC := Color("9e2438")
 const HOT := Color("d54b58")
@@ -10,9 +9,6 @@ var flash_seconds := 0.09
 var impact_seconds := 0.16
 var impact_radius := 32.0
 var penetration_length := 80.0
-func configure(db) -> void:
-	for key in ["charge_radius","trail_length","trail_width","flash_seconds","impact_seconds","impact_radius","penetration_length"]:
-		set(key,db.weapon_motion_value("rail_"+key,float(get(key))))
 func charge(surface:CanvasItem,point:Vector2,direction:Vector2,amount:float,_clock:float)->void:
 	if amount<=0:return
 	var side:=direction.orthogonal()
@@ -43,18 +39,9 @@ func impact(surface:CanvasItem,point:Vector2,direction:Vector2,age:float,_critic
 func afterglow_seconds() -> float:
 	return maxf(flash_seconds,impact_seconds*3.5)
 
-func discharge_width(multiplier:float=1.0)->float:
-	return Geometry.width(trail_width,multiplier)
-func exit_point(origin:Vector2,direction:Vector2,bounds:Vector2,full_width:float=-1.0)->Vector2:
-	return Geometry.exit_point(origin,direction,bounds,discharge_width() if full_width<0 else full_width)
-
-func penetration(surface:CanvasItem,origin:Vector2,contact:Vector2,_direction:Vector2,age:float,budget:float,bounds:Vector2,full_width:float=-1.0,tint:Color=Color(1,1,1,0))->void:
+func penetration(surface:CanvasItem,origin:Vector2,end:Vector2,direction:Vector2,age:float,budget:float,decoration_width:float,full_width:float,tint:Color=Color(1,1,1,0))->void:
 	var lifetime := afterglow_seconds()
 	if age<0 or age>=lifetime:return
-	var direction := (contact-origin).normalized()
-	full_width=discharge_width() if full_width<0 else full_width
-	var end := exit_point(origin,direction,bounds,full_width)
-	var decoration_width:=trail_width*full_width/discharge_width()
 	var side := direction.orthogonal()
 	var main_lifetime := minf(flash_seconds,0.09)
 	if age<main_lifetime:

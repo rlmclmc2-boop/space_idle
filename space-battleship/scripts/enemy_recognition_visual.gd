@@ -1,7 +1,6 @@
 extends RefCounted
 ## Presentation only. Never settles shields, selects targets, or changes combat entities.
 const GEOMETRY := preload("res://scripts/enemy_protection_geometry.gd")
-const N := preload("res://scripts/growth_number.gd")
 const PHYSICAL := Color("ffaf61")
 const ENERGY := Color("64b5ff")
 const NEUTRAL := Color("c6ced2")
@@ -113,30 +112,6 @@ func geometry_from_profile(identity:int,profile:PackedVector2Array,width:float,m
 	packets[bucket]=result;cache.recognition_width_order.append(bucket)
 	if cache.recognition_width_order.size()>16:packets.erase(cache.recognition_width_order.pop_front())
 	envelope_builds+=1
-	return result
-
-func state(enemy: Dictionary, shield_clock: float, paused: bool, cache: Dictionary, result=null) -> Dictionary:
-	var alive := N.compare(enemy.get("hp",0),0)>0
-	var capacity = enemy.get("max_shield",0)
-	var amount = enemy.get("shield",0)
-	var has_shield := N.compare(capacity,0)>0
-	var active := alive and has_shield and N.compare(amount,0)>0
-	var repair := has_shield and float(enemy.get("shieldRecovery",0))>0
-	var fraction := clampf(N.ratio(amount,capacity),0,1) if active else 0.0
-	var ready := shield_clock>=float(enemy.get("shield_hit_at",shield_clock))+float(enemy.get("shieldDelay",0))
-	var eligible := active and repair and fraction<1 and ready
-	var recovering := bool(cache.get("recognition_recovering",false))
-	if not eligible:recovering=false
-	elif shield_clock>float(cache.get("recognition_shield_clock",shield_clock)):
-		recovering=N.compare(amount,cache.get("recognition_shield_amount",amount))>0
-	if not cache.has("recognition_shield_clock") or shield_clock!=float(cache.recognition_shield_clock) or N.compare(amount,cache.recognition_shield_amount)!=0 or recovering!=bool(cache.recognition_recovering):
-		cache.recognition_shield_clock=shield_clock
-		cache.recognition_shield_amount=amount.duplicate(true) if amount is Dictionary else amount
-		cache.recognition_recovering=recovering
-	if result==null:result={}
-	result.alive=alive;result.active=active;result.repair=repair;result.fraction=fraction
-	result.recovering=recovering and not paused
-	result.show_hull=not active or int(enemy.get("armourType",0))!=int(enemy.get("shieldType",0))
 	return result
 
 func closed(surface: CanvasItem, outline: PackedVector2Array, color: Color, stroke: float) -> void:

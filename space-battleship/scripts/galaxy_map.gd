@@ -343,7 +343,6 @@ func prepare_core() -> void:
 	var fog_bytes: PackedByteArray = region.cells.duplicate()
 	for index in fog_bytes.size():fog_bytes[index]=255 if fog_bytes[index]!=0 else 0
 	fog_image=Image.create_from_data(int(region.row.map_w),int(region.row.map_h),false,Image.FORMAT_R8,fog_bytes)
-	region.dirty_chunks.clear() # The full mask already includes every dirty chunk.
 	fog_texture=ImageTexture.create_from_image(fog_image)
 	space_material.set_shader_parameter("explored",fog_texture)
 
@@ -499,35 +498,8 @@ func set_construction_height(node: Node, height: float) -> void:
 	if node is MeshInstance3D:node.set_instance_shader_parameter("construction_height",height)
 	for child in node.get_children():set_construction_height(child,height)
 
-func refresh_construction() -> void:
-	for slot in region.slots:
-		var item: Dictionary=construction[int(slot.id)]
-		if slot.status!="constructing":continue
-		var path := visual_path(slot)
-		var bounds: Array=asset_bounds.get(path,[10.0,6.0,10.0])
-		var progress: float=region.node_progress(slot)
-		var height := float(bounds[1])*BUILDING_SCALE*clampf(progress,0.07,1.0)
-		if is_equal_approx(height,float(item.height)):continue
-		item.height=height
-		item.upper.position.y=height+0.3
-		for post in item.posts:
-			post.position.y=(height+0.3)*0.5
-			post.scale.y=height+0.3
-		var model=slot_nodes[int(slot.id)].get_node_or_null("Building")
-		if model!=null:set_construction_height(model,height)
-		draw_updates+=1
-
 func refresh() -> void:
 	if preparing or region==null or not is_visible_in_tree():return
-	if not region.dirty_chunks.is_empty():
-		var width := ceili(float(region.row.map_w)/region.chunk_size)
-		for id in region.dirty_chunks:
-			var origin := Vector2i(int(id)%width,int(id)/width)*int(region.chunk_size)
-			for y in range(origin.y,mini(origin.y+region.chunk_size,int(region.row.map_h))):
-				for x in range(origin.x,mini(origin.x+region.chunk_size,int(region.row.map_w))):fog_image.set_pixel(x,y,Color(float(region.cells[y*int(region.row.map_w)+x]),0,0))
-		fog_texture.update(fog_image)
-		region.dirty_chunks.clear()
-		draw_updates+=1
 	if building_revision!=region.building_revision:
 		building_revision=region.building_revision
 		activity.clear()
@@ -546,7 +518,6 @@ func refresh() -> void:
 			route_revision=building_revision
 		layout()
 	sync_transports()
-	refresh_construction()
 func desired_transport_count(built_count: int) -> int:
 	return mini(maxi(0,int(setting("max_transport_ships",12))),ceili(maxi(0,built_count)/maxf(1,setting("transport_buildings_per_ship",3))))
 func sync_transports() -> void:

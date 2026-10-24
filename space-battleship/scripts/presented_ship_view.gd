@@ -19,7 +19,6 @@ var modules: Array[Dictionary] = []
 var loadout_signature := ""
 var hull_key := ""
 var hull_config: Dictionary = {}
-var fleet_static = preload("res://scripts/fleet_static_descriptors.gd").new()
 var manifest: Dictionary = {}
 var approved_hull_art: Dictionary = {}
 var static_weapon_art: Dictionary = {}
@@ -87,10 +86,6 @@ func _ready() -> void:
 	add_child(output)
 	world = Node3D.new()
 	viewport.add_child(world)
-	fleet_static.prepare(world)
-	manifest = fleet_static.manifest
-	static_weapon_art = fleet_static.presentation_art
-	approved_hull_art = fleet_static.approved_hull_art
 	var environment_node := WorldEnvironment.new()
 	var environment := Environment.new()
 	environment.background_mode = Environment.BG_COLOR
@@ -212,8 +207,6 @@ func set_hull(key: String) -> bool:
 	world.add_child(ship)
 	weapon_mount = ship.find_child("WeaponMount01",true,false)
 	_install_materials(ship)
-	if not _install_approved_hull_art(key):
-		body_baker.attach(ship,"hull:"+key)
 	_add_exhausts()
 	shield = MeshInstance3D.new()
 	shield.name = "PrototypeShield"
@@ -237,9 +230,7 @@ func set_hull(key: String) -> bool:
 
 
 
-func _install_approved_hull_art(key: String) -> bool:
-	if not fleet_static.approved.has(key):return false
-	var art: Dictionary = fleet_static.approved[key]
+func _install_approved_hull_art(key: String, art: Dictionary) -> bool:
 	var texture := load(str(approved_hull_art[key].texture)) as Texture2D
 	# Preserve the imported assembly, sockets, turrets, exhausts and shield.
 	_hide_imported_hull_meshes(ship)
@@ -373,12 +364,6 @@ func set_loadout(entries: Array, active_capacity := -1) -> bool:
 			"pivot":node.find_child("TurretPivot",true,false),"muzzle":node.find_child("Muzzle",true,false),
 			"muzzle2":node.find_child("Muzzle02",true,false)})
 		modules.back().pivot_rest_position=modules.back().pivot.position
-		if item.key=="missile":
-			# Apply the same authored socket correction captured for logical queries.
-			var sockets: Array = fleet_static.weapons[item.key].sockets
-			for index in sockets.size():
-				var socket: Node3D = modules.back().muzzle if index == 0 else modules.back().muzzle2
-				socket.transform = sockets[index].back()
 		_install_materials(node,"weapon")
 		modules.back().visual_ports=_install_static_weapon_art(node,str(item.key))
 	_fit_approved_weapon_mounts()

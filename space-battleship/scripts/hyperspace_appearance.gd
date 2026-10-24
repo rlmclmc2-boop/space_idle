@@ -12,32 +12,7 @@ static var thumbnail_cache: Dictionary={}
 static var thumbnail_order: Array=[]
 static var projections=0
 static var resource_creations=0
-static func reload_config() -> bool:
- var raw=JSON.parse_string(preload("res://scripts/configuration_snapshot.gd").text("res://data/hyperspace_visuals.json"))
- if not raw is Dictionary or raw.is_empty():return false
- for key in ["emission","ornament_scale","body_tint","tier_glyph_scale","high_tier_max","version"]:
-  if raw.has(key) and not (raw[key] is int or raw[key] is float):return false
- if not raw.get("quality") is Dictionary:return false
- for quality in ["white","blue","gold","legendary"]:
-  var entry=raw.get("quality",{}).get(quality,{})
-  if not entry is Dictionary or not Color.html_is_valid(str(entry.get("color",""))):return false
-  if not entry.get("rank") is int and not entry.get("rank") is float:return false
-  if float(entry.rank)!=int(entry.rank) or int(entry.rank)<0 or int(entry.rank)>3:return false
- if not Color.html_is_valid(str(raw.get("ultimate_color",""))):return false
- if raw.has("animate") and not raw.animate is bool:return false
- var ranges={"emission":Vector2(0,0.7),"ornament_scale":Vector2(0.5,1.1),"body_tint":Vector2(0,1),"tier_glyph_scale":Vector2(1,3),"high_tier_max":Vector2(1,5)}
- for key in ranges:
-  var limits=ranges[key]
-  if raw.has(key) and (float(raw[key])<limits.x or float(raw[key])>limits.y):return false
- for key in ["version","high_tier_max"]:
-  if raw.has(key) and (float(raw[key])!=int(raw[key]) or int(raw[key])<1):return false
- if raw==config:return false
- config=raw
- materials.clear();rig_meshes.clear();rig_order.clear();thumbnail_cache.clear();thumbnail_order.clear()
- return true
 static func settings() -> Dictionary:
- if config.is_empty():
-  if not reload_config():config={"version":1}
  return config
 static func project(d: Dictionary) -> Dictionary:
  projections+=1

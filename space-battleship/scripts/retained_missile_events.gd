@@ -53,23 +53,3 @@ func piece(index:int,retired:bool):
  if pieces[index].get_index()!=index:move_child(pieces[index],index)
  pieces[index].show()
  return pieces[index]
-func sync(scene,events:Array,clock:float,budget:float)->void:
- var index:=0;var batch:Batch
- for event_index in events.size():
-  var event:Dictionary=events[event_index]
-  var age:=clock-float(event.born)
-  if event.kind=="retired":
-   if batch!=null:batch.finish();batch=null
-   var node:Casing=piece(index,true);index+=1
-   var coast:=float(event.coast_time)
-   node.point=scene.battle_point(Vector2(event.position)+Vector2(event.direction)*float(event.speed)*minf(age,coast))
-   node.direction=event.direction;node.age=age;node.coast=coast;node.serial=int(event.serial);node.tint=scene.evolution_color(int(event.get("tier",0)));node.queue_redraw()
-  else:
-   if batch==null:
-    batch=piece(index,false);index+=1
-    var count:=1
-    while event_index+count<events.size() and events[event_index+count].kind!="retired":count+=1
-    batch.begin(count)
-   batch.append_event(scene.battle_point(Vector2(event.position)),event.direction,age,budget,bool(event.get("critical",false)),event.kind=="fire",scene.evolution_color(int(event.get("tier",0))))
- if batch!=null:batch.finish()
- for i in range(index,pieces.size()):pieces[i].hide()

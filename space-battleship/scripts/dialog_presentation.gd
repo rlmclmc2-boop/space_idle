@@ -56,11 +56,9 @@ static func theme() -> Theme:
 
 static func dialog(window: AcceptDialog) -> void:
 	window.theme = theme()
-	window.ok_button_text = UIText.t("system.confirm") if window.ok_button_text in ["","OK"] else window.ok_button_text
 	window.get_ok_button().custom_minimum_size = Vector2(120,44)
 	button_skin(window.get_ok_button(),true)
 	if window is ConfirmationDialog:
-		if window.cancel_button_text=="Cancel":window.cancel_button_text=UIText.t("system.cancel")
 		window.get_cancel_button().custom_minimum_size = Vector2(120,44)
 		button_skin(window.get_cancel_button())
 
