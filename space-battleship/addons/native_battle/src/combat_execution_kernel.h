@@ -150,7 +150,7 @@ class SpaceCombatKernel : public RefCounted {
         // an upgrade while a repeat is queued. Retain that immutable descriptor.
         std::shared_ptr<const BirthConfig> view_birth;
         uint64_t born_step = 0, serial = 0;
-        int weapon = -1, type = 0;
+        int weapon = -1, type = 0, source_slot = 0;
         Handle source, target;
         std::shared_ptr<Instance> instance;
         std::shared_ptr<MissileContext> context;
@@ -284,6 +284,9 @@ class SpaceCombatKernel : public RefCounted {
     Amount player_initial_hp = 0, player_initial_shield = 0;
     Amount player_shield = 0;
     double resistance = 0.5;
+    double reactive_volley_window = 0, reactive_stack_seconds = 0, reactive_per_stack = 0;
+    int reactive_stack_limit = 0;
+    double projectile_min_x = 0, projectile_max_x = 0, projectile_min_y = 0, projectile_max_y = 0;
     double last_incoming_at = -100;
     double jewel_probability = 0, jewel_ratio = 1;
     int64_t drop_uid = 0;
@@ -461,8 +464,8 @@ class SpaceCombatKernel : public RefCounted {
             !schema_types(d, Variant::ARRAY, {"enemies","weapons","defences","unsupported_rules"}) ||
             !schema_types(d, Variant::BOOL, {"final_encounter","scatter","requires_strange_matter","requires_laser_charge","requires_endless_beam","drop_rules_compiled","requires_drop_rules","requires_module_defense"}) ||
             !schema_integers(d, {"chain_count","prism_count"}) ||
-            !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid","attack_counter","incoming_counter","counter_level"}, false) ||
-            !numeric_fields(d, {"target_slot_center","battle_width","missile_departure_angle","missile_launch_edge_margin","missile_launch_forward_y","clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","counter_growth","defence_counter_growth","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
+            !schema_integers(d, {"rng_state","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid","attack_counter","incoming_counter","counter_level","reactive_stack_limit"}, false) ||
+            !numeric_fields(d, {"reactive_volley_window","reactive_stack_seconds","reactive_per_stack","projectile_min_x","projectile_max_x","projectile_min_y","projectile_max_y","target_slot_center","battle_width","missile_departure_angle","missile_launch_edge_margin","missile_launch_forward_y","clock","since_hit","ejection_gap","launch_speed","turn_rate","ignition","seek","cruise_at","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","chain_speed","resistance","critical_rate","critical_multiplier","repeat_probability","repeat_multiplier","repeat_delay","secondary_probability","scatter_bonus","laser_charge_multiplier","prism_bonus","counter_growth","defence_counter_growth","counter_log_base","counter_round_scale","memory_interval","deferred_interval","deferred_duration","clear_probability","defence_time","memory_elapsed","deferred_elapsed","jewel_probability","jewel_ratio"})) return false;
         if (!Array(d.get("unsupported_rules", Array())).is_empty() ||
             !schema_nonnegative(d, {"since_hit","launch_speed","turn_rate","ignition","seek","lifetime","orphan_lifetime","brake_range","brake_angle","min_speed","brake_factor","hit_radius","critical_multiplier","repeat_multiplier","repeat_delay","attack_counter","incoming_counter","counter_growth","defence_counter_growth","counter_level","scatter_bonus","prism_bonus","deferred_duration","defence_time","memory_elapsed","deferred_elapsed","jewel_ratio","chain_count","prism_count","projectile_serial","attack_serial","instance_serial","deferred_tick","drop_uid"}) ||
             !schema_probabilities(d, {"resistance","critical_rate","repeat_probability","secondary_probability","clear_probability","jewel_probability"})) return false;
@@ -507,7 +510,7 @@ class SpaceCombatKernel : public RefCounted {
                 int(v.get("armourType",0)) < 0 || int(v.get("armourType",0)) > 2 ||
                 int(v.get("shieldType",0)) < 0 || int(v.get("shieldType",0)) > 2 ||
                 int(v.get("reactiveReduction",0)) < 0 || int(v.get("reactiveReduction",0)) > 1 ||
-                int(v.get("reactive_stacks",0)) < 0 || int(v.get("reactive_stacks",0)) > 3) return false;
+                int(v.get("reactive_stacks",0)) < 0 || int(v.get("reactive_stacks",0)) > int(d.get("reactive_stack_limit",0))) return false;
             Array drops = v.get("compiled_drops", Array());
             for (int j = 0; j < drops.size(); ++j) {
                 if (Variant(drops[j]).get_type() != Variant::DICTIONARY) return false;
@@ -766,6 +769,7 @@ class SpaceCombatKernel : public RefCounted {
         f.hostile = w.hostile;
         f.target = target;
         f.source = w.source;
+        f.source_slot = w.hostile && w.source.index < actors.size() ? actors[w.source.index].slot : w.slot;
         f.instance = inst;
         if (!w.hostile && w.kind == 2) f.context = missile_ctx ? missile_ctx : (chain || repeated ? missile_context(w,inst->attack->id,true,chain) : inst->attack->context);
         f.multiplier = multiplier;
@@ -984,13 +988,13 @@ class SpaceCombatKernel : public RefCounted {
         int reactive_stacks = -1;
         double reactive_multiplier = 1;
         if (a->reactive_reduction) {
-            if (at > a->reactive_volley_at + 0.16) {
-                a->reactive_stacks = at <= a->reactive_volley_at + 2.2
-                    ? minimum(3, a->reactive_stacks + 1) : 0;
+            if (at > a->reactive_volley_at + reactive_volley_window) {
+                a->reactive_stacks = at <= a->reactive_volley_at + reactive_stack_seconds
+                    ? minimum(reactive_stack_limit, a->reactive_stacks + 1) : 0;
                 a->reactive_volley_at = at;
             }
             reactive_stacks = a->reactive_stacks;
-            reactive_multiplier = 1.0 - 0.2 * reactive_stacks;
+            reactive_multiplier = 1.0 - reactive_per_stack * reactive_stacks;
             raw *= reactive_multiplier;
             a->view["reactive_stacks"] = reactive_stacks;
             a->view["reactive_multiplier"] = reactive_multiplier;
@@ -1606,74 +1610,191 @@ class SpaceCombatKernel : public RefCounted {
             f.view["elapsed"] = f.age;
         }
     }
-    void beam_periods(double &defence_at) {
-        struct Period { double at, due; size_t id; };
-        std::vector<Period> periods;
-        for (size_t id : active_beams) {
-            const Flight &f = flights[id];
-            if (!f.live || f.await_target) continue;
-            for (double due = f.next_hit; due <= f.age + 1e-9; due += f.interval)
-                periods.push_back({clock - f.age + due, due, id});
+    void settle_beam(size_t id, double due, double at) {
+        Flight &f = flights[id];
+        if (!f.live || f.await_target || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
+            if (f.live && (f.hostile || !retain_endless_target(f,at,false))) retire(id);
+            return;
         }
-        std::sort(periods.begin(), periods.end(), [&](const Period &a, const Period &b) {
-            if (a.at != b.at) return a.at < b.at;
-            int aw = flights[a.id].weapon, bw = flights[b.id].weapon;
-            return aw != bw ? weapon_before(aw, bw) : flights[a.id].serial < flights[b.id].serial;
-        });
-        for (const Period &p : periods) {
-            if (stopped || final_cleared) break;
-            recover(nonnegative(p.at - defence_at), defence_at);
-            defence_at = maximum(defence_at, p.at);
-            if (stopped) break;
-            Flight &f = flights[p.id];
-            if (!f.live || f.await_target || (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
-                if (f.live && (f.hostile || !retain_endless_target(f,p.at,false))) retire(p.id);
-                continue;
+        // Collection is speculative; only an executed hit consumes its period.
+        f.next_hit = due + f.interval;
+        ++f.ticks;
+        f.view["ticks"] = f.ticks;
+        double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : due;
+        double ramp = f.ramp > 0 ? std::clamp(duration / f.ramp, 0.0, 1.0) : 1;
+        Amount raw = f.damage * (1 + (f.maximum - 1) * ramp);
+        effect(6, f, f.aim, at);
+        if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, at);
+        if (f.hostile)
+            player_hit(raw, f.type, at);
+        else
+            hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, at, f.weapon, true);
+        if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
+            auto candidates = targets(f.type, at);
+            for (Handle h : candidates)
+                if (h.index != f.target.index) {
+                    Vector2 target_position = actors[h.index].point;
+                    int64_t target_uid = actors[h.index].uid;
+                    hit_enemy(h, raw, f.type, f.instance, false, at, f.weapon);
+                    Effect secondary;
+                    secondary.kind = 8;
+                    secondary.time = at;
+                    secondary.point = f.aim;
+                    secondary.target_point = target_position;
+                    secondary.target_uid = target_uid;
+                    secondary.type = f.type;
+                    feedback.push_back(secondary);
+                    break;
+                }
+        }
+        if (!final_cleared && f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
+            Timed pending{at + repeat_delay,
+                          ++event_serial,
+                          2,
+                          f.weapon,
+                          0,
+                          f.target,
+                          f.instance->attack,
+                          weapons[f.weapon].repeat_multiplier};
+            pending.owner_flight = id;
+            pending.owner_generation = f.generation;
+            repeats.push(pending);
+        }
+    }
+    void advance_flight(size_t id, double dt) {
+        Flight &f = flights[id];
+        if (!f.live || f.beam || f.born_step >= step_serial)
+            return;
+        ++physics_visits;
+        Motion &m = f.lease->motion();
+        Actor *t = resolve(f.target);
+        Vector2 aim = f.hostile ? player_point : t ? t->point : m.last_aim;
+        if (!f.hostile && !t) {
+            f.target_view_cleared = true;
+            if (!f.view.is_empty()) f.view["target"] = Dictionary();
+        }
+        bool impact = false;
+        if (m.kind == 1) {
+            m.age += dt;
+            if ((f.hostile || t) && m.age > lifetime) {
+                retire(id, 1);
+                return;
             }
-            // Collection is speculative; only an executed hit consumes its period.
-            f.next_hit = p.due + f.interval;
-            ++f.ticks;
-            f.view["ticks"] = f.ticks;
-            double duration = f.charge >= 0 ? (f.ticks - 1) * f.interval : p.due;
-            double ramp = f.ramp > 0 ? std::clamp(duration / f.ramp, 0.0, 1.0) : 1;
-            Amount raw = f.damage * (1 + (f.maximum - 1) * ramp);
-            effect(6, f, f.aim, p.at);
-            if (!f.hostile && f.instance->attack->critical) effect(9, f, f.aim, p.at);
-            if (f.hostile)
-                player_hit(raw, f.type, p.at);
-            else
-                hit_enemy(f.target, raw, f.type, f.instance, !f.repeated, p.at, f.weapon, true);
-            if (!final_cleared && f.ticks == 1 && !f.hostile && !f.repeated && f.instance->attack->secondary) {
-                auto candidates = targets(f.type, p.at);
-                for (Handle h : candidates)
-                    if (h.index != f.target.index) {
-                        Vector2 target_position = actors[h.index].point;
-                        int64_t target_uid = actors[h.index].uid;
-                        hit_enemy(h, raw, f.type, f.instance, false, p.at, f.weapon);
-                        Effect secondary;
-                        secondary.kind = 8;
-                        secondary.time = p.at;
-                        secondary.point = f.aim;
-                        secondary.target_point = target_position;
-                        secondary.target_uid = target_uid;
-                        secondary.type = f.type;
-                        feedback.push_back(secondary);
-                        break;
+            double progress = std::clamp((m.age - ignition) / (cruise_at - ignition), 0.0, 1.0);
+            progress = progress * progress * (3 - 2 * progress);
+            m.speed = launch_speed + (f.cruise_speed - launch_speed) * progress;
+            if (f.hostile || t) {
+                m.orphan = 0;
+                m.last_aim = aim;
+                double old = angle(m.direction), wanted = angle(aim - position(m));
+                double change = std::remainder(wanted - old, 6.28318530717958647692);
+                double range = distance(position(m), aim);
+                if (range < brake_range && std::abs(change) > brake_angle)
+                    m.speed = minimum(m.speed, maximum(min_speed, range * turn_rate * brake_factor));
+                if (m.age >= seek)
+                    m.direction = axis(old + std::clamp(change, -turn_rate * dt, turn_rate * dt));
+                Vector2 delta = m.direction * m.speed * dt, p = position(m);
+                double length = delta.length_squared();
+                double ratio =
+                    length > 0 ? std::clamp(double((aim - p).dot(delta)) / length, 0.0, 1.0) : 0;
+                impact = distance(p + delta * ratio, aim) <= hit_radius;
+            } else {
+                m.orphan += dt;
+                if (m.orphan >= orphan_lifetime) {
+                    retire(id, 1);
+                    return;
+                }
+            }
+        } else {
+            if (t || f.hostile) {
+                Vector2 delta = aim - position(m);
+                if (f.chain) {
+                    // Chain carriers use their own straight contact path.
+                    m.direction = unit(delta);
+                    impact = distance(position(m), aim) <= m.speed * dt;
+                } else {
+                    if (f.hostile && player_collision_hull.size() >= 3) {
+                        const Vector2 start = position(m), movement = m.direction * m.speed * dt;
+                        const double ratio = hull_contact(start, movement, player_collision_hull);
+                        impact = ratio <= 1.0;
+                        if (impact) aim = start + movement * ratio;
+                    } else if (!f.hostile && t && f.fixed_ray) {
+                        const double progress = (position(m) - f.launch_point).dot(m.direction);
+                        if (t->stationary_geometry && f.contact_revision != t->geometry_revision)
+                            refresh_ray_contact(f, *t);
+                        // The birth ray is a conservative far-contact gate, not a future hit.
+                        // Keep the exact segment predicate at contact, preserving float rounding,
+                        // impact coordinates and born_step; contact dispatch owns damage order.
+                        const double margin = maximum(1.0, std::abs(f.contact_distance) * 1e-4);
+                        if (t->stationary_geometry && f.contact_distance >= 0 &&
+                            progress + m.speed * dt < f.contact_distance - margin) {
+                            ++ballistic_skips;
+                        } else {
+                            ++ballistic_checks;
+                            Vector2 start = f.ray_origin + f.ray_step * progress;
+                            double ratio = hull_contact(start, f.ray_step * m.speed * dt, t->collision_hull);
+                            impact = ratio <= 1.0;
+                            if (impact) aim = position(m) + m.direction * m.speed * dt * ratio;
+                        }
+                    } else {
+                        double along = delta.dot(m.direction);
+                        impact = along >= 0 && along <= m.speed * dt &&
+                                 std::abs(double(delta.cross(m.direction))) <= 0.5;
                     }
+                }
             }
-            if (!final_cleared && f.ticks == 1 && !f.repeated && f.instance->attack->repeats) {
-                Timed pending{p.at + repeat_delay,
-                              ++event_serial,
-                              2,
-                              f.weapon,
-                              0,
-                              f.target,
-                              f.instance->attack,
-                              weapons[f.weapon].repeat_multiplier};
-                pending.owner_flight = p.id;
-                pending.owner_generation = f.generation;
-                repeats.push(pending);
+        }
+        if (impact) {
+            m.x = aim.x;
+            m.y = aim.y;
+            effect(1, f, aim, clock);
+            if (f.hostile)
+                player_hit(f.damage, f.type, clock);
+            else
+                hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain && !f.repeated && !(f.context && f.context->derived), clock, f.weapon, !f.chain && !(f.context && f.context->wild), f.context);
+            retire(id);
+            return;
+        }
+        Vector2 move = m.direction * m.speed * dt;
+        m.x += move.x;
+        m.y += move.y;
+        if (m.x < projectile_min_x || m.x > projectile_max_x || m.y < projectile_min_y || m.y > projectile_max_y)
+            retire(id);
+    }
+    void settle_contacts(double dt) {
+        struct Contact { double at, due; size_t id; uint32_t generation; bool beam; };
+        std::vector<Contact> contacts;
+        for (size_t id : active) {
+            const Flight &f = flights[id];
+            if (!f.live) continue;
+            if (f.beam && !f.await_target) {
+                for (double due = f.next_hit; due <= f.age + 1e-9; due += f.interval) {
+                    double at = clock - f.age + due;
+                    if (std::abs(at - clock) <= 1e-9) at = clock;
+                    contacts.push_back({at, due, id, f.generation, true});
+                }
+            } else if (!f.beam && f.born_step < step_serial) {
+                contacts.push_back({clock, 0, id, f.generation, false});
             }
+        }
+        // Snapshot identities, never the mutable dense active order. Each hit and
+        // its local derivatives finish before the next source gets to settle.
+        std::sort(contacts.begin(), contacts.end(), [&](const Contact &a, const Contact &b) {
+            if (a.at != b.at) return a.at < b.at;
+            const Flight &af = flights[a.id], &bf = flights[b.id];
+            if (af.hostile != bf.hostile) return !af.hostile;
+            if (af.source_slot != bf.source_slot) return af.source_slot < bf.source_slot;
+            int as = weapons[af.weapon].slot, bs = weapons[bf.weapon].slot;
+            if (as != bs) return as < bs;
+            if (af.serial != bf.serial) return af.serial < bf.serial;
+            return a.due < b.due;
+        });
+        for (const Contact &contact : contacts) {
+            if (stopped || final_cleared) break;
+            const Flight &f = flights[contact.id];
+            if (!f.live || f.generation != contact.generation) continue;
+            if (contact.beam) settle_beam(contact.id, contact.due, contact.at);
+            else advance_flight(contact.id, dt);
         }
     }
     void segment(double dt) {
@@ -1740,110 +1861,8 @@ class SpaceCombatKernel : public RefCounted {
             collect_due(ejections);
         }
         if (!stopped && !final_cleared) for (const Timed &q : reschedule) roots.push(q);
-        beam_periods(defence_at);
+        settle_contacts(dt);
         if (stopped || final_cleared) { compact(); executing = false; return; }
-        const size_t motion_count = active.size();
-        for (size_t n = 0; n < motion_count && !stopped; ++n) {
-            size_t id = active[n];
-            Flight &f = flights[id];
-            if (!f.live || f.beam || f.born_step >= step_serial)
-                continue;
-            ++physics_visits;
-            Motion &m = f.lease->motion();
-            Actor *t = resolve(f.target);
-            Vector2 aim = f.hostile ? player_point : t ? t->point : m.last_aim;
-            if (!f.hostile && !t) {
-                f.target_view_cleared = true;
-                if (!f.view.is_empty()) f.view["target"] = Dictionary();
-            }
-            bool impact = false;
-            if (m.kind == 1) {
-                m.age += dt;
-                if ((f.hostile || t) && m.age > lifetime) {
-                    retire(id, 1);
-                    continue;
-                }
-                double progress = std::clamp((m.age - ignition) / (cruise_at - ignition), 0.0, 1.0);
-                progress = progress * progress * (3 - 2 * progress);
-                m.speed = launch_speed + (f.cruise_speed - launch_speed) * progress;
-                if (f.hostile || t) {
-                    m.orphan = 0;
-                    m.last_aim = aim;
-                    double old = angle(m.direction), wanted = angle(aim - position(m));
-                    double change = std::remainder(wanted - old, 6.28318530717958647692);
-                    double range = distance(position(m), aim);
-                    if (range < brake_range && std::abs(change) > brake_angle)
-                        m.speed = minimum(m.speed, maximum(min_speed, range * turn_rate * brake_factor));
-                    if (m.age >= seek)
-                        m.direction = axis(old + std::clamp(change, -turn_rate * dt, turn_rate * dt));
-                    Vector2 delta = m.direction * m.speed * dt, p = position(m);
-                    double length = delta.length_squared();
-                    double ratio =
-                        length > 0 ? std::clamp(double((aim - p).dot(delta)) / length, 0.0, 1.0) : 0;
-                    impact = distance(p + delta * ratio, aim) <= hit_radius;
-                } else {
-                    m.orphan += dt;
-                    if (m.orphan >= orphan_lifetime) {
-                        retire(id, 1);
-                        continue;
-                    }
-                }
-            } else {
-                if (t || f.hostile) {
-                    Vector2 delta = aim - position(m);
-                    if (f.chain) {
-                        // Chain carriers use their own straight contact path.
-                        m.direction = unit(delta);
-                        impact = distance(position(m), aim) <= m.speed * dt;
-                    } else {
-                        if (f.hostile && player_collision_hull.size() >= 3) {
-                            const Vector2 start = position(m), movement = m.direction * m.speed * dt;
-                            const double ratio = hull_contact(start, movement, player_collision_hull);
-                            impact = ratio <= 1.0;
-                            if (impact) aim = start + movement * ratio;
-                        } else if (!f.hostile && t && f.fixed_ray) {
-                            const double progress = (position(m) - f.launch_point).dot(m.direction);
-                            if (t->stationary_geometry && f.contact_revision != t->geometry_revision)
-                                refresh_ray_contact(f, *t);
-                            // The birth ray is a conservative far-contact gate, not a future hit.
-                            // Keep the exact segment predicate at contact, preserving float rounding,
-                            // impact coordinates, born_step and active-order damage settlement.
-                            const double margin = maximum(1.0, std::abs(f.contact_distance) * 1e-4);
-                            if (t->stationary_geometry && f.contact_distance >= 0 &&
-                                progress + m.speed * dt < f.contact_distance - margin) {
-                                ++ballistic_skips;
-                            } else {
-                                ++ballistic_checks;
-                                Vector2 start = f.ray_origin + f.ray_step * progress;
-                                double ratio = hull_contact(start, f.ray_step * m.speed * dt, t->collision_hull);
-                                impact = ratio <= 1.0;
-                                if (impact) aim = position(m) + m.direction * m.speed * dt * ratio;
-                            }
-                        } else {
-                            double along = delta.dot(m.direction);
-                            impact = along >= 0 && along <= m.speed * dt &&
-                                     std::abs(double(delta.cross(m.direction))) <= 0.5;
-                        }
-                    }
-                }
-            }
-            if (impact) {
-                m.x = aim.x;
-                m.y = aim.y;
-                effect(1, f, aim, clock);
-                if (f.hostile)
-                    player_hit(f.damage, f.type, clock);
-                else
-                    hit_enemy(f.target, f.damage, f.type, f.instance, !f.chain && !f.repeated && !(f.context && f.context->derived), clock, f.weapon, !f.chain && !(f.context && f.context->wild), f.context);
-                retire(id);
-                continue;
-            }
-            Vector2 move = m.direction * m.speed * dt;
-            m.x += move.x;
-            m.y += move.y;
-            if (m.x < -32 || m.x > 604 || m.y < -32 || m.y > 776)
-                retire(id);
-        }
         for (size_t id : active) {
             Flight &f = flights[id];
             if (f.live && f.beam && (f.hostile ? !resolve(f.source) : !resolve(f.target))) {
@@ -2139,6 +2158,7 @@ class SpaceCombatKernel : public RefCounted {
         Dictionary descriptor;
         descriptor["player"] = player_row;
         descriptor["target_slot_center"] = target_slot_center;
+        descriptor["reactive_stack_limit"] = reactive_stack_limit;
         descriptor["enemies"] = wave.get("enemies", Array());
         descriptor["weapons"] = wave.get("weapons", Array());
         if (!configuration_schema(descriptor) || Array(descriptor["enemies"]).is_empty()) return false;
@@ -2242,6 +2262,12 @@ class SpaceCombatKernel : public RefCounted {
 
         target_slot_center = d["target_slot_center"];
         battle_width = d.get("battle_width", 0.0);
+        reactive_volley_window = d.get("reactive_volley_window", 0.0);
+        reactive_stack_seconds = d.get("reactive_stack_seconds", 0.0);
+        reactive_per_stack = d.get("reactive_per_stack", 0.0);
+        reactive_stack_limit = d.get("reactive_stack_limit", 0);
+        projectile_min_x = d.get("projectile_min_x", 0.0); projectile_max_x = d.get("projectile_max_x", 0.0);
+        projectile_min_y = d.get("projectile_min_y", 0.0); projectile_max_y = d.get("projectile_max_y", 0.0);
         missile_departure_angle = d.get("missile_departure_angle", 0.0);
         missile_launch_edge_margin = d.get("missile_launch_edge_margin", 0.0);
         missile_launch_forward_y = d.get("missile_launch_forward_y", 0.0);

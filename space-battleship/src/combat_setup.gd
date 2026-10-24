@@ -20,7 +20,7 @@ static func weapon(row: Dictionary, key: String, damage: String, slot: int, host
 		"branch_factors": [], "external_factors": []}
 
 static func build_player(slots: Array, equipment_definitions: Dictionary, evolution: Dictionary,
-		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary,
+		api, player_art: Dictionary, player_dimensions: Vector2, geometry: Dictionary, rules: Dictionary,
 		resistance: float, motion: Dictionary, enhancement: Dictionary, seed_value: int) -> Dictionary:
 	var one = api.apply("from_decimal", ["1"])
 	if not one.ok:
@@ -65,6 +65,10 @@ static func build_player(slots: Array, equipment_definitions: Dictionary, evolut
 		"counter_log_base": float(enhancement.counter_log_base),
 		"counter_round_scale": float(enhancement.bonus_round_scale),
 		"jewel_probability": 0.0, "jewel_ratio": 1.0}
+	for key in ["reactive_volley_window", "reactive_stack_seconds", "reactive_per_stack", "reactive_stack_limit"]:
+		descriptor[key] = rules[key]
+	for key in ["projectile_min_x", "projectile_max_x", "projectile_min_y", "projectile_max_y"]:
+		descriptor[key] = geometry[key]
 	var motion_keys := {"missile_departure_angle": "missile_departure_angle",
 		"missile_launch_edge_margin": "missile_launch_edge_margin", "missile_launch_forward_y": "missile_launch_forward_y",
 		"ejection_gap": "missile_ejection_gap", "launch_speed": "missile_launch_speed",

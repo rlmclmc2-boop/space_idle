@@ -10,7 +10,8 @@ static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array,
 	var captured: Dictionary = {}
 	for source in rows:
 		var id: int = source.uid
-		if id <= registered_through or pending.has(id) or captured.has(id):
+		var key: String = "native:" + str(id)
+		if id <= registered_through or pending.has(key) or captured.has(key):
 			continue
 		var row: Dictionary = source.duplicate(true)
 		var quantity = amount_api.apply("from_decimal", [str(row.amount)])
@@ -19,18 +20,20 @@ static func register_drops(pending: Dictionary, cursor: Dictionary, rows: Array,
 		var base = amount_api.apply("from_decimal", [str(row.get("production_base", row.amount))])
 		if not base.ok:
 			return base
+		row.domain = "native"
+		row.income_source = "fragment_drop" if row.get("jewel", false) else "enemy_drop"
 		row.amount = quantity.value
 		row.production_base = base.value
 		row.born_at = float(row.get("created_at", now))
 		row.auto_at = float(row.born_at) + float(rules.fragment_drop_auto_seconds if row.get("jewel", false) else rules.ordinary_drop_auto_seconds)
-		captured[id] = row
+		captured[key] = row
 		next_frontier = maxi(next_frontier, id)
 	for id in captured:
 		pending[id] = captured[id]
 	cursor.registered_through = next_frontier
 	return {"ok": true}
 
-static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array, id: int, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
+static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array, id: String, automatic: bool, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
 	if not pending.has(id):
 		return {"ok": false, "reason": "NoChange"}
 	var row: Dictionary = pending[id]
@@ -86,7 +89,7 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 	# One completed collection: wallet, history and ownership change together.
 	wallet[resource] = result.value
 	samples.append({"resource": resource, "actual": quantity, "production_base": base,
-		"wall": wall, "game": game, "source": "fragment_drop" if resource == "jewel" else "enemy_drop"})
+		"wall": wall, "game": game, "source": row.income_source})
 	while not samples.is_empty() and float(samples[0].wall) <= wall - 60.0 and float(samples[0].game) <= game - 60.0:
 		samples.pop_front()
 	pending.erase(id)
@@ -95,10 +98,54 @@ static func collect_drop(pending: Dictionary, wallet: Dictionary, samples: Array
 static func collect_due(pending: Dictionary, wallet: Dictionary, samples: Array, auto_reduce: float, wall: float, game: float, amount_api, force: bool = false) -> Dictionary:
 	# Stable birth order; collection never depends on Dictionary iteration order.
 	var ids: Array = pending.keys()
-	ids.sort()
+	ids.sort_custom(func(a, b):
+		var left: Dictionary = pending[a]
+		var right: Dictionary = pending[b]
+		if float(left.born_at) != float(right.born_at): return float(left.born_at) < float(right.born_at)
+		if str(left.domain) != str(right.domain): return str(left.domain) < str(right.domain)
+		return int(left.uid) < int(right.uid))
 	for id in ids:
-		if force or float(pending[id].auto_at) <= game:
+		if force or (not pending[id].get("moving", false) and float(pending[id].auto_at) <= game):
 			var result = collect_drop(pending, wallet, samples, id, true, auto_reduce, wall, game, amount_api)
+			if not result.ok:
+				return result
+	return {"ok": true}
+
+static func spawn_timed_drop(pending: Dictionary, generator: Dictionary, resource: String,
+		base_text: String, speed: float, resource_ratio: Dictionary, origin: Vector2,
+		born_at: float, amount_api) -> Dictionary:
+	if int(generator.next_id) == 9223372036854775807:
+		return {"ok": false, "reason": "TimedDropIdRangeExceeded"}
+	var base = amount_api.apply("from_decimal", [base_text])
+	if not base.ok:
+		return base
+	base = amount_api.apply("mul", [base.value, resource_ratio])
+	if not base.ok:
+		return base
+	base = amount_api.apply("ceil", [base.value])
+	if not base.ok:
+		return base
+	var id: int = int(generator.next_id) + 1
+	var key: String = "timed:" + str(id)
+	pending[key] = {"domain": "timed", "uid": id, "id": resource,
+		"amount": base.value, "production_base": base.value, "income_source": "timed_drop",
+		"x": origin.x, "y": origin.y, "origin_y": origin.y, "born_at": born_at,
+		"moving": true, "speed": speed}
+	generator.next_id = id
+	return {"ok": true}
+
+static func advance_timed_drops(pending: Dictionary, wallet: Dictionary, samples: Array,
+		target_y: float, auto_reduce: float, wall: float, game: float, amount_api) -> Dictionary:
+	var ids: Array = pending.keys()
+	ids.sort_custom(func(a, b): return int(pending[a].uid) < int(pending[b].uid))
+	for key in ids:
+		var row: Dictionary = pending[key]
+		if not row.get("moving", false):
+			continue
+		row.y = minf(target_y, float(row.origin_y) + float(row.speed) * maxf(0.0, game - float(row.born_at)))
+		if float(row.y) + 1e-9 >= target_y:
+			row.y = target_y
+			var result = collect_drop(pending, wallet, samples, str(key), true, auto_reduce, wall, game, amount_api)
 			if not result.ok:
 				return result
 	return {"ok": true}

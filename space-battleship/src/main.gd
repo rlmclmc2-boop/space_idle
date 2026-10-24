@@ -46,7 +46,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		for id in session.drops.keys():
 			var row: Dictionary = session.drops[id]
 			if event.position.distance_to(Vector2(float(row.x), float(row.y))) <= 18.0:
-				session.collect_drop(int(id))
+				session.collect_drop(str(id))
 				break
 
 func _draw() -> void:

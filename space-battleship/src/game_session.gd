@@ -36,6 +36,8 @@ var campaign: Dictionary = {"state": "menu", "stage": 1, "distance": 0.0,
 var wallet: Dictionary = {}
 var drops: Dictionary = {}
 var drop_cursor: Dictionary = {"registered_through": 0}
+var timed_resource_spec: PackedStringArray = []
+var timed_resources: Dictionary = {"elapsed": 0.0, "next_id": 0}
 var income_samples: Array = []
 var pause_reasons: Dictionary = {}
 var pending_seconds: float = 0.0
@@ -61,6 +63,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	seed_value = combat_seed
 	for row in configuration.config.config:
 		parameters[str(row.name)] = row.para_1
+	timed_resource_spec = str(parameters.autoGenRes).replace("\uff0c", ",").split(",")
 	for row in configuration.game_rules.game_rules:
 		rules[str(row.id)] = row.value
 	for row in configuration.battle_geometry.battle_geometry:
@@ -124,7 +127,7 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
 	var setup = CombatSetup.build_player(slots, equipment_definitions, evolution, amount_api,
-		player_art, player_dimensions, geometry, float(parameters.dmgReduce), motion, enhancement, seed_value)
+		player_art, player_dimensions, geometry, rules, float(parameters.dmgReduce), motion, enhancement, seed_value)
 	if not setup.ok:
 		return _fail(str(setup.get("error", setup.get("reason", "EquipmentAssemblyFailed"))))
 	for row in setup.descriptor.weapons:
@@ -191,6 +194,8 @@ func frame(real_dt: float, _focused: bool) -> void:
 
 func _step(dt: float) -> void:
 	game_time += dt
+	if not _advance_timed_resources(dt):
+		return
 	var settled = Economy.collect_due(drops, wallet, income_samples,
 		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
 	if not settled.ok:
@@ -365,7 +370,7 @@ func _sync_geometry() -> void:
 	if not kernel.input_player_hull(player_hull):
 		_fail("InvalidPlayerGeometry")
 
-func collect_drop(id: int) -> Dictionary:
+func collect_drop(id: String) -> Dictionary:
 	return Economy.collect_drop(drops, wallet, income_samples, id, false,
 		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
 
@@ -436,3 +441,29 @@ func _fail(reason: String) -> Dictionary:
 	last_error = reason
 	pause_reasons.error = true
 	return {"ok": false, "reason": reason}
+
+func _advance_timed_resources(dt: float) -> bool:
+	if campaign.state in ["travel", "combat", "waiting", "guard_wait", "retreat"]:
+		timed_resources.elapsed = float(timed_resources.elapsed) + dt
+		var interval: float = float(timed_resource_spec[0])
+		while float(timed_resources.elapsed) + 1e-9 >= interval:
+			var stage: Dictionary = level_definitions[int(campaign.stage)]
+			var previous: Dictionary = level_definitions.get(int(campaign.stage) - 1, {})
+			var ratio = CombatSetup.ratio(stage, previous, "resRatio", int(campaign.point), campaign.points.size(), amount_api)
+			if not ratio.ok:
+				_fail(str(ratio.get("error", "TimedResourceRatioFailed")))
+				return false
+			var remainder: float = maxf(0.0, float(timed_resources.elapsed) - interval)
+			var spawned = Economy.spawn_timed_drop(drops, timed_resources, timed_resource_spec[1],
+				timed_resource_spec[2], float(timed_resource_spec[3]), ratio.value,
+				Vector2(float(geometry.player_x), float(geometry.timed_drop_spawn_y)), game_time - remainder, amount_api)
+			if not spawned.ok:
+				_fail(str(spawned.get("error", spawned.get("reason", "TimedResourceSpawnFailed"))))
+				return false
+			timed_resources.elapsed = remainder
+	var moved = Economy.advance_timed_drops(drops, wallet, income_samples, float(geometry.player_y),
+		float(parameters.autoCollectReduce), wall_time, game_time, amount_api)
+	if not moved.ok:
+		_fail(str(moved.get("error", "TimedResourceCollectionFailed")))
+		return false
+	return true
