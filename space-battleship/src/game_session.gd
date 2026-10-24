@@ -103,23 +103,24 @@ func initialize(path: String, combat_seed: int) -> Dictionary:
 	player_geometry_height = float(geometry_image.get_height())
 	player_dimensions = models[selected_ship].size * float(player_art.display_scale) * float(geometry.player_display_multiplier) * float(parameters["playerVisualScale" + selected_ship])
 	var starts: PackedStringArray = str(parameters.startEquip).split(",")
+	var starting_weapons: Array = []
+	var starting_defences: Array = []
+	for candidate in starts:
+		if not unlocked("equipment", candidate):
+			continue
+		if CombatSetup.KINDS.has(candidate):
+			starting_weapons.append(candidate)
+		elif candidate in ["armour", "shield"]:
+			starting_defences.append(candidate)
 	var ship: Dictionary = ship_definitions[selected_ship]
 	for index in int(ship.para_1):
-		var key: String = ""
-		for candidate in starts:
-			if CombatSetup.KINDS.has(candidate) and unlocked("equipment", candidate):
-				key = candidate
-				break
 		slots.append({"id": "weapon:" + str(index), "category": "weapon", "index": index,
-			"equipment_id": key if index == 0 else "", "paid_level": 1, "extra_levels": 0})
+			"equipment_id": starting_weapons[index] if index < starting_weapons.size() else "",
+			"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	for index in int(ship.para_2):
-		var key: String = ""
-		for candidate in starts:
-			if candidate in ["armour", "shield"] and unlocked("equipment", candidate):
-				key = candidate
-				break
 		slots.append({"id": "defence:" + str(index), "category": "defence", "index": index,
-			"equipment_id": key if index == 0 else "", "paid_level": 1, "extra_levels": 0})
+			"equipment_id": starting_defences[index] if index < starting_defences.size() else "",
+			"paid_level": 1, "extra_levels": 0, "generation": 1, "switch_ready_at": 0.0})
 	amount_api = ClassDB.instantiate("FoundationAmount")
 	kernel = ClassDB.instantiate("SpaceCombatKernel")
 	var setup = CombatSetup.build_player(self)

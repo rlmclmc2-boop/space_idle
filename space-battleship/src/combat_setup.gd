@@ -48,6 +48,10 @@ static func build_player(session) -> Dictionary:
 		else:
 			var row_weapon: Dictionary = weapon(row, str(row.name), str(text.text), int(slot.index), false, session.motion)
 			row_weapon.muzzle = Geometry.mount_position(session.player_art, int(slot.index), player_point, session.player_dimensions)
+			row_weapon.entry.id = str(slot.id)
+			row_weapon.entry.generation = int(slot.generation)
+			row_weapon.entry.paid_level = int(slot.paid_level)
+			row_weapon.entry.effective_level = int(slot.paid_level) + int(slot.extra_levels)
 			weapons.append(row_weapon)
 	var descriptor := {"player": {"armour": "0", "shield": "0", "x": player_point.x, "y": player_point.y},
 		"enemies": [], "weapons": weapons, "defences": defences,
