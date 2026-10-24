@@ -133,6 +133,7 @@ void SpaceMotionLease::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_orphan","value"),&SpaceMotionLease::set_orphan);
 }
 #include "amount_binding.h"
+#include "module_binding.h"
 #include "save_io.h"
 #include "combat_execution_kernel.h"
 #include "combat_presentation.h"
@@ -210,6 +211,7 @@ public:
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
     ClassDB::register_class<SpaceAmount>();
+    ClassDB::register_class<SpaceModuleEvaluator>();
     ClassDB::register_class<SpaceSaveIO>();
     ClassDB::register_class<SpaceSaveLock>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceCombatKernel>();

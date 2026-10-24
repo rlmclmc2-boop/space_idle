@@ -11,3 +11,4 @@
 | fleet-13-20261018 | tasks/fleet-13-20261018.md |
 | battlefield-motion | tasks/battlefield-motion.md |
 | rewrite-stage1 | tasks/rewrite-stage1.md |
+| rewrite-stage2 | tasks/rewrite-stage2.md |

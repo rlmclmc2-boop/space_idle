@@ -1,4 +1,5 @@
 #include "../addons/native_battle/src/amount.h"
+#include "../addons/native_battle/src/module_evaluation.h"
 #include <cassert>
 #include <iostream>
 
@@ -42,5 +43,14 @@ int main() {
     assert(Amount::from_decimal("200.999999999").floor().compare(Amount(200))==0);
     assert(Amount::from_decimal("999999999999999").floor().compare(Amount::from_decimal("999999999999999"))==0);
     assert(Amount(1.23456).round_significant(3).compare(Amount(1.23))==0);
+    space::ModuleInput module;
+    module.charged_base=Amount(10);module.history_count=100;module.effective_level=2;module.growth=0.1;
+    module.branch_factors={Amount(1.5)};module.external_factors={Amount(2)};
+    auto evaluated=space::evaluate_module(module);
+    assert(evaluated.history_enhanced.compare(Amount(14))==0);
+    assert(evaluated.final.compare(Amount(42))==0);
+    module.charged_base=Amount::from_decimal("1e500");module.history_count=9007199254740993LL;module.effective_level=1;module.growth=1;
+    module.branch_factors.clear();module.external_factors.clear();
+    assert(space::evaluate_module(module).final.compare(Amount::from_decimal("1.7e501"))==0);
     std::cout<<"Amount native boundary checks passed\n";
 }

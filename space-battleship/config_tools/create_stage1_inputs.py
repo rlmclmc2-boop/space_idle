@@ -74,6 +74,11 @@ def main():
         tables['amount_case']['fields'][f]['types'].append('null')
     tables['amount_case']['fields']['operation']['enum']=['add','sub_nonnegative','mul','div','pow','floor','ceil','sum_geometric','round_significant','compare','to_ratio','from_decimal']
     tables['amount_case']['references']=[dict(field='case_id',table='case',target='case_id')]
+    tables['kernel_case']=spec(['case_id','kind','damage','enemy_hp','enemy_shield','shield_type','resistance','interval','initial_delay','charge','maximum','ramp','speed','duration','expected_hp','expected_shield','history_start','expected_attacks','enemy_x','enemy_y','player_x','player_y'],
+        ['kind','shield_type','resistance','interval','initial_delay','charge','maximum','ramp','speed','duration','enemy_x','enemy_y','player_x','player_y'])
+    tables['kernel_case']['references']=[dict(field='case_id',table='case',target='case_id')]
+    tables['wave_case']=spec(['case_id','player_hp','player_damage','player_interval','enemy_hp','enemy_damage','enemy_interval','enemy_speed','distance','resource','drop_amount','travel_seconds'],
+        ['player_interval','enemy_interval','enemy_speed','distance','resource','travel_seconds'])
     (ROOT/'config_tools/schema.json').write_text(json.dumps(dict(version=1,tables=tables),ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     (ROOT/'config_tools/production.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     fixture=ROOT/'tests/excel'; fixture.mkdir(parents=True,exist_ok=True)
@@ -97,7 +102,16 @@ def main():
         ['N01-div-zero','div','1','0',0,0,None,'AmountDivisionByZero'],
         ['N01-overflow','mul','1e9000000000000000','10',0,0,None,'AmountRangeExceeded']]
     for row in cases: row.append(1e-3 if row[0]=='N01-sub' else 1e-12)
-    sheet('case',[[row[0],'core_rules',17,1/60,'amount_relative'] for row in cases]);sheet('amount_case',cases)
+    kernel_cases=[
+        ['C01-before',0,'100','1000','30',1,0.5,10,0,0,1,1,1000,0.05,'1000','30','0','1',0,0,0,100],
+        ['C01-after',0,'100','1000','30',1,0.5,10,0,0,1,1,1000,0.2,'960','0','0','1',0,0,0,100],
+        ['C12-cannon',1,'100','1000','30',1,0.5,10,0,0,1,1,1000,0.001,'960','0','0','1',0,0,0,100],
+        ['C07-missile',2,'100','1000','0',0,0.5,10,0,0,1,1,1000,2,'900','0','0','1',0,0,0,100],
+        ['C08-beam',3,'100','1000','0',0,0.5,0.5,0,1,1,1,1000,1.05,'900','0','0','1',0,0,0,100],
+        ['N01-native-large',1,'1e500','1e501','0',0,0.5,10,0,0,1,1,1000,0.01,'9e500','0','9007199254740993','9007199254740994',0,0,0,100]]
+    sheet('case',[[row[0],'core_rules',17,1/60,'amount_relative'] for row in cases]+[[row[0],'core_rules',17,row[13],'native_exact'] for row in kernel_cases]+[['W01','core_rules',17,4,'native_wave']])
+    sheet('amount_case',cases);sheet('kernel_case',kernel_cases)
+    sheet('wave_case',[['W01','100','10',0.1,'10','3',0.02,50,100,71,'6',3]])
     # Genuine minimal game definitions, independent from production values.
     for name, data in {
         'res':[['id','name'],[71,'test_iron']],

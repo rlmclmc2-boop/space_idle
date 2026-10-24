@@ -6,3 +6,5 @@ SRC: authorized tables/user-approved exceptions. Stable battle behavior: PROJECT
 - Unsupported effect requires table/user approval; record scope/behavior in PROJECT, add validation/player notice if needed. Missing impl != unsupported rule; unresolved -> STATUS.
 
 - Contact centre (2026-10-19): both fleets aim/hit at the fixed ship centre. Texture outlines are display-only; straight-shot numerical tolerance is +/-0.5 presentation units. Keep live PNG centre, projectile endpoint and settlement aligned.
+
+- Rewrite stage 2 (a815d2a design): the same native kernel uses shared Amount values and int64 history. Independent Excel cases exercise four weapon families, contact vs immediate hit, large values, and nonfinal/final flight lifetime. GameSession integration is still in progress.

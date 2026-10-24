@@ -2837,6 +2837,237 @@
           "target": "case_id"
         }
       ]
+    },
+    "kernel_case": {
+      "columns": [
+        "case_id",
+        "kind",
+        "damage",
+        "enemy_hp",
+        "enemy_shield",
+        "shield_type",
+        "resistance",
+        "interval",
+        "initial_delay",
+        "charge",
+        "maximum",
+        "ramp",
+        "speed",
+        "duration",
+        "expected_hp",
+        "expected_shield",
+        "history_start",
+        "expected_attacks",
+        "enemy_x",
+        "enemy_y",
+        "player_x",
+        "player_y"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "kind": {
+          "types": [
+            "number"
+          ]
+        },
+        "damage": {
+          "types": [
+            "string"
+          ]
+        },
+        "enemy_hp": {
+          "types": [
+            "string"
+          ]
+        },
+        "enemy_shield": {
+          "types": [
+            "string"
+          ]
+        },
+        "shield_type": {
+          "types": [
+            "number"
+          ]
+        },
+        "resistance": {
+          "types": [
+            "number"
+          ]
+        },
+        "interval": {
+          "types": [
+            "number"
+          ]
+        },
+        "initial_delay": {
+          "types": [
+            "number"
+          ]
+        },
+        "charge": {
+          "types": [
+            "number"
+          ]
+        },
+        "maximum": {
+          "types": [
+            "number"
+          ]
+        },
+        "ramp": {
+          "types": [
+            "number"
+          ]
+        },
+        "speed": {
+          "types": [
+            "number"
+          ]
+        },
+        "duration": {
+          "types": [
+            "number"
+          ]
+        },
+        "expected_hp": {
+          "types": [
+            "string"
+          ]
+        },
+        "expected_shield": {
+          "types": [
+            "string"
+          ]
+        },
+        "history_start": {
+          "types": [
+            "string"
+          ]
+        },
+        "expected_attacks": {
+          "types": [
+            "string"
+          ]
+        },
+        "enemy_x": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_y": {
+          "types": [
+            "number"
+          ]
+        },
+        "player_x": {
+          "types": [
+            "number"
+          ]
+        },
+        "player_y": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true,
+      "references": [
+        {
+          "field": "case_id",
+          "table": "case",
+          "target": "case_id"
+        }
+      ]
+    },
+    "wave_case": {
+      "columns": [
+        "case_id",
+        "player_hp",
+        "player_damage",
+        "player_interval",
+        "enemy_hp",
+        "enemy_damage",
+        "enemy_interval",
+        "enemy_speed",
+        "distance",
+        "resource",
+        "drop_amount",
+        "travel_seconds"
+      ],
+      "primary": [
+        "case_id"
+      ],
+      "fields": {
+        "case_id": {
+          "types": [
+            "string"
+          ]
+        },
+        "player_hp": {
+          "types": [
+            "string"
+          ]
+        },
+        "player_damage": {
+          "types": [
+            "string"
+          ]
+        },
+        "player_interval": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_hp": {
+          "types": [
+            "string"
+          ]
+        },
+        "enemy_damage": {
+          "types": [
+            "string"
+          ]
+        },
+        "enemy_interval": {
+          "types": [
+            "number"
+          ]
+        },
+        "enemy_speed": {
+          "types": [
+            "number"
+          ]
+        },
+        "distance": {
+          "types": [
+            "number"
+          ]
+        },
+        "resource": {
+          "types": [
+            "number"
+          ]
+        },
+        "drop_amount": {
+          "types": [
+            "string"
+          ]
+        },
+        "travel_seconds": {
+          "types": [
+            "number"
+          ]
+        }
+      },
+      "literalOnly": true
     }
   }
 }

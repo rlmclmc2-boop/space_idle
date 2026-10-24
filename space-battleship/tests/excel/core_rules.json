@@ -16,6 +16,14 @@
           "table": "amount_case"
         },
         {
+          "sheet": "kernel_case",
+          "table": "kernel_case"
+        },
+        {
+          "sheet": "wave_case",
+          "table": "wave_case"
+        },
+        {
           "sheet": "res",
           "table": "res"
         },

@@ -3,6 +3,7 @@
 
 class SpaceAmount : public RefCounted {
     GDCLASS(SpaceAmount, RefCounted)
+public:
     static space::Amount read(const Dictionary &value) {
         if (!value.has("m") || !value.has("e") || value["m"].get_type() != Variant::STRING || value["e"].get_type() != Variant::STRING)
             throw std::domain_error("InvalidAmountEncoding");

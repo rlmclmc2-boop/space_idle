@@ -34,7 +34,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_execution_kernel.h') -Destination (Join-Path $native 'src\combat_execution_kernel.h')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_presentation.h') -Destination (Join-Path $native 'src\combat_presentation.h')
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'src\combat_retained_presentation.h') -Destination (Join-Path $native 'src\combat_retained_presentation.h')
-    foreach ($header in 'amount.h','amount_binding.h','save_io.h') {
+    foreach ($header in 'amount.h','amount_binding.h','module_evaluation.h','module_binding.h','combat_amount.h','wave_lifecycle.h','save_io.h') {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot ('src\' + $header)) -Destination (Join-Path $native ('src\' + $header))
     }
     Push-Location $native

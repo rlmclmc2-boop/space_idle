@@ -77,7 +77,9 @@ func run() -> void:
 				var observed_log = amount.calculate("log10", result.value).scalar
 				var expected_log = amount.calculate("log10", expected).scalar
 				check(abs(observed_log - expected_log) <= row.tolerance, diagnostic)
-	check(count > 0, "UnknownOrEmptyCaseSelection")
+	var native_count := verify_kernel_cases(bundle, amount, options)
+	var wave_count := verify_wave_cases(bundle, amount, options)
+	check(count + native_count + wave_count > 0, "UnknownOrEmptyCaseSelection")
 	# Stage-1 admission/advance smoke uses the actual existing kernel, no game
 	# scene, GPU object, old Game adapter, or alternative battle implementation.
 	var kernel = ClassDB.instantiate("SpaceCombatKernel")
@@ -92,7 +94,7 @@ func run() -> void:
 	check(kernel.enemy_views().size() == 1, "NativeEnemyRetention")
 	check(kernel.take_feedback().is_empty(), "NativeEmptyFeedback")
 	await verify_saves(options["--output"].path_join("isolated_saves"), bundle.semanticHash)
-	var report := JSON.stringify({"ok": failures.is_empty(), "amountCases": count, "nativeKernel": true, "saveProtocol": true, "failures": failures})
+	var report := JSON.stringify({"ok": failures.is_empty(), "amountCases": count, "nativeCases": native_count, "waveCases": wave_count, "nativeKernel": true, "saveProtocol": true, "failures": failures})
 	var report_file := FileAccess.open(options["--output"].path_join("result.json"), FileAccess.WRITE)
 	if report_file == null:
 		quit(2)
@@ -101,6 +103,92 @@ func run() -> void:
 	report_file.close()
 	print(report)
 	quit(0 if failures.is_empty() else 1)
+
+func verify_kernel_cases(bundle: Dictionary, amount, options: Dictionary) -> int:
+	var count := 0
+	for row in bundle.tables.get("kernel_case", []):
+		if options.has("--case") and options["--case"] != row.case_id:
+			continue
+		count += 1
+		var kernel = ClassDB.instantiate("SpaceCombatKernel")
+		var enemy_hp = amount.calculate("from_decimal", {"text": row.enemy_hp}).value
+		var enemy_shield = amount.calculate("from_decimal", {"text": row.enemy_shield}).value
+		var damage = amount.calculate("from_decimal", {"text": row.damage}).value
+		var descriptor := {"player": {"armour": enemy_hp, "shield": enemy_shield, "x": row.player_x, "y": row.player_y},
+			"enemies": [{"uid": 1, "hp": enemy_hp, "max_hp": enemy_hp, "shield": enemy_shield, "max_shield": enemy_shield,
+				"x": row.enemy_x, "y": row.enemy_y, "armourType": 0, "shieldType": int(row.shield_type)}],
+			"weapons": [{"kind": int(row.kind), "damage": damage, "type": 1, "interval": row.interval,
+				"remaining": row.initial_delay, "speed": row.speed, "charge": row.charge, "maximum": row.maximum, "ramp": row.ramp,
+				"muzzle": Vector2(row.player_x, row.player_y)}], "attack_counter": row.history_start.to_int(), "rng_state": 17,
+			"resistance": row.resistance}
+		if not kernel.configure(descriptor):
+			check(false, row.case_id + " native admission " + kernel.last_error())
+			continue
+		var elapsed := 0.0
+		while elapsed + 1e-10 < row.duration:
+			var dt: float = min(1.0 / 60.0, row.duration - elapsed)
+			if not kernel.advance(dt):
+				check(false, row.case_id + " native advance " + kernel.last_error())
+				break
+			elapsed += dt
+		var view = kernel.enemy_views()[0]
+		check(view.hp == amount.calculate("from_decimal", {"text": row.expected_hp}).value, row.case_id + " hp " + str(view.hp))
+		check(view.shield == amount.calculate("from_decimal", {"text": row.expected_shield}).value, row.case_id + " shield " + str(view.shield))
+		check(str(kernel.metrics().attack_counter) == row.expected_attacks, row.case_id + " exact history " + str(kernel.metrics().attack_counter))
+	return count
+
+func verify_wave_cases(bundle: Dictionary, amount, options: Dictionary) -> int:
+	var count := 0
+	for row in bundle.tables.get("wave_case", []):
+		if options.has("--case") and options["--case"] != row.case_id:
+			continue
+		count += 1
+		var kernel = ClassDB.instantiate("SpaceCombatKernel")
+		var zero = amount.calculate("zero").value
+		var hp = amount.calculate("from_decimal", {"text": row.player_hp}).value
+		var damage = amount.calculate("from_decimal", {"text": row.player_damage}).value
+		check(kernel.configure({"player": {"armour": hp, "shield": zero, "x": 0.0, "y": row.distance}, "enemies": [],
+			"weapons": [{"kind": 1, "damage": damage, "interval": row.player_interval, "muzzle": Vector2(0, row.distance)}],
+			"drop_rules_compiled": true, "rng_state": 17}), "W01 initialize")
+		var enemy_hp = amount.calculate("from_decimal", {"text": row.enemy_hp}).value
+		var enemy_damage = amount.calculate("from_decimal", {"text": row.enemy_damage}).value
+		var drop_amount = amount.calculate("from_decimal", {"text": row.drop_amount}).value
+		var wave := {"final": false, "enemies": [{"uid": 1, "hp": enemy_hp, "max_hp": enemy_hp, "x": 0.0, "y": 0.0,
+			"compiled_drops": [{"chance": 1.0, "resource": int(row.resource), "amount": drop_amount, "base": drop_amount}]}],
+			"weapons": [{"kind": 0, "hostile": true, "source": 0, "damage": enemy_damage, "speed": row.enemy_speed,
+				"interval": row.enemy_interval, "remaining": 0.0, "muzzle": Vector2.ZERO}]}
+		check(kernel.start_wave(wave), "W01 start " + kernel.last_error())
+		var cleared := false
+		var drop_count := 0
+		for i in range(60):
+			check(kernel.advance(1.0 / 60.0), "W01 advance")
+			var result: Dictionary = kernel.take_results()
+			drop_count += result.drops.size()
+			if result.wave_cleared:
+				cleared = true
+				break
+		check(cleared and drop_count == 1, "W01 clear/drop exactly once")
+		check(kernel.finish_wave(false), "W01 finish nonfinal")
+		check(kernel.take_results().drops.is_empty() and not kernel.take_results().wave_cleared, "W01 result drain")
+		var before: Dictionary = kernel.player_view().armour
+		for i in range(int(row.travel_seconds * 60)):
+			check(kernel.advance(1.0 / 60.0), "W01 travel")
+		check(amount.calculate("compare", kernel.player_view().armour, before).scalar < 0, "W01 enemy flight survives nonfinal clear")
+		var history: int = kernel.read_history().attacks
+		wave.final = true
+		check(kernel.start_wave(wave), "W01 next wave")
+		for i in range(60):
+			check(kernel.advance(1.0 / 60.0), "W01 final advance")
+			var result: Dictionary = kernel.take_results()
+			if result.final_cleared:
+				break
+		check(kernel.finish_wave(true), "W01 final finish")
+		check(kernel.read_history().attacks > history, "W01 cross-wave history retained")
+		before = kernel.player_view().armour
+		for i in range(int(row.travel_seconds * 60)):
+			check(kernel.advance(1.0 / 60.0), "W01 final travel")
+		check(kernel.player_view().armour == before, "W01 final clears enemy flights")
+	return count
 
 func wait_save(files) -> void:
 	for i in range(10000):
