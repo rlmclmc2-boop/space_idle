@@ -111,6 +111,17 @@ def compile_bundle(manifest_path: Path):
                         error(rel, name, row_index, cell.column_letter, field, 'UnknownRuleKey', str(value)); continue
                     row[field] = value
                     locations[field] = dict(workbook=rel, sheet=name, row=row_index, column=cell.column_letter)
+                required = set()
+                for condition in spec.get('requiredWhen', []):
+                    if row.get(condition['field']) in condition['values']:
+                        required.update(condition['required'])
+                for group in spec.get('requiredGroups', []):
+                    if any(row.get(field) is not None for field in group):
+                        required.update(group)
+                for field in sorted(required):
+                    if row.get(field) is None:
+                        column=openpyxl.utils.get_column_letter(expected.index(field)+1)
+                        error(rel,name,row_index,column,field,'RequiredField','required for this row/resource group')
                 primary = spec['primary']
                 identity = [row.get(k) for k in primary]
                 if any((v is None and k not in spec.get('nullablePrimary', [])) or v == '' for k,v in zip(primary,identity)):

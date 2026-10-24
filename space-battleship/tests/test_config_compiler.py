@@ -66,6 +66,21 @@ class CompilerCases(unittest.TestCase):
         self.edit(lambda b:setattr(b['res']['B4'],'value',None))
         self.expect_error('LiteralType')
 
+    def clear_equipment_field(self,field):
+        def clear(book):
+            sheet=book['equipment'];headers=[c.value for c in sheet[1]]
+            for row in range(4,sheet.max_row+1):
+                if sheet.cell(row,1).value=='laser':sheet.cell(row,headers.index(field)+1).value=None
+        self.edit(clear)
+
+    def test_player_laser_damage_required(self):
+        self.clear_equipment_field('dmg')
+        self.expect_error('LiteralType')
+
+    def test_player_laser_cost_required(self):
+        self.clear_equipment_field('cost_1')
+        self.expect_error('RequiredField')
+
     def test_formula_without_cache(self):
         self.edit(lambda b:setattr(b['res']['A4'],'value','=70+1'))
         self.expect_error('FormulaCacheMissing')

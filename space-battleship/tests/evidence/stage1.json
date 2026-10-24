@@ -1,7 +1,7 @@
 {
   "designCommit": "a815d2a843976e22cb3fb24e7683d4a54c65fd3f",
   "baseline": "b4729b9a9803458b5ac19a4945c2fe0d5f76e51f",
-  "compilerTests": 15,
+  "compilerTests": 17,
   "nativeAmount": "passed",
   "headless": {
     "amountCases": 14,
@@ -35,5 +35,27 @@
     "structured HeaderMismatch for typed tables",
     "nonzero underflow returns canonical zero",
     "fixture generation does not relax production requiredness"
+  ],
+  "formalMissingFieldChecks": [
+    {
+      "table": "equipment",
+      "field": "dmg",
+      "code": "LiteralType"
+    },
+    {
+      "table": "equipment",
+      "field": "cost_1",
+      "code": "RequiredField"
+    },
+    {
+      "table": "mon",
+      "field": "health",
+      "code": "LiteralType"
+    },
+    {
+      "table": "level",
+      "field": "length",
+      "code": "LiteralType"
+    }
   ]
 }

@@ -542,6 +542,36 @@
           "table": "res",
           "target": "id"
         }
+      ],
+      "requiredGroups": [
+        [
+          "res_1",
+          "cost_1",
+          "costMulti_1"
+        ],
+        [
+          "res_2",
+          "cost_2",
+          "costMulti_2"
+        ]
+      ],
+      "requiredWhen": [
+        {
+          "field": "name",
+          "values": [
+            "armour",
+            "shield",
+            "laser",
+            "missile",
+            "cannon",
+            "longLaser"
+          ],
+          "required": [
+            "res_1",
+            "cost_1",
+            "costMulti_1"
+          ]
+        }
       ]
     },
     "galaxy": {

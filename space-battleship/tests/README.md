@@ -10,7 +10,7 @@ python config_tools/compile.py --manifest tests/excel/core_rules.json --output t
 python tests/test_config_compiler.py
 ```
 
-`production.json` 显式列出24本44表；候选、生成、发布副本及旧总表不进入正式输入。schema固定在版本库，运行时不从Excel值推测类型。`create_stage1_inputs.py --write`仅用于审阅后的schema/独立fixture再生成，不是编译流程；它不改正式工作簿。测试Excel的资源71、敌人9101、编组9201、关卡9301及小数值均独立编写。
+`production.json` 显式列出24本44表；候选、生成、发布副本及旧总表不进入正式输入。schema固定在版本库，运行时不从Excel值推测类型。`create_stage1_inputs.py --write`仅用于审阅后的schema/独立fixture再生成，不是编译流程；它不改正式工作簿。fixture不会改变正式字段nullability；玩家装备费用及各资源/费用/成长字段按行校验必填与成组完整性。测试Excel的资源71、敌人9101、编组9201、关卡9301及小数值均独立编写。
 
 编译包包含全行内容、ID索引、坐标、源字节hash及来源分类；相同行数据换物理行不改语义hash。阶段1校验类型、主键、装备资源引用、主线嵌套引用/战点顺序、敌武器引用、科技拓扑、typed literal表。后续领域接入时补相应布局、预算、词缀和规则专属校验及具名运行结构；当前生产包尚未接入游戏启动入口。`ruleParameters`预留，当前不从旧代码补默认规则，也没有把基线快照冒充09章目标配置迁移。
 

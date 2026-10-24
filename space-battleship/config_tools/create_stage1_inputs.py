@@ -52,6 +52,8 @@ def main():
             if {'data_type','value'} <= fields.keys(): spec['typedValues']=True
             if table=='equipment':
                 spec['references']=[dict(field=f,table='res',target='id') for f in ('res_1','res_2')]
+                spec['requiredGroups']=[['res_1','cost_1','costMulti_1'],['res_2','cost_2','costMulti_2']]
+                spec['requiredWhen']=[dict(field='name',values=['armour','shield','laser','missile','cannon','longLaser'],required=['res_1','cost_1','costMulti_1'])]
                 for f in ('cost_1','cost_2','costMulti_1','costMulti_2'): fields[f]['min']=0
             if table=='ai_tech_tree': spec['topologies']=[dict(field='requirements',id='id')]
             structured={
@@ -100,7 +102,7 @@ def main():
     for name, data in {
         'res':[['id','name'],[71,'test_iron']],
         'enemy_weapon_base':[['id','dmg','cd','dmgtype','para1','para2','para3'],['laser',3,2,1,100,1,1]],
-        'equipment':[['name','des','level','dmgtype','dmg','cd','res_1','cost_1','costMulti_1','para1','para2'],['armour','fixture',1,2,0,0,71,7,0.1,30,0.1],['laser_mon','fixture enemy',1,1,3,2,71,7,0.1,100,None]],
+        'equipment':[['name','des','level','dmgtype','dmg','cd','res_1','cost_1','costMulti_1','para1','para2'],['armour','fixture',1,2,0,0,71,7,0.1,30,0.1],['laser_mon','fixture enemy',1,1,3,2,71,7,0.1,100,None],['laser','fixture player',1,1,3,2,71,7,0.1,100,None]],
         'mon':[['id','des','equipment','dmgMultiple','health','armourType','res','size','shield','shieldType','shieldRecovery','shieldDelay'],[9101,'fixture','{laser_mon|1}',1,9,0,'{71,2,1}',2,0,0,0,0]],
         'monGroup':[['id','des','mon'],[9201,'fixture','{null,null,null,9101,null,null,null,null,null,null}']],
         'level':[['id','length','monGroup','atkRatio','lifeRatio','resRatio','jewelRatio','planetExpRatio'],[9301,100,'{9201|0.5}',1,1,1,1,0]]
