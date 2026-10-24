@@ -13,18 +13,9 @@
 #include <array>
 #include <cmath>
 #include <deque>
-#include <filesystem>
 #include <vector>
 #include <memory>
 #include <unordered_map>
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <cerrno>
-#include <fcntl.h>
-#include <sys/file.h>
-#include <unistd.h>
-#endif
 
 using namespace godot;
 static_assert(sizeof(real_t)==4 && sizeof(double)==8,"This build must match Godot single vectors and GDScript doubles.");
@@ -135,79 +126,8 @@ void SpaceMotionLease::_bind_methods() {
 #include "combat_execution_kernel.h"
 #include "combat_presentation.h"
 
-// The sidecar is deliberately permanent. Its contents and PID do not grant
-// ownership; only an open OS handle does. Closing the process releases it.
-class SpaceSaveLock : public RefCounted {
-    GDCLASS(SpaceSaveLock, RefCounted)
-#ifdef _WIN32
-    HANDLE handle = INVALID_HANDLE_VALUE;
-#else
-    int handle = -1;
-#endif
-protected:
-    static void _bind_methods() {
-        ClassDB::bind_method(D_METHOD("acquire", "path"), &SpaceSaveLock::acquire);
-        ClassDB::bind_method(D_METHOD("owns"), &SpaceSaveLock::owns);
-        ClassDB::bind_method(D_METHOD("canonical_path", "path"), &SpaceSaveLock::canonical_path);
-    }
-public:
-    ~SpaceSaveLock() { release(); }
-    bool owns() const {
-#ifdef _WIN32
-        return handle != INVALID_HANDLE_VALUE;
-#else
-        return handle >= 0;
-#endif
-    }
-    void release() {
-        if (!owns()) return;
-#ifdef _WIN32
-        CloseHandle(handle);
-        handle = INVALID_HANDLE_VALUE;
-#else
-        flock(handle, LOCK_UN);
-        close(handle);
-        handle = -1;
-#endif
-    }
-    bool acquire(const String &path) {
-        if (owns()) return false;
-#ifdef _WIN32
-        Char16String wide = path.utf16();
-        handle = CreateFileW(reinterpret_cast<const wchar_t *>(wide.get_data()),
-            GENERIC_READ | GENERIC_WRITE, 0, nullptr, OPEN_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL, nullptr);
-#else
-        CharString bytes = path.utf8();
-        handle = open(bytes.get_data(), O_RDWR | O_CREAT | O_CLOEXEC, 0600);
-        if (handle >= 0 && flock(handle, LOCK_EX | LOCK_NB) != 0) {
-            close(handle);
-            handle = -1;
-        }
-#endif
-        return owns();
-    }
-    String canonical_path(const String &path) const {
-        // weakly_canonical resolves an existing link or junction and still
-        // resolves the parent of a not-yet-created save/staging file.
-#ifdef _WIN32
-        Char16String wide = path.utf16();
-        std::filesystem::path input(reinterpret_cast<const wchar_t *>(wide.get_data()));
-#else
-        CharString bytes = path.utf8();
-        std::filesystem::path input(bytes.get_data());
-#endif
-        std::error_code error;
-        auto canonical = std::filesystem::weakly_canonical(input, error);
-        if (error) return String(); // Unknown identity cannot authorize a write.
-        auto resolved = canonical.u8string();
-        return String::utf8(resolved.c_str());
-    }
-};
-
 void initialize(ModuleInitializationLevel level) {
     if(level!=MODULE_INITIALIZATION_LEVEL_SCENE)return;
-    ClassDB::register_class<SpaceSaveLock>();
     ClassDB::register_class<SpaceMotionLease>();ClassDB::register_class<SpaceCombatKernel>();
     ClassDB::register_class<SpaceVisualLease>();ClassDB::register_class<SpaceCombatFlightFrame>();ClassDB::register_class<SpaceCombatPresentation>();
 }
