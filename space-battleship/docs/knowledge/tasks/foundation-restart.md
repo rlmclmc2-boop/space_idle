@@ -8,15 +8,15 @@
 
 交接现场先在当前工作区以 de0c3f9c 保存；原 task-6 工作树保留不动。保留 foundation/tests/amount_value_tests.cpp，并明确其编译命令和唯一例外边界。
 
-## 剩余跨模块依赖：待用户确认必要性
+## 模块依赖：用户已确认处理
 
-依最新要求，以下只登记事实与选择，不由实现线程判定必要或验收保留：
+以 478c0e5fc73382eeee8565d93a9029479a8c08b5 为基线，用户确认删除保存与配置哈希的绑定，保留其余三项依赖：
 
-| 双方 | 当前依赖内容及用途 | 可选替代 |
-|---|---|---|
-| Godot 适配层 → Amount | amount_api.hpp 包含值类型并调用公开运算/编码接口，用于 Godot 调用统一算术 | 保留公开接口依赖；或增加编译边界，将值实现移到独立编译单元 |
-| SaveFiles → FoundationDisk | 通过 ClassDB 中的固定类名和 replace 方法调用平台 flush/文件替换 | 保留该调用；或由宿主传入文件替换函数 |
-| native 初始化/构建 → Amount 绑定、磁盘原语和战斗类 | space_native.cpp 同时包含并注册它们，SConstruct 构建一个 DLL | 同 DLL 拆分编译单元；或拆成独立扩展/DLL |
-| SaveFiles ↔ 配置身份 | 构造时要求调用方传入 config_hash，读存档时要求 configHash 完全匹配；导入器已不生成该标识 | 由宿主确定兼容策略并传入标识；或去掉保存层的配置身份匹配，交给业务入口决策 |
+| 双方 | 确认后的处理 |
+|---|---|
+| Godot 适配层 → Amount | 保留公开运算/编码接口调用 |
+| SaveFiles → FoundationDisk | 保留 ClassDB 固定类名及 replace 平台文件替换接口 |
+| native 初始化/构建 → Amount 绑定、磁盘原语和战斗类 | 保留同一个 native DLL 的注册和发布 |
+| SaveFiles ↔ 配置身份 | 已移除构造/读取参数、封套字段、写入任务字段和强制匹配判断；只按目录读取存档 |
 
-独立 Amount 测试只依赖该模块公开接口，是用户明确允许的唯一测试例外。Excel 导入器不依赖 Amount；保存层不解释 Amount 金额。上述必要性须交父级请用户确认，本轮未据此新增封装或改变存档协议。
+文件 checksum、payloadHash、格式/代际检查、A/B 槽与主备指针、异步写入和失败处理继续保留。独立 Amount 测试仍是唯一测试例外；本次不新增保存测试。Excel 导入器不依赖 Amount，保存层不解释 Amount 金额。完成受影响脚本编译检查后提交推送交审，不进入第二阶段，不合 main。

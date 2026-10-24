@@ -2,16 +2,14 @@ extends RefCounted
 ## One background writer. This foundation stores opaque immutable payloads;
 ## domain/entity validation and full session restore belong to later stages.
 var _directory: String
-var _config_hash: String
 var _worker: Thread
 var _pending: Dictionary = {}
 var _generation: int = 0
 var saved_change: String = ""
 var last_result: Dictionary = {}
 
-func _init(directory: String, config_hash: String) -> void:
+func _init(directory: String) -> void:
 	_directory = directory
-	_config_hash = config_hash
 	DirAccess.make_dir_recursive_absolute(directory)
 	var previous := load_latest()
 	if previous.ok:
@@ -21,14 +19,14 @@ func _init(directory: String, config_hash: String) -> void:
 static func integer_text(value) -> bool:
 	return value is String and value.is_valid_int() and value.to_int() >= 0 and str(value.to_int()) == value
 
-static func read_pointer(directory: String, config_hash: String, pointer_file: String) -> Dictionary:
+static func read_pointer(directory: String, pointer_file: String) -> Dictionary:
 	if not FileAccess.file_exists(directory.path_join(pointer_file)): return {"ok": false}
 	var pointer = JSON.parse_string(FileAccess.get_file_as_string(directory.path_join(pointer_file)))
 	if not pointer is Dictionary or not pointer.get("file") in ["slot-0.json", "slot-1.json"] or not integer_text(pointer.get("generation")): return {"ok": false}
 	var raw := FileAccess.get_file_as_string(directory.path_join(pointer.file))
 	if raw.sha256_text() != pointer.get("checksum"): return {"ok": false}
 	var envelope = JSON.parse_string(raw)
-	if not envelope is Dictionary or envelope.get("formatVersion") != 1 or envelope.get("configHash") != config_hash:
+	if not envelope is Dictionary or envelope.get("formatVersion") != 1:
 		return {"ok": false}
 	for field in ["changeNumber", "generation", "savedUtc"]:
 		if not integer_text(envelope.get(field)): return {"ok": false}
@@ -36,15 +34,15 @@ static func read_pointer(directory: String, config_hash: String, pointer_file: S
 	if JSON.stringify(envelope.payload).sha256_text() != envelope.get("payloadHash"): return {"ok": false}
 	return {"ok": true, "envelope": envelope, "pointer": pointer}
 
-static func read_store(directory: String, config_hash: String) -> Dictionary:
-	var current := read_pointer(directory, config_hash, "active.json")
+static func read_store(directory: String) -> Dictionary:
+	var current := read_pointer(directory, "active.json")
 	if current.ok: return current
-	var backup := read_pointer(directory, config_hash, "previous.json")
+	var backup := read_pointer(directory, "previous.json")
 	if backup.ok: return backup
 	return {"ok": false, "error": "InvalidSaveStore" if FileAccess.file_exists(directory.path_join("active.json")) or FileAccess.file_exists(directory.path_join("previous.json")) else "MissingSave"}
 
 func load_latest() -> Dictionary:
-	return read_store(_directory, _config_hash)
+	return read_store(_directory)
 
 func request(payload: Dictionary, change_number: String, session_id: String, utc: String) -> Dictionary:
 	if not integer_text(change_number) or not integer_text(utc) or session_id.is_empty() or _generation == 9223372036854775807:
@@ -57,9 +55,9 @@ func request(payload: Dictionary, change_number: String, session_id: String, utc
 	var snapshot = JSON.parse_string(payload_text)
 	if not snapshot is Dictionary: return {"ok": false, "error": "InvalidSavePayload"}
 	var envelope := {"formatVersion": 1, "sessionId": session_id, "changeNumber": change_number,
-		"generation": str(_generation), "configHash": _config_hash, "savedUtc": utc,
+		"generation": str(_generation), "savedUtc": utc,
 		"payloadHash": JSON.stringify(snapshot).sha256_text(), "payload": snapshot}
-	_pending = {"directory": _directory, "config": _config_hash, "envelope": JSON.stringify(envelope),
+	_pending = {"directory": _directory, "envelope": JSON.stringify(envelope),
 		"generation": str(_generation), "change": change_number}
 	poll()
 	return {"ok": true, "generation": str(_generation)}
@@ -103,7 +101,7 @@ static func publish_file(directory: String, name: String, content: String, disk)
 static func write_snapshot(job: Dictionary) -> Dictionary:
 	var directory: String = job.directory
 	var disk = ClassDB.instantiate("FoundationDisk")
-	var old := read_store(directory, job.config)
+	var old := read_store(directory)
 	if not old.ok and old.error != "MissingSave": return {"ok": false, "error": old.error}
 	var filename := "slot-1.json" if old.ok and old.pointer.file == "slot-0.json" else "slot-0.json"
 	if not publish_file(directory, filename, job.envelope, disk): return {"ok": false, "error": "DataWrite"}
@@ -111,7 +109,7 @@ static func write_snapshot(job: Dictionary) -> Dictionary:
 	# Validate the complete envelope before replacing either publication pointer.
 	var probe_name: String = "probe-" + job.generation + ".json"
 	if not publish_file(directory, probe_name, JSON.stringify(pointer), disk): return {"ok": false, "error": "DataVerify"}
-	var verified := read_pointer(directory, job.config, probe_name)
+	var verified := read_pointer(directory, probe_name)
 	DirAccess.remove_absolute(directory.path_join(probe_name))
 	if not verified.ok: return {"ok": false, "error": "DataVerify"}
 	if old.ok:

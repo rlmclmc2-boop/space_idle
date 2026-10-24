@@ -40,7 +40,7 @@ powershell -ExecutionPolicy Bypass -File addons/native_battle/build_native.ps1
 
 ## 保存骨架
 
-foundation/host/save_files.gd 通过显式目录和配置内容 hash 创建，request() 接收本次 payload 快照，poll() 回收写入结果，dirty()/close() 提供状态。保留实际保存需要的写入失败处理、flush/回读、checksum、A/B 槽与主备指针保护；测试专用故障注入已移除。没有默认个人存档路径。
+foundation/host/save_files.gd 只通过显式目录创建，request() 接收本次 payload 快照，poll() 回收写入结果，dirty()/close() 提供状态。保留实际保存需要的写入失败处理、flush/回读、checksum、A/B 槽与主备指针保护；测试专用故障注入已移除。没有默认个人存档路径。保存层不接收配置身份参数，也不写入或匹配配置哈希；文件 checksum 和 payloadHash 继续只校验保存数据的完整性。
 
 
 ## 唯一保留的正确性测试
