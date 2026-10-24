@@ -156,7 +156,7 @@ static func combine(base: String,followup: String) -> Dictionary:
 		pairs[key]=merge_pair(pairs[key],new_pairs[key]) if pairs.has(key) else new_pairs[key]
 	var combined: Dictionary=previous.duplicate(true)
 	combined.execution_batches=previous.get("execution_batches",[original.execution_identity]).duplicate(true)
-	combined.execution_batches.append(additional.execution_identity.duplicate(true))
+	combined.execution_batches.append_array(recent.get("execution_batches",[additional.execution_identity]).duplicate(true))
 	combined.status="retested"
 	combined.completed_count=int(previous.get("completed_count",0))+int(recent.get("completed_count",0))
 	combined.budget=int(previous.get("budget",0))+int(recent.get("budget",0))

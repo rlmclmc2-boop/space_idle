@@ -223,6 +223,28 @@ func run() -> void:
 	while followup.busy() and Time.get_ticks_msec()<deadline:followup.process(10000)
 	var merged:Dictionary=preload("res://scripts/fleet_batch_retest.gd").combine(fleet.directory,followup.directory)
 	check(merged.has("directory"),"actual F9 merge accepts compatible batches")
+	var third=preload("res://scripts/fleet_battle_runner.gd").new(fleet_db)
+	followup_options.seed=int(followup_options.seed)+1
+	check(third.start(saved_inputs.enemy_fleets,saved_inputs.player_loadouts,followup_options).is_empty(),"third compatible batch starts")
+	deadline=Time.get_ticks_msec()+5000
+	while third.busy() and Time.get_ticks_msec()<deadline:third.process(10000)
+	var nested:Dictionary=preload("res://scripts/fleet_batch_retest.gd").combine(third.directory,merged.directory)
+	check(nested.has("directory"),"right nested merge completes")
+	if nested.has("directory"):
+		var nested_summary:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(str(nested.directory).path_join("summary.json")))
+		var nested_inputs:Dictionary=JSON.parse_string(FileAccess.get_file_as_string(str(nested.directory).path_join("inputs.json")))
+		check(nested_summary.execution_batches.size()==3 and nested_summary.completed_count==3,"right nested merge retains all three batch identities")
+		check(nested_inputs.execution_batches==nested_summary.execution_batches and nested_summary.execution_batches.map(func(item):return item.batch_sha256)==[third.execution_identity.batch_sha256,fleet.execution_identity.batch_sha256,followup.execution_identity.batch_sha256],"nested input and summary preserve constituent order and identities")
+	var mutable_db:=ShipDatabase.new()
+	var captured_runner=preload("res://scripts/fleet_battle_runner.gd").new(mutable_db)
+	check(captured_runner.start(enemy_rows,player_rows,{"runs":1,"max_total":1,"max_per_pair":1,"max_seconds":0.1,"module_delta":1,"directory":"res://.runtime/s4-captured-upgrade"}).is_empty(),"captured upgrade batch starts")
+	var captured_batch_sha:String=captured_runner.execution_identity.batch_sha256
+	mutable_db.groups.clear()
+	while captured_runner.status=="validating":captured_runner.validate_next()
+	check(str(captured_runner.player_errors[0]).is_empty() and not captured_runner.profiles[0].is_empty() and int(captured_runner.profiles[0].loadout.weapons[0].level)==int(player_rows[0].equipment.weapons[0].level)+1,"upgrade uses captured data after original database becomes invalid")
+	deadline=Time.get_ticks_msec()+5000
+	while captured_runner.busy() and Time.get_ticks_msec()<deadline:captured_runner.process(10000)
+	check(captured_runner.completed==1 and captured_runner.results[0].status!="error" and captured_runner.execution_identity.batch_sha256==captured_batch_sha,"captured upgrade executes under unchanged batch identity")
 	var large_generator_db:=ShipDatabase.new()
 	for rows in large_generator_db.equipment.values():
 		for large_source_row in rows:

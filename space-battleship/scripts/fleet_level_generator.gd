@@ -146,7 +146,7 @@ func read_existing_pairs() -> void:
 	var expected:Dictionary=probe.capture_identity(database,inputs.enemy_fleets,inputs.get("player_loadouts",[]),{"mode":"fast","max_seconds":policy.max_seconds})
 	var compatibility:Dictionary=preload("res://scripts/execution_identity.gd").compare(inputs.get("execution_identity",{}),expected,"retest")
 	if not compatibility.compatible:return
-	execution_batches.append(inputs.execution_identity.duplicate(true))
+	execution_batches.append_array(inputs.get("execution_batches",[inputs.execution_identity]).duplicate(true))
 	var source_players: Array=inputs.get("player_loadouts",[])
 	var lookup: Dictionary={}
 	for index in range(source_players.size()):

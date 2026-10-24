@@ -64,6 +64,15 @@ func run() -> void:
 	check(generator.start(path,{"max_loadouts":1,"max_level":1,"max_total_battles":3,"coarse_runs":3,"max_per_level":3,"seed":42})=="","all-fleet level analysis starts")
 	check(generator.status=="completed" and generator.spent==0,"compatible +0 result reused")
 	check(generator.execution_identity.status=="known" and generator.execution_batches.size()==1,"generated levels retain generation and reused battle identities")
+	var merged_source:=Generator.new(db)
+	merged_source.inputs=generator.inputs.duplicate(true)
+	merged_source.inputs.execution_batches=[generator.inputs.execution_identity.duplicate(true),generator.inputs.execution_identity.duplicate(true)]
+	merged_source.inputs.execution_batches[1].batch_sha256="second-compatible-batch"
+	merged_source.loadouts=generator.loadouts.duplicate(true)
+	merged_source.candidates=generator.candidates.duplicate(true)
+	merged_source.source_directory=generator.source_directory
+	merged_source.read_existing_pairs()
+	check(not merged_source.previous_pairs.is_empty() and merged_source.execution_batches.size()==2 and merged_source.execution_batches[1].batch_sha256=="second-compatible-batch","auto-level reuse retains every merged source constituent")
 	var unknown:=Generator.new(db)
 	unknown.inputs=generator.inputs.duplicate(true);unknown.inputs.erase("execution_identity")
 	unknown.read_existing_pairs()

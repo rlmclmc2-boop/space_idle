@@ -161,10 +161,10 @@ func start(enemy_rows: Array, player_rows: Array, options: Dictionary = {}) -> S
 	var inputs := FileAccess.open(directory.path_join("inputs.json"),FileAccess.WRITE)
 	if inputs==null:return fail_output()
 	var names := {"equipment":{}}
-	for key in source.equipment:
+	for key in validation_source.equipment:
 		var binding := UIText.data_key("equipment",str(key),"name")
-		names.equipment[str(key)]=UIText.t(binding) if not binding.is_empty() else str(source.equip(str(key),1).get("name",""))
-	inputs.store_string(JSON.stringify({"replay_inputs":replay_inputs,"execution_identity":execution_identity,"config":config,"sampling_policy":policy.sampling,"sampling":sampling.report(),"display_names":names,"enemy_fleets":enemies,"player_loadouts":players,"data_sha256":JSON.stringify(source.data).sha256_text(),"engine":Engine.get_version_info().string,"step_seconds":STEP},"  ",true,true))
+		names.equipment[str(key)]=UIText.t(binding) if not binding.is_empty() else str(validation_source.equip(str(key),1).get("name",""))
+	inputs.store_string(JSON.stringify({"replay_inputs":replay_inputs,"execution_identity":execution_identity,"config":config,"sampling_policy":policy.sampling,"sampling":sampling.report(),"display_names":names,"enemy_fleets":enemies,"player_loadouts":players,"data_sha256":JSON.stringify(validation_source.data).sha256_text(),"engine":Engine.get_version_info().string,"step_seconds":STEP},"  ",true,true))
 	inputs.flush()
 	if inputs.get_error()!=OK:return fail_output()
 	status = "validating"
@@ -225,7 +225,7 @@ func validate_next() -> void:
 		if valid and profile.is_empty():
 			player_errors[int(job.index)]="incomplete_logical_step";valid=false
 		if valid and int(config.get("module_delta",0))>0:
-			profile=PlayerGenerator.upgraded_profile(source,row,profile,int(config.module_delta))
+			profile=PlayerGenerator.upgraded_profile(player_validator.db,row,profile,int(config.module_delta))
 			if profile.has("error"):
 				player_errors[int(job.index)]=str(profile.error)
 				profile={}
