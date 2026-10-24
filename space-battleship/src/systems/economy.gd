@@ -2,7 +2,7 @@ extends RefCounted
 ## These functions mutate the session's ledger only after Amount operations succeed.
 ## Death sampling and damage belong to the native kernel.
 
-static func register_drops(pending: Dictionary, claimed: Dictionary, rows: Array, now: float, amount_api) -> Dictionary:
+static func register_drops(pending: Dictionary, claimed: Dictionary, rows: Array, now: float, rules: Dictionary, amount_api) -> Dictionary:
 	var captured: Dictionary = {}
 	for source in rows:
 		var id: int = source.uid
@@ -17,8 +17,8 @@ static func register_drops(pending: Dictionary, claimed: Dictionary, rows: Array
 			return base
 		row.amount = quantity.value
 		row.production_base = base.value
-		row.born_at = now
-		row.auto_at = now + (2.0 if row.get("jewel", false) else 5.0)
+		row.born_at = float(row.get("created_at", now))
+		row.auto_at = float(row.born_at) + float(rules.fragment_drop_auto_seconds if row.get("jewel", false) else rules.ordinary_drop_auto_seconds)
 		captured[id] = row
 	for id in captured:
 		pending[id] = captured[id]

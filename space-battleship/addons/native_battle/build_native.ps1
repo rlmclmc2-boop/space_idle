@@ -40,7 +40,11 @@ try {
         & $python -m SCons "bindings=$($binding.Replace('\','/'))" platform=windows arch=x86_64 use_mingw=yes use_llvm=yes "mingw_prefix=$($compiler.Replace('\','/'))" use_static_cpp=yes "custom_api_file=$($api.Replace('\','/'))" target=template_release lto=none -j $Jobs
         if ($LASTEXITCODE -ne 0) { throw "Native build failed: $LASTEXITCODE" }
     } finally { Pop-Location }
-    Write-Output (Join-Path $native 'bin\space_native.dll')
+    $nativeDll = Join-Path $native 'bin\space_native.dll'
+    $extensionTemplate = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'space_native.gdextension.in'))
+    $extensionText = $extensionTemplate.Replace('res://bin/space_native.dll', $nativeDll.Replace('\','/'))
+    [IO.File]::WriteAllText((Join-Path $native 'space_native.gdextension'), $extensionText)
+    Write-Output $nativeDll
 } finally {
     foreach ($key in $saved.Keys) { [Environment]::SetEnvironmentVariable($key,$saved[$key],'Process') }
 }
