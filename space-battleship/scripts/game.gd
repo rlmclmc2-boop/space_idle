@@ -406,7 +406,6 @@ func install_prepared_game(candidate:BattleGame,authority:String="memory")->void
 	# Candidate owners and derived state are complete before the live install.
 	lifecycle.state="installing"
 	progress_runtime.clear_runtime(self)
-	if event.is_connected(crew.on_event):event.disconnect(crew.on_event)
 	for key in ["db","profile","economy","equipment","enhancement_growth","research","crew","planets","reactor","hyperspace","galaxy","income_history","galaxy_runtime","hyperspace_runtime","manual_hyperspace","attributes","configuration_revision","unlock_revision","_unlock_inputs","_committed_configuration","save_interval_minutes","last_successful_save_at","login_chrono_particles"]:
 		set(key,candidate.get(key))
 	crew.attach(self)
@@ -1544,10 +1543,6 @@ func production_minute_total(id: String, at := -1.0) -> Variant:
 
 func resource_game_minute_total(id: String, at := -1.0) -> Variant:
 	return income_history.research_total(id,production_time() if at<0 else at)
-
-func resource_minute_total(id: String, now := -1.0, exclude_furnace := false) -> Variant:
-	if now<0:now=economy_time()
-	return income_history.wall_production_total(id,now) if exclude_furnace else income_history.display_total(id,now)
 
 func auto_gen_settings() -> Dictionary:
 	var raw = db.config.get("autoGenRes", "")

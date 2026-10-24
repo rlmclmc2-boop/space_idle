@@ -36,7 +36,6 @@ func _init() -> void:
 
 func attach(g) -> void:
 	game_ref = weakref(g)
-	g.event.connect(on_event)
 
 func clear_schedule() -> void:
 	timers.clear()
@@ -125,10 +124,6 @@ func on_committed(g,result: Dictionary) -> void:
 	if result.facts.get("reactor_equalized",false) and not allocation_dependencies.is_empty():
 		allocation_dependencies=reactor_allocation_state(g,str(allocation_dependencies[0]))
 	elif allocation_changed:invalidate_reactor_allocation(g)
-
-func on_event(_kind:String,_payload:Dictionary)->void:
-	# Compatibility hook for existing fixtures; UI events carry no business work.
-	pass
 
 func register_target(target_type: String, provider: Callable) -> void:
 	targets[target_type] = provider

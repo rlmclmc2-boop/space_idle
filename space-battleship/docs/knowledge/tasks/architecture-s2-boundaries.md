@@ -2,13 +2,13 @@
 
 ## Authority and delivered base
 
-Same existing executor task; no replacement task or new audit. This commit proposes S5 scope only, not S5 implementation or acceptance. Parent coordinates the existing dot/high review.
+Same existing executor task; no replacement task or new audit. S5 scope at 101501b5 has dot/high approval. Implementation is in progress, not accepted. Parent coordinates the existing dot/high review.
 
 S4 approved candidate: faa24fbd48efc1558334dc42631b7324b7badec5, unanimously accepted by dot and high. Full S4 history is in this path at that commit. Original approved plan: d08f24e8344b5e0f7068b449005187c44ae122de:space-battleship/docs/GLOBAL_ARCHITECTURE_PLAN.md, S5 and responsibility-exit table.
 
 Delivered main: 1795d5c5cef6a20060303e5f1c914542edc882a4; normal push and remote readback confirmed. Selected 37 runtime/build/current reusable test/document files; task history, evidence and temporary products excluded. Selected blobs and complete production scripts/tools/data/config_excel/manifest/export settings match the approved candidate. Actual filtered main entry: test/work/test_ordinary_entry-pxxa4or1, eight phases, 151 checks / 0 failures, restored-domain mismatches empty. Intentional configuration-corruption rejection and known certificate-store diagnostic remain visible.
 
-S5 branch: work/architecture-s5-scope-20261024, based on delivered main. No S5 runtime edit yet.
+S5 branch: work/architecture-s5-scope-20261024, based on delivered main. Runtime cleanup removes the empty Crew UI-event connection and mixed income query facade only.
 
 ## 1. Retire only responsibilities with proven absent consumers
 
@@ -45,4 +45,13 @@ Evidence and timings remain under ignored test/work; compact current findings an
 
 ## Constraints and stop conditions
 
-Preserve the approved S2 freezing boundary (not arbitrary interruption recovery), all GrowthNumber discard semantics, and explicit Lab/native support limits. No new gameplay, timing/target/damage rules, refunds, exact ledger, save schema, old-result compatibility, capability registry or experimental framework. If a live responsibility or semantic mismatch cannot be resolved within those constraints, isolate and report it while continuing independent inventory. Initial scope needs parent/high review before cleanup implementation; this doc-only commit needs no additional game test.
+Preserve the approved S2 freezing boundary (not arbitrary interruption recovery), all GrowthNumber discard semantics, and explicit Lab/native support limits. No new gameplay, timing/target/damage rules, refunds, exact ledger, save schema, old-result compatibility, capability registry or experimental framework. If a live responsibility or semantic mismatch cannot be resolved within those constraints, isolate and report it while continuing independent inventory. Final implementation still requires the existing dot/high review before any main merge.
+
+## S5 implementation checkpoint (pending measurements / final review)
+
+- Runtime: remove Crew.on_event, its attach connection and install disconnect; remove Game.resource_minute_total. Four tracked-crew fixtures now attach without empty UI wiring. Opening feedback and state-ownership checks call IncomeHistory.display_total explicitly.
+- Existing harnesses: whole_game_perf stages an optional historical/current configuration manifest and refuses reuse across source-byte fingerprints; records actual work before/after measurement. Growth performance now runs the actual Runner without a shadow MeasuredGame/old scientist fields. F9 speed has bounded opt-in candidate/result counts and separate setup/CPU/wall records. No production numerical or timing semantics changed.
+- ARCHITECTURE contains the eight-entry closure/retirement table, evidence reuse reasons, support limits and the existing extra-storage cross-domain example. BALANCE_PERFORMANCE and the performance guide distinguish unknown identity and historical fixtures.
+- Current affected checks: commit boundary 131/0, state ownership 1230/0, opening feedback 21/0. Initial opening run timed out at the retired invalidate_stat_cache fixture call; replaced with notify_configuration_changed. Initial material economy test 156/1: transient per-instance configuration was assumed to survive S3 replacement. Formula cases remain; restoration now tests the captured published configuration. Recheck pending.
+- Initial F9 benchmark generation timed out at 120 s; not reported as performance evidence. The opt-in small workload uses the existing runner regression's first-enemy/1-2 ship/module-level-10 setup. Same-input before/after timing and final actual entry remain pending.
+- Logs and raw measurements remain ignored under test/work. No main merge, no overall S5 pass claimed. Two historical formation compatibility failures remain outside scope.

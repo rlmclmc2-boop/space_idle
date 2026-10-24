@@ -219,7 +219,7 @@ func completion_boundaries()->void:
 	var g:=CallbackGame.new(ShipDatabase.new(),false)
 	var tracker:=TrackedCrew.new()
 	tracker.install_snapshot(g.crew.save_data(),g.db)
-	g.event.disconnect(g.crew.on_event);g.crew=tracker;tracker.attach(g)
+	g.crew=tracker;tracker.attach(g)
 	var keys:Array=g.economy.material_wallet().materials.keys()
 	var source:String=keys[0];var target:String=keys[1]
 	g.economy.credit(source,100)
@@ -297,6 +297,7 @@ func consumer_boundaries() -> void:
 	var hs:=g.hyperspace.save_data();Bag.insert(hs.hyperspace.inventory,drone,g.hyperspace.config)
 	for key in g.hyperspace.config.hanging_modules:hs.hyperspace.hanging_modules[key]={"unlocked":true,"level":2,"exp":0.0}
 	assert(g.hyperspace.install_snapshot(hs,db));check(g.hyperspace_runtime.set_equipped(g,[drone.id]),"Equip actual consumer drone")
+	var published_config:Dictionary=g.hyperspace.config.duplicate(true)
 	for growth in [0.1,0.2]:
 		g.hyperspace_runtime.attach_hangings(g,drone.id,[])
 		var energy=g.reactor_energy();var chrono:=g.chrono_capacity()
@@ -309,14 +310,20 @@ func consumer_boundaries() -> void:
 		var modules:=g.reactor_available_modules()
 		check(not modules.is_empty(),"reactor allocation fixture unlocked")
 		check(g.set_reactor_allocation(modules[0],g.reactor_capacity()),"boosted reactor energy can be allocated")
-		var saved := g.portable_save_data()
-		var restored := BattleGame.new(db,false)
-		restored.hyperspace.configure(g.hyperspace.config)
-		restored.load_progress_data(saved)
-		check(restored.hyperspace.last_error.is_empty() and restored.reactor.allocations()==g.reactor.allocations() and restored.reactor_capacity()==g.reactor_capacity(),"load installs storage contributions before reconciling reactor allocation")
 		g.hyperspace_runtime.attach_hangings(g,drone.id,[])
 		check(g.reactor_allocated()<=g.reactor_capacity() and g.reactor_capacity()==floori(energy),"removing storage reconciles allocations to reduced capacity")
 		check(g.chrono_capacity()==chrono,"detach leaves chrono limit unchanged")
+	# Replacement installs the captured published configuration, not transient
+	# mutations of the departing instance. Keep the formula variants above;
+	# exercise restoration separately with the actual published input.
+	g.hyperspace.configure(published_config)
+	check(g.hyperspace_runtime.attach_hangings(g,drone.id,["extra_storage"]),"published storage fixture attaches")
+	var modules:=g.reactor_available_modules()
+	check(g.set_reactor_allocation(modules[0],g.reactor_capacity()),"published storage allocation fills capacity")
+	var restored:=BattleGame.new(db,false)
+	restored.load_progress_data(g.portable_save_data())
+	check(restored.hyperspace.last_error.is_empty() and restored.reactor.allocations()==g.reactor.allocations() and restored.reactor_capacity()==g.reactor_capacity(),"load installs published storage contributions before reconciling reactor allocation")
+	g.hyperspace_runtime.attach_hangings(g,drone.id,[])
 	for key in g.reactor_modules():g.set_reactor_allocation(key,0)
 	g.economy.credit_many({"1":100000.0,"2":100000.0});g.set_tech_input("1",10);g.set_tech_input("2",10)
 	check(g.select_tech("singularity"),"current AI research starts")

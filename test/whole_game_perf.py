@@ -8,6 +8,7 @@ Examples:
 Use --instrument only for attribution, not final before/after frame comparisons.
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -20,6 +21,7 @@ import sys
 from saved_game_perf import MODULES, instrument
 
 ROOT = Path(__file__).resolve().parent.parent
+OPTIONAL_PARTS = ('configuration_manifest.json',)
 PARTS = ('scripts', 'shaders', 'tools', 'data', 'config_excel', 'assets', 'addons', 'dev', 'project.godot', 'main.tscn')
 
 
@@ -52,16 +54,35 @@ def main():
     project = area / 'space-battleship'
     source = ROOT / 'space-battleship'
     if args.ref:
+        available = subprocess.check_output(['git', 'ls-tree', '--name-only', args.ref + ':space-battleship'], cwd=ROOT, text=True).splitlines()
+        selected = PARTS + tuple(p for p in OPTIONAL_PARTS if p in available)
         archive = area / 'input.tar'
         with archive.open('wb') as output:
-            subprocess.run(['git', 'archive', args.ref, *['space-battleship/' + p for p in PARTS]], cwd=ROOT, stdout=output, check=True)
+            subprocess.run(['git', 'archive', args.ref, *['space-battleship/' + p for p in selected]], cwd=ROOT, stdout=output, check=True)
         source = area / 'source/space-battleship'
         with tarfile.open(archive) as package:
             package.extractall(area / 'source', filter='data')
         archive.unlink()
+    fingerprints = {}
+    for part in PARTS + OPTIONAL_PARTS:
+        origin = source / part
+        paths = sorted(origin.rglob('*')) if origin.is_dir() else [origin]
+        for path in paths:
+            if path.is_file() and '__pycache__' not in path.parts and path.suffix not in {'.blend', '.blend1', '.pyc'}:
+                fingerprints[str(path.relative_to(source)).replace('\\', '/')] = hashlib.sha256(path.read_bytes()).hexdigest()
+    fingerprint = hashlib.sha256(json.dumps(fingerprints, sort_keys=True).encode()).hexdigest()
+    source_record = area / 'source-fingerprint.json'
+    if args.reuse and source_record.exists():
+        if json.loads(source_record.read_text(encoding='utf-8'))['sha256'] != fingerprint:
+            raise ValueError('Reuse requires exactly the same source/configuration bytes')
+    source_record.write_text(json.dumps({'sha256': fingerprint, 'files': fingerprints}, indent=2), encoding='utf-8')
     project.mkdir(exist_ok=True)
-    for part in PARTS:
+    for part in PARTS + OPTIONAL_PARTS:
         origin, target = source / part, project / part
+        if not origin.exists() and part in OPTIONAL_PARTS:
+            if target.exists():
+                target.unlink()
+            continue
         if origin.is_dir():
             shutil.copytree(origin, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.blend', '*.blend1', '__pycache__'))
         else:
@@ -125,7 +146,7 @@ def main():
     rows = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ROW ')]
     environment = [json.loads(line[4:]) for line in text.splitlines() if line.startswith('ENV ')]
     expected = 1 if args.max_quote else len(args.pages.split(','))
-    report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, 'exit': result.returncode, 'environment': environment, 'rows': rows, 'page_checks': [json.loads(line[7:]) for line in text.splitlines() if line.startswith('CHECKS ')]}
+    report = {'options': {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}, 'source_sha256': fingerprint, 'godot_sha256': hashlib.sha256(Path(args.godot).read_bytes()).hexdigest(), 'native_sha256': hashlib.sha256(bundle.read_bytes()).hexdigest(), 'probe_sha256': hashlib.sha256((ROOT / 'test/whole_game_perf.gd').read_bytes()).hexdigest(), 'exit': result.returncode, 'environment': environment, 'rows': rows, 'page_checks': [json.loads(line[7:]) for line in text.splitlines() if line.startswith('CHECKS ')]}
     (area / (args.label + '.json')).write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print('Exit:', result.returncode, 'Rows:', len(rows), '/', expected, 'Log:', log_path)
     unexpected_errors = [line for line in text.splitlines() if 'ERROR:' in line and line != 'ERROR: Failed to read the root certificate store.']
